@@ -55,6 +55,7 @@
 #define CNC_RED_ALERT_TD_MAPEDIT_H_
 
 #include <array>
+#include <memory>
 #include <span>
 
 #include "engine/gfx/pixel_buffer.h"
@@ -348,21 +349,22 @@ class MapEditClass : public MouseClass {
   /*.....................................................................
   Variables for supporting the object-editing controls at screen bottom
   .....................................................................*/
-  TextButtonClass* GDIButton = nullptr;
-  TextButtonClass* NODButton = nullptr;
-  TextButtonClass* NeutralButton = nullptr;
-  TextButtonClass* Multi1Button = nullptr;
-  TextButtonClass* Multi2Button = nullptr;
-  TextButtonClass* Multi3Button = nullptr;
-  TextButtonClass* Multi4Button = nullptr;
-  ListClass* MissionList = nullptr;
-  TriColorGaugeClass* HealthGauge = nullptr;
-  Dial8Class* FacingDial = nullptr;
-  ControlClass* MapArea = nullptr;
-  TextLabelClass* HealthText = nullptr;
+  // Built by One_Time(); null before it runs.
+  std::unique_ptr<TextButtonClass> GDIButton;
+  std::unique_ptr<TextButtonClass> NODButton;
+  std::unique_ptr<TextButtonClass> NeutralButton;
+  std::unique_ptr<TextButtonClass> Multi1Button;
+  std::unique_ptr<TextButtonClass> Multi2Button;
+  std::unique_ptr<TextButtonClass> Multi3Button;
+  std::unique_ptr<TextButtonClass> Multi4Button;
+  std::unique_ptr<ListClass> MissionList;
+  std::unique_ptr<TriColorGaugeClass> HealthGauge;
+  std::unique_ptr<Dial8Class> FacingDial;
+  std::unique_ptr<ControlClass> MapArea;
+  std::unique_ptr<TextLabelClass> HealthText;
   static char HealthBuf[20];
-  GaugeClass* BaseGauge = nullptr;
-  TextLabelClass* BaseLabel = nullptr;
+  std::unique_ptr<GaugeClass> BaseGauge;
+  std::unique_ptr<TextLabelClass> BaseLabel;
   static constexpr std::array MapEditMissions = {
       MISSION_GUARD,  MISSION_STICKY, MISSION_HARVEST, MISSION_GUARD_AREA,
       MISSION_RETURN, MISSION_AMBUSH, MISSION_HUNT,    MISSION_SLEEP,

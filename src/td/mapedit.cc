@@ -65,6 +65,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <memory>
 #include <span>
 
 #include "absl/strings/str_format.h"
@@ -180,44 +181,44 @@ void MapEditClass::One_Time() {
   ........................................................................*/
   // MapArea = new ControlClass(kMapArea,0,8,312,192, GadgetClass::kLeftPress |
   // GadgetClass::kLeftRelease, false);
-  MapArea = new ControlClass(
+  MapArea = std::make_unique<ControlClass>(
       kMapArea, 0, 16, 624, 384,
       GadgetClass::kLeftPress | GadgetClass::kLeftRelease, false);
 
   /*........................................................................
   House buttons
   ........................................................................*/
-  GDIButton = new TextButtonClass(
+  GDIButton = std::make_unique<TextButtonClass>(
       kPopupGdi, "GDI",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupGdiX,
       kPopupGdiY, kPopupGdiW, kPopupGdiH);
 
-  NODButton = new TextButtonClass(
+  NODButton = std::make_unique<TextButtonClass>(
       kPopupNod, "NOD",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupNodX,
       kPopupNodY, kPopupNodW, kPopupNodH);
 
-  NeutralButton = new TextButtonClass(
+  NeutralButton = std::make_unique<TextButtonClass>(
       kPopupNeutral, "Neutral",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       kPopupNeutralX, kPopupNeutralY, kPopupNeutralW, kPopupNeutralH);
 
-  Multi1Button = new TextButtonClass(
+  Multi1Button = std::make_unique<TextButtonClass>(
       kPopupMulti1, "M1",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       kPopupMulti1X, kPopupMulti1Y, kPopupMulti1W, kPopupMulti1H);
 
-  Multi2Button = new TextButtonClass(
+  Multi2Button = std::make_unique<TextButtonClass>(
       kPopupMulti2, "M2",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       kPopupMulti2X, kPopupMulti2Y, kPopupMulti2W, kPopupMulti2H);
 
-  Multi3Button = new TextButtonClass(
+  Multi3Button = std::make_unique<TextButtonClass>(
       kPopupMulti3, "M3",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       kPopupMulti3X, kPopupMulti3Y, kPopupMulti3W, kPopupMulti3H);
 
-  Multi4Button = new TextButtonClass(
+  Multi4Button = std::make_unique<TextButtonClass>(
       kPopupMulti4, "M4",
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       kPopupMulti4X, kPopupMulti4Y, kPopupMulti4W, kPopupMulti4H);
@@ -225,7 +226,7 @@ void MapEditClass::One_Time() {
   /*........................................................................
   The mission list box
   ........................................................................*/
-  MissionList = new ListClass(
+  MissionList = std::make_unique<ListClass>(
       kPopupMissionlist, kPopupMissionX, kPopupMissionY, kPopupMissionW,
       kPopupMissionH, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP"));
@@ -237,9 +238,9 @@ void MapEditClass::One_Time() {
   /*........................................................................
   The health bar
   ........................................................................*/
-  HealthGauge =
-      new TriColorGaugeClass(kPopupHealthgauge, kPopupHealthX, kPopupHealthY,
-                             kPopupHealthW, kPopupHealthH);
+  HealthGauge = std::make_unique<TriColorGaugeClass>(
+      kPopupHealthgauge, kPopupHealthX, kPopupHealthY, kPopupHealthW,
+      kPopupHealthH);
   HealthGauge->Use_Thumb(true);
   HealthGauge->Set_Maximum(0x100);
   HealthGauge->Set_Red_Limit(0x3f - 1);
@@ -249,7 +250,7 @@ void MapEditClass::One_Time() {
   The health text label
   ........................................................................*/
   base::At(HealthBuf, 0) = 0;
-  HealthText = new TextLabelClass(
+  HealthText = std::make_unique<TextLabelClass>(
       HealthBuf, kPopupHealthX + (kPopupHealthW / 2),
       kPopupHealthY + kPopupHealthH + 1, kCcGreen,
       TPF_CENTER | TPF_FULLSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
@@ -257,19 +258,19 @@ void MapEditClass::One_Time() {
   /*........................................................................
   The facing dial
   ........................................................................*/
-  FacingDial =
-      new Dial8Class(kPopupFacingdial, kPopupFaceboxX, kPopupFaceboxY,
-                     kPopupFaceboxW, kPopupFaceboxH, static_cast<DirType>(0));
+  FacingDial = std::make_unique<Dial8Class>(
+      kPopupFacingdial, kPopupFaceboxX, kPopupFaceboxY, kPopupFaceboxW,
+      kPopupFaceboxH, static_cast<DirType>(0));
 
   /*........................................................................
   The base percent-built slider & its label
   ........................................................................*/
-  BaseGauge = new GaugeClass(kPopupBasepercent, kPopupBaseX, kPopupBaseY,
-                             kPopupBaseW, kPopupBaseH);
+  BaseGauge = std::make_unique<GaugeClass>(
+      kPopupBasepercent, kPopupBaseX, kPopupBaseY, kPopupBaseW, kPopupBaseH);
   // TextLabelClass keeps the pointer in its non-const Text member, so the
   // caption needs storage that outlives this call and is not a literal.
   static char base_caption[] = "Base:";
-  BaseLabel = new TextLabelClass(
+  BaseLabel = std::make_unique<TextLabelClass>(
       base_caption, kPopupBaseX - 3, kPopupBaseY, kCcGreen,
       TPF_RIGHT | TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   BaseGauge->Set_Maximum(100);
