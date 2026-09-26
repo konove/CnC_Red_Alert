@@ -50,7 +50,6 @@
 #include <vector>
 
 #include "absl/log/check.h"
-#include "absl/strings/str_cat.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "engine/stream/archive.h"
@@ -179,7 +178,15 @@ class FixedHeapClass {
 // (pointer size) in ActivePointers vector.
 class FixedIHeapClass : public FixedHeapClass {
  public:
-  explicit FixedIHeapClass(int size) noexcept : FixedHeapClass(size) {}
+  // Reads the slot index an object caches in its own `ID` field.
+  using SlotIdReader = int (*)(const void* object);
+
+  // slot_id is nullptr for objects that cache no slot index; Validate() then
+  // checks the heap's own bookkeeping only. clang's lifetime analysis reads
+  // slot_id as borrowed storage, but a function pointer outlives any heap.
+  // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
+  explicit FixedIHeapClass(int size, SlotIdReader slot_id = nullptr) noexcept
+      : FixedHeapClass(size), slot_id_(slot_id) {}
   ~FixedIHeapClass() override = default;
   FixedIHeapClass(const FixedIHeapClass&) = delete;
   FixedIHeapClass& operator=(const FixedIHeapClass&) = delete;
@@ -200,10 +207,11 @@ class FixedIHeapClass : public FixedHeapClass {
   // object apart from one the layer lists but the heap has let go.
   [[nodiscard]] std::string Describe(const void* pointer) const override;
 
-  // Describes the first disagreement between ActivePointers, FreeFlag and the
-  // slot buffer, or "" when the heap is sound. Walks every active pointer, so
-  // it is for the once-a-frame -CHECKHEAPS sweep, not for the inner loop.
-  [[nodiscard]] virtual std::string Validate() const;
+  // Describes the first disagreement between ActivePointers, FreeFlag, the
+  // slot buffer and the slot index each object caches, or "" when the heap is
+  // sound. Walks every active pointer, so it is for the once-a-frame
+  // -CHECKHEAPS sweep, not for the inner loop.
+  [[nodiscard]] std::string Validate() const;
 
   virtual void* Active_Ptr(int index) { return ActivePointers.at(index); }
   [[nodiscard]] virtual const void* Active_Ptr(int index) const {
@@ -217,6 +225,9 @@ class FixedIHeapClass : public FixedHeapClass {
   *sorting can be *	performed.
   */
   DynamicVectorClass<void*> ActivePointers;
+
+ private:
+  SlotIdReader slot_id_;  // nullptr when the objects cache no slot index.
 };
 
 // Whether T caches its own slot index in a public `ID` field, the way
@@ -240,44 +251,29 @@ concept HasHeapId = requires(const T& object) {
 template <class T>
 class TFixedIHeapClass : public FixedIHeapClass {
  public:
-  TFixedIHeapClass() noexcept : FixedIHeapClass(sizeof(T)) {}
+  TFixedIHeapClass() noexcept : FixedIHeapClass(sizeof(T), SlotIdReaderFor()) {}
   ~TFixedIHeapClass() override = default;
   TFixedIHeapClass(const TFixedIHeapClass&) = delete;
   TFixedIHeapClass& operator=(const TFixedIHeapClass&) = delete;
   TFixedIHeapClass(TFixedIHeapClass&&) = delete;
   TFixedIHeapClass& operator=(TFixedIHeapClass&&) = delete;
 
+  using FixedIHeapClass::Free;
   using FixedIHeapClass::ID;
   using FixedIHeapClass::Logical_ID;
 
-  virtual int ID(const T* pointer) const {
+  // The typed members below are deliberately not virtual: nothing derives
+  // from this template, and portability-template-virtual-member-function
+  // reports every virtual member a translation unit does not instantiate.
+  [[nodiscard]] int ID(const T* pointer) const {
     return FixedIHeapClass::ID(pointer);
   }
-  virtual int Logical_ID(const T* pointer) const {
+  [[nodiscard]] int Logical_ID(const T* pointer) const {
     return FixedIHeapClass::Logical_ID(pointer);
   }
-  [[nodiscard]] int Logical_ID(int id) const override {
-    return FixedIHeapClass::Logical_ID(id);
-  }
-  // Adds the check the untyped heap cannot make: that each object's cached ID
-  // still names the slot it occupies.
-  [[nodiscard]] std::string Validate() const override {
-    std::string trouble = FixedIHeapClass::Validate();
-    if constexpr (HasHeapId<T>) {
-      for (int i = 0; trouble.empty() && i < ActiveCount; i++) {
-        const T* object = Ptr(i);
-        if (FixedIHeapClass::ID(object) != int{object->ID}) {
-          trouble = absl::StrCat("stale ID ", int{object->ID}, ": ",
-                                 Describe(object));
-        }
-      }
-    }
-    return trouble;
-  }
 
-  virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
-  virtual bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
-  bool Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
+  T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
+  bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   // Writes the active count, then each object's slot index and contents.
   bool Save(ByteSink& file) const
     requires Serializable<T>;
@@ -285,10 +281,23 @@ class TFixedIHeapClass : public FixedIHeapClass {
   // malformed stream; the heap is then partially populated.
   bool Load(ByteSource& file)
     requires Serializable<T>;
-  [[nodiscard]] virtual T* Ptr(int index) const {
+  [[nodiscard]] T* Ptr(int index) const {
     return static_cast<T*>(ActivePointers.at(index));
   }
-  virtual T* Raw_Ptr(int index) { return static_cast<T*>((*this).at(index)); }
+  T* Raw_Ptr(int index) { return static_cast<T*>((*this).at(index)); }
+
+ private:
+  // Lets Validate() check that each object's cached ID still names the slot
+  // it occupies, for the types that cache one.
+  static constexpr SlotIdReader SlotIdReaderFor() {
+    if constexpr (HasHeapId<T>) {
+      return [](const void* object) {
+        return int{static_cast<const T*>(object)->ID};
+      };
+    } else {
+      return nullptr;
+    }
+  }
 };
 
 template <class T>

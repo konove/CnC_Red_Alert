@@ -188,21 +188,22 @@ class TFixedIHeapClass : public FixedIHeapClass {
   TFixedIHeapClass(TFixedIHeapClass&&) = delete;
   TFixedIHeapClass& operator=(TFixedIHeapClass&&) = delete;
 
+  using FixedIHeapClass::Free;
   using FixedIHeapClass::ID;
 
-  virtual int ID(const T* pointer) { return FixedIHeapClass::ID(pointer); }
-  virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
-  virtual bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
-  bool Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
+  // The typed members below are deliberately not virtual: nothing derives
+  // from this template, and portability-template-virtual-member-function
+  // reports every virtual member a translation unit does not instantiate.
+  int ID(const T* pointer) { return FixedIHeapClass::ID(pointer); }
+  T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
+  bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   bool Save(ArchiveWriter& /*file*/)
     requires Serializable<T>;
   bool Load(ArchiveReader& /*file*/)
     requires Serializable<T>;
 
-  virtual T* Ptr(int index) {
-    return static_cast<T*>(ActivePointers.at(index));
-  }
-  virtual T* Raw_Ptr(int index) { return static_cast<T*>((*this).at(index)); }
+  T* Ptr(int index) { return static_cast<T*>(ActivePointers.at(index)); }
+  T* Raw_Ptr(int index) { return static_cast<T*>((*this).at(index)); }
 };
 
 /***********************************************************************************************

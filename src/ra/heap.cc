@@ -529,6 +529,14 @@ std::string FixedIHeapClass::Validate() const {
       return absl::StrCat("active pointer ", index,
                           " was freed: ", FixedHeapClass::Describe(pointer));
     }
+    // Only now is the pointer known to be a live slot whose ID field can be
+    // read.
+    if (slot_id_ != nullptr) {
+      const int cached = slot_id_(pointer);
+      if (FixedHeapClass::ID(pointer) != cached) {
+        return absl::StrCat("stale ID ", cached, ": ", Describe(pointer));
+      }
+    }
   }
   return {};
 }
