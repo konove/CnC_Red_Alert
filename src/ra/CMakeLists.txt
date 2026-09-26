@@ -143,6 +143,15 @@ apply_dotenv_settings(ra_drop_test)
 apply_language_setting(ra_drop_test)
 
 add_gtest(
+    NAME ra_options_test
+    SOURCES options_test.cc startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_options_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_options_test)
+apply_language_setting(ra_options_test)
+
+add_gtest(
     NAME ra_assets_test
     SOURCES assets_test.cc assets.cc ini.cc
     LIBS base engine_file magic_enum::magic_enum absl::strings absl::check absl::log

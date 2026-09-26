@@ -87,6 +87,71 @@
 
 const char* const OptionsClass::HotkeyName = "WinHotkeys";
 
+namespace {
+
+// A [WinHotkeys] entry and the option it sets.
+struct Hotkey {
+  const char* name;
+  engine::window::KeyNumber OptionsClass::* key;
+};
+
+// The [WinHotkeys] entries. They hold Windows virtual-key codes, as the
+// original Windows game wrote them, so one REDALERT.INI serves both games:
+// KeyFromWindowsKey() and WindowsKeyFromKey() translate on the way in and out.
+constexpr Hotkey kHotkeys[] = {
+    {"KeyForceMove1", &OptionsClass::KeyForceMove1},
+    {"KeyForceMove2", &OptionsClass::KeyForceMove2},
+    {"KeyForceAttack1", &OptionsClass::KeyForceAttack1},
+    {"KeyForceAttack2", &OptionsClass::KeyForceAttack2},
+    {"KeySelect1", &OptionsClass::KeySelect1},
+    {"KeySelect2", &OptionsClass::KeySelect2},
+    {"KeyScatter", &OptionsClass::KeyScatter},
+    {"KeyStop", &OptionsClass::KeyStop},
+    {"KeyGuard", &OptionsClass::KeyGuard},
+    {"KeyNext", &OptionsClass::KeyNext},
+    {"KeyPrevious", &OptionsClass::KeyPrevious},
+    {"KeyFormation", &OptionsClass::KeyFormation},
+    {"KeyHome1", &OptionsClass::KeyHome1},
+    {"KeyHome2", &OptionsClass::KeyHome2},
+    {"KeyBase", &OptionsClass::KeyBase},
+    {"KeyResign", &OptionsClass::KeyResign},
+    {"KeyAlliance", &OptionsClass::KeyAlliance},
+    {"KeyBookmark1", &OptionsClass::KeyBookmark1},
+    {"KeyBookmark2", &OptionsClass::KeyBookmark2},
+    {"KeyBookmark3", &OptionsClass::KeyBookmark3},
+    {"KeyBookmark4", &OptionsClass::KeyBookmark4},
+    {"KeySelectView", &OptionsClass::KeySelectView},
+    {"KeyRepairToggle", &OptionsClass::KeyRepair},
+    {"KeyRepairOn", &OptionsClass::KeyRepairOn},
+    {"KeyRepairOff", &OptionsClass::KeyRepairOff},
+    {"KeySellToggle", &OptionsClass::KeySell},
+    {"KeySellOn", &OptionsClass::KeySellOn},
+    {"KeySellOff", &OptionsClass::KeySellOff},
+    {"KeyMapToggle", &OptionsClass::KeyMap},
+    {"KeySidebarUp", &OptionsClass::KeySidebarUp},
+    {"KeySidebarDown", &OptionsClass::KeySidebarDown},
+    {"KeyOption1", &OptionsClass::KeyOption1},
+    {"KeyOption2", &OptionsClass::KeyOption2},
+    {"KeyScrollLeft", &OptionsClass::KeyScrollLeft},
+    {"KeyScrollRight", &OptionsClass::KeyScrollRight},
+    {"KeyScrollUp", &OptionsClass::KeyScrollUp},
+    {"KeyScrollDown", &OptionsClass::KeyScrollDown},
+    {"KeyQueueMove1", &OptionsClass::KeyQueueMove1},
+    {"KeyQueueMove2", &OptionsClass::KeyQueueMove2},
+    {"KeyTeam1", &OptionsClass::KeyTeam1},
+    {"KeyTeam2", &OptionsClass::KeyTeam2},
+    {"KeyTeam3", &OptionsClass::KeyTeam3},
+    {"KeyTeam4", &OptionsClass::KeyTeam4},
+    {"KeyTeam5", &OptionsClass::KeyTeam5},
+    {"KeyTeam6", &OptionsClass::KeyTeam6},
+    {"KeyTeam7", &OptionsClass::KeyTeam7},
+    {"KeyTeam8", &OptionsClass::KeyTeam8},
+    {"KeyTeam9", &OptionsClass::KeyTeam9},
+    {"KeyTeam10", &OptionsClass::KeyTeam10},
+};
+
+}  // namespace
+
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.
  **
@@ -496,105 +561,7 @@ void OptionsClass::Load_Settings() {
       ini.Get_Bool(OPTIONS, "SlowPalette", ThePalettes().slow_palette()));
   IsPaletteScroll = ini.Get_Bool(OPTIONS, "PaletteScroll", IsPaletteScroll);
 
-  KeyForceMove1 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyForceMove1", KeyForceMove1));
-  KeyForceMove2 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyForceMove2", KeyForceMove2));
-  KeyForceAttack1 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyForceAttack1", KeyForceAttack1));
-  KeyForceAttack2 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyForceAttack2", KeyForceAttack2));
-  KeySelect1 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeySelect1", KeySelect1));
-  KeySelect2 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeySelect2", KeySelect2));
-  KeyScatter = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyScatter", KeyScatter));
-  KeyStop = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyStop", KeyStop));
-  KeyGuard = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyGuard", KeyGuard));
-  KeyNext = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyNext", KeyNext));
-  KeyPrevious = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyPrevious", KeyPrevious));
-  KeyFormation = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyFormation", KeyFormation));
-  KeyHome1 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyHome1", KeyHome1));
-  KeyHome2 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyHome2", KeyHome2));
-  KeyBase = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyBase", KeyBase));
-  KeyResign = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyResign", KeyResign));
-  KeyAlliance = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyAlliance", KeyAlliance));
-  KeyBookmark1 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyBookmark1", KeyBookmark1));
-  KeyBookmark2 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyBookmark2", KeyBookmark2));
-  KeyBookmark3 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyBookmark3", KeyBookmark3));
-  KeyBookmark4 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyBookmark4", KeyBookmark4));
-  KeySelectView = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeySelectView", KeySelectView));
-  KeyRepair = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyRepairToggle", KeyRepair));
-  KeyRepairOn = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyRepairOn", KeyRepairOn));
-  KeyRepairOff = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyRepairOff", KeyRepairOff));
-  KeySell = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeySellToggle", KeySell));
-  KeySellOn = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeySellOn", KeySellOn));
-  KeySellOff = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeySellOff", KeySellOff));
-  KeyMap = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyMapToggle", KeyMap));
-  KeySidebarUp = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeySidebarUp", KeySidebarUp));
-  KeySidebarDown = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeySidebarDown", KeySidebarDown));
-  KeyOption1 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyOption1", KeyOption1));
-  KeyOption2 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyOption2", KeyOption2));
-  KeyScrollLeft = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyScrollLeft", KeyScrollLeft));
-  KeyScrollRight = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyScrollRight", KeyScrollRight));
-  KeyScrollUp = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyScrollUp", KeyScrollUp));
-  KeyScrollDown = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyScrollDown", KeyScrollDown));
-  KeyQueueMove1 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyQueueMove1", KeyQueueMove1));
-  KeyQueueMove2 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyQueueMove2", KeyQueueMove2));
-  KeyTeam1 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyTeam1", KeyTeam1));
-  KeyTeam2 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyTeam2", KeyTeam2));
-  KeyTeam3 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyTeam3", KeyTeam3));
-  KeyTeam4 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyTeam4", KeyTeam4));
-  KeyTeam5 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyTeam5", KeyTeam5));
-  KeyTeam6 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyTeam6", KeyTeam6));
-  KeyTeam7 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyTeam7", KeyTeam7));
-  KeyTeam8 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyTeam8", KeyTeam8));
-  KeyTeam9 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyTeam9", KeyTeam9));
-  KeyTeam10 = static_cast<engine::window::KeyNumber>(
-      ini.Get_Int(HotkeyName, "KeyTeam10", KeyTeam10));
-
+  LoadHotkeys(ini);
 }
 
 /***********************************************************************************************
@@ -642,61 +609,30 @@ void OptionsClass::Save_Settings() const {
   ini.Put_Bool(OPTIONS, "IsScoreShuffle", IsScoreShuffle);
   ini.Put_Bool(OPTIONS, "PaletteScroll", IsPaletteScroll);
 
-  ini.Put_Int(HotkeyName, "KeyForceMove1", KeyForceMove1);
-  ini.Put_Int(HotkeyName, "KeyForceMove2", KeyForceMove2);
-  ini.Put_Int(HotkeyName, "KeyForceAttack1", KeyForceAttack1);
-  ini.Put_Int(HotkeyName, "KeyForceAttack2", KeyForceAttack2);
-  ini.Put_Int(HotkeyName, "KeySelect1", KeySelect1);
-  ini.Put_Int(HotkeyName, "KeySelect2", KeySelect2);
-  ini.Put_Int(HotkeyName, "KeyScatter", KeyScatter);
-  ini.Put_Int(HotkeyName, "KeyStop", KeyStop);
-  ini.Put_Int(HotkeyName, "KeyGuard", KeyGuard);
-  ini.Put_Int(HotkeyName, "KeyNext", KeyNext);
-  ini.Put_Int(HotkeyName, "KeyPrevious", KeyPrevious);
-  ini.Put_Int(HotkeyName, "KeyFormation", KeyFormation);
-  ini.Put_Int(HotkeyName, "KeyHome1", KeyHome1);
-  ini.Put_Int(HotkeyName, "KeyHome2", KeyHome2);
-  ini.Put_Int(HotkeyName, "KeyBase", KeyBase);
-  ini.Put_Int(HotkeyName, "KeyResign", KeyResign);
-  ini.Put_Int(HotkeyName, "KeyAlliance", KeyAlliance);
-  ini.Put_Int(HotkeyName, "KeyBookmark1", KeyBookmark1);
-  ini.Put_Int(HotkeyName, "KeyBookmark2", KeyBookmark2);
-  ini.Put_Int(HotkeyName, "KeyBookmark3", KeyBookmark3);
-  ini.Put_Int(HotkeyName, "KeyBookmark4", KeyBookmark4);
-  ini.Put_Int(HotkeyName, "KeySelectView", KeySelectView);
-  ini.Put_Int(HotkeyName, "KeyRepairToggle", KeyRepair);
-  ini.Put_Int(HotkeyName, "KeyRepairOn", KeyRepairOn);
-  ini.Put_Int(HotkeyName, "KeyRepairOff", KeyRepairOff);
-  ini.Put_Int(HotkeyName, "KeySellToggle", KeySell);
-  ini.Put_Int(HotkeyName, "KeySellOn", KeySellOn);
-  ini.Put_Int(HotkeyName, "KeySellOff", KeySellOff);
-  ini.Put_Int(HotkeyName, "KeyMapToggle", KeyMap);
-  ini.Put_Int(HotkeyName, "KeySidebarUp", KeySidebarUp);
-  ini.Put_Int(HotkeyName, "KeySidebarDown", KeySidebarDown);
-  ini.Put_Int(HotkeyName, "KeyOption1", KeyOption1);
-  ini.Put_Int(HotkeyName, "KeyOption2", KeyOption2);
-  ini.Put_Int(HotkeyName, "KeyScrollLeft", KeyScrollLeft);
-  ini.Put_Int(HotkeyName, "KeyScrollRight", KeyScrollRight);
-  ini.Put_Int(HotkeyName, "KeyScrollUp", KeyScrollUp);
-  ini.Put_Int(HotkeyName, "KeyScrollDown", KeyScrollDown);
-  ini.Put_Int(HotkeyName, "KeyQueueMove1", KeyQueueMove1);
-  ini.Put_Int(HotkeyName, "KeyQueueMove2", KeyQueueMove2);
-  ini.Put_Int(HotkeyName, "KeyTeam1", KeyTeam1);
-  ini.Put_Int(HotkeyName, "KeyTeam2", KeyTeam2);
-  ini.Put_Int(HotkeyName, "KeyTeam3", KeyTeam3);
-  ini.Put_Int(HotkeyName, "KeyTeam4", KeyTeam4);
-  ini.Put_Int(HotkeyName, "KeyTeam5", KeyTeam5);
-  ini.Put_Int(HotkeyName, "KeyTeam6", KeyTeam6);
-  ini.Put_Int(HotkeyName, "KeyTeam7", KeyTeam7);
-  ini.Put_Int(HotkeyName, "KeyTeam8", KeyTeam8);
-  ini.Put_Int(HotkeyName, "KeyTeam9", KeyTeam9);
-  ini.Put_Int(HotkeyName, "KeyTeam10", KeyTeam10);
+  SaveHotkeys(ini);
 
   /*
   **	Write the INI data out to a file.
   */
   if (const auto file = OpenGameFile(kConfigFileName, FileAccess::kWrite)) {
     ini.Save(*file);
+  }
+}
+
+void OptionsClass::LoadHotkeys(const INIClass& ini) {
+  for (const auto& [name, key] : kHotkeys) {
+    // No Windows code is negative, so -1 marks a missing entry.
+    if (const int windows_key = ini.Get_Int(HotkeyName, name, -1);
+        windows_key >= 0) {
+      this->*key = engine::window::KeyFromWindowsKey(windows_key);
+    }
+  }
+}
+
+void OptionsClass::SaveHotkeys(INIClass& ini) const {
+  for (const auto& [name, key] : kHotkeys) {
+    ini.Put_Int(HotkeyName, name,
+                engine::window::WindowsKeyFromKey(this->*key));
   }
 }
 

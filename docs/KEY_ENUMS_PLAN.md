@@ -110,11 +110,14 @@ message line; the hall-of-fame name entry on the score screen; TD's map editor w
       Steam `REDALERT.INI` `[WinHotkeys]` values carry no `0x1000`, so dropping the strip changes
       nothing.
 
-## Open: `[WinHotkeys]` holds Windows key codes
+## Fixed: `[WinHotkeys]` holds Windows key codes
 
 The Steam `REDALERT.INI` stores Windows virtual-key codes (`KeyForceMove1=18` is VK_MENU,
-`KeyStop=83` is 'S', `KeyTeam1=49` is '1'), but the port compares them against SDL scancodes, where
-18 is O, 83 is Num Lock and 49 is backslash. Any hotkey the INI sets therefore binds the wrong key;
-the team keys only work because `ra/hotkeys.cc` also accepts `KN_1`...`KN_0` directly. Fix by
-translating Windows codes to scancodes on load, or by reading the bindings from a port-specific
-section.
+`KeyStop=83` is 'S', `KeyTeam1=49` is '1'), but the port compared them against SDL scancodes, where
+18 is O, 83 is Num Lock and 49 is backslash. `engine::window::KeyFromWindowsKey()` and
+`WindowsKeyFromKey()` now translate, and RA's `OptionsClass::LoadHotkeys()`/`SaveHotkeys()` use them
+on the way in and out, so the file stays in the format RA95 reads.
+
+A `REDALERT.INI` that an earlier port build saved holds scancodes in `[WinHotkeys]` instead
+(`KeyStop=22`, `KeyTeam1=30`); those now read as unknown Windows codes and leave the hotkeys
+unbound. Delete the section from such files and the defaults return.

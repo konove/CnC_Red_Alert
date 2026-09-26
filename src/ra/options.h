@@ -44,6 +44,8 @@
 #include "engine/window/keyboard.h"
 #include "ra/palette.h"
 
+class INIClass;
+
 class OptionsClass {
  public:
   // Field-wise saved-game state; read and write share this field list.
@@ -78,6 +80,14 @@ class OptionsClass {
   */
   void Load_Settings();
   void Save_Settings() const;
+
+  // Reads the [WinHotkeys] bindings from `ini`, translating the Windows
+  // virtual-key codes stored there. A binding the file lacks keeps its value.
+  void LoadHotkeys(const INIClass& ini);
+
+  // Writes the hotkey bindings to `ini`'s [WinHotkeys] as Windows virtual-key
+  // codes, the form the original Windows game reads.
+  void SaveHotkeys(INIClass& ini) const;
 
   void Set();
 
