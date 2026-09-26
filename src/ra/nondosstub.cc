@@ -78,12 +78,11 @@ void Focus_Restore() {
 
 void Load_Title_Screen(std::string_view name, PixelView* video_page,
                        std::span<uint8_t> palette) {
-  PixelBuffer* load_buffer =
+  const auto load_buffer =
       Read_PCX_File(std::string(name).c_str(), palette, {}, 0);
 
   if (load_buffer) {
     load_buffer->view().BlitTo(*video_page);
-    delete load_buffer;
   }
 }
 
@@ -158,8 +157,10 @@ class BufferedFileReader {
   size_t bytes_in_buffer_ = 0;
 };
 
-PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
-                           std::span<uint8_t> backing, int32_t size) {
+std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
+                                           std::span<uint8_t> palette,
+                                           std::span<uint8_t> backing,
+                                           int32_t size) {
   const auto file_handle = OpenGameFile(name);
   if (!file_handle) {
     return nullptr;
@@ -190,48 +191,56 @@ PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
     }
   }
   auto pic = std::make_unique<PixelBuffer>(width, height, backing);
-  const auto pixels = pic->bytes();
-  BufferedFileReader reader(*file_handle);
-  for (int row = 0; row < height; ++row) {
-    int column = 0;
-    while (column < header.byte_per_line) {
-      const auto code = reader.ReadByte();
-      if (!code) {
-        return nullptr;
-      }
-      int count = 1;
-      uint8_t color = *code;
-      if ((color & 0xc0U) == 0xc0U) {
-        count = color & 0x3fU;
-        const auto value = reader.ReadByte();
-        if (!value || count == 0) {
-          return nullptr;
+  // Every exit returns `pic`, emptied on failure, so the return is elided.
+  const bool decoded = [&] {
+    const auto pixels = pic->bytes();
+    BufferedFileReader reader(*file_handle);
+    for (int row = 0; row < height; ++row) {
+      int column = 0;
+      while (column < header.byte_per_line) {
+        const auto code = reader.ReadByte();
+        if (!code) {
+          return false;
         }
-        color = *value;
+        int count = 1;
+        uint8_t color = *code;
+        if ((color & 0xc0U) == 0xc0U) {
+          count = color & 0x3fU;
+          const auto value = reader.ReadByte();
+          if (!value || count == 0) {
+            return false;
+          }
+          color = *value;
+        }
+        if (count > header.byte_per_line - column) {
+          return false;
+        }
+        const int visible = std::min(count, std::max(0, width - column));
+        if (visible > 0) {
+          std::ranges::fill(pixels.subspan(base::ToSize((row * width) + column),
+                                           base::ToSize(visible)),
+                            color);
+        }
+        column += count;
       }
-      if (count > header.byte_per_line - column) {
-        return nullptr;
-      }
-      const int visible = std::min(count, std::max(0, width - column));
-      if (visible > 0) {
-        std::ranges::fill(pixels.subspan(base::ToSize((row * width) + column),
-                                         base::ToSize(visible)),
-                          color);
-      }
-      column += count;
     }
+    if (!palette.empty()) {
+      if (palette.size() < 768) {
+        return false;
+      }
+      file_handle->Seek(-768, SeekOrigin::kEnd);
+      if (file_handle->Read(std::as_writable_bytes(palette.first(768))) !=
+          768) {
+        return false;
+      }
+      for (auto& color : palette.first(768)) {
+        color >>= 2;
+      }
+    }
+    return true;
+  }();
+  if (!decoded) {
+    pic.reset();
   }
-  if (!palette.empty()) {
-    if (palette.size() < 768) {
-      return nullptr;
-    }
-    file_handle->Seek(-768, SeekOrigin::kEnd);
-    if (file_handle->Read(std::as_writable_bytes(palette.first(768))) != 768) {
-      return nullptr;
-    }
-    for (auto& color : palette.first(768)) {
-      color >>= 2;
-    }
-  }
-  return pic.release();
+  return pic;
 }

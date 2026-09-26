@@ -628,8 +628,7 @@ void Uninit_Game() {
   // speech buffer and the MIX archives freed below; stop it first.
   engine::audio::TheAudio().Close();
 
-  delete MouseClass::ShadowPage;
-  MouseClass::ShadowPage = nullptr;
+  MouseClass::ShadowPage.reset();
   TheMap().Free_Cells();
 
   SearchPaths::Clear();

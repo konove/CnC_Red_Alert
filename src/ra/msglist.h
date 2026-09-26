@@ -95,7 +95,9 @@
 #ifndef CNC_RED_ALERT_RA_MSGLIST_H_
 #define CNC_RED_ALERT_RA_MSGLIST_H_
 
+#include <memory>
 #include <span>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "base/array.h"
@@ -148,9 +150,13 @@ class MessageListClass {
   void Init(int x, int y, int max_msg, int maxchars, int height, int edit_x,
             int edit_y, int overflow_on, int over_start, int over_end,
             int width = 640);
-  TextLabelClass* Add_Message(const char* name, int id, const char* txt,
-                              PlayerColorType color, TextPrintType style,
-                              int timeout) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  // The label belongs to Labels; the lifetime analysis cannot follow it
+  // through the vector's unique_ptr.
+  TextLabelClass* Add_Message(
+      const char* name, int id, const char* txt, PlayerColorType color,
+      TextPrintType style,
+      // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+      int timeout) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   int Concat_Message(const char* name, int id, const char* txt, int timeout);
 
   //.....................................................................
@@ -194,11 +200,15 @@ class MessageListClass {
   // Compute the y-coord of the message list
   //.....................................................................
   void Compute_Y();
+  // Destroys a label already unlinked from MessageList.
+  void Delete_Label(const TextLabelClass* label);
 
   //.....................................................................
   // Private Data
   //.....................................................................
   TextLabelClass* MessageList{nullptr};  // list of messages
+  // Owns every label in MessageList, in no particular order.
+  std::vector<std::unique_ptr<TextLabelClass>> Labels;
   int MessageX{0};                       // x-coord of upper-left
   int MessageY{0};                       // y-coord of upper-left
   int MaxMessages{0};                    // max messages allowed
@@ -215,7 +225,7 @@ class MessageListClass {
   bool AdjustEdit : 1 {false};              // 1 = edit field appears over msgs
   int EditX{0};                             // x-coord of edit field
   int EditY{0};                             // y-coord of edit field
-  TextLabelClass* EditLabel{nullptr};       // ptr to current edit label
+  std::unique_ptr<TextLabelClass> EditLabel;  // current edit label
   char EditBuf[MAX_MESSAGE_LENGTH + 30]{};  // buffer for editable message
   char OverflowBuf[MAX_MESSAGE_LENGTH + 30]{};  // overflow area
   int EditCurPos{0};                            // current edit position

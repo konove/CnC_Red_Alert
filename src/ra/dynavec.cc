@@ -46,7 +46,6 @@
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/egos.h"
-#include "ra/loaddlg.h"
 #include "ra/object.h"
 #include "ra/session.h"
 #include "ra/taction.h"
@@ -66,7 +65,6 @@ template class DynamicVectorClass<PhoneEntryClass*>;
 template class DynamicVectorClass<MultiMission*>;
 template class DynamicVectorClass<ObjectClass*>;
 template class DynamicVectorClass<TriggerClass*>;
-template class DynamicVectorClass<FileEntryClass*>;
 template class DynamicVectorClass<RemapControlType*>;
 template class DynamicVectorClass<BaseNodeClass>;
 template class DynamicVectorClass<int>;

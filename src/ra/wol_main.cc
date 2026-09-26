@@ -21,6 +21,8 @@
 
 #include "ra/wol_main.h"
 
+#include <memory>
+
 #include "engine/platform/win32/win32_com.h"
 #include "engine/platform/win32/win32_types.h"
 #include "ra/defines.h"
@@ -79,14 +81,13 @@ int WOL_Main() {
       WWMessageBox().Process(TXT_WOL_WOLAPIREINIT);
       //	Kill wolapi.
       TheNetwork().wolapi()->UnsetupCOMStuff();
-      delete TheNetwork().wolapi();
-      TheNetwork().wolapi() = nullptr;
+      TheNetwork().wolapi().reset();
     }
   }
 
   if (!TheNetwork().wolapi()) {
     //	Start up wolapi.
-    TheNetwork().wolapi() = new WolapiObject;
+    TheNetwork().wolapi() = std::make_unique<WolapiObject>();
     if (!TheNetwork().wolapi()->bSetupCOMStuff()) {
       //	Things are really bad if this happens. A COM call failed.
 
@@ -118,13 +119,13 @@ int WOL_Main() {
 
   TheNetwork().wolapi()->bInGame = false;
 
-  const int iLoginResult = WOL_Login_Dialog(TheNetwork().wolapi());
+  const int iLoginResult = WOL_Login_Dialog(TheNetwork().wolapi().get());
   if (iLoginResult == 1) {
     TheNetwork().wolapi()->SetOptionDefaults();
     bool bKeepGoing = true;
     while (bKeepGoing) {
       bool bCreator = false;  //	True when this player made the channel.
-      switch (WOL_Chat_Dialog(TheNetwork().wolapi())) {
+      switch (WOL_Chat_Dialog(TheNetwork().wolapi().get())) {
         case -1:
           bKeepGoing = false;
           break;
@@ -140,7 +141,7 @@ int WOL_Main() {
           break;
       }
       if (bKeepGoing) {
-        WOL_GameSetupDialog GSupDlg(TheNetwork().wolapi(), bCreator);
+        WOL_GameSetupDialog GSupDlg(TheNetwork().wolapi().get(), bCreator);
         switch (GSupDlg.Run()) {
           case RESULT_WOLGSUP_LOGOUT:
             //	User logged out.
@@ -182,8 +183,7 @@ int WOL_Main() {
   if (iReturn != 1) {
     //	Kill wolapi.
     TheNetwork().wolapi()->UnsetupCOMStuff();
-    delete TheNetwork().wolapi();
-    TheNetwork().wolapi() = nullptr;
+    TheNetwork().wolapi().reset();
   } else {
     TheNetwork().wolapi()->bInGame = true;
     TheNetwork().wolapi()->bConnectionDown = false;
@@ -266,6 +266,5 @@ void HandleDLLFail() {
   //	Windows component is the only one that could ever be right.
   WWMessageBox().Process(TXT_WOL_DLLERROR_CALLUS);
 
-  delete TheNetwork().wolapi();
-  TheNetwork().wolapi() = nullptr;
+  TheNetwork().wolapi().reset();
 }

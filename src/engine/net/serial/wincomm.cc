@@ -1,6 +1,7 @@
 #include "engine/net/serial/wincomm.h"
 
 #include <cstdio>
+#include <memory>
 
 #include "absl/strings/str_format.h"
 #include "engine/net/serial/modemreg.h"
@@ -9,7 +10,7 @@
 #include <libserialport.h>
 #endif
 
-WinModemClass* SerialPort = nullptr;
+std::unique_ptr<WinModemClass> SerialPort;
 
 HANDLE WinModemClass::Serial_Port_Open(const char* /*device_name*/,
                                        int /*baud*/, int /*parity*/,

@@ -125,27 +125,5 @@ TEST(SafeCopyTest, CopiesAndAppendsBoundedUnterminatedInput) {
   EXPECT_STREQ(dest, "abcbc");
 }
 
-// CloneString tests
-
-TEST(CloneStringTest, BasicClone) {
-  const char* original = "test string";
-  char* clone = CloneString(original);
-  ASSERT_NE(clone, nullptr);
-  EXPECT_STREQ(clone, original);
-  EXPECT_NE(clone, original);  // Must be different pointer.
-  delete[] clone;
-}
-
-TEST(CloneStringTest, NullReturnsNull) {
-  EXPECT_EQ(CloneString(nullptr), nullptr);
-}
-
-TEST(CloneStringTest, EmptyString) {
-  char* clone = CloneString("");
-  ASSERT_NE(clone, nullptr);
-  EXPECT_STREQ(clone, "");
-  delete[] clone;
-}
-
 }  // namespace
 }  // namespace base

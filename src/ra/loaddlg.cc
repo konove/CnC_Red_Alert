@@ -106,9 +106,7 @@
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-LoadOptionsClass::LoadOptionsClass(LoadStyleType style) : Style(style) {
-  Files.Clear();
-}
+LoadOptionsClass::LoadOptionsClass(LoadStyleType style) : Style(style) {}
 
 /***********************************************************************************************
  * LoadOptionsClass::~LoadOptionsClass -- class destructor *
@@ -121,12 +119,7 @@ LoadOptionsClass::LoadOptionsClass(LoadStyleType style) : Style(style) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-LoadOptionsClass::~LoadOptionsClass() {
-  for (int i = 0; i < Files.Count(); i++) {
-    delete Files.at(i);
-  }
-  Files.Clear();
-}
+LoadOptionsClass::~LoadOptionsClass() = default;
 
 /***********************************************************************************************
  * LoadOptionsClass::Process -- main processing routine *
@@ -408,11 +401,11 @@ bool LoadOptionsClass::Process() {
       */
       case engine::window::ButtonKey(kButtonLoad):
         game_idx = listbtn.Current_Index();
-        if (game_idx < 0 || game_idx >= Files.Count()) {
+        if (game_idx < 0 || game_idx >= std::ssize(Files)) {
           break;
         }
-        game_num = Files.at(game_idx)->Num;
-        if (Files.at(game_idx)->Valid) {
+        game_num = Files.at(base::ToSize(game_idx)).Num;
+        if (Files.at(base::ToSize(game_idx)).Valid) {
           // Shown in case a load is ever slow; it no longer holds the screen
           // for a second, since loading takes milliseconds.
           WWMessageBox().Process(TXT_LOADING, TXT_NONE);
@@ -457,11 +450,11 @@ bool LoadOptionsClass::Process() {
           display = true;
           break;
         }
-        if (game_idx < 0 || game_idx >= Files.Count()) {
+        if (game_idx < 0 || game_idx >= std::ssize(Files)) {
           break;
         }
 
-        game_num = Files.at(game_idx)->Num;
+        game_num = Files.at(base::ToSize(game_idx)).Num;
         if (!Save_Game(game_num, game_descr)) {
           WWMessageBox().Process(TXT_ERROR_SAVING_GAME);
         } else {
@@ -488,10 +481,10 @@ bool LoadOptionsClass::Process() {
       */
       case engine::window::ButtonKey(kButtonDelete):
         game_idx = listbtn.Current_Index();
-        if (game_idx < 0 || game_idx >= Files.Count()) {
+        if (game_idx < 0 || game_idx >= std::ssize(Files)) {
           break;
         }
-        game_num = Files.at(game_idx)->Num;
+        game_num = Files.at(base::ToSize(game_idx)).Num;
         if (WWMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
             0) {
           absl::SNPrintF(fname, sizeof(fname), "SAVEGAME.%03d", game_num);
@@ -608,10 +601,7 @@ void LoadOptionsClass::Clear_List(ListClass* list) {
   /*
   ** Clear the array of game numbers
   */
-  for (int i = 0; i < Files.Count(); i++) {
-    delete Files.at(i);
-  }
-  Files.Clear();
+  Files.clear();
 }
 
 /***********************************************************************************************
@@ -627,7 +617,6 @@ void LoadOptionsClass::Clear_List(ListClass* list) {
  *games are "(old)".                                     *
  *=============================================================================================*/
 void LoadOptionsClass::Fill_List(ListClass* list) {
-  FileEntryClass* fdata = nullptr;  // for adding entries to 'Files'
   char descr[kDescripMax + 32];
   unsigned scenario = 0;  // scenario #
   HousesType house = HOUSE_NONE;
@@ -642,10 +631,9 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   ** Add the Empty Slot entry
   */
   if (Style == SAVE) {
-    fdata = new FileEntryClass;
-    base::SafeCopy(fdata->Descr, Text_String(TXT_EMPTY_SLOT));
-    fdata->DateTime = 0xffffffff;  // will always be first
-    Files.Add(fdata);
+    FileEntryClass& empty_slot = Files.emplace_back();
+    base::SafeCopy(empty_slot.Descr, Text_String(TXT_EMPTY_SLOT));
+    empty_slot.DateTime = 0xffffffff;  // will always be first
   }
 
   /*
@@ -664,27 +652,26 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
       const bool ok =
           Get_Savefile_Info(id, descr, sizeof(descr), &scenario, &house);
 
-      fdata = new FileEntryClass;
+      FileEntryClass& fdata = Files.emplace_back();
 
-      fdata->Descr[0] = '\0';
+      fdata.Descr[0] = '\0';
       if (!ok) {
-        base::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
+        base::SafeCopy(fdata.Descr, Text_String(TXT_OLD_GAME));
       } else {
         if (IsSovietHouse(house)) {
-          absl::SNPrintF(fdata->Descr, sizeof(fdata->Descr), "(%s) ",
+          absl::SNPrintF(fdata.Descr, sizeof(fdata.Descr), "(%s) ",
                          Text_String(TXT_SOVIET));
         } else {
-          absl::SNPrintF(fdata->Descr, sizeof(fdata->Descr), "(%s) ",
+          absl::SNPrintF(fdata.Descr, sizeof(fdata.Descr), "(%s) ",
                          Text_String(TXT_ALLIES));
         }
       }
-      base::SafeAppend(fdata->Descr, descr);
-      fdata->Valid = ok;
-      fdata->Scenario = scenario;
-      fdata->House = house;
-      fdata->Num = id;
-      fdata->DateTime = found.modified;
-      Files.Add(fdata);
+      base::SafeAppend(fdata.Descr, descr);
+      fdata.Valid = ok;
+      fdata.Scenario = scenario;
+      fdata.House = house;
+      fdata.Num = id;
+      fdata.DateTime = found.modified;
     }
   }
 
@@ -699,10 +686,11 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
     ** use 'N + 1'.
     */
     int i = 0;
-    for (i = 0; i < Files.Count(); i++) {  // i = the # we're searching for
+    for (i = 0; i < std::ssize(Files); i++) {  // i = the # we're searching for
       id = -1;                             // mark as 'not found'
-      for (int j = 0; j < Files.Count(); j++) {  // loop through all game ID's
-        if (Files.at(j)->Num == i) {             // if found, mark as found
+      for (int j = 0; j < std::ssize(Files);
+           j++) {                                  // loop through all game ID's
+        if (Files.at(base::ToSize(j)).Num == i) {  // if found, mark as found
           id = j;
           break;
         }
@@ -712,34 +700,26 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
       }
     }
 
-    if (Files.Count() > 0) {
-      Files.at(0)->Num = i;  // set the empty slot's ID
+    if (!Files.empty()) {
+      Files.front().Num = i;  // set the empty slot's ID
     }
   }
 
   /*
   ** Now sort the list in order of Date/Time (newest first, oldest last)
   */
-  if (Files.Count() > 0) {
-    std::vector<FileEntryClass*> sorted;
-    sorted.reserve(base::ToSize(Files.Count()));
-    for (int i = 0; i < Files.Count(); ++i) {
-      sorted.push_back(Files.at(i));
-    }
+  if (!Files.empty()) {
     std::ranges::sort(
-        sorted, [](const FileEntryClass* left, const FileEntryClass* right) {
-          return left->DateTime > right->DateTime;
+        Files, [](const FileEntryClass& left, const FileEntryClass& right) {
+          return left.DateTime > right.DateTime;
         });
-    for (int i = 0; i < Files.Count(); ++i) {
-      Files.at(i) = sorted.at(base::ToSize(i));
-    }
   }
 
   /*
   ** Now add every file's name to the list box
   */
-  for (int i = 0; i < Files.Count(); i++) {
-    list->Add_Item(Files.at(i)->Descr);
+  for (const FileEntryClass& file : Files) {
+    list->Add_Item(file.Descr);
   }
 }
 

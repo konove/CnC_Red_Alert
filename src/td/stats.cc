@@ -48,7 +48,10 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <span>
+#include <utility>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -180,8 +183,7 @@ void Send_Statistics_Packet() {
 #ifndef DEMO
 
   PacketClass stats;
-  static int packet_size;
-  void* packet = nullptr;
+  std::vector<char> packet;
 
   static char field_player_handle[5] = {"NAM?"};
   static char field_player_team[5] = {"SID?"};
@@ -208,7 +210,7 @@ void Send_Statistics_Packet() {
 
   CCDebugString("C&C95 - In Send_Statistics_Packet.\n");
 
-  if (!TheNetwork().packet_later()) {
+  if (TheNetwork().packet_later().empty()) {
     CCDebugString("C&C95 - PacketLater is false.\n");
 
     /*
@@ -614,7 +616,7 @@ void Send_Statistics_Packet() {
     /*
     ** Create the comms packet to be sent
     */
-    packet = stats.Create_Comms_Packet(packet_size);
+    packet = stats.Create_Comms_Packet();
     CCDebugString("C&C95 - Returned from Create_Comms_Packet.\n");
 
     /*
@@ -623,7 +625,7 @@ void Send_Statistics_Packet() {
     */
     if (completion == kCompletionPlayer1WonByDisconnection ||
         completion == kCompletionPlayer2WonByDisconnection) {
-      TheNetwork().packet_later() = packet;
+      TheNetwork().packet_later() = std::move(packet);
       CCDebugString("C&C95 - Flagging to send the packet later.\n");
       return;
     }
@@ -635,8 +637,8 @@ void Send_Statistics_Packet() {
     /*
     ** Send the packet we calculated earlier when the disconnect occurred
     */
-    packet = TheNetwork().packet_later();
-    TheNetwork().packet_later() = nullptr;
+    packet = std::move(TheNetwork().packet_later());
+    TheNetwork().packet_later().clear();
   }
 
   /*
@@ -646,7 +648,8 @@ void Send_Statistics_Packet() {
 
 #ifdef _WIN32
   CCDebugString("C&C95 - About to send stats packet to DDE server.\n");
-  while (!Send_Data_To_DDE_Server(static_cast<const char*>(packet), packet_size,
+  while (!Send_Data_To_DDE_Server(packet.data(),
+                                  static_cast<int>(packet.size()),
                                   DDEServerClass::DDE_PACKET_GAME_RESULTS)) {
     CCDebugString("C&C95 - Stats packet send failed.\n");
     send_timer.Set(60, true);
@@ -654,15 +657,6 @@ void Send_Statistics_Packet() {
     }
   }
 #endif
-
-  /*
-  ** Save it to disk as well so I can see it
-  */
-  /*
-  ** Tidy up
-  */
-  CCDebugString("C&C95 - About to delete packet memory.\n");
-  delete[] static_cast<char*>(packet);
 
   TheNetwork().statistics_sent() = true;
   CCDebugString("C&C95 - Returning from Send_Statistics_Packet.\n");

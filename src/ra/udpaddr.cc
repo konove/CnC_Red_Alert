@@ -134,12 +134,10 @@ bool Get_Broadcast_Addresses() {
     char entry_name[16];
     do {
       entry++;
-      char* temp = new char[128];
+      // The list copies the text, so one buffer serves every entry.
+      char temp[128];
       absl::SNPrintF(entry_name, sizeof(entry_name), "%d", entry);
-      // temp owns exactly 128 allocated characters.
-      res = ip_ini.Get_String("IP_ADDRESSES", entry_name, "",
-                              // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-                              std::span(temp, 128), 128);
+      res = ip_ini.Get_String("IP_ADDRESSES", entry_name, "", temp, 128);
       if (res) {
         ip_address_list.Add_Item(temp);
         char debug[128];

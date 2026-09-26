@@ -73,6 +73,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <utility>
 
@@ -94,7 +95,6 @@
 #include "ra/ipxgconn.h"
 #include "ra/network.h"
 #include "ra/session.h"
-#include "ra/vector_dynamic.h"
 #include "ra/world.h"
 #include "ra/wsproto.h"
 
@@ -170,13 +170,9 @@ IPXManagerClass::~IPXManagerClass() {
   //------------------------------------------------------------------------
   //	Free all protected-mode memory
   //------------------------------------------------------------------------
-  if (GlobalChannel) {
-    delete GlobalChannel;
-    GlobalChannel = nullptr;
-  }
+  GlobalChannel.reset();
   for (int i = 0; i < NumConnections; i++) {
-    delete base::At(Connection, i);
-    base::At(Connection, i) = nullptr;
+    base::At(Connection, i).reset();
   }
   NumConnections = 0;
 
@@ -243,13 +239,9 @@ int IPXManagerClass::Init() {
   //------------------------------------------------------------------------
   //	Free protected-mode memory
   //------------------------------------------------------------------------
-  if (GlobalChannel) {
-    delete GlobalChannel;
-    GlobalChannel = nullptr;
-  }
+  GlobalChannel.reset();
   for (int i = 0; i < NumConnections; i++) {
-    delete base::At(Connection, i);
-    base::At(Connection, i) = nullptr;
+    base::At(Connection, i).reset();
   }
   NumConnections = 0;
 
@@ -266,11 +258,8 @@ int IPXManagerClass::Init() {
   //------------------------------------------------------------------------
   //	Allocate the Global Channel
   //------------------------------------------------------------------------
-  GlobalChannel = new IPXGlobalConnClass(Glb_NumPackets, Glb_NumPackets,
-                                         Glb_MaxPacketLen, ProductID);
-  if (!GlobalChannel) {
-    return 0;
-  }
+  GlobalChannel = std::make_unique<IPXGlobalConnClass>(
+      Glb_NumPackets, Glb_NumPackets, Glb_MaxPacketLen, ProductID);
   GlobalChannel->Init();
   GlobalChannel->Set_Retry_Delta(RetryDelta);
   GlobalChannel->Set_Max_Retries(MaxRetries);
@@ -412,12 +401,9 @@ int IPXManagerClass::Create_Connection(int id, char* name,
   //------------------------------------------------------------------------
   //	Create new connection
   //------------------------------------------------------------------------
-  base::At(Connection, NumConnections) =
-      new IPXConnClass(Pvt_NumPackets, Pvt_NumPackets, Pvt_MaxPacketLen,
-                       ProductID, address, id, name);
-  if (!base::At(Connection, NumConnections)) {
-    return 0;
-  }
+  base::At(Connection, NumConnections) = std::make_unique<IPXConnClass>(
+      Pvt_NumPackets, Pvt_NumPackets, Pvt_MaxPacketLen, ProductID, address, id,
+      name);
 
   base::At(Connection, NumConnections)->Init();
   base::At(Connection, NumConnections)->Set_Retry_Delta(RetryDelta);
@@ -472,13 +458,13 @@ int IPXManagerClass::Delete_Connection(int id) {
     //	If a match, delete it
     //.....................................................................
     if (base::At(Connection, i)->ID == id) {
-      delete base::At(Connection, i);
+      base::At(Connection, i).reset();
 
       //..................................................................
       //	Move array elements back one index
       //..................................................................
       for (int j = i; j < NumConnections - 1; j++) {
-        base::At(Connection, j) = base::At(Connection, j + 1);
+        base::At(Connection, j) = std::move(base::At(Connection, j + 1));
       }
 
       //..................................................................
@@ -1377,7 +1363,7 @@ void IPXManagerClass::Reset_Response_Time() {
 std::span<const std::byte> IPXManagerClass::Oldest_Send() {
   std::array<CommBufferClass*, CONNECT_MAX> queues{};
   for (int i = 0; i < NumConnections; i++) {
-    queues.at(base::ToSize(i)) = base::At(Connection, i)->Queue;
+    queues.at(base::ToSize(i)) = base::At(Connection, i)->Queue.get();
   }
   const SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
   return oldest != nullptr

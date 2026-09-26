@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <span>
 #include <vector>
 
@@ -81,7 +82,7 @@ class RecordingSink : public ByteSink {
 };
 
 Widget* Allocate(TFixedIHeapClass<Widget>& heap, int32_t value) {
-  auto* w = new (heap.Alloc()) Widget();
+  auto* w = std::construct_at(heap.Alloc());
   w->ID = heap.ID(w);
   w->value = value;
   return w;

@@ -5,8 +5,8 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
-#include <memory>
 #include <span>
+#include <vector>
 
 #include "base/buffer.h"
 #include "engine/net/field.h"
@@ -15,8 +15,10 @@
 namespace {
 
 // Serializes `packet` and returns the wire bytes.
-std::unique_ptr<char[]> Serialize(PacketClass& packet, int& size) {
-  return std::unique_ptr<char[]>(packet.Create_Comms_Packet(size));
+std::vector<char> Serialize(PacketClass& packet, int& size) {
+  std::vector<char> wire = packet.Create_Comms_Packet();
+  size = static_cast<int>(wire.size());
+  return wire;
 }
 
 TEST(PacketClassTest, IntegerFieldsRoundTrip) {
@@ -30,11 +32,8 @@ TEST(PacketClassTest, IntegerFieldsRoundTrip) {
   packet.Add_Field("STRG", "hello");
 
   int size = 0;
-  const std::unique_ptr<char[]> wire = Serialize(packet, size);
-  // Serialize returns an owning allocation of exactly size bytes.
-  const auto bytes =
-      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-      std::as_bytes(std::span(wire.get(), static_cast<std::size_t>(size)));
+  const std::vector<char> wire = Serialize(packet, size);
+  const auto bytes = std::as_bytes(std::span(wire));
   PacketClass parsed(bytes);
 
   char c = 0;
@@ -66,7 +65,7 @@ TEST(PacketClassTest, LongFieldIsFourBigEndianBytes) {
   packet.Add_Field("ABCD", int32_t{0x01020304});
 
   int size = 0;
-  const std::unique_ptr<char[]> wire = Serialize(packet, size);
+  const std::vector<char> wire = Serialize(packet, size);
 
   // Packet header (size, id), field header (id, type, size), then the data.
   // The original protocol sends TYPE_LONG as 4 bytes; an 8-byte host `long`
@@ -77,10 +76,7 @@ TEST(PacketClassTest, LongFieldIsFourBigEndianBytes) {
       0x04,                                           // field size
       0x01, 0x02, 0x03, 0x04};                        // value
   ASSERT_EQ(size, static_cast<int>(kExpected.size()));
-  // Create_Comms_Packet allocated exactly size bytes, owned by wire.
-  const auto bytes =
-      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-      std::as_bytes(std::span(wire.get(), static_cast<std::size_t>(size)));
+  const auto bytes = std::as_bytes(std::span(wire));
   EXPECT_EQ(base::CompareBytes(bytes, base::ObjectBytes(kExpected), size), 0);
 }
 

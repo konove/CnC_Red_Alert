@@ -35,6 +35,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <span>
 #include <string>
@@ -42,13 +43,11 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "base/listnode.h"
 #include "engine/crypto/pk.h"
 
 // An archive is opened, and its files are served, through OpenGameFile, so an
 // archive packed inside another registered archive works too.
-// NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
-class MixArchive : public Node<MixArchive> {
+class MixArchive {
  public:
   // Result of looking up a file in the mixfile system.
   struct FileLocation {
@@ -66,7 +65,7 @@ class MixArchive : public Node<MixArchive> {
     std::int32_t size = 0;
   };
 
-  ~MixArchive() override;
+  ~MixArchive();
 
   // Delete copy/move to prevent slicing or list corruption.
   MixArchive(const MixArchive&) = delete;
@@ -151,8 +150,9 @@ class MixArchive : public Node<MixArchive> {
   std::vector<FileEntry> file_index_;  // Sorted by CRC.
   std::vector<std::byte> data_;        // Cached file data.
 
-  // Global registry of all open mixfiles.
-  inline static List<MixArchive> MixList;
+  // Global registry of all open mixfiles, which owns them, in registration
+  // order.
+  static std::vector<std::unique_ptr<MixArchive>> MixList;
 };
 
 #endif  // CNC_RED_ALERT_ENGINE_FILE_MIX_ARCHIVE_H_

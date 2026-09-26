@@ -129,6 +129,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -467,34 +468,30 @@ HouseClass::HouseClass(HousesType house)
 }
 
 void HouseClass::Init_Trackers() {
-  AircraftTotals = new UnitTrackerClass(static_cast<int>(AIRCRAFT_COUNT));
-  InfantryTotals = new UnitTrackerClass(static_cast<int>(INFANTRY_COUNT));
-  UnitTotals = new UnitTrackerClass(static_cast<int>(UNIT_COUNT));
-  BuildingTotals = new UnitTrackerClass(static_cast<int>(STRUCT_COUNT));
+  AircraftTotals =
+      std::make_unique<UnitTrackerClass>(static_cast<int>(AIRCRAFT_COUNT));
+  InfantryTotals =
+      std::make_unique<UnitTrackerClass>(static_cast<int>(INFANTRY_COUNT));
+  UnitTotals = std::make_unique<UnitTrackerClass>(static_cast<int>(UNIT_COUNT));
+  BuildingTotals =
+      std::make_unique<UnitTrackerClass>(static_cast<int>(STRUCT_COUNT));
 
-  DestroyedAircraft = new UnitTrackerClass(static_cast<int>(AIRCRAFT_COUNT));
-  DestroyedInfantry = new UnitTrackerClass(static_cast<int>(INFANTRY_COUNT));
-  DestroyedUnits = new UnitTrackerClass(static_cast<int>(UNIT_COUNT));
-  DestroyedBuildings = new UnitTrackerClass(static_cast<int>(STRUCT_COUNT));
+  DestroyedAircraft =
+      std::make_unique<UnitTrackerClass>(static_cast<int>(AIRCRAFT_COUNT));
+  DestroyedInfantry =
+      std::make_unique<UnitTrackerClass>(static_cast<int>(INFANTRY_COUNT));
+  DestroyedUnits =
+      std::make_unique<UnitTrackerClass>(static_cast<int>(UNIT_COUNT));
+  DestroyedBuildings =
+      std::make_unique<UnitTrackerClass>(static_cast<int>(STRUCT_COUNT));
 
-  CapturedBuildings = new UnitTrackerClass(static_cast<int>(STRUCT_COUNT));
-  TotalCrates = new UnitTrackerClass(TOTAL_CRATE_TYPES);  // 15 crate types
+  CapturedBuildings =
+      std::make_unique<UnitTrackerClass>(static_cast<int>(STRUCT_COUNT));
+  TotalCrates =
+      std::make_unique<UnitTrackerClass>(TOTAL_CRATE_TYPES);  // 15 crate types
 }
 
-HouseClass::~HouseClass() {
-  delete AircraftTotals;
-  delete InfantryTotals;
-  delete UnitTotals;
-  delete BuildingTotals;
-
-  delete DestroyedAircraft;
-  delete DestroyedInfantry;
-  delete DestroyedUnits;
-  delete DestroyedBuildings;
-
-  delete CapturedBuildings;
-  delete TotalCrates;
-}
+HouseClass::~HouseClass() = default;
 
 /***********************************************************************************************
  * HouseClass::Can_Build -- General purpose build legality checker. *
@@ -814,7 +811,7 @@ void HouseClass::Init() {
   // Shell loads allocate fresh trackers; release the previous scenario's
   // owners.
   while (TheObjectHeaps().house().Count() != 0) {
-    delete TheObjectHeaps().house().Ptr(0);
+    base::DeletePooled(TheObjectHeaps().house().Ptr(0));
   }
   TheObjectHeaps().house().Free_All();
 
@@ -3007,7 +3004,7 @@ void HouseClass::Clobber_All() {
   }
   for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
     if (TheObjectHeaps().trigger().Ptr(i)->House == Class->House) {
-      delete TheObjectHeaps().trigger().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().trigger().Ptr(i));
       i--;
     }
   }
@@ -4196,13 +4193,13 @@ void HouseClass::Blowup_All() {
   */
   for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
     if (TheObjectHeaps().team_type().Ptr(i)->House == Class->House) {
-      delete TheObjectHeaps().team_type().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().team_type().Ptr(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
     if (TheObjectHeaps().trigger().Ptr(i)->House == Class->House) {
-      delete TheObjectHeaps().trigger().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().trigger().Ptr(i));
       i--;
     }
   }

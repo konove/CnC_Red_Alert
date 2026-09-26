@@ -165,7 +165,7 @@
 #include "td/world.h"
 
 // The current theater's art and icons, registered and cached by
-// Init_Theater().
+// Init_Theater(). The MixArchive registry owns them.
 static MixArchive* theater_data = nullptr;
 static MixArchive* theater_icons = nullptr;
 
@@ -391,7 +391,10 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   absl::SNPrintF(fullname, sizeof(fullname), "%s.MIX",
                  Theaters.at(Theater).Root);
   if (Theater != TheWorld().last_theater()) {
-    delete theater_data;
+    if (theater_data != nullptr) {
+      // The archive registry owns the archive; unregistering deletes it.
+      MixArchive::Unregister(theater_data->Filename());
+    }
     theater_data = MixArchive::Register(fullname);
     theater_data->Cache();
   }
@@ -405,7 +408,10 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   absl::SNPrintF(iconname, sizeof(iconname), "%.4sICNH.MIX",
                  Theaters.at(Theater).Root);
   if (Theater != TheWorld().last_theater()) {
-    delete theater_icons;
+    if (theater_icons != nullptr) {
+      // The archive registry owns the archive; unregistering deletes it.
+      MixArchive::Unregister(theater_icons->Filename());
+    }
     theater_icons = MixArchive::Register(iconname);
     theater_icons->Cache();
   }

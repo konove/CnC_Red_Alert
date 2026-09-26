@@ -110,6 +110,7 @@
 #include <cstring>
 #include <iterator>
 #include <span>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -410,7 +411,13 @@ void DisplayClass::Init_Theater(TheaterType theater) {
                  Theaters.at(theater).Root);
 
   if (TheScenario().Theater != TheWorld().last_theater()) {
-    delete theater_data;
+    if (theater_data != nullptr) {
+      // The registry owns the archive. Unregistering destroys the archive that
+      // holds the name, so the copy is needed.
+      // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
+      const std::string old_name = theater_data->Filename();
+      MixArchive::Unregister(old_name);
+    }
 
     theater_data = MixArchive::Register(fullname, &TheAssets().mix_key());
 

@@ -69,10 +69,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <memory>
 #include <span>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
@@ -923,12 +925,18 @@ bool TeamTypeClass::Edit() {
   mlist.Set_Selected_Index(0);
   mlist.Add_Tail(*commands);
 
+  // Owns the missions missionlist2 shows: copies of the team type's own, and
+  // the ones the dialog adds.
+  std::vector<std::unique_ptr<TeamMissionClass>> missions;
   TListClass<TeamMissionClass*> missionlist2(
       kButtonMission2, missionlist1.X + 60, missionlist1.Y + 22, 240, 8 * 7,
       TPF_EFNT | TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (int index = 0; index < MissionCount; index++) {
-    missionlist2.Add_Item(new TeamMissionClass(base::At(MissionList, index)));
+    missionlist2.Add_Item(missions
+                              .emplace_back(std::make_unique<TeamMissionClass>(
+                                  base::At(MissionList, index)))
+                              .get());
     //		missionlist2.Add_Item(&TeamMissions[MissionList[index].Mission]);
   }
   static const int tabs[] = {13, 40};  // list box tab stops
@@ -1183,7 +1191,8 @@ bool TeamTypeClass::Edit() {
       */
       case engine::window::ButtonKey(kButtonInsert):
         if (missionlist2.Count() < kMaxTeamMissions) {
-          auto* tm = new TeamMissionClass;
+          auto* tm =
+              missions.emplace_back(std::make_unique<TeamMissionClass>()).get();
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
           tm->Data.Value = 0;
           switch (TeamMission_Needs(tm->Mission)) {
@@ -1249,7 +1258,8 @@ bool TeamTypeClass::Edit() {
       */
       case engine::window::ButtonKey(kButtonAdd):
         if (missionlist2.Count() < kMaxTeamMissions) {
-          auto* tm = new TeamMissionClass;
+          auto* tm =
+              missions.emplace_back(std::make_unique<TeamMissionClass>()).get();
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
           tm->Data.Value = 0;
           switch (TeamMission_Needs(tm->Mission)) {
@@ -1384,7 +1394,8 @@ bool TeamTypeClass::Edit() {
         if (missionlist2.Count()) {
           const TeamMissionClass* tm = missionlist2.Current_Item();
           missionlist2.Remove_Index(missionlist2.Current_Index());
-          delete tm;
+          std::erase_if(missions,
+                        [tm](const auto& owned) { return owned.get() == tm; });
         }
         display = true;
         break;
@@ -1491,11 +1502,6 @@ bool TeamTypeClass::Edit() {
     if (input & KN_BUTTON) {
       lastbutton = ButtonId(input);
     }
-  }
-
-  // The list holds copies made with new; the team type has its own array.
-  for (int index = 0; index < missionlist2.Count(); index++) {
-    delete missionlist2.at(index);
   }
 
   return (!cancel);

@@ -53,6 +53,7 @@
 #include <span>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -270,7 +271,10 @@ int MapEditClass::Select_Team(const char* caption) {
   /*........................................................................
   Dialog variables
   ........................................................................*/
-  char* teamtext[kTeamTypeMax + 1] = {};  // text for defined teams
+  constexpr int kTeamNameSize = 255;
+  // Text for each defined team; the list box points into it.
+  std::vector<std::array<char, kTeamNameSize>> teamtext(
+      base::ToSize(kTeamTypeMax + 1));
   bool edit_team = false;            // true = user wants to edit
   bool new_team = false;             // true = user wants to new
   bool del_team = false;             // true = user wants to new
@@ -320,12 +324,7 @@ int MapEditClass::Select_Team(const char* caption) {
     */
     // teamtext[i] = (char *)HidPage.buffer()->Get_Buffer() +
     // TEAMTXT_LEN * i;
-    constexpr int kTeamNameSize = 255;
-    base::At(teamtext, i) = new char[kTeamNameSize];
-    // This entry was allocated immediately above with exactly kTeamNameSize
-    // characters.
-    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    const std::span<char> team_name(base::At(teamtext, i), kTeamNameSize);
+    const std::span<char> team_name(teamtext.at(base::ToSize(i)));
 
     /*
     ........................ Fill in name & house .........................
@@ -354,7 +353,7 @@ int MapEditClass::Select_Team(const char* caption) {
       entry)
       ..................................................................*/
       if (std::string_view(txt).size() +
-              std::string_view(base::At(teamtext, i)).size() + 6 <
+              std::string_view(team_name.data()).size() + 6 <
           kTeamtxtLen) {
         if (j > 0) {
           base::SafeAppend(team_name, ", ");
@@ -376,7 +375,7 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ........................... Add to list box ...........................
     */
-    teamlist.Add_Item(base::At(teamtext, i));
+    teamlist.Add_Item(team_name.data());
   }
 
   /*
@@ -495,9 +494,6 @@ int MapEditClass::Select_Team(const char* caption) {
   Flag_To_Redraw(true);
   Render();
 
-  for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
-    delete[] base::At(teamtext, i);
-  }
   if (edit_team) {
     return 1;
   }

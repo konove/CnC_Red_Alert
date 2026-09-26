@@ -46,6 +46,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iterator>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -132,10 +133,10 @@ void SpecialClass::Init() {
 void Special_Dialog(bool simple) {
   SpecialClass oldspecial = TheSpecial();
   GadgetClass* buttons = nullptr;
-  static struct {
+  struct {
     int Description;
     bool Setting;
-    CheckBoxClass* Button;
+    std::unique_ptr<CheckBoxClass> Button;
   } _options[] = {
       {TXT_THREE_POINT, false, nullptr},
       {TXT_SPEED_BUILD, false, nullptr},
@@ -150,9 +151,9 @@ void Special_Dialog(bool simple) {
   cancel.Add(*buttons);
 
   for (int index = 0; index < std::ssize(_options); index++) {
-    base::At(_options, index).Button =
-        new CheckBoxClass(static_cast<unsigned>(100 + index), kOptionX + 34,
-                          kOptionY + 40 + (index * 20));
+    base::At(_options, index).Button = std::make_unique<CheckBoxClass>(
+        static_cast<unsigned>(100 + index), kOptionX + 34,
+        kOptionY + 40 + (index * 20));
     if (base::At(_options, index).Button) {
       base::At(_options, index).Button->Add(*buttons);
 

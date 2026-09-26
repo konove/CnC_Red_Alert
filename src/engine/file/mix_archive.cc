@@ -23,7 +23,6 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "base/buffer.h"
-#include "base/listnode.h"
 #include "engine/crypto/blowfish_source.h"
 #include "engine/crypto/crc.h"
 #include "engine/crypto/pk.h"
@@ -125,7 +124,9 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
   return true;
 }
 
-MixArchive::~MixArchive() { this->Unlink(); }
+std::vector<std::unique_ptr<MixArchive>> MixArchive::MixList;
+
+MixArchive::~MixArchive() = default;
 
 bool MixArchive::Free(const std::string_view filename) {
   if (MixArchive* ptr = Finder(filename)) {
@@ -204,7 +205,7 @@ std::optional<MixArchive::FileLocation> MixArchive::Offset(
 
   // Iterate through mixfiles (Most Recently Added / Tail priority is typical
   // for override mods)
-  for (auto* mix = MixList.First(); mix->Is_Valid(); mix = mix->Next()) {
+  for (const auto& mix : MixList) {
     // Use C++20/23 ranges::lower_bound with projection
     const auto it =
         std::ranges::lower_bound(mix->file_index_, crc, {}, &FileEntry::crc);
@@ -225,7 +226,7 @@ std::optional<MixArchive::FileLocation> MixArchive::Offset(
 
       return FileLocation{
           .data = view,
-          .mixfile = mix,
+          .mixfile = mix.get(),
           .offset = cached ? it->offset : it->offset + mix->data_start_,
           .size = it->size,
       };
@@ -251,38 +252,32 @@ MixArchive* MixArchive::Register(std::string_view filename, const PKey* key) {
   if (auto* existing = Finder(filename)) {
     return existing;
   }
-  auto* mix = new MixArchive();
+  // The constructor is private, so std::make_unique cannot reach it.
+  std::unique_ptr<MixArchive> mix(new MixArchive());
   if (!mix->Open(filename, key)) {
-    delete mix;
     return nullptr;
   }
-  MixList.Add_Tail(mix);
-  return mix;
+  return MixList.emplace_back(std::move(mix)).get();
 }
 
 bool MixArchive::Unregister(std::string_view filename) {
   if (const auto* mix = Finder(filename)) {
-    delete mix;
+    std::erase_if(MixList,
+                  [mix](const auto& entry) { return entry.get() == mix; });
     return true;
   }
   return false;
 }
 
-void MixArchive::Free_All() {
-  for (const auto* node = MixList.First(); node->Is_Valid();) {
-    auto* next = node->Next();
-    delete node;
-    node = next;
-  }
-}
+void MixArchive::Free_All() { MixList.clear(); }
 
 MixArchive* MixArchive::Finder(const std::string_view filename) {
-  for (auto* ptr = MixList.First(); ptr->Is_Valid(); ptr = ptr->Next()) {
+  for (const auto& ptr : MixList) {
     // Compare basename only; paths may differ.
     const auto basename =
         std::filesystem::path(ptr->filename_).filename().string();
     if (absl::EqualsIgnoreCase(basename, filename)) {
-      return ptr;
+      return ptr.get();
     }
   }
   return nullptr;

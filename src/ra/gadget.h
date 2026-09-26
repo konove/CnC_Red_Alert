@@ -132,7 +132,6 @@ class GadgetClass : public LinkClass {
   // The event keeps the click's position either way.
   virtual engine::window::InputEvent Input(PixelView& view);
   virtual void Draw_All(PixelView& view, bool forced = true);
-  virtual void Delete_List();
   virtual ControlClass* Extract_Gadget(unsigned id);
   virtual void Flag_List_To_Redraw() { LastList = nullptr; }
   GadgetClass* Remove() override;

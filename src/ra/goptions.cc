@@ -42,6 +42,8 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
+#include <vector>
 
 #include "base/array.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -75,7 +77,6 @@
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"
-#include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
@@ -119,6 +120,8 @@ void GameOptionsClass::Process() {
   **	Variables.
   */
   TextButtonClass* buttons = nullptr;
+  // Owns every gadget linked into `buttons`.
+  std::vector<std::unique_ptr<TextButtonClass>> owned_buttons;
   int selection = 0;
   int curbutton = 7;
   int y = 0;
@@ -187,27 +190,35 @@ void GameOptionsClass::Process() {
           TheSession().Players.Count() == 2) {
         if (TheScenario().bLocalProposesDraw) {
           if (!TheScenario().bOtherProposesDraw) {
-            g = new TextButtonClass(kButtonDraw, TXT_WOL_RETRACT_DRAW,
-                                    kTpfButton, 0, y);
+            g = owned_buttons
+                    .emplace_back(std::make_unique<TextButtonClass>(
+                        kButtonDraw, TXT_WOL_RETRACT_DRAW, kTpfButton, 0, y))
+                    .get();
           } else {
             continue;  //	Game will end now anyway.
           }
         } else {
           if (!TheScenario().bOtherProposesDraw) {
-            g = new TextButtonClass(kButtonDraw, TXT_WOL_PROPOSE_DRAW,
-                                    kTpfButton, 0, y);
+            g = owned_buttons
+                    .emplace_back(std::make_unique<TextButtonClass>(
+                        kButtonDraw, TXT_WOL_PROPOSE_DRAW, kTpfButton, 0, y))
+                    .get();
           } else {
-            g = new TextButtonClass(kButtonDraw, TXT_WOL_ACCEPT_DRAW,
-                                    kTpfButton, 0, y);
+            g = owned_buttons
+                    .emplace_back(std::make_unique<TextButtonClass>(
+                        kButtonDraw, TXT_WOL_ACCEPT_DRAW, kTpfButton, 0, y))
+                    .get();
           }
         }
       } else {
         continue;
       }
     } else {
-      g = new TextButtonClass(
-          static_cast<unsigned>(base::At(_constants, index).ID), text,
-          kTpfButton, 0, y);
+      g = owned_buttons
+              .emplace_back(std::make_unique<TextButtonClass>(
+                  static_cast<unsigned>(base::At(_constants, index).ID), text,
+                  kTpfButton, 0, y))
+              .get();
     }
 
     maxwidth = std::max(g->Width, maxwidth);
@@ -565,7 +576,10 @@ void GameOptionsClass::Process() {
   /*
   **	Clean up and re-enter the game.
   */
-  buttons->Delete_List();
+  for (const auto& button : owned_buttons) {
+    button->Clear_Focus();
+  }
+  owned_buttons.clear();
 
   /*
   **	Redraw the map.

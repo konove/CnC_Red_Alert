@@ -5,22 +5,21 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
+#include "engine/net/serial/modemreg.h"
 #include "td/defines.h"
 #include "td/event.h"
 #include "td/ipxaddr.h"
 #include "td/ipxmgr.h"
 #include "td/nodename.h"
 #include "td/nullmgr.h"
+#include "td/phone.h"
 #include "td/queue.h"
 #include "td/tcpip.h"
-#include "td/vector.h"
-
-class ModemRegistryEntryClass;
-class PhoneEntryClass;
 
 // The transports a multiplayer game runs over -- the null modem and the IPX
 // manager -- together with the two event queues their traffic is, the
@@ -83,14 +82,15 @@ class Network {
   // The numbers the serial dialog can dial, which one is selected, the
   // modem init strings to choose from, the port settings read from the INI
   // file, and which end of a modem game this machine is.
-  DynamicVectorClass<PhoneEntryClass*>& phone_book()
+  std::vector<std::unique_ptr<PhoneEntryClass>>& phone_book()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return phone_book_;
   }
   int& current_phone_index() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return current_phone_index_;
   }
-  DynamicVectorClass<char*>& init_strings() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::vector<std::unique_ptr<char[]>>& init_strings()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return init_strings_;
   }
   SerialSettingsType& serial_defaults() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -139,10 +139,12 @@ class Network {
   // second list is what connections are formed from, and it is filled both
   // from replies to this machine's query and from other machines' queries,
   // so anyone who knows about this machine is known to it in turn.
-  DynamicVectorClass<NodeNameType*>& games() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::vector<std::unique_ptr<NodeNameType>>& games()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return games_;
   }
-  DynamicVectorClass<NodeNameType*>& players() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::vector<std::unique_ptr<NodeNameType>>& players()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return players_;
   }
 
@@ -162,13 +164,16 @@ class Network {
 
   // The modems the registry lists, as a linked list, or null before the
   // serial dialog has read it.
-  ModemRegistryEntryClass*& modem_registry() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::unique_ptr<ModemRegistryEntryClass>& modem_registry()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return modem_registry_;
   }
 
-  // A packet that arrived before the game was ready for it, kept until it
-  // is. Null when there is none.
-  void*& packet_later() ABSL_ATTRIBUTE_LIFETIME_BOUND { return packet_later_; }
+  // The game-statistics packet built when a player disconnected, held back
+  // until the game ends and sent then. Empty when there is none.
+  std::vector<char>& packet_later() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return packet_later_;
+  }
 
   // The first and last frame of the window in which a raised MaxAhead is
   // not yet in force everywhere. An event scheduled inside it would reach
@@ -238,9 +243,10 @@ class Network {
       VIRGIN_SOCKET,  // Socket ID #
       IPXGlobalConnClass::kCommandAndConquer};  // Product ID #
 
-  DynamicVectorClass<PhoneEntryClass*> phone_book_;
+  std::vector<std::unique_ptr<PhoneEntryClass>> phone_book_;
   int current_phone_index_ = 0;
-  DynamicVectorClass<char*> init_strings_;
+  // Each holds INITSTRBUF_MAX characters; list boxes keep pointers to them.
+  std::vector<std::unique_ptr<char[]>> init_strings_;
   SerialSettingsType serial_defaults_{};
   ModemGameType modem_game_type_{};
 
@@ -258,17 +264,17 @@ class Network {
 
   std::vector<std::byte> meta_packet_;
 
-  DynamicVectorClass<NodeNameType*> games_;
-  DynamicVectorClass<NodeNameType*> players_;
+  std::vector<std::unique_ptr<NodeNameType>> games_;
+  std::vector<std::unique_ptr<NodeNameType>> players_;
 
   TcpipManagerClass winsock_;
   bool is_server_ = false;
   bool use_subnet_server_ = false;
   int internet_max_players_ = 0;
 
-  ModemRegistryEntryClass* modem_registry_ = nullptr;
+  std::unique_ptr<ModemRegistryEntryClass> modem_registry_;
 
-  void* packet_later_ = nullptr;
+  std::vector<char> packet_later_;
 
   int64_t new_max_ahead_frame1_ = 0;
   int64_t new_max_ahead_frame2_ = 0;

@@ -278,6 +278,14 @@ class EventClass {
   // Only valid for ADDPLAYER events after the wire pointer has been replaced.
   [[nodiscard]] std::span<std::byte> variable_bytes() const;
 
+  // Gives a received ADDPLAYER event a heap buffer of `size` bytes for its
+  // payload and returns it. The event is a trivially copyable record that
+  // travels by value through the queues and over the wire, so it cannot hold
+  // a smart pointer: the buffer belongs to whichever copy is executed or
+  // dropped, and that copy releases it with Free_Variable().
+  std::span<std::byte> Allocate_Variable(uint32_t size);
+  void Free_Variable();
+
   // Process the event.
   void Execute();
 

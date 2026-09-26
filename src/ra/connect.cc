@@ -51,6 +51,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <utility>
 
@@ -140,7 +141,8 @@ ConnectionClass::ConnectionClass(int numsend, int numreceive, int maxlen,
   packet, but aren't transmitted as part of the packet.  If 'extralen'
   is 0, the CommBufferClass ignores this parameter.
   ------------------------------------------------------------------------*/
-  Queue = new CommBufferClass(numsend, numreceive, MaxPacketLen, extralen);
+  Queue = std::make_unique<CommBufferClass>(numsend, numreceive, MaxPacketLen,
+                                            extralen);
 
 } /* end of ConnectionClass */
 
@@ -162,14 +164,7 @@ ConnectionClass::ConnectionClass(int numsend, int numreceive, int maxlen,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-ConnectionClass::~ConnectionClass() {
-  /*------------------------------------------------------------------------
-  Free memory.
-  ------------------------------------------------------------------------*/
-
-  delete Queue;
-
-} /* end of ~ConnectionClass */
+ConnectionClass::~ConnectionClass() = default;
 
 /***************************************************************************
  * ConnectionClass::Init -- Initializes connection queue to empty

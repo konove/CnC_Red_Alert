@@ -35,7 +35,6 @@
  *---------------------------------------------------------------------------------------------*
  * Functions: * GadgetClass::Action -- Base action for gadget. *
  *   GadgetClass::Clear_Focus -- Clears the focus if this gadget has it. *
- *   GadgetClass::Delete_List -- Deletes all gadget objects in list. *
  *   GadgetClass::Disable -- Disables the gadget from input processing. *
  *   GadgetClass::Draw_All -- Forces all gadgets in list to be redrawn. *
  *   GadgetClass::Draw_Me -- Gadget redraw action (flag control). *
@@ -317,46 +316,6 @@ GadgetClass* GadgetClass::Get_Next() const {
  *=============================================================================================*/
 GadgetClass* GadgetClass::Get_Prev() const {
   return dynamic_cast<GadgetClass*>(LinkClass::Get_Prev());
-}
-
-/***********************************************************************************************
- * GadgetClass::Delete_List -- Deletes all gadget objects in list. *
- *                                                                                             *
- *    This function will delete all gadgets in the list. It is the counterpart
- *to the          * Create_One_Of functions. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   Any references to these gadget become invalidated by this
- *routine.              *
- *                                                                                             *
- * HISTORY: * 01/15/1995 JLB : Created. *
- *=============================================================================================*/
-void GadgetClass::Delete_List() {
-  GadgetClass* g = this;
-
-  /*
-  **	Move to head of the list.
-  */
-  while (g->Get_Prev()) {
-    g = g->Get_Prev();
-  }
-
-  /*
-  **	First delete all the gadgets following the first one. The reason the
-  *first one *	is kept around is that sometimes deleting one gadget will result
-  *in related gadgets *	in the same list also being deleted. The first gadget
-  *will always contain the *	correct gadget pointer.
-  */
-  while (g) {
-    g->Clear_Focus();
-
-    const GadgetClass* temp = g;
-    g = g->Get_Next();
-    delete temp;
-  }
 }
 
 /***********************************************************************************************

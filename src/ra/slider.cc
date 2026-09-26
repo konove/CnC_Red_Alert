@@ -50,6 +50,7 @@
 #include "ra/slider.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/fixed.h"
 #include "engine/file/mix_archive.h"
@@ -83,10 +84,10 @@ SliderClass::SliderClass(unsigned id, int x, int y, int w, int h,
                          bool belong_to_list)
     : GaugeClass(id, x, y, w, h), BelongToList(belong_to_list) {
   if (!BelongToList) {
-    PlusGadget = new ShapeButtonClass(id, MixArchive::RetrieveData("BTN-PLUS.SHP"),
-                                      X + Width + 2, Y);
-    MinusGadget = new ShapeButtonClass(id, MixArchive::RetrieveData("BTN-MINS.SHP"),
-                                       X - 6, Y);
+    PlusGadget = std::make_unique<ShapeButtonClass>(
+        id, MixArchive::RetrieveData("BTN-PLUS.SHP"), X + Width + 2, Y);
+    MinusGadget = std::make_unique<ShapeButtonClass>(
+        id, MixArchive::RetrieveData("BTN-MINS.SHP"), X - 6, Y);
 
     if (PlusGadget) {
       PlusGadget->Make_Peer(*this);
@@ -122,14 +123,9 @@ SliderClass::SliderClass(unsigned id, int x, int y, int w, int h,
  * HISTORY: * 09/20/1995 JLB : Created. *
  *=============================================================================================*/
 SliderClass::~SliderClass() {
-  if (PlusGadget) {
-    delete PlusGadget;
-    PlusGadget = nullptr;
-  }
-  if (MinusGadget) {
-    delete MinusGadget;
-    MinusGadget = nullptr;
-  }
+  // In creation order; the members alone would go in reverse.
+  PlusGadget.reset();
+  MinusGadget.reset();
 }
 
 /***********************************************************************************************
@@ -390,10 +386,10 @@ void SliderClass::Peer_To_Peer(unsigned flags,
                                engine::window::KeyNumber& /*unused*/,
                                ControlClass& whom) {
   if (flags & kLeftRelease) {
-    if (&whom == PlusGadget) {
+    if (&whom == PlusGadget.get()) {
       Step(false);
     }
-    if (&whom == MinusGadget) {
+    if (&whom == MinusGadget.get()) {
       Step(true);
     }
   }

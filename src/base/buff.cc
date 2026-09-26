@@ -42,6 +42,9 @@
 
 #include "base/buff.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/numeric.h"
 #include "base/types.h"
 
@@ -64,11 +67,11 @@
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 Buffer::Buffer(void* buffer, base::ssize size)
-    : BufferPtr(buffer), Size(size), IsAllocated(false) {}
+    : BufferPtr(buffer), Size(size) {}
 
 // Alternate constructor for char * pointer.
 Buffer::Buffer(char* buffer, base::ssize size)
-    : BufferPtr(buffer), Size(size), IsAllocated(false) {}
+    : BufferPtr(buffer), Size(size) {}
 
 /***********************************************************************************************
  * Buffer::Buffer -- Self-allocating constructor for buffer object. *
@@ -86,34 +89,23 @@ Buffer::Buffer(char* buffer, base::ssize size)
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-Buffer::Buffer(base::ssize size)
-    : BufferPtr(nullptr), Size(size), IsAllocated(false) {
+Buffer::Buffer(base::ssize size) : BufferPtr(nullptr), Size(size) {
   if (size > 0) {
-    BufferPtr = new char[base::ToSize(size)];
-    IsAllocated = true;
+    Owned = std::make_unique_for_overwrite<char[]>(base::ToSize(size));
+    BufferPtr = Owned.get();
   }
 }
 
 Buffer::Buffer(Buffer&& buffer) noexcept
-    : BufferPtr(buffer.BufferPtr),
-      Size(buffer.Size),
-      IsAllocated(buffer.IsAllocated) {
-  buffer.BufferPtr = nullptr;
-  buffer.Size = 0;
-  buffer.IsAllocated = false;
-}
+    : BufferPtr(std::exchange(buffer.BufferPtr, nullptr)),
+      Size(std::exchange(buffer.Size, 0)),
+      Owned(std::move(buffer.Owned)) {}
 
 Buffer& Buffer::operator=(Buffer&& buffer) noexcept {
   if (&buffer != this) {
-    if (IsAllocated) {
-      delete[] static_cast<char*>(BufferPtr);
-    }
-    BufferPtr = buffer.BufferPtr;
-    Size = buffer.Size;
-    IsAllocated = buffer.IsAllocated;
-    buffer.BufferPtr = nullptr;
-    buffer.Size = 0;
-    buffer.IsAllocated = false;
+    BufferPtr = std::exchange(buffer.BufferPtr, nullptr);
+    Size = std::exchange(buffer.Size, 0);
+    Owned = std::move(buffer.Owned);
   }
   return *this;
 }
@@ -150,10 +142,7 @@ Buffer::~Buffer() { Reset(); }
  * HISTORY: * 09/07/1996 JLB : Created. *
  *=============================================================================================*/
 void Buffer::Reset() {
-  if (IsAllocated) {
-    delete[] static_cast<char*>(BufferPtr);
-  }
+  Owned.reset();
   BufferPtr = nullptr;
   Size = 0;
-  IsAllocated = false;
 }

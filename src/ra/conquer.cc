@@ -107,7 +107,6 @@
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/unit.h"  // IWYU pragma: keep
-#include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/vessel.h"  // IWYU pragma: keep
 #include "ra/vortex.h"
@@ -253,7 +252,7 @@ static void BeginScenario() {
   if (TheSession().Type == GAME_INTERNET) {
     Register_Game_Start_Time();
     TheNetwork().statistics_sent() = false;
-    TheNetwork().packet_later() = nullptr;
+    TheNetwork().packet_later().clear();
     TheNetwork().connection_lost() = false;
   }
 }
@@ -286,7 +285,7 @@ static void RunScenario() {
 // selecting them again in Select_Game() restarts them from a known state.
 // Playback never initialized either, so it skips this.
 static void EndScenario() {
-  if (!TheNetwork().statistics_sent() && TheNetwork().packet_later()) {
+  if (!TheNetwork().statistics_sent() && !TheNetwork().packet_later().empty()) {
     Send_Statistics_Packet();  // After game sending if
                                // PacketLater set.
   }

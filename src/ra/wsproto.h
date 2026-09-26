@@ -44,7 +44,7 @@
 
 class IPXAddressClass;
 
-#include "ra/vector_dynamic.h"
+#include "ra/owned_vector.h"
 
 #ifdef _WIN32
 /*
@@ -167,8 +167,8 @@ class WinsockInterfaceClass {
   /*
   ** Array of buffers to temporarily store incoming and outgoing packets.
   */
-  DynamicVectorClass<WinsockBufferType*> InBuffers;
-  DynamicVectorClass<WinsockBufferType*> OutBuffers;
+  OwnedVector<WinsockBufferType> InBuffers;
+  OwnedVector<WinsockBufferType> OutBuffers;
 
   /*
   ** Is Winsock present and initialised?

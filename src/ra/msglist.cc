@@ -60,6 +60,7 @@
 #include <cctype>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -140,6 +141,11 @@ MessageListClass::~MessageListClass() {
 
 }  // end of ~MessageListClass
 
+void MessageListClass::Delete_Label(const TextLabelClass* label) {
+  std::erase_if(Labels,
+                [label](const auto& owned) { return owned.get() == label; });
+}
+
 /***************************************************************************
  * MessageListClass::Init -- Inits message system, sets options            *
  *                                                                         *
@@ -178,7 +184,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
   TextLabelClass* txtlabel = MessageList;
   while (txtlabel) {
     MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
-    delete txtlabel;
+    Delete_Label(txtlabel);
     txtlabel = MessageList;
   }
 
@@ -193,8 +199,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
   //	Remove the editable message
   //------------------------------------------------------------------------
   if (IsEdit) {
-    delete EditLabel;
-    EditLabel = nullptr;
+    EditLabel.reset();
   }
 
   //------------------------------------------------------------------------
@@ -225,7 +230,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars, int height,
     EditX = edit_x;
     EditY = edit_y;
   }
-  EditLabel = nullptr;
+  EditLabel.reset();
   EditBuf[0] = 0;
   OverflowBuf[0] = 0;
   EditCurPos = 0;
@@ -267,7 +272,7 @@ void MessageListClass::Reset() {
   TextLabelClass* txtlabel = MessageList;
   while (txtlabel) {
     MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
-    delete txtlabel;
+    Delete_Label(txtlabel);
     txtlabel = MessageList;
   }
 
@@ -282,15 +287,14 @@ void MessageListClass::Reset() {
   //	Remove the editable message
   //------------------------------------------------------------------------
   if (IsEdit) {
-    delete EditLabel;
-    EditLabel = nullptr;
+    EditLabel.reset();
   }
 
   //------------------------------------------------------------------------
   //	Init variables
   //------------------------------------------------------------------------
   MessageList = nullptr;
-  EditLabel = nullptr;
+  EditLabel.reset();
   IsEdit = false;
 }
 
@@ -396,7 +400,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
         base::At(BufferAvail, i) = 1;
       }
     }
-    delete txtlabel;
+    Delete_Label(txtlabel);
   }
 
   //------------------------------------------------------------------------
@@ -423,8 +427,11 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
 
   // The label keeps a pointer to its text, so it is built on the message
   // buffer, never on the local copy.
-  txtlabel = new TextLabelClass(base::At(MessageBuffers, i), MessageX, MessageY,
-                                &ThePalettes().color_remaps().at(color), style);
+  txtlabel = Labels
+                 .emplace_back(std::make_unique<TextLabelClass>(
+                     base::At(MessageBuffers, i), MessageX, MessageY,
+                     &ThePalettes().color_remaps().at(color), style))
+                 .get();
   if (timeout == -1) {
     txtlabel->UserData1 = 0;
   } else {
@@ -761,7 +768,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
         base::At(BufferAvail, i) = 1;
       }
     }
-    delete txtlabel;
+    Delete_Label(txtlabel);
   }
 
   //------------------------------------------------------------------------
@@ -783,7 +790,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
   base::SafeCopy(EditBuf, to);
   OverflowBuf[0] = 0;
   EditCurPos = EditInitPos = static_cast<int>(std::string_view(to).size());
-  EditLabel = new TextLabelClass(
+  EditLabel = std::make_unique<TextLabelClass>(
       EditBuf, EditX, EditY, &ThePalettes().color_remaps().at(color), style);
 
   Width = width;
@@ -805,7 +812,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
     MaxMessages--;
   }
 
-  return EditLabel;
+  return EditLabel.get();
 
 }  // end of Add_Edit
 
@@ -833,7 +840,7 @@ void MessageListClass::Remove_Edit() {
   //------------------------------------------------------------------------
   if (IsEdit) {
     IsEdit = false;
-    delete EditLabel;
+    EditLabel.reset();
 
     //.....................................................................
     // If the edit field appears over the message list, recompute the
@@ -932,7 +939,7 @@ int MessageListClass::Manage() {
           base::At(BufferAvail, i) = 1;
         }
       }
-      delete txtlabel;
+      Delete_Label(txtlabel);
       changed = 1;
       txtlabel = next;
     } else {

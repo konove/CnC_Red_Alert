@@ -52,8 +52,7 @@ class PcxFile {
 
   // Load without a palette so EOF is exactly the end of the encoded pixels.
   [[nodiscard]] std::unique_ptr<PixelBuffer> Load() const {
-    return std::unique_ptr<PixelBuffer>(
-        Read_PCX_File(path_.string().c_str(), {}, {}, 0));
+    return Read_PCX_File(path_.string().c_str(), {}, {}, 0);
   }
 
  private:
@@ -116,8 +115,8 @@ TEST(PcxTest, WrittenFileReadsBack) {
   Write_PCX_File(path.string().c_str(), picture.view(), palette);
 
   std::array<uint8_t, 768> loaded_palette{};
-  const std::unique_ptr<PixelBuffer> loaded(
-      Read_PCX_File(path.string().c_str(), loaded_palette, {}, 0));
+  const std::unique_ptr<PixelBuffer> loaded =
+      Read_PCX_File(path.string().c_str(), loaded_palette, {}, 0);
   std::error_code ignored;
   std::filesystem::remove(path, ignored);
 

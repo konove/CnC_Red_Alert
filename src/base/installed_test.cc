@@ -2,6 +2,8 @@
 
 #include "base/installed.h"
 
+#include <memory>
+
 #include "gtest/gtest.h"
 
 namespace {
@@ -66,9 +68,9 @@ TEST(InstalledDeathTest, EndingScopesOutOfOrderDies) {
       {
         Widget first;
         Widget second;
-        auto* const outer = new base::Installed<Widget>::Scope(first);
+        auto outer = std::make_unique<base::Installed<Widget>::Scope>(first);
         const base::Installed<Widget>::Scope inner(second);
-        delete outer;
+        outer.reset();
       },
       "out of order");
 }

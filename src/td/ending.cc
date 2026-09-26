@@ -41,9 +41,9 @@
 #include "td/ending.h"
 
 #include <cstddef>
+#include <memory>
 #include <span>
 
-#include "base/bytes_of.h"
 #ifdef NOT_FOR_WIN95
 #include <vector>
 
@@ -177,9 +177,9 @@ void Nod_Ending() {
   TheScreen().hidden_view().Clear();
   show.page().view().Clear();
 
-  std::span<std::byte> localpal;
+  std::vector<std::byte> localpal;
   if (const auto file = OpenGameFile("SATSEL.PAL")) {
-    localpal = Load_Alloc_Data(*file);
+    localpal = LoadAllocData(*file);
   }
   if (const auto file = OpenGameFile("SATSEL.CPS")) {
     Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
@@ -206,14 +206,15 @@ void Nod_Ending() {
 
   Hide_Mouse();
   engine::window::TheDisplay().EndFrame();
-  Set_Palette(base::UnsignedBytes(localpal));
+  Set_Palette(base::UnsignedBytes(std::span(localpal)));
 #ifdef NOT_FOR_WIN95
   base::CopyBytes(std::as_writable_bytes(TheScreen().visible_view().bytes()),
                   std::as_writable_bytes(std::span(satpic)), satpic.size());
 #endif  // NOT_FOR_WIN95
   Show_Mouse();
 
-  Increase_Palette_Luminance(base::UnsignedBytes(localpal), 30, 30, 30, 63);
+  Increase_Palette_Luminance(base::UnsignedBytes(std::span(localpal)), 30, 30,
+                             30, 63);
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
                        "SATSELIN.PAL");
 
@@ -228,8 +229,8 @@ void Nod_Ending() {
   while (!done) {
     if (!printedtext && !engine::audio::TheAudio().IsPlaying(kanefinl.data())) {
       printedtext = true;
-      Alloc_Object(new ScorePrintClass(show, Text_String(TXT_SEL_TARGET), 0,
-                                       180, _tanpal));
+      Alloc_Object(std::make_unique<ScorePrintClass>(
+          show, Text_String(TXT_SEL_TARGET), 0, 180, _tanpal));
       mouseshown = true;
       Show_Mouse();
     }
@@ -270,12 +271,7 @@ void Nod_Ending() {
 #endif  // NOT_FOR_WIN95
 
   /* get rid of all the animating objects */
-  for (auto& ScoreObj : ScoreObjs) {
-    if (ScoreObj) {
-      delete ScoreObj;
-      ScoreObj = nullptr;
-    }
-  }
+  Clear_Score_Objects();
   // erase the "choose a target" text
   TheScreen().visible_view().FillRect(0, 360, 638, 398, 0);
   show.text_page().view().FillRect(0, 360, 638, 398, 0);
@@ -332,7 +328,5 @@ void Nod_Ending() {
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
 
   Play_Movie("CC2TEASE");
-
-  delete[] base::CharBytes(std::span(localpal)).data();
 }
 #endif

@@ -35,7 +35,7 @@
  *---------------------------------------------------------------------------------------------*
  * Functions: * Select_MPlayer_Game -- prompts user for NULL-Modem, Modem, or
  *Network game                * Clear_Listbox -- clears the given list box *
- *   Clear_Vector -- clears the given NodeNameType vector * Computer_Message --
+ *   Computer_Message --
  *"sends" a message from the computer                                   *
  *   Garble_Message -- "garbles" a message * Surrender_Dialog -- Prompts user
  *for surrendering                                         * Abort_Dialog --
@@ -74,7 +74,6 @@
 #include "ra/session.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
-#include "ra/vector_dynamic.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 
@@ -450,36 +449,6 @@ GameType Select_MPlayer_Game() {
  *   11/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Clear_Listbox(ListClass* list) { list->Clear(); }  // end of Clear_Listbox
-
-/***************************************************************************
- * Clear_Vector -- clears the given NodeNameType vector                    *
- *                                                                         *
- * INPUT:                                                                  *
- *		vector		ptr to vector to clear
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   11/29/1995 BRR : Created.                                             *
- *=========================================================================*/
-void Clear_Vector(DynamicVectorClass<NodeNameType*>* vector) {
-
-  //------------------------------------------------------------------------
-  //	Clear the 'Players' Vector
-  //------------------------------------------------------------------------
-  for (int i = 0; i < vector->Count(); i++) {
-    delete (*vector).at(i);
-  }
-  vector->Clear();
-
-}  // end of Clear_Vector
 
 /***************************************************************************
  * Computer_Message -- "sends" a message from the computer                 *

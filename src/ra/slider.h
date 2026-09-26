@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_SLIDER_H_
 #define CNC_RED_ALERT_RA_SLIDER_H_
 
+#include <memory>
+
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "ra/control.h"
@@ -87,8 +89,8 @@ class SliderClass final : public GaugeClass {
   **	If the slider bar has been created, these point to the respective
   *gadgets *	that it is composed of.
   */
-  ShapeButtonClass* PlusGadget{nullptr};
-  ShapeButtonClass* MinusGadget{nullptr};
+  std::unique_ptr<ShapeButtonClass> PlusGadget;
+  std::unique_ptr<ShapeButtonClass> MinusGadget;
 
   /*
   **	If I belong to a listbox, I have to draw myself differently...

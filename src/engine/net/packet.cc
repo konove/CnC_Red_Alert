@@ -41,8 +41,11 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <ranges>
 #include <span>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/array.h"
 #include "base/buffer.h"
@@ -58,42 +61,8 @@
 #include <arpa/inet.h>
 #endif
 
-/**************************************************************************
- * PACKETCLASS::~PACKETCLASS -- destroys a packet class be freeing list   *
- *                                                                        *
- * INPUT:		none *
- *                                                                        *
- * OUTPUT:     none
- **
- *                                                                        *
- * HISTORY:                                                               *
- *   04/24/1996 PWG : Created.                                            *
- *========================================================================*/
-PacketClass::~PacketClass() {
-  FieldClass* next = nullptr;
-  //
-  // Loop through the entire field list and delete each entry.
-  //
-  for (FieldClass* current = Head; current; current = next) {
-    next = current->Next;
-    delete current;
-  }
-}
-
-/**************************************************************************
- * PACKETCLASS::ADD_FIELD -- Adds a FieldClass entry to head of packet li *
- *                                                                        *
- * INPUT:		FieldClass * - a properly constructed field class entry.
- **
- *                                                                        *
- * OUTPUT:     none                                                       *
- *                                                                        *
- * HISTORY:                                                               *
- *   04/24/1996 PWG : Created.                                            *
- *========================================================================*/
-void PacketClass::Add_Field(FieldClass* field) {
-  field->Next = Head;
-  Head = field;
+void PacketClass::Add_Field(FieldClass field) {
+  Fields.push_back(std::move(field));
 }
 
 /**************************************************************************
@@ -108,8 +77,7 @@ void PacketClass::Add_Field(FieldClass* field) {
  * HISTORY:                                                               *
  *   04/22/1996 PWG : Created.                                            *
  *========================================================================*/
-PacketClass::PacketClass(std::span<const std::byte> curbuf)
-    : Size(0), ID(0), Head(nullptr) {
+PacketClass::PacketClass(std::span<const std::byte> curbuf) : Size(0), ID(0) {
   if (curbuf.size() < 4) {
     return;
   }
@@ -121,62 +89,56 @@ PacketClass::PacketClass(std::span<const std::byte> curbuf)
   }
   curbuf = curbuf.first(Size).subspan(4);
   while (curbuf.size() >= FIELD_HEADER_SIZE) {
-    auto* field = new FieldClass;
-    base::CopyBytes(base::ObjectBytes(field->ID), curbuf, 4);
-    field->DataType = base::ReadUnaligned<uint16_t>(curbuf.subspan(4));
-    field->Size = base::ReadUnaligned<uint16_t>(curbuf.subspan(6));
+    FieldClass field;
+    base::CopyBytes(base::ObjectBytes(field.ID), curbuf, 4);
+    field.DataType = base::ReadUnaligned<uint16_t>(curbuf.subspan(4));
+    field.Size = base::ReadUnaligned<uint16_t>(curbuf.subspan(6));
     curbuf = curbuf.subspan(FIELD_HEADER_SIZE);
-    const std::size_t size = ntohs(field->Size);
+    const std::size_t size = ntohs(field.Size);
     const std::size_t pad = (4 - (size % 4)) % 4;
     if (size + pad > curbuf.size()) {
-      delete field;
       return;
     }
-    const int type = ntohs(field->DataType);
+    const int type = ntohs(field.DataType);
     if (((type == TYPE_CHAR || type == TYPE_UNSIGNED_CHAR) && size != 1) ||
         ((type == TYPE_SHORT || type == TYPE_UNSIGNED_SHORT) && size != 2) ||
         ((type == TYPE_LONG || type == TYPE_UNSIGNED_LONG) && size != 4)) {
-      delete field;
       return;
     }
-    field->Data.assign(curbuf.begin(),
-                       curbuf.begin() + static_cast<std::ptrdiff_t>(size));
+    field.Data.assign(curbuf.begin(),
+                      curbuf.begin() + static_cast<std::ptrdiff_t>(size));
     curbuf = curbuf.subspan(size + pad);
-    field->Net_To_Host();
-    Add_Field(field);
+    field.Net_To_Host();
+    Add_Field(std::move(field));
   }
 }
 
 /**************************************************************************
  * CREATE_COMMS_PACKET -- Walks field list creating a packet              *
  *                                                                        *
- * INPUT:		short - the id of the packet so the server can identify
- *it * unsigned short & - the size of the packet returned here    *
+ * INPUT:      none                                                       *
  *                                                                        *
- * OUTPUT:     void * pointer to the linear packet data                   *
+ * OUTPUT:     the linear packet data                                     *
  *                                                                        *
- * WARNINGS: 	This routine allocates memory that the user is responsible *
- *  				for freeing.
- **
+ * WARNINGS:   none                                                       *
  *                                                                        *
  * HISTORY:                                                               *
  *   04/22/1996 PWG : Created.                                            *
  *========================================================================*/
-char* PacketClass::Create_Comms_Packet(int& size) {
-
+std::vector<char> PacketClass::Create_Comms_Packet() {
   //
   // Size starts at four because that is the size of the packet header.
   //
-  size = 4;
+  int size = 4;
 
   //
   // Take a quick spin through and calculate the size of the packet we
   //   are building.
   //
-  for (FieldClass* current = Head; current; current = current->Next) {
+  for (const FieldClass& field : std::views::reverse(Fields)) {
     size +=
         static_cast<uint16_t>(FIELD_HEADER_SIZE);  // add in packet header size
-    size += current->Size;       // add in data size
+    size += field.Size;                            // add in data size
     size +=
         (4 - (size % 4)) % 4;  // add in pad value to dword align next packet
   }
@@ -185,10 +147,8 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   // Now that we know the size allocate a buffer big enough to hold the
   // packet.
   //
-  char* retval = new char[base::ToSize(size)];
-  // retval owns exactly size bytes allocated immediately above.
-  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-  auto curbuf = std::as_writable_bytes(std::span(retval, base::ToSize(size)));
+  std::vector<char> packet(base::ToSize(size));
+  auto curbuf = std::as_writable_bytes(std::span(packet));
 
   //
   // write the size into the packet header
@@ -202,31 +162,31 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   // Ok now that the actual header information has been written we need to write
   // out field information.
   //
-  for (FieldClass* current = Head; current; current = current->Next) {
+  for (FieldClass& field : std::views::reverse(Fields)) {
     //
     // Temporarily convert the packet to net format (this saves alot of
     //   effort, and seems safe...)
     //
-    current->Host_To_Net();
+    field.Host_To_Net();
 
     //
     // Copy the adjusted header into the buffer and then advance the buffer
     //
-    base::CopyBytes(curbuf, base::ObjectBytes(current->ID), 4);
-    base::WriteUnaligned(curbuf.subspan(4), current->DataType);
-    base::WriteUnaligned(curbuf.subspan(6), current->Size);
+    base::CopyBytes(curbuf, base::ObjectBytes(field.ID), 4);
+    base::WriteUnaligned(curbuf.subspan(4), field.DataType);
+    base::WriteUnaligned(curbuf.subspan(6), field.Size);
     curbuf = curbuf.subspan(FIELD_HEADER_SIZE);
 
     //
     // Copy the data into the buffer and then advance the buffer
     //
-    base::CopyBytes(curbuf, current->Data, ntohs(current->Size));
-    curbuf = curbuf.subspan(ntohs(current->Size));
+    base::CopyBytes(curbuf, field.Data, ntohs(field.Size));
+    curbuf = curbuf.subspan(ntohs(field.Size));
 
     //
     // Finally take care of any pad bytes by setting them to 0
     //
-    const int pad = (4 - (ntohs(current->Size) % 4)) % 4;
+    const int pad = (4 - (ntohs(field.Size) % 4)) % 4;
 
     //
     //	If there is any pad left over, make sure you memset it
@@ -237,9 +197,9 @@ char* PacketClass::Create_Comms_Packet(int& size) {
       curbuf = curbuf.subspan(base::ToSize(pad));
     }
 
-    current->Net_To_Host();
+    field.Net_To_Host();
   }
-  return retval;
+  return packet;
 }
 
 /**************************************************************************
@@ -254,12 +214,12 @@ char* PacketClass::Create_Comms_Packet(int& size) {
  *   04/23/1996 PWG : Created.                                            *
  *========================================================================*/
 FieldClass* PacketClass::Find_Field(const char* id) {
-  for (FieldClass* current = Head; current; current = current->Next) {
+  for (FieldClass& field : std::views::reverse(Fields)) {
     if (std::string_view(id).substr(0, 4) ==
-        std::string_view(current->ID, static_cast<std::size_t>(
-                                          std::ranges::find(current->ID, '\0') -
-                                          std::begin(current->ID)))) {
-      return current;
+        std::string_view(field.ID, static_cast<std::size_t>(
+                                       std::ranges::find(field.ID, '\0') -
+                                       std::begin(field.ID)))) {
+      return &field;
     }
   }
   return nullptr;

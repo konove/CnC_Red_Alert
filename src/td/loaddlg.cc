@@ -51,15 +51,19 @@
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
 #include <system_error>
+#include <utility>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/disk_file.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -100,9 +104,7 @@
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-LoadOptionsClass::LoadOptionsClass(LoadStyleType style) : Style(style) {
-  Files.Clear();
-}
+LoadOptionsClass::LoadOptionsClass(LoadStyleType style) : Style(style) {}
 
 /***********************************************************************************************
  * LoadOptionsClass::~LoadOptionsClass -- class destructor *
@@ -115,12 +117,7 @@ LoadOptionsClass::LoadOptionsClass(LoadStyleType style) : Style(style) {
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
-LoadOptionsClass::~LoadOptionsClass() {
-  for (int i = 0; i < Files.Count(); i++) {
-    delete Files.at(i);
-  }
-  Files.Clear();
-}
+LoadOptionsClass::~LoadOptionsClass() = default;
 
 /***********************************************************************************************
  * LoadOptionsClass::Process -- main processing routine *
@@ -396,8 +393,8 @@ bool LoadOptionsClass::Process() {
       */
       case engine::window::ButtonKey(kButtonLoad):
         game_idx = listbtn.Current_Index();
-        game_num = Files.at(game_idx)->Num;
-        if (Files.at(game_idx)->Valid) {
+        game_num = Files.at(base::ToSize(game_idx))->Num;
+        if (Files.at(base::ToSize(game_idx))->Valid) {
           CCMessageBox().Process(TXT_LOADING, TXT_NONE);
           if (!Load_Game(game_num)) {
             CCMessageBox().Process(TXT_ERROR_LOADING_GAME);
@@ -434,7 +431,7 @@ bool LoadOptionsClass::Process() {
           break;
         }
 
-        game_num = Files.at(game_idx)->Num;
+        game_num = Files.at(base::ToSize(game_idx))->Num;
         if (!Save_Game(game_num, game_descr)) {
           CCMessageBox().Process(TXT_ERROR_SAVING_GAME);
         } else {
@@ -449,7 +446,7 @@ bool LoadOptionsClass::Process() {
       */
       case engine::window::ButtonKey(kButtonDelete):
         game_idx = listbtn.Current_Index();
-        game_num = Files.at(game_idx)->Num;
+        game_num = Files.at(base::ToSize(game_idx))->Num;
         if (CCMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
             0) {
           absl::SNPrintF(fname, sizeof(fname), "SAVEGAME.%03d", game_num);
@@ -539,10 +536,7 @@ void LoadOptionsClass::Clear_List(ListClass* list) {
   /*
   ** Clear the array of game numbers
   */
-  for (int i = 0; i < Files.Count(); i++) {
-    delete Files.at(i);
-  }
-  Files.Clear();
+  Files.clear();
 }
 
 /***********************************************************************************************
@@ -558,7 +552,6 @@ void LoadOptionsClass::Clear_List(ListClass* list) {
  *games are "(old)".                                     *
  *=============================================================================================*/
 void LoadOptionsClass::Fill_List(ListClass* list) {
-  FileEntryClass* fdata = nullptr;  // for adding entries to 'Files'
   char descr[kDescripMax];
   unsigned scenario = 0;  // scenario #
   HousesType house = HOUSE_NONE;
@@ -573,10 +566,10 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   ** Add the Empty Slot entry
   */
   if (Style == SAVE) {
-    fdata = new FileEntryClass;
+    auto fdata = std::make_unique<FileEntryClass>();
     base::SafeCopy(fdata->Descr, Text_String(TXT_EMPTY_SLOT));
     fdata->DateTime = 0xffffffff;  // will always be first
-    Files.Add(fdata);
+    Files.push_back(std::move(fdata));
   }
 
   /*
@@ -593,7 +586,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
     */
     const bool ok = Get_Savefile_Info(id, descr, &scenario, &house);
 
-    fdata = new FileEntryClass;
+    auto fdata = std::make_unique<FileEntryClass>();
 
     base::At(fdata->Descr, 0) = '\0';
     if (!ok) {
@@ -605,7 +598,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
     fdata->House = house;
     fdata->Num = id;
     fdata->DateTime = found.modified;
-    Files.Add(fdata);
+    Files.push_back(std::move(fdata));
   }
 
   /*
@@ -619,10 +612,10 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
     ** use 'N + 1'.
     */
     int i = 0;
-    for (i = 0; i < Files.Count(); i++) {  // i = the # we're searching for
-      id = -1;                             // mark as 'not found'
-      for (int j = 0; j < Files.Count(); j++) {  // loop through all game ID's
-        if (Files.at(j)->Num == i) {             // if found, mark as found
+    for (i = 0; i < std::ssize(Files); i++) {  // i = the # we're searching for
+      id = -1;                                 // mark as 'not found'
+      for (int j = 0; j < std::ssize(Files); j++) {  // loop through all IDs
+        if (Files.at(base::ToSize(j))->Num == i) {   // if found, mark as found
           id = j;
           break;
         }
@@ -638,18 +631,16 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   /*
   ** Now sort the list in order of Date/Time (newest first, oldest last)
   */
-  if (Files.Count() > 0) {
-    std::ranges::sort(Files.ActiveElements(), [](const FileEntryClass* left,
-                                                 const FileEntryClass* right) {
-      return left->DateTime > right->DateTime;
-    });
-  }
+  std::ranges::sort(Files, [](const std::unique_ptr<FileEntryClass>& left,
+                              const std::unique_ptr<FileEntryClass>& right) {
+    return left->DateTime > right->DateTime;
+  });
 
   /*
   ** Now add every file's name to the list box
   */
-  for (int i = 0; i < Files.Count(); i++) {
-    list->Add_Item(Files.at(i)->Descr);
+  for (const auto& file : Files) {
+    list->Add_Item(file->Descr);
   }
 }
 

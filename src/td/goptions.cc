@@ -46,6 +46,8 @@
 #include <cstdio>
 #include <cstring>
 #include <iterator>
+#include <memory>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -142,6 +144,10 @@ void GameOptionsClass::Process() {
   **	Variables.
   */
   TextButtonClass* buttons = nullptr;
+  // Own every gadget linked into `buttons`: the dialog's text buttons, then
+  // the two catch-all click regions behind them.
+  std::vector<std::unique_ptr<TextButtonClass>> text_buttons;
+  std::vector<std::unique_ptr<GadgetClass>> gadgets;
   int selection = 0;
   bool pressed = false;
   int curbutton = 6;
@@ -179,9 +185,12 @@ void GameOptionsClass::Process() {
       y = OptionY + ButtonResumeY;
     }
 
-    auto* g = new TextButtonClass(
-        static_cast<unsigned>(base::At(_constants, index).ID), text,
-        TPF_6PT_GRAD | TPF_NOSHADOW, 0, y);
+    TextButtonClass* const g =
+        text_buttons
+            .emplace_back(std::make_unique<TextButtonClass>(
+                static_cast<unsigned>(base::At(_constants, index).ID), text,
+                TPF_6PT_GRAD | TPF_NOSHADOW, 0, y))
+            .get();
 
     maxwidth = std::max(g->Width, maxwidth);
     if (!buttons) {
@@ -223,17 +232,20 @@ void GameOptionsClass::Process() {
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  (new GadgetClass(OptionX, OptionY, OptionWidth, OptionHeight,
-                   GadgetClass::kLeftPress))
+  gadgets
+      .emplace_back(std::make_unique<GadgetClass>(
+          OptionX, OptionY, OptionWidth, OptionHeight, GadgetClass::kLeftPress))
       ->Add_Tail(*buttons);
 
   /*
   **	This cause a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to game button.
   */
-  (new ControlClass(kButtonResume, 0, 0, TheScreen().visible_view().width(),
-                    TheScreen().visible_view().height(),
-                    GadgetClass::kLeftPress | GadgetClass::kRightPress))
+  gadgets
+      .emplace_back(std::make_unique<ControlClass>(
+          kButtonResume, 0, 0, TheScreen().visible_view().width(),
+          TheScreen().visible_view().height(),
+          GadgetClass::kLeftPress | GadgetClass::kRightPress))
       ->Add_Tail(*buttons);
 
   TheKeyboard().Clear();
@@ -543,7 +555,14 @@ void GameOptionsClass::Process() {
   /*
   **	Clean up and re-enter the game.
   */
-  buttons->Delete_List();
+  for (const auto& button : text_buttons) {
+    button->Clear_Focus();
+  }
+  for (const auto& gadget : gadgets) {
+    gadget->Clear_Focus();
+  }
+  text_buttons.clear();
+  gadgets.clear();
 
   /*
   **	Redraw the map.

@@ -64,8 +64,8 @@ class FieldClass {
   // Members are value-initialized rather than left indeterminate: the
   // packet reader default-constructs a field and then memcpy's only
   // FIELD_HEADER_SIZE bytes into it, which covers ID, DataType and Size but
-  // not Data or Next.
-  FieldClass() : DataType(0), Size(0), Next(nullptr) {}
+  // not Data.
+  FieldClass() : DataType(0), Size(0) {}
   FieldClass(const char* id, char data);
   FieldClass(const char* id, unsigned char data);
   FieldClass(const char* id, int16_t data);
@@ -83,7 +83,6 @@ class FieldClass {
   uint16_t DataType;          // id of the data type we are using
   uint16_t Size;              // size of the data portion of this field
   std::vector<std::byte> Data;  // pointer to the data portion of this field
-  FieldClass* Next;         // pointer to the next field in the field list
 };
 
 #endif  // CNC_RED_ALERT_ENGINE_NET_FIELD_H_

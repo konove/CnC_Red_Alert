@@ -60,6 +60,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <sstream>
 #include <string>
@@ -224,7 +225,8 @@ int NullModemClass::Init(int port, int /*irq*/, char* dev_name, int baud,
     /*------------------------------------------------------------------------
     Init our Connection
     ------------------------------------------------------------------------*/
-    Connection = new NullModemConnClass(NumSend, NumReceive, MaxLen, MagicNum);
+    Connection = std::make_unique<NullModemConnClass>(NumSend, NumReceive,
+                                                      MaxLen, MagicNum);
 
     Connection->Set_Retry_Delta(RetryDelta);
     Connection->Set_Max_Retries(MaxRetries);
@@ -256,7 +258,7 @@ int NullModemClass::Init(int port, int /*irq*/, char* dev_name, int baud,
   ** Create a new modem class for our com port
   */
   if (!SerialPort) {
-    SerialPort = new WinModemClass;
+    SerialPort = std::make_unique<WinModemClass>();
   }
 
   /*
@@ -299,12 +301,10 @@ int NullModemClass::Init(int port, int /*irq*/, char* dev_name, int baud,
       *otherwise use
       ** the device name directly to open the port with.
       */
-      if (TheNetwork().modem_registry()) {
-        delete TheNetwork().modem_registry();
-        TheNetwork().modem_registry() = nullptr;
-      }
+      TheNetwork().modem_registry().reset();
       for (int i = 0; i < 10; i++) {
-        TheNetwork().modem_registry() = new ModemRegistryEntryClass(i);
+        TheNetwork().modem_registry() =
+            std::make_unique<ModemRegistryEntryClass>(i);
         if (TheNetwork().modem_registry()->Get_Modem_Name() &&
             (std::string_view(dev_name) ==
              TheNetwork().modem_registry()->Get_Modem_Name())) {
@@ -312,8 +312,7 @@ int NullModemClass::Init(int port, int /*irq*/, char* dev_name, int baud,
           break;
         }
 
-        delete TheNetwork().modem_registry();
-        TheNetwork().modem_registry() = nullptr;
+        TheNetwork().modem_registry().reset();
       }
       break;
 
@@ -367,10 +366,7 @@ int NullModemClass::Num_Connections() { return NumConnections; }
  * HISTORY: * 8/2/96 11:44AM ST : Documented / Win32 support *
  *=============================================================================================*/
 bool NullModemClass::Delete_Connection() {
-  if (Connection) {
-    delete Connection;
-    Connection = nullptr;
-  }
+  Connection.reset();
 
   if (!RXBuf.empty()) {
     RXBuf.clear();
@@ -436,7 +432,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   ** Create a new modem class for our com port
   */
   if (!SerialPort) {
-    SerialPort = new WinModemClass;
+    SerialPort = std::make_unique<WinModemClass>();
   } else {
     SerialPort->Serial_Port_Close();
   }
@@ -482,12 +478,10 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
       *otherwise use
       ** the device name directly to open the port with.
       */
-      if (TheNetwork().modem_registry()) {
-        delete TheNetwork().modem_registry();
-        TheNetwork().modem_registry() = nullptr;
-      }
+      TheNetwork().modem_registry().reset();
       for (int i = 0; i < 10; i++) {
-        TheNetwork().modem_registry() = new ModemRegistryEntryClass(i);
+        TheNetwork().modem_registry() =
+            std::make_unique<ModemRegistryEntryClass>(i);
         if (TheNetwork().modem_registry()->Get_Modem_Name() &&
             (std::string_view(device) ==
              TheNetwork().modem_registry()->Get_Modem_Name())) {
@@ -498,8 +492,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
           break;
         }
 
-        delete TheNetwork().modem_registry();
-        TheNetwork().modem_registry() = nullptr;
+        TheNetwork().modem_registry().reset();
       }
       break;
 
@@ -537,8 +530,7 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
 void NullModemClass::Shutdown() {
   if (PortHandle && SerialPort) {
     SerialPort->Serial_Port_Close();
-    delete SerialPort;
-    SerialPort = nullptr;
+    SerialPort.reset();
     PortHandle = nullptr;
     Delete_Connection();
   }
@@ -1110,7 +1102,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   if (settings->InitStringIndex != -1) {
     const std::string initStr =
-        TheSession().InitStrings.at(settings->InitStringIndex);
+        TheSession().InitStrings.at(settings->InitStringIndex)->data();
 
     std::istringstream tokenStream(initStr);
     std::string token;

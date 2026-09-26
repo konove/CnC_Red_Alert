@@ -42,7 +42,6 @@
 
 #include "td/base.h"
 #include "td/cell.h"
-#include "td/loaddlg.h"
 #include "td/nodename.h"
 #include "td/phone.h"
 #include "td/vector_impl.h"  // IWYU pragma: keep
@@ -51,7 +50,6 @@ template class VectorClass<NodeNameTag*>;
 template class VectorClass<PhoneEntryClass*>;
 template class VectorClass<ObjectClass*>;
 template class VectorClass<TriggerClass*>;
-template class VectorClass<FileEntryClass*>;
 template class VectorClass<BaseNodeClass>;
 template class VectorClass<CellClass>;
 template class VectorClass<char>;
@@ -65,7 +63,6 @@ template class DynamicVectorClass<NodeNameTag*>;
 template class DynamicVectorClass<PhoneEntryClass*>;
 template class DynamicVectorClass<ObjectClass*>;
 template class DynamicVectorClass<TriggerClass*>;
-template class DynamicVectorClass<FileEntryClass*>;
 template class DynamicVectorClass<BaseNodeClass>;
 template class DynamicVectorClass<char>;
 template class DynamicVectorClass<int>;

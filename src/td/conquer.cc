@@ -292,7 +292,7 @@ void Main_Game() {
     if (TheSession().type() == GAME_INTERNET) {
       Register_Game_Start_Time();
       TheNetwork().statistics_sent() = false;
-      TheNetwork().packet_later() = nullptr;
+      TheNetwork().packet_later().clear();
       TheNetwork().connection_lost() = false;
     } else {
 #ifdef _WIN32
@@ -415,7 +415,8 @@ void Main_Game() {
     // Stop_Profiler();
     TheGameState().in_main_loop() = false;
 
-    if (!TheNetwork().statistics_sent() && TheNetwork().packet_later()) {
+    if (!TheNetwork().statistics_sent() &&
+        !TheNetwork().packet_later().empty()) {
       Send_Statistics_Packet();
     }
 
@@ -3070,9 +3071,13 @@ bool Force_CD_Available(int cd) {
     TheTheme().Stop();
 
     Assets::DiscArchives& archives = TheAssets().disc_archives();
-    delete archives.movies;
-    delete archives.general;
-    delete archives.score;
+    // The archive registry owns the archives; unregistering one deletes it.
+    for (const MixArchive* archive :
+         {archives.movies, archives.general, archives.score}) {
+      if (archive != nullptr) {
+        MixArchive::Unregister(archive->Filename());
+      }
+    }
 
     archives.movies = MixArchive::Register("MOVIES.MIX");
     archives.general = MixArchive::Register("GENERAL.MIX");

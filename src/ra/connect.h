@@ -108,6 +108,7 @@
 #define CNC_RED_ALERT_RA_CONNECT_H_
 
 #include <cstddef>
+#include <memory>
 #include <span>
 #include <vector>
 
@@ -219,7 +220,7 @@ class ConnectionClass {
   The packet "queue"; this non-sequenced version isn't really much of
   a queue, but more of a repository.
   .....................................................................*/
-  CommBufferClass* Queue;
+  std::unique_ptr<CommBufferClass> Queue;
 
   /*
   -------------------------- Protected Interface ---------------------------

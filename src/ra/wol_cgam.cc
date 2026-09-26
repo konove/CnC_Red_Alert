@@ -347,13 +347,12 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   if (cgiReturn.bCreateGame && cgiReturn.bPrivate) {
     //	Get a password for the channel.
                                  // call, for god's sake.
-    auto* pEditDlg =
-        new SimpleEditDlgClass(300, TXT_WOL_CREATEPRIVGAMETITLE,
+    SimpleEditDlgClass EditDlg(300, TXT_WOL_CREATEPRIVGAMETITLE,
                                TXT_WOL_PASSPROMPT, WOL_CHANKEY_LEN_MAX);
     pWO->bPump_In_Call_Back = true;
-    if (std::string_view(pEditDlg->Show()) == Text_String(TXT_OK) &&
-        *pEditDlg->szEdit) {
-      base::SafeCopy(cgiReturn.szPassword, pEditDlg->szEdit);
+    if (std::string_view(EditDlg.Show()) == Text_String(TXT_OK) &&
+        *EditDlg.szEdit) {
+      base::SafeCopy(cgiReturn.szPassword, EditDlg.szEdit);
     } else {
       cgiReturn.bCreateGame = false;  //	Cancel creation.
     }

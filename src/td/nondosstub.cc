@@ -104,11 +104,11 @@ void Focus_Restore() {
 
 void Load_Title_Screen(const char* name, PixelView* video_page,
                        std::span<unsigned char> palette) {
-  PixelBuffer* load_buffer = Read_PCX_File(name, palette, {}, 0);
+  const std::unique_ptr<PixelBuffer> load_buffer =
+      Read_PCX_File(name, palette, {}, 0);
 
   if (load_buffer) {
     load_buffer->view().BlitTo(*video_page);
-    delete load_buffer;
   }
 }
 
@@ -183,8 +183,10 @@ class BufferedFileReader {
   size_t bytes_in_buffer_ = 0;
 };
 
-PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
-                           std::span<uint8_t> buff, int32_t size) {
+std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
+                                           std::span<uint8_t> palette,
+                                           std::span<uint8_t> buff,
+                                           int32_t size) {
   const auto file_handle = OpenGameFile(name);
   if (!file_handle) {
     return nullptr;
@@ -210,6 +212,8 @@ PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
       return nullptr;
     }
   }
+  // Every exit below returns `pic`, emptied on failure, so the return is
+  // elided.
   auto pic = std::make_unique<PixelBuffer>(width, height, buff);
   const auto pixels = pic->bytes();
   BufferedFileReader reader(*file_handle);
@@ -218,7 +222,8 @@ PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
     while (column < header.byte_per_line) {
       const auto code = reader.ReadByte();
       if (!code) {
-        return nullptr;
+        pic.reset();
+        return pic;
       }
       int count = 1;
       uint8_t color = *code;
@@ -226,12 +231,14 @@ PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
         count = color & 0x3fU;
         const auto value = reader.ReadByte();
         if (!value || count == 0) {
-          return nullptr;
+          pic.reset();
+          return pic;
         }
         color = *value;
       }
       if (count > header.byte_per_line - column) {
-        return nullptr;
+        pic.reset();
+        return pic;
       }
       const int visible = std::min(count, std::max(0, width - column));
       if (visible > 0) {
@@ -244,15 +251,17 @@ PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
   }
   if (!palette.empty()) {
     if (palette.size() < 768) {
-      return nullptr;
+      pic.reset();
+      return pic;
     }
     file_handle->Seek(-768, SeekOrigin::kEnd);
     if (file_handle->Read(std::as_writable_bytes(palette.first(768))) != 768) {
-      return nullptr;
+      pic.reset();
+      return pic;
     }
     for (auto& color : palette.first(768)) {
       color >>= 2;
     }
   }
-  return pic.release();
+  return pic;
 }

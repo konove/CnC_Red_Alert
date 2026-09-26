@@ -45,15 +45,16 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <iterator>
 #include <memory>
 #include <span>
+#include <string_view>
 #include <vector>
 
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
-#include "base/strings/safe_string.h"
 #include "base/types.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/font.h"
@@ -75,7 +76,6 @@
 #include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/theme.h"
-#include "ra/vector_dynamic.h"
 
 using enum engine::window::KeyNumber;
 
@@ -83,7 +83,7 @@ using enum engine::window::KeyNumber;
 ** List of Ego Class instances
 **  There will be one instance for each line of text.
 */
-static DynamicVectorClass<EgoClass*> EgoList;
+static std::vector<std::unique_ptr<EgoClass>> EgoList;
 
 /*
 ** Number of slideshow pictures
@@ -120,12 +120,12 @@ static unsigned char SlidePals[NUM_SLIDES][256 * 3];
 /*
 ** Array of graphic buffers containing the slides
 */
-static PixelBuffer* SlideBuffers[NUM_SLIDES];
+static std::unique_ptr<PixelBuffer> SlideBuffers[NUM_SLIDES];
 
 /*
 ** Original copy of slide (pref in video mem) that we use to undraw the text
 */
-static PixelBuffer* BackgroundPage;
+static std::unique_ptr<PixelBuffer> BackgroundPage;
 
 /*
 **  This palette contains both the font palette entries and the slide
@@ -167,23 +167,8 @@ static char PaletteLUT[256];
  *                                                                                             *
  * HISTORY: * 9/9/96 11:53PM ST : Created *
  *=============================================================================================*/
-EgoClass::EgoClass(int x, int y, char* text, TextPrintType flags)
-    : Text(base::CloneString(text)), XPos(x), YPos(y), Flags(flags) {}
-
-/***********************************************************************************************
- * EC::~EgoClass -- EgoClass destructor *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 9/9/96 11:54PM ST : Created *
- *=============================================================================================*/
-EgoClass::~EgoClass() { delete[] Text; }
+EgoClass::EgoClass(int x, int y, std::string_view text, TextPrintType flags)
+    : Text(text), XPos(x), YPos(y), Flags(flags) {}
 
 /***********************************************************************************************
  * EC::Scroll -- Apply the given distance to the y position of the text. * A
@@ -218,8 +203,8 @@ bool EgoClass::Scroll(int distance) {
  *=============================================================================================*/
 void EgoClass::Render(PixelView& view) const {
   if (YPos < view.height() && YPos > -16) {
-    Fancy_Text_Print(view, Text, XPos, YPos, GadgetClass::Get_Color_Scheme(),
-                     kTBlack, Flags);
+    Fancy_Text_Print(view, Text.c_str(), XPos, YPos,
+                     GadgetClass::Get_Color_Scheme(), kTBlack, Flags);
   }
 }
 
@@ -237,7 +222,7 @@ void EgoClass::Render(PixelView& view) const {
  * HISTORY: * 9/9/96 11:58PM ST : Created *
  *=============================================================================================*/
 void EgoClass::Wipe(PixelView& view, PixelBuffer* background) const {
-  const int width = StringPixelWidth(TextFontStyle(Flags), Text);
+  const int width = StringPixelWidth(TextFontStyle(Flags), Text.c_str());
   int x = XPos;
 
   if (base::Any(Flags & TPF_RIGHT)) {
@@ -452,7 +437,6 @@ void Show_Who_Was_Responsible() {
   int endcolumn = 0;
   int x = 0;
   const int y = TheScreen().visible_view().height() + 2;
-  EgoClass* ego = nullptr;
   /*
   ** Search through the text file and extract the strings, using each string to
   *create
@@ -578,12 +562,8 @@ void Show_Who_Was_Responsible() {
         /*
         ** Create the new class and add it to our list.
         */
-        ego =
-            new EgoClass(x, y + (line * 16), std::to_address(strstart), flags);
-
-        if (!EgoList.Add(ego)) {
-          delete ego;
-        }
+        EgoList.push_back(std::make_unique<EgoClass>(
+            x, y + (line * 16), std::to_address(strstart), flags));
 
         /*
         ** Restore the character that was lost when we added the terminator.
@@ -681,7 +661,7 @@ void Show_Who_Was_Responsible() {
   ** Loop through and load up all the slideshow pictures
   */
   for (int index = 0; index < NUM_SLIDES; index++) {
-    base::At(SlideBuffers, index) = new PixelBuffer;
+    base::At(SlideBuffers, index) = std::make_unique<PixelBuffer>();
     base::At(SlideBuffers, index)
         ->Init(TheScreen().visible_view().width(),
                TheScreen().visible_view().height(), {}, 0);
@@ -693,7 +673,7 @@ void Show_Who_Was_Responsible() {
   // Create a new graphic buffer to restore the background from. Initialize it
   // to black so we can start scrolling before the first slideshow picture is
   // blitted.
-  BackgroundPage = new PixelBuffer;
+  BackgroundPage = std::make_unique<PixelBuffer>();
   BackgroundPage->Init(TheScreen().visible_view().width(),
                        TheScreen().visible_view().height(), {}, 0);
 
@@ -732,7 +712,7 @@ void Show_Who_Was_Responsible() {
   ** Main scrolling loop.
   ** Keeps going until all the EgoClass objects are deleted or esc is pressed.
   */
-  while (EgoList.Count()) {
+  while (!EgoList.empty()) {
     frame++;
 
     /*
@@ -767,10 +747,10 @@ void Show_Who_Was_Responsible() {
     /*
     ** Scroll the text. If any text goes off the top then delete that object.
     */
-    for (base::ssize i = EgoList.Count() - 1; i >= 0; i--) {
-      EgoList.at(i)->Wipe(view, BackgroundPage);
-      if (EgoList.at(i)->Scroll(1)) {
-        EgoList.Delete(i);
+    for (base::ssize i = std::ssize(EgoList) - 1; i >= 0; i--) {
+      EgoList.at(base::ToSize(i))->Wipe(view, BackgroundPage.get());
+      if (EgoList.at(base::ToSize(i))->Scroll(1)) {
+        EgoList.erase(std::next(EgoList.begin(), i));
         break;
       }
     }
@@ -779,8 +759,8 @@ void Show_Who_Was_Responsible() {
     ** Render all the text strings in their new positions.
     */
     if (view.Lock()) {
-      for (base::ssize i = EgoList.Count() - 1; i >= 0; i--) {
-        EgoList.at(i)->Render(view);
+      for (base::ssize i = std::ssize(EgoList) - 1; i >= 0; i--) {
+        EgoList.at(base::ToSize(i))->Render(view);
       }
       view.Unlock();
     }
@@ -876,13 +856,11 @@ void Show_Who_Was_Responsible() {
   TheTheme().Stop();
   TheOptions().Set_Score_Volume(oldvolume, false);
 
-  for (auto& SlideBuffer : SlideBuffers) {
-    delete SlideBuffer;
-    SlideBuffer = nullptr;
+  for (int index = 0; index < NUM_SLIDES; index++) {
+    base::At(SlideBuffers, index).reset();
   }
 
-  delete BackgroundPage;
-  BackgroundPage = nullptr;
+  BackgroundPage.reset();
 
-  EgoList.Clear();
+  EgoList.clear();
 }

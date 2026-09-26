@@ -6,12 +6,20 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <memory>
 
 #include "absl/log/check.h"
 
 bool TimerSystemOn = false;
 
 TickTimer* g_tick_timer = nullptr;
+
+namespace {
+
+// Owns the timer g_tick_timer points to.
+std::unique_ptr<TickTimer> tick_timer_owner;
+
+}  // namespace
 
 static Uint32 TimerCallback(Uint32 interval, void* param) {
   static_cast<TickTimer*>(param)->UpdateTickCount();
@@ -98,10 +106,11 @@ uint32_t Get_Time_Ms() { return SDL_GetTicks(); }
 
 void InitTickTimer(int tick_rate) {
   CHECK(g_tick_timer == nullptr);
-  g_tick_timer = new TickTimer(tick_rate);
+  tick_timer_owner = std::make_unique<TickTimer>(tick_rate);
+  g_tick_timer = tick_timer_owner.get();
 }
 
 void ShutdownTickTimer() {
-  delete g_tick_timer;
   g_tick_timer = nullptr;
+  tick_timer_owner.reset();
 }

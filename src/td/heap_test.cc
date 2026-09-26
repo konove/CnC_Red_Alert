@@ -3,6 +3,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <span>
 
 #include "engine/stream/archive.h"
@@ -70,9 +71,9 @@ bool LoadHeap(TFixedIHeapClass<T>& heap, const std::array<uint8_t, 256>& bytes,
 TEST(TdHeapTest, FieldObjectsPreserveSparseSlots) {
   TFixedIHeapClass<FieldObject> source;
   source.Set_Heap(4);
-  auto* first = new (source.Alloc()) FieldObject();
-  auto* hole = new (source.Alloc()) FieldObject();
-  auto* last = new (source.Alloc()) FieldObject();
+  auto* first = std::construct_at(source.Alloc());
+  auto* hole = std::construct_at(source.Alloc());
+  auto* last = std::construct_at(source.Alloc());
   first->value = 123;
   last->value = -456;
   last->flag = true;
@@ -154,11 +155,11 @@ TEST(TdHeapTest, EmptyHeapRoundTripsWithoutObjects) {
 TEST(TdHeapTest, FreedSlotIsHandedToTheNextAllocation) {
   TFixedIHeapClass<FieldObject> heap;
   heap.Set_Heap(2);
-  auto* first = new (heap.Alloc()) FieldObject();
+  auto* first = std::construct_at(heap.Alloc());
   first->value = 4242;
   heap.Free(first);
 
-  auto* second = new (heap.Alloc()) FieldObject();
+  auto* second = std::construct_at(heap.Alloc());
   second->value = -7;
 
   EXPECT_EQ(second, first);
@@ -168,7 +169,7 @@ TEST(TdHeapTest, FreedSlotIsHandedToTheNextAllocation) {
 TEST(TdHeapTest, AllocationQueryRejectsHolesAndOutOfRangeSlots) {
   TFixedIHeapClass<FieldObject> heap;
   heap.Set_Heap(3);
-  auto* object = new (heap.Alloc()) FieldObject();
+  auto* object = std::construct_at(heap.Alloc());
   EXPECT_TRUE(heap.Is_Allocated(0));
   EXPECT_FALSE(heap.Is_Allocated(1));
   EXPECT_FALSE(heap.Is_Allocated(-1));

@@ -2,6 +2,7 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include <new>
 #include <span>
 #include <vector>
@@ -88,7 +89,8 @@ class TdArchiveRoundTripTest : public testing::Test {
   static void SetUpTestSuite() {
     // Selecting and drawing an object reads the debug switches, which Game
     // installs in the real game.
-    debug_state_scope_ = new base::Installed<DebugState>::Scope(debug_state_);
+    debug_state_scope_ =
+        std::make_unique<base::Installed<DebugState>::Scope>(debug_state_);
     TheGameState().active() = false;
     TheGameClock().set_frame(100);
     TheObjectHeaps().house().Set_Heap(8);
@@ -108,19 +110,18 @@ class TdArchiveRoundTripTest : public testing::Test {
       base::DeletePooled(TheObjectHeaps().unit().Ptr(0));
     }
     while (TheObjectHeaps().trigger().Count() != 0) {
-      delete TheObjectHeaps().trigger().Ptr(0);
+      base::DeletePooled(TheObjectHeaps().trigger().Ptr(0));
     }
-    delete ThePlayer();
+    base::DeletePooled(ThePlayer());
     ThePlayer() = nullptr;
     TheMap().Clear();
-    delete debug_state_scope_;
-    debug_state_scope_ = nullptr;
+    debug_state_scope_.reset();
   }
 
  private:
   static inline DebugState debug_state_;
-  static inline base::Installed<DebugState>::Scope* debug_state_scope_ =
-      nullptr;
+  static inline std::unique_ptr<base::Installed<DebugState>::Scope>
+      debug_state_scope_;
 };
 
 TEST_F(TdArchiveRoundTripTest, TriggerIniPreserves64BitDataAndRejectsOverflow) {
@@ -135,7 +136,7 @@ TEST_F(TdArchiveRoundTripTest, TriggerIniPreserves64BitDataAndRejectsOverflow) {
   trigger->Fill_In(name, overflow);
   EXPECT_EQ(trigger->Data, 0);
   EXPECT_EQ(trigger->DataCopy, 0);
-  delete trigger;
+  base::DeletePooled(trigger);
 }
 
 TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireBytes) {
@@ -147,6 +148,8 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
     configure(expected);
     alignas(EventClass) std::array<unsigned char, sizeof(EventClass)> storage{};
     storage.fill(0xff);
+    // Constructed in the test's own storage; there is nothing to free.
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
     auto* event = new (storage.data()) EventClass(args...);
     EXPECT_EQ(event->IsExecuted, 0U);
     EXPECT_EQ(event->MPlayerID, 0);

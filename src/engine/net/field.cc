@@ -52,51 +52,42 @@
 #endif
 
 FieldClass::FieldClass(const char* id, char data)
-    : DataType(TYPE_CHAR), Size(sizeof(data)), Data(Size), Next(nullptr) {
+    : DataType(TYPE_CHAR), Size(sizeof(data)), Data(Size) {
   std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
   base::CopyBytes(Data, base::ObjectBytes(data), Size);
 }
 
 FieldClass::FieldClass(const char* id, unsigned char data)
-    : DataType(TYPE_UNSIGNED_CHAR),
-      Size(sizeof(data)),
-      Data(Size),
-      Next(nullptr) {
+    : DataType(TYPE_UNSIGNED_CHAR), Size(sizeof(data)), Data(Size) {
   std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
   base::CopyBytes(Data, base::ObjectBytes(data), Size);
 }
 
 FieldClass::FieldClass(const char* id, int16_t data)
-    : DataType(TYPE_SHORT), Size(sizeof(data)), Data(Size), Next(nullptr) {
+    : DataType(TYPE_SHORT), Size(sizeof(data)), Data(Size) {
   std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
   base::CopyBytes(Data, base::ObjectBytes(data), Size);
 }
 
 FieldClass::FieldClass(const char* id, uint16_t data)
-    : DataType(TYPE_UNSIGNED_SHORT),
-      Size(sizeof(data)),
-      Data(Size),
-      Next(nullptr) {
+    : DataType(TYPE_UNSIGNED_SHORT), Size(sizeof(data)), Data(Size) {
   std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
   base::CopyBytes(Data, base::ObjectBytes(data), Size);
 }
 
 FieldClass::FieldClass(const char* id, int32_t data)
-    : DataType(TYPE_LONG), Size(sizeof(data)), Data(Size), Next(nullptr) {
+    : DataType(TYPE_LONG), Size(sizeof(data)), Data(Size) {
   std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
   base::CopyBytes(Data, base::ObjectBytes(data), Size);
 }
 
 FieldClass::FieldClass(const char* id, uint32_t data)
-    : DataType(TYPE_UNSIGNED_LONG),
-      Size(sizeof(data)),
-      Data(Size),
-      Next(nullptr) {
+    : DataType(TYPE_UNSIGNED_LONG), Size(sizeof(data)), Data(Size) {
   std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
   base::CopyBytes(Data, base::ObjectBytes(data), Size);
@@ -105,8 +96,7 @@ FieldClass::FieldClass(const char* id, uint32_t data)
 FieldClass::FieldClass(const char* id, const char* data)
     : DataType(TYPE_STRING),
       Size(static_cast<uint16_t>(std::string_view(data).size() + 1)),
-      Data(Size),
-      Next(nullptr) {
+      Data(Size) {
   std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
   base::CopyBytes(Data, std::as_bytes(std::span(std::string_view(data))),
@@ -116,8 +106,7 @@ FieldClass::FieldClass(const char* id, const char* data)
 FieldClass::FieldClass(const char* id, std::span<const std::byte> data)
     : DataType(TYPE_CHUNK),
       Size(static_cast<uint16_t>(data.size())),
-      Data(Size),
-      Next(nullptr) {
+      Data(Size) {
   std::ranges::copy(std::string_view(id).substr(0, sizeof(ID)), std::begin(ID));
 
   base::CopyBytes(Data, data, Size);

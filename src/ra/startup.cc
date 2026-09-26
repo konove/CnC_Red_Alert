@@ -45,6 +45,7 @@
 #include <array>
 #include <cstdint>
 #include <filesystem>
+#include <memory>
 #include <optional>
 #include <span>
 #include <string>
@@ -106,7 +107,7 @@
 
 // The one Game; main() creates it and ShutDown() destroys it. nullptr before
 // main() and after ShutDown().
-static Game* game = nullptr;
+static std::unique_ptr<Game> game;
 
 void ShutDown() {
   // Everything ShutDownEngine() takes down belongs to the Game, so there is
@@ -119,8 +120,7 @@ void ShutDown() {
   // Nothing is left for an allocation failure from here on to clean up.
   Memory_Error_Exit = ExitWithError;
   ShutDownEngine();
-  delete game;
-  game = nullptr;
+  game.reset();
 }
 
 // The test that links this file defines RA_NO_ENTRY_POINT: it needs
@@ -234,7 +234,7 @@ int main(const int argc, char* argv[])
   absl::InitializeLog();
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
 
-  game = new Game();
+  game = std::make_unique<Game>();
 
 #ifdef _WIN32
 

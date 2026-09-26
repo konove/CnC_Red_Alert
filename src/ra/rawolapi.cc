@@ -29,6 +29,7 @@
 #include <cstring>
 #include <ctime>
 #include <iterator>
+#include <memory>
 #include <span>
 #include <string>
 #include <string_view>
@@ -140,7 +141,7 @@ RAChatEventSink::RAChatEventSink(WolapiObject* pOwnerIn)
 //***********************************************************************************************
 RAChatEventSink::~RAChatEventSink() {
   //	debugprint( "RAChatEventSink destructor\n" );
-  delete pServer;
+  pServer.reset();
   DeleteChannelList();
   DeleteUserList();
   DeleteUserIPList();
@@ -193,10 +194,7 @@ STDMETHODIMP RAChatEventSink::OnServerList(HRESULT hRes, Server* pServerHead) {
   //	debugprint( ">>> OnServerList got: %i ", hRes );
   DebugChatDef(hRes);
 
-  if (pServer) {
-    delete pServer;
-    pServer = nullptr;
-  }
+  pServer.reset();
 
   if (SUCCEEDED(hRes)) {
     while (pServerHead) {
@@ -204,8 +202,7 @@ STDMETHODIMP RAChatEventSink::OnServerList(HRESULT hRes, Server* pServerHead) {
       // call.
       if (!pServer &&
           (std::string_view(WolText(pServerHead->connlabel)) == "IRC")) {
-        pServer = new Server;
-        *pServer = *pServerHead;
+        pServer = std::make_unique<Server>(*pServerHead);
       } else if (!*pOwner->szLadderServerHost &&
                  (std::string_view(WolText(pServerHead->connlabel)) == "LAD")) {
         //				debugprint( "Scanning '%s'\n",
@@ -436,10 +433,9 @@ STDMETHODIMP RAChatEventSink::OnChannelJoin(HRESULT hRes, Channel* /*pChannel*/,
       // Fatal( "pUserList is null in OnChannelJoin!!!\n" );
       //			}
 
-      User* pUserNew = new User;
-      *pUserNew = *pUser;
-      pUserNew->next =
-          nullptr;  //	(We don't want the value that was just copied!)
+      //	A copy with `next` cleared: we don't want the value that came
+      // in.
+      User* pUserNew = user_nodes_.Add(*pUser);
 
       //	Insert user into list alphabetically.
       InsertUserSorted(pUserNew);
@@ -590,7 +586,7 @@ STDMETHODIMP RAChatEventSink::OnChannelLeave(HRESULT hRes, Channel* /*channel*/,
             }
           }
           //	Destroy removed user.
-          delete pUserSearch;
+          user_nodes_.Free(pUserSearch);
           bFound = true;
           break;
         }
@@ -860,10 +856,8 @@ STDMETHODIMP RAChatEventSink::OnChannelList(HRESULT /*res*/,
       default:
         break;
     }
-    auto* pChannelNew = new Channel;
-    *pChannelNew = *pChannelListIn;
-    pChannelNew->next =
-        nullptr;  //	(We don't want the value that was just copied!)
+    //	A copy with `next` cleared: we don't want the value that came in.
+    Channel* pChannelNew = channel_nodes_.Add(*pChannelListIn);
     if (!pChannelListTail) {
       //	First channel in list.
       pChannelList = pChannelNew;  //	This is the head of our channel list.
@@ -892,11 +886,8 @@ void RAChatEventSink::DeleteChannelList() {
   //	pChannelList points to the head element of a linked list of channels,
   // copied during OnChannelList().
   //	debugprint( "DeleteChannelList\n" );
-  while (pChannelList) {
-    const Channel* pChannelHead = pChannelList;
-    pChannelList = pChannelHead->next;
-    delete pChannelHead;
-  }
+  channel_nodes_.Clear();
+  pChannelList = nullptr;
 }
 
 //***********************************************************************************************
@@ -909,10 +900,8 @@ STDMETHODIMP RAChatEventSink::OnUserList(HRESULT /*res*/, Channel* /*channel*/,
   //	Copy channel list to our own list.
   while (pUserListIn) {
     //		debugprint( "OnUserList got %s\n", pUserListIn->name );
-    User* pUserNew = new User;
-    *pUserNew = *pUserListIn;
-    pUserNew->next =
-        nullptr;  //	(We don't want the value that was just copied!)
+    //	A copy with `next` cleared: we don't want the value that came in.
+    User* pUserNew = user_nodes_.Add(*pUserListIn);
     if (!pUserTail) {
       //	First User in list.
       pUserList = pUserNew;  //	This is the head of our User list.
@@ -934,11 +923,8 @@ void RAChatEventSink::DeleteUserList() {
   //	pUserList points to the head element of a linked list of Users, copied
   // during OnUserList().
   //	debugprint( "DeleteUserList\n" );
-  while (pUserList) {
-    const User* pUserHead = pUserList;
-    pUserList = pUserHead->next;
-    delete pUserHead;
-  }
+  user_nodes_.Clear();
+  pUserList = nullptr;
   pUserTail = nullptr;
 }
 
@@ -990,6 +976,9 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   CoCreateInstance(CLSID_Download, nullptr, CLSCTX_INPROC_SERVER, IID_IDownload,
                    ComOut(&pDownload));
   DCHECK(pDownload);
+  //	A COM object: its reference count owns it, and the Release() below frees
+  // it.
+  // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): owned by its COM refcount.
   auto* pDownloadSink = new RADownloadEventSink();
   pDownloadSink->AddRef();
   IConnectionPoint* pConnectionPoint = nullptr;
@@ -1363,20 +1352,15 @@ STDMETHODIMP RAChatEventSink::OnGameStart(HRESULT hRes, Channel* /*channel*/,
   // pGameUserList ip information, 	strictly speaking.
 
   //	Delete any existing list.
-  while (pGameUserList) {
-    const User* pGameUserHead = pGameUserList;
-    pGameUserList = pGameUserList->next;
-    delete pGameUserHead;
-  }
+  game_user_nodes_.Clear();
+  pGameUserList = nullptr;
   //	Copy incoming user list.
   User* pGameUserListTail = nullptr;
   while (pUserIn) {
     //			debugprint( "OnGameStart got %s\n", (char*)pUserIn->name
     //);
-    User* pUserNew = new User;
-    *pUserNew = *pUserIn;
-    pUserNew->next =
-        nullptr;  //	(We don't want the value that was just copied!)
+    //	A copy with `next` cleared: we don't want the value that came in.
+    User* pUserNew = game_user_nodes_.Add(*pUserIn);
     if (!pGameUserListTail) {
       //	First User in list.
       pGameUserList = pUserNew;  //	This is the head of our User list.
@@ -1486,10 +1470,8 @@ STDMETHODIMP RAChatEventSink::OnUserIP(HRESULT hRes, User* pUser) {
       pUserSearch = pUserSearch->next;
     }
     //	User not found in current list. Add.
-    User* pUserNew = new User;
-    *pUserNew = *pUser;
-    pUserNew->next =
-        nullptr;  //	(We don't want the value that was just copied!)
+    //	A copy with `next` cleared: we don't want the value that came in.
+    User* pUserNew = user_ip_nodes_.Add(*pUser);
     if (!pUserIPListTail) {
       //	First user in list.
       pUserIPList = pUserNew;  //	This is the head of our list.
@@ -1506,11 +1488,8 @@ STDMETHODIMP RAChatEventSink::OnUserIP(HRESULT hRes, User* pUser) {
 void RAChatEventSink::DeleteUserIPList() {
   //	Same as DeleteUserList but for pUserIPList.
   //	debugprint( "DeleteUserIPList\n" );
-  while (pUserIPList) {
-    const User* pUserHead = pUserIPList;
-    pUserIPList = pUserHead->next;
-    delete pUserHead;
-  }
+  user_ip_nodes_.Clear();
+  pUserIPList = nullptr;
   pUserIPListTail = nullptr;
 }
 
@@ -1804,10 +1783,11 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(
       // rung is unsigned; -1 is the "unranked" sentinel the server sends.
       constexpr auto kUnranked = static_cast<unsigned int>(-1);
       if (*pLadderListIn->login_name != 0 && pLadderListIn->rung != kUnranked) {
-        auto* pLadderNew = new Ladder;
-        *pLadderNew = *pLadderListIn;
-        pLadderNew->next =
-            nullptr;  //	(We don't want the value that was just copied!)
+        //	A copy with `next` cleared: we don't want the value that came
+        // in.
+        Ladder* pLadderNew = pLadderListIn->sku == LADDER_CODE_RA
+                                 ? ladder_nodes_.Add(*pLadderListIn)
+                                 : ladder_am_nodes_.Add(*pLadderListIn);
         if (pLadderNew->sku == LADDER_CODE_RA) {
           if (!pLadderTail) {
             //	First Ladder in list.
@@ -1899,11 +1879,8 @@ STDMETHODIMP RANetUtilEventSink::OnPing(
 void RANetUtilEventSink::DeleteLadderList() {
   //	debugprint( "DeleteLadderList()\n" );
   //	Delete all Ladders allocated on the heap.
-  while (pLadderList) {
-    const Ladder* pLadderHead = pLadderList;
-    pLadderList = pLadderHead->next;
-    delete pLadderHead;
-  }
+  ladder_nodes_.Clear();
+  pLadderList = nullptr;
   pLadderTail = nullptr;
 }
 

@@ -57,6 +57,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -1215,18 +1216,19 @@ GameType Select_Serial_Dialog() {
             */
             if (TheNetwork()
                     .phone_book()
-                    .at(TheNetwork().current_phone_index())
+                    .at(base::ToSize(TheNetwork().current_phone_index()))
                     ->Settings.Port == 0) {
               settings = &TheNetwork().serial_defaults();
             } else {
-              settings = &TheNetwork()
-                              .phone_book()
-                              .at(TheNetwork().current_phone_index())
-                              ->Settings;
+              settings =
+                  &TheNetwork()
+                       .phone_book()
+                       .at(base::ToSize(TheNetwork().current_phone_index()))
+                       ->Settings;
             }
 
-            delete SerialPort;
-            SerialPort = new WinModemClass;
+            SerialPort.reset();
+            SerialPort = std::make_unique<WinModemClass>();
 
             if (Init_Null_Modem(settings)) {
               if (settings->CallWaitStringIndex == kCallWaitCustom) {
@@ -1236,11 +1238,12 @@ GameType Select_Serial_Dialog() {
                     DialString,
                     base::At(call_wait_strings, settings->CallWaitStringIndex));
               }
-              base::SafeAppend(DialString,
-                               TheNetwork()
-                                   .phone_book()
-                                   .at(TheNetwork().current_phone_index())
-                                   ->Number);
+              base::SafeAppend(
+                  DialString,
+                  TheNetwork()
+                      .phone_book()
+                      .at(base::ToSize(TheNetwork().current_phone_index()))
+                      ->Number);
 
               if (Dial_Modem(settings, false)) {
                 TheNetwork().modem_game_type() = MODEM_DIALER;
@@ -1276,8 +1279,8 @@ GameType Select_Serial_Dialog() {
             */
             settings = &TheNetwork().serial_defaults();
 
-            delete SerialPort;
-            SerialPort = new WinModemClass;
+            SerialPort.reset();
+            SerialPort = std::make_unique<WinModemClass>();
 
             if (Init_Null_Modem(settings)) {
               if (Answer_Modem(settings, false)) {
@@ -1313,8 +1316,8 @@ GameType Select_Serial_Dialog() {
             ** Otherwise, remote-connect; save values if we're recording
             */
 
-            delete SerialPort;
-            SerialPort = new WinNullModemClass;
+            SerialPort.reset();
+            SerialPort = std::make_unique<WinNullModemClass>();
 
             if (Init_Null_Modem(&TheNetwork().serial_defaults())) {
               rc = Test_Null_Modem();
@@ -2142,19 +2145,18 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   *its just
   ** tough luck if the user has more than 10 modems attached!
   */
-  delete TheNetwork().modem_registry();
   int modems_found = 0;
   for (i = 0; i < 10; i++) {
-    TheNetwork().modem_registry() = new ModemRegistryEntryClass(i);
+    TheNetwork().modem_registry() =
+        std::make_unique<ModemRegistryEntryClass>(i);
     if (TheNetwork().modem_registry()->Get_Modem_Name()) {
       base::SafeCopy(base::At(modemnames, modems_found),
                      TheNetwork().modem_registry()->Get_Modem_Name());
       portlist.Add_Item(base::At(modemnames, modems_found++));
       port_custom_index++;
     }
-    delete TheNetwork().modem_registry();
   }
-  TheNetwork().modem_registry() = nullptr;
+  TheNetwork().modem_registry().reset();
 
   portlist.Add_Item(custom_port);
 
@@ -2728,25 +2730,27 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       ------------------------------------------------------------------*/
       case engine::window::ButtonKey(kButtonAdd):
 
-        item = new char[INITSTRBUF_MAX]{};
-
         std::ranges::transform(base::MutableCString(initstrbuf), initstrbuf,
                                absl::ascii_toupper);
-        // This allocation above owns exactly INITSTRBUF_MAX characters.
+        item = TheNetwork()
+                   .init_strings()
+                   .emplace_back(std::make_unique<char[]>(INITSTRBUF_MAX))
+                   .get();
+        // The allocation above owns exactly INITSTRBUF_MAX characters.
         // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
         base::SafeCopy(std::span(item, INITSTRBUF_MAX), initstrbuf);
-
-        TheNetwork().init_strings().Add(item);
         Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
                                   &initstr_index);
         /*............................................................
         Set the current listbox index to the newly-added item.
         ............................................................*/
-        for (i = 0; i < TheNetwork().init_strings().Count(); i++) {
-          if (item == TheNetwork().init_strings().at(i)) {
+        for (i = 0; i < std::ssize(TheNetwork().init_strings()); i++) {
+          if (item == TheNetwork().init_strings().at(base::ToSize(i)).get()) {
             initstr_index = i;
-            base::SafeCopy(initstrbuf,
-                           TheNetwork().init_strings().at(initstr_index));
+            base::SafeCopy(initstrbuf, TheNetwork()
+                                           .init_strings()
+                                           .at(base::ToSize(initstr_index))
+                                           .get());
             initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
             initstrlist.Set_Selected_Index(initstr_index);
           }
@@ -2761,8 +2765,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       ------------------------------------------------------------------*/
       case engine::window::ButtonKey(kButtonDelete):
 
-        if (TheNetwork().init_strings().Count() && initstr_index != -1) {
-          TheNetwork().init_strings().Delete(initstr_index);
+        if (std::ssize(TheNetwork().init_strings()) && initstr_index != -1) {
+          TheNetwork().init_strings().erase(
+              TheNetwork().init_strings().begin() + initstr_index);
           Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
                                     &initstr_index);
         }
@@ -2992,18 +2997,19 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   /*
   ** Now sort the init string list by name then number
   */
-  if (TheNetwork().init_strings().Count() > 0) {
-    std::ranges::sort(TheNetwork().init_strings().ActiveElements(),
-                      [](const char* left, const char* right) {
-                        return std::string_view(left).compare(right) < 0;
-                      });
+  if (std::ssize(TheNetwork().init_strings()) > 0) {
+    std::ranges::sort(
+        TheNetwork().init_strings(), [](const std::unique_ptr<char[]>& left,
+                                        const std::unique_ptr<char[]>& right) {
+          return std::string_view(left.get()).compare(right.get()) < 0;
+        });
   }
 
   /*........................................................................
   Build the list
   ........................................................................*/
-  for (int i = 0; i < TheNetwork().init_strings().Count(); i++) {
-    list->Add_Item(TheNetwork().init_strings().at(i));
+  for (int i = 0; i < std::ssize(TheNetwork().init_strings()); i++) {
+    list->Add_Item(TheNetwork().init_strings().at(base::ToSize(i)).get());
   }
   list->Flag_To_Redraw();
 
@@ -3023,7 +3029,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   ........................................................................*/
   if (curidx > -1) {
     base::SafeCopy(std::span(buf).first(INITSTRBUF_MAX),
-                   TheNetwork().init_strings().at(curidx));
+                   TheNetwork().init_strings().at(base::ToSize(curidx)).get());
     edit->Set_Text(buf, INITSTRBUF_MAX);
     list->Set_Selected_Index(curidx);
   }
@@ -6042,10 +6048,12 @@ static int Phone_Dialog() {
         ...............................................................*/
         if (phonelist.Current_Index() != TheNetwork().current_phone_index()) {
           TheNetwork().current_phone_index() = phonelist.Current_Index();
-          base::SafeCopy(phone_num, TheNetwork()
-                                        .phone_book()
-                                        .at(TheNetwork().current_phone_index())
-                                        ->Number);
+          base::SafeCopy(
+              phone_num,
+              TheNetwork()
+                  .phone_book()
+                  .at(base::ToSize(TheNetwork().current_phone_index()))
+                  ->Number);
           numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
           changed = 1;
         }
@@ -6054,12 +6062,12 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       Add a new entry
       ------------------------------------------------------------------*/
-      case engine::window::ButtonKey(kButtonAdd):
-
+      case engine::window::ButtonKey(kButtonAdd): {
         /*...............................................................
         Allocate a new phone book entry
         ...............................................................*/
-        p_entry = new PhoneEntryClass();
+        auto new_entry = std::make_unique<PhoneEntryClass>();
+        p_entry = new_entry.get();
         base::At(p_entry->Name, 0) = 0;
         base::At(p_entry->Number, 0) = 0;
         p_entry->Settings.Port = 0;
@@ -6075,38 +6083,36 @@ static int Phone_Dialog() {
         to the list, and rebuild the list box.
         ...............................................................*/
         if (Edit_Phone_Dialog(p_entry)) {
-          TheNetwork().phone_book().Add(p_entry);
+          TheNetwork().phone_book().push_back(std::move(new_entry));
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
-          for (int i = 0; i < TheNetwork().phone_book().Count(); i++) {
-            if (p_entry == TheNetwork().phone_book().at(i)) {
+          for (int i = 0; i < std::ssize(TheNetwork().phone_book()); i++) {
+            if (p_entry ==
+                TheNetwork().phone_book().at(base::ToSize(i)).get()) {
               TheNetwork().current_phone_index() = i;
-              base::SafeCopy(phone_num,
-                             TheNetwork()
-                                 .phone_book()
-                                 .at(TheNetwork().current_phone_index())
-                                 ->Number);
+              base::SafeCopy(
+                  phone_num,
+                  TheNetwork()
+                      .phone_book()
+                      .at(base::ToSize(TheNetwork().current_phone_index()))
+                      ->Number);
               numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
               phonelist.Set_Selected_Index(TheNetwork().current_phone_index());
             }
           }
           changed = 1;
-        } else {
-          /*...............................................................
-          If the user clicked Cancel, delete the entry & keep looping.
-          ...............................................................*/
-          delete p_entry;
         }
+        // If the user clicked Cancel, new_entry frees the entry.
         display = REDRAW_ALL;
         break;
+      }
 
       /*------------------------------------------------------------------
       Edit the current entry
       ------------------------------------------------------------------*/
-      case engine::window::ButtonKey(kButtonEdit):
-
+      case engine::window::ButtonKey(kButtonEdit): {
         /*...............................................................
         Do nothing if no entry is selected.
         ...............................................................*/
@@ -6115,43 +6121,43 @@ static int Phone_Dialog() {
         }
 
         /*...............................................................
-        Allocate a new entry & copy the currently-selected entry into it
+        Copy the currently-selected entry
         ...............................................................*/
-        p_entry = new PhoneEntryClass();
-        *p_entry =
-            *TheNetwork().phone_book().at(TheNetwork().current_phone_index());
+        PhoneEntryClass edited_entry = *TheNetwork().phone_book().at(
+            base::ToSize(TheNetwork().current_phone_index()));
 
         /*...............................................................
         Pass the new entry to the entry editor; if the user selects OK,
         copy the data back into our phone book.  Rebuild the list so
         the changes show up in the list box.
         ...............................................................*/
-        if (Edit_Phone_Dialog(p_entry)) {
-          *TheNetwork().phone_book().at(TheNetwork().current_phone_index()) =
-              *p_entry;
+        if (Edit_Phone_Dialog(&edited_entry)) {
+          *TheNetwork().phone_book().at(
+              base::ToSize(TheNetwork().current_phone_index())) = edited_entry;
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
-          for (int i = 0; i < TheNetwork().phone_book().Count(); i++) {
+          for (int i = 0; i < std::ssize(TheNetwork().phone_book()); i++) {
             if (TheNetwork().phone_book().at(
-                    TheNetwork().current_phone_index()) ==
-                TheNetwork().phone_book().at(i)) {
+                    base::ToSize(TheNetwork().current_phone_index())) ==
+                TheNetwork().phone_book().at(base::ToSize(i))) {
               TheNetwork().current_phone_index() = i;
-              base::SafeCopy(phone_num,
-                             TheNetwork()
-                                 .phone_book()
-                                 .at(TheNetwork().current_phone_index())
-                                 ->Number);
+              base::SafeCopy(
+                  phone_num,
+                  TheNetwork()
+                      .phone_book()
+                      .at(base::ToSize(TheNetwork().current_phone_index()))
+                      ->Number);
               numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
               phonelist.Set_Selected_Index(TheNetwork().current_phone_index());
             }
           }
           changed = 1;
         }
-        delete p_entry;
         display = REDRAW_ALL;
         break;
+      }
 
       /*------------------------------------------------------------------
       Delete the current entry
@@ -6168,7 +6174,8 @@ static int Phone_Dialog() {
         /*...............................................................
         Delete the current item & rebuild the phone listbox
         ...............................................................*/
-        TheNetwork().phone_book().Delete(TheNetwork().current_phone_index());
+        TheNetwork().phone_book().erase(TheNetwork().phone_book().begin() +
+                                        TheNetwork().current_phone_index());
         Build_Phone_Listbox(&phonelist, &numedit, phone_num);
 
         if (TheNetwork().current_phone_index() == -1) {
@@ -6196,17 +6203,19 @@ static int Phone_Dialog() {
         - Set settings to defaults
         ...............................................................*/
         if (TheNetwork().current_phone_index() == -1 ||
-            std::string_view(TheNetwork()
-                                 .phone_book()
-                                 .at(TheNetwork().current_phone_index())
-                                 ->Number) != phone_num) {
+            std::string_view(
+                TheNetwork()
+                    .phone_book()
+                    .at(base::ToSize(TheNetwork().current_phone_index()))
+                    ->Number) != phone_num) {
           if (std::string_view(phone_num).empty()) {  // do not dial
             dialbtn.IsPressed = false;
             dialbtn.Flag_To_Redraw();
             break;
           }
 
-          p_entry = new PhoneEntryClass();
+          auto new_entry = std::make_unique<PhoneEntryClass>();
+          p_entry = new_entry.get();
           base::SafeCopy(p_entry->Name, "NONAME");
           base::SafeCopy(p_entry->Number, phone_num);
           p_entry->Settings.Port = 0;
@@ -6217,13 +6226,14 @@ static int Phone_Dialog() {
           p_entry->Settings.CallWaitStringIndex = kCallWaitCustom;
           base::At(p_entry->Settings.CallWaitString, 0) = 0;
 
-          TheNetwork().phone_book().Add(p_entry);
+          TheNetwork().phone_book().push_back(std::move(new_entry));
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
-          for (int i = 0; i < TheNetwork().phone_book().Count(); i++) {
-            if (p_entry == TheNetwork().phone_book().at(i)) {
+          for (int i = 0; i < std::ssize(TheNetwork().phone_book()); i++) {
+            if (p_entry ==
+                TheNetwork().phone_book().at(base::ToSize(i)).get()) {
               TheNetwork().current_phone_index() = i;
             }
           }
@@ -6300,10 +6310,11 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   /*
   ** Now sort the phone list by name then number
   */
-  if (TheNetwork().phone_book().Count() > 0) {
+  if (std::ssize(TheNetwork().phone_book()) > 0) {
     std::ranges::sort(
-        TheNetwork().phone_book().ActiveElements(),
-        [](const PhoneEntryClass* left, const PhoneEntryClass* right) {
+        TheNetwork().phone_book(),
+        [](const std::unique_ptr<PhoneEntryClass>& left,
+           const std::unique_ptr<PhoneEntryClass>& right) {
           int result = std::string_view(left->Name).compare(right->Name);
           if (result == 0) {
             // Same name, so order by the phone number instead.
@@ -6316,31 +6327,38 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   /*........................................................................
   Build the list
   ........................................................................*/
-  for (int i = 0; i < TheNetwork().phone_book().Count(); i++) {
-    if (std::string_view(TheNetwork().phone_book().at(i)->Name).empty()) {
+  for (int i = 0; i < std::ssize(TheNetwork().phone_book()); i++) {
+    if (std::string_view(TheNetwork().phone_book().at(base::ToSize(i))->Name)
+            .empty()) {
       base::SafeCopy(phonename, " ");
     } else {
-      base::SafeCopy(phonename, TheNetwork().phone_book().at(i)->Name);
+      base::SafeCopy(phonename,
+                     TheNetwork().phone_book().at(base::ToSize(i))->Name);
     }
 
-    if (std::string_view(TheNetwork().phone_book().at(i)->Number).empty()) {
+    if (std::string_view(TheNetwork().phone_book().at(base::ToSize(i))->Number)
+            .empty()) {
       base::SafeCopy(phonenum, " ");
     } else {
-      if (std::string_view(TheNetwork().phone_book().at(i)->Number).size() <
-          15) {
-        base::SafeCopy(phonenum, TheNetwork().phone_book().at(i)->Number);
-      } else {
+      if (std::string_view(
+              TheNetwork().phone_book().at(base::ToSize(i))->Number)
+              .size() < 15) {
         base::SafeCopy(phonenum,
-                       std::string_view(TheNetwork().phone_book().at(i)->Number)
-                           .substr(0, 12));
+                       TheNetwork().phone_book().at(base::ToSize(i))->Number);
+      } else {
+        base::SafeCopy(
+            phonenum, std::string_view(
+                          TheNetwork().phone_book().at(base::ToSize(i))->Number)
+                          .substr(0, 12));
         base::At(phonenum, 12) = 0;
         base::SafeAppend(phonenum, "...");
       }
     }
 
-    if (TheNetwork().phone_book().at(i)->Settings.Baud != -1) {
-      absl::SNPrintF(item, sizeof(item), "%s\t%s\t%d", phonename, phonenum,
-                     TheNetwork().phone_book().at(i)->Settings.Baud);
+    if (TheNetwork().phone_book().at(base::ToSize(i))->Settings.Baud != -1) {
+      absl::SNPrintF(
+          item, sizeof(item), "%s\t%s\t%d", phonename, phonenum,
+          TheNetwork().phone_book().at(base::ToSize(i))->Settings.Baud);
     } else {
       absl::SNPrintF(item, sizeof(item), "%s\t%s\t[%s]", phonename, phonenum,
                      Text_String(TXT_DEFAULT));
@@ -6367,7 +6385,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
     base::SafeCopy(std::span(buf).first(PhoneEntryClass::kPhoneMaxNum),
                    TheNetwork()
                        .phone_book()
-                       .at(TheNetwork().current_phone_index())
+                       .at(base::ToSize(TheNetwork().current_phone_index()))
                        ->Number);
     edit->Set_Text(buf, PhoneEntryClass::kPhoneMaxNum);
     list->Set_Selected_Index(TheNetwork().current_phone_index());

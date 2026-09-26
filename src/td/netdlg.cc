@@ -128,6 +128,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -1456,17 +1457,15 @@ static int Net_Join_Dialog() {
           //
           // Remove myself from the Players list
           //
-          if (TheNetwork().players().Count()) {  // added: BRR 6/14/96
-            who = TheNetwork().players().at(0);
-            TheNetwork().players().Delete(0);
-            delete who;
+          if (std::ssize(TheNetwork().players())) {  // added: BRR 6/14/96
+            TheNetwork().players().erase(TheNetwork().players().begin());
           }
 
-          for (i = 0; i < TheNetwork().players().Count(); i++) {
+          for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
             TheNetwork().ipx().Send_Global_Message(
                 base::ObjectBytes(TheNetwork().global_packet()),
                 sizeof(GlobalPacketType), 1,
-                &TheNetwork().players().at(i)->Address);
+                &TheNetwork().players().at(base::ToSize(i))->Address);
             TheNetwork().ipx().Service();
           }
         }
@@ -1521,9 +1520,9 @@ static int Net_Join_Dialog() {
         ..................... Ensure name is unique .....................
         */
         found = 0;
-        for (i = 0; i < TheNetwork().games().Count(); i++) {
-          if (absl::EqualsIgnoreCase(TheNetwork().games().at(i)->Name,
-                                     namebuf)) {
+        for (i = 0; i < std::ssize(TheNetwork().games()); i++) {
+          if (absl::EqualsIgnoreCase(
+                  TheNetwork().games().at(base::ToSize(i))->Name, namebuf)) {
             found = 1;
             CCMessageBox().Process(TXT_GAMENAME_MUSTBE_UNIQUE);
             display = REDRAW_ALL;
@@ -1683,11 +1682,11 @@ static int Net_Join_Dialog() {
                 list.
                 ..................................................................*/
                 if (joinstate == JOIN_CONFIRMED) {
-                  for (i = 1; i < TheNetwork().players().Count(); i++) {
+                  for (i = 1; i < std::ssize(TheNetwork().players()); i++) {
                     TheNetwork().ipx().Send_Global_Message(
                         base::ObjectBytes(TheNetwork().global_packet()),
                         sizeof(GlobalPacketType), 1,
-                        &TheNetwork().players().at(i)->Address);
+                        &TheNetwork().players().at(base::ToSize(i))->Address);
                     TheNetwork().ipx().Service();
                   }
 
@@ -1701,11 +1700,11 @@ static int Net_Join_Dialog() {
                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
                       magic_number, crc);
                 } else {
-                  for (i = 0; i < TheNetwork().players().Count(); i++) {
+                  for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
                     TheNetwork().ipx().Send_Global_Message(
                         base::ObjectBytes(TheNetwork().global_packet()),
                         sizeof(GlobalPacketType), 1,
-                        &TheNetwork().players().at(i)->Address);
+                        &TheNetwork().players().at(base::ToSize(i))->Address);
                     TheNetwork().ipx().Service();
                   }
                 }
@@ -1756,13 +1755,15 @@ static int Net_Join_Dialog() {
               item, static_cast<char>(base::At(TheSession().text_colors(),
                                                TheSession().color_index())));
 
-          who = new NodeNameType;
+          who = TheNetwork()
+                    .players()
+                    .emplace_back(std::make_unique<NodeNameType>())
+                    .get();
           base::SafeCopy(who->Name, TheSession().player_name());
           who->Address = IPXAddressClass();
           who->Player.House = TheSession().house();
           who->Player.Color =
               static_cast<unsigned char>(TheSession().color_index());
-          TheNetwork().players().Add(who);
 
           Send_Join_Queries(game_index, 0, 1);
         } else {
@@ -1781,10 +1782,8 @@ static int Net_Join_Dialog() {
             //
             // Remove myself from the Players list
             //
-            if (TheNetwork().players().Count()) {
-              who = TheNetwork().players().at(0);
-              TheNetwork().players().Delete(0);
-              delete who;
+            if (std::ssize(TheNetwork().players())) {
+              TheNetwork().players().erase(TheNetwork().players().begin());
             }
 
             TheSession().messages().Init(d_message_x + 2, d_message_y + 2, 4,
@@ -1843,9 +1842,11 @@ static int Net_Join_Dialog() {
     - Clear the player list
     - Send queries for the new selected game, if there is one
     ---------------------------------------------------------------------*/
-    for (i = 0; i < TheNetwork().games().Count(); i++) {
-      if (SystemTicks() - TheNetwork().games().at(i)->Game.LastTime > 400) {
-        TheNetwork().games().Delete(TheNetwork().games().at(i));
+    for (i = 0; i < std::ssize(TheNetwork().games()); i++) {
+      if (SystemTicks() -
+              TheNetwork().games().at(base::ToSize(i))->Game.LastTime >
+          400) {
+        TheNetwork().games().erase(TheNetwork().games().begin() + i);
         gamelist.Remove_Item(i);
         if (i <= game_index) {
           gamelist.Flag_To_Redraw();
@@ -1885,10 +1886,8 @@ static int Net_Join_Dialog() {
       //
       // Remove myself from the Players list
       //
-      if (TheNetwork().players().Count()) {  // added: BRR 6/14/96
-        who = TheNetwork().players().at(0);
-        TheNetwork().players().Delete(0);
-        delete who;
+      if (std::ssize(TheNetwork().players())) {  // added: BRR 6/14/96
+        TheNetwork().players().erase(TheNetwork().players().begin());
       }
 
       base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
@@ -1898,11 +1897,11 @@ static int Net_Join_Dialog() {
       base::SafeCopy(TheNetwork().global_packet().Name,
                      TheSession().player_name());
 
-      for (i = 0; i < TheNetwork().players().Count(); i++) {
+      for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
         TheNetwork().ipx().Send_Global_Message(
             base::ObjectBytes(TheNetwork().global_packet()),
             sizeof(GlobalPacketType), 1,
-            &TheNetwork().players().at(i)->Address);
+            &TheNetwork().players().at(base::ToSize(i))->Address);
         TheNetwork().ipx().Service();
       }
 
@@ -1933,7 +1932,7 @@ static int Net_Join_Dialog() {
       Set the number of players in this game, and my ID
       ..................................................................*/
       TheSession().player_count() =
-          static_cast<int>(TheNetwork().players().Count());
+          static_cast<int>(std::ssize(TheNetwork().players()));
       TheSession().local_id() = static_cast<unsigned char>(
           Build_MPlayerID(TheSession().color_index(), TheSession().house()));
 
@@ -1949,21 +1948,21 @@ static int Net_Join_Dialog() {
       player's color & house at any time.  Fill in 'tmp_id' while we're
       doing this.
       ..................................................................*/
-      for (i = 0; i < TheNetwork().players().Count(); i++) {
+      for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
         /*...............................................................
         Only create the connection if it's not myself!
         ...............................................................*/
         if (std::string_view(TheSession().player_name()) !=
-            TheNetwork().players().at(i)->Name) {
-          id = static_cast<unsigned char>(
-              Build_MPlayerID(TheNetwork().players().at(i)->Player.Color,
-                              TheNetwork().players().at(i)->Player.House));
+            TheNetwork().players().at(base::ToSize(i))->Name) {
+          id = static_cast<unsigned char>(Build_MPlayerID(
+              TheNetwork().players().at(base::ToSize(i))->Player.Color,
+              TheNetwork().players().at(base::ToSize(i))->Player.House));
 
           base::At(tmp_id, i) = id;
 
           TheNetwork().ipx().Create_Connection(
-              id, TheNetwork().players().at(i)->Name,
-              &TheNetwork().players().at(i)->Address);
+              id, TheNetwork().players().at(base::ToSize(i))->Name,
+              &TheNetwork().players().at(base::ToSize(i))->Address);
         } else {
           base::At(tmp_id, i) = TheSession().local_id();
         }
@@ -2068,11 +2067,7 @@ static void Clear_Game_List(ListClass* gamelist) {
   /*------------------------------------------------------------------------
   Clear the 'Games' Vector
   ------------------------------------------------------------------------*/
-  for (int i = 0; i < TheNetwork().games().Count(); i++) {
-    delete TheNetwork().games().at(i);
-  }
-
-  TheNetwork().games().Clear();
+  TheNetwork().games().clear();
 
 } /* end of Clear_Game_List */
 
@@ -2107,11 +2102,7 @@ static void Clear_Player_List(ListClass* playerlist) {
   /*------------------------------------------------------------------------
   Clear the 'Players' Vector
   ------------------------------------------------------------------------*/
-  for (int i = 0; i < TheNetwork().players().Count(); i++) {
-    delete TheNetwork().players().at(i);
-  }
-
-  TheNetwork().players().Clear();
+  TheNetwork().players().clear();
 
 } /* end of Clear_Player_List */
 
@@ -2147,8 +2138,8 @@ static bool Request_To_Join(const char* playername, int join_index,
   /*
   --------------------------- Validate join_index --------------------------
   */
-  if (TheNetwork().games().Count() == 0 ||
-      join_index > TheNetwork().games().Count() || join_index < 0) {
+  if (std::ssize(TheNetwork().games()) == 0 ||
+      join_index > std::ssize(TheNetwork().games()) || join_index < 0) {
     CCMessageBox().Process(TXT_NOTHING_TO_JOIN);
     return false;
   }
@@ -2164,7 +2155,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   /*
   ------------------------- The game must be open --------------------------
   */
-  if (!TheNetwork().games().at(join_index)->Game.IsOpen) {
+  if (!TheNetwork().games().at(base::ToSize(join_index))->Game.IsOpen) {
     CCMessageBox().Process(TXT_GAME_IS_CLOSED);
     return false;
   }
@@ -2172,9 +2163,9 @@ static bool Request_To_Join(const char* playername, int join_index,
   /*
   ------------------------ Make sure name is unique ------------------------
   */
-  for (int i = 0; i < TheNetwork().players().Count(); i++) {
-    if (absl::EqualsIgnoreCase(playername,
-                               TheNetwork().players().at(i)->Name)) {
+  for (int i = 0; i < std::ssize(TheNetwork().players()); i++) {
+    if (absl::EqualsIgnoreCase(
+            playername, TheNetwork().players().at(base::ToSize(i))->Name)) {
       CCMessageBox().Process(TXT_NAME_MUSTBE_UNIQUE);
       return false;
     }
@@ -2193,11 +2184,11 @@ static bool Request_To_Join(const char* playername, int join_index,
 #else
   v = Version_Number();
 #endif
-  if (TheNetwork().games().at(join_index)->Game.Version > v) {
+  if (TheNetwork().games().at(base::ToSize(join_index))->Game.Version > v) {
     CCMessageBox().Process(TXT_YOURGAME_OUTDATED);
     return false;
   }
-  if (TheNetwork().games().at(join_index)->Game.Version < v) {
+  if (TheNetwork().games().at(base::ToSize(join_index))->Game.Version < v) {
     CCMessageBox().Process(TXT_DESTGAME_OUTDATED);
     return false;
   }
@@ -2221,7 +2212,7 @@ static bool Request_To_Join(const char* playername, int join_index,
 
   TheNetwork().ipx().Send_Global_Message(
       base::ObjectBytes(TheNetwork().global_packet()), sizeof(GlobalPacketType),
-      1, &TheNetwork().games().at(join_index)->Address);
+      1, &TheNetwork().games().at(base::ToSize(join_index))->Address);
 
   return true;
 }
@@ -2291,7 +2282,7 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
   expired and there is a currently-selected game, or we're told to do it
   right now
   ------------------------------------------------------------------------*/
-  if (curgame != -1 && curgame < TheNetwork().games().Count() &&
+  if (curgame != -1 && curgame < std::ssize(TheNetwork().games()) &&
       (SystemTicks() - lasttime2 > 35 || playernow)) {
     lasttime2 = static_cast<int>(SystemTicks());
 
@@ -2300,7 +2291,7 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
 
     TheNetwork().global_packet().Command = NET_QUERY_PLAYER;
     base::SafeCopy(TheNetwork().global_packet().Name,
-                   TheNetwork().games().at(curgame)->Name);
+                   TheNetwork().games().at(base::ToSize(curgame))->Name);
 
     TheNetwork().ipx().Send_Global_Message(
         base::ObjectBytes(TheNetwork().global_packet()),
@@ -2403,15 +2394,15 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     .....................................................................*/
     retcode = EV_NONE;
     found = 0;
-    for (i = 0; i < TheNetwork().games().Count(); i++) {
-      if ((std::string_view(TheNetwork().games().at(i)->Name) ==
+    for (i = 0; i < std::ssize(TheNetwork().games()); i++) {
+      if ((std::string_view(TheNetwork().games().at(base::ToSize(i))->Name) ==
            TheNetwork().global_packet().Name)) {
         found = 1;
         /*...............................................................
         If name was found, update the node's time stamp & IsOpen flag.
         ...............................................................*/
-        TheNetwork().games().at(i)->Game.LastTime = SystemTicks();
-        if (TheNetwork().games().at(i)->Game.IsOpen !=
+        TheNetwork().games().at(base::ToSize(i))->Game.LastTime = SystemTicks();
+        if (TheNetwork().games().at(base::ToSize(i))->Game.IsOpen !=
             TheNetwork().global_packet().GameInfo.IsOpen) {
           if (TheNetwork().global_packet().GameInfo.IsOpen) {
             Format_Runtime_Text(item, kGameListItemSize,
@@ -2423,7 +2414,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                                 TheNetwork().global_packet().Name);
           }
           gamelist->Set_Item(i, item);
-          TheNetwork().games().at(i)->Game.IsOpen =
+          TheNetwork().games().at(base::ToSize(i))->Game.IsOpen =
               TheNetwork().global_packet().GameInfo.IsOpen;
           gamelist->Flag_To_Redraw();
           /*............................................................
@@ -2431,8 +2422,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           address into our Game slot, since the guy responding to this
           must be game owner.
           ............................................................*/
-          if (TheNetwork().games().at(i)->Game.IsOpen) {
-            TheNetwork().games().at(i)->Address = TheNetwork().global_address();
+          if (TheNetwork().games().at(base::ToSize(i))->Game.IsOpen) {
+            TheNetwork().games().at(base::ToSize(i))->Address =
+                TheNetwork().global_address();
           }
         }
         break;
@@ -2445,13 +2437,15 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       /*..................................................................
       Create a new node structure, fill it in, add it to 'Games'
       ..................................................................*/
-      who = new NodeNameType;
+      who = TheNetwork()
+                .games()
+                .emplace_back(std::make_unique<NodeNameType>())
+                .get();
       base::SafeCopy(who->Name, TheNetwork().global_packet().Name);
       who->Address = TheNetwork().global_address();
       who->Game.Version = TheNetwork().global_packet().GameInfo.Version;
       who->Game.IsOpen = TheNetwork().global_packet().GameInfo.IsOpen;
       who->Game.LastTime = SystemTicks();
-      TheNetwork().games().Add(who);
 
       /*..................................................................
       Create a string for "xxx's Game", leaving room for brackets around
@@ -2480,20 +2474,21 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     .....................................................................*/
     retcode = EV_NONE;
     found = 0;
-    for (i = 0; i < TheNetwork().players().Count(); i++) {
+    for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
       /*..................................................................
       If the address is already present, re-copy their name, color &
       house into the existing entry, in case they've changed it without
       our knowledge; set the 'found' flag so we won't create a new entry.
       ..................................................................*/
-      if (TheNetwork().players().at(i)->Address ==
+      if (TheNetwork().players().at(base::ToSize(i))->Address ==
           TheNetwork().global_address()) {
-        base::SafeCopy(TheNetwork().players().at(i)->Name,
+        base::SafeCopy(TheNetwork().players().at(base::ToSize(i))->Name,
                        TheNetwork().global_packet().Name);
-        TheNetwork().players().at(i)->Player.House =
+        TheNetwork().players().at(base::ToSize(i))->Player.House =
             TheNetwork().global_packet().PlayerInfo.House;
-        TheNetwork().players().at(i)->Player.Color = static_cast<unsigned char>(
-            TheNetwork().global_packet().PlayerInfo.Color);
+        TheNetwork().players().at(base::ToSize(i))->Player.Color =
+            static_cast<unsigned char>(
+                TheNetwork().global_packet().PlayerInfo.Color);
         playerlist->Colors.at(i) = static_cast<char>(
             base::At(TheSession().text_colors(),
                      TheNetwork().global_packet().PlayerInfo.Color));
@@ -2505,9 +2500,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     Don't add this player if he's not part of the game that's selected.
     .....................................................................*/
     i = gamelist->Current_Index();
-    if (TheNetwork().games().Count() &&
+    if (std::ssize(TheNetwork().games()) &&
         TheNetwork().global_packet().PlayerInfo.NameCRC !=
-            Compute_Name_CRC(TheNetwork().games().at(i)->Name)) {
+            Compute_Name_CRC(TheNetwork().games().at(base::ToSize(i))->Name)) {
       found = 1;
     }
 
@@ -2526,13 +2521,15 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       /*..................................................................
       Create & add a node to the Vector
       ..................................................................*/
-      who = new NodeNameType;
+      who = TheNetwork()
+                .players()
+                .emplace_back(std::make_unique<NodeNameType>())
+                .get();
       base::SafeCopy(who->Name, TheNetwork().global_packet().Name);
       who->Address = TheNetwork().global_address();
       who->Player.House = TheNetwork().global_packet().PlayerInfo.House;
       who->Player.Color = static_cast<unsigned char>(
           TheNetwork().global_packet().PlayerInfo.Color);
-      TheNetwork().players().Add(who);
 
       /*..................................................................
       Create & add a string to the list box
@@ -2662,10 +2659,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     /*.....................................................................
     Remove this name from the list of games
     .....................................................................*/
-    for (i = 0; i < TheNetwork().games().Count(); i++) {
-      if ((std::string_view(TheNetwork().games().at(i)->Name) ==
+    for (i = 0; i < std::ssize(TheNetwork().games()); i++) {
+      if ((std::string_view(TheNetwork().games().at(base::ToSize(i))->Name) ==
            TheNetwork().global_packet().Name) &&
-          TheNetwork().games().at(i)->Address ==
+          TheNetwork().games().at(base::ToSize(i))->Address ==
               TheNetwork().global_address()) {
         /*...............................................................
         If the system signing off is the currently-selected list
@@ -2699,7 +2696,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         /*
         ................. Remove game name from game list ...............
         */
-        TheNetwork().games().Delete(TheNetwork().games().at(i));
+        TheNetwork().games().erase(TheNetwork().games().begin() + i);
         gamelist->Remove_Item(i);
         gamelist->Flag_To_Redraw();
       }
@@ -2707,14 +2704,14 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     /*.....................................................................
     Remove this name from the list of players
     .....................................................................*/
-    for (i = 0; i < TheNetwork().players().Count(); i++) {
+    for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
       /*
       ..................... Name found; remove it .....................
       */
-      if (TheNetwork().players().at(i)->Address ==
+      if (TheNetwork().players().at(base::ToSize(i))->Address ==
           TheNetwork().global_address()) {
         playerlist->Remove_Item(i);
-        TheNetwork().players().Delete(TheNetwork().players().at(i));
+        TheNetwork().players().erase(TheNetwork().players().begin() + i);
         playerlist->Flag_To_Redraw();
 
         if (retcode == EV_NONE) {
@@ -3371,7 +3368,7 @@ static int Net_New_Dialog() {
         TheNetwork().ipx().Send_Global_Message(
             base::ObjectBytes(TheNetwork().global_packet()),
             sizeof(GlobalPacketType), 1,
-            &TheNetwork().players().at(index - 1)->Address);
+            &TheNetwork().players().at(base::ToSize(index - 1))->Address);
         break;
 
       /*------------------------------------------------------------------
@@ -3566,7 +3563,7 @@ static int Net_New_Dialog() {
         /*...............................................................
         If there are at least 2 players, go ahead & play; error otherwise
         ...............................................................*/
-        if (TheSession().solo() || TheNetwork().players().Count() > 0) {
+        if (TheSession().solo() || std::ssize(TheNetwork().players()) > 0) {
           rc = 1;
           process = false;
         } else {
@@ -3629,11 +3626,11 @@ static int Net_New_Dialog() {
         only way I have of crossing the bridge is to send a packet
         directly to him.)
         ...............................................................*/
-        for (i = 0; i < TheNetwork().players().Count(); i++) {
+        for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
           TheNetwork().ipx().Send_Global_Message(
               base::ObjectBytes(TheNetwork().global_packet()),
               sizeof(GlobalPacketType), 1,
-              &TheNetwork().players().at(i)->Address);
+              &TheNetwork().players().at(base::ToSize(i))->Address);
           TheNetwork().ipx().Service();
         }
         while (TheNetwork().ipx().Global_Num_Send() > 0 &&
@@ -3775,11 +3772,11 @@ static int Net_New_Dialog() {
             /*..................................................................
             Send the message to every player in our player list.
             ..................................................................*/
-            for (i = 0; i < TheNetwork().players().Count(); i++) {
+            for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
               TheNetwork().ipx().Send_Global_Message(
                   base::ObjectBytes(TheNetwork().global_packet()),
                   sizeof(GlobalPacketType), 1,
-                  &TheNetwork().players().at(i)->Address);
+                  &TheNetwork().players().at(base::ToSize(i))->Address);
               TheNetwork().ipx().Service();
             }
             /*..................................................................
@@ -3832,7 +3829,7 @@ static int Net_New_Dialog() {
     If our Transmit flag is set, we need to send out a game option packet
     ---------------------------------------------------------------------*/
     if (transmit) {
-      for (i = 0; i < TheNetwork().players().Count(); i++) {
+      for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
         base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 
@@ -3862,7 +3859,7 @@ static int Net_New_Dialog() {
         TheNetwork().ipx().Send_Global_Message(
             base::ObjectBytes(TheNetwork().global_packet()),
             sizeof(GlobalPacketType), 1,
-            &TheNetwork().players().at(i)->Address);
+            &TheNetwork().players().at(base::ToSize(i))->Address);
       }
       transmit = 0;
     }
@@ -3875,11 +3872,11 @@ static int Net_New_Dialog() {
       base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                       sizeof(GlobalPacketType));
       TheNetwork().global_packet().Command = NET_PING;
-      for (i = 0; i < TheNetwork().players().Count(); i++) {
+      for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
         TheNetwork().ipx().Send_Global_Message(
             base::ObjectBytes(TheNetwork().global_packet()),
             sizeof(GlobalPacketType), 1,
-            &TheNetwork().players().at(i)->Address);
+            &TheNetwork().players().at(base::ToSize(i))->Address);
       }
       ping_timer = SystemTicks();
     }
@@ -3905,7 +3902,7 @@ static int Net_New_Dialog() {
     Set the number of players in this game, and my ID
     .....................................................................*/
     TheSession().player_count() =
-        static_cast<int>(TheNetwork().players().Count()) + 1;
+        static_cast<int>(std::ssize(TheNetwork().players())) + 1;
     TheSession().local_id() = static_cast<unsigned char>(
         Build_MPlayerID(TheSession().color_index(), TheSession().house()));
 
@@ -3931,10 +3928,11 @@ static int Net_New_Dialog() {
                     sizeof(GlobalPacketType));
     TheNetwork().global_packet().Command = NET_GO;
     TheNetwork().global_packet().ResponseTime.OneWay = TheSession().max_ahead();
-    for (i = 0; i < TheNetwork().players().Count(); i++) {
+    for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheNetwork().global_packet()),
-          sizeof(GlobalPacketType), 1, &TheNetwork().players().at(i)->Address);
+          sizeof(GlobalPacketType), 1,
+          &TheNetwork().players().at(base::ToSize(i))->Address);
       /*..................................................................
       Wait for all the ACK's to come in.
       ..................................................................*/
@@ -3949,16 +3947,16 @@ static int Net_New_Dialog() {
     will let us extract any player's color & house at any time.
     Fill in 'tmp_id' while we're doing this.
     .....................................................................*/
-    for (i = 0; i < TheNetwork().players().Count(); i++) {
-      id = static_cast<unsigned char>(
-          Build_MPlayerID(TheNetwork().players().at(i)->Player.Color,
-                          TheNetwork().players().at(i)->Player.House));
+    for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
+      id = static_cast<unsigned char>(Build_MPlayerID(
+          TheNetwork().players().at(base::ToSize(i))->Player.Color,
+          TheNetwork().players().at(base::ToSize(i))->Player.House));
 
       base::At(tmp_id, i) = id;
 
       TheNetwork().ipx().Create_Connection(
-          id, TheNetwork().players().at(i)->Name,
-          &TheNetwork().players().at(i)->Address);
+          id, TheNetwork().players().at(base::ToSize(i))->Name,
+          &TheNetwork().players().at(base::ToSize(i))->Address);
     }
     base::At(tmp_id, i) = TheSession().local_id();
 
@@ -4083,10 +4081,10 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
     .....................................................................*/
     int found = 0;
     int resend = 0;
-    for (int i = 0; i < TheNetwork().players().Count(); i++) {
-      if ((std::string_view(TheNetwork().players().at(i)->Name) ==
+    for (int i = 0; i < std::ssize(TheNetwork().players()); i++) {
+      if ((std::string_view(TheNetwork().players().at(base::ToSize(i))->Name) ==
            TheNetwork().global_packet().Name)) {
-        if (TheNetwork().players().at(i)->Address !=
+        if (TheNetwork().players().at(base::ToSize(i))->Address !=
             TheNetwork().global_address()) {
           found = 1;
         } else {
@@ -4104,7 +4102,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
     Reject if name is a duplicate, or if there are too many players:
     .....................................................................*/
     if (found ||
-        (TheNetwork().players().Count() >= TheSession().max_players() - 1 &&
+        (std::ssize(TheNetwork().players()) >= TheSession().max_players() - 1 &&
          !resend)) {
       base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                       sizeof(GlobalPacketType));
@@ -4122,11 +4120,13 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       /*..................................................................
       Add node to the Vector list
       ..................................................................*/
-      auto* who = new NodeNameType;  // node to add to Players Vector
+      auto* who = TheNetwork()
+                      .players()
+                      .emplace_back(std::make_unique<NodeNameType>())
+                      .get();  // node to add to Players Vector
       base::SafeCopy(who->Name, TheNetwork().global_packet().Name);
       who->Address = TheNetwork().global_address();
       who->Player.House = TheNetwork().global_packet().PlayerInfo.House;
-      TheNetwork().players().Add(who);
 
       /*..................................................................
       Set player's color; if requested color isn't used, give it to him;
@@ -4187,13 +4187,13 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
     NET_SIGN_OFF: Another system is signing off: search for that system in
     the player list, & remove it if found
     ------------------------------------------------------------------------*/
-    for (int i = 0; i < TheNetwork().players().Count(); i++) {
+    for (int i = 0; i < std::ssize(TheNetwork().players()); i++) {
       /*
       ....................... Name found; remove it ......................
       */
-      if ((std::string_view(TheNetwork().players().at(i)->Name) ==
+      if ((std::string_view(TheNetwork().players().at(base::ToSize(i))->Name) ==
            TheNetwork().global_packet().Name) &&
-          TheNetwork().players().at(i)->Address ==
+          TheNetwork().players().at(base::ToSize(i))->Address ==
               TheNetwork().global_address()) {
         /*...............................................................
         Remove from the list box
@@ -4203,11 +4203,12 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
         /*...............................................................
         Mark his color as available
         ...............................................................*/
-        base::At(color_used, TheNetwork().players().at(i)->Player.Color) = 0;
+        base::At(color_used,
+                 TheNetwork().players().at(base::ToSize(i))->Player.Color) = 0;
         /*...............................................................
         Delete from the Vector list
         ...............................................................*/
-        TheNetwork().players().Delete(TheNetwork().players().at(i));
+        TheNetwork().players().erase(TheNetwork().players().begin() + i);
         break;
       }
     }
@@ -4607,7 +4608,7 @@ static int Net_Fake_New_Dialog() {
 
   char a_buffer[128];
   absl::SNPrintF(a_buffer, sizeof(a_buffer), "Number of players:%d",
-                 static_cast<int>(TheNetwork().players().Count()));
+                 static_cast<int>(std::ssize(TheNetwork().players())));
   CCDebugString(a_buffer);
 
 #ifdef VIRTUAL_SUBNET_SERVER
@@ -4718,11 +4719,11 @@ static int Net_Fake_New_Dialog() {
         only way I have of crossing the bridge is to send a packet
         directly to him.)
         ...............................................................*/
-        for (i = 0; i < TheNetwork().players().Count(); i++) {
+        for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
           TheNetwork().ipx().Send_Global_Message(
               base::ObjectBytes(TheNetwork().global_packet()),
               sizeof(GlobalPacketType), 1,
-              &TheNetwork().players().at(i)->Address);
+              &TheNetwork().players().at(base::ToSize(i))->Address);
           TheNetwork().ipx().Service();
         }
         while (TheNetwork().ipx().Global_Num_Send() > 0 &&
@@ -4744,10 +4745,10 @@ static int Net_Fake_New_Dialog() {
       ------------------------------------------------------------------*/
       default:
 #ifdef VIRTUAL_SUBNET_SERVER
-        if (TheNetwork().players().Count() ==
+        if (std::ssize(TheNetwork().players()) ==
             TheNetwork().internet_max_players() - 1) {
 #else   // VIRTUAL_SUBNET_SERVER
-        if (TheNetwork().players().Count() > 0) {
+        if (std::ssize(TheNetwork().players()) > 0) {
 #endif  // VIRTUAL_SUBNET_SERVER
 
           // char ddkks[128];
@@ -4785,7 +4786,7 @@ static int Net_Fake_New_Dialog() {
           /*...............................................................
           If there are at least 2 players, go ahead & play; error otherwise
           ...............................................................*/
-          if (TheSession().solo() || TheNetwork().players().Count() > 0) {
+          if (TheSession().solo() || std::ssize(TheNetwork().players()) > 0) {
             rc = 1;
             process = false;
           } else {
@@ -4813,7 +4814,7 @@ static int Net_Fake_New_Dialog() {
     If our Transmit flag is set, we need to send out a game option packet
     ---------------------------------------------------------------------*/
     if (transmit) {
-      for (i = 0; i < TheNetwork().players().Count(); i++) {
+      for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
         base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 
@@ -4843,7 +4844,7 @@ static int Net_Fake_New_Dialog() {
         TheNetwork().ipx().Send_Global_Message(
             base::ObjectBytes(TheNetwork().global_packet()),
             sizeof(GlobalPacketType), 1,
-            &TheNetwork().players().at(i)->Address);
+            &TheNetwork().players().at(base::ToSize(i))->Address);
       }
       transmit = 0;
     }
@@ -4856,11 +4857,11 @@ static int Net_Fake_New_Dialog() {
       base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                       sizeof(GlobalPacketType));
       TheNetwork().global_packet().Command = NET_PING;
-      for (i = 0; i < TheNetwork().players().Count(); i++) {
+      for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
         TheNetwork().ipx().Send_Global_Message(
             base::ObjectBytes(TheNetwork().global_packet()),
             sizeof(GlobalPacketType), 1,
-            &TheNetwork().players().at(i)->Address);
+            &TheNetwork().players().at(base::ToSize(i))->Address);
       }
       ping_timer = SystemTicks();
     }
@@ -4888,7 +4889,7 @@ static int Net_Fake_New_Dialog() {
     Set the number of players in this game, and my ID
     .....................................................................*/
     TheSession().player_count() =
-        static_cast<int>(TheNetwork().players().Count()) + 1;
+        static_cast<int>(std::ssize(TheNetwork().players())) + 1;
     TheSession().local_id() = static_cast<unsigned char>(
         Build_MPlayerID(TheSession().color_index(), TheSession().house()));
 
@@ -4918,17 +4919,18 @@ static int Net_Fake_New_Dialog() {
                     sizeof(GlobalPacketType));
     TheNetwork().global_packet().Command = NET_GO;
     TheNetwork().global_packet().ResponseTime.OneWay = TheSession().max_ahead();
-    for (i = 0; i < TheNetwork().players().Count(); i++) {
+    for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
       char flopbuf[128];
-      absl::SNPrintF(
-          flopbuf, sizeof(flopbuf), "Sending 'GO' packet to address %d\n",
-          base::ReadUnaligned<uint16_t>(
-              base::ObjectBytes(TheNetwork().players().at(i)->Address)));
+      absl::SNPrintF(flopbuf, sizeof(flopbuf),
+                     "Sending 'GO' packet to address %d\n",
+                     base::ReadUnaligned<uint16_t>(base::ObjectBytes(
+                         TheNetwork().players().at(base::ToSize(i))->Address)));
       CCDebugString(flopbuf);
 
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheNetwork().global_packet()),
-          sizeof(GlobalPacketType), 1, &TheNetwork().players().at(i)->Address);
+          sizeof(GlobalPacketType), 1,
+          &TheNetwork().players().at(base::ToSize(i))->Address);
       /*..................................................................
       Wait for all the ACK's to come in.
       ..................................................................*/
@@ -4943,16 +4945,16 @@ static int Net_Fake_New_Dialog() {
     will let us extract any player's color & house at any time.
     Fill in 'tmp_id' while we're doing this.
     .....................................................................*/
-    for (i = 0; i < TheNetwork().players().Count(); i++) {
-      id = static_cast<unsigned char>(
-          Build_MPlayerID(TheNetwork().players().at(i)->Player.Color,
-                          TheNetwork().players().at(i)->Player.House));
+    for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
+      id = static_cast<unsigned char>(Build_MPlayerID(
+          TheNetwork().players().at(base::ToSize(i))->Player.Color,
+          TheNetwork().players().at(base::ToSize(i))->Player.House));
 
       base::At(tmp_id, i) = id;
 
       TheNetwork().ipx().Create_Connection(
-          id, TheNetwork().players().at(i)->Name,
-          &TheNetwork().players().at(i)->Address);
+          id, TheNetwork().players().at(base::ToSize(i))->Name,
+          &TheNetwork().players().at(base::ToSize(i))->Address);
     }
 
 #ifdef VIRTUAL_SUBNET_SERVER
@@ -5207,7 +5209,7 @@ static int Net_Fake_Join_Dialog() {
 
   char a_buffer[128];
   absl::SNPrintF(a_buffer, sizeof(a_buffer), "C&C95 - Number of players:%d\n",
-                 static_cast<int>(TheNetwork().players().Count()));
+                 static_cast<int>(std::ssize(TheNetwork().players())));
   CCDebugString(a_buffer);
 
   CCDebugString("C&C95 - About to reveal mouse\n");
@@ -5303,15 +5305,13 @@ static int Net_Fake_Join_Dialog() {
           //
           // Remove myself from the Players list
           //
-          who = TheNetwork().players().at(0);
-          TheNetwork().players().Delete(0);
-          delete who;
+          TheNetwork().players().erase(TheNetwork().players().begin());
 
-          for (i = 0; i < TheNetwork().players().Count(); i++) {
+          for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
             TheNetwork().ipx().Send_Global_Message(
                 base::ObjectBytes(TheNetwork().global_packet()),
                 sizeof(GlobalPacketType), 1,
-                &TheNetwork().players().at(i)->Address);
+                &TheNetwork().players().at(base::ToSize(i))->Address);
             TheNetwork().ipx().Service();
           }
         }
@@ -5355,7 +5355,8 @@ static int Net_Fake_Join_Dialog() {
       mode.  (Request_To_Join fills in MPlayerName with my namebuf.)
       ------------------------------------------------------------------*/
       default:
-        if (joinstate == JOIN_NOTHING && TheNetwork().games().Count() != 0) {
+        if (joinstate == JOIN_NOTHING &&
+            std::ssize(TheNetwork().games()) != 0) {
           gamelist.Set_Selected_Index(0);
           join_index = gamelist.Current_Index();
           if (Request_To_Join(TheSession().player_name(), join_index,
@@ -5407,13 +5408,15 @@ static int Net_Fake_Join_Dialog() {
               item, static_cast<char>(base::At(TheSession().text_colors(),
                                                TheSession().color_index())));
 
-          who = new NodeNameType;
+          who = TheNetwork()
+                    .players()
+                    .emplace_back(std::make_unique<NodeNameType>())
+                    .get();
           base::SafeCopy(who->Name, TheSession().player_name());
           who->Address = IPXAddressClass();
           who->Player.House = TheSession().house();
           who->Player.Color =
               static_cast<unsigned char>(TheSession().color_index());
-          TheNetwork().players().Add(who);
 
           Send_Join_Queries(game_index, 0, 1);
         } else {
@@ -5430,10 +5433,8 @@ static int Net_Fake_Join_Dialog() {
             //
             // Remove myself from the Players list
             //
-            if (TheNetwork().players().Count()) {
-              who = TheNetwork().players().at(0);
-              TheNetwork().players().Delete(0);
-              delete who;
+            if (std::ssize(TheNetwork().players())) {
+              TheNetwork().players().erase(TheNetwork().players().begin());
             }
           }
         }
@@ -5484,9 +5485,11 @@ static int Net_Fake_Join_Dialog() {
     - Clear the player list
     - Send queries for the new selected game, if there is one
     ---------------------------------------------------------------------*/
-    for (i = 0; i < TheNetwork().games().Count(); i++) {
-      if (SystemTicks() - TheNetwork().games().at(i)->Game.LastTime > 400) {
-        TheNetwork().games().Delete(TheNetwork().games().at(i));
+    for (i = 0; i < std::ssize(TheNetwork().games()); i++) {
+      if (SystemTicks() -
+              TheNetwork().games().at(base::ToSize(i))->Game.LastTime >
+          400) {
+        TheNetwork().games().erase(TheNetwork().games().begin() + i);
         gamelist.Remove_Item(i);
         if (i <= game_index) {
           gamelist.Flag_To_Redraw();
@@ -5537,9 +5540,7 @@ static int Net_Fake_Join_Dialog() {
       //
       // Remove myself from the Players list
       //
-      who = TheNetwork().players().at(0);
-      TheNetwork().players().Delete(0);
-      delete who;
+      TheNetwork().players().erase(TheNetwork().players().begin());
 
       base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                       sizeof(GlobalPacketType));
@@ -5548,11 +5549,11 @@ static int Net_Fake_Join_Dialog() {
       base::SafeCopy(TheNetwork().global_packet().Name,
                      TheSession().player_name());
 
-      for (i = 0; i < TheNetwork().players().Count(); i++) {
+      for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
         TheNetwork().ipx().Send_Global_Message(
             base::ObjectBytes(TheNetwork().global_packet()),
             sizeof(GlobalPacketType), 1,
-            &TheNetwork().players().at(i)->Address);
+            &TheNetwork().players().at(base::ToSize(i))->Address);
         TheNetwork().ipx().Service();
       }
 
@@ -5583,7 +5584,7 @@ static int Net_Fake_Join_Dialog() {
       Set the number of players in this game, and my ID
       ..................................................................*/
       TheSession().player_count() =
-          static_cast<int>(TheNetwork().players().Count());
+          static_cast<int>(std::ssize(TheNetwork().players()));
       TheSession().local_id() = static_cast<unsigned char>(
           Build_MPlayerID(TheSession().color_index(), TheSession().house()));
 
@@ -5601,21 +5602,21 @@ static int Net_Fake_Join_Dialog() {
       player's color & house at any time.  Fill in 'tmp_id' while we're
       doing this.
       ..................................................................*/
-      for (i = 0; i < TheNetwork().players().Count(); i++) {
+      for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
         /*...............................................................
         Only create the connection if it's not myself!
         ...............................................................*/
         if (std::string_view(TheSession().player_name()) !=
-            TheNetwork().players().at(i)->Name) {
-          id = static_cast<unsigned char>(
-              Build_MPlayerID(TheNetwork().players().at(i)->Player.Color,
-                              TheNetwork().players().at(i)->Player.House));
+            TheNetwork().players().at(base::ToSize(i))->Name) {
+          id = static_cast<unsigned char>(Build_MPlayerID(
+              TheNetwork().players().at(base::ToSize(i))->Player.Color,
+              TheNetwork().players().at(base::ToSize(i))->Player.House));
 
           base::At(tmp_id, i) = id;
 
           TheNetwork().ipx().Create_Connection(
-              id, TheNetwork().players().at(i)->Name,
-              &TheNetwork().players().at(i)->Address);
+              id, TheNetwork().players().at(base::ToSize(i))->Name,
+              &TheNetwork().players().at(base::ToSize(i))->Address);
         } else {
           base::At(tmp_id, i) = TheSession().local_id();
         }

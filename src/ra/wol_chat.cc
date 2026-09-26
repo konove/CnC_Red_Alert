@@ -290,7 +290,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   RankAMBtn.ReflectButtonState = true;
 
   //	Build the button list.
-  GadgetClass* commands = pWO->pShpBtnDiscon;  // button list
+  GadgetClass* commands = pWO->pShpBtnDiscon.get();  // button list
   pWO->pShpBtnLeave->Add_Tail(*commands);
   pWO->pShpBtnRefresh->Add_Tail(*commands);
   pWO->pShpBtnSquelch->Add_Tail(*commands);
@@ -323,24 +323,24 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   ToolTipClass* pToolTipHitLast =
       nullptr;  //	ToolTip the mouse was last over, or null.
 
-  ToolTipClass* pToolTip = pToolTipHead = pWO->pTTipDiscon;
-  pToolTip->next = pWO->pTTipLeave;
+  ToolTipClass* pToolTip = pToolTipHead = pWO->pTTipDiscon.get();
+  pToolTip->next = pWO->pTTipLeave.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipRefresh;
+  pToolTip->next = pWO->pTTipRefresh.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipSquelch;
+  pToolTip->next = pWO->pTTipSquelch.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipBan;
+  pToolTip->next = pWO->pTTipBan.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipKick;
+  pToolTip->next = pWO->pTTipKick.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipFindpage;
+  pToolTip->next = pWO->pTTipFindpage.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipOptions;
+  pToolTip->next = pWO->pTTipOptions.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipLadder;
+  pToolTip->next = pWO->pTTipLadder.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipHelp;
+  pToolTip->next = pWO->pTTipHelp.get();
   pToolTip = pToolTip->next;
   ToolTipClass TTipChanExpand(&ExpandChanBtn, TXT_WOL_TTIP_EXPANDLIST,
                               ExpandChanBtn.X + 8, ExpandChanBtn.Y - 9, true);
@@ -1226,30 +1226,30 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     switch (hRes) {
       case CHAT_E_BADCHANNELPASSWORD: {
                                     // call, for god's sake.
-        auto* pEditDlg = new SimpleEditDlgClass(
-            [] {
-              if (config::kIsEnglish) {
-                return 300;
-              }
-              if (config::kIsGerman) {
-                return 400;
-              }
-              return 500;
-            }(),
-            TXT_WOL_JOINPRIVATETITLE, TXT_WOL_JOINPRIVATEPROMPT,
-            WOL_CHANKEY_LEN_MAX);
-        pWO->bPump_In_Call_Back = true;
-        if (std::string_view(pEditDlg->Show()) != Text_String(TXT_OK) ||
-            !*pEditDlg->szEdit) {
-          pWO->bPump_In_Call_Back = false;
-          delete pEditDlg;
-          bKeepTrying = false;
-          break;
-        }
+                                    SimpleEditDlgClass EditDlg(
+                                        [] {
+                                          if (config::kIsEnglish) {
+                                            return 300;
+                                          }
+                                          if (config::kIsGerman) {
+                                            return 400;
+                                          }
+                                          return 500;
+                                        }(),
+                                        TXT_WOL_JOINPRIVATETITLE,
+                                        TXT_WOL_JOINPRIVATEPROMPT,
+                                        WOL_CHANKEY_LEN_MAX);
+                                    pWO->bPump_In_Call_Back = true;
+                                    if (std::string_view(EditDlg.Show()) !=
+                                            Text_String(TXT_OK) ||
+                                        !*EditDlg.szEdit) {
+                                      pWO->bPump_In_Call_Back = false;
+                                      bKeepTrying = false;
+                                      break;
+                                    }
         pWO->bPump_In_Call_Back = false;
-        base::SafeCopy(WolTextBuffer(pChannel->key), pEditDlg->szEdit);
-        base::SafeCopy(szSuccessfulPassword, pEditDlg->szEdit);
-        delete pEditDlg;
+        base::SafeCopy(WolTextBuffer(pChannel->key), EditDlg.szEdit);
+        base::SafeCopy(szSuccessfulPassword, EditDlg.szEdit);
         break;
       }
       case CHAT_E_TIMEOUT:
@@ -1343,7 +1343,6 @@ bool ExitChatChannel(WolapiObject* pWO) {
 //***********************************************************************************************
 // void CreateChatChannel( WolapiObject* pWO, bool bPrivate )
 void CreateChatChannel(WolapiObject* pWO) {
-  SimpleEditDlgClass* pEditDlg = nullptr;
   /*	if( !bPrivate )
           {
                   pEditDlg = new SimpleEditDlgClass( 300,
@@ -1361,28 +1360,34 @@ void CreateChatChannel(WolapiObject* pWO) {
   */
   {
                                 // call, for god's sake.
-    pEditDlg = new SimpleEditDlgClass(
-        350, TXT_WOL_CREATECHANNELTITLE, TXT_WOL_CREATECHANNELPROMPT,
-        WOL_CHANNAME_LEN_MAX, TXT_WOL_OPTIONALPASSPROMPT, WOL_CHANKEY_LEN_MAX);
-    pWO->bPump_In_Call_Back = true;
-    if (std::string_view(pEditDlg->Show()) == Text_String(TXT_OK) &&
-        *pEditDlg->szEdit) {
-      pWO->bPump_In_Call_Back = false;
-      if (*pEditDlg->szEdit2) {
-        if (pWO->ChannelCreate(pEditDlg->szEdit, pEditDlg->szEdit2)) {
-          pWO->OnEnteringChatChannel(pEditDlg->szEdit, true, -1);
-        }
-      } else {
-        //	Create public channel.
-        if (pWO->ChannelCreate(pEditDlg->szEdit, nullptr)) {
-          pWO->OnEnteringChatChannel(pEditDlg->szEdit, true, -1);
-        }
-      }
-    }
+                                SimpleEditDlgClass EditDlg(
+                                    350, TXT_WOL_CREATECHANNELTITLE,
+                                    TXT_WOL_CREATECHANNELPROMPT,
+                                    WOL_CHANNAME_LEN_MAX,
+                                    TXT_WOL_OPTIONALPASSPROMPT,
+                                    WOL_CHANKEY_LEN_MAX);
+                                pWO->bPump_In_Call_Back = true;
+                                if (std::string_view(EditDlg.Show()) ==
+                                        Text_String(TXT_OK) &&
+                                    *EditDlg.szEdit) {
+                                  pWO->bPump_In_Call_Back = false;
+                                  if (*EditDlg.szEdit2) {
+                                    if (pWO->ChannelCreate(EditDlg.szEdit,
+                                                           EditDlg.szEdit2)) {
+                                      pWO->OnEnteringChatChannel(EditDlg.szEdit,
+                                                                 true, -1);
+                                    }
+                                  } else {
+                                    //	Create public channel.
+                                    if (pWO->ChannelCreate(EditDlg.szEdit,
+                                                           nullptr)) {
+                                      pWO->OnEnteringChatChannel(EditDlg.szEdit,
+                                                                 true, -1);
+                                    }
+                                  }
+                                }
     pWO->bPump_In_Call_Back = false;
   }
-
-  delete pEditDlg;
 }
 
 //***********************************************************************************************

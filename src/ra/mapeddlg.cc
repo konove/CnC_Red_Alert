@@ -50,6 +50,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
+#include <utility>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -89,7 +91,6 @@
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/mapedit.h"
-#include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/object.h"
 #include "ra/object_heaps.h"
@@ -109,7 +110,6 @@
 #include "ra/tracker.h"
 #include "ra/trigtype.h"
 #include "ra/type.h"
-#include "ra/vector_dynamic.h"
 #include "ra/world.h"
 
 using enum engine::window::KeyNumber;
@@ -327,13 +327,13 @@ int MapEditClass::Load_Scenario() {
   *routine *	  into working properly.
   */
   if (player == SCEN_PLAYER_MPLAYER) {
-    Clear_Vector(&TheSession().Players);
+    TheSession().Players.Clear();
 
-    auto* who = new NodeNameType;  // node to add to Players
+    auto who = std::make_unique<NodeNameType>();  // node to add to Players
     base::SafeCopy(who->Name, TheSession().Handle);
     who->Player.House = TheSession().House;
     who->Player.Color = TheSession().ColorIdx;
-    TheSession().Players.Add(who);
+    TheSession().Players.Add(std::move(who));
 
     TheSession().NumPlayers = 1;
     LastHouse = HOUSE_MULTI1;

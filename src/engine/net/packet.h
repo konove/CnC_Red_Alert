@@ -45,54 +45,51 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "engine/net/field.h"
 
 class PacketClass {
  public:
-  explicit PacketClass(int16_t id = 0) : Size(0), ID(id), Head(nullptr) {}
+  explicit PacketClass(int16_t id = 0) : Size(0), ID(id) {}
   explicit PacketClass(std::span<const std::byte> curbuf);
-  ~PacketClass();
+  ~PacketClass() = default;
 
   PacketClass(const PacketClass&) = delete;
   PacketClass& operator=(const PacketClass&) = delete;
   PacketClass(PacketClass&&) = delete;
   PacketClass& operator=(PacketClass&&) = delete;
 
-  //
-  // This function allows us to add a field to the start of the list.  As the
-  // field is just
-  //   a big linked list it makes no difference which end we add a member to.
-  //
-  void Add_Field(FieldClass* field);
+  // Adds a field to the packet. A later field comes first in the packet and
+  // hides an earlier one of the same name from Find_Field.
+  void Add_Field(FieldClass field);
 
   //
-  // These convenience functions allow us to add a field directly to the list
-  // without having to worry about newing one first.
+  // These convenience functions construct the field from its name and value.
   //
   void Add_Field(const char* field, char data) {
-    Add_Field(new FieldClass(field, data));
+    Add_Field(FieldClass(field, data));
   }
   void Add_Field(const char* field, unsigned char data) {
-    Add_Field(new FieldClass(field, data));
+    Add_Field(FieldClass(field, data));
   }
   void Add_Field(const char* field, int16_t data) {
-    Add_Field(new FieldClass(field, data));
+    Add_Field(FieldClass(field, data));
   }
   void Add_Field(const char* field, uint16_t data) {
-    Add_Field(new FieldClass(field, data));
+    Add_Field(FieldClass(field, data));
   }
   void Add_Field(const char* field, int32_t data) {
-    Add_Field(new FieldClass(field, data));
+    Add_Field(FieldClass(field, data));
   }
   void Add_Field(const char* field, uint32_t data) {
-    Add_Field(new FieldClass(field, data));
+    Add_Field(FieldClass(field, data));
   }
   void Add_Field(const char* field, const char* data) {
-    Add_Field(new FieldClass(field, data));
+    Add_Field(FieldClass(field, data));
   }
   void Add_Field(const char* field, std::span<const std::byte> data) {
-    Add_Field(new FieldClass(field, data));
+    Add_Field(FieldClass(field, data));
   }
 
   //
@@ -109,12 +106,14 @@ class PacketClass {
   bool Get_Field(const char* id, std::span<char> data);
   bool Get_Field(const char* id, std::span<std::byte> data, int& length);
 
-  char* Create_Comms_Packet(int& size);
+  // Serializes the packet for the wire: the 4-byte header (size, ID), then
+  // each field's header and data, padded to a multiple of 4 bytes.
+  [[nodiscard]] std::vector<char> Create_Comms_Packet();
 
  private:
   uint16_t Size;
   int16_t ID;
-  FieldClass* Head;
+  std::vector<FieldClass> Fields;  // In the order added; sent last first.
 };
 
 #endif  // CNC_RED_ALERT_ENGINE_NET_PACKET_H_

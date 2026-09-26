@@ -43,6 +43,7 @@
 #include <array>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <numeric>
 #include <span>
 #include <string_view>
@@ -678,7 +679,7 @@ void Map_Selection() {
     // UPDATE.MIX)
     switch (frame) {
       case 1:
-        Alloc_Object(new MultiStagePrintClass(
+        Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, Text_String(TXT_READING_IMAGE_DATA), 0, 10, _othergreenpal));
         break;
 
@@ -696,8 +697,8 @@ void Map_Selection() {
             2 * StringPixelWidth(score_font,
                                  Text_String(TXT_READING_IMAGE_DATA)),
             2 * (10 + 12), kTBlack);
-        Alloc_Object(
-            new MultiStagePrintClass(show, "ANALYZING", 0, 10, _othergreenpal));
+        Alloc_Object(std::make_unique<MultiStagePrintClass>(
+            show, "ANALYZING", 0, 10, _othergreenpal));
         break;
 
       case 33:
@@ -710,7 +711,7 @@ void Map_Selection() {
         show.text_page().view().FillRect(
             0, 20, 2 * StringPixelWidth(score_font, Text_String(TXT_ANALYZING)),
             2 * (10 + 12), kTBlack);
-        Alloc_Object(new MultiStagePrintClass(
+        Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, Text_String(TXT_ENHANCING_IMAGE_DATA), 0, 10,
             _othergreenpal));
         break;
@@ -729,7 +730,7 @@ void Map_Selection() {
             2 * StringPixelWidth(score_font,
                                  Text_String(TXT_ENHANCING_IMAGE_DATA)),
             2 * (10 + 12), kTBlack);
-        Alloc_Object(new MultiStagePrintClass(
+        Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, Text_String(TXT_ISOLATING_OPERATIONAL_THEATER), 0, 10,
             _othergreenpal));
         break;
@@ -748,13 +749,13 @@ void Map_Selection() {
             2 * StringPixelWidth(
                     score_font, Text_String(TXT_ISOLATING_OPERATIONAL_THEATER)),
             2 * (10 + 12), kTBlack);
-        Alloc_Object(new MultiStagePrintClass(
+        Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES), 0, 10,
             _othergreenpal));
         break;
 
       case 74:
-        Alloc_Object(new MultiStagePrintClass(
+        Alloc_Object(std::make_unique<MultiStagePrintClass>(
             show, Text_String(TXT_FOR_VISUAL_REFERENCE), 0, 22,
             _othergreenpal));
         break;
@@ -795,9 +796,9 @@ void Map_Selection() {
 
   Increase_Palette_Luminance(progresspalette, 30, 30, 30, 63);
 
-  auto* europe = new PixelBuffer(TheScreen().sys_mem_page().width(),
-                                 TheScreen().sys_mem_page().height());
-  TheScreen().sys_mem_page().view().BlitTo(europe->view());
+  PixelBuffer europe(TheScreen().sys_mem_page().width(),
+                     TheScreen().sys_mem_page().height());
+  TheScreen().sys_mem_page().view().BlitTo(europe.view());
 
   /*
   ** Now show territories as they existed last scenario
@@ -819,9 +820,11 @@ void Map_Selection() {
                                            20 * 6, 8);
   engine::audio::TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
   if (house == HOUSE_GOOD) {
-    Alloc_Object(new ScorePrintClass(show, TXT_MAP_GDI, 0, 2, greenpal));
+    Alloc_Object(
+        std::make_unique<ScorePrintClass>(show, TXT_MAP_GDI, 0, 2, greenpal));
   } else {
-    Alloc_Object(new ScorePrintClass(show, TXT_MAP_NOD, xcoord, 2, greenpal));
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_NOD, xcoord, 2,
+                                                   greenpal));
   }
   Call_Back_Delay(show, 60);
 
@@ -856,10 +859,11 @@ void Map_Selection() {
     engine::audio::TheAudio().Play(text2, 255,
                                    TheOptions().Normalize_Sound(90));
     if (house == HOUSE_GOOD) {
-      Alloc_Object(new ScorePrintClass(show, TXT_MAP_NOD, 0, 12, greenpal));
+      Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_NOD, 0, 12,
+                                                     greenpal));
     } else {
-      Alloc_Object(
-          new ScorePrintClass(show, TXT_MAP_GDI, xcoord, 12, greenpal));
+      Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_GDI, xcoord,
+                                                     12, greenpal));
     }
     Call_Back_Delay(show, 65);
   }
@@ -893,13 +897,15 @@ void Map_Selection() {
   ** Now print the text over the page
   */
   engine::audio::TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
-  Alloc_Object(new ScorePrintClass(show, TXT_MAP_LOCATE, 0, 160, greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_LOCATE, 0, 160,
+                                                 greenpal));
   Call_Back_Delay(show, 20);
-  Alloc_Object(
-      new ScorePrintClass(show, TXT_MAP_NEXT_MISSION, 0, 170, greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_NEXT_MISSION, 0,
+                                                 170, greenpal));
 #if (defined(GERMAN) || defined(FRENCH))
   Call_Back_Delay(show, 20);
-  Alloc_Object(new ScorePrintClass(show, TXT_MAP_NEXT_MISS2, 0, 180, greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_NEXT_MISS2, 0,
+                                                 180, greenpal));
 #endif
   Call_Back_Delay(show, 50);
 
@@ -957,17 +963,17 @@ void Map_Selection() {
       switch (frame) {
         case 23:
           if (house == HOUSE_GOOD) {
-            Alloc_Object(new MultiStagePrintClass(
+            Alloc_Object(std::make_unique<MultiStagePrintClass>(
                 show, Text_String(TXT_ENHANCING_IMAGE), 0, 10, _othergreenpal));
           } else {
 #ifdef FRENCH
-            Alloc_Object(
-                new MultiStagePrintClass(show, Text_String(TXT_ENHANCING_IMAGE),
-                                         180, 10, _othergreenpal));
+            Alloc_Object(std::make_unique<MultiStagePrintClass>(
+                show, Text_String(TXT_ENHANCING_IMAGE), 180, 10,
+                _othergreenpal));
 #else
-            Alloc_Object(
-                new MultiStagePrintClass(show, Text_String(TXT_ENHANCING_IMAGE),
-                                         210, 10, _othergreenpal));
+            Alloc_Object(std::make_unique<MultiStagePrintClass>(
+                show, Text_String(TXT_ENHANCING_IMAGE), 210, 10,
+                _othergreenpal));
 #endif  //(FRENCH)
           }
           // Frame 35 blacks out the region this frame starts printing into,
@@ -1077,11 +1083,11 @@ void Map_Selection() {
   }
 
   engine::audio::TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
-  Alloc_Object(
-      new ScorePrintClass(show, TXT_MAP_SELECT, attackxcoord, 160, greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_SELECT,
+                                                 attackxcoord, 160, greenpal));
   Cycle_Call_Back_Delay(show, 16, progresspalette);
-  Alloc_Object(new ScorePrintClass(show, TXT_MAP_TO_ATTACK, attackxcoord, 170,
-                                   greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_TO_ATTACK,
+                                                 attackxcoord, 170, greenpal));
   Cycle_Call_Back_Delay(show, 24, progresspalette);
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
@@ -1162,7 +1168,7 @@ void Map_Selection() {
     ** Draw the country's shape in non-fading colors
     */
     PixelView& view = TheScreen().sys_mem_page().view();
-    europe->view().BlitTo(view);
+    europe.view().BlitTo(view);
     const int shape =
         base::At(base::At(base::At(CountryArray, scenario).CountryShape,
                           static_cast<int>(TheWorld().scen_dir())),
@@ -1229,7 +1235,6 @@ void Map_Selection() {
 
   TheTheme().Queue_Song(THEME_NONE);
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, nullptr);
-  delete europe;
 
 }
 
@@ -1297,7 +1302,7 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
 #endif
   ypos = ypos > 100 ? 8 : 104 - 6;
   if (ThePlayer()->Class->House == HOUSE_GOOD) {
-    Alloc_Object(new ScorePrintClass(
+    Alloc_Object(std::make_unique<ScorePrintClass>(
         show, base::At(_countryname, base::At(GDIStats, country).nameindex),
         xpos, ypos, greenpal));
     Call_Back_Delay(
@@ -1309,8 +1314,8 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
                   3);
     ypos += 16;
     for (index = 0; index < 7; index++) {
-      Alloc_Object(new ScorePrintClass(show, base::At(_gdistatnames, index),
-                                       xpos, ypos, greenpal));
+      Alloc_Object(std::make_unique<ScorePrintClass>(
+          show, base::At(_gdistatnames, index), xpos, ypos, greenpal));
       Call_Back_Delay(
           show,
           static_cast<int>(
@@ -1323,33 +1328,33 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
                        .size()));
       switch (index) {
         case 0:
-          Alloc_Object(new ScorePrintClass(
+          Alloc_Object(std::make_unique<ScorePrintClass>(
               show, base::At(GDIStats, country).pop, newx, ypos, greenpal));
           break;
         case 1:
-          Alloc_Object(new ScorePrintClass(
+          Alloc_Object(std::make_unique<ScorePrintClass>(
               show, base::At(GDIStats, country).area, newx, ypos, greenpal));
           break;
         case 2:
-          Alloc_Object(new ScorePrintClass(
+          Alloc_Object(std::make_unique<ScorePrintClass>(
               show, base::At(GDIStats, country).capital, newx, ypos, greenpal));
           break;
         case 3:
-          Alloc_Object(new ScorePrintClass(
+          Alloc_Object(std::make_unique<ScorePrintClass>(
               show, base::At(_govtnames, base::At(GDIStats, country).govt),
               newx, ypos, greenpal));
           break;
         case 4:
-          Alloc_Object(new ScorePrintClass(
+          Alloc_Object(std::make_unique<ScorePrintClass>(
               show, base::At(GDIStats, country).gdp, newx, ypos, greenpal));
           break;
         case 5:
-          Alloc_Object(new ScorePrintClass(show,
-                                           base::At(GDIStats, country).conflict,
-                                           newx, ypos, greenpal));
+          Alloc_Object(std::make_unique<ScorePrintClass>(
+              show, base::At(GDIStats, country).conflict, newx, ypos,
+              greenpal));
           break;
         case 6:
-          Alloc_Object(new ScorePrintClass(
+          Alloc_Object(std::make_unique<ScorePrintClass>(
               show, base::At(_armynames, base::At(GDIStats, country).military),
               newx, ypos, greenpal));
           break;
@@ -1368,7 +1373,7 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
     }
     country++;
 
-    Alloc_Object(new ScorePrintClass(
+    Alloc_Object(std::make_unique<ScorePrintClass>(
         show, base::At(_countryname, base::At(NodStats, country).nameindex),
         xpos, ypos, greenpal));
     Call_Back_Delay(
@@ -1380,8 +1385,8 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
                   3);
     ypos += 16;
     for (index = 0; index < 9; index++) {
-      Alloc_Object(new ScorePrintClass(show, base::At(_nodstatnames, index),
-                                       xpos, ypos, greenpal));
+      Alloc_Object(std::make_unique<ScorePrintClass>(
+          show, base::At(_nodstatnames, index), xpos, ypos, greenpal));
       Call_Back_Delay(
           show,
           static_cast<int>(
@@ -1394,21 +1399,21 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
                        .size()));
       switch (index) {
         case 0:
-          Alloc_Object(new ScorePrintClass(
+          Alloc_Object(std::make_unique<ScorePrintClass>(
               show, base::At(NodStats, country).pop, newx, ypos, greenpal));
           break;
         case 1:
           absl::SNPrintF(_deststr, sizeof(_deststr), "%d%%",
                          base::At(NodStats, country).expendable);
-          Alloc_Object(
-              new ScorePrintClass(show, _deststr, newx, ypos, greenpal));
+          Alloc_Object(std::make_unique<ScorePrintClass>(show, _deststr, newx,
+                                                         ypos, greenpal));
           break;
         case 2:
-          Alloc_Object(new ScorePrintClass(
+          Alloc_Object(std::make_unique<ScorePrintClass>(
               show, base::At(NodStats, country).capital, newx, ypos, greenpal));
           break;
         case 3:
-          Alloc_Object(new ScorePrintClass(
+          Alloc_Object(std::make_unique<ScorePrintClass>(
               show, base::At(_govtnames, base::At(NodStats, country).govt),
               newx, ypos, greenpal));
           break;
@@ -1420,28 +1425,28 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
 #endif  // FIX_ME_LATER
           absl::SNPrintF(_deststr, sizeof(_deststr), "%d%%",
                          base::At(NodStats, country).corruptible);
-          Alloc_Object(
-              new ScorePrintClass(show, _deststr, newx, ypos, greenpal));
+          Alloc_Object(std::make_unique<ScorePrintClass>(show, _deststr, newx,
+                                                         ypos, greenpal));
           break;
         case 5:
-          Alloc_Object(new ScorePrintClass(
+          Alloc_Object(std::make_unique<ScorePrintClass>(
               show, base::At(NodStats, country).worth, newx, ypos, greenpal));
           break;
         case 6:
-          Alloc_Object(new ScorePrintClass(show,
-                                           base::At(NodStats, country).conflict,
-                                           newx, ypos, greenpal));
+          Alloc_Object(std::make_unique<ScorePrintClass>(
+              show, base::At(NodStats, country).conflict, newx, ypos,
+              greenpal));
           break;
         case 7:
-          Alloc_Object(new ScorePrintClass(
+          Alloc_Object(std::make_unique<ScorePrintClass>(
               show, base::At(_military, base::At(NodStats, country).military),
               newx, ypos, greenpal));
           break;
         case 8:
           absl::SNPrintF(_deststr, sizeof(_deststr), "%d%%",
                          base::At(NodStats, country).probability);
-          Alloc_Object(
-              new ScorePrintClass(show, _deststr, newx, ypos, greenpal));
+          Alloc_Object(std::make_unique<ScorePrintClass>(show, _deststr, newx,
+                                                         ypos, greenpal));
           break;
         default:
           break;
@@ -1451,17 +1456,17 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
   }
 
 #ifdef FRENCH
-  Alloc_Object(
-      new ScorePrintClass(show, TXT_MAP_CLICK2, 94, 193 - 6, greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_CLICK2, 94,
+                                                 193 - 6, greenpal));
 #else
-  Alloc_Object(new ScorePrintClass(show, TXT_MAP_CLICK2, 160 - (17 * 3),
-                                   193 - 6, greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_MAP_CLICK2, 160 - (17 * 3), 193 - 6, greenpal));
 #endif
 
   int done = 0;
   while (!done) {
     done = 1;
-    for (auto& ScoreObj : ScoreObjs) {
+    for (const auto& ScoreObj : ScoreObjs) {
       if (ScoreObj) {
         done = 0;
         Call_Back_Delay(show, 1);

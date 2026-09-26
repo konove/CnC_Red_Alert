@@ -39,6 +39,7 @@
 #ifndef CNC_RED_ALERT_RA_SESSION_H_
 #define CNC_RED_ALERT_RA_SESSION_H_
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <span>
@@ -58,9 +59,9 @@
 #include "ra/ipxaddr.h"
 #include "ra/msglist.h"
 #include "ra/object.h"
+#include "ra/owned_vector.h"
 #include "ra/special.h"
 #include "ra/target.h"
-#include "ra/vector_dynamic.h"
 #include "ra/version.h"
 
 //---------------------------------------------------------------------------
@@ -121,6 +122,9 @@
 #define PACKET_TIMING_TIMEOUT 40  // ticks b/w sending a timing packet
 // Max length of modem name in list box.
 #define MODEM_NAME_MAX (PORTBUF_MAX - 1)
+
+// One modem initialization string, nul-terminated.
+using InitString = std::array<char, INITSTRBUF_MAX>;
 
 //---------------------------------------------------------------------------
 // Enums
@@ -632,7 +636,7 @@ class SessionClass {
   //.....................................................................
   // List of scenarios & their file numbers
   //.....................................................................
-  DynamicVectorClass<MultiMission*> Scenarios;
+  OwnedVector<MultiMission> Scenarios;
   //		DynamicVectorClass <char *> Scenarios;
   //		DynamicVectorClass <int> Filenum;
 
@@ -704,9 +708,9 @@ class SessionClass {
   uint16_t GProductID{0};                     // product ID of sender
   char MetaPacket[MAX_IPX_PACKET_SIZE]{};     // packet building buffer
   int MetaSize;                               // size of MetaPacket
-  DynamicVectorClass<NodeNameType*> Games;    // list of games
-  DynamicVectorClass<NodeNameType*> Players;  // list of players
-  DynamicVectorClass<NodeNameType*> Chat;     // list of chat nodes
+  OwnedVector<NodeNameType> Games;            // list of games
+  OwnedVector<NodeNameType> Players;          // list of players
+  OwnedVector<NodeNameType> Chat;             // list of chat nodes
 
   //.....................................................................
   // Modem-specific variables
@@ -716,8 +720,8 @@ class SessionClass {
   SerialSettingsType SerialDefaults{};  // default serial settings
   ModemGameType ModemType{MODEM_NULL_HOST};  // caller or answerer?
 
-  DynamicVectorClass<PhoneEntryClass*> PhoneBook;
-  DynamicVectorClass<char*> InitStrings;
+  OwnedVector<PhoneEntryClass> PhoneBook;
+  OwnedVector<InitString> InitStrings;
   static base::EnumArray<DialMethodType, const char*,
                          static_cast<int>(DIAL_METHODS)>
       DialMethodCheck;

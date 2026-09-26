@@ -50,12 +50,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <span>
 #include <string_view>
+#include <system_error>
 #include <vector>
 
 #include "absl/strings/str_format.h"
@@ -342,9 +345,8 @@ int MapEditClass::Save_Scenario() {
   ------------------- Warning if scenario already exists -------------------
   */
   Set_Scenario_Name(fname, scen_num, player, dir, var);
-  FILE* fp = fopen(fname, "rb");
-  if (fp) {
-    fclose(fp);
+  std::error_code exists_error;
+  if (std::filesystem::exists(fname, exists_error)) {
     rc = CCMessageBox().Process("File exists. Replace?", TXT_YES, TXT_NO);
     TheScreen().hidden_page().view().Clear();
     Flag_To_Redraw(true);
@@ -2232,7 +2234,10 @@ int MapEditClass::Select_Trigger() {
   /*........................................................................
   Dialog variables:
   ........................................................................*/
-  char* trigtext[kTriggerMax + 1] = {};     // text for defined triggers
+  constexpr int kTrigTextSize = 255;
+  // Text for each defined trigger; the list box points into it.
+  std::vector<std::array<char, kTrigTextSize>> trigtext(
+      base::ToSize(kTriggerMax + 1));
   bool edit_trig = false;                   // true = user wants to edit
   bool new_trig = false;                    // true = user wants to new
   bool del_trig = false;                    // true = user wants to new
@@ -2285,13 +2290,9 @@ int MapEditClass::Select_Trigger() {
     .....................................................................*/
     // trigtext[i] = (char *)HidPage.buffer()->Get_Buffer() + 60 *
     // i;
-    constexpr int kTrigTextSize = 255;
-    base::At(trigtext, i) = new char[kTrigTextSize];
-    // The allocation immediately above has exactly kTrigTextSize bytes.
-    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    const std::span<char> trigger_text(base::At(trigtext, i), kTrigTextSize);
+    const std::span<char> trigger_text(trigtext.at(base::ToSize(i)));
     absl::SNPrintF(
-        base::At(trigtext, i), kTrigTextSize, "%s\t%s\t%s\t",
+        trigger_text.data(), trigger_text.size(), "%s\t%s\t%s\t",
         TheObjectHeaps().trigger().Ptr(i)->Get_Name(),
         TriggerClass::Name_From_Event(TheObjectHeaps().trigger().Ptr(i)->Event),
         TriggerClass::Name_From_Action(
@@ -2340,7 +2341,7 @@ int MapEditClass::Select_Trigger() {
   .......................... Fill in the list box ..........................
   */
   for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
-    triggerlist.Add_Item(base::At(trigtext, i));
+    triggerlist.Add_Item(trigtext.at(base::ToSize(i)).data());
   }
   triggerlist.Set_Selected_Index(def_idx);
 
@@ -2460,10 +2461,6 @@ int MapEditClass::Select_Trigger() {
   TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
-
-  for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
-    delete[] base::At(trigtext, i);
-  }
 
   if (edit_trig) {
     return 1;

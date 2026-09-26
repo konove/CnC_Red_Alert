@@ -58,6 +58,7 @@
 #define CNC_RED_ALERT_TD_VECTOR_H_
 
 #include <cstddef>
+#include <memory>
 #include <span>
 
 #include "absl/log/check.h"
@@ -146,12 +147,13 @@ class VectorClass {
   // The count is byte-serialized with the pointer; preserve its existing type.
   base::ssize VectorMax{0};
 
-  /*
-  **	Does the vector data pointer refer to memory that this class has
-  *manually *	allocated? If so, then this class is responsible for deleting
-  *it.
-  */
+  // True if Vector points into Owned.
   bool IsAllocated : 1 {false};
+
+ private:
+  // The array this vector allocated itself; null when it borrows the
+  // caller's storage or holds nothing.
+  std::unique_ptr<T[]> Owned;
 };
 
 /**************************************************************************

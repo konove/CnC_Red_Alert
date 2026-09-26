@@ -42,11 +42,12 @@
 
 #include <cstddef>
 #include <cstdlib>
+#include <memory>
 #include <span>
 #include <string>
+#include <vector>
 
 #include "base/fixed.h"
-#include "base/listnode.h"
 #include "engine/crypto/crc.h"
 #include "engine/crypto/pk.h"
 #include "engine/stream/byte_sink.h"
@@ -83,7 +84,7 @@ class INIClass {
   bool Clear(const char* section = nullptr, const char* entry = nullptr);
 
   int Line_Count(const char* section) const;
-  [[nodiscard]] bool Is_Loaded() const { return !SectionList.Is_Empty(); }
+  [[nodiscard]] bool Is_Loaded() const { return !SectionList.empty(); }
   [[nodiscard]] int Size() const;
   bool Is_Present(const char* section, const char* entry = nullptr) const {
     if (entry == nullptr) {
@@ -144,10 +145,10 @@ class INIClass {
   **	The value entries for the INI file are stored as objects of this type.
   **	The entry identifier and value string are combined into this object.
   */
-  struct INIEntry : Node<INIEntry> {
+  struct INIEntry {
     explicit INIEntry(const char* entry = "", const char* value = "")
         : Entry(entry), Value(value) {}
-    ~INIEntry() override;
+    ~INIEntry();
     INIEntry(const INIEntry&) = delete;
     INIEntry& operator=(const INIEntry&) = delete;
     INIEntry(INIEntry&&) = delete;
@@ -164,9 +165,9 @@ class INIClass {
   **	Each section (bracketed) is represented by an object of this type. All
   *entries *	subordinate to this section are attached.
   */
-  struct INISection : Node<INISection> {
+  struct INISection {
     explicit INISection(const char* section) : Section(section) {}
-    ~INISection() override;
+    ~INISection();
     INISection(const INISection&) = delete;
     INISection& operator=(const INISection&) = delete;
     INISection(INISection&&) = delete;
@@ -177,7 +178,7 @@ class INIClass {
     }
 
     std::string Section;
-    List<INIEntry> EntryList;
+    std::vector<std::unique_ptr<INIEntry>> EntryList;  // In file order.
     IndexClass<INIEntry*> EntryIndex;
   };
 
@@ -191,7 +192,7 @@ class INIClass {
   /*
   **	This is the list of all sections within this INI file.
   */
-  List<INISection> SectionList;
+  std::vector<std::unique_ptr<INISection>> SectionList;  // In file order.
 
   IndexClass<INISection*> SectionIndex;
 };

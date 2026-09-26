@@ -28,15 +28,6 @@ void SafeAppend(std::span<char> dest, std::string_view src);
 // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
 std::span<char> MutableCString(char* text ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
-// Allocates a new copy of `src` on the heap.
-//
-// Returns a pointer to a newly allocated character array containing a copy of
-// `src`. The caller takes ownership of the returned pointer and must free it
-// using `delete[]`.
-//
-// If `src` is null, returns nullptr.
-char* CloneString(const char* src);
-
 }  // namespace base
 
 #endif  // CNC_RED_ALERT_BASE_STRINGS_SAFE_STRING_H_

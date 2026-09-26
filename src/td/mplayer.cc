@@ -55,6 +55,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -66,6 +67,7 @@
 #include "base/array.h"
 #include "base/bytes_of.h"
 #include "base/enum_array.h"
+#include "base/numeric.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
@@ -410,7 +412,6 @@ GameType Select_MPlayer_Game() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void Read_MultiPlayer_Settings() {
-  char* entry = nullptr;   // a phone book entry
   char buf[128];           // buffer for parsing INI entry
   int i = 0;
 
@@ -426,18 +427,12 @@ void Read_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Clear the initstring entries
   ------------------------------------------------------------------------*/
-  for (i = 0; i < TheNetwork().init_strings().Count(); i++) {
-    delete[] TheNetwork().init_strings().at(i);
-  }
-  TheNetwork().init_strings().Clear();
+  TheNetwork().init_strings().clear();
 
   /*------------------------------------------------------------------------
   Clear the dialing entries
   ------------------------------------------------------------------------*/
-  for (i = 0; i < TheNetwork().phone_book().Count(); i++) {
-    delete TheNetwork().phone_book().at(i);
-  }
-  TheNetwork().phone_book().Clear();
+  TheNetwork().phone_book().clear();
 
   /*------------------------------------------------------------------------
   Create filename and read the file.
@@ -561,20 +556,18 @@ void Read_MultiPlayer_Settings() {
   Read in & store each entry
   ------------------------------------------------------------------------*/
   while (*tbuffer != '\0') {
-    entry = new char[INITSTRBUF_MAX];
+    auto entry = std::make_unique<char[]>(INITSTRBUF_MAX);
     // This allocation owns exactly INITSTRBUF_MAX writable characters.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    const std::span<char> entry_storage(entry, INITSTRBUF_MAX);
-
-    entry_storage.front() = '\0';
+    const std::span<char> entry_storage(entry.get(), INITSTRBUF_MAX);
 
     WWGetPrivateProfileString("InitStrings", tbuffer, nullptr, entry_storage,
                               buffer);
 
-    std::ranges::transform(base::MutableCString(entry), entry,
+    std::ranges::transform(base::MutableCString(entry.get()), entry.get(),
                            absl::ascii_toupper);
 
-    TheNetwork().init_strings().Add(entry);
+    TheNetwork().init_strings().push_back(std::move(entry));
 
     key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
     tbuffer = key_cursor.data();
@@ -583,12 +576,12 @@ void Read_MultiPlayer_Settings() {
   // if no entries then have at least one
 
   if (key_cursor.data() == key_storage.data()) {
-    entry = new char[INITSTRBUF_MAX];
+    auto entry = std::make_unique<char[]>(INITSTRBUF_MAX);
     // This allocation owns exactly INITSTRBUF_MAX writable characters.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    const std::span<char> entry_storage(entry, INITSTRBUF_MAX);
+    const std::span<char> entry_storage(entry.get(), INITSTRBUF_MAX);
     base::SafeCopy(entry_storage, "ATZ");
-    TheNetwork().init_strings().Add(entry);
+    TheNetwork().init_strings().push_back(std::move(entry));
     TheNetwork().serial_defaults().InitStringIndex = 0;
   }
 
@@ -612,7 +605,7 @@ void Read_MultiPlayer_Settings() {
     /*.....................................................................
     Create a new phone book entry
     .....................................................................*/
-    auto* phone = new PhoneEntryClass();  // a phone book entry
+    auto phone = std::make_unique<PhoneEntryClass>();  // a phone book entry
 
     /*.....................................................................
     Read the entire entry in
@@ -737,7 +730,7 @@ void Read_MultiPlayer_Settings() {
     /*.....................................................................
     Add it to our list
     .....................................................................*/
-    TheNetwork().phone_book().Add(phone);
+    TheNetwork().phone_book().push_back(std::move(phone));
 
     key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
     tbuffer = key_cursor.data();
@@ -890,12 +883,13 @@ void Write_MultiPlayer_Settings() {
   Save all InitString entries.  In descending order so they come out in
   ascending order.
   ------------------------------------------------------------------------*/
-  for (int i = static_cast<int>(TheNetwork().init_strings().Count()) - 1;
+  for (int i = static_cast<int>(std::ssize(TheNetwork().init_strings())) - 1;
        i >= 0; i--) {
     absl::SNPrintF(buf, sizeof(buf), "%03d", i);
-    WWWritePrivateProfileString("InitStrings", buf,
-                                TheNetwork().init_strings().at(i),
-                                base::CharBytes(ShapeBufferBytes));
+    WWWritePrivateProfileString(
+        "InitStrings", buf,
+        TheNetwork().init_strings().at(base::ToSize(i)).get(),
+        base::CharBytes(ShapeBufferBytes));
   }
 
   /*------------------------------------------------------------------------
@@ -908,24 +902,20 @@ void Write_MultiPlayer_Settings() {
   Save all Phone Book entries.
   Format: Entry=Name,PhoneNum,Port,IRQ,Baud,InitString
   ------------------------------------------------------------------------*/
-  for (int i = static_cast<int>(TheNetwork().phone_book().Count()) - 1; i >= 0;
-       i--) {
+  for (int i = static_cast<int>(std::ssize(TheNetwork().phone_book())) - 1;
+       i >= 0; i--) {
+    const PhoneEntryClass& phone =
+        *TheNetwork().phone_book().at(base::ToSize(i));
     absl::SNPrintF(
-        buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
-        TheNetwork().phone_book().at(i)->Name,
-        TheNetwork().phone_book().at(i)->Number,
-        static_cast<unsigned int>(
-            TheNetwork().phone_book().at(i)->Settings.Port),
-        TheNetwork().phone_book().at(i)->Settings.IRQ,
-        TheNetwork().phone_book().at(i)->Settings.Baud,
-        TheNetwork().phone_book().at(i)->Settings.Compression ? 1 : 0,
-        TheNetwork().phone_book().at(i)->Settings.ErrorCorrection ? 1 : 0,
-        TheNetwork().phone_book().at(i)->Settings.HardwareFlowControl ? 1 : 0,
-        kDialMethodCheck.at(
-            TheNetwork().phone_book().at(i)->Settings.DialMethod),
-        TheNetwork().phone_book().at(i)->Settings.InitStringIndex,
-        TheNetwork().phone_book().at(i)->Settings.CallWaitStringIndex,
-        TheNetwork().phone_book().at(i)->Settings.CallWaitString);
+        buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s", phone.Name,
+        phone.Number, static_cast<unsigned int>(phone.Settings.Port),
+        phone.Settings.IRQ, phone.Settings.Baud,
+        phone.Settings.Compression ? 1 : 0,
+        phone.Settings.ErrorCorrection ? 1 : 0,
+        phone.Settings.HardwareFlowControl ? 1 : 0,
+        kDialMethodCheck.at(phone.Settings.DialMethod),
+        phone.Settings.InitStringIndex, phone.Settings.CallWaitStringIndex,
+        phone.Settings.CallWaitString);
     absl::SNPrintF(entrytext, sizeof(entrytext), "%03d", i);
     WWWritePrivateProfileString("PhoneBook", entrytext, buf,
                                 base::CharBytes(ShapeBufferBytes));
@@ -1032,18 +1022,12 @@ void Free_Scenario_Descriptions() {
   /*------------------------------------------------------------------------
   Clear the initstring entries
   ------------------------------------------------------------------------*/
-  for (int i = 0; i < TheNetwork().init_strings().Count(); i++) {
-    delete TheNetwork().init_strings().at(i);
-  }
-  TheNetwork().init_strings().Clear();
+  TheNetwork().init_strings().clear();
 
   /*------------------------------------------------------------------------
   Clear the dialing entries
   ------------------------------------------------------------------------*/
-  for (int i = 0; i < TheNetwork().phone_book().Count(); i++) {
-    delete TheNetwork().phone_book().at(i);
-  }
-  TheNetwork().phone_book().Clear();
+  TheNetwork().phone_book().clear();
 }
 
 /***************************************************************************

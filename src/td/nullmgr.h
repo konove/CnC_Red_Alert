@@ -43,6 +43,7 @@
 #define CNC_RED_ALERT_TD_NULLMGR_H_
 
 #include <cstddef>
+#include <memory>
 #include <span>
 #include <vector>
 
@@ -198,7 +199,7 @@ class NullModemClass : public ConnManClass {
   /*
   **	This is a pointer to the NULL-Modem Connection object.
   */
-  NullModemConnClass* Connection{nullptr};
+  std::unique_ptr<NullModemConnClass> Connection;
   int NumConnections{0};  // # connection objects in use
 
   /*

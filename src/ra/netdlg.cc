@@ -131,6 +131,7 @@
 #include <cstring>
 #include <ctime>
 #include <iterator>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -1187,8 +1188,7 @@ void Destroy_Connection(int id, int error) {
   for (int i = 0; i < TheSession().Players.Count(); i++) {
     if (absl::EqualsIgnoreCase(TheSession().Players.at(i)->Name,
                                housep->IniName)) {
-      delete TheSession().Players.at(i);
-      TheSession().Players.Delete(TheSession().Players.at(i));
+      TheSession().Players.Delete(i);
       break;
     }
   }
@@ -1708,29 +1708,27 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Clear the list of games, players, and the chat list
   //------------------------------------------------------------------------
-  Clear_Vector(&TheSession().Games);
-  Clear_Vector(&TheSession().Players);
-  Clear_Vector(&TheSession().Chat);
+  TheSession().Games.Clear();
+  TheSession().Players.Clear();
+  TheSession().Chat.Clear();
 
   //------------------------------------------------------------------------
   // Add myself to the Chat vector
   //------------------------------------------------------------------------
-  who = new NodeNameType;
+  who = TheSession().Chat.Add(std::make_unique<NodeNameType>());
   base::SafeCopy(who->Name, namebuf);
   who->Chat.LastTime = 0;
   who->Chat.LastChance = 0;
   who->Chat.Color = TheSession().GPacket.Chat.Color;
-  TheSession().Chat.Add(who);
 
   //------------------------------------------------------------------------
   // Create the "Lobby" game name on the games list, and create a bogus
   // node for the gamelist, so Games[i] will always match gamelist[i]
   //------------------------------------------------------------------------
-  who = new NodeNameType;
+  who = TheSession().Games.Add(std::make_unique<NodeNameType>());
   who->Name[0] = '\0';
   who->Game.IsOpen = 0;
   who->Game.LastTime = 0;
-  TheSession().Games.Add(who);
   gamelist.Add_Item(Text_String(TXT_LOBBY));
   gamelist.Set_Selected_Index(0);
   game_index = 0;
@@ -2137,7 +2135,7 @@ static int Net_Join_Dialog() {
             // our game_index has changed.
             //.........................................................
             Clear_Listbox(&playerlist);
-            Clear_Vector(&TheSession().Players);
+            TheSession().Players.Clear();
             game_index = gamelist.Current_Index();
           }
           //............................................................
@@ -2204,7 +2202,7 @@ static int Net_Join_Dialog() {
             // init the click timer, to detect a double-click of this item.
             //............................................................
             Clear_Listbox(&playerlist);
-            Clear_Vector(&TheSession().Players);
+            TheSession().Players.Clear();
             game_index = gamelist.Current_Index();
             Send_Join_Queries(game_index, joinstate, 0, 1, 0, namebuf);
           }
@@ -2617,7 +2615,7 @@ static int Net_Join_Dialog() {
         //...............................................................
 
         Clear_Listbox(&playerlist);
-        Clear_Vector(&TheSession().Players);
+        TheSession().Players.Clear();
 
 #ifdef OLDWAY
         if (TheSession().House == HOUSE_GOOD) {
@@ -2639,11 +2637,10 @@ static int Net_Join_Dialog() {
                 ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
                 : &ThePalettes().color_remaps().at(TheSession().ColorIdx));
 
-        who = new NodeNameType;
+        who = TheSession().Players.Add(std::make_unique<NodeNameType>());
         base::SafeCopy(who->Name, namebuf);
         who->Player.House = TheSession().House;
         who->Player.Color = TheSession().ColorIdx;
-        TheSession().Players.Add(who);
 
         Send_Join_Queries(game_index, joinstate, 0, 1, 0, namebuf);
 
@@ -2771,7 +2768,7 @@ static int Net_Join_Dialog() {
       } else {
         gamelist.Flag_To_Redraw();
         Clear_Listbox(&playerlist);
-        Clear_Vector(&TheSession().Players);
+        TheSession().Players.Clear();
         game_index = gamelist.Current_Index();
         Send_Join_Queries(game_index, joinstate, 0, 1, 0, namebuf);
       }
@@ -2791,8 +2788,7 @@ static int Net_Join_Dialog() {
       //.....................................................................
       for (i = 1; i < TheSession().Games.Count(); i++) {
         if (SystemTicks() - TheSession().Games.at(i)->Game.LastTime > 400) {
-          delete TheSession().Games.at(i);
-          TheSession().Games.Delete(TheSession().Games.at(i));
+          TheSession().Games.Delete(i);
 
           gamelist.Remove_Item(i);
 
@@ -2806,7 +2802,7 @@ static int Net_Join_Dialog() {
             } else {
               gamelist.Flag_To_Redraw();
               Clear_Listbox(&playerlist);
-              Clear_Vector(&TheSession().Players);
+              TheSession().Players.Clear();
               game_index = gamelist.Current_Index();
               Send_Join_Queries(game_index, joinstate, 0, 1, 0, namebuf);
             }
@@ -2832,8 +2828,7 @@ static int Net_Join_Dialog() {
       //.....................................................................
       for (i = 1; i < TheSession().Chat.Count(); i++) {
         if (SystemTicks() - TheSession().Chat.at(i)->Chat.LastTime > 360) {
-          delete TheSession().Chat.at(i);
-          TheSession().Chat.Delete(TheSession().Chat.at(i));
+          TheSession().Chat.Delete(i);
         } else if (SystemTicks() - TheSession().Chat.at(i)->Chat.LastTime >
                        300 &&
                    TheSession().Chat.at(i)->Chat.LastChance == 0) {
@@ -3030,10 +3025,10 @@ static int Net_Join_Dialog() {
   // Clear the Chat vector regardless.
   //------------------------------------------------------------------------
   if (rc != 0) {
-    Clear_Vector(&TheSession().Games);
-    Clear_Vector(&TheSession().Players);
+    TheSession().Games.Clear();
+    TheSession().Players.Clear();
   }
-  Clear_Vector(&TheSession().Chat);
+  TheSession().Chat.Clear();
 
   return rc;
 
@@ -3214,8 +3209,7 @@ static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
   }
 
   if (TheSession().Players.Count() > 0) {
-    delete TheSession().Players.at(0);
-    TheSession().Players.Delete(TheSession().Players.at(0));
+    TheSession().Players.Delete(0);
   }
 
   TheSession().GameName[0] = 0;
@@ -3527,12 +3521,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       //	Create a new node structure, fill it in, add it to 'Games'
       //..................................................................
-      who = new NodeNameType;
+      who = TheSession().Games.Add(std::make_unique<NodeNameType>());
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
       who->Game.IsOpen = TheSession().GPacket.GameInfo.IsOpen;
       who->Game.LastTime = SystemTicks();
-      TheSession().Games.Add(who);
 
       //..................................................................
       //	Create a string for "xxx's Game", leaving room for brackets
@@ -3554,8 +3547,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       for (i = 1; i < TheSession().Chat.Count(); i++) {
         if (TheSession().Chat.at(i)->Address == TheSession().GAddress) {
-          delete TheSession().Chat.at(i);
-          TheSession().Chat.Delete(TheSession().Chat.at(i));
+          TheSession().Chat.Delete(i);
           break;
         }
       }
@@ -3641,12 +3633,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       //	Create & add a node to the Vector
       //..................................................................
-      who = new NodeNameType;
+      who = TheSession().Players.Add(std::make_unique<NodeNameType>());
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
       who->Player.House = TheSession().GPacket.PlayerInfo.House;
       who->Player.Color = TheSession().GPacket.PlayerInfo.Color;
-      TheSession().Players.Add(who);
 
       //..................................................................
       //	Create & add a string to the list box
@@ -3675,8 +3666,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //..................................................................
       for (i = 1; i < TheSession().Chat.Count(); i++) {
         if (TheSession().Chat.at(i)->Address == TheSession().GAddress) {
-          delete TheSession().Chat.at(i);
-          TheSession().Chat.Delete(TheSession().Chat.at(i));
+          TheSession().Chat.Delete(i);
           break;
         }
       }
@@ -3747,8 +3737,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       playerlist->Remove_Item(0);
       playerlist->Flag_To_Redraw();
 
-      delete TheSession().Players.at(0);
-      TheSession().Players.Delete(TheSession().Players.at(0));
+      TheSession().Players.Delete(0);
 
       *joinstate = JOIN_REJECTED;
       *why = REJECT_BY_OWNER;
@@ -3848,7 +3837,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         if (i == gamelist->Current_Index()) {
           Clear_Listbox(playerlist);
-          Clear_Vector(&TheSession().Players);
+          TheSession().Players.Clear();
         }
 
         //...............................................................
@@ -3875,8 +3864,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         //	Remove game name from game list
         //...............................................................
-        delete TheSession().Games.at(i);
-        TheSession().Games.Delete(TheSession().Games.at(i));
+        TheSession().Games.Delete(i);
         gamelist->Remove_Item(i);
         gamelist->Flag_To_Redraw();
       }
@@ -3892,8 +3880,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       if (TheSession().Players.at(i)->Address == TheSession().GAddress) {
         playerlist->Remove_Item(i);
 
-        delete TheSession().Players.at(i);
-        TheSession().Players.Delete(TheSession().Players.at(i));
+        TheSession().Players.Delete(i);
 
         playerlist->Flag_To_Redraw();
 
@@ -3918,8 +3905,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //	Name found; remove it
       //..................................................................
       if (TheSession().Chat.at(i)->Address == TheSession().GAddress) {
-        delete TheSession().Chat.at(i);
-        TheSession().Chat.Delete(TheSession().Chat.at(i));
+        TheSession().Chat.Delete(i);
 
         if (retcode == EV_NONE) {
           retcode = EV_PLAYER_SIGNOFF;
@@ -3979,13 +3965,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     // Add a new node to the list
     //.....................................................................
     if (!found) {
-      who = new NodeNameType;
+      who = TheSession().Chat.Add(std::make_unique<NodeNameType>());
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
       who->Chat.LastTime = SystemTicks();
       who->Chat.LastChance = 0;
       who->Chat.Color = TheSession().GPacket.Chat.Color;
-      TheSession().Chat.Add(who);
     }
   } else if (TheSession().GPacket.Command == NET_CHAT_REQUEST) {
     //------------------------------------------------------------------------
@@ -4429,7 +4414,7 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Clear the list of players
   //------------------------------------------------------------------------
-  Clear_Vector(&TheSession().Players);
+  TheSession().Players.Clear();
 
   //------------------------------------------------------------------------
   //	Add myself to the list, and to the Players vector.
@@ -4453,11 +4438,10 @@ static int Net_New_Dialog() {
                 ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
                 : &ThePalettes().color_remaps().at(TheSession().ColorIdx));
 
-  who = new NodeNameType;
+  who = TheSession().Players.Add(std::make_unique<NodeNameType>());
   base::SafeCopy(who->Name, TheSession().Handle);
   who->Player.House = TheSession().House;
   who->Player.Color = TheSession().ColorIdx;
-  TheSession().Players.Add(who);
   Load_Title_Page(true);
   ThePalettes().title_palette().Set();  // GamePalette.Set();
 
@@ -5262,7 +5246,7 @@ static int Net_New_Dialog() {
   // Clear the Players vector if we're not starting a game.
   //------------------------------------------------------------------------
   if (!rc) {
-    Clear_Vector(&TheSession().Players);
+    TheSession().Players.Clear();
   }
 
   //	while (optionlist.Count()>0) {
@@ -5470,11 +5454,10 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //..................................................................
       //	Add node to the Vector list
       //..................................................................
-      who = new NodeNameType;
+      who = TheSession().Players.Add(std::make_unique<NodeNameType>());
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
       who->Player.House = TheSession().GPacket.PlayerInfo.House;
-      TheSession().Players.Add(who);
 
       //..................................................................
       //	Set player's color; if requested color isn't used, give it to
@@ -5564,8 +5547,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         //...............................................................
         //	Delete from the Vector list
         //...............................................................
-        delete TheSession().Players.at(i);
-        TheSession().Players.Delete(TheSession().Players.at(i));
+        TheSession().Players.Delete(i);
 
         //...............................................................
         // Play a special sound.

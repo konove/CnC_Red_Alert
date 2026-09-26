@@ -133,11 +133,13 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <span>
 
 /*
 ********************************* Includes **********************************
 */
+#include "absl/base/attributes.h"
 #include "ra/connmgr.h"
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
@@ -204,8 +206,8 @@ class IPXManagerClass : public ConnManClass {
   int Delete_Connection(int id);
   int Num_Connections() override;
   int Connection_ID(int index) override;
-  char* Connection_Name(int id);
-  IPXAddressClass* Connection_Address(int id);
+  char* Connection_Name(int id) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  IPXAddressClass* Connection_Address(int id) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   int Connection_Index(int id) override;
   void Set_Connection_Parms(int index, int id, char* name);
 
@@ -303,9 +305,9 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Array of connection queues
   .....................................................................*/
-  IPXConnClass* Connection[CONNECT_MAX]{};  // array of connection object ptrs
+  std::unique_ptr<IPXConnClass> Connection[CONNECT_MAX];  // the connections
   int NumConnections = 0;                   // # connection objects in use
-  IPXGlobalConnClass* GlobalChannel = nullptr;  // the Global Channel
+  std::unique_ptr<IPXGlobalConnClass> GlobalChannel;  // the Global Channel
 
   /*.....................................................................
   Current queue for polling for received packets

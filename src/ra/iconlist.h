@@ -33,8 +33,10 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <span>
 #include <string>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -189,17 +191,19 @@ class IconListClass : public ListClass {
   virtual void MultiSelect(int index, bool bSelect);
   //	The extra string stored with an item, or nullptr when the item has
   //	none and when the index is out of range.
-  [[nodiscard]] virtual const char* Get_Item_ExtraDataString(int index) const;
+  [[nodiscard]] virtual const char* Get_Item_ExtraDataString(int index) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
   virtual void Set_Item_ExtraDataString(int index, const char* szNewString);
   [[nodiscard]] virtual void* Get_Item_ExtraDataPtr(int index) const;
   virtual void Set_Item_ExtraDataPtr(int index, void* pNewValue);
   //	The item's tooltip text, or nullptr when it has none and when the
   //	index is out of range.
-  [[nodiscard]] const char* Get_Item_Help(int index) const;
+  [[nodiscard]] const char* Get_Item_Help(int index) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
   virtual RemapControlType* Get_Item_Color(int index);
   virtual void Set_Item_Color(int index, RemapControlType* pColorRemap);
   [[nodiscard]] virtual const IconList_ItemExtras* Get_ItemExtras(
-      int index) const;
+      int index) const ABSL_ATTRIBUTE_LIFETIME_BOUND;
   void Clear() override;
   virtual int Get_View_Index() { return CurrentTopIndex; }
   bool bScrollBeingDragged() {
@@ -245,10 +249,7 @@ class IconListClass : public ListClass {
                               int iFixedIconWidth);
 
   //	The extras for each item, in the same order as the list's text.
-  //	ajw stored these as void* because a vector of the real pointer type
-  //	"creates hellacious linking problems" in the 1998 compiler. It does not
-  //	here.
-  DynamicVectorClass<IconList_ItemExtras*> ExtrasList;
+  std::vector<std::unique_ptr<IconList_ItemExtras>> ExtrasList;
 
   bool bWrapText;   //	True to word-wrap added text into several lines.
   int iSelectType;  //	0 for no selection shown, 1 for normal ListClass

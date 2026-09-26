@@ -41,6 +41,8 @@
 #include "td/special.h"
 
 #include <iterator>
+#include <memory>
+#include <vector>
 
 #include "base/array.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -101,10 +103,15 @@ void Special_Dialog() {
   buttons = &ok;
   cancel.Add(*buttons);
 
+  // Owns the check boxes the _options entries point at.
+  std::vector<std::unique_ptr<CheckBoxClass>> check_boxes;
   for (int index = 0; index < std::ssize(_options); index++) {
     base::At(_options, index).Button =
-        new CheckBoxClass(static_cast<unsigned>(100 + index), kOptionX + 7,
-                          kOptionY + 20 + (index * 10));
+        check_boxes
+            .emplace_back(std::make_unique<CheckBoxClass>(
+                static_cast<unsigned>(100 + index), kOptionX + 7,
+                kOptionY + 20 + (index * 10)))
+            .get();
     if (base::At(_options, index).Button) {
       base::At(_options, index).Button->Add(*buttons);
 

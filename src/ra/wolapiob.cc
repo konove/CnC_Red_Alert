@@ -22,6 +22,7 @@
 #include "ra/wolapiob.h"
 
 #include <cstdlib>
+#include <memory>
 #include <span>
 
 #include "absl/log/log.h"
@@ -151,27 +152,27 @@ WolapiObject::~WolapiObject() {
   }
 
   //	Delete buttons, etc., shared by dialogs.
-  delete pShpBtnDiscon;
-  delete pShpBtnLeave;
-  delete pShpBtnRefresh;
-  delete pShpBtnSquelch;
-  delete pShpBtnBan;
-  delete pShpBtnKick;
-  delete pShpBtnFindpage;
-  delete pShpBtnOptions;
-  delete pShpBtnLadder;
-  delete pShpBtnHelp;
+  pShpBtnDiscon.reset();
+  pShpBtnLeave.reset();
+  pShpBtnRefresh.reset();
+  pShpBtnSquelch.reset();
+  pShpBtnBan.reset();
+  pShpBtnKick.reset();
+  pShpBtnFindpage.reset();
+  pShpBtnOptions.reset();
+  pShpBtnLadder.reset();
+  pShpBtnHelp.reset();
   //	Delete shared tooltips.
-  delete pTTipDiscon;
-  delete pTTipLeave;
-  delete pTTipRefresh;
-  delete pTTipSquelch;
-  delete pTTipBan;
-  delete pTTipKick;
-  delete pTTipFindpage;
-  delete pTTipOptions;
-  delete pTTipLadder;
-  delete pTTipHelp;
+  pTTipDiscon.reset();
+  pTTipLeave.reset();
+  pTTipRefresh.reset();
+  pTTipSquelch.reset();
+  pTTipBan.reset();
+  pTTipKick.reset();
+  pTTipFindpage.reset();
+  pTTipOptions.reset();
+  pTTipLadder.reset();
+  pTTipHelp.reset();
 }
 
 //***********************************************************************************************
@@ -193,9 +194,13 @@ bool WolapiObject::bSetupCOMStuff() {
   }
 
   //	Set up RAChatEventSink.
+  //	The sinks are COM objects: their reference counts own them, and
+  //	UnsetupCOMStuff()'s Release() calls free them.
+  // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): owned by its COM refcount.
   pChatSink = new RAChatEventSink(this);
   pChatSink->AddRef();
   //	Set up RANetUtilEventSink.
+  // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): owned by its COM refcount.
   pNetUtilSink = new RANetUtilEventSink(this);
   pNetUtilSink->AddRef();
 
@@ -379,54 +384,65 @@ void WolapiObject::PrepareButtonsAndIcons() {
   int xWolButton = iWolButtons_x;
   const int xTTip = 10;  //	Offset for tooltip.
   const int yTTip = -5;  //	Offset for tooltip.
-  pShpBtnDiscon =
-      new ShapeButtonClass(100, pShpDiscon, xWolButton, iWolButtons_y);
-  pTTipDiscon = new ToolTipClass(pShpBtnDiscon, TXT_WOL_TTIP_DISCON,
-                                 xWolButton + xTTip, iWolButtons_y + yTTip);
+  pShpBtnDiscon = std::make_unique<ShapeButtonClass>(100, pShpDiscon,
+                                                     xWolButton, iWolButtons_y);
+  pTTipDiscon =
+      std::make_unique<ToolTipClass>(pShpBtnDiscon.get(), TXT_WOL_TTIP_DISCON,
+                                     xWolButton + xTTip, iWolButtons_y + yTTip);
   xWolButton += iWolButtons_dx;
-  pShpBtnLeave =
-      new ShapeButtonClass(101, pShpLeave, xWolButton, iWolButtons_y);
-  pTTipLeave = new ToolTipClass(pShpBtnLeave, TXT_WOL_TTIP_LEAVE,
-                                xWolButton + xTTip, iWolButtons_y + yTTip);
+  pShpBtnLeave = std::make_unique<ShapeButtonClass>(101, pShpLeave, xWolButton,
+                                                    iWolButtons_y);
+  pTTipLeave =
+      std::make_unique<ToolTipClass>(pShpBtnLeave.get(), TXT_WOL_TTIP_LEAVE,
+                                     xWolButton + xTTip, iWolButtons_y + yTTip);
   xWolButton += iWolButtons_dx;
-  pShpBtnRefresh =
-      new ShapeButtonClass(102, pShpRefresh, xWolButton, iWolButtons_y);
-  pTTipRefresh = new ToolTipClass(pShpBtnRefresh, TXT_WOL_TTIP_REFRESH,
-                                  xWolButton + xTTip, iWolButtons_y + yTTip);
+  pShpBtnRefresh = std::make_unique<ShapeButtonClass>(
+      102, pShpRefresh, xWolButton, iWolButtons_y);
+  pTTipRefresh =
+      std::make_unique<ToolTipClass>(pShpBtnRefresh.get(), TXT_WOL_TTIP_REFRESH,
+                                     xWolButton + xTTip, iWolButtons_y + yTTip);
   xWolButton += iWolButtons_dx;
-  pShpBtnSquelch =
-      new ShapeButtonClass(103, pShpSquelch, xWolButton, iWolButtons_y);
-  pTTipSquelch = new ToolTipClass(pShpBtnSquelch, TXT_WOL_TTIP_SQUELCH,
-                                  xWolButton + xTTip, iWolButtons_y + yTTip);
+  pShpBtnSquelch = std::make_unique<ShapeButtonClass>(
+      103, pShpSquelch, xWolButton, iWolButtons_y);
+  pTTipSquelch =
+      std::make_unique<ToolTipClass>(pShpBtnSquelch.get(), TXT_WOL_TTIP_SQUELCH,
+                                     xWolButton + xTTip, iWolButtons_y + yTTip);
   xWolButton += iWolButtons_dx;
-  pShpBtnBan = new ShapeButtonClass(104, pShpBan, xWolButton, iWolButtons_y);
-  pTTipBan = new ToolTipClass(pShpBtnBan, TXT_WOL_TTIP_BAN, xWolButton + xTTip,
-                              iWolButtons_y + yTTip);
+  pShpBtnBan = std::make_unique<ShapeButtonClass>(104, pShpBan, xWolButton,
+                                                  iWolButtons_y);
+  pTTipBan =
+      std::make_unique<ToolTipClass>(pShpBtnBan.get(), TXT_WOL_TTIP_BAN,
+                                     xWolButton + xTTip, iWolButtons_y + yTTip);
   xWolButton += iWolButtons_dx;
-  pShpBtnKick = new ShapeButtonClass(105, pShpKick, xWolButton, iWolButtons_y);
-  pTTipKick = new ToolTipClass(pShpBtnKick, TXT_WOL_TTIP_KICK,
-                               xWolButton + xTTip, iWolButtons_y + yTTip);
+  pShpBtnKick = std::make_unique<ShapeButtonClass>(105, pShpKick, xWolButton,
+                                                   iWolButtons_y);
+  pTTipKick =
+      std::make_unique<ToolTipClass>(pShpBtnKick.get(), TXT_WOL_TTIP_KICK,
+                                     xWolButton + xTTip, iWolButtons_y + yTTip);
   xWolButton += iWolButtons_dx;
-  pShpBtnFindpage =
-      new ShapeButtonClass(106, pShpFindpage, xWolButton, iWolButtons_y);
-  pTTipFindpage = new ToolTipClass(pShpBtnFindpage, TXT_WOL_TTIP_FINDPAGE,
-                                   xWolButton + xTTip, iWolButtons_y + yTTip);
+  pShpBtnFindpage = std::make_unique<ShapeButtonClass>(
+      106, pShpFindpage, xWolButton, iWolButtons_y);
+  pTTipFindpage = std::make_unique<ToolTipClass>(
+      pShpBtnFindpage.get(), TXT_WOL_TTIP_FINDPAGE, xWolButton + xTTip,
+      iWolButtons_y + yTTip);
   xWolButton = 452;
-  pShpBtnOptions =
-      new ShapeButtonClass(107, pShpOptions, xWolButton, iWolButtons_y);
-  pTTipOptions =
-      new ToolTipClass(pShpBtnOptions, TXT_WOL_TTIP_OPTIONS, xWolButton + xTTip,
-                       iWolButtons_y + yTTip, true);
+  pShpBtnOptions = std::make_unique<ShapeButtonClass>(
+      107, pShpOptions, xWolButton, iWolButtons_y);
+  pTTipOptions = std::make_unique<ToolTipClass>(
+      pShpBtnOptions.get(), TXT_WOL_TTIP_OPTIONS, xWolButton + xTTip,
+      iWolButtons_y + yTTip, true);
   xWolButton += iWolButtons_dx;
-  pShpBtnLadder =
-      new ShapeButtonClass(108, pShpLadder, xWolButton, iWolButtons_y);
-  pTTipLadder =
-      new ToolTipClass(pShpBtnLadder, TXT_WOL_TTIP_LADDER, xWolButton + xTTip,
-                       iWolButtons_y + yTTip, true);
+  pShpBtnLadder = std::make_unique<ShapeButtonClass>(108, pShpLadder,
+                                                     xWolButton, iWolButtons_y);
+  pTTipLadder = std::make_unique<ToolTipClass>(
+      pShpBtnLadder.get(), TXT_WOL_TTIP_LADDER, xWolButton + xTTip,
+      iWolButtons_y + yTTip, true);
   xWolButton += iWolButtons_dx;
-  pShpBtnHelp = new ShapeButtonClass(109, pShpHelp, xWolButton, iWolButtons_y);
-  pTTipHelp = new ToolTipClass(pShpBtnHelp, TXT_WOL_TTIP_HELP,
-                               xWolButton + xTTip, iWolButtons_y + yTTip, true);
+  pShpBtnHelp = std::make_unique<ShapeButtonClass>(109, pShpHelp, xWolButton,
+                                                   iWolButtons_y);
+  pTTipHelp = std::make_unique<ToolTipClass>(
+      pShpBtnHelp.get(), TXT_WOL_TTIP_HELP, xWolButton + xTTip,
+      iWolButtons_y + yTTip, true);
 
   //	Load standard hard-coded icons.
   const std::array<dib::Color, dib::kPaletteSize> Palette =
@@ -675,7 +691,7 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
   pChatSink->bRequestConnectionWait = true;
   pChatSink->hresRequestConnectionError = 0;
 
-  if (!SUCCEEDED(pChat->RequestConnection(pChatSink->pServer, 15,
+  if (!SUCCEEDED(pChat->RequestConnection(pChatSink->pServer.get(), 15,
                                           bPassIsMangled ? 0 : 1))) {
     //		debugprint( "RequestConnection call failed\n" );
     return CHAT_E_CON_ERROR;
@@ -1491,31 +1507,30 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
   //	Iterate through ILUsers looking for selected entries. Build up a users
   // list of selected 	items. If the list turns out to be blank, send message
   // publicly.
-  User* pUserListSend = nullptr;
-  User* pUserTail = nullptr;
+  //	The copies live in UsersSend; the request takes them as a list linked
+  // through `next`, which is built once every copy has its final address.
+  std::vector<User> UsersSend;
   const int iCount = ILUsers.Count();
   int iPrivatePrintLen = 1;
   for (int i = 0; i != iCount; i++) {
     if (ILUsers.bItemIsMultiSelected(i)) {
-      User* pUserNew = new User;
-      *pUserNew = *static_cast<const User*>(ILUsers.Get_Item_ExtraDataPtr(i));
-      //			debugprint( "Copied %s for sendmessage.\n",
-      // pUserNew->name );
-      pUserNew->next =
-          nullptr;  //	(We don't want the value that was just copied!)
-      if (!pUserTail) {
-        //	First User in list.
-        pUserListSend = pUserNew;
-      } else {
-        pUserTail->next = pUserNew;
-      }
-      pUserTail = pUserNew;
+      const User& UserNew = UsersSend.emplace_back(
+          *static_cast<const User*>(ILUsers.Get_Item_ExtraDataPtr(i)));
       //	Extra space and comma.
       iPrivatePrintLen +=
-          static_cast<int>(std::string_view(WolText(pUserNew->name)).size()) +
-          2;
+          static_cast<int>(std::string_view(WolText(UserNew.name)).size()) + 2;
     }
   }
+  User* pUserPrevious = nullptr;
+  for (User& UserSend : UsersSend) {
+    UserSend.next = nullptr;  //	(We don't want the value that was
+                              //copied!)
+    if (pUserPrevious) {
+      pUserPrevious->next = &UserSend;
+    }
+    pUserPrevious = &UserSend;
+  }
+  User* pUserListSend = UsersSend.empty() ? nullptr : UsersSend.data();
   if (pUserListSend) {
     //	Send private message.
     if (!bAction) {
@@ -1699,23 +1714,21 @@ void WolapiObject::DoFindPage() {
 
   //	Ask user for user desired.
                               // call, for god's sake.
-  auto* pFindPageDlg = new SimpleEditDlgClass(
-      400, TXT_WOL_PAGELOCATE, TXT_WOL_USERNAMEPROMPT, WOL_NAME_LEN_MAX);
-  pFindPageDlg->SetButtons(TXT_WOL_LOCATE, Text_String(TXT_CANCEL),
-                           TXT_WOL_PAGE);
+  SimpleEditDlgClass FindPageDlg(400, TXT_WOL_PAGELOCATE,
+                                 TXT_WOL_USERNAMEPROMPT, WOL_NAME_LEN_MAX);
+  FindPageDlg.SetButtons(TXT_WOL_LOCATE, Text_String(TXT_CANCEL), TXT_WOL_PAGE);
   bPump_In_Call_Back = true;
-  const char* szNameDlgResult = pFindPageDlg->Show();
+  const char* szNameDlgResult = FindPageDlg.Show();
   bPump_In_Call_Back = false;
 
   if (std::string_view(szNameDlgResult) == Text_String(TXT_CANCEL) ||
-      !*pFindPageDlg->szEdit) {
-    delete pFindPageDlg;
+      !*FindPageDlg.szEdit) {
     return;
   }
 
   if (std::string_view(szNameDlgResult) == TXT_WOL_LOCATE) {
     //	Locate user.
-    const HRESULT hRes = Locate(pFindPageDlg->szEdit);
+    const HRESULT hRes = Locate(FindPageDlg.szEdit);
     switch (hRes) {
       case CHAT_S_FIND_NOTHERE:
         bPump_In_Call_Back = true;
@@ -1763,13 +1776,12 @@ void WolapiObject::DoFindPage() {
   } else {
     //	Page user.
     //	Ask user for text to send.
-    auto* pMessDlg =
-        new SimpleEditDlgClass(600, TXT_WOL_PAGEMESSAGETITLE,
+    SimpleEditDlgClass MessDlg(600, TXT_WOL_PAGEMESSAGETITLE,
                                TXT_WOL_PAGEMESSAGEPROMPT, MAXCHATSENDLENGTH);
     bPump_In_Call_Back = true;
-    if (std::string_view(pMessDlg->Show()) == Text_String(TXT_OK) &&
-        *pMessDlg->szEdit) {
-      switch (Page(pFindPageDlg->szEdit, pMessDlg->szEdit, true)) {
+    if (std::string_view(MessDlg.Show()) == Text_String(TXT_OK) &&
+        *MessDlg.szEdit) {
+      switch (Page(FindPageDlg.szEdit, MessDlg.szEdit, true)) {
         case CHAT_S_PAGE_NOTHERE:
           WWMessageBox().Process(TXT_WOL_PAGE_NOTHERE);
           break;
@@ -1785,7 +1797,7 @@ void WolapiObject::DoFindPage() {
         case S_OK:
           char szMessage[WOL_NAME_LEN_MAX + 30];
           Format_Runtime_Text(szMessage, sizeof(szMessage), TXT_WOL_WASPAGED,
-                              pFindPageDlg->szEdit);
+                              FindPageDlg.szEdit);
           PrintMessage(szMessage, WOLCOLORREMAP_LOCALMACHINEMESS);
           break;
         default:
@@ -1794,8 +1806,6 @@ void WolapiObject::DoFindPage() {
     }
     bPump_In_Call_Back = false;
   }
-
-  delete pFindPageDlg;
 }
 
 //***********************************************************************************************
@@ -2854,76 +2864,48 @@ void WolapiObject::SaveChat() {
   // the chat dialog so that we can refresh it 	after returning from the game
   // setup dialog (if necessary). 	This turns out to be the easiest and
   // most straightforward way to implement this.
-  pChatSaveLast = pChatSaveList = nullptr;
+  SavedChat.clear();
 
   for (int i = 0; i != pILChat->Count(); i++) {
-    auto* pChatSaveNew = new CHATSAVE;
+    CHATSAVE& ChatSaveNew = SavedChat.emplace_back();
     const char* szItem = pILChat->Get_Item(i);
     if (std::string_view(szItem).size() < SAVECHATWIDTH) {
-      base::SafeCopy(pChatSaveNew->szText, szItem);
+      base::SafeCopy(ChatSaveNew.szText, szItem);
     }
     const IconList_ItemExtras* pItemExtras = pILChat->Get_ItemExtras(i);
-    pChatSaveNew->ItemExtras.pColorRemap = pItemExtras->pColorRemap;
-    pChatSaveNew->next = nullptr;
-
-    if (pChatSaveLast) {
-      pChatSaveLast->next = pChatSaveNew;
-    } else {
-      pChatSaveList = pChatSaveNew;
-    }
-    pChatSaveLast = pChatSaveNew;
+    ChatSaveNew.ItemExtras.pColorRemap = pItemExtras->pColorRemap;
   }
 }
 
 //***********************************************************************************************
 void WolapiObject::RestoreChat() {
   //	See SaveChat()...
-  CHATSAVE* pChatSave = pChatSaveList;
-  while (pChatSave) {
-    PrintMessage(pChatSave->szText, pChatSave->ItemExtras.pColorRemap);
-    pChatSave = pChatSave->next;
+  for (const CHATSAVE& ChatSave : SavedChat) {
+    PrintMessage(ChatSave.szText, ChatSave.ItemExtras.pColorRemap);
   }
 }
 
 //***********************************************************************************************
 void WolapiObject::AddHostLeftMessageToSavedChat(const char* szName) {
-  auto* pChatSaveNew = new CHATSAVE;
-  Format_Runtime_Text(pChatSaveNew->szText, sizeof(pChatSaveNew->szText),
+  CHATSAVE& ChatSaveNew = SavedChat.emplace_back();
+  Format_Runtime_Text(ChatSaveNew.szText, sizeof(ChatSaveNew.szText),
                       TXT_WOL_HOSTLEFTGAME, szName);
-  pChatSaveNew->ItemExtras.pColorRemap =
+  ChatSaveNew.ItemExtras.pColorRemap =
       &ThePalettes().color_remaps().at(WOLCOLORREMAP_LOCALMACHINEMESS);
-  pChatSaveNew->next = nullptr;
-  if (pChatSaveLast) {
-    pChatSaveLast->next = pChatSaveNew;
-  } else {
-    pChatSaveList = pChatSaveNew;
-  }
-  pChatSaveLast = pChatSaveNew;
 }
 
 //***********************************************************************************************
 void WolapiObject::AddMessageToSavedChat(const char* szMessage) {
-  auto* pChatSaveNew = new CHATSAVE;
-  base::SafeCopy(pChatSaveNew->szText, szMessage);
-  pChatSaveNew->ItemExtras.pColorRemap =
+  CHATSAVE& ChatSaveNew = SavedChat.emplace_back();
+  base::SafeCopy(ChatSaveNew.szText, szMessage);
+  ChatSaveNew.ItemExtras.pColorRemap =
       &ThePalettes().color_remaps().at(WOLCOLORREMAP_LOCALMACHINEMESS);
-  pChatSaveNew->next = nullptr;
-  if (pChatSaveLast) {
-    pChatSaveLast->next = pChatSaveNew;
-  } else {
-    pChatSaveList = pChatSaveNew;
-  }
-  pChatSaveLast = pChatSaveNew;
 }
 
 //***********************************************************************************************
 void WolapiObject::DeleteSavedChat() {
   //	See SaveChat()...
-  while (pChatSaveList) {
-    CHATSAVE* pChatSaveNext = pChatSaveList->next;
-    delete pChatSaveList;
-    pChatSaveList = pChatSaveNext;
-  }
+  SavedChat.clear();
 }
 
 //***********************************************************************************************

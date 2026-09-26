@@ -55,6 +55,7 @@
 #include "td/gscreen.h"
 
 #include <cstdio>
+#include <memory>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -78,7 +79,7 @@
 
 GadgetClass* GScreenClass::Buttons = nullptr;
 
-PixelBuffer* GScreenClass::ShadowPage = nullptr;
+std::unique_ptr<PixelBuffer> GScreenClass::ShadowPage;
 
 /***********************************************************************************************
  * GScreenClass::GScreenClass -- Default constructor for GScreenClass. *
@@ -129,11 +130,9 @@ void GScreenClass::One_Time() {
   *SEENPAGE is.
   */
   Buttons = nullptr;
-  ShadowPage = new PixelBuffer(320, 200);
-  if (ShadowPage) {
-    ShadowPage->view().Clear();
-    TheScreen().hidden_page().view().Clear();
-  }
+  ShadowPage = std::make_unique<PixelBuffer>(320, 200);
+  ShadowPage->view().Clear();
+  TheScreen().hidden_page().view().Clear();
 }
 
 /***********************************************************************************************
@@ -414,13 +413,13 @@ void GScreenClass::Render() {
 
 #define MAX_SCREENS_SAVED (30 * 15)  // Enough for 30 seconds @ 15 fps
 
-static PixelBuffer* ScreenList[MAX_SCREENS_SAVED];
+static std::unique_ptr<PixelBuffer> ScreenList[MAX_SCREENS_SAVED];
 static int CurrentScreen = 0;
 bool ScreenRecording = false;
 
 static void Add_Current_Screen() {
   if (ScreenRecording) {
-    base::At(ScreenList, CurrentScreen) = new PixelBuffer;
+    base::At(ScreenList, CurrentScreen) = std::make_unique<PixelBuffer>();
     base::At(ScreenList, CurrentScreen)
         ->Init(TheScreen().visible_view().width(),
                TheScreen().visible_view().height(), {}, 0);
@@ -435,7 +434,7 @@ static void Add_Current_Screen() {
         absl::SNPrintF(filename, sizeof(filename), "SCRN%04d.PCX", i);
         Write_PCX_File(filename, base::At(ScreenList, i)->view(),
                        CurrentPalette);
-        delete base::At(ScreenList, i);
+        base::At(ScreenList, i).reset();
       }
 
       CurrentScreen = 0;

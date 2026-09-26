@@ -57,16 +57,4 @@ std::span<char> MutableCString(char* text) {
   return {text, std::string_view(text).size() + 1};
 }
 
-char* CloneString(const char* src) {
-  if (src == nullptr) {
-    return nullptr;
-  }
-  const std::size_t size = std::string_view(src).size() + 1;
-  auto* const dest = new char[size];
-  // This allocation is exactly size elements; the owner establishes the bound.
-  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-  SafeCopy(std::span(dest, size), src);
-  return dest;
-}
-
 }  // namespace base

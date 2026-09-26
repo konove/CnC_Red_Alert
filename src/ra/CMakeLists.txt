@@ -118,6 +118,12 @@ add_gtest(
 )
 
 add_gtest(
+    NAME ra_owned_vector_test
+    SOURCES owned_vector_test.cc
+    LIBS base
+)
+
+add_gtest(
     NAME ra_taction_test
     SOURCES taction_test.cc
     LIBS base absl::check absl::log magic_enum::magic_enum

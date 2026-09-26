@@ -60,13 +60,14 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>  // for station ID computation
+#include <memory>
 #include <span>
 #include <string_view>
+#include <utility>
 
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
-#include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/strings/number_parse.h"
@@ -406,18 +407,14 @@ void SessionClass::SerializePlayers(Archive& ar) {
       ar.Fail("invalid recording player count");
       return;
     }
-    for (int i = 0; i < Players.Count(); ++i) {
-      delete Players.at(i);
-    }
     Players.Clear();
     for (int i = 0; i < count; ++i) {
-      auto* node = new NodeNameType{};
+      auto node = std::make_unique<NodeNameType>();
       ar(*node);
       if (!ar.ok()) {
-        delete node;
         return;
       }
-      Players.Add(node);
+      Players.Add(std::move(node));
     }
   } else {
     for (int i = 0; i < count; ++i) {
@@ -474,7 +471,6 @@ bool SessionClass::Load(ByteSource& file) {
  *   02/14/1995 BR : Created.                                              *
  *=========================================================================*/
 void SessionClass::Read_MultiPlayer_Settings() {
-  char* entry = nullptr;   // a phone book entry
   char buf[128];           // buffer for parsing INI entry
   int i = 0;
 
@@ -483,15 +479,9 @@ void SessionClass::Read_MultiPlayer_Settings() {
   //------------------------------------------------------------------------
   //	Clear the initstring entries
   //------------------------------------------------------------------------
-  for (i = 0; i < InitStrings.Count(); i++) {
-    delete[] InitStrings.at(i);
-  }
   InitStrings.Clear();
 
   //	Clear the dialing entries
-  for (i = 0; i < PhoneBook.Count(); i++) {
-    delete[] PhoneBook.at(i);
-  }
   PhoneBook.Clear();
 
   //	Create filename and read the file.
@@ -559,25 +549,19 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
     const int initcount = ini.Entry_Count("InitStrings");
     for (int index = 0; index < initcount; index++) {
-      entry = new char[INITSTRBUF_MAX];
-      // entry was allocated above with INITSTRBUF_MAX elements.
-      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-      const std::span entry_buffer(entry, INITSTRBUF_MAX);
-      base::At(entry_buffer, 0) = 0;
+      auto entry = std::make_unique<InitString>();
       ini.Get_String("InitStrings", ini.Get_Entry("InitStrings", index),
-                     nullptr, entry_buffer, INITSTRBUF_MAX);
-      std::ranges::transform(base::MutableCString(entry), entry,
+                     nullptr, *entry, INITSTRBUF_MAX);
+      std::ranges::transform(base::MutableCString(entry->data()), entry->data(),
                              absl::ascii_toupper);
-      InitStrings.Add(entry);
+      InitStrings.Add(std::move(entry));
     }
 
     //	if no entries then have at least one
     if (initcount == 0) {
-      entry = new char[INITSTRBUF_MAX];
-      // The freshly allocated entry contains INITSTRBUF_MAX characters.
-      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-      base::SafeCopy(std::span(entry, INITSTRBUF_MAX), "ATZ");
-      InitStrings.Add(entry);
+      auto entry = std::make_unique<InitString>();
+      base::SafeCopy(*entry, "ATZ");
+      InitStrings.Add(std::move(entry));
       SerialDefaults.InitStringIndex = 0;
     }
 
@@ -585,7 +569,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
     const int phonecount = ini.Entry_Count("PhoneBook");
     for (int index = 0; index < phonecount; index++) {
       //	Create a new phone book entry
-      auto* phone = new PhoneEntryClass();  // a phone book entry
+      auto phone = std::make_unique<PhoneEntryClass>();  // a phone book entry
 
       //	Read the entire entry in
       ini.Get_String("PhoneBook", ini.Get_Entry("PhoneBook", index), nullptr,
@@ -728,9 +712,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       }
 
       //	Add it to our list
-      if (!PhoneBook.Add(phone)) {
-        delete phone;
-      }
+      PhoneBook.Add(std::move(phone));
     }
 
     //	Read special recording playback values, to help find sync bugs
@@ -829,7 +811,7 @@ void SessionClass::Write_MultiPlayer_Settings() {
     for (int index = 0; index < InitStrings.Count(); index++) {
       char buf[10];
       absl::SNPrintF(buf, sizeof(buf), "%03d", index);
-      ini.Put_String("InitStrings", buf, InitStrings.at(index));
+      ini.Put_String("InitStrings", buf, InitStrings.at(index)->data());
     }
 
     //	Clear all existing Phone Book entries.
@@ -916,8 +898,8 @@ void SessionClass::Read_Scenario_Descriptions() {
       const char* fname = ini.Get_Entry("Missions", index);
       char buffer[128];
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-      Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
-                                     IsMissionCounterstrike(fname)));
+      Scenarios.Add(std::make_unique<MultiMission>(
+          fname, buffer, nullptr, true, IsMissionCounterstrike(fname)));
     }
   /*		//	ajw Copy file for viewing.
                   GameFile fileCopy( "msns_pkt.txt" );
@@ -947,8 +929,8 @@ void SessionClass::Read_Scenario_Descriptions() {
       char buffer[128];
       ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
 
-      Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
-                                     IsMissionCounterstrike(fname)));
+      Scenarios.Add(std::make_unique<MultiMission>(
+          fname, buffer, nullptr, true, IsMissionCounterstrike(fname)));
     }
   }
 
@@ -970,8 +952,8 @@ void SessionClass::Read_Scenario_Descriptions() {
         const char* fname = ini.Get_Entry("Missions", index);
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-        Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
-                                       IsMissionCounterstrike(fname)));
+        Scenarios.Add(std::make_unique<MultiMission>(
+            fname, buffer, nullptr, true, IsMissionCounterstrike(fname)));
       }
       /*ajw Copy file for viewing.
                               GameFile fileCopy( "cs_pkt.txt" );
@@ -996,8 +978,8 @@ void SessionClass::Read_Scenario_Descriptions() {
         const char* fname = ini.Get_Entry("Missions", index);
         char buffer[128];
         ini.Get_String("Missions", fname, "", buffer, sizeof(buffer));
-        Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
-                                       IsMissionCounterstrike(fname)));
+        Scenarios.Add(std::make_unique<MultiMission>(
+            fname, buffer, nullptr, true, IsMissionCounterstrike(fname)));
       }
     }
   }
@@ -1021,9 +1003,9 @@ void SessionClass::Read_Scenario_Descriptions() {
                    sizeof(name_buffer));
     ini.Get_String("Digest", "1", "No Digest", digest_buffer,
                    sizeof(digest_buffer));
-    Scenarios.Add(
-        new MultiMission(found.name.c_str(), name_buffer, digest_buffer,
-                         ini.Get_Bool("Basic", "Official", false), false));
+    Scenarios.Add(std::make_unique<MultiMission>(
+        found.name.c_str(), name_buffer, digest_buffer,
+        ini.Get_Bool("Basic", "Official", false), false));
   }
 }
 
@@ -1047,26 +1029,17 @@ void SessionClass::Free_Scenario_Descriptions() {
   //------------------------------------------------------------------------
   //	Clear the scenario descriptions & filenames
   //------------------------------------------------------------------------
-  for (int index = 0; index < Scenarios.Count(); index++) {
-    delete Scenarios.at(index);
-  }
   Scenarios.Clear();
   //	Filenum.Clear();
 
   //------------------------------------------------------------------------
   //	Clear the initstring entries
   //------------------------------------------------------------------------
-  for (int i = 0; i < InitStrings.Count(); i++) {
-    delete[] InitStrings.at(i);
-  }
   InitStrings.Clear();
 
   //------------------------------------------------------------------------
   //	Clear the dialing entries
   //------------------------------------------------------------------------
-  for (int i = 0; i < PhoneBook.Count(); i++) {
-    delete PhoneBook.at(i);
-  }
   PhoneBook.Clear();
 
 } /* end of Free_Scenario_Descriptions */

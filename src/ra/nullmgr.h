@@ -43,6 +43,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <span>
 #include <vector>
 
@@ -191,7 +192,7 @@ class NullModemClass : public ConnManClass {
   /*
   **	This is a pointer to the NULL-Modem Connection object.
   */
-  NullModemConnClass* Connection{nullptr};
+  std::unique_ptr<NullModemConnClass> Connection;  // null until Init
   int NumConnections{0};  // # connection objects in use
 
   /*

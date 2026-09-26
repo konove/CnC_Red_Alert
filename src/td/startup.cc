@@ -46,6 +46,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <vector>
@@ -143,7 +144,7 @@ void Move_Point(int16_t& x, int16_t& y, DirType dir, uint16_t distance);
 
 // The one Game; main() creates it and ShutDown() destroys it. nullptr before
 // main() and after ShutDown().
-static Game* game = nullptr;
+static std::unique_ptr<Game> game;
 
 #ifndef TD_NO_ENTRY_POINT
 // Hands what the command line asked for to whatever owns it. The screen
@@ -225,7 +226,7 @@ int main(int argc, char* argv[])
   absl::InitializeLog();
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
 
-  game = new Game();
+  game = std::make_unique<Game>();
 
   // Heap_Dump_Check( "first thing in main" );
   //	malloc(1);
@@ -535,8 +536,7 @@ void ShutDown() {
   // Nothing is left for an allocation failure from here on to clean up.
   Memory_Error_Exit = Print_Error_Exit;
   ShutDownEngine();
-  delete game;
-  game = nullptr;
+  game.reset();
 }
 
 /***********************************************************************************************

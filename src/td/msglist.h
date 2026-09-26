@@ -58,9 +58,10 @@
 #define CNC_RED_ALERT_TD_MSGLIST_H_
 
 #include <cstdint>
+#include <memory>
 #include <span>
+#include <vector>
 
-#include "absl/base/attributes.h"
 #include "engine/window/keyboard.h"
 #include "td/defines.h"
 #include "td/txtlabel.h"
@@ -84,15 +85,13 @@ class MessageListClass {
   **	Initialization
   */
   void Init(int x, int y, int max_msg, int maxchars, int height);
-  TextLabelClass* Add_Message(char* txt ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                              int color, TextPrintType style, int timeout,
-                              uint16_t magic_number, uint16_t crc);
+  TextLabelClass* Add_Message(char* txt, int color, TextPrintType style,
+                              int timeout, uint16_t magic_number, uint16_t crc);
 
   /*
   **	Message-editing routines
   */
-  TextLabelClass* Add_Edit(int color, TextPrintType style,
-                           char* to ABSL_ATTRIBUTE_LIFETIME_BOUND, int width);
+  TextLabelClass* Add_Edit(int color, TextPrintType style, char* to, int width);
   char* Get_Edit_Buf();
 
   /*
@@ -105,7 +104,12 @@ class MessageListClass {
   void Set_Width(int width);
 
  private:
+  // Destroys `label`, which the caller has already unlinked from MessageList.
+  void Destroy_Label(const TextLabelClass* label);
+
   TextLabelClass* MessageList{nullptr};  // list of messages
+  // Owns every label linked into MessageList.
+  std::vector<std::unique_ptr<TextLabelClass>> Labels;
   int MessageX{0};                       // x-coord of upper-left
   int MessageY{0};                       // y-coord of upper-left
   int MaxMessages{0};                    // max messages allowed

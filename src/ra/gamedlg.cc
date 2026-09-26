@@ -489,7 +489,7 @@ void GameControlsClass::Process() {
           break;
 
         case kButtonWolapi:
-          if (WOL_Options_Dialog(TheNetwork().wolapi(), true)) {
+          if (WOL_Options_Dialog(TheNetwork().wolapi().get(), true)) {
             //	The game ended while in this dialog.
             process = false;
           } else {

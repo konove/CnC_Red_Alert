@@ -50,8 +50,11 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/array.h"
 #include "base/buffer.h"
@@ -113,6 +116,12 @@ MessageListClass::MessageListClass() {
  *=========================================================================*/
 MessageListClass::~MessageListClass() { Init(0, 0, 0, 0, 0); }
 
+void MessageListClass::Destroy_Label(const TextLabelClass* label) {
+  std::erase_if(Labels, [label](const std::unique_ptr<TextLabelClass>& owned) {
+    return owned.get() == label;
+  });
+}
+
 /***************************************************************************
  * MessageListClass::Init -- Inits message system, sets options            *
  *                                                                         *
@@ -139,7 +148,7 @@ void MessageListClass::Init(int x, int y, int max_msg, int maxchars,
   TextLabelClass* txtlabel = MessageList;
   while (txtlabel) {
     MessageList = dynamic_cast<TextLabelClass*>(txtlabel->Remove());
-    delete txtlabel;
+    Destroy_Label(txtlabel);
     txtlabel = MessageList;
   }
 
@@ -325,7 +334,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
         base::At(BufferAvail, i) = 1;
       }
     }
-    delete txtlabel;
+    Destroy_Label(txtlabel);
 
     /*.....................................................................
     Recompute everyone's y-coordinate
@@ -357,11 +366,11 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   /*------------------------------------------------------------------------
   Create the message
   ------------------------------------------------------------------------*/
-  txtlabel = new TextLabelClass(txt, x, y, color, style);
+  auto label = std::make_unique<TextLabelClass>(txt, x, y, color, style);
   if (timeout == -1) {
-    txtlabel->UserData = 0;
+    label->UserData = 0;
   } else {
-    txtlabel->UserData = SystemTicks() + timeout;
+    label->UserData = SystemTicks() + timeout;
   }
 
   /*------------------------------------------------------------------------
@@ -369,8 +378,8 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   message.
   ------------------------------------------------------------------------*/
   int found = 0;
-  txtlabel->Segments = 0;
-  txtlabel->CRC = crc;
+  label->Segments = 0;
+  label->CRC = crc;
 
   for (int i = 0; i < MAX_NUM_MESSAGES; i++) {
     if (base::At(BufferAvail, i)) {
@@ -411,18 +420,18 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
                                     1) = '\0';
         }
         position = magic_number - MESSAGE_HEAD_MAGIC_NUMBER;
-        txtlabel->Segments = base::Bit<uint8_t>(position);
+        label->Segments = base::Bit<uint8_t>(position);
       }
 
-      txtlabel->Text = base::At(MessageBuffers, i);
+      label->Text = base::At(MessageBuffers, i);
       found = 1;
       break;
     }
   }
   if (!found) {
-    delete txtlabel;
     return nullptr;
   }
+  txtlabel = Labels.emplace_back(std::move(label)).get();
 
   /*------------------------------------------------------------------------
   Attach the message to our list
@@ -554,7 +563,7 @@ int MessageListClass::Manage() {
           base::At(BufferAvail, i) = 1;
         }
       }
-      delete txtlabel;
+      Destroy_Label(txtlabel);
       changed = 1;
       txtlabel = next;
     } else {

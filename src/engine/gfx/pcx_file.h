@@ -41,6 +41,7 @@ size);
 #define CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_
 
 #include <cstdint>
+#include <memory>
 #include <span>
 
 #include "engine/gfx/pixel_buffer.h"
@@ -70,8 +71,10 @@ struct PCX_HEADER {
   char filler[58];
 };
 
-PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette = {},
-                           std::span<uint8_t> buff = {}, int32_t size = 0);
+std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
+                                           std::span<uint8_t> palette = {},
+                                           std::span<uint8_t> buff = {},
+                                           int32_t size = 0);
 int Write_PCX_File(const char* name, PixelView& pic,
                    std::span<const unsigned char> palette);
 

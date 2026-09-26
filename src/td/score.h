@@ -47,6 +47,7 @@ struct FontStyle;
 
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>
 
@@ -227,7 +228,10 @@ class ScoreScaleClass : public ScoreAnimClass {
 };
 
 #define MAXSCOREOBJS 8
-extern ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
+// The animations running on the score or map selection screen. Each slot owns
+// its animation; an animation that finishes empties its own slot (and so
+// destroys itself) from Update().
+extern std::unique_ptr<ScoreAnimClass> ScoreObjs[MAXSCOREOBJS];
 
 void Multi_Score_Presentation();
 
@@ -240,7 +244,11 @@ void Map_Selection();
 void Bit_It_In(Presentation& show, int x, int y, int w, int h, PixelBuffer* src,
                PixelBuffer* dest, int delay = 0, bool dagger = false);
 void Call_Back_Delay(Presentation& show, int time);
-int Alloc_Object(ScoreAnimClass* obj);
+// Puts `obj` in the first free ScoreObjs slot and returns the slot's index.
+// When every slot is taken the animation is destroyed unrun and 0 is returned.
+int Alloc_Object(std::unique_ptr<ScoreAnimClass> obj);
+// Destroys every running score animation and empties its slot.
+void Clear_Score_Objects();
 
 extern template void ScoreClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void ScoreClass::Serialize<ArchiveReader>(ArchiveReader&);

@@ -21,8 +21,9 @@
 #ifndef CNC_RED_ALERT_RA_VECTOR_H_
 #define CNC_RED_ALERT_RA_VECTOR_H_
 
-#include <new>  // IWYU pragma: keep
+#include <memory>
 #include <span>
+#include <utility>
 
 #include "absl/log/check.h"
 #include "base/array.h"
@@ -82,8 +83,12 @@ class VectorClass {
   }
   T* Vector;                // Pointer to element array.
   base::ssize VectorMax{0};  // Maximum number of elements.
-  bool IsAllocated
-      : true {false};  // True if we own the memory and must delete it.
+  bool IsAllocated : true {false};  // True if Vector points into Owned.
+
+ private:
+  // The array this vector allocated itself; null when it borrows the
+  // caller's storage or holds nothing.
+  std::unique_ptr<T[]> Owned;
 };
 
 // Implementation details only below here
@@ -95,13 +100,15 @@ VectorClass<T>::VectorClass(base::ssize size, std::span<T> array)
   CHECK(array.empty() || base::ToSize(size) <= array.size());
   if (size > 0) {
     if (!array.empty()) {
-      Vector = new (static_cast<void*>(array.data()))
-          T[base::ToSize(size)];  // Placement new into provided buffer.
+      // Constructs the elements in the provided buffer.
+      std::uninitialized_default_construct_n(array.data(), base::ToSize(size));
+      Vector = array.data();
     } else {
       // Value initialized: callers routinely read capacity that has not been
       // assigned yet (Resize copies the whole old capacity, not just the
       // elements in use), which is an indeterminate value for a POD T.
-      Vector = new T[base::ToSize(size)]();
+      Owned = std::make_unique<T[]>(base::ToSize(size));
+      Vector = Owned.get();
       IsAllocated = true;
     }
   }
@@ -123,12 +130,11 @@ VectorClass<T>& VectorClass<T>::operator=(const VectorClass<T>& vector) {
     Clear();
     VectorMax = vector.Length();
     if (VectorMax > 0) {
-      Vector = new T[base::ToSize(VectorMax)];
-      if (Vector) {
-        IsAllocated = true;
-        for (base::ssize index = 0; index < VectorMax; index++) {
-          base::At(Elements(), base::ToSize(index)) = vector.at(index);
-        }
+      Owned = std::make_unique_for_overwrite<T[]>(base::ToSize(VectorMax));
+      Vector = Owned.get();
+      IsAllocated = true;
+      for (base::ssize index = 0; index < VectorMax; index++) {
+        base::At(Elements(), base::ToSize(index)) = vector.at(index);
       }
     } else {
       Vector = nullptr;
@@ -175,29 +181,31 @@ base::ssize VectorClass<T>::ID(const T& object) {
 // Frees memory and resets to empty state.
 template <class T>
 void VectorClass<T>::Clear() {
-  if (Vector && IsAllocated) {
-    delete[] Vector;
+  if (IsAllocated) {
     Vector = nullptr;
   }
+  Owned.reset();
   IsAllocated = false;
   VectorMax = 0;
 }
 
 // Changes capacity, preserving existing elements up to new size.
-// If array is provided, uses placement new into that buffer.
+// If array is provided, constructs the elements in that buffer instead.
 template <class T>
 bool VectorClass<T>::Resize(base::ssize newsize, std::span<T> array) {
   CHECK_GE(newsize, 0);
   CHECK(array.empty() || base::ToSize(newsize) <= array.size());
   if (newsize > 0) {
+    std::unique_ptr<T[]> allocation;
     T* newptr = nullptr;
     if (array.empty()) {
-      newptr = new T[base::ToSize(newsize)]();  // Value initialized, see the constructor.
+      // Value initialized, see the constructor.
+      allocation = std::make_unique<T[]>(base::ToSize(newsize));
+      newptr = allocation.get();
     } else {
-      newptr = new (static_cast<void*>(array.data())) T[base::ToSize(newsize)];
-    }
-    if (!newptr) {
-      return false;
+      std::uninitialized_default_construct_n(array.data(),
+                                             base::ToSize(newsize));
+      newptr = array.data();
     }
     // newptr is the newsize-element allocation or the checked external span
     // above. NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
@@ -209,23 +217,21 @@ bool VectorClass<T>::Resize(base::ssize newsize, std::span<T> array) {
       // which is why the allocations above are value initialized.
       //
       // NOLINT below: the static analyzer does not model the initialization
-      // performed by `new T[n]()`, so it reads every element of a heap array
-      // as indeterminate no matter how it was allocated.
+      // performed by `std::make_unique<T[]>(n)`, so it reads every element of a
+      // heap array as indeterminate no matter how it was allocated.
       const base::ssize copycount = newsize < VectorMax ? newsize : VectorMax;
       for (base::ssize index = 0; index < copycount; index++) {
         // NOLINTNEXTLINE(clang-analyzer-core.uninitialized.Assign)
         base::At(replacement, base::ToSize(index)) =
             base::At(Elements(), base::ToSize(index));
       }
-      if (IsAllocated) {
-        delete[] Vector;
-        Vector = nullptr;
-      }
     }
 
-    Vector = newptr;
+    // Frees the old array, if this vector allocated it.
+    Owned = std::move(allocation);
+    Vector = array.empty() ? Owned.get() : array.data();
     VectorMax = newsize;
-    IsAllocated = Vector != nullptr && array.empty();
+    IsAllocated = array.empty();
     return true;
   }
   // Resize to 0 is a failure. Use Clear() to explicitly deallocate.

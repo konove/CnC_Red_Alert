@@ -30,6 +30,8 @@
 // class that would handle common input behavior and so forth (one that this
 // class could derive from) 	wasn't written 5 years ago, I don't know...
 
+#include <memory>
+
 #include "absl/base/attributes.h"
 #include "ra/session.h"
 #include "ra/wolapiob.h"
@@ -247,36 +249,36 @@ class WOL_GameSetupDialog {
  protected:
   GadgetClass* commands = nullptr;  //	The controls list.
 
-  IconListClass* pILPlayers{nullptr};
-  IconListClass* pILScens{nullptr};
-  IconListClass* pILDisc{nullptr};
+  std::unique_ptr<IconListClass> pILPlayers;
+  std::unique_ptr<IconListClass> pILScens;
+  std::unique_ptr<IconListClass> pILDisc;
   char szSendBuffer[MAXCHATSENDLENGTH]{};
-  EditClass* pEditSend{nullptr};
-  GaugeClass* pGaugeCount{nullptr};
-  GaugeClass* pGaugeLevel{nullptr};
-  GaugeClass* pGaugeCredits{nullptr};
-  GaugeClass* pGaugeAIPlayers{nullptr};
-  CheckListClass* pCheckListOptions{nullptr};
+  std::unique_ptr<EditClass> pEditSend;
+  std::unique_ptr<GaugeClass> pGaugeCount;
+  std::unique_ptr<GaugeClass> pGaugeLevel;
+  std::unique_ptr<GaugeClass> pGaugeCredits;
+  std::unique_ptr<GaugeClass> pGaugeAIPlayers;
+  std::unique_ptr<CheckListClass> pCheckListOptions;
   TextButtonClass* pTextBtnOk = nullptr;
-  TextButtonClass* pTextBtnCancel{nullptr};
-  TextButtonClass* pTextBtnAcceptStart{nullptr};
-  TextButtonClass* pTextBtnAction{nullptr};
+  std::unique_ptr<TextButtonClass> pTextBtnCancel;
+  std::unique_ptr<TextButtonClass> pTextBtnAcceptStart;
+  std::unique_ptr<TextButtonClass> pTextBtnAction;
   StaticButtonClass* pStaticDescrip{nullptr};
-  StaticButtonClass* pStaticUnit{nullptr};
-  StaticButtonClass* pStaticLevel{nullptr};
-  StaticButtonClass* pStaticCredits{nullptr};
-  StaticButtonClass* pStaticAIPlayers{nullptr};
+  std::unique_ptr<StaticButtonClass> pStaticUnit;
+  std::unique_ptr<StaticButtonClass> pStaticLevel;
+  std::unique_ptr<StaticButtonClass> pStaticCredits;
+  std::unique_ptr<StaticButtonClass> pStaticAIPlayers;
   char szHouseBuffer[25]{};  // buffer for house droplist
-  DropListClass* pDropListHouse{nullptr};
-  BigCheckBoxClass* pCheckAftermathUnits{nullptr};
-  ShapeButtonClass* pShpBtnScenarioRA{nullptr};
-  ShapeButtonClass* pShpBtnScenarioCS{nullptr};
-  ShapeButtonClass* pShpBtnScenarioAM{nullptr};
-  ShapeButtonClass* pShpBtnScenarioUser{nullptr};
+  std::unique_ptr<DropListClass> pDropListHouse;
+  std::unique_ptr<BigCheckBoxClass> pCheckAftermathUnits;
+  std::unique_ptr<ShapeButtonClass> pShpBtnScenarioRA;
+  std::unique_ptr<ShapeButtonClass> pShpBtnScenarioCS;
+  std::unique_ptr<ShapeButtonClass> pShpBtnScenarioAM;
+  std::unique_ptr<ShapeButtonClass> pShpBtnScenarioUser;
 
-  ToolTipClass* pTTipAcceptStart{nullptr};
-  ToolTipClass* pTTipCancel{nullptr};
-  ToolTipClass* pTTipAction{nullptr};
+  std::unique_ptr<ToolTipClass> pTTipAcceptStart;
+  std::unique_ptr<ToolTipClass> pTTipCancel;
+  std::unique_ptr<ToolTipClass> pTTipAction;
 
   WolapiObject* pWO;
 

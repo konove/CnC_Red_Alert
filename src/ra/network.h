@@ -4,7 +4,9 @@
 #define CNC_RED_ALERT_RA_NETWORK_H_
 
 #include <cstdint>
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
@@ -37,8 +39,9 @@ class WolapiObject;
 //   OutList.Add(event);
 class Network {
  public:
-  Network() = default;
-  ~Network() = default;
+  // Out of line, where the transports' classes are complete.
+  Network();
+  ~Network();
 
   Network(const Network&) = delete;
   Network& operator=(const Network&) = delete;
@@ -70,22 +73,28 @@ class Network {
   IPXManagerClass& ipx() ABSL_ATTRIBUTE_LIFETIME_BOUND { return ipx_; }
 
   // The Winsock interface the IPX manager sends through, or null when no
-  // socket is open. Owned by the protocol code, not by Network.
-  WinsockInterfaceClass*& packet_transport() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // socket is open. The protocol setup code creates and resets it.
+  std::unique_ptr<WinsockInterfaceClass>& packet_transport()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return packet_transport_;
   }
 
-  // A packet that arrived before the game was ready for it, kept until it
-  // is. Null when there is none.
-  void*& packet_later() ABSL_ATTRIBUTE_LIFETIME_BOUND { return packet_later_; }
+  // The game-statistics packet built when a player disconnected, held back
+  // until the game ends and sent then. Empty when there is none.
+  std::vector<char>& packet_later() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return packet_later_;
+  }
 
   // The Westwood Online session, or null when the player is not logged in.
-  // Owned by the chat code, not by Network.
-  WolapiObject*& wolapi() ABSL_ATTRIBUTE_LIFETIME_BOUND { return wolapi_; }
+  // The chat code creates and resets it.
+  std::unique_ptr<WolapiObject>& wolapi() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return wolapi_;
+  }
 
   // The modems the registry lists, as a linked list, or null before the
   // serial dialog has read it.
-  ModemRegistryEntryClass*& modem_registry() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  std::unique_ptr<ModemRegistryEntryClass>& modem_registry()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return modem_registry_;
   }
 
@@ -157,10 +166,10 @@ class Network {
       VIRGIN_SOCKET,   // Socket ID #
       IPXGlobalConnClass::kCommandAndConquer0};  // Product ID #
 
-  WinsockInterfaceClass* packet_transport_ = nullptr;
-  void* packet_later_ = nullptr;
-  WolapiObject* wolapi_ = nullptr;
-  ModemRegistryEntryClass* modem_registry_ = nullptr;
+  std::unique_ptr<WinsockInterfaceClass> packet_transport_;
+  std::vector<char> packet_later_;
+  std::unique_ptr<WolapiObject> wolapi_;
+  std::unique_ptr<ModemRegistryEntryClass> modem_registry_;
   std::string modem_response_;
 
   int64_t new_max_ahead_frame1_ = 0;

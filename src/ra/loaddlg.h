@@ -44,10 +44,10 @@
 #define CNC_RED_ALERT_RA_LOADDLG_H_
 
 #include <cstdint>
+#include <vector>
 
 #include "ra/defines.h"
 #include "ra/list.h"
-#include "ra/vector_dynamic.h"
 
 class FileEntryClass {
  public:
@@ -88,14 +88,10 @@ class LoadOptionsClass {
   */
   LoadStyleType Style;
 
-  /*
-  ** This is an array of pointers to FileEntryClass objects.  These objects
-  ** are allocated on the fly as files are found, and pointers to them are
-  ** added to the vector list.  Thus, all the objects must be free'd before
-  ** the vector list is cleared.  This list is used for sorting the files
-  ** by date/time.
-  */
-  DynamicVectorClass<FileEntryClass*> Files;
+  // The saved games the list box shows, newest first, in the list's order.
+  // The list box points into their descriptions, so Clear_List empties it
+  // before this.
+  std::vector<FileEntryClass> Files;
 };
 
 #endif  // CNC_RED_ALERT_RA_LOADDLG_H_

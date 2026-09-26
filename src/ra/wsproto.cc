@@ -67,8 +67,9 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <span>
-#include <utility>  // IWYU pragma: keep - used by an DCHECK() below.
+#include <utility>
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
@@ -241,14 +242,7 @@ void WinsockInterfaceClass::Stop_Listening() {
  *                                                                                             *
  * HISTORY: * 8/5/97 11:55AM ST : Created *
  *=============================================================================================*/
-void WinsockInterfaceClass::Discard_In_Buffers() {
-
-  while (InBuffers.Count()) {
-    WinsockBufferType* packet = InBuffers.at(0);
-    delete packet;
-    InBuffers.Delete(0);
-  }
-}
+void WinsockInterfaceClass::Discard_In_Buffers() { InBuffers.Clear(); }
 
 /***********************************************************************************************
  * WIC::Discard_In_Buffers -- Discard any packets in our outgoing packet holding
@@ -264,14 +258,7 @@ void WinsockInterfaceClass::Discard_In_Buffers() {
  *                                                                                             *
  * HISTORY: * 8/5/97 11:55AM ST : Created *
  *=============================================================================================*/
-void WinsockInterfaceClass::Discard_Out_Buffers() {
-
-  while (OutBuffers.Count()) {
-    WinsockBufferType* packet = OutBuffers.at(0);
-    delete packet;
-    OutBuffers.Delete(0);
-  }
-}
+void WinsockInterfaceClass::Discard_Out_Buffers() { OutBuffers.Clear(); }
 
 /***********************************************************************************************
  * WIC::Init -- Initialised Winsock and this class for use. *
@@ -295,13 +282,13 @@ bool WinsockInterfaceClass::Init() {
   }
 
 #ifdef _WIN32
-  /*
-  ** Create a buffer much larger than the sizeof (WSADATA) would indicate since
-  *Bounds Checker
-  ** says that a buffer of that size gets overrun.
-  */
-  char* buffer = new char[sizeof(WSADATA) + 1024];
-  auto* winsock_info = reinterpret_cast<WSADATA*>(buffer);
+  // Leave 1 KB of slack after the WSADATA: Bounds Checker reported
+  // WSAStartup writing past a buffer of exactly its size.
+  struct {
+    WSADATA data;
+    char slack[1024];
+  } winsock_storage{};
+  WSADATA* const winsock_info = &winsock_storage.data;
 #endif
 
   /*
@@ -324,7 +311,6 @@ bool WinsockInterfaceClass::Init() {
                    "TS: Winsock failed to initialise - error code %d.\n",
                    GetLastError());
     absl::PrintF("%s", out);
-    delete[] buffer;
     return (false);
   }
 
@@ -334,11 +320,8 @@ bool WinsockInterfaceClass::Init() {
   if ((winsock_info->wVersion & 0x00ff) != (version & 0x00ff) ||
       (winsock_info->wVersion >> 8) != (version >> 8)) {
     absl::PrintF("%s", "TS: Winsock version is less than 1.1\n");
-    delete[] buffer;
     return (false);
   }
-
-  delete[] buffer;
 #endif
 
   /*
@@ -408,7 +391,6 @@ int WinsockInterfaceClass::Read(std::span<std::byte> buffer, int& buffer_len,
   *the game.
   */
   InBuffers.Delete(packetnum);
-  delete packet;
 
   return buffer_len;
 }
@@ -433,7 +415,7 @@ void WinsockInterfaceClass::WriteTo(std::span<const std::byte> buffer,
   /*
   ** Create a temporary holding area for the packet.
   */
-  auto* packet = new WinsockBufferType;
+  auto packet = std::make_unique<WinsockBufferType>();
 
   /*
   ** Copy the packet into the holding buffer.
@@ -451,10 +433,7 @@ void WinsockInterfaceClass::WriteTo(std::span<const std::byte> buffer,
   /*
   ** Add it to our out list.
   */
-  if (!OutBuffers.Add(packet)) {
-    delete packet;
-    return;
-  }
+  OutBuffers.Add(std::move(packet));
 
   // enable write events
   Socket_Check_Write(Socket, true);
@@ -483,7 +462,7 @@ void WinsockInterfaceClass::Broadcast(std::span<const std::byte> buffer,
   /*
   ** Create a temporary holding area for the packet.
   */
-  auto* packet = new WinsockBufferType;
+  auto packet = std::make_unique<WinsockBufferType>();
 
   /*
   ** Copy the packet into the holding buffer.
@@ -500,10 +479,7 @@ void WinsockInterfaceClass::Broadcast(std::span<const std::byte> buffer,
   /*
   ** Add it to our out list.
   */
-  if (!OutBuffers.Add(packet)) {
-    delete packet;
-    return;
-  }
+  OutBuffers.Add(std::move(packet));
 
   /*
   ** Make sure the message loop gets called.

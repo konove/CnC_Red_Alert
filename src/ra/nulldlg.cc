@@ -56,6 +56,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <memory>
 #include <span>
 #include <string>
 #include <string_view>
@@ -117,7 +118,6 @@
 #include "ra/list.h"
 #include "ra/mapedit.h"
 #include "ra/mission_id.h"
-#include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
 #include "ra/netdlg.h"
@@ -845,8 +845,7 @@ void Destroy_Null_Connection(int id, int error) {
   for (int i = 0; i < TheSession().Players.Count(); i++) {
     if (absl::EqualsIgnoreCase(TheSession().Players.at(i)->Name,
                                housep->IniName)) {
-      delete TheSession().Players.at(i);
-      TheSession().Players.Delete(TheSession().Players.at(i));
+      TheSession().Players.Delete(i);
       break;
     }
   }
@@ -1155,9 +1154,9 @@ GameType Select_Serial_Dialog() {
                               ->Settings;
             }
 
-            delete SerialPort;
+            SerialPort.reset();
 
-            SerialPort = new WinModemClass;
+            SerialPort = std::make_unique<WinModemClass>();
             if (Init_Null_Modem(settings)) {
               if (settings->CallWaitStringIndex == kCallWaitCustom) {
                 *DialString = settings->CallWaitString;
@@ -1201,8 +1200,8 @@ GameType Select_Serial_Dialog() {
             ** Remote-connect
             */
             settings = &TheSession().SerialDefaults;
-            delete SerialPort;
-            SerialPort = new WinModemClass;
+            SerialPort.reset();
+            SerialPort = std::make_unique<WinModemClass>();
             if (Init_Null_Modem(settings)) {
               if (Answer_Modem(settings, false)) {
                 TheSession().ModemType = MODEM_ANSWERER;
@@ -1748,7 +1747,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   */
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  char* item = nullptr;             // general-purpose string
   size_t temp = 0;                  // general-purpose string
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
@@ -1859,20 +1857,20 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   *its just
   ** tough luck if the user has more than 10 modems attached!
   */
-  delete TheNetwork().modem_registry();
+  TheNetwork().modem_registry().reset();
 
   int modems_found = 0;
   for (int i = 0; i < 10; i++) {
-    TheNetwork().modem_registry() = new ModemRegistryEntryClass(i);
+    TheNetwork().modem_registry() =
+        std::make_unique<ModemRegistryEntryClass>(i);
     if (TheNetwork().modem_registry()->Get_Modem_Name()) {
       base::SafeCopy(base::At(modemnames, modems_found),
                      TheNetwork().modem_registry()->Get_Modem_Name());
       portlist.Add_Item(base::At(modemnames, modems_found++));
       port_custom_index++;
     }
-    delete TheNetwork().modem_registry();
+    TheNetwork().modem_registry().reset();
   }
-  TheNetwork().modem_registry() = nullptr;
 
   portlist.Add_Item(custom_port);
 
@@ -2293,16 +2291,14 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       ** Add a new InitString entry
       */
       case engine::window::ButtonKey(kButtonAdd): {
-        item = new char[INITSTRBUF_MAX]{};
-        // The allocation immediately above owns exactly INITSTRBUF_MAX bytes.
-        // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-        const std::span<char> item_buffer(item, INITSTRBUF_MAX);
+        auto new_item = std::make_unique<InitString>();
 
         std::ranges::transform(base::MutableCString(initstrbuf), initstrbuf,
                                absl::ascii_toupper);
-        base::SafeCopy(item_buffer, initstrbuf);
+        base::SafeCopy(*new_item, initstrbuf);
 
-        TheSession().InitStrings.Add(item);
+        const InitString* const item =
+            TheSession().InitStrings.Add(std::move(new_item));
         Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
                                   &initstr_index);
         /*............................................................
@@ -2312,7 +2308,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           if (item == TheSession().InitStrings.at(i)) {
             initstr_index = i;
             base::SafeCopy(initstrbuf,
-                           TheSession().InitStrings.at(initstr_index));
+                           TheSession().InitStrings.at(initstr_index)->data());
             initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
             initstrlist.Set_Selected_Index(initstr_index);
           }
@@ -2510,24 +2506,16 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   /*
   ** Now sort the init string list by name then number
   */
-  if (TheSession().InitStrings.Count() > 0) {
-    std::vector<char*> sorted(base::ToSize(TheSession().InitStrings.Count()));
-    for (int i = 0; i < TheSession().InitStrings.Count(); ++i) {
-      sorted.at(base::ToSize(i)) = TheSession().InitStrings.at(i);
-    }
-    std::ranges::sort(sorted, [](const char* left, const char* right) {
-      return std::string_view(left).compare(right) < 0;
-    });
-    for (int i = 0; i < TheSession().InitStrings.Count(); ++i) {
-      TheSession().InitStrings.at(i) = sorted.at(base::ToSize(i));
-    }
-  }
+  TheSession().InitStrings.Sort(
+      [](const InitString& left, const InitString& right) {
+        return std::string_view(left.data()) < std::string_view(right.data());
+      });
 
   /*........................................................................
   Build the list
   ........................................................................*/
   for (int i = 0; i < TheSession().InitStrings.Count(); i++) {
-    list->Add_Item(TheSession().InitStrings.at(i));
+    list->Add_Item(TheSession().InitStrings.at(i)->data());
   }
   list->Flag_To_Redraw();
 
@@ -2545,7 +2533,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   ........................................................................*/
   if (curidx > -1) {
     base::SafeCopy(std::span(buf).first(INITSTRBUF_MAX),
-                   TheSession().InitStrings.at(curidx));
+                   TheSession().InitStrings.at(curidx)->data());
     edit->Set_Text(buf, INITSTRBUF_MAX);
     list->Set_Selected_Index(curidx);
   }
@@ -3002,7 +2990,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Clear the Players vector
   ........................................................................*/
-  Clear_Vector(&TheSession().Players);
+  TheSession().Players.Clear();
 
   /*........................................................................
   Init scenario description list box
@@ -4075,12 +4063,11 @@ int Com_Scenario_Dialog(bool skirmish) {
       Add both players to the Players vector; the local system is always
       index 0.
       .....................................................................*/
-      who = new NodeNameType;
+      who = TheSession().Players.Add(std::make_unique<NodeNameType>());
       base::SafeCopy(who->Name, namebuf);
       who->Player.House = TheSession().House;
       who->Player.Color = TheSession().ColorIdx;
       who->Player.ProcessTime = -1;
-      TheSession().Players.Add(who);
 
       /*
       **	Fetch the difficulty setting when in skirmish mode.
@@ -4122,7 +4109,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       }
 
       if (!skirmish) {
-        who = new NodeNameType;
+        who = TheSession().Players.Add(std::make_unique<NodeNameType>());
 
         /* If the names of the players are the same then we MUST force them
          * be be unique. This is necessary to prevent a crash after loading
@@ -4140,7 +4127,6 @@ int Com_Scenario_Dialog(bool skirmish) {
         who->Player.House = TheirHouse;
         who->Player.Color = TheirColor;
         who->Player.ProcessTime = -1;
-        TheSession().Players.Add(who);
       }
 
       /*.....................................................................
@@ -4829,7 +4815,7 @@ int Com_Show_Scenario_Dialog() {
   /*........................................................................
   Clear the Players vector
   ........................................................................*/
-  Clear_Vector(&TheSession().Players);
+  TheSession().Players.Clear();
 
   /*........................................................................
   Init the message display system
@@ -5914,7 +5900,7 @@ int Com_Show_Scenario_Dialog() {
     Add both players to the Players vector; the local system is always
     index 0.
     .....................................................................*/
-    who = new NodeNameType;
+    who = TheSession().Players.Add(std::make_unique<NodeNameType>());
 
     /* If the names of the players are the same then we MUST force them
      * to be unique. This is necessary to prevent a crash after loading
@@ -5932,14 +5918,12 @@ int Com_Show_Scenario_Dialog() {
     who->Player.House = TheSession().House;
     who->Player.Color = TheSession().ColorIdx;
     who->Player.ProcessTime = -1;
-    TheSession().Players.Add(who);
 
-    who = new NodeNameType;
+    who = TheSession().Players.Add(std::make_unique<NodeNameType>());
     base::SafeCopy(who->Name, TheirName);
     who->Player.House = TheirHouse;
     who->Player.Color = TheirColor;
     who->Player.ProcessTime = -1;
-    TheSession().Players.Add(who);
 
     starttime = SystemTicks();
     while ((TheNetwork().null_modem().Num_Send() &&
@@ -6266,28 +6250,27 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       Add a new entry
       ------------------------------------------------------------------*/
-      case engine::window::ButtonKey(kButtonAdd):
-
+      case engine::window::ButtonKey(kButtonAdd): {
         /*...............................................................
         Allocate a new phone book entry
         ...............................................................*/
-        p_entry = new PhoneEntryClass();
-        p_entry->Name[0] = 0;
-        p_entry->Number[0] = 0;
-        p_entry->Settings.Port = 0;
-        p_entry->Settings.IRQ = -1;
-        p_entry->Settings.Baud = -1;
-        p_entry->Settings.DialMethod = DIAL_TOUCH_TONE;
-        p_entry->Settings.InitStringIndex = 0;
-        p_entry->Settings.CallWaitStringIndex = kCallWaitCustom;
-        p_entry->Settings.CallWaitString[0] = 0;
+        auto new_entry = std::make_unique<PhoneEntryClass>();
+        new_entry->Name[0] = 0;
+        new_entry->Number[0] = 0;
+        new_entry->Settings.Port = 0;
+        new_entry->Settings.IRQ = -1;
+        new_entry->Settings.Baud = -1;
+        new_entry->Settings.DialMethod = DIAL_TOUCH_TONE;
+        new_entry->Settings.InitStringIndex = 0;
+        new_entry->Settings.CallWaitStringIndex = kCallWaitCustom;
+        new_entry->Settings.CallWaitString[0] = 0;
 
         /*...............................................................
         Invoke the entry editor; if user clicks Save, add the new entry
         to the list, and rebuild the list box.
         ...............................................................*/
-        if (Edit_Phone_Dialog(p_entry)) {
-          TheSession().PhoneBook.Add(p_entry);
+        if (Edit_Phone_Dialog(new_entry.get())) {
+          p_entry = TheSession().PhoneBook.Add(std::move(new_entry));
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
@@ -6303,20 +6286,16 @@ static int Phone_Dialog() {
             }
           }
           changed = true;
-        } else {
-          /*...............................................................
-          If the user clicked Cancel, delete the entry & keep looping.
-          ...............................................................*/
-          delete p_entry;
         }
+        // On Cancel the entry is discarded and the loop keeps going.
         display = REDRAW_ALL;
         break;
+      }
 
       /*------------------------------------------------------------------
       Edit the current entry
       ------------------------------------------------------------------*/
-      case engine::window::ButtonKey(kButtonEdit):
-
+      case engine::window::ButtonKey(kButtonEdit): {
         /*...............................................................
         Do nothing if no entry is selected.
         ...............................................................*/
@@ -6325,18 +6304,18 @@ static int Phone_Dialog() {
         }
 
         /*...............................................................
-        Allocate a new entry & copy the currently-selected entry into it
+        Copy the currently-selected entry for the editor to change
         ...............................................................*/
-        p_entry = new PhoneEntryClass();
-        *p_entry = *TheSession().PhoneBook.at(TheSession().CurPhoneIdx);
+        PhoneEntryClass edited =
+            *TheSession().PhoneBook.at(TheSession().CurPhoneIdx);
 
         /*...............................................................
         Pass the new entry to the entry editor; if the user selects OK,
         copy the data back into our phone book.  Rebuild the list so
         the changes show up in the list box.
         ...............................................................*/
-        if (Edit_Phone_Dialog(p_entry)) {
-          *TheSession().PhoneBook.at(TheSession().CurPhoneIdx) = *p_entry;
+        if (Edit_Phone_Dialog(&edited)) {
+          *TheSession().PhoneBook.at(TheSession().CurPhoneIdx) = edited;
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
@@ -6354,9 +6333,9 @@ static int Phone_Dialog() {
           }
           changed = true;
         }
-        delete p_entry;
         display = REDRAW_ALL;
         break;
+      }
 
       /*------------------------------------------------------------------
       Delete the current entry
@@ -6410,7 +6389,8 @@ static int Phone_Dialog() {
             break;
           }
 
-          p_entry = new PhoneEntryClass();
+          p_entry =
+              TheSession().PhoneBook.Add(std::make_unique<PhoneEntryClass>());
           base::SafeCopy(p_entry->Name, "NONAME");
           base::SafeCopy(p_entry->Number, phone_num);
           p_entry->Settings.Port = 0;
@@ -6421,7 +6401,6 @@ static int Phone_Dialog() {
           p_entry->Settings.CallWaitStringIndex = kCallWaitCustom;
           p_entry->Settings.CallWaitString[0] = 0;
 
-          TheSession().PhoneBook.Add(p_entry);
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
@@ -6506,25 +6485,15 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   /*
   ** Now sort the phone list by name then number
   */
-  if (TheSession().PhoneBook.Count() > 0) {
-    std::vector<PhoneEntryClass*> sorted;
-    sorted.reserve(base::ToSize(TheSession().PhoneBook.Count()));
-    for (int i = 0; i < TheSession().PhoneBook.Count(); ++i) {
-      sorted.push_back(TheSession().PhoneBook.at(i));
-    }
-    std::ranges::sort(
-        sorted, [](const PhoneEntryClass* left, const PhoneEntryClass* right) {
-          int result = std::string_view(left->Name).compare(right->Name);
-          if (result == 0) {
-            // Same name, so order by the phone number instead.
-            result = std::string_view(left->Number).compare(right->Number);
-          }
-          return result < 0;
-        });
-    for (int i = 0; i < TheSession().PhoneBook.Count(); ++i) {
-      TheSession().PhoneBook.at(i) = sorted.at(base::ToSize(i));
-    }
-  }
+  TheSession().PhoneBook.Sort(
+      [](const PhoneEntryClass& left, const PhoneEntryClass& right) {
+        int result = std::string_view(left.Name).compare(right.Name);
+        if (result == 0) {
+          // Same name, so order by the phone number instead.
+          result = std::string_view(left.Number).compare(right.Number);
+        }
+        return result < 0;
+      });
 
   /*........................................................................
   Build the list

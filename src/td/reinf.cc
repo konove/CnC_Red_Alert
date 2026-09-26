@@ -424,7 +424,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
             thisone->Commence();
           }
         } else {
-          delete thisone;
+          base::DeletePooled(thisone);
         }
 
         thisone = next;

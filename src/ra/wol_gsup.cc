@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -99,7 +100,6 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 #include "ra/gauge.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/netdlg.h"
 #include "ra/shapebtn.h"
@@ -194,33 +194,33 @@ WOL_GameSetupDialog::WOL_GameSetupDialog(WolapiObject* wolapi, bool bIsHost)
 
 //***********************************************************************************************
 WOL_GameSetupDialog::~WOL_GameSetupDialog() {
-  delete pILPlayers;
-  delete pILScens;
-  delete pILDisc;
-  delete pEditSend;
-  delete pGaugeCount;
-  delete pGaugeLevel;
-  delete pGaugeCredits;
-  delete pGaugeAIPlayers;
-  delete pCheckListOptions;
+  pILPlayers.reset();
+  pILScens.reset();
+  pILDisc.reset();
+  pEditSend.reset();
+  pGaugeCount.reset();
+  pGaugeLevel.reset();
+  pGaugeCredits.reset();
+  pGaugeAIPlayers.reset();
+  pCheckListOptions.reset();
   //	delete pTextBtnOk;
-  delete pTextBtnCancel;
-  delete pTextBtnAcceptStart;
-  delete pTextBtnAction;
+  pTextBtnCancel.reset();
+  pTextBtnAcceptStart.reset();
+  pTextBtnAction.reset();
   //	delete pStaticDescrip;
-  delete pStaticUnit;
-  delete pStaticLevel;
-  delete pStaticCredits;
-  delete pStaticAIPlayers;
-  delete pDropListHouse;
-  delete pCheckAftermathUnits;
-  delete pTTipAcceptStart;
-  delete pTTipCancel;
-  delete pTTipAction;
-  delete pShpBtnScenarioRA;
-  delete pShpBtnScenarioCS;
-  delete pShpBtnScenarioAM;
-  delete pShpBtnScenarioUser;
+  pStaticUnit.reset();
+  pStaticLevel.reset();
+  pStaticCredits.reset();
+  pStaticAIPlayers.reset();
+  pDropListHouse.reset();
+  pCheckAftermathUnits.reset();
+  pTTipAcceptStart.reset();
+  pTTipCancel.reset();
+  pTTipAction.reset();
+  pShpBtnScenarioRA.reset();
+  pShpBtnScenarioCS.reset();
+  pShpBtnScenarioAM.reset();
+  pShpBtnScenarioUser.reset();
 }
 
 //***********************************************************************************************
@@ -347,26 +347,26 @@ void WOL_GameSetupDialog::Initialize() {
   d_amunits_x = d_dialog_x + (d_dialog_w / 6) - (d_amunits_w / 2);
   d_amunits_y = 365;
 
-  ToolTipClass* pToolTip = pToolTipHead = pWO->pTTipDiscon;
-  pToolTip->next = pWO->pTTipLeave;
+  ToolTipClass* pToolTip = pToolTipHead = pWO->pTTipDiscon.get();
+  pToolTip->next = pWO->pTTipLeave.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipRefresh;
+  pToolTip->next = pWO->pTTipRefresh.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipSquelch;
+  pToolTip->next = pWO->pTTipSquelch.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipBan;
+  pToolTip->next = pWO->pTTipBan.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipKick;
+  pToolTip->next = pWO->pTTipKick.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipFindpage;
+  pToolTip->next = pWO->pTTipFindpage.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipOptions;
+  pToolTip->next = pWO->pTTipOptions.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipLadder;
+  pToolTip->next = pWO->pTTipLadder.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pWO->pTTipHelp;
+  pToolTip->next = pWO->pTTipHelp.get();
 
-  pILPlayers = new IconListClass(
+  pILPlayers = std::make_unique<IconListClass>(
       kButtonPlayerlist, d_playerlist_x, d_playerlist_y, d_playerlist_w,
       d_playerlist_h, TPF_TYPE, MixArchive::RetrieveData("BTN-UP.SHP"),
       MixArchive::RetrieveData("BTN-DN.SHP"), true, 2);
@@ -374,70 +374,73 @@ void WOL_GameSetupDialog::Initialize() {
   // d_scenariolist_y, d_scenariolist_w, d_scenariolist_h, kTpfText,
   // MixArchive::RetrieveData("BTN-UP.SHP"),
   // MixArchive::RetrieveData("BTN-DN.SHP"));
-  pILScens = new IconListClass(
+  pILScens = std::make_unique<IconListClass>(
       kButtonScenariolist, d_scenariolist_x, d_scenariolist_y, d_scenariolist_w,
       d_scenariolist_h, TPF_TYPE, MixArchive::RetrieveData("BTN-UP.SHP"),
       MixArchive::RetrieveData("BTN-DN.SHP"), true, 1);
-  pILDisc =
-      new IconListClass(kButtonDisclist, d_disc_x, d_disc_y, d_disc_w, d_disc_h,
-                        TPF_TYPE, MixArchive::RetrieveData("BTN-UP.SHP"),
-                        MixArchive::RetrieveData("BTN-DN.SHP"), true, 0, 300);
+  pILDisc = std::make_unique<IconListClass>(
+      kButtonDisclist, d_disc_x, d_disc_y, d_disc_w, d_disc_h, TPF_TYPE,
+      MixArchive::RetrieveData("BTN-UP.SHP"),
+      MixArchive::RetrieveData("BTN-DN.SHP"), true, 0, 300);
 
-  pEditSend = new EditClass(kButtonSendedit, szSendBuffer, MAXCHATSENDLENGTH,
-                            kTpfText, d_send_x, d_send_y, d_send_w, d_send_h);
+  pEditSend = std::make_unique<EditClass>(kButtonSendedit, szSendBuffer,
+                                          MAXCHATSENDLENGTH, kTpfText, d_send_x,
+                                          d_send_y, d_send_w, d_send_h);
 
   //	TextButtonClass rejectbtn( BUTTON_REJECT, TXT_REJECT, kTpfButton,
   // d_reject_x, d_reject_y );
-  pGaugeCount =
-      new GaugeClass(kButtonCount, d_count_x, d_count_y, d_count_w, d_count_h);
-  pGaugeLevel =
-      new GaugeClass(kButtonLevel, d_level_x, d_level_y, d_level_w, d_level_h);
-  pGaugeCredits = new GaugeClass(kButtonCredits, d_credits_x, d_credits_y,
-                                 d_credits_w, d_credits_h);
-  pGaugeAIPlayers = new GaugeClass(kButtonAiplayers, d_aiplayers_x,
+  pGaugeCount = std::make_unique<GaugeClass>(kButtonCount, d_count_x, d_count_y,
+                                             d_count_w, d_count_h);
+  pGaugeLevel = std::make_unique<GaugeClass>(kButtonLevel, d_level_x, d_level_y,
+                                             d_level_w, d_level_h);
+  pGaugeCredits = std::make_unique<GaugeClass>(
+      kButtonCredits, d_credits_x, d_credits_y, d_credits_w, d_credits_h);
+  pGaugeAIPlayers =
+      std::make_unique<GaugeClass>(kButtonAiplayers, d_aiplayers_x,
                                    d_aiplayers_y, d_aiplayers_w, d_aiplayers_h);
-  pCheckListOptions = new CheckListClass(
+  pCheckListOptions = std::make_unique<CheckListClass>(
       kButtonParams, d_options_x, d_options_y, d_options_w, d_options_h,
       kTpfText, MixArchive::RetrieveData("BTN-UP.SHP"),
       MixArchive::RetrieveData("BTN-DN.SHP"));
   //	pTextBtnOk = new TextButtonClass( BUTTON_OK, TXT_OK, kTpfButton, d_ok_x,
   // d_ok_y, 60*2 ); 	TextButtonClass loadbtn(kButtonLoad,
   // TXT_LOAD_BUTTON, kTpfButton, d_load_x, d_load_y, 60*2);
-  pTextBtnCancel =
-      new TextButtonClass(kButtonCancel, TXT_WOL_CANCELGAME, kTpfButton,
-                          d_cancel_x, d_cancel_y, d_cancel_w);
-  pTTipCancel = new ToolTipClass(pTextBtnCancel, TXT_WOL_TTIP_CANCELGAME,
-                                 d_cancel_x + (d_cancel_w / 2), d_cancel_y - 6);
+  pTextBtnCancel = std::make_unique<TextButtonClass>(
+      kButtonCancel, TXT_WOL_CANCELGAME, kTpfButton, d_cancel_x, d_cancel_y,
+      d_cancel_w);
+  pTTipCancel = std::make_unique<ToolTipClass>(
+      pTextBtnCancel.get(), TXT_WOL_TTIP_CANCELGAME,
+      d_cancel_x + (d_cancel_w / 2), d_cancel_y - 6);
 
   if (bHost) {
-    pTextBtnAcceptStart =
-        new TextButtonClass(kButtonAcceptstart, TXT_WOL_STARTBUTTON, kTpfButton,
-                            d_accept_x, d_accept_y, d_accept_w);
-    pTTipAcceptStart =
-        new ToolTipClass(pTextBtnAcceptStart, TXT_WOL_TTIP_START,
-                         d_accept_x + (d_accept_w / 2), d_accept_y - 6);
+    pTextBtnAcceptStart = std::make_unique<TextButtonClass>(
+        kButtonAcceptstart, TXT_WOL_STARTBUTTON, kTpfButton, d_accept_x,
+        d_accept_y, d_accept_w);
+    pTTipAcceptStart = std::make_unique<ToolTipClass>(
+        pTextBtnAcceptStart.get(), TXT_WOL_TTIP_START,
+        d_accept_x + (d_accept_w / 2), d_accept_y - 6);
   } else {
-    pTextBtnAcceptStart =
-        new TextButtonClass(kButtonAcceptstart, TXT_WOL_ACCEPTBUTTON,
-                            kTpfButton, d_accept_x, d_accept_y, d_accept_w);
-    pTTipAcceptStart =
-        new ToolTipClass(pTextBtnAcceptStart, TXT_WOL_TTIP_ACCEPT,
-                         d_accept_x + (d_accept_w / 2), d_accept_y - 6);
+    pTextBtnAcceptStart = std::make_unique<TextButtonClass>(
+        kButtonAcceptstart, TXT_WOL_ACCEPTBUTTON, kTpfButton, d_accept_x,
+        d_accept_y, d_accept_w);
+    pTTipAcceptStart = std::make_unique<ToolTipClass>(
+        pTextBtnAcceptStart.get(), TXT_WOL_TTIP_ACCEPT,
+        d_accept_x + (d_accept_w / 2), d_accept_y - 6);
   }
 
-  pTextBtnAction =
-      new TextButtonClass(kButtonAction, TXT_WOL_ACTION, kTpfButton, d_action_x,
-                          d_action_y, d_action_w);
-  pTTipAction =
-      new ToolTipClass(pTextBtnAction, TXT_WOL_TTIP_ACTION,
-                       d_action_x + (d_action_w / 2), d_action_y - 6, true);
+  pTextBtnAction = std::make_unique<TextButtonClass>(
+      kButtonAction, TXT_WOL_ACTION, kTpfButton, d_action_x, d_action_y,
+      d_action_w);
+  pTTipAction = std::make_unique<ToolTipClass>(
+      pTextBtnAction.get(), TXT_WOL_TTIP_ACTION, d_action_x + (d_action_w / 2),
+      d_action_y - 6, true);
 
   pToolTip = pToolTip->next;
-  pToolTip->next = pTTipCancel;
+  pToolTip->next = pTTipCancel.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pTTipAcceptStart;
+  pToolTip->next = pTTipAcceptStart.get();
   pToolTip = pToolTip->next;
-  pToolTip->next = pTTipAction;
+  pToolTip->next = pTTipAction.get();
   pToolTip = pToolTip->next;
   pToolTip->next = nullptr;
 
@@ -449,22 +452,22 @@ void WOL_GameSetupDialog::Initialize() {
   // text. You'd think a StaticButton control would.
   //	pStaticDescrip = new StaticButtonClass( 0, "", TPF_TYPE, d_gamekind_x,
   // d_gamekind_y, d_gamekind_w, d_gamekind_h );
-  pStaticUnit = new StaticButtonClass(0, "    ", kTpfText,
-                                      d_count_x + d_count_w + 4, d_count_y);
-  pStaticLevel = new StaticButtonClass(0, "    ", kTpfText,
-                                       d_level_x + d_level_w + 4, d_level_y);
-  pStaticCredits = new StaticButtonClass(
+  pStaticUnit = std::make_unique<StaticButtonClass>(
+      0, "    ", kTpfText, d_count_x + d_count_w + 4, d_count_y);
+  pStaticLevel = std::make_unique<StaticButtonClass>(
+      0, "    ", kTpfText, d_level_x + d_level_w + 4, d_level_y);
+  pStaticCredits = std::make_unique<StaticButtonClass>(
       0, "         ", kTpfText, d_credits_x + d_credits_w + 4, d_credits_y);
-  pStaticAIPlayers = new StaticButtonClass(
+  pStaticAIPlayers = std::make_unique<StaticButtonClass>(
       0, "   ", kTpfText, d_aiplayers_x + d_aiplayers_w + 4, d_aiplayers_y);
 
-  pDropListHouse = new DropListClass(
+  pDropListHouse = std::make_unique<DropListClass>(
       kButtonHouse, szHouseBuffer, sizeof(szHouseBuffer), kTpfText, d_house_x,
       d_house_y, d_house_w, d_house_h, MixArchive::RetrieveData("BTN-UP.SHP"),
       MixArchive::RetrieveData("BTN-DN.SHP"));
 
   //	ajw - This checkbox is not used. Could be turned on, though.
-  pCheckAftermathUnits = new BigCheckBoxClass(
+  pCheckAftermathUnits = std::make_unique<BigCheckBoxClass>(
       kButtonAftermathunits, d_amunits_x, d_amunits_y, d_amunits_w, d_amunits_h,
       "Aftermath units enabled", kTpfText, false);
 
@@ -484,13 +487,13 @@ void WOL_GameSetupDialog::Initialize() {
   bSlowUnitBuildRate = true;
 
 #define TABSPACING 38
-  pShpBtnScenarioRA = new ShapeButtonClass(
+  pShpBtnScenarioRA = std::make_unique<ShapeButtonClass>(
       kButtonScenarioRa, MixArchive::RetrieveData("tabra.shp"),
       d_scenariolist_x, d_scenariolist_y - d_tab_h);
-  pShpBtnScenarioCS = new ShapeButtonClass(
+  pShpBtnScenarioCS = std::make_unique<ShapeButtonClass>(
       kButtonScenarioCs, MixArchive::RetrieveData("tabcs.shp"),
       d_scenariolist_x + TABSPACING, d_scenariolist_y - d_tab_h);
-  pShpBtnScenarioAM = new ShapeButtonClass(
+  pShpBtnScenarioAM = std::make_unique<ShapeButtonClass>(
       kButtonScenarioAm, MixArchive::RetrieveData("tabam.shp"),
       d_scenariolist_x + TABSPACING, d_scenariolist_y - d_tab_h);
 
@@ -505,7 +508,7 @@ void WOL_GameSetupDialog::Initialize() {
     iScenarioUserTabPos = d_scenariolist_x + TABSPACING;
   }
 
-  pShpBtnScenarioUser = new ShapeButtonClass(
+  pShpBtnScenarioUser = std::make_unique<ShapeButtonClass>(
       kButtonScenarioUser, MixArchive::RetrieveData("tabus.shp"),
       iScenarioUserTabPos, d_scenariolist_y - d_tab_h);
 
@@ -525,7 +528,7 @@ void WOL_GameSetupDialog::Initialize() {
     pCheckAftermathUnits->Disable();
   }
 
-  pWO->LinkToGameDlg(pILDisc, pILPlayers);
+  pWO->LinkToGameDlg(pILDisc.get(), pILPlayers.get());
   pWO->pGSupDlg = this;
 
   dwTimeNextParamRefresh = Get_Time_Ms();
@@ -1373,16 +1376,16 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         break;
 
       case engine::window::ButtonKey(kButtonSquelch):
-        pWO->DoSquelch(pILPlayers);
+        pWO->DoSquelch(pILPlayers.get());
         break;
 
       case engine::window::ButtonKey(kButtonBan):
-        pWO->DoKick(pILPlayers, true);
+        pWO->DoKick(pILPlayers.get(), true);
         //				display = REDRAW_ALL;
         break;
 
       case engine::window::ButtonKey(kButtonKick):
-        pWO->DoKick(pILPlayers, false);
+        pWO->DoKick(pILPlayers.get(), false);
         //				display = REDRAW_ALL;
         break;
 
@@ -1770,7 +1773,7 @@ void WOL_GameSetupDialog::SetSpecialControlStates() {
 //***********************************************************************************************
 void WOL_GameSetupDialog::BindControls(bool bBind) {
   if (bBind) {
-    commands = pWO->pShpBtnDiscon;
+    commands = pWO->pShpBtnDiscon.get();
     pWO->pShpBtnLeave->Add_Tail(*commands);
     pWO->pShpBtnRefresh->Add_Tail(*commands);
     pWO->pShpBtnSquelch->Add_Tail(*commands);
@@ -3602,7 +3605,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   // set "ID" based on a player's color, though it seems unclear if this is even
   // used in the game, or what it should be.
 
-  Clear_Vector(&TheSession().Players);
+  TheSession().Players.Clear();
 
   //	Make the pILPlayers a valid list of players in the game.
   //	Players might (incredibly rarely) have joined in the last split-second,
@@ -3638,7 +3641,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	Add myself to Session.Players list.
   DCHECK(pILPlayers->Find(pWO->szMyName) != -1);
 
-  auto* pPlayerNew = new NodeNameType;
+  auto player = std::make_unique<NodeNameType>();
+  NodeNameType* pPlayerNew = player.get();
   base::SafeCopy(pPlayerNew->Name, pWO->szMyName);  //	"Name" is 12 chars max.
   // pPlayerNew->Address = Session.GAddress;
   pPlayerNew->Player.House = GetPlayerHouse(pWO->szMyName);
@@ -3649,7 +3653,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	pPlayerNew->Player.ID = (HousesType)( pPlayerNew->Player.Color +
   // HOUSE_MULTI1 );
 
-  TheSession().Players.Add(pPlayerNew);
+  TheSession().Players.Add(std::move(player));
 
   char szHostName[WOL_NAME_LEN_MAX] = "Game host";
 
@@ -3668,7 +3672,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
         GetPlayerColor(szPlayerName) != PCOLOR_NONE) {
       //			debugprint( "Creating player node '%s'\n",
       // szPlayerName );
-      pPlayerNew = new NodeNameType;
+      player = std::make_unique<NodeNameType>();
+      pPlayerNew = player.get();
       base::SafeCopy(pPlayerNew->Name, szPlayerName);
       //	Get player's IP address from pChatSink...
       uint32_t lAddress =
@@ -3698,7 +3703,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       // pPlayerNew->Player.ID = (HousesType)( pPlayerNew->Player.Color +
       // HOUSE_MULTI1 );
 
-      TheSession().Players.Add(pPlayerNew);
+      TheSession().Players.Add(std::move(player));
 
       //	If player is the game host, set HostAddress. This global is used
       // when downloading scenarios; who knows where else.

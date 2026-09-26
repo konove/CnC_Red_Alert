@@ -3,7 +3,7 @@
 #define CNC_RED_ALERT_TD_VECTOR_IMPL_H_
 
 #include <algorithm>
-#include <new>
+#include <memory>
 #include <utility>
 
 #include "base/array.h"
@@ -41,9 +41,11 @@ VectorClass<T>::VectorClass(base::ssize size, std::span<T> array)
   */
   if (size) {
     if (!array.empty()) {
-      Vector = new (static_cast<void*>(array.data())) T[base::ToSize(size)];
+      std::uninitialized_default_construct_n(array.data(), base::ToSize(size));
+      Vector = array.data();
     } else {
-      Vector = new T[base::ToSize(size)];
+      Owned = std::make_unique_for_overwrite<T[]>(base::ToSize(size));
+      Vector = Owned.get();
       IsAllocated = true;
     }
   }
@@ -93,12 +95,11 @@ template <class T>
 void VectorClass<T>::Copy_From(const VectorClass<T>& vector) {
   VectorMax = vector.Length();
   if (VectorMax) {
-    Vector = new T[base::ToSize(VectorMax)];
-    if (Vector) {
-      IsAllocated = true;
-      for (base::ssize index = 0; index < VectorMax; index++) {
-        base::At(Elements(), base::ToSize(index)) = vector.at(index);
-      }
+    Owned = std::make_unique_for_overwrite<T[]>(base::ToSize(VectorMax));
+    Vector = Owned.get();
+    IsAllocated = true;
+    for (base::ssize index = 0; index < VectorMax; index++) {
+      base::At(Elements(), base::ToSize(index)) = vector.at(index);
     }
   } else {
     Vector = nullptr;
@@ -230,10 +231,10 @@ int VectorClass<T>::ID(const T& object) {
  *=============================================================================================*/
 template <class T>
 void VectorClass<T>::Clear() {
-  if (Vector && IsAllocated) {
-    delete[] Vector;
+  if (IsAllocated) {
     Vector = nullptr;
   }
+  Owned.reset();
   IsAllocated = false;
   VectorMax = 0;
 }
@@ -267,14 +268,15 @@ bool VectorClass<T>::Resize(base::ssize newsize, std::span<T> array) {
     **	Allocate a new vector of the size specified. The default constructor
     **	will be called for every object in this vector.
     */
+    std::unique_ptr<T[]> allocation;
     T* newptr = nullptr;
     if (array.empty()) {
-      newptr = new T[base::ToSize(newsize)];
+      allocation = std::make_unique_for_overwrite<T[]>(base::ToSize(newsize));
+      newptr = allocation.get();
     } else {
-      newptr = new (static_cast<void*>(array.data())) T[base::ToSize(newsize)];
-    }
-    if (!newptr) {
-      return false;
+      std::uninitialized_default_construct_n(array.data(),
+                                             base::ToSize(newsize));
+      newptr = array.data();
     }
     // newptr is the newsize-element allocation or the checked external span
     // above. NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
@@ -297,24 +299,18 @@ bool VectorClass<T>::Resize(base::ssize newsize, std::span<T> array) {
             base::At(Elements(), base::ToSize(index));
       }
 
-      /*
-      **	Delete the old vector. This might cause the destructors to be
-      *called *	for all of the old elements. This makes the implementation of
-      *suitable *	assignment operator very important. The default
-      *assigment operator will *	only work for the simplist of objects.
-      */
-      if (IsAllocated) {
-        delete[] Vector;
-        Vector = nullptr;
-      }
     }
 
     /*
-    **	Assign the new vector data to this class.
+    **	Assign the new vector data to this class. Replacing Owned deletes the
+    **	old vector if this class allocated it, which runs the destructors of
+    **	all of the old elements; that makes a suitable assignment operator
+    **	for the copy above very important.
     */
-    Vector = newptr;
+    Owned = std::move(allocation);
+    Vector = array.empty() ? Owned.get() : array.data();
     VectorMax = newsize;
-    IsAllocated = Vector != nullptr && array.empty();
+    IsAllocated = array.empty();
 
   } else {
     /*

@@ -63,7 +63,9 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <span>
+#include <utility>
 
 #include "absl/log/check.h"
 #include "base/array.h"
@@ -137,7 +139,7 @@ class IndexClass {
   **	This is the pointer to the allocated index table. It contains all valid
   *nodes in *	a sorted order.
   */
-  NodeElement* IndexTable;
+  std::unique_ptr<NodeElement[]> IndexTable;
 
   /*
   **	This records the number of valid nodes within the index table.
@@ -204,7 +206,7 @@ class IndexClass {
     CHECK(IndexTable != nullptr || IndexSize == 0);
     // IndexTable is allocated exclusively by Increase_Table_Size at IndexSize.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    return {IndexTable, base::ToSize(IndexSize)};
+    return {IndexTable.get(), base::ToSize(IndexSize)};
   }
 };
 
@@ -222,10 +224,7 @@ class IndexClass {
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
 template <class T>
-IndexClass<T>::IndexClass()
-    : IndexTable(nullptr),
-
-      Archive(nullptr) {
+IndexClass<T>::IndexClass() : Archive(nullptr) {
   Invalidate_Archive();
 }
 
@@ -264,8 +263,7 @@ IndexClass<T>::~IndexClass() {
  *=============================================================================================*/
 template <class T>
 void IndexClass<T>::Clear() {
-  delete[] IndexTable;
-  IndexTable = nullptr;
+  IndexTable.reset();
   IndexCount = 0;
   IndexSize = 0;
   IsSorted = false;
@@ -299,39 +297,31 @@ bool IndexClass<T>::Increase_Table_Size(int amount) {
     return false;
   }
 
-  auto* table = new NodeElement[base::ToSize(IndexSize + amount)];
-  if (table != nullptr) {
-    // table was allocated immediately above for exactly IndexSize + amount
-    // nodes. NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    const std::span<NodeElement> replacement(table,
-                                             base::ToSize(IndexSize + amount));
-    /*
-    **	Copy all valid nodes into the new table.
-    */
-    for (int index = 0; index < IndexCount; index++) {
-      base::At(replacement, base::ToSize(index)) =
-          base::At(Nodes(), base::ToSize(index));
-    }
-
-    /*
-    **	Make the new table the current one (and delete the old one).
-    */
-    delete[] IndexTable;
-    IndexTable = table;
-    IndexSize += amount;
-    Invalidate_Archive();
-
-    /*
-    **	Return with success flag.
-    */
-    return true;
+  auto table = std::make_unique_for_overwrite<NodeElement[]>(
+      base::ToSize(IndexSize + amount));
+  // table was allocated immediately above for exactly IndexSize + amount
+  // nodes. NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+  const std::span<NodeElement> replacement(table.get(),
+                                           base::ToSize(IndexSize + amount));
+  /*
+  **	Copy all valid nodes into the new table.
+  */
+  for (int index = 0; index < IndexCount; index++) {
+    base::At(replacement, base::ToSize(index)) =
+        base::At(Nodes(), base::ToSize(index));
   }
 
   /*
-  **	Failure to allocate the memory results in a failure to increase
-  **	the size of the index table.
+  **	Make the new table the current one (and delete the old one).
   */
-  return false;
+  IndexTable = std::move(table);
+  IndexSize += amount;
+  Invalidate_Archive();
+
+  /*
+  **	Return with success flag.
+  */
+  return true;
 }
 
 /***********************************************************************************************

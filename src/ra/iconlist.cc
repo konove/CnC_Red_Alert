@@ -35,6 +35,8 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <iterator>
+#include <memory>
 #include <span>
 #include <string>
 #include <string_view>
@@ -60,7 +62,6 @@
 #include "ra/inline.h"
 #include "ra/list.h"
 #include "ra/shape_draw.h"
-#include "ra/vector_dynamic.h"
 #include "ra/winbits.h"
 
 namespace {
@@ -80,17 +81,14 @@ const dib::Image& AsImage(const void* icon ABSL_ATTRIBUTE_LIFETIME_BOUND) {
 // Add_Item takes these seventeen arguments in three different places; this is
 // the part all three share.
 //
-// Returns false, having thrown the struct away again, if the list could not
-// grow. The caller must then not add the item's text either, or the two lists
-// stop lining up.
-bool AddItemExtras(DynamicVectorClass<IconList_ItemExtras*>& list,
+void AddItemExtras(std::vector<std::unique_ptr<IconList_ItemExtras>>& list,
                    const char* szHelp, IconListIcon pIcon0, ICONKIND IconKind0,
                    const char* szExtraDataString, void* pvExtraData,
                    RemapControlType* pColorRemap, IconListIcon pIcon1,
                    ICONKIND IconKind1, IconListIcon pIcon2, ICONKIND IconKind2,
                    IconListIcon pFixedIcon, ICONKIND FixedIconKind,
                    int iXFixedIcon, int iYFixedIcon, int iFixedIconWidth) {
-  auto* extras = new IconList_ItemExtras;
+  auto extras = std::make_unique<IconList_ItemExtras>();
   extras->pIcon[0] = pIcon0;
   extras->IconKind[0] = IconKind0;
   extras->pIcon[1] = pIcon1;
@@ -110,11 +108,7 @@ bool AddItemExtras(DynamicVectorClass<IconList_ItemExtras*>& list,
   if (szExtraDataString != nullptr) {
     extras->szExtraData = szExtraDataString;
   }
-  if (!list.Add(extras)) {
-    delete extras;
-    return false;
-  }
-  return true;
+  list.push_back(std::move(extras));
 }
 
 }  // namespace
@@ -146,13 +140,7 @@ IconListClass::IconListClass(int id, int x, int y, int w, int h,
 }
 
 //***********************************************************************************************
-IconListClass::~IconListClass() {
-  //	Delete the IconList_ItemExtras structs created to hold extra info on
-  // each item.
-  for (int i = 0; i < ExtrasList.Count(); i++) {
-    delete ExtrasList.at(i);
-  }
-}
+IconListClass::~IconListClass() = default;
 
 /***********************************************************************************************
  * IconListClass::Add_Item -- Adds an item to the list box. *
@@ -248,12 +236,10 @@ int IconListClass::Add_Item(
       }
       return iRetVal;  //	Last value returned by ListClass::Add_Item
     }  //	Add one item to list.
-    if (!AddItemExtras(ExtrasList, szHelp, pIcon0, IconKind0, szExtraDataString,
-                       pvExtraDataPtr, pColorRemap, pIcon1, IconKind1, pIcon2,
-                       IconKind2, pFixedIcon, FixedIconKind, iXFixedIcon,
-                       iYFixedIcon, iFixedIconWidth)) {
-      return -1;
-    }
+    AddItemExtras(ExtrasList, szHelp, pIcon0, IconKind0, szExtraDataString,
+                  pvExtraDataPtr, pColorRemap, pIcon1, IconKind1, pIcon2,
+                  IconKind2, pFixedIcon, FixedIconKind, iXFixedIcon,
+                  iYFixedIcon, iFixedIconWidth);
     return ListClass::Add_Item(text);
   }
 
@@ -264,12 +250,10 @@ int IconListClass::Add_Item(
 
   //	Because we want the icon to show up, create a blank entry for the
   //	ListClass.
-  if (!AddItemExtras(ExtrasList, szHelp, pIcon0, IconKind0, szExtraDataString,
-                     pvExtraDataPtr, pColorRemap, pIcon1, IconKind1, pIcon2,
-                     IconKind2, pFixedIcon, FixedIconKind, iXFixedIcon,
-                     iYFixedIcon, iFixedIconWidth)) {
-    return -1;
-  }
+  AddItemExtras(ExtrasList, szHelp, pIcon0, IconKind0, szExtraDataString,
+                pvExtraDataPtr, pColorRemap, pIcon1, IconKind1, pIcon2,
+                IconKind2, pFixedIcon, FixedIconKind, iXFixedIcon, iYFixedIcon,
+                iFixedIconWidth);
 
   if (iMaxItems && Count() == iMaxItems) {
     //	Delete head of list.
@@ -297,12 +281,10 @@ int IconListClass::Add_Item_Detail(
   }
   //	Create icon entry.
   //	ajw - Question: repeat the icon for each entry? make it optional?
-  if (!AddItemExtras(ExtrasList, szHelp, pIcon0, IconKind0, szExtraDataString,
-                     pvExtraData, pColorRemap, pIcon1, IconKind1, pIcon2,
-                     IconKind2, pFixedIcon, FixedIconKind, iXFixedIcon,
-                     iYFixedIcon, iFixedIconWidth)) {
-    return -1;
-  }
+  AddItemExtras(ExtrasList, szHelp, pIcon0, IconKind0, szExtraDataString,
+                pvExtraData, pColorRemap, pIcon1, IconKind1, pIcon2, IconKind2,
+                pFixedIcon, FixedIconKind, iXFixedIcon, iYFixedIcon,
+                iFixedIconWidth);
   //	Create text entry.
   return ListClass::Add_Item(szToken);
 }
@@ -337,8 +319,7 @@ void IconListClass::Remove_Item(const char* text) {
 //***********************************************************************************************
 void IconListClass::Remove_Item(int index) {
   if (index >= 0 && index < Count()) {
-    delete ExtrasList.at(index);
-    ExtrasList.Delete(index);
+    ExtrasList.erase(std::next(ExtrasList.begin(), index));
     ListClass::Remove_Item(index);
 
     //	I should probably put this in ListClass:Remove_Item(), as it seems
@@ -377,7 +358,7 @@ void IconListClass::Remove_Item(int index) {
 
 void IconListClass::Draw_Entry(PixelView& view, int index, int x, int y,
                                int width, bool selected) {
-  const IconList_ItemExtras* pExtras = ExtrasList.at(index);
+  const IconList_ItemExtras* pExtras = ExtrasList.at(base::ToSize(index)).get();
 
   int xText = x;
   //	ajw If I end up needing to use SHAPEs for icons, figure out shape width
@@ -516,8 +497,8 @@ bool IconListClass::Action(unsigned flags, engine::window::KeyNumber& key,
     base::ssize iSelected = CurrentTopIndex + index;
     iSelected = std::min<base::ssize>(iSelected, Count() - 1);
     if (iSelected >= 0) {
-      ExtrasList.at(iSelected)->bMultiSelected =
-          !ExtrasList.at(iSelected)->bMultiSelected;
+      ExtrasList.at(base::ToSize(iSelected))->bMultiSelected =
+          !ExtrasList.at(base::ToSize(iSelected))->bMultiSelected;
     }
   }
 
@@ -538,23 +519,23 @@ void IconListClass::Show_Last_Item() {
 
 //***********************************************************************************************
 bool IconListClass::bItemIsMultiSelected(int index) const {
-  if (index < ExtrasList.Count() && index > -1) {
-    return ExtrasList.at(index)->bMultiSelected;
+  if (index < std::ssize(ExtrasList) && index > -1) {
+    return ExtrasList.at(base::ToSize(index))->bMultiSelected;
   }
   return false;
 }
 
 //***********************************************************************************************
 void IconListClass::MultiSelect(int index, bool bSelect) {
-  if (index < ExtrasList.Count() && index > -1) {
-    ExtrasList.at(index)->bMultiSelected = bSelect;
+  if (index < std::ssize(ExtrasList) && index > -1) {
+    ExtrasList.at(base::ToSize(index))->bMultiSelected = bSelect;
   }
 }
 
 //***********************************************************************************************
 const char* IconListClass::Get_Item_ExtraDataString(int index) const {
-  if (index < ExtrasList.Count() && index > -1) {
-    const std::string& data = ExtrasList.at(index)->szExtraData;
+  if (index < std::ssize(ExtrasList) && index > -1) {
+    const std::string& data = ExtrasList.at(base::ToSize(index))->szExtraData;
     return data.empty() ? nullptr : data.c_str();
   }
   return nullptr;
@@ -563,8 +544,8 @@ const char* IconListClass::Get_Item_ExtraDataString(int index) const {
 //***********************************************************************************************
 void IconListClass::Set_Item_ExtraDataString(int index,
                                              const char* szNewString) {
-  if (index < ExtrasList.Count() && index > -1) {
-    IconList_ItemExtras* pItemExtra = ExtrasList.at(index);
+  if (index < std::ssize(ExtrasList) && index > -1) {
+    IconList_ItemExtras* pItemExtra = ExtrasList.at(base::ToSize(index)).get();
     pItemExtra->szExtraData = szNewString != nullptr ? szNewString : "";
   }
 }
@@ -573,8 +554,8 @@ void IconListClass::Set_Item_ExtraDataString(int index,
 void* IconListClass::Get_Item_ExtraDataPtr(int index) const {
   //	Returns the hidden "extra data" void pointer that can be associated with
   // each item. 	This is NULL if no value was assigned.
-  if (index < ExtrasList.Count() && index > -1) {
-    return ExtrasList.at(index)->pvExtraData;
+  if (index < std::ssize(ExtrasList) && index > -1) {
+    return ExtrasList.at(base::ToSize(index))->pvExtraData;
   }
   return nullptr;
 }
@@ -583,23 +564,23 @@ void* IconListClass::Get_Item_ExtraDataPtr(int index) const {
 void IconListClass::Set_Item_ExtraDataPtr(int index, void* pNewValue) {
   //	Sets the hidden "extra data" void pointer that can be associated with
   // each item.
-  if (index < ExtrasList.Count() && index > -1) {
-    ExtrasList.at(index)->pvExtraData = pNewValue;
+  if (index < std::ssize(ExtrasList) && index > -1) {
+    ExtrasList.at(base::ToSize(index))->pvExtraData = pNewValue;
   }
 }
 
 //***********************************************************************************************
 const IconList_ItemExtras* IconListClass::Get_ItemExtras(int index) const {
-  if (index < ExtrasList.Count() && index > -1) {
-    return ExtrasList.at(index);
+  if (index < std::ssize(ExtrasList) && index > -1) {
+    return ExtrasList.at(base::ToSize(index)).get();
   }
   return nullptr;
 }
 
 //***********************************************************************************************
 const char* IconListClass::Get_Item_Help(int index) const {
-  if (index < ExtrasList.Count() && index > -1) {
-    const std::string& help = ExtrasList.at(index)->szHelp;
+  if (index < std::ssize(ExtrasList) && index > -1) {
+    const std::string& help = ExtrasList.at(base::ToSize(index))->szHelp;
     return help.empty() ? nullptr : help.c_str();
   }
   return nullptr;
@@ -609,12 +590,7 @@ const char* IconListClass::Get_Item_Help(int index) const {
 void IconListClass::Clear() {
   //	Removes all items from list.
 
-  //	Delete the IconList_ItemExtras structs created to hold extra info on
-  // each item.
-  for (int i = 0; i < ExtrasList.Count(); i++) {
-    delete ExtrasList.at(i);
-  }
-  ExtrasList.Clear();
+  ExtrasList.clear();
 
   List.clear();
   Remove_Scroll_Bar();
@@ -624,16 +600,16 @@ void IconListClass::Clear() {
 
 //***********************************************************************************************
 RemapControlType* IconListClass::Get_Item_Color(int index) {
-  if (index < ExtrasList.Count() && index > -1) {
-    return ExtrasList.at(index)->pColorRemap;
+  if (index < std::ssize(ExtrasList) && index > -1) {
+    return ExtrasList.at(base::ToSize(index))->pColorRemap;
   }
   return nullptr;
 }
 
 //***********************************************************************************************
 void IconListClass::Set_Item_Color(int index, RemapControlType* pColorRemap) {
-  if (index < ExtrasList.Count() && index > -1) {
-    ExtrasList.at(index)->pColorRemap = pColorRemap;
+  if (index < std::ssize(ExtrasList) && index > -1) {
+    ExtrasList.at(base::ToSize(index))->pColorRemap = pColorRemap;
   }
 }
 
@@ -678,8 +654,9 @@ bool IconListClass::Set_Icon(unsigned int index, unsigned int iIconNumber,
   }
 
   //	Sets one of the left-aligned icons.
-  base::At(ExtrasList.at(index)->pIcon, iIconNumber) = pIcon;
-  base::At(ExtrasList.at(index)->IconKind, iIconNumber) = IconKind;
+  base::At(ExtrasList.at(base::ToSize(index))->pIcon, iIconNumber) = pIcon;
+  base::At(ExtrasList.at(base::ToSize(index))->IconKind, iIconNumber) =
+      IconKind;
   return true;
 }
 

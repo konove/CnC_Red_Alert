@@ -31,8 +31,10 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <span>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -157,7 +159,6 @@ struct CHATSAVE  //	What we save about each individual list item.
 {
   char szText[SAVECHATWIDTH + 1]{};
   IconList_ItemExtras ItemExtras;  //	Only color is used.
-  CHATSAVE* next = nullptr;
 };
 
 struct CREATEGAMEINFO {
@@ -356,26 +357,26 @@ class WolapiObject {
   std::span<const std::byte> pShpOptions;
   std::span<const std::byte> pShpLadder;
   std::span<const std::byte> pShpHelp;
-  ShapeButtonClass* pShpBtnDiscon{nullptr};
-  ShapeButtonClass* pShpBtnLeave{nullptr};
-  ShapeButtonClass* pShpBtnRefresh{nullptr};
-  ShapeButtonClass* pShpBtnSquelch{nullptr};
-  ShapeButtonClass* pShpBtnBan{nullptr};
-  ShapeButtonClass* pShpBtnKick{nullptr};
-  ShapeButtonClass* pShpBtnFindpage{nullptr};
-  ShapeButtonClass* pShpBtnOptions{nullptr};
-  ShapeButtonClass* pShpBtnLadder{nullptr};
-  ShapeButtonClass* pShpBtnHelp{nullptr};
-  ToolTipClass* pTTipDiscon{nullptr};
-  ToolTipClass* pTTipLeave{nullptr};
-  ToolTipClass* pTTipRefresh{nullptr};
-  ToolTipClass* pTTipSquelch{nullptr};
-  ToolTipClass* pTTipBan{nullptr};
-  ToolTipClass* pTTipKick{nullptr};
-  ToolTipClass* pTTipFindpage{nullptr};
-  ToolTipClass* pTTipOptions{nullptr};
-  ToolTipClass* pTTipLadder{nullptr};
-  ToolTipClass* pTTipHelp{nullptr};
+  std::unique_ptr<ShapeButtonClass> pShpBtnDiscon;
+  std::unique_ptr<ShapeButtonClass> pShpBtnLeave;
+  std::unique_ptr<ShapeButtonClass> pShpBtnRefresh;
+  std::unique_ptr<ShapeButtonClass> pShpBtnSquelch;
+  std::unique_ptr<ShapeButtonClass> pShpBtnBan;
+  std::unique_ptr<ShapeButtonClass> pShpBtnKick;
+  std::unique_ptr<ShapeButtonClass> pShpBtnFindpage;
+  std::unique_ptr<ShapeButtonClass> pShpBtnOptions;
+  std::unique_ptr<ShapeButtonClass> pShpBtnLadder;
+  std::unique_ptr<ShapeButtonClass> pShpBtnHelp;
+  std::unique_ptr<ToolTipClass> pTTipDiscon;
+  std::unique_ptr<ToolTipClass> pTTipLeave;
+  std::unique_ptr<ToolTipClass> pTTipRefresh;
+  std::unique_ptr<ToolTipClass> pTTipSquelch;
+  std::unique_ptr<ToolTipClass> pTTipBan;
+  std::unique_ptr<ToolTipClass> pTTipKick;
+  std::unique_ptr<ToolTipClass> pTTipFindpage;
+  std::unique_ptr<ToolTipClass> pTTipOptions;
+  std::unique_ptr<ToolTipClass> pTTipLadder;
+  std::unique_ptr<ToolTipClass> pTTipHelp;
 
   WOL_GAMETYPEINFO OldRAGameTypeInfos[3];  //	Used for storing old red alert
                                            // icons only.
@@ -524,8 +525,7 @@ class WolapiObject {
   //	an optional it cannot check from where it stands.
   int iLatencyIconWidth = 0;
 
-  CHATSAVE* pChatSaveList{nullptr};
-  CHATSAVE* pChatSaveLast = nullptr;
+  std::vector<CHATSAVE> SavedChat;  //	See SaveChat().
 };
 
 // The one Westwood Online session, or nullptr when the game is not logged in.

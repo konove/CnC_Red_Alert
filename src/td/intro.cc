@@ -43,11 +43,12 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
+#include <memory>
 #include <optional>
 #include <span>
 #include <utility>
+#include <vector>
 
-#include "base/bytes_of.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -138,17 +139,17 @@ void Choose_Side() {
 
   Call_Back();
 
-  std::span<std::byte> staticaud;
+  std::vector<std::byte> staticaud;
   if (const auto file = OpenGameFile("STRUGGLE.AUD")) {
-    staticaud = Load_Alloc_Data(*file);
+    staticaud = LoadAllocData(*file);
   }
-  std::span<std::byte> speechg;
+  std::vector<std::byte> speechg;
   if (const auto file = OpenGameFile("GDI_SLCT.AUD")) {
-    speechg = Load_Alloc_Data(*file);
+    speechg = LoadAllocData(*file);
   }
-  std::span<std::byte> speechn;
+  std::vector<std::byte> speechn;
   if (const auto file = OpenGameFile("NOD_SLCT.AUD")) {
-    speechn = Load_Alloc_Data(*file);
+    speechn = LoadAllocData(*file);
   }
 
   //	staticaud = MixArchive::RetrieveData("STRUGGLE.AUD");
@@ -185,19 +186,25 @@ void Choose_Side() {
   int statichandle = engine::audio::TheAudio().Play(staticaud, 255, 64);
   CountDownTimerClass sample_timer;
   sample_timer.Set(0x3f);
-  Alloc_Object(new ScorePrintClass(show, TXT_GDI_NAME, 0, 180, yellowpal));
+  Alloc_Object(
+      std::make_unique<ScorePrintClass>(show, TXT_GDI_NAME, 0, 180, yellowpal));
 #ifdef FRENCH
-  Alloc_Object(new ScorePrintClass(show, TXT_GDI_NAME2, 0, 187, yellowpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_GDI_NAME2, 0, 187,
+                                                 yellowpal));
 #endif
-  Alloc_Object(new ScorePrintClass(show, TXT_NOD_NAME, 180, 180, redpal));
+  Alloc_Object(
+      std::make_unique<ScorePrintClass>(show, TXT_NOD_NAME, 180, 180, redpal));
 
 #ifdef GERMAN
-  Alloc_Object(new ScorePrintClass(show, TXT_SEL_TRANS, 57, 190, _graypal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SEL_TRANS, 57, 190,
+                                                 _graypal));
 #else
 #ifdef FRENCH
-  Alloc_Object(new ScorePrintClass(show, TXT_SEL_TRANS, 103, 194, _graypal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SEL_TRANS, 103, 194,
+                                                 _graypal));
 #else
-  Alloc_Object(new ScorePrintClass(show, TXT_SEL_TRANS, 103, 190, _graypal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SEL_TRANS, 103, 190,
+                                                 _graypal));
 #endif
 #endif
   TheKeyboard().Clear();
@@ -232,7 +239,7 @@ void Choose_Side() {
     /* keep the mouse hidden until the letters are thru printing */
     if (!lettersdone) {
       lettersdone = true;
-      for (auto& ScoreObj : ScoreObjs) {
+      for (const auto& ScoreObj : ScoreObjs) {
         if (ScoreObj) {
           lettersdone = false;
         }
@@ -302,12 +309,7 @@ void Choose_Side() {
   }
 
   /* get rid of all the animating objects */
-  for (auto& ScoreObj : ScoreObjs) {
-    if (ScoreObj) {
-      delete ScoreObj;
-      ScoreObj = nullptr;
-    }
-  }
+  Clear_Score_Objects();
 
   if (TheWorld().whom() == HOUSE_GOOD) {
     /*
@@ -321,8 +323,5 @@ void Choose_Side() {
     TheGameState().preserve_movie_screen() = true;
   }
   engine::audio::TheAudio().Stop(statichandle);
-  delete[] base::CharBytes(std::span(staticaud)).data();
-  delete[] base::CharBytes(std::span(speechg)).data();
-  delete[] base::CharBytes(std::span(speechn)).data();
 }
 #endif

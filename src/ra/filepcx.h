@@ -40,6 +40,7 @@ size);
 #define CNC_RED_ALERT_RA_FILEPCX_H_
 
 #include <cstdint>
+#include <memory>
 
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/palette.h"
@@ -71,8 +72,14 @@ struct PCX_HEADER {
   char filler[58];
 };
 
-PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
-                           std::span<uint8_t> backing, int32_t size);
+// Reads the PCX picture `name` into a new buffer, backed by `backing` when it
+// is not empty (at most `size` bytes of it, 0 meaning all). Fills `palette`
+// with the file's 6-bit palette when it is not empty. Returns null if the file
+// is missing, malformed or does not fit.
+std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
+                                           std::span<uint8_t> palette,
+                                           std::span<uint8_t> backing,
+                                           int32_t size);
 
 // Writes pic as a PCX picture with palette (6-bit components, widened to the
 // file's 8 bits) to file, which the caller has opened for writing; the

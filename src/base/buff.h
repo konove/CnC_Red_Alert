@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_BASE_BUFF_H_
 #define CNC_RED_ALERT_BASE_BUFF_H_
 
+#include <memory>
+
 #include "absl/base/attributes.h"
 #include "base/types.h"
 
@@ -85,10 +87,10 @@ class Buffer {
   base::ssize Size;
 
   /*
-  **	Was the buffer allocated by this class? If so, then this class
-  **	will be responsible for freeing the buffer.
+  **	The memory this object allocated itself, which BufferPtr then points
+  **	to; null when the buffer belongs to the caller.
   */
-  bool IsAllocated;
+  std::unique_ptr<char[]> Owned;
 };
 
 #endif  // CNC_RED_ALERT_BASE_BUFF_H_

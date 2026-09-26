@@ -43,13 +43,16 @@
  *- - */
 #ifndef CNC_RED_ALERT_RA_EGOS_H_
 #define CNC_RED_ALERT_RA_EGOS_H_
+#include <string>
+#include <string_view>
+
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/defines.h"
 
 class EgoClass {
  public:
-  EgoClass(int x, int y, char* text, TextPrintType flags);
-  ~EgoClass();
+  EgoClass(int x, int y, std::string_view text, TextPrintType flags);
+  ~EgoClass() = default;
   EgoClass(const EgoClass&) = delete;
   EgoClass& operator=(const EgoClass&) = delete;
   EgoClass(EgoClass&&) = delete;
@@ -59,7 +62,7 @@ class EgoClass {
   void Render(PixelView& view) const;
   void Wipe(PixelView& view, PixelBuffer* background) const;
 
-  char* Text;
+  std::string Text;
   int XPos;
   int YPos;
   TextPrintType Flags;

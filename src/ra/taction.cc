@@ -629,7 +629,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
           if (TheObjectHeaps().trigger().Ptr(index)->Class == Trigger) {
             Detach_This_From_All(
                 TheObjectHeaps().trigger().Ptr(index)->As_Target());
-            delete TheObjectHeaps().trigger().Ptr(index);
+            base::DeletePooled(TheObjectHeaps().trigger().Ptr(index));
             index--;
           }
         }

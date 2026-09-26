@@ -307,10 +307,16 @@ bool Force_CD_Available(int cd_desired)  // ajw
     TheTheme().Stop();
 
     Assets::DiscArchives& archives = TheAssets().disc_archives();
-    delete archives.movies;
-    delete archives.general;
-    delete archives.score;
-    delete archives.main;
+    // The registry owns the archives. Copy each name first: unregistering
+    // destroys the archive that holds it.
+    for (MixArchive** archive : {&archives.movies, &archives.general,
+                                 &archives.score, &archives.main}) {
+      if (*archive != nullptr) {
+        const std::string name = (*archive)->Filename();
+        MixArchive::Unregister(name);
+        *archive = nullptr;
+      }
+    }
 
     archives.main = MixArchive::Register("MAIN.MIX", &TheAssets().mix_key());
     DCHECK(archives.main != nullptr);

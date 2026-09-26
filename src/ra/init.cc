@@ -916,9 +916,10 @@ bool Select_Game(bool /*fade*/) {
             //	cases just before.
             case GAME_INTERNET:
               if constexpr (config::kWolapiEnabled) {
-                delete TheNetwork().packet_transport();
-                TheNetwork().packet_transport() = new UDPInterfaceClass;
-                DCHECK(TheNetwork().packet_transport() != nullptr);
+                // Close the old interface's socket before the new one exists.
+                TheNetwork().packet_transport().reset();
+                TheNetwork().packet_transport() =
+                    std::make_unique<UDPInterfaceClass>();
                 if (TheNetwork().packet_transport()->Init()) {
                   switch (WOL_Main()) {
                     case 1:
@@ -932,8 +933,7 @@ bool Select_Game(bool /*fade*/) {
                       TheSession().Type = GAME_NORMAL;
                       display = true;
                       selection = kSelMultiplayerGame;  // SEL_NONE;
-                      delete TheNetwork().packet_transport();
-                      TheNetwork().packet_transport() = nullptr;
+                      TheNetwork().packet_transport().reset();
                       break;
                     case -1:
                       //	Patch was downloaded. Exit app.
@@ -947,8 +947,7 @@ bool Select_Game(bool /*fade*/) {
                   TheSession().Type = GAME_NORMAL;
                   display = true;
                   selection = kSelMultiplayerGame;  // SEL_NONE;
-                  delete TheNetwork().packet_transport();
-                  TheNetwork().packet_transport() = nullptr;
+                  TheNetwork().packet_transport().reset();
                 }
               } else {
                 TheTheme().Fade_Out();
@@ -965,9 +964,10 @@ bool Select_Game(bool /*fade*/) {
               /*
               ** Init network system & remote-connect
               */
-              delete TheNetwork().packet_transport();
               // we don't even have IPX
-              TheNetwork().packet_transport() = new UDPInterfaceClass;
+              TheNetwork().packet_transport().reset();
+              TheNetwork().packet_transport() =
+                  std::make_unique<UDPInterfaceClass>();
               TheNetwork().packet_transport()->Set_Broadcast_Address(
                   "255.255.255.255");
               WWDebugString("RA95 - About to call Init_Network.\n");
@@ -980,8 +980,7 @@ bool Select_Game(bool /*fade*/) {
                 TheSession().Type = GAME_NORMAL;
                 display = true;
                 selection = kSelNone;
-                delete TheNetwork().packet_transport();
-                TheNetwork().packet_transport() = nullptr;
+                TheNetwork().packet_transport().reset();
               }
               break;
             case GameType::GAME_NORMAL:
@@ -2175,18 +2174,16 @@ static void Init_Secondary_Mixfiles() {
     // extract the extra missions from the expansion "discs"
     // (they don't contain the base missions)
     if (GameFileExists("MAIN3.MIX") && !GameFileExists("GENERAL3.MIX")) {
-      const MixArchive* tmp =
-          MixArchive::Register("MAIN3.MIX", &TheAssets().mix_key());
+      MixArchive::Register("MAIN3.MIX", &TheAssets().mix_key());
       Extract("GENERAL.MIX", "GENERAL3.MIX");
-      delete tmp;
+      MixArchive::Unregister("MAIN3.MIX");
     }
 
     if (GameFileExists("MAIN4.MIX") && !GameFileExists("GENERAL4.MIX")) {
-      const MixArchive* tmp =
-          MixArchive::Register("MAIN4.MIX", &TheAssets().mix_key());
+      MixArchive::Register("MAIN4.MIX", &TheAssets().mix_key());
       Extract("GENERAL.MIX", "GENERAL4.MIX");
       Extract("SCORES.MIX", "SCORES.MIX");  // also extract scores
-      delete tmp;
+      MixArchive::Unregister("MAIN4.MIX");
     }
 
     // load the first two to get both movies

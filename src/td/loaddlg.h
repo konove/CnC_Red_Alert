@@ -45,6 +45,8 @@
 #define CNC_RED_ALERT_TD_LOADDLG_H_
 
 #include <cstdint>
+#include <memory>
+#include <vector>
 
 #include "td/defines.h"
 #include "td/list.h"
@@ -94,14 +96,10 @@ class LoadOptionsClass {
   */
   LoadStyleType Style;
 
-  /*
-  ** This is an array of pointers to FileEntryClass objects.  These objects
-  ** are allocated on the fly as files are found, and pointers to them are
-  ** added to the vector list.  Thus, all the objects must be free'd before
-  ** the vector list is cleared.  This list is used for sorting the files
-  ** by date/time.
-  */
-  DynamicVectorClass<class FileEntryClass*> Files;
+  // One entry per saved game found (plus the empty slot when saving), sorted
+  // by date/time. The list box points at each entry's Descr, so an entry must
+  // not move while the list box shows it: they are held by pointer.
+  std::vector<std::unique_ptr<FileEntryClass>> Files;
 };
 
 #endif  // CNC_RED_ALERT_TD_LOADDLG_H_

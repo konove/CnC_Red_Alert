@@ -85,6 +85,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -153,7 +154,6 @@
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/unit.h"
-#include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/vessel.h"
 #include "ra/world.h"
@@ -191,6 +191,26 @@ enum class RetcodeType {
   RC_CANCEL,             // user cancelled
 };
 using enum RetcodeType;
+
+namespace {
+
+// Closes a debug dump file.
+struct CloseFile {
+  void operator()(FILE* file) const {
+    std::fclose(file);  // NOLINT(cppcoreguidelines-owning-memory): the C API
+                        // owns FILE; DumpFile holds it.
+  }
+};
+
+// A debug dump file, closed when it goes out of scope; empty if it could not
+// be created.
+using DumpFile = std::unique_ptr<FILE, CloseFile>;
+
+DumpFile OpenDumpFile(const char* name) {
+  return DumpFile(std::fopen(name, "wt"));
+}
+
+}  // namespace
 
 /********************************* Prototypes *******************************/
 //...........................................................................
@@ -1016,8 +1036,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     if (dialog_timer.IsFinished() &&
         TheGameState().special_dialog() == SDLG_NONE) {
       if (reconnect_dlg == 0 && first_time == 0) {
-        FILE* fp = fopen("recon.txt", "wt");
-        if (fp) {
+        const DumpFile file = OpenDumpFile("recon.txt");
+        if (FILE* fp = file.get()) {
           absl::FPrintF(fp, "# Connections: %d\n", net->Num_Connections());
           absl::FPrintF(fp, "   My Frame #: %" PRId64 "\n", CurrentFrame());
           for (int i = 0; i < net->Num_Connections(); i++) {
@@ -1031,7 +1051,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
                 base::At(their_recv, base::ToSize(i)),
                 base::At(their_frame, base::ToSize(i)));
           }
-          fclose(fp);
         }
 
         //	"Reconnecting" dialog is about to be shown.
@@ -1838,8 +1857,8 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
       base::At(their_sent, base::ToSize(index))) {
     if (abs(base::At(their_sent, base::ToSize(index)) -
             event->Data.FrameInfo.CommandCount) > 500) {
-      FILE* fp = fopen("badcount.txt", "wt");
-      if (fp) {
+      const DumpFile file = OpenDumpFile("badcount.txt");
+      if (FILE* fp = file.get()) {
         absl::FPrintF(fp, "Event Type:%s\n",
                       EventClass::EventNames.at(event->Type));
         absl::FPrintF(fp, "Frame:%d  ID:%d  IsExec:%d\n", event->Frame,
@@ -1852,7 +1871,6 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
                         event->Data.FrameInfo.CommandCount,
                         event->Data.FrameInfo.Delay);
         }
-        fclose(fp);
       }
     }
 
@@ -3049,8 +3067,7 @@ int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize) {
                              base::ToSize(leftover) - sizeof(EventClass))) {
           return count;
         }
-        event->Data.Variable.Pointer = new char[event->Data.Variable.Size];
-        base::CopyBytes(event->variable_bytes(),
+        base::CopyBytes(event->Allocate_Variable(event->Data.Variable.Size),
                         buf.subspan(base::ToSize(pos) + sizeof(EventClass)),
                         event->Data.Variable.Size);
 
@@ -3060,7 +3077,7 @@ int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize) {
 
       if (!TheNetwork().do_list().Add(*event)) {
         if (event->Type == EventClass::ADDPLAYER) {
-          delete[] static_cast<char*>(event->Data.Variable.Pointer);
+          event->Free_Variable();
         }
         return -1;
       }
@@ -3203,9 +3220,8 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
                                leftover - datasize - kEventTypeSize)) {
             return count;
           }
-          eventdata.Data.Variable.Pointer = new char[variable_size];
           base::CopyBytes(
-              eventdata.variable_bytes(),
+              eventdata.Allocate_Variable(variable_size),
               buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType) +
                           base::ToSize(datasize)),
               variable_size);
@@ -3304,7 +3320,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
 
       if (!TheNetwork().do_list().Add(eventdata)) {
         if (eventdata.Type == EventClass::ADDPLAYER) {
-          delete[] static_cast<char*>(eventdata.Data.Variable.Pointer);
+          eventdata.Free_Variable();
         }
         // The analyzer does not model Add() taking ownership of the buffer on
         // success, so it reads the stale pointer left in eventdata -- which is
@@ -4071,7 +4087,8 @@ static void Print_CRCs(const EventClass* ev) {
   ObjectClass* objp = nullptr;
   HouseClass* housep = nullptr;
 
-  FILE* fp = fopen("OUT.TXT", "wt");
+  const DumpFile file = OpenDumpFile("OUT.TXT");
+  FILE* fp = file.get();
   if (fp == nullptr) {
     return;
   }
@@ -4399,8 +4416,6 @@ static void Print_CRCs(const EventClass* ev) {
     absl::FPrintF(fp, "  Delay:        %d\n", ev->Data.FrameInfo.Delay);
   }
 
-  fclose(fp);
-
 } /* end of Print_CRCs */
 
 /***************************************************************************
@@ -4425,8 +4440,9 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
                                 std::span<const int64_t> their_frame,
                                 std::span<const uint16_t> their_sent,
                                 std::span<const uint16_t> their_recv) {
-  FILE* fp = fopen("toolate.txt", "wt");
-  if (!fp) {
+  const DumpFile file = OpenDumpFile("toolate.txt");
+  FILE* fp = file.get();
+  if (fp == nullptr) {
     return;
   }
   absl::FPrintF(fp, "----------------- Event data: ----------------------\n");
@@ -4459,8 +4475,6 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
                     base::At(their_recv, base::ToSize(i)));
     }
   }
-
-  fclose(fp);
 }
 
 /*************************** end of queue.cpp ******************************/

@@ -28,8 +28,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <ctime>
+#include <memory>
 #include <span>
 #include <string>
+#include <vector>
 
 // ajw wrapped these in a WOL namespace to keep wolapi's `struct Server` away
 // from Red Alert's global of that name, then had to take it out again --
@@ -92,6 +94,41 @@ void** ComOut(T** out ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   return reinterpret_cast<void**>(out);
 }
+
+// Owns the nodes of one of the sinks' copies of a wolapi list. The structs link
+// themselves through their own `next` pointer, which the wolapi calls read, so
+// the list code keeps building, walking and relinking the chain by hand; the
+// store only decides when a node's memory goes away.
+//
+// Example:
+//   User* user = user_nodes.Add(*pUserIn);  // a copy with `next` cleared
+//   ... link `user` into pUserList ...
+//   user_nodes.Free(user);                  // after unlinking it
+template <class T>
+class WolNodes {
+ public:
+  // Returns a copy of `value` with its `next` link cleared, owned by the store
+  // until Free() or Clear().
+  T* Add(const T& value) {
+    T* node = nodes_.emplace_back(std::make_unique<T>(value)).get();
+    node->next = nullptr;
+    return node;
+  }
+
+  // Frees `node`, which the caller has already unlinked. Does nothing for a
+  // node the store does not own.
+  void Free(const T* node) {
+    std::erase_if(nodes_, [node](const std::unique_ptr<T>& owned) {
+      return owned.get() == node;
+    });
+  }
+
+  // Frees every node; the caller resets the head and tail pointers.
+  void Clear() { nodes_.clear(); }
+
+ private:
+  std::vector<std::unique_ptr<T>> nodes_;
+};
 
 //***********************************************************************************************
 //	For debugging chat defined hresults...
@@ -248,8 +285,8 @@ class RAChatEventSink
 
   bool bRequestGameStartWait{false};
 
-  Server* pServer{
-      nullptr};            //	Server to connect to, acquired from OnServerList.
+  std::unique_ptr<Server>
+      pServer;             //	Server to connect to, acquired from OnServerList.
   bool bConnected{false};  //	True when user is logged in to chat server.
   bool bJoined{false};     //	True when user has joined a channel.
 
@@ -296,6 +333,12 @@ class RAChatEventSink
 
  private:
   std::atomic<int> m_cRef;  // Reference count.
+
+  // The nodes of pChannelList, pUserList, pGameUserList and pUserIPList.
+  WolNodes<Channel> channel_nodes_;
+  WolNodes<User> user_nodes_;
+  WolNodes<User> game_user_nodes_;
+  WolNodes<User> user_ip_nodes_;
 };
 
 //***********************************************************************************************
@@ -394,6 +437,11 @@ class RANetUtilEventSink :
 
  private:
   std::atomic<int> m_cRef;  // Reference count.
+
+  // The nodes of pLadderList and pLadderListAM. DeleteLadderList() empties
+  // only the first; the Aftermath list lives as long as the sink.
+  WolNodes<Ladder> ladder_nodes_;
+  WolNodes<Ladder> ladder_am_nodes_;
 };
 
 //***********************************************************************************************

@@ -57,10 +57,12 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <utility>
 
+#include "absl/log/check.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -302,7 +304,23 @@ struct Fame {
   int level;
 };
 
-ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
+std::unique_ptr<ScoreAnimClass> ScoreObjs[MAXSCOREOBJS];
+
+namespace {
+
+// Empties the ScoreObjs slot holding `obj`, which destroys it. A finished
+// animation calls this on itself as the last thing it does.
+void Remove_Score_Object(const ScoreAnimClass* obj) {
+  for (auto& score_obj : ScoreObjs) {
+    if (score_obj.get() == obj) {
+      score_obj.reset();
+      return;
+    }
+  }
+  DCHECK(false) << "score animation is not in ScoreObjs";
+}
+
+}  // namespace
 
 FontStyle ScoreFontStyle(const std::span<const uint8_t> palette) {
   FontStyle style{.font = FontView(TheAssets().font(FontType::kScore))};
@@ -407,14 +425,9 @@ void ScorePrintClass::Update() {
                                             0x0F, 0x0F, 0x0F, 0x0F};
 
   if (Stage && Text_At(Stage - 1) == 0) {
-    for (auto& ScoreObj : ScoreObjs) {
-      if (ScoreObj == this) {
-        ScoreObj = nullptr;
-      }
-    }
     show_.AddTextRect(XPos * 2, YPos * 2, XPos * 2, YPos * 2, (Stage * 6) + 14,
                       16);
-    delete this;
+    Remove_Score_Object(this);  // Destroys this.
     return;
   }
 
@@ -487,14 +500,9 @@ void MultiStagePrintClass::Update() {
                                             0x0F, 0x0F, 0x0F, 0x0F};
 
   if (Stage && Text_At(Stage - 1) == 0) {
-    for (auto& ScoreObj : ScoreObjs) {
-      if (ScoreObj == this) {
-        ScoreObj = nullptr;
-      }
-    }
     show_.AddTextRect(XPos * 2, YPos * 2, XPos * 2, YPos * 2, (Stage * 6) + 14,
                       16);
-    delete this;
+    Remove_Score_Object(this);  // Destroys this.
     return;
   }
 
@@ -588,11 +596,6 @@ void ScoreScaleClass::Update() {
       Stage--;
     } else {
       const FontStyle font = ScoreFontStyle(Palette);
-      for (auto& ScoreObj : ScoreObjs) {
-        if (ScoreObj == this) {
-          ScoreObj = nullptr;
-        }
-      }
       show_.text_page().view().Print(font, Text(), XPos * 2, YPos * 2, kTBlack,
                                      kTBlack);
       // TextPrintBuffer->Blit(HidPage, XPos * 2, YPos * 2, XPos
@@ -601,23 +604,26 @@ void ScoreScaleClass::Update() {
 
       // SysMemPage.Print((char *)DataPtr, XPos,YPos,   TBLACK, TBLACK);
       // SysMemPage.Blit(*PseudoSeenBuff, XPos,YPos, XPos, YPos, 6,6);
-      delete this;
+      Remove_Score_Object(this);  // Destroys this.
       return;
     }
   }
 }
 
-int Alloc_Object(ScoreAnimClass* obj) {
-  int ret = 0;
-
-  for (int i = ret = 0; i < MAXSCOREOBJS; i++) {
+int Alloc_Object(std::unique_ptr<ScoreAnimClass> obj) {
+  for (int i = 0; i < MAXSCOREOBJS; i++) {
     if (!base::At(ScoreObjs, i)) {
-      base::At(ScoreObjs, i) = obj;
-      ret = i;
-      break;
+      base::At(ScoreObjs, i) = std::move(obj);
+      return i;
     }
   }
-  return ret;
+  return 0;
+}
+
+void Clear_Score_Objects() {
+  for (int i = 0; i < MAXSCOREOBJS; i++) {
+    base::At(ScoreObjs, i).reset();
+  }
 }
 
 /***********************************************************************************************
@@ -806,14 +812,15 @@ void ScoreClass::Show() {
   ** Background's up, so now load various shapes and animations
   */
   const auto timeshape = MixArchive::RetrieveData("TIME.SHP");
-  base::At(ScoreObjs, 0) = new ScoreTimeClass(show, 233, 2, timeshape, 30, 4);
+  base::At(ScoreObjs, 0) =
+      std::make_unique<ScoreTimeClass>(show, 233, 2, timeshape, 30, 4);
 
   const auto hiscore1shape = MixArchive::RetrieveData("HISCORE1.SHP");
   const auto hiscore2shape = MixArchive::RetrieveData("HISCORE2.SHP");
   base::At(ScoreObjs, 1) =
-      new ScoreTimeClass(show, 4, 97, hiscore1shape, 10, 4);
+      std::make_unique<ScoreTimeClass>(show, 4, 97, hiscore1shape, 10, 4);
   base::At(ScoreObjs, 2) =
-      new ScoreTimeClass(show, 8, 172, hiscore2shape, 10, 4);
+      std::make_unique<ScoreTimeClass>(show, 8, 172, hiscore2shape, 10, 4);
 
   /* Now display the stuff */
   show.page().view().BlitTo(TheScreen().sys_mem_page().view());
@@ -831,13 +838,18 @@ void ScoreClass::Show() {
   }
 
 #ifdef FRENCH
-  Alloc_Object(new ScorePrintClass(show, TXT_SCORE_TIME, 200, 3, greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_TIME, 200, 3,
+                                                 greenpal));
 #else
-  Alloc_Object(new ScorePrintClass(show, TXT_SCORE_TIME, 206, 3, greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_TIME, 206, 3,
+                                                 greenpal));
 #endif
-  Alloc_Object(new ScorePrintClass(show, TXT_SCORE_LEAD, 182, 26, greenpal));
-  Alloc_Object(new ScorePrintClass(show, TXT_SCORE_EFFI, 182, 38, greenpal));
-  Alloc_Object(new ScorePrintClass(show, TXT_SCORE_TOTA, 182, 50, greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_LEAD, 182, 26,
+                                                 greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_EFFI, 182, 38,
+                                                 greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_TOTA, 182, 50,
+                                                 greenpal));
   engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(120));
   Call_Back_Delay(show, 13);
 
@@ -883,21 +895,22 @@ void ScoreClass::Show() {
   ** Show stats on # of units killed
   */
   engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
-  Alloc_Object(new ScorePrintClass(show, TXT_SCORE_CASU,
-                                   base::At(_casuax, house),
-                                   base::At(_casuay, house), redpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_SCORE_CASU, base::At(_casuax, house), base::At(_casuay, house),
+      redpal));
   Call_Back_Delay(show, 9);
   if (player_house == HOUSE_BAD) {
-    Alloc_Object(new ScorePrintClass(show, TXT_SCORE_NEUT, 200, 114, redpal));
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_NEUT, 200,
+                                                   114, redpal));
     Call_Back_Delay(show, 4);
   }
 
-  Alloc_Object(new ScorePrintClass(show, TXT_SCORE_GDI,
-                                   base::At(_gditxx, house),
-                                   base::At(_gditxy, house), redpal));
-  Alloc_Object(new ScorePrintClass(show, TXT_SCORE_NOD,
-                                   base::At(_nodtxx, house),
-                                   base::At(_nodtxy, house), redpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_SCORE_GDI, base::At(_gditxx, house), base::At(_gditxy, house),
+      redpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_SCORE_NOD, base::At(_nodtxx, house), base::At(_nodtxy, house),
+      redpal));
   Call_Back_Delay(show, 6);
 
   if (player_house == HOUSE_BAD) {
@@ -912,23 +925,25 @@ void ScoreClass::Show() {
   */
   engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
   if (player_house == HOUSE_GOOD) {
-    Alloc_Object(new ScorePrintClass(show, TXT_SCORE_BUIL, 144, 126, greenpal));
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_BUIL, 144,
+                                                   126, greenpal));
     Call_Back_Delay(show, 9);
   } else {
-    Alloc_Object(
-        new ScorePrintClass(show, TXT_SCORE_BUIL1, 146, 128, greenpal));
-    Alloc_Object(
-        new ScorePrintClass(show, TXT_SCORE_BUIL2, 146, 136, greenpal));
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_BUIL1, 146,
+                                                   128, greenpal));
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_BUIL2, 146,
+                                                   136, greenpal));
     Call_Back_Delay(show, 9);
-    Alloc_Object(new ScorePrintClass(show, TXT_SCORE_NEUT, 200, 152, greenpal));
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_NEUT, 200,
+                                                   152, greenpal));
     Call_Back_Delay(show, 4);
   }
-  Alloc_Object(new ScorePrintClass(show, TXT_SCORE_GDI,
-                                   base::At(_gditxx, house),
-                                   base::At(_bldggy, house), greenpal));
-  Alloc_Object(new ScorePrintClass(show, TXT_SCORE_NOD,
-                                   base::At(_gditxx, house),
-                                   base::At(_bldgny, house), greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_SCORE_GDI, base::At(_gditxx, house), base::At(_bldggy, house),
+      greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_SCORE_NOD, base::At(_gditxx, house), base::At(_bldgny, house),
+      greenpal));
   Call_Back_Delay(show, 7);
 
   if (player_house == HOUSE_BAD) {
@@ -956,7 +971,8 @@ void ScoreClass::Show() {
   ** Hall of fame display and processing
   */
   engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
-  Alloc_Object(new ScorePrintClass(show, TXT_SCORE_TOP, 28, 110, bluepal));
+  Alloc_Object(
+      std::make_unique<ScorePrintClass>(show, TXT_SCORE_TOP, 28, 110, bluepal));
   Call_Back_Delay(show, 9);
 
   /*
@@ -1018,24 +1034,25 @@ void ScoreClass::Show() {
   */
 
   for (int j = 0; j < NUMFAMENAMES; j++) {
-    Alloc_Object(new ScorePrintClass(show, base::At(hallfame, j).name,
-                                     HALLFAME_X, HALLFAME_Y + (j * 8),
-                                     bluepal));
+    Alloc_Object(std::make_unique<ScorePrintClass>(
+        show, base::At(hallfame, j).name, HALLFAME_X, HALLFAME_Y + (j * 8),
+        bluepal));
     if (base::At(hallfame, j).score) {
       const auto str = base::CharBytes(TheScreen().sys_mem_page().bytes())
                            .subspan(base::ToSize(j) * 32, 32);
       absl::SNPrintF(str.data(), 16, "%d", base::At(hallfame, j).score);
-      Alloc_Object(new ScorePrintClass(show, str.data(), HALLFAME_X + (6 * 15),
-                                       HALLFAME_Y + (j * 8), bluepal, kBlack));
+      Alloc_Object(std::make_unique<ScorePrintClass>(
+          show, str.data(), HALLFAME_X + (6 * 15), HALLFAME_Y + (j * 8),
+          bluepal, kBlack));
       if (base::At(hallfame, j).level < 20) {
         absl::SNPrintF(str.subspan(16).data(), 16, "%d",
                        base::At(hallfame, j).level);
       } else {
         absl::SNPrintF(str.subspan(16).data(), 16, "**");
       }
-      Alloc_Object(new ScorePrintClass(show, str.subspan(16).data(),
-                                       HALLFAME_X + (6 * 12),
-                                       HALLFAME_Y + (j * 8), bluepal, kBlack));
+      Alloc_Object(std::make_unique<ScorePrintClass>(
+          show, str.subspan(16).data(), HALLFAME_X + (6 * 12),
+          HALLFAME_Y + (j * 8), bluepal, kBlack));
       Call_Back_Delay(show, 13);
     }
   }
@@ -1060,11 +1077,11 @@ void ScoreClass::Show() {
     }
   } else {
 #ifdef FRENCH
-    Alloc_Object(
-        new ScorePrintClass(show, TXT_MAP_CLICK2, 145, 190, yellowpal));
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_CLICK2, 145,
+                                                   190, yellowpal));
 #else
-    Alloc_Object(
-        new ScorePrintClass(show, TXT_MAP_CLICK2, 149, 190, yellowpal));
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_CLICK2, 149,
+                                                   190, yellowpal));
 #endif
     Cycle_Wait_Click(show);
   }
@@ -1072,12 +1089,7 @@ void ScoreClass::Show() {
   TheKeyboard().Clear();
 
   /* get rid of all the animating objects */
-  for (i = 0; i < MAXSCOREOBJS; i++) {
-    if (base::At(ScoreObjs, i)) {
-      delete base::At(ScoreObjs, i);
-      base::At(ScoreObjs, i) = nullptr;
-    }
-  }
+  Clear_Score_Objects();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteFast, nullptr);
   TheScreen().visible_page().view().Clear();
 
@@ -1585,14 +1597,14 @@ void ScoreClass::Show_Credits(Presentation& show, int house,
 
   const auto credshape = MixArchive::RetrieveData("CREDS.SHP");
 
-  Alloc_Object(new ScorePrintClass(show, TXT_SCORE_ENDCRED,
-                                   base::At(_credtx, house),
-                                   base::At(_credty, house), pal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_SCORE_ENDCRED, base::At(_credtx, house),
+      base::At(_credty, house), pal));
   Call_Back_Delay(show, 15);
 
-  const int credobj = Alloc_Object(
-      new ScoreCredsClass(show, base::At(_credsx, house),
-                          base::At(_credsy, house), credshape, 32, 2));
+  const int credobj = Alloc_Object(std::make_unique<ScoreCredsClass>(
+      show, base::At(_credsx, house), base::At(_credsy, house), credshape, 32,
+      2));
   const int min = static_cast<int>(ThePlayer()->Available_Money() / 100);
 
   /*
@@ -1632,8 +1644,7 @@ void ScoreClass::Show_Credits(Presentation& show, int house,
   while (base::At(ScoreObjs, credobj)->Stage >= 20 && !ControlQ) {
     Call_Back_Delay(show, 1);
   }
-  delete base::At(ScoreObjs, credobj);
-  base::At(ScoreObjs, credobj) = nullptr;
+  base::At(ScoreObjs, credobj).reset();
 }
 
 /***************************************************************************
@@ -1802,9 +1813,9 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
 
           engine::audio::TheAudio().Play(keystrok, 255,
                                          TheOptions().Normalize_Sound(255));
-          const int objindex = Alloc_Object(
-              new ScoreScaleClass(show, str.subspan(base::ToSize(index)).data(),
-                                  xpos + (index * 6), ypos, pal));
+          const int objindex = Alloc_Object(std::make_unique<ScoreScaleClass>(
+              show, str.subspan(base::ToSize(index)).data(), xpos + (index * 6),
+              ypos, pal));
           while (base::At(ScoreObjs, objindex)) {
             Call_Back_Delay(show, 1);
           }
@@ -2219,17 +2230,18 @@ void Multi_Score_Presentation() {
     if (!std::string_view(i.Name).empty()) {
       const auto pal = base::At(_colors, i.Color);
 
-      Alloc_Object(new ScorePrintClass(show, i.Name, 15, y, pal));
+      Alloc_Object(std::make_unique<ScorePrintClass>(show, i.Name, 15, y, pal));
       Call_Back_Delay(show, 20);
 
-      Alloc_Object(new ScorePrintClass(show, Int_Print(i.Wins), 118, y, pal));
+      Alloc_Object(std::make_unique<ScorePrintClass>(show, Int_Print(i.Wins),
+                                                     118, y, pal));
       Call_Back_Delay(show, 6);
 
       for (int k = 0;
            k <= std::min(TheSession().current_game(), MAX_MULTI_GAMES - 2);
            k++) {
         if (base::At(i.Kills, k) >= 0) {
-          Alloc_Object(new ScorePrintClass(
+          Alloc_Object(std::make_unique<ScorePrintClass>(
               show, Int_Print(base::At(i.Kills, k)), 225 + (24 * k), y, pal));
           Call_Back_Delay(show, 6);
         }
@@ -2239,23 +2251,18 @@ void Multi_Score_Presentation() {
   }
 
 #ifdef FRENCH
-  Alloc_Object(new ScorePrintClass(
+  Alloc_Object(std::make_unique<ScorePrintClass>(
       show, TXT_MAP_CLICK2, 90 /*(320-strlen(Text_String(TXT_MAP_CLICK2)))/2*/,
       185, _cycleyellowpal));
 #else
-  Alloc_Object(new ScorePrintClass(
+  Alloc_Object(std::make_unique<ScorePrintClass>(
       show, TXT_MAP_CLICK2, 109 /*(320-strlen(Text_String(TXT_MAP_CLICK2)))/2*/,
       185, _cycleyellowpal));
 #endif
   Cycle_Wait_Click(show);
 
   /* get rid of all the animating objects */
-  for (auto& ScoreObj : ScoreObjs) {
-    if (ScoreObj) {
-      delete ScoreObj;
-      ScoreObj = nullptr;
-    }
-  }
+  Clear_Score_Objects();
 
   TheTheme().Queue_Song(THEME_NONE);
 

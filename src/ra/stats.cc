@@ -49,6 +49,8 @@
 #include <cstring>
 #include <span>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/array.h"
 #include "base/unaligned.h"
@@ -73,7 +75,6 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/utracker.h"
-#include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/vessel.h"
 #include "ra/world.h"
@@ -222,8 +223,7 @@ void Send_Statistics_Packet() {
   }
 
   PacketClass stats;
-  static int packet_size;
-  void* packet = nullptr;
+  std::vector<char> packet;
 
   static char field_player_handle[5] = {"NAM?"};
   static char field_player_team[5] = {"SID?"};
@@ -252,7 +252,7 @@ void Send_Statistics_Packet() {
       "SPA", "GRE", "USS", "ENG", "ITA", "GER", "FRA", "TKY", "GUD", "BAD",
       "CIV", "JP ", "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08"};
 
-  if (!TheNetwork().packet_later()) {
+  if (TheNetwork().packet_later().empty()) {
     /*
     ** Field to identify this as C&C 95 internet game statistics packet
     */
@@ -832,7 +832,7 @@ void Send_Statistics_Packet() {
     /*
     ** Create the comms packet to be sent
     */
-    packet = stats.Create_Comms_Packet(packet_size);
+    packet = stats.Create_Comms_Packet();
 
     //	ajw - 'PacketLater' is no longer ever used.
     /*
@@ -842,7 +842,7 @@ void Send_Statistics_Packet() {
     if (!config::kWolapiEnabled &&
         (completion == kCompletionPlayer1WonByDisconnection ||
          completion == kCompletionPlayer2WonByDisconnection)) {
-      TheNetwork().packet_later() = packet;
+      TheNetwork().packet_later() = std::move(packet);
       return;
     }
 
@@ -851,8 +851,8 @@ void Send_Statistics_Packet() {
     /*
     ** Send the packet we calculated earlier when the disconnect occurred
     */
-    packet = TheNetwork().packet_later();
-    TheNetwork().packet_later() = nullptr;
+    packet = std::move(TheNetwork().packet_later());
+    TheNetwork().packet_later().clear();
   }
 
   if constexpr (config::kWolapiEnabled) {
@@ -870,10 +870,12 @@ void Send_Statistics_Packet() {
       iPort = TheNetwork().wolapi()->iGameResServerPort1;
     }
 
+    // The WOL interface takes the bytes as unsigned char.
+    std::vector<unsigned char> wire(packet.begin(), packet.end());
     if ((*szGameResServer) &&
         (TheNetwork().wolapi()->pNetUtil->RequestGameresSend(
-             szGameResServer, iPort, static_cast<unsigned char*>(packet),
-             packet_size) != S_OK)) {
+             szGameResServer, iPort, wire.data(),
+             static_cast<int>(wire.size())) != S_OK)) {
       // debugprint( "RequestGameresSend( %s, %i ) failed!!!\n",
       // szGameResServer, iPort );
     }
@@ -885,11 +887,6 @@ void Send_Statistics_Packet() {
   //	DiskFile anotherfile ("packet.net");
   //	anotherfile.Write(packet, packet_size);
   // debugprint( "Wrote out packet.net\n" );
-
-  /*
-  ** Tidy up
-  */
-  delete[] static_cast<char*>(packet);
 
   TheNetwork().statistics_sent() = true;
 }

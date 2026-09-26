@@ -47,6 +47,7 @@
 #define CNC_RED_ALERT_ENGINE_NET_SERIAL_WINCOMM_H_
 
 #include <cstdint>
+#include <memory>
 
 enum class WinCommDialMethodType { WC_TOUCH_TONE = 0, WC_PULSE };
 using enum WinCommDialMethodType;
@@ -258,6 +259,8 @@ class WinNullModemClass : public WinModemClass {
   void Set_Abort_Function(int (* /*func*/)()) override {}
 };
 
-extern WinModemClass* SerialPort;
+// The serial port the null-modem and modem games talk through; nullptr when
+// none is open.
+extern std::unique_ptr<WinModemClass> SerialPort;
 
 #endif  // CNC_RED_ALERT_ENGINE_NET_SERIAL_WINCOMM_H_

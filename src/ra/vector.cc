@@ -23,7 +23,6 @@
 #include "ra/cell.h"
 #include "ra/defines.h"
 #include "ra/egos.h"
-#include "ra/loaddlg.h"
 #include "ra/object.h"
 #include "ra/session.h"
 #include "ra/taction.h"
@@ -49,7 +48,6 @@ template class VectorClass<PhoneEntryClass*>;
 template class VectorClass<MultiMission*>;
 template class VectorClass<ObjectClass*>;
 template class VectorClass<TriggerClass*>;
-template class VectorClass<FileEntryClass*>;
 template class VectorClass<RemapControlType*>;
 template class VectorClass<BaseNodeClass>;
 template class VectorClass<CellClass>;

@@ -54,8 +54,10 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>  // IWYU pragma: keep - used by an DCHECK() below.
+#include <utility>
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
@@ -281,7 +283,7 @@ void UDPInterfaceClass::Broadcast(std::span<const std::byte> buffer,
     /*
     ** Create a temporary holding area for the packet.
     */
-    auto* packet = new WinsockBufferType;
+    auto packet = std::make_unique<WinsockBufferType>();
 
     /*
     ** Copy the packet into the holding buffer.
@@ -306,10 +308,7 @@ void UDPInterfaceClass::Broadcast(std::span<const std::byte> buffer,
     /*
     ** Add it to our out list.
     */
-    if (!OutBuffers.Add(packet)) {
-      delete packet;
-      continue;
-    }
+    OutBuffers.Add(std::move(packet));
 
     // enable write events
     Socket_Check_Write(Socket, true);
@@ -357,17 +356,15 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
         /*
         ** Create a new buffer and store this packet in it.
         */
-        packet = new WinsockBufferType;
-        packet->BufferLen = rc;
-        base::CopyBytes(base::ObjectBytes(packet->Buffer),
+        auto received = std::make_unique<WinsockBufferType>();
+        received->BufferLen = rc;
+        base::CopyBytes(base::ObjectBytes(received->Buffer),
                         base::ObjectBytes(ReceiveBuffer), base::ToSize(rc));
-        base::FillBytes(base::ObjectBytes(packet->Address), 0,
-                        sizeof(packet->Address));
-        base::CopyBytes(base::ObjectBytes(packet->Address).subspan(4),
+        base::FillBytes(base::ObjectBytes(received->Address), 0,
+                        sizeof(received->Address));
+        base::CopyBytes(base::ObjectBytes(received->Address).subspan(4),
                         base::ObjectBytes(addr.sin_addr.s_addr), 4);
-        if (!InBuffers.Add(packet)) {
-          delete packet;
-        }
+        InBuffers.Add(std::move(received));
       }
       break;
     }
@@ -419,7 +416,6 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       ** Delete the sent packet.
       */
       OutBuffers.Delete(packetnum);
-      delete packet;
 
       break;
     }

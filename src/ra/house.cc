@@ -143,6 +143,7 @@
 #include <cstdio>
 #include <cstring>
 #include <iterator>
+#include <memory>
 #include <new>
 #include <span>
 
@@ -519,31 +520,31 @@ HouseClass::HouseClass(HousesType house)
  *=============================================================================================*/
 void HouseClass::Init_Trackers() {
   if (TheSession().Type == GAME_INTERNET) {
-    AircraftTotals = new UnitTrackerClass(
+    AircraftTotals = std::make_unique<UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<AircraftType>()));
-    InfantryTotals = new UnitTrackerClass(
+    InfantryTotals = std::make_unique<UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<InfantryType>()));
-    UnitTotals = new UnitTrackerClass(
+    UnitTotals = std::make_unique<UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<UnitType>()));
-    BuildingTotals = new UnitTrackerClass(
+    BuildingTotals = std::make_unique<UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<StructType>()));
-    VesselTotals = new UnitTrackerClass(
+    VesselTotals = std::make_unique<UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<VesselType>()));
 
-    DestroyedAircraft = new UnitTrackerClass(
+    DestroyedAircraft = std::make_unique<UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<AircraftType>()));
-    DestroyedInfantry = new UnitTrackerClass(
+    DestroyedInfantry = std::make_unique<UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<InfantryType>()));
-    DestroyedUnits = new UnitTrackerClass(
+    DestroyedUnits = std::make_unique<UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<UnitType>()));
-    DestroyedBuildings = new UnitTrackerClass(
+    DestroyedBuildings = std::make_unique<UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<StructType>()));
-    DestroyedVessels = new UnitTrackerClass(
+    DestroyedVessels = std::make_unique<UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<VesselType>()));
 
-    CapturedBuildings = new UnitTrackerClass(
+    CapturedBuildings = std::make_unique<UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<StructType>()));
-    TotalCrates = new UnitTrackerClass(
+    TotalCrates = std::make_unique<UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<CrateType>()));
   }
 }
@@ -561,26 +562,7 @@ HouseClass::HouseClass()
   Init_Trackers();
 }
 
-HouseClass::~HouseClass() {
-  Class = nullptr;
-
-  if (TheSession().Type == GAME_INTERNET) {
-    delete AircraftTotals;
-    delete InfantryTotals;
-    delete UnitTotals;
-    delete BuildingTotals;
-    delete VesselTotals;
-
-    delete DestroyedAircraft;
-    delete DestroyedInfantry;
-    delete DestroyedUnits;
-    delete DestroyedBuildings;
-    delete DestroyedVessels;
-
-    delete CapturedBuildings;
-    delete TotalCrates;
-  }
-}
+HouseClass::~HouseClass() { Class = nullptr; }
 
 /***********************************************************************************************
  * HouseStaticClass::HouseStaticClass -- Default constructor for house static
@@ -3059,7 +3041,7 @@ void HouseClass::Clobber_All() {
   }
   for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
     if (TheObjectHeaps().trigger().Ptr(i)->Class->House == Class->House) {
-      delete TheObjectHeaps().trigger().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().trigger().Ptr(i));
       i--;
     }
   }

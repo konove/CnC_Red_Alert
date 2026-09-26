@@ -77,9 +77,12 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <iterator>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
@@ -122,7 +125,7 @@ INIClass::~INIClass() { Clear(); }
 
 INIClass::INIEntry::~INIEntry() = default;
 
-INIClass::INISection::~INISection() { EntryList.Delete(); }
+INIClass::INISection::~INISection() = default;
 
 /***********************************************************************************************
  * INIClass::Clear -- Clears out a section (or all sections) of the INI data. *
@@ -149,7 +152,7 @@ INIClass::INISection::~INISection() { EntryList.Delete(); }
  *=============================================================================================*/
 bool INIClass::Clear(const char* section, const char* entry) {
   if (section == nullptr) {
-    SectionList.Delete();
+    SectionList.clear();
     SectionIndex.Clear();
   } else {
     INISection* secptr = Find_Section(section);
@@ -162,7 +165,9 @@ bool INIClass::Clear(const char* section, const char* entry) {
           */
           secptr->EntryIndex.Remove_Index(entptr->Index_ID());
 
-          delete entptr;
+          std::erase_if(secptr->EntryList, [entptr](const auto& owned) {
+            return owned.get() == entptr;
+          });
         }
       } else {
         /*
@@ -170,7 +175,9 @@ bool INIClass::Clear(const char* section, const char* entry) {
         */
         SectionIndex.Remove_Index(secptr->Index_ID());
 
-        delete secptr;
+        std::erase_if(SectionList, [secptr](const auto& owned) {
+          return owned.get() == secptr;
+        });
       }
     }
   }
@@ -237,11 +244,7 @@ bool INIClass::Load(ByteSource& file) {
       base::At(buffer, close) = '\0';
     }
     strtrim(base::MutableCString(buffer));
-    auto* secptr = new INISection(buffer);
-    if (secptr == nullptr) {
-      Clear();
-      return false;
-    }
+    auto secptr = std::make_unique<INISection>(buffer);
 
     /*
     **	Read in the entries of this section.
@@ -292,26 +295,18 @@ bool INIClass::Load(ByteSource& file) {
         continue;
       }
 
-      auto* entryptr = new INIEntry(buffer, divider);
-      if (entryptr == nullptr) {
-        delete secptr;
-        Clear();
-        return false;
-      }
-
-      secptr->EntryIndex.Add_Index(entryptr->Index_ID(), entryptr);
-      secptr->EntryList.Add_Tail(entryptr);
+      auto entryptr = std::make_unique<INIEntry>(buffer, divider);
+      secptr->EntryIndex.Add_Index(entryptr->Index_ID(), entryptr.get());
+      secptr->EntryList.push_back(std::move(entryptr));
     }
 
     /*
     **	All the entries for this section have been parsed. If this section is
     *blank, then *	don't bother storing it.
     */
-    if (secptr->EntryList.Is_Empty()) {
-      delete secptr;
-    } else {
-      SectionIndex.Add_Index(secptr->Index_ID(), secptr);
-      SectionList.Add_Tail(secptr);
+    if (!secptr->EntryList.empty()) {
+      SectionIndex.Add_Index(secptr->Index_ID(), secptr.get());
+      SectionList.push_back(std::move(secptr));
     }
   }
   return true;
@@ -354,8 +349,7 @@ bool INIClass::Save(ByteSink& pipe) const {
     pipe.Write(std::as_bytes(std::span(text)));
   };
 
-  INISection* secptr = SectionList.First();
-  while (secptr && secptr->Is_Valid()) {
+  for (const auto& secptr : SectionList) {
     /*
     **	Output the section identifier.
     */
@@ -367,14 +361,11 @@ bool INIClass::Save(ByteSink& pipe) const {
     /*
     **	Output all the entries and values in this section.
     */
-    INIEntry* entryptr = secptr->EntryList.First();
-    while (entryptr && entryptr->Is_Valid()) {
+    for (const auto& entryptr : secptr->EntryList) {
       put(entryptr->Entry);
       put("=");
       put(entryptr->Value);
       put("\r\n");
-
-      entryptr = entryptr->Next();
     }
 
     /*
@@ -382,8 +373,6 @@ bool INIClass::Save(ByteSink& pipe) const {
     **	blank line for readability purposes.
     */
     put("\r\n");
-
-    secptr = secptr->Next();
   }
   return pipe.Finish();
 }
@@ -504,16 +493,9 @@ INIClass::INIEntry* INIClass::Find_Entry(const char* section,
 const char* INIClass::Get_Entry(const char* section, int index) const {
   const INISection* secptr = Find_Section(section);
 
-  if (secptr != nullptr && index < secptr->EntryIndex.Count()) {
-    const INIEntry* entryptr = secptr->EntryList.First();
-
-    while (entryptr != nullptr && entryptr->Is_Valid()) {
-      if (index == 0) {
-        return entryptr->Entry.c_str();
-      }
-      index--;
-      entryptr = entryptr->Next();
-    }
+  if (secptr != nullptr && index >= 0 &&
+      index < std::ssize(secptr->EntryList)) {
+    return secptr->EntryList.at(base::ToSize(index))->Entry.c_str();
   }
   return nullptr;
 }
@@ -942,33 +924,28 @@ bool INIClass::Put_String(const char* section, const char* entry,
   INISection* secptr = Find_Section(section);
 
   if (secptr == nullptr) {
-    secptr = new INISection(section);
-    if (secptr == nullptr) {
-      return false;
-    }
-    SectionList.Add_Tail(secptr);
+    secptr =
+        SectionList.emplace_back(std::make_unique<INISection>(section)).get();
     SectionIndex.Add_Index(secptr->Index_ID(), secptr);
   }
 
   /*
   **	Remove the old entry if found.
   */
-  INIEntry* entryptr = secptr->Find_Entry(entry);
-  if (entryptr != nullptr) {
-    secptr->EntryIndex.Remove_Index(entryptr->Index_ID());
-    delete entryptr;
+  if (const INIEntry* old = secptr->Find_Entry(entry); old != nullptr) {
+    secptr->EntryIndex.Remove_Index(old->Index_ID());
+    std::erase_if(secptr->EntryList,
+                  [old](const auto& owned) { return owned.get() == old; });
   }
 
   /*
   **	Create and add the new entry.
   */
   if (string != nullptr && !std::string_view(string).empty()) {
-    entryptr = new INIEntry(entry, string);
-
-    if (entryptr == nullptr) {
-      return false;
-    }
-    secptr->EntryList.Add_Tail(entryptr);
+    INIEntry* entryptr =
+        secptr->EntryList
+            .emplace_back(std::make_unique<INIEntry>(entry, string))
+            .get();
     secptr->EntryIndex.Add_Index(entryptr->Index_ID(), entryptr);
   }
   return true;

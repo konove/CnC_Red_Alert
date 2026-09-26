@@ -102,7 +102,6 @@
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/type.h"
-#include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
@@ -493,6 +492,20 @@ std::span<std::byte> EventClass::variable_bytes() const {
   // Receive paths replace the untrusted wire pointer before calling this.
   // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
   return {static_cast<std::byte*>(Data.Variable.Pointer), Data.Variable.Size};
+}
+
+std::span<std::byte> EventClass::Allocate_Variable(uint32_t size) {
+  // The event is a by-value record, so it cannot hold an owner; see event.h.
+  // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): see above.
+  Data.Variable.Pointer = new std::byte[size];
+  Data.Variable.Size = size;
+  return variable_bytes();
+}
+
+void EventClass::Free_Variable() {
+  // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): see Allocate_Variable.
+  delete[] static_cast<std::byte*>(Data.Variable.Pointer);
+  Data.Variable.Pointer = nullptr;
 }
 
 EventClass::EventClass(EventType type, std::span<std::byte> payload)
@@ -969,7 +982,7 @@ void EventClass::Execute() {
                                  base::At(variable_bytes(), base::ToSize(i))));
       }
       if (std::cmp_not_equal(ID, ThePlayer()->ID)) {
-        delete[] static_cast<char*>(Data.Variable.Pointer);
+        Free_Variable();
       }
       break;
 

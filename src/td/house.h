@@ -46,6 +46,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <span>
 
 #include "absl/base/attributes.h"
@@ -295,28 +296,28 @@ class HouseClass {
   /*
   ** Stuff to keep track of the total number of units built by this house.
   */
-  UnitTrackerClass* AircraftTotals = nullptr;
-  UnitTrackerClass* InfantryTotals = nullptr;
-  UnitTrackerClass* UnitTotals = nullptr;
-  UnitTrackerClass* BuildingTotals = nullptr;
+  std::unique_ptr<UnitTrackerClass> AircraftTotals;
+  std::unique_ptr<UnitTrackerClass> InfantryTotals;
+  std::unique_ptr<UnitTrackerClass> UnitTotals;
+  std::unique_ptr<UnitTrackerClass> BuildingTotals;
 
   /*
   ** Total number of units destroyed by this house
   */
-  UnitTrackerClass* DestroyedAircraft = nullptr;
-  UnitTrackerClass* DestroyedInfantry = nullptr;
-  UnitTrackerClass* DestroyedUnits = nullptr;
-  UnitTrackerClass* DestroyedBuildings = nullptr;
+  std::unique_ptr<UnitTrackerClass> DestroyedAircraft;
+  std::unique_ptr<UnitTrackerClass> DestroyedInfantry;
+  std::unique_ptr<UnitTrackerClass> DestroyedUnits;
+  std::unique_ptr<UnitTrackerClass> DestroyedBuildings;
 
   /*
   ** Total number of enemy buildings captured by this house
   */
-  UnitTrackerClass* CapturedBuildings = nullptr;
+  std::unique_ptr<UnitTrackerClass> CapturedBuildings;
 
   /*
   ** Total number of crates found by this house
   */
-  UnitTrackerClass* TotalCrates = nullptr;
+  std::unique_ptr<UnitTrackerClass> TotalCrates;
 
   /*
   **	Records the number of infantry and vehicle factories active. This value

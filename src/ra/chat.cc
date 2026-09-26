@@ -49,7 +49,6 @@
 #include "ra/rules.h"
 #include "ra/session.h"
 #include "ra/text_ids.h"
-#include "ra/vector_dynamic.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"

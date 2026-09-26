@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_GSCREEN_H_
 #define CNC_RED_ALERT_TD_GSCREEN_H_
 
+#include <memory>
+
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "td/cell.h"
@@ -117,7 +119,7 @@ class GScreenClass : public VectorClass<CellClass> {
   /*
   **	Misc routines.
   */
-  virtual void* Shadow_Address() { return ShadowPage; }
+  virtual void* Shadow_Address() { return ShadowPage.get(); }
 
   /*
   **	This points to the buttons that are used for input. All of the derived
@@ -148,7 +150,7 @@ class GScreenClass : public VectorClass<CellClass> {
   *algorithm.
   */
  public:
-  static PixelBuffer* ShadowPage;
+  static std::unique_ptr<PixelBuffer> ShadowPage;
 
  private:
 };

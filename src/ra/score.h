@@ -32,6 +32,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <span>
 #include <string_view>
 
@@ -129,11 +130,11 @@ class ScoreClass {
 };
 
 // Base class for the things that animate on the score screens. An object is
-// heap-allocated, parked in the score screen's object table with
-// Alloc_Object(), and has Update()
-// called on every display refresh while the screen waits. Text animations
-// delete themselves and clear their slot when finished; the looping shape
-// animations live until the screen tears the table down.
+// handed to the score screen's object table with Alloc_Object(), which owns
+// it, and has Update() called on every display refresh while the screen
+// waits. Text animations empty their own slot, destroying themselves, when
+// finished; the looping shape animations live until the screen tears the
+// table down.
 //
 // Constructors take 320x200 coordinates and double them; XPos and YPos are
 // hi-res pixels. The data and text are viewed, not copied, so they must outlive
@@ -154,8 +155,8 @@ class ScoreAnimClass {
   std::string_view TextData;
   // The animation's text, for the text-style animations.
   [[nodiscard]] std::string_view Text() const { return TextData; }
-  // Advances the animation if AnimTimer has run out. May `delete this`, so the
-  // caller must not touch the object afterwards.
+  // Advances the animation if AnimTimer has run out. May destroy the object by
+  // emptying its slot, so the caller must not touch it afterwards.
   virtual void Update() {}
   virtual ~ScoreAnimClass();
   ScoreAnimClass(const ScoreAnimClass&) = delete;
@@ -251,7 +252,7 @@ void Multi_Score_Presentation();
 // then owns it, and returns the slot index. If the table is full this runs the
 // animations until one finishes and frees its slot; at least one slot must
 // therefore hold an animation that ends, or the call never returns.
-int Alloc_Object(ScoreAnimClass* obj);
+int Alloc_Object(std::unique_ptr<ScoreAnimClass> obj);
 
 class ArchiveReader;
 class ArchiveWriter;
