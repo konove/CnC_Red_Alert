@@ -187,7 +187,7 @@ primary.
 | `clang-diagnostic-reserved-identifier`                          | Enabled | Commit `Rename reserved identifiers`: the same 133 renames cleared all 144 compiler reports.                                                                                                                                                                                                                                                                                                                                 |
 | `clang-diagnostic-reserved-macro-identifier`                    | Enabled | Commit `Rename reserved identifiers`: `_MAX_*` are `kMaxPath` and friends (105 uses), `_USERENTRY` and TD's `_RETRIEVE` are gone, removing the preprocessing warning `CLAUDE.md` names as the `clang-tidy-cache` blocker (not re-measured). See review below.                                                                                                                                                                |
 | `clang-diagnostic-invalid-source-encoding`                      | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                |
-| `portability-template-virtual-member-function`                  | Skipped | Commit `Record the remaining P3 policy decisions`: 35 virtual members of the heap, vector and mix-file templates; silencing it needs explicit instantiation of every specialization or devirtualizing them. See review below.                                                                                                                                                                                                |
+| `portability-template-virtual-member-function`                  | Enabled | Commit `Enable portability-template-virtual-member-function`: the typed heaps and both games' vectors are no longer virtual, since nothing dispatches through them; the transform adapters keep their overrides under a reasoned suppression. See review below.                                                                                                                                                              |
 | `portability-avoid-pragma-once`                                 | Enabled | Commit `Enable ten checks the tree already satisfies`: no findings across 460 translation units; a probe confirms it reports.                                                                                                                                                                                                                                                                                                |
 
 ## P4 — Cleanup and design consistency
@@ -1818,6 +1818,40 @@ positions, plus the fixture load) and the TD smoke test with every fixture (5,74
 Enums serialize through `static_cast<int32_t>`, so the save format is unchanged. The excluded-name
 count drops from 95 to 94.
 
+### Template virtual member enablement (2026-09-26)
+
+`portability-template-virtual-member-function` is now enforced; the plan is
+[TEMPLATE_VIRTUAL_PLAN.md](TEMPLATE_VIRTUAL_PLAN.md). The check reports a virtual member of a class
+template specialization that the translation unit does not instantiate: clang and GCC instantiate a
+virtual member only where they emit the vtable, other compilers instantiate all of them, so a member
+that does not compile for some `T` would break only there. A fresh sweep over the 1,080 project
+files found 40 locations in 7 headers.
+
+The 2026-09-12 review expected explicit instantiation to be one way out. It is not: an
+`extern template class` declaration suppresses the vtable, so it _causes_ the report, which is why
+TD's vectors (declared `extern`) reported and most of RA's (not declared) did not. The fixes instead
+remove the virtuals no call ever dispatches:
+
+- `TFixedIHeapClass<T>` (both games): the typed `ID`, `Logical_ID`, `Alloc`, `Free`, `Ptr` and
+  `Raw_Ptr` are plain members, since nothing derives from the template; the `Free(void*)` and
+  `Logical_ID(int)` overrides that only forwarded became using-declarations. RA's `Validate()`
+  override carried the stale-ID check; the typed heap now hands its untyped base a function that
+  reads a slot's cached `ID` (none when `T` has no such field), and one non-virtual
+  `FixedIHeapClass::Validate()` in `heap.cc` makes both checks.
+- `VectorClass<T>` and `DynamicVectorClass<T>` (both games) have no virtuals; the dynamic vector's
+  `Resize`, `Clear` and `ID` hide the base's. No code reaches a dynamic vector through the base, and
+  the two base calls that did dispatch (`Clear()` in `operator=`, TD's `Resize(0)`) left the same
+  `ActiveCount` either way. `LayerClass` in both games and TD's `GScreenClass`, which add virtuals
+  of their own, declare their own virtual destructors.
+- `TransformSink<C>` and `TransformSource<C>` keep their `ByteSink`/`ByteSource` overrides, which
+  are the adapters' purpose, under one reasoned `NOLINTBEGIN` each. Their overrides use only what
+  the `ByteCodec` constraint requires, so they compile for every codec the template admits.
+
+Verification: the isolated sweep reports nothing; the full strict build and the GCC build; CTest
+(858 tests) in both; the RA save/load smoke test (240 positions, plus the fixture load) and the TD
+smoke test (5,742 states). Saves are field-wise, so dropping the vectors' vptr changes no format.
+The excluded-name count drops by one.
+
 ### Nodiscard review (2026-09-12)
 
 `modernize-use-nodiscard` is now enforced. Its fix-its add `[[nodiscard]]` to 927 value-returning
@@ -1995,6 +2029,7 @@ every site.
 | `cppcoreguidelines-use-enum-class`                           | 517     | 178 are unnamed enums used as integer constants. 46 are the per-dialog `RedrawType` levels, compared as ordered values 110 times. 137 are the core type enums in each game's `defines.h`, which index arrays and loops. |
 | `portability-template-virtual-member-function`               | 35      | See below.                                                                                                                                                                                                              |
 
+Superseded on 2026-09-26: the check is enabled; see "Template virtual member enablement" below.
 `portability-template-virtual-member-function` reports 35 virtual members of the heap, vector and
 mix-file class templates. Clang and GCC only instantiate a virtual member that some specialization
 uses, while some compilers instantiate all of them, so an unused member that does not compile for a

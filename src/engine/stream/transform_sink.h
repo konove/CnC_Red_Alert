@@ -37,6 +37,13 @@ class TransformSink : public ChainedSink {
     requires std::default_initializable<C>
       : ChainedSink(next) {}
 
+  // The ByteSink overrides are instantiated only where the vtable is, so a
+  // translation unit that merely names a specialization (every includer of
+  // blowfish_sink.h) leaves them out, which
+  // portability-template-virtual-member-function reports. They use nothing
+  // but what the ByteCodec constraint requires, so they compile for every
+  // codec the template admits, which is the portability the check is after.
+  // NOLINTBEGIN(portability-template-virtual-member-function)
   bool Write(std::span<const std::byte> bytes) override {
     if (!ok()) {
       return false;
@@ -57,6 +64,7 @@ class TransformSink : public ChainedSink {
   [[nodiscard]] bool ok() const override {
     return codec_.ok() && ChainedSink::ok();
   }
+  // NOLINTEND(portability-template-virtual-member-function)
 
   [[nodiscard]] C& codec() ABSL_ATTRIBUTE_LIFETIME_BOUND { return codec_; }
   [[nodiscard]] const C& codec() const ABSL_ATTRIBUTE_LIFETIME_BOUND {

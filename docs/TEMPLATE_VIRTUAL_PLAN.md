@@ -3,7 +3,8 @@
 Written 2026-09-26 against `.clang-tidy` and clang-tidy 23.1.2. Companion to the row in
 [CLANG_TIDY_PRIORITIES.md](CLANG_TIDY_PRIORITIES.md).
 
-**Status: in progress.**
+**Status: complete (2026-09-26).** The check is enabled; the results are in the "Template virtual
+member enablement" review in CLANG_TIDY_PRIORITIES.md.
 
 ## Context
 

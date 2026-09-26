@@ -45,6 +45,13 @@ class TransformSource : public ChainedSource {
     requires std::default_initializable<C>
       : ChainedSource(source) {}
 
+  // The ByteSource overrides are instantiated only where the vtable is, so a
+  // translation unit that merely names a specialization (every includer of
+  // blowfish_source.h) leaves them out, which
+  // portability-template-virtual-member-function reports. They use nothing
+  // but what the ByteCodec constraint requires, so they compile for every
+  // codec the template admits, which is the portability the check is after.
+  // NOLINTBEGIN(portability-template-virtual-member-function)
   // Output left over from the last transform is handed out first. Only then
   // is the source read again, and only for as many bytes as the codec wants.
   base::ssize Read(std::span<std::byte> buffer) override {
@@ -92,6 +99,7 @@ class TransformSource : public ChainedSource {
   [[nodiscard]] bool ok() const override {
     return codec_.ok() && ChainedSource::ok();
   }
+  // NOLINTEND(portability-template-virtual-member-function)
 
   [[nodiscard]] C& codec() ABSL_ATTRIBUTE_LIFETIME_BOUND { return codec_; }
   [[nodiscard]] const C& codec() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
