@@ -86,7 +86,8 @@ apply_dotenv_settings(td_game_test)
 add_gtest(
     NAME td_assets_test
     SOURCES assets_test.cc assets.cc
-    LIBS base engine_file magic_enum::magic_enum absl::check absl::log absl::strings
+    # SDL for the scancodes engine/window/keyboard.h names its keys by.
+    LIBS base engine_file SDL2::SDL2 magic_enum::magic_enum absl::check absl::log absl::strings
 )
 
 add_gtest(
