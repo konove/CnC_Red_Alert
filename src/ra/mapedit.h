@@ -54,6 +54,7 @@
 #define CNC_RED_ALERT_RA_MAPEDIT_H_
 
 #include <array>
+#include <memory>
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -331,17 +332,18 @@ class MapEditClass : public MouseClass {
   /*
   **	Variables for supporting the object-editing controls at screen bottom
   */
-  ListClass* HouseList = nullptr;
-  ListClass* MissionList = nullptr;
-  TriColorGaugeClass* HealthGauge = nullptr;
-  DirectionDial* FacingDial = nullptr;
-  ControlClass* MapArea = nullptr;
-  TextLabelClass* HealthText = nullptr;
-  TextButtonClass* Sellable = nullptr;
-  TextButtonClass* Rebuildable = nullptr;
+  // Built by One_Time(); null before it runs.
+  std::unique_ptr<ListClass> HouseList;
+  std::unique_ptr<ListClass> MissionList;
+  std::unique_ptr<TriColorGaugeClass> HealthGauge;
+  std::unique_ptr<DirectionDial> FacingDial;
+  std::unique_ptr<ControlClass> MapArea;
+  std::unique_ptr<TextLabelClass> HealthText;
+  std::unique_ptr<TextButtonClass> Sellable;
+  std::unique_ptr<TextButtonClass> Rebuildable;
   static char HealthBuf[20];
-  GaugeClass* BaseGauge = nullptr;
-  TextLabelClass* BaseLabel = nullptr;
+  std::unique_ptr<GaugeClass> BaseGauge;
+  std::unique_ptr<TextLabelClass> BaseLabel;
   static constexpr std::array MapEditMissions = {
       MISSION_GUARD,   MISSION_STICKY,     MISSION_HARMLESS,
       MISSION_HARVEST, MISSION_GUARD_AREA, MISSION_RETURN,

@@ -65,6 +65,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -188,17 +189,17 @@ void MapEditClass::One_Time() {
   /*
   **	The map: a single large "button"
   */
-  MapArea = new ControlClass(
+  MapArea = std::make_unique<ControlClass>(
       kMapArea, 0, 8, 640 - 8, 400 - 8,
       GadgetClass::kLeftPress | GadgetClass::kLeftRelease, false);
 
   /*
   **	House buttons
   */
-  HouseList = new ListClass(kPopupHouselist, kPopupHouseX, kPopupHouseY,
-                            kPopupHouseW, kPopupHouseH, TPF_EFNT | TPF_NOSHADOW,
-                            MixArchive::RetrieveData("EBTN-UP.SHP"),
-                            MixArchive::RetrieveData("EBTN-DN.SHP"));
+  HouseList = std::make_unique<ListClass>(
+      kPopupHouselist, kPopupHouseX, kPopupHouseY, kPopupHouseW, kPopupHouseH,
+      TPF_EFNT | TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     HouseList->Add_Item(HouseTypeClass::As_Reference(house).IniName);
   }
@@ -206,11 +207,11 @@ void MapEditClass::One_Time() {
   /*
   **	The mission list box
   */
-  MissionList =
-      new ListClass(kPopupMissionlist, kPopupMissionX, kPopupMissionY,
-                    kPopupMissionW, kPopupMissionH, TPF_EFNT | TPF_NOSHADOW,
-                    MixArchive::RetrieveData("EBTN-UP.SHP"),
-                    MixArchive::RetrieveData("EBTN-DN.SHP"));
+  MissionList = std::make_unique<ListClass>(
+      kPopupMissionlist, kPopupMissionX, kPopupMissionY, kPopupMissionW,
+      kPopupMissionH, TPF_EFNT | TPF_NOSHADOW,
+      MixArchive::RetrieveData("EBTN-UP.SHP"),
+      MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const auto mission : MapEditMissions) {
     MissionList->Add_Item(MissionClass::Mission_Name(mission));
@@ -219,9 +220,9 @@ void MapEditClass::One_Time() {
   /*
   **	The health bar
   */
-  HealthGauge =
-      new TriColorGaugeClass(kPopupHealthgauge, kPopupHealthX, kPopupHealthY,
-                             kPopupHealthW, kPopupHealthH);
+  HealthGauge = std::make_unique<TriColorGaugeClass>(
+      kPopupHealthgauge, kPopupHealthX, kPopupHealthY, kPopupHealthW,
+      kPopupHealthH);
   HealthGauge->Use_Thumb(true);
   HealthGauge->Set_Maximum(0x100);
   HealthGauge->Set_Red_Limit(0x3f - 1);
@@ -231,7 +232,7 @@ void MapEditClass::One_Time() {
   **	The health text label
   */
   HealthBuf[0] = 0;
-  HealthText = new TextLabelClass(
+  HealthText = std::make_unique<TextLabelClass>(
       HealthBuf, kPopupHealthX + (kPopupHealthW / 2),
       kPopupHealthY + kPopupHealthH + 1, GadgetClass::Get_Color_Scheme(),
       TPF_CENTER | TPF_FULLSHADOW | TPF_EFNT);
@@ -239,29 +240,29 @@ void MapEditClass::One_Time() {
   /*
   **	Building attribute buttons.
   */
-  Sellable = new TextButtonClass(kPopupSellable, TXT_SELLABLE, kTpfEButton,
-                                 320 - 65, 200 - 25, 60);
-  Rebuildable = new TextButtonClass(kPopupRebuildable, TXT_REBUILD, kTpfEButton,
-                                    320 - 65, 200 - 15, 60);
+  Sellable = std::make_unique<TextButtonClass>(
+      kPopupSellable, TXT_SELLABLE, kTpfEButton, 320 - 65, 200 - 25, 60);
+  Rebuildable = std::make_unique<TextButtonClass>(
+      kPopupRebuildable, TXT_REBUILD, kTpfEButton, 320 - 65, 200 - 15, 60);
 
   /*
   **	The facing dial
   */
-  FacingDial = new DirectionDial(kPopupFacingdial, kPopupFaceboxX,
-                                 kPopupFaceboxY, kPopupFaceboxW, kPopupFaceboxH,
-                                 static_cast<DirType>(0));
+  FacingDial = std::make_unique<DirectionDial>(
+      kPopupFacingdial, kPopupFaceboxX, kPopupFaceboxY, kPopupFaceboxW,
+      kPopupFaceboxH, static_cast<DirType>(0));
 
   /*
   **	The base percent-built slider & its label
   */
-  BaseGauge = new GaugeClass(kPopupBasepercent, kPopupBaseX, kPopupBaseY,
-                             kPopupBaseW, kPopupBaseH);
+  BaseGauge = std::make_unique<GaugeClass>(
+      kPopupBasepercent, kPopupBaseX, kPopupBaseY, kPopupBaseW, kPopupBaseH);
   // TextLabelClass keeps the pointer in its non-const Text member, so the
   // caption needs storage that outlives this call and is not a literal.
   static char base_caption[] = "Base:";
-  BaseLabel = new TextLabelClass(base_caption, kPopupBaseX - 3, kPopupBaseY,
-                                 GadgetClass::Get_Color_Scheme(),
-                                 TPF_RIGHT | TPF_NOSHADOW | TPF_EFNT);
+  BaseLabel = std::make_unique<TextLabelClass>(
+      base_caption, kPopupBaseX - 3, kPopupBaseY,
+      GadgetClass::Get_Color_Scheme(), TPF_RIGHT | TPF_NOSHADOW | TPF_EFNT);
   BaseGauge->Set_Maximum(100);
   BaseGauge->Set_Value(TheScenario().Percent);
 }
