@@ -251,35 +251,69 @@ KeyNumber KeyFromWindowsKey(int windows_key);
 // KN_NONE and for a key that has no Windows code.
 int WindowsKeyFromKey(KeyNumber key);
 
+// A mouse button, as a click in the input queue names it.
+enum class MouseButton { kNone, kLeft, kRight, kMiddle };
+
+// One entry from the input queue: a key press or release, or a mouse click.
+// Until the games stop reading clicks as key numbers
+// (docs/INPUT_EVENTS_PLAN.md), a click's `key` also holds the button's
+// KN_*MOUSE number, with KN_RLSE_BIT for a release.
+//
+// Example:
+//   const engine::window::InputEvent event = keys.ReadEvent();
+//   if (event.IsPress(engine::window::MouseButton::kLeft)) {
+//     Click_At(event.x, event.y);
+//   }
+struct InputEvent {
+  KeyNumber key = KN_NONE;  // the key, with its modifier and release bits
+  MouseButton button = MouseButton::kNone;  // kNone for a key
+  bool release = false;  // for a click, whether the button came up
+  int x = 0;             // for a click, where it happened, in game pixels
+  int y = 0;
+
+  // Returns whether the event is a click, of any button, down or up.
+  [[nodiscard]] bool IsClick() const { return button != MouseButton::kNone; }
+
+  // Returns whether the event is `mouse_button` going down, or coming up.
+  [[nodiscard]] bool IsPress(const MouseButton mouse_button) const {
+    return button == mouse_button && !release;
+  }
+  [[nodiscard]] bool IsRelease(const MouseButton mouse_button) const {
+    return button == mouse_button && release;
+  }
+};
+
 // The queue of key presses, key releases and mouse clicks the game reads its
-// input from. HandleEvent() fills it from SDL events; the game drains it with
-// Peek() and Read(). Each entry is a key number: a scancode in the low byte
-// with the kKey*Bit flags above it. A mouse click takes three entries - the
-// button, then the x and y position - and Read() returns the button and leaves
-// the position in click_x() and click_y().
+// input from, in the order they happened. HandleEvent() fills it from SDL
+// events; the game drains it with Peek() and ReadEvent() (or Read(), for the
+// key number alone). Read() also leaves a click's position in click_x() and
+// click_y() for the code that has not moved to events yet.
 //
 // Example:
 //   if (keys.Peek() != KN_NONE) {
-//     const KeyNumber key = keys.Read();
-//     if (engine::window::KeyBuffer::IsMouseKey(key)) {
-//       Click_At(keys.click_x(), keys.click_y());
+//     const InputEvent event = keys.ReadEvent();
+//     if (event.IsClick()) {
+//       Click_At(event.x, event.y);
 //     }
 //   }
 class KeyBuffer {
  public:
-  // Returns the key number at the head of the buffer without removing it, or
-  // KN_NONE when no key is pending. Also pumps the SDL event loop, so callers
-  // that only need that side effect may discard the result.
+  // Returns the key number of the event at the head of the buffer without
+  // removing it, or KN_NONE when nothing is pending. Also pumps the SDL event
+  // loop, so callers that only need that side effect may discard the result.
   KeyNumber Peek();
 
-  // Removes and returns the key number at the head of the buffer, pumping SDL
-  // events until one arrives. For a mouse key, also stores the click position
-  // for click_x() and click_y().
-  KeyNumber Read();
+  // Removes and returns the event at the head of the buffer, pumping SDL
+  // events until one arrives. For a click, also stores its position for
+  // click_x() and click_y().
+  InputEvent ReadEvent();
 
-  // Appends one raw entry to the buffer. Returns false, dropping the entry, if
-  // the buffer is full.
-  bool Put(int entry);
+  // Returns ReadEvent()'s key number.
+  KeyNumber Read() { return ReadEvent().key; }
+
+  // Appends `event` to the buffer. Returns false, dropping it, if the buffer
+  // is full.
+  bool Put(const InputEvent& event);
 
   // Queues the key `key_code` (a bare key number), adding the Shift, Ctrl and
   // Alt bits for the modifier keys held right now and kKeyReleaseBit for a
@@ -288,11 +322,10 @@ class KeyBuffer {
   // media key, which has no key code). Mouse buttons go through PutClick().
   bool PutKey(int key_code, bool release = false);
 
-  // Queues a click of the mouse `button` (KN_LMOUSE, KN_MMOUSE or
-  // KN_RMOUSE) at `x`, `y`: the button, with kKeyReleaseBit for a `release`
-  // but no modifier bits, as in the DOS version, followed by the position.
-  // Returns false, queuing nothing, if the three entries do not all fit.
-  bool PutClick(int button, bool release, int x, int y);
+  // Queues a click of the mouse `button` at `x`, `y`, or its `release`. The
+  // click's key number carries no modifier bits, as in the DOS version.
+  // Returns false if the buffer is full.
+  bool PutClick(MouseButton button, bool release, int x, int y);
 
   // Returns the character `key` types on the current keyboard layout, with
   // Shift ignored, so letters come back lower case. Returns '\0' for a
@@ -311,11 +344,6 @@ class KeyBuffer {
   // bits set it names a different scancode.
   static bool IsDown(int key);
 
-  // Returns whether `key` is a mouse button, pressed or released, whatever
-  // modifier bits it carries. In the buffer such an entry is followed by the
-  // click's x and y position.
-  static bool IsMouseKey(int key);
-
   // Queues the key or click an SDL event carries; mouse motion moves the
   // cursor instead. Returns true only for a click, which it consumes, so the
   // game's own handler can skip it; everything else goes on to that handler.
@@ -331,11 +359,11 @@ class KeyBuffer {
 
   static constexpr int kBufferSize = 256;
 
-  // A ring buffer of entries. head_ == tail_ means empty, so it holds at most
+  // A ring buffer of events. head_ == tail_ means empty, so it holds at most
   // kBufferSize - 1, and every index wraps modulo kBufferSize.
-  uint16_t entries_[kBufferSize]{};
-  int head_ = 0;  // the entry Read() returns next
-  int tail_ = 0;  // where Put() writes the next entry
+  InputEvent events_[kBufferSize]{};
+  int head_ = 0;  // the event ReadEvent() returns next
+  int tail_ = 0;  // where Put() writes the next event
 };
 
 }  // namespace engine::window

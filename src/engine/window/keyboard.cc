@@ -157,42 +157,34 @@ KeyNumber KeyBuffer::Peek() {
   if (head_ == tail_) {
     return KN_NONE;
   }
-
-  // head_ always addresses a key entry: Read steps past the two coordinate
-  // entries that follow a mouse key, so a click at x or y 0 is never read here.
-  // An entry carries modifier bits, so it rarely names an enumerator.
-  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-  return static_cast<KeyNumber>(base::At(entries_, head_));
+  return base::At(events_, head_).key;
 }
 
-KeyNumber KeyBuffer::Read() {
-  // Peek() pumps SDL events, so the wait ends as soon as a key arrives.
-  KeyNumber key = Peek();
-  while (key == KN_NONE) {
-    key = Peek();
+InputEvent KeyBuffer::ReadEvent() {
+  // Peek() pumps SDL events, so the wait ends as soon as an event arrives.
+  // Every queued event has a key number, a click's included, so KN_NONE
+  // means empty.
+  while (Peek() == KN_NONE) {
   }
-  int entry_count = 1;
-  if (IsMouseKey(key)) {
-    // A click's position rides in the two entries behind the button.
-    click_x_ = base::At(entries_, (head_ + 1) % kBufferSize);
-    click_y_ = base::At(entries_, (head_ + 2) % kBufferSize);
-    entry_count = 3;
+  const InputEvent event = base::At(events_, head_);
+  head_ = (head_ + 1) % kBufferSize;
+  if (event.IsClick()) {
+    click_x_ = event.x;
+    click_y_ = event.y;
   }
-  head_ = (head_ + entry_count) % kBufferSize;
-  return key;
+  return event;
 }
 
-bool KeyBuffer::Put(const int entry) {
+bool KeyBuffer::Put(const InputEvent& event) {
   // One slot always stays free: a full buffer would otherwise have head_ ==
   // tail_ and read as empty.
   const int next_tail = (tail_ + 1) % kBufferSize;
-  if (next_tail != head_) {
-    base::At(entries_, tail_) = static_cast<uint16_t>(entry);
-
-    tail_ = next_tail;
-    return true;
+  if (next_tail == head_) {
+    return false;
   }
-  return false;
+  base::At(events_, tail_) = event;
+  tail_ = next_tail;
+  return true;
 }
 
 bool KeyBuffer::PutKey(const int key_code, const bool release) {
@@ -221,29 +213,24 @@ bool KeyBuffer::PutKey(const int key_code, const bool release) {
     key_number |= kKeyReleaseBit;
   }
 
-  return Put(static_cast<int>(key_number));
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+  return Put({.key = static_cast<KeyNumber>(key_number)});
 }
 
-bool KeyBuffer::PutClick(const int button, const bool release, const int x,
-                         const int y) {
-  // A click is three entries, queued all or not at all: a button without its
-  // position would make Read() take one from past the tail. Put() keeps one
-  // slot free, so that slot does not count.
-  const int free_entries = (head_ - tail_ + kBufferSize - 1) % kBufferSize;
-  if (free_entries < 3) {
-    return false;
+bool KeyBuffer::PutClick(const MouseButton button, const bool release,
+                         const int x, const int y) {
+  // The click's key number, which the games still read clicks by.
+  KeyNumber key = KN_LMOUSE;
+  if (button == MouseButton::kRight) {
+    key = KN_RMOUSE;
+  } else if (button == MouseButton::kMiddle) {
+    key = KN_MMOUSE;
   }
-
-  // No modifier bits: the DOS version never set them on a button, and the
-  // click handlers compare the button without masking them off.
-  auto key_number = static_cast<uint32_t>(button);
-  if (release) {
-    key_number |= kKeyReleaseBit;
-  }
-  Put(static_cast<int>(key_number));
-  Put(x);
-  Put(y);
-  return true;
+  return Put({.key = release ? Released(key) : key,
+              .button = button,
+              .release = release,
+              .x = x,
+              .y = y});
 }
 
 char KeyBuffer::ToAscii(const int key) {
@@ -298,27 +285,19 @@ bool KeyBuffer::IsDown(const int key) {
   return false;
 }
 
-bool KeyBuffer::IsMouseKey(int key) {
-  // Only the key-code byte; the modifier and release bits say nothing about
-  // which key it is.
-  key = static_cast<int>(static_cast<uint32_t>(key) & kScancodeMask);
-  return key == KN_LMOUSE || key == KN_MMOUSE || key == KN_RMOUSE;
-}
-
 bool KeyBuffer::HandleEvent(const SDL_Event* event) {
   switch (event->type) {
     case SDL_MOUSEBUTTONDOWN:
     case SDL_MOUSEBUTTONUP: {
-      // SDL numbers the buttons left, middle, right; the key numbers go left,
-      // right, middle.
-      int button = event->button.button;
-      if (button == SDL_BUTTON_RIGHT) {
-        button = KN_RMOUSE;
-      } else if (button == SDL_BUTTON_MIDDLE) {
-        button = KN_MMOUSE;
-      } else if (button != SDL_BUTTON_LEFT) {
-        // Extra buttons have no key code. SDL_BUTTON_LEFT is 1, already
-        // KN_LMOUSE.
+      MouseButton button = MouseButton::kNone;
+      if (event->button.button == SDL_BUTTON_LEFT) {
+        button = MouseButton::kLeft;
+      } else if (event->button.button == SDL_BUTTON_RIGHT) {
+        button = MouseButton::kRight;
+      } else if (event->button.button == SDL_BUTTON_MIDDLE) {
+        button = MouseButton::kMiddle;
+      } else {
+        // The extra buttons have no meaning in the games.
         return false;
       }
 

@@ -116,7 +116,7 @@ Manual check on a real display:
 
 ## Progress
 
-- [ ] Phase 1: engine event
+- [x] Phase 1: engine event. `KeyBuffer::IsMouseKey()` had no callers left and went here.
 - [ ] Phase 2: the two funnels return events
 - [ ] Phase 3: consumers move to the event
 - [ ] Phase 4: flip
