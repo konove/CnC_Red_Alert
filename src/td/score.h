@@ -135,7 +135,7 @@ class ScoreAnimClass {
   Presentation& show_;
 
  public:
-  virtual ~ScoreAnimClass() = default;
+  virtual ~ScoreAnimClass();
   ScoreAnimClass(const ScoreAnimClass&) = delete;
   ScoreAnimClass& operator=(const ScoreAnimClass&) = delete;
   ScoreAnimClass(ScoreAnimClass&&) = delete;

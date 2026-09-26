@@ -75,7 +75,7 @@ class BaseClass {
   ** Constructor/Destructor
   */
   BaseClass() = default;
-  virtual ~BaseClass() { Nodes.Clear(); }
+  virtual ~BaseClass();
   BaseClass(const BaseClass&) = delete;
   BaseClass& operator=(const BaseClass&) = delete;
   BaseClass(BaseClass&&) = delete;

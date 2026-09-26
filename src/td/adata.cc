@@ -2252,6 +2252,8 @@ AnimTypeClass::AnimTypeClass(AnimType anim, const char* name, int size,
       Sound(sound),
       ChainTo(chainto) {}
 
+AnimTypeClass::~AnimTypeClass() = default;
+
 /***********************************************************************************************
  * AnimTypeClass::One_Time -- Performs one time action for animation types. *
  *                                                                                             *

@@ -75,7 +75,7 @@ class AbstractClass {
   }
 
   AbstractClass() = default;
-  virtual ~AbstractClass() = default;
+  virtual ~AbstractClass();
   AbstractClass(const AbstractClass&) = delete;
   AbstractClass& operator=(const AbstractClass&) = delete;
   AbstractClass(AbstractClass&&) = delete;

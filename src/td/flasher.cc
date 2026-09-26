@@ -42,6 +42,8 @@
 
 #include "td/flasher.h"
 
+FlasherClass::~FlasherClass() = default;
+
 /***********************************************************************************************
  * FlasherClass::Process -- Performs the logic processing for the flashing
  *ability.            *

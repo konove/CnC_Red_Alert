@@ -49,6 +49,13 @@ class ArchiveWriter;
 
 class LayerClass : public DynamicVectorClass<ObjectClass*> {
  public:
+  LayerClass() = default;
+  ~LayerClass() override;
+  LayerClass(const LayerClass&) = delete;
+  LayerClass& operator=(const LayerClass&) = delete;
+  LayerClass(LayerClass&&) = delete;
+  LayerClass& operator=(LayerClass&&) = delete;
+
   //-----------------------------------------------------------------
   void Sort();
   bool Submit(ObjectClass* object, bool sort = false);

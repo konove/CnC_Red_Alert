@@ -74,7 +74,7 @@
 #include "td/startup_options.h"
 #include "td/winstub.h"
 
-// The two tests that link this file define TD_NO_ENTRY_POINT; these headers
+// The tests that link this file define TD_NO_ENTRY_POINT; these headers
 // serve only main().
 #ifndef TD_NO_ENTRY_POINT
 #include <filesystem>

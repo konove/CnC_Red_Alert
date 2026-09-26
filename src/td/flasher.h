@@ -76,7 +76,7 @@ class FlasherClass {
   }
 
   FlasherClass() = default;
-  virtual ~FlasherClass() = default;
+  virtual ~FlasherClass();
   FlasherClass(const FlasherClass&) = delete;
   FlasherClass& operator=(const FlasherClass&) = delete;
   FlasherClass(FlasherClass&&) = delete;

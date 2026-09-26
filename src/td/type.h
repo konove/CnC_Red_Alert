@@ -1259,6 +1259,11 @@ class BulletTypeClass : public ObjectTypeClass {
                   bool is_inaccurate, bool is_translucent, bool is_antiair,
                   int arming, int range, MPHType maxspeed, unsigned rot,
                   WarheadType warhead, AnimType explosion) noexcept;
+  ~BulletTypeClass() override;
+  BulletTypeClass(const BulletTypeClass&) = delete;
+  BulletTypeClass& operator=(const BulletTypeClass&) = delete;
+  BulletTypeClass(BulletTypeClass&&) = delete;
+  BulletTypeClass& operator=(BulletTypeClass&&) = delete;
 
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_BULLETTYPE; }
 
@@ -1597,6 +1602,11 @@ class AnimTypeClass : public ObjectTypeClass {
                 unsigned int damage, int delaytime, int start, int loopstart,
                 int loopend, int stages, int loops, VocType sound,
                 AnimType chainto) noexcept;
+  ~AnimTypeClass() override;
+  AnimTypeClass(const AnimTypeClass&) = delete;
+  AnimTypeClass& operator=(const AnimTypeClass&) = delete;
+  AnimTypeClass(AnimTypeClass&&) = delete;
+  AnimTypeClass& operator=(AnimTypeClass&&) = delete;
   RTTIType What_Am_I() const override { return RTTI_ANIMTYPE; }
 
   static const AnimTypeClass& As_Reference(AnimType type) {

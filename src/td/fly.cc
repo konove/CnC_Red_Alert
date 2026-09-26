@@ -67,6 +67,8 @@
 #include "td/display_constants.h"
 #include "td/jshell.h"
 
+FlyClass::~FlyClass() = default;
+
 ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
   if (SpeedAdd != MPH_IMMOBILE) {
     int actual = static_cast<int>(SpeedAdd) + SpeedAccum;

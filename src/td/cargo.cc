@@ -46,6 +46,8 @@
 #include "td/foot.h"
 #include "td/object.h"
 
+CargoClass::~CargoClass() { CargoHold = nullptr; }
+
 /***********************************************************************************************
  * CargoClass::Attach -- Add unit to cargo hold. *
  *                                                                                             *

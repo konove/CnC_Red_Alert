@@ -65,7 +65,7 @@ class FlyClass {
   **	Constructors, Destructors, and overloaded operators.
   */
   FlyClass() = default;
-  virtual ~FlyClass() = default;
+  virtual ~FlyClass();
   FlyClass(const FlyClass&) = delete;
   FlyClass& operator=(const FlyClass&) = delete;
   FlyClass(FlyClass&&) = delete;

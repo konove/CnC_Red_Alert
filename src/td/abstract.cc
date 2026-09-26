@@ -34,6 +34,8 @@
 #include "td/target.h"
 #include "td/type.h"
 
+AbstractClass::~AbstractClass() = default;
+
 DirType AbstractClass::Direction(TARGET target) const {
   return ::Direction(Center_Coord(), As_Coord(target));
 }

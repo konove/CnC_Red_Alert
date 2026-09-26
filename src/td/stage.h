@@ -75,7 +75,7 @@ class StageClass {
     ar(Stage, StageTimer, Rate);
   }
 
-  virtual ~StageClass() = default;
+  virtual ~StageClass();
   StageClass(const StageClass&) = delete;
   StageClass& operator=(const StageClass&) = delete;
   StageClass(StageClass&&) = delete;

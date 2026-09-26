@@ -114,6 +114,8 @@ bool BaseNodeClass::operator!=(const BaseNodeClass& node) const {
  *=============================================================================================*/
 bool BaseNodeClass::operator>(const BaseNodeClass& /*unused*/) { return true; }
 
+BaseClass::~BaseClass() { Nodes.Clear(); }
+
 /***********************************************************************************************
  * BaseClass::Read_INI -- INI reading routine *
  *                                                                                             *

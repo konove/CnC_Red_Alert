@@ -1037,6 +1037,8 @@ SidebarClass::StripClass::StripClass(const InitClass& /*unused*/) {
   }
 }
 
+SidebarClass::StripClass::~StripClass() = default;
+
 /***********************************************************************************************
  * SidebarClass::StripClass::One_Time -- Performs one time actions necessary for
  *the side stri *

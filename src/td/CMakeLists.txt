@@ -67,14 +67,17 @@ add_gtest(
 target_compile_definitions(td_archive_roundtrip_test PRIVATE TD_NO_ENTRY_POINT=1)
 apply_dotenv_settings(td_archive_roundtrip_test)
 
+# The serializers' value tests. They derive from and construct AbstractClass,
+# FlyClass and StageClass, whose vtables live with their out-of-line
+# destructors in the engine, so the test links the engine without its entry
+# point.
 add_gtest(
     NAME td_saveload_test
-    SOURCES savevalues_test.cc cellvalues.cc scorevalues.cc door.cc flasher.cc fuse.cc super.cc fixedmath.cc rand.cc
-    # SDL for the scancodes engine/window/keyboard.h names its keys by.
-    LIBS base engine_stream SDL2::SDL2
+    SOURCES savevalues_test.cc startup.cc
+    LIBS td_engine absl::core_headers
 )
-
-target_compile_definitions(td_saveload_test PRIVATE TD=1)
+target_compile_definitions(td_saveload_test PRIVATE TD_NO_ENTRY_POINT=1)
+apply_dotenv_settings(td_saveload_test)
 
 add_gtest(
     NAME td_game_test

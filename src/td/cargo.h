@@ -57,7 +57,7 @@ class CargoClass {
   void Serialize(Archive& ar);
 
   CargoClass() = default;
-  virtual ~CargoClass() { CargoHold = nullptr; }
+  virtual ~CargoClass();
   CargoClass(const CargoClass&) = delete;
   CargoClass& operator=(const CargoClass&) = delete;
   CargoClass(CargoClass&&) = delete;

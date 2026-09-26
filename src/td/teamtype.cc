@@ -103,6 +103,8 @@ base::EnumArray<TeamMissionType, const char*, static_cast<int>(TMISSION_COUNT)>
         "Unload",
 };
 
+TeamTypeClass::~TeamTypeClass() = default;
+
 /***********************************************************************************************
  * TeamTypeClass::Validate -- validates teamtype pointer
  **

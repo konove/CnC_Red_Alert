@@ -61,6 +61,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+LogicClass::~LogicClass() = default;
+
 /***********************************************************************************************
  * LogicClass::AI -- Handles AI logic processing for game objects. *
  *                                                                                             *

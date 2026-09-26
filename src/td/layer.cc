@@ -45,6 +45,8 @@
 
 #include "td/object.h"
 
+LayerClass::~LayerClass() = default;
+
 /***********************************************************************************************
  * LayerClass::Submit -- Adds an object to a layer list. *
  *                                                                                             *

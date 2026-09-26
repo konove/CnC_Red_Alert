@@ -564,6 +564,8 @@ BulletTypeClass::BulletTypeClass(
       Arming(arming),
       Range(range) {}
 
+BulletTypeClass::~BulletTypeClass() = default;
+
 /***********************************************************************************************
  * BulletTypeClass::One_Time -- Performs the one time processing for bullets. *
  *                                                                                             *

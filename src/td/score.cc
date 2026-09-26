@@ -330,6 +330,8 @@ ScoreAnimClass::ScoreAnimClass(Presentation& show, int x, int y,
   Timer.Start();
 }
 
+ScoreAnimClass::~ScoreAnimClass() = default;
+
 ScoreTimeClass::ScoreTimeClass(Presentation& show, int xpos, int ypos,
                                std::span<const std::byte> data, int max,
                                int timer)

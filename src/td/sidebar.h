@@ -139,6 +139,11 @@ class SidebarClass : public PowerClass {
 
     StripClass() = default;
     explicit StripClass(const InitClass& /*unused*/);
+    ~StripClass() override;
+    StripClass(const StripClass&) = delete;
+    StripClass& operator=(const StripClass&) = delete;
+    StripClass(StripClass&&) = delete;
+    StripClass& operator=(StripClass&&) = delete;
 
     bool Add(RTTIType type, int ID);
     bool Abandon_Production(int factory);

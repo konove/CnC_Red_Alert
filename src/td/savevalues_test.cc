@@ -10,7 +10,6 @@
 #include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
 #include "td/abstract.h"
-#include "td/audio.h"
 #include "td/cell.h"
 #include "td/crew.h"
 #include "td/defines.h"
@@ -38,9 +37,6 @@ GameClock game_clock;
 const base::Installed<GameClock>::Scope game_clock_scope(game_clock);
 SpecialClass special{};
 const base::Installed<SpecialClass>::Scope special_scope(special);
-}  // namespace
-void Speak(VoxType /*unused*/) {}
-namespace {
 
 template <class T>
 std::array<uint8_t, 64> Save(T& value) {
