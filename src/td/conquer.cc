@@ -185,7 +185,7 @@ using enum engine::window::KeyNumber;
 
 // Holds the end of the current frame; Main_Loop() sets it and Sync_Delay()
 // waits it out.
-static CountDownTimerClass frame_timer{0L};
+static CountDownTimerClass frame_timer{int64_t{0}};
 
 // Measures how long one frame's logic takes, for the multiplayer frame rate.
 static TimerClass process_timer;
@@ -1202,8 +1202,8 @@ static void Message_Input(engine::window::KeyNumber& input) {
  *text fade color.                                                 *
  *=============================================================================================*/
 bool Color_Cycle() {
-  static CountDownTimerClass _timer(0L);
-  static CountDownTimerClass _ftimer(0L);
+  static CountDownTimerClass _timer(int64_t{0});
+  static CountDownTimerClass _ftimer(int64_t{0});
   static bool _up = false;
   bool changed = false;
 

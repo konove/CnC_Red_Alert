@@ -149,7 +149,7 @@ void CreditClass::AI(bool forced) {
   /*
   **	Make sure that the credit counter doesn't drop below zero.
   */
-  Credits = std::max(Credits, 0L);
+  Credits = std::max(Credits, int64_t{0});
 
   if (Current == Credits) {
     return;
