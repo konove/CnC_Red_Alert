@@ -307,12 +307,16 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
   **	present. If no keystroke is pending then simple mouse tracking will
   **	be done.
   */
-  int key = 0;
-  TheGameState().unknown_key() = 0;
+  engine::window::InputEvent input_event;
+  TheGameState().unknown_input() = {};
   if (TheKeyboard().Peek()) {
-    key = (TheKeyboard().Read() &
-           0x18FF); /* mask off all but release bit	*/
+    input_event = TheKeyboard().ReadEvent();
   }
+  // The key without its modifier bits; a release stays a release. A click is
+  // handled below, not as a key.
+  const engine::window::KeyNumber key =
+      input_event.IsClick() ? engine::window::KN_NONE
+                            : engine::window::WithoutModifiers(input_event.key);
 
   /*
   **	if we are using the mouse and it is installed, then find the mouse
@@ -334,7 +338,19 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     newitem = (tempy - my1) / menuskip;
   }
 
-  switch (key) {
+  // A click on an item selects it; any other click goes back to the caller.
+  if (input_event.IsPress(engine::window::MouseButton::kLeft) ||
+      input_event.IsPress(engine::window::MouseButton::kRight)) {
+    if (Coordinates_In_Region(input_event.x, input_event.y, mx1, my1, mx2,
+                              my2)) {
+      newitem = (input_event.y - my1) / menuskip;
+      select = newitem;
+    } else {
+      TheGameState().unknown_input() = input_event;
+    }
+  }
+
+  switch (static_cast<int>(key)) {
     case KN_UP:            /* if the key moves up	*/
       newitem--;           /* 	new item up one	*/
       if (newitem < 0) {   /* if invalid new item	*/
@@ -355,22 +371,6 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     case KN_PGDN:        /*		selected then		*/
       newitem = maxitem; /*		new item = bottom	*/
       break;
-
-    /*
-    **	Handle mouse button press. Set selection and then fall into the
-    **	normal menu item select logic.
-    */
-    case KN_RMOUSE:
-    case KN_LMOUSE:
-      if (Coordinates_In_Region(TheKeyboard().click_x(),
-                                TheKeyboard().click_y(), mx1, my1, mx2, my2)) {
-        newitem = (TheKeyboard().click_y() - my1) / menuskip;
-      } else {
-        TheGameState().unknown_key() =
-            key;  //	Pass the unprocessed button click back.
-        break;
-      }
-      [[fallthrough]];
 
     /*
     **	Normal menu item select logic. Will flash line and exit with menu
@@ -396,12 +396,12 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
       for (int menu_item = 0; menu_item < menu.item_count; menu_item++) {
         if (toupper(*base::At(text, base::ToSize(Select_To_Entry(
                                         menu_item, field, index)))) ==
-            toupper(engine::window::KeyBuffer::ToAscii(key % 256))) {
+            toupper(engine::window::KeyBuffer::ToAscii(KeyCode(key)))) {
           newitem = select = menu_item;
           break;
         }
       }
-      TheGameState().unknown_key() = key;
+      TheGameState().unknown_input() = {.key = key};
       break;
   }
 
@@ -506,14 +506,12 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
 
   TheKeyboard().Clear();
   int selection = -1;  // Selection from user.
-  TheGameState().unknown_key() = 0;
+  TheGameState().unknown_input() = {};
   while (selection == -1) {
     Call_Back();
     selection = Check_Menu(view, menu_config, strings, 0xFFL, 0);
-    // The KN_ESC/KN_LMOUSE/KN_RMOUSE tests were unreachable: any of them
-    // already satisfies the != 0 in front of them, so the loop has always
-    // exited on the first unrecognized key of any kind.
-    if (TheGameState().unknown_key() != 0) {
+    // Any key or click the menu does not understand ends it.
+    if (!TheGameState().unknown_input().IsEmpty()) {
       break;
     }
   }

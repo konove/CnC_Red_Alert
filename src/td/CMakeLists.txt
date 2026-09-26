@@ -70,7 +70,8 @@ apply_dotenv_settings(td_archive_roundtrip_test)
 add_gtest(
     NAME td_saveload_test
     SOURCES savevalues_test.cc cellvalues.cc scorevalues.cc door.cc flasher.cc fuse.cc super.cc fixedmath.cc rand.cc
-    LIBS base engine_stream
+    # SDL for the scancodes engine/window/keyboard.h names its keys by.
+    LIBS base engine_stream SDL2::SDL2
 )
 
 target_compile_definitions(td_saveload_test PRIVATE TD=1)

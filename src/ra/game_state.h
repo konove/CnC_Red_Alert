@@ -5,6 +5,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
+#include "engine/window/keyboard.h"
 #include "ra/defines.h"
 
 // The flags that say what the game is doing right now: whether it is
@@ -77,14 +78,16 @@ class GameState {
     return special_dialog_;
   }
 
-  // Dialog plumbing: whether the options menu needs redrawing, the key a
-  // dialog did not understand and handed back, and the two flags a message
-  // box watches so another thread of control can take it down or stop it
-  // from appearing.
+  // Dialog plumbing: whether the options menu needs redrawing, the key or
+  // click a menu did not understand and handed back, and the two flags a
+  // message box watches so another thread of control can take it down or stop
+  // it from appearing.
   bool& redraw_options_menu() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return redraw_options_menu_;
   }
-  int& unknown_key() ABSL_ATTRIBUTE_LIFETIME_BOUND { return unknown_key_; }
+  engine::window::InputEvent& unknown_input() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return unknown_input_;
+  }
   bool& cancel_msgbox() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return cancel_msgbox_;
   }
@@ -119,7 +122,7 @@ class GameState {
   SpecialDialogType special_dialog_ = SDLG_NONE;
 
   bool redraw_options_menu_ = false;
-  int unknown_key_ = 0;
+  engine::window::InputEvent unknown_input_;
   bool cancel_msgbox_ = false;
   bool disable_msgbox_ = false;
   bool tab_key_pressed_ = false;

@@ -1579,9 +1579,12 @@ void MapEditClass::Main_Menu() {
     Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
     const int selection = Do_Menu(_menus, true);  // option the user picks
     Show_Mouse();
-    if (TheGameState().unknown_key() == KN_ESC ||
-        TheGameState().unknown_key() == KN_LMOUSE ||
-        TheGameState().unknown_key() == KN_RMOUSE) {
+    // Esc, or a click away from the menu, closes it.
+    if (const engine::window::InputEvent& unknown =
+            TheGameState().unknown_input();
+        unknown.key == KN_ESC ||
+        unknown.IsPress(engine::window::MouseButton::kLeft) ||
+        unknown.IsPress(engine::window::MouseButton::kRight)) {
       break;
     }
 
@@ -1761,9 +1764,12 @@ void MapEditClass::AI_Menu() {
     Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
     const int selection = Do_Menu(_menus, true);  // option the user picks
     Show_Mouse();
-    if (TheGameState().unknown_key() == KN_ESC ||
-        TheGameState().unknown_key() == KN_LMOUSE ||
-        TheGameState().unknown_key() == KN_RMOUSE) {
+    // Esc, or a click away from the menu, closes it.
+    if (const engine::window::InputEvent& unknown =
+            TheGameState().unknown_input();
+        unknown.key == KN_ESC ||
+        unknown.IsPress(engine::window::MouseButton::kLeft) ||
+        unknown.IsPress(engine::window::MouseButton::kRight)) {
       break;
     }
 

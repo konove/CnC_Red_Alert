@@ -277,12 +277,16 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   **	present. If no keystroke is pending then simple mouse tracking will
   **	be done.
   */
-  // The key without its modifier bits; a release stays a release.
-  engine::window::KeyNumber key = engine::window::KN_NONE;
-  TheGameState().unknown_key() = 0;
+  engine::window::InputEvent input_event;
+  TheGameState().unknown_input() = {};
   if (TheKeyboard().Peek()) {
-    key = engine::window::WithoutModifiers(TheKeyboard().Read());
+    input_event = TheKeyboard().ReadEvent();
   }
+  // The key without its modifier bits; a release stays a release. A click is
+  // handled below, not as a key.
+  const engine::window::KeyNumber key =
+      input_event.IsClick() ? engine::window::KN_NONE
+                            : engine::window::WithoutModifiers(input_event.key);
 
   /*
   **	if we are using the mouse and it is installed, then find the mouse
@@ -306,6 +310,18 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
     newitem = (tempy - my1) / menuskip;
   }
 
+  // A click on an item selects it; any other click goes back to the caller.
+  if (input_event.IsPress(engine::window::MouseButton::kLeft) ||
+      input_event.IsPress(engine::window::MouseButton::kRight)) {
+    if (Coordinates_In_Region(input_event.x, input_event.y, mx1, my1, mx2,
+                              my2)) {
+      newitem = (input_event.y - my1) / menuskip;
+      select = newitem;
+    } else {
+      TheGameState().unknown_input() = input_event;
+    }
+  }
+
   switch (static_cast<int>(key)) {
     case KN_UP:            /* if the key moves up	*/
       newitem--;           /* 	new item up one	*/
@@ -327,22 +343,6 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
     case KN_PGDN:        /*		selected then		*/
       newitem = maxitem; /*		new item = bottom	*/
       break;
-
-    /*
-    **	Handle mouse button press. Set selection and then fall into the
-    **	normal menu item select logic.
-    */
-    case KN_RMOUSE:
-    case KN_LMOUSE:
-      if (Coordinates_In_Region(TheKeyboard().click_x(),
-                                TheKeyboard().click_y(), mx1, my1, mx2, my2)) {
-        newitem = (TheKeyboard().click_y() - my1) / menuskip;
-      } else {
-        TheGameState().unknown_key() =
-            static_cast<int>(key);  //	Pass the unprocessed button click back.
-        break;
-      }
-      [[fallthrough]];
 
     /*
     **	Normal menu item select logic. Will flash line and exit with menu
@@ -373,7 +373,7 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
           break;
         }
       }
-      TheGameState().unknown_key() = static_cast<int>(key);
+      TheGameState().unknown_input() = {.key = key};
       break;
   }
 
@@ -481,11 +481,11 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
 
   TheKeyboard().Clear();
   int selection = -1;  // Selection from user.
-  TheGameState().unknown_key() = 0;
+  TheGameState().unknown_input() = {};
   while (selection == -1) {
     ServiceRealTime();
     selection = Check_Menu(view, 0, strings, nullptr, 0xFFL, 0);
-    if (TheGameState().unknown_key() != 0) {
+    if (!TheGameState().unknown_input().IsEmpty()) {
       break;
     }
   }
@@ -729,8 +729,26 @@ int Main_Menu(int32_t /*unused*/) {
     /*
     **	Get and process player input.
     */
-    const engine::window::KeyNumber input =
-        commands->Input(view).key;  // input from user
+    const engine::window::InputEvent input_event = commands->Input(view);
+    const engine::window::KeyNumber input = input_event.key;
+
+    // A click on the logo shows who made the game; a Shift-click in the top
+    // right corner starts the ant missions.
+    if (input_event.IsPress(engine::window::MouseButton::kLeft)) {
+      if (Coordinates_In_Region(input_event.x, input_event.y, 18, 20, 158,
+                                48)) {
+        Show_Who_Was_Responsible();
+        display = true;
+        TheTheme().Play_Song(THEME_INTRO);
+      } else if (Is_Counterstrike_Installed() &&
+                 engine::window::IsShiftDown() &&
+                 Coordinates_In_Region(input_event.x, input_event.y, 520, 0,
+                                       640, 100)) {
+        TheWorld().ants_enabled() = true;
+        process = false;
+        retval = 2;  //	To match SEL_START_NEW_GAME
+      }
+    }
 
     /*
     **	Dispatch the input to be processed.
@@ -801,29 +819,6 @@ int Main_Menu(int32_t /*unused*/) {
         retval = curbutton;
         process = false;
         break;
-
-      case KN_LMOUSE:
-        if (Coordinates_In_Region(TheKeyboard().click_x(),
-                                  TheKeyboard().click_y(),
-
-                                  18, 20, 158, 48)) {
-          Show_Who_Was_Responsible();
-          display = true;
-          TheTheme().Play_Song(THEME_INTRO);
-
-          break;
-        }
-        if (Is_Counterstrike_Installed() &&
-            (engine::window::IsShiftDown() &&
-             Coordinates_In_Region(TheKeyboard().click_x(),
-                                   TheKeyboard().click_y(), 520, 0, 640,
-                                   100))) {
-          TheWorld().ants_enabled() = true;
-          process = false;
-          retval = 2;  //	To match SEL_START_NEW_GAME
-        }
-
-        [[fallthrough]];
 
       default:
         break;

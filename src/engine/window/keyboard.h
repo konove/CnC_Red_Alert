@@ -271,6 +271,11 @@ struct InputEvent {
   int x = 0;             // for a click, where it happened, in game pixels
   int y = 0;
 
+  // Returns whether the event holds nothing: no key and no click.
+  [[nodiscard]] bool IsEmpty() const {
+    return key == KN_NONE && button == MouseButton::kNone;
+  }
+
   // Returns whether the event is a click, of any button, down or up.
   [[nodiscard]] bool IsClick() const { return button != MouseButton::kNone; }
 

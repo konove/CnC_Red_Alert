@@ -9,6 +9,7 @@
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "engine/platform/timer.h"
+#include "engine/window/keyboard.h"
 #include "td/defines.h"
 
 // The flags that say what the game is doing right now: whether it is
@@ -98,8 +99,10 @@ class GameState {
     return speech_timer_;
   }
 
-  // The key a dialog did not understand and handed back to its caller.
-  int& unknown_key() ABSL_ATTRIBUTE_LIFETIME_BOUND { return unknown_key_; }
+  // The key or click a menu did not understand and handed back to its caller.
+  engine::window::InputEvent& unknown_input() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return unknown_input_;
+  }
 
   // Whether the dinosaurs of the Jurassic cheat may appear, and the flag a
   // unit sets while it is carrying the scenario's archive target.
@@ -149,7 +152,7 @@ class GameState {
   SpecialDialogType special_dialog_ = SDLG_NONE;
   CountDownTimerClass speech_timer_{int64_t{0}};
 
-  int unknown_key_ = 0;
+  engine::window::InputEvent unknown_input_;
 
   bool thingies_enabled_ = false;
   bool special_flag_ = false;
