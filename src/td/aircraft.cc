@@ -117,6 +117,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "base/trig.h"
@@ -528,8 +529,8 @@ void AircraftClass::Read_INI(char* buffer) {
           AircraftTypeClass::From_Name(tokens.Next());  // Unit class.
 
       if (classid != AIRCRAFT_NONE) {
-        auto* air =
-            new AircraftClass(classid, inhouse);  // Working unit pointer.
+        auto* air = base::NewPooled<AircraftClass>(
+            classid, inhouse);  // Working unit pointer.
         if (air) {
 
           /*
@@ -542,14 +543,14 @@ void AircraftClass::Read_INI(char* buffer) {
               static_cast<DirType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
           if (!TheMap().In_Radar(Coord_Cell(coord))) {
-            delete air;
+            base::DeletePooled(air);
           } else {
             air->Strength = static_cast<int16_t>(
                 Fixed_To_Cardinal(air->Class->MaxStrength, strength));
             if (air->Unlimbo(coord, dir)) {
               air->Assign_Mission(Mission_From_Name(tokens.Next(",\n\r")));
             } else {
-              delete air;
+              base::DeletePooled(air);
             }
           }
         }
@@ -894,7 +895,7 @@ void AircraftClass::AI() {
         if (*this == AIRCRAFT_CARGO) {
           House->Refund_Money(obj->Class_Of().Cost_Of());
         }
-        delete obj;
+        base::DeletePooled(obj);
       }
       Stun();
       delete this;
@@ -1233,7 +1234,7 @@ int AircraftClass::Mission_Unload() {
             TheMap().Pick_Up(Coord_Cell(Coord), this);
 
             if (!Exit_Object(unit)) {
-              delete unit;
+              base::DeletePooled(unit);
             }
 
             /*
@@ -1598,7 +1599,7 @@ ResultType AircraftClass::Take_Damage(int& damage, int distance,
     case RESULT_DESTROYED:
       Kill_Cargo(source);
       Death_Announcement();
-      new AnimClass(ANIM_FBALL1, Target_Coord());
+      base::NewPooled<AnimClass>(ANIM_FBALL1, Target_Coord());
       delete this;
       break;
 
@@ -3228,7 +3229,7 @@ AircraftClass::~AircraftClass() {
     **	If there are any cargo members, delete them.
     */
     while (Is_Something_Attached()) {
-      delete Detach_Object();
+      base::DeletePooled(Detach_Object());
     }
 
     Limbo();

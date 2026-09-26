@@ -83,6 +83,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/random.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
@@ -484,11 +485,13 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
 bool TerrainClass::Catch_Fire() {
   Validate();
   if (!IsCrumbling && !IsOnFire && Class->IsFlammable) {
-    auto* anim = new AnimClass(ANIM_BURN_BIG, Coord_Add(Sort_Y(), 0xFFB00000L));
+    auto* anim = base::NewPooled<AnimClass>(ANIM_BURN_BIG,
+                                            Coord_Add(Sort_Y(), 0xFFB00000L));
     if (anim) {
       anim->Attach_To(this);
     }
-    anim = new AnimClass(ANIM_BURN_MED, Coord_Add(Sort_Y(), 0xFF200000L), 15);
+    anim = base::NewPooled<AnimClass>(ANIM_BURN_MED,
+                                      Coord_Add(Sort_Y(), 0xFF200000L), 15);
     if (anim) {
       anim->Attach_To(this);
     }
@@ -522,7 +525,8 @@ void TerrainClass::Fire_Out() {
       Detach_All();
       Mark();
       Start_To_Crumble();
-      new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, Class->CenterBase));
+      base::NewPooled<AnimClass>(ANIM_SMOKE_M,
+                                 Coord_Add(Coord, Class->CenterBase));
     }
   }
 }
@@ -786,7 +790,7 @@ void TerrainClass::Read_INI(char* buffer) {
     const TerrainType terrain =
         TerrainTypeClass::From_Name(tokens.Next());  // Terrain type.
     if (terrain != TERRAIN_NONE) {
-      auto* tptr = new TerrainClass(terrain, cell);
+      auto* tptr = base::NewPooled<TerrainClass>(terrain, cell);
       tptr->Trigger = TriggerClass::As_Pointer(tokens.Next());
       if (tptr->Trigger) {
         tptr->Trigger->AttachCount++;

@@ -65,6 +65,7 @@
 #include "base/enum_array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/ftimer.h"
 #include "ra/anim.h"
@@ -635,7 +636,7 @@ void EventClass::Execute() {
     **	result of player intervention.
     */
     case ANIMATION:
-      anim = new AnimClass(Data.Anim.What, Data.Anim.Where);
+      anim = base::NewPooled<AnimClass>(Data.Anim.What, Data.Anim.Where);
       if (anim && (Data.Anim.Owner != HOUSE_NONE &&
                    ThePlayer()->Class->House != Data.Anim.Owner)) {
         anim->Make_Invisible();

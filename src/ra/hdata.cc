@@ -53,6 +53,7 @@
 
 #include "absl/strings/match.h"
 #include "base/fixed.h"
+#include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccini.h"
@@ -359,26 +360,26 @@ void HouseTypeClass::Init_Heap() {
   *because the heap *	allocation block index serves double duty as the type
   *number index.
   */
-  new HouseTypeClass(HouseSpain);
-  new HouseTypeClass(HouseGreece);
-  new HouseTypeClass(HouseUSSR);
-  new HouseTypeClass(HouseEngland);
-  new HouseTypeClass(HouseUkraine);
-  new HouseTypeClass(HouseGermany);
-  new HouseTypeClass(HouseFrance);
-  new HouseTypeClass(HouseTurkey);
-  new HouseTypeClass(HouseGood);
-  new HouseTypeClass(HouseBad);
-  new HouseTypeClass(HouseCivilian);
-  new HouseTypeClass(HouseJP);
-  new HouseTypeClass(HouseMulti1);
-  new HouseTypeClass(HouseMulti2);
-  new HouseTypeClass(HouseMulti3);
-  new HouseTypeClass(HouseMulti4);
-  new HouseTypeClass(HouseMulti5);
-  new HouseTypeClass(HouseMulti6);
-  new HouseTypeClass(HouseMulti7);
-  new HouseTypeClass(HouseMulti8);
+  base::NewPooled<HouseTypeClass>(HouseSpain);
+  base::NewPooled<HouseTypeClass>(HouseGreece);
+  base::NewPooled<HouseTypeClass>(HouseUSSR);
+  base::NewPooled<HouseTypeClass>(HouseEngland);
+  base::NewPooled<HouseTypeClass>(HouseUkraine);
+  base::NewPooled<HouseTypeClass>(HouseGermany);
+  base::NewPooled<HouseTypeClass>(HouseFrance);
+  base::NewPooled<HouseTypeClass>(HouseTurkey);
+  base::NewPooled<HouseTypeClass>(HouseGood);
+  base::NewPooled<HouseTypeClass>(HouseBad);
+  base::NewPooled<HouseTypeClass>(HouseCivilian);
+  base::NewPooled<HouseTypeClass>(HouseJP);
+  base::NewPooled<HouseTypeClass>(HouseMulti1);
+  base::NewPooled<HouseTypeClass>(HouseMulti2);
+  base::NewPooled<HouseTypeClass>(HouseMulti3);
+  base::NewPooled<HouseTypeClass>(HouseMulti4);
+  base::NewPooled<HouseTypeClass>(HouseMulti5);
+  base::NewPooled<HouseTypeClass>(HouseMulti6);
+  base::NewPooled<HouseTypeClass>(HouseMulti7);
+  base::NewPooled<HouseTypeClass>(HouseMulti8);
 }
 
 /***********************************************************************************************

@@ -71,6 +71,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
@@ -1203,7 +1204,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
           /*
           ................... Delete current object ....................
           */
-          delete TheWorld().current_object().at(0);
+          base::DeletePooled(TheWorld().current_object().at(0));
 
           /*
           .................. Hide the popup controls ...................

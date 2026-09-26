@@ -147,6 +147,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -879,10 +880,10 @@ bool BuildingClass::Mark(MarkType mark) {
       case MARK_UP:
         TheMap().Pick_Up(cell, this);
         if (Class->Bib_And_Offset(bib, cell)) {
-          auto* smudge = new SmudgeClass(bib);
+          auto* smudge = base::NewPooled<SmudgeClass>(bib);
           if (smudge) {
             smudge->Disown(cell);
-            delete smudge;
+            base::DeletePooled(smudge);
           }
         }
         break;
@@ -897,24 +898,28 @@ bool BuildingClass::Mark(MarkType mark) {
         if (Class->IsWall) {
           switch (Class->Type) {
             case STRUCT_BRICK_WALL:
-              new OverlayClass(OVERLAY_BRICK_WALL, cell, House->Class->House);
+              base::NewPooled<OverlayClass>(OVERLAY_BRICK_WALL, cell,
+                                            House->Class->House);
               break;
 
             case STRUCT_BARBWIRE_WALL:
-              new OverlayClass(OVERLAY_BARBWIRE_WALL, cell,
-                               House->Class->House);
+              base::NewPooled<OverlayClass>(OVERLAY_BARBWIRE_WALL, cell,
+                                            House->Class->House);
               break;
 
             case STRUCT_SANDBAG_WALL:
-              new OverlayClass(OVERLAY_SANDBAG_WALL, cell, House->Class->House);
+              base::NewPooled<OverlayClass>(OVERLAY_SANDBAG_WALL, cell,
+                                            House->Class->House);
               break;
 
             case STRUCT_WOOD_WALL:
-              new OverlayClass(OVERLAY_WOOD_WALL, cell, House->Class->House);
+              base::NewPooled<OverlayClass>(OVERLAY_WOOD_WALL, cell,
+                                            House->Class->House);
               break;
 
             case STRUCT_CYCLONE_WALL:
-              new OverlayClass(OVERLAY_CYCLONE_WALL, cell, House->Class->House);
+              base::NewPooled<OverlayClass>(OVERLAY_CYCLONE_WALL, cell,
+                                            House->Class->House);
               break;
             case StructType::STRUCT_NONE:
             case StructType::STRUCT_WEAP:
@@ -992,7 +997,8 @@ bool BuildingClass::Mark(MarkType mark) {
             */
             CELL newcell = cell;
             if (Class->Bib_And_Offset(bib, newcell)) {
-              new SmudgeClass(bib, Cell_Coord(newcell), House->Class->House);
+              base::NewPooled<SmudgeClass>(bib, Cell_Coord(newcell),
+                                           House->Class->House);
             }
 
             TheMap().Place_Down(cell, this);
@@ -1043,7 +1049,7 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
   BulletClass* bullet = TechnoClass::Fire_At(target, which);  // Projectile.
   if (bullet) {
     if (*this == STRUCT_SAM) {
-      auto* anim = new AnimClass(
+      auto* anim = base::NewPooled<AnimClass>(
           static_cast<AnimType>(
               static_cast<int>(ANIM_SAM_N) +
               static_cast<int>(Dir_Facing(PrimaryFacing.Current()))),
@@ -1059,10 +1065,11 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
       Sound_Effect(weapon->Sound, Coord);
 
       if (weapon->Fires == BULLET_BULLET) {
-        new AnimClass(static_cast<AnimType>(static_cast<int>(ANIM_GUN_N) +
-                                            static_cast<int>(Dir_Facing(
-                                                PrimaryFacing.Current()))),
-                      Fire_Coord(which));
+        base::NewPooled<AnimClass>(
+            static_cast<AnimType>(
+                static_cast<int>(ANIM_GUN_N) +
+                static_cast<int>(Dir_Facing(PrimaryFacing.Current()))),
+            Fire_Coord(which));
       } else {
         if (weapon->Fires == BULLET_LASER) {
           int x = 0;
@@ -1091,10 +1098,10 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
             engine::window::WaitTicks(1);  // Make sure line is visible briefly
             TheMap().Flag_To_Redraw(true);
           }
-          new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
-                          As_Coord(target));
+          base::NewPooled<SmudgeClass>(
+              Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6), As_Coord(target));
         } else {
-          new AnimClass(ANIM_MUZZLE_FLASH, Fire_Coord(which));
+          base::NewPooled<AnimClass>(ANIM_MUZZLE_FLASH, Fire_Coord(which));
         }
       }
       Mark(MARK_CHANGE);
@@ -1370,7 +1377,7 @@ void BuildingClass::AI() {
       */
       case 0:
         Factory->Abandon();
-        delete Factory;
+        base::DeletePooled(Factory);
         Factory = nullptr;
         break;
 
@@ -1380,7 +1387,7 @@ void BuildingClass::AI() {
 
       case 2:
         Factory->Completed();
-        delete Factory;
+        base::DeletePooled(Factory);
         Factory = nullptr;
         break;
       default:
@@ -1428,7 +1435,7 @@ void BuildingClass::AI() {
         */
         if (PlacementDelay.Expired() && !Factory->Is_Building()) {
           Factory->Abandon();
-          delete Factory;
+          base::DeletePooled(Factory);
           Factory = nullptr;
         }
 
@@ -1448,10 +1455,10 @@ void BuildingClass::AI() {
           *start *	producing it now.
           */
           if (techno) {
-            Factory = new FactoryClass;
+            Factory = base::NewPooled<FactoryClass>();
             if (Factory) {
               if (!Factory->Set(*techno, *House)) {
-                delete Factory;
+                base::DeletePooled(Factory);
                 Factory = nullptr;
               } else {
                 Factory->Start();
@@ -1806,7 +1813,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
           const FootClass* obj = Detach_Object();
 
           Detach_All(true);
-          delete obj;
+          base::DeletePooled(obj);
         }
 
         Sound_Effect(VOC_XPLOBIG4, Coord);
@@ -1818,23 +1825,24 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
           **	If the building is destroyed, then lots of
           **	explosions occur.
           */
-          new SmudgeClass(Random_Pick(SMUDGE_CRATER1, SMUDGE_CRATER6),
-                          Cell_Coord(cell));
+          base::NewPooled<SmudgeClass>(
+              Random_Pick(SMUDGE_CRATER1, SMUDGE_CRATER6), Cell_Coord(cell));
           if (Random_Pick(0, 1) == 0) {
-            new AnimClass(ANIM_FIRE_SMALL,
-                          Coord_Scatter(Cell_Coord(cell), 0x0080),
-                          static_cast<unsigned char>(Random_Pick(0, 7)),
-                          static_cast<unsigned char>(Random_Pick(1, 3)));
+            base::NewPooled<AnimClass>(
+                ANIM_FIRE_SMALL, Coord_Scatter(Cell_Coord(cell), 0x0080),
+                static_cast<unsigned char>(Random_Pick(0, 7)),
+                static_cast<unsigned char>(Random_Pick(1, 3)));
             if (Random_Pick(0, 1) == 0) {
-              new AnimClass(ANIM_FIRE_MED,
-                            Coord_Scatter(Cell_Coord(cell), 0x0040),
-                            static_cast<unsigned char>(Random_Pick(0, 7)),
-                            static_cast<unsigned char>(Random_Pick(1, 3)));
+              base::NewPooled<AnimClass>(
+                  ANIM_FIRE_MED, Coord_Scatter(Cell_Coord(cell), 0x0040),
+                  static_cast<unsigned char>(Random_Pick(0, 7)),
+                  static_cast<unsigned char>(Random_Pick(1, 3)));
             }
           }
           // Start_Profiler();
-          new AnimClass(ANIM_FBALL1, Coord_Scatter(Cell_Coord(cell), 0x0040),
-                        static_cast<unsigned char>(Random_Pick(0, 3)));
+          base::NewPooled<AnimClass>(
+              ANIM_FBALL1, Coord_Scatter(Cell_Coord(cell), 0x0040),
+              static_cast<unsigned char>(Random_Pick(0, 3)));
         }
 
         shakes = Class->Cost_Of() / 400;
@@ -1860,8 +1868,8 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
       case RESULT_HALF:
         if (*this == STRUCT_PUMP) {
-          auto* anim = new AnimClass(ANIM_OILFIELD_BURN,
-                                     Coord_Add(Coord, 0x00400130L), 1);
+          auto* anim = base::NewPooled<AnimClass>(
+              ANIM_OILFIELD_BURN, Coord_Add(Coord, 0x00400130L), 1);
           if (anim) {
             anim->Attach_To(this);
           }
@@ -1886,7 +1894,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
               case 2:
               case 3:
               case 4:
-                anim = new AnimClass(
+                anim = base::NewPooled<AnimClass>(
                     ANIM_ON_FIRE_SMALL, Coord_Scatter(Cell_Coord(cell), 0x0060),
                     0, static_cast<unsigned char>(Random_Pick(1, 3)));
                 break;
@@ -1894,15 +1902,15 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
               case 5:
               case 6:
               case 7:
-                anim = new AnimClass(
+                anim = base::NewPooled<AnimClass>(
                     ANIM_ON_FIRE_MED, Coord_Scatter(Cell_Coord(cell), 0x0060),
                     0, static_cast<unsigned char>(Random_Pick(1, 3)));
                 break;
 
               case 8:
-                anim = new AnimClass(ANIM_ON_FIRE_BIG,
-                                     Coord_Scatter(Cell_Coord(cell), 0x0060), 0,
-                                     1);
+                anim = base::NewPooled<AnimClass>(
+                    ANIM_ON_FIRE_BIG, Coord_Scatter(Cell_Coord(cell), 0x0060),
+                    0, 1);
                 break;
 
               case 9:
@@ -1915,7 +1923,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
             }
           } else {
             if (Random_Pick(0, 1) == 0) {
-              anim = new AnimClass(
+              anim = base::NewPooled<AnimClass>(
                   ANIM_FIRE_SMALL, Coord_Scatter(Cell_Coord(cell), 0x0060),
                   static_cast<unsigned char>(Random_Pick(0, 7)),
                   static_cast<unsigned char>(Random_Pick(1, 3)));
@@ -2152,7 +2160,8 @@ void BuildingClass::Drop_Debris(TARGET source) {
   */
   if (TheSession().type() == GAME_NORMAL && *this == STRUCT_MISSION &&
       ThePlayer()->ActLike == HOUSE_BAD && TheWorld().scenario() == 10) {
-    auto* i = new InfantryClass(INFANTRY_CHAN, House->Class->House);
+    auto* i =
+        base::NewPooled<InfantryClass>(INFANTRY_CHAN, House->Class->House);
 
     TheWorld().scenario_init()++;
     if (i->Unlimbo(Center_Coord(), DIR_N)) {
@@ -2164,7 +2173,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
       TheWorld().scenario_init()++;
       i->Assign_Mission(MISSION_GUARD_AREA);
     } else {
-      delete i;
+      base::DeletePooled(i);
     }
     TheWorld().scenario_init()--;
   }
@@ -2191,7 +2200,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
       InfantryClass* i = nullptr;
 
       if (Random_Pick(0, odds) == 1) {
-        i = new InfantryClass(Crew_Type(), House->Class->House);
+        i = base::NewPooled<InfantryClass>(Crew_Type(), House->Class->House);
         if (i) {
           if (!Class->Get_Buildup_Data().empty() && i->Class->IsNominal) {
             i->IsTechnician = true;
@@ -2212,7 +2221,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
               }
             }
           } else {
-            delete i;
+            base::DeletePooled(i);
           }
           TheWorld().scenario_init()--;
         }
@@ -2226,10 +2235,10 @@ void BuildingClass::Drop_Debris(TARGET source) {
       case 0:
       case 1:
       case 2:
-        new AnimClass(ANIM_SMOKE_M,
-                      Coord_Scatter(Cell_Coord(newcell), 0x0050, false),
-                      static_cast<unsigned char>(Random_Pick(0, 5)),
-                      static_cast<unsigned char>(Random_Pick(1, 2)));
+        base::NewPooled<AnimClass>(
+            ANIM_SMOKE_M, Coord_Scatter(Cell_Coord(newcell), 0x0050, false),
+            static_cast<unsigned char>(Random_Pick(0, 5)),
+            static_cast<unsigned char>(Random_Pick(1, 2)));
         break;
 
       default:
@@ -2240,11 +2249,12 @@ void BuildingClass::Drop_Debris(TARGET source) {
     **	The building always scars the ground in some fashion.
     */
     if (Random_Pick(0, 3) == 0) {
-      new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
-                      Cell_Coord(newcell));
+      base::NewPooled<SmudgeClass>(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
+                                   Cell_Coord(newcell));
     } else {
-      new SmudgeClass(Random_Pick(SMUDGE_CRATER1, SMUDGE_CRATER6),
-                      Coord_Scatter(Cell_Coord(newcell), 0x0080, false));
+      base::NewPooled<SmudgeClass>(
+          Random_Pick(SMUDGE_CRATER1, SMUDGE_CRATER6),
+          Coord_Scatter(Cell_Coord(newcell), 0x0080, false));
     }
   }
 }
@@ -2520,7 +2530,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
           if (Create_Special_Reinforcement(
                   House, &AircraftTypeClass::As_Reference(AIRCRAFT_CARGO),
                   ttype, TMISSION_UNLOAD, As_Target())) {
-            delete base;
+            base::DeletePooled(base);
             return 2;
           }
           return 0;
@@ -3108,7 +3118,8 @@ void BuildingClass::Grand_Opening(bool captured) {
        PurchasePrice > Class->Raw_Cost())) {
     CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_SW));
     //		if (!Map[cell].Cell_Unit()) {
-    auto* unit = new UnitClass(UNIT_HARVESTER, House->Class->House);
+    auto* unit =
+        base::NewPooled<UnitClass>(UNIT_HARVESTER, House->Class->House);
     if (unit) {
       /*
       **	Try to place down the harvesters. If it could not be placed,
@@ -3123,7 +3134,7 @@ void BuildingClass::Grand_Opening(bool captured) {
         */
         if (!unit->Unlimbo(Cell_Coord(cell), DIR_SW)) {
           House->Refund_Money(unit->Class->Cost_Of());
-          delete unit;
+          base::DeletePooled(unit);
         }
       }
     } else {
@@ -3146,9 +3157,10 @@ void BuildingClass::Grand_Opening(bool captured) {
     TheWorld().scenario_init()++;
     AircraftClass* air = nullptr;
     if (House->ActLike == HOUSE_GOOD) {
-      air = new AircraftClass(AIRCRAFT_ORCA, House->Class->House);
+      air = base::NewPooled<AircraftClass>(AIRCRAFT_ORCA, House->Class->House);
     } else {
-      air = new AircraftClass(AIRCRAFT_HELICOPTER, House->Class->House);
+      air = base::NewPooled<AircraftClass>(AIRCRAFT_HELICOPTER,
+                                           House->Class->House);
     }
     if (air) {
       air->Altitude = 0;
@@ -3520,7 +3532,8 @@ void BuildingClass::Read_INI(char* buffer) {
       */
       char* trigname = tokens.Next();  // building's trigger's name
 
-      auto* b = new BuildingClass(classid, bhouse);  // Working unit pointer.
+      auto* b = base::NewPooled<BuildingClass>(
+          classid, bhouse);  // Working unit pointer.
       if (b) {
         if (b->Unlimbo(Cell_Coord(cell), facing)) {
           strength = std::min(strength, 0x100);
@@ -3536,7 +3549,7 @@ void BuildingClass::Read_INI(char* buffer) {
           **	If the building could not be unlimboed on the map, then this
           *indicates *	a serious error. Delete the building.
           */
-          delete b;
+          base::DeletePooled(b);
         }
       }
     }
@@ -3897,12 +3910,12 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     SmudgeType bib = SMUDGE_NONE;
     CELL cell = Coord_Cell(Coord);
     if (Class->Bib_And_Offset(bib, cell)) {
-      auto* smudge = new SmudgeClass(bib);
+      auto* smudge = base::NewPooled<SmudgeClass>(bib);
       if (smudge) {
         smudge->Disown(cell);
-        delete smudge;
+        base::DeletePooled(smudge);
       }
-      new SmudgeClass(bib, Cell_Coord(cell), House->Class->House);
+      base::NewPooled<SmudgeClass>(bib, Cell_Coord(cell), House->Class->House);
     }
 
     House->Harvested(booty);
@@ -4262,7 +4275,8 @@ int BuildingClass::Mission_Deconstruction() {
               engine = true;
             }
 
-            auto* infantry = new InfantryClass(typ, House->Class->House);
+            auto* infantry =
+                base::NewPooled<InfantryClass>(typ, House->Class->House);
             if (infantry) {
               TheWorld().scenario_init()++;
               COORDINATE coord =
@@ -4280,7 +4294,7 @@ int BuildingClass::Mission_Deconstruction() {
                 TheWorld().scenario_init()++;
                 infantry->Assign_Mission(MISSION_GUARD_AREA);
               } else {
-                delete infantry;
+                base::DeletePooled(infantry);
               }
               TheWorld().scenario_init()--;
             }
@@ -4310,7 +4324,8 @@ int BuildingClass::Mission_Deconstruction() {
         if (TheSpecial().IsMCVDeploy && *this == STRUCT_CONST &&
             House->IsHuman) {
           TheWorld().scenario_init()++;
-          auto* unit = new UnitClass(UNIT_MCV, House->Class->House);
+          auto* unit =
+              base::NewPooled<UnitClass>(UNIT_MCV, House->Class->House);
           TheWorld().scenario_init()--;
           if (unit) {
             /*
@@ -4865,7 +4880,7 @@ int BuildingClass::Mission_Missile() {
       case kDoorOpening:
         if (IsReadyToCommence) {
           Begin_Mode(BSTATE_IDLE);
-          new AnimClass(ANIM_ATOM_DOOR, Center_Coord());
+          base::NewPooled<AnimClass>(ANIM_ATOM_DOOR, Center_Coord());
           Status = kLaunchUp;
           return 14;
         }
@@ -4876,7 +4891,7 @@ int BuildingClass::Mission_Missile() {
       ** actually handles launching the missile into the air.
       */
       case kLaunchUp: {
-        auto* bullet = new BulletClass(BULLET_NUKE_UP);
+        auto* bullet = base::NewPooled<BulletClass>(BULLET_NUKE_UP);
         if (bullet) {
           const COORDINATE launch =
               Coord_Move(Center_Coord(), AsDirection(1), 0x1A0);
@@ -4884,7 +4899,7 @@ int BuildingClass::Mission_Missile() {
           bullet->Payback = nullptr;
           bullet->Strength = 1;
           if (!bullet->Unlimbo(launch, DIR_N)) {
-            delete bullet;
+            base::DeletePooled(bullet);
             bullet = nullptr;
           } else {
             bullet->PrimaryFacing.Set_Current(DIR_N);
@@ -4908,7 +4923,7 @@ int BuildingClass::Mission_Missile() {
       ** over the target.
       */
       case kLaunchDown: {
-        auto* bullet = new BulletClass(BULLET_NUKE_DOWN);
+        auto* bullet = base::NewPooled<BulletClass>(BULLET_NUKE_DOWN);
         if (bullet) {
           //						Theme.Queue_Song(THEME_NONE);
           const COORDINATE start =
@@ -4920,7 +4935,7 @@ int BuildingClass::Mission_Missile() {
             // The missile never reached the map. Clear the pointer so the
             // launch-complete test below sees the failure instead of reading
             // the recycled heap block.
-            delete bullet;
+            base::DeletePooled(bullet);
             bullet = nullptr;
           } else {
             bullet->PrimaryFacing.Set_Current(DIR_S);
@@ -5422,7 +5437,7 @@ void BuildingClass::Detach_All(bool all) {
   */
   if (Factory) {
     Factory->Abandon();
-    delete Factory;
+    base::DeletePooled(Factory);
     Factory = nullptr;
   }
 

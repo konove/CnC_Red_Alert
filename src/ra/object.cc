@@ -117,6 +117,7 @@
 #include "absl/log/check.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -1747,13 +1748,13 @@ bool ObjectClass::Paradrop(COORDINATE coord) {
     AnimClass* anim = nullptr;
 
     if (What_Am_I() == RTTI_BULLET) {
-      anim = new AnimClass(ANIM_PARA_BOMB,
-                           Coord_Move(Center_Coord(), DIR_N,
-                                      static_cast<uint16_t>(0x0030 + Height)));
+      anim = base::NewPooled<AnimClass>(
+          ANIM_PARA_BOMB, Coord_Move(Center_Coord(), DIR_N,
+                                     static_cast<uint16_t>(0x0030 + Height)));
     } else {
-      anim = new AnimClass(ANIM_PARACHUTE,
-                           Coord_Move(Center_Coord(), DIR_N,
-                                      static_cast<uint16_t>(0x0030 + Height)));
+      anim = base::NewPooled<AnimClass>(
+          ANIM_PARACHUTE, Coord_Move(Center_Coord(), DIR_N,
+                                     static_cast<uint16_t>(0x0030 + Height)));
     }
 
     /*

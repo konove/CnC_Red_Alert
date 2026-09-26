@@ -63,6 +63,7 @@
 #include "base/enum_array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -649,8 +650,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Place a smoke marker at the waypoint specified.
     */
     case TACTION_DZ:
-      new AnimClass(ANIM_LZ_SMOKE,
-                    Cell_Coord(base::At(TheScenario().Waypoint, Data.Value)));
+      base::NewPooled<AnimClass>(
+          ANIM_LZ_SMOKE,
+          Cell_Coord(base::At(TheScenario().Waypoint, Data.Value)));
       break;
 
     /*

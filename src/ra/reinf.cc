@@ -48,6 +48,7 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
+#include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
@@ -106,7 +107,7 @@ static bool Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
       */
       case RTTI_BUILDING:
         if (object->Exit_Object(todo) != 2) {
-          delete todo;
+          base::DeletePooled(todo);
         } else {
           ++quantity;
         }
@@ -152,7 +153,7 @@ static bool Pop_Group_Out_Of_Object(FootClass* group, TechnoClass* object) {
       case RTTIType::RTTI_UNITTYPE:
       case RTTIType::RTTI_VESSELTYPE:
       default:
-        delete todo;
+        base::DeletePooled(todo);
         break;
     }
   }
@@ -222,7 +223,7 @@ static bool Need_To_Take(const AircraftClass* air) {
 static FootClass* Create_Group(TeamTypeClass* teamtype) {
   DCHECK(teamtype != nullptr);
 
-  auto* team = new TeamClass(teamtype);
+  auto* team = base::NewPooled<TeamClass>(teamtype);
   if (team != nullptr) {
     team->Force_Active();
   }
@@ -318,7 +319,7 @@ static FootClass* Create_Group(TeamTypeClass* teamtype) {
   }
 
   if (transport == nullptr && object == nullptr) {
-    delete team;
+    base::DeletePooled(team);
     return nullptr;
   }
 
@@ -564,7 +565,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       o = dynamic_cast<FootClass*>(o->Next);
       old->Next = nullptr;
 
-      delete old;
+      base::DeletePooled(old);
     }
   }
 
@@ -612,7 +613,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
   DCHECK(type != nullptr);
 
   if (house && type) {
-    auto* team = new TeamTypeClass();
+    auto* team = base::NewPooled<TeamTypeClass>();
 
     if (team) {
       /*
@@ -651,7 +652,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
 
       const bool ok = Do_Reinforcements(team);
       if (!ok) {
-        delete team;
+        base::DeletePooled(team);
       }
       return ok;
     }
@@ -795,7 +796,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       */
       obj->Commence();
     } else {
-      delete obj;
+      base::DeletePooled(obj);
       sub--;
       return sub;
     }

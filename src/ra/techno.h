@@ -389,8 +389,7 @@ class TechnoClass : public RadioClass,
   void Override_Mission(MissionType mission, TARGET tarcom,
                         TARGET navcom) override;
   bool Restore_Mission() override;
-  virtual BulletClass* Fire_At(TARGET target,
-                               int which = 0) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  virtual BulletClass* Fire_At(TARGET target, int which = 0);
   [[nodiscard]] int Weapon_Range(int which) const override;
   virtual bool Captured(HouseClass* newowner);
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,

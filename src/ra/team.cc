@@ -85,6 +85,7 @@
 #include "absl/log/check.h"
 #include "base/array.h"
 #include "base/fixed.h"
+#include "base/pooled.h"
 #include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/audio.h"
@@ -298,7 +299,7 @@ TeamClass::~TeamClass() {
     */
     if (Trigger.Is_Valid()) {
       if (Trigger->AttachCount == 0) {
-        delete static_cast<TriggerClass*>(Trigger);
+        base::DeletePooled(static_cast<TriggerClass*>(Trigger));
       }
       Trigger = nullptr;
     }
@@ -342,7 +343,7 @@ TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
   **	create an instance of that trigger and attach it to the team.
   */
   if (Class->Trigger.Is_Valid()) {
-    Trigger = new TriggerClass(Class->Trigger);
+    Trigger = base::NewPooled<TriggerClass>(Class->Trigger);
   }
 }
 

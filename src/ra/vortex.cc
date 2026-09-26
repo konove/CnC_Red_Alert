@@ -75,6 +75,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
@@ -680,14 +681,15 @@ void ChronalVortexClass::Zap_Target() {
     ** Create a temporary techno object se we can access the lightning ability
     *of the tesla.
     */
-    TechnoClass* temptech = new BuildingClass(STRUCT_TESLA, HOUSE_GOOD);
+    TechnoClass* temptech =
+        base::NewPooled<BuildingClass>(STRUCT_TESLA, HOUSE_GOOD);
     if (temptech != nullptr) {
       temptech->Coord = here;
       ObjectClass* obj = As_Object(TargetObject);
       const TARGET target = As_Target(obj->Center_Coord());
       PlaySoundEffectAt(VOC_TESLA_ZAP, obj->Center_Coord());
       temptech->Electric_Zap(target, 0, here, LightningRemap);
-      delete temptech;
+      base::DeletePooled(temptech);
 
       /*
       ** Flag the whole map to redraw to cover the lightning.

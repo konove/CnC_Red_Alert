@@ -100,6 +100,7 @@
 #include "base/array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -2352,7 +2353,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
     **	Generate any corresponding animation associated with this crate powerup.
     */
     if (TheRules().crate_anims().at(powerup) != ANIM_NONE) {
-      new AnimClass(TheRules().crate_anims().at(powerup), Cell_Coord());
+      base::NewPooled<AnimClass>(TheRules().crate_anims().at(powerup),
+                                 Cell_Coord());
     }
 
     /*
@@ -2469,7 +2471,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             if (goodie_unit->Unlimbo(::Cell_Coord(cell))) {
               return false;
             }
-            delete goodie_unit;
+            base::DeletePooled(goodie_unit);
             give_crate_money();
             break;
           }
@@ -2530,7 +2532,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         for (int index = 0; index < 5; index++) {
           const COORDINATE frag_coord =
               Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
-          new AnimClass(ANIM_FBALL1, frag_coord);
+          base::NewPooled<AnimClass>(ANIM_FBALL1, frag_coord);
           damage = TheRules().crate_data().at(powerup);
           Explosion_Damage(frag_coord, damage, nullptr, WARHEAD_HE);
         }
@@ -2541,7 +2543,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       */
       case CRATE_NAPALM:
         coord = Coord_Mid(Cell_Coord(), object->Center_Coord());
-        new AnimClass(ANIM_NAPALM3, coord);
+        base::NewPooled<AnimClass>(ANIM_NAPALM3, coord);
         if (object != nullptr) {
           int d = TheRules().crate_data().at(powerup);
           object->Take_Damage(d, 0, WARHEAD_FIRE, nullptr, true);
@@ -3050,8 +3052,8 @@ bool CellClass::Spread_Tiberium(bool forced) {
     CellClass* newcell = &Adjacent_Cell(index + offset);
 
     if (newcell != nullptr && newcell->Can_Tiberium_Germinate()) {
-      new OverlayClass(Random_Pick(OVERLAY_GOLD1, OVERLAY_GOLD4),
-                       newcell->Cell_Number());
+      base::NewPooled<OverlayClass>(Random_Pick(OVERLAY_GOLD1, OVERLAY_GOLD4),
+                                    newcell->Cell_Number());
       newcell->OverlayData = 0;
       return true;
     }

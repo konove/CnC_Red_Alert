@@ -66,6 +66,7 @@
 #include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "ra/aircraft.h"
@@ -204,7 +205,7 @@ BulletClass::~BulletClass() {
         Payback = nullptr;
 
         if (!unlimbo) {
-          delete dog;
+          base::DeletePooled(dog);
         }
       }
     }
@@ -415,9 +416,9 @@ void BulletClass::AI() {
   if (Class->IsFlameEquipped) {
     if (IsToAnimate) {
       if (absl::EqualsIgnoreCase(Class->GraphicName, "FB1")) {
-        new AnimClass(ANIM_FBALL_FADE, coord, 1);
+        base::NewPooled<AnimClass>(ANIM_FBALL_FADE, coord, 1);
       } else {
-        new AnimClass(ANIM_SMOKE_PUFF, coord, 1);
+        base::NewPooled<AnimClass>(ANIM_SMOKE_PUFF, coord, 1);
       }
     }
     IsToAnimate = !IsToAnimate;
@@ -821,7 +822,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       //			Height = Pixel_To_Lepton(24);
       Riser = 0;
       if (Class->IsParachuted) {
-        auto* anim = new AnimClass(ANIM_PARA_BOMB, Target_Coord());
+        auto* anim = base::NewPooled<AnimClass>(ANIM_PARA_BOMB, Target_Coord());
         //				AnimClass * anim = new
         // AnimClass(ANIM_PARACHUTE, Target_Coord());
         if (anim) {
@@ -1068,7 +1069,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   }
 
   if (anim != ANIM_NONE) {
-    const auto* aptr = new AnimClass(anim, Coord);
+    const auto* aptr = base::NewPooled<AnimClass>(anim, Coord);
     /*
     ** Special case trap: if they're making the nuclear explosion,
     ** and no anim is available, force the nuclear damage anyway

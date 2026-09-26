@@ -51,6 +51,7 @@
 #include "absl/log/check.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "engine/codec/block_codec.h"
 #include "engine/codec/lcw_sink.h"
@@ -305,7 +306,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
         **	the map.
         */
         {
-          new OverlayClass(classid, cell);
+          base::NewPooled<OverlayClass>(classid, cell);
 
           // Assign house ownership to cells with walls in 'em.
           if (OverlayTypeClass::As_Reference(classid).IsWall) {
@@ -349,7 +350,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
       **	the map.
       */
       {
-        new OverlayClass(classid, cell);
+        base::NewPooled<OverlayClass>(classid, cell);
 
         // Assign house ownership to cells with walls in 'em.
         if (OverlayTypeClass::As_Reference(classid).IsWall) {

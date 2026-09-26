@@ -80,6 +80,7 @@
 #include <algorithm>
 #include <cstddef>
 
+#include "base/pooled.h"
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/debug_state.h"
@@ -572,7 +573,7 @@ bool FactoryClass::Abandon() {
       **	Delete the object under construction.
       */
       TheWorld().scenario_init()++;
-      delete Object;
+      base::DeletePooled(Object);
       Object = nullptr;
       TheWorld().scenario_init()--;
     }

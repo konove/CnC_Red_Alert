@@ -57,6 +57,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
@@ -1496,7 +1497,7 @@ void TemplateTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 bool TemplateTypeClass::Create_And_Place(CELL cell,
                                          HousesType /*unused*/) const {
-  return new TemplateClass(Type, cell) != nullptr;
+  return base::NewPooled<TemplateClass>(Type, cell) != nullptr;
 }
 
 /***********************************************************************************************
@@ -1518,7 +1519,7 @@ bool TemplateTypeClass::Create_And_Place(CELL cell,
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* TemplateTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
-  return new TemplateClass(Type, -1);
+  return base::NewPooled<TemplateClass>(Type);
 }
 
 /***********************************************************************************************

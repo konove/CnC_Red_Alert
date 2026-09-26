@@ -66,6 +66,7 @@
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "base/fixed.h"
+#include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "magic_enum/magic_enum.hpp"
@@ -487,8 +488,8 @@ void AnimClass::operator delete(void* ptr) {
  * HISTORY: * 05/31/1994 JLB : Created. * 08/03/1994 JLB : Added a delayed
  *affect parameter.                                        *
  *=============================================================================================*/
-AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
-                     unsigned char timedelay, unsigned char loop)
+AnimClass::AnimClass(AnimType animnum, COORDINATE coord, int timedelay,
+                     int loop)
     : ObjectClass(RTTI_ANIM, TheObjectHeaps().anim().ID(this)),
       Class(TheTypeHeaps().anim().Ptr(static_cast<int>(animnum))),
       Delay(timedelay) {
@@ -520,8 +521,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
                         false);
   }
 
-  Loops = static_cast<unsigned char>(std::max(static_cast<int>(loop), 1) *
-                                     Class->Loops);
+  Loops = static_cast<unsigned char>(std::max(loop, 1) * Class->Loops);
   Loops = static_cast<unsigned char>(std::max(static_cast<int>(Loops), 1));
 
   /*
@@ -901,8 +901,8 @@ void AnimClass::Middle() {
   *time.
   */
   if (Class->IsScorcher) {
-    new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
-                    Center_Coord());
+    base::NewPooled<SmudgeClass>(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
+                                 Center_Coord());
   }
 
   /*
@@ -919,7 +919,7 @@ void AnimClass::Middle() {
     **	If there already is a crater in the cell, then just expand the
     **	crater.
     */
-    new SmudgeClass(SMUDGE_CRATER1, Center_Coord());
+    base::NewPooled<SmudgeClass>(SMUDGE_CRATER1, Center_Coord());
   }
 
   AnimClass* newanim = nullptr;
@@ -933,28 +933,32 @@ void AnimClass::Middle() {
     case ANIM_NAPALM1:
     case ANIM_NAPALM2:
     case ANIM_NAPALM3:
-      new AnimClass(ANIM_FIRE_SMALL,
-                    MapEditClass::Closest_Free_Spot(
-                        Coord_Scatter(Center_Coord(), 0x0040), true),
-                    0, static_cast<unsigned char>(Random_Pick(1, 2)));
+      base::NewPooled<AnimClass>(
+          ANIM_FIRE_SMALL,
+          MapEditClass::Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0040),
+                                          true),
+          0, static_cast<unsigned char>(Random_Pick(1, 2)));
       if (Percent_Chance(50)) {
-        new AnimClass(ANIM_FIRE_SMALL,
-                      MapEditClass::Closest_Free_Spot(
-                          Coord_Scatter(Center_Coord(), 0x00A0), true),
-                      0, static_cast<unsigned char>(Random_Pick(1, 2)));
+        base::NewPooled<AnimClass>(
+            ANIM_FIRE_SMALL,
+            MapEditClass::Closest_Free_Spot(
+                Coord_Scatter(Center_Coord(), 0x00A0), true),
+            0, static_cast<unsigned char>(Random_Pick(1, 2)));
       }
       if (Percent_Chance(50)) {
-        new AnimClass(ANIM_FIRE_MED,
-                      MapEditClass::Closest_Free_Spot(
-                          Coord_Scatter(Center_Coord(), 0x0070), true),
-                      0, static_cast<unsigned char>(Random_Pick(1, 2)));
+        base::NewPooled<AnimClass>(
+            ANIM_FIRE_MED,
+            MapEditClass::Closest_Free_Spot(
+                Coord_Scatter(Center_Coord(), 0x0070), true),
+            0, static_cast<unsigned char>(Random_Pick(1, 2)));
       }
       break;
 
     case ANIM_FIRE_MED:
     case ANIM_FIRE_MED2:
-      newanim = new AnimClass(ANIM_FIRE_SMALL, Center_Coord(), 0,
-                              static_cast<unsigned char>(Random_Pick(1, 2)));
+      newanim = base::NewPooled<AnimClass>(
+          ANIM_FIRE_SMALL, Center_Coord(), 0,
+          static_cast<unsigned char>(Random_Pick(1, 2)));
       if (newanim != nullptr && xObject != kTargetNone) {
         newanim->Attach_To(As_Object(xObject));
       }

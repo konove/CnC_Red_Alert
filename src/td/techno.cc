@@ -174,6 +174,7 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
@@ -2135,7 +2136,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   **	need to be performed according to the style of projectile
   **	created.
   */
-  auto* bullet = new BulletClass(weapon->Fires);  // Projectile.
+  auto* bullet = base::NewPooled<BulletClass>(weapon->Fires);  // Projectile.
   if (bullet) {
     bullet->Assign_Target(target);
     bullet->Payback = this;
@@ -2160,7 +2161,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     } else {
       // The projectile never reached the map, so report no shot rather than
       // hand callers a pointer into the recycled heap block.
-      delete bullet;
+      base::DeletePooled(bullet);
       bullet = nullptr;
     }
     if (!is_fueled) {
@@ -2269,7 +2270,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     **	now.
     */
     if (a != ANIM_NONE) {
-      auto* anim = new AnimClass(a, Fire_Coord(which));
+      auto* anim = base::NewPooled<AnimClass>(a, Fire_Coord(which));
       if (anim) {
         anim->Attach_To(this);
       }
@@ -3378,7 +3379,7 @@ void TechnoClass::Kill_Cargo(TechnoClass* source) {
     FootClass* foot = Detach_Object();
     if (foot) {
       foot->Record_The_Kill(source);
-      delete foot;
+      base::DeletePooled(foot);
     }
   }
 }

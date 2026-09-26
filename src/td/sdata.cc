@@ -57,6 +57,7 @@
 #include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -376,7 +377,7 @@ void SmudgeTypeClass::Prep_For_Add() {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType /*unused*/) const {
-  return new SmudgeClass(Type, Cell_Coord(cell)) != nullptr;
+  return base::NewPooled<SmudgeClass>(Type, Cell_Coord(cell)) != nullptr;
 }
 
 /***********************************************************************************************
@@ -397,7 +398,7 @@ bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType /*unused*/) const {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* SmudgeTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
-  return new SmudgeClass(Type);
+  return base::NewPooled<SmudgeClass>(Type);
 }
 
 /***********************************************************************************************

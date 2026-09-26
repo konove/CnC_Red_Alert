@@ -85,6 +85,7 @@
 #include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "engine/audio/audio_mixer.h"
@@ -2849,10 +2850,10 @@ static void Create_Units(bool official) {
       **	  - Attach a flag to it for capture-the-flag mode
       */
       scaleval = 1;
-      obj = new UnitClass(UNIT_MCV, house);
+      obj = base::NewPooled<UnitClass>(UNIT_MCV, house);
       if ((!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) &&
           (!Scan_Place_Object(obj, centroid))) {
-        delete obj;
+        base::DeletePooled(obj);
         obj = nullptr;
       }
 
@@ -2890,9 +2891,9 @@ static void Create_Units(bool official) {
         if (!IsSovietHouse(hptr->ActLike)) {
           for (const auto k : base::At(utable, i).AllyType) {
             if (k != UNIT_NONE) {
-              obj = new UnitClass(k, house);
+              obj = base::NewPooled<UnitClass>(k, house);
               if (!Scan_Place_Object(obj, centerpt)) {
-                delete obj;
+                base::DeletePooled(obj);
               } else {
                 if (!hptr->IsHuman) {
                   obj->Set_Mission(MISSION_GUARD_AREA);
@@ -2908,9 +2909,9 @@ static void Create_Units(bool official) {
           */
           for (const auto k : base::At(utable, i).SovietType) {
             if (k != UNIT_NONE) {
-              obj = new UnitClass(k, house);
+              obj = base::NewPooled<UnitClass>(k, house);
               if (!Scan_Place_Object(obj, centerpt)) {
-                delete obj;
+                base::DeletePooled(obj);
               } else {
                 if (!hptr->IsHuman) {
                   obj->Set_Mission(MISSION_GUARD_AREA);
@@ -2944,9 +2945,10 @@ static void Create_Units(bool official) {
         */
         if (!IsSovietHouse(hptr->ActLike)) {
           for (int k = 0; k < base::At(itable, i).AllyCount; k++) {
-            obj = new InfantryClass(base::At(itable, i).AllyType, house);
+            obj = base::NewPooled<InfantryClass>(base::At(itable, i).AllyType,
+                                                 house);
             if (!Scan_Place_Object(obj, centerpt)) {
-              delete obj;
+              base::DeletePooled(obj);
             } else {
               if (!hptr->IsHuman) {
                 obj->Set_Mission(MISSION_GUARD_AREA);
@@ -2960,9 +2962,10 @@ static void Create_Units(bool official) {
           **	Create Soviet infantry
           */
           for (int k = 0; k < base::At(itable, i).SovietCount; k++) {
-            obj = new InfantryClass(base::At(itable, i).SovietType, house);
+            obj = base::NewPooled<InfantryClass>(base::At(itable, i).SovietType,
+                                                 house);
             if (!Scan_Place_Object(obj, centerpt)) {
-              delete obj;
+              base::DeletePooled(obj);
             } else {
               if (!hptr->IsHuman) {
                 obj->Set_Mission(MISSION_GUARD_AREA);

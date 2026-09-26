@@ -80,6 +80,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
@@ -364,7 +365,7 @@ void TeamTypeClass::operator delete(void* ptr) {
 TeamClass* TeamTypeClass::Create_One_Of() {
   if (TheWorld().scenario_init() || std::cmp_less(Number, MaxAllowed)) {
     //	if (ScenarioInit || TeamClass::Number[ID] < MaxAllowed) {
-    return new TeamClass(this, HouseClass::As_Pointer(House));
+    return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(House));
   }
   return nullptr;
 }
@@ -388,7 +389,7 @@ void TeamTypeClass::Destroy_All_Of() const {
     const TeamClass* team = TheObjectHeaps().team().Ptr(index);
 
     if (team->Class == this) {
-      delete team;
+      base::DeletePooled(team);
       index--;
     }
   }
@@ -1753,7 +1754,7 @@ void TeamTypeClass::Read_INI(CCINIClass& ini) {
   **	Loop for all team entries, create and fill in.
   */
   for (int index = 0; index < len; index++) {
-    auto* team = new TeamTypeClass();  // Working team pointer.
+    auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
     if (team != nullptr) {
       const char* entry = ini.Get_Entry(INI_Name(), index);
       ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));

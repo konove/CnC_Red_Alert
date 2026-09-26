@@ -53,6 +53,7 @@
 #include "absl/strings/match.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -769,7 +770,7 @@ void TerrainTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 bool TerrainTypeClass::Create_And_Place(CELL cell,
                                         HousesType /*unused*/) const {
-  return new TerrainClass(Type, cell) != nullptr;
+  return base::NewPooled<TerrainClass>(Type, cell) != nullptr;
 }
 
 /***********************************************************************************************
@@ -789,7 +790,7 @@ bool TerrainTypeClass::Create_And_Place(CELL cell,
  * HISTORY: * 07/19/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
-  return new TerrainClass(Type, -1);
+  return base::NewPooled<TerrainClass>(Type);
 }
 
 std::span<const int16_t> TerrainTypeClass::Occupy_List(

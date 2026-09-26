@@ -42,6 +42,7 @@
 #include <cstdint>
 
 #include "base/array.h"
+#include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
@@ -136,7 +137,8 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_O: {
-        auto* air = new AircraftClass(AIRCRAFT_HIND, ThePlayer()->Class->House);
+        auto* air = base::NewPooled<AircraftClass>(AIRCRAFT_HIND,
+                                                   ThePlayer()->Class->House);
         if (air) {
           air->Height = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
@@ -145,8 +147,8 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_B: {
-        auto* air =
-            new AircraftClass(AIRCRAFT_LONGBOW, ThePlayer()->Class->House);
+        auto* air = base::NewPooled<AircraftClass>(AIRCRAFT_LONGBOW,
+                                                   ThePlayer()->Class->House);
         if (air) {
           air->Height = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
@@ -159,7 +161,7 @@ void Debug_Key(unsigned input) {
         const COORDINATE coord =
             TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
         const int damage = 1000;
-        new AnimClass(
+        base::NewPooled<AnimClass>(
             Combat_Anim(damage, warhead, TheMap().at(coord).Land_Type()),
             coord);
         Explosion_Damage(coord, damage, nullptr, warhead);
@@ -223,7 +225,7 @@ void Debug_Key(unsigned input) {
             ObjectClass* object = TheWorld().current_object().at(0);
             object->Unselect();
             object->Limbo();
-            delete object;
+            base::DeletePooled(object);
           }
         }
         break;

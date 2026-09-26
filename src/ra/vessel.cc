@@ -80,6 +80,7 @@
 #include "base/enum_array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "base/types.h"
@@ -208,7 +209,7 @@ VesselClass::~VesselClass() {
     **	If there are any cargo members, delete them.
     */
     while (Is_Something_Attached()) {
-      delete Detach_Object();
+      base::DeletePooled(Detach_Object());
     }
 
     Limbo();
@@ -927,7 +928,7 @@ ResultType VesselClass::Take_Damage(int& damage, int distance,
     if (Class->Explosion != ANIM_NONE) {
       const AnimType anim = Class->Explosion;
 
-      new AnimClass(anim, Coord);
+      base::NewPooled<AnimClass>(anim, Coord);
 
       /*
       **	Very strong units that have an explosion will also rock the
@@ -950,7 +951,7 @@ ResultType VesselClass::Take_Damage(int& damage, int distance,
       *not a sure *	thing.
       */
       object->Record_The_Kill(source);
-      delete object;
+      base::DeletePooled(object);
     }
 
     /*
@@ -965,8 +966,8 @@ ResultType VesselClass::Take_Damage(int& damage, int distance,
     */
     if (Health_Ratio() <= TheRules().ConditionYellow && !IsAnimAttached &&
         *this != VESSEL_SS && *this != VESSEL_MISSILESUB) {
-      auto* anim =
-          new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
+      auto* anim = base::NewPooled<AnimClass>(
+          ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
       if (anim != nullptr) {
         anim->Attach_To(this);
       }
@@ -1970,8 +1971,8 @@ void VesselClass::Read_INI(CCINIClass& ini) {
           VesselTypeClass::From_Name(tokens.Next());  // Vessel class.
 
       if (classid != VESSEL_NONE) {
-        auto* vessel =
-            new VesselClass(classid, inhouse);  // Working vessel pointer.
+        auto* vessel = base::NewPooled<VesselClass>(
+            classid, inhouse);  // Working vessel pointer.
         if (vessel != nullptr) {
           /*
           **	Read the raw data.
@@ -2018,7 +2019,7 @@ void VesselClass::Read_INI(CCINIClass& ini) {
             **	If the vessel could not be unlimboed, then this is a
             *catastrophic error *	condition. Delete the vessel.
             */
-            delete vessel;
+            base::DeletePooled(vessel);
           }
         }
       }

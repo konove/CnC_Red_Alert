@@ -61,6 +61,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
@@ -162,7 +163,7 @@ int MapEditClass::New_Scenario() {
   ----------------------------- Create houses ------------------------------
   */
   for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-    new HouseClass(house);
+    base::NewPooled<HouseClass>(house);
   }
 
   if (TheWorld().scen_player() == SCEN_PLAYER_MPLAYER) {
@@ -2023,7 +2024,7 @@ int MapEditClass::Scenario_Dialog() {
       if (terrain) {
         theater_mask = terrain->Class->Theater;
         if ((theater_mask & base::Bit<uint32_t>(theater)) == 0) {
-          delete terrain;
+          base::DeletePooled(terrain);
         }
       }
     }
@@ -2100,13 +2101,13 @@ void MapEditClass::Handle_Triggers() {
       /*
       ..................... Create a new trigger ......................
       */
-      CurTrigger = new TriggerClass();
+      CurTrigger = base::NewPooled<TriggerClass>();
       if (CurTrigger) {
         /*
         ................... delete it if user cancels ...................
         */
         if (Edit_Trigger() == -1) {
-          delete CurTrigger;
+          base::DeletePooled(CurTrigger);
           CurTrigger = nullptr;
         } else {
           Changed = true;
@@ -3366,7 +3367,8 @@ int MapEditClass::Import_Triggers() {
             std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
             inibuf);
 
-        auto* trigger = new TriggerClass();  // Working trigger pointer.
+        auto* trigger =
+            base::NewPooled<TriggerClass>();  // Working trigger pointer.
         trigger->Fill_In(tbuffer, buf);
 
         if (trigger->House != HOUSE_NONE) {
@@ -3683,7 +3685,7 @@ int MapEditClass::Import_Teams() {
             std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
             inibuf);
 
-        auto* team = new TeamTypeClass();  // Working team pointer.
+        auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
         team->Fill_In(tbuffer, buf);
       }
 

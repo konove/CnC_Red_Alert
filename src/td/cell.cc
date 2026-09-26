@@ -92,6 +92,7 @@
 #include "absl/log/check.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -1994,7 +1995,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     if (steel) {
       if (object->Owner() == HOUSE_BAD) {
         object->House->Add_Nuke_Piece();
-        new AnimClass(ANIM_CRATE_EMPULSE, Cell_Coord());
+        base::NewPooled<AnimClass>(ANIM_CRATE_EMPULSE, Cell_Coord());
       }
 
     } else {
@@ -2084,7 +2085,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	Give the player money.
         */
         case kMoney:
-          new AnimClass(ANIM_CRATE_DOLLAR, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_DOLLAR, Cell_Coord());
           if (TheSession().type() == GAME_NORMAL) {
             HouseClass::As_Pointer(object->Owner())->Refund_Money(2000);
           } else {
@@ -2097,7 +2098,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	Shroud the world in blackness.
         */
         case kDarkness:
-          new AnimClass(ANIM_CRATE_EMPULSE, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_EMPULSE, Cell_Coord());
           if (object->House == ThePlayer()) {
             for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
               CellClass* cellptr = &TheMap().at(cell);
@@ -2125,7 +2126,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	Reveal the entire map.
         */
         case kReveal:
-          new AnimClass(ANIM_CRATE_EMPULSE, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_EMPULSE, Cell_Coord());
           object->House->IsVisionary = true;
           if (object->House == ThePlayer()) {
             for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
@@ -2182,7 +2183,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             if (new_unit->Unlimbo(Cell_Coord())) {
               return false;
             }
-            delete new_unit;
+            base::DeletePooled(new_unit);
           }
         } break;
 
@@ -2208,21 +2209,21 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	Sometimes an explosion of great magnitude occurs.
         */
         case kNuke:
-          new AnimClass(ANIM_ATOM_BLAST, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_ATOM_BLAST, Cell_Coord());
           break;
 
         /*
         **	Sometimes an explosion of great magnitude occurs.
         */
         case kIon:
-          new AnimClass(ANIM_ION_CANNON, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_ION_CANNON, Cell_Coord());
           break;
 
         /*
         **	A nuclear missile was discovered. Add it to the sidebar.
         */
         case kNukeMissile:
-          new AnimClass(ANIM_CRATE_MISSILE, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_MISSILE, Cell_Coord());
           if (object->House->NukeStrike.Enable(true) &&
               object->IsOwnedByPlayer) {
             TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
@@ -2235,7 +2236,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	A one time ion blast was discovered. Add it to the sidebar.
         */
         case kIonBlast:
-          new AnimClass(ANIM_CRATE_EARTH, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_EARTH, Cell_Coord());
           if (object->House->IonCannon.Enable(true) &&
               object->IsOwnedByPlayer) {
             TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_ION_CANNON));
@@ -2248,7 +2249,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	A one time air strike can be called int. Add it to the sidebar.
         */
         case kAirStrike:
-          new AnimClass(ANIM_CRATE_DEVIATOR, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_DEVIATOR, Cell_Coord());
           if (object->House->AirStrike.Enable(true) &&
               object->IsOwnedByPlayer) {
             TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
@@ -2266,7 +2267,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           for (int index = 0; index < 5; index++) {
             const COORDINATE blast_coord =
                 Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
-            new AnimClass(ANIM_FBALL1, blast_coord);
+            base::NewPooled<AnimClass>(ANIM_FBALL1, blast_coord);
             damage = 400;
             Explosion_Damage(blast_coord, damage, nullptr, WARHEAD_HE);
           }
@@ -2277,7 +2278,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         */
         case kNapalm:
           coord = Coord_Mid(Cell_Coord(), object->Center_Coord());
-          new AnimClass(ANIM_NAPALM3, coord);
+          base::NewPooled<AnimClass>(ANIM_NAPALM3, coord);
           damage = 600;
           Explosion_Damage(coord, damage, nullptr, WARHEAD_FIRE);
           break;
@@ -2286,12 +2287,12 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	A visceroid appears and, boy, he's angry!
         */
         case kVisceroid:
-          unit = new UnitClass(UNIT_VICE, HOUSE_JP);
+          unit = base::NewPooled<UnitClass>(UNIT_VICE, HOUSE_JP);
           if (unit) {
             if (unit->Unlimbo(Cell_Coord())) {
               return false;
             }
-            delete unit;
+            base::DeletePooled(unit);
           }
           break;
 
@@ -2300,7 +2301,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         *cloak.
         */
         case kCloak:
-          new AnimClass(ANIM_CRATE_STEALTH, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_STEALTH, Cell_Coord());
           for (int index = 0;
                index < MouseClass::Layer.at(LAYER_GROUND).Count(); index++) {
             ObjectClass* obj = MouseClass::Layer.at(LAYER_GROUND).at(index);
@@ -2316,7 +2317,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	All of the player's objects heal up.
         */
         case kHealBase:
-          new AnimClass(ANIM_CRATE_INVUN, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_INVUN, Cell_Coord());
           for (int index = 0; index < TheWorld().logic().Count(); index++) {
             ObjectClass* obj = TheWorld().logic().at(index);
 

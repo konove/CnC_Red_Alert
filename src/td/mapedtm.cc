@@ -57,6 +57,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -141,13 +142,13 @@ void MapEditClass::Handle_Teams(const char* caption) {
         /*
         ........................ Create a new team .........................
         */
-        CurTeam = new TeamTypeClass();
+        CurTeam = base::NewPooled<TeamTypeClass>();
         if (CurTeam) {
           /*
           ................... delete it if user cancels ...................
           */
           if (Edit_Team() == -1) {
-            delete CurTeam;
+            base::DeletePooled(CurTeam);
             CurTeam = nullptr;
           } else {
             Changed = true;

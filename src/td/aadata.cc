@@ -27,6 +27,7 @@
 #include "absl/strings/match.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -318,7 +319,7 @@ void AircraftTypeClass::One_Time() {
 }
 
 ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
-  return new AircraftClass(Type, house->Class->House);
+  return base::NewPooled<AircraftClass>(Type, house->Class->House);
 }
 
 void AircraftTypeClass::Prep_For_Add() {

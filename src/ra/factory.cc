@@ -63,6 +63,7 @@
 
 #include "base/array.h"
 #include "base/fixed.h"
+#include "base/pooled.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -478,7 +479,7 @@ bool FactoryClass::Abandon() {
       **	Delete the object under construction.
       */
       TheWorld().scenario_init()++;
-      delete Object;
+      base::DeletePooled(Object);
       Object = nullptr;
       TheWorld().scenario_init()--;
     }

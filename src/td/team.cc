@@ -66,6 +66,7 @@
 
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/pooled.h"
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/config.h"
@@ -172,7 +173,7 @@ TeamClass::~TeamClass() {
 
     if (Class->IsTransient &&
         !base::At(Number, TheObjectHeaps().team_type().ID(Class))) {
-      delete Class;
+      base::DeletePooled(Class);
     }
   }
 }

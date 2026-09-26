@@ -55,6 +55,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
@@ -207,7 +208,7 @@ int MapEditClass::New_Scenario() {
   **	Create houses
   */
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
-    new HouseClass(house);
+    base::NewPooled<HouseClass>(house);
   }
 
   switch (player) {
@@ -2463,7 +2464,7 @@ int MapEditClass::Load_Scenario() {
         if (terrain != nullptr) {
           theater_mask = terrain->Class->Theater;
           if ((theater_mask & base::Bit<uint32_t>(theater)) == 0) {
-            delete terrain;
+            base::DeletePooled(terrain);
           }
         }
       }
@@ -2553,13 +2554,13 @@ int MapEditClass::Load_Scenario() {
         /*
         **	Create a new trigger
         */
-        CurTrigger = new TriggerTypeClass();
+        CurTrigger = base::NewPooled<TriggerTypeClass>();
         if (CurTrigger) {
           /*
           **	delete it if user cancels
           */
           if (!CurTrigger->Edit()) {
-            delete CurTrigger;
+            base::DeletePooled(CurTrigger);
             CurTrigger = nullptr;
           } else {
             Changed = true;
@@ -2584,7 +2585,7 @@ int MapEditClass::Load_Scenario() {
       */
       if ((rc == 3) && CurTrigger) {
         Detach_This_From_All(CurTrigger->As_Target(), true);
-        delete CurTrigger;
+        base::DeletePooled(CurTrigger);
         // CurTrigger->Remove();
         CurTrigger = nullptr;
         Changed = true;

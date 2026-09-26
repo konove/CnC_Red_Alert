@@ -62,6 +62,7 @@
 #include <string>
 
 #include "absl/strings/match.h"
+#include "base/pooled.h"
 #include "base/trig.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -316,13 +317,14 @@ void VesselTypeClass::Init_Heap() {
   *because the heap *	allocation block index serves double duty as the type
   *number index.
   */
-  new VesselTypeClass(VesselSubmarine);         //	VESSEL_SS
-  new VesselTypeClass(VesselDestroyer);         //	VESSEL_DD
-  new VesselTypeClass(VesselCruiser);           // VESSEL_CA
-  new VesselTypeClass(VesselTransport);         // VESSEL_TRANSPORT
-  new VesselTypeClass(VesselPTBoat);            // VESSEL_PT
-  new VesselTypeClass(VesselMissileSubmarine);  // VESSEL_MISSILESUB
-  new VesselTypeClass(VesselCarrier);           // VESSEL_CARRIER
+  base::NewPooled<VesselTypeClass>(VesselSubmarine);  //	VESSEL_SS
+  base::NewPooled<VesselTypeClass>(VesselDestroyer);  //	VESSEL_DD
+  base::NewPooled<VesselTypeClass>(VesselCruiser);    // VESSEL_CA
+  base::NewPooled<VesselTypeClass>(VesselTransport);  // VESSEL_TRANSPORT
+  base::NewPooled<VesselTypeClass>(VesselPTBoat);     // VESSEL_PT
+  base::NewPooled<VesselTypeClass>(
+      VesselMissileSubmarine);                      // VESSEL_MISSILESUB
+  base::NewPooled<VesselTypeClass>(VesselCarrier);  // VESSEL_CARRIER
 }
 
 /***********************************************************************************************
@@ -422,7 +424,7 @@ void VesselTypeClass::Prep_For_Add() {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* VesselTypeClass::Create_One_Of(HouseClass* house) const {
-  return new VesselClass(Type, house->Class->House);
+  return base::NewPooled<VesselClass>(Type, house->Class->House);
 }
 
 /***********************************************************************************************
@@ -444,11 +446,11 @@ ObjectClass* VesselTypeClass::Create_One_Of(HouseClass* house) const {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 bool VesselTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  auto* unit = new VesselClass(Type, house);
+  auto* unit = base::NewPooled<VesselClass>(Type, house);
   if (unit != nullptr) {
     return unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX));
   }
-  delete unit;
+  base::DeletePooled(unit);
   return false;
 }
 

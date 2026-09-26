@@ -66,6 +66,7 @@
 #include <span>
 
 #include "base/array.h"
+#include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "td/audio.h"
@@ -733,8 +734,8 @@ void AnimClass::operator delete(void* ptr) {
  * HISTORY: * 05/31/1994 JLB : Created. * 08/03/1994 JLB : Added a delayed
  *affect parameter.                                        *
  *=============================================================================================*/
-AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
-                     unsigned char timedelay, unsigned char loop, bool alt)
+AnimClass::AnimClass(AnimType animnum, COORDINATE coord, int timedelay,
+                     int loop, bool alt)
     : Class(&AnimTypeClass::As_Reference(animnum)) {
   if (Class->IsNormalized) {
     Set_Rate(
@@ -759,9 +760,9 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
   **	Determine the time before the first animation process. For time delayed
   **	animations, this is the value passed as a parameter.
   */
-  Delay = timedelay;
+  Delay = static_cast<unsigned char>(timedelay);
 
-  Loops = static_cast<unsigned char>(std::max<int>(loop, 1) * Class->Loops);
+  Loops = static_cast<unsigned char>(std::max(loop, 1) * Class->Loops);
   Loops = static_cast<unsigned char>(std::max<int>(Loops, 1));
 
   IsToDelete = false;
@@ -1169,8 +1170,8 @@ void AnimClass::Middle() {
 
         const int damage = rawdamage / ((std::abs(radius) / 2) + 1);
         Explosion_Damage(Cell_Coord(tcell), damage, building, WARHEAD_FIRE);
-        new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
-                        Cell_Coord(tcell));
+        base::NewPooled<SmudgeClass>(
+            Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6), Cell_Coord(tcell));
       }
     }
     ShakeScreen(3);
@@ -1184,8 +1185,8 @@ void AnimClass::Middle() {
   *time.
   */
   if (Class->IsScorcher) {
-    new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
-                    Center_Coord());
+    base::NewPooled<SmudgeClass>(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
+                                 Center_Coord());
   }
 
   /*
@@ -1202,7 +1203,7 @@ void AnimClass::Middle() {
     **	If there already is a crater in the cell, then just expand the
     **	crater.
     */
-    new SmudgeClass(SMUDGE_CRATER1, Center_Coord());
+    base::NewPooled<SmudgeClass>(SMUDGE_CRATER1, Center_Coord());
   }
 
   /*
@@ -1226,18 +1227,18 @@ void AnimClass::Middle() {
     c2 = TheMap().Closest_Free_Spot(c2, true);
     if ((c3 && Random_Pick(0, 1) == 1) &&
         (!TheMap().at(Coord_Cell(c3)).Cell_Terrain())) {
-      new AnimClass(ANIM_FIRE_SMALL, c3, 0, 2);
+      base::NewPooled<AnimClass>(ANIM_FIRE_SMALL, c3, 0, 2);
     }
 
     if ((c2 && Random_Pick(0, 1) == 1) &&
         (!TheMap().at(Coord_Cell(c2)).Cell_Terrain())) {
-      new AnimClass(ANIM_FIRE_SMALL, c2, 0, 2);
+      base::NewPooled<AnimClass>(ANIM_FIRE_SMALL, c2, 0, 2);
     }
 
-    new SmudgeClass(SMUDGE_SCORCH1, c2);
+    base::NewPooled<SmudgeClass>(SMUDGE_SCORCH1, c2);
     if ((c3 && Random_Pick(0, 1) == 1) &&
         (!TheMap().at(Coord_Cell(c3)).Cell_Terrain())) {
-      new AnimClass(ANIM_SMOKE_M, c3);
+      base::NewPooled<AnimClass>(ANIM_SMOKE_M, c3);
     }
   }
 
@@ -1276,28 +1277,31 @@ void AnimClass::Middle() {
     case ANIM_NAPALM1:
     case ANIM_NAPALM2:
     case ANIM_NAPALM3:
-      new AnimClass(ANIM_FIRE_SMALL,
-                    TheMap().Closest_Free_Spot(
-                        Coord_Scatter(Center_Coord(), 0x0040), true),
-                    0, Random_Pick(0, 1) == 1 ? 1 : 2);
+      base::NewPooled<AnimClass>(
+          ANIM_FIRE_SMALL,
+          TheMap().Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0040),
+                                     true),
+          0, Random_Pick(0, 1) == 1 ? 1 : 2);
       if (Random_Pick(0, 1) == 1) {
-        new AnimClass(ANIM_FIRE_SMALL,
-                      TheMap().Closest_Free_Spot(
-                          Coord_Scatter(Center_Coord(), 0x00A0), true),
-                      0, Random_Pick(0, 1) == 1 ? 1 : 2);
+        base::NewPooled<AnimClass>(
+            ANIM_FIRE_SMALL,
+            TheMap().Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x00A0),
+                                       true),
+            0, Random_Pick(0, 1) == 1 ? 1 : 2);
       }
       if (Random_Pick(0, 1) == 1) {
-        new AnimClass(ANIM_FIRE_MED,
-                      TheMap().Closest_Free_Spot(
-                          Coord_Scatter(Center_Coord(), 0x0070), true),
-                      0, Random_Pick(0, 1) == 1 ? 1 : 2);
+        base::NewPooled<AnimClass>(
+            ANIM_FIRE_MED,
+            TheMap().Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0070),
+                                       true),
+            0, Random_Pick(0, 1) == 1 ? 1 : 2);
       }
       break;
 
     case ANIM_FIRE_MED:
     case ANIM_FIRE_MED2:
-      newanim = new AnimClass(ANIM_FIRE_SMALL, Center_Coord(), 0,
-                              Random_Pick(0, 1) == 1 ? 1 : 2);
+      newanim = base::NewPooled<AnimClass>(ANIM_FIRE_SMALL, Center_Coord(), 0,
+                                           Random_Pick(0, 1) == 1 ? 1 : 2);
       if (newanim && Object) {
         newanim->Attach_To(Object);
       }

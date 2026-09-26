@@ -45,6 +45,7 @@
 #include <utility>
 
 #include "base/array.h"
+#include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "td/aircraft.h"
 #include "td/audio.h"
@@ -99,7 +100,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   */
   TeamClass* team = nullptr;
   if (teamtype->MissionCount) {
-    team = new TeamClass(teamtype, HouseClass::As_Pointer(teamtype->House));
+    team = base::NewPooled<TeamClass>(teamtype,
+                                      HouseClass::As_Pointer(teamtype->House));
     if (!team) {
       return false;
     }
@@ -162,7 +164,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   *delete it *	and return a failure condition.
   */
   if (source == SOURCE_NONE) {
-    delete team;
+    base::DeletePooled(team);
     return false;
   }
 
@@ -239,7 +241,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   **	This is probably because the object maximum was reached.
   */
   if (!object && !transport) {
-    delete team;
+    base::DeletePooled(team);
     return false;
   }
 
@@ -280,8 +282,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
         object->Assign_Destination(As_Target(
             XY_Cell(TheMap().MapCellX - 1, Cell_Y(Coord_Cell(object->Coord)))));
       } else {
-        delete team;
-        delete object;
+        base::DeletePooled(team);
+        base::DeletePooled(object);
         return false;
       }
       break;
@@ -370,7 +372,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
           o = dynamic_cast<FootClass*>(o->Next);
           old->Next = nullptr;
 
-          delete old;
+          base::DeletePooled(old);
         }
       }
     } break;
@@ -428,7 +430,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
         thisone = next;
       }
       if (!placed && team) {
-        delete team;
+        base::DeletePooled(team);
       }
 
       /*
@@ -458,8 +460,8 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
             object->Assign_Destination(As_Target(cell));
           }
         } else {
-          delete team;
-          delete object;
+          base::DeletePooled(team);
+          base::DeletePooled(object);
           return false;
         }
       }
@@ -515,7 +517,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
                                   const TechnoTypeClass* another,
                                   TeamMissionType mission, int argument) {
   if (house && type) {
-    auto* team = new TeamTypeClass();
+    auto* team = base::NewPooled<TeamTypeClass>();
 
     if (team) {
       /*
@@ -601,7 +603,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
 
       const bool ok = Do_Reinforcements(team);
       if (!ok && TheSession().type() == GAME_NORMAL) {
-        delete team;
+        base::DeletePooled(team);
       }
       return ok;
     }
@@ -724,7 +726,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       */
       obj->Commence();
     } else {
-      delete obj;
+      base::DeletePooled(obj);
       sub--;
       return sub;
     }

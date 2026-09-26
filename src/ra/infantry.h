@@ -195,8 +195,7 @@ class InfantryClass final : public FootClass {
   */
   ActionType What_Action(ObjectClass* object) override;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
-  BulletClass* Fire_At(TARGET target,
-                       int which) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  BulletClass* Fire_At(TARGET target, int which) override;
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source = nullptr,
                          bool forced = false) override;

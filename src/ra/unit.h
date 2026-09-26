@@ -227,8 +227,7 @@ class UnitClass final : public DriveClass {
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source = nullptr,
                          bool forced = false) override;
-  BulletClass* Fire_At(TARGET target,
-                       int which = 0) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  BulletClass* Fire_At(TARGET target, int which = 0) override;
 
   /*
   **	Driver control support functions. These are used to control cell

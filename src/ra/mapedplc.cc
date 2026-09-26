@@ -60,6 +60,7 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
@@ -1039,7 +1040,7 @@ void MapEditClass::Cancel_Placement() {
   /*
   **	Delete the placement object
   */
-  delete PendingObjectPtr;
+  base::DeletePooled(PendingObjectPtr);
   PendingObject = nullptr;
   PendingObjectPtr = nullptr;
   PendingHouse = HOUSE_NONE;
@@ -1078,7 +1079,7 @@ void MapEditClass::Cancel_Placement() {
  *   11/03/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Place_Next() {
-  delete PendingObjectPtr;
+  base::DeletePooled(PendingObjectPtr);
   PendingObjectPtr = nullptr;
   PendingObject = nullptr;
 
@@ -1150,7 +1151,7 @@ void MapEditClass::Place_Next() {
  *   11/03/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Place_Prev() {
-  delete PendingObjectPtr;
+  base::DeletePooled(PendingObjectPtr);
   PendingObjectPtr = nullptr;
   PendingObject = nullptr;
 
@@ -1229,7 +1230,7 @@ void MapEditClass::Place_Next_Category() {
     return;
   }
 
-  delete PendingObjectPtr;
+  base::DeletePooled(PendingObjectPtr);
   PendingObjectPtr = nullptr;
   PendingObject = nullptr;
 
@@ -1317,7 +1318,7 @@ void MapEditClass::Place_Prev_Category() {
     return;
   }
 
-  delete PendingObjectPtr;
+  base::DeletePooled(PendingObjectPtr);
   PendingObjectPtr = nullptr;
   PendingObject = nullptr;
 
@@ -1422,7 +1423,7 @@ void MapEditClass::Place_Prev_Category() {
  *   11/03/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Place_Home() {
-  delete PendingObjectPtr;
+  base::DeletePooled(PendingObjectPtr);
   PendingObjectPtr = nullptr;
   PendingObject = nullptr;
 
@@ -1752,7 +1753,7 @@ void MapEditClass::Build_Base_To(int percent) {
   for (int i = 0; i < TheWorld().base().Nodes.Count(); i++) {
     if (TheWorld().base().Is_Built(i)) {
       obj = TheWorld().base().Get_Building(i);
-      delete obj;
+      base::DeletePooled(obj);
     }
   }
 
@@ -1779,7 +1780,7 @@ void MapEditClass::Build_Base_To(int percent) {
     */
     TheWorld().scenario_init()++;
     if (!obj->Unlimbo(Cell_Coord(TheWorld().base().Nodes.at(i).Cell))) {
-      delete obj;
+      base::DeletePooled(obj);
       WWMessageBox().Process("Unable to build base!");
       TheWorld().scenario_init()--;
       return;

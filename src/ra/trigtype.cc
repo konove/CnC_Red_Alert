@@ -72,6 +72,7 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
@@ -2042,7 +2043,8 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
     /*
     **	Create a new trigger.
     */
-    auto* trigger = new TriggerTypeClass();  // Working trigger pointer.
+    auto* trigger =
+        base::NewPooled<TriggerTypeClass>();  // Working trigger pointer.
 
     /*
     **	Get the trigger entry.

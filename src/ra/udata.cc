@@ -62,6 +62,7 @@
 
 #include "absl/strings/match.h"
 #include "base/array.h"
+#include "base/pooled.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -940,28 +941,28 @@ void UnitTypeClass::Init_Heap() {
   *because the heap *	allocation block index serves double duty as the type
   *number index.
   */
-  new UnitTypeClass(UnitHTank);        //	UNIT_HTANK
-  new UnitTypeClass(UnitMTank);        //	UNIT_MTANK
-  new UnitTypeClass(UnitMTank2);       //	UNIT_MTANK2
-  new UnitTypeClass(UnitLTank);        //	UNIT_LTANK
-  new UnitTypeClass(UnitAPC);          //	UNIT_APC
-  new UnitTypeClass(UnitMineLayer);    // UNIT_MINELAYER
-  new UnitTypeClass(UnitJeep);         //	UNIT_JEEP
-  new UnitTypeClass(UnitHarvester);    //	UNIT_HARVESTER
-  new UnitTypeClass(UnitArty);         //	UNIT_ARTY
-  new UnitTypeClass(UnitMRJammer);     //	UNIT_MRJ
-  new UnitTypeClass(UnitMGG);          //	UNIT_MGG
-  new UnitTypeClass(UnitMCV);          // UNIT_MCV
-  new UnitTypeClass(UnitV2Launcher);   //	UNIT_V2_LAUNCHER
-  new UnitTypeClass(UnitConvoyTruck);  // UNIT_TRUCK
-  new UnitTypeClass(UnitAnt1);         // UNIT_ANT1
-  new UnitTypeClass(UnitAnt2);         // UNIT_ANT2
-  new UnitTypeClass(UnitAnt3);         // UNIT_ANT3
-  new UnitTypeClass(UnitChrono);       // UNIT_CHRONOTANK
-  new UnitTypeClass(UnitTesla);        // UNIT_TESLATANK
-  new UnitTypeClass(UnitMAD);          // UNIT_MAD
-  new UnitTypeClass(UnitDemoTruck);    // UNIT_DEMOTRUCK
-  new UnitTypeClass(UnitPhase);        //	UNIT_PHASETRANSPORT
+  base::NewPooled<UnitTypeClass>(UnitHTank);        //	UNIT_HTANK
+  base::NewPooled<UnitTypeClass>(UnitMTank);        //	UNIT_MTANK
+  base::NewPooled<UnitTypeClass>(UnitMTank2);       //	UNIT_MTANK2
+  base::NewPooled<UnitTypeClass>(UnitLTank);        //	UNIT_LTANK
+  base::NewPooled<UnitTypeClass>(UnitAPC);          //	UNIT_APC
+  base::NewPooled<UnitTypeClass>(UnitMineLayer);    // UNIT_MINELAYER
+  base::NewPooled<UnitTypeClass>(UnitJeep);         //	UNIT_JEEP
+  base::NewPooled<UnitTypeClass>(UnitHarvester);    //	UNIT_HARVESTER
+  base::NewPooled<UnitTypeClass>(UnitArty);         //	UNIT_ARTY
+  base::NewPooled<UnitTypeClass>(UnitMRJammer);     //	UNIT_MRJ
+  base::NewPooled<UnitTypeClass>(UnitMGG);          //	UNIT_MGG
+  base::NewPooled<UnitTypeClass>(UnitMCV);          // UNIT_MCV
+  base::NewPooled<UnitTypeClass>(UnitV2Launcher);   //	UNIT_V2_LAUNCHER
+  base::NewPooled<UnitTypeClass>(UnitConvoyTruck);  // UNIT_TRUCK
+  base::NewPooled<UnitTypeClass>(UnitAnt1);         // UNIT_ANT1
+  base::NewPooled<UnitTypeClass>(UnitAnt2);         // UNIT_ANT2
+  base::NewPooled<UnitTypeClass>(UnitAnt3);         // UNIT_ANT3
+  base::NewPooled<UnitTypeClass>(UnitChrono);       // UNIT_CHRONOTANK
+  base::NewPooled<UnitTypeClass>(UnitTesla);        // UNIT_TESLATANK
+  base::NewPooled<UnitTypeClass>(UnitMAD);          // UNIT_MAD
+  base::NewPooled<UnitTypeClass>(UnitDemoTruck);    // UNIT_DEMOTRUCK
+  base::NewPooled<UnitTypeClass>(UnitPhase);        //	UNIT_PHASETRANSPORT
 }
 
 /***********************************************************************************************
@@ -1132,7 +1133,7 @@ void UnitTypeClass::One_Time() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  auto* unit = new UnitClass(Type, house);
+  auto* unit = base::NewPooled<UnitClass>(Type, house);
   if (unit != nullptr) {
     return unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX));
   }
@@ -1156,7 +1157,7 @@ bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  * HISTORY: * 06/07/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* UnitTypeClass::Create_One_Of(HouseClass* house) const {
-  return new UnitClass(Type, house->Class->House);
+  return base::NewPooled<UnitClass>(Type, house->Class->House);
 }
 
 /***********************************************************************************************

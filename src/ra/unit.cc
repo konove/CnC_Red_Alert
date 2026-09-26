@@ -114,6 +114,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/mix_archive.h"
@@ -288,7 +289,7 @@ UnitClass::~UnitClass() {
     **	If there are any cargo members, delete them.
     */
     while (Is_Something_Attached()) {
-      delete Detach_Object();
+      base::DeletePooled(Detach_Object());
     }
 
     Limbo();
@@ -1031,7 +1032,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         anim = ANIM_NAPALM3;
       }
 
-      new AnimClass(anim, Coord);
+      base::NewPooled<AnimClass>(anim, Coord);
 
       /*
       **	Harvesters explode with a force equal to the amount of
@@ -1061,12 +1062,12 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         InfantryClass* i = nullptr;
 
         if (Class->PrimaryWeapon == nullptr) {
-          i = new InfantryClass(INFANTRY_C1, House->Class->House);
+          i = base::NewPooled<InfantryClass>(INFANTRY_C1, House->Class->House);
           if (i != nullptr) {
             i->IsTechnician = true;
           }
         } else {
-          i = new InfantryClass(INFANTRY_E1, House->Class->House);
+          i = base::NewPooled<InfantryClass>(INFANTRY_E1, House->Class->House);
         }
         if (i != nullptr) {
           if (i->Unlimbo(Coord, DIR_N)) {
@@ -1082,7 +1083,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
               i->Select();
             }
           } else {
-            delete i;
+            base::DeletePooled(i);
           }
         }
       }
@@ -1105,7 +1106,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
           }
         } else {
           object->Record_The_Kill(source);
-          delete object;
+          base::DeletePooled(object);
         }
       }
     }
@@ -1117,7 +1118,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
     if (TheScenario().IsTruckCrate && *this == UNIT_TRUCK) {
       const CELL cell = Nearby_Location();
       if (cell != 0) {
-        new OverlayClass(OVERLAY_WOOD_CRATE, cell);
+        base::NewPooled<OverlayClass>(OVERLAY_WOOD_CRATE, cell);
       }
     }
 
@@ -1133,8 +1134,8 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
     */
     if (Health_Ratio() <= TheRules().ConditionYellow && !IsAnimAttached) {
       if (*this != UNIT_ANT1 && *this != UNIT_ANT2 && *this != UNIT_ANT3) {
-        auto* anim =
-            new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
+        auto* anim = base::NewPooled<AnimClass>(
+            ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
         if (anim) {
           anim->Attach_To(this);
         }
@@ -1540,7 +1541,8 @@ bool UnitClass::Try_To_Deploy() {
       *delete the *	unit, just mark it as not deploying.
       */
       Mark(MARK_UP);
-      auto* building = new BuildingClass(STRUCT_CONST, House->Class->House);
+      auto* building =
+          base::NewPooled<BuildingClass>(STRUCT_CONST, House->Class->House);
       if (building != nullptr) {
         if (building->Unlimbo(Adjacent_Cell(Coord, FACING_NW))) {
           /*
@@ -1599,7 +1601,7 @@ bool UnitClass::Try_To_Deploy() {
          *revert *	back to normal "just sitting there" mode and await
          *further instructions.
          */
-        delete building;
+        base::DeletePooled(building);
       }
       Mark(MARK_DOWN);
       IsDeploying = false;
@@ -1862,7 +1864,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
       if (*this != UNIT_MINELAYER || bldng->House != House) {
         const COORDINATE blcoord = bldng->Center_Coord();
 
-        new AnimClass(ANIM_MINE_EXP1, blcoord);
+        base::NewPooled<AnimClass>(ANIM_MINE_EXP1, blcoord);
         //				new
         // AnimClass(Combat_Anim(Rule.AVMineDamage, WARHEAD_HE,
         // Map[cell].Land_Type()), blcoord);
@@ -1878,7 +1880,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
           int damage = 10;
           Take_Damage(damage, 0, WARHEAD_HE);
         }
-        delete bldng;
+        base::DeletePooled(bldng);
         if (!IsActive) {
           return true;
         }
@@ -1895,7 +1897,8 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
     const LandType land = TheMap().at(Coord).Land_Type();
     if (!IsDriving &&
         (land == LAND_ROCK || land == LAND_WATER || land == LAND_RIVER)) {
-      new AnimClass(Combat_Anim(Strength, WARHEAD_AP, land), Coord);
+      base::NewPooled<AnimClass>(Combat_Anim(Strength, WARHEAD_AP, land),
+                                 Coord);
       int damage = Strength;
       Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
       return !IsActive;
@@ -2687,7 +2690,7 @@ int UnitClass::Mission_Unload() {
           if (Ammo > 0) {
             if (!TheMap().at(Center_Coord()).Cell_Building()) {
               Mark(MARK_UP);
-              auto* building = new BuildingClass(
+              auto* building = base::NewPooled<BuildingClass>(
                   IsSovietHouse(House->ActLike) || House->ActLike == HOUSE_BAD
                       ? STRUCT_APMINE
                       : STRUCT_AVMINE,
@@ -2742,7 +2745,8 @@ int UnitClass::Mission_Unload() {
         Set_Rate(TheRules().OreDumpRate * 2);
         IsDumping = true;
 
-        auto* crew = new InfantryClass(INFANTRY_C1, House->Class->House);
+        auto* crew =
+            base::NewPooled<InfantryClass>(INFANTRY_C1, House->Class->House);
         if (crew != nullptr) {
           crew->IsTechnician = true;
         }
@@ -4462,12 +4466,12 @@ void UnitClass::Overrun_Square(CELL cell, bool threaten) {
           */
           PlaySoundEffectAt(VOC_SQUISH, Coord);
           if (object->Height == 0) {
-            new AnimClass(ANIM_CORPSE1, object->Center_Coord());
+            base::NewPooled<AnimClass>(ANIM_CORPSE1, object->Center_Coord());
           }
           object->Record_The_Kill(this);
           object->Mark(MARK_UP);
           object->Limbo();
-          delete object;
+          base::DeletePooled(object);
           // new OverlayClass(OVERLAY_SQUISH, Coord_Cell(Coord));
 
           object = next;
@@ -4709,7 +4713,8 @@ void UnitClass::Read_INI(CCINIClass& ini) {
           UnitTypeClass::From_Name(tokens.Next());  // Unit class.
 
       if (classid != UNIT_NONE) {
-        auto* unit = new UnitClass(classid, inhouse);  // Working unit pointer.
+        auto* unit = base::NewPooled<UnitClass>(
+            classid, inhouse);  // Working unit pointer.
         if (unit != nullptr) {
           /*
           **	Read the raw data.
@@ -4754,7 +4759,7 @@ void UnitClass::Read_INI(CCINIClass& ini) {
             **	If the unit could not be unlimboed, then this is a catastrophic
             *error *	condition. Delete the unit.
             */
-            delete unit;
+            base::DeletePooled(unit);
           }
         }
       }

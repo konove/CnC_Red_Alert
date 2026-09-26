@@ -62,6 +62,7 @@
 #include <string>
 
 #include "absl/strings/match.h"
+#include "base/pooled.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -1041,32 +1042,32 @@ void InfantryTypeClass::Init_Heap() {
   *because the heap *	allocation block index serves double duty as the type
   *number index.
   */
-  new InfantryTypeClass(E1);
-  new InfantryTypeClass(E2);
-  new InfantryTypeClass(E3);
-  new InfantryTypeClass(E4);
-  new InfantryTypeClass(E6);
-  new InfantryTypeClass(E7);
-  new InfantryTypeClass(E8);
-  new InfantryTypeClass(E9);
-  new InfantryTypeClass(Medic);
-  new InfantryTypeClass(General);
-  new InfantryTypeClass(Dog);
-  new InfantryTypeClass(C1);
-  new InfantryTypeClass(C2);
-  new InfantryTypeClass(C3);
-  new InfantryTypeClass(C4);
-  new InfantryTypeClass(C5);
-  new InfantryTypeClass(C6);
-  new InfantryTypeClass(C7);
-  new InfantryTypeClass(C8);
-  new InfantryTypeClass(C9);
-  new InfantryTypeClass(C10);
-  new InfantryTypeClass(Einstein);
-  new InfantryTypeClass(Delphi);
-  new InfantryTypeClass(DrChan);
-  new InfantryTypeClass(ShockTrooper);
-  new InfantryTypeClass(Mechanic);
+  base::NewPooled<InfantryTypeClass>(E1);
+  base::NewPooled<InfantryTypeClass>(E2);
+  base::NewPooled<InfantryTypeClass>(E3);
+  base::NewPooled<InfantryTypeClass>(E4);
+  base::NewPooled<InfantryTypeClass>(E6);
+  base::NewPooled<InfantryTypeClass>(E7);
+  base::NewPooled<InfantryTypeClass>(E8);
+  base::NewPooled<InfantryTypeClass>(E9);
+  base::NewPooled<InfantryTypeClass>(Medic);
+  base::NewPooled<InfantryTypeClass>(General);
+  base::NewPooled<InfantryTypeClass>(Dog);
+  base::NewPooled<InfantryTypeClass>(C1);
+  base::NewPooled<InfantryTypeClass>(C2);
+  base::NewPooled<InfantryTypeClass>(C3);
+  base::NewPooled<InfantryTypeClass>(C4);
+  base::NewPooled<InfantryTypeClass>(C5);
+  base::NewPooled<InfantryTypeClass>(C6);
+  base::NewPooled<InfantryTypeClass>(C7);
+  base::NewPooled<InfantryTypeClass>(C8);
+  base::NewPooled<InfantryTypeClass>(C9);
+  base::NewPooled<InfantryTypeClass>(C10);
+  base::NewPooled<InfantryTypeClass>(Einstein);
+  base::NewPooled<InfantryTypeClass>(Delphi);
+  base::NewPooled<InfantryTypeClass>(DrChan);
+  base::NewPooled<InfantryTypeClass>(ShockTrooper);
+  base::NewPooled<InfantryTypeClass>(Mechanic);
 }
 
 /***********************************************************************************************
@@ -1087,7 +1088,7 @@ void InfantryTypeClass::Init_Heap() {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
-  return new InfantryClass(Type, house->Class->House);
+  return base::NewPooled<InfantryClass>(Type, house->Class->House);
 }
 
 /***********************************************************************************************
@@ -1109,14 +1110,14 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  auto* i = new InfantryClass(Type, house);
+  auto* i = base::NewPooled<InfantryClass>(Type, house);
   if (i != nullptr) {
     const COORDINATE coord =
         TheMap().at(cell).Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
       return i->Unlimbo(coord, DIR_E);
     }
-    delete i;
+    base::DeletePooled(i);
   }
   return false;
 }

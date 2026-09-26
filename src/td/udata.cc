@@ -61,6 +61,7 @@
 #include "absl/strings/match.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -1549,7 +1550,7 @@ void UnitTypeClass::Init(TheaterType theater) {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  auto* unit = new UnitClass(Type, house);
+  auto* unit = base::NewPooled<UnitClass>(Type, house);
   if (unit) {
     return unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX));
   }
@@ -1573,7 +1574,7 @@ bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
  * HISTORY: * 06/07/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* UnitTypeClass::Create_One_Of(HouseClass* house) const {
-  return new UnitClass(Type, house->Class->House);
+  return base::NewPooled<UnitClass>(Type, house->Class->House);
 }
 
 /***********************************************************************************************

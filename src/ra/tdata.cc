@@ -60,6 +60,7 @@
 
 #include "absl/strings/match.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -443,41 +444,41 @@ void TerrainTypeClass::Init_Heap() {
   *because the heap *	allocation block index serves double duty as the type
   *number index.
   */
-  new TerrainTypeClass(Tree1Class);   //	TERRAIN_TREE1
-  new TerrainTypeClass(Tree2Class);   //	TERRAIN_TREE2
-  new TerrainTypeClass(Tree3Class);   //	TERRAIN_TREE3
-  new TerrainTypeClass(Tree5Class);   //	TERRAIN_TREE5
-  new TerrainTypeClass(Tree6Class);   //	TERRAIN_TREE6
-  new TerrainTypeClass(Tree7Class);   //	TERRAIN_TREE7
-  new TerrainTypeClass(Tree8Class);   //	TERRAIN_TREE8
-  new TerrainTypeClass(Tree10Class);  //	TERRAIN_TREE10
-  new TerrainTypeClass(Tree11Class);  //	TERRAIN_TREE11
-  new TerrainTypeClass(Tree12Class);  //	TERRAIN_TREE12
-  new TerrainTypeClass(Tree13Class);  //	TERRAIN_TREE13
-  new TerrainTypeClass(Tree14Class);  //	TERRAIN_TREE14
-  new TerrainTypeClass(Tree15Class);  //	TERRAIN_TREE15
-  new TerrainTypeClass(Tree16Class);  //	TERRAIN_TREE16
-  new TerrainTypeClass(Tree17Class);  //	TERRAIN_TREE17
-  new TerrainTypeClass(Clump1Class);  //	TERRAIN_CLUMP1
-  new TerrainTypeClass(Clump2Class);  //	TERRAIN_CLUMP2
-  new TerrainTypeClass(Clump3Class);  //	TERRAIN_CLUMP3
-  new TerrainTypeClass(Clump4Class);  //	TERRAIN_CLUMP4
-  new TerrainTypeClass(Clump5Class);  //	TERRAIN_CLUMP5
-  new TerrainTypeClass(Ice01);        //	TERRAIN_ICE01
-  new TerrainTypeClass(Ice02);        //	TERRAIN_ICE02
-  new TerrainTypeClass(Ice03);        //	TERRAIN_ICE03
-  new TerrainTypeClass(Ice04);        //	TERRAIN_ICE04
-  new TerrainTypeClass(Ice05);        //	TERRAIN_ICE05
-  new TerrainTypeClass(Boxes01);      //	TERRAIN_BOXES01
-  new TerrainTypeClass(Boxes02);      //	TERRAIN_BOXES02
-  new TerrainTypeClass(Boxes03);      //	TERRAIN_BOXES03
-  new TerrainTypeClass(Boxes04);      //	TERRAIN_BOXES04
-  new TerrainTypeClass(Boxes05);      //	TERRAIN_BOXES05
-  new TerrainTypeClass(Boxes06);      //	TERRAIN_BOXES06
-  new TerrainTypeClass(Boxes07);      //	TERRAIN_BOXES07
-  new TerrainTypeClass(Boxes08);      //	TERRAIN_BOXES08
-  new TerrainTypeClass(Boxes09);      //	TERRAIN_BOXES09
-  new TerrainTypeClass(Mine);         // TERRAIN_MINE
+  base::NewPooled<TerrainTypeClass>(Tree1Class);   //	TERRAIN_TREE1
+  base::NewPooled<TerrainTypeClass>(Tree2Class);   //	TERRAIN_TREE2
+  base::NewPooled<TerrainTypeClass>(Tree3Class);   //	TERRAIN_TREE3
+  base::NewPooled<TerrainTypeClass>(Tree5Class);   //	TERRAIN_TREE5
+  base::NewPooled<TerrainTypeClass>(Tree6Class);   //	TERRAIN_TREE6
+  base::NewPooled<TerrainTypeClass>(Tree7Class);   //	TERRAIN_TREE7
+  base::NewPooled<TerrainTypeClass>(Tree8Class);   //	TERRAIN_TREE8
+  base::NewPooled<TerrainTypeClass>(Tree10Class);  //	TERRAIN_TREE10
+  base::NewPooled<TerrainTypeClass>(Tree11Class);  //	TERRAIN_TREE11
+  base::NewPooled<TerrainTypeClass>(Tree12Class);  //	TERRAIN_TREE12
+  base::NewPooled<TerrainTypeClass>(Tree13Class);  //	TERRAIN_TREE13
+  base::NewPooled<TerrainTypeClass>(Tree14Class);  //	TERRAIN_TREE14
+  base::NewPooled<TerrainTypeClass>(Tree15Class);  //	TERRAIN_TREE15
+  base::NewPooled<TerrainTypeClass>(Tree16Class);  //	TERRAIN_TREE16
+  base::NewPooled<TerrainTypeClass>(Tree17Class);  //	TERRAIN_TREE17
+  base::NewPooled<TerrainTypeClass>(Clump1Class);  //	TERRAIN_CLUMP1
+  base::NewPooled<TerrainTypeClass>(Clump2Class);  //	TERRAIN_CLUMP2
+  base::NewPooled<TerrainTypeClass>(Clump3Class);  //	TERRAIN_CLUMP3
+  base::NewPooled<TerrainTypeClass>(Clump4Class);  //	TERRAIN_CLUMP4
+  base::NewPooled<TerrainTypeClass>(Clump5Class);  //	TERRAIN_CLUMP5
+  base::NewPooled<TerrainTypeClass>(Ice01);        //	TERRAIN_ICE01
+  base::NewPooled<TerrainTypeClass>(Ice02);        //	TERRAIN_ICE02
+  base::NewPooled<TerrainTypeClass>(Ice03);        //	TERRAIN_ICE03
+  base::NewPooled<TerrainTypeClass>(Ice04);        //	TERRAIN_ICE04
+  base::NewPooled<TerrainTypeClass>(Ice05);        //	TERRAIN_ICE05
+  base::NewPooled<TerrainTypeClass>(Boxes01);      //	TERRAIN_BOXES01
+  base::NewPooled<TerrainTypeClass>(Boxes02);      //	TERRAIN_BOXES02
+  base::NewPooled<TerrainTypeClass>(Boxes03);      //	TERRAIN_BOXES03
+  base::NewPooled<TerrainTypeClass>(Boxes04);      //	TERRAIN_BOXES04
+  base::NewPooled<TerrainTypeClass>(Boxes05);      //	TERRAIN_BOXES05
+  base::NewPooled<TerrainTypeClass>(Boxes06);      //	TERRAIN_BOXES06
+  base::NewPooled<TerrainTypeClass>(Boxes07);      //	TERRAIN_BOXES07
+  base::NewPooled<TerrainTypeClass>(Boxes08);      //	TERRAIN_BOXES08
+  base::NewPooled<TerrainTypeClass>(Boxes09);      //	TERRAIN_BOXES09
+  base::NewPooled<TerrainTypeClass>(Mine);         // TERRAIN_MINE
 }
 
 /***********************************************************************************************
@@ -629,7 +630,7 @@ void TerrainTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 bool TerrainTypeClass::Create_And_Place(CELL cell,
                                         HousesType /*unused*/) const {
-  return new TerrainClass(Type, cell) != nullptr;
+  return base::NewPooled<TerrainClass>(Type, cell) != nullptr;
 }
 
 /***********************************************************************************************
@@ -649,7 +650,7 @@ bool TerrainTypeClass::Create_And_Place(CELL cell,
  * HISTORY: * 07/19/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* TerrainTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
-  return new TerrainClass(Type, -1);
+  return base::NewPooled<TerrainClass>(Type);
 }
 
 /***********************************************************************************************

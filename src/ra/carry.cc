@@ -43,6 +43,7 @@
 
 #include <cstdint>
 
+#include "base/pooled.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/coord.h"
@@ -150,19 +151,19 @@ bool CarryoverClass::Create() const {
 
   switch (RTTI) {
     case RTTI_UNIT:
-      techno = new UnitClass(Type.Unit, House);
+      techno = base::NewPooled<UnitClass>(Type.Unit, House);
       break;
 
     case RTTI_INFANTRY:
-      techno = new InfantryClass(Type.Infantry, House);
+      techno = base::NewPooled<InfantryClass>(Type.Infantry, House);
       break;
 
     case RTTI_BUILDING:
-      techno = new BuildingClass(Type.Building, House);
+      techno = base::NewPooled<BuildingClass>(Type.Building, House);
       break;
 
     case RTTI_VESSEL:
-      techno = new VesselClass(Type.Vessel, House);
+      techno = base::NewPooled<VesselClass>(Type.Vessel, House);
       break;
     case RTTIType::RTTI_NONE:
     case RTTIType::RTTI_AIRCRAFT:

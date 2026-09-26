@@ -132,6 +132,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/mix_archive.h"
@@ -845,7 +846,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         Sound_Effect(VOC_DINODIE1, Coord);
       }
 
-      new AnimClass(anim, Coord);
+      base::NewPooled<AnimClass>(anim, Coord);
 
       /*
       **	When the flame tank blows up, it really blows up. It is
@@ -872,10 +873,10 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
       if (Random_Pick(0, 1) == 0) {
         InfantryClass* i = nullptr;
         if (Class->Primary == WEAPON_NONE) {
-          i = new InfantryClass(INFANTRY_C1, House->Class->House);
+          i = base::NewPooled<InfantryClass>(INFANTRY_C1, House->Class->House);
           i->IsTechnician = true;
         } else {
-          i = new InfantryClass(INFANTRY_E1, House->Class->House);
+          i = base::NewPooled<InfantryClass>(INFANTRY_E1, House->Class->House);
         }
         if (i) {
           if (i->Unlimbo(Coord, DIR_N)) {
@@ -891,7 +892,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
               i->Select();
             }
           } else {
-            delete i;
+            base::DeletePooled(i);
           }
         }
       }
@@ -918,7 +919,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
             }
           } else {
             object->Record_The_Kill(source);
-            delete object;
+            base::DeletePooled(object);
           }
         }
       } else {
@@ -946,8 +947,8 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
     if (Health_Ratio() < 0x0080 && !IsAnimAttached && *this != UNIT_VICE &&
         *this != UNIT_STEG && *this != UNIT_TREX && *this != UNIT_TRIC &&
         *this != UNIT_RAPT) {
-      auto* anim =
-          new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
+      auto* anim = base::NewPooled<AnimClass>(
+          ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
       if (anim) {
         anim->Attach_To(this);
       }
@@ -958,7 +959,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
     */
     if (res == RESULT_HALF) {
       if (*this == UNIT_GUNBOAT) {
-        auto* anim = new AnimClass(
+        auto* anim = base::NewPooled<AnimClass>(
             ANIM_ON_FIRE_MED,
             Coord_Add(Coord, XYP_Coord(Random_Pick(0, 16) - 8, -2)));
         if (anim) {
@@ -1090,7 +1091,7 @@ UnitClass::~UnitClass() {
     **	If there are any cargo members, delete them.
     */
     while (Is_Something_Attached()) {
-      delete Detach_Object();
+      base::DeletePooled(Detach_Object());
     }
 
     Limbo();
@@ -1386,7 +1387,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
               if (unit == u) {
                 unit = nullptr;
               }
-              delete u;
+              base::DeletePooled(u);
             }
             TheWorld().scenario_init()--;
             count++;
@@ -1542,7 +1543,8 @@ bool UnitClass::Try_To_Deploy() {
       *delete the *	unit, just mark it as not deploying.
       */
       Mark(MARK_UP);
-      auto* building = new BuildingClass(STRUCT_CONST, House->Class->House);
+      auto* building =
+          base::NewPooled<BuildingClass>(STRUCT_CONST, House->Class->House);
       if (building) {
         if (building->Unlimbo(Adjacent_Cell(Coord, FACING_NW))) {
           /*
@@ -1572,7 +1574,7 @@ bool UnitClass::Try_To_Deploy() {
          *revert *	back to normal "just sitting there" mode and await
          *further instructions.
          */
-        delete building;
+        base::DeletePooled(building);
       }
       Mark(MARK_DOWN);
       IsDeploying = false;
@@ -3518,7 +3520,8 @@ void UnitClass::Read_INI(char* buffer) {
           UnitTypeClass::From_Name(tokens.Next(","));  // Unit class.
 
       if (classid != UNIT_NONE) {
-        auto* unit = new UnitClass(classid, inhouse);  // Working unit pointer.
+        auto* unit = base::NewPooled<UnitClass>(
+            classid, inhouse);  // Working unit pointer.
         if (unit) {
           /*
           **	Read the raw data.
@@ -3563,7 +3566,7 @@ void UnitClass::Read_INI(char* buffer) {
             **	If the unit could not be unlimboed, then this is a catastrophic
             *error *	condition. Delete the unit.
             */
-            delete unit;
+            base::DeletePooled(unit);
           }
         }
       }

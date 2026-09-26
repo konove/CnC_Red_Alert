@@ -119,6 +119,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "base/trig.h"
@@ -636,8 +637,8 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
           AircraftTypeClass::From_Name(tokens.Next());  // Unit class.
 
       if (classid != AIRCRAFT_NONE) {
-        auto* air =
-            new AircraftClass(classid, inhouse);  // Working unit pointer.
+        auto* air = base::NewPooled<AircraftClass>(
+            classid, inhouse);  // Working unit pointer.
         if (air) {
           COORDINATE coord = 0;
           int strength = 0;
@@ -668,14 +669,14 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
           }
 
           if (!TheMap().In_Radar(Coord_Cell(coord))) {
-            delete air;
+            base::DeletePooled(air);
           } else {
             air->Strength = static_cast<int16_t>(air->Class->MaxStrength *
                                                  fixed(strength, 256));
             if (air->Unlimbo(coord, dir)) {
               air->Assign_Mission(Mission_From_Name(tokens.Next(",\n\r")));
             } else {
-              delete air;
+              base::DeletePooled(air);
             }
           }
         }
@@ -1251,7 +1252,7 @@ int AircraftClass::Mission_Unload() {
           TheMap().Pick_Up(Coord_Cell(Coord), this);
 
           if (!Exit_Object(unit)) {
-            delete unit;
+            base::DeletePooled(unit);
           }
 
           /*
@@ -1658,7 +1659,7 @@ ResultType AircraftClass::Take_Damage(int& damage, int distance,
     case RESULT_DESTROYED:
       Kill_Cargo(source);
       Death_Announcement();
-      new AnimClass(ANIM_FBALL1, Target_Coord());
+      base::NewPooled<AnimClass>(ANIM_FBALL1, Target_Coord());
 
       /*
       **	Parachute a survivor if possible.
@@ -1667,9 +1668,10 @@ ResultType AircraftClass::Take_Damage(int& damage, int distance,
           TheMap()
               .at(Center_Coord())
               .Is_Clear_To_Move(SPEED_FOOT, true, false)) {
-        auto* infantry = new InfantryClass(INFANTRY_E1, House->Class->House);
+        auto* infantry =
+            base::NewPooled<InfantryClass>(INFANTRY_E1, House->Class->House);
         if ((infantry != nullptr) && (!infantry->Paradrop(Center_Coord()))) {
-          delete infantry;
+          base::DeletePooled(infantry);
         }
       }
 
@@ -3724,7 +3726,7 @@ AircraftClass::~AircraftClass() {
     **	If there are any cargo members, delete them.
     */
     while (Is_Something_Attached()) {
-      delete Detach_Object();
+      base::DeletePooled(Detach_Object());
     }
 
     AircraftClass::Limbo();
@@ -4290,7 +4292,7 @@ bool AircraftClass::Edge_Of_World_AI() {
           House->Refund_Money(obj->Class_Of().Cost_Of());
         }
 #endif
-        delete obj;
+        base::DeletePooled(obj);
       }
       if (Team.Is_Valid()) {
         Team->IsLeaveMap = true;

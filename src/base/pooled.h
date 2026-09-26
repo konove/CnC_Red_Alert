@@ -23,13 +23,14 @@ concept PoolAllocated = requires(std::size_t size) {
 // The pool owns the object, not the caller: it hands the object out again
 // when iterated and takes the slot back in DeletePooled. That is ownership
 // cppcoreguidelines-owning-memory cannot see, so this is the one place a pooled
-// object is created with a bare `new`.
+// object is created with a bare `new`. Discarding the result is fine when the
+// constructor hands the object to the game, as an animation or a smudge does.
 //
 // Example:
 //   auto* anim = base::NewPooled<AnimClass>(ANIM_FIRE_SMALL, coord);
 //   if (anim != nullptr) anim->Attach_To(this);
 template <PoolAllocated T, class... Args>
-[[nodiscard]] T* NewPooled(Args&&... args) {
+T* NewPooled(Args&&... args) {
   // NOLINTNEXTLINE(cppcoreguidelines-owning-memory): T's pool owns the object.
   return new T(std::forward<Args>(args)...);
 }

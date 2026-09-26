@@ -67,6 +67,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
@@ -190,7 +191,7 @@ void TeamTypeClass::Read_INI(char* buffer) {
     /*
     ....................... Create a new team type ........................
     */
-    auto* team = new TeamTypeClass();  // Working team pointer.
+    auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
 
     /*
     ......................... Get the team entry ..........................
@@ -547,7 +548,7 @@ void TeamTypeClass::Read_Old_INI(char* buffer) {
     /*
     ........................ Create a new trigger .........................
     */
-    auto* team = new TeamTypeClass();  // Working team pointer.
+    auto* team = base::NewPooled<TeamTypeClass>();  // Working team pointer.
 
     /*
     ............................ Set its name .............................
@@ -842,7 +843,7 @@ TeamClass* TeamTypeClass::Create_One_Of() const {
   if (TheWorld().scenario_init() ||
       base::At(TeamClass::Number, TheObjectHeaps().team_type().ID(this)) <
           MaxAllowed) {
-    return new TeamClass(this, HouseClass::As_Pointer(House));
+    return base::NewPooled<TeamClass>(this, HouseClass::As_Pointer(House));
   }
   return nullptr;
 }
@@ -857,7 +858,7 @@ void TeamTypeClass::Destroy_All_Of() const {
     const TeamClass* team = TheObjectHeaps().team().Ptr(index);
 
     if (team->Class == this) {
-      delete team;
+      base::DeletePooled(team);
       index--;
     }
   }

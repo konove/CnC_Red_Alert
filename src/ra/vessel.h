@@ -156,8 +156,7 @@ class VesselClass : public DriveClass {
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   TARGET Greatest_Threat(ThreatType threat) override;  // const;
   [[nodiscard]] bool Is_Allowed_To_Recloak() const override;
-  BulletClass* Fire_At(TARGET target,
-                       int which = 0) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  BulletClass* Fire_At(TARGET target, int which = 0) override;
   /*
   **	File I/O.
   */

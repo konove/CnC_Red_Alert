@@ -64,6 +64,7 @@
 
 #include "absl/strings/match.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -611,31 +612,31 @@ void OverlayTypeClass::Init_Heap() {
   *because the heap *	allocation block index serves double duty as the type
   *number index.
   */
-  new OverlayTypeClass(Sandbag);     //	OVERLAY_SANDBAG_WALL
-  new OverlayTypeClass(Cyclone);     //	OVERLAY_CYCLONE_WALL
-  new OverlayTypeClass(Brick);       //	OVERLAY_BRICK_WALL
-  new OverlayTypeClass(Barbwire);    //	OVERLAY_BARBWIRE_WALL
-  new OverlayTypeClass(Wood);        //	OVERLAY_WOOD_WALL
-  new OverlayTypeClass(Gold1);       // OVERLAY_GOLD1
-  new OverlayTypeClass(Gold2);       // OVERLAY_GOLD2
-  new OverlayTypeClass(Gold3);       // OVERLAY_GOLD3
-  new OverlayTypeClass(Gold4);       // OVERLAY_GOLD4
-  new OverlayTypeClass(Gems1);       // OVERLAY_GEMS1
-  new OverlayTypeClass(Gems2);       // OVERLAY_GEMS2
-  new OverlayTypeClass(Gems3);       // OVERLAY_GEMS3
-  new OverlayTypeClass(Gems4);       // OVERLAY_GEMS4
-  new OverlayTypeClass(V12);         //	OVERLAY_V12
-  new OverlayTypeClass(V13);         //	OVERLAY_V13
-  new OverlayTypeClass(V14);         //	OVERLAY_V14
-  new OverlayTypeClass(V15);         //	OVERLAY_V15
-  new OverlayTypeClass(V16);         //	OVERLAY_V16
-  new OverlayTypeClass(V17);         //	OVERLAY_V17
-  new OverlayTypeClass(V18);         //	OVERLAY_V18
-  new OverlayTypeClass(FlagSpot);    //	OVERLAY_FLAG_SPOT
-  new OverlayTypeClass(WoodCrate);   // OVERLAY_WOOD_CRATE
-  new OverlayTypeClass(SteelCrate);  // OVERLAY_STEEL_CRATE
-  new OverlayTypeClass(Fence);       // OVERLAY_FENCE
-  new OverlayTypeClass(WaterCrate);  // OVERLAY_WATER_CRATE
+  base::NewPooled<OverlayTypeClass>(Sandbag);     //	OVERLAY_SANDBAG_WALL
+  base::NewPooled<OverlayTypeClass>(Cyclone);     //	OVERLAY_CYCLONE_WALL
+  base::NewPooled<OverlayTypeClass>(Brick);       //	OVERLAY_BRICK_WALL
+  base::NewPooled<OverlayTypeClass>(Barbwire);    //	OVERLAY_BARBWIRE_WALL
+  base::NewPooled<OverlayTypeClass>(Wood);        //	OVERLAY_WOOD_WALL
+  base::NewPooled<OverlayTypeClass>(Gold1);       // OVERLAY_GOLD1
+  base::NewPooled<OverlayTypeClass>(Gold2);       // OVERLAY_GOLD2
+  base::NewPooled<OverlayTypeClass>(Gold3);       // OVERLAY_GOLD3
+  base::NewPooled<OverlayTypeClass>(Gold4);       // OVERLAY_GOLD4
+  base::NewPooled<OverlayTypeClass>(Gems1);       // OVERLAY_GEMS1
+  base::NewPooled<OverlayTypeClass>(Gems2);       // OVERLAY_GEMS2
+  base::NewPooled<OverlayTypeClass>(Gems3);       // OVERLAY_GEMS3
+  base::NewPooled<OverlayTypeClass>(Gems4);       // OVERLAY_GEMS4
+  base::NewPooled<OverlayTypeClass>(V12);         //	OVERLAY_V12
+  base::NewPooled<OverlayTypeClass>(V13);         //	OVERLAY_V13
+  base::NewPooled<OverlayTypeClass>(V14);         //	OVERLAY_V14
+  base::NewPooled<OverlayTypeClass>(V15);         //	OVERLAY_V15
+  base::NewPooled<OverlayTypeClass>(V16);         //	OVERLAY_V16
+  base::NewPooled<OverlayTypeClass>(V17);         //	OVERLAY_V17
+  base::NewPooled<OverlayTypeClass>(V18);         //	OVERLAY_V18
+  base::NewPooled<OverlayTypeClass>(FlagSpot);    //	OVERLAY_FLAG_SPOT
+  base::NewPooled<OverlayTypeClass>(WoodCrate);   // OVERLAY_WOOD_CRATE
+  base::NewPooled<OverlayTypeClass>(SteelCrate);  // OVERLAY_STEEL_CRATE
+  base::NewPooled<OverlayTypeClass>(Fence);       // OVERLAY_FENCE
+  base::NewPooled<OverlayTypeClass>(WaterCrate);  // OVERLAY_WATER_CRATE
 }
 
 /***********************************************************************************************
@@ -806,7 +807,7 @@ void OverlayTypeClass::Prep_For_Add() {
  *=============================================================================================*/
 bool OverlayTypeClass::Create_And_Place(CELL cell,
                                         HousesType /*unused*/) const {
-  return new OverlayClass(Type, cell) != nullptr;
+  return base::NewPooled<OverlayClass>(Type, cell) != nullptr;
 }
 
 /***********************************************************************************************
@@ -827,7 +828,7 @@ bool OverlayTypeClass::Create_And_Place(CELL cell,
  * HISTORY: * 06/18/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
-  return new OverlayClass(Type, -1);
+  return base::NewPooled<OverlayClass>(Type);
 }
 
 /***********************************************************************************************

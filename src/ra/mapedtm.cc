@@ -42,6 +42,7 @@
 #include <cstdint>
 
 #include "base/array.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
@@ -130,13 +131,13 @@ void MapEditClass::Handle_Teams(const char* caption) {
         /*
         **	Create a new team
         */
-        CurTeam = new TeamTypeClass();
+        CurTeam = base::NewPooled<TeamTypeClass>();
         if (CurTeam) {
           /*
           **	delete it if user cancels
           */
           if (!CurTeam->Edit()) {
-            delete CurTeam;
+            base::DeletePooled(CurTeam);
             CurTeam = nullptr;
           } else {
             Changed = true;
@@ -159,7 +160,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
         */
         if ((rc == 3) && CurTeam) {
           Detach_This_From_All(CurTeam->As_Target(), true);
-          delete CurTeam;
+          base::DeletePooled(CurTeam);
           // CurTeam->Remove();
           CurTeam = nullptr;
         }

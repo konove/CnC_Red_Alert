@@ -69,8 +69,8 @@ class AnimClass final : public ObjectClass, private StageClass {
   }
   void operator delete(void* ptr);
   AnimClass() { IsActive = true; }
-  AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
-            unsigned char loop = 1, bool alt = false);
+  AnimClass(AnimType animnum, COORDINATE coord, int timedelay = 0, int loop = 1,
+            bool alt = false);
   ~AnimClass() override;
   AnimClass(const AnimClass&) = delete;
   AnimClass& operator=(const AnimClass&) = delete;

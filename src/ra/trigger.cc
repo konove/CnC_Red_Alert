@@ -56,6 +56,7 @@
 
 #include "absl/log/check.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
@@ -474,7 +475,7 @@ TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
   /*
   **	No trigger was found, so make one.
   */
-  auto* trig = new TriggerClass(trigtype);
+  auto* trig = base::NewPooled<TriggerClass>(trigtype);
   return trig;
 }
 

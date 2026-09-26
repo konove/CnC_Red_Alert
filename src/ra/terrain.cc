@@ -72,6 +72,7 @@
 #include "base/array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -442,11 +443,13 @@ bool TerrainClass::Catch_Fire() {
   DCHECK(IsActive);
 
   if (!IsCrumbling && !IsOnFire && Class->Armor == ARMOR_WOOD) {
-    auto* anim = new AnimClass(ANIM_BURN_BIG, Coord_Add(Sort_Y(), 0xFFB00000L));
+    auto* anim = base::NewPooled<AnimClass>(ANIM_BURN_BIG,
+                                            Coord_Add(Sort_Y(), 0xFFB00000L));
     if (anim) {
       anim->Attach_To(this);
     }
-    anim = new AnimClass(ANIM_BURN_MED, Coord_Add(Sort_Y(), 0xFF200000L), 15);
+    anim = base::NewPooled<AnimClass>(ANIM_BURN_MED,
+                                      Coord_Add(Sort_Y(), 0xFF200000L), 15);
     if (anim) {
       anim->Attach_To(this);
     }
@@ -482,7 +485,8 @@ void TerrainClass::Fire_Out() {
       Detach_All();
       Mark();
       Start_To_Crumble();
-      new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, Class->CenterBase));
+      base::NewPooled<AnimClass>(ANIM_SMOKE_M,
+                                 Coord_Add(Coord, Class->CenterBase));
     }
   }
 }
@@ -728,7 +732,7 @@ void TerrainClass::Read_INI(CCINIClass& ini) {
     const CELL cell = base::ParseIntegerOr<CELL>(entry, 0);
 
     if (terrain != TERRAIN_NONE) {
-      new TerrainClass(terrain, cell);
+      base::NewPooled<TerrainClass>(terrain, cell);
     }
   }
 }

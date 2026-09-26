@@ -139,6 +139,7 @@
 #include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -1003,10 +1004,11 @@ void HouseClass::AI() {
         UnitClass* obj = nullptr;
 
         if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
-          obj = new UnitClass(Random_Pick(UNIT_TRIC, UNIT_STEG), HOUSE_JP);
+          obj = base::NewPooled<UnitClass>(Random_Pick(UNIT_TRIC, UNIT_STEG),
+                                           HOUSE_JP);
         } else {
           if ((TheWorld().build_level() >= 7) && (!(UScan & kUnitFlagVice))) {
-            obj = new UnitClass(UNIT_VICE, HOUSE_JP);
+            obj = base::NewPooled<UnitClass>(UNIT_VICE, HOUSE_JP);
           }
         }
 
@@ -1015,7 +1017,7 @@ void HouseClass::AI() {
               TheMap().MapCellX + Random_Pick(0, TheMap().MapCellWidth - 1),
               TheMap().MapCellY + Random_Pick(0, TheMap().MapCellHeight - 1));
           if (!Scan_Place_Object(obj, cell)) {
-            delete obj;
+            base::DeletePooled(obj);
           }
         }
       }
@@ -1725,7 +1727,8 @@ void HouseClass::Read_INI(char* buffer) {
 
     const int credits = WWGetPrivateProfileInt(hname, "Credits", 0, buffer);
 
-    auto* p = new HouseClass(index);  // Pointer to current player data.
+    auto* p =
+        base::NewPooled<HouseClass>(index);  // Pointer to current player data.
 
     p->MaxBuilding = maxbuilding;
     p->MaxUnit = maxunit;
@@ -2187,7 +2190,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
       return PROD_CANT;
     }
   } else {
-    fptr = new FactoryClass();
+    fptr = base::NewPooled<FactoryClass>();
     if (!fptr) {
       return PROD_CANT;
     }
@@ -2421,7 +2424,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   **	Abandon production of the object.
   */
   fptr->Abandon();
-  delete fptr;
+  base::DeletePooled(fptr);
   *factory = -1;
 
   return PROD_OK;
@@ -2498,7 +2501,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
   switch (id) {
     case SPC_ION_CANNON:
       if (IonCannon.Is_Ready()) {
-        anim = new AnimClass(ANIM_ION_CANNON, Cell_Coord(cell));
+        anim = base::NewPooled<AnimClass>(ANIM_ION_CANNON, Cell_Coord(cell));
         if (anim) {
           anim->Owner = Class->House;
         }
@@ -2560,14 +2563,14 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           **	Since no launch site was found, just bring the missile in
           **	directly from the North map edge.
           */
-          auto* bullet = new BulletClass(BULLET_NUKE_DOWN);
+          auto* bullet = base::NewPooled<BulletClass>(BULLET_NUKE_DOWN);
           if (bullet) {
             const COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), 0));
             bullet->Assign_Target(As_Target(cell));
             bullet->Payback = nullptr;
             bullet->Strength = 1;
             if (!bullet->Unlimbo(start, DIR_S)) {
-              delete bullet;
+              base::DeletePooled(bullet);
             } else {
               bullet->PrimaryFacing.Set_Current(DIR_S);
             }
@@ -2974,31 +2977,31 @@ void HouseClass::Clobber_All() {
 
   for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
     if (TheObjectHeaps().aircraft().Ptr(i)->House == this) {
-      delete TheObjectHeaps().aircraft().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().aircraft().Ptr(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
     if (TheObjectHeaps().unit().Ptr(i)->House == this) {
-      delete TheObjectHeaps().unit().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().unit().Ptr(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
     if (TheObjectHeaps().infantry().Ptr(i)->House == this) {
-      delete TheObjectHeaps().infantry().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().infantry().Ptr(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
     if (TheObjectHeaps().building().Ptr(i)->House == this) {
-      delete TheObjectHeaps().building().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().building().Ptr(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
     if (TheObjectHeaps().team_type().Ptr(i)->House == Class->House) {
-      delete TheObjectHeaps().team_type().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().team_type().Ptr(i));
       i--;
     }
   }
@@ -4110,7 +4113,7 @@ void HouseClass::Blowup_All() {
         Explosion_Damage(uptr->Center_Coord(), damage, nullptr, WARHEAD_HE);
         count++;
         if (count > 5) {
-          delete uptr;
+          base::DeletePooled(uptr);
           break;
         }
       }
@@ -4150,7 +4153,7 @@ void HouseClass::Blowup_All() {
         Explosion_Damage(bptr->Center_Coord(), damage, nullptr, WARHEAD_HE);
         count++;
         if (count > 5) {
-          delete bptr;
+          base::DeletePooled(bptr);
           break;
         }
       }
@@ -4180,7 +4183,7 @@ void HouseClass::Blowup_All() {
 
         count++;
         if (count > 5) {
-          delete iptr;
+          base::DeletePooled(iptr);
           break;
         }
       }

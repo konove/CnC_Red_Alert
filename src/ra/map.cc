@@ -80,6 +80,7 @@
 #include "base/buffer.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/codec/block_codec.h"
 #include "engine/codec/lcw_sink.h"
 #include "engine/codec/lcw_source.h"
@@ -1980,12 +1981,12 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       cell = static_cast<CELL>(cell - (MAP_CELL_W * (icon / w)));
 
       if (ttype == TEMPLATE_BRIDGE1) {
-        new TemplateClass(TEMPLATE_BRIDGE1H, cell);
+        base::NewPooled<TemplateClass>(TEMPLATE_BRIDGE1H, cell);
       } else {
-        new TemplateClass(TEMPLATE_BRIDGE2H, cell);
+        base::NewPooled<TemplateClass>(TEMPLATE_BRIDGE2H, cell);
       }
 
-      new AnimClass(
+      base::NewPooled<AnimClass>(
           ANIM_NAPALM3,
           Cell_Coord(static_cast<CELL>(cell + (w / 2) + (h / 2 * MAP_CELL_W))));
     }
@@ -1999,16 +2000,17 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       cell = static_cast<CELL>(cell - (MAP_CELL_W * (icon / bridge_w)));
 
       if (ttype == TEMPLATE_BRIDGE1H) {
-        new TemplateClass(TEMPLATE_BRIDGE1D, cell);
+        base::NewPooled<TemplateClass>(TEMPLATE_BRIDGE1D, cell);
       } else {
-        new TemplateClass(TEMPLATE_BRIDGE2D, cell);
+        base::NewPooled<TemplateClass>(TEMPLATE_BRIDGE2D, cell);
       }
 
       TheScenario().BridgeCount--;
       TheScenario().IsBridgeChanged = true;
-      new AnimClass(ANIM_NAPALM3,
-                    Cell_Coord(static_cast<CELL>(cell + (bridge_w / 2) +
-                                                 (bridge_h / 2 * MAP_CELL_W))));
+      base::NewPooled<AnimClass>(
+          ANIM_NAPALM3,
+          Cell_Coord(static_cast<CELL>(cell + (bridge_w / 2) +
+                                       (bridge_h / 2 * MAP_CELL_W))));
       TheMap().Zone_Reset(kZoneFlagAll);
 
       /*
@@ -2061,7 +2063,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
           damaged_type == TEMPLATE_BRIDGE_3A ||
           damaged_type == TEMPLATE_BRIDGE_3B) {
         ttype++;
-        new TemplateClass(ttype, cell);
+        base::NewPooled<TemplateClass>(ttype, cell);
       }
 
       /*
@@ -2074,10 +2076,10 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
         const CellClass* celptr = &(*this).at(cell2);
         if (celptr->TType == TEMPLATE_BRIDGE_3C) {
           // It was also destroyed.  Update us and it.
-          new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
-                            cell);
-          new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3E),
-                            cell2);
+          base::NewPooled<TemplateClass>(
+              static_cast<TemplateType>(TEMPLATE_BRIDGE_3D), cell);
+          base::NewPooled<TemplateClass>(
+              static_cast<TemplateType>(TEMPLATE_BRIDGE_3E), cell2);
         }
 
         // Now check the template above us, at x+1, y-1.
@@ -2086,14 +2088,14 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
         if (celptr->TType == TEMPLATE_BRIDGE_3C) {
           if (cellptr->TType == TEMPLATE_BRIDGE_3D) {
             // if we're already one-sided, turn us to all water
-            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3F),
-                              cell);
+            base::NewPooled<TemplateClass>(
+                static_cast<TemplateType>(TEMPLATE_BRIDGE_3F), cell);
           } else {
-            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3E),
-                              cell);
+            base::NewPooled<TemplateClass>(
+                static_cast<TemplateType>(TEMPLATE_BRIDGE_3E), cell);
           }
-          new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
-                            cell2);
+          base::NewPooled<TemplateClass>(
+              static_cast<TemplateType>(TEMPLATE_BRIDGE_3D), cell2);
         }
         TheMap().Zone_Reset(kZoneFlagAll);
       }
@@ -2112,11 +2114,11 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
         if (bridge_type == TEMPLATE_BRIDGE_3A ||
             bridge_type == TEMPLATE_BRIDGE_3B ||
             bridge_type == TEMPLATE_BRIDGE_3C) {
-          new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3E),
-                            cell2);
+          base::NewPooled<TemplateClass>(
+              static_cast<TemplateType>(TEMPLATE_BRIDGE_3E), cell2);
         } else if (bridge_type == TEMPLATE_BRIDGE_3D) {
-          new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3F),
-                            cell2);
+          base::NewPooled<TemplateClass>(
+              static_cast<TemplateType>(TEMPLATE_BRIDGE_3F), cell2);
         }
       } else {
         if (cellptr->TType == TEMPLATE_BRIDGE_2C) {
@@ -2126,11 +2128,11 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
           if (bridge_type == TEMPLATE_BRIDGE_3A ||
               bridge_type == TEMPLATE_BRIDGE_3B ||
               bridge_type == TEMPLATE_BRIDGE_3C) {
-            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
-                              cell2);
+            base::NewPooled<TemplateClass>(
+                static_cast<TemplateType>(TEMPLATE_BRIDGE_3D), cell2);
           } else if (bridge_type == TEMPLATE_BRIDGE_3E) {
-            new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3F),
-                              cell2);
+            base::NewPooled<TemplateClass>(
+                static_cast<TemplateType>(TEMPLATE_BRIDGE_3F), cell2);
           }
         }
       }

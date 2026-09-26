@@ -39,6 +39,7 @@
 
 #include "ra/tracker.h"
 
+#include "base/pooled.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -131,7 +132,7 @@ void Detach_This_From_All(TARGET target, bool all) {
 
         if (tp->Class->As_Target() == target) {
           Detach_This_From_All(tp->As_Target());
-          delete tp;
+          base::DeletePooled(tp);
           j--;
         }
       }

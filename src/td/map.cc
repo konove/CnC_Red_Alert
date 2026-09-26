@@ -69,6 +69,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/types.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
@@ -1160,7 +1161,7 @@ void MapClass::Logic() {
                   bridge_type != TEMPLATE_BRIDGE3 &&
                   bridge_type != TEMPLATE_BRIDGE4) {
                 found = true;
-                new OverlayClass(
+                base::NewPooled<OverlayClass>(
                     Random_Pick(OVERLAY_TIBERIUM1, OVERLAY_TIBERIUM12),
                     newcell->Cell_Number());
                 newcell->OverlayData = 1;

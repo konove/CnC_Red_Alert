@@ -144,7 +144,7 @@ class TeamTypeClass : public AbstractTypeClass {
   void Remove();
   // the heap owns the new object; many callers create without keeping it.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  TeamClass* Create_One_Of() const ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  TeamClass* Create_One_Of() const;
   void Destroy_All_Of() const;
 
   /*

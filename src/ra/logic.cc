@@ -44,6 +44,7 @@
 #include <cstdint>
 
 #include "base/fixed.h"
+#include "base/pooled.h"
 #include "engine/platform/ftimer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
@@ -236,7 +237,7 @@ void LogicClass::AI() {
           }
           if (damage) {
             obj->Clicked_As_Target();
-            new AnimClass(ANIM_MINE_EXP1, obj->Center_Coord());
+            base::NewPooled<AnimClass>(ANIM_MINE_EXP1, obj->Center_Coord());
           }
           obj->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
         }

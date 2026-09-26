@@ -76,6 +76,7 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "td/anim.h"
@@ -513,7 +514,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
       if (trig) {
         trig->Remove();
       }
-      delete trig;
+      base::DeletePooled(trig);
       break;
 
     case ACTION_DESTROY_YYYY:
@@ -521,7 +522,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
       if (trig) {
         trig->Remove();
       }
-      delete trig;
+      base::DeletePooled(trig);
       break;
 
     case ACTION_DESTROY_ZZZZ:
@@ -529,7 +530,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
       if (trig) {
         trig->Remove();
       }
-      delete trig;
+      base::DeletePooled(trig);
       break;
 
     case ACTION_AIRSTRIKE:
@@ -538,8 +539,8 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
       break;
 
     case ACTION_DZ:
-      new AnimClass(ANIM_LZ_SMOKE,
-                    Cell_Coord(base::At(TheWorld().waypoint(), 25)));
+      base::NewPooled<AnimClass>(
+          ANIM_LZ_SMOKE, Cell_Coord(base::At(TheWorld().waypoint(), 25)));
       break;
 
     case ACTION_NONE:
@@ -696,7 +697,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
       if (trig) {
         trig->Remove();
       }
-      delete trig;
+      base::DeletePooled(trig);
       break;
 
     case ACTION_DESTROY_YYYY:
@@ -704,7 +705,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
       if (trig) {
         trig->Remove();
       }
-      delete trig;
+      base::DeletePooled(trig);
       break;
 
     case ACTION_DESTROY_ZZZZ:
@@ -712,7 +713,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
       if (trig) {
         trig->Remove();
       }
-      delete trig;
+      base::DeletePooled(trig);
       break;
 
     case ACTION_AIRSTRIKE:
@@ -726,8 +727,8 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
       break;
 
     case ACTION_DZ:
-      new AnimClass(ANIM_LZ_SMOKE,
-                    Cell_Coord(base::At(TheWorld().waypoint(), 25)));
+      base::NewPooled<AnimClass>(
+          ANIM_LZ_SMOKE, Cell_Coord(base::At(TheWorld().waypoint(), 25)));
       break;
 
     case ACTION_NONE:
@@ -893,7 +894,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
       if (trig) {
         trig->Remove();
       }
-      delete trig;
+      base::DeletePooled(trig);
       break;
 
     case ACTION_DESTROY_YYYY:
@@ -901,7 +902,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
       if (trig) {
         trig->Remove();
       }
-      delete trig;
+      base::DeletePooled(trig);
       break;
 
     case ACTION_DESTROY_ZZZZ:
@@ -909,7 +910,7 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
       if (trig) {
         trig->Remove();
       }
-      delete trig;
+      base::DeletePooled(trig);
       break;
 
     case ACTION_AIRSTRIKE:
@@ -925,8 +926,8 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
       break;
 
     case ACTION_DZ:
-      new AnimClass(ANIM_LZ_SMOKE,
-                    Cell_Coord(base::At(TheWorld().waypoint(), 25)));
+      base::NewPooled<AnimClass>(
+          ANIM_LZ_SMOKE, Cell_Coord(base::At(TheWorld().waypoint(), 25)));
       break;
 
     case ACTION_WIN:
@@ -1102,7 +1103,8 @@ void TriggerClass::Read_INI(char* buffer) {
     /*
     **	Create a new trigger.
     */
-    auto* trigger = new TriggerClass();  // Working trigger pointer.
+    auto* trigger =
+        base::NewPooled<TriggerClass>();  // Working trigger pointer.
 
     /*
     **	Set its name.

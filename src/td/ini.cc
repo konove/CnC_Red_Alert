@@ -67,6 +67,7 @@
 #include "base/buffer.h"
 #include "base/bytes_of.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
@@ -1214,10 +1215,10 @@ static void Create_Units() {
       ..................................................................*/
       if (hptr->IsHuman) {
         scaleval = 1;
-        obj = new UnitClass(UNIT_MCV, h);
+        obj = base::NewPooled<UnitClass>(UNIT_MCV, h);
         if ((!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) &&
             (!Scan_Place_Object(obj, centroid))) {
-          delete obj;
+          base::DeletePooled(obj);
           obj = nullptr;
         }
 
@@ -1241,10 +1242,10 @@ static void Create_Units() {
         }
 
         if (TheSpecial().IsCaptureTheFlag) {
-          obj = new UnitClass(UNIT_MHQ, h);
+          obj = base::NewPooled<UnitClass>(UNIT_MHQ, h);
           if ((!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) &&
               (!Scan_Place_Object(obj, centroid))) {
-            delete obj;
+            base::DeletePooled(obj);
             obj = nullptr;
           }
 
@@ -1259,7 +1260,7 @@ static void Create_Units() {
       ---------------------------------------------------------------------*/
       scaleval = 1;
       if (TheSpecial().IsCaptureTheFlag) {
-        obj = new UnitClass(UNIT_MHQ, h);
+        obj = base::NewPooled<UnitClass>(UNIT_MHQ, h);
         obj->Unlimbo(Cell_Coord(centroid), DIR_N);
         hptr->FlagHome = 0;  // turn house's flag off
         hptr->FlagLocation = 0;
@@ -1289,9 +1290,9 @@ static void Create_Units() {
         ...............................................................*/
         if (hptr->ActLike == HOUSE_GOOD) {
           for (int k = 0; k < base::At(utable, i).GDICount; k++) {
-            obj = new UnitClass(base::At(utable, i).GDIType, h);
+            obj = base::NewPooled<UnitClass>(base::At(utable, i).GDIType, h);
             if (!Scan_Place_Object(obj, centerpt)) {
-              delete obj;
+              base::DeletePooled(obj);
             } else {
               if (!hptr->IsHuman) {
                 obj->Set_Mission(MISSION_TIMED_HUNT);
@@ -1303,9 +1304,9 @@ static void Create_Units() {
           Create a NOD unit
           ...............................................................*/
           for (int k = 0; k < base::At(utable, i).NODCount; k++) {
-            obj = new UnitClass(base::At(utable, i).NODType, h);
+            obj = base::NewPooled<UnitClass>(base::At(utable, i).NODType, h);
             if (!Scan_Place_Object(obj, centerpt)) {
-              delete obj;
+              base::DeletePooled(obj);
             } else {
               if (!hptr->IsHuman) {
                 obj->Set_Mission(MISSION_TIMED_HUNT);
@@ -1336,9 +1337,10 @@ static void Create_Units() {
         ...............................................................*/
         if (hptr->ActLike == HOUSE_GOOD) {
           for (int k = 0; k < base::At(itable, i).GDICount; k++) {
-            obj = new InfantryClass(base::At(itable, i).GDIType, h);
+            obj =
+                base::NewPooled<InfantryClass>(base::At(itable, i).GDIType, h);
             if (!Scan_Place_Object(obj, centerpt)) {
-              delete obj;
+              base::DeletePooled(obj);
             } else {
               if (!hptr->IsHuman) {
                 obj->Set_Mission(MISSION_TIMED_HUNT);
@@ -1350,9 +1352,10 @@ static void Create_Units() {
           Create NOD infantry
           ...............................................................*/
           for (int k = 0; k < base::At(itable, i).NODCount; k++) {
-            obj = new InfantryClass(base::At(itable, i).NODType, h);
+            obj =
+                base::NewPooled<InfantryClass>(base::At(itable, i).NODType, h);
             if (!Scan_Place_Object(obj, centerpt)) {
-              delete obj;
+              base::DeletePooled(obj);
             } else {
               if (!hptr->IsHuman) {
                 obj->Set_Mission(MISSION_TIMED_HUNT);

@@ -62,6 +62,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -1644,7 +1645,7 @@ InfantryTypeClass::InfantryTypeClass(
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
-  return new InfantryClass(Type, house->Class->House);
+  return base::NewPooled<InfantryClass>(Type, house->Class->House);
 }
 
 /***********************************************************************************************
@@ -1666,14 +1667,14 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  auto* i = new InfantryClass(Type, house);
+  auto* i = base::NewPooled<InfantryClass>(Type, house);
   if (i) {
     const COORDINATE coord =
         TheMap().at(cell).Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
       return i->Unlimbo(coord, DIR_E);
     }
-    delete i;
+    base::DeletePooled(i);
   }
   return false;
 }

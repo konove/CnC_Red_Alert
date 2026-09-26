@@ -108,6 +108,7 @@
 #include "base/enum_array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/mix_archive.h"
@@ -426,7 +427,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
         if (Class->IsDog) {
           anim = ANIM_DOG_ELECT_DIE;
         }
-        new AnimClass(anim, Coord);
+        base::NewPooled<AnimClass>(anim, Coord);
         delthis = true;
         break;
     }
@@ -836,10 +837,10 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
       ** Show the animation and get rid of the land mine
       */
       const COORDINATE blcoord = bldng->Center_Coord();
-      new AnimClass(Combat_Anim(TheRules().APMineDamage, WARHEAD_HE,
-                                cellptr->Land_Type()),
-                    blcoord);
-      delete bldng;
+      base::NewPooled<AnimClass>(Combat_Anim(TheRules().APMineDamage,
+                                             WARHEAD_HE, cellptr->Land_Type()),
+                                 blcoord);
+      base::DeletePooled(bldng);
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
            index++) {
         InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
@@ -3308,8 +3309,8 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           InfantryTypeClass::From_Name(tokens.Next());  // Infantry class.
 
       if (classid != INFANTRY_NONE) {
-        auto* infantry =
-            new InfantryClass(classid, inhouse);  // Working infantry pointer.
+        auto* infantry = base::NewPooled<InfantryClass>(
+            classid, inhouse);  // Working infantry pointer.
         if (infantry != nullptr) {
           /*
           **	3rd token: strength.
@@ -3378,7 +3379,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
             **	If the infantry could not be unlimboed, then this is a big
             *error. *	Delete the infantry.
             */
-            delete infantry;
+            base::DeletePooled(infantry);
           }
         }
       }
@@ -3732,19 +3733,19 @@ bool InfantryClass::Doing_AI() {
             base::At(Class->DoControls, base::ToSize(static_cast<int>(Doing)))
                 .Count) {
           if (Doing == DO_GUN_DEATH && !Class->IsDog && Height == 0) {
-            new AnimClass(ANIM_CORPSE1,
-                          Coord_Add(Center_Coord(), XYP_Coord(-2, 4)));
+            base::NewPooled<AnimClass>(
+                ANIM_CORPSE1, Coord_Add(Center_Coord(), XYP_Coord(-2, 4)));
           }
           if (Doing == DO_GRENADE_DEATH && !Class->IsDog && Height == 0) {
-            new AnimClass(ANIM_CORPSE1,
-                          Coord_Add(Center_Coord(), XYP_Coord(-10, 3)));
+            base::NewPooled<AnimClass>(
+                ANIM_CORPSE1, Coord_Add(Center_Coord(), XYP_Coord(-10, 3)));
           }
           if (Doing == DO_EXPLOSION_DEATH && !Class->IsDog && Height == 0) {
-            new AnimClass(ANIM_CORPSE3,
-                          Coord_Add(Center_Coord(), XYP_Coord(-2, 4)));
+            base::NewPooled<AnimClass>(
+                ANIM_CORPSE3, Coord_Add(Center_Coord(), XYP_Coord(-2, 4)));
           }
           if (Doing == DO_EXPLOSION2_DEATH && !Class->IsDog && Height == 0) {
-            new AnimClass(ANIM_CORPSE2, Center_Coord());
+            base::NewPooled<AnimClass>(ANIM_CORPSE2, Center_Coord());
           }
           delete this;
           return true;

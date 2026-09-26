@@ -58,6 +58,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -548,7 +549,7 @@ void Do_Win() {
       if (building && !building->IsInLimbo && building->House != ThePlayer() &&
           building->Class->Type == TheWorld().sabotaged_type()) {
         building->Limbo();
-        delete building;
+        base::DeletePooled(building);
         break;
       }
     }

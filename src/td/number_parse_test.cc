@@ -1,6 +1,7 @@
 // Tests legacy INI defaults and team count validation through game readers.
 #include <string>
 
+#include "base/pooled.h"
 #include "gtest/gtest.h"
 #include "td/config.h"
 #include "td/object_heaps.h"
@@ -32,7 +33,7 @@ class TdTeamTypeParseTest : public testing::Test {
 TEST_F(TdTeamTypeParseTest, RejectsInvalidTeamClassAndMissionCounts) {
   char name[] = "TestTeam";
   for (const char* count : {"-1", "999999", "2147483648", "1tail"}) {
-    auto* heap_team = new TeamTypeClass();
+    auto* heap_team = base::NewPooled<TeamTypeClass>();
     ASSERT_NE(heap_team, nullptr);
     TeamTypeClass& team = *heap_team;
     std::string entry = std::string{"GoodGuy,0,0,0,0,0,7,2,1,0,"} + count;
@@ -44,14 +45,14 @@ TEST_F(TdTeamTypeParseTest, RejectsInvalidTeamClassAndMissionCounts) {
     team.Fill_In(name, entry.data());
     EXPECT_EQ(team.ClassCount, 0) << count;
     EXPECT_EQ(team.MissionCount, 0) << count;
-    delete heap_team;
+    base::DeletePooled(heap_team);
   }
 }
 
 TEST_F(TdTeamTypeParseTest, PreservesValidEmptyTeamAndRejectsTruncatedMembers) {
   char name[] = "TestTeam";
   char entry[] = "GoodGuy,0,0,0,0,0,7,2,1,0,0,0";
-  auto* heap_team = new TeamTypeClass();
+  auto* heap_team = base::NewPooled<TeamTypeClass>();
   ASSERT_NE(heap_team, nullptr);
   TeamTypeClass& team = *heap_team;
   team.Fill_In(name, entry);
@@ -65,7 +66,7 @@ TEST_F(TdTeamTypeParseTest, PreservesValidEmptyTeamAndRejectsTruncatedMembers) {
   team.Fill_In(name, truncated);
   EXPECT_EQ(team.ClassCount, 0);
   EXPECT_EQ(team.MissionCount, 0);
-  delete heap_team;
+  base::DeletePooled(heap_team);
 }
 
 TEST_F(TdTeamTypeParseTest, TeamTypeOutsideItsHeapFailsValidation) {

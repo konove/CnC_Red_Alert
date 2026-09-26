@@ -125,6 +125,7 @@
 #include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -434,17 +435,17 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
     **	Flame thrower infantry always go out with a bang.
     */
     if (*this == INFANTRY_E4) {
-      new AnimClass(ANIM_NAPALM1, Coord);
+      base::NewPooled<AnimClass>(ANIM_NAPALM1, Coord);
       Explosion_Damage(Coord, 80, nullptr, WARHEAD_FIRE);
     }
 
     if (*this == INFANTRY_E2) {
-      new AnimClass(ANIM_ART_EXP1, Coord);
+      base::NewPooled<AnimClass>(ANIM_ART_EXP1, Coord);
       Explosion_Damage(Coord, 30, nullptr, WARHEAD_HE);
     }
 
     if (*this == INFANTRY_E5) {
-      new AnimClass(ANIM_CHEM_BALL, Coord);
+      base::NewPooled<AnimClass>(ANIM_CHEM_BALL, Coord);
       Explosion_Damage(Coord, 80, nullptr, WARHEAD_HE);
     }
 
@@ -3103,8 +3104,8 @@ void InfantryClass::Read_INI(char* buffer) {
           InfantryTypeClass::From_Name(tokens.Next());  // Infantry class.
 
       if (classid != INFANTRY_NONE) {
-        auto* infantry =
-            new InfantryClass(classid, inhouse);  // Working infantry pointer.
+        auto* infantry = base::NewPooled<InfantryClass>(
+            classid, inhouse);  // Working infantry pointer.
         if (infantry) {
           /*
           **	3rd token: strength.
@@ -3152,7 +3153,7 @@ void InfantryClass::Read_INI(char* buffer) {
             **	If the infantry could not be unlimboed, then this is a big
             *error. *	Delete the infantry.
             */
-            delete infantry;
+            base::DeletePooled(infantry);
           }
         }
       }

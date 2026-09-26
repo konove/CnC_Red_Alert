@@ -44,6 +44,7 @@
 #include "ra/crate.h"
 
 #include "base/fixed.h"
+#include "base/pooled.h"
 #include "ra/cell.h"
 #include "ra/defines.h"
 #include "ra/inline.h"
@@ -145,9 +146,9 @@ bool CrateClass::Put_Crate(CELL& cell) {
     }
 
     if (cellptr->Is_Clear_To_Build(SPEED_FLOAT)) {
-      new OverlayClass(OVERLAY_WATER_CRATE, cell);
+      base::NewPooled<OverlayClass>(OVERLAY_WATER_CRATE, cell);
     } else {
-      new OverlayClass(OVERLAY_WOOD_CRATE, cell);
+      base::NewPooled<OverlayClass>(OVERLAY_WOOD_CRATE, cell);
     }
     TheWorld().scenario_init() = old;
     return true;

@@ -73,6 +73,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -3861,7 +3862,7 @@ void BuildingTypeClass::Prep_For_Add() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool BuildingTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  auto* ptr = new BuildingClass(Type, house);
+  auto* ptr = base::NewPooled<BuildingClass>(Type, house);
   if (ptr) {
     return ptr->Unlimbo(Cell_Coord(cell), DIR_N);
   }
@@ -3892,7 +3893,7 @@ ObjectClass* BuildingTypeClass::Create_One_Of(HouseClass* house) const {
   if (house) {
     htype = house->Class->House;
   }
-  return new BuildingClass(Type, htype);
+  return base::NewPooled<BuildingClass>(Type, htype);
 }
 
 /***********************************************************************************************

@@ -9,6 +9,7 @@
 #include "base/buffer.h"
 #include "base/installed.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
@@ -98,13 +99,13 @@ class TdArchiveRoundTripTest : public testing::Test {
     TheMap().Resize(MAP_CELL_TOTAL);
     TheWorld().cell_triggers().Resize(MAP_CELL_TOTAL);
     TheMap().Init_Cells();
-    ThePlayer() = new HouseClass(HOUSE_GOOD);
+    ThePlayer() = base::NewPooled<HouseClass>(HOUSE_GOOD);
   }
   static void TearDownTestSuite() {
     TheMap().Init_Cells();
     TheWorld().cell_triggers().Clear();
     while (TheObjectHeaps().unit().Count() != 0) {
-      delete TheObjectHeaps().unit().Ptr(0);
+      base::DeletePooled(TheObjectHeaps().unit().Ptr(0));
     }
     while (TheObjectHeaps().trigger().Count() != 0) {
       delete TheObjectHeaps().trigger().Ptr(0);
@@ -123,7 +124,7 @@ class TdArchiveRoundTripTest : public testing::Test {
 };
 
 TEST_F(TdArchiveRoundTripTest, TriggerIniPreserves64BitDataAndRejectsOverflow) {
-  auto* trigger = new TriggerClass;
+  auto* trigger = base::NewPooled<TriggerClass>();
   char name[] = "CRED";
   char entry[] = "Credits,None,4294967296,GoodGuy,None,0";
   trigger->Fill_In(name, entry);
@@ -205,8 +206,8 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
 }
 
 TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferences) {
-  auto* unit = new UnitClass(UNIT_LTANK, HOUSE_GOOD);
-  auto* trigger = new TriggerClass;
+  auto* unit = base::NewPooled<UnitClass>(UNIT_LTANK, HOUSE_GOOD);
+  auto* trigger = base::NewPooled<TriggerClass>();
   auto& cell = TheMap().at(100);
   cell.Reset();
   cell.IsPlot = cell.IsCursorHere = cell.IsWaypoint = true;
@@ -308,7 +309,7 @@ TEST_F(TdArchiveRoundTripTest, HouseRestoresEconomyFlagsTimersAndTypeIdentity) {
 }
 
 TEST_F(TdArchiveRoundTripTest, UnitRestoresBaseFieldsReferencesTimersAndPathTail) {
-  auto* unit = new UnitClass(UNIT_LTANK, HOUSE_GOOD);
+  auto* unit = base::NewPooled<UnitClass>(UNIT_LTANK, HOUSE_GOOD);
   unit->Coord = Cell_Coord(1000);
   unit->Strength = 123;
   unit->NavCom = As_Target(CELL{1200});
@@ -318,7 +319,7 @@ TEST_F(TdArchiveRoundTripTest, UnitRestoresBaseFieldsReferencesTimersAndPathTail
   unit->Path[1] = FACING_NONE;
   unit->Path[kConquerPathMax - 1] = FACING_S;
   const auto bytes = Save(*unit);
-  auto* restored = new UnitClass;
+  auto* restored = base::NewPooled<UnitClass>();
   ASSERT_TRUE(Restore(*restored, bytes));
   EXPECT_EQ(restored->Class, unit->Class);
   EXPECT_EQ(restored->House, ThePlayer());
@@ -344,7 +345,7 @@ TEST_F(TdArchiveRoundTripTest, TruncatedCellHouseAndUnitRecordsFail) {
   };
   check(TheMap().at(200));
   check(*ThePlayer());
-  auto* unit = new UnitClass(UNIT_LTANK, HOUSE_GOOD);
+  auto* unit = base::NewPooled<UnitClass>(UNIT_LTANK, HOUSE_GOOD);
   check(*unit);
 }
 }  // namespace

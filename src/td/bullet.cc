@@ -61,6 +61,7 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "td/aircraft.h"
@@ -364,7 +365,7 @@ void BulletClass::AI() {
   COORDINATE coord = Coord;
   if (Class->IsFlameEquipped) {
     if (IsToAnimate) {
-      new AnimClass(ANIM_SMOKE_PUFF, coord, 1);
+      base::NewPooled<AnimClass>(ANIM_SMOKE_PUFF, coord, 1);
     }
     IsToAnimate = !IsToAnimate;
   }
@@ -479,7 +480,7 @@ void BulletClass::AI() {
           Coord = Coord_Scatter(Coord, 0x0020);
         }
         if (Class->Explosion != ANIM_NONE) {
-          new AnimClass(Class->Explosion, Coord);
+          base::NewPooled<AnimClass>(Class->Explosion, Coord);
         }
         delete this;
         return;

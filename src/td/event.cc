@@ -61,6 +61,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
+#include "base/pooled.h"
 #include "td/anim.h"
 #include "td/audio.h"
 #include "td/building.h"
@@ -511,7 +512,7 @@ void EventClass::Execute() {
     **	result of player intervention.
     */
     case ANIMATION:
-      anim = new AnimClass(Data.Anim.What, Data.Anim.Where);
+      anim = base::NewPooled<AnimClass>(Data.Anim.What, Data.Anim.Where);
       if (anim && (Data.Anim.Owner != HOUSE_NONE &&
                    ThePlayer()->Class->House != Data.Anim.Owner &&
                    !TheSpecial().IsVisibleTarget)) {

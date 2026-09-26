@@ -46,6 +46,7 @@
 #include <filesystem>
 
 #include "absl/strings/str_format.h"
+#include "base/pooled.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -71,7 +72,7 @@
 #include "td/palette.h"
 #include "td/screen.h"
 #include "td/session.h"
-#include "td/team.h"
+#include "td/team.h"  // IWYU pragma: keep (DeletePooled needs TeamClass complete)
 #include "td/techno.h"
 #include "td/type.h"
 #include "td/vector.h"
@@ -154,7 +155,8 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_O: {
-        auto* air = new AircraftClass(AIRCRAFT_ORCA, ThePlayer()->Class->House);
+        auto* air = base::NewPooled<AircraftClass>(AIRCRAFT_ORCA,
+                                                   ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
@@ -166,8 +168,8 @@ void Debug_Key(unsigned input) {
         TheDebugState().set_instant_build(!TheDebugState().instant_build());
       } break;
       case KN_B: {
-        auto* air =
-            new AircraftClass(AIRCRAFT_HELICOPTER, ThePlayer()->Class->House);
+        auto* air = base::NewPooled<AircraftClass>(AIRCRAFT_HELICOPTER,
+                                                   ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
@@ -176,8 +178,8 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_T: {
-        auto* air =
-            new AircraftClass(AIRCRAFT_TRANSPORT, ThePlayer()->Class->House);
+        auto* air = base::NewPooled<AircraftClass>(AIRCRAFT_TRANSPORT,
+                                                   ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
@@ -186,8 +188,9 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_GRAVE:
-        new AnimClass(ANIM_ART_EXP1,
-                      TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()));
+        base::NewPooled<AnimClass>(
+            ANIM_ART_EXP1,
+            TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()));
         Explosion_Damage(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
                          250, nullptr, WARHEAD_HE);
         break;
@@ -277,13 +280,13 @@ void Debug_Key(unsigned input) {
         if (TheWorld().current_object().Count()) {
           TheMap().Recalc();
           // CurrentObject[0]->Detach_All();
-          delete TheWorld().current_object().at(0);
+          base::DeletePooled(TheWorld().current_object().at(0));
         }
         break;
 
       case KN_D:
         if (TheObjectHeaps().team().Ptr(0)) {
-          delete TheObjectHeaps().team().Ptr(0);
+          base::DeletePooled(TheObjectHeaps().team().Ptr(0));
         }
         break;
 

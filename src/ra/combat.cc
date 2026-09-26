@@ -47,6 +47,7 @@
 
 #include "base/array.h"
 #include "base/fixed.h"
+#include "base/pooled.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/cell.h"
 #include "ra/coord.h"
@@ -478,8 +479,8 @@ void Wide_Area_Damage(COORDINATE coord, LEPTON radius, int rawdamage,
           rawdamage * fixed(cell_radius, dist_from_center).Inverse();
       Explosion_Damage(Cell_Coord(tcell), damage, source, warhead);
       if (warhead == WARHEAD_FIRE && damage > 100) {
-        new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
-                        Cell_Coord(tcell));
+        base::NewPooled<SmudgeClass>(
+            Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6), Cell_Coord(tcell));
       }
     }
   }

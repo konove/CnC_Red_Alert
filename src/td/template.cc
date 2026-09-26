@@ -66,6 +66,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/tile.h"
@@ -143,7 +144,7 @@ void TemplateClass::Read_INI(char* buffer) {
     const TemplateType temp =
         TemplateTypeClass::From_Name(tokens.Next());  // Terrain type.
     if (temp != TEMPLATE_NONE) {
-      new TemplateClass(temp, cell);
+      base::NewPooled<TemplateClass>(temp, cell);
     }
     key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
     tbuffer = key_cursor.data();

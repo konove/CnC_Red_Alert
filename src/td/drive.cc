@@ -78,6 +78,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -304,8 +305,8 @@ void DriveClass::Overrun_Square(CELL cell, bool threaten) {
           object->Record_The_Kill(this);
           object->Mark(MARK_UP);
           object->Limbo();
-          delete object;
-          new OverlayClass(OVERLAY_SQUISH, Coord_Cell(Coord));
+          base::DeletePooled(object);
+          base::NewPooled<OverlayClass>(OVERLAY_SQUISH, Coord_Cell(Coord));
 
           object = next;
         } else {

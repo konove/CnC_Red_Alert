@@ -70,6 +70,7 @@
 #include "absl/strings/str_split.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "engine/audio/audio_mixer.h"
@@ -1670,7 +1671,7 @@ bool Select_Game(bool fade) {
       TheMap().at(10).Overlay = OVERLAY_BRICK_WALL;
       TheMap().at(10).Recalc_Attributes();
       TheMap().at(10).Overlay = OVERLAY_NONE;
-      auto* trigger = new TriggerClass;
+      auto* trigger = base::NewPooled<TriggerClass>();
       if (!trigger || TheObjectHeaps().unit().Count() == 0) {
         return false;
       }
@@ -1682,8 +1683,8 @@ bool Select_Game(bool fade) {
       base::At(TheMap().at(14).Overlappers, 2) = TheObjectHeaps().unit().Ptr(0);
       TheMap().at(15).Flag.Composite = 2;
       TheMap().TotalValue = static_cast<int64_t>(uint64_t{1} << 35);
-      auto* pending =
-          new BuildingClass(STRUCT_POWER, ThePlayer()->Class->House);
+      auto* pending = base::NewPooled<BuildingClass>(STRUCT_POWER,
+                                                     ThePlayer()->Class->House);
       if (!pending) {
         return false;
       }
@@ -1694,9 +1695,9 @@ bool Select_Game(bool fade) {
     }
     if (TheStartupOptions().mobile_test) {
       const HousesType house = ThePlayer()->Class->House;
-      auto* vehicle = new UnitClass(UNIT_APC, house);
-      auto* passenger = new InfantryClass(INFANTRY_E1, house);
-      auto* plane = new AircraftClass(AIRCRAFT_ORCA, house);
+      auto* vehicle = base::NewPooled<UnitClass>(UNIT_APC, house);
+      auto* passenger = base::NewPooled<InfantryClass>(INFANTRY_E1, house);
+      auto* plane = base::NewPooled<AircraftClass>(AIRCRAFT_ORCA, house);
       if (!vehicle || !passenger || !plane) {
         LOG(ERROR) << "-MOBILETEST: fixture allocation failed";
         return false;
@@ -1764,10 +1765,10 @@ bool Select_Game(bool fade) {
       const HousesType house = ThePlayer()->Class->House;
       // Limbo fixtures preserve non-default fields without building AI replacing
       // them before the save. Campaign buildings exercise normal AI separately.
-      auto* building = new BuildingClass(STRUCT_WEAP, house);
-      auto* peer = new BuildingClass(STRUCT_REPAIR, house);
-      auto* passenger = new InfantryClass(INFANTRY_E1, house);
-      auto* factory = new FactoryClass;
+      auto* building = base::NewPooled<BuildingClass>(STRUCT_WEAP, house);
+      auto* peer = base::NewPooled<BuildingClass>(STRUCT_REPAIR, house);
+      auto* passenger = base::NewPooled<InfantryClass>(INFANTRY_E1, house);
+      auto* factory = base::NewPooled<FactoryClass>();
       if (!building || !peer || !passenger || !factory ||
           !factory->Set(UnitTypeClass::As_Reference(UNIT_JEEP), *ThePlayer()) ||
           !factory->Start() ||
@@ -1830,13 +1831,14 @@ bool Select_Game(bool fade) {
       }
       UnitClass* owner = TheObjectHeaps().unit().Ptr(0);
       // Keep normally short-lived placement objects in limbo across the save.
-      auto* ground = new TemplateClass(TEMPLATE_CLEAR1);
-      auto* overlay = new OverlayClass(OVERLAY_CONCRETE);
-      auto* smudge = new SmudgeClass(SMUDGE_CRATER1);
-      auto* terrain = new TerrainClass(TERRAIN_TREE1, -1);
-      auto* bullet = new BulletClass(BULLET_HE);
-      auto* trigger = new TriggerClass;
-      auto* anim = new AnimClass(ANIM_SMOKE_PUFF, owner->Coord, 90, 10);
+      auto* ground = base::NewPooled<TemplateClass>(TEMPLATE_CLEAR1);
+      auto* overlay = base::NewPooled<OverlayClass>(OVERLAY_CONCRETE);
+      auto* smudge = base::NewPooled<SmudgeClass>(SMUDGE_CRATER1);
+      auto* terrain = base::NewPooled<TerrainClass>(TERRAIN_TREE1);
+      auto* bullet = base::NewPooled<BulletClass>(BULLET_HE);
+      auto* trigger = base::NewPooled<TriggerClass>();
+      auto* anim =
+          base::NewPooled<AnimClass>(ANIM_SMOKE_PUFF, owner->Coord, 90, 10);
       if (!ground || !overlay || !smudge || !terrain || !bullet || !trigger ||
           !anim) {
         LOG(ERROR) << "-WORLDTEST: fixture allocation failed";
@@ -1858,7 +1860,7 @@ bool Select_Game(bool fade) {
       bullet->Fly_Speed(127, MPH_FAST);
       bullet->Arm_Fuse(owner->Coord, owner->Coord + 0x200, 95, 5);
       bullet->Assign_Target(owner->As_Target());
-      auto* missile = new BulletClass(BULLET_SSM);
+      auto* missile = base::NewPooled<BulletClass>(BULLET_SSM);
       const COORDINATE destination = owner->Coord + 0x600;
       if (missile == nullptr) {
         return false;
@@ -1884,7 +1886,7 @@ bool Select_Game(bool fade) {
           break;
         }
       }
-      auto* type = new TeamTypeClass;
+      auto* type = base::NewPooled<TeamTypeClass>();
       if (member == nullptr || type == nullptr) {
         LOG(ERROR) << "-TEAMTEST: no member or team type slot";
         return false;
@@ -1907,7 +1909,7 @@ bool Select_Game(bool fade) {
       team->SuspendTimer = 150;
     }
     if (TheStartupOptions().factory_test) {
-      auto* factory = new FactoryClass;
+      auto* factory = base::NewPooled<FactoryClass>();
       if (factory == nullptr ||
           !factory->Set(UnitTypeClass::As_Reference(UNIT_JEEP), *ThePlayer()) ||
           !factory->Start()) {

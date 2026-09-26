@@ -153,6 +153,7 @@
 #include "base/enum_array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -2281,7 +2282,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
       return PROD_CANT;
     }
   } else {
-    fptr = new FactoryClass();
+    fptr = base::NewPooled<FactoryClass>();
     if (!fptr) {
       return PROD_CANT;
     }
@@ -2302,7 +2303,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
     return PROD_OK;
   }
 
-  delete fptr;
+  base::DeletePooled(fptr);
   return PROD_CANT;
 }
 
@@ -2398,7 +2399,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   */
   fptr->Abandon();
   Set_Factory(type, nullptr);
-  delete fptr;
+  base::DeletePooled(fptr);
 
   return PROD_OK;
 }
@@ -2497,14 +2498,14 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
     case SPC_NUCLEAR_BOMB:
       if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_Ready()) {
         if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_One_Time()) {
-          auto* bullet =
-              new BulletClass(BULLET_NUKE_DOWN, As_Target(cell), nullptr, 200,
-                              WARHEAD_NUKE, static_cast<int>(MPH_VERY_FAST));
+          auto* bullet = base::NewPooled<BulletClass>(
+              BULLET_NUKE_DOWN, As_Target(cell), nullptr, 200, WARHEAD_NUKE,
+              static_cast<int>(MPH_VERY_FAST));
           if (bullet) {
             const int celly = std::max(Cell_Y(cell) - 15, 1);
             const COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), celly));
             if (!bullet->Unlimbo(start, DIR_S)) {
-              delete bullet;
+              base::DeletePooled(bullet);
             }
             SuperWeapon.at(SPC_NUCLEAR_BOMB).Discharged(this == ThePlayer());
             IsRecalcNeeded = true;
@@ -2541,7 +2542,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
       if (SuperWeapon.at(SPC_PARA_INFANTRY).Is_Ready()) {
         TeamTypeClass* ttype = TeamTypeClass::As_Pointer("@PINF");
         if (ttype == nullptr) {
-          ttype = new TeamTypeClass;
+          ttype = base::NewPooled<TeamTypeClass>();
           if (ttype != nullptr) {
             base::SafeCopy(ttype->IniName, "@PINF");
             ttype->IsTransient = true;
@@ -3022,37 +3023,37 @@ void HouseClass::Clobber_All() {
 
   for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
     if (TheObjectHeaps().aircraft().Ptr(i)->House == this) {
-      delete TheObjectHeaps().aircraft().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().aircraft().Ptr(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
     if (TheObjectHeaps().unit().Ptr(i)->House == this) {
-      delete TheObjectHeaps().unit().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().unit().Ptr(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
     if (TheObjectHeaps().vessel().Ptr(i)->House == this) {
-      delete TheObjectHeaps().vessel().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().vessel().Ptr(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
     if (TheObjectHeaps().infantry().Ptr(i)->House == this) {
-      delete TheObjectHeaps().infantry().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().infantry().Ptr(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
     if (TheObjectHeaps().building().Ptr(i)->House == this) {
-      delete TheObjectHeaps().building().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().building().Ptr(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
     if (TheObjectHeaps().team_type().Ptr(i)->House == Class->House) {
-      delete TheObjectHeaps().team_type().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().team_type().Ptr(i));
       i--;
     }
   }
@@ -3064,7 +3065,7 @@ void HouseClass::Clobber_All() {
   }
   for (int i = 0; i < TheObjectHeaps().trigger_type().Count(); i++) {
     if (TheObjectHeaps().trigger_type().Ptr(i)->House == Class->House) {
-      delete TheObjectHeaps().trigger_type().Ptr(i);
+      base::DeletePooled(TheObjectHeaps().trigger_type().Ptr(i));
       i--;
     }
   }
@@ -3759,7 +3760,7 @@ void HouseClass::Blowup_All() {
         uptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
         count++;
         if (count > 5 && uptr->IsActive) {
-          delete uptr;
+          base::DeletePooled(uptr);
           break;
         }
       }
@@ -3814,7 +3815,7 @@ void HouseClass::Blowup_All() {
         bptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
         count++;
         if (count > 5) {
-          delete bptr;
+          base::DeletePooled(bptr);
           break;
         }
       }
@@ -3840,7 +3841,7 @@ void HouseClass::Blowup_All() {
 
         count++;
         if (count > 5) {
-          delete iptr;
+          base::DeletePooled(iptr);
           break;
         }
       }
@@ -7132,7 +7133,8 @@ void HouseClass::Read_INI(CCINIClass& ini) {
     const char* hname = HouseTypeClass::As_Reference(index)
                             .IniName;  //	Pointer to house name.
 
-    auto* p = new HouseClass(index);  // Pointer to current player data.
+    auto* p =
+        base::NewPooled<HouseClass>(index);  // Pointer to current player data.
     p->Control.TechLevel =
         ini.Get_Int(hname, "TechLevel", TheScenario().Scenario);
     p->Control.MaxBuilding =

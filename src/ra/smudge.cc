@@ -54,6 +54,7 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "ra/ccini.h"
@@ -323,7 +324,7 @@ void SmudgeClass::Read_INI(CCINIClass& ini) {
         if (ptr != nullptr) {
           data = base::ParseIntegerOr<int>(ptr, 0);
         }
-        new SmudgeClass(smudge, Cell_Coord(cell));
+        base::NewPooled<SmudgeClass>(smudge, Cell_Coord(cell));
         if (TheMap().at(cell).Smudge == smudge && data != 0) {
           TheMap().at(cell).SmudgeData = static_cast<unsigned char>(data);
         }

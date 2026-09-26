@@ -79,6 +79,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -2959,94 +2960,98 @@ void BuildingTypeClass::Init_Heap() {
   *because the heap *	allocation block index serves double duty as the type
   *number index.
   */
-  new BuildingTypeClass(ClassAdvancedTech);   // STRUCT_ADVANCED_TECH
-  new BuildingTypeClass(ClassIronCurtain);    // STRUCT_IRON_CURTAIN
-  new BuildingTypeClass(ClassWeapon);         //	STRUCT_WEAP
-  new BuildingTypeClass(ClassChronosphere);   // STRUCT_CHRONOSPHERE
-  new BuildingTypeClass(ClassPillbox);        //	STRUCT_PILLBOX
-  new BuildingTypeClass(ClassCamoPillbox);    //	STRUCT_CAMOPILLBOX
-  new BuildingTypeClass(ClassCommand);        //	STRUCT_RADAR
-  new BuildingTypeClass(ClassGapGenerator);   // STRUCT_GAP
-  new BuildingTypeClass(ClassTurret);         //	STRUCT_TURRET
-  new BuildingTypeClass(ClassAAGun);          // STRUCT_AAGUN
-  new BuildingTypeClass(ClassFlameTurret);    //	STRUCT_FLAME_TURRET
-  new BuildingTypeClass(ClassConst);          //	STRUCT_CONST
-  new BuildingTypeClass(ClassRefinery);       //	STRUCT_REFINERY
-  new BuildingTypeClass(ClassStorage);        //	STRUCT_STORAGE
-  new BuildingTypeClass(ClassHelipad);        //	STRUCT_HELIPAD
-  new BuildingTypeClass(ClassSAM);            //	STRUCT_SAM
-  new BuildingTypeClass(ClassAirStrip);       //	STRUCT_AIRSTRIP
-  new BuildingTypeClass(ClassPower);          //	STRUCT_POWER
-  new BuildingTypeClass(ClassAdvancedPower);  //	STRUCT_ADVANCED_POWER
-  new BuildingTypeClass(ClassSovietTech);     // STRUCT_SOVIET_TECH
-  new BuildingTypeClass(ClassHospital);       //	STRUCT_HOSPITAL
-  new BuildingTypeClass(ClassBarracks);       //	STRUCT_BARRACKS
-  new BuildingTypeClass(ClassTent);           //	STRUCT_TENT
-  new BuildingTypeClass(ClassKennel);         // STRUCT_KENNEL
-  new BuildingTypeClass(ClassRepair);         //	STRUCT_REPAIR
-  new BuildingTypeClass(ClassBioLab);         //	STRUCT_BIO_LAB
-  new BuildingTypeClass(ClassMission);        //	STRUCT_MISSION
-  new BuildingTypeClass(ClassShipYard);       //	STRUCT_SHIP_YARD
-  new BuildingTypeClass(ClassSubPen);         //	STRUCT_SUB_PEN
-  new BuildingTypeClass(ClassMissileSilo);    // STRUCT_MSLO
-  new BuildingTypeClass(ClassForwardCom);     // STRUCT_FORWARD_COM
-  new BuildingTypeClass(ClassTesla);          //	STRUCT_TESLA
-  new BuildingTypeClass(ClassFakeWeapon);     // STRUCT_FAKEWEAP
-  new BuildingTypeClass(ClassFakeConst);      // STRUCT_FAKECONST
-  new BuildingTypeClass(ClassFakeShipYard);   // STRUCT_FAKE_YARD
-  new BuildingTypeClass(ClassFakeSubPen);     // STRUCT_FAKE_PEN
-  new BuildingTypeClass(ClassFakeCommand);    // STRUCT_FAKE_RADAR
-  new BuildingTypeClass(Sandbag);             // STRUCT_SANDBAG_WALL
-  new BuildingTypeClass(Cyclone);             //	STRUCT_CYCLONE_WALL
-  new BuildingTypeClass(Brick);               // STRUCT_BRICK_WALL
-  new BuildingTypeClass(Barbwire);            // STRUCT_BARBWIRE_WALL
-  new BuildingTypeClass(Wood);                //	STRUCT_WOOD_WALL
-  new BuildingTypeClass(Fence);               // STRUCT_FENCE
-  new BuildingTypeClass(ClassAVMine);         // STRUCT_AVMINE
-  new BuildingTypeClass(ClassAPMine);         // STRUCT_APMINE
-  new BuildingTypeClass(ClassV01);            //	STRUCT_V1
-  new BuildingTypeClass(ClassV02);            //	STRUCT_V2
-  new BuildingTypeClass(ClassV03);            //	STRUCT_V3
-  new BuildingTypeClass(ClassV04);            //	STRUCT_V4
-  new BuildingTypeClass(ClassV05);            //	STRUCT_V5
-  new BuildingTypeClass(ClassV06);            //	STRUCT_V6
-  new BuildingTypeClass(ClassV07);            //	STRUCT_V7
-  new BuildingTypeClass(ClassV08);            //	STRUCT_V8
-  new BuildingTypeClass(ClassV09);            //	STRUCT_V9
-  new BuildingTypeClass(ClassV10);            //	STRUCT_V10
-  new BuildingTypeClass(ClassV11);            //	STRUCT_V11
-  new BuildingTypeClass(ClassV12);            //	STRUCT_V12
-  new BuildingTypeClass(ClassV13);            //	STRUCT_V13
-  new BuildingTypeClass(ClassV14);            //	STRUCT_V14
-  new BuildingTypeClass(ClassV15);            //	STRUCT_V15
-  new BuildingTypeClass(ClassV16);            //	STRUCT_V16
-  new BuildingTypeClass(ClassV17);            //	STRUCT_V17
-  new BuildingTypeClass(ClassV18);            //	STRUCT_V18
-  new BuildingTypeClass(ClassV19);            //	STRUCT_PUMP
-  new BuildingTypeClass(ClassV20);            //	STRUCT_V20
-  new BuildingTypeClass(ClassV21);            //	STRUCT_V21
-  new BuildingTypeClass(ClassV22);            //	STRUCT_V22
-  new BuildingTypeClass(ClassV23);            //	STRUCT_V23
-  new BuildingTypeClass(ClassV24);            //	STRUCT_V24
-  new BuildingTypeClass(ClassV25);            //	STRUCT_V25
-  new BuildingTypeClass(ClassV26);            //	STRUCT_V26
-  new BuildingTypeClass(ClassV27);            //	STRUCT_V27
-  new BuildingTypeClass(ClassV28);            //	STRUCT_V28
-  new BuildingTypeClass(ClassV29);            //	STRUCT_V29
-  new BuildingTypeClass(ClassV30);            //	STRUCT_V30
-  new BuildingTypeClass(ClassV31);            //	STRUCT_V31
-  new BuildingTypeClass(ClassV32);            //	STRUCT_V32
-  new BuildingTypeClass(ClassV33);            //	STRUCT_V33
-  new BuildingTypeClass(ClassV34);            //	STRUCT_V34
-  new BuildingTypeClass(ClassV35);            //	STRUCT_V35
-  new BuildingTypeClass(ClassV36);            //	STRUCT_V36
-  new BuildingTypeClass(ClassV37);            //	STRUCT_V37
-  new BuildingTypeClass(ClassBarrel);         // STRUCT_BARREL
-  new BuildingTypeClass(ClassBarrel3);        // STRUCT_BARREL3
+  base::NewPooled<BuildingTypeClass>(
+      ClassAdvancedTech);                                // STRUCT_ADVANCED_TECH
+  base::NewPooled<BuildingTypeClass>(ClassIronCurtain);  // STRUCT_IRON_CURTAIN
+  base::NewPooled<BuildingTypeClass>(ClassWeapon);       //	STRUCT_WEAP
+  base::NewPooled<BuildingTypeClass>(ClassChronosphere);  // STRUCT_CHRONOSPHERE
+  base::NewPooled<BuildingTypeClass>(ClassPillbox);       //	STRUCT_PILLBOX
+  base::NewPooled<BuildingTypeClass>(
+      ClassCamoPillbox);                                  //	STRUCT_CAMOPILLBOX
+  base::NewPooled<BuildingTypeClass>(ClassCommand);       //	STRUCT_RADAR
+  base::NewPooled<BuildingTypeClass>(ClassGapGenerator);  // STRUCT_GAP
+  base::NewPooled<BuildingTypeClass>(ClassTurret);        //	STRUCT_TURRET
+  base::NewPooled<BuildingTypeClass>(ClassAAGun);         // STRUCT_AAGUN
+  base::NewPooled<BuildingTypeClass>(
+      ClassFlameTurret);                              //	STRUCT_FLAME_TURRET
+  base::NewPooled<BuildingTypeClass>(ClassConst);     //	STRUCT_CONST
+  base::NewPooled<BuildingTypeClass>(ClassRefinery);  //	STRUCT_REFINERY
+  base::NewPooled<BuildingTypeClass>(ClassStorage);   //	STRUCT_STORAGE
+  base::NewPooled<BuildingTypeClass>(ClassHelipad);   //	STRUCT_HELIPAD
+  base::NewPooled<BuildingTypeClass>(ClassSAM);       //	STRUCT_SAM
+  base::NewPooled<BuildingTypeClass>(ClassAirStrip);  //	STRUCT_AIRSTRIP
+  base::NewPooled<BuildingTypeClass>(ClassPower);     //	STRUCT_POWER
+  base::NewPooled<BuildingTypeClass>(
+      ClassAdvancedPower);                              //	STRUCT_ADVANCED_POWER
+  base::NewPooled<BuildingTypeClass>(ClassSovietTech);  // STRUCT_SOVIET_TECH
+  base::NewPooled<BuildingTypeClass>(ClassHospital);    //	STRUCT_HOSPITAL
+  base::NewPooled<BuildingTypeClass>(ClassBarracks);    //	STRUCT_BARRACKS
+  base::NewPooled<BuildingTypeClass>(ClassTent);        //	STRUCT_TENT
+  base::NewPooled<BuildingTypeClass>(ClassKennel);      // STRUCT_KENNEL
+  base::NewPooled<BuildingTypeClass>(ClassRepair);      //	STRUCT_REPAIR
+  base::NewPooled<BuildingTypeClass>(ClassBioLab);      //	STRUCT_BIO_LAB
+  base::NewPooled<BuildingTypeClass>(ClassMission);     //	STRUCT_MISSION
+  base::NewPooled<BuildingTypeClass>(ClassShipYard);    //	STRUCT_SHIP_YARD
+  base::NewPooled<BuildingTypeClass>(ClassSubPen);      //	STRUCT_SUB_PEN
+  base::NewPooled<BuildingTypeClass>(ClassMissileSilo);   // STRUCT_MSLO
+  base::NewPooled<BuildingTypeClass>(ClassForwardCom);    // STRUCT_FORWARD_COM
+  base::NewPooled<BuildingTypeClass>(ClassTesla);         //	STRUCT_TESLA
+  base::NewPooled<BuildingTypeClass>(ClassFakeWeapon);    // STRUCT_FAKEWEAP
+  base::NewPooled<BuildingTypeClass>(ClassFakeConst);     // STRUCT_FAKECONST
+  base::NewPooled<BuildingTypeClass>(ClassFakeShipYard);  // STRUCT_FAKE_YARD
+  base::NewPooled<BuildingTypeClass>(ClassFakeSubPen);    // STRUCT_FAKE_PEN
+  base::NewPooled<BuildingTypeClass>(ClassFakeCommand);   // STRUCT_FAKE_RADAR
+  base::NewPooled<BuildingTypeClass>(Sandbag);            // STRUCT_SANDBAG_WALL
+  base::NewPooled<BuildingTypeClass>(Cyclone);            //	STRUCT_CYCLONE_WALL
+  base::NewPooled<BuildingTypeClass>(Brick);              // STRUCT_BRICK_WALL
+  base::NewPooled<BuildingTypeClass>(Barbwire);      // STRUCT_BARBWIRE_WALL
+  base::NewPooled<BuildingTypeClass>(Wood);          //	STRUCT_WOOD_WALL
+  base::NewPooled<BuildingTypeClass>(Fence);         // STRUCT_FENCE
+  base::NewPooled<BuildingTypeClass>(ClassAVMine);   // STRUCT_AVMINE
+  base::NewPooled<BuildingTypeClass>(ClassAPMine);   // STRUCT_APMINE
+  base::NewPooled<BuildingTypeClass>(ClassV01);      //	STRUCT_V1
+  base::NewPooled<BuildingTypeClass>(ClassV02);      //	STRUCT_V2
+  base::NewPooled<BuildingTypeClass>(ClassV03);      //	STRUCT_V3
+  base::NewPooled<BuildingTypeClass>(ClassV04);      //	STRUCT_V4
+  base::NewPooled<BuildingTypeClass>(ClassV05);      //	STRUCT_V5
+  base::NewPooled<BuildingTypeClass>(ClassV06);      //	STRUCT_V6
+  base::NewPooled<BuildingTypeClass>(ClassV07);      //	STRUCT_V7
+  base::NewPooled<BuildingTypeClass>(ClassV08);      //	STRUCT_V8
+  base::NewPooled<BuildingTypeClass>(ClassV09);      //	STRUCT_V9
+  base::NewPooled<BuildingTypeClass>(ClassV10);      //	STRUCT_V10
+  base::NewPooled<BuildingTypeClass>(ClassV11);      //	STRUCT_V11
+  base::NewPooled<BuildingTypeClass>(ClassV12);      //	STRUCT_V12
+  base::NewPooled<BuildingTypeClass>(ClassV13);      //	STRUCT_V13
+  base::NewPooled<BuildingTypeClass>(ClassV14);      //	STRUCT_V14
+  base::NewPooled<BuildingTypeClass>(ClassV15);      //	STRUCT_V15
+  base::NewPooled<BuildingTypeClass>(ClassV16);      //	STRUCT_V16
+  base::NewPooled<BuildingTypeClass>(ClassV17);      //	STRUCT_V17
+  base::NewPooled<BuildingTypeClass>(ClassV18);      //	STRUCT_V18
+  base::NewPooled<BuildingTypeClass>(ClassV19);      //	STRUCT_PUMP
+  base::NewPooled<BuildingTypeClass>(ClassV20);      //	STRUCT_V20
+  base::NewPooled<BuildingTypeClass>(ClassV21);      //	STRUCT_V21
+  base::NewPooled<BuildingTypeClass>(ClassV22);      //	STRUCT_V22
+  base::NewPooled<BuildingTypeClass>(ClassV23);      //	STRUCT_V23
+  base::NewPooled<BuildingTypeClass>(ClassV24);      //	STRUCT_V24
+  base::NewPooled<BuildingTypeClass>(ClassV25);      //	STRUCT_V25
+  base::NewPooled<BuildingTypeClass>(ClassV26);      //	STRUCT_V26
+  base::NewPooled<BuildingTypeClass>(ClassV27);      //	STRUCT_V27
+  base::NewPooled<BuildingTypeClass>(ClassV28);      //	STRUCT_V28
+  base::NewPooled<BuildingTypeClass>(ClassV29);      //	STRUCT_V29
+  base::NewPooled<BuildingTypeClass>(ClassV30);      //	STRUCT_V30
+  base::NewPooled<BuildingTypeClass>(ClassV31);      //	STRUCT_V31
+  base::NewPooled<BuildingTypeClass>(ClassV32);      //	STRUCT_V32
+  base::NewPooled<BuildingTypeClass>(ClassV33);      //	STRUCT_V33
+  base::NewPooled<BuildingTypeClass>(ClassV34);      //	STRUCT_V34
+  base::NewPooled<BuildingTypeClass>(ClassV35);      //	STRUCT_V35
+  base::NewPooled<BuildingTypeClass>(ClassV36);      //	STRUCT_V36
+  base::NewPooled<BuildingTypeClass>(ClassV37);      //	STRUCT_V37
+  base::NewPooled<BuildingTypeClass>(ClassBarrel);   // STRUCT_BARREL
+  base::NewPooled<BuildingTypeClass>(ClassBarrel3);  // STRUCT_BARREL3
 
-  new BuildingTypeClass(ClassQueen);   // STRUCT_QUEEN
-  new BuildingTypeClass(ClassLarva1);  // STRUCT_LARVA1
-  new BuildingTypeClass(ClassLarva2);  // STRUCT_LARVA2
+  base::NewPooled<BuildingTypeClass>(ClassQueen);   // STRUCT_QUEEN
+  base::NewPooled<BuildingTypeClass>(ClassLarva1);  // STRUCT_LARVA1
+  base::NewPooled<BuildingTypeClass>(ClassLarva2);  // STRUCT_LARVA2
 }
 
 /***********************************************************************************************
@@ -3272,7 +3277,7 @@ void BuildingTypeClass::Prep_For_Add() {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 bool BuildingTypeClass::Create_And_Place(CELL cell, HousesType house) const {
-  auto* ptr = new BuildingClass(Type, house);
+  auto* ptr = base::NewPooled<BuildingClass>(Type, house);
   if (ptr != nullptr) {
     return ptr->Unlimbo(Cell_Coord(cell), DIR_N);
   }
@@ -3303,7 +3308,7 @@ ObjectClass* BuildingTypeClass::Create_One_Of(HouseClass* house) const {
   if (house != nullptr) {
     htype = house->Class->House;
   }
-  return new BuildingClass(Type, htype);
+  return base::NewPooled<BuildingClass>(Type, htype);
 }
 
 /***********************************************************************************************

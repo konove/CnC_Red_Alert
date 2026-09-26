@@ -62,6 +62,7 @@
 #include <string>
 
 #include "absl/strings/match.h"
+#include "base/pooled.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -345,13 +346,13 @@ void AircraftTypeClass::Init_Heap() {
   *because the heap *	allocation block index serves double duty as the type
   *number index.
   */
-  new AircraftTypeClass(TransportHeli);
-  new AircraftTypeClass(BadgerPlane);
-  new AircraftTypeClass(U2Plane);
-  new AircraftTypeClass(MigPlane);
-  new AircraftTypeClass(YakPlane);
-  new AircraftTypeClass(AttackHeli);
-  new AircraftTypeClass(OrcaHeli);
+  base::NewPooled<AircraftTypeClass>(TransportHeli);
+  base::NewPooled<AircraftTypeClass>(BadgerPlane);
+  base::NewPooled<AircraftTypeClass>(U2Plane);
+  base::NewPooled<AircraftTypeClass>(MigPlane);
+  base::NewPooled<AircraftTypeClass>(YakPlane);
+  base::NewPooled<AircraftTypeClass>(AttackHeli);
+  base::NewPooled<AircraftTypeClass>(OrcaHeli);
 }
 
 /***********************************************************************************************
@@ -421,7 +422,7 @@ void AircraftTypeClass::One_Time() {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
-  return new AircraftClass(Type, house->Class->House);
+  return base::NewPooled<AircraftClass>(Type, house->Class->House);
 }
 
 /***********************************************************************************************

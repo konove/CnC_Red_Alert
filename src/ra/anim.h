@@ -65,8 +65,8 @@ class AnimClass final : public ObjectClass, public StageClass {
   CCPtr<AnimTypeClass> Class;
 
  public:
-  AnimClass(AnimType animnum, COORDINATE coord, unsigned char timedelay = 0,
-            unsigned char loop = 1);
+  AnimClass(AnimType animnum, COORDINATE coord, int timedelay = 0,
+            int loop = 1);
   ~AnimClass() override;
   AnimClass(const AnimClass&) = delete;
   AnimClass& operator=(const AnimClass&) = delete;

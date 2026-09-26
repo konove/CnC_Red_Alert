@@ -57,6 +57,7 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "td/cell.h"
@@ -372,7 +373,7 @@ void OverlayClass::Read_INI(char* buffer) {
     **	the map.
     */
     {
-      new OverlayClass(classid, cell);
+      base::NewPooled<OverlayClass>(classid, cell);
     }
 
     key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);

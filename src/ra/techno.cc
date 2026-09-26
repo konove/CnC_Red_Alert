@@ -157,6 +157,7 @@
 #include "absl/log/check.h"
 #include "base/array.h"
 #include "base/numeric.h"
+#include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -3309,10 +3310,10 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     firespeed *= TheRules().TurboBoost;
   }
 
-  auto* bullet =
-      new BulletClass(weapon->Bullet->Type, target, this, firepower,
-                      static_cast<WarheadType>(weapon->WarheadPtr->ID),
-                      firespeed);  // Projectile.
+  auto* bullet = base::NewPooled<BulletClass>(
+      weapon->Bullet->Type, target, this, firepower,
+      static_cast<WarheadType>(weapon->WarheadPtr->ID),
+      firespeed);  // Projectile.
 
   if (bullet != nullptr) {
     /*
@@ -3326,7 +3327,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     if (!bullet->Unlimbo(fire_coord, dir)) {
       // The projectile never reached the map, so report no shot rather than
       // hand callers a pointer into the recycled heap block.
-      delete bullet;
+      base::DeletePooled(bullet);
       bullet = nullptr;
     }
     if (tclass.IsTurretEquipped) {
@@ -3448,7 +3449,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     *it *	now.
     */
     if (a != ANIM_NONE) {
-      auto* anim = new AnimClass(a, Fire_Coord(which));
+      auto* anim = base::NewPooled<AnimClass>(a, Fire_Coord(which));
       if (anim != nullptr) {
         anim->Attach_To(this);
       }
@@ -4178,9 +4179,10 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
         }
 
         const int explosion_damage = Techno_Type_Class()->MaxStrength;
-        new AnimClass(Combat_Anim(explosion_damage, wh,
-                                  TheMap().at(Center_Coord()).Land_Type()),
-                      Center_Coord());
+        base::NewPooled<AnimClass>(
+            Combat_Anim(explosion_damage, wh,
+                        TheMap().at(Center_Coord()).Land_Type()),
+            Center_Coord());
         const int radius = explosion_damage * TheRules().ExplosionSpread;
         //				int radius = damage/2;
         Wide_Area_Damage(Center_Coord(), static_cast<LEPTON>(radius), explosion_damage,
@@ -4776,7 +4778,7 @@ void TechnoClass::Kill_Cargo(TechnoClass* source) {
     FootClass* foot = Detach_Object();
     if (foot != nullptr) {
       foot->Record_The_Kill(source);
-      delete foot;
+      base::DeletePooled(foot);
     }
   }
 }

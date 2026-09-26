@@ -182,8 +182,7 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                          TechnoClass* source, bool forced = false) override;
-  BulletClass* Fire_At(TARGET target,
-                       int which) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  BulletClass* Fire_At(TARGET target, int which) override;
 
   /*
   **	AI.
