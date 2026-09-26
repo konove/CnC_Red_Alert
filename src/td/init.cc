@@ -1998,9 +1998,7 @@ bool Select_Game(bool fade) {
  * HISTORY: * 06/06/1995 BRR : Created. *
  *=============================================================================================*/
 static void Play_Intro(bool for_real) {
-  const bool playright =
-      !engine::window::KeyBuffer::IsDown(engine::window::KN_LCTRL) ||
-      !engine::window::KeyBuffer::IsDown(engine::window::KN_RCTRL);
+  const bool playright = !engine::window::IsCtrlDown();
   static int _counter = -1;
   static const char* _names[] = {
 #ifdef DEMO

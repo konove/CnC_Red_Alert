@@ -1579,17 +1579,17 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
         // Check 'input' to see if it's the 1st char of button text
         default:
           if (b1char ==
-              toupper(engine::window::KeyBuffer::ToAscii(input & 0xFF))) {
+              toupper(engine::window::KeyBuffer::ToAscii(KeyCode(input)))) {
             selection = kButton1;
             pressed = true;
           } else if (b2txt != nullptr &&
                      b2char == toupper(engine::window::KeyBuffer::ToAscii(
-                                   input & 0xFF))) {
+                                   KeyCode(input)))) {
             selection = kButton2;
             pressed = true;
           } else if (b3txt != nullptr &&
                      b3char == toupper(engine::window::KeyBuffer::ToAscii(
-                                   input & 0xFF))) {
+                                   KeyCode(input)))) {
             selection = kButton3;
             pressed = true;
           }

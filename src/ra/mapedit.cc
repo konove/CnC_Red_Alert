@@ -499,7 +499,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
   */
   if (TheDebugState().developer_mode() &&
       ((input == KN_F2 && TheSession().Type == GAME_NORMAL) ||
-       input == (KN_F2 | KN_CTRL_BIT))) {
+       input == Ctrl(KN_F2))) {
     TheWorld().scenario_init() = 0;
 
     /*
@@ -820,7 +820,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     /*
     **	SHIFT-HOME: set new Home Cell position
     */
-    case (KN_HOME | KN_SHIFT_BIT):
+    case Shift(KN_HOME):
       if (TheWorld().current_cell() != 0) {
         /*
         ** Unflag the old Home Cell, if there are no other waypoints
@@ -864,7 +864,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     **	SHIFT-R: set new Reinforcement Cell position.  Don't allow setting
     **	the Reinf. Cell to the same as the Home Cell (for display purposes.)
     */
-    case (KN_R | KN_SHIFT_BIT):
+    case Shift(KN_R):
       if (TheWorld().current_cell() == 0 ||
           TheWorld().current_cell() ==
               TheScenario().Waypoint[ScenarioClass::kHomeWaypoint]) {
@@ -905,35 +905,35 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     /*
     **	ALT-Letter: Label a waypoint cell
     */
-    case (KN_A | KN_ALT_BIT):
-    case (KN_B | KN_ALT_BIT):
-    case (KN_C | KN_ALT_BIT):
-    case (KN_D | KN_ALT_BIT):
-    case (KN_E | KN_ALT_BIT):
-    case (KN_F | KN_ALT_BIT):
-    case (KN_G | KN_ALT_BIT):
-    case (KN_H | KN_ALT_BIT):
-    case (KN_I | KN_ALT_BIT):
-    case (KN_J | KN_ALT_BIT):
-    case (KN_K | KN_ALT_BIT):
-    case (KN_L | KN_ALT_BIT):
-    case (KN_M | KN_ALT_BIT):
-    case (KN_N | KN_ALT_BIT):
-    case (KN_O | KN_ALT_BIT):
-    case (KN_P | KN_ALT_BIT):
-    case (KN_Q | KN_ALT_BIT):
-    case (KN_R | KN_ALT_BIT):
-    case (KN_S | KN_ALT_BIT):
-    case (KN_T | KN_ALT_BIT):
-    case (KN_U | KN_ALT_BIT):
-    case (KN_V | KN_ALT_BIT):
-    case (KN_W | KN_ALT_BIT):
-    case (KN_X | KN_ALT_BIT):
-    case (KN_Y | KN_ALT_BIT):
-    case (KN_Z | KN_ALT_BIT):
+    case Alt(KN_A):
+    case Alt(KN_B):
+    case Alt(KN_C):
+    case Alt(KN_D):
+    case Alt(KN_E):
+    case Alt(KN_F):
+    case Alt(KN_G):
+    case Alt(KN_H):
+    case Alt(KN_I):
+    case Alt(KN_J):
+    case Alt(KN_K):
+    case Alt(KN_L):
+    case Alt(KN_M):
+    case Alt(KN_N):
+    case Alt(KN_O):
+    case Alt(KN_P):
+    case Alt(KN_Q):
+    case Alt(KN_R):
+    case Alt(KN_S):
+    case Alt(KN_T):
+    case Alt(KN_U):
+    case Alt(KN_V):
+    case Alt(KN_W):
+    case Alt(KN_X):
+    case Alt(KN_Y):
+    case Alt(KN_Z):
       if (TheWorld().current_cell() != 0) {
         const int waypt_idx =
-            (input & ~KN_ALT_BIT) - KN_A;  // for labelling a waypoint
+            KeyCode(input) - KN_A;  // for labelling a waypoint
         Update_Waypoint(waypt_idx);
       }
       input = KN_NONE;
@@ -943,7 +943,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     ** ALT-. : Designate an extended (2-letter) waypoint name
     */
     case KN_PERIOD:
-    case (KN_PERIOD | KN_ALT_BIT):
+    case Alt(KN_PERIOD):
       if (TheWorld().current_cell() != 0 && Get_Waypoint_Name(wayname)) {
         int waynm = 0;
         if (!std::string_view(wayname).empty()) {
@@ -966,7 +966,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     /*
     **	ALT-Space: Remove a waypoint designation
     */
-    case (KN_SPACE | KN_ALT_BIT):
+    case Alt(KN_SPACE):
       if (TheWorld().current_cell() != 0) {
         /*
         **	Loop through letter waypoints; if this cell is one of them,
@@ -1013,7 +1013,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     **	'H' = toggle current placement object's house
     */
     case KN_H:
-    case (KN_H | KN_SHIFT_BIT):
+    case Shift(KN_H):
       if (PendingObject) {
         Toggle_House();
       }
@@ -1097,10 +1097,10 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     /*
     **	SHIFT-ALT-Arrow: move the current object
     */
-    case KN_UP | KN_ALT_BIT | KN_SHIFT_BIT:
-    case KN_DOWN | KN_ALT_BIT | KN_SHIFT_BIT:
-    case KN_LEFT | KN_ALT_BIT | KN_SHIFT_BIT:
-    case KN_RIGHT | KN_ALT_BIT | KN_SHIFT_BIT:
+    case Shift(Alt(KN_UP)):
+    case Shift(Alt(KN_DOWN)):
+    case Shift(Alt(KN_LEFT)):
+    case Shift(Alt(KN_RIGHT)):
       if (TheWorld().current_object().Count()) {
         TheWorld().current_object().at(0)->Move(KN_To_Facing(input));
         Changed = true;

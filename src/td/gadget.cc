@@ -503,10 +503,10 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
     if (key == KN_RMOUSE) {
       flags |= kRightPress;
     }
-    if (key == (KN_LMOUSE | KN_RLSE_BIT)) {
+    if (key == Released(KN_LMOUSE)) {
       flags |= kLeftRelease;
     }
-    if (key == (KN_RMOUSE | KN_RLSE_BIT)) {
+    if (key == Released(KN_RMOUSE)) {
       flags |= kRightRelease;
     }
   }

@@ -104,20 +104,17 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
 
   // The modifier bits are stripped from the "plain" value of the key so that
   // a comparison to KN_1, for example, holds whichever modifier is down.
-  constexpr unsigned kModifierBits = unsigned{engine::window::kKeyShiftBit} |
-                                     unsigned{engine::window::kKeyAltBit} |
-                                     unsigned{engine::window::kKeyCtrlBit};
-  const auto plain = static_cast<engine::window::KeyNumber>(
-      static_cast<unsigned>(input) & ~kModifierBits);
+  const engine::window::KeyNumber plain =
+      engine::window::WithoutModifiers(input);
   // A copy: the clauses below clear input once they handle the key.
   const engine::window::KeyNumber key = input;
 
   if constexpr (config::kCheatKeysEnabled) {
     if (TheDebugState().developer_mode()) {
-      switch (static_cast<unsigned>(input)) {
-        case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_SHIFT_BIT):
-        case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_ALT_BIT):
-        case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_CTRL_BIT):
+      switch (static_cast<int>(input)) {
+        case Shift(KN_M):
+        case Alt(KN_M):
+        case Ctrl(KN_M):
           for (const HousesType house : magic_enum::enum_values<HousesType>()) {
             HouseClass::As_Pointer(house)->Refund_Money(10000);
           }
@@ -130,9 +127,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   }
 
   if constexpr (config::kCheatKeysEnabled) {
-    if (TheDebugState().playtest() &&
-        static_cast<unsigned>(input) ==
-            (static_cast<unsigned>(KN_W) | static_cast<unsigned>(KN_ALT_BIT))) {
+    if (TheDebugState().playtest() && input == Alt(KN_W)) {
       ThePlayer()->Blockage = 0;
       ThePlayer()->Flag_To_Win();
     }
@@ -158,16 +153,13 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   // if the SHIFT key is held down. It will create the team if the
   // CTRL or ALT key is held down.
   int action = 0;
-  if ((static_cast<unsigned>(input) & unsigned{engine::window::kKeyShiftBit}) !=
-      0U) {
+  if (HasShift(input)) {
     action = 1;
   }
-  if ((static_cast<unsigned>(input) & unsigned{engine::window::kKeyAltBit}) !=
-      0U) {
+  if (HasAlt(input)) {
     action = 3;
   }
-  if ((static_cast<unsigned>(input) & unsigned{engine::window::kKeyCtrlBit}) !=
-      0U) {
+  if (HasCtrl(input)) {
     action = 2;
   }
 
@@ -483,20 +475,14 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   }
 
   if constexpr (config::kCheatKeysEnabled) {
-    if (input != 0 && TheDebugState().developer_mode() &&
-        (static_cast<unsigned>(input) & static_cast<unsigned>(KN_RLSE_BIT)) ==
-            0U) {
+    if (input != 0 && TheDebugState().developer_mode() && !IsRelease(input)) {
       Debug_Key(input);
     }
   }
 }
 
-FacingType KN_To_Facing(const unsigned input) {
-  constexpr unsigned kModifierBits = static_cast<unsigned>(KN_ALT_BIT) |
-                                     static_cast<unsigned>(KN_SHIFT_BIT) |
-                                     static_cast<unsigned>(KN_CTRL_BIT);
-  // C++17 init-statement: key exists only for the switch.
-  switch (const unsigned key = input & ~kModifierBits; key) {
+FacingType KN_To_Facing(const engine::window::KeyNumber input) {
+  switch (static_cast<int>(engine::window::WithoutModifiers(input))) {
     case KN_LEFT:
       return FACING_W;
 

@@ -710,11 +710,11 @@ int MapEditClass::Team_Members(HousesType house) {
         }
         break;
 
-      case (KN_LMOUSE | KN_RLSE_BIT):
+      case Released(KN_LMOUSE):
         lheld = 0;
         break;
 
-      case (KN_RMOUSE | KN_RLSE_BIT):
+      case Released(KN_RMOUSE):
         rheld = 0;
         break;
 

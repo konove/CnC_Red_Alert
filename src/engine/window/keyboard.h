@@ -205,6 +205,14 @@ constexpr KeyNumber KeyCode(const KeyNumber key) {
   return static_cast<KeyNumber>(static_cast<uint32_t>(key) & kScancodeMask);
 }
 
+// Returns `key` without its Shift, Ctrl and Alt bits, so that it matches
+// whichever modifier was held. Unlike KeyCode(), a release stays a release.
+constexpr KeyNumber WithoutModifiers(const KeyNumber key) {
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+  return static_cast<KeyNumber>(static_cast<uint32_t>(key) &
+                                ~(kKeyShiftBit | kKeyCtrlBit | kKeyAltBit));
+}
+
 // Returns whether `key` was pressed with Shift, Ctrl or Alt held, or is a
 // release.
 constexpr bool HasShift(const KeyNumber key) {

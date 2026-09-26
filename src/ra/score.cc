@@ -1044,8 +1044,7 @@ void Animate_Cursor(int pos, int ypos) {
 }
 
 void TickScoreScreen(const int ticks) {
-  if (!ControlQ &&
-      engine::window::KeyBuffer::IsDown(engine::window::KN_LCTRL) &&
+  if (!ControlQ && engine::window::IsCtrlDown() &&
       engine::window::KeyBuffer::IsDown(engine::window::KN_Q)) {
     ControlQ = true;
     TheKeyboard().Clear();

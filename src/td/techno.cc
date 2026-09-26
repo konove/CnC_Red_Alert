@@ -2379,12 +2379,9 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
       return ACTION_SELF;
     }
 
-    const bool altdown = engine::window::KeyBuffer::IsDown(KN_LALT) ||
-                         engine::window::KeyBuffer::IsDown(KN_RALT);
-    const bool ctrldown = engine::window::KeyBuffer::IsDown(KN_LCTRL) ||
-                          engine::window::KeyBuffer::IsDown(KN_RCTRL);
-    const bool shiftdown = engine::window::KeyBuffer::IsDown(KN_LSHIFT) ||
-                           engine::window::KeyBuffer::IsDown(KN_RSHIFT);
+    const bool altdown = engine::window::IsAltDown();
+    const bool ctrldown = engine::window::IsCtrlDown();
+    const bool shiftdown = engine::window::IsShiftDown();
 
     /*
     **	Special guard area mission is possible if both the control and the
@@ -2460,12 +2457,9 @@ ActionType TechnoClass::What_Action(CELL cell) const {
   const CellClass* cellptr = &TheMap().at(cell);
   const OverlayTypeClass* optr = nullptr;
 
-  bool ctrldown = engine::window::KeyBuffer::IsDown(KN_LCTRL) ||
-                  engine::window::KeyBuffer::IsDown(KN_RCTRL);
-  const bool shiftdown = engine::window::KeyBuffer::IsDown(KN_LSHIFT) ||
-                         engine::window::KeyBuffer::IsDown(KN_RSHIFT);
-  const bool altdown = engine::window::KeyBuffer::IsDown(KN_LALT) ||
-                       engine::window::KeyBuffer::IsDown(KN_RALT);
+  bool ctrldown = engine::window::IsCtrlDown();
+  const bool shiftdown = engine::window::IsShiftDown();
+  const bool altdown = engine::window::IsAltDown();
 
   /*
   **	Disable recognizing the <CTRL> key forced fire option when dealing with

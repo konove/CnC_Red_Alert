@@ -1339,7 +1339,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         value while the button is being held down, so this case must be
         trapped as a default.
       .....................................................................*/
-      if (static_cast<int>(input) == (KN_LMOUSE | KN_RLSE_BIT)) {
+      if (static_cast<int>(input) == Released(KN_LMOUSE)) {
         grabbed = 0;
         display = REDRAW_MAP;
       } else {
@@ -3002,8 +3002,7 @@ int MapEditClass::Edit_Trigger() {
       case engine::window::ButtonKey(kButtonMulti4):
       case engine::window::ButtonKey(kButtonMulti5):
       case engine::window::ButtonKey(kButtonMulti6):
-        house = static_cast<HousesType>(static_cast<int>(input & ~KN_BUTTON) -
-                                        kButtonGdi);
+        house = static_cast<HousesType>(ButtonId(input) - kButtonGdi);
         Set_House_Buttons(house, commands, kButtonGdi);
         break;
 

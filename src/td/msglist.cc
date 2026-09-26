@@ -612,8 +612,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
   /*------------------------------------------------------------------------
   Leave mouse events alone.
   ------------------------------------------------------------------------*/
-  if ((input & ~KN_RLSE_BIT) == KN_LMOUSE ||
-      (input & ~KN_RLSE_BIT) == KN_RMOUSE) {
+  if (KeyCode(input) == KN_LMOUSE || KeyCode(input) == KN_RMOUSE) {
     return 0;
   }
 
@@ -626,10 +625,8 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
     /*
     ** Filter out all special keys except return, escape and backspace
     */
-    if (((input & KN_BUTTON) || ascii < ' ') &&
-        (input & 0xff) != (KN_RETURN & 0xff) &&
-        (input & 0xff) != (KN_BACKSPACE & 0xff) &&
-        (input & 0xff) != (KN_ESC & 0xff)) {
+    if (((input & KN_BUTTON) || ascii < ' ') && KeyCode(input) != KN_RETURN &&
+        KeyCode(input) != KN_BACKSPACE && KeyCode(input) != KN_ESC) {
       input = KN_NONE;
       return 0;
     }

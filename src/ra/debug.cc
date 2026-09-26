@@ -182,7 +182,7 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case KN_Z | KN_ALT_BIT:
+      case Alt(KN_Z):
         if (map_x == -1) {
           map_x = TheMap().MapCellX;
           map_y = TheMap().MapCellY;
@@ -204,11 +204,11 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case KN_W | KN_ALT_BIT:
+      case Alt(KN_W):
         ThePlayer()->Flag_To_Win();
         break;
 
-      case KN_L | KN_ALT_BIT:
+      case Alt(KN_L):
         ThePlayer()->Flag_To_Lose();
         break;
 
@@ -228,7 +228,7 @@ void Debug_Key(unsigned input) {
         }
         break;
 
-      case KN_DELETE | KN_SHIFT_BIT:
+      case Shift(KN_DELETE):
         if (TheWorld().current_object().Count()) {
           TheMap().Recalc();
           int damage = 50;
@@ -309,7 +309,7 @@ void Debug_Key(unsigned input) {
       /*
       **	Reveal the entire map to the player.
       */
-      case (KN_F4 | KN_CTRL_BIT):
+      case Ctrl(KN_F4):
         TheDebugState().set_unshroud(!TheDebugState().unshroud());
         TheMap().Flag_To_Redraw(true);
         break;

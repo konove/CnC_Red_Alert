@@ -557,16 +557,15 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   ** The key without its modifier bits, so that the hotkeys below match
   ** whichever modifier is down.
   */
-  const auto plain = static_cast<engine::window::KeyNumber>(
-      input & ~(engine::window::kKeyShiftBit | engine::window::kKeyAltBit |
-                engine::window::kKeyCtrlBit));
+  const engine::window::KeyNumber plain =
+      engine::window::WithoutModifiers(input);
 
   if constexpr (config::kCheatKeysEnabled) {
     if (TheDebugState().developer_mode()) {
       switch (static_cast<int>(input)) {
-        case KN_M | KN_SHIFT_BIT:
-        case KN_M | KN_ALT_BIT:
-        case KN_M | KN_CTRL_BIT:
+        case Shift(KN_M):
+        case Alt(KN_M):
+        case Ctrl(KN_M):
           ThePlayer()->Credits += 10000;
           break;
 
@@ -577,14 +576,14 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   }
 
   if constexpr (config::kVirginCheatKeysEnabled) {
-    if (TheDebugState().playtest() && input == (KN_W | KN_ALT_BIT)) {
+    if (TheDebugState().playtest() && input == Alt(KN_W)) {
       ThePlayer()->Blockage = 0;
       ThePlayer()->Flag_To_Win();
     }
   }
 
   // #ifdef CHEAT_KEYS
-  if (/*TheDebugState().playtest() && */ input == (KN_W | KN_ALT_BIT)) {
+  if (/*TheDebugState().playtest() && */ input == Alt(KN_W)) {
     ThePlayer()->Blockage = 0;
     ThePlayer()->Flag_To_Win();
   }
@@ -616,13 +615,13 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   **	CTRL or ALT key is held down.
   */
   int action = 0;
-  if (input & engine::window::kKeyShiftBit) {
+  if (HasShift(input)) {
     action = 1;
   }
-  if (input & engine::window::kKeyAltBit) {
+  if (HasAlt(input)) {
     action = 3;
   }
-  if (input & engine::window::kKeyCtrlBit) {
+  if (HasCtrl(input)) {
     action = 2;
   }
 
@@ -836,8 +835,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
 #endif
 
   if constexpr (config::kCheatKeysEnabled) {
-    if (TheDebugState().developer_mode() && input &&
-        (input & KN_RLSE_BIT) == 0) {
+    if (TheDebugState().developer_mode() && input && !IsRelease(input)) {
       Debug_Key(input);
     }
   }
@@ -1537,12 +1535,8 @@ TheaterType Theater_From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-FacingType KN_To_Facing(int input) {
-  const uint32_t key =
-      static_cast<uint32_t>(input) &
-      ~(engine::window::kKeyAltBit | engine::window::kKeyShiftBit |
-        engine::window::kKeyCtrlBit);
-  switch (key) {
+FacingType KN_To_Facing(const engine::window::KeyNumber input) {
+  switch (static_cast<int>(engine::window::WithoutModifiers(input))) {
     case KN_LEFT:
       return FACING_W;
 

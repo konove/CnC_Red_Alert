@@ -105,5 +105,13 @@ Manual check on a real display:
 ## Progress
 
 - [x] Step 1: helpers
-- [ ] Step 2: sweep the call sites
+- [x] Step 2: sweep the call sites. Two additions on the way:
+  - Five sites strip the modifiers but keep the release bit (RA's `Do_Menu()`, the "plain" hotkey
+    value, `KN_To_Facing()` in both games), so there is also `WithoutModifiers()`.
+  - The `ToAscii(input & 0xff)` sites became `ToAscii(KeyCode(input))`, which masks exactly the same
+    bits, so a release still yields its character there.
+
+  What is left spells the bits only in commented-out code and in `td/msgbox.cc`'s `#ifdef NEVER`
+  block.
+
 - [ ] Step 3: live mouse state leaves `KeyBuffer::IsDown()`

@@ -1486,7 +1486,7 @@ bool TeamTypeClass::Edit() {
     **	can be detected.
     */
     if (input & KN_BUTTON) {
-      lastbutton = (input & ~KN_BUTTON);
+      lastbutton = ButtonId(input);
     }
   }
 

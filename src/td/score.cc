@@ -2067,7 +2067,7 @@ void Call_Back_Delay(Presentation& show, int time) {
   CountDownTimerClass cd;
 
   if ((!ControlQ) &&
-      (engine::window::KeyBuffer::IsDown(engine::window::KN_LCTRL) &&
+      (engine::window::IsCtrlDown() &&
        engine::window::KeyBuffer::IsDown(engine::window::KN_Q))) {
     ControlQ = true;
     TheKeyboard().Clear();

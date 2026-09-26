@@ -513,7 +513,7 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
   *the click occurred *	rather the the mouse position at the time we get around
   *to this function.
   */
-  if ((key & 0xFF) == KN_LMOUSE || (key & 0xFF) == KN_RMOUSE) {
+  if (KeyCode(key) == KN_LMOUSE || KeyCode(key) == KN_RMOUSE) {
     mousex = TheKeyboard().click_x();
     mousey = TheKeyboard().click_y();
   } else {
@@ -533,10 +533,10 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
     if (key == KN_RMOUSE) {
       flags |= kRightPress;
     }
-    if (key == (KN_LMOUSE | KN_RLSE_BIT)) {
+    if (key == Released(KN_LMOUSE)) {
       flags |= kLeftRelease;
     }
-    if (key == (KN_RMOUSE | KN_RLSE_BIT)) {
+    if (key == Released(KN_RMOUSE)) {
       flags |= kRightRelease;
     }
   }

@@ -242,10 +242,9 @@ void Nod_Ending() {
       if (engine::audio::TheAudio().IsPlaying(kanefinl.data())) {
         TheKeyboard().Clear();
       } else {
-        const auto key = static_cast<uint32_t>(TheKeyboard().Read());
-        if ((key & engine::window::kScancodeMask) ==
-                engine::window::KN_LMOUSE &&
-            (key & engine::window::kKeyReleaseBit) == 0) {
+        const engine::window::KeyNumber key = TheKeyboard().Read();
+        if (engine::window::KeyCode(key) == engine::window::KN_LMOUSE &&
+            !engine::window::IsRelease(key)) {
           const int mousex = TheKeyboard().click_x();
           const int mousey = TheKeyboard().click_y();
           if (mousey >= 44 && mousey <= 354) {

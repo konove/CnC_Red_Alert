@@ -237,6 +237,11 @@ TEST(KeyModifierTest, KeyCodeDropsEveryFlag) {
   EXPECT_EQ(KeyCode(KN_NONE), KN_NONE);
 }
 
+TEST(KeyModifierTest, WithoutModifiersKeepsTheRelease) {
+  EXPECT_EQ(WithoutModifiers(Ctrl(Alt(Shift(KN_Q)))), KN_Q);
+  EXPECT_EQ(WithoutModifiers(Released(Alt(KN_Q))), Released(KN_Q));
+}
+
 TEST(KeyModifierTest, ButtonIdUndoesButtonKey) {
   EXPECT_EQ(ButtonId(ButtonKey(0)), 0);
   EXPECT_EQ(ButtonId(ButtonKey(100)), 100);

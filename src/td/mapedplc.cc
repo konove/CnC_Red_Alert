@@ -656,8 +656,8 @@ int MapEditClass::Placement_Dialog() {
       case engine::window::ButtonKey(kButtonMulti2):
       case engine::window::ButtonKey(kButtonMulti3):
       case engine::window::ButtonKey(kButtonMulti4): {
-        const auto house = static_cast<HousesType>(
-            static_cast<int>(input & ~KN_BUTTON) - kButtonGdi);
+        const auto house =
+            static_cast<HousesType>(ButtonId(input) - kButtonGdi);
         /*
         ............... ignore if invalid for this object ...............
         */

@@ -818,7 +818,7 @@ void Call_Back();
 const char* Language_Name(const char* basename);
 SourceType Source_From_Name(const char* name);
 const char* Name_From_Source(SourceType source);
-FacingType KN_To_Facing(int input);
+FacingType KN_To_Facing(engine::window::KeyNumber input);
 std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
                                     int shapenum, int frames, int zoomfactor);
 void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,

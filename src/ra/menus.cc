@@ -277,13 +277,11 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   **	present. If no keystroke is pending then simple mouse tracking will
   **	be done.
   */
-  uint32_t key = 0;  // Key number with its modifier bits.
+  // The key without its modifier bits; a release stays a release.
+  engine::window::KeyNumber key = engine::window::KN_NONE;
   TheGameState().unknown_key() = 0;
   if (TheKeyboard().Peek()) {
-    key =
-        static_cast<uint32_t>(TheKeyboard().Read()) &
-        ~(engine::window::kKeyShiftBit | engine::window::kKeyAltBit |
-          engine::window::kKeyCtrlBit); /* mask off all but release bit	*/
+    key = engine::window::WithoutModifiers(TheKeyboard().Read());
   }
 
   /*
@@ -308,7 +306,7 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
     newitem = (tempy - my1) / menuskip;
   }
 
-  switch (key) {
+  switch (static_cast<int>(key)) {
     case KN_UP:            /* if the key moves up	*/
       newitem--;           /* 	new item up one	*/
       if (newitem < 0) {   /* if invalid new item	*/
@@ -370,7 +368,7 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
       for (idx = 0; idx < base::At(menuptr, kItemshigh); idx++) {
         if (toupper(*base::At(
                 text, base::ToSize(Select_To_Entry(idx, field, index)))) ==
-            toupper(engine::window::KeyBuffer::ToAscii(key & 0xFFU))) {
+            toupper(engine::window::KeyBuffer::ToAscii(KeyCode(key)))) {
           newitem = select = idx;
           break;
         }
@@ -816,8 +814,7 @@ int Main_Menu(int32_t /*unused*/) {
           break;
         }
         if (Is_Counterstrike_Installed() &&
-            ((engine::window::KeyBuffer::IsDown(KN_LSHIFT) ||
-              engine::window::KeyBuffer::IsDown(KN_RSHIFT)) &&
+            (engine::window::IsShiftDown() &&
              Coordinates_In_Region(TheKeyboard().click_x(),
                                    TheKeyboard().click_y(), 520, 0, 640,
                                    100))) {

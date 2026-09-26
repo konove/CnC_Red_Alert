@@ -242,7 +242,7 @@ void Special_Dialog(bool simple) {
         break;
 
       default:
-        const int index = (input & ~KN_BUTTON) - 100;
+        const int index = ButtonId(input) - 100;
         if (static_cast<unsigned>(index) <
             sizeof(_options) / sizeof(_options[0])) {
           base::At(_options, index).Setting =

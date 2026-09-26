@@ -554,8 +554,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
   Trap 'F2' regardless of whether we're in game or editor mode
   ------------------------------------------------------------------------*/
   if (TheDebugState().developer_mode() &&
-      (/*(input == KN_F2 && Session == GAME_SOLO) ||*/ input ==
-       (KN_F2 | KN_CTRL_BIT))) {
+      (/*(input == KN_F2 && Session == GAME_SOLO) ||*/ input == Ctrl(KN_F2))) {
     TheWorld().scenario_init() = 0;
 
     /*
@@ -872,7 +871,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     /*---------------------------------------------------------------------
     SHIFT-HOME: set new Home Cell position
     ---------------------------------------------------------------------*/
-    case (KN_HOME | KN_SHIFT_BIT):
+    case Shift(KN_HOME):
       /*
       ** Unflag the old Home Cell, if there are no other waypoints
       ** pointing to it
@@ -907,7 +906,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     SHIFT-R: set new Reinforcement Cell position.  Don't allow setting
     the Reinf. Cell to the same as the Home Cell (for display purposes.)
     ---------------------------------------------------------------------*/
-    case (KN_R | KN_SHIFT_BIT):
+    case Shift(KN_R):
       if (TheWorld().current_cell() == 0 ||
           TheWorld().current_cell() ==
               base::At(TheWorld().waypoint(), kWayptHome)) {
@@ -946,34 +945,34 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     /*---------------------------------------------------------------------
     ALT-Letter: Label a waypoint cell
     ---------------------------------------------------------------------*/
-    case (KN_A | KN_ALT_BIT):
-    case (KN_B | KN_ALT_BIT):
-    case (KN_C | KN_ALT_BIT):
-    case (KN_D | KN_ALT_BIT):
-    case (KN_E | KN_ALT_BIT):
-    case (KN_F | KN_ALT_BIT):
-    case (KN_G | KN_ALT_BIT):
-    case (KN_H | KN_ALT_BIT):
-    case (KN_I | KN_ALT_BIT):
-    case (KN_J | KN_ALT_BIT):
-    case (KN_K | KN_ALT_BIT):
-    case (KN_L | KN_ALT_BIT):
-    case (KN_M | KN_ALT_BIT):
-    case (KN_N | KN_ALT_BIT):
-    case (KN_O | KN_ALT_BIT):
-    case (KN_P | KN_ALT_BIT):
-    case (KN_Q | KN_ALT_BIT):
-    case (KN_R | KN_ALT_BIT):
-    case (KN_S | KN_ALT_BIT):
-    case (KN_T | KN_ALT_BIT):
-    case (KN_U | KN_ALT_BIT):
-    case (KN_V | KN_ALT_BIT):
-    case (KN_W | KN_ALT_BIT):
-    case (KN_X | KN_ALT_BIT):
-    case (KN_Y | KN_ALT_BIT):
-    case (KN_Z | KN_ALT_BIT):
+    case Alt(KN_A):
+    case Alt(KN_B):
+    case Alt(KN_C):
+    case Alt(KN_D):
+    case Alt(KN_E):
+    case Alt(KN_F):
+    case Alt(KN_G):
+    case Alt(KN_H):
+    case Alt(KN_I):
+    case Alt(KN_J):
+    case Alt(KN_K):
+    case Alt(KN_L):
+    case Alt(KN_M):
+    case Alt(KN_N):
+    case Alt(KN_O):
+    case Alt(KN_P):
+    case Alt(KN_Q):
+    case Alt(KN_R):
+    case Alt(KN_S):
+    case Alt(KN_T):
+    case Alt(KN_U):
+    case Alt(KN_V):
+    case Alt(KN_W):
+    case Alt(KN_X):
+    case Alt(KN_Y):
+    case Alt(KN_Z):
       if (TheWorld().current_cell() != 0) {
-        waypt_idx = engine::window::KeyBuffer::ToAscii(input & 0xff) - 'a';
+        waypt_idx = engine::window::KeyBuffer::ToAscii(KeyCode(input)) - 'a';
         /*...............................................................
         Unflag cell for this waypoint if there is one
         ...............................................................*/
@@ -996,15 +995,15 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     /*---------------------------------------------------------------------
     ALT-1-4: Designate a cell as a capture-the-flag cell.
     ---------------------------------------------------------------------*/
-    case (KN_1 | KN_ALT_BIT):
-    case (KN_2 | KN_ALT_BIT):
-    case (KN_3 | KN_ALT_BIT):
-    case (KN_4 | KN_ALT_BIT):
+    case Alt(KN_1):
+    case Alt(KN_2):
+    case Alt(KN_3):
+    case Alt(KN_4):
       /*------------------------------------------------------------------
       If there's a current cell, place the flag & waypoint there.
       ------------------------------------------------------------------*/
       if (TheWorld().current_cell() != 0) {
-        waypt_idx = (engine::window::KeyBuffer::ToAscii(input & 0xff) - '1');
+        waypt_idx = (engine::window::KeyBuffer::ToAscii(KeyCode(input)) - '1');
         house =
             static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + waypt_idx);
         if (HouseClass::As_Pointer(house)) {
@@ -1017,7 +1016,8 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
         waypoint.
         ------------------------------------------------------------------*/
         if (TheWorld().current_object().at(0) != nullptr) {
-          waypt_idx = (engine::window::KeyBuffer::ToAscii(input & 0xff) - '1');
+          waypt_idx =
+              (engine::window::KeyBuffer::ToAscii(KeyCode(input)) - '1');
           house = static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) +
                                           waypt_idx);
           if (HouseClass::As_Pointer(house) &&
@@ -1034,7 +1034,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     /*---------------------------------------------------------------------
     ALT-Space: Remove a waypoint designation
     ---------------------------------------------------------------------*/
-    case (KN_SPACE | KN_ALT_BIT):
+    case Alt(KN_SPACE):
       if (TheWorld().current_cell() != 0) {
         /*...............................................................
         Loop through letter waypoints; if this cell is one of them,
@@ -1080,7 +1080,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     'H' = toggle current placement object's house
     ---------------------------------------------------------------------*/
     case KN_H:
-    case (KN_H | KN_SHIFT_BIT):
+    case Shift(KN_H):
       if (PendingObject) {
         Toggle_House();
       }
@@ -1162,10 +1162,10 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     /*---------------------------------------------------------------------
     SHIFT-ALT-Arrow: move the current object
     ---------------------------------------------------------------------*/
-    case KN_UP | KN_ALT_BIT | KN_SHIFT_BIT:
-    case KN_DOWN | KN_ALT_BIT | KN_SHIFT_BIT:
-    case KN_LEFT | KN_ALT_BIT | KN_SHIFT_BIT:
-    case KN_RIGHT | KN_ALT_BIT | KN_SHIFT_BIT:
+    case Shift(Alt(KN_UP)):
+    case Shift(Alt(KN_DOWN)):
+    case Shift(Alt(KN_LEFT)):
+    case Shift(Alt(KN_RIGHT)):
       if (TheWorld().current_object().Count()) {
         TheWorld().current_object().at(0)->Move(KN_To_Facing(input));
         Changed = true;
@@ -1258,8 +1258,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
       /*..................................................................
       Convert input value into a house value; assume HOUSE_GOOD is 0
       ..................................................................*/
-      house = static_cast<HousesType>(static_cast<int>(input & ~KN_BUTTON) -
-                                      kPopupGdi);
+      house = static_cast<HousesType>(ButtonId(input) - kPopupGdi);
       /*..................................................................
       If that house doesn't own this object, try to transfer it
       ..................................................................*/

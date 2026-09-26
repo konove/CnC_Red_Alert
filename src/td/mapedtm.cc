@@ -1308,8 +1308,7 @@ int MapEditClass::Edit_Team() {
       case engine::window::ButtonKey(kButtonMulti2):
       case engine::window::ButtonKey(kButtonMulti3):
       case engine::window::ButtonKey(kButtonMulti4):
-        house = static_cast<HousesType>(static_cast<int>(input & ~KN_BUTTON) -
-                                        kButtonGdi);
+        house = static_cast<HousesType>(ButtonId(input) - kButtonGdi);
         Set_House_Buttons(house, commands, kButtonGdi);
         break;
 
@@ -1765,11 +1764,11 @@ int MapEditClass::Team_Members(HousesType house) {
         }
         break;
 
-      case (KN_LMOUSE | KN_RLSE_BIT):
+      case Released(KN_LMOUSE):
         lheld = 0;
         break;
 
-      case (KN_RMOUSE | KN_RLSE_BIT):
+      case Released(KN_RMOUSE):
         rheld = 0;
         break;
 
