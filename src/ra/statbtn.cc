@@ -46,7 +46,6 @@
 #include "ra/statbtn.h"
 
 #include "base/numeric.h"
-#include "base/strings/safe_string.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
@@ -88,7 +87,7 @@
 StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
                                      TextPrintType style, int x, int y, int w,
                                      int h)
-    : GadgetClass(x, y, w, h, 0), String(nullptr), PrintFlags(style) {
+    : GadgetClass(x, y, w, h, 0), PrintFlags(style) {
   /*
   **	Make a duplicate of the string to display.
   */
@@ -97,7 +96,7 @@ StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
   if (w == -1 || h == -1) {
     const FontStyle font = TextFontStyle(PrintFlags);
     if (w == -1) {
-      Width = StringPixelWidth(font, String);
+      Width = StringPixelWidth(font, String.c_str());
     }
     if (h == -1) {
       Height = static_cast<unsigned char>(FontMaxHeight(font));
@@ -118,7 +117,7 @@ StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
 StaticButtonClass::StaticButtonClass()
-    : GadgetClass(0, 0, 0, 0, 0), String(nullptr), PrintFlags(TPF_8POINT) {}
+    : GadgetClass(0, 0, 0, 0, 0), PrintFlags(TPF_8POINT) {}
 
 /***********************************************************************************************
  * StaticButtonClass::Draw_Me -- Draws the text buttons as indicated. *
@@ -148,7 +147,7 @@ bool StaticButtonClass::Draw_Me(PixelView& view, bool forced) {
     **	calls so that they may be overridden.
     */
     Draw_Background(view);
-    Draw_Text(view, String);
+    Draw_Text(view, String.c_str());
 
     /*
     **	Display the mouse.
@@ -173,19 +172,12 @@ bool StaticButtonClass::Draw_Me(PixelView& view, bool forced) {
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   The text is NOT copied to this button. You must make sure that
- *the text         * remains valid throughout the lifetime of this text button.
- **
+ * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 void StaticButtonClass::Set_Text(const char* text) {
-  if (String != nullptr) {
-    delete[] String;
-    String = nullptr;
-  }
-
-  String = base::CloneString(text);
+  String = text != nullptr ? text : "";
 
   Flag_To_Redraw();
 }
@@ -248,7 +240,7 @@ void StaticButtonClass::Draw_Text(PixelView& view, const char* text) {
   /*
   **	Display the text.
   */
-  if (String != nullptr) {
+  if (!String.empty()) {
     int x = X;
 
     if (base::Any(PrintFlags & TPF_CENTER)) {

@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_STATBTN_H_
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "base/buff.h"
@@ -66,10 +67,8 @@ class StaticButtonClass final : public GadgetClass {
   */
   std::vector<uint8_t> Background;
 
-  /*
-  **	This points to a copy of the string that is used for the button's text.
-  */
-  char* String;
+  // The button's own copy of its text; empty for no text.
+  std::string String;
 
   /*
   **	This is the print flags to use when rendering this button's text.
