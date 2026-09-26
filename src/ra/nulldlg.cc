@@ -3290,7 +3290,8 @@ int Com_Scenario_Dialog(bool skirmish) {
       */
       messages_have_focus = TheSession().Messages.Has_Edit_Focus();
       const bool droplist_is_dropped = housebtn.IsDropped;
-      input = commands->Input(view).key;
+      const engine::window::InputEvent input_event = commands->Input(view);
+      input = input_event.key;
 
       /*
       ** Sort out the input focus between the name edit box and the message
@@ -3320,40 +3321,36 @@ int Com_Scenario_Dialog(bool skirmish) {
       /*
       ---------------------------- Process input ----------------------------
       */
+      // The player clicks on a color button.
+      if (input_event.IsPress(engine::window::MouseButton::kLeft) &&
+          (input_event.x > cbox_x[0] &&
+           input_event.x < cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
+           input_event.y > d_color_y &&
+           input_event.y < d_color_y + d_color_h)) {
+        TheSession().PrefColor = static_cast<PlayerColorType>(
+            (input_event.x - cbox_x[0]) / d_color_w);
+        TheSession().ColorIdx = TheSession().PrefColor;
+        display = std::max(display, REDRAW_COLORS);
+
+        name_edt.Set_Color(&ThePalettes().color_remaps().at(
+            TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                ? PCOLOR_REALLY_BLUE
+                : TheSession().ColorIdx));
+        name_edt.Flag_To_Redraw();
+        TheSession().Messages.Set_Edit_Color(TheSession().ColorIdx ==
+                                                     PCOLOR_DIALOG_BLUE
+                                                 ? PCOLOR_REALLY_BLUE
+                                                 : TheSession().ColorIdx);
+        base::SafeCopy(TheSession().Handle, namebuf);
+        transmit = true;
+        changed = true;
+        if (housebtn.IsDropped) {
+          housebtn.Collapse();
+          display = REDRAW_BACKGROUND;
+        }
+      }
+
       switch (static_cast<int>(input)) {
-        /*------------------------------------------------------------------
-        User clicks on a color button
-        ------------------------------------------------------------------*/
-        case KN_LMOUSE:
-          if (TheKeyboard().click_x() > cbox_x[0] &&
-              TheKeyboard().click_x() <
-                  cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
-              TheKeyboard().click_y() > d_color_y &&
-              TheKeyboard().click_y() < d_color_y + d_color_h) {
-            TheSession().PrefColor = static_cast<PlayerColorType>(
-                (TheKeyboard().click_x() - cbox_x[0]) / d_color_w);
-            TheSession().ColorIdx = TheSession().PrefColor;
-            display = std::max(display, REDRAW_COLORS);
-
-            name_edt.Set_Color(&ThePalettes().color_remaps().at(
-                TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
-                    ? PCOLOR_REALLY_BLUE
-                    : TheSession().ColorIdx));
-            name_edt.Flag_To_Redraw();
-            TheSession().Messages.Set_Edit_Color(TheSession().ColorIdx ==
-                                                         PCOLOR_DIALOG_BLUE
-                                                     ? PCOLOR_REALLY_BLUE
-                                                     : TheSession().ColorIdx);
-            base::SafeCopy(TheSession().Handle, namebuf);
-            transmit = true;
-            changed = true;
-            if (housebtn.IsDropped) {
-              housebtn.Collapse();
-              display = REDRAW_BACKGROUND;
-            }
-          }
-          break;
-
         /*------------------------------------------------------------------
         User edits the name field; retransmit new game options
         ------------------------------------------------------------------*/
@@ -5076,7 +5073,8 @@ int Com_Show_Scenario_Dialog() {
     */
     messages_have_focus = TheSession().Messages.Has_Edit_Focus();
     const bool droplist_is_dropped = housebtn.IsDropped;
-    engine::window::KeyNumber input = commands->Input(view).key;
+    const engine::window::InputEvent input_event = commands->Input(view);
+    engine::window::KeyNumber input = input_event.key;
 
     /*
     ** Sort out the input focus between the name edit box and the message system
@@ -5100,31 +5098,24 @@ int Com_Show_Scenario_Dialog() {
     /*
     ---------------------------- Process input ----------------------------
     */
-    switch (static_cast<int>(input)) {
-      /*------------------------------------------------------------------
-      User clicks on a color button
-      ------------------------------------------------------------------*/
-      case KN_LMOUSE:
-        if (TheKeyboard().click_x() > cbox_x[0] &&
-            TheKeyboard().click_x() <
-                cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
-            TheKeyboard().click_y() > d_color_y &&
-            TheKeyboard().click_y() < d_color_y + d_color_h) {
-          /*.........................................................
-          Compute my preferred color as the one I clicked on.
-          .........................................................*/
-          TheSession().PrefColor = static_cast<PlayerColorType>(
-              (TheKeyboard().click_x() - cbox_x[0]) / d_color_w);
-          changed = true;
+    // The player clicks on a color button, or on a control only the host may
+    // change.
+    if (input_event.IsPress(engine::window::MouseButton::kLeft)) {
+      if (input_event.x > cbox_x[0] &&
+          input_event.x < cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
+          input_event.y > d_color_y && input_event.y < d_color_y + d_color_h) {
+        /*.........................................................
+        Compute my preferred color as the one I clicked on.
+        .........................................................*/
+        TheSession().PrefColor = static_cast<PlayerColorType>(
+            (input_event.x - cbox_x[0]) / d_color_w);
+        changed = true;
 
-          /*.........................................................
-          If 'TheirColor' is set to the other player's color, make
-          sure we can't pick that color.
-          .........................................................*/
-          if (parms_received && (TheSession().PrefColor == TheirColor)) {
-            break;
-          }
-
+        /*.........................................................
+        If 'TheirColor' is set to the other player's color, make
+        sure we can't pick that color.
+        .........................................................*/
+        if (!parms_received || TheSession().PrefColor != TheirColor) {
           TheSession().ColorIdx = TheSession().PrefColor;
 
           name_edt.Set_Color(&ThePalettes().color_remaps().at(
@@ -5143,27 +5134,28 @@ int Com_Show_Scenario_Dialog() {
             housebtn.Collapse();
             display = REDRAW_BACKGROUND;
           }
-        } else if ((Get_Mouse_X() >= d_count_x &&
-                    Get_Mouse_X() <= d_count_x + d_count_w &&
-                    Get_Mouse_Y() >= d_count_y &&
-                    Get_Mouse_Y() <= d_aiplayers_y + d_aiplayers_h) ||
-                   (Get_Mouse_X() >= d_options_x &&
-                    Get_Mouse_X() <= d_options_x + d_options_w &&
-                    Get_Mouse_Y() >= d_options_y &&
-                    Get_Mouse_Y() <= d_options_y + d_options_h)) {
-          TheSession().Messages.Add_Message(
-              nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
-              kTpfText, 1200);
-          PlaySoundEffect(VOC_SYS_ERROR);
-          display = std::max(display, REDRAW_MESSAGE);
-          if (housebtn.IsDropped) {
-            housebtn.Collapse();
-            display = REDRAW_BACKGROUND;
-          }
         }
+      } else if ((Get_Mouse_X() >= d_count_x &&
+                  Get_Mouse_X() <= d_count_x + d_count_w &&
+                  Get_Mouse_Y() >= d_count_y &&
+                  Get_Mouse_Y() <= d_aiplayers_y + d_aiplayers_h) ||
+                 (Get_Mouse_X() >= d_options_x &&
+                  Get_Mouse_X() <= d_options_x + d_options_w &&
+                  Get_Mouse_Y() >= d_options_y &&
+                  Get_Mouse_Y() <= d_options_y + d_options_h)) {
+        TheSession().Messages.Add_Message(nullptr, 0,
+                                          Text_String(TXT_ONLY_HOST_CAN_MODIFY),
+                                          PCOLOR_BROWN, kTpfText, 1200);
+        PlaySoundEffect(VOC_SYS_ERROR);
+        display = std::max(display, REDRAW_MESSAGE);
+        if (housebtn.IsDropped) {
+          housebtn.Collapse();
+          display = REDRAW_BACKGROUND;
+        }
+      }
+    }
 
-        break;
-
+    switch (static_cast<int>(input)) {
 #ifdef OLDWAY
       /*------------------------------------------------------------------
       House Buttons: set the player's desired House

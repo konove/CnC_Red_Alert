@@ -244,11 +244,13 @@ void Choose_Side() {
     if (frame >= anim.frame_count()) {
       frame = 0;
     }
-    if ((TheKeyboard().Peek() && endframe == 255) &&
-        engine::window::KeyCode(TheKeyboard().Read()) ==
-            engine::window::KN_LMOUSE &&
-        (TheKeyboard().click_y() > 96 && TheKeyboard().click_y() < 300)) {
-      if (TheKeyboard().click_x() > 36 && TheKeyboard().click_x() < 296) {
+    engine::window::InputEvent click;
+    if (TheKeyboard().Peek() && endframe == 255) {
+      click = TheKeyboard().ReadEvent();
+    }
+    if (click.button == engine::window::MouseButton::kLeft && click.y > 96 &&
+        click.y < 300) {
+      if (click.x > 36 && click.x < 296) {
         // Chose GDI
         TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scen_player() = SCEN_PLAYER_GDI;
@@ -257,8 +259,7 @@ void Choose_Side() {
         speechplaying = true;
         speech = speechg;
 
-      } else if (TheKeyboard().click_x() > 320 &&
-                 TheKeyboard().click_x() < 600) {
+      } else if (click.x > 320 && click.x < 600) {
         // Chose Nod
         endframe = 14;
         TheWorld().whom() = HOUSE_BAD;

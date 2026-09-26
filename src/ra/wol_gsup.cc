@@ -1259,12 +1259,14 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       }
     }
 
-    input = commands->Input(view).key;
+    engine::window::InputEvent input_event = commands->Input(view);
+    input = input_event.key;
 
     if (bHackFocus) {
       pEditSend->Set_Focus();
       pEditSend->Flag_To_Redraw();
-      input = commands->Input(view).key;
+      input_event = commands->Input(view);
+      input = input_event.key;
       bHackFocus = false;
     }
 
@@ -1287,9 +1289,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     }
 
     //	Yummy special hack. Luv' that UI system.
-    if (input ==
-        2049)  //	Left mouse released, not on control that captured it.
-    {
+    // A left release no gadget took.
+    if (input_event.IsRelease(engine::window::MouseButton::kLeft)) {
       //	Redraw the tabs in case they were what were pressed down on.
       pShpBtnScenarioRA->Flag_To_Redraw();
       pShpBtnScenarioCS->Flag_To_Redraw();
@@ -1300,62 +1301,60 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //.....................................................................
     //	Process input
     //.....................................................................
-    switch (static_cast<int>(input)) {
-      case KN_LMOUSE:
-        if (!bWaitingToStart) {
-          //	Check for mouse down on a control when player is not host.
-          if ((!bHost) &&
-              ((Get_Mouse_X() >= d_count_x &&
-                Get_Mouse_X() <= d_count_x + d_count_w &&
-                Get_Mouse_Y() >= d_count_y &&
-                Get_Mouse_Y() <= d_aiplayers_y + d_aiplayers_h) ||
-               (Get_Mouse_X() >= d_options_x &&
-                Get_Mouse_X() <= d_options_x + d_options_w &&
-                Get_Mouse_Y() >= d_options_y &&
-                Get_Mouse_Y() <= d_options_y + d_options_h) ||
-               (Get_Mouse_X() >= d_scenariolist_x &&
-                Get_Mouse_X() <= d_scenariolist_x + d_scenariolist_w &&
-                Get_Mouse_Y() >= d_scenariolist_y &&
-                Get_Mouse_Y() <= d_scenariolist_y + d_scenariolist_h))) {
-            // Session.Messages.Add_Message(NULL, 0, (char
-            // *)Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
-            // kTpfText, 1200);
-            WOL_PrintMessage(*pILDisc, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
-                             WOLCOLORREMAP_LOCALMACHINEMESS);
-            PlaySoundEffect(WOLSOUND_ERROR);
-            display = std::max(display, REDRAW_MESSAGE);
-            break;
-          }
+    // A guest's click on a control only the host may change is refused; a click
+    // on a color button asks for that color.
+    if (input_event.IsPress(engine::window::MouseButton::kLeft) &&
+        (!bWaitingToStart)) {
+      //	Check for mouse down on a control when player is not host.
+      if ((!bHost) &&
+          ((Get_Mouse_X() >= d_count_x &&
+            Get_Mouse_X() <= d_count_x + d_count_w &&
+            Get_Mouse_Y() >= d_count_y &&
+            Get_Mouse_Y() <= d_aiplayers_y + d_aiplayers_h) ||
+           (Get_Mouse_X() >= d_options_x &&
+            Get_Mouse_X() <= d_options_x + d_options_w &&
+            Get_Mouse_Y() >= d_options_y &&
+            Get_Mouse_Y() <= d_options_y + d_options_h) ||
+           (Get_Mouse_X() >= d_scenariolist_x &&
+            Get_Mouse_X() <= d_scenariolist_x + d_scenariolist_w &&
+            Get_Mouse_Y() >= d_scenariolist_y &&
+            Get_Mouse_Y() <= d_scenariolist_y + d_scenariolist_h))) {
+        // Session.Messages.Add_Message(NULL, 0, (char
+        // *)Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
+        // kTpfText, 1200);
+        WOL_PrintMessage(*pILDisc, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
+                         WOLCOLORREMAP_LOCALMACHINEMESS);
+        PlaySoundEffect(WOLSOUND_ERROR);
+        display = std::max(display, REDRAW_MESSAGE);
+      } else if (input_event.x > base::At(cbox_x, 0) &&
+                 input_event.x <
+                     (base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w) &&
+                 input_event.y > d_color_y &&
+                 input_event.y < (d_color_y + d_color_h)) {
+        TheSession().PrefColor = static_cast<PlayerColorType>(
+            (input_event.x - base::At(cbox_x, 0)) / d_color_w);
 
-          if (TheKeyboard().click_x() > base::At(cbox_x, 0) &&
-              TheKeyboard().click_x() <
-                  (base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w) &&
-              TheKeyboard().click_y() > d_color_y &&
-              TheKeyboard().click_y() < (d_color_y + d_color_h)) {
-            TheSession().PrefColor = static_cast<PlayerColorType>(
-                (TheKeyboard().click_x() - base::At(cbox_x, 0)) / d_color_w);
-
-            //	Ensure that no one is using this color (to our knowledge).
-            if (pILPlayers->FindColor(&ThePalettes().color_remaps().at(
-                    TheSession().PrefColor == PCOLOR_DIALOG_BLUE
-                        ? PCOLOR_REALLY_BLUE
-                        : TheSession().PrefColor)) == -1) {
-              //	Show me as the new color.
-              //							debugprint(
-              //"Color box pressed - " );
-              SetPlayerColor(pWO->szMyName, TheSession().PrefColor);
-              if (bHost) {
-                //	Tell all guests about the color change.
-                InformAboutPlayerColor(pWO->szMyName, TheSession().PrefColor,
-                                       nullptr);
-              } else {
-                RequestPlayerColor(TheSession().PrefColor);
-              }
-            }
+        //	Ensure that no one is using this color (to our knowledge).
+        if (pILPlayers->FindColor(&ThePalettes().color_remaps().at(
+                TheSession().PrefColor == PCOLOR_DIALOG_BLUE
+                    ? PCOLOR_REALLY_BLUE
+                    : TheSession().PrefColor)) == -1) {
+          //	Show me as the new color.
+          //							debugprint(
+          //"Color box pressed - " );
+          SetPlayerColor(pWO->szMyName, TheSession().PrefColor);
+          if (bHost) {
+            //	Tell all guests about the color change.
+            InformAboutPlayerColor(pWO->szMyName, TheSession().PrefColor,
+                                   nullptr);
+          } else {
+            RequestPlayerColor(TheSession().PrefColor);
           }
         }
-        break;
+      }
+    }
 
+    switch (static_cast<int>(input)) {
       case engine::window::ButtonKey(kButtonDisconnect):
         if (WWMessageBox().Process(TXT_WOL_CONFIRMLOGOUT, TXT_YES, TXT_NO) ==
             0) {

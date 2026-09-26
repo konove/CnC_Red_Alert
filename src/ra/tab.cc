@@ -204,7 +204,6 @@ void TabClass::Hilite_Tab(PixelView& view, int tab) {
  *JLB : Handles new scrolling option. *
  *=============================================================================================*/
 void TabClass::AI(engine::window::InputEvent& event, int x, int y) {
-  engine::window::KeyNumber& input = event.key;
   if (y >= 0 && y < TAB_HEIGHT * 2 &&
       x < TheScreen().visible_view().width() - 1 && x > 0) {
     bool ok = false;
@@ -219,14 +218,14 @@ void TabClass::AI(engine::window::InputEvent& event, int x, int y) {
     }
 
     if (ok) {
-      if (input == engine::window::KN_LMOUSE) {
+      if (event.IsPress(engine::window::MouseButton::kLeft)) {
         int sel = -1;
         if (x < EVA_WIDTH * 2) {
           sel = 0;
         }
         if (sel >= 0) {
           Set_Active(sel);
-          input = engine::window::KN_NONE;
+          event = {};  // The tab used up the click.
         }
       }
 

@@ -1092,8 +1092,8 @@ void Map_Selection() {
     Cycle_Call_Back_Delay(show, 1, progresspalette);
 
     // Check for the mouse button
-    if (TheKeyboard().Peek() && engine::window::KeyCode(TheKeyboard().Read()) ==
-                                    engine::window::KN_LMOUSE) {
+    if (TheKeyboard().Peek() && TheKeyboard().ReadEvent().button ==
+                                    engine::window::MouseButton::kLeft) {
       for (selection = 0;
            selection < base::At(base::At(CountryArray, scenario).Choices,
                                 static_cast<int>(TheWorld().scen_dir()));

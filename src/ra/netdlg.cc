@@ -2047,7 +2047,8 @@ static int Net_Join_Dialog() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    input = commands->Input(view).key;
+    const engine::window::InputEvent input_event = commands->Input(view);
+    input = input_event.key;
 
     if (input & KN_BUTTON) {
       housebtn.Collapse();
@@ -2057,65 +2058,54 @@ static int Net_Join_Dialog() {
     //.....................................................................
     //	Process input
     //.....................................................................
+    // A click on a control only the host may change, once joined to a game, is
+    // refused; a click on a color button otherwise picks that color for the
+    // player's name and messages.
+    if (input_event.IsPress(engine::window::MouseButton::kLeft)) {
+      if (joinstate > JOIN_NOTHING) {
+        if ((Get_Mouse_X() >= d_count_x &&
+             Get_Mouse_X() <= d_count_x + d_count_w &&
+             Get_Mouse_Y() >= d_count_y &&
+             Get_Mouse_Y() <= d_aiplayers_y + d_aiplayers_h) ||
+            (Get_Mouse_X() >= d_options_x &&
+             Get_Mouse_X() <= d_options_x + d_options_w &&
+             Get_Mouse_Y() >= d_options_y &&
+             Get_Mouse_Y() <= d_options_y + d_options_h)) {
+          TheSession().Messages.Add_Message(
+              nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
+              kTpfText, 1200);
+          PlaySoundEffect(VOC_SYS_ERROR);
+          display = REDRAW_MESSAGE;
+        }
+      } else if (input_event.x > cbox_x[0] &&
+                 input_event.x < cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
+                 input_event.y > d_color_y &&
+                 input_event.y < d_color_y + d_color_h) {
+        TheSession().PrefColor = static_cast<PlayerColorType>(
+            (input_event.x - cbox_x[0]) / d_color_w);
+        TheSession().ColorIdx = TheSession().PrefColor;
+
+        if (TheSession().ColorIdx == PCOLOR_DIALOG_BLUE) {
+          name_edt.Set_Color(
+              &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE));
+        } else {
+          name_edt.Set_Color(&ThePalettes().color_remaps().at(
+              TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                  ? PCOLOR_REALLY_BLUE
+                  : TheSession().ColorIdx));
+        }
+        name_edt.Flag_To_Redraw();
+
+        TheSession().Messages.Set_Edit_Color(TheSession().ColorIdx ==
+                                                     PCOLOR_DIALOG_BLUE
+                                                 ? PCOLOR_REALLY_BLUE
+                                                 : TheSession().ColorIdx);
+
+        display = REDRAW_COLORS;
+      }
+    }
+
     switch (static_cast<int>(input)) {
-      //..................................................................
-      // Mouse Click:
-      // If we're joined to a game, display an error if the user tries to
-      // modify a read-only control.
-      // If user clicks on a color button:
-      //	- If we've joined a game, don't allow a new color selection
-      //	- otherwise, select that color
-      // - Change the color of the user's name & message field to match
-      //   the newly-selected color.
-      //..................................................................
-      case KN_LMOUSE:
-        if (joinstate > JOIN_NOTHING) {
-          if ((Get_Mouse_X() >= d_count_x &&
-               Get_Mouse_X() <= d_count_x + d_count_w &&
-               Get_Mouse_Y() >= d_count_y &&
-               Get_Mouse_Y() <= d_aiplayers_y + d_aiplayers_h) ||
-              (Get_Mouse_X() >= d_options_x &&
-               Get_Mouse_X() <= d_options_x + d_options_w &&
-               Get_Mouse_Y() >= d_options_y &&
-               Get_Mouse_Y() <= d_options_y + d_options_h)) {
-            TheSession().Messages.Add_Message(
-                nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
-                kTpfText, 1200);
-            PlaySoundEffect(VOC_SYS_ERROR);
-            display = REDRAW_MESSAGE;
-          }
-          break;
-        }
-
-        if (TheKeyboard().click_x() > cbox_x[0] &&
-            TheKeyboard().click_x() <
-                cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
-            TheKeyboard().click_y() > d_color_y &&
-            TheKeyboard().click_y() < d_color_y + d_color_h) {
-          TheSession().PrefColor = static_cast<PlayerColorType>(
-              (TheKeyboard().click_x() - cbox_x[0]) / d_color_w);
-          TheSession().ColorIdx = TheSession().PrefColor;
-
-          if (TheSession().ColorIdx == PCOLOR_DIALOG_BLUE) {
-            name_edt.Set_Color(
-                &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE));
-          } else {
-            name_edt.Set_Color(&ThePalettes().color_remaps().at(
-                TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
-                    ? PCOLOR_REALLY_BLUE
-                    : TheSession().ColorIdx));
-          }
-          name_edt.Flag_To_Redraw();
-
-          TheSession().Messages.Set_Edit_Color(TheSession().ColorIdx ==
-                                                       PCOLOR_DIALOG_BLUE
-                                                   ? PCOLOR_REALLY_BLUE
-                                                   : TheSession().ColorIdx);
-
-          display = REDRAW_COLORS;
-        }
-        break;
-
       //..................................................................
       //	User clicks on the game list:
       //..................................................................

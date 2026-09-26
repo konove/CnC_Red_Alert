@@ -127,8 +127,9 @@ class GadgetClass : public LinkClass {
   **	Gadget list management functions.
   */
   // Reads one input event, if any, offers it to the gadgets in this list and
-  // redraws them on `view`. Returns the event; when a gadget acted on it, its
-  // key is that gadget's ButtonKey().
+  // redraws them on `view`. Returns the event. When a gadget acted on it, its
+  // key is what the gadget left there (its ButtonKey(), or KN_NONE) and it is
+  // no longer a click, so a click still in the event is one no gadget took.
   virtual engine::window::InputEvent Input(PixelView& view);
   virtual void Draw_All(PixelView& view, bool forced = true);
   virtual void Delete_List();

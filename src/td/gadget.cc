@@ -599,7 +599,11 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
       }
     }
   }
-  event.key = key;
+  // A gadget that acted replaced the key, and used up the click with it.
+  if (key != event.key) {
+    event.key = key;
+    event.button = engine::window::MouseButton::kNone;
+  }
   return event;
 }
 

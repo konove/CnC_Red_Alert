@@ -1344,38 +1344,30 @@ static int Net_Join_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(view).key;
+    const engine::window::InputEvent input_event = commands->Input(view);
+    input = input_event.key;
 
     /*
     ---------------------------- Process input ----------------------------
     */
+    // The player clicks on a color button; once joined to a game, the color is
+    // fixed.
+    if (input_event.IsPress(engine::window::MouseButton::kLeft) &&
+        (joinstate <= JOIN_NOTHING && input_event.x > base::At(cbox_x, 0) &&
+         input_event.x < base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
+         input_event.y > d_color_y && input_event.y < d_color_y + d_color_h)) {
+      TheSession().preferred_color() =
+          (input_event.x - base::At(cbox_x, 0)) / d_color_w;
+      TheSession().color_index() = TheSession().preferred_color();
+
+      name_edt.Set_Color(
+          base::At(TheSession().text_colors(), TheSession().color_index()));
+      name_edt.Flag_To_Redraw();
+
+      display = REDRAW_COLORS;
+    }
+
     switch (static_cast<int>(input)) {
-      /*------------------------------------------------------------------
-      User clicks on a color button:
-      - If we've joined a game, don't allow a new color selection
-      - otherwise, select that color
-      ------------------------------------------------------------------*/
-      case KN_LMOUSE:
-        if (joinstate > JOIN_NOTHING) {
-          break;
-        }
-        if (TheKeyboard().click_x() > base::At(cbox_x, 0) &&
-            TheKeyboard().click_x() <
-                base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
-            TheKeyboard().click_y() > d_color_y &&
-            TheKeyboard().click_y() < d_color_y + d_color_h) {
-          TheSession().preferred_color() =
-              (TheKeyboard().click_x() - base::At(cbox_x, 0)) / d_color_w;
-          TheSession().color_index() = TheSession().preferred_color();
-
-          name_edt.Set_Color(
-              base::At(TheSession().text_colors(), TheSession().color_index()));
-          name_edt.Flag_To_Redraw();
-
-          display = REDRAW_COLORS;
-        }
-        break;
-
       /*------------------------------------------------------------------
       User clicks on the game list:
       - If we've joined a game, don't allow the selected item to change;

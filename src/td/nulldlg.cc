@@ -3680,38 +3680,34 @@ int Com_Scenario_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(view).key;
+    const engine::window::InputEvent input_event = commands->Input(view);
+    input = input_event.key;
 
     /*
     ---------------------------- Process input ----------------------------
     */
+    // The player clicks on a color button.
+    if (input_event.IsPress(engine::window::MouseButton::kLeft) &&
+        ((input_event.x > base::At(cbox_x, 0) &&
+          input_event.x <
+              base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
+          input_event.y > d_color_y && input_event.y < d_color_y + d_color_h) &&
+         (!ready_to_go))) {
+      TheSession().preferred_color() =
+          (input_event.x - base::At(cbox_x, 0)) / d_color_w;
+      TheSession().color_index() = TheSession().preferred_color();
+      display = REDRAW_COLORS;
+
+      name_edt.Set_Color(
+          base::At(TheSession().text_colors(), TheSession().color_index()));
+      name_edt.Flag_To_Redraw();
+      TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
+      base::SafeCopy(TheSession().player_name(), namebuf);
+      transmit = 1;
+      changed = 1;
+    }
+
     switch (static_cast<int>(input)) {
-      /*------------------------------------------------------------------
-      User clicks on a color button
-      ------------------------------------------------------------------*/
-      case KN_LMOUSE:
-        if ((TheKeyboard().click_x() > base::At(cbox_x, 0) &&
-             TheKeyboard().click_x() <
-                 base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
-             TheKeyboard().click_y() > d_color_y &&
-             TheKeyboard().click_y() < d_color_y + d_color_h) &&
-            (!ready_to_go)) {
-          TheSession().preferred_color() =
-              (TheKeyboard().click_x() - base::At(cbox_x, 0)) / d_color_w;
-          TheSession().color_index() = TheSession().preferred_color();
-          display = REDRAW_COLORS;
-
-          name_edt.Set_Color(
-              base::At(TheSession().text_colors(), TheSession().color_index()));
-          name_edt.Flag_To_Redraw();
-          TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
-          base::SafeCopy(TheSession().player_name(), namebuf);
-          transmit = 1;
-          changed = 1;
-        }
-
-        break;
-
       /*------------------------------------------------------------------
       User edits the name field; retransmit new game options
       ------------------------------------------------------------------*/
@@ -5113,49 +5109,43 @@ int Com_Show_Scenario_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(view).key;
+    const engine::window::InputEvent input_event = commands->Input(view);
+    input = input_event.key;
 
     /*
     ---------------------------- Process input ----------------------------
     */
+    // The player clicks on a color button.
+    if (input_event.IsPress(engine::window::MouseButton::kLeft) &&
+        ((input_event.x > base::At(cbox_x, 0) &&
+          input_event.x <
+              base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
+          input_event.y > d_color_y && input_event.y < d_color_y + d_color_h) &&
+         (!ready_to_go))) {
+      /*.........................................................
+      Compute my preferred color as the one I clicked on.
+      .........................................................*/
+      TheSession().preferred_color() =
+          (input_event.x - base::At(cbox_x, 0)) / d_color_w;
+      changed = 1;
+      /*.........................................................
+      If 'TheirColor' is set to the other player's color, make
+      sure we can't pick that color.
+      .........................................................*/
+      if (!parms_received ||
+          !std::cmp_equal(TheSession().preferred_color(), TheirColor)) {
+        TheSession().color_index() = TheSession().preferred_color();
+
+        name_edt.Set_Color(
+            base::At(TheSession().text_colors(), TheSession().color_index()));
+        name_edt.Flag_To_Redraw();
+        display = REDRAW_COLORS;
+        base::SafeCopy(TheSession().player_name(), namebuf);
+        transmit = 1;
+      }
+    }
+
     switch (static_cast<int>(input)) {
-      /*------------------------------------------------------------------
-      User clicks on a color button
-      ------------------------------------------------------------------*/
-      case KN_LMOUSE:
-        if ((TheKeyboard().click_x() > base::At(cbox_x, 0) &&
-             TheKeyboard().click_x() <
-                 base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
-             TheKeyboard().click_y() > d_color_y &&
-             TheKeyboard().click_y() < d_color_y + d_color_h) &&
-            (!ready_to_go)) {
-          /*.........................................................
-          Compute my preferred color as the one I clicked on.
-          .........................................................*/
-          TheSession().preferred_color() =
-              (TheKeyboard().click_x() - base::At(cbox_x, 0)) / d_color_w;
-          changed = 1;
-          /*.........................................................
-          If 'TheirColor' is set to the other player's color, make
-          sure we can't pick that color.
-          .........................................................*/
-          if (parms_received &&
-              std::cmp_equal(TheSession().preferred_color(), TheirColor)) {
-            break;
-          }
-
-          TheSession().color_index() = TheSession().preferred_color();
-
-          name_edt.Set_Color(
-              base::At(TheSession().text_colors(), TheSession().color_index()));
-          name_edt.Flag_To_Redraw();
-          display = REDRAW_COLORS;
-          base::SafeCopy(TheSession().player_name(), namebuf);
-          transmit = 1;
-        }
-
-        break;
-
       /*------------------------------------------------------------------
       House Buttons: set the player's desired House
       ------------------------------------------------------------------*/

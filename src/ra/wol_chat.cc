@@ -743,9 +743,6 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         break;
 
-      case KN_LMOUSE:
-        break;
-
       case engine::window::ButtonKey(kButtonExpandchannels):
         if (OnExpandChannelList(chanlist, userlist)) {
           //	Hide userlist.
