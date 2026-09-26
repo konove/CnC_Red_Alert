@@ -110,7 +110,7 @@ class EditClass : public ControlClass {
 
   // Processes a single keyboard character. Returns false if the RETURN key
   // was pressed (allowing the gadget ID to propagate), true otherwise.
-  virtual bool Handle_Key(engine::window::KeyAscii ascii);
+  virtual bool Handle_Key(char ascii);
 
  private:
   bool IsReadOnly = false;

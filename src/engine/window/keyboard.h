@@ -17,8 +17,8 @@
 */
 
 // File: The keyboard buffer the games read keys and mouse clicks from, the
-// key numbers (KN_*) and characters (KA_*) they are compared against, and the
-// modifier bits combined with both. It began as Philip W. Gorrow's Westwood
+// key numbers (KN_*) they are compared against, and the modifier bits combined
+// with them. It began as Philip W. Gorrow's Westwood
 // Keyboard Library (October 1995); the SDL port fills the buffer from SDL
 // events instead of Windows messages.
 
@@ -175,138 +175,6 @@ constexpr int KeyCode(const int key) {
 #define VK_CONTROL 224
 #define VK_SHIFT 225
 #define VK_MENU 226
-
-// Characters as ToAscii() reports them, with the kKey*Bit flags available for
-// callers that carry them along. The codes below the space are the text
-// printer's formatting commands (KA_MORE, KA_SETBKGDCOL, ...) and the control
-// keys. A character with modifier bits is a bit pattern rather than one of
-// these values, so the enum stays unscoped.
-// NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
-enum KeyAscii {
-  KA_NONE = 0,
-  KA_MORE = 1,
-  KA_SETBKGDCOL = 2,
-  KA_SETFORECOL = 6,
-  KA_FORMFEED = 12,
-  KA_SPCTAB = 20,
-  KA_SETX = 25,
-  KA_SETY = 26,
-
-  KA_SPACE = 32,        // space
-  KA_EXCLAMATION = 33,  // !
-  KA_DQUOTE = 34,       // "
-  KA_POUND = 35,        // #
-  KA_DOLLAR = 36,       // $
-  KA_PERCENT = 37,      // %
-  KA_AMPER = 38,        // &
-  KA_SQUOTE = 39,       // '
-  KA_LPAREN = 40,       // (
-  KA_RPAREN = 41,       // )
-  KA_ASTERISK = 42,     // *
-  KA_PLUS = 43,         // +
-  KA_COMMA = 44,        // ,
-  KA_MINUS = 45,        // -
-  KA_PERIOD = 46,       // .
-  KA_SLASH = 47,        // /
-
-  KA_0 = 48,
-  KA_1 = 49,
-  KA_2 = 50,
-  KA_3 = 51,
-  KA_4 = 52,
-  KA_5 = 53,
-  KA_6 = 54,
-  KA_7 = 55,
-  KA_8 = 56,
-  KA_9 = 57,
-  KA_COLON = 58,         // :
-  KA_SEMICOLON = 59,     // ;
-  KA_LESS_THAN = 60,     // <
-  KA_EQUAL = 61,         // =
-  KA_GREATER_THAN = 62,  // >
-  KA_QUESTION = 63,      // ?
-
-  KA_AT = 64,  // @
-  KA_A = 65,   // A
-  KA_B = 66,   // B
-  KA_C = 67,   // C
-  KA_D = 68,   // D
-  KA_E = 69,   // E
-  KA_F = 70,   // F
-  KA_G = 71,   // G
-  KA_H = 72,   // H
-  // Key names spell their key's label, so I/1, O/0 and l/1 look alike by
-  // design. NOLINTNEXTLINE(misc-confusable-identifiers)
-  KA_I = 73,  // I
-  KA_J = 74,  // J
-  KA_K = 75,  // K
-  KA_L = 76,  // L
-  KA_M = 77,  // M
-  KA_N = 78,  // N
-  // NOLINTNEXTLINE(misc-confusable-identifiers)
-  KA_O = 79,  // O
-
-  KA_P = 80,          // P
-  KA_Q = 81,          // Q
-  KA_R = 82,          // R
-  KA_S = 83,          // S
-  KA_T = 84,          // T
-  KA_U = 85,          // U
-  KA_V = 86,          // V
-  KA_W = 87,          // W
-  KA_X = 88,          // X
-  KA_Y = 89,          // Y
-  KA_Z = 90,          // Z
-  KA_LBRACKET = 91,   // [
-  KA_BACKSLASH = 92,  // backslash
-  KA_RBRACKET = 93,   // ]
-  KA_CARROT = 94,     // ^
-  KA_UNDERLINE = 95,  // _
-
-  KA_GRAVE = 96,  // `
-  KA_a = 97,      // a
-  KA_b = 98,      // b
-  KA_c = 99,      // c
-  KA_d = 100,     // d
-  KA_e = 101,     // e
-  KA_f = 102,     // f
-  KA_g = 103,     // g
-  KA_h = 104,     // h
-  KA_i = 105,     // i
-  KA_j = 106,     // j
-  KA_k = 107,     // k
-  // NOLINTNEXTLINE(misc-confusable-identifiers)
-  KA_l = 108,  // l
-  KA_m = 109,  // m
-  KA_n = 110,  // n
-  KA_o = 111,  // o
-
-  KA_p = 112,       // p
-  KA_q = 113,       // q
-  KA_r = 114,       // r
-  KA_s = 115,       // s
-  KA_t = 116,       // t
-  KA_u = 117,       // u
-  KA_v = 118,       // v
-  KA_w = 119,       // w
-  KA_x = 120,       // x
-  KA_y = 121,       // y
-  KA_z = 122,       // z
-  KA_LBRACE = 123,  // {
-  KA_BAR = 124,     // |
-  KA_RBRACE = 125,  // }
-  KA_TILDA = 126,   // ~
-
-  KA_ESC = '\x1b',
-  KA_RETURN = '\r',
-  KA_BACKSPACE = '\b',
-  KA_TAB = '\t',
-
-  KA_SHIFT_BIT = kKeyShiftBit,
-  KA_CTRL_BIT = kKeyCtrlBit,
-  KA_ALT_BIT = kKeyAltBit,
-  KA_RLSE_BIT = kKeyReleaseBit,
-};
 
 // Key numbers: which key, as its VK_* code. The values combine with the
 // KN_*_BIT modifier bits and with KN_BUTTON (see ButtonKey()), so the enum
@@ -517,10 +385,10 @@ class KeyBuffer {
   bool PutClick(int button, bool release, int x, int y);
 
   // Returns the character `key` types on the current keyboard layout, with
-  // Shift ignored, so letters come back lower case. Returns KA_NONE for a
+  // Shift ignored, so letters come back lower case. Returns '\0' for a
   // release and for a key that types no character up to 'z' (arrows, function
   // keys, Delete, the mouse buttons).
-  static KeyAscii ToAscii(int key);
+  static char ToAscii(int key);
 
   // Discards every pending entry.
   void Clear();

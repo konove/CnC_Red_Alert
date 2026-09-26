@@ -69,7 +69,6 @@
 #include "td/jshell.h"
 #include "td/screen.h"
 
-using enum engine::window::KeyAscii;
 using enum engine::window::KeyNumber;
 
 /***********************************************************************************************
@@ -274,8 +273,7 @@ bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
       flags = 0;
 
     } else {
-      const auto ascii = static_cast<engine::window::KeyAscii>(
-          engine::window::KeyBuffer::ToAscii(key) & 0x00ff);
+      const auto ascii = engine::window::KeyBuffer::ToAscii(key);
 
       /*
       ** Allow numeric keypad presses to map to ascii numbers
@@ -295,8 +293,7 @@ bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
         /*
         ** Filter out all special keys except return and backspace
         */
-        if ((!(key & engine::window::kKeyVirtualBit) && ascii >= ' ' &&
-             ascii <= 127) ||
+        if ((!(key & engine::window::kKeyVirtualBit) && ascii >= ' ') ||
             key == KN_RETURN || key == KN_BACKSPACE) {
           if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
               Handle_Key(engine::window::KeyBuffer::ToAscii(key))) {
@@ -404,7 +401,7 @@ void EditClass::Draw_Text(PixelView& view, const char* text) {
  *                                                                                             *
  * WARNINGS:   none * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-bool EditClass::Handle_Key(engine::window::KeyAscii ascii) {
+bool EditClass::Handle_Key(char ascii) {
   switch (ascii) {
     /*
     **	Handle the special case of a non-keyboard event. It is possible that
@@ -421,7 +418,7 @@ bool EditClass::Handle_Key(engine::window::KeyAscii ascii) {
     **	so that the controlling program will know that the text can be
     **	processed.
     */
-    case KA_RETURN:
+    case '\r':
       Clear_Focus();
       return false;
 
@@ -429,7 +426,7 @@ bool EditClass::Handle_Key(engine::window::KeyAscii ascii) {
     **	When the BACKSPACE key is pressed, remove the last character in the edit
     *string.
     */
-    case KA_BACKSPACE:
+    case '\b':
       if (Length) {
         Length--;
         base::At(String, base::ToSize(Length)) = '\0';
@@ -442,122 +439,13 @@ bool EditClass::Handle_Key(engine::window::KeyAscii ascii) {
     *see *	if it can legally be added to the edit string and do so if
     *possible.
     */
-    case KA_MORE:
-    case KA_SETBKGDCOL:
-    case KA_SETFORECOL:
-    case KA_FORMFEED:
-    case KA_SPCTAB:
-    case KA_SETX:
-    case KA_SETY:
-    case KA_SPACE:
-    case KA_EXCLAMATION:
-    case KA_DQUOTE:
-    case KA_POUND:
-    case KA_DOLLAR:
-    case KA_PERCENT:
-    case KA_AMPER:
-    case KA_SQUOTE:
-    case KA_LPAREN:
-    case KA_RPAREN:
-    case KA_ASTERISK:
-    case KA_PLUS:
-    case KA_COMMA:
-    case KA_MINUS:
-    case KA_PERIOD:
-    case KA_SLASH:
-    case KA_0:
-    case KA_1:
-    case KA_2:
-    case KA_3:
-    case KA_4:
-    case KA_5:
-    case KA_6:
-    case KA_7:
-    case KA_8:
-    case KA_9:
-    case KA_COLON:
-    case KA_SEMICOLON:
-    case KA_LESS_THAN:
-    case KA_EQUAL:
-    case KA_GREATER_THAN:
-    case KA_QUESTION:
-    case KA_AT:
-    case KA_A:
-    case KA_B:
-    case KA_C:
-    case KA_D:
-    case KA_E:
-    case KA_F:
-    case KA_G:
-    case KA_H:
-    case KA_I:
-    case KA_J:
-    case KA_K:
-    case KA_L:
-    case KA_M:
-    case KA_N:
-    case KA_O:
-    case KA_P:
-    case KA_Q:
-    case KA_R:
-    case KA_S:
-    case KA_T:
-    case KA_U:
-    case KA_V:
-    case KA_W:
-    case KA_X:
-    case KA_Y:
-    case KA_Z:
-    case KA_LBRACKET:
-    case KA_BACKSLASH:
-    case KA_RBRACKET:
-    case KA_CARROT:
-    case KA_UNDERLINE:
-    case KA_GRAVE:
-    case KA_a:
-    case KA_b:
-    case KA_c:
-    case KA_d:
-    case KA_e:
-    case KA_f:
-    case KA_g:
-    case KA_h:
-    case KA_i:
-    case KA_j:
-    case KA_k:
-    case KA_l:
-    case KA_m:
-    case KA_n:
-    case KA_o:
-    case KA_p:
-    case KA_q:
-    case KA_r:
-    case KA_s:
-    case KA_t:
-    case KA_u:
-    case KA_v:
-    case KA_w:
-    case KA_x:
-    case KA_y:
-    case KA_z:
-    case KA_LBRACE:
-    case KA_BAR:
-    case KA_RBRACE:
-    case KA_TILDA:
-    case KA_ESC:
-    case KA_TAB:
-    case KA_SHIFT_BIT:
-    case KA_CTRL_BIT:
-    case KA_ALT_BIT:
-    case KA_RLSE_BIT:
     default:
 
       /*
       **	Don't add a character if the length is greater than edit width.
       */
       if (const FontStyle font = TextFontStyle(TextFlags);
-          StringPixelWidth(font, String.data()) +
-              CharPixelWidth(font, static_cast<char>(ascii)) >=
+          StringPixelWidth(font, String.data()) + CharPixelWidth(font, ascii) >=
           Width - 2) {
         break;
       }
@@ -585,7 +473,7 @@ bool EditClass::Handle_Key(engine::window::KeyAscii ascii) {
       *alphabetic *	character to upper case.
       */
       if (base::Any(EditFlags & UPPERCASE) && isalpha(ascii)) {
-        ascii = static_cast<engine::window::KeyAscii>(toupper(ascii));
+        ascii = static_cast<char>(toupper(ascii));
       }
 
       if ((!base::Any(EditFlags & NUMERIC) || !isdigit(ascii)) &&
@@ -601,7 +489,7 @@ bool EditClass::Handle_Key(engine::window::KeyAscii ascii) {
       *gadget's ID *	number from being returned just because the gadget has
       *been edited.
       */
-      base::At(String, base::ToSize(Length++)) = static_cast<char>(ascii);
+      base::At(String, base::ToSize(Length++)) = ascii;
       base::At(String, base::ToSize(Length)) = '\0';
       Flag_To_Redraw();
       break;

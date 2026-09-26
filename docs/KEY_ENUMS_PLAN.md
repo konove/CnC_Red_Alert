@@ -102,7 +102,7 @@ message line; the hall-of-fame name entry on the score screen; TD's map editor w
 
 ## Progress
 
-- [ ] Step 1: `KeyAscii` becomes `char`
+- [x] Step 1: `KeyAscii` becomes `char`
 - [ ] Step 2: fold `VK_*` into `KeyNumber`
 - [ ] Step 3: drop the unused `KeyNumber` names
 - [ ] Step 4: remove `kKeyVirtualBit`

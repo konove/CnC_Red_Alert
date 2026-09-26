@@ -84,7 +84,6 @@
 #include "ra/screen.h"
 #include "ra/txtlabel.h"
 
-using enum engine::window::KeyAscii;
 using enum engine::window::KeyNumber;
 
 /**************************** Globals **************************************/
@@ -994,8 +993,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
   //	If we're in 'edit mode', handle keys
   //------------------------------------------------------------------------
   if (IsEdit) {
-    const auto ascii = static_cast<engine::window::KeyAscii>(
-        engine::window::KeyBuffer::ToAscii(input) & 0x00ff);
+    const auto ascii = engine::window::KeyBuffer::ToAscii(input);
 
     /*
     ** Allow numeric keypad presses to map to ascii numbers
@@ -1009,13 +1007,11 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
       /*
       ** Filter out all special keys except return, escape and backspace
       */
-      if ((!(input & engine::window::kKeyVirtualBit) && !(input & KN_BUTTON) &&
-           ascii >= ' ' && ascii <= 127) ||
-          (input & 0xff) == (KN_RETURN & 0xff) ||
-          (input & 0xff) == (KN_BACKSPACE & 0xff) ||
-          (input & 0xff) == (KN_ESC & 0xff)) {
-        // ascii = (KeyAscii)(engine::window::KeyBuffer::ToAscii(input));
-      } else {
+      if (((input & engine::window::kKeyVirtualBit) || (input & KN_BUTTON) ||
+           ascii < ' ') &&
+          (input & 0xff) != (KN_RETURN & 0xff) &&
+          (input & 0xff) != (KN_BACKSPACE & 0xff) &&
+          (input & 0xff) != (KN_ESC & 0xff)) {
         input = KN_NONE;
         return 0;
       }
@@ -1025,7 +1021,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
       //..................................................................
       //	ESC = abort message
       //..................................................................
-      case KA_ESC & 0xff:
+      case '\x1b':
         Remove_Edit();
         retcode = 2;
         input = KN_NONE;
@@ -1037,7 +1033,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
       // onto this one after we send it; then, they won't be mushed
       // together.
       //..................................................................
-      case KA_RETURN & 0xff:
+      case '\r':
         if (EditCurPos == EditInitPos) {
           retcode = 0;
           input = KN_NONE;
@@ -1056,7 +1052,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
       //..................................................................
       //	BACKSPACE = remove a character
       //..................................................................
-      case KA_BACKSPACE & 0xff:
+      case '\b':
         if (EditCurPos > EditInitPos) {
           EditCurPos--;
           base::At(EditBuf, EditCurPos) = 0;
@@ -1071,120 +1067,12 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
       // null.  (EditCurPos - EditInitPos) is the buffer index # of the
       // next character, after the "To:" prefix.
       //..................................................................
-      case KA_NONE:
-      case KA_MORE:
-      case KA_SETBKGDCOL:
-      case KA_SETFORECOL:
-      case KA_FORMFEED:
-      case KA_SPCTAB:
-      case KA_SETX:
-      case KA_SETY:
-      case KA_SPACE:
-      case KA_EXCLAMATION:
-      case KA_DQUOTE:
-      case KA_POUND:
-      case KA_DOLLAR:
-      case KA_PERCENT:
-      case KA_AMPER:
-      case KA_SQUOTE:
-      case KA_LPAREN:
-      case KA_RPAREN:
-      case KA_ASTERISK:
-      case KA_PLUS:
-      case KA_COMMA:
-      case KA_MINUS:
-      case KA_PERIOD:
-      case KA_SLASH:
-      case KA_0:
-      case KA_1:
-      case KA_2:
-      case KA_3:
-      case KA_4:
-      case KA_5:
-      case KA_6:
-      case KA_7:
-      case KA_8:
-      case KA_9:
-      case KA_COLON:
-      case KA_SEMICOLON:
-      case KA_LESS_THAN:
-      case KA_EQUAL:
-      case KA_GREATER_THAN:
-      case KA_QUESTION:
-      case KA_AT:
-      case KA_A:
-      case KA_B:
-      case KA_C:
-      case KA_D:
-      case KA_E:
-      case KA_F:
-      case KA_G:
-      case KA_H:
-      case KA_I:
-      case KA_J:
-      case KA_K:
-      case KA_L:
-      case KA_M:
-      case KA_N:
-      case KA_O:
-      case KA_P:
-      case KA_Q:
-      case KA_R:
-      case KA_S:
-      case KA_T:
-      case KA_U:
-      case KA_V:
-      case KA_W:
-      case KA_X:
-      case KA_Y:
-      case KA_Z:
-      case KA_LBRACKET:
-      case KA_BACKSLASH:
-      case KA_RBRACKET:
-      case KA_CARROT:
-      case KA_UNDERLINE:
-      case KA_GRAVE:
-      case KA_a:
-      case KA_b:
-      case KA_c:
-      case KA_d:
-      case KA_e:
-      case KA_f:
-      case KA_g:
-      case KA_h:
-      case KA_i:
-      case KA_j:
-      case KA_k:
-      case KA_l:
-      case KA_m:
-      case KA_n:
-      case KA_o:
-      case KA_p:
-      case KA_q:
-      case KA_r:
-      case KA_s:
-      case KA_t:
-      case KA_u:
-      case KA_v:
-      case KA_w:
-      case KA_x:
-      case KA_y:
-      case KA_z:
-      case KA_LBRACE:
-      case KA_BAR:
-      case KA_RBRACE:
-      case KA_TILDA:
-      case KA_TAB:
-      case KA_SHIFT_BIT:
-      case KA_CTRL_BIT:
-      case KA_ALT_BIT:
-      case KA_RLSE_BIT:
       default:
         EditLabel->Set_Focus();
         bool overflowed = false;
-        if (ascii >= ' ' && ascii <= 127) {
+        if (ascii >= ' ') {
           if (EditCurPos - EditInitPos < MaxChars - 1) {
-            base::At(EditBuf, EditCurPos) = static_cast<char>(ascii);
+            base::At(EditBuf, EditCurPos) = ascii;
             EditCurPos++;
             base::At(EditBuf, EditCurPos) = 0;
             retcode = 1;
@@ -1217,7 +1105,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
                 std::span(EditBuf).subspan(base::ToSize(EditInitPos)),
                 OverflowStart, OverflowEnd, 1);
             EditCurPos -= numchars;
-            base::At(EditBuf, EditCurPos) = static_cast<char>(ascii);
+            base::At(EditBuf, EditCurPos) = ascii;
             EditCurPos++;
             base::At(EditBuf, EditCurPos) = 0;
             retcode = 4;

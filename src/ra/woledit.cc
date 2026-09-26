@@ -106,8 +106,7 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
       flags = 0;
 
     } else {
-      const auto ascii = static_cast<engine::window::KeyAscii>(
-          engine::window::KeyBuffer::ToAscii(key) & 0xff);
+      const auto ascii = engine::window::KeyBuffer::ToAscii(key);
 
       //
       // Allow numeric keypad presses to map to ascii numbers
@@ -126,8 +125,7 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
         //
         // Filter out all special keys except return and backspace
         //
-        if ((!(key & engine::window::kKeyVirtualBit) && ascii >= ' ' &&
-             ascii <= 255) ||
+        if ((!(key & engine::window::kKeyVirtualBit) && ascii >= ' ') ||
             key == KN_RETURN || key == KN_BACKSPACE) {
           if (((!(flags & kLeftRelease)) && (!(flags & kRightRelease))) &&
               Handle_Key(engine::window::KeyBuffer::ToAscii(key))) {

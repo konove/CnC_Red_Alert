@@ -61,6 +61,7 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -108,7 +109,6 @@
 #include "td/winstub.h"
 #include "td/world.h"
 
-using enum engine::window::KeyAscii;
 
 #define SCORETEXT_X 184
 // #define SCORETEXT_Y 8
@@ -1725,8 +1725,8 @@ void ScoreClass::Count_Up_Print(Presentation& show, const FontStyle& font,
  *=============================================================================================*/
 void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
                             int ypos, std::span<const unsigned char> pal) {
-  int key = 0;
-  int ascii = 0;
+  char key = '\0';
+  char ascii = '\0';
   int index = 0;
 
   const auto keystrok = MixArchive::RetrieveData("KEYSTROK.AUD");
@@ -1760,13 +1760,13 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
       ** If they hit 'backspace' when they're on the last letter,
       ** turn it into a space instead.
       */
-      if ((key == KA_BACKSPACE && index == MAX_FAMENAME_LENGTH - 2) &&
+      if ((key == '\b' && index == MAX_FAMENAME_LENGTH - 2) &&
           (base::At(str, base::ToSize(index)) &&
            base::At(str, base::ToSize(index)) != 32)) {
-        key = 32;
+        key = ' ';
       }
 
-      if (key == KA_BACKSPACE) {  // if (key == KN_BACKSPACE) {
+      if (key == '\b') {  // if (key == KN_BACKSPACE) {
         if (index) {
           base::At(str, base::ToSize(--index)) = 0;
 
@@ -1781,14 +1781,11 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
                                            kBlack);
         }
 
-      } else if (key != KA_RETURN) {  // else if (key != KN_RETURN &&
-                                      // key!=KN_KEYPAD_RETURN) {
-        ascii = key;                  // ascii = KeyBuffer::ToAscii(key);
-        if (ascii >= 'a' && ascii <= 'z') {
-          ascii -= 'a' - 'A';
-        }
+      } else if (key != '\r') {  // else if (key != KN_RETURN &&
+                                 // key!=KN_KEYPAD_RETURN) {
+        ascii = absl::ascii_toupper(static_cast<unsigned char>(key));
         // if (ascii >='A' && ascii<='Z' || ascii == ' ') {
-        if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
+        if ((ascii >= '!' && ascii <= '~') || ascii == ' ') {
           show.page().view().FillRect(xpos + (index * 6), ypos,
                                       xpos + (index * 6) + 6, ypos + 5,
                                       kTBlack);
@@ -1798,7 +1795,7 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
           show.text_page().view().FillRect(2 * (xpos + (index * 6)), ypos * 2,
                                            2 * (xpos + (index * 6) + 6),
                                            2 * (ypos + 6), kBlack);
-          base::At(str, base::ToSize(index)) = static_cast<char>(ascii);
+          base::At(str, base::ToSize(index)) = ascii;
           base::At(str, base::ToSize(index + 1)) = 0;
 
           engine::audio::TheAudio().Play(keystrok, 255,
@@ -1816,9 +1813,8 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
         }
       }
     }
-  } while (
-      key !=
-      KA_RETURN);  //	} while(key != KN_RETURN && key!=KN_KEYPAD_RETURN);
+  } while (key !=
+           '\r');  //	} while(key != KN_RETURN && key!=KN_KEYPAD_RETURN);
 }
 
 void Animate_Cursor(Presentation& show, int pos, int ypos) {

@@ -3797,7 +3797,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   if (TheKeyboard().Peek()) {
     const int key = TheKeyboard().Read();
-    if (key == engine::window::KA_ESC || TheSession().Attract) {
+    if (key == '\x1b' || TheSession().Attract) {
       TheGameState().active() = false;
       return;
     }

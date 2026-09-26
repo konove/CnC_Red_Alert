@@ -120,11 +120,11 @@ bool KeyBuffer::PutClick(const int button, const bool release, const int x,
   return true;
 }
 
-KeyAscii KeyBuffer::ToAscii(const int key) {
+char KeyBuffer::ToAscii(const int key) {
   // A key number is a scancode in the low byte with modifier bits above it.
   const auto bits = static_cast<uint32_t>(key);
   if (bits & kKeyReleaseBit) {
-    return KA_NONE;
+    return '\0';
   }
 
   // SDL_GetKeyFromScancode maps through the keyboard layout but takes no
@@ -135,7 +135,7 @@ KeyAscii KeyBuffer::ToAscii(const int key) {
 
   // SDL keycodes for keys that type a character are that character; every
   // other key's code has SDLK_SCANCODE_MASK set and lands above 'z'.
-  return keycode <= SDLK_z ? static_cast<KeyAscii>(keycode) : KA_NONE;
+  return keycode <= SDLK_z ? static_cast<char>(keycode) : '\0';
 }
 
 void KeyBuffer::Clear() { head_ = tail_; }

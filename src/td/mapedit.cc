@@ -112,7 +112,6 @@
 #include "td/vector.h"
 #include "td/world.h"
 
-using enum engine::window::KeyAscii;
 using enum engine::window::KeyNumber;
 
 /*
@@ -974,7 +973,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
     case (KN_Y | KN_ALT_BIT):
     case (KN_Z | KN_ALT_BIT):
       if (TheWorld().current_cell() != 0) {
-        waypt_idx = engine::window::KeyBuffer::ToAscii(input & 0xff) - KA_a;
+        waypt_idx = engine::window::KeyBuffer::ToAscii(input & 0xff) - 'a';
         /*...............................................................
         Unflag cell for this waypoint if there is one
         ...............................................................*/
@@ -1005,7 +1004,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
       If there's a current cell, place the flag & waypoint there.
       ------------------------------------------------------------------*/
       if (TheWorld().current_cell() != 0) {
-        waypt_idx = (engine::window::KeyBuffer::ToAscii(input & 0xff) - KA_1);
+        waypt_idx = (engine::window::KeyBuffer::ToAscii(input & 0xff) - '1');
         house =
             static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + waypt_idx);
         if (HouseClass::As_Pointer(house)) {
@@ -1018,7 +1017,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
         waypoint.
         ------------------------------------------------------------------*/
         if (TheWorld().current_object().at(0) != nullptr) {
-          waypt_idx = (engine::window::KeyBuffer::ToAscii(input & 0xff) - KA_1);
+          waypt_idx = (engine::window::KeyBuffer::ToAscii(input & 0xff) - '1');
           house = static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) +
                                           waypt_idx);
           if (HouseClass::As_Pointer(house) &&

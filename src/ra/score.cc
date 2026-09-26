@@ -38,6 +38,7 @@
 #include <span>
 #include <string_view>
 
+#include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -87,7 +88,6 @@
 #include "ra/type.h"
 #include "ra/world.h"
 
-using enum engine::window::KeyAscii;
 
 // Layout, in 320x200 coordinates.
 
@@ -922,7 +922,7 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
 
 void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
                             std::span<const uint8_t> pal) {
-  int key = 0;
+  char key = '\0';
   // Cursor position within `str`. It stops at the last letter,
   // kFameNameSize - 2, which further typing overwrites.
   int index = 0;
@@ -944,8 +944,7 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
     Animate_Score_Objs();
     Animate_Cursor(index, ypos);
     if (TheKeyboard().Peek()) {
-      // Keep the character and drop the modifier bits.
-      key = engine::window::KeyBuffer::ToAscii(TheKeyboard().Read()) & 0xFF;
+      key = engine::window::KeyBuffer::ToAscii(TheKeyboard().Read());
       ServiceRealTime();
 
       // On the last letter, flush the type-ahead so that key repeat doesn't
@@ -960,13 +959,13 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
       // space instead. The cursor never moves past the last letter, so a plain
       // backspace there would delete the letter before it and leave the last
       // one standing.
-      if ((key == KA_BACKSPACE && index == kFameNameSize - 2) &&
+      if ((key == '\b' && index == kFameNameSize - 2) &&
           (base::At(str, base::ToSize(index)) &&
            base::At(str, base::ToSize(index)) != 32)) {
-        key = 32;
+        key = ' ';
       }
 
-      if (key == KA_BACKSPACE) {
+      if (key == '\b') {
         if (index) {
           base::At(str, base::ToSize(--index)) = 0;
 
@@ -981,20 +980,17 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
                                            xposindex6, ypos * 2, 12, 12);
         }
 
-      } else if (key != KA_RETURN) {
+      } else if (key != '\r') {
         // Names are upper case only.
-        int ascii = key;
-        if (ascii >= 'a' && ascii <= 'z') {
-          ascii -= 'a' - 'A';
-        }
-        if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
+        const char ascii = absl::ascii_toupper(static_cast<unsigned char>(key));
+        if ((ascii >= '!' && ascii <= '~') || ascii == ' ') {
           TheScreen().hidden_view().BlitTo(
               TheScreen().visible_view(), (xpos + (index * 6)) * 2,
               (ypos - 100) * 2, (xpos + (index * 6)) * 2, ypos * 2, 12, 12);
           TheScreen().hidden_view().BlitTo(
               TheScreen().hidden_view(), (xpos + (index * 6)) * 2,
               (ypos - 100) * 2, (xpos + (index * 6)) * 2, ypos * 2, 12, 12);
-          base::At(str, base::ToSize(index)) = static_cast<char>(ascii);
+          base::At(str, base::ToSize(index)) = ascii;
           base::At(str, base::ToSize(index + 1)) = 0;
 
           engine::audio::TheAudio().Play(keystrok, 255,
@@ -1014,7 +1010,7 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
         }
       }
     }
-  } while (key != KA_RETURN);
+  } while (key != '\r');
 }
 
 void Animate_Cursor(int pos, int ypos) {

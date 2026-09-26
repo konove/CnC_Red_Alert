@@ -3413,12 +3413,12 @@ static void Queue_Playback() {
   //	If the user hits ESC, stop the playback
   //------------------------------------------------------------------------
   if (TheKeyboard().Peek()) {
-    const int key = engine::window::KeyBuffer::ToAscii(TheKeyboard().Read());
+    const char key = engine::window::KeyBuffer::ToAscii(TheKeyboard().Read());
     //
     // If the user hit ESC, end the recording.  If this is an Attract-mode
     // recording, end it no matter what the user does (any key or mouse).
     //
-    if (key == engine::window::KA_ESC || TheSession().allow_attract()) {
+    if (key == '\x1b' || TheSession().allow_attract()) {
       TheGameState().active() = false;
       return;
     }

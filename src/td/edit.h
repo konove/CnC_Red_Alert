@@ -110,7 +110,7 @@ class EditClass : public ControlClass {
   bool Action(unsigned flags, engine::window::KeyNumber& key) override;
   virtual void Draw_Background(PixelView& view);
   virtual void Draw_Text(PixelView& view, const char* text);
-  virtual bool Handle_Key(engine::window::KeyAscii ascii);
+  virtual bool Handle_Key(char ascii);
 
  private:
   bool IsReadOnly = false;
