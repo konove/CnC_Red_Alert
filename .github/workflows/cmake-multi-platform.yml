@@ -24,9 +24,13 @@ jobs:
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
+          # Not the runner's default clang 18: libstdc++ hides std::expected
+          # from any clang that reports __cpp_concepts below 202002L, which
+          # clang 18 does. clang 20 comes from Ubuntu 24.04's own archive.
           - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
+            c_compiler: clang-20
+            cpp_compiler: clang++-20
+            apt_packages: clang-20
           - os: macos-latest
             c_compiler: clang
             cpp_compiler: clang++
@@ -58,7 +62,7 @@ jobs:
     # workaround setup-sdl failing to download (https://github.com/libsdl-org/setup-sdl/issues/23)
     - name: Install SDL and build tools
       if: runner.os == 'Linux'
-      run: sudo apt update && sudo apt install libsdl2-dev ninja-build
+      run: sudo apt update && sudo apt install libsdl2-dev ninja-build ${{ matrix.apt_packages }}
 
     # For cpplint_test (docs/CPPLINT_PLAN.md). Pinned so findings do not shift
     # with a new release; the other runners skip the test.
