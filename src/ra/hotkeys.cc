@@ -102,18 +102,15 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   // For network & modem, process user input for inter-player messages.
   Message_Input(input);
 
-  // The VK_BIT must be stripped from the "plain" value of the key so that a
-  // comparison to KN_1, for example, will yield true if in fact the "1"
-  // key was pressed.
-
+  // The modifier bits are stripped from the "plain" value of the key so that
+  // a comparison to KN_1, for example, holds whichever modifier is down.
   constexpr unsigned kModifierBits = unsigned{engine::window::kKeyShiftBit} |
                                      unsigned{engine::window::kKeyAltBit} |
-                                     unsigned{engine::window::kKeyCtrlBit} |
-                                     unsigned{engine::window::kKeyVirtualBit};
+                                     unsigned{engine::window::kKeyCtrlBit};
   const auto plain = static_cast<engine::window::KeyNumber>(
       static_cast<unsigned>(input) & ~kModifierBits);
-  const auto key = static_cast<engine::window::KeyNumber>(
-      static_cast<unsigned>(input) & ~unsigned{engine::window::kKeyVirtualBit});
+  // A copy: the clauses below clear input once they handle the key.
+  const engine::window::KeyNumber key = input;
 
   if constexpr (config::kCheatKeysEnabled) {
     if (TheDebugState().developer_mode()) {

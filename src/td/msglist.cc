@@ -624,25 +624,14 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
     const auto ascii = engine::window::KeyBuffer::ToAscii(input);
 
     /*
-    ** Allow numeric keypad presses to map to ascii numbers
+    ** Filter out all special keys except return, escape and backspace
     */
-    if (input & engine::window::kKeyVirtualBit && ascii >= '0' &&
-        ascii <= '9') {
-      input = static_cast<engine::window::KeyNumber>(
-          input & ~engine::window::kKeyVirtualBit);
-
-    } else {
-      /*
-      ** Filter out all special keys except return, escape and backspace
-      */
-      if (((input & engine::window::kKeyVirtualBit) || (input & KN_BUTTON) ||
-           ascii < ' ') &&
-          (input & 0xff) != (KN_RETURN & 0xff) &&
-          (input & 0xff) != (KN_BACKSPACE & 0xff) &&
-          (input & 0xff) != (KN_ESC & 0xff)) {
-        input = KN_NONE;
-        return 0;
-      }
+    if (((input & KN_BUTTON) || ascii < ' ') &&
+        (input & 0xff) != (KN_RETURN & 0xff) &&
+        (input & 0xff) != (KN_BACKSPACE & 0xff) &&
+        (input & 0xff) != (KN_ESC & 0xff)) {
+      input = KN_NONE;
+      return 0;
     }
 
     switch (ascii) {
@@ -682,8 +671,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
       ------------------------------------------------------------------*/
       default:
         if ((EditCurPos - EditInitPos < MaxChars - 1) &&
-            base::ToSize(EditCurPos + 1) < EditBuf.size() &&
-            (!(input & engine::window::kKeyVirtualBit) && ascii >= ' ')) {
+            base::ToSize(EditCurPos + 1) < EditBuf.size() && (ascii >= ' ')) {
           base::At(EditBuf, base::ToSize(EditCurPos)) = ascii;
           EditCurPos++;
           base::At(EditBuf, base::ToSize(EditCurPos)) = '\0';

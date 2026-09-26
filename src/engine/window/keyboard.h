@@ -39,21 +39,15 @@ inline constexpr uint32_t kKeyShiftBit = 0x100;
 inline constexpr uint32_t kKeyCtrlBit = 0x200;
 inline constexpr uint32_t kKeyAltBit = 0x400;
 inline constexpr uint32_t kKeyReleaseBit = 0x800;
-inline constexpr uint32_t kKeyVirtualBit = 0x1000;
 inline constexpr uint32_t kKeyButtonBit = 0x8000;
 
 // The low byte of a key number, which holds the key's scancode.
 inline constexpr uint32_t kScancodeMask = 0xFFU;
 
-// The part of a key value that says which key it is: the code and whether it
-// is a virtual key, without the shift, release and button bits that say how
-// it was pressed.
-inline constexpr uint32_t kKeyCodeMask = kKeyVirtualBit | kScancodeMask;
-
 // Returns which key `key` is, however it was pressed. A release matches too;
 // test kKeyReleaseBit as well to tell a press from a release.
 constexpr int KeyCode(const int key) {
-  return static_cast<int>(static_cast<uint32_t>(key) & kKeyCodeMask);
+  return static_cast<int>(static_cast<uint32_t>(key) & kScancodeMask);
 }
 
 // Key numbers: which key, as its SDL scancode, so a key event needs no

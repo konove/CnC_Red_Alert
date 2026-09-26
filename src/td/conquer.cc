@@ -554,8 +554,8 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   Message_Input(input);
 #endif
   /*
-  ** Use raw key numbers because KN values have kKeyVirtualBit or'd in with them
-  ** and we need kKeyVirtualBit to still be set if it is.
+  ** The key without its modifier bits, so that the hotkeys below match
+  ** whichever modifier is down.
   */
   const auto plain = static_cast<engine::window::KeyNumber>(
       input & ~(engine::window::kKeyShiftBit | engine::window::kKeyAltBit |

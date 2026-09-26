@@ -109,12 +109,9 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
       const auto ascii = engine::window::KeyBuffer::ToAscii(key);
 
       //
-      // Allow numeric keypad presses to map to ascii numbers
+      // Filter out all special keys except return and backspace
       //
-      if ((key & engine::window::kKeyVirtualBit) && ascii >= '0' &&
-          ascii <= '9') {
-        key = static_cast<engine::window::KeyNumber>(
-            key & ~engine::window::kKeyVirtualBit);
+      if (ascii >= ' ' || key == KN_RETURN || key == KN_BACKSPACE) {
         if (((!(flags & kLeftRelease)) && (!(flags & kRightRelease))) &&
             Handle_Key(ascii)) {
           flags &= ~kKeyboard;
@@ -122,24 +119,11 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
         }
 
       } else {
-        //
-        // Filter out all special keys except return and backspace
-        //
-        if ((!(key & engine::window::kKeyVirtualBit) && ascii >= ' ') ||
-            key == KN_RETURN || key == KN_BACKSPACE) {
-          if (((!(flags & kLeftRelease)) && (!(flags & kRightRelease))) &&
-              Handle_Key(engine::window::KeyBuffer::ToAscii(key))) {
-            flags &= ~kKeyboard;
-            key = KN_NONE;
-          }
-
-        } else {
-          if (key == KN_TAB) {
-            TheGameState().tab_key_pressed() = true;
-          }
-          flags &= ~kKeyboard;
-          key = KN_NONE;
+        if (key == KN_TAB) {
+          TheGameState().tab_key_pressed() = true;
         }
+        flags &= ~kKeyboard;
+        key = KN_NONE;
       }
     }
 

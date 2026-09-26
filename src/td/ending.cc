@@ -243,7 +243,8 @@ void Nod_Ending() {
         TheKeyboard().Clear();
       } else {
         const auto key = static_cast<uint32_t>(TheKeyboard().Read());
-        if ((key & engine::window::kKeyCodeMask) == engine::window::KN_LMOUSE &&
+        if ((key & engine::window::kScancodeMask) ==
+                engine::window::KN_LMOUSE &&
             (key & engine::window::kKeyReleaseBit) == 0) {
           const int mousex = TheKeyboard().click_x();
           const int mousey = TheKeyboard().click_y();
