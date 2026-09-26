@@ -623,41 +623,38 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
   **	Trap special editing keys; if one is detected, set 'input' to 0 to
   **	prevent a conflict with parent's AI().
   */
-  switch (static_cast<int>(input)) {
+  // A right-click pops up the main menu.
+  if (event.IsPress(engine::window::MouseButton::kRight)) {
     /*
-    ** F2/RMOUSE = pop up main menu
+    **	Turn off placement mode
     */
-    case KN_RMOUSE:
-
-      /*
-      **	Turn off placement mode
-      */
-      if (PendingObject) {
-        if (BaseBuilding) {
-          Cancel_Base_Building();
-        } else {
-          Cancel_Placement();
-        }
+    if (PendingObject) {
+      if (BaseBuilding) {
+        Cancel_Base_Building();
+      } else {
+        Cancel_Placement();
       }
+    }
 
-      /*
-      **	Turn off trigger placement mode
-      */
-      if (CurTrigger) {
-        Stop_Trigger_Placement();
-      }
+    /*
+    **	Turn off trigger placement mode
+    */
+    if (CurTrigger) {
+      Stop_Trigger_Placement();
+    }
 
-      /*
-      **	Unselect object & hide popup controls
-      */
-      if (TheWorld().current_object().Count()) {
-        TheWorld().current_object().at(0)->Unselect();
-        Popup_Controls();
-      }
-      Main_Menu();
-      input = KN_NONE;
-      break;
+    /*
+    **	Unselect object & hide popup controls
+    */
+    if (TheWorld().current_object().Count()) {
+      TheWorld().current_object().at(0)->Unselect();
+      Popup_Controls();
+    }
+    Main_Menu();
+    event = {};
+  }
 
+  switch (static_cast<int>(input)) {
     /*
     **	F6 = toggle passable/impassable display
     */
@@ -1054,7 +1051,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
           **	Place a trigger
           */
           if (CurTrigger) {
-            Place_Trigger();
+            Place_Trigger(event.x, event.y);
             Changed = true;
           } else {
             /*
@@ -1067,15 +1064,14 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
               /*
               **	Single-click: select object
               */
-              if (Select_Object() == 0) {
+              if (Select_Object(event.x, event.y) == 0) {
                 TheWorld().current_cell() = 0;
                 Grab_Object();
               } else {
                 /*
                 **	No object: select the cell
                 */
-                TheWorld().current_cell() = Click_Cell_Calc(
-                    TheKeyboard().click_x(), TheKeyboard().click_y());
+                TheWorld().current_cell() = Click_Cell_Calc(event.x, event.y);
                 TheScreen().hidden_view().Clear();
                 Flag_To_Redraw(true);
                 Render();

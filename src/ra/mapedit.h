@@ -231,7 +231,8 @@ class MapEditClass : public MouseClass {
   void Set_House_Buttons(HousesType house, GadgetClass* btnlist, int base_id);
   void Start_Trigger_Placement();
   void Stop_Trigger_Placement();
-  void Place_Trigger();
+  // Places the current trigger on what was clicked at `x`, `y`.
+  void Place_Trigger(int x, int y);
   void Start_Base_Building();
   void Cancel_Base_Building();
   static void Build_Base_To(int percent);
@@ -239,7 +240,8 @@ class MapEditClass : public MouseClass {
   /*
   **	mapedsel.cpp
   */
-  int Select_Object();
+  // Selects the object clicked at `x`, `y`. Returns 0 if there was one.
+  int Select_Object(int x, int y);
   void Select_Next();
   void Popup_Controls();
   void Grab_Object();

@@ -1244,13 +1244,39 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     /*
     ------------------------- Process user input --------------------------
     */
-    const engine::window::KeyNumber input =
-        commands->Input(view).key;  // user input
+    const engine::window::InputEvent input_event = commands->Input(view);
+    const engine::window::KeyNumber input = input_event.key;
     /*.....................................................................
     Normal button processing: This is done when the mouse button is NOT
     being held down ('grabbed' is 0).
     .....................................................................*/
     if (grabbed == 0) {
+      // A click near a corner grabs that corner; one near the middle grabs the
+      // whole map.
+      if (input_event.IsPress(engine::window::MouseButton::kLeft)) {
+        const int click_x = input_event.x;
+        const int click_y = input_event.y;
+        if (abs(click_x - map_x1) < 3 && abs(click_y - map_y1) < 3) {
+          grabbed = 1;  // top left
+        } else if (abs(click_x - map_x2) < 3 && abs(click_y - map_y1) < 3) {
+          grabbed = 2;  // top right
+        } else if (abs(click_x - map_x2) < 3 && abs(click_y - map_y2) < 3) {
+          grabbed = 3;  // bottom right
+        } else if (abs(click_x - map_x1) < 3 && abs(click_y - map_y2) < 3) {
+          grabbed = 4;  // bottom left
+        } else if (abs(click_x - ((map_x1 + map_x2) / 2)) <
+                       (map_x2 - map_x1) / 4 &&
+                   abs(click_y - ((map_y1 + map_y2) / 2)) <
+                       (map_y2 - map_y1) / 4) {
+          grabbed = 5;  // the whole map
+        }
+        if (grabbed != 0) {
+          mx = click_x;
+          my = click_y;
+          display = REDRAW_MAP;
+        }
+      }
+
       switch (static_cast<int>(input)) {
         case KN_RETURN:
         case engine::window::ButtonKey(kButtonOk):
@@ -1262,69 +1288,6 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         case engine::window::ButtonKey(kButtonCancel):
           cancel = true;
           process = false;
-          break;
-
-        case KN_LMOUSE:
-          /*
-          ....................... Grab top left ........................
-          */
-          delta1 = abs(TheKeyboard().click_x() - map_x1);
-          delta2 = abs(TheKeyboard().click_y() - map_y1);
-          if (delta1 < 3 && delta2 < 3) {
-            grabbed = 1;
-            mx = TheKeyboard().click_x();
-            my = TheKeyboard().click_y();
-            display = REDRAW_MAP;
-            break;
-          }
-          /*
-          ...................... Grab top right ........................
-          */
-          delta1 = abs(TheKeyboard().click_x() - map_x2);
-          delta2 = abs(TheKeyboard().click_y() - map_y1);
-          if (delta1 < 3 && delta2 < 3) {
-            grabbed = 2;
-            mx = TheKeyboard().click_x();
-            my = TheKeyboard().click_y();
-            display = REDRAW_MAP;
-            break;
-          }
-          /*
-          ..................... Grab bottom right ......................
-          */
-          delta1 = abs(TheKeyboard().click_x() - map_x2);
-          delta2 = abs(TheKeyboard().click_y() - map_y2);
-          if (delta1 < 3 && delta2 < 3) {
-            grabbed = 3;
-            mx = TheKeyboard().click_x();
-            my = TheKeyboard().click_y();
-            display = REDRAW_MAP;
-            break;
-          }
-          /*
-          ..................... Grab bottom left .......................
-          */
-          delta1 = abs(TheKeyboard().click_x() - map_x1);
-          delta2 = abs(TheKeyboard().click_y() - map_y2);
-          if (delta1 < 3 && delta2 < 3) {
-            grabbed = 4;
-            mx = TheKeyboard().click_x();
-            my = TheKeyboard().click_y();
-            display = REDRAW_MAP;
-            break;
-          }
-          /*
-          ..................... Grab the whole map .....................
-          */
-          delta1 = abs(TheKeyboard().click_x() - ((map_x1 + map_x2) / 2));
-          delta2 = abs(TheKeyboard().click_y() - ((map_y1 + map_y2) / 2));
-          if (delta1 < (map_x2 - map_x1) / 4 &&
-              delta2 < (map_y2 - map_y1) / 4) {
-            grabbed = 5;
-            mx = TheKeyboard().click_x();
-            my = TheKeyboard().click_y();
-            display = REDRAW_MAP;
-          }
           break;
 
         default:
@@ -1339,7 +1302,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         value while the button is being held down, so this case must be
         trapped as a default.
       .....................................................................*/
-      if (static_cast<int>(input) == Released(KN_LMOUSE)) {
+      if (input_event.IsRelease(engine::window::MouseButton::kLeft)) {
         grabbed = 0;
         display = REDRAW_MAP;
       } else {

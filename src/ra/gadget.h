@@ -129,6 +129,7 @@ class GadgetClass : public LinkClass {
   // redraws them on `view`. Returns the event. When a gadget acted on it, its
   // key is what the gadget left there (its ButtonKey(), or KN_NONE) and it is
   // no longer a click, so a click still in the event is one no gadget took.
+  // The event keeps the click's position either way.
   virtual engine::window::InputEvent Input(PixelView& view);
   virtual void Draw_All(PixelView& view, bool forced = true);
   virtual void Delete_List();

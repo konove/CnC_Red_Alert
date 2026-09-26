@@ -1610,14 +1610,8 @@ void MapEditClass::Stop_Trigger_Placement() {
  * HISTORY:                                                                *
  *   12/01/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Place_Trigger() {
+void MapEditClass::Place_Trigger(int x, int y) {
   ObjectClass* object = nullptr;  // Generic object clicked on.
-
-  /*
-  **	See if an object was clicked on
-  */
-  int x = TheKeyboard().click_x();
-  int y = TheKeyboard().click_y();
 
   /*
   **	Get cell for x,y

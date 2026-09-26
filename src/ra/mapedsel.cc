@@ -89,15 +89,9 @@
  * HISTORY:                                                                *
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
-int MapEditClass::Select_Object() {
+int MapEditClass::Select_Object(int x, int y) {
   ObjectClass* object = nullptr;  // Generic object clicked on.
   int rc = 0;
-
-  /*
-  **	See if an object was clicked on
-  */
-  int x = TheKeyboard().click_x();
-  int y = TheKeyboard().click_y();
 
   /*
   **	Get cell for x,y

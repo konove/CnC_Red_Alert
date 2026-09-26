@@ -684,40 +684,29 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Get user input.
     */
-    const engine::window::KeyNumber input =
-        commands->Input(view).key;  // user input
+    const engine::window::InputEvent input_event = commands->Input(view);
+    const engine::window::KeyNumber input = input_event.key;
+
+    // The mouse buttons set or clear the 'held' values that step the member
+    // count while a button is down.
+    using engine::window::MouseButton;
+    if (input_event.IsPress(MouseButton::kLeft) ||
+        input_event.IsPress(MouseButton::kRight)) {
+      if (curclass >= 0 && curclass < maxclasses) {
+        (input_event.button == MouseButton::kLeft ? lheld : rheld) = 1;
+        tindex = 2;
+        heldtime = 0;
+      }
+    } else if (input_event.IsRelease(MouseButton::kLeft)) {
+      lheld = 0;
+    } else if (input_event.IsRelease(MouseButton::kRight)) {
+      rheld = 0;
+    }
 
     /*
     **	Process input.
     */
     switch (static_cast<int>(input)) {
-      /*
-      **	Mouse buttons set or clear 'held' values
-      */
-      case KN_LMOUSE:
-        if (curclass >= 0 && curclass < maxclasses) {
-          lheld = 1;
-          tindex = 2;
-          heldtime = 0;
-        }
-        break;
-
-      case KN_RMOUSE:
-        if (curclass >= 0 && curclass < maxclasses) {
-          rheld = 1;
-          tindex = 2;
-          heldtime = 0;
-        }
-        break;
-
-      case Released(KN_LMOUSE):
-        lheld = 0;
-        break;
-
-      case Released(KN_RMOUSE):
-        rheld = 0;
-        break;
-
       /*
       **	OK: save values & return.
       */

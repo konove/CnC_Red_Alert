@@ -268,7 +268,9 @@ struct InputEvent {
   KeyNumber key = KN_NONE;  // the key, with its modifier and release bits
   MouseButton button = MouseButton::kNone;  // kNone for a key
   bool release = false;  // for a click, whether the button came up
-  int x = 0;             // for a click, where it happened, in game pixels
+  // For a click, where it happened, in game pixels. A gadget that takes the
+  // click clears `button` but leaves the position for whoever handles its key.
+  int x = 0;
   int y = 0;
 
   // Returns whether the event holds nothing: no key and no click.
