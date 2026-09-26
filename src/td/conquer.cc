@@ -631,7 +631,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     **	Center the map around the currently selected objects. If no
     **	objects are selected, then fall into the home case.
     */
-    case VK_HOME:
+    case KN_HOME:
       if (TheWorld().current_object().Count()) {
         TheMap().Center_Map();
         TheMap().Flag_To_Redraw(true);
@@ -643,7 +643,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     **	Center the map about the construction yard or construction vehicle
     **	if one is present.
     */
-    case VK_H:
+    case KN_H:
       for (index = 0; index < TheObjectHeaps().unit().Count(); index++) {
         UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
 
@@ -671,7 +671,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     /*
     **	Toggle free scrolling mode.
     */
-    case VK_F:
+    case KN_F:
       if constexpr (config::kCheatKeysEnabled) {
         TheOptions().IsFreeScroll =
             !static_cast<bool>(TheOptions().IsFreeScroll);
@@ -681,7 +681,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     /*
     **	If the "N" key is pressed, then select the next object.
     */
-    case VK_N:
+    case KN_N:
       if (action) {
         obj = MapEditClass::Prev_Object(TheWorld().current_object().Count()
                                             ? TheWorld().current_object().at(0)
@@ -702,7 +702,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     /*
     ** For multiplayer, 'R' pops up the surrender dialog.
     */
-    case VK_R:
+    case KN_R:
       if (/*GameToPlay != GAME_NORMAL &&*/ !ThePlayer()->IsDefeated) {
         TheGameState().special_dialog() = SDLG_SURRENDER;
         input = KN_NONE;
@@ -712,7 +712,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     /*
     **	Handle making and breaking alliances.
     */
-    case VK_A:
+    case KN_A:
       if ((TheSession().type() != GAME_NORMAL ||
            TheDebugState().developer_mode()) &&
           (TheWorld().current_object().Count() && !ThePlayer()->IsDefeated) &&
@@ -728,35 +728,35 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     /*
     **	Control the remembered tactical location.
     */
-    case VK_F7:
-    case VK_F8:
-    case VK_F9:
-    case VK_F10:
+    case KN_F7:
+    case KN_F8:
+    case KN_F9:
+    case KN_F10:
       if (!TheDebugState().map_editor_active()) {
-        Handle_View(plain - VK_F7, action);
+        Handle_View(plain - KN_F7, action);
       }
       break;
 
     /*
     **	Control the custom team select state.
     */
-    case VK_1:
-    case VK_2:
-    case VK_3:
-    case VK_4:
-    case VK_5:
-    case VK_6:
-    case VK_7:
-    case VK_8:
-    case VK_9:
-    case VK_0:
-      Handle_Team(plain - VK_1, action);
+    case KN_1:
+    case KN_2:
+    case KN_3:
+    case KN_4:
+    case KN_5:
+    case KN_6:
+    case KN_7:
+    case KN_8:
+    case KN_9:
+    case KN_0:
+      Handle_Team(plain - KN_1, action);
       break;
 
     /*
     **	All selected units will go into idle mode.
     */
-    case VK_S:
+    case KN_S:
       if (TheWorld().current_object().Count()) {
         for (int j = 0; j < TheWorld().current_object().Count(); j++) {
           const ObjectClass* tech = TheWorld().current_object().at(j);
@@ -774,7 +774,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     /*
     **	All selected units will attempt to scatter.
     */
-    case VK_X:
+    case KN_X:
       if (TheWorld().current_object().Count()) {
         for (int j = 0; j < TheWorld().current_object().Count(); j++) {
           const ObjectClass* tech = TheWorld().current_object().at(j);
@@ -790,7 +790,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     /*
     **	All selected units will attempt to go into guard area mode.
     */
-    case VK_G:
+    case KN_G:
       if (TheWorld().current_object().Count()) {
         for (int j = 0; j < TheWorld().current_object().Count(); j++) {
           const ObjectClass* tech = TheWorld().current_object().at(j);

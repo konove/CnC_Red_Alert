@@ -56,244 +56,127 @@ constexpr int KeyCode(const int key) {
   return static_cast<int>(static_cast<uint32_t>(key) & kKeyCodeMask);
 }
 
-// Key codes, named after the Windows virtual keys the original used. Their
-// values are the SDL scancodes of the same keys, so a key event needs no
-// translation. The mouse buttons take scancodes 1-3, which SDL never reports
-// for a key, and VK_CONTROL, VK_SHIFT and VK_MENU are the left-hand modifier
-// keys.
-#define VK_LBUTTON 1
-#define VK_RBUTTON 2
-#define VK_MBUTTON 3
-
-#define VK_A 4
-#define VK_B 5
-#define VK_C 6
-#define VK_D 7
-#define VK_E 8
-#define VK_F 9
-#define VK_G 10
-#define VK_H 11
-#define VK_I 12
-#define VK_J 13
-#define VK_K 14
-#define VK_L 15
-#define VK_M 16
-#define VK_N 17
-#define VK_O 18
-#define VK_P 19
-#define VK_Q 20
-#define VK_R 21
-#define VK_S 22
-#define VK_T 23
-#define VK_U 24
-#define VK_V 25
-#define VK_W 26
-#define VK_X 27
-#define VK_Y 28
-#define VK_Z 29
-
-#define VK_1 30
-#define VK_2 31
-#define VK_3 32
-#define VK_4 33
-#define VK_5 34
-#define VK_6 35
-#define VK_7 36
-#define VK_8 37
-#define VK_9 38
-#define VK_0 39
-
-#define VK_RETURN 40
-#define VK_ESCAPE 41
-#define VK_BACK 42
-#define VK_TAB 43
-#define VK_SPACE 44
-
-#define VK_OEM_MINUS 45
-#define VK_OEM_PLUS 46  // =
-#define VK_OEM_4 47     // [
-#define VK_OEM_6 48     // ]
-#define VK_OEM_5 49     // backslash
-#define VK_OEM_1 51     // ;
-#define VK_OEM_7 52     // '
-#define VK_OEM_3 53     // `
-#define VK_OEM_COMMA 54
-#define VK_OEM_PERIOD 55
-#define VK_OEM_2 56  // /
-
-#define VK_CAPITAL 57
-
-#define VK_F1 58
-#define VK_F2 59
-#define VK_F3 60
-#define VK_F4 61
-#define VK_F5 62
-#define VK_F6 63
-#define VK_F7 64
-#define VK_F8 65
-#define VK_F9 66
-#define VK_F10 67
-#define VK_F11 68
-#define VK_F12 69
-
-#define VK_SNAPSHOT 70
-#define VK_SCROLL 71
-#define VK_PAUSE 72
-#define VK_INSERT 73
-
-#define VK_HOME 74
-#define VK_PRIOR 75
-#define VK_DELETE 76
-#define VK_END 77
-#define VK_NEXT 78
-#define VK_RIGHT 79
-#define VK_LEFT 80
-#define VK_DOWN 81
-#define VK_UP 82
-
-#define VK_NUMLOCK 83
-
-#define VK_DIVIDE 84
-#define VK_MULTIPLY 85
-#define VK_SUBTRACT 86
-#define VK_ADD 87
-#define VK_NUMPAD1 89
-#define VK_NUMPAD2 90
-#define VK_NUMPAD3 91
-#define VK_NUMPAD4 92
-#define VK_NUMPAD5 93
-#define VK_NUMPAD6 94
-#define VK_NUMPAD7 95
-#define VK_NUMPAD8 96
-#define VK_NUMPAD9 97
-#define VK_NUMPAD0 98
-#define VK_DECIMAL 99
-
-// The keypad 5, which Windows reports as Clear with Num Lock off.
-#define VK_CLEAR VK_NUMPAD5
-
-#define VK_CONTROL 224
-#define VK_SHIFT 225
-#define VK_MENU 226
-
-// Key numbers: which key, as its VK_* code. The values combine with the
-// KN_*_BIT modifier bits and with KN_BUTTON (see ButtonKey()), so the enum
-// stays unscoped. Keys the port cannot tell apart share a value: the left
-// and right modifier keys, KN_DELETE and KN_E_DELETE, and each diagonal with
-// its navigation key. KN_E_* name the numeric keypad's cursor keys.
+// Key numbers: which key, as its SDL scancode, so a key event needs no
+// translation. The mouse buttons take 1-3, which SDL never reports for a key.
+// The values combine with the KN_*_BIT modifier bits and with KN_BUTTON (see
+// ButtonKey()), so the enum stays unscoped. Keys the port cannot tell apart
+// share a value: the left and right modifier keys, KN_DELETE and KN_E_DELETE,
+// and each diagonal with its navigation key. KN_E_* name the numeric keypad's
+// cursor keys.
 // NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
 enum KeyNumber {
   KN_NONE = 0,
 
-  KN_0 = VK_0,
-  KN_1 = VK_1,
-  KN_2 = VK_2,
-  KN_3 = VK_3,
-  KN_4 = VK_4,
-  KN_5 = VK_5,
-  KN_6 = VK_6,
-  KN_7 = VK_7,
-  KN_8 = VK_8,
-  KN_9 = VK_9,
-  KN_A = VK_A,
-  KN_B = VK_B,
-  KN_BACKSLASH = VK_OEM_5,
-  KN_BACKSPACE = VK_BACK,
-  KN_C = VK_C,
-  KN_CAPSLOCK = VK_CAPITAL,
-  KN_CENTER = VK_CLEAR,
-  KN_COMMA = VK_OEM_COMMA,
-  KN_D = VK_D,
-  KN_DELETE = VK_DELETE,
-  KN_DOWN = VK_DOWN,
-  KN_DOWNLEFT = VK_END,
-  KN_DOWNRIGHT = VK_NEXT,
-  KN_E = VK_E,
-  KN_END = VK_END,
-  KN_EQUAL = VK_OEM_PLUS,
-  KN_ESC = VK_ESCAPE,
-  KN_E_DELETE = VK_DELETE,
-  KN_E_DOWN = VK_NUMPAD2,
-  KN_E_END = VK_NUMPAD1,
-  KN_E_HOME = VK_NUMPAD7,
-  KN_E_INSERT = VK_INSERT,
-  KN_E_LEFT = VK_NUMPAD4,
-  KN_E_PGDN = VK_NUMPAD3,
-  KN_E_PGUP = VK_NUMPAD9,
-  KN_E_RIGHT = VK_NUMPAD6,
-  KN_E_UP = VK_NUMPAD8,
-  KN_F = VK_F,
-  KN_F1 = VK_F1,
-  KN_F10 = VK_F10,
-  KN_F11 = VK_F11,
-  KN_F12 = VK_F12,
-  KN_F2 = VK_F2,
-  KN_F3 = VK_F3,
-  KN_F4 = VK_F4,
-  KN_F5 = VK_F5,
-  KN_F6 = VK_F6,
-  KN_F7 = VK_F7,
-  KN_F8 = VK_F8,
-  KN_F9 = VK_F9,
-  KN_G = VK_G,
-  KN_GRAVE = VK_OEM_3,
-  KN_H = VK_H,
-  KN_HOME = VK_HOME,
+  KN_0 = 39,
+  KN_1 = 30,
+  KN_2 = 31,
+  KN_3 = 32,
+  KN_4 = 33,
+  KN_5 = 34,
+  KN_6 = 35,
+  KN_7 = 36,
+  KN_8 = 37,
+  KN_9 = 38,
+  KN_A = 4,
+  KN_B = 5,
+  KN_BACKSLASH = 49,
+  KN_BACKSPACE = 42,
+  KN_C = 6,
+  KN_CAPSLOCK = 57,
+  KN_CENTER = 93,
+  KN_COMMA = 54,
+  KN_D = 7,
+  KN_DELETE = 76,
+  KN_DOWN = 81,
+  KN_DOWNLEFT = 77,
+  KN_DOWNRIGHT = 78,
+  KN_E = 8,
+  KN_END = 77,
+  KN_EQUAL = 46,
+  KN_ESC = 41,
+  KN_E_DELETE = 76,
+  KN_E_DOWN = 90,
+  KN_E_END = 89,
+  KN_E_HOME = 95,
+  KN_E_INSERT = 73,
+  KN_E_LEFT = 92,
+  KN_E_PGDN = 91,
+  KN_E_PGUP = 97,
+  KN_E_RIGHT = 94,
+  KN_E_UP = 96,
+  KN_F = 9,
+  KN_F1 = 58,
+  KN_F10 = 67,
+  KN_F11 = 68,
+  KN_F12 = 69,
+  KN_F2 = 59,
+  KN_F3 = 60,
+  KN_F4 = 61,
+  KN_F5 = 62,
+  KN_F6 = 63,
+  KN_F7 = 64,
+  KN_F8 = 65,
+  KN_F9 = 66,
+  KN_G = 10,
+  KN_GRAVE = 53,
+  KN_H = 11,
+  KN_HOME = 74,
   // NOLINTNEXTLINE(misc-confusable-identifiers)
-  KN_I = VK_I,
-  KN_INSERT = VK_INSERT,
-  KN_J = VK_J,
-  KN_K = VK_K,
-  KN_KEYPAD_ASTERISK = VK_MULTIPLY,
-  KN_KEYPAD_MINUS = VK_SUBTRACT,
-  KN_KEYPAD_PLUS = VK_ADD,
-  KN_KEYPAD_RETURN = VK_RETURN,
-  KN_KEYPAD_SLASH = VK_DIVIDE,
-  KN_L = VK_L,
-  KN_LALT = VK_MENU,
-  KN_LBRACKET = VK_OEM_4,
-  KN_LCTRL = VK_CONTROL,
-  KN_LEFT = VK_LEFT,
-  KN_LMOUSE = VK_LBUTTON,
-  KN_LSHIFT = VK_SHIFT,
-  KN_M = VK_M,
-  KN_MINUS = VK_OEM_MINUS,
-  KN_N = VK_N,
-  KN_NUMLOCK = VK_NUMLOCK,
+  KN_I = 12,
+  KN_INSERT = 73,
+  KN_J = 13,
+  KN_K = 14,
+  KN_KEYPAD_ASTERISK = 85,
+  KN_KEYPAD_MINUS = 86,
+  KN_KEYPAD_PLUS = 87,
+  KN_KEYPAD_RETURN = 40,
+  KN_KEYPAD_SLASH = 84,
+  KN_L = 15,
+  KN_LALT = 226,
+  KN_LBRACKET = 47,
+  KN_LCTRL = 224,
+  KN_LEFT = 80,
+  KN_LMOUSE = 1,
+  KN_MMOUSE = 3,
+  KN_LSHIFT = 225,
+  KN_M = 16,
+  KN_MINUS = 45,
+  KN_N = 17,
+  KN_NUMLOCK = 83,
   // NOLINTNEXTLINE(misc-confusable-identifiers)
-  KN_O = VK_O,
-  KN_P = VK_P,
-  KN_PAUSE = VK_PAUSE,
-  KN_PERIOD = VK_OEM_PERIOD,
-  KN_PGDN = VK_NEXT,
-  KN_PGUP = VK_PRIOR,
-  KN_PRNTSCRN = VK_SNAPSHOT,
-  KN_Q = VK_Q,
-  KN_R = VK_R,
-  KN_RALT = VK_MENU,
-  KN_RBRACKET = VK_OEM_6,
-  KN_RCTRL = VK_CONTROL,
-  KN_RETURN = VK_RETURN,
-  KN_RIGHT = VK_RIGHT,
-  KN_RMOUSE = VK_RBUTTON,
-  KN_RSHIFT = VK_SHIFT,
-  KN_S = VK_S,
-  KN_SCROLLLOCK = VK_SCROLL,
-  KN_SEMICOLON = VK_OEM_1,
-  KN_SLASH = VK_OEM_2,
-  KN_SPACE = VK_SPACE,
-  KN_SQUOTE = VK_OEM_7,
-  KN_T = VK_T,
-  KN_TAB = VK_TAB,
-  KN_U = VK_U,
-  KN_UP = VK_UP,
-  KN_UPLEFT = VK_HOME,
-  KN_UPRIGHT = VK_PRIOR,
-  KN_V = VK_V,
-  KN_W = VK_W,
-  KN_X = VK_X,
-  KN_Y = VK_Y,
-  KN_Z = VK_Z,
+  KN_O = 18,
+  KN_P = 19,
+  KN_PAUSE = 72,
+  KN_PERIOD = 55,
+  KN_PGDN = 78,
+  KN_PGUP = 75,
+  KN_PRNTSCRN = 70,
+  KN_Q = 20,
+  KN_R = 21,
+  KN_RALT = 226,
+  KN_RBRACKET = 48,
+  KN_RCTRL = 224,
+  KN_RETURN = 40,
+  KN_RIGHT = 79,
+  KN_RMOUSE = 2,
+  KN_RSHIFT = 225,
+  KN_S = 22,
+  KN_SCROLLLOCK = 71,
+  KN_SEMICOLON = 51,
+  KN_SLASH = 56,
+  KN_SPACE = 44,
+  KN_SQUOTE = 52,
+  KN_T = 23,
+  KN_TAB = 43,
+  KN_U = 24,
+  KN_UP = 82,
+  KN_UPLEFT = 74,
+  KN_UPRIGHT = 75,
+  KN_V = 25,
+  KN_W = 26,
+  KN_X = 27,
+  KN_Y = 28,
+  KN_Z = 29,
 
   KN_SHIFT_BIT = kKeyShiftBit,
   KN_CTRL_BIT = kKeyCtrlBit,
@@ -343,7 +226,7 @@ inline KeyNumber operator~(const KeyNumber a) noexcept {
 
 // The queue of key presses, key releases and mouse clicks the game reads its
 // input from. HandleEvent() fills it from SDL events; the game drains it with
-// Peek() and Read(). Each entry is a key number: a VK_* code in the low byte
+// Peek() and Read(). Each entry is a key number: a scancode in the low byte
 // with the kKey*Bit flags above it. A mouse click takes three entries - the
 // button, then the x and y position - and Read() returns the button and leaves
 // the position in click_x() and click_y().
@@ -371,15 +254,15 @@ class KeyBuffer {
   // the buffer is full.
   bool Put(int entry);
 
-  // Queues the key `key_code` (a VK_* code), adding the Shift, Ctrl and Alt
-  // bits for the modifier keys held right now and kKeyReleaseBit for a
+  // Queues the key `key_code` (a bare key number), adding the Shift, Ctrl and
+  // Alt bits for the modifier keys held right now and kKeyReleaseBit for a
   // `release`. Returns false if the key was dropped: the buffer is full, or
   // the scancode is 0 (a key SDL does not know), negative, or above 0xFF (a
   // media key, which has no key code). Mouse buttons go through PutClick().
   bool PutKey(int key_code, bool release = false);
 
-  // Queues a click of the mouse `button` (VK_LBUTTON, VK_MBUTTON or
-  // VK_RBUTTON) at `x`, `y`: the button, with kKeyReleaseBit for a `release`
+  // Queues a click of the mouse `button` (KN_LMOUSE, KN_MMOUSE or
+  // KN_RMOUSE) at `x`, `y`: the button, with kKeyReleaseBit for a `release`
   // but no modifier bits, as in the DOS version, followed by the position.
   // Returns false, queuing nothing, if the three entries do not all fit.
   bool PutClick(int button, bool release, int x, int y);

@@ -141,7 +141,7 @@ TEST_F(KeyBufferTest, ClickIsQueuedWithItsPosition) {
 TEST_F(KeyBufferTest, MouseClickCoordinatesAreNotReportedAsKeys) {
   // A click queues the button followed by its x and y position; one at the
   // origin puts two zero entries in the buffer behind the button.
-  ASSERT_TRUE(keys.PutClick(VK_LBUTTON, /*release=*/false, 0, 0));
+  ASSERT_TRUE(keys.PutClick(KN_LMOUSE, /*release=*/false, 0, 0));
   ASSERT_TRUE(keys.Put(KN_Y));
 
   EXPECT_EQ(keys.Peek(), KN_LMOUSE);

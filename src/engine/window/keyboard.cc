@@ -177,23 +177,23 @@ bool KeyBuffer::IsMouseKey(int key) {
   // Only the key-code byte; the modifier and release bits say nothing about
   // which key it is.
   key = static_cast<int>(static_cast<uint32_t>(key) & kScancodeMask);
-  return key == VK_LBUTTON || key == VK_MBUTTON || key == VK_RBUTTON;
+  return key == KN_LMOUSE || key == KN_MMOUSE || key == KN_RMOUSE;
 }
 
 bool KeyBuffer::HandleEvent(const SDL_Event* event) {
   switch (event->type) {
     case SDL_MOUSEBUTTONDOWN:
     case SDL_MOUSEBUTTONUP: {
-      // SDL numbers the buttons left, middle, right; the VK codes go left,
+      // SDL numbers the buttons left, middle, right; the key numbers go left,
       // right, middle.
       int button = event->button.button;
       if (button == SDL_BUTTON_RIGHT) {
-        button = VK_RBUTTON;
+        button = KN_RMOUSE;
       } else if (button == SDL_BUTTON_MIDDLE) {
-        button = VK_MBUTTON;
+        button = KN_MMOUSE;
       } else if (button != SDL_BUTTON_LEFT) {
         // Extra buttons have no key code. SDL_BUTTON_LEFT is 1, already
-        // VK_LBUTTON.
+        // KN_LMOUSE.
         return false;
       }
 
