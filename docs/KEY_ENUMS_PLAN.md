@@ -105,5 +105,5 @@ message line; the hall-of-fame name entry on the score screen; TD's map editor w
 - [x] Step 1: `KeyAscii` becomes `char`
 - [x] Step 2: fold `VK_*` into `KeyNumber` (the two `ra/wolapiob.cc` comments name the Win32
       `VK_SHIFT`/`VK_CONTROL` in commented-out `GetAsyncKeyState` calls, so they stay)
-- [ ] Step 3: drop the unused `KeyNumber` names
+- [x] Step 3: drop the unused `KeyNumber` names (25: `KN_F8` gained a user in step 2)
 - [ ] Step 4: remove `kKeyVirtualBit`
