@@ -28,6 +28,8 @@ TEST(MatchesPatternTest, MatchesPatternIgnoresCase) {
   EXPECT_TRUE(MatchesPattern("savegame.*", "SAVEGAME.001"));
 }
 
+namespace {
+
 class FindFilesTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -51,6 +53,8 @@ class FindFilesTest : public ::testing::Test {
  private:
   std::filesystem::path dir_;
 };
+
+}  // namespace
 
 TEST_F(FindFilesTest, FindFilesMatchesLowercaseNames) {
   Touch("sc02.mix");

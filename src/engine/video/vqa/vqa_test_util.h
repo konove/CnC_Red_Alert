@@ -29,6 +29,13 @@
 // tests can assert on the interaction.
 class FakeVqaIo final : public VqaIo {
  public:
+  FakeVqaIo() = default;
+  ~FakeVqaIo() override;
+  FakeVqaIo(const FakeVqaIo&) = delete;
+  FakeVqaIo& operator=(const FakeVqaIo&) = delete;
+  FakeVqaIo(FakeVqaIo&&) = delete;
+  FakeVqaIo& operator=(FakeVqaIo&&) = delete;
+
   bool Open(std::string_view /*name*/) override {
     opens++;
     if (fail_open) {
@@ -90,6 +97,11 @@ class FakeVqaAudioDevice final : public VqaAudioDevice {
     audio_spec.format = AUDIO_S16;
     audio_spec.channels = 2;
   }
+  ~FakeVqaAudioDevice() override;
+  FakeVqaAudioDevice(const FakeVqaAudioDevice&) = delete;
+  FakeVqaAudioDevice& operator=(const FakeVqaAudioDevice&) = delete;
+  FakeVqaAudioDevice(FakeVqaAudioDevice&&) = delete;
+  FakeVqaAudioDevice& operator=(FakeVqaAudioDevice&&) = delete;
 
   [[nodiscard]] const SDL_AudioSpec& spec() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND override {
@@ -120,6 +132,13 @@ class FakeVqaAudioDevice final : public VqaAudioDevice {
 // stop_after frames.
 class RecordingClient final : public VqaClient {
  public:
+  RecordingClient() = default;
+  ~RecordingClient() override;
+  RecordingClient(const RecordingClient&) = delete;
+  RecordingClient& operator=(const RecordingClient&) = delete;
+  RecordingClient(RecordingClient&&) = delete;
+  RecordingClient& operator=(RecordingClient&&) = delete;
+
   bool OnFrame(const VqaFrameView& frame) override {
     shown.push_back(frame.frame_number);
     if (!frame.palette.empty()) {

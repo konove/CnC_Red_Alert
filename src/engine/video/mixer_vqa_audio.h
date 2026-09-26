@@ -23,6 +23,11 @@ class MixerVqaAudio final : public VqaAudioDevice {
   explicit MixerVqaAudio(
       engine::audio::AudioMixer& mixer ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : mixer_(&mixer) {}
+  ~MixerVqaAudio() override;
+  MixerVqaAudio(const MixerVqaAudio&) = delete;
+  MixerVqaAudio& operator=(const MixerVqaAudio&) = delete;
+  MixerVqaAudio(MixerVqaAudio&&) = delete;
+  MixerVqaAudio& operator=(MixerVqaAudio&&) = delete;
 
   [[nodiscard]] const SDL_AudioSpec& spec() const override {
     return mixer_->output_spec();

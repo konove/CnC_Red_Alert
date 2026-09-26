@@ -79,7 +79,7 @@ struct VqaFrameView {
 class VqaClient {
  public:
   VqaClient() = default;
-  virtual ~VqaClient() = default;
+  virtual ~VqaClient();
   VqaClient(const VqaClient&) = delete;
   VqaClient& operator=(const VqaClient&) = delete;
   VqaClient(VqaClient&&) = delete;

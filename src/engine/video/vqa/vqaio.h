@@ -18,7 +18,7 @@
 class VqaIo {
  public:
   VqaIo() = default;
-  virtual ~VqaIo() = default;
+  virtual ~VqaIo();
   VqaIo(const VqaIo&) = delete;
   VqaIo& operator=(const VqaIo&) = delete;
   VqaIo(VqaIo&&) = delete;

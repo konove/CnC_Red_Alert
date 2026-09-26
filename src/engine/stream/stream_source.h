@@ -22,6 +22,11 @@ class StreamSource : public ByteSource {
   // stream must outlive this source.
   explicit StreamSource(ByteStream& stream ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : stream_(stream) {}
+  ~StreamSource() override;
+  StreamSource(const StreamSource&) = delete;
+  StreamSource& operator=(const StreamSource&) = delete;
+  StreamSource(StreamSource&&) = delete;
+  StreamSource& operator=(StreamSource&&) = delete;
 
   base::ssize Read(std::span<std::byte> buffer) override {
     if (!ok()) {

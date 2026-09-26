@@ -22,7 +22,7 @@ class VqaAudioDevice {
   using Mixer = std::function<void(std::span<std::byte> device_buffer)>;
 
   VqaAudioDevice() = default;
-  virtual ~VqaAudioDevice() = default;
+  virtual ~VqaAudioDevice();
   VqaAudioDevice(const VqaAudioDevice&) = delete;
   VqaAudioDevice& operator=(const VqaAudioDevice&) = delete;
   VqaAudioDevice(VqaAudioDevice&&) = delete;

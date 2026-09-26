@@ -58,7 +58,7 @@
 class ByteSource {
  public:
   ByteSource() = default;
-  virtual ~ByteSource() = default;
+  virtual ~ByteSource();
 
   ByteSource(const ByteSource&) = delete;
   ByteSource& operator=(const ByteSource&) = delete;
@@ -104,6 +104,11 @@ class ChainedSource : public ByteSource {
   // source must outlive this source.
   explicit ChainedSource(ByteSource& source ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : source_(source) {}
+  ~ChainedSource() override;
+  ChainedSource(const ChainedSource&) = delete;
+  ChainedSource& operator=(const ChainedSource&) = delete;
+  ChainedSource(ChainedSource&&) = delete;
+  ChainedSource& operator=(ChainedSource&&) = delete;
 
   // Passes bytes through unchanged.
   base::ssize Read(std::span<std::byte> buffer) override {

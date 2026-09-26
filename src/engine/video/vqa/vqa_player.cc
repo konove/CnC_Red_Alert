@@ -29,6 +29,8 @@
 #include "engine/video/vqa/vqa_audio_device.h"
 #include "engine/video/vqa/vqaio.h"
 
+VqaClient::~VqaClient() = default;
+
 std::expected<VqaPlayer, VqaError> VqaPlayer::Open(VqaIo& io,
                                                    const std::string_view name,
                                                    VqaClient& client,

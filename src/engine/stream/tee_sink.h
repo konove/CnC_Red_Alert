@@ -19,6 +19,11 @@ class TeeSink : public ChainedSink {
   TeeSink(ByteSink& main_sink,
           ByteSink* copy_sink ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : ChainedSink(main_sink), copy_sink_(copy_sink) {}
+  ~TeeSink() override;
+  TeeSink(const TeeSink&) = delete;
+  TeeSink& operator=(const TeeSink&) = delete;
+  TeeSink(TeeSink&&) = delete;
+  TeeSink& operator=(TeeSink&&) = delete;
 
   bool Write(std::span<const std::byte> bytes) override {
     if (copy_sink_ != nullptr && copy_ok_ && !bytes.empty()) {

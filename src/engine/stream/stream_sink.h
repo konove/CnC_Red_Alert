@@ -23,6 +23,11 @@ class StreamSink : public ByteSink {
   // stream must outlive this sink.
   explicit StreamSink(ByteStream& stream ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : stream_(stream) {}
+  ~StreamSink() override;
+  StreamSink(const StreamSink&) = delete;
+  StreamSink& operator=(const StreamSink&) = delete;
+  StreamSink(StreamSink&&) = delete;
+  StreamSink& operator=(StreamSink&&) = delete;
 
   bool Write(std::span<const std::byte> bytes) override {
     if (!ok()) {

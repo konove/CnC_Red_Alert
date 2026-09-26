@@ -21,6 +21,8 @@
 #include <cstddef>
 #include <span>
 
+ByteSink::~ByteSink() = default;
+
 bool ChainedSink::Write(std::span<const std::byte> bytes) {
   return ok() && next_.Write(bytes);
 }
@@ -35,3 +37,5 @@ bool ChainedSink::Finish() {
   next_.Finish();
   return ok();
 }
+
+NullSink::~NullSink() = default;

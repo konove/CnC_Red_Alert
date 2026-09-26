@@ -23,6 +23,11 @@ class VectorSink : public ByteSink {
   explicit VectorSink(
       std::vector<std::byte>& bytes ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : bytes_(bytes) {}
+  ~VectorSink() override;
+  VectorSink(const VectorSink&) = delete;
+  VectorSink& operator=(const VectorSink&) = delete;
+  VectorSink(VectorSink&&) = delete;
+  VectorSink& operator=(VectorSink&&) = delete;
 
   bool Write(std::span<const std::byte> data) override {
     bytes_.insert(bytes_.end(), data.begin(), data.end());

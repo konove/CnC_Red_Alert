@@ -26,6 +26,11 @@ class SpanSink : public ByteSink {
   // it.
   // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
   explicit SpanSink(std::span<std::byte> buffer) : buffer_(buffer) {}
+  ~SpanSink() override;
+  SpanSink(const SpanSink&) = delete;
+  SpanSink& operator=(const SpanSink&) = delete;
+  SpanSink(SpanSink&&) = delete;
+  SpanSink& operator=(SpanSink&&) = delete;
 
   // Stores what fits, failing if that is not every byte.
   bool Write(std::span<const std::byte> bytes) override {

@@ -57,7 +57,7 @@
 class ByteSink {
  public:
   ByteSink() = default;
-  virtual ~ByteSink() = default;
+  virtual ~ByteSink();
   ByteSink(const ByteSink&) = delete;
   ByteSink& operator=(const ByteSink&) = delete;
   ByteSink(ByteSink&&) = delete;
@@ -130,6 +130,13 @@ class ChainedSink : public ByteSink {
 // matter only for what they observe, such as a SHA-1 digest.
 class NullSink : public ByteSink {
  public:
+  NullSink() = default;
+  ~NullSink() override;
+  NullSink(const NullSink&) = delete;
+  NullSink& operator=(const NullSink&) = delete;
+  NullSink(NullSink&&) = delete;
+  NullSink& operator=(NullSink&&) = delete;
+
   bool Write(std::span<const std::byte> /*bytes*/) override { return true; }
 };
 

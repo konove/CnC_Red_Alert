@@ -16,6 +16,11 @@
 class Sha1Sink : public TransformSink<Sha1Codec> {
  public:
   using TransformSink::TransformSink;
+  ~Sha1Sink() override;
+  Sha1Sink(const Sha1Sink&) = delete;
+  Sha1Sink& operator=(const Sha1Sink&) = delete;
+  Sha1Sink(Sha1Sink&&) = delete;
+  Sha1Sink& operator=(Sha1Sink&&) = delete;
 
   // Returns the digest of the bytes written so far.
   [[nodiscard]] Sha1Digest digest() const { return codec().digest(); }

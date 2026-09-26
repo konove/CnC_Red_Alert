@@ -15,6 +15,11 @@
 class BlowfishSource : public TransformSource<BlowfishCodec> {
  public:
   using TransformSource::TransformSource;
+  ~BlowfishSource() override;
+  BlowfishSource(const BlowfishSource&) = delete;
+  BlowfishSource& operator=(const BlowfishSource&) = delete;
+  BlowfishSource(BlowfishSource&&) = delete;
+  BlowfishSource& operator=(BlowfishSource&&) = delete;
 
   // Keys the cipher. Until then bytes pass through unchanged.
   void Key(std::span<const std::byte> key) { codec().Key(key); }

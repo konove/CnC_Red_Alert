@@ -171,6 +171,8 @@ void WinModemClass::Set_Abort_Function(int (* /*func*/)()) {
 
 HANDLE WinModemClass::Get_Port_Handle() const { return PortHandle; }
 
+WinNullModemClass::~WinNullModemClass() = default;
+
 ModemRegistryEntryClass::ModemRegistryEntryClass(int /*modem_number*/) {
 #ifdef LIBSERIALPORT
   struct sp_port** port_list;

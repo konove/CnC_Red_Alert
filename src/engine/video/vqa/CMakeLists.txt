@@ -34,5 +34,6 @@ add_gtest(
         SOURCES adpcm_decoders_test.cc audio_output_test.cc audio_ring_test.cc chunk_reader_test.cc
             frame_ring_test.cc lcw_buffer_test.cc movie_clock_test.cc movie_drawer_test.cc
             movie_loader_test.cc movie_test.cc vq_decoder_test.cc vqa_player_test.cc
+            vqa_test_util.cc
         LIBS engine_vqa
 )

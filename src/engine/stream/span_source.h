@@ -25,6 +25,11 @@ class SpanSource : public ByteSource {
   explicit SpanSource(
       std::span<const std::byte> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : buffer_(buffer) {}
+  ~SpanSource() override;
+  SpanSource(const SpanSource&) = delete;
+  SpanSource& operator=(const SpanSource&) = delete;
+  SpanSource(SpanSource&&) = delete;
+  SpanSource& operator=(SpanSource&&) = delete;
 
   base::ssize Read(std::span<std::byte> buffer) override {
     const base::ssize count =

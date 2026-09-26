@@ -17,6 +17,11 @@
 class Sha1Source : public TransformSource<Sha1Codec> {
  public:
   using TransformSource::TransformSource;
+  ~Sha1Source() override;
+  Sha1Source(const Sha1Source&) = delete;
+  Sha1Source& operator=(const Sha1Source&) = delete;
+  Sha1Source(Sha1Source&&) = delete;
+  Sha1Source& operator=(Sha1Source&&) = delete;
 
   // Returns the digest of the bytes read so far.
   [[nodiscard]] Sha1Digest digest() const { return codec().digest(); }

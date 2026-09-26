@@ -52,7 +52,7 @@ class GenericNode {
  public:
   friend class GenericList;
   GenericNode() = default;
-  virtual ~GenericNode() { Unlink(); }
+  virtual ~GenericNode();
   GenericNode(GenericNode&&) = delete;
   GenericNode& operator=(GenericNode&&) = delete;
 

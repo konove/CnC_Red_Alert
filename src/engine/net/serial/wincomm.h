@@ -234,6 +234,13 @@ class WinModemClass {
 */
 class WinNullModemClass : public WinModemClass {
  public:
+  WinNullModemClass() = default;
+  ~WinNullModemClass() override;
+  WinNullModemClass(const WinNullModemClass&) = delete;
+  WinNullModemClass& operator=(const WinNullModemClass&) = delete;
+  WinNullModemClass(WinNullModemClass&&) = delete;
+  WinNullModemClass& operator=(WinNullModemClass&&) = delete;
+
   void Set_Modem_Dial_Type(WinCommDialMethodType /*method*/) override {}
   unsigned Get_Modem_Status() override { return 0; }
   void Set_Serial_DTR(bool /*state*/) override {}

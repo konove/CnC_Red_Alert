@@ -29,6 +29,8 @@ base::ssize ClampedSeek(const base::ssize position, const base::ssize size,
   return std::clamp<base::ssize>(base + offset, 0, size);
 }
 
+ByteStream::~ByteStream() = default;
+
 std::vector<std::byte> ByteStream::ReadBytes(const base::ssize count) {
   std::vector<std::byte> bytes(base::ToSize(count));
   bytes.resize(base::ToSize(Read(bytes)));

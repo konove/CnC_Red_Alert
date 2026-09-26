@@ -25,7 +25,7 @@
 class ByteStream {
  public:
   ByteStream() = default;
-  virtual ~ByteStream() = default;
+  virtual ~ByteStream();
 
   ByteStream(const ByteStream&) = delete;
   ByteStream& operator=(const ByteStream&) = delete;

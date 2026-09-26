@@ -15,6 +15,11 @@
 class BlowfishSink : public TransformSink<BlowfishCodec> {
  public:
   using TransformSink::TransformSink;
+  ~BlowfishSink() override;
+  BlowfishSink(const BlowfishSink&) = delete;
+  BlowfishSink& operator=(const BlowfishSink&) = delete;
+  BlowfishSink(BlowfishSink&&) = delete;
+  BlowfishSink& operator=(BlowfishSink&&) = delete;
 
   // Keys the cipher. Until then bytes pass through unchanged.
   void Key(std::span<const std::byte> key) { codec().Key(key); }

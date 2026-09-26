@@ -30,7 +30,7 @@ class PixelSurface {
   };
 
   PixelSurface() = default;
-  virtual ~PixelSurface() = default;
+  virtual ~PixelSurface();
   PixelSurface(const PixelSurface&) = delete;
   PixelSurface& operator=(const PixelSurface&) = delete;
   PixelSurface(PixelSurface&&) = delete;
