@@ -101,10 +101,6 @@ class WWMouseClass {
   void Update_Pos(int x, int y);
 
  private:
-  // Legacy flags for conditional hide (unused with hardware cursors).
-  static constexpr int kCondhide = 1;
-  static constexpr int kCondhidden = 2;
-
   // Decoded cursor pixels (scaled for current display).
   std::vector<uint8_t> MouseCursor;
   SDLCursorPtr sdl_cursor_;
