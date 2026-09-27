@@ -62,7 +62,6 @@
 #include "td/gadget.h"
 #include "td/gauge.h"
 #include "td/jshell.h"
-#include "td/screen.h"
 #include "td/shapebtn.h"
 
 using enum engine::window::KeyNumber;
@@ -326,24 +325,11 @@ bool SliderClass::Draw_Me(PixelView& view, bool forced) {
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
   if (BelongToList && ControlClass::Draw_Me(view, forced)) {
     /*
-    ===================== Hide the mouse =====================
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
-    }
-
-    /*
     =========== Draw the body & set text color ===============
     */
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
     Draw_Thumb(view);
 
-    /*
-    =================== Display the mouse ===================
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Show_Mouse();
-    }
     return true;
   }
 

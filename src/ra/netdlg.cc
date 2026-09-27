@@ -181,7 +181,6 @@
 #include "ra/house.h"
 #include "ra/init.h"
 #include "ra/inline.h"
-#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/ipx.h"
 #include "ra/ipxgconn.h"

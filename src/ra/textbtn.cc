@@ -49,14 +49,12 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/window/ww_mouse.h"
 #include "ra/config.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/toggle.h"
 
@@ -191,25 +189,12 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
 bool TextButtonClass::Draw_Me(PixelView& view, bool forced) {
   if (ControlClass::Draw_Me(view, forced)) {
     /*
-    **	Hide the mouse.
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Hide_Mouse(X, Y, X + Width - 1, Y + Height - 1);
-    }
-
-    /*
     **	Draw the background and overlaying text. These are virtual function
     **	calls so that they may be overridden.
     */
     Draw_Background(view);
     Draw_Text(view, String);
 
-    /*
-    **	Display the mouse.
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Show_Mouse();
-    }
     return true;
   }
   return false;

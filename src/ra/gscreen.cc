@@ -416,11 +416,9 @@ void GScreenClass::Render() {
  *function.                                            *
  *=============================================================================================*/
 void GScreenClass::Blit_Display() {
-  TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 0, 0, 0,
                                    TheScreen().hidden_view().width(),
                                    TheScreen().hidden_view().height());
-  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), false);
 }
 
 // Shows the screen two pixels up, centred, or two pixels down, picking a

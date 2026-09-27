@@ -7,17 +7,14 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
-#include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 
-class PixelView;
 class HardwareCursor;
 
 // The two devices the player plays with. The keyboard exists for the whole
 // of a Game, because the startup path reads keys before there is a window;
-// the mouse cursor needs a page to draw itself over, so it is created by
-// InstallMouse() once the video mode is set and destroyed by ShutDownEngine()
-// before the pages go.
+// the mouse cursor grabs the mouse into the window, so it is created by
+// InstallMouse() once the video mode is set and destroyed by ShutDownEngine().
 //
 // Game owns the one Input; everything else reaches it through TheKeyboard()
 // and TheMouse().
@@ -41,11 +38,11 @@ class Input {
   // The mouse cursor, or null before InstallMouse() and after RemoveMouse().
   HardwareCursor* mouse() ABSL_ATTRIBUTE_LIFETIME_BOUND { return mouse_.get(); }
 
-  // Creates the cursor over the given page. Called once the video mode is
-  // set; calling it again replaces the cursor.
-  void InstallMouse(PixelView& page);
+  // Creates the cursor. Called once the video mode is set; calling it again
+  // replaces the cursor.
+  void InstallMouse();
 
-  // Destroys the cursor. ShutDownEngine() calls this before the video pages go.
+  // Destroys the cursor, releasing the mouse. ShutDownEngine() calls this.
   void RemoveMouse();
 
  private:

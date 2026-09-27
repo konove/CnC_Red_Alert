@@ -34,13 +34,11 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/ww_mouse.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/jshell.h"
-#include "ra/screen.h"
 
 using enum engine::window::KeyNumber;
 
@@ -105,16 +103,8 @@ void EditClass::Set_Text(std::span<char> text, const int max_len) {
 
 bool EditClass::Draw_Me(PixelView& view, const bool forced) {
   if (ControlClass::Draw_Me(view, forced)) {
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
-    }
-
     Draw_Background(view);
     Draw_Text(view, String.data());
-
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Show_Mouse();
-    }
 
     return true;
   }

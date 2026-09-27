@@ -1591,11 +1591,9 @@ static void Sync_Delay() {
     Call_Back();
 
     if (TheGameState().special_dialog() == SDLG_NONE) {
-      TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
       engine::window::KeyNumber input = KN_NONE;
       int x = 0;
       int y = 0;
-      TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
       input = TheMap().Input(x, y).key;
       if (input) {
         Keyboard_Process(input);
@@ -1688,7 +1686,6 @@ bool Main_Loop() {
   if ((!TheSession().playback_game()) &&
       (TheGameState().special_dialog() == SDLG_NONE &&
        TheGameState().in_focus())) {
-    TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     input = TheMap().Input(x, y).key;
     if (input) {
       Keyboard_Process(input);
@@ -1776,7 +1773,6 @@ bool Main_Loop() {
       Send_Statistics_Packet();
     }
 
-    TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     TheGameState().player_loses() = false;
     TheGameState().player_wins() = false;
     TheGameState().player_restarts() = false;
@@ -1790,7 +1786,6 @@ bool Main_Loop() {
       Send_Statistics_Packet();
     }
 
-    TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     TheGameState().player_wins() = false;
     TheGameState().player_loses() = false;
     TheGameState().player_restarts() = false;
@@ -1798,7 +1793,6 @@ bool Main_Loop() {
     Do_Lose();
   }
   if (TheGameState().player_restarts()) {
-    TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     TheGameState().player_wins() = false;
     TheGameState().player_loses() = false;
     TheGameState().player_restarts() = false;

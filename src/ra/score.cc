@@ -367,7 +367,6 @@ void ScoreClass::Presentation() {
   TheTheme().Queue_Song(THEME_SCORE);
 
   TheScreen().visible_page().view().Clear();
-  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().view().Clear();
   ThePalettes().black_palette().Set();
 

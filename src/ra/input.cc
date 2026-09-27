@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "engine/gfx/pixel_buffer.h"
 #include "engine/window/ww_mouse.h"
 
 namespace {
@@ -16,8 +15,8 @@ Input::Input() = default;
 
 Input::~Input() = default;
 
-void Input::InstallMouse(PixelView& page) {
-  mouse_ = std::make_unique<HardwareCursor>(&page, kCursorWidth, kCursorHeight);
+void Input::InstallMouse() {
+  mouse_ = std::make_unique<HardwareCursor>(kCursorWidth, kCursorHeight);
 }
 
 void Input::RemoveMouse() { mouse_.reset(); }

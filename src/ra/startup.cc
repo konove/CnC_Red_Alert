@@ -379,7 +379,7 @@ int main(const int argc, char* argv[])
   base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
       TheScreen().visible_view().height();
 
-  TheInput().InstallMouse(TheScreen().visible_view());
+  TheInput().InstallMouse();
 
   // SDL enumerates no CD drives, so there is no drive letter to record. -1
   // rather than 0 keeps "?:\" in the search path list: SearchPaths::Scan()

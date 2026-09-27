@@ -47,12 +47,10 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
-#include "engine/window/ww_mouse.h"
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/keyframe.h"
-#include "td/screen.h"
 #include "td/toggle.h"
 
 /***********************************************************************************************
@@ -132,13 +130,6 @@ void ShapeButtonClass::Set_Shape(std::span<const std::byte> data) {
 bool ShapeButtonClass::Draw_Me(PixelView& view, bool forced) {
   if (ControlClass::Draw_Me(view, forced) && !ShapeData.empty()) {
     /*
-    **	Hide the mouse.
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Hide_Mouse(X, Y, X + Width - 1, Y + Height - 1);
-    }
-
-    /*
     **	Draw the body & set text color.
     */
     int shapenum = 0;
@@ -157,12 +148,6 @@ bool ShapeButtonClass::Draw_Me(PixelView& view, bool forced) {
     }
     CC_Draw_Shape(view, ShapeData, shapenum, X, Y, WINDOW_MAIN, SHAPE_NORMAL);
 
-    /*
-    **	Display the mouse.
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Show_Mouse();
-    }
     return true;
   }
   return false;

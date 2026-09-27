@@ -71,14 +71,12 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/window/ww_mouse.h"
 #include "ra/assets.h"
 #include "ra/config.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
 #include "ra/inline.h"
-#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
@@ -163,10 +161,8 @@ void Dialog_Box(int x, int y, int w, int h) {
   CC_Draw_Shape(view, shapedata, 3, w - 23, h - 24, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
 
-  TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), x, y, x, y, w,
                                    h);
-  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), false);
 }
 
 // Draws the beveled edges shared by the button box styles: "Shadow" along the
@@ -346,22 +342,7 @@ void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style) {
   const int h =
       base::At(base::At(WindowList, static_cast<int>(window)), kWindowHeight);
 
-  /*
-  **	If it is to be rendered to the seenpage, then
-  **	hide the mouse.
-  */
-  if (TheScreen().IsVisible(&view)) {
-    Conditional_Hide_Mouse(x, y, x + w, y + h);
-  }
-
   Draw_Box(view, x, y, w, h, style, true);
-
-  /*
-  **	Restore the mouse if it has been hidden and return.
-  */
-  if (TheScreen().IsVisible(&view)) {
-    Conditional_Show_Mouse();
-  }
 }
 
 /***********************************************************************************************

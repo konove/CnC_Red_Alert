@@ -69,7 +69,6 @@
 #include "td/dialog.h"
 #include "td/gadget.h"
 #include "td/jshell.h"
-#include "td/screen.h"
 
 GaugeClass::GaugeClass(unsigned id, int x, int y, int w, int h)
     : ControlClass(id, x, y, w, h, kLeftHeld | kLeftPress | kLeftRelease, true),
@@ -211,13 +210,6 @@ int GaugeClass::Value_To_Pixel(int value) {
 bool GaugeClass::Draw_Me(PixelView& view, bool forced) {
   if (ControlClass::Draw_Me(view, forced)) {
     /*
-    ===================== Hide the mouse =====================
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
-    }
-
-    /*
     =========== Draw the body & set text color ===============
     */
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
@@ -245,12 +237,6 @@ bool GaugeClass::Draw_Me(PixelView& view, bool forced) {
       Draw_Thumb(view);
     }
 
-    /*
-    =================== Display the mouse ===================
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Show_Mouse();
-    }
     return true;
   }
   return false;
@@ -465,12 +451,6 @@ bool TriColorGaugeClass::Draw_Me(PixelView& view, bool forced) {
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
   if (ControlClass::Draw_Me(view, forced)) {
     /*
-    ===================== Hide the mouse =====================
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
-    }
-    /*
     =========== Draw the body & set text color ===============
     */
     Draw_Box(view, X, Y, Width, Height,
@@ -513,12 +493,6 @@ bool TriColorGaugeClass::Draw_Me(PixelView& view, bool forced) {
       Draw_Thumb(view);
     }
 
-    /*
-    =================== Display the mouse ===================
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Show_Mouse();
-    }
     return true;
   }
   return false;

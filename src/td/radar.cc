@@ -109,7 +109,6 @@
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/inline.h"
-#include "td/input.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"

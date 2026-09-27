@@ -370,7 +370,7 @@ int main(int argc, char* argv[])
       Memory_Error = &Memory_Error_Handler;
 
       CCDebugString("C&C95 - Creating mouse class.\n");
-      TheInput().InstallMouse(TheScreen().visible_view());
+      TheInput().InstallMouse();
 
       /*
       ** See if we should run the intro

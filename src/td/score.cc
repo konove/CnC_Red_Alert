@@ -701,7 +701,6 @@ void ScoreClass::Show() {
   TheScreen().visible_page().view().Clear();
   show.page().view().Clear();
   TheScreen().sys_mem_page().view().Clear();
-  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().view().Clear();
   Set_Palette(ThePalettes().black_palette());
 
@@ -1307,9 +1306,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
     */
     Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
     show.DrawTextRects();
-    TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-    TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
 
     if (!TheKeyboard().Peek()) {
@@ -1510,9 +1507,7 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
   */
   Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
   show.DrawTextRects();
-  TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
 
   Call_Back_Delay(show, 40);
 
@@ -2103,9 +2098,7 @@ void Call_Back_Delay(Presentation& show, int time) {
     Animate_Score_Objs();
     Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
     show.DrawTextRects();
-    TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-    TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     //}
   } while (cd.Time());
 }

@@ -181,7 +181,6 @@
 #include "ra/heap.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
-#include "ra/input.h"
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
 #include "ra/logic.h"

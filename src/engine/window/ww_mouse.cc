@@ -23,7 +23,6 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "engine/codec/lcw_uncompress.h"
-#include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/window/display.h"
 
@@ -100,8 +99,7 @@ static int CursorScaleForDisplay() {
   return scale;
 }
 
-HardwareCursor::HardwareCursor([[maybe_unused]] PixelView* scr, int max_width,
-                               int max_height)
+HardwareCursor::HardwareCursor(int max_width, int max_height)
     : MouseCursor(
           base::ToSize(static_cast<base::ssize>(max_width) * max_height)),
       max_width_(max_width),
@@ -272,22 +270,11 @@ void HardwareCursor::Show() {
   }
 }
 
-void HardwareCursor::Conditional_Hide_Mouse(int /*x1*/, int /*y1*/, int /*x2*/,
-                                            int /*y2*/) {}
-
-void HardwareCursor::Conditional_Show_Mouse() {}
-
 int HardwareCursor::hide_count() const { return hide_count_; }
 
 int HardwareCursor::x() const { return x_; }
 
 int HardwareCursor::y() const { return y_; }
-
-void HardwareCursor::Draw_Mouse(PixelView* /*scr*/) {
-  // No-op: SDL hardware cursor is drawn by the OS, not by us.
-}
-
-void HardwareCursor::Erase_Mouse(PixelView* /*scr*/, bool /*forced*/) {}
 
 void HardwareCursor::GrabMouse() {
   if (!mouse_grab_disabled) {
@@ -350,18 +337,6 @@ void HideMouse() {
 void ShowMouse() {
   if (active_cursor) {
     active_cursor->Show();
-  }
-}
-
-void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2) {
-  if (active_cursor) {
-    active_cursor->Conditional_Hide_Mouse(x1, y1, x2, y2);
-  }
-}
-
-void Conditional_Show_Mouse() {
-  if (active_cursor) {
-    active_cursor->Conditional_Show_Mouse();
   }
 }
 

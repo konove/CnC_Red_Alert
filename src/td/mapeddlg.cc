@@ -88,7 +88,6 @@
 #include "td/house.h"
 #include "td/ini.h"
 #include "td/inline.h"
-#include "td/input.h"
 #include "td/jshell.h"
 #include "td/list.h"
 #include "td/mapedit.h"

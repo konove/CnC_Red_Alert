@@ -93,7 +93,6 @@
 #include "td/gauge.h"
 #include "td/house.h"
 #include "td/inline.h"
-#include "td/input.h"
 #include "td/jshell.h"
 #include "td/list.h"
 #include "td/menus.h"

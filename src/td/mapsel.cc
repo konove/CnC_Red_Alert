@@ -574,7 +574,6 @@ void Map_Selection() {
 
   TheScreen().sys_mem_page().view().Clear();
   show.page().view().Clear();
-  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().view().Clear();
 
   Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30, 63);

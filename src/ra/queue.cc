@@ -143,7 +143,6 @@
 #include "ra/rules.h"
 #include "ra/saveload.h"
 #include "ra/scenario.h"
-#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/smudge.h"
 #include "ra/startup.h"
@@ -1255,7 +1254,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     ServiceRealTime();
     if (!first_time && TheGameState().special_dialog() == SDLG_NONE &&
         reconnect_dlg == 0) {
-      TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
       input = TheMap().Input(x, y).key;
       if (input) {
         Keyboard_Process(input);

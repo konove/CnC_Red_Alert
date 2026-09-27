@@ -1945,7 +1945,6 @@ bool Select_Game(bool fade) {
   HideMouse();
   HideMouse();
   HideMouse();
-  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
 
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   TheScreen().hidden_page().view().Clear();

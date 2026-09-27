@@ -71,7 +71,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/window/ww_mouse.h"
 #include "td/assets.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -306,14 +305,6 @@ void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style) {
   const int h = base::At(base::At(WindowList, static_cast<int>(window)),
                          kWindowHeight);  // Window dimensions.
 
-  /*
-  **	If it is to be rendered to the seenpage, then
-  **	hide the mouse.
-  */
-  if (TheScreen().IsVisible(&view)) {
-    Conditional_Hide_Mouse(x, y, x + w, y + h);
-  }
-
   Draw_Box(view, x, y, w, h, style, true);
   const int border = base::At(_border.at(style), 1);  // Width of border.
 
@@ -323,13 +314,6 @@ void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style) {
   if (border) {
     Draw_Box(view, x + border, y + border, w - (border * 2), h - (border * 2),
              style, false);
-  }
-
-  /*
-  **	Restore the mouse if it has been hidden and return.
-  */
-  if (TheScreen().IsVisible(&view)) {
-    Conditional_Show_Mouse();
   }
 }
 

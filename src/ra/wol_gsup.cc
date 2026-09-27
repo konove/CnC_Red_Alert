@@ -54,7 +54,6 @@
 #include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/iconlist.h"
-#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/ipx.h"
 #include "ra/mission_id.h"

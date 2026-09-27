@@ -80,7 +80,6 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/link.h"
-#include "ra/screen.h"
 #include "ra/text_ids.h"
 
 using enum engine::window::KeyNumber;
@@ -352,13 +351,6 @@ bool ListClass::Draw_Me(PixelView& view, bool forced) {
   // peer through ControlClass::Action.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
   if (GadgetClass::Draw_Me(view, forced)) {
-    /*
-    **	Turn off the mouse.
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
-    }
-
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_BOX, true);
 
     /*
@@ -378,12 +370,6 @@ bool ListClass::Draw_Me(PixelView& view, bool forced) {
       }
     }
 
-    /*
-    **	Turn on the mouse.
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Show_Mouse();
-    }
     return true;
   }
   return false;

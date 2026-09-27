@@ -122,7 +122,6 @@
 #include "td/nullmgr.h"
 #include "td/object_heaps.h"
 #include "td/randomstate.h"
-#include "td/screen.h"
 #include "td/session.h"
 #include "td/stats.h"
 #include "td/text.h"
@@ -1062,7 +1061,6 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     Call_Back();
     if (!first_time && TheGameState().special_dialog() == SDLG_NONE &&
         reconnect_dlg == 0) {
-      TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
       input = TheMap().Input(x, y).key;
       if (input) {
         Keyboard_Process(input);

@@ -373,7 +373,6 @@ void GScreenClass::Render() {
   // }
 
   if (IsToUpdate || IsScreenToRedraw) {
-    // TheMouse()->Erase_Mouse(&HidPage, true);
     PixelView& view = TheScreen().hidden_view();
 
     // if (IsToRedraw) {
@@ -462,12 +461,10 @@ extern bool CanVblankSync;
  *function.                                            *
  *=============================================================================================*/
 void GScreenClass::Blit_Display() {
-  TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 0, 0, 0,
                                    TheScreen().hidden_view().width(),
                                    TheScreen().hidden_view().height());
   if (config::kCheatKeysEnabled) {
     Add_Current_Screen();
   }
-  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), false);
 }

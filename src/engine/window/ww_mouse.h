@@ -34,8 +34,6 @@
 #include <span>
 #include <vector>
 
-#include "engine/gfx/pixel_buffer.h"
-
 class SDL_Cursor;
 class SDL_Surface;
 
@@ -53,16 +51,14 @@ using SdlSurfacePtr = std::unique_ptr<SDL_Surface, SdlSurfaceDeleter>;
 
 // The hardware cursor that replaces the original's software cursor.
 //
-// It keeps the software cursor's interface: the game hands it cursor shapes,
-// hides and shows it in nested pairs, and still calls the draw, erase and
-// conditional-hide entry points, which do nothing now that the OS draws the
-// cursor. Each game's Input owns the one instance (see Input::InstallMouse());
-// constructing it grabs the mouse into the window and makes it the instance the
-// free functions below reach, and destroying it lets go of the mouse. Both need
-// an installed Display.
+// The game hands it cursor shapes and hides and shows it in nested pairs, as it
+// did the software cursor; the OS does the drawing. Each game's Input owns the
+// one instance (see Input::InstallMouse()); constructing it grabs the mouse
+// into the window and makes it the instance the free functions below reach, and
+// destroying it lets go of the mouse. Both need an installed Display.
 class HardwareCursor {
  public:
-  HardwareCursor(PixelView* scr, int max_width, int max_height);
+  HardwareCursor(int max_width, int max_height);
   HardwareCursor(const HardwareCursor&) = delete;
   HardwareCursor& operator=(const HardwareCursor&) = delete;
   HardwareCursor(HardwareCursor&&) = delete;
@@ -85,11 +81,6 @@ class HardwareCursor {
   void Hide();
   void Show();
 
-  // Legacy API stubs. The original game used these for software cursor
-  // clipping during screen updates; hardware cursors don't need this.
-  void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2);
-  void Conditional_Show_Mouse();
-
   // Returns the current hide count (0 = visible).
   [[nodiscard]] int hide_count() const;
 
@@ -97,11 +88,6 @@ class HardwareCursor {
   // screen pixels.
   [[nodiscard]] int x() const;
   [[nodiscard]] int y() const;
-
-  // No-ops for hardware cursor. Kept for API compatibility with legacy code
-  // that expected software cursor rendering.
-  void Draw_Mouse(PixelView* scr);
-  void Erase_Mouse(PixelView* scr, bool forced = false);
 
   // Confines the mouse to the game window, unless mouse_grab_disabled is set,
   // or releases it. Both act on TheDisplay().
@@ -162,8 +148,6 @@ class HardwareCursor {
 // when there is none, does nothing or returns 0.
 void HideMouse();
 void ShowMouse();
-void Conditional_Hide_Mouse(int x1, int y1, int x2, int y2);
-void Conditional_Show_Mouse();
 int MouseHideCount();
 void SetMouseShape(int hot_x, int hot_y, std::span<const std::byte> shape);
 int MouseX();

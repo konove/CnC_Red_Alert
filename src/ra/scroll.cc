@@ -55,7 +55,6 @@
 #include "ra/goptions.h"
 #include "ra/help.h"
 #include "ra/inline.h"
-#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/screen.h"
 

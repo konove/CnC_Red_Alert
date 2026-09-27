@@ -105,7 +105,6 @@
 #include "ra/hotkeys.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/menus.h"

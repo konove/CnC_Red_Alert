@@ -60,14 +60,12 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/ww_mouse.h"
 #include "td/assets.h"
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/gadget.h"
 #include "td/jshell.h"
-#include "td/screen.h"
 
 using enum engine::window::KeyNumber;
 
@@ -193,13 +191,6 @@ void EditClass::Set_Text(std::span<char> text, int max_len) {
 bool EditClass::Draw_Me(PixelView& view, bool forced) {
   if (ControlClass::Draw_Me(view, forced)) {
     /*
-    **	Hide the mouse.
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
-    }
-
-    /*
     **	Draw the body & set text color.
     */
     Draw_Background(view);
@@ -208,13 +199,6 @@ bool EditClass::Draw_Me(PixelView& view, bool forced) {
     **	Display the text.
     */
     Draw_Text(view, String.data());
-
-    /*
-    **	Display the mouse.
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Show_Mouse();
-    }
 
     return true;
   }

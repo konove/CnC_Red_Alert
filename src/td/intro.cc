@@ -172,7 +172,6 @@ void Choose_Side() {
   Call_Back();
   gdibrief = Open_Movie(gdibrief_io, movie_screen, audio, "GDI1.VQA");
 
-  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().view().Clear();
   show.page().view().Clear();
   TheScreen().sys_mem_page().view().Clear();

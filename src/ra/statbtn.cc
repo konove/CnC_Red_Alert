@@ -49,12 +49,10 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/window/ww_mouse.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/jshell.h"
-#include "ra/screen.h"
 
 /***********************************************************************************************
  * StaticButtonClass::StaticButtonClass -- Normal constructor for a text button.
@@ -136,25 +134,12 @@ StaticButtonClass::StaticButtonClass()
 bool StaticButtonClass::Draw_Me(PixelView& view, bool forced) {
   if (GadgetClass::Draw_Me(view, forced)) {
     /*
-    **	Hide the mouse.
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Hide_Mouse(X, Y, X + Width - 1, Y + Height - 1);
-    }
-
-    /*
     **	Draw the background and overlaying text. These are virtual function
     **	calls so that they may be overridden.
     */
     Draw_Background(view);
     Draw_Text(view, String.c_str());
 
-    /*
-    **	Display the mouse.
-    */
-    if (TheScreen().IsVisible(&view)) {
-      Conditional_Show_Mouse();
-    }
     return true;
   }
   return false;

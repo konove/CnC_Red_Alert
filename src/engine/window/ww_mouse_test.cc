@@ -22,8 +22,7 @@ class HardwareCursorTest : public testing::Test {
 };
 
 TEST_F(HardwareCursorTest, FreeFunctionsForgetADestroyedMouse) {
-  auto mouse =
-      std::make_unique<HardwareCursor>(nullptr, kCursorSize, kCursorSize);
+  auto mouse = std::make_unique<HardwareCursor>(kCursorSize, kCursorSize);
   HideMouse();
   RecordMousePosition(10, 20);
   ASSERT_EQ(MouseHideCount(), 1);
@@ -39,10 +38,8 @@ TEST_F(HardwareCursorTest, FreeFunctionsForgetADestroyedMouse) {
 // Input::InstallMouse() replaces a mouse by building the new one before the
 // old one goes, so the old one's destructor must leave the new one reachable.
 TEST_F(HardwareCursorTest, ReplacingAMouseKeepsTheNewOne) {
-  auto old_mouse =
-      std::make_unique<HardwareCursor>(nullptr, kCursorSize, kCursorSize);
-  auto new_mouse =
-      std::make_unique<HardwareCursor>(nullptr, kCursorSize, kCursorSize);
+  auto old_mouse = std::make_unique<HardwareCursor>(kCursorSize, kCursorSize);
+  auto new_mouse = std::make_unique<HardwareCursor>(kCursorSize, kCursorSize);
 
   old_mouse.reset();
   RecordMousePosition(30, 40);

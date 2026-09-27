@@ -163,10 +163,8 @@ static void CyclePalette() {
   }
 }
 
-// Reads one input event from the map and dispatches any keypress. The mouse is
-// erased from the hidden page first so the next render draws it afresh.
+// Reads one input event from the map and dispatches any keypress.
 static void ProcessInput() {
-  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   engine::window::KeyNumber input = engine::window::KN_NONE;
   int x = 0;
   int y = 0;
@@ -509,7 +507,6 @@ static bool FinishScenarioIfDecided() {
     Send_Statistics_Packet();
   }
 
-  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheGameState().player_wins() = false;
   TheGameState().player_loses() = false;
   TheGameState().player_restarts() = false;
