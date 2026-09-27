@@ -29,10 +29,8 @@
 #define CNC_RED_ALERT_ENGINE_WINDOW_WW_MOUSE_H_
 
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <span>
-#include <vector>
 
 class SDL_Cursor;
 class SDL_Surface;
@@ -105,9 +103,9 @@ class HardwareCursor {
   void RecordPosition(int x, int y);
 
  private:
-  // Scratch space of max_width_ * max_height_ pixels that SetShape() decodes a
-  // shape into, unscaled; only the first Width * Height pixels are the shape.
-  std::vector<uint8_t> MouseCursor;
+  // Makes sdl_surface_ the SDL cursor, with the hot spot scaled like it.
+  void RebuildCursor();
+
   // The cursor SDL is showing, or null before the first SetShape().
   SdlCursorPtr sdl_cursor_;
   // The scaled 8-bit image sdl_cursor_ was made from, kept so that
@@ -117,11 +115,6 @@ class HardwareCursor {
   int hot_x_ = 0;
   int hot_y_ = 0;
 
-  // The decoded shape, unscaled, and its size in pixels. SetShape() scales
-  // it straight away; nothing reads it later.
-  std::vector<uint8_t> OriginalCursor;
-  int OriginalWidth = 0;
-  int OriginalHeight = 0;
   // The factor the current cursor was scaled by, fixed when it was set.
   int scale_ = 1;
 
@@ -137,7 +130,8 @@ class HardwareCursor {
   int hide_count_{0};
 
   // The pointer position, as RecordPosition() last recorded it.
-  int x_ = 0, y_ = 0;
+  int x_ = 0;
+  int y_ = 0;
 
   // Set when the palette changes while the cursor is hidden; the next Show()
   // that makes it visible calls UpdatePalette().

@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <span>
 #include <utility>
 #include <vector>
@@ -40,34 +41,28 @@ void SdlSurfaceDeleter::operator()(SDL_Surface* surface) const noexcept {
 // nullptr while there is none.
 static HardwareCursor* active_cursor = nullptr;
 
-// Returns the src_width x src_height image `src` scaled up `scale` times, and
-// its size in *dst_width and *dst_height; empty, with a size of 0 x 0, for an
-// empty image or a scale below 1. Nearest-neighbor keeps the pixel art crisp.
+// The Shape_Type fields up to and including DataLength. The color table after
+// them belongs to compact shapes, which SetShape() rejects.
+constexpr base::ssize kShapeHeaderSize = offsetof(Shape_Type, Colortable);
+static_assert(kShapeHeaderSize == 10);
+
+// Returns the width x height image `src` scaled up `scale` (at least 1) times.
+// Nearest-neighbor keeps the pixel art crisp.
 [[nodiscard]] static std::vector<uint8_t> ScaleUpNearest(
-    std::span<const uint8_t> src, int src_width, int src_height, int scale,
-    int* dst_width, int* dst_height) {
-  if (src_width <= 0 || src_height <= 0 || scale <= 0) {
-    *dst_width = 0;
-    *dst_height = 0;
-    return {};
-  }
-
-  const int width = src_width * scale;
-  const int height = src_height * scale;
+    std::span<const uint8_t> src, int width, int height, int scale) {
+  const int dst_width = width * scale;
+  const int dst_height = height * scale;
   std::vector<uint8_t> dst(
-      base::ToSize(static_cast<base::ssize>(width) * height));
+      base::ToSize(static_cast<base::ssize>(dst_width) * dst_height));
 
-  for (int y = 0; y < height; ++y) {
+  for (int y = 0; y < dst_height; ++y) {
     const int src_y = y / scale;
-    for (int x = 0; x < width; ++x) {
+    for (int x = 0; x < dst_width; ++x) {
       const int src_x = x / scale;
-      dst.at(base::ToSize((y * width) + x)) =
-          base::At(src, base::ToSize((src_y * src_width) + src_x));
+      dst.at(base::ToSize((y * dst_width) + x)) =
+          base::At(src, base::ToSize((src_y * width) + src_x));
     }
   }
-
-  *dst_width = width;
-  *dst_height = height;
   return dst;
 }
 
@@ -89,21 +84,35 @@ static int CursorScaleForDisplay() {
 
   constexpr int kLinesPerScaleStep = 500;
   constexpr int kMaxScale = 4;
-  const int scale = mode.h / kLinesPerScaleStep;
-  if (scale < 1) {
-    return 1;
+  return std::clamp(mode.h / kLinesPerScaleStep, 1, kMaxScale);
+}
+
+// Returns the display's palette, or nullptr without a display or before it has
+// a video mode.
+static const SDL_Palette* GamePalette() {
+  if (!engine::window::HasDisplay()) {
+    return nullptr;
   }
-  if (scale > kMaxScale) {
-    return kMaxScale;
-  }
-  return scale;
+  return static_cast<const SDL_Palette*>(
+      engine::window::TheDisplay().palette());
+}
+
+// Gives colors 1-255 of the cursor's palette the game's colors. Color 0 is
+// left alone: it is the transparent one.
+static void CopyGameColors(const SDL_Palette& game_palette,
+                           SDL_Palette& cursor_palette) {
+  SDL_SetPaletteColors(
+      &cursor_palette,
+      // SDL owns ncolors (256) entries in the window palette.
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      std::span(game_palette.colors, base::ToSize(game_palette.ncolors))
+          .subspan(1, 255)
+          .data(),
+      1, 255);
 }
 
 HardwareCursor::HardwareCursor(int max_width, int max_height)
-    : MouseCursor(
-          base::ToSize(static_cast<base::ssize>(max_width) * max_height)),
-      max_width_(max_width),
-      max_height_(max_height) {
+    : max_width_(max_width), max_height_(max_height) {
   GrabMouse();
   active_cursor = this;
 }
@@ -119,37 +128,34 @@ HardwareCursor::~HardwareCursor() {
 
 void HardwareCursor::SetShape(int hot_x, int hot_y,
                               std::span<const std::byte> shape) {
-  // 10 is the size of the Shape_Type header up to and including DataLength;
-  // the color table after it belongs to compact shapes, which are rejected
-  // below.
-  if (shape.size() < 10 || current_shape_ == shape.data()) {
+  if (std::ssize(shape) < kShapeHeaderSize || current_shape_ == shape.data()) {
     return;
   }
   Shape_Type header{};
-  base::CopyBytes(base::ObjectBytes(header), shape, 10);
-  const auto* cursor_shape = &header;
+  base::CopyBytes(base::ObjectBytes(header), shape, kShapeHeaderSize);
 
-  if (cursor_shape->Width == 0 || cursor_shape->OriginalHeight == 0 ||
-      std::cmp_greater(cursor_shape->Width, max_width_) ||
-      std::cmp_greater(cursor_shape->OriginalHeight, max_height_)) {
+  if (header.Width == 0 || header.OriginalHeight == 0 ||
+      std::cmp_greater(header.Width, max_width_) ||
+      std::cmp_greater(header.OriginalHeight, max_height_)) {
     return;
   }
 
   // Only ShapeType 0 (LCW compressed, 256-color) is supported here.
-  if (cursor_shape->ShapeType != 0) {
-    DLOG(INFO) << "SetShape: shape type " << cursor_shape->ShapeType;
+  if (header.ShapeType != 0) {
+    DLOG(INFO) << "SetShape: shape type " << header.ShapeType;
     return;
   }
+  const int width = header.Width;
+  const int height = header.OriginalHeight;
 
-  // Shape data is LCW compressed starting at byte 10 (after the header).
-  std::vector<uint8_t> rle_data(cursor_shape->DataLength);
-  const int32_t rle_bytes = LCW_Uncompress(
-      shape.subspan(10), std::as_writable_bytes(std::span(rle_data)));
+  std::vector<uint8_t> rle_data(header.DataLength);
+  const int32_t rle_bytes =
+      LCW_Uncompress(shape.subspan(kShapeHeaderSize),
+                     std::as_writable_bytes(std::span(rle_data)));
   auto input = std::span(rle_data).first(base::ToSize(rle_bytes));
-  const auto pixel_count =
-      base::ToSize(cursor_shape->Width * cursor_shape->OriginalHeight);
-  auto output = std::span(MouseCursor).first(pixel_count);
-  std::ranges::fill(output, 0);
+  // Starts out transparent: skipped pixels stay color 0.
+  std::vector<uint8_t> pixels(base::ToSize(width * height));
+  auto output = std::span(pixels);
   // Undo the zero-run-length encoding under the LCW: a nonzero byte is a
   // pixel, and a zero byte is followed by a count of transparent (color 0)
   // pixels to skip. Data that runs out early or holds a zero or overlong count
@@ -176,29 +182,12 @@ void HardwareCursor::SetShape(int hot_x, int hot_y,
     }
   }
 
-  // Scale a copy of the unscaled shape for the display. Palette changes do not
-  // come back to it: UpdatePalette() recolors the scaled surface instead.
-  OriginalWidth = cursor_shape->Width;
-  OriginalHeight = cursor_shape->OriginalHeight;
-  const int original_size = OriginalWidth * OriginalHeight;
+  const int scale = CursorScaleForDisplay();
+  const int scaled_width = width * scale;
+  const int scaled_height = height * scale;
+  const auto scaled_pixels = ScaleUpNearest(pixels, width, height, scale);
 
-  OriginalCursor.assign(MouseCursor.begin(),
-                        MouseCursor.begin() + original_size);
-
-  scale_ = CursorScaleForDisplay();
-  int scaled_width = 0;
-  int scaled_height = 0;
-  const auto scaled_cursor =
-      ScaleUpNearest(OriginalCursor, OriginalWidth, OriginalHeight, scale_,
-                     &scaled_width, &scaled_height);
-  if (scaled_cursor.empty()) {
-    return;
-  }
-
-  const int scaled_hot_x = hot_x * scale_;
-  const int scaled_hot_y = hot_y * scale_;
-
-  // The surface outlives scaled_cursor, because UpdatePalette() recolors it
+  // The surface outlives scaled_pixels, because UpdatePalette() recolors it
   // later, so it has to own its pixels: SDL_CreateRGBSurfaceFrom would only
   // borrow them.
   SdlSurfacePtr surface(
@@ -214,41 +203,26 @@ void HardwareCursor::SetShape(int hot_x, int hot_y,
                 base::ToSize(surface->pitch) * base::ToSize(surface->h));
   for (int y = 0; y < scaled_height; ++y) {
     std::ranges::copy(
-        std::span(scaled_cursor)
+        std::span(scaled_pixels)
             .subspan(base::ToSize(y * scaled_width),
                      base::ToSize(scaled_width)),
         surface_pixels.subspan(base::ToSize(y * surface->pitch)).begin());
   }
 
-  const auto* window_palette = engine::window::HasDisplay()
-                                   ? static_cast<const SDL_Palette*>(
-                                         engine::window::TheDisplay().palette())
-                                   : nullptr;
-  if (window_palette != nullptr) {
-    // Give colors 1-255 the game's colors; color 0 is transparent. SDL owns
-    // ncolors (256) entries in the window palette.
-    SDL_SetPaletteColors(
-        surface->format->palette,
-        // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-        std::span(window_palette->colors, base::ToSize(window_palette->ncolors))
-            .subspan(1)
-            .data(),
-        1, 255);
+  if (const SDL_Palette* game_palette = GamePalette()) {
+    CopyGameColors(*game_palette, *surface->format->palette);
     // An 8-bit surface's palette has 256 entries. SDL_CreateColorCursor()
     // converts the surface to ARGB through it, so an alpha of 0 on entry 0 is
     // what makes color 0 see-through.
     surface->format->palette->colors->a = 0;
   }
 
-  SdlCursorPtr sdl_cursor(
-      SDL_CreateColorCursor(surface.get(), scaled_hot_x, scaled_hot_y));
-
-  SDL_SetCursor(sdl_cursor.get());
   current_shape_ = shape.data();
-  sdl_cursor_ = std::move(sdl_cursor);
   sdl_surface_ = std::move(surface);
   hot_x_ = hot_x;
   hot_y_ = hot_y;
+  scale_ = scale;
+  RebuildCursor();
 }
 
 // Only the transitions between a count of 0 and 1 reach SDL.
@@ -287,8 +261,8 @@ void HardwareCursor::ReleaseMouse() {
 }
 
 void HardwareCursor::UpdatePalette() {
-  if (!engine::window::HasDisplay() ||
-      engine::window::TheDisplay().palette() == nullptr || !sdl_surface_) {
+  const SDL_Palette* game_palette = GamePalette();
+  if (game_palette == nullptr || !sdl_surface_) {
     return;
   }
 
@@ -299,26 +273,16 @@ void HardwareCursor::UpdatePalette() {
   }
 
   palette_stale_ = false;
+  // Color 0 keeps the alpha of 0 SetShape() gave it.
+  CopyGameColors(*game_palette, *sdl_surface_->format->palette);
+  RebuildCursor();
+}
 
-  const auto* window_palette =
-      static_cast<const SDL_Palette*>(engine::window::TheDisplay().palette());
-  // Color 0 keeps the alpha of 0 SetShape() gave it. SDL owns ncolors (256)
-  // entries in the window palette.
-  SDL_SetPaletteColors(
-      sdl_surface_->format->palette,
-      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-      std::span(window_palette->colors, base::ToSize(window_palette->ncolors))
-          .subspan(1)
-          .data(),
-      1, 255);
-
-  const int scaled_hot_x = hot_x_ * scale_;
-  const int scaled_hot_y = hot_y_ * scale_;
-  SdlCursorPtr sdl_cursor(
-      SDL_CreateColorCursor(sdl_surface_.get(), scaled_hot_x, scaled_hot_y));
-  SDL_SetCursor(sdl_cursor.get());
-
-  sdl_cursor_ = std::move(sdl_cursor);
+void HardwareCursor::RebuildCursor() {
+  SdlCursorPtr cursor(SDL_CreateColorCursor(sdl_surface_.get(), hot_x_ * scale_,
+                                            hot_y_ * scale_));
+  SDL_SetCursor(cursor.get());
+  sdl_cursor_ = std::move(cursor);
 }
 
 void HardwareCursor::RecordPosition(int x, int y) {
