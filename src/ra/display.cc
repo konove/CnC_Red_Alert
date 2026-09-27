@@ -1731,9 +1731,18 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
   TheWorld().chronal_vortex().Set_Redraw();
 
   if (DesiredTacticalCoord != TacticalCoord) {
+    const bool moved = Lepton_To_Pixel(Coord_X(DesiredTacticalCoord)) !=
+                           Lepton_To_Pixel(Coord_X(TacticalCoord)) ||
+                       Lepton_To_Pixel(Coord_Y(DesiredTacticalCoord)) !=
+                           Lepton_To_Pixel(Coord_Y(TacticalCoord));
     TheWorld().scenario_init()++;
     Set_Tactical_Position(DesiredTacticalCoord);
     TheWorld().scenario_init()--;
+    // The map moved under the mouse: move the placement cursor to the cell
+    // now under it, as moving the mouse would.
+    if (moved) {
+      Set_Cursor_Pos(-1);
+    }
   }
 
   CellRedraw.assign(CellRedraw.size(), true);
