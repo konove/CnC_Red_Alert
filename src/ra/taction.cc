@@ -69,7 +69,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/anim.h"

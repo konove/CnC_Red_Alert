@@ -54,8 +54,8 @@
 #include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
+#include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/ww_mouse.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"  // IWYU pragma: keep
 #include "ra/audio.h"

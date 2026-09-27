@@ -2,7 +2,7 @@
 // cursor shapes into SDL color cursors, scaling them for the display, and
 // keeping their colors in step with the palette.
 
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 
 #include <SDL_events.h>
 #include <SDL_mouse.h>

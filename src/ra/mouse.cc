@@ -57,8 +57,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/platform/ftimer.h"
+#include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/ww_mouse.h"
 #include "magic_enum/magic_enum.hpp"  // IWYU pragma: keep - used by an DCHECK() below.
 #include "ra/defines.h"
 #include "ra/jshell.h"

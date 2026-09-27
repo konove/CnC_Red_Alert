@@ -50,7 +50,7 @@
 #include "base/fixed.h"
 #include "base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"

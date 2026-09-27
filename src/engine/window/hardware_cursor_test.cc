@@ -1,6 +1,6 @@
 // Tests for the free mouse functions: which HardwareCursor they reach.
 
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 
 #include <memory>
 

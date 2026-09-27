@@ -25,8 +25,8 @@
 // bottom are the interface the games use; they forward to the one live
 // HardwareCursor.
 
-#ifndef CNC_RED_ALERT_ENGINE_WINDOW_WW_MOUSE_H_
-#define CNC_RED_ALERT_ENGINE_WINDOW_WW_MOUSE_H_
+#ifndef CNC_RED_ALERT_ENGINE_WINDOW_HARDWARE_CURSOR_H_
+#define CNC_RED_ALERT_ENGINE_WINDOW_HARDWARE_CURSOR_H_
 
 #include <cstddef>
 #include <memory>
@@ -162,4 +162,4 @@ extern bool mouse_grab_disabled;
 
 }  // namespace engine::window
 
-#endif  // CNC_RED_ALERT_ENGINE_WINDOW_WW_MOUSE_H_
+#endif  // CNC_RED_ALERT_ENGINE_WINDOW_HARDWARE_CURSOR_H_

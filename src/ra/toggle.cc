@@ -42,8 +42,8 @@
 
 #include "ra/toggle.h"
 
+#include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/ww_mouse.h"
 #include "ra/control.h"
 #include "ra/gadget.h"
 

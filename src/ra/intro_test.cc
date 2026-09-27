@@ -10,7 +10,7 @@
 
 #include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
 #include "ra/game_state.h"

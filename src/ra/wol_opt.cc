@@ -21,8 +21,8 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/sleep.h"
+#include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/ww_mouse.h"
 #include "ra/bigcheck.h"
 #include "ra/config.h"
 #include "ra/conquer.h"

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 
 namespace {
 // The cursor's hot-spot box, in pixels. The original picked a square large

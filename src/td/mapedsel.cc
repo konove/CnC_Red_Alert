@@ -51,7 +51,7 @@
 
 #include "absl/strings/str_format.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 #include "td/base.h"
 #include "td/building.h"
 #include "td/conquer.h"

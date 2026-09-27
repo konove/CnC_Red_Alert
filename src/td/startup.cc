@@ -93,7 +93,7 @@
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/file_system.h"
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/goptions.h"

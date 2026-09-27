@@ -35,7 +35,7 @@
 #include "engine/gfx/rgb.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/win32/win32_registry.h"
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 #include "ra/assets.h"
 #include "ra/config.h"
 #include "ra/game_state.h"

@@ -9,7 +9,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/net/net_select.h"
 #include "engine/window/display.h"
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 #include "engine/window/ww_win.h"
 #include "ra/config.h"
 #include "ra/game_state.h"

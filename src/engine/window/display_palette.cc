@@ -8,7 +8,7 @@
 #include <span>
 
 #include "engine/window/display.h"
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 
 namespace engine::window {
 

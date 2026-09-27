@@ -54,8 +54,8 @@ the game defines them. Moving a hook in (and making each game define it inside
 `namespace engine::window { }`) is a design change; list it for the user instead.
 
 **Test stubs.** The opposite case: `engine/window/keyboard_test.cc` compiles `keyboard.cc` alone and
-defines `SDL_Event_Loop()` and `Update_Mouse_Pos()` itself at global scope, standing in for the real
-ones in `ww_win.cc` and `ww_mouse.cc`. Those are library functions, so they move into
+defines `SDL_Event_Loop()` and `RecordMousePosition()` itself at global scope, standing in for the
+real ones in `ww_win.cc` and `hardware_cursor.cc`. Those are library functions, so they move into
 `engine::window`, and `keyboard.cc`'s calls then mean `engine::window::SDL_Event_Loop` - the global
 stubs no longer satisfy them. A stub goes in the namespace of the function it replaces.
 `git grep -n 'stub' -- 'src/engine/**'` and the library's `CMakeLists.txt` (`add_gtest` entries that

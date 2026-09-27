@@ -99,7 +99,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "engine/platform/memflag.h"
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/audio.h"
 #include "ra/building.h"

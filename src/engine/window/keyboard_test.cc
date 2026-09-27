@@ -8,8 +8,7 @@
 #include <SDL_scancode.h>
 #include <SDL_stdinc.h>
 
-
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 #include "engine/window/ww_win.h"
 #include "gtest/gtest.h"
 

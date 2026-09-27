@@ -54,8 +54,8 @@
 
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/ww_mouse.h"
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/dialog.h"

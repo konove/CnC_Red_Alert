@@ -110,7 +110,7 @@
 #include "engine/stream/span_source.h"
 #include "engine/stream/stream_sink.h"
 #include "engine/stream/stream_source.h"
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets.h"
 #include "ra/ccini.h"

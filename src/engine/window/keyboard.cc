@@ -11,7 +11,7 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 #include "engine/window/ww_win.h"
 
 namespace engine::window {

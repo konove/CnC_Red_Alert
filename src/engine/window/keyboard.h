@@ -337,7 +337,7 @@ class KeyBuffer {
   // rather than from the buffer. Covers either side of the keyboard for Shift,
   // Ctrl and Alt. `key` is a bare key code: with modifier bits set it names a
   // different scancode. The mouse buttons are IsLeftButtonDown() and
-  // IsRightButtonDown() in ww_mouse.h.
+  // IsRightButtonDown() in hardware_cursor.h.
   static bool IsDown(int key);
 
   // Queues the key or click an SDL event carries; mouse motion moves the

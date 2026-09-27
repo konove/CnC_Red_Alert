@@ -81,7 +81,7 @@
 #include "engine/platform/win32/win32_com.h"
 #include "engine/platform/win32/win32_registry.h"
 #include "engine/platform/win32/win32_system.h"
-#include "engine/window/ww_mouse.h"
+#include "engine/window/hardware_cursor.h"
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/inline.h"
