@@ -414,8 +414,6 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   */
   int jitter = 0;
   if (Altitude == kFlightLevel && !Class->IsFixedWing) {
-    Jitter++;
-
     static const int _jitter[] = {0, 0, 0, 0, 1,  1,  1,  0,
                                   0, 0, 0, 0, -1, -1, -1, 0};
     jitter = base::At(_jitter, Jitter % 16);
@@ -759,6 +757,13 @@ void AircraftClass::AI() {
   }
 
   if (Physics(Coord, PrimaryFacing) != IMPACT_NONE) {
+    Mark();
+  }
+
+  // A flying helicopter bobs one step per game frame. The step is saved, so it
+  // advances here rather than in Draw_It(), where it would count repaints.
+  if (Altitude == kFlightLevel && !Class->IsFixedWing) {
+    Jitter++;
     Mark();
   }
 
