@@ -60,6 +60,7 @@
 #include <cstdio>
 #include <cstring>
 
+#include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
 #include "td/winstub.h"
 
@@ -71,7 +72,7 @@ Instance_Class* DDE_Class = NULL;  // pointer for client callback
 bool CC95AlreadyRunning =
     FALSE;  // Was there an instance of C&C 95 already running when we started?
 
-extern TimerClass GameTimer;
+extern Stopwatch<SystemTickSource> GameTimer;
 extern bool GameTimerInUse;
 extern void CCDebugString(const char* string);
 
@@ -252,7 +253,7 @@ BOOL DDEServerClass::Callback(unsigned char* data, int32_t length) {
       case DDE_PACKET_HEART_BEAT:
         CCDebugString("C&C95 - Received heart beat packet.");
         if (GameTimerInUse) {
-          LastHeartbeat = GameTimer.Time();
+          LastHeartbeat = GameTimer.Value();
         } else {
           LastHeartbeat = 0;
         }
@@ -318,7 +319,7 @@ void DDEServerClass::Delete_MPlayer_Game_Info() {
  * HISTORY: * 6/9/96 11:05PM ST : Created *
  *=============================================================================================*/
 int DDEServerClass::Time_Since_Heartbeat() {
-  return (GameTimer.Time() - LastHeartbeat);
+  return (GameTimer.Value() - LastHeartbeat);
 }
 
 /***********************************************************************************************

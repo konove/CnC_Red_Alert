@@ -79,6 +79,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wsa_animation.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -334,8 +335,6 @@ FontStyle ScoreFontStyle(const std::span<const uint8_t> palette) {
 ScoreAnimClass::ScoreAnimClass(Presentation& show, int x, int y,
                                std::span<const std::byte> data)
     : XPos(x), YPos(y), DataPtr(data), show_(show) {
-  Timer.Set(0);
-  Timer.Start();
 }
 
 ScoreAnimClass::ScoreAnimClass(Presentation& show, int x, int y,
@@ -344,8 +343,6 @@ ScoreAnimClass::ScoreAnimClass(Presentation& show, int x, int y,
   show_.AddTextRect(x * 2, y * 2, x * 2, y * 2,
                     2 * StringPixelWidth(ScoreFontStyle(), Text()), 16);
 
-  Timer.Set(0);
-  Timer.Start();
 }
 
 ScoreAnimClass::~ScoreAnimClass() = default;
@@ -358,8 +355,8 @@ ScoreTimeClass::ScoreTimeClass(Presentation& show, int xpos, int ypos,
 }
 
 void ScoreTimeClass::Update() {
-  if (!Timer.Time()) {
-    Timer.Set(TimerReset);
+  if (!AnimTimer.Value()) {
+    AnimTimer.Set(TimerReset);
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
@@ -380,8 +377,8 @@ ScoreCredsClass::ScoreCredsClass(Presentation& show, int xpos, int ypos,
 }
 
 void ScoreCredsClass::Update() {
-  if (!Timer.Time()) {
-    Timer.Set(TimerReset);
+  if (!AnimTimer.Value()) {
+    AnimTimer.Set(TimerReset);
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
@@ -433,8 +430,8 @@ void ScorePrintClass::Update() {
 
   StillUpdating = true;
 
-  if (!Timer.Time()) {
-    Timer.Set(1);
+  if (!AnimTimer.Value()) {
+    AnimTimer.Set(1);
 
     const int pos = XPos + (Stage * 6);
     if (Stage) {
@@ -508,8 +505,8 @@ void MultiStagePrintClass::Update() {
 
   StillUpdating = true;
 
-  if (!Timer.Time()) {
-    Timer.Set(1);
+  if (!AnimTimer.Value()) {
+    AnimTimer.Set(1);
 
     /*
     ** Do 10 stages at once
@@ -570,8 +567,8 @@ void ScoreScaleClass::Update() {
   /*
   ** Restore the background for the scaled-up letter
   */
-  if (!Timer.Time()) {
-    Timer.Set(1);
+  if (!AnimTimer.Value()) {
+    AnimTimer.Set(1);
     if (Stage != 5) {
       show_.text_page().view().BlitTo(
           TheScreen().hidden_view(), base::At(_destx, Stage + 1) * 2, YPos * 2,
@@ -1828,7 +1825,7 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
 void Animate_Cursor(Presentation& show, int pos, int ypos) {
   static int _lastpos;
   static bool _state;
-  static CountDownTimerClass _timer;
+  static Timer<SystemTickSource> _timer;
 
   ypos += 7;  // move cursor to bottom of letter
 
@@ -1854,7 +1851,7 @@ void Animate_Cursor(Presentation& show, int pos, int ypos) {
   /*
   ** Toggle the color of the cursor, green or black, if it's time to do so.
   */
-  if (!_timer.Time()) {
+  if (!_timer.Value()) {
     _state = !_state;
     _timer.Set(5);
   }
@@ -2072,7 +2069,7 @@ void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
  *   04/13/1995 BWG : Created.                                             *
  *=========================================================================*/
 void Call_Back_Delay(Presentation& show, int time) {
-  CountDownTimerClass cd;
+  Timer<SystemTickSource> cd;
 
   if ((!ControlQ) &&
       (engine::window::IsCtrlDown() &&
@@ -2100,7 +2097,7 @@ void Call_Back_Delay(Presentation& show, int time) {
     show.DrawTextRects();
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
     //}
-  } while (cd.Time());
+  } while (cd.Value());
 }
 
 void Animate_Score_Objs() {

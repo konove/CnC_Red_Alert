@@ -46,6 +46,7 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "td/conquer.h"
@@ -135,7 +136,7 @@ class HelpClass : public TabClass {
   *mouse *	remains stationary while this countdown timer expires, then the
   *help text *	will pop up.
   */
-  static CountDownTimerClass CountDownTimer;
+  static Timer<SystemTickSource> CountDownTimer;
 
   /*
   **	This is a calculated cell offset list (from the Map.TacticalCell) that

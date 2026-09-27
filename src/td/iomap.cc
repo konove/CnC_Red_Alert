@@ -299,7 +299,7 @@ void MouseClass::ResetTransientUiState() {
   Override_Mouse_Shape(MOUSE_NORMAL, false);
   NormalMouseShape = MOUSE_NORMAL;
   Frame = 0;
-  Timer.Set(0);
+  AnimTimer.Set(0);
 }
 
 

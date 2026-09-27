@@ -8,6 +8,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "td/defines.h"
@@ -95,7 +96,7 @@ class GameState {
 
   // Paces the mission briefing: each line stays up until this runs out or
   // the speech over it finishes.
-  CountDownTimerClass& speech_timer() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Timer<SystemTickSource>& speech_timer() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return speech_timer_;
   }
 
@@ -150,7 +151,7 @@ class GameState {
   char version_text_[kVersionTextLength]{};
 
   SpecialDialogType special_dialog_ = SDLG_NONE;
-  CountDownTimerClass speech_timer_{int64_t{0}};
+  Timer<SystemTickSource> speech_timer_{int64_t{0}};
 
   engine::window::InputEvent unknown_input_;
 

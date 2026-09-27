@@ -76,7 +76,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "td/conquer.h"
@@ -164,8 +163,6 @@ GameType Select_MPlayer_Game() {
   const int d_cancel_h = 9 * factor;
   const int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
   const int d_cancel_y = d_ipx_y + d_ipx_h + d_margin;
-
-  const CountDownTimerClass delay;
 
   /*........................................................................
   Button enumerations:

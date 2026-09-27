@@ -44,6 +44,7 @@
 #include "td/winstub.h"
 
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/platform/ftimer.h"
 #include "engine/stream/seek_origin.h"
 #include "td/function.h"
 #include "td/game_state.h"
@@ -128,7 +129,7 @@ void Check_For_Focus_Loss() {
 
   if (!focus_last_time && TheGameState().in_focus()) {
     engine::audio::TheAudio().SetExtraPaused(true);
-    CountDownTimerClass cd;
+    Timer<SystemTickSource> cd;
     cd.Set(60 * 1);
 
     do {
@@ -140,7 +141,7 @@ void Check_For_Focus_Loss() {
         DispatchMessage(&msg);
       }
 
-    } while (cd.Time());
+    } while (cd.Value());
     engine::audio::TheAudio().SetExtraPaused(false);
     // AllSurfaces.Restore_Surfaces();
     // VisiblePage.Clear();

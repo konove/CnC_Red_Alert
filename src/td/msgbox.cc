@@ -54,7 +54,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/ftimer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "td/conquer.h"
@@ -427,10 +427,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     **	Delay for a brief moment so that the dialog box will be visible long
     **	enough to read the text.
     */
-    CountDownTimerClass timer(false);
-    timer.Start();
-    timer.Set(int64_t{kTicksPerSecond} * 4);
-    while (timer.Time() > 0) {
+    const Timer<SystemTickSource> timer{int64_t{kTicksPerSecond} * 4};
+    while (timer.Value() > 0) {
       Call_Back();
     }
     TheKeyboard().Clear();

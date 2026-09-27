@@ -55,6 +55,7 @@ struct FontStyle;
 #include "base/buffer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
 #include "td/presentation.h"
 
@@ -118,7 +119,7 @@ class ScoreAnimClass {
   int XPos;
   int Stage = 0;
   int YPos;
-  CountDownTimerClass Timer;
+  Timer<SystemTickSource> AnimTimer;
   std::span<const std::byte> DataPtr;
   const char* TextData = "";
   [[nodiscard]] char Text_At(int index) const {

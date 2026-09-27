@@ -94,7 +94,6 @@
 #include "base/strings/safe_string.h"
 #include "base/unaligned.h"
 #include "engine/platform/ftimer.h"
-#include "engine/platform/timer.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -201,7 +200,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
                        std::span<const int> their_frame,
                        std::span<const uint16_t> their_sent,
                        std::span<const uint16_t> their_recv);
-static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
+static int Process_Reconnect_Dialog(Timer<SystemTickSource>* timeout_timer,
                                     std::span<const int> their_frame,
                                     int num_conn, bool reconn, bool fresh);
 static int Handle_Timeout(ConnManClass* net, std::span<int> their_frame,
@@ -867,9 +866,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   //........................................................................
   // Timing variables
   //........................................................................
-  CountDownTimerClass retry_timer;    // time between FRAMESYNC packet resends
-  CountDownTimerClass dialog_timer;   // time to pop up a dialog
-  CountDownTimerClass timeout_timer;  // general-purpose timeout
+  Timer<SystemTickSource> retry_timer;  // time between FRAMESYNC packet resends
+  Timer<SystemTickSource> dialog_timer;   // time to pop up a dialog
+  Timer<SystemTickSource> timeout_timer;  // general-purpose timeout
 
   //........................................................................
   // Dialog variables
@@ -888,9 +887,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   // Wait to hear from all other players
   //------------------------------------------------------------------------
   int num_ready = 0;                    // # players signalling ready
-  retry_timer.Set(resend_delta, true);  // time to retry
-  dialog_timer.Set(dialog_time, true);  // time to show dlg
-  timeout_timer.Set(timeout, true);     // time to bail out
+  retry_timer.Set(resend_delta);        // time to retry
+  dialog_timer.Set(dialog_time);        // time to show dlg
+  timeout_timer.Set(timeout);           // time to bail out
 
   while (true) {
     //---------------------------------------------------------------------
@@ -900,8 +899,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     // him to advance.  Resending a FRAMESYNC ensures he knows what frame
     // number I'm on.
     //---------------------------------------------------------------------
-    if (!retry_timer.Time()) {
-      retry_timer.Set(resend_delta, true);  // time to retry
+    if (!retry_timer.Value()) {
+      retry_timer.Set(resend_delta);  // time to retry
       Send_FrameSync(net, my_sent);
     }
 
@@ -913,7 +912,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     //---------------------------------------------------------------------
     //	Pop up a reconnect dialog if enough time goes by
     //---------------------------------------------------------------------
-    if (!dialog_timer.Time() && TheGameState().special_dialog() == SDLG_NONE) {
+    if (!dialog_timer.Value() && TheGameState().special_dialog() == SDLG_NONE) {
       if (Process_Reconnect_Dialog(&timeout_timer, their_frame,
                                    net->Num_Connections(), first_time == 0,
                                    reconnect_dlg == 0)) {
@@ -926,7 +925,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     //	Exit if too much time goes by (the other system has crashed or
     // bailed)
     //---------------------------------------------------------------------
-    if (!timeout_timer.Time()) {
+    if (!timeout_timer.Value()) {
       //..................................................................
       // For the first-time run, just give up; something's wrong.
       //..................................................................
@@ -940,9 +939,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       if (Handle_Timeout(net, their_frame, their_sent, their_recv)) {
         TheMap().Flag_To_Redraw(true);  // erase modem reconnect dialog
         TheMap().Render();
-        retry_timer.Set(resend_delta, true);
-        dialog_timer.Set(dialog_time, true);
-        timeout_timer.Set(timeout, true);
+        retry_timer.Set(resend_delta);
+        dialog_timer.Set(dialog_time);
+        timeout_timer.Set(timeout);
       } else {
         return RC_NOT_RESPONDING;
       }
@@ -971,9 +970,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
         //...............................................................
         if (rc == RC_SERIAL_PROCESSED) {
           net->Service();
-          retry_timer.Set(resend_delta, true);
-          dialog_timer.Set(dialog_time, true);
-          timeout_timer.Set(timeout, true);
+          retry_timer.Set(resend_delta);
+          dialog_timer.Set(dialog_time);
+          timeout_timer.Set(timeout);
           continue;
         }
         //...............................................................
@@ -1967,7 +1966,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
+static int Process_Reconnect_Dialog(Timer<SystemTickSource>* timeout_timer,
                                     std::span<const int> their_frame,
                                     int num_conn, bool reconn, bool fresh) {
   static int displayed_time = 0;  // time value currently displayed
@@ -1976,8 +1975,7 @@ static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
   //------------------------------------------------------------------------
   // Convert the timer to seconds
   //------------------------------------------------------------------------
-  const int new_time = static_cast<int>(timeout_timer->Time() / 60);
-
+  const int new_time = static_cast<int>(timeout_timer->Value() / 60);
 
   //------------------------------------------------------------------------
   // If the timer has changed, or 'fresh' is set, redraw the dialog

@@ -41,6 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_SCROLL_H_
 #define CNC_RED_ALERT_TD_SCROLL_H_
 
+#include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "td/help.h"
@@ -58,7 +59,7 @@ class ScrollClass : public HelpClass {
   *reaches zero, *	scroll the map in the direction required and reset this
   *timer.
   */
-  static CountDownTimerClass Counter;
+  static Timer<SystemTickSource> Counter;
 
   /*
   **	These are the delays used (as countdown timers) to regulate the scroll

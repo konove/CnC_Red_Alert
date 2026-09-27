@@ -55,7 +55,7 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/shape.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/ftimer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "td/defines.h"
@@ -72,7 +72,7 @@ std::span<const std::byte> MouseClass::MouseShapes;
 **	This is the timer that controls the mouse animation. It is always at a
 *fixed *	rate so it uses the constant system timer.
 */
-CountDownTimerClass MouseClass::Timer;
+Timer<SystemTickSource> MouseClass::AnimTimer;
 
 /*
 ** This contains the value of the Virtual Function Table Pointer
@@ -183,7 +183,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
                    (mouse != CurrentMouseShape || wwsmall != IsSmall))) {
     startup = true;
 
-    Timer.Set(control->FrameRate);
+    AnimTimer.Set(control->FrameRate);
     Frame = 0;
 
 #ifdef OBSOLETE
@@ -229,10 +229,10 @@ void MouseClass::AI(engine::window::InputEvent& event, int x, int y) {
   std::span<const std::byte> mouse_shape_ptr;
   const MouseStruct* control = &MouseControl.at(CurrentMouseShape);
 
-  if (control->FrameRate && Timer.Time() == 0) {
+  if (control->FrameRate && AnimTimer.Value() == 0) {
     Frame++;
     Frame %= control->FrameCount;
-    Timer.Set(control->FrameRate);
+    AnimTimer.Set(control->FrameRate);
 
 #ifdef OBSOLETE
     Control.Set_Stage(Control.Fetch_Stage() % control->FrameCount);
@@ -264,7 +264,7 @@ void MouseClass::AI(engine::window::InputEvent& event, int x, int y) {
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-MouseClass::MouseClass() { Timer.Start(); }
+MouseClass::MouseClass() = default;
 
 /***********************************************************************************************
  * MouseClass::One_Time -- Performs the one time initialization of the mouse

@@ -47,7 +47,7 @@
 
 #include "base/array.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/ftimer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "td/defines.h"
@@ -61,7 +61,7 @@
 
 #define SCROLL_DELAY 1
 
-CountDownTimerClass ScrollClass::Counter;
+Timer<SystemTickSource> ScrollClass::Counter;
 
 /***********************************************************************************************
  * ScrollClass::ScrollClass -- Constructor for the scroll class object. *
@@ -78,8 +78,6 @@ CountDownTimerClass ScrollClass::Counter;
  *=============================================================================================*/
 ScrollClass::ScrollClass() {
   Counter.Set(SCROLL_DELAY);
-
-  Counter.Start();
 }
 
 /***********************************************************************************************
@@ -221,14 +219,14 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
             distance = base::At(_rate, rate);
             Scroll_Map(direction, distance, true);
 
-            if (Counter.Time() == 0 && player_scrolled) {
+            if (Counter.Value() == 0 && player_scrolled) {
               Counter.Set(SCROLL_DELAY);
               Inertia++;
             }
           }
         }
       }
-      if ((!player_scrolled) && (Counter.Time() == 0)) {
+      if ((!player_scrolled) && (Counter.Value() == 0)) {
         Inertia--;
         if (Inertia < 0) {
           Inertia++;

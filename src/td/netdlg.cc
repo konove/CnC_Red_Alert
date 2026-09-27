@@ -146,6 +146,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
@@ -4385,7 +4386,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
  * HISTORY: * 1/6/97 3:23PM ST : Created *
  *=============================================================================================*/
 static void Wait_For_Focus() {
-  CountDownTimerClass focus_timer;
+  Timer<SystemTickSource> focus_timer;
   focus_timer.Set(int64_t{5} * 60);
   /*
   ** Process the message loop until we are in focus.
@@ -4395,7 +4396,7 @@ static void Wait_For_Focus() {
     do {
       CCDebugString(".");
       TheKeyboard().Peek();
-      if (!focus_timer.Time()) {
+      if (!focus_timer.Value()) {
         focus_timer.Set(int64_t{5} * 60);
       }
 
@@ -4455,7 +4456,7 @@ static int Net_Fake_New_Dialog() {
 #endif  // GERMAN | FRENCH
 
   bool player_joined = false;
-  CountDownTimerClass join_timer;
+  Timer<SystemTickSource> join_timer;
 
   // Format_Window_String inserts line breaks in place, so format a copy rather
   // than the shared string table.
@@ -4756,10 +4757,10 @@ static int Net_Fake_New_Dialog() {
           */
           if (!player_joined) {
             player_joined = true;
-            join_timer.Set(int64_t{3} * 60, true);
+            join_timer.Set(int64_t{3} * 60);
             break;
           }
-          if (join_timer.Time()) {
+          if (join_timer.Value()) {
             break;
           }
 

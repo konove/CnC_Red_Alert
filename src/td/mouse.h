@@ -48,6 +48,7 @@ class ArchiveWriter;
 #include <span>
 
 #include "base/enum_array.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "td/defines.h"
@@ -133,7 +134,7 @@ class MouseClass : public ScrollClass {
   /*
   **	For animating mouse shapes, this controls the frame and animation rate.
   */
-  static CountDownTimerClass Timer;
+  static Timer<SystemTickSource> AnimTimer;
   int Frame = 0;
   //		StageClass Control;
 

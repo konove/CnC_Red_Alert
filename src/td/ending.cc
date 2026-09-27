@@ -57,7 +57,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/ftimer.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -103,7 +103,7 @@ void GDI_Ending() {
     Play_Movie("GDIEND1");
   }
 
-  CountDownTimerClass count;
+  Timer<SystemTickSource> count;
   if (GameFileExists("TRAILER.VQA")) {
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                     Call_Back);
@@ -118,7 +118,7 @@ void GDI_Ending() {
                     Call_Back);
     TheKeyboard().Clear();
     count.Set(int64_t{kTimerSecond} * 3);
-    while (count.Time()) {
+    while (count.Value()) {
       Call_Back();
     }
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
@@ -137,9 +137,9 @@ void GDI_Ending() {
                                           0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
   TheKeyboard().Clear();
-  //	CountDownTimerClass count;
+  //	Timer<SystemTickSource> count;
   count.Set(int64_t{kTimerSecond} * 3);
-  while (count.Time()) {
+  while (count.Value()) {
     Call_Back();
   }
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
@@ -286,7 +286,7 @@ void Nod_Ending() {
   TheGameState().preserve_movie_screen() = true;
   Play_Movie(fname);
 
-  CountDownTimerClass count;
+  Timer<SystemTickSource> count;
   if (GameFileExists("TRAILER.VQA")) {
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                     Call_Back);
@@ -301,7 +301,7 @@ void Nod_Ending() {
                     Call_Back);
     TheKeyboard().Clear();
     count.Set(int64_t{kTimerSecond} * 3);
-    while (count.Time()) {
+    while (count.Value()) {
       Call_Back();
     }
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
@@ -320,9 +320,9 @@ void Nod_Ending() {
                                           0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
   TheKeyboard().Clear();
-  //	CountDownTimerClass count;
+  //	Timer<SystemTickSource> count;
   count.Set(int64_t{kTimerSecond} * 3);
-  while (count.Time()) {
+  while (count.Value()) {
     Call_Back();
   }
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);

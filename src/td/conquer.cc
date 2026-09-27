@@ -97,8 +97,8 @@
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/env.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
-#include "engine/platform/timer.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_stream.h"
@@ -185,10 +185,10 @@ using enum engine::window::KeyNumber;
 
 // Holds the end of the current frame; Main_Loop() sets it and Sync_Delay()
 // waits it out.
-static CountDownTimerClass frame_timer{int64_t{0}};
+static Timer<SystemTickSource> frame_timer{int64_t{0}};
 
 // Measures how long one frame's logic takes, for the multiplayer frame rate.
-static TimerClass process_timer;
+static Stopwatch<SystemTickSource> process_timer;
 
 // Where the message being typed goes: a broadcast address after F4, or the
 // player picked with F1-F3. IPX only.
@@ -1203,8 +1203,8 @@ static void Message_Input(engine::window::KeyNumber& input) {
  *text fade color.                                                 *
  *=============================================================================================*/
 bool Color_Cycle() {
-  static CountDownTimerClass _timer(int64_t{0});
-  static CountDownTimerClass _ftimer(int64_t{0});
+  static Timer<SystemTickSource> _timer(int64_t{0});
+  static Timer<SystemTickSource> _ftimer(int64_t{0});
   static bool _up = false;
   bool changed = false;
 
@@ -1212,7 +1212,7 @@ bool Color_Cycle() {
   **	Process the fading white color. It is used for the radar box and other
   *glowing *	game interface elements.
   */
-  if (!_ftimer.Time()) {
+  if (!_ftimer.Value()) {
     _ftimer.Set(kTimerSecond / 8);
 
 /*
@@ -1247,7 +1247,7 @@ bool Color_Cycle() {
   /*
   **	Process the color cycling effects -- water.
   */
-  if (!_timer.Time()) {
+  if (!_timer.Value()) {
     unsigned char colors[3];
 
     _timer.Set(kTimerSecond / 4);
@@ -1586,7 +1586,7 @@ static void Sync_Delay() {
   /*
   **	Delay one tick.
   */
-  while (frame_timer.Time()) {
+  while (frame_timer.Value()) {
     Color_Cycle();
     Call_Back();
 
@@ -1648,7 +1648,7 @@ bool Main_Loop() {
   //
   // Initialize our AI processing timer
   //
-  process_timer.Set(0, true);
+  process_timer.Reset();
 
   if (TheDebugState().trap_check_heap()) {
     check_heap = true;
@@ -1734,7 +1734,7 @@ bool Main_Loop() {
   // Measure how long it took to process the AI
   //
   TheSession().process_ticks() =
-      static_cast<int>(TheSession().process_ticks() + process_timer.Time());
+      static_cast<int>(TheSession().process_ticks() + process_timer.Value());
   TheSession().process_frames()++;
 
   //	Heap_Dump_Check( "Before Queue_AI" );

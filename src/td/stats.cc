@@ -59,7 +59,7 @@
 #include "engine/file/game_file.h"
 #include "engine/gfx/shape.h"
 #include "engine/net/packet.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/ftimer.h"
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/defines.h"
@@ -161,7 +161,7 @@ constexpr int kCompletionPlayer2Won = 4;
 constexpr int kCompletionPlayer2WonByResignation = 5;
 constexpr int kCompletionPlayer2WonByDisconnection = 6;
 
-static TimerClass GameTimer;
+static Stopwatch<SystemTickSource> GameTimer;
 static int32_t GameEndTime;
 
 /***********************************************************************************************
@@ -644,16 +644,15 @@ void Send_Statistics_Packet() {
   /*
   ** Send it.....
   */
-  const CountDownTimerClass send_timer;
-
 #ifdef _WIN32
+  Timer<SystemTickSource> send_timer;
   CCDebugString("C&C95 - About to send stats packet to DDE server.\n");
   while (!Send_Data_To_DDE_Server(packet.data(),
                                   static_cast<int>(packet.size()),
                                   DDEServerClass::DDE_PACKET_GAME_RESULTS)) {
     CCDebugString("C&C95 - Stats packet send failed.\n");
-    send_timer.Set(60, true);
-    while (send_timer.Time()) {
+    send_timer.Set(60);
+    while (send_timer.Value()) {
     }
   }
 #endif
@@ -663,10 +662,8 @@ void Send_Statistics_Packet() {
 #endif  // DEMO
 }
 
-void Register_Game_Start_Time() {
-  GameTimer.Set(0, true);
-}
+void Register_Game_Start_Time() { GameTimer.Reset(); }
 
 extern void Register_Game_End_Time() {
-  GameEndTime = static_cast<int32_t>(GameTimer.Time());
+  GameEndTime = static_cast<int32_t>(GameTimer.Value());
 }

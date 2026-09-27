@@ -78,6 +78,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/net/serial/modemreg.h"
 #include "engine/net/serial/wincomm.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
@@ -365,9 +366,9 @@ int Test_Null_Modem() {
   ** Send hangup command
   */
   SerialPort->Write_To_Serial_Port("ATH\r", strlen("ATH\r"));
-  CountDownTimerClass time;
+  Timer<SystemTickSource> time;
   time.Set(2 * 60);
-  while (time.Time()) {
+  while (time.Value()) {
   }
 
   /*
@@ -3270,7 +3271,7 @@ int Com_Scenario_Dialog() {
   uint16_t magic_number = 0;
   uint16_t crc = 0;
   bool ready_to_go = false;
-  CountDownTimerClass ready_time;
+  Timer<SystemTickSource> ready_time;
 
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
@@ -3948,7 +3949,7 @@ int Com_Scenario_Dialog() {
             }
 
             ready_to_go = true;
-            ready_time.Set(120, true);
+            ready_time.Set(120);
 
             transmit = 1;
             transmittime = 0;
@@ -4424,7 +4425,7 @@ int Com_Scenario_Dialog() {
     /*
     ** If user has clicked 'GO' and the timeout has elapsed then quit the loop
     */
-    if (ready_to_go && ready_time.Time() == 0) {
+    if (ready_to_go && ready_time.Value() == 0) {
       rc = 1;
       process = false;
     }
@@ -6822,16 +6823,16 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
-    CountDownTimerClass wait;
+    Timer<SystemTickSource> wait;
     Call_Back();
-    wait.Set(60, true);
-    while (wait.Time()) {
+    wait.Set(60);
+    while (wait.Value()) {
       Call_Back();
     }
     engine::audio::TheAudio().Close();
     Call_Back();
-    wait.Set(60, true);
-    while (wait.Time()) {
+    wait.Set(60);
+    while (wait.Value()) {
       Call_Back();
     }
     TheGameState().sound_on() = false;
@@ -6998,16 +6999,16 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
-    CountDownTimerClass wait;
+    Timer<SystemTickSource> wait;
     Call_Back();
-    wait.Set(60, true);
-    while (wait.Time()) {
+    wait.Set(60);
+    while (wait.Value()) {
       Call_Back();
     }
     engine::audio::TheAudio().Close();
     Call_Back();
-    wait.Set(60, true);
-    while (wait.Time()) {
+    wait.Set(60);
+    while (wait.Value()) {
       Call_Back();
     }
     TheGameState().sound_on() = false;

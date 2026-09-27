@@ -2,7 +2,7 @@
 
 Written 2026-09-27.
 
-**Status: in progress.** Steps 1 to 3 done.
+**Status: in progress.** Steps 1 to 4 done.
 
 ## Context
 
@@ -89,7 +89,9 @@ Each step builds, passes ctest and the strict checks, and is its own commit.
    `TimerClass` → `Stopwatch<SystemTickSource>` (`Set(0, true)` → `Reset()`, `Time()` → `Value()`).
    Delete `delay` in `td/mplayer.cc`; drop the `const` from `send_timer`. TD members named `Timer`
    (`MouseClass::Timer`, `ScoreClass::Timer`) shadow the template and get renamed (`AnimTimer`, as
-   RA did).
+   RA did). Done: the `Start()` calls these timers needed after default construction are no-ops on a
+   running `Timer<T>` and were dropped, and `send_timer` moved inside its `#ifdef _WIN32`.
+
 5. **Delete the legacy classes.** `TimerClass`, `CountDownTimerClass`, `TimerSystemOn` go from
    `engine/platform/timer.{h,cc}`.
 6. **Rename the files.** `timer.{h,cc}` → `tick_clock.{h,cc}`, then `ftimer.h` → `timer.h` and

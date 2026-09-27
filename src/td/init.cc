@@ -84,8 +84,8 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/file_system.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/random_seed.h"
-#include "engine/platform/timer.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
@@ -689,7 +689,7 @@ bool Select_Game(bool fade) {
   int selection = 0;        // the default selection
   bool process = true;      // false = break out of while loop
   bool display = true;
-  CountDownTimerClass count;
+  Timer<SystemTickSource> count;
   int cd_index = 0;
 
   /*
@@ -1190,13 +1190,13 @@ bool Select_Game(bool fade) {
                   std::array<std::byte, 1024> temp_buffer{};
 
                   DLOG(INFO) << "C&C95 - Creating timer class instance.";
-                  CountDownTimerClass ptimer;
+                  Timer<SystemTickSource> ptimer;
 
                   DLOG(INFO) << "C&C95 - Entering read loop.";
                   while (TheNetwork().winsock().Read(temp_buffer, 1024)) {
                     DLOG(INFO) << "C&C95 - Discarding a packet.";
-                    ptimer.Set(30, true);
-                    while (ptimer.Time()) {
+                    ptimer.Set(30);
+                    while (ptimer.Value()) {
                     }
                     DLOG(INFO) << "C&C95 - Ready to check for more packets.";
                   }
@@ -1352,7 +1352,7 @@ bool Select_Game(bool fade) {
             }
             TheKeyboard().Clear();
             count.Set(int64_t{kTimerSecond} * 3);
-            while (count.Time()) {
+            while (count.Value()) {
               Call_Back();
             }
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
@@ -1376,7 +1376,7 @@ bool Select_Game(bool fade) {
             }
             TheKeyboard().Clear();
             count.Set(int64_t{kTimerSecond} * 3);
-            while (count.Time()) {
+            while (count.Value()) {
               Call_Back();
             }
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
@@ -1400,7 +1400,7 @@ bool Select_Game(bool fade) {
             }
             TheKeyboard().Clear();
             count.Set(int64_t{kTimerSecond} * 3);
-            while (count.Time()) {
+            while (count.Value()) {
               Call_Back();
             }
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
@@ -1423,7 +1423,7 @@ bool Select_Game(bool fade) {
           }
           TheKeyboard().Clear();
           count.Set(int64_t{kTimerSecond} * 3);
-          while (count.Time()) {
+          while (count.Value()) {
             Call_Back();
           }
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,

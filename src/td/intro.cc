@@ -53,7 +53,7 @@
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wsa_animation.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/ftimer.h"
 #include "engine/video/game_file_vqa_io.h"
 #include "engine/video/mixer_vqa_audio.h"
 #include "engine/video/vqa/vqa_player.h"
@@ -183,7 +183,7 @@ void Choose_Side() {
   //}
 
   int statichandle = engine::audio::TheAudio().Play(staticaud, 255, 64);
-  CountDownTimerClass sample_timer;
+  Timer<SystemTickSource> sample_timer;
   sample_timer.Set(0x3f);
   Alloc_Object(
       std::make_unique<ScorePrintClass>(show, TXT_GDI_NAME, 0, 180, yellowpal));
@@ -226,7 +226,7 @@ void Choose_Side() {
     ** If the sample has stopped or is about to then restart it
     */
     if (!engine::audio::TheAudio().IsPlaying(staticaud.data()) ||
-        !sample_timer.Time()) {
+        !sample_timer.Value()) {
       engine::audio::TheAudio().Stop(statichandle);
       statichandle = engine::audio::TheAudio().Play(staticaud, 255, 64);
       sample_timer.Set(0x3f);
