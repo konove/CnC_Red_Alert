@@ -152,7 +152,7 @@
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/window/wait_ticks.h"
 #include "td/aircraft.h"
 #include "td/anim.h"

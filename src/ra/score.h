@@ -37,7 +37,7 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "ra/jshell.h"
 
 // Statistics for the mission in progress plus the score screen that presents

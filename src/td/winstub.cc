@@ -44,7 +44,7 @@
 #include "td/winstub.h"
 
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/stream/seek_origin.h"
 #include "td/function.h"
 #include "td/game_state.h"

@@ -41,7 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_SUPER_H_
 #define CNC_RED_ALERT_TD_SUPER_H_
 
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/defines.h"
 #include "td/game_clock.h"
 

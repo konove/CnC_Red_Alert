@@ -79,7 +79,7 @@
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/anim.h"
 #include "td/building.h"
 #include "td/cell.h"

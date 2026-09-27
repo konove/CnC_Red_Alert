@@ -44,7 +44,7 @@
 #include <span>
 
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "ra/credits.h"
 #include "ra/game_clock.h"

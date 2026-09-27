@@ -16,18 +16,20 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Timer templates parameterized on a tick-source class.
+// File: Stopwatch and Timer, the one timer interface of both games,
+// parameterized on where their ticks come from.
 //
 // Stopwatch<T> -- counts up with stop/start (pause/resume).
 // Timer<T>     -- counts down toward zero with stop/start support.
 //
-// The tick-source class T must provide `T::Tick() const` returning a
-// monotonically increasing tick count (typically int64_t or uint64_t).
+// T is a tick source: a class with a static `Tick()` returning a monotonically
+// increasing count. SystemTickSource (below) ticks at 60 Hz of real time; each
+// game's FrameTickSource, in its game_clock.h, ticks once per game frame.
 //
 // Both serialize by value through Serialize().
 
-#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_FTIMER_H_
-#define CNC_RED_ALERT_ENGINE_PLATFORM_FTIMER_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
 
 #include <concepts>
 #include <cstdint>
@@ -279,4 +281,4 @@ int64_t Timer<T>::Elapsed() const {
   return static_cast<int64_t>(T::Tick()) - start_tick_;
 }
 
-#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_FTIMER_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_

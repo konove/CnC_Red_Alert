@@ -2,7 +2,9 @@
 
 Written 2026-09-27.
 
-**Status: in progress.** Steps 1 to 5 done.
+**Status: complete (2026-09-27).** Step 1 is cb9795d0, step 2 7aea7e85, step 3 51899177, step 4
+b584c2eb (RA) and 4fa8a9cb (TD), step 5 8453f575, step 6 50e051b5 and the commit after it. Both
+games now time everything with `Stopwatch<T>`/`Timer<T>` from `engine/platform/timer.h`.
 
 ## Context
 
@@ -96,7 +98,9 @@ Each step builds, passes ctest and the strict checks, and is its own commit.
    `engine/platform/timer.{h,cc}`. Done.
 6. **Rename the files.** `timer.{h,cc}` → `tick_clock.{h,cc}`, then `ftimer.h` → `timer.h` and
    `ftimer_test.cc` → `timer_test.cc`; update includers and CMake lists. Both save/load smoke tests,
-   and one full strict build.
+   and one full strict build. Done: the layer checker's SDL-allowed file is now
+   `platform/tick_clock.cc`. All eight TD fixtures and both RA runs (fresh and `--load-fixture`)
+   pass.
 
 ## Risks
 

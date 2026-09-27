@@ -41,7 +41,7 @@
 #define CNC_RED_ALERT_RA_MISSION_H_
 
 #include "base/fixed.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/game_clock.h"

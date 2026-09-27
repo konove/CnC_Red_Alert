@@ -45,7 +45,7 @@
 
 #include "base/fixed.h"
 #include "base/pooled.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/audio.h"

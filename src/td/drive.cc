@@ -79,7 +79,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"

@@ -123,7 +123,7 @@
 #include "base/trig.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/anim.h"
 #include "td/audio.h"
 #include "td/building.h"

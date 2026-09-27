@@ -67,7 +67,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/pooled.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/config.h"

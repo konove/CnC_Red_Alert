@@ -10,7 +10,7 @@
 #include "base/buffer.h"
 #include "base/installed.h"
 #include "base/strings/safe_string.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"

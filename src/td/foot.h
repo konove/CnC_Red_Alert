@@ -44,7 +44,7 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/defines.h"
 #include "td/game_clock.h"
 #include "td/object.h"

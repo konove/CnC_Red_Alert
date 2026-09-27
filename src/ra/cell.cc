@@ -106,7 +106,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/audio.h"

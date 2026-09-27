@@ -43,7 +43,7 @@
 #include <cstddef>
 
 #include "absl/base/attributes.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "ra/abstract.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"

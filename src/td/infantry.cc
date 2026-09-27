@@ -129,7 +129,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/audio.h"

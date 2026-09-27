@@ -59,7 +59,7 @@
 #include "engine/file/game_file.h"
 #include "engine/gfx/shape.h"
 #include "engine/net/packet.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/defines.h"

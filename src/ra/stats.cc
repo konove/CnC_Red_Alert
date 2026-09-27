@@ -55,7 +55,7 @@
 #include "base/array.h"
 #include "base/unaligned.h"
 #include "engine/net/packet.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/platform/win32/win32_com.h"
 #include "ra/aircraft.h"
 #include "ra/building.h"

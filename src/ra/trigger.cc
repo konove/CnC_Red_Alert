@@ -59,7 +59,7 @@
 #include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "ra/cell.h"
 #include "ra/config.h"
 #include "ra/defines.h"

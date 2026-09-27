@@ -51,7 +51,7 @@ class ArchiveWriter;
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/defines.h"
 #include "td/game_clock.h"
 #include "td/jshell.h"

@@ -18,7 +18,7 @@
 
 // File: The game's clocks: TickTimer, a 60 Hz tick counter driven by an SDL
 // timer, and the millisecond wall clock. The Stopwatch and Timer templates in
-// engine/platform/ftimer.h measure time against them.
+// engine/platform/timer.h measure time against them.
 
 #ifndef CNC_RED_ALERT_ENGINE_PLATFORM_TICK_CLOCK_H_
 #define CNC_RED_ALERT_ENGINE_PLATFORM_TICK_CLOCK_H_

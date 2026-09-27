@@ -44,7 +44,7 @@
 #include <span>
 
 #include "base/enum_array.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "engine/window/keyboard.h"

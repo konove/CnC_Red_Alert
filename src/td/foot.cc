@@ -107,7 +107,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "td/audio.h"
 #include "td/building.h"

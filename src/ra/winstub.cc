@@ -50,7 +50,7 @@
 #include "ra/winstub.h"
 
 #include "WSProto.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "ra/config.h"
 #include "ra/function.h"
 #include "ra/game_state.h"

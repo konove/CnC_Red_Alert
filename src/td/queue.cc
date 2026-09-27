@@ -93,7 +93,7 @@
 #include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "base/unaligned.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"

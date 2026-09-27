@@ -53,7 +53,7 @@
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wsa_animation.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/video/game_file_vqa_io.h"
 #include "engine/video/mixer_vqa_audio.h"
 #include "engine/video/vqa/vqa_player.h"

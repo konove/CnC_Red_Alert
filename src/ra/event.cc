@@ -67,7 +67,7 @@
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "ra/anim.h"
 #include "ra/audio.h"
 #include "ra/building.h"

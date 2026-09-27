@@ -55,7 +55,7 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/shape.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "td/defines.h"

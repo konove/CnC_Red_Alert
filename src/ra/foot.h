@@ -45,7 +45,7 @@
 
 #include "base/array.h"
 #include "base/fixed.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/face.h"

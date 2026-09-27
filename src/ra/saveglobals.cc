@@ -3,7 +3,7 @@
 #include <cstdint>
 
 #include "base/random.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/stream/archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/carry.h"

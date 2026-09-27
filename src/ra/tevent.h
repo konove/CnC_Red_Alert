@@ -50,7 +50,7 @@
 #include "base/enum_array.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/game_clock.h"

@@ -97,7 +97,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/anim.h"
 #include "td/building.h"
 #include "td/combat.h"

@@ -45,7 +45,7 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "ra/defines.h"
 #include "ra/face.h"

@@ -179,7 +179,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "td/aircraft.h"
 #include "td/anim.h"

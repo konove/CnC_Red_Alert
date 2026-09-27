@@ -47,7 +47,7 @@
 #include "absl/base/attributes.h"
 #include "base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "ra/bullet.h"
 #include "ra/cargo.h"
 #include "ra/ccptr.h"

@@ -28,7 +28,7 @@ class ArchiveWriter;
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/bullet.h"
 #include "td/defines.h"
 #include "td/facing.h"

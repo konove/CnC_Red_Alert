@@ -47,7 +47,7 @@ class ArchiveWriter;
 #include <cstddef>
 
 #include "absl/base/attributes.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/abstract.h"
 #include "td/defines.h"
 #include "td/foot.h"

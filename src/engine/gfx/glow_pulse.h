@@ -8,7 +8,7 @@
 #include <cstdint>
 
 #include "engine/gfx/rgb.h"
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 
 // A fade toward black that swings back and forth, one step per `period` ticks
 // of the tick source T. The caller polls it and rewrites its glowing palette

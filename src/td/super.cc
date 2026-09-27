@@ -70,7 +70,7 @@
  *=============================================================================================*/
 #include "td/super.h"
 
-#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "td/audio.h"
 #include "td/config.h"
 #include "td/defines.h"
