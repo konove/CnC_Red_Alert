@@ -2,8 +2,8 @@
 
 Written 2026-09-27, on the tree at 69f28795.
 
-**Status: in progress.** Step 0 is c19e606f, step 1 34c350e9, step 2 the commit that records it
-below.
+**Status: in progress.** Step 0 is c19e606f, step 1 34c350e9, step 2 602da368; step 3 needed no
+code.
 
 ### Progress
 
@@ -14,6 +14,16 @@ below.
   disagree on units and infantry. `ra_saveload_smoke.sh` passes. A full repaint on unshrouded
   SCG01EA takes 310 µs (max 404), against 445 µs for the cell-sorted full repaint and 263 µs for the
   old algorithm's; this pass also clears the view, sorts a copy and sweeps the flags twice.
+- **Step 2 (RA removes the cell-sorted path): done.** `kSortDrawEnabled`, `Redraw_OIcons`,
+  `CellClass::Draw_It`'s object half and `Calc_Partial_Window` are gone. `Redraw_Objects` now only
+  flags the cell and cuts dead objects from the occupier chain; the `Mark(MARK_CHANGE)` calls it
+  made were render-only (`RADIO_REDRAW` is answered with another `Mark`). `kOverlapperCount` is a
+  plain 10. Position logs still match; `ra_saveload_smoke.sh` and its `--load-fixture` form pass.
+- **Step 3 (pacing): nothing to do.** The spin loop is already capped: every pass of
+  `WaitForNextFrame()` ends in `ServiceRealTime()` → `Display::EndFrame()`, whose `PresentFrame()`
+  sleeps to hold presents to 70 a second, and each pass renders at most once. That bounds repaints
+  at 70 a second, about 22 ms of CPU a second at 310 µs each. Headless SCG10EA to frame 600 used
+  2.57 s of user time over 40 s both before step 1 and after step 2.
 
 Red Alert draws the map with the cell-sorted renderer (`config::kSortDrawEnabled`); Tiberian Dawn
 still uses the original y-sorted layer. Both exist only to avoid repainting the whole tactical view,
