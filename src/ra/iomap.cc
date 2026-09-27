@@ -28,8 +28,6 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "engine/stream/archive.h"
-#include "engine/stream/byte_sink.h"
-#include "engine/stream/byte_source.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/crate.h"
@@ -398,14 +396,12 @@ void MouseClass::Serialize(Archive& ar) {
 template void MouseClass::Serialize(ArchiveWriter&);
 template void MouseClass::Serialize(ArchiveReader&);
 
-bool MouseClass::Load(ByteSource& file) {
-  ArchiveReader reader(file);
+bool MouseClass::Load(ArchiveReader& reader) {
   Serialize(reader);
   return reader.ok();
 }
 
-bool MouseClass::Save(ByteSink& file) {
-  ArchiveWriter writer(file);
+bool MouseClass::Save(ArchiveWriter& writer) {
   Serialize(writer);
   return true;
 }

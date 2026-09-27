@@ -7,8 +7,6 @@
 #include <string_view>
 
 #include "engine/stream/archive.h"
-#include "engine/stream/byte_sink.h"
-#include "engine/stream/byte_source.h"
 #include "ra/defines.h"
 
 // Identifies a saved game written by this port. It follows the description
@@ -20,10 +18,10 @@ inline constexpr uint32_t kSaveGameMagic = FourCC("RASV");
 // from a raw image to Serialize(). Only an exact match loads.
 inline constexpr int32_t kSaveGameVersion = 16;
 
-bool Load_Misc_Values(ByteSource& file);
-bool Save_Misc_Values(ByteSink& file);
-bool Load_MPlayer_Values(ByteSource& file);
-bool Save_MPlayer_Values(ByteSink& file);
+bool Load_Misc_Values(ArchiveReader& reader);
+bool Save_Misc_Values(ArchiveWriter& writer);
+bool Load_MPlayer_Values(ArchiveReader& reader);
+bool Save_MPlayer_Values(ArchiveWriter& writer);
 bool Get_Savefile_Info(int id, std::span<char> buf, size_t buf_size,
                        unsigned* scenp, HousesType* housep);
 bool Load_Game(int id);

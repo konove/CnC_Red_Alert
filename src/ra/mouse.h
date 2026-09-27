@@ -45,12 +45,13 @@
 
 #include "base/enum_array.h"
 #include "engine/platform/timer.h"
-#include "engine/stream/byte_sink.h"
-#include "engine/stream/byte_source.h"
 #include "engine/window/keyboard.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "ra/scroll.h"
+
+class ArchiveReader;
+class ArchiveWriter;
 
 class MouseClass : public ScrollClass {
  public:
@@ -80,8 +81,8 @@ class MouseClass : public ScrollClass {
   /*
   **	File I/O.
   */
-  virtual bool Load(ByteSource& file);
-  virtual bool Save(ByteSink& file);
+  virtual bool Load(ArchiveReader& reader);
+  virtual bool Save(ArchiveWriter& writer);
 
   void Set_Default_Mouse(MouseType mouse, bool size = false) override;
 
@@ -146,8 +147,6 @@ class MouseClass : public ScrollClass {
   int Frame{0};
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void MouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void MouseClass::Serialize<ArchiveReader>(ArchiveReader&);
 

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <memory>
 #include <span>
+#include <string>
 #include <vector>
 
 #include "absl/base/attributes.h"
@@ -91,13 +92,23 @@ Widget* Allocate(TFixedIHeapClass<Widget>& heap, int32_t value) {
 
 std::vector<uint8_t> Save(const TFixedIHeapClass<Widget>& heap) {
   RecordingSink pipe;
-  EXPECT_TRUE(heap.Save(pipe));
+  ArchiveWriter writer(pipe);
+  EXPECT_TRUE(heap.Save(writer));
   return pipe.bytes;
 }
 
-bool Load(TFixedIHeapClass<Widget>& heap, const std::vector<uint8_t>& bytes) {
+// Loads `bytes` into `heap` and returns the reader's error, empty on success.
+std::string LoadError(TFixedIHeapClass<Widget>& heap,
+                      const std::vector<uint8_t>& bytes) {
   SpanSource straw(std::as_bytes(std::span(bytes)));
-  return heap.Load(straw);
+  ArchiveReader reader(straw);
+  const bool loaded = heap.Load(reader);
+  EXPECT_EQ(loaded, reader.ok());
+  return std::string(reader.error());
+}
+
+bool Load(TFixedIHeapClass<Widget>& heap, const std::vector<uint8_t>& bytes) {
+  return LoadError(heap, bytes).empty();
 }
 
 TEST(HeapDiagnosticsTest, OwnsOnlySlotStartsInsideTheBuffer) {
@@ -211,7 +222,7 @@ TEST(HeapSerializeTest, CountBeyondCapacityFails) {
 
   TFixedIHeapClass<Widget> smaller;
   smaller.Set_Heap(4);
-  EXPECT_FALSE(Load(smaller, bytes));
+  EXPECT_EQ(LoadError(smaller, bytes), "invalid saved heap count");
 }
 
 TEST(HeapSerializeTest, SlotIndexOutOfRangeFails) {
@@ -224,8 +235,22 @@ TEST(HeapSerializeTest, SlotIndexOutOfRangeFails) {
 
   TFixedIHeapClass<Widget> loaded;
   loaded.Set_Heap(8);
-  EXPECT_FALSE(Load(loaded, bytes));
+  EXPECT_EQ(LoadError(loaded, bytes), "invalid heap slot");
   EXPECT_EQ(loaded.Count(), 0);
+}
+
+TEST(HeapSerializeTest, SlotNamedTwiceFails) {
+  TFixedIHeapClass<Widget> source;
+  source.Set_Heap(8);
+  Allocate(source, 1);
+  Allocate(source, 2);
+  std::vector<uint8_t> bytes = Save(source);
+  bytes.at(4 + 13) = 0;  // second object's slot index: 1 -> 0
+
+  TFixedIHeapClass<Widget> loaded;
+  loaded.Set_Heap(8);
+  EXPECT_EQ(LoadError(loaded, bytes), "invalid heap slot");
+  EXPECT_EQ(loaded.Count(), 1);
 }
 
 }  // namespace

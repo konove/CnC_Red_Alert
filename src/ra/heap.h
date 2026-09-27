@@ -54,8 +54,6 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "engine/stream/archive.h"
-#include "engine/stream/byte_sink.h"
-#include "engine/stream/byte_source.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 
@@ -286,11 +284,12 @@ class TFixedIHeapClass : public FixedIHeapClass {
   }
   bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   // Writes the active count, then each object's slot index and contents.
-  bool Save(ByteSink& file) const
+  bool Save(ArchiveWriter& writer) const
     requires Serializable<T>;
   // Reads what Save wrote back into the same slots. Returns false on a
-  // malformed stream; the heap is then partially populated.
-  bool Load(ByteSource& file)
+  // malformed stream, with the reason in reader.error(); the heap is then
+  // partially populated.
+  bool Load(ArchiveReader& reader)
     requires Serializable<T>;
   [[nodiscard]] T* Ptr(int index) const {
     return static_cast<T*>(ActivePointers.at(index));
@@ -312,10 +311,9 @@ class TFixedIHeapClass : public FixedIHeapClass {
 };
 
 template <class T>
-bool TFixedIHeapClass<T>::Save(ByteSink& file) const
+bool TFixedIHeapClass<T>::Save(ArchiveWriter& writer) const
   requires Serializable<T>
 {
-  ArchiveWriter writer(file);
   int32_t count = ActiveCount;
   writer(count);
 
@@ -330,20 +328,28 @@ bool TFixedIHeapClass<T>::Save(ByteSink& file) const
 }
 
 template <class T>
-bool TFixedIHeapClass<T>::Load(ByteSource& file)
+bool TFixedIHeapClass<T>::Load(ArchiveReader& reader)
   requires Serializable<T>
 {
-  ArchiveReader reader(file);
   int32_t count = 0;
   reader(count);
-  if (!reader.ok() || count < 0 || count > TotalCount) {
+  if (!reader.ok()) {
+    return false;
+  }
+  if (count < 0 || count > TotalCount) {
+    reader.Fail("invalid saved heap count");
     return false;
   }
 
   for (int i = 0; i < count; i++) {
     int32_t idx = 0;
     reader(idx);
-    if (!reader.ok() || idx < 0 || idx >= TotalCount) {
+    if (!reader.ok()) {
+      return false;
+    }
+    // A slot named twice would be activated twice and listed twice.
+    if (idx < 0 || idx >= TotalCount || FreeFlag.at(base::ToSize(idx))) {
+      reader.Fail("invalid heap slot");
       return false;
     }
 

@@ -79,7 +79,6 @@
 #include "engine/platform/platform.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
-#include "engine/stream/byte_source.h"
 #include "engine/stream/seek_origin.h"
 #include "engine/stream/stream_sink.h"
 #include "engine/stream/stream_source.h"
@@ -153,12 +152,12 @@ static bool Reconcile_Players();
 // Section tags bracket every top-level block of the save body. They cost
 // four bytes each and turn a field-list mismatch into an error that names
 // the block instead of garbage further down the stream.
-static void Put_Section(ByteSink& pipe, uint32_t tag) {
-  ArchiveWriter(pipe).Section(tag);
-}
-static bool Get_Section(ByteSource& straw, uint32_t tag) {
-  ArchiveReader reader(straw);
-  return reader.Section(tag);
+
+// Logs why Load_Game() gave up on the saved block `tag` and returns false.
+static bool Rejected(const ArchiveReader& reader, std::string_view tag) {
+  LOG(ERROR) << "Cannot load saved game, block " << tag << ": "
+             << reader.error();
+  return false;
 }
 
 // Trigger lists load after the trigger heap, so targets can resolve directly.
@@ -250,14 +249,14 @@ static void Put_All(ByteSink& pipe, int save_net) {
   /*
   **	Frame goes first: every frame-based timer re-anchors to it when read.
   */
-  Put_Section(pipe, FourCC("FRAM"));
+  writer.Section(FourCC("FRAM"));
   int64_t frame = CurrentFrame();
   writer(frame);
 
   /*
   **	Save the scenario global information.
   */
-  Put_Section(pipe, FourCC("SCEN"));
+  writer.Section(FourCC("SCEN"));
   writer(TheScenario());
 
   /*
@@ -266,8 +265,8 @@ static void Put_All(ByteSink& pipe, int save_net) {
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("MAP_"));
-  TheMap().Save(pipe);
+  writer.Section(FourCC("MAP_"));
+  TheMap().Save(writer);
 
   if (!save_net) {
     ServiceBackgroundTasks();
@@ -277,90 +276,90 @@ static void Put_All(ByteSink& pipe, int save_net) {
   **	Save all game objects.  This code saves every object that's stored in a
   **	TFixedIHeap class.
   */
-  Put_Section(pipe, FourCC("HOUS"));
-  TheObjectHeaps().house().Save(pipe);
+  writer.Section(FourCC("HOUS"));
+  TheObjectHeaps().house().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("TMTY"));
-  TheObjectHeaps().team_type().Save(pipe);
+  writer.Section(FourCC("TMTY"));
+  TheObjectHeaps().team_type().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("TEAM"));
-  TheObjectHeaps().team().Save(pipe);
+  writer.Section(FourCC("TEAM"));
+  TheObjectHeaps().team().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("TRTY"));
-  TheObjectHeaps().trigger_type().Save(pipe);
+  writer.Section(FourCC("TRTY"));
+  TheObjectHeaps().trigger_type().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("TRIG"));
-  TheObjectHeaps().trigger().Save(pipe);
+  writer.Section(FourCC("TRIG"));
+  TheObjectHeaps().trigger().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("AIRC"));
-  TheObjectHeaps().aircraft().Save(pipe);
+  writer.Section(FourCC("AIRC"));
+  TheObjectHeaps().aircraft().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("ANIM"));
-  TheObjectHeaps().anim().Save(pipe);
+  writer.Section(FourCC("ANIM"));
+  TheObjectHeaps().anim().Save(writer);
 
   if (!save_net) {
     ServiceBackgroundTasks();
   }
 
-  Put_Section(pipe, FourCC("BLDG"));
-  TheObjectHeaps().building().Save(pipe);
+  writer.Section(FourCC("BLDG"));
+  TheObjectHeaps().building().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("BULL"));
-  TheObjectHeaps().bullet().Save(pipe);
+  writer.Section(FourCC("BULL"));
+  TheObjectHeaps().bullet().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("INFT"));
-  TheObjectHeaps().infantry().Save(pipe);
+  writer.Section(FourCC("INFT"));
+  TheObjectHeaps().infantry().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("OVRL"));
-  TheObjectHeaps().overlay().Save(pipe);
+  writer.Section(FourCC("OVRL"));
+  TheObjectHeaps().overlay().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("SMDG"));
-  TheObjectHeaps().smudge().Save(pipe);
+  writer.Section(FourCC("SMDG"));
+  TheObjectHeaps().smudge().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("TMPL"));
-  TheObjectHeaps().tmplate().Save(pipe);
+  writer.Section(FourCC("TMPL"));
+  TheObjectHeaps().tmplate().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("TERR"));
-  TheObjectHeaps().terrain().Save(pipe);
+  writer.Section(FourCC("TERR"));
+  TheObjectHeaps().terrain().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("UNIT"));
-  TheObjectHeaps().unit().Save(pipe);
+  writer.Section(FourCC("UNIT"));
+  TheObjectHeaps().unit().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("FACT"));
-  TheObjectHeaps().factory().Save(pipe);
+  writer.Section(FourCC("FACT"));
+  TheObjectHeaps().factory().Save(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
-  Put_Section(pipe, FourCC("VESL"));
-  TheObjectHeaps().vessel().Save(pipe);
+  writer.Section(FourCC("VESL"));
+  TheObjectHeaps().vessel().Save(writer);
 
   if (!save_net) {
     ServiceBackgroundTasks();
@@ -369,16 +368,16 @@ static void Put_All(ByteSink& pipe, int save_net) {
   /*
   **	Save the Logic & Map layers
   */
-  Put_Section(pipe, FourCC("LOGC"));
+  writer.Section(FourCC("LOGC"));
   writer(TheWorld().logic());
 
-  Put_Section(pipe, FourCC("TRGV"));
+  writer.Section(FourCC("TRGV"));
   SerializeTriggerLists(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
 
-  Put_Section(pipe, FourCC("LAYR"));
+  writer.Section(FourCC("LAYR"));
   for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
     writer(MouseClass::Layer.at(layer));
   }
@@ -390,7 +389,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
   /*
   **	Save the Score
   */
-  Put_Section(pipe, FourCC("SCOR"));
+  writer.Section(FourCC("SCOR"));
   writer(TheWorld().score());
   if (!save_net) {
     ServiceBackgroundTasks();
@@ -399,13 +398,13 @@ static void Put_All(ByteSink& pipe, int save_net) {
   /*
   **	Save the AI Base
   */
-  Put_Section(pipe, FourCC("BASE"));
+  writer.Section(FourCC("BASE"));
   writer(TheWorld().base());
   if (!save_net) {
     ServiceBackgroundTasks();
   }
 
-  Put_Section(pipe, FourCC("CARY"));
+  writer.Section(FourCC("CARY"));
   SerializeCarryover(writer);
   if (!save_net) {
     ServiceBackgroundTasks();
@@ -414,8 +413,8 @@ static void Put_All(ByteSink& pipe, int save_net) {
   /*
   **	Save miscellaneous variables.
   */
-  Put_Section(pipe, FourCC("MISC"));
-  Save_Misc_Values(pipe);
+  writer.Section(FourCC("MISC"));
+  Save_Misc_Values(writer);
 
   if (!save_net) {
     ServiceBackgroundTasks();
@@ -425,8 +424,8 @@ static void Put_All(ByteSink& pipe, int save_net) {
   **	Save multiplayer values
   */
   if (save_net) {
-    Put_Section(pipe, FourCC("MPLY"));
-    Save_MPlayer_Values(pipe);
+    writer.Section(FourCC("MPLY"));
+    Save_MPlayer_Values(writer);
   }
 
   pipe.Flush();
@@ -669,6 +668,8 @@ bool Load_Game(int id) {
     header(magic, version, scenario32, house);
     if (!header.ok() || magic != kSaveGameMagic ||
         version != kSaveGameVersion) {
+      LOG(ERROR) << "Cannot load " << name << ": not a version "
+                 << kSaveGameVersion << " Red Alert save";
       return false;
     }
   }
@@ -707,6 +708,7 @@ bool Load_Game(int id) {
   **	before any damage could be done.
   */
   if (actual != digest) {
+    LOG(ERROR) << "Cannot load " << name << ": digest mismatch";
     return false;
   }
 
@@ -730,26 +732,27 @@ bool Load_Game(int id) {
   */
   Clear_Scenario();
 
-  if (!Get_Section(straw, FourCC("FRAM"))) {
-    return false;
-  }
+  // One reader for the whole body, so the first failure's reason survives.
   ArchiveReader reader(straw);
+  if (!reader.Section(FourCC("FRAM"))) {
+    return Rejected(reader, "FRAM");
+  }
   int64_t frame = 0;
   reader(frame);
   TheGameClock().set_frame(frame);
   if (!reader.ok()) {
-    return false;
+    return Rejected(reader, "FRAM");
   }
 
   /*
   **	Load the scenario global information.
   */
-  if (!Get_Section(straw, FourCC("SCEN"))) {
-    return false;
+  if (!reader.Section(FourCC("SCEN"))) {
+    return Rejected(reader, "SCEN");
   }
   reader(TheScenario());
   if (!reader.ok()) {
-    return false;
+    return Rejected(reader, "SCEN");
   }
 
   /*
@@ -801,11 +804,11 @@ bool Load_Game(int id) {
   *them *	what the Theater is; this must be done before any objects are
   *created, so *	they'll be properly created.
   */
-  if (!Get_Section(straw, FourCC("MAP_"))) {
-    return false;
+  if (!reader.Section(FourCC("MAP_"))) {
+    return Rejected(reader, "MAP_");
   }
-  if (!TheMap().Load(straw)) {
-    return false;
+  if (!TheMap().Load(reader)) {
+    return Rejected(reader, "MAP_");
   }
 
   ServiceBackgroundTasks();
@@ -813,104 +816,104 @@ bool Load_Game(int id) {
   /*
   **	Load the object data.
   */
-  if (!Get_Section(straw, FourCC("HOUS")) ||
-      !TheObjectHeaps().house().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("HOUS")) ||
+      !TheObjectHeaps().house().Load(reader)) {
+    return Rejected(reader, "HOUS");
   }
-  if (!Get_Section(straw, FourCC("TMTY")) ||
-      !TheObjectHeaps().team_type().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("TMTY")) ||
+      !TheObjectHeaps().team_type().Load(reader)) {
+    return Rejected(reader, "TMTY");
   }
-  if (!Get_Section(straw, FourCC("TEAM")) ||
-      !TheObjectHeaps().team().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("TEAM")) ||
+      !TheObjectHeaps().team().Load(reader)) {
+    return Rejected(reader, "TEAM");
   }
-  if (!Get_Section(straw, FourCC("TRTY")) ||
-      !TheObjectHeaps().trigger_type().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("TRTY")) ||
+      !TheObjectHeaps().trigger_type().Load(reader)) {
+    return Rejected(reader, "TRTY");
   }
-  if (!Get_Section(straw, FourCC("TRIG")) ||
-      !TheObjectHeaps().trigger().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("TRIG")) ||
+      !TheObjectHeaps().trigger().Load(reader)) {
+    return Rejected(reader, "TRIG");
   }
-  if (!Get_Section(straw, FourCC("AIRC")) ||
-      !TheObjectHeaps().aircraft().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("AIRC")) ||
+      !TheObjectHeaps().aircraft().Load(reader)) {
+    return Rejected(reader, "AIRC");
   }
-  if (!Get_Section(straw, FourCC("ANIM")) ||
-      !TheObjectHeaps().anim().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("ANIM")) ||
+      !TheObjectHeaps().anim().Load(reader)) {
+    return Rejected(reader, "ANIM");
   }
-  if (!Get_Section(straw, FourCC("BLDG")) ||
-      !TheObjectHeaps().building().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("BLDG")) ||
+      !TheObjectHeaps().building().Load(reader)) {
+    return Rejected(reader, "BLDG");
   }
-  if (!Get_Section(straw, FourCC("BULL")) ||
-      !TheObjectHeaps().bullet().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("BULL")) ||
+      !TheObjectHeaps().bullet().Load(reader)) {
+    return Rejected(reader, "BULL");
   }
 
   ServiceBackgroundTasks();
 
-  if (!Get_Section(straw, FourCC("INFT")) ||
-      !TheObjectHeaps().infantry().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("INFT")) ||
+      !TheObjectHeaps().infantry().Load(reader)) {
+    return Rejected(reader, "INFT");
   }
-  if (!Get_Section(straw, FourCC("OVRL")) ||
-      !TheObjectHeaps().overlay().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("OVRL")) ||
+      !TheObjectHeaps().overlay().Load(reader)) {
+    return Rejected(reader, "OVRL");
   }
-  if (!Get_Section(straw, FourCC("SMDG")) ||
-      !TheObjectHeaps().smudge().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("SMDG")) ||
+      !TheObjectHeaps().smudge().Load(reader)) {
+    return Rejected(reader, "SMDG");
   }
-  if (!Get_Section(straw, FourCC("TMPL")) ||
-      !TheObjectHeaps().tmplate().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("TMPL")) ||
+      !TheObjectHeaps().tmplate().Load(reader)) {
+    return Rejected(reader, "TMPL");
   }
-  if (!Get_Section(straw, FourCC("TERR")) ||
-      !TheObjectHeaps().terrain().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("TERR")) ||
+      !TheObjectHeaps().terrain().Load(reader)) {
+    return Rejected(reader, "TERR");
   }
-  if (!Get_Section(straw, FourCC("UNIT")) ||
-      !TheObjectHeaps().unit().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("UNIT")) ||
+      !TheObjectHeaps().unit().Load(reader)) {
+    return Rejected(reader, "UNIT");
   }
-  if (!Get_Section(straw, FourCC("FACT")) ||
-      !TheObjectHeaps().factory().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("FACT")) ||
+      !TheObjectHeaps().factory().Load(reader)) {
+    return Rejected(reader, "FACT");
   }
-  if (!Get_Section(straw, FourCC("VESL")) ||
-      !TheObjectHeaps().vessel().Load(straw)) {
-    return false;
+  if (!reader.Section(FourCC("VESL")) ||
+      !TheObjectHeaps().vessel().Load(reader)) {
+    return Rejected(reader, "VESL");
   }
 
   /*
   **	Load the Logic & Map Layers
   */
-  if (!Get_Section(straw, FourCC("LOGC"))) {
-    return false;
+  if (!reader.Section(FourCC("LOGC"))) {
+    return Rejected(reader, "LOGC");
   }
   reader(TheWorld().logic());
   if (!reader.ok()) {
-    return false;
+    return Rejected(reader, "LOGC");
   }
 
-  if (!Get_Section(straw, FourCC("TRGV"))) {
-    return false;
+  if (!reader.Section(FourCC("TRGV"))) {
+    return Rejected(reader, "TRGV");
   }
   SerializeTriggerLists(reader);
   if (!reader.ok()) {
-    return false;
+    return Rejected(reader, "TRGV");
   }
 
-  if (!Get_Section(straw, FourCC("LAYR"))) {
-    return false;
+  if (!reader.Section(FourCC("LAYR"))) {
+    return Rejected(reader, "LAYR");
   }
   for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
     reader(MouseClass::Layer.at(layer));
     if (!reader.ok()) {
-      return false;
+      return Rejected(reader, "LAYR");
     }
   }
 
@@ -919,53 +922,53 @@ bool Load_Game(int id) {
   /*
   **	Load the Score
   */
-  if (!Get_Section(straw, FourCC("SCOR"))) {
-    return false;
+  if (!reader.Section(FourCC("SCOR"))) {
+    return Rejected(reader, "SCOR");
   }
   reader(TheWorld().score());
   if (!reader.ok()) {
-    return false;
+    return Rejected(reader, "SCOR");
   }
 
   /*
   **	Load the AI Base
   */
-  if (!Get_Section(straw, FourCC("BASE"))) {
-    return false;
+  if (!reader.Section(FourCC("BASE"))) {
+    return Rejected(reader, "BASE");
   }
   reader(TheWorld().base());
   if (!reader.ok()) {
-    return false;
+    return Rejected(reader, "BASE");
   }
 
-  if (!Get_Section(straw, FourCC("CARY"))) {
-    return false;
+  if (!reader.Section(FourCC("CARY"))) {
+    return Rejected(reader, "CARY");
   }
   SerializeCarryover(reader);
   if (!reader.ok()) {
-    return false;
+    return Rejected(reader, "CARY");
   }
   ServiceBackgroundTasks();
 
   /*
   **	Load miscellaneous variables, including the map size & the Theater
   */
-  if (!Get_Section(straw, FourCC("MISC"))) {
-    return false;
+  if (!reader.Section(FourCC("MISC"))) {
+    return Rejected(reader, "MISC");
   }
-  if (!Load_Misc_Values(straw)) {
-    return false;
+  if (!Load_Misc_Values(reader)) {
+    return Rejected(reader, "MISC");
   }
 
   /*
   **	Load multiplayer values
   */
   if (load_net) {
-    if (!Get_Section(straw, FourCC("MPLY"))) {
-      return false;
+    if (!reader.Section(FourCC("MPLY"))) {
+      return Rejected(reader, "MPLY");
     }
-    if (!Load_MPlayer_Values(straw)) {
-      return false;
+    if (!Load_MPlayer_Values(reader)) {
+      return Rejected(reader, "MPLY");
     }
   }
 
@@ -1222,8 +1225,7 @@ static void SerializeMultiplayer(Archive& ar) {
   }
 }
 
-bool Save_Misc_Values(ByteSink& file) {
-  ArchiveWriter writer(file);
+bool Save_Misc_Values(ArchiveWriter& writer) {
   SerializeMisc(writer);
   return true;
 }
@@ -1239,8 +1241,7 @@ bool Save_Misc_Values(ByteSink& file) {
  *                                                                                             *
  * HISTORY: * 06/24/1995 BRR : Created. * 03/12/1996 JLB : Simplified. *
  *=============================================================================================*/
-bool Load_Misc_Values(ByteSource& file) {
-  ArchiveReader reader(file);
+bool Load_Misc_Values(ArchiveReader& reader) {
   SerializeMisc(reader);
   return reader.ok();
 }
@@ -1273,8 +1274,7 @@ bool Load_Misc_Values(ByteSource& file) {
  * HISTORY:                                                                *
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool Save_MPlayer_Values(ByteSink& file) {
-  ArchiveWriter writer(file);
+bool Save_MPlayer_Values(ArchiveWriter& writer) {
   SerializeMultiplayer(writer);
   return true;
 }
@@ -1297,8 +1297,7 @@ bool Save_MPlayer_Values(ByteSink& file) {
  * HISTORY:                                                                *
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool Load_MPlayer_Values(ByteSource& file) {
-  ArchiveReader reader(file);
+bool Load_MPlayer_Values(ArchiveReader& reader) {
   SerializeMultiplayer(reader);
   return reader.ok();
 }
