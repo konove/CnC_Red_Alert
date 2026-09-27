@@ -2,7 +2,7 @@
 
 Written 2026-09-27.
 
-**Status: in progress.** Steps 1 to 4 done.
+**Status: in progress.** Steps 1 to 5 done.
 
 ## Context
 
@@ -93,7 +93,7 @@ Each step builds, passes ctest and the strict checks, and is its own commit.
    running `Timer<T>` and were dropped, and `send_timer` moved inside its `#ifdef _WIN32`.
 
 5. **Delete the legacy classes.** `TimerClass`, `CountDownTimerClass`, `TimerSystemOn` go from
-   `engine/platform/timer.{h,cc}`.
+   `engine/platform/timer.{h,cc}`. Done.
 6. **Rename the files.** `timer.{h,cc}` → `tick_clock.{h,cc}`, then `ftimer.h` → `timer.h` and
    `ftimer_test.cc` → `timer_test.cc`; update includers and CMake lists. Both save/load smoke tests,
    and one full strict build.
