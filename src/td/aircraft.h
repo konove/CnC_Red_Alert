@@ -28,12 +28,13 @@ class ArchiveWriter;
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/platform/ftimer.h"
 #include "td/bullet.h"
 #include "td/defines.h"
 #include "td/facing.h"
 #include "td/fly.h"
 #include "td/foot.h"
-#include "td/ftimer.h"
+#include "td/game_clock.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/techno.h"
@@ -217,7 +218,7 @@ class AircraftClass : public FootClass, public FlyClass {
   *itself. *	When this timer expires and this aircraft has a sight range,
   *then the *	look around process will occur.
   */
-  TCountDownTimerClass SightTimer;
+  Timer<FrameTickSource> SightTimer;
 
   /*
   **	Most attack aircraft can make several attack runs. This value contains

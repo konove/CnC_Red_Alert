@@ -72,6 +72,7 @@
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/shape.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
 #include "td/base.h"
 #include "td/building.h"
@@ -80,7 +81,6 @@
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
-#include "td/ftimer.h"
 #include "td/game_state.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -649,7 +649,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
           const auto house =
               static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
           HouseClass* housep = HouseClass::As_Pointer(house);
-          housep->BlitzTime = GameRandomRange(rndmin, rndmax);
+          housep->BlitzTime.Set(GameRandomRange(rndmin, rndmax));
         }
       }
     }

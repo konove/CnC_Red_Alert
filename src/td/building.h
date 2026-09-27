@@ -51,10 +51,11 @@ class ArchiveWriter;
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/platform/ftimer.h"
 #include "td/bullet.h"
 #include "td/defines.h"
 #include "td/factory.h"
-#include "td/ftimer.h"
+#include "td/game_clock.h"
 #include "td/house.h"
 #include "td/object.h"
 #include "td/radio.h"
@@ -143,7 +144,7 @@ class BuildingClass final : public TechnoClass {
   **	it won't actually be removed from the map until this value reaches
   **	zero. This delay is for cosmetic reasons.
   */
-  TCountDownTimerClass CountDown;
+  Timer<FrameTickSource> CountDown;
 
   /*
   **	This is the current animation processing state that the building is
@@ -175,7 +176,7 @@ class BuildingClass final : public TechnoClass {
   **	This is the countdown timer that regulates placement retry logic
   **	for factory type buildings.
   */
-  TCountDownTimerClass PlacementDelay;
+  Timer<FrameTickSource> PlacementDelay;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

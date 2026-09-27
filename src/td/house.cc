@@ -144,6 +144,7 @@
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/platform/ftimer.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/audio.h"
@@ -161,7 +162,6 @@
 #include "td/facing.h"
 #include "td/factory.h"
 #include "td/foot.h"
-#include "td/ftimer.h"
 #include "td/game_clock.h"
 #include "td/game_state.h"
 #include "td/goptions.h"
@@ -386,7 +386,7 @@ HouseClass::HouseClass(HousesType house)
 
   base::SafeCopy(Name, "Computer");  // Default computer name.
   JustBuilt = STRUCT_NONE;
-  AlertTime = 0;
+  AlertTime.Set(0);
   IsAlerted = false;
   IsAirstrikePending = false;
   AircraftFactory = -1;
@@ -395,7 +395,8 @@ HouseClass::HouseClass(HousesType house)
   Allies = 0;
   AScan = 0;
   NukeDest = 0;
-  BlitzTime.Clear();
+  BlitzTime.Set(0);
+  BlitzTime.Stop();
   BScan = 0;
   BuildingFactories = 0;
   BuildingFactory = -1;
@@ -404,7 +405,7 @@ HouseClass::HouseClass(HousesType house)
   CreditsSpent = 0;
   CurBuildings = 0;
   CurUnits = 0;
-  DamageTime = kDamageDelay;
+  DamageTime.Set(kDamageDelay);
   Drain = 0;
   Edge = SOURCE_NORTH;
   FlagHome = 0;
@@ -449,15 +450,15 @@ HouseClass::HouseClass(HousesType house)
     BrightColor = bad.BrightColor;
   }
   Resigned = false;
-  SpeakAttackDelay = 1;
-  SpeakMaxedDelay = 1;
-  SpeakMoneyDelay = 1;
-  SpeakPowerDelay = 1;
+  SpeakAttackDelay.Set(1);
+  SpeakMaxedDelay.Set(1);
+  SpeakMoneyDelay.Set(1);
+  SpeakPowerDelay.Set(1);
   SpecialFactories = 0;
   SpecialFactory = -1;
-  TeamTime = kTeamDelay;
+  TeamTime.Set(kTeamDelay);
   Tiberium = 0;
-  TriggerTime = 0;
+  TriggerTime.Set(0);
   UnitFactories = 0;
   UnitFactory = -1;
   UScan = 0;
@@ -858,8 +859,8 @@ void HouseClass::AI() {
   /*
   **	Check to see if the house wins.
   */
-  if (TheSession().type() == GAME_NORMAL && IsToWin && BorrowedTime.Expired() &&
-      Blockage <= 0) {
+  if (TheSession().type() == GAME_NORMAL && IsToWin &&
+      BorrowedTime.IsFinished() && Blockage <= 0) {
     IsToWin = false;
     if (this == ThePlayer()) {
       TheGameState().player_wins() = true;
@@ -872,7 +873,7 @@ void HouseClass::AI() {
   **	Check to see if the house loses.
   */
   if (TheSession().type() == GAME_NORMAL && IsToLose &&
-      BorrowedTime.Expired()) {
+      BorrowedTime.IsFinished()) {
     IsToLose = false;
     if (this == ThePlayer()) {
       TheGameState().player_loses() = true;
@@ -884,7 +885,7 @@ void HouseClass::AI() {
   /*
   **	Check to see if all objects of this house should be blown up.
   */
-  if (IsToDie && BorrowedTime.Expired()) {
+  if (IsToDie && BorrowedTime.IsFinished()) {
     IsToDie = false;
     Blowup_All();
   }
@@ -906,7 +907,7 @@ void HouseClass::AI() {
   **	see if the attack timer has expired. If it has, then create the attack
   **	teams.
   */
-  if (IsAlerted && AlertTime.Expired()) {
+  if (IsAlerted && AlertTime.IsFinished()) {
     /*
     **	Adjusted to reduce maximum number of teams created.
     */
@@ -921,12 +922,12 @@ void HouseClass::AI() {
       }
     }
     if (TheSpecial().IsDifficult) {
-      AlertTime = kTicksPerMinute * Random_Pick(4, 10);
+      AlertTime.Set(kTicksPerMinute * Random_Pick(4, 10));
     } else {
       if (TheSpecial().IsEasy) {
-        AlertTime = kTicksPerMinute * Random_Pick(16, 40);
+        AlertTime.Set(kTicksPerMinute * Random_Pick(16, 40));
       } else {
-        AlertTime = kTicksPerMinute * Random_Pick(5, 20);
+        AlertTime.Set(kTicksPerMinute * Random_Pick(5, 20));
       }
     }
   }
@@ -935,7 +936,7 @@ void HouseClass::AI() {
   **	Create teams for this house if necessary.
   ** (Use the same timer for some extra capture-the-flag logic.)
   */
-  if (TeamTime.Expired()) {
+  if (TeamTime.IsFinished()) {
     const TeamTypeClass* ttype = Suggested_New_Team(false);
     if (ttype) {
       ttype->Create_One_Of();
@@ -1023,7 +1024,7 @@ void HouseClass::AI() {
   **	If there is insufficient power, then all buildings that are above
   **	half strength take a little bit of damage.
   */
-  if (DamageTime.Expired()) {
+  if (DamageTime.IsFinished()) {
 /*
 **	No free harvesters for computer or player. - 8/16/95
 */
@@ -1036,7 +1037,7 @@ void HouseClass::AI() {
         (ActiveBScan & kStructFlagRefinery) != 0 &&
         (UScan & kUnitFlagHarvester) == 0 && !IsFreeHarvester) {
       IsFreeHarvester = true;
-      FreeHarvester = kTicksPerMinute * 2;
+      FreeHarvester.Set(kTicksPerMinute * 2);
     }
 #endif
 
@@ -1044,7 +1045,7 @@ void HouseClass::AI() {
     **	If a free harvester is to be created and the time is right, then create
     **	the harvester and clear the free harvester pending flag.
     */
-    if (IsFreeHarvester && FreeHarvester.Expired()) {
+    if (IsFreeHarvester && FreeHarvester.IsFinished()) {
       IsFreeHarvester = false;
       Create_Special_Reinforcement(
           this, &UnitTypeClass::As_Reference(UNIT_HARVESTER), nullptr);
@@ -1080,7 +1081,7 @@ void HouseClass::AI() {
   **	Various base conditions may be announced to the player.
   */
   if (ThePlayer() == this) {
-    if (SpeakMaxedDelay.Expired() && IsMaxedOut) {
+    if (SpeakMaxedDelay.IsFinished() && IsMaxedOut) {
       IsMaxedOut = false;
       if (Capacity - Tiberium < 300 && Capacity > 500 &&
           BScan & (kStructFlagRefinery | kStructFlagConst)) {
@@ -1088,7 +1089,7 @@ void HouseClass::AI() {
         SpeakMaxedDelay.Set(TheOptions().Normalize_Delay(kSpeakDelay));
       }
     }
-    if (SpeakPowerDelay.Expired() && Power_Fraction() < 0x0100 &&
+    if (SpeakPowerDelay.IsFinished() && Power_Fraction() < 0x0100 &&
         (BScan & kStructFlagConst) != 0) {
       Speak(VOX_LOW_POWER);
       SpeakPowerDelay.Set(TheOptions().Normalize_Delay(kSpeakDelay));
@@ -1115,9 +1116,9 @@ void HouseClass::AI() {
   **	Triggers are only checked every so often. If the trigger timer has
   *expired, *	then set the trigger processing flag.
   */
-  if (TriggerTime.Expired()) {
+  if (TriggerTime.IsFinished()) {
     is_time = true;
-    TriggerTime = kTicksPerMinute / 10;
+    TriggerTime.Set(kTicksPerMinute / 10);
   }
 
   /*
@@ -1482,7 +1483,8 @@ void HouseClass::AI() {
  *=============================================================================================*/
 void HouseClass::Attacked() {
   Validate();
-  if (SpeakAttackDelay.Expired() && ThePlayer()->Class->House == Class->House) {
+  if (SpeakAttackDelay.IsFinished() &&
+      ThePlayer()->Class->House == Class->House) {
     Speak(VOX_BASE_UNDER_ATTACK);
     SpeakAttackDelay.Set(TheOptions().Normalize_Delay(kSpeakDelay));
 
@@ -2943,7 +2945,8 @@ void HouseClass::Remove_Ion_Cannon() {
     IonCannonPresent = false;
     IonOneTimeFlag = false;
     IonReady = false;
-    IonControl.Clear();
+    IonControl.Set(0);
+    IonControl.Stop();
     IonOldStage = -1;
   }
 }
@@ -3072,7 +3075,8 @@ void HouseClass::Remove_Nuke_Bomb() {
   Validate();
   if (NukePresent && !NukeOneTimeFlag) {
     NukePresent = false;
-    NukeControl.Clear();
+    NukeControl.Set(0);
+    NukeControl.Stop();
     NukeOldStage = -1;
     NukeReady = false;
   }
@@ -3148,7 +3152,8 @@ void HouseClass::Remove_Air_Strike() {
   Validate();
   AirPresent = false;
   AirReady = false;
-  AirControl.Clear();
+  AirControl.Set(0);
+  AirControl.Stop();
   AirOldStage = -1;
 }
 
@@ -4222,9 +4227,9 @@ bool HouseClass::Flag_To_Die() {
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToDie = true;
     if (TheGameState().compatibility_v107()) {
-      BorrowedTime = int64_t{kTicksPerSecond} * 3;
+      BorrowedTime.Set(int64_t{kTicksPerSecond} * 3);
     } else {
-      BorrowedTime = int64_t{kTicksPerSecond} * 1;
+      BorrowedTime.Set(int64_t{kTicksPerSecond} * 1);
     }
   }
   return IsToDie;
@@ -4249,9 +4254,9 @@ bool HouseClass::Flag_To_Win() {
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToWin = true;
     if (TheGameState().compatibility_v107()) {
-      BorrowedTime = int64_t{kTicksPerSecond} * 3;
+      BorrowedTime.Set(int64_t{kTicksPerSecond} * 3);
     } else {
-      BorrowedTime = int64_t{kTicksPerSecond} * 1;
+      BorrowedTime.Set(int64_t{kTicksPerSecond} * 1);
     }
   }
   return IsToWin;
@@ -4279,9 +4284,9 @@ bool HouseClass::Flag_To_Lose() {
   if (!IsToDie && !IsToLose) {
     IsToLose = true;
     if (TheGameState().compatibility_v107()) {
-      BorrowedTime = int64_t{kTicksPerSecond} * 3;
+      BorrowedTime.Set(int64_t{kTicksPerSecond} * 3);
     } else {
-      BorrowedTime = int64_t{kTicksPerSecond} * 1;
+      BorrowedTime.Set(int64_t{kTicksPerSecond} * 1);
     }
   }
   return IsToLose;

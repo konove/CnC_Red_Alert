@@ -41,8 +41,9 @@
 #ifndef CNC_RED_ALERT_TD_SUPER_H_
 #define CNC_RED_ALERT_TD_SUPER_H_
 
+#include "engine/platform/ftimer.h"
 #include "td/defines.h"
-#include "td/ftimer.h"
+#include "td/game_clock.h"
 
 class SuperClass {
  public:
@@ -100,7 +101,7 @@ class SuperClass {
   bool IsReady : 1 = false;
   bool IsSuspended : 1 = false;
 
-  TCountDownTimerClass Control;
+  Timer<FrameTickSource> Control;
   int OldStage = -1;
   int SuspendTime = 0;
 

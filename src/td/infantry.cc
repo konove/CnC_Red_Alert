@@ -129,6 +129,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/platform/ftimer.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/audio.h"
@@ -144,7 +145,6 @@
 #include "td/face.h"
 #include "td/facing.h"
 #include "td/foot.h"
-#include "td/ftimer.h"
 #include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
@@ -1093,7 +1093,7 @@ void InfantryClass::AI() {
   /*
   **	Special victory dance action.
   */
-  if (!Target_Legal(NavCom) && !IsProne && IsStoked && Comment.Expired()) {
+  if (!Target_Legal(NavCom) && !IsProne && IsStoked && Comment.IsFinished()) {
     IsStoked = false;
     Do_Action(Random_Pick(0, 1) == 0 ? DO_GESTURE1 : DO_GESTURE2);
     if (*this == INFANTRY_RAMBO) {
@@ -1354,7 +1354,7 @@ void InfantryClass::AI() {
           **	indicates that basic path & movement logic needs to be
           **	aborted.
           */
-          if (!PathDelay.Expired()) {
+          if (!PathDelay.IsFinished()) {
             return;
           }
           if (!Basic_Path()) {
@@ -3298,7 +3298,7 @@ int InfantryClass::Made_A_Kill() {
   Validate();
   if (*this == INFANTRY_RAMBO || Random_Pick(0, 5) < Kills) {
     IsStoked = true;
-    Comment = int64_t{kTicksPerSecond} * 2;
+    Comment.Set(int64_t{kTicksPerSecond} * 2);
   }
   return FootClass::Made_A_Kill();
 }

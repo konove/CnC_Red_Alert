@@ -42,8 +42,9 @@
 #define CNC_RED_ALERT_TD_MISSION_H_
 
 #include "base/enum_array.h"
+#include "engine/platform/ftimer.h"
 #include "td/defines.h"
-#include "td/ftimer.h"
+#include "td/game_clock.h"
 #include "td/object.h"
 
 /****************************************************************************
@@ -131,7 +132,7 @@ class MissionClass : public ObjectClass {
   **	This the thread processing timer. When this value counts down to zero,
   *then *	more script processing may occur.
   */
-  TCountDownTimerClass Timer;
+  Timer<FrameTickSource> MissionTimer;
 
   /*
   **	These are the order names as ASCII strings.

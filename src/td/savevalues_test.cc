@@ -5,6 +5,7 @@
 
 #include "base/installed.h"
 #include "base/random.h"
+#include "engine/platform/ftimer.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
@@ -17,7 +18,6 @@
 #include "td/facing.h"
 #include "td/flasher.h"
 #include "td/fly.h"
-#include "td/ftimer.h"
 #include "td/fuse.h"
 #include "td/game_clock.h"
 #include "td/rand.h"
@@ -63,37 +63,37 @@ void Restore(T& value, const std::array<uint8_t, 64>& bytes) {
 
 TEST(TdSaveValuesTest, CountdownReanchorsAndKeepsWideRemainingTime) {
   TheGameClock().set_frame(100);
-  TCountDownTimerClass timer(int64_t{1} * 1024 * 1024 * 1024 * 1024);
+  Timer<FrameTickSource> timer(int64_t{1} * 1024 * 1024 * 1024 * 1024);
   TheGameClock().set_frame(CurrentFrame() + 17);
-  const int64_t remaining = timer.Time();
+  const int64_t remaining = timer.Value();
   const auto bytes = Save(timer);
   TheGameClock().set_frame(10000);
-  TCountDownTimerClass loaded;
+  Timer<FrameTickSource> loaded;
   Restore(loaded, bytes);
-  EXPECT_TRUE(loaded.Active());
-  EXPECT_EQ(loaded.Get_Start(), CurrentFrame());
-  EXPECT_EQ(loaded.Time(), remaining);
+  EXPECT_TRUE(loaded.IsRunning());
+  EXPECT_EQ(loaded.Value(), remaining);
   TheGameClock().set_frame(CurrentFrame() + 9);
-  EXPECT_EQ(loaded.Time(), remaining - 9);
+  EXPECT_EQ(loaded.Value(), remaining - 9);
 }
 
 TEST(TdSaveValuesTest, ClearedAndExpiredCountdownsRemainDistinct) {
   TheGameClock().set_frame(100);
-  TCountDownTimerClass timer(1);
+  Timer<FrameTickSource> timer(1);
   TheGameClock().set_frame(102);
-  TCountDownTimerClass loaded;
+  Timer<FrameTickSource> loaded;
   Restore(loaded, Save(timer));
-  EXPECT_TRUE(loaded.Active());
-  EXPECT_EQ(loaded.Time(), 0);
-  timer.Clear();
+  EXPECT_TRUE(loaded.IsRunning());
+  EXPECT_EQ(loaded.Value(), 0);
+  // What TCountDownTimerClass::Clear() did: nothing left, and not running.
+  timer.Set(0);
+  timer.Stop();
   Restore(loaded, Save(timer));
-  EXPECT_FALSE(loaded.Active());
-  EXPECT_EQ(loaded.Get_Start(), -1);
-  EXPECT_EQ(loaded.Get_Delay(), 0);
+  EXPECT_FALSE(loaded.IsRunning());
+  EXPECT_TRUE(loaded.IsFinished());
 }
 
 TEST(TdSaveValuesTest, CountdownRejectsTruncationAndNegativeDuration) {
-  TCountDownTimerClass timer;
+  Timer<FrameTickSource> timer;
   std::array<uint8_t, 9> bytes{};
   SpanSource short_source(std::as_bytes(std::span(bytes).first(8)));
   ArchiveReader short_reader(short_source);

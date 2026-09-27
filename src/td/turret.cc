@@ -85,7 +85,7 @@
  *=============================================================================================*/
 TurretClass::TurretClass(UnitType classid, HousesType house)
     : DriveClass(classid, house) {
-  Reload = 0;
+  Reload.Set(0);
 }
 
 /***********************************************************************************************
@@ -202,8 +202,8 @@ BulletClass* TurretClass::Fire_At(TARGET target, int which) {
       /*
       **	Possible reload timer set.
       */
-      if (*this == UNIT_MSAM && Reload == 0) {
-        Reload = int64_t{kTicksPerSecond} * 30;
+      if (*this == UNIT_MSAM && Reload.IsFinished()) {
+        Reload.Set(int64_t{kTicksPerSecond} * 30);
       }
     }
   }

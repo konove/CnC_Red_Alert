@@ -70,12 +70,12 @@
 
 #include "absl/strings/match.h"
 #include "base/enum_array.h"
+#include "engine/platform/ftimer.h"
 #include "td/defines.h"
-#include "td/ftimer.h"
 #include "td/jshell.h"
 #include "td/object.h"
 
-MissionClass::MissionClass() { Timer = 0; }
+MissionClass::MissionClass() { MissionTimer.Set(0); }
 
 int MissionClass::Mission_Sleep() { return kTicksPerSecond * 30; }
 int MissionClass::Mission_Ambush() { return kTicksPerSecond * 30; }
@@ -159,88 +159,88 @@ void MissionClass::AI() {
   /*
   **	This is the script AI equivalent processing.
   */
-  if (Timer.Expired() && Strength > 0) {
+  if (MissionTimer.IsFinished() && Strength > 0) {
     switch (Mission) {
       case MissionType::MISSION_NONE:
       case MissionType::MISSION_COUNT:
       default:
       case MISSION_STICKY:
       case MISSION_SLEEP:
-        Timer = Mission_Sleep();
+        MissionTimer.Set(Mission_Sleep());
         break;
 
       case MISSION_GUARD:
-        Timer = Mission_Guard();
+        MissionTimer.Set(Mission_Guard());
         break;
 
       case MISSION_ENTER:
-        Timer = Mission_Enter();
+        MissionTimer.Set(Mission_Enter());
         break;
 
       case MISSION_CONSTRUCTION:
-        Timer = Mission_Construction();
+        MissionTimer.Set(Mission_Construction());
         break;
 
       case MISSION_DECONSTRUCTION:
-        Timer = Mission_Deconstruction();
+        MissionTimer.Set(Mission_Deconstruction());
         break;
 
       case MISSION_CAPTURE:
       case MISSION_SABOTAGE:
-        Timer = Mission_Capture();
+        MissionTimer.Set(Mission_Capture());
         break;
 
       case MISSION_MOVE:
-        Timer = Mission_Move();
+        MissionTimer.Set(Mission_Move());
         break;
 
       case MISSION_ATTACK:
-        Timer = Mission_Attack();
+        MissionTimer.Set(Mission_Attack());
         break;
 
       case MISSION_RETREAT:
-        Timer = Mission_Retreat();
+        MissionTimer.Set(Mission_Retreat());
         break;
 
       case MISSION_HARVEST:
-        Timer = Mission_Harvest();
+        MissionTimer.Set(Mission_Harvest());
         break;
 
       case MISSION_GUARD_AREA:
-        Timer = Mission_Guard_Area();
+        MissionTimer.Set(Mission_Guard_Area());
         break;
 
       case MISSION_RETURN:
-        Timer = Mission_Return();
+        MissionTimer.Set(Mission_Return());
         break;
 
       case MISSION_STOP:
-        Timer = Mission_Stop();
+        MissionTimer.Set(Mission_Stop());
         break;
 
       case MISSION_AMBUSH:
-        Timer = Mission_Ambush();
+        MissionTimer.Set(Mission_Ambush());
         break;
 
       case MISSION_HUNT:
       case MISSION_RESCUE:
-        Timer = Mission_Hunt();
+        MissionTimer.Set(Mission_Hunt());
         break;
 
       case MISSION_TIMED_HUNT:
-        Timer = Mission_Timed_Hunt();
+        MissionTimer.Set(Mission_Timed_Hunt());
         break;
 
       case MISSION_UNLOAD:
-        Timer = Mission_Unload();
+        MissionTimer.Set(Mission_Unload());
         break;
 
       case MISSION_REPAIR:
-        Timer = Mission_Repair();
+        MissionTimer.Set(Mission_Repair());
         break;
 
       case MISSION_MISSILE:
-        Timer = Mission_Missile();
+        MissionTimer.Set(Mission_Missile());
         break;
     }
   }
@@ -272,7 +272,7 @@ bool MissionClass::Commence() {
     **	Force immediate state machine processing at the first state machine
     *state value.
     */
-    Timer = 0;
+    MissionTimer.Set(0);
     Status = 0;
     return true;
   }

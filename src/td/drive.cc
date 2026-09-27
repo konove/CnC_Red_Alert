@@ -79,6 +79,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
+#include "engine/platform/ftimer.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -87,7 +88,6 @@
 #include "td/display_constants.h"
 #include "td/facing.h"
 #include "td/foot.h"
-#include "td/ftimer.h"
 #include "td/game_state.h"
 #include "td/house.h"
 #include "td/inline.h"
@@ -891,7 +891,7 @@ bool DriveClass::Start_Of_Move() {
     **	NavCom to null and let the script take care of assigning a new
     **	navigation target.
     */
-    if (!PathDelay.Expired()) {
+    if (!PathDelay.IsFinished()) {
       return false;
     }
     if (!Basic_Path()) {

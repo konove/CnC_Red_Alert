@@ -44,8 +44,9 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/platform/ftimer.h"
 #include "td/defines.h"
-#include "td/ftimer.h"
+#include "td/game_clock.h"
 #include "td/object.h"
 #include "td/radio.h"
 #include "td/target.h"
@@ -193,7 +194,7 @@ class FootClass : public TechnoClass {
   **	When there is a complete findpath failure, this timer is initialized so
   **	that a findpath won't be calculated until this timer expires.
   */
-  TCountDownTimerClass PathDelay;
+  Timer<FrameTickSource> PathDelay;
   static constexpr int kPathDelay = 15;
   static constexpr int kPathRetry = 10;
   int TryTryAgain;  // Number of retry attempts remaining.
@@ -203,7 +204,7 @@ class FootClass : public TechnoClass {
   ** have expired yet.  It is used so a building does not keep calling
   ** for help from the same attacker.
   */
-  TCountDownTimerClass BaseAttackTimer;
+  Timer<FrameTickSource> BaseAttackTimer;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

@@ -63,6 +63,7 @@
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "td/aircraft.h"
@@ -76,7 +77,6 @@
 #include "td/dialog.h"
 #include "td/ending.h"
 #include "td/factory.h"
-#include "td/ftimer.h"
 #include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
@@ -306,7 +306,7 @@ void Fill_In_Data() {
 void Clear_Scenario() {
   TheWorld().end_count_down() = kTicksPerSecond * 30;
   TheWorld().crate_count() = 0;
-  TheWorld().crate_timer() = 0;
+  TheWorld().crate_timer().Set(0);
   TheWorld().crate_maker() = false;
 
   /*

@@ -47,10 +47,11 @@ class ArchiveWriter;
 #include <cstddef>
 
 #include "absl/base/attributes.h"
+#include "engine/platform/ftimer.h"
 #include "td/abstract.h"
 #include "td/defines.h"
 #include "td/foot.h"
-#include "td/ftimer.h"
+#include "td/game_clock.h"
 #include "td/house.h"
 #include "td/teamtype.h"
 #include "td/techno.h"
@@ -172,13 +173,14 @@ class TeamClass : public AbstractClass {
   /*
   ** This is the amount of time the team is suspended for.
   */
-  TCountDownTimerClass SuspendTimer;
+  Timer<FrameTickSource> SuspendTimer;
 
   //------------------------------------------------------------
   // Loading constructs an active shell without changing team counts.
   TeamClass() {
     IsActive = true;
-    SuspendTimer.Clear();
+    SuspendTimer.Set(0);
+    SuspendTimer.Stop();
   }
   TeamClass(const TeamTypeClass* type ABSL_ATTRIBUTE_LIFETIME_BOUND,
             HouseClass* owner ABSL_ATTRIBUTE_LIFETIME_BOUND);
@@ -240,7 +242,7 @@ class TeamClass : public AbstractClass {
   **	Some missions will time out. This is the timer that keeps track of the
   **	time to transition between missions.
   */
-  TCountDownTimerClass TimeOut;
+  Timer<FrameTickSource> TimeOut;
 
   void Coordinate_Unload();
   bool Coordinate_Regroup();

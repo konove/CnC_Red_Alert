@@ -67,6 +67,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/pooled.h"
+#include "engine/platform/ftimer.h"
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/config.h"
@@ -74,7 +75,6 @@
 #include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/foot.h"
-#include "td/ftimer.h"
 #include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -274,7 +274,7 @@ void TeamClass::AI() {
   ** for this team.
   */
   if (Suspended) {
-    if (!SuspendTimer.Expired()) {
+    if (!SuspendTimer.IsFinished()) {
       return;
     }
     Suspended = false;
@@ -468,7 +468,7 @@ void TeamClass::AI() {
       const TeamMissionStruct* mission =
           base::Suffix(Class->MissionList, CurrentMission).data();
 
-      TimeOut = mission->Argument * (kTicksPerMinute / 10);
+      TimeOut.Set(mission->Argument * (kTicksPerMinute / 10));
       Target = kTargetNone;
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
@@ -614,7 +614,7 @@ void TeamClass::AI() {
       case TMISSION_UNLOAD:
       case TMISSION_RETREAT:
       case TMISSION_GUARD:
-        if (TimeOut.Expired()) {
+        if (TimeOut.IsFinished()) {
           IsNextMission = true;
         }
         break;
@@ -1485,7 +1485,7 @@ void TeamClass::Suspend_Teams(int priority) {
         team->Remove(team->Member);
       }
       team->IsAltered = true;
-      team->SuspendTimer = kTicksPerMinute * 2;
+      team->SuspendTimer.Set(kTicksPerMinute * 2);
       team->Suspended = true;
     }
   }

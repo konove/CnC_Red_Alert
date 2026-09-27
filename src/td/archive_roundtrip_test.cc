@@ -295,7 +295,7 @@ TEST_F(TdArchiveRoundTripTest, HouseRestoresEconomyFlagsTimersAndTypeIdentity) {
   house.IsHuman = true;
   house.IsAlerted = true;
   house.NukePieces = 5;
-  house.BorrowedTime = 777;
+  house.BorrowedTime.Set(777);
   house.UnitsKilled.at(HOUSE_BAD) = 19;
   const auto bytes = Save(house);
   HouseClass restored;
@@ -306,7 +306,7 @@ TEST_F(TdArchiveRoundTripTest, HouseRestoresEconomyFlagsTimersAndTypeIdentity) {
   EXPECT_EQ(restored.InitialCredits, house.InitialCredits);
   EXPECT_TRUE(restored.IsHuman && restored.IsAlerted);
   EXPECT_EQ(restored.NukePieces, 5);
-  EXPECT_EQ(static_cast<int>(restored.BorrowedTime), 777);
+  EXPECT_EQ(restored.BorrowedTime.Value(), 777);
   EXPECT_EQ(restored.UnitsKilled.at(HOUSE_BAD), 19);
   EXPECT_EQ(Save(restored), bytes);
 }
@@ -317,7 +317,7 @@ TEST_F(TdArchiveRoundTripTest, UnitRestoresBaseFieldsReferencesTimersAndPathTail
   unit->Strength = 123;
   unit->NavCom = As_Target(CELL{1200});
   unit->Flagged = HOUSE_BAD;
-  unit->Reload = 87;
+  unit->Reload.Set(87);
   unit->Path[0] = FACING_E;
   unit->Path[1] = FACING_NONE;
   unit->Path[kConquerPathMax - 1] = FACING_S;
@@ -330,7 +330,7 @@ TEST_F(TdArchiveRoundTripTest, UnitRestoresBaseFieldsReferencesTimersAndPathTail
   EXPECT_EQ(restored->Strength, 123);
   EXPECT_EQ(restored->NavCom, unit->NavCom);
   EXPECT_EQ(restored->Flagged, HOUSE_BAD);
-  EXPECT_EQ(static_cast<int>(restored->Reload), 87);
+  EXPECT_EQ(restored->Reload.Value(), 87);
   EXPECT_EQ(restored->Path[0], FACING_E);
   EXPECT_EQ(restored->Path[1], FACING_NONE);
   EXPECT_EQ(restored->Path[kConquerPathMax - 1], FACING_S);

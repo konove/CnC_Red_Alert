@@ -2,7 +2,7 @@
 
 Written 2026-09-27.
 
-**Status: in progress.** Steps 1 and 2 done.
+**Status: in progress.** Steps 1 to 3 done.
 
 ## Context
 
@@ -79,7 +79,12 @@ Each step builds, passes ctest and the strict checks, and is its own commit.
    `Value()`, `Expired()` → `IsFinished()`, `Clear()` → `Set(0); Stop();`. Rewrite the
    `savevalues_test.cc` cases against the new API, keeping what they prove (re-anchor on load, wide
    remaining values, cleared vs expired stay distinct, negative duration rejected). Delete
-   `td/ftimer.h`. Save/load smoke test: `tools/td_saveload_smoke.sh`.
+   `td/ftimer.h`. Save/load smoke test: `tools/td_saveload_smoke.sh`. Done: 76 assignments became
+   `Set()`, five `Clear()` calls `Set(0); Stop();`, and `MissionClass::Timer` (private) became
+   `MissionTimer`, as in RA. Every smoke fixture's state comparison passes; the `--building`,
+   `--mobile`, `--globals` and `--map` rejection scripts fail on the pre-change binary too, because
+   the messages they look for are `DLOG`ged and `NDEBUG` builds drop them.
+
 4. **System-tick timers in both games.** `CountDownTimerClass` → `Timer<SystemTickSource>`,
    `TimerClass` → `Stopwatch<SystemTickSource>` (`Set(0, true)` → `Reset()`, `Time()` → `Value()`).
    Delete `delay` in `td/mplayer.cc`; drop the `const` from `send_timer`. TD members named `Timer`

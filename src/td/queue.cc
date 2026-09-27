@@ -93,6 +93,7 @@
 #include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "base/unaligned.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/window/hardware_cursor.h"
@@ -103,7 +104,6 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/event.h"
-#include "td/ftimer.h"
 #include "td/game_clock.h"
 #include "td/game_state.h"
 #include "td/goptions.h"
@@ -227,7 +227,7 @@ static int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
 // DoList management:
 //...........................................................................
 static int Execute_DoList(int max_houses, HousesType base_house,
-                          ConnManClass* net, TCountDownTimerClass* skip_crc,
+                          ConnManClass* net, Timer<FrameTickSource>* skip_crc,
                           std::span<int> their_frame,
                           std::span<uint16_t> their_sent,
                           std::span<uint16_t> their_recv);
@@ -3043,7 +3043,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
-                          ConnManClass* net, TCountDownTimerClass* /*unused*/,
+                          ConnManClass* net, Timer<FrameTickSource>* /*unused*/,
                           std::span<int> their_frame,
                           std::span<uint16_t> their_sent,
                           std::span<uint16_t> their_recv) {

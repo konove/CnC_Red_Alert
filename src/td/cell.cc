@@ -97,6 +97,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/platform/ftimer.h"
 #include "td/anim.h"
 #include "td/building.h"
 #include "td/combat.h"
@@ -110,7 +111,6 @@
 #include "td/display.h"
 #include "td/display_constants.h"
 #include "td/foot.h"
-#include "td/ftimer.h"
 #include "td/game_clock.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -2072,7 +2072,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       if (!TheWorld().crate_maker() && TheWorld().crate_count() <= 0 &&
           TheSession().type() != GAME_NORMAL) {
         TheWorld().crate_maker() = true;
-        TheWorld().crate_timer() = 1;
+        TheWorld().crate_timer().Set(1);
       }
 
       /*

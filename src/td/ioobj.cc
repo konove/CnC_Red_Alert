@@ -454,7 +454,7 @@ template void BulletClass::Serialize(ArchiveReader&);
 template <class Archive>
 void MissionClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
-  ar(Mission, SuspendedMission, MissionQueue, Status, Timer);
+  ar(Mission, SuspendedMission, MissionQueue, Status, MissionTimer);
   if constexpr (Archive::kIsReading) {
     for (const MissionType mission :
          {Mission, SuspendedMission, MissionQueue}) {

@@ -152,6 +152,7 @@
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
+#include "engine/platform/ftimer.h"
 #include "engine/window/wait_ticks.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -171,7 +172,6 @@
 #include "td/facing.h"
 #include "td/factory.h"
 #include "td/foot.h"
-#include "td/ftimer.h"
 #include "td/game_clock.h"
 #include "td/game_state.h"
 #include "td/goptions.h"
@@ -1295,7 +1295,7 @@ void BuildingClass::AI() {
   *time.
   */
   if (!Strength) {
-    if (CountDown.Expired()) {
+    if (CountDown.IsFinished()) {
       Limbo();
       Drop_Debris(WhomToRepay);
       delete this;
@@ -1368,7 +1368,7 @@ void BuildingClass::AI() {
   *buildings have *	production attached to the building itself. The player
   *uses the sidebar interface for *	all production control.
   */
-  if (Factory && Factory->Has_Completed() && PlacementDelay.Expired()) {
+  if (Factory && Factory->Has_Completed() && PlacementDelay.IsFinished()) {
     switch (Exit_Object(Factory->Get_Object())) {
       /*
       **	If the object could not leave the factory, then either request
@@ -1382,7 +1382,7 @@ void BuildingClass::AI() {
         break;
 
       case 1:
-        PlacementDelay = int64_t{kTicksPerSecond} * 3;
+        PlacementDelay.Set(int64_t{kTicksPerSecond} * 3);
         break;
 
       case 2:
@@ -1433,7 +1433,7 @@ void BuildingClass::AI() {
         **	If production has halted, then just abort production and make
         *the *	funds available for something else.
         */
-        if (PlacementDelay.Expired() && !Factory->Is_Building()) {
+        if (PlacementDelay.IsFinished() && !Factory->Is_Building()) {
           Factory->Abandon();
           base::DeletePooled(Factory);
           Factory = nullptr;
@@ -1474,7 +1474,7 @@ void BuildingClass::AI() {
   **	Check for demolition timeout. When timeout has expired, the building
   *explodes.
   */
-  if (IsGoingToBlow && CountDown.Expired()) {
+  if (IsGoingToBlow && CountDown.IsFinished()) {
     TheWorld().sabotaged_type() = Class->Type;
     int damage = 5000;
     Take_Damage(damage, 0, WARHEAD_FIRE, As_Techno(WhomToRepay));
@@ -1851,10 +1851,10 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         }
         Sound_Effect(VOC_CRUMBLE, Coord);
         if (Mission == MISSION_DECONSTRUCTION) {
-          CountDown = 0;
+          CountDown.Set(0);
           Set_Rate(0);
         } else {
-          CountDown = 8;
+          CountDown.Set(8);
         }
 
         /*
@@ -2081,7 +2081,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
       Class(&BuildingTypeClass::As_Reference(type)),
       ActLike(House->ActLike),
       WhoLastHurtMe(house) {
-  PlacementDelay = 0;
+  PlacementDelay.Set(0);
 
   CountDown.Set(0);
 

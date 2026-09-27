@@ -8,10 +8,11 @@
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
 #include "base/installed.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
 #include "td/base.h"
 #include "td/defines.h"
-#include "td/ftimer.h"
+#include "td/game_clock.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
 #include "td/score.h"
@@ -125,7 +126,7 @@ class World {
   // The crates scattered over the map: how many there are, when the next
   // one appears, and whether the scenario makes more of them.
   int& crate_count() ABSL_ATTRIBUTE_LIFETIME_BOUND { return crate_count_; }
-  TCountDownTimerClass& crate_timer() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Timer<FrameTickSource>& crate_timer() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return crate_timer_;
   }
   bool& crate_maker() ABSL_ATTRIBUTE_LIFETIME_BOUND { return crate_maker_; }
@@ -197,7 +198,7 @@ class World {
   TheaterType last_theater_ = THEATER_NONE;
 
   int crate_count_ = 0;
-  TCountDownTimerClass crate_timer_;
+  Timer<FrameTickSource> crate_timer_;
   bool crate_maker_ = false;
 
   int seed_ = 0;

@@ -41,11 +41,12 @@
 #ifndef CNC_RED_ALERT_TD_TURRET_H_
 #define CNC_RED_ALERT_TD_TURRET_H_
 
+#include "engine/platform/ftimer.h"
 #include "td/bullet.h"
 #include "td/defines.h"
 #include "td/drive.h"
 #include "td/facing.h"
-#include "td/ftimer.h"
+#include "td/game_clock.h"
 
 class TurretClass : public DriveClass {
  public:
@@ -57,7 +58,7 @@ class TurretClass : public DriveClass {
   **	This is the timer that controls the reload rate. The MSAM rocket
   **	launcher is the primary user of this.
   */
-  TCountDownTimerClass Reload;
+  Timer<FrameTickSource> Reload;
 
   /*
   **	This is the facing of the turret. It can be, and usually is,

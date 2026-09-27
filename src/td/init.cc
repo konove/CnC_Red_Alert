@@ -1681,14 +1681,14 @@ bool Select_Game(bool fade) {
       vehicle->IsHarvesting = true;
       vehicle->IsReturning = true;
       vehicle->IsTurretLockedDown = true;
-      vehicle->Reload = 173;
+      vehicle->Reload.Set(173);
       vehicle->SecondaryFacing.Set(DIR_NE);
       vehicle->SecondaryFacing = DIR_SW;
       base::At(vehicle->Path, 0) = FACING_NE;
       base::At(vehicle->Path, 1) = FACING_E;
       base::At(vehicle->Path, 2) = FACING_NONE;
-      vehicle->PathDelay = 181;
-      vehicle->BaseAttackTimer = 217;
+      vehicle->PathDelay.Set(181);
+      vehicle->BaseAttackTimer.Set(217);
       vehicle->TryTryAgain = 3;
       vehicle->ArchiveTarget = plane->As_Target();
       vehicle->NavCom = plane->As_Target();
@@ -1702,7 +1702,7 @@ bool Select_Game(bool fade) {
       vehicle->Speed = 103;
       vehicle->Group = 4;
       passenger->Doing = DO_PRONE;
-      passenger->Comment = 193;
+      passenger->Comment.Set(193);
       passenger->IsTechnician = true;
       passenger->IsStoked = true;
       passenger->IsProne = true;
@@ -1753,8 +1753,8 @@ bool Select_Game(bool fade) {
       building->SuspendedMission = MISSION_GUARD;
       building->MissionQueue = MISSION_UNLOAD;
       building->Status = 3;
-      building->CountDown = 175;
-      building->PlacementDelay = 210;
+      building->CountDown.Set(175);
+      building->PlacementDelay.Set(210);
       building->LastStrength = building->Strength - 20;
       building->WhomToRepay = peer->As_Target();
       building->WhoLastHurtMe = HOUSE_BAD;
@@ -1875,7 +1875,7 @@ bool Select_Game(bool fade) {
         return false;
       }
       team->Force_Active();
-      team->SuspendTimer = 150;
+      team->SuspendTimer.Set(150);
     }
     if (TheStartupOptions().factory_test) {
       auto* factory = base::NewPooled<FactoryClass>();

@@ -107,6 +107,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "engine/platform/ftimer.h"
 #include "engine/window/hardware_cursor.h"
 #include "td/audio.h"
 #include "td/building.h"
@@ -115,7 +116,6 @@
 #include "td/coord.h"
 #include "td/defines.h"
 #include "td/event.h"
-#include "td/ftimer.h"
 #include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/house.h"
@@ -176,7 +176,7 @@ FootClass::FootClass()
     facing = FACING_NONE;
   }
 
-  PathDelay = 0;
+  PathDelay.Set(0);
 
   if (House) {
     House->CurUnits++;
@@ -241,7 +241,7 @@ FootClass::FootClass(HousesType house)
     facing = FACING_NONE;
   }
 
-  PathDelay = 0;
+  PathDelay.Set(0);
 
   House->CurUnits++;
 }
@@ -519,7 +519,7 @@ bool FootClass::Basic_Path() {
     }
 #endif
 
-    PathDelay = kPathDelay;
+    PathDelay.Set(kPathDelay);
     if (base::At(Path, 0) != FACING_NONE) {
       return true;
     }
@@ -692,7 +692,7 @@ int FootClass::Mission_Timed_Hunt() {
     ** has expired, or if our owning house has lost more than 1/4 of its units
     ** (it gets mad at you)
     */
-    if ((TheSession().blitz() && House->BlitzTime == 0) ||
+    if ((TheSession().blitz() && House->BlitzTime.IsFinished()) ||
         House->CurUnits < House->MaxUnit * 4 / 5) {
       Assign_Mission(MISSION_HUNT);
       changed = 1;

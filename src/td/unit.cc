@@ -138,6 +138,7 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
+#include "engine/platform/ftimer.h"
 #include "td/anim.h"
 #include "td/audio.h"
 #include "td/building.h"
@@ -152,7 +153,6 @@
 #include "td/display_constants.h"
 #include "td/facing.h"
 #include "td/foot.h"
-#include "td/ftimer.h"
 #include "td/game_clock.h"
 #include "td/game_state.h"
 #include "td/goptions.h"
@@ -376,12 +376,12 @@ void UnitClass::AI() {
   */
   if (*this == UNIT_MSAM && Ammo < Class->MaxAmmo) {
     if (IsDriving) {
-      Reload = Reload + 1;
+      Reload.Set(Reload.Value() + 1);
     } else {
-      if (Reload.Expired()) {
+      if (Reload.IsFinished()) {
         Ammo++;
         if (Ammo < Class->MaxAmmo) {
-          Reload = int64_t{kTicksPerSecond} * 30;
+          Reload.Set(int64_t{kTicksPerSecond} * 30);
         }
         Mark(MARK_CHANGE);
       }
@@ -1120,7 +1120,7 @@ UnitClass::~UnitClass() {
  *=============================================================================================*/
 UnitClass::UnitClass(UnitType classid, HousesType house)
     : TarComClass(classid, house) {
-  Reload = 0;
+  Reload.Set(0);
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;
   if (Class->IsAnimating) {

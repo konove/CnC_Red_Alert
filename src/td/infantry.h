@@ -51,11 +51,12 @@ class ArchiveWriter;
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/platform/ftimer.h"
 #include "td/bullet.h"
 #include "td/cell.h"
 #include "td/defines.h"
 #include "td/foot.h"
-#include "td/ftimer.h"
+#include "td/game_clock.h"
 #include "td/inline.h"
 #include "td/object.h"
 #include "td/radio.h"
@@ -97,7 +98,7 @@ class InfantryClass final : public FootClass {
   *an *	amount of time has expired subsiquent to an significant event. This is
   *the *	timer the counts down.
   */
-  TCountDownTimerClass Comment;
+  Timer<FrameTickSource> Comment;
 
   /*
   **	If this civilian is actually a technician, then this flag will be true.

@@ -70,10 +70,10 @@
  *=============================================================================================*/
 #include "td/super.h"
 
+#include "engine/platform/ftimer.h"
 #include "td/audio.h"
 #include "td/config.h"
 #include "td/defines.h"
-#include "td/ftimer.h"
 #include "td/jshell.h"
 
 /***********************************************************************************************
@@ -94,9 +94,9 @@
 bool SuperClass::Suspend(bool on) {
   if ((IsPresent && !IsReady && !IsOneTime) && (on != IsSuspended)) {
     if (on) {
-      SuspendTime = static_cast<int>(Control);
+      SuspendTime = static_cast<int>(Control.Value());
     } else {
-      Control = SuspendTime;
+      Control.Set(SuspendTime);
     }
     IsSuspended = on;
     return true;
@@ -185,12 +185,12 @@ bool SuperClass::Recharge(bool player) {
     OldStage = -1;
     if constexpr (config::kCheatKeysEnabled) {
       if (TheSpecial().IsSpeedBuild) {
-        Control = 1;
+        Control.Set(1);
       } else {
-        Control = RechargeTime;
+        Control.Set(RechargeTime);
       }
     } else {
-      Control = RechargeTime;
+      Control.Set(RechargeTime);
     }
     if (player && VoxCharging != VOX_NONE) {
       Speak(VoxCharging);
@@ -257,7 +257,7 @@ bool SuperClass::AI(bool player) {
         return true;
       }
     } else {
-      if (Control.Expired()) {
+      if (Control.IsFinished()) {
         IsReady = true;
         if (player && VoxRecharge != VOX_NONE) {
           Speak(VoxRecharge);
@@ -296,7 +296,7 @@ int SuperClass::Anim_Stage() const {
     if (IsReady) {
       return kAnimationStages;
     }
-    int time = static_cast<int>(Control.Time());
+    int time = static_cast<int>(Control.Value());
     if (IsSuspended) {
       time = SuspendTime;
     }

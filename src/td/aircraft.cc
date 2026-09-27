@@ -123,6 +123,7 @@
 #include "base/trig.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
+#include "engine/platform/ftimer.h"
 #include "td/anim.h"
 #include "td/audio.h"
 #include "td/building.h"
@@ -137,7 +138,6 @@
 #include "td/facing.h"
 #include "td/fly.h"
 #include "td/foot.h"
-#include "td/ftimer.h"
 #include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -765,9 +765,9 @@ void AircraftClass::AI() {
   /*
   **	Perform sighting every so often as controlled by the sight timer.
   */
-  if (IsOwnedByPlayer && Class->SightRange && SightTimer.Expired()) {
+  if (IsOwnedByPlayer && Class->SightRange && SightTimer.IsFinished()) {
     TheMap().Sight_From(Coord_Cell(Coord), Class->SightRange, false);
-    SightTimer = kTicksPerSecond;
+    SightTimer.Set(kTicksPerSecond);
   }
 
   /*

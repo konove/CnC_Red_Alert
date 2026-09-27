@@ -79,13 +79,13 @@
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
+#include "engine/platform/ftimer.h"
 #include "td/anim.h"
 #include "td/building.h"
 #include "td/cell.h"
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/ftimer.h"
 #include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -373,7 +373,8 @@ TriggerClass::~TriggerClass() {
     if (HouseClass::As_Pointer(House)->Blockage) {
       HouseClass::As_Pointer(House)->Blockage--;
     }
-    HouseClass::As_Pointer(House)->BorrowedTime = int64_t{kTicksPerSecond} * 4;
+    HouseClass::As_Pointer(House)->BorrowedTime.Set(int64_t{kTicksPerSecond} *
+                                                    4);
   }
 }
 

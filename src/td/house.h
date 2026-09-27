@@ -51,8 +51,9 @@ class ArchiveWriter;
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
+#include "engine/platform/ftimer.h"
 #include "td/defines.h"
-#include "td/ftimer.h"
+#include "td/game_clock.h"
 #include "td/jshell.h"
 #include "td/object.h"
 #include "td/region.h"
@@ -176,7 +177,7 @@ class HouseClass {
   */
   bool IsFreeHarvester : 1 = false;
 
-  TCountDownTimerClass FreeHarvester;
+  Timer<FrameTickSource> FreeHarvester;
 
   /*
   **	These super weapon control objects are used to control the recharge
@@ -205,13 +206,13 @@ class HouseClass {
   *expires *	and the house has been alerted, then it will create a set of
   *attack *	teams.
   */
-  TCountDownTimerClass AlertTime;
+  Timer<FrameTickSource> AlertTime;
 
   /*
   **	This timer is used to handle the delay between some catastrophic
   **	event trigger and when it is actually carried out.
   */
-  TCountDownTimerClass BorrowedTime;
+  Timer<FrameTickSource> BorrowedTime;
 
   /*
   **	This is the last working scan bits for buildings. If a building is
@@ -532,13 +533,13 @@ class HouseClass {
   ** now in range.  If the Ion cannon was in range it will toggle out
   ** of range.
   */
-  TCountDownTimerClass IonControl;
+  Timer<FrameTickSource> IonControl;
   int IonOldStage = 0;
 
-  TCountDownTimerClass AirControl;
+  Timer<FrameTickSource> AirControl;
   int AirOldStage = 0;
 
-  TCountDownTimerClass NukeControl;
+  Timer<FrameTickSource> NukeControl;
   int NukeOldStage = 0;
 #endif
 
@@ -546,7 +547,7 @@ class HouseClass {
   ** This timer is for multiplayer mode; for a computer-controlled house,
   ** it determines how long until this player "blitzes" the hapless humans.
   */
-  TCountDownTimerClass BlitzTime;
+  Timer<FrameTickSource> BlitzTime;
 
   /*
   **	This count down timer class decrements and then changes
@@ -594,27 +595,27 @@ class HouseClass {
   **	General low-power related damaged is doled out whenever this timer
   **	expires.
   */
-  TCountDownTimerClass DamageTime;
+  Timer<FrameTickSource> DamageTime;
 
   /*
   **	Team creation is done whenever this timer expires.
   */
-  TCountDownTimerClass TeamTime;
+  Timer<FrameTickSource> TeamTime;
 
   /*
   **	This controls the rate that the trigger time logic is processed.
   */
-  TCountDownTimerClass TriggerTime;
+  Timer<FrameTickSource> TriggerTime;
 
   /*
   **	At various times, the computer may announce the player's condition. The
   *following *	variables are used as countdown timers so that these
   *announcements are paced *	far enough appart to reduce annoyance.
   */
-  TCountDownTimerClass SpeakAttackDelay;
-  TCountDownTimerClass SpeakPowerDelay;
-  TCountDownTimerClass SpeakMoneyDelay;
-  TCountDownTimerClass SpeakMaxedDelay;
+  Timer<FrameTickSource> SpeakAttackDelay;
+  Timer<FrameTickSource> SpeakPowerDelay;
+  Timer<FrameTickSource> SpeakMoneyDelay;
+  Timer<FrameTickSource> SpeakMaxedDelay;
 };
 extern template void HouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void HouseClass::Serialize<ArchiveReader>(ArchiveReader&);

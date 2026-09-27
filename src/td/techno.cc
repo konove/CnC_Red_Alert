@@ -179,6 +179,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/platform/ftimer.h"
 #include "engine/window/keyboard.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -195,7 +196,6 @@
 #include "td/door.h"
 #include "td/facing.h"
 #include "td/foot.h"
-#include "td/ftimer.h"
 #include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -3551,7 +3551,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   ** If the threat has already been dealt with then we don't need to do
   ** any work.  Check for that here.
   */
-  if (!dynamic_cast<const FootClass*>(enemy)->BaseAttackTimer.Expired()) {
+  if (!dynamic_cast<const FootClass*>(enemy)->BaseAttackTimer.IsFinished()) {
     return;
   }
 

@@ -41,11 +41,11 @@
 
 #include "td/logic.h"
 
+#include "engine/platform/ftimer.h"
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/defines.h"
 #include "td/factory.h"
-#include "td/ftimer.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -84,9 +84,9 @@ void LogicClass::AI() {
   **	Crate regeneration is handled here.
   */
   if (TheSession().type() != GAME_NORMAL && TheWorld().crate_maker() &&
-      TheWorld().crate_timer().Expired()) {
+      TheWorld().crate_timer().IsFinished()) {
     TheMap().Place_Random_Crate();
-    TheWorld().crate_timer() = kTicksPerMinute * Random_Pick(7, 15);
+    TheWorld().crate_timer().Set(kTicksPerMinute * Random_Pick(7, 15));
   }
 
   /*
