@@ -2,7 +2,7 @@
 
 Written 2026-09-27.
 
-**Status: proposed.**
+**Status: in progress.** Step 1 done.
 
 ## Context
 
@@ -32,8 +32,9 @@ legacy classes stayed in the engine for it.
   load. `Active()`, `Get_Start()` and `Get_Delay()` are read only by `td/savevalues_test.cc`.
 - `TCountDownTimerClass` serializes `(remaining, active)`; `Timer<T>` serializes `(value, running)`
   — the same two fields in the same order, so TD saves keep loading.
-- `Timer<T>::Value()` returns `delay_time_` unclamped while stopped, so `Set(-5); Stop();` reads -5.
-  The legacy countdowns clamp at 0 in every state.
+- `Timer<T>::Value()` returns `delay_time_` unclamped while stopped, but `Stop()` stores the clamped
+  running value, so the only way to a negative stopped value is loading one from a save.
+  `Stopwatch<T>` loads a negative elapsed value the same way.
 - `TimerSystemOn` is read only by the `TimerClass(bool start)` constructor, and nobody passes
   `true`.
 - `const CountDownTimerClass delay;` in `td/mplayer.cc` is never read. `send_timer` in `td/stats.cc`
@@ -64,10 +65,11 @@ legacy classes stayed in the engine for it.
 
 Each step builds, passes ctest and the strict checks, and is its own commit.
 
-1. **Harden `Timer<T>`.** `Value()` clamps at 0 while stopped too; `Serialize` fails the archive on
-   a negative remaining value (ported from `TCountDownTimerClass`). Tests in
-   `engine/platform/ftimer_test.cc`: pause/resume for both templates, `Set` while stopped, clamping,
-   negative-load rejection.
+1. **Harden the templates.** `Timer<T>::Serialize` fails the archive on a negative remaining value
+   (ported from `TCountDownTimerClass`), `Stopwatch<T>::Serialize` on a negative elapsed value; both
+   leave the object unchanged. Tests in `engine/platform/ftimer_test.cc`: countdown to zero,
+   pause/resume for both templates, `Set` while stopped, stopped at zero (the new `Clear()`),
+   `Reset`, negative-load rejection. Done.
 2. **Move the tick sources.** `SystemTickSource` into `engine/platform/ftimer.h`; `FrameTickSource`
    into `ra/game_clock.h`, and a TD copy into `td/game_clock.h`. `ra/jshell.h` loses both.
 3. **TD frame countdowns.** `TCountDownTimerClass` → `Timer<FrameTickSource>` in the 34 declarations

@@ -65,7 +65,8 @@ class Stopwatch {
   // Saved-game support. Writes the elapsed value and the running flag, not
   // the anchor tick, so the format does not depend on the tick source. On
   // read the stopwatch re-anchors to the current tick, which for a frame
-  // tick source means Frame must already be restored.
+  // tick source means Frame must already be restored. A negative value fails
+  // the archive and leaves the stopwatch unchanged.
   template <class Archive>
   void Serialize(Archive& ar);
 
@@ -90,6 +91,10 @@ void Stopwatch<T>::Serialize(Archive& ar) {
   bool running = running_;
   ar(value, running);
   if constexpr (Archive::kIsReading) {
+    if (value < 0) {
+      ar.Fail("negative stopwatch value");
+      return;
+    }
     accumulated_ticks_ = value;
     start_tick_ = static_cast<int64_t>(T::Tick());
     running_ = running;
@@ -170,6 +175,7 @@ class Timer {
 
   // Saved-game support. Writes the remaining value and the running flag and
   // re-anchors on read; see Stopwatch::Serialize for the Frame precondition.
+  // A negative value fails the archive and leaves the timer unchanged.
   template <class Archive>
   void Serialize(Archive& ar);
 
@@ -194,6 +200,10 @@ void Timer<T>::Serialize(Archive& ar) {
   bool running = running_;
   ar(value, running);
   if constexpr (Archive::kIsReading) {
+    if (value < 0) {
+      ar.Fail("negative countdown duration");
+      return;
+    }
     delay_time_ = value;
     start_tick_ = static_cast<int64_t>(T::Tick());
     running_ = running;
