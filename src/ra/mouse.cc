@@ -61,6 +61,7 @@
 #include "engine/window/keyboard.h"
 #include "magic_enum/magic_enum.hpp"  // IWYU pragma: keep - used by an DCHECK() below.
 #include "ra/defines.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/scroll.h"
 
@@ -160,16 +161,16 @@ void MouseClass::Mouse_Small(bool wsmall) {
 
   if (wsmall) {
     if (control->SmallFrame != -1) {
-      engine::window::SetMouseShape(
+      TheMouse().SetShape(
           control->X, control->Y,
           Extract_Shape(MouseShapes, control->SmallFrame + (Frame / 4)));
     } else {
-      engine::window::SetMouseShape(
+      TheMouse().SetShape(
           MouseControl.at(MOUSE_NORMAL).X, MouseControl.at(MOUSE_NORMAL).Y,
           Extract_Shape(MouseShapes, static_cast<int>(MOUSE_NORMAL)));
     }
   } else {
-    engine::window::SetMouseShape(
+    TheMouse().SetShape(
         control->X, control->Y,
         Extract_Shape(MouseShapes, control->StartFrame + (Frame / 4)));
   }
@@ -227,8 +228,8 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
       baseshp = control->StartFrame;
     }
 
-    engine::window::SetMouseShape(control->X, control->Y,
-                                  Extract_Shape(MouseShapes, baseshp));
+    TheMouse().SetShape(control->X, control->Y,
+                        Extract_Shape(MouseShapes, baseshp));
     CurrentMouseShape = mouse;
     IsSmall = wsmall;
     return true;
@@ -272,9 +273,8 @@ void MouseClass::AI(engine::window::InputEvent& event, int x, int y) {
       if (baseframe == -1) {
         baseframe = control->StartFrame;
       }
-      engine::window::SetMouseShape(
-          control->X, control->Y,
-          Extract_Shape(MouseShapes, baseframe + Frame));
+      TheMouse().SetShape(control->X, control->Y,
+                          Extract_Shape(MouseShapes, baseframe + Frame));
     }
   }
 

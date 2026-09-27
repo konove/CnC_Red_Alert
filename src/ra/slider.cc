@@ -62,6 +62,7 @@
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/gauge.h"
+#include "ra/input.h"
 #include "ra/shapebtn.h"
 
 using enum engine::window::KeyNumber;
@@ -236,10 +237,10 @@ bool SliderClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     int edge = 0;   // Edge of slider.
 
     if (IsHorizontal) {
-      mouse = engine::window::MouseX();
+      mouse = TheMouse().x();
       edge = X;
     } else {
-      mouse = engine::window::MouseY();
+      mouse = TheMouse().y();
       edge = Y;
     }
     edge += 1;

@@ -11,7 +11,6 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
-#include "engine/window/hardware_cursor.h"
 #include "engine/window/ww_win.h"
 
 namespace engine::window {
@@ -288,9 +287,6 @@ bool KeyBuffer::HandleEvent(const SDL_Event* event) {
       PutKey(event->key.keysym.scancode, event->key.state == SDL_RELEASED);
       break;
 
-    case SDL_MOUSEMOTION:
-      RecordMousePosition(event->motion.x, event->motion.y);
-      break;
     default:
       break;
   }

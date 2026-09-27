@@ -135,7 +135,7 @@ void Choose_Side() {
   int endframe = 255;
   bool lettersdone = false;
 
-  engine::window::HideMouse();
+  TheMouse().Hide();
 
   Call_Back();
 
@@ -208,9 +208,7 @@ void Choose_Side() {
 #endif
   TheKeyboard().Clear();
 
-  while (engine::window::MouseHideCount()) {
-    engine::window::ShowMouse();
-  }
+  TheMouse().ForceShow();
 
   while (
       endframe != frame ||
@@ -244,7 +242,7 @@ void Choose_Side() {
         }
       }
       if (lettersdone) {
-        engine::window::ShowMouse();
+        TheMouse().Show();
       }
     }
     if (frame >= anim.frame_count()) {
@@ -277,7 +275,7 @@ void Choose_Side() {
     }
   }
 
-  engine::window::HideMouse();
+  TheMouse().Hide();
   anim.Close();
 
   // erase the "choose side" text

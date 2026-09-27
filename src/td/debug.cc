@@ -159,8 +159,7 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(engine::window::MouseX(),
-                                               engine::window::MouseY()),
+          air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
                        DIR_N);
         }
       } break;
@@ -173,8 +172,7 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(engine::window::MouseX(),
-                                               engine::window::MouseY()),
+          air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
                        DIR_N);
         }
       } break;
@@ -184,19 +182,18 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(engine::window::MouseX(),
-                                               engine::window::MouseY()),
+          air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
                        DIR_N);
         }
       } break;
 
       case KN_GRAVE:
         base::NewPooled<AnimClass>(
-            ANIM_ART_EXP1, TheMap().Pixel_To_Coord(engine::window::MouseX(),
-                                                   engine::window::MouseY()));
-        Explosion_Damage(TheMap().Pixel_To_Coord(engine::window::MouseX(),
-                                                 engine::window::MouseY()),
-                         250, nullptr, WARHEAD_HE);
+            ANIM_ART_EXP1,
+            TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()));
+        Explosion_Damage(
+            TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()), 250,
+            nullptr, WARHEAD_HE);
         break;
 
       case KN_Z:
@@ -250,13 +247,13 @@ void Debug_Key(unsigned input) {
 #ifdef NEVER
       case KN_G:
         HouseClass::As_Pointer(HOUSE_GOOD)
-            ->Flag_Attach(TheMap().Click_Cell_Calc(engine::window::MouseX(),
-                                                   engine::window::MouseY()));
+            ->Flag_Attach(
+                TheMap().Click_Cell_Calc(TheMouse().x(), TheMouse().y()));
         break;
 
       case KN_N:
-        HouseClass::As_Pointer(HOUSE_BAD)->Flag_Attach(TheMap().Click_Cell_Calc(
-            engine::window::MouseX(), engine::window::MouseY()));
+        HouseClass::As_Pointer(HOUSE_BAD)->Flag_Attach(
+            TheMap().Click_Cell_Calc(TheMouse().x(), TheMouse().y()));
         break;
 #endif
 

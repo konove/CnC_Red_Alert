@@ -19,13 +19,6 @@
 - Make typed text honour Shift
   - `KeyBuffer::ToAscii()` maps through `SDL_GetKeyFromScancode()`, which ignores modifiers, so edit
     boxes and chat get no capitals or shifted symbols; doing better needs SDL text-input events
-- Keep the mouse grabbed when `Input::InstallMouse()` replaces the cursor
-  - The new `HardwareCursor`'s constructor grabs, then the old one's destructor releases; latent
-    while each game installs the cursor once per run
-  - Fix at the root: make `mouse_grab_disabled` a `Display` option honoured by `SetMouseGrab()`,
-    drop `HardwareCursor::GrabMouse()`/`ReleaseMouse()`, and have the focus handlers
-    (`ra/nondosstub.cc`, `td/nondosstub.cc`, `td/winstub.cc`, which calls the static through
-    `TheMouse()->`) and `Input` call `TheDisplay().SetMouseGrab()` directly
 - Let `HardwareCursor::SetShape()` retry a shape whose SDL cursor could not be created
   - It records `current_shape_` even when `SDL_CreateColorCursor()` fails, so the same shape is
     never tried again and SDL shows its default cursor
@@ -73,19 +66,14 @@
   - `ra/gadget.cc`, `ra/init.cc`, `ra/wol_chat.cc`, `ra/wol_logn.cc`, `td/conquer.cc`,
     `td/debug.cc`, `td/gscreen.cc`, `td/init.cc`, `td/scenario.cc`, `td/score.cc`, and
     `// TheMouse()->GrabMouse();` in `ra/winstub.cc` and `td/winstub.cc`
-- Reach the live `HardwareCursor` through a `base::Installed<HardwareCursor>` scope
-  - Replaces the file-static `active_cursor` in `engine/window/hardware_cursor.cc`, as
-    `TheDisplay()`/`HasDisplay()` do for the display
-  - `Input::InstallMouse()` must reset the old cursor before building the new one (scopes end in
-    order), which also removes the replacement case the destructor check exists for
-- Stop `Display::SetPalette()` calling up into `UpdateMousePalette()`
-  - A palette generation counter on `Display` that `HardwareCursor` compares on `Show()` and
-    `SetShape()` would replace the call
-  - `UpdatePalette()` recreates the OS cursor on every palette change while the cursor is visible;
-    skipping unchanged colors 1-255 is worth it only if a profile shows the cost
-- Fix the `kCursorWidth`/`kCursorHeight` comments in `ra/input.cc` and `td/input.cc`
-  - They call it "the cursor's hot-spot box"; it is the largest shape `HardwareCursor` accepts
-  - Dropping the limit instead would accept larger shapes, which changes behaviour
+- Move the mouse grab into `Display`
+  - Make `mouse_grab_disabled` a `Display` option honoured by `SetMouseGrab()`, drop the static
+    `HardwareCursor::GrabMouse()`/`ReleaseMouse()`, and have the startup and shutdown code
+    (`ra/startup.cc`, `td/startup.cc`) and the focus handlers (`ra/nondosstub.cc`,
+    `td/nondosstub.cc`, `td/winstub.cc`) call `TheDisplay().SetMouseGrab()` directly
+- Consider skipping `HardwareCursor::UpdatePalette()` when colors 1-255 are unchanged
+  - It recreates the OS cursor on every palette change while the cursor is visible; worth it only if
+    a profile shows the cost
 - Share the SDL helpers the engine repeats
   - `std::unique_ptr` deleters exist separately in `engine/window/hardware_cursor.h`,
     `src/tools/vqaplay.cc` and `engine/video/vqa/audio_output.h`, and `engine/window/display.cc`

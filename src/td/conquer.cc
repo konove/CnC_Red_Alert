@@ -282,9 +282,9 @@ void Main_Game() {
     ** Only show the mouse if we're not playing back a recording.
     */
     if (TheSession().playback_game()) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
     } else {
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
 
     TheGameState().special_dialog() = SDLG_NONE;
@@ -465,7 +465,7 @@ void Main_Game() {
     ** Also, set all variables back to normal, to return to the main menu.
     */
     if (TheSession().playback_game()) {
-      engine::window::ShowMouse();
+      TheMouse().Show();
       TheSession().type() = GAME_NORMAL;
       TheSession().playback_game() = false;
     }
@@ -499,7 +499,7 @@ void Main_Game() {
   }
 
 #ifdef DEMO
-  engine::window::HideMouse();
+  TheMouse().Hide();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, NULL);
   Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
                     ThePalettes().title_palette());
@@ -1629,8 +1629,8 @@ bool Main_Loop() {
   /*
   ** I think I'm gonna cry if this makes it work
   */
-  if (engine::window::MouseHideCount()) {
-    engine::window::ShowMouse();
+  if (TheMouse().hide_count()) {
+    TheMouse().Show();
   }
 
   /*
@@ -2123,7 +2123,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     *to black as well. *	When the palette has finished fading, wait until
     *the score has finished fading *	before launching the movie.
     */
-    engine::window::HideMouse();
+    TheMouse().Hide();
     // Theme.Stop();
     // Theme.AI();
     TheTheme().Queue_Song(theme);
@@ -2173,7 +2173,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       std::ranges::fill(ThePalettes().black_palette(), 0x00);
       Set_Palette(ThePalettes().black_palette());
     }
-    engine::window::ShowMouse();
+    TheMouse().Show();
   }
 }
 
@@ -3016,7 +3016,6 @@ bool Force_CD_Available(int cd) {
       // The theme was already stopped above, and the only way out of this
       // loop is the cancel below, so there is nothing to remember here.
       TheTheme().Stop();
-      int hidden = engine::window::MouseHideCount();
       std::ranges::copy(CurrentPalette, std::begin(_palette));
 
       /*
@@ -3032,18 +3031,13 @@ bool Force_CD_Available(int cd) {
 
       TheKeyboard().Clear();
 
-      while (engine::window::MouseHideCount()) {
-        engine::window::ShowMouse();
-      }
-
-      if (CCMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
-          1) {
-        engine::window::HideMouse();
-        TheGameState().in_main_loop() = old_in_main_loop;
-        return false;
-      }
-      while (hidden--) {
-        engine::window::HideMouse();
+      {
+        const engine::window::HardwareCursor::ShownScope shown(TheMouse());
+        if (CCMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE,
+                                   true) == 1) {
+          TheGameState().in_main_loop() = old_in_main_loop;
+          return false;
+        }
       }
       Set_Palette(_palette);
       TheGameState().in_main_loop() = old_in_main_loop;

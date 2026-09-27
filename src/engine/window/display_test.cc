@@ -119,7 +119,7 @@ TEST_F(DisplayTest, LendsThePixelsOfTheVideoMode) {
 // Giving the pixels back only arms the redraw timer; the frame reaches the
 // window when something ends it.
 TEST_F(DisplayTest, UnlockDefersThePresentToTheEndOfTheFrame) {
-  display().UpdatePalette(PaletteWith(1, 63, 0, 0));
+  display().SetPalette(PaletteWith(1, 63, 0, 0));
   display().EndFrame();
   ASSERT_TRUE(display().Lock().has_value());
   display().Unlock();
@@ -134,7 +134,7 @@ TEST_F(DisplayTest, UnlockDefersThePresentToTheEndOfTheFrame) {
 TEST_F(DisplayTest, PresentsWhatThePageDrewInThePalette) {
   PixelBuffer page;
   page.Init(2, 2, display());
-  display().UpdatePalette(PaletteWith(1, 0, 0, 63));
+  display().SetPalette(PaletteWith(1, 0, 0, 63));
 
   page.view().Clear(1);
   display().EndFrame();
@@ -150,7 +150,7 @@ TEST_F(DisplayTest, ResetVideoModeTakesTheSurfaceAway) {
 }
 
 TEST_F(DisplayTest, ShowsAScaledFrameInTheCurrentPalette) {
-  display().UpdatePalette(PaletteWith(1, 63, 0, 0));
+  display().SetPalette(PaletteWith(1, 63, 0, 0));
   display().PresentScaledFrame(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{255, 0, 0}));
 }
@@ -158,17 +158,17 @@ TEST_F(DisplayTest, ShowsAScaledFrameInTheCurrentPalette) {
 // The texture holds baked colors, so a palette-cycling screen (the mission
 // map's pulsing hotspots) depends on a palette change converting them again.
 TEST_F(DisplayTest, AScaledFrameFollowsALaterPaletteChange) {
-  display().UpdatePalette(PaletteWith(1, 63, 0, 0));
+  display().SetPalette(PaletteWith(1, 63, 0, 0));
   display().PresentScaledFrame(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
 
-  display().UpdatePalette(PaletteWith(1, 0, 63, 0));
+  display().SetPalette(PaletteWith(1, 0, 63, 0));
   display().EndFrame();
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 255, 0}));
 }
 
 // As soon as the game draws on the surface again, it replaces the frame.
 TEST_F(DisplayTest, DrawingOnTheSurfaceDropsTheScaledFrame) {
-  display().UpdatePalette(PaletteWith(1, 63, 0, 0));
+  display().SetPalette(PaletteWith(1, 63, 0, 0));
   display().PresentScaledFrame(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
 
   ASSERT_TRUE(display().Lock().has_value());
@@ -182,7 +182,7 @@ TEST_F(DisplayTest, DrawingOnTheSurfaceDropsTheScaledFrame) {
 // rejected without presenting anything; the surface (all color 0, black)
 // stays what an end of frame shows.
 TEST_F(DisplayTest, RejectsFramesThatDoNotMatchTheirSize) {
-  display().UpdatePalette(PaletteWith(1, 63, 0, 0));
+  display().SetPalette(PaletteWith(1, 63, 0, 0));
   const std::array<uint8_t, 4> pixels{1, 1, 1, 1};
 
   display().PresentScaledFrame(pixels, 0, 2);

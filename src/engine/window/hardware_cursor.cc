@@ -1,4 +1,4 @@
-// Implements HardwareCursor and the free mouse functions: decoding the game's
+// Implements HardwareCursor: decoding the game's
 // cursor shapes into SDL color cursors, scaling them for the display, and
 // keeping their colors in step with the palette.
 
@@ -39,10 +39,6 @@ void SdlCursorDeleter::operator()(SDL_Cursor* cursor) const noexcept {
 void SdlSurfaceDeleter::operator()(SDL_Surface* surface) const noexcept {
   SDL_FreeSurface(surface);
 }
-
-// The instance the free functions forward to: the one constructed last, or
-// nullptr while there is none.
-static HardwareCursor* active_cursor = nullptr;
 
 // The Shape_Type fields up to and including DataLength. The color table after
 // them belongs to compact shapes, which SetShape() rejects.
@@ -154,20 +150,27 @@ static void CopyGameColors(const SDL_Palette& game_palette,
       1, 255);
 }
 
-HardwareCursor::HardwareCursor(int max_width, int max_height)
-    : max_width_(max_width), max_height_(max_height) {
-  GrabMouse();
-  active_cursor = this;
+HardwareCursor::ShownScope::ShownScope(HardwareCursor& cursor)
+    : cursor_(cursor), saved_hide_count_(cursor.hide_count()) {
+  cursor_.ForceShow();
 }
 
-HardwareCursor::~HardwareCursor() {
-  ReleaseMouse();
-  // Input::InstallMouse() builds a replacement before the old mouse goes, and
-  // then active_cursor is already the new one.
-  if (active_cursor == this) {
-    active_cursor = nullptr;
+// Goes back through Hide() and Show() rather than setting the count, so that
+// SDL hears about the change; the second loop undoes Hide() calls the scope's
+// code left unmatched.
+HardwareCursor::ShownScope::~ShownScope() {
+  while (cursor_.hide_count() < saved_hide_count_) {
+    cursor_.Hide();
+  }
+  while (cursor_.hide_count() > saved_hide_count_) {
+    cursor_.Show();
   }
 }
+
+HardwareCursor::HardwareCursor(int max_width, int max_height)
+    : max_width_(max_width), max_height_(max_height) {}
+
+HardwareCursor::~HardwareCursor() = default;
 
 void HardwareCursor::SetShape(int hot_x, int hot_y,
                               std::span<const std::byte> shape) {
@@ -241,11 +244,12 @@ void HardwareCursor::Show() {
   }
 }
 
-int HardwareCursor::hide_count() const { return hide_count_; }
-
-int HardwareCursor::x() const { return x_; }
-
-int HardwareCursor::y() const { return y_; }
+// Leaves one Hide() outstanding so that Show() does the work of making the
+// cursor visible, including a palette change that waited for it.
+void HardwareCursor::ForceShow() {
+  hide_count_ = std::min(hide_count_, 1);
+  Show();
+}
 
 void HardwareCursor::GrabMouse() {
   if (!mouse_grab_disabled) {
@@ -280,53 +284,12 @@ void HardwareCursor::RebuildCursor() {
   sdl_cursor_ = std::move(cursor);
 }
 
-void HardwareCursor::RecordPosition(int x, int y) {
-  x_ = x;
-  y_ = y;
-}
-
-void HideMouse() {
-  if (active_cursor) {
-    active_cursor->Hide();
-  }
-}
-
-void ShowMouse() {
-  if (active_cursor) {
-    active_cursor->Show();
-  }
-}
-
-int MouseHideCount() { return active_cursor ? active_cursor->hide_count() : 0; }
-
-void SetMouseShape(int hot_x, int hot_y, std::span<const std::byte> shape) {
-  if (active_cursor) {
-    active_cursor->SetShape(hot_x, hot_y, shape);
-  }
-}
-
 bool IsLeftButtonDown() {
   return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK) != 0;
 }
 
 bool IsRightButtonDown() {
   return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_RMASK) != 0;
-}
-
-int MouseX() { return active_cursor ? active_cursor->x() : 0; }
-
-int MouseY() { return active_cursor ? active_cursor->y() : 0; }
-
-void UpdateMousePalette() {
-  if (active_cursor) {
-    active_cursor->UpdatePalette();
-  }
-}
-
-void RecordMousePosition(int x, int y) {
-  if (active_cursor) {
-    active_cursor->RecordPosition(x, y);
-  }
 }
 
 }  // namespace engine::window

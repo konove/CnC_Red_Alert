@@ -365,7 +365,7 @@ int Test_Null_Modem() {
   /*
   ** Draw the dialog
   */
-  engine::window::HideMouse();
+  TheMouse().Hide();
   Load_Title_Page(true);
 
   Dialog_Box(x, y, width, height);
@@ -374,9 +374,7 @@ int Test_Null_Modem() {
   Fancy_Text_Print(view, buffer, x + 40, y + 50, scheme, kTBlack, kTpfText);
 
   commands->Draw_All(view);
-  while (engine::window::MouseHideCount() > 0) {
-    engine::window::ShowMouse();
-  }
+  TheMouse().ForceShow();
 
   /*
   ** Check for a packet.  If we detect one, the other system has already been
@@ -667,7 +665,7 @@ static int Reconnect_Null_Modem() {
   /*
   ** Draw the dialog
   */
-  engine::window::HideMouse();
+  TheMouse().Hide();
 
   Dialog_Box(x, y, width, height);
   Draw_Caption(view, TXT_NONE, x, y, width);
@@ -675,7 +673,7 @@ static int Reconnect_Null_Modem() {
   Fancy_Text_Print(view, buffer, x + 40, y + 50, scheme, kTBlack, kTpfText);
 
   commands->Draw_All(view);
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   /*
   ** Main Processing Loop
@@ -1035,7 +1033,7 @@ GameType Select_Serial_Dialog() {
     */
 
     if (display != REDRAW_NONE) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         /*
         ** Refresh the backdrop
@@ -1052,7 +1050,7 @@ GameType Select_Serial_Dialog() {
                      d_dialog_w);
       }
       commands->Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -1449,7 +1447,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -1489,7 +1487,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
         hardwareflowcontrolbutton.Flag_To_Redraw();
       }
 
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -2043,7 +2041,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     ** Refresh display if needed
     */
     if (display != REDRAW_NONE) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
       /*
       ** Redraw backgound & dialog box
       */
@@ -2094,7 +2092,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         savebtn.Flag_To_Redraw();
       }
 
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -2454,9 +2452,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /*------------------------------------------------------------------------
   Restore screen
   ------------------------------------------------------------------------*/
-  engine::window::HideMouse();
+  TheMouse().Hide();
   Load_Title_Page(true);
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   /*------------------------------------------------------------------------
   Save values into the Settings structure
@@ -3125,7 +3123,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           housebtn.Collapse();
           display = REDRAW_BACKGROUND;
         }
-        engine::window::HideMouse();
+        TheMouse().Hide();
 
         /*
         .................. Redraw backgound & dialog box ...................
@@ -3268,7 +3266,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           commands->Draw_All(view);
         }
 
-        engine::window::ShowMouse();
+        TheMouse().Show();
         display = REDRAW_NONE;
       }
 
@@ -3602,11 +3600,11 @@ int Com_Scenario_Dialog(bool skirmish) {
             also erases the cursor).
             ...............................................................*/
             if (i == 1 || i == 2) {
-              engine::window::HideMouse();
+              TheMouse().Hide();
               Draw_Box(view, d_send_x, d_send_y, d_send_w, d_send_h,
                        BOXSTYLE_BOX, true);
               TheSession().Messages.Draw(view);
-              engine::window::ShowMouse();
+              TheMouse().Show();
             } else if (i == 3 || i == 4) {
               /*...............................................................
               If 'input' returned 3, it means send the current message.
@@ -4295,9 +4293,9 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*------------------------------------------------------------------------
   Restore screen
   ------------------------------------------------------------------------*/
-  engine::window::HideMouse();
+  TheMouse().Hide();
   Load_Title_Page(true);
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   /*------------------------------------------------------------------------
   Save any changes made to our options
@@ -4886,7 +4884,7 @@ int Com_Show_Scenario_Dialog() {
         housebtn.Collapse();
         display = REDRAW_BACKGROUND;
       }
-      engine::window::HideMouse();
+      TheMouse().Hide();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -5049,7 +5047,7 @@ int Com_Show_Scenario_Dialog() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -5120,14 +5118,14 @@ int Com_Show_Scenario_Dialog() {
             display = REDRAW_BACKGROUND;
           }
         }
-      } else if ((engine::window::MouseX() >= d_count_x &&
-                  engine::window::MouseX() <= d_count_x + d_count_w &&
-                  engine::window::MouseY() >= d_count_y &&
-                  engine::window::MouseY() <= d_aiplayers_y + d_aiplayers_h) ||
-                 (engine::window::MouseX() >= d_options_x &&
-                  engine::window::MouseX() <= d_options_x + d_options_w &&
-                  engine::window::MouseY() >= d_options_y &&
-                  engine::window::MouseY() <= d_options_y + d_options_h)) {
+      } else if ((TheMouse().x() >= d_count_x &&
+                  TheMouse().x() <= d_count_x + d_count_w &&
+                  TheMouse().y() >= d_count_y &&
+                  TheMouse().y() <= d_aiplayers_y + d_aiplayers_h) ||
+                 (TheMouse().x() >= d_options_x &&
+                  TheMouse().x() <= d_options_x + d_options_w &&
+                  TheMouse().y() >= d_options_y &&
+                  TheMouse().y() <= d_options_y + d_options_h)) {
         TheSession().Messages.Add_Message(nullptr, 0,
                                           Text_String(TXT_ONLY_HOST_CAN_MODIFY),
                                           PCOLOR_BROWN, kTpfText, 1200);
@@ -5212,11 +5210,11 @@ int Com_Show_Scenario_Dialog() {
         also erases the cursor).
         ...............................................................*/
         if (i == 1 || i == 2) {
-          engine::window::HideMouse();
+          TheMouse().Hide();
           Draw_Box(view, d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
                    true);
           TheSession().Messages.Draw(view);
-          engine::window::ShowMouse();
+          TheMouse().Show();
         } else if (i == 3 || i == 4) {
           /*...............................................................
           If 'input' returned 3, it means send the current message.
@@ -5989,9 +5987,9 @@ int Com_Show_Scenario_Dialog() {
   /*------------------------------------------------------------------------
   Restore screen
   ------------------------------------------------------------------------*/
-  engine::window::HideMouse();
+  TheMouse().Hide();
   Load_Title_Page(true);
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   /*------------------------------------------------------------------------
   Save any changes made to our options
@@ -6177,7 +6175,7 @@ static int Phone_Dialog() {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -6206,7 +6204,7 @@ static int Phone_Dialog() {
         cancelbtn.Flag_To_Redraw();
         numedit.Flag_To_Redraw();
       }
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -6715,7 +6713,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -6741,7 +6739,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 

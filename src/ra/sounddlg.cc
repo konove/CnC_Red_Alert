@@ -59,6 +59,7 @@
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/goptions.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/palettes.h"
@@ -331,7 +332,7 @@ void SoundControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       /*
       **	Draw the background.
@@ -359,7 +360,7 @@ void SoundControlsClass::Process() {
                        kTpfText | TPF_RIGHT);
 
       optionsbtn->Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = false;
     }
 

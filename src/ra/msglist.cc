@@ -81,6 +81,7 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
+#include "ra/input.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/txtlabel.h"
@@ -1126,7 +1127,7 @@ void MessageListClass::Draw(PixelView& view) {
 
   if (IsEdit) {
     if (TheScreen().IsVisible(&view)) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
     }
     EditLabel->Draw_Me(view, true);
 
@@ -1141,16 +1142,16 @@ void MessageListClass::Draw(PixelView& view) {
     }
 
     if (TheScreen().IsVisible(&view)) {
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
   }
   if (MessageList) {
     if (TheScreen().IsVisible(&view)) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
     }
     MessageList->Draw_All(view);
     if (TheScreen().IsVisible(&view)) {
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
   }
 

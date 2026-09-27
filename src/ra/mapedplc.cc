@@ -83,6 +83,7 @@
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/mapedit.h"
@@ -370,7 +371,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Display the dialog box
       */
-      engine::window::HideMouse();
+      TheMouse().Hide();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(view, TXT_PLACE_OBJECT, kDialogX, kDialogY, kDialogW);
 
@@ -507,7 +508,7 @@ int MapEditClass::Placement_Dialog() {
       **	Redraw buttons
       */
       commands->Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = false;
     }
 
@@ -950,10 +951,9 @@ int MapEditClass::Place_Object() {
     /*
     **	Find cell sub-position
     */
-    if (Is_Spot_Free(Pixel_To_Coord(engine::window::MouseX(),
-                                    engine::window::MouseY()))) {
-      obj_coord = Closest_Free_Spot(
-          Pixel_To_Coord(engine::window::MouseX(), engine::window::MouseY()));
+    if (Is_Spot_Free(Pixel_To_Coord(TheMouse().x(), TheMouse().y()))) {
+      obj_coord =
+          Closest_Free_Spot(Pixel_To_Coord(TheMouse().x(), TheMouse().y()));
     } else {
       obj_coord = 0;
     }

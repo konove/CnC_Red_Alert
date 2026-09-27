@@ -69,6 +69,7 @@
 #include "ra/dialog.h"
 #include "ra/face.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/tab.h"
 #include "ra/text_ids.h"
 
@@ -228,11 +229,11 @@ void HelpClass::Help_Text(int text, int x, int y, int /*color*/, bool quick) {
     */
     X = x;
     if (x == -1) {
-      X = engine::window::MouseX();
+      X = TheMouse().x();
     }
     Y = y;
     if (y == -1) {
-      Y = engine::window::MouseY();
+      Y = TheMouse().y();
     }
     IsRight = y != -1 || x != -1;
 

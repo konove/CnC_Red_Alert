@@ -54,6 +54,7 @@
 #include "ra/gadget.h"
 #include "ra/goptions.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/msgbox.h"
@@ -258,20 +259,20 @@ void GameControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       TheMap().Flag_To_Redraw(true);
       TheMap().Render();
 
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(view, TXT_GAME_CONTROLS, d_dialog_x, d_dialog_y, d_dialog_w);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = false;
       refresh = true;
     }
 
     if (refresh) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       /*
       **	Label the game speed slider
@@ -307,7 +308,7 @@ void GameControlsClass::Process() {
 
       commands->Draw_All(view);
 
-      engine::window::ShowMouse();
+      TheMouse().Show();
       refresh = false;
     }
 

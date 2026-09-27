@@ -64,6 +64,7 @@
 #include "ra/gadget.h"
 #include "ra/init.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
@@ -446,7 +447,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     if (display) {
       display = false;
 
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       /*
       **	Load the background picture.
@@ -463,7 +464,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
                      kOptionWidth);
       }
       buttons->Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;

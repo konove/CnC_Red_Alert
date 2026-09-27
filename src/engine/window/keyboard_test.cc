@@ -8,17 +8,14 @@
 #include <SDL_scancode.h>
 #include <SDL_stdinc.h>
 
-#include "engine/window/hardware_cursor.h"
 #include "engine/window/ww_win.h"
 #include "gtest/gtest.h"
 
-// The hooks keyboard.cc calls out to. Stubbing them keeps the buffer
+// The event pump keyboard.cc calls out to. Stubbing it keeps the buffer
 // semantics under test deterministic and free of a real event pump.
 void SDL_Event_Loop() {}
 
 namespace engine::window {
-
-void RecordMousePosition(int /*x*/, int /*y*/) {}
 
 namespace {
 

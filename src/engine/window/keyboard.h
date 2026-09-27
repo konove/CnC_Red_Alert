@@ -340,9 +340,9 @@ class KeyBuffer {
   // IsRightButtonDown() in hardware_cursor.h.
   static bool IsDown(int key);
 
-  // Queues the key or click an SDL event carries; mouse motion moves the
-  // cursor instead. Returns true only for a click, which it consumes, so the
-  // game's own handler can skip it; everything else goes on to that handler.
+  // Queues the key or click an SDL event carries. Returns true only for a
+  // click, which it consumes, so the game's own handler can skip it;
+  // everything else, mouse motion included, goes on to that handler.
   bool HandleEvent(const SDL_Event* event);
 
  private:

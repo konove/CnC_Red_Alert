@@ -64,6 +64,7 @@
 #include "td/goptions.h"
 #include "td/ini.h"
 #include "td/init.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/list.h"
 #include "td/profile.h"
@@ -219,7 +220,7 @@ bool Expansion_Dialog() {
     if (display) {
       display = false;
 
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       /*
       **	Load the background picture.
@@ -230,7 +231,7 @@ bool Expansion_Dialog() {
       Draw_Caption(view, TXT_MISSION_DESCRIPTION, option_x, option_y,
                    option_width);
       buttons->Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;
@@ -361,7 +362,7 @@ bool Bonus_Dialog() {
     if (display) {
       display = false;
 
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       /*
       **	Load the background picture.
@@ -371,7 +372,7 @@ bool Bonus_Dialog() {
       Dialog_Box(view, option_x, option_y, option_width, option_height);
       Draw_Caption(view, TXT_BONUS_MISSIONS, option_x, option_y, option_width);
       buttons->Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;

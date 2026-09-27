@@ -307,14 +307,9 @@ bool Init_Game() {
   ** Since there is no mouse shape currently available we need'
   ** to set one of our own.
   */
-  if (TheMouse() != nullptr) {
-    temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
-    if (!temp_mouse_shapes.empty()) {
-      engine::window::SetMouseShape(0, 0, Extract_Shape(temp_mouse_shapes, 0));
-      while (engine::window::MouseHideCount() > 1) {
-        engine::window::ShowMouse();
-      }
-    }
+  temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
+  if (!temp_mouse_shapes.empty()) {
+    TheMouse().SetShape(0, 0, Extract_Shape(temp_mouse_shapes, 0));
   }
 
   DLOG(INFO) << "C&C95 - About to enter wait for focus loop";
@@ -337,27 +332,6 @@ bool Init_Game() {
     palfile->Read(std::span(ThePalettes().game_palette()), 768L);
   }
 
-  if (TheMouse() == nullptr) {
-    char buffer[255];
-    Set_Palette(ThePalettes().game_palette());
-#ifdef GERMAN
-    absl::SNPrintF(buffer, sizeof(buffer),
-                   "Command & Conquer kann Ihren Maustreiber nicht finden..");
-#else
-#ifdef FRENCH
-    absl::SNPrintF(
-        buffer, sizeof(buffer),
-        "Command & Conquer ne peut pas détecter votre gestionnaire de souris.");
-#else
-    absl::SNPrintF(buffer, sizeof(buffer),
-                   "Command & Conquer is unable to detect your mouse driver.");
-#endif
-#endif
-    CCMessageBox().Process(buffer, TXT_OK);
-    ShutDown();
-    exit(1);
-  }
-
 #ifdef DEMO
   /*
   **	Add in any override path specified in the conquer.ini file.
@@ -378,7 +352,7 @@ bool Init_Game() {
     // so the scan for the disc had nothing to scan and this always ended in
     // the same error.
     Set_Palette(ThePalettes().game_palette());
-    engine::window::ShowMouse();
+    TheMouse().Show();
     CCMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
     ShutDown();
     exit(EXIT_FAILURE);
@@ -500,12 +474,12 @@ bool Init_Game() {
     Load_Title_Page(true);
   }
 
-  engine::window::HideMouse();
+  TheMouse().Hide();
   engine::window::TheDisplay().EndFrame();
   if (!TheSpecial().IsFromInstall) {
     Set_Palette(ThePalettes().title_palette());
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-    engine::window::ShowMouse();
+    TheMouse().Show();
   }
   Call_Back();
   //	Window_Dialog_Box(hCCLibrary, "DIALOG_1", MainWindow,
@@ -570,17 +544,10 @@ bool Init_Game() {
 
   Call_Back();
 
-  /*
-  **	WWLIB bug: MouseState is in some undefined state; show the mouse until
-  **	it really shows.
-  */
+  // The loading above leaves the cursor hidden an unknown number of times;
+  // from here on the menus own it, visible.
   TheMap().Set_Default_Mouse(MOUSE_NORMAL, false);
-  engine::window::ShowMouse();
-  // #ifdef FIX_ME_LATER
-  while (engine::window::MouseHideCount() > 0) {
-    engine::window::ShowMouse();
-  }
-  // #endif //FIX_ME_LATER
+  TheMouse().ForceShow();
   Call_Back();
 
 #ifndef DEMO
@@ -732,7 +699,7 @@ bool Select_Game(bool fade) {
   if (TheSpecial().IsFromInstall) {
     {
       display = false;
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
   }
 
@@ -865,7 +832,7 @@ bool Select_Game(bool fade) {
       **	Redraw the title page if needed
       */
       if (display) {
-        engine::window::HideMouse();
+        TheMouse().Hide();
 
         /*
         **	Display the title page; fade it in if this is the first time
@@ -905,7 +872,7 @@ bool Select_Game(bool fade) {
 #endif
         }
         display = false;
-        engine::window::ShowMouse();
+        TheMouse().Show();
       }
 
       /*
@@ -1041,7 +1008,7 @@ bool Select_Game(bool fade) {
           TheWorld().carry_over_money() = 0;
 
 #ifdef DEMO
-          engine::window::HideMouse();
+          TheMouse().Hide();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
           Load_Title_Screen("PREPICK.PCX", &TheScreen().hidden_view(),
@@ -1056,7 +1023,7 @@ bool Select_Game(bool fade) {
           TheKeyboard().Read();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
-          engine::window::ShowMouse();
+          TheMouse().Show();
 
           TheWorld().scenario() = 1;
           TheWorld().build_level() = 1;
@@ -1110,7 +1077,7 @@ bool Select_Game(bool fade) {
         case kSelMultiplayerGame:
 
 #ifdef DEMO
-          engine::window::HideMouse();
+          TheMouse().Hide();
           Set_Palette(ThePalettes().black_palette());
           Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
                             ThePalettes().title_palette());
@@ -1124,7 +1091,7 @@ bool Select_Game(bool fade) {
           TheKeyboard().Read();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
-          engine::window::ShowMouse();
+          TheMouse().Show();
           display = true;
           fade = true;
           selection = kSelNone;
@@ -1364,7 +1331,7 @@ bool Select_Game(bool fade) {
 
           Force_CD_Available(-1);
           Play_Intro(false);
-          engine::window::HideMouse();
+          TheMouse().Hide();
 
           // verify existence of movie file before playing this sequence.
           if (GameFileExists("TRAILER.VQA")) {
@@ -1460,7 +1427,7 @@ bool Select_Game(bool fade) {
                           Call_Back);
 
           Play_Movie("CC2TEASE");
-          engine::window::ShowMouse();
+          TheMouse().Show();
 
           TheWorld().scenario_init()++;
           TheTheme().Play_Song(THEME_MAP1);
@@ -1475,7 +1442,7 @@ bool Select_Game(bool fade) {
         */
         case kSelExit:
 #ifdef JAPANESE
-          engine::window::HideMouse();
+          TheMouse().Hide();
 #endif
           TheTheme().Fade_Out();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteSlow,
@@ -1599,7 +1566,7 @@ bool Select_Game(bool fade) {
     ** Start_Scenario() changes the palette; so, fade out & clear the screen
     ** before calling it.
     */
-    engine::window::HideMouse();
+    TheMouse().Hide();
 
     if (selection != kSelStartNewGame) {
       Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
@@ -1607,7 +1574,7 @@ bool Select_Game(bool fade) {
       TheScreen().hidden_page().view().Clear();
       TheScreen().visible_page().view().Clear();
     }
-    engine::window::ShowMouse();
+    TheMouse().Show();
 
     TheSpecial().IsFromInstall = 0;
     DLOG(INFO) << "C&C95 - Starting scenario.";
@@ -1941,10 +1908,10 @@ bool Select_Game(bool fade) {
   /*
   ** This is desperately sad isnt it?
   */
-  engine::window::HideMouse();
-  engine::window::HideMouse();
-  engine::window::HideMouse();
-  engine::window::HideMouse();
+  TheMouse().Hide();
+  TheMouse().Hide();
+  TheMouse().Hide();
+  TheMouse().Hide();
 
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   TheScreen().hidden_page().view().Clear();
@@ -1971,8 +1938,8 @@ bool Select_Game(bool fade) {
 #endif  // FORCE_WINSOCK
 
   if (TheDebugState().map_editor_active()) {
-    while (engine::window::MouseHideCount() > 1) {
-      engine::window::ShowMouse();
+    while (TheMouse().hide_count() > 1) {
+      TheMouse().Show();
     }
   }
 
@@ -2029,9 +1996,9 @@ static void Play_Intro(bool for_real) {
 
   TheKeyboard().Clear();
   if (for_real) {
-    engine::window::HideMouse();
+    TheMouse().Hide();
     Play_Movie("LOGO", THEME_NONE, false);
-    engine::window::ShowMouse();
+    TheMouse().Show();
   } else {
     if (!TheDebugState().developer_mode()) {
       _counter = 0;
@@ -2043,9 +2010,9 @@ static void Play_Intro(bool for_real) {
         _counter = 0;
       }
     }
-    engine::window::HideMouse();
+    TheMouse().Hide();
     Play_Movie(base::At(_names, _counter), THEME_NONE);
-    engine::window::ShowMouse();
+    TheMouse().Show();
     if (!base::At(_names, _counter)) {
       _counter = -1;
     }

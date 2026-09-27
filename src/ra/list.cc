@@ -78,6 +78,7 @@
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/link.h"
 #include "ra/text_ids.h"
@@ -318,7 +319,7 @@ bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     }
 
   } else {
-    int index = engine::window::MouseY() - (Y + 1);
+    int index = TheMouse().y() - (Y + 1);
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex = std::min(SelectedIndex, Count() - 1);

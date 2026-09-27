@@ -3822,12 +3822,12 @@ static void Queue_Playback() {
   // playback.
   //------------------------------------------------------------------------
   if (TheSession().Attract && CurrentFrame() > 0 &&
-      (mx != engine::window::MouseX() || my != engine::window::MouseY())) {
+      (mx != TheMouse().x() || my != TheMouse().y())) {
     TheGameState().active() = false;
     return;
   }
-  mx = engine::window::MouseX();
-  my = engine::window::MouseY();
+  mx = TheMouse().x();
+  my = TheMouse().y();
 
   //------------------------------------------------------------------------
   //	Compute the Game's CRC

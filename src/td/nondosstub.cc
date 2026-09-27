@@ -32,7 +32,6 @@
 #include "engine/stream/seek_origin.h"
 #include "td/defines.h"
 #include "td/game_state.h"
-#include "td/input.h"
 #include "td/winstub.h"
 #include "td/world.h"
 // #include "ra/filepcx.h"
@@ -69,9 +68,7 @@ void Focus_Loss() {
 
   TheTheme().Stop();
   engine::audio::TheAudio().Pause();
-  if (TheMouse()) {
-    engine::window::HardwareCursor::ReleaseMouse();
-  }
+  engine::window::HardwareCursor::ReleaseMouse();
 }
 
 void Focus_Restore() {
@@ -83,9 +80,7 @@ void Focus_Restore() {
     OldTheme = THEME_NONE;
   }
 
-  if (TheMouse()) {
-    engine::window::HardwareCursor::GrabMouse();
-  }
+  engine::window::HardwareCursor::GrabMouse();
 }
 
 /***********************************************************************************************

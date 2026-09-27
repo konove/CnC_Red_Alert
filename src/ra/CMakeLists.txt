@@ -233,10 +233,10 @@ add_gtest(
 )
 apply_language_setting(ra_crate_test)
 
-# Compiles intro.cc directly; the dialog, movie player and mouse are stubs.
+# Compiles intro.cc directly; the dialog, movie player and title page are stubs.
 add_gtest(
     NAME ra_intro_test
-    SOURCES intro_test.cc intro.cc
+    SOURCES intro_test.cc intro.cc input.cc
     LIBS base engine_window absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_intro_test)

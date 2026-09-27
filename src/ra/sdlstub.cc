@@ -36,9 +36,7 @@ void Check_For_Focus_Loss() {
 void Memory_Error_Handler() {
   TheScreen().visible_page().view().Clear();
   ThePalettes().title_palette().Set();
-  while (engine::window::MouseHideCount()) {
-    engine::window::ShowMouse();
-  }
+  TheMouse().ForceShow();
   WWMessageBox().Process(kLanguageText.memory_error, kLanguageText.abort);
 
   ShutDown();
@@ -72,6 +70,9 @@ static void SDL_Event_Handler(SDL_Event* event) {
   }
 
   switch (event->type) {
+    case SDL_MOUSEMOTION:
+      TheMouse().RecordPosition(event->motion.x, event->motion.y);
+      break;
     case SDL_WINDOWEVENT: {
       switch (event->window.event) {
         case SDL_WINDOWEVENT_FOCUS_GAINED:

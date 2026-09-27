@@ -113,6 +113,7 @@
 #include "ra/gadget.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
@@ -536,10 +537,10 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
         MouseClass::Zoom.Draw_Me(view, true);
 
         if (TheScreen().IsVisible(&view)) {
-          engine::window::HideMouse();
+          TheMouse().Hide();
           view.BlitTo(TheScreen().visible_view(), RadX, RadY, RadX, RadY,
                       RadWidth, RadHeight);
-          engine::window::ShowMouse();
+          TheMouse().Show();
         }
       }
 

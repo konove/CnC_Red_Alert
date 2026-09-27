@@ -1,6 +1,7 @@
-// Tests for the first-launch introduction. The dialog, the movie player, the
-// mouse and the title page are link-time stubs that record what was asked of
-// them.
+// Tests for the first-launch introduction. The dialog, the movie player and
+// the title page are link-time stubs that record what was asked of them; the
+// mouse is a real one, in an Input of the test's own, whose hide count shows
+// what was done to it.
 
 #include "ra/intro.h"
 
@@ -10,11 +11,11 @@
 
 #include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/window/hardware_cursor.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
 #include "ra/game_state.h"
 #include "ra/init.h"
+#include "ra/input.h"
 #include "ra/movie.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -27,7 +28,6 @@ bool using_dvd = false;
 int dialog_answer = 0;  // Index of the button the stub dialog "presses".
 int dialogs_shown = 0;
 int movies_played = 0;
-int mouse_hides = 0;  // HideMouse() calls not yet matched by ShowMouse().
 
 // intro.cc reads the disc number out of the run state, so the test
 // installs one.
@@ -37,10 +37,6 @@ const base::Installed<GameState>::Scope game_state_scope(game_state);
 }  // namespace
 
 bool Using_DVD() { return using_dvd; }
-namespace engine::window {
-void HideMouse() { ++mouse_hides; }
-void ShowMouse() { --mouse_hides; }
-}  // namespace engine::window
 void Load_Title_Page(bool /*visible*/) {}
 void PaletteClass::Set(int /*time*/, void (* /*callback*/)()) {}
 void Play_Movie(VQType /*name*/, ThemeType /*theme*/, bool /*clear_screen*/) {
@@ -62,7 +58,8 @@ class IntroTest : public testing::Test {
     TheGameState().current_cd() = -1;
     dialogs_shown = 0;
     movies_played = 0;
-    mouse_hides = 0;
+    // Hidden once, so that a Show() without its Hide() shows up as well.
+    TheMouse().Hide();
   }
 
   static constexpr int kWidth = 8;
@@ -75,6 +72,8 @@ class IntroTest : public testing::Test {
   PixelBuffer seen_{kWidth, kHeight, seen_pixels_};
   Palettes palettes_;
   base::Installed<Palettes>::Scope palettes_scope_{palettes_};
+  Input input_;
+  base::Installed<Input>::Scope input_scope_{input_};
 };
 
 TEST_F(IntroTest, CdInstallPlaysTheIntroWithoutAsking) {
@@ -85,7 +84,7 @@ TEST_F(IntroTest, CdInstallPlaysTheIntroWithoutAsking) {
   EXPECT_EQ(dialogs_shown, 0);
   EXPECT_EQ(movies_played, 1);
   EXPECT_EQ(TheGameState().current_cd(), -1);
-  EXPECT_EQ(mouse_hides, 0);
+  EXPECT_EQ(TheMouse().hide_count(), 1);
 }
 
 TEST_F(IntroTest, DvdAsksForTheSideBeforeTheIntro) {
@@ -104,7 +103,7 @@ TEST_F(IntroTest, DvdLeavesTheMouseAsItFoundIt) {
 
   PlayFirstLaunchIntro(hidden_.view(), seen_.view());
 
-  EXPECT_EQ(mouse_hides, 0);
+  EXPECT_EQ(TheMouse().hide_count(), 1);
 }
 
 }  // namespace

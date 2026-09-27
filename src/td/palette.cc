@@ -2,14 +2,24 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <span>
 
 #include "absl/log/check.h"
 #include "base/array.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
+#include "engine/window/hardware_cursor.h"
+#include "td/input.h"
 
 unsigned char CurrentPalette[3 * 256];
+
+// Shows `palette` on the display and recolors the mouse cursor, which SDL
+// draws in the colors it had when the cursor was made.
+static void ShowPalette(std::span<const uint8_t> palette) {
+  engine::window::TheDisplay().SetPalette(palette);
+  TheMouse().UpdatePalette();
+}
 
 void Fade_Palette_To(std::span<const unsigned char> palette, int fade,
                      void (*callback)()) {
@@ -32,7 +42,7 @@ void Fade_Palette_To(std::span<const unsigned char> palette, int fade,
             old_val + ((new_val - old_val) * cur_time / fade));
       }
 
-      engine::window::TheDisplay().SetPalette(fade_palette);
+      ShowPalette(fade_palette);
       if (callback) {
         callback();
       }
@@ -53,5 +63,5 @@ void Set_Palette(std::span<const unsigned char> palette) {
   CHECK_GE(palette.size(), sizeof(CurrentPalette));
   std::ranges::copy(palette.first(sizeof(CurrentPalette)),
                     std::span(CurrentPalette).begin());
-  engine::window::TheDisplay().SetPalette(palette);
+  ShowPalette(palette);
 }

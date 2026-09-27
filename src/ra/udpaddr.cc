@@ -33,6 +33,7 @@
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/init.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/network.h"
 #include "ra/palette.h"
@@ -157,7 +158,7 @@ bool Get_Broadcast_Addresses() {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -192,7 +193,7 @@ bool Get_Broadcast_Addresses() {
         commands->Draw_All(view);
       }
 
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -224,10 +225,10 @@ bool Get_Broadcast_Addresses() {
   //------------------------------------------------------------------------
   //	Restore screen
   //------------------------------------------------------------------------
-  engine::window::HideMouse();
+  TheMouse().Hide();
   Load_Title_Page(true);
   ThePalettes().title_palette().Set();  // GamePalette.Set();
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   for (int i = 0; i < ip_address_list.Count(); i++) {
     std::string addr = ip_address_list.Get_Item(i);

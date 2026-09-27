@@ -53,6 +53,7 @@
 #include "td/event.h"
 #include "td/gadget.h"
 #include "td/goptions.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/msgbox.h"
 #include "td/network.h"
@@ -232,16 +233,16 @@ void GameControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
       Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(view, TXT_GAME_CONTROLS, d_dialog_x, d_dialog_y, d_dialog_w);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = false;
       refresh = true;
     }
 
     if (refresh) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       /*
       **	Label the game speed slider
@@ -281,7 +282,7 @@ void GameControlsClass::Process() {
 
       commands->Draw_All(view);
 
-      engine::window::ShowMouse();
+      TheMouse().Show();
       refresh = false;
     }
 

@@ -62,6 +62,7 @@
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/list.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
@@ -488,10 +489,9 @@ int MapEditClass::Move_Grabbed_Object() {
   **	If infantry, use a free spot in this cell
   */
   if (GrabbedObject->Is_Infantry()) {
-    if (Is_Spot_Free(Pixel_To_Coord(engine::window::MouseX(),
-                                    engine::window::MouseY()))) {
-      new_coord = Closest_Free_Spot(
-          Pixel_To_Coord(engine::window::MouseX(), engine::window::MouseY()));
+    if (Is_Spot_Free(Pixel_To_Coord(TheMouse().x(), TheMouse().y()))) {
+      new_coord =
+          Closest_Free_Spot(Pixel_To_Coord(TheMouse().x(), TheMouse().y()));
 
       /*
       **	Clear the occupied bit in this infantry's cell.

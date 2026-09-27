@@ -69,6 +69,7 @@
 #include "ra/event.h"
 #include "ra/gadget.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/network.h"
@@ -195,7 +196,7 @@ void Special_Dialog(bool simple) {
     if (display) {
       display = false;
 
-      engine::window::HideMouse();
+      TheMouse().Hide();
       Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
       Draw_Caption(view, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
 
@@ -206,7 +207,7 @@ void Special_Dialog(bool simple) {
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;
@@ -413,7 +414,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Draw the background of the dialog.
   */
-  engine::window::HideMouse();
+  TheMouse().Hide();
   Dialog_Box(x, y, width, height);
   Draw_Caption(view, caption, x, y, width);
 
@@ -430,7 +431,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   if (buttonlist) {
     buttonlist->Draw_All(view);
   }
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   /*
   **	Main Processing Loop.
@@ -546,7 +547,7 @@ int Fetch_Difficulty(bool amath) {
       /*
       **	Draw the background of the dialog.
       */
-      engine::window::HideMouse();
+      TheMouse().Hide();
       Dialog_Box(x, y, w, h);
 
       /*
@@ -578,7 +579,7 @@ int Fetch_Difficulty(bool amath) {
       if (buttonlist) {
         buttonlist->Draw_All(view);
       }
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
 
     /*

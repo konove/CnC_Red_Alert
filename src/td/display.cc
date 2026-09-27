@@ -140,6 +140,7 @@
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/layer.h"
 #include "td/map.h"
@@ -791,7 +792,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   **	Follow the mouse position if no cell number is provided.
   */
   if (pos == -1) {
-    pos = Click_Cell_Calc(engine::window::MouseX(), engine::window::MouseY());
+    pos = Click_Cell_Calc(TheMouse().x(), TheMouse().y());
   }
 
   if (CursorSize.empty()) {
@@ -981,14 +982,12 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
  *   06/27/1995 JLB : Breaks out of rubber band mode if mouse leaves map. *
  *=============================================================================================*/
 void DisplayClass::AI(engine::window::InputEvent& event, int x, int y) {
-  if (IsRubberBand && (engine::window::MouseX() < TacPixelX ||
-                       engine::window::MouseY() < TacPixelY ||
-                       engine::window::MouseX() >=
-                           TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
-                       engine::window::MouseY() >=
-                           TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
-    Mouse_Left_Release(-1, engine::window::MouseX(), engine::window::MouseY(),
-                       nullptr, ACTION_NONE);
+  if (IsRubberBand &&
+      (TheMouse().x() < TacPixelX || TheMouse().y() < TacPixelY ||
+       TheMouse().x() >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
+       TheMouse().y() >= TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
+    Mouse_Left_Release(-1, TheMouse().x(), TheMouse().y(), nullptr,
+                       ACTION_NONE);
   }
 
   MapClass::AI(event, x, y);

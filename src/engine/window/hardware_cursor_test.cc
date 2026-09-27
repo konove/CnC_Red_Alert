@@ -1,11 +1,7 @@
-// Tests for the free mouse functions: which HardwareCursor they reach.
+// Tests for HardwareCursor's hide count, ShownScope and recorded position.
 
 #include "engine/window/hardware_cursor.h"
 
-#include <memory>
-
-#include "base/installed.h"
-#include "engine/window/display.h"
 #include "gtest/gtest.h"
 
 namespace engine::window {
@@ -14,39 +10,70 @@ namespace {
 // A cursor as large as the games ask for.
 constexpr int kCursorSize = 48;
 
-// Each test gets a Display without a window: the mouse grabs and releases the
-// mouse through it, and SDL ignores a grab of no window.
-class HardwareCursorTest : public testing::Test {
- protected:
-  Display display_;
-  base::Installed<Display>::Scope display_scope_{display_};
-};
+TEST(HardwareCursorTest, ShowUndoesOneHideAndStopsAtZero) {
+  HardwareCursor mouse(kCursorSize, kCursorSize);
 
-TEST_F(HardwareCursorTest, FreeFunctionsForgetADestroyedMouse) {
-  auto mouse = std::make_unique<HardwareCursor>(kCursorSize, kCursorSize);
-  HideMouse();
-  RecordMousePosition(10, 20);
-  ASSERT_EQ(MouseHideCount(), 1);
-  ASSERT_EQ(MouseX(), 10);
+  mouse.Hide();
+  mouse.Hide();
+  mouse.Show();
+  EXPECT_EQ(mouse.hide_count(), 1);
 
-  mouse.reset();
-
-  EXPECT_EQ(MouseHideCount(), 0);
-  EXPECT_EQ(MouseX(), 0);
-  EXPECT_EQ(MouseY(), 0);
+  mouse.Show();
+  mouse.Show();
+  EXPECT_EQ(mouse.hide_count(), 0);
 }
 
-// Input::InstallMouse() replaces a mouse by building the new one before the
-// old one goes, so the old one's destructor must leave the new one reachable.
-TEST_F(HardwareCursorTest, ReplacingAMouseKeepsTheNewOne) {
-  auto old_mouse = std::make_unique<HardwareCursor>(kCursorSize, kCursorSize);
-  auto new_mouse = std::make_unique<HardwareCursor>(kCursorSize, kCursorSize);
+TEST(HardwareCursorTest, ForceShowClearsEveryHide) {
+  HardwareCursor mouse(kCursorSize, kCursorSize);
+  mouse.Hide();
+  mouse.Hide();
+  mouse.Hide();
 
-  old_mouse.reset();
-  RecordMousePosition(30, 40);
+  mouse.ForceShow();
+  EXPECT_EQ(mouse.hide_count(), 0);
 
-  EXPECT_EQ(new_mouse->x(), 30);
-  EXPECT_EQ(MouseY(), 40);
+  mouse.ForceShow();
+  EXPECT_EQ(mouse.hide_count(), 0);
+}
+
+TEST(HardwareCursorTest, ShownScopeShowsAndRestoresTheHideCount) {
+  HardwareCursor mouse(kCursorSize, kCursorSize);
+  mouse.Hide();
+  mouse.Hide();
+
+  {
+    const HardwareCursor::ShownScope shown(mouse);
+    EXPECT_EQ(mouse.hide_count(), 0);
+  }
+
+  EXPECT_EQ(mouse.hide_count(), 2);
+}
+
+TEST(HardwareCursorTest, ShownScopeUndoesUnmatchedCallsInside) {
+  HardwareCursor mouse(kCursorSize, kCursorSize);
+  mouse.Hide();
+
+  {
+    const HardwareCursor::ShownScope shown(mouse);
+    mouse.Hide();
+    mouse.Hide();
+  }
+  EXPECT_EQ(mouse.hide_count(), 1);
+
+  {
+    const HardwareCursor::ShownScope shown(mouse);
+    mouse.ForceShow();
+  }
+  EXPECT_EQ(mouse.hide_count(), 1);
+}
+
+TEST(HardwareCursorTest, RecordPositionSetsXAndY) {
+  HardwareCursor mouse(kCursorSize, kCursorSize);
+
+  mouse.RecordPosition(10, 20);
+
+  EXPECT_EQ(mouse.x(), 10);
+  EXPECT_EQ(mouse.y(), 20);
 }
 
 }  // namespace

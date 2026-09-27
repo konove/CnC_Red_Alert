@@ -30,13 +30,14 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
+#include "ra/input.h"
 #include "ra/shape_draw.h"
 #include "ra/toggle.h"
 
 //***********************************************************************************************
 bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
   if (ToggleClass::Draw_Me(view, forced)) {
-    engine::window::HideMouse();
+    TheMouse().Hide();
 
     if (!IsOn) {
       if (!IsDisabled) {
@@ -71,7 +72,7 @@ bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
                             Y + BIGCHECK_OFFSETY, pScheme, kTBlack, flags,
                             Width, {});
 
-    engine::window::ShowMouse();
+    TheMouse().Show();
     return true;
   }
   return false;

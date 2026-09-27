@@ -34,7 +34,6 @@
 #include "engine/platform/memflag.h"
 #include "engine/platform/timer.h"
 #include "ra/game.h"
-#include "ra/input.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
@@ -379,7 +378,7 @@ int main(const int argc, char* argv[])
   base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
       TheScreen().visible_view().height();
 
-  TheInput().InstallMouse();
+  engine::window::HardwareCursor::GrabMouse();
 
   // SDL enumerates no CD drives, so there is no drive letter to record. -1
   // rather than 0 keeps "?:\" in the search path list: SearchPaths::Scan()
@@ -425,7 +424,7 @@ int main(const int argc, char* argv[])
 
 void ShutDownEngine() {
   engine::audio::TheAudio().Close();
-  TheInput().RemoveMouse();
+  engine::window::HardwareCursor::ReleaseMouse();
   ShutdownTickTimer();
 }
 

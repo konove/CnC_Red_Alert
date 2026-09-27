@@ -109,6 +109,7 @@
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
@@ -484,10 +485,10 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
         FullRedraw = false;
         IsRadarToRedraw = false;
         if (TheScreen().IsVisible(&view)) {
-          engine::window::HideMouse();
+          TheMouse().Hide();
           view.BlitTo(TheScreen().visible_view(), RadX, RadY, RadX, RadY,
                       RadWidth, RadHeight);
-          engine::window::ShowMouse();
+          TheMouse().Show();
         }
       }
 

@@ -54,6 +54,7 @@
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/goptions.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/screen.h"
 #include "ra/session.h"
@@ -219,10 +220,10 @@ void VisualControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
       Dialog_Box(option_x, option_y, option_width, option_height);
       Draw_Caption(view, TXT_VISUAL_CONTROLS, option_x, option_y, option_width);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = false;
       partial = true;
     }
@@ -231,7 +232,7 @@ void VisualControlsClass::Process() {
     **	If just the buttons and captions need to be redrawn, then do so now.
     */
     if (partial) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       /*
       **	Draw the titles.
@@ -244,7 +245,7 @@ void VisualControlsClass::Process() {
                              (curbutton == i ? TPF_BRIGHT_COLOR : kTpfText));
       }
       optionsbtn.Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       partial = false;
     }
 

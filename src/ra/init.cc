@@ -222,12 +222,12 @@ static std::vector<uint8_t> shape_storage;
  * HISTORY: * 11/03/1996 JLB : Created. *
  *=============================================================================================*/
 static void Load_Prolog_Page() {
-  engine::window::HideMouse();
+  TheMouse().Hide();
   Load_Title_Screen("PROLOG.PCX", &TheScreen().hidden_view(),
                     ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   ThePalettes().title_palette().Set();
-  engine::window::ShowMouse();
+  TheMouse().Show();
 }
 
 /***********************************************************************************************
@@ -378,11 +378,11 @@ bool Init_Game() {
   if (!TheSpecial().IsFromInstall) {
     Load_Title_Page(true);
 
-    engine::window::HideMouse();
+    TheMouse().Hide();
     Fancy_Text_Print(view, TXT_STAND_BY, 320, 240,
                      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE),
                      kTBlack, TPF_CENTER | kTpfText | TPF_DROPSHADOW);
-    engine::window::ShowMouse();
+    TheMouse().Show();
 
     ThePalettes().title_palette().Set(kFadePaletteSlow);
     ServiceRealTime();
@@ -477,7 +477,7 @@ bool Select_Game(bool /*fade*/) {
 
   const int cdcheck = 0;
 
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   TheRules().NewUnitsEnabled = TheRules().SecretUnitsEnabled =
       false;  // Assume new units disabled, unless specifically .INI enabled or
@@ -563,7 +563,7 @@ bool Select_Game(bool /*fade*/) {
       **	Redraw the title page if needed
       */
       if (display) {
-        engine::window::HideMouse();
+        TheMouse().Hide();
 
         /*
         **	Display the title page; fade it in if this is the first time
@@ -582,7 +582,7 @@ bool Select_Game(bool /*fade*/) {
         //				}
 
         display = false;
-        engine::window::ShowMouse();
+        TheMouse().Show();
       }
 
       /*
@@ -772,7 +772,7 @@ bool Select_Game(bool /*fade*/) {
             TheTheme().Fade_Out();
             PlayFirstLaunchIntro(TheScreen().hidden_view(),
                                  TheScreen().visible_view());
-            engine::window::HideMouse();
+            TheMouse().Hide();
             if (TheGameState().current_cd() == 0) {
               TheScenario().Set_Scenario_Name("SCG01EA.INI");
             } else {
@@ -997,9 +997,9 @@ bool Select_Game(bool /*fade*/) {
           if (TheDebugState().developer_mode()) {
             Play_Intro(TheDebugState().developer_mode());
           } else {
-            engine::window::HideMouse();
+            TheMouse().Hide();
             TheScreen().visible_page().view().Clear();
-            engine::window::ShowMouse();
+            TheMouse().Show();
             Play_Movie(VQ_INTRO_MOVIE, THEME_NONE,
                        true);  // no transition picture to briefing
             TheKeyboard().Clear();
@@ -1132,19 +1132,19 @@ bool Select_Game(bool /*fade*/) {
     ** Start_Scenario() changes the palette; so, fade out & clear the screen
     ** before calling it.
     */
-    engine::window::HideMouse();
+    TheMouse().Hide();
 
     if (selection != kSelStartNewGame) {
       ThePalettes().black_palette().Set(kFadePaletteMedium, ServiceRealTime);
       TheScreen().hidden_page().view().Clear();
       TheScreen().visible_page().view().Clear();
     }
-    engine::window::ShowMouse();
+    TheMouse().Show();
     if (!Start_Scenario(TheScenario().ScenarioName)) {
       return false;
     }
     if (TheSpecial().IsFromInstall) {
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
     TheSpecial().IsFromInstall = false;
   }
@@ -1187,11 +1187,11 @@ bool Select_Game(bool /*fade*/) {
   * cleared the screen to black already.)
   */
   ServiceRealTime();
-  engine::window::HideMouse();
+  TheMouse().Hide();
   ThePalettes().black_palette().Set(kFadePaletteMedium, ServiceRealTime);
   TheScreen().hidden_page().view().Clear();
   TheScreen().visible_page().view().Clear();
-  engine::window::ShowMouse();
+  TheMouse().Show();
   /*
   ** Sidebar is always active in hi-res.
   */
@@ -1269,16 +1269,16 @@ static void Play_Intro(bool sequenced) {
     if (_counter == VQ_TITLE) {
       _counter--;
     }
-    engine::window::HideMouse();
+    TheMouse().Hide();
     TheScreen().visible_page().view().Clear();
-    engine::window::ShowMouse();
+    TheMouse().Show();
     Play_Movie(static_cast<VQType>(_counter--), THEME_NONE);
 
     //		ShowMouse();
   } else {
-    engine::window::HideMouse();
+    TheMouse().Hide();
     TheScreen().visible_page().view().Clear();
-    engine::window::ShowMouse();
+    TheMouse().Show();
     Play_Movie(VQ_REDINTRO, THEME_NONE, false);
   }
 }
@@ -2038,7 +2038,7 @@ static void Init_CDROM_Access() {
         case 1:
           TheScreen().visible_page().view().Clear();
           ThePalettes().game_palette().Set();
-          engine::window::ShowMouse();
+          TheMouse().Show();
           WWMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
           // ShutDownEngine();
           EmergencyExit(EXIT_FAILURE);
@@ -2046,23 +2046,23 @@ static void Init_CDROM_Access() {
         case 2:
           TheScreen().visible_page().view().Clear();
           ThePalettes().game_palette().Set();
-          engine::window::ShowMouse();
+          TheMouse().Show();
           if (WWMessageBox().Process(TXT_CD_DIALOG_1, TXT_OK, TXT_CANCEL) ==
               1) {
             // ShutDownEngine();
             EmergencyExit(EXIT_FAILURE);
           }
-          engine::window::HideMouse();
+          TheMouse().Hide();
           break;
 
         default:
           TheScreen().visible_page().view().Clear();
-          engine::window::ShowMouse();
+          TheMouse().Show();
           if (!Force_CD_Available(TheGameState().required_cd())) {
             // ShutDownEngine();
             EmergencyExit(EXIT_FAILURE);
           }
-          engine::window::HideMouse();
+          TheMouse().Hide();
           break;
       }
     } while (error);
@@ -2354,9 +2354,8 @@ static void Bootstrap() {
 /***********************************************************************************************
  * Init_Mouse -- Initialize the mouse system. *
  *                                                                                             *
- *    This routine will ensure that a valid mouse driver is present and a
- *working mouse        * pointer can be displayed. The mouse is hidden when this
- *routine exits.                   *
+ *    Gives the cursor its first shape and shows it once, so the player sees
+ *    it appear. The mouse is hidden when this routine exits. *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
@@ -2371,30 +2370,15 @@ static void Init_Mouse() {
   ** Since there is no mouse shape currently available we need
   ** to set one of our own.
   */
-  if (TheMouse() != nullptr) {
-    const auto temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
-    if (!temp_mouse_shapes.empty()) {
-      engine::window::SetMouseShape(0, 0, Extract_Shape(temp_mouse_shapes, 0));
-      while (engine::window::MouseHideCount() > 1) {
-        engine::window::ShowMouse();
-      }
-    }
-  } else {
-    ThePalettes().game_palette().Set();
-    ThePalettes().game_palette().Set();
-    TheScreen().visible_page().view().Clear();
-    WWMessageBox().Process(kLanguageText.no_mouse, TXT_OK);
-    // ShutDownEngine();
-    EmergencyExit(1);
+  const auto temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
+  if (!temp_mouse_shapes.empty()) {
+    TheMouse().SetShape(0, 0, Extract_Shape(temp_mouse_shapes, 0));
   }
 
   TheMap().Set_Default_Mouse(MOUSE_NORMAL, false);
-  engine::window::ShowMouse();
-  while (engine::window::MouseHideCount() > 1) {
-    engine::window::ShowMouse();
-  }
+  TheMouse().ForceShow();
   ServiceRealTime();
-  engine::window::HideMouse();
+  TheMouse().Hide();
 }
 
 /***********************************************************************************************

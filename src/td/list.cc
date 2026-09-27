@@ -78,6 +78,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/gadget.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/link.h"
 #include "td/shapebtn.h"
@@ -305,7 +306,7 @@ bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     }
 
   } else {
-    int index = engine::window::MouseY() - (Y + 1);
+    int index = TheMouse().y() - (Y + 1);
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex = std::min<int>(SelectedIndex, Count() - 1);

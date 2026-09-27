@@ -61,6 +61,7 @@
 #include "td/dialog.h"
 #include "td/gadget.h"
 #include "td/gauge.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/shapebtn.h"
 
@@ -217,10 +218,10 @@ bool SliderClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     int edge = 0;   // Edge of slider.
 
     if (IsHorizontal) {
-      mouse = engine::window::MouseX();
+      mouse = TheMouse().x();
       edge = X;
     } else {
-      mouse = engine::window::MouseY();
+      mouse = TheMouse().y();
       edge = Y;
     }
     edge += 1;

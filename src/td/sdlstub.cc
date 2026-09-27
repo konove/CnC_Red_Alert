@@ -38,9 +38,7 @@ void Check_For_Focus_Loss() {
 void Memory_Error_Handler() {
   TheScreen().visible_page().view().Clear();
   Set_Palette(ThePalettes().game_palette());
-  while (engine::window::MouseHideCount()) {
-    engine::window::ShowMouse();
-  }
+  TheMouse().ForceShow();
   CCMessageBox().Process("Error - out of memory.", "Abort");
 
   ShutDown();
@@ -63,6 +61,9 @@ static void SDL_Event_Handler(SDL_Event* event) {
   }
 
   switch (event->type) {
+    case SDL_MOUSEMOTION:
+      TheMouse().RecordPosition(event->motion.x, event->motion.y);
+      break;
     case SDL_WINDOWEVENT: {
       switch (event->window.event) {
         case SDL_WINDOWEVENT_FOCUS_GAINED:
@@ -93,7 +94,7 @@ static void SDL_Event_Handler(SDL_Event* event) {
 void ShakeScreen(int shakes) {
   shakes += shakes;
 
-  engine::window::HideMouse();
+  TheMouse().Hide();
   TheScreen().visible_view().BlitTo(TheScreen().hidden_view());
   const int oldyoff = 0;
   int newyoff = 0;
@@ -124,5 +125,5 @@ void ShakeScreen(int shakes) {
   }
 
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-  engine::window::ShowMouse();
+  TheMouse().Show();
 }

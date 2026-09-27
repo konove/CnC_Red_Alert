@@ -92,6 +92,7 @@
 #include "td/gadget.h"
 #include "td/goptions.h"
 #include "td/init.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/msgbox.h"
 #include "td/network.h"
@@ -1047,7 +1048,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ............................ Draw the dialog .............................
   */
-  engine::window::HideMouse();
+  TheMouse().Hide();
   if (!reconnect) {
     Load_Title_Page(true);
   }
@@ -1058,7 +1059,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor), kCcGreen,
                    kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   /*
   ** OK, lets not mess about any more. Just turn on echo, verbose, and result
@@ -1371,7 +1372,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   /*
   ............................ Draw the dialog .............................
   */
-  engine::window::HideMouse();
+  TheMouse().Hide();
   if (!reconnect) {
     Load_Title_Page(true);
   }
@@ -1392,7 +1393,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   CCDebugString("C&C95 - About to draw buttons.\n");
   Commands->Draw_All(view);
   CCDebugString("C&C95 - About to show mouse.\n");
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   // Timer_Test(__LINE__, __FILE__);
 
@@ -1620,7 +1621,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         /*
         ..................... Refresh the backdrop ......................
@@ -1644,7 +1645,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
         Commands->Draw_All(view);
       }
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 

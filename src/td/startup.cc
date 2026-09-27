@@ -369,8 +369,8 @@ int main(int argc, char* argv[])
       */
       Memory_Error = &Memory_Error_Handler;
 
-      CCDebugString("C&C95 - Creating mouse class.\n");
-      TheInput().InstallMouse();
+      CCDebugString("C&C95 - Grabbing the mouse.\n");
+      engine::window::HardwareCursor::GrabMouse();
 
       /*
       ** See if we should run the intro
@@ -506,8 +506,8 @@ void ShutDownEngine() {
   CCDebugString("C&C95 - About to call CloseAudio.\n");
   engine::audio::TheAudio().Close();
   CCDebugString("C&C95 - Returned from CloseAudio.\n");
-  CCDebugString("C&C95 - Deleting mouse object.\n");
-  TheInput().RemoveMouse();
+  CCDebugString("C&C95 - Releasing the mouse.\n");
+  engine::window::HardwareCursor::ReleaseMouse();
   CCDebugString("C&C95 - Deleting tick timer.\n");
   ShutdownTickTimer();
 }

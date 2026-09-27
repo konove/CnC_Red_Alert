@@ -45,18 +45,19 @@
 #include "engine/window/hardware_cursor.h"
 #include "td/defines.h"
 #include "td/dialog.h"
+#include "td/input.h"
 #include "td/toggle.h"
 
 bool CheckBoxClass::Draw_Me(PixelView& view, bool forced) {
   if (ToggleClass::Draw_Me(view, forced)) {
-    engine::window::HideMouse();
+    TheMouse().Hide();
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, false);
     view.FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, kGrey);
     if (IsOn) {
       view.DrawLine(X + 1, Y + 1, X + Width - 2, Y + Height - 2, kBlack);
       view.DrawLine(X + Width - 2, Y + 1, X + 1, Y + Height - 2, kBlack);
     }
-    engine::window::ShowMouse();
+    TheMouse().Show();
     return true;
   }
   return false;

@@ -60,6 +60,7 @@
 #include "td/dialog.h"
 #include "td/gadget.h"
 #include "td/goptions.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/list.h"
 #include "td/screen.h"
@@ -352,7 +353,7 @@ void SoundControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       /*
       **	Draw the background.
@@ -383,7 +384,7 @@ void SoundControlsClass::Process() {
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
       optionsbtn->Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = false;
     }
 

@@ -85,6 +85,7 @@
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/movie.h"
@@ -573,12 +574,12 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	suspended while the movie plays.
     */
     case TACTION_PLAY_MOVIE:
-      engine::window::HideMouse();
+      TheMouse().Hide();
       TheScreen().visible_view().Clear();
       Play_Movie(Data.Movie, THEME_NONE, true);
       ThePalettes().game_palette().Set();
       TheMap().Flag_To_Redraw(true);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       break;
 
     /*

@@ -40,8 +40,8 @@ add_gtest(
         LIBS engine_window SDL2::SDL2
 )
 
-# Compiles keyboard.cc directly and stubs its hooks, so the key buffer can
-# be tested without linking the event loop and mouse cursor code.
+# Compiles keyboard.cc directly and stubs the event pump, so the key buffer
+# can be tested without linking the event loop or the mouse cursor code.
 add_gtest(
         NAME engine_window_keyboard_test
         SOURCES keyboard_test.cc keyboard.cc

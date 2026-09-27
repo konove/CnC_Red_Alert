@@ -97,6 +97,7 @@
 #include "ra/gadget.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/object_heaps.h"
 #include "ra/palettes.h"
@@ -1120,7 +1121,7 @@ bool TriggerTypeClass::Edit() {
       /*
       **	Display the dialog box
       */
-      engine::window::HideMouse();
+      TheMouse().Hide();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(view, TXT_TRIGGER_EDITOR, kDialogX, kDialogY, kDialogW);
 
@@ -1513,7 +1514,7 @@ bool TriggerTypeClass::Edit() {
       speechtype1list.Collapse();
       speechtype2list.Collapse();
       commands->Flag_List_To_Redraw();
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = false;
     }
 

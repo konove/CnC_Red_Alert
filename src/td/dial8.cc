@@ -71,6 +71,7 @@
 #include "td/face.h"
 #include "td/gadget.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/screen.h"
 
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
@@ -186,8 +187,7 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     /*
     **	Get new dial position (0-255)
     */
-    Direction = Desired_Facing8(FaceX, FaceY, engine::window::MouseX(),
-                                engine::window::MouseY());
+    Direction = Desired_Facing8(FaceX, FaceY, TheMouse().x(), TheMouse().y());
 
     /*
     **	Convert to Facing value (0-7).
@@ -245,7 +245,7 @@ bool Dial8Class::Draw_Me(PixelView& view, bool forced) {
     */
 
     if (TheScreen().IsVisible(&view)) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
     }
 
     /*
@@ -273,7 +273,7 @@ bool Dial8Class::Draw_Me(PixelView& view, bool forced) {
     **	Restore the mouse.
     */
     if (TheScreen().IsVisible(&view)) {
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
 
     return true;

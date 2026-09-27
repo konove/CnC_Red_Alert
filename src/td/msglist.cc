@@ -68,6 +68,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/gadget.h"
+#include "td/input.h"
 #include "td/txtlabel.h"
 
 using enum engine::window::KeyNumber;
@@ -714,9 +715,9 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
  *=========================================================================*/
 void MessageListClass::Draw(PixelView& view) {
   if (MessageList) {
-    engine::window::HideMouse();
+    TheMouse().Hide();
     MessageList->Draw_All(view);
-    engine::window::ShowMouse();
+    TheMouse().Show();
   }
 }
 

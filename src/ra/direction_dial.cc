@@ -36,6 +36,7 @@
 #include "ra/face.h"
 #include "ra/gadget.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/screen.h"
 
 namespace {
@@ -84,8 +85,8 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
   if (flags & kLeftPress || (flags & kLeftHeld && StuckOn == this)) {
     const FacingType old_facing = facing_;
     // Get the new dial position, snapped to one of the eight directions.
-    direction_ = Desired_Facing8(center_x_, center_y_, engine::window::MouseX(),
-                                 engine::window::MouseY());
+    direction_ =
+        Desired_Facing8(center_x_, center_y_, TheMouse().x(), TheMouse().y());
     facing_ = Dir_Facing(direction_);
 
     if (facing_ != old_facing) {
@@ -119,7 +120,7 @@ bool DirectionDial::Draw_Me(PixelView& view, const bool forced) {
   // does not save and restore pixels the drawing is changing.
   const bool on_screen = TheScreen().IsVisible(&view);
   if (on_screen) {
-    engine::window::HideMouse();
+    TheMouse().Hide();
   }
 
   // Draw the background and the eight decorations.
@@ -135,7 +136,7 @@ bool DirectionDial::Draw_Me(PixelView& view, const bool forced) {
   view.DrawLine(center_x_, center_y_, tip[0], tip[1], scheme->Highlight);
 
   if (on_screen) {
-    engine::window::ShowMouse();
+    TheMouse().Show();
   }
   return true;
 }

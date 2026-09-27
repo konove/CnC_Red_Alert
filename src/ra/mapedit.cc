@@ -105,6 +105,7 @@
 #include "ra/hotkeys.h"
 #include "ra/house.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/menus.h"
@@ -559,10 +560,10 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
   /*
   **	Do special mouse processing if the mouse is over the map
   */
-  if (engine::window::MouseX() > TacPixelX &&
-      engine::window::MouseX() < TacPixelX + Lepton_To_Pixel(TacLeptonWidth) &&
-      engine::window::MouseY() > TacPixelY &&
-      engine::window::MouseY() < TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
+  if (TheMouse().x() > TacPixelX &&
+      TheMouse().x() < TacPixelX + Lepton_To_Pixel(TacLeptonWidth) &&
+      TheMouse().y() > TacPixelY &&
+      TheMouse().y() < TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
     /*
     **	When the mouse moves over a scrolling edge, ScrollClass changes its
     **	shape to the appropriate arrow or NO symbol; it's our job to change it
@@ -580,12 +581,11 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
   **	Set 'ZoneCell' to track the mouse cursor around over the map.  Do this
   **	even if the map is scrolling.
   */
-  if (engine::window::MouseX() >= TacPixelX &&
-      engine::window::MouseX() <= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) &&
-      engine::window::MouseY() >= TacPixelY &&
-      engine::window::MouseY() <=
-          TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
-    cell = Click_Cell_Calc(engine::window::MouseX(), engine::window::MouseY());
+  if (TheMouse().x() >= TacPixelX &&
+      TheMouse().x() <= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) &&
+      TheMouse().y() >= TacPixelY &&
+      TheMouse().y() <= TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
+    cell = Click_Cell_Calc(TheMouse().x(), TheMouse().y());
     if (cell != -1) {
       Set_Cursor_Pos(cell);
       if (PendingObject) {
@@ -1485,8 +1485,7 @@ bool MapEditClass::Mouse_Moved() {
   /*
   **	Return if no motion
   */
-  if (old_mx == engine::window::MouseX() &&
-      old_my == engine::window::MouseY()) {
+  if (old_mx == TheMouse().x() && old_my == TheMouse().y()) {
     return false;
   }
 
@@ -1499,8 +1498,8 @@ bool MapEditClass::Mouse_Moved() {
     if (GrabbedObject) {
       objtype = &GrabbedObject->Class_Of();
     } else {
-      old_mx = engine::window::MouseX();
-      old_my = engine::window::MouseY();
+      old_mx = TheMouse().x();
+      old_my = TheMouse().y();
       old_zonecell = ZoneCell;
       return false;
     }
@@ -1518,8 +1517,8 @@ bool MapEditClass::Mouse_Moved() {
     retcode = old_zonecell != ZoneCell;
   }
 
-  old_mx = engine::window::MouseX();
-  old_my = engine::window::MouseY();
+  old_mx = TheMouse().x();
+  old_my = TheMouse().y();
   old_zonecell = ZoneCell;
   return retcode;
 }
@@ -1570,9 +1569,9 @@ void MapEditClass::Main_Menu() {
     /*
     **	Invoke menu
     */
-    engine::window::HideMouse();  // Do_Menu assumes the mouse is already hidden
+    TheMouse().Hide();  // Do_Menu assumes the mouse is already hidden
     const int selection = Do_Menu(_menus, true);  // option the user picks
-    engine::window::ShowMouse();
+    TheMouse().Show();
     // Esc, or a click away from the menu, closes it.
     if (const engine::window::InputEvent& unknown =
             TheGameState().unknown_input();
@@ -1757,9 +1756,9 @@ void MapEditClass::AI_Menu() {
     /*
     **	Invoke menu
     */
-    engine::window::HideMouse();  // Do_Menu assumes the mouse is already hidden
+    TheMouse().Hide();  // Do_Menu assumes the mouse is already hidden
     const int selection = Do_Menu(_menus, true);  // option the user picks
-    engine::window::ShowMouse();
+    TheMouse().Show();
     // Esc, or a click away from the menu, closes it.
     if (const engine::window::InputEvent& unknown =
             TheGameState().unknown_input();
@@ -2007,7 +2006,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
       /*
       **	Display the dialog box.
       */
-      engine::window::HideMouse();
+      TheMouse().Hide();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       //				Draw_Caption(caption, kDialogX,
       // kDialogY, kDialogW);
@@ -2016,7 +2015,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
       **	Redraw the buttons.
       */
       commands->Flag_List_To_Redraw();
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = false;
     }
 
@@ -2055,10 +2054,10 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
       ** to allow the user to try another game
       */
       case engine::window::ButtonKey(kButtonOk):
-        engine::window::HideMouse();
+        TheMouse().Hide();
         TheScreen().visible_view().Clear();
         ThePalettes().game_palette().Set();
-        engine::window::ShowMouse();
+        TheMouse().Show();
         process = false;
         cancel = false;
         break;
@@ -2068,10 +2067,10 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
       */
       case KN_ESC:
       case engine::window::ButtonKey(kButtonCancel):
-        engine::window::HideMouse();
+        TheMouse().Hide();
         TheScreen().visible_view().Clear();
         ThePalettes().game_palette().Set();
-        engine::window::ShowMouse();
+        TheMouse().Show();
         cancel = true;
         process = false;
         break;

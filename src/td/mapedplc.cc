@@ -80,6 +80,7 @@
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/msgbox.h"
@@ -493,7 +494,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       ---------------------- Display the dialog box ----------------------
       */
-      engine::window::HideMouse();
+      TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -632,7 +633,7 @@ int MapEditClass::Placement_Dialog() {
       .......................... Redraw buttons ..........................
       */
       commands->Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -1135,10 +1136,9 @@ int MapEditClass::Place_Object() {
     /*
     ....................... Find cell sub-position ........................
     */
-    if (Is_Spot_Free(Pixel_To_Coord(engine::window::MouseX(),
-                                    engine::window::MouseY()))) {
-      obj_coord = Closest_Free_Spot(
-          Pixel_To_Coord(engine::window::MouseX(), engine::window::MouseY()));
+    if (Is_Spot_Free(Pixel_To_Coord(TheMouse().x(), TheMouse().y()))) {
+      obj_coord =
+          Closest_Free_Spot(Pixel_To_Coord(TheMouse().x(), TheMouse().y()));
     } else {
       obj_coord = 0;
     }

@@ -21,9 +21,7 @@
 // Converts the game's cursor shapes (LCW-compressed, zero-run-length encoded,
 // 8-bit paletted) into SDL color cursors, scaled up by a whole factor on
 // high-resolution displays. SDL bakes the colors in when it creates a cursor,
-// so every palette change creates the cursor again. The free functions at the
-// bottom are the interface the games use; they forward to the one live
-// HardwareCursor.
+// so every palette change creates the cursor again.
 
 #ifndef CNC_RED_ALERT_ENGINE_WINDOW_HARDWARE_CURSOR_H_
 #define CNC_RED_ALERT_ENGINE_WINDOW_HARDWARE_CURSOR_H_
@@ -31,6 +29,8 @@
 #include <cstddef>
 #include <memory>
 #include <span>
+
+#include "absl/base/attributes.h"
 
 class SDL_Cursor;
 class SDL_Surface;
@@ -53,11 +53,41 @@ using SdlSurfacePtr = std::unique_ptr<SDL_Surface, SdlSurfaceDeleter>;
 //
 // The game hands it cursor shapes and hides and shows it in nested pairs, as it
 // did the software cursor; the OS does the drawing. Each game's Input owns the
-// one instance (see Input::InstallMouse()); constructing it grabs the mouse
-// into the window and makes it the instance the free functions below reach, and
-// destroying it lets go of the mouse. Both need an installed Display.
+// one instance for the Game's lifetime, and the game feeds it what the engine
+// does not route here: mouse motion and palette changes. Creating one touches
+// neither SDL nor the display, so a test can create its own.
+//
+// Example:
+//   mouse.Hide();
+//   ... draw ...
+//   mouse.Show();
 class HardwareCursor {
  public:
+  // Shows the cursor for the scope's lifetime, however many Hide() calls are
+  // outstanding, and puts the hide count back as it was when the scope ends.
+  // For a prompt that interrupts code which has the cursor hidden, such as a
+  // request to insert a CD in the middle of loading.
+  //
+  // Example:
+  //   {
+  //     const HardwareCursor::ShownScope shown(TheMouse());
+  //     WWMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
+  //   }
+  class [[nodiscard]] ShownScope {
+   public:
+    explicit ShownScope(HardwareCursor& cursor ABSL_ATTRIBUTE_LIFETIME_BOUND);
+    ~ShownScope();
+
+    ShownScope(const ShownScope&) = delete;
+    ShownScope& operator=(const ShownScope&) = delete;
+    ShownScope(ShownScope&&) = delete;
+    ShownScope& operator=(ShownScope&&) = delete;
+
+   private:
+    HardwareCursor& cursor_;
+    int saved_hide_count_;
+  };
+
   HardwareCursor(int max_width, int max_height);
   HardwareCursor(const HardwareCursor&) = delete;
   HardwareCursor& operator=(const HardwareCursor&) = delete;
@@ -81,16 +111,24 @@ class HardwareCursor {
   void Hide();
   void Show();
 
+  // Shows the cursor however many Hide() calls are outstanding, dropping the
+  // count to 0 for good. For a screen that takes the cursor over from here
+  // on, such as a menu; a prompt that should hand the cursor back hidden
+  // uses a ShownScope instead.
+  void ForceShow();
+
   // Returns the current hide count (0 = visible).
-  [[nodiscard]] int hide_count() const;
+  [[nodiscard]] int hide_count() const { return hide_count_; }
 
   // The pointer's last position that RecordPosition() recorded, in the game's
   // screen pixels.
-  [[nodiscard]] int x() const;
-  [[nodiscard]] int y() const;
+  [[nodiscard]] int x() const { return x_; }
+  [[nodiscard]] int y() const { return y_; }
 
   // Confines the mouse to the game window, unless mouse_grab_disabled is set,
-  // or releases it. Both act on TheDisplay().
+  // or releases it. Both act on TheDisplay(); the games grab once the window
+  // is open, release on shutdown, and release and grab again as the window
+  // loses and regains focus.
   static void GrabMouse();
   static void ReleaseMouse();
 
@@ -98,11 +136,16 @@ class HardwareCursor {
   // colors into a cursor when it creates one, so this creates the cursor again.
   // While the cursor is hidden the work waits for Show(); fades change
   // the palette every frame with the cursor hidden. Does nothing before the
-  // first cursor or without a display palette.
+  // first cursor or without a display palette. The games call it after every
+  // Display::SetPalette().
   void UpdatePalette();
 
-  // Records the pointer's position for x() and y().
-  void RecordPosition(int x, int y);
+  // Records the pointer's position for x() and y(). The games' event handlers
+  // report every mouse motion here.
+  void RecordPosition(int x, int y) {
+    x_ = x;
+    y_ = y;
+  }
 
  private:
   // Makes sdl_surface_ the SDL cursor, with the hot spot scaled like it.
@@ -137,27 +180,13 @@ class HardwareCursor {
   bool palette_stale_ = false;
 };
 
-// The interface the games use. Each forwards to the live HardwareCursor and,
-// when there is none, does nothing or returns 0.
-void HideMouse();
-void ShowMouse();
-int MouseHideCount();
-void SetMouseShape(int hot_x, int hot_y, std::span<const std::byte> shape);
-int MouseX();
-int MouseY();
-
 // Returns whether the left or right mouse button is held down right now, read
 // from SDL's live state rather than from the queued clicks.
 bool IsLeftButtonDown();
 bool IsRightButtonDown();
 
-// Display::SetPalette() calls this after every palette change.
-void UpdateMousePalette();
-// The event loop reports every mouse motion here.
-void RecordMousePosition(int x, int y);
-
 // Leaves the mouse free to leave the window, for debugging. Set from the
-// command line before the mouse is created.
+// command line before the window opens.
 extern bool mouse_grab_disabled;
 
 }  // namespace engine::window

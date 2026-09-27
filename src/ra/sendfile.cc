@@ -89,6 +89,7 @@ static bool Receive_Remote_File(const char* file_name, int file_length,
 
 #include "engine/platform/timer.h"
 #include "ra/config.h"
+#include "ra/input.h"
 #include "ra/wolapiob.h"
 
 namespace {
@@ -366,7 +367,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
     if (display != REDRAW_NONE) {
       if (display >= REDRAW_BACKGROUND) {
-        engine::window::HideMouse();
+        TheMouse().Hide();
         /*
         ** Redraw backgound & dialog box
         */
@@ -385,7 +386,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
                          kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        engine::window::ShowMouse();
+        TheMouse().Show();
       }
 
       if (display >= REDRAW_BUTTONS) {
@@ -666,7 +667,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
     if (display != REDRAW_NONE) {
       if (display >= REDRAW_BACKGROUND) {
-        engine::window::HideMouse();
+        TheMouse().Hide();
         /*
         ** Redraw backgound & dialog box
         */
@@ -685,7 +686,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        engine::window::ShowMouse();
+        TheMouse().Show();
       }
 
       if (display >= REDRAW_BUTTONS) {

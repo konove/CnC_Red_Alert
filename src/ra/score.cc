@@ -386,7 +386,7 @@ void ScoreClass::Presentation() {
 
   // Load this side's background onto the hidden page, brighten its palette,
   // and fade it in from black.
-  engine::window::HideMouse();
+  TheMouse().Hide();
   Load_Title_Screen(base::At(ScreenNames, house), &TheScreen().hidden_view(),
                     score_palette);
   Increase_Palette_Luminance(score_palette, 30, 30, 30, 63);
@@ -685,7 +685,7 @@ void ScoreClass::Presentation() {
   }
   ThePalettes().black_palette().Set(kFadePaletteFast, nullptr);
   TheScreen().visible_page().view().Clear();
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   TheTheme().Queue_Song(THEME_NONE);
 
@@ -1098,7 +1098,7 @@ void Multi_Score_Presentation() {
   ThePalettes().black_palette().Set();
   TheScreen().visible_view().Clear();
   TheScreen().hidden_view().Clear();
-  engine::window::HideMouse();
+  TheMouse().Hide();
   WsaAnimation anim("MLTIPLYR.WSA", score_palette);
   // Display the background animation. The first frame goes up under a black
   // palette and is faded in; the remaining frames then play at two ticks each.
@@ -1199,7 +1199,7 @@ void Multi_Score_Presentation() {
   TheScreen().visible_view().Clear();
   ThePalettes().game_palette().Set();
   ControlQ = false;
-  engine::window::ShowMouse();
+  TheMouse().Show();
 }
 
 void ScoreClass::Init() {

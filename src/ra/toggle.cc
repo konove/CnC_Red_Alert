@@ -46,6 +46,7 @@
 #include "engine/window/keyboard.h"
 #include "ra/control.h"
 #include "ra/gadget.h"
+#include "ra/input.h"
 
 /***********************************************************************************************
  * ToggleClass::ToggleClass -- Normal constructor for toggle button gadgets. *
@@ -135,10 +136,10 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   *forced call *	must never actually function like a real call, but
   *rather only performs any necessary *	graphic updating.
   */
-  const bool overbutton = static_cast<unsigned>(engine::window::MouseX() - X) <
-                              static_cast<unsigned>(Width) &&
-                          static_cast<unsigned>(engine::window::MouseY() - Y) <
-                              static_cast<unsigned>(Height);
+  const bool overbutton =
+      static_cast<unsigned>(TheMouse().x() - X) <
+          static_cast<unsigned>(Width) &&
+      static_cast<unsigned>(TheMouse().y() - Y) < static_cast<unsigned>(Height);
   if (!flags) {
     if (overbutton) {
       if (!IsPressed) {

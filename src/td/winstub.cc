@@ -86,17 +86,13 @@ void Focus_Loss() {
   }
   TheTheme().Stop();
   engine::audio::TheAudio().Pause();
-  if (TheMouse()) {
-    TheMouse()->ReleaseMouse();
-  }
+  engine::window::HardwareCursor::ReleaseMouse();
 }
 
 void Focus_Restore() {
   TheMap().Flag_To_Redraw(true);
   engine::audio::TheAudio().Resume();
-  if (TheMouse()) {
-    TheMouse()->GrabMouse();
-  }
+  engine::window::HardwareCursor::GrabMouse();
   TheScreen().visible_page().Clear();
   TheScreen().hidden_page().Clear();
 }
@@ -347,7 +343,7 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   ** dialog box and we want to have the right windows cursor showing
   ** for it.
   */
-  engine::window::HideMouse();
+  TheMouse().Hide();
   ShowCursor(true);
 
   /*
@@ -367,7 +363,7 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   ** doing things.
   */
   ShowCursor(FALSE);
-  engine::window::ShowMouse();
+  TheMouse().Show();
 }
 
 struct tColourList {
@@ -540,9 +536,7 @@ void SetPalette(unsigned char* palette, long, unsigned long) {
 void Memory_Error_Handler() {
   TheScreen().visible_page().Clear();
   Set_Palette(GamePalette);
-  while (engine::window::MouseHideCount()) {
-    engine::window::ShowMouse();
-  };
+  TheMouse().ForceShow();
   CCMessageBox().Process("Error - out of memory.", "Abort", false);
   ShutDownEngine();
   Invalidate_Cached_Icons();

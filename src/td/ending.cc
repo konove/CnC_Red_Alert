@@ -204,14 +204,14 @@ void Nod_Ending() {
 
   Play_Movie("NODFINAL", THEME_NONE, false);
 
-  engine::window::HideMouse();
+  TheMouse().Hide();
   engine::window::TheDisplay().EndFrame();
   Set_Palette(base::UnsignedBytes(std::span(localpal)));
 #ifdef NOT_FOR_WIN95
   base::CopyBytes(std::as_writable_bytes(TheScreen().visible_view().bytes()),
                   std::as_writable_bytes(std::span(satpic)), satpic.size());
 #endif  // NOT_FOR_WIN95
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   Increase_Palette_Luminance(base::UnsignedBytes(std::span(localpal)), 30, 30,
                              30, 63);
@@ -232,7 +232,7 @@ void Nod_Ending() {
       Alloc_Object(std::make_unique<ScorePrintClass>(
           show, Text_String(TXT_SEL_TARGET), 0, 180, _tanpal));
       mouseshown = true;
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
     Call_Back_Delay(show, 1);
     if (!TheKeyboard().Peek()) {
@@ -264,7 +264,7 @@ void Nod_Ending() {
     }
   }
   if (mouseshown) {
-    engine::window::HideMouse();
+    TheMouse().Hide();
   }
 #ifdef NOT_FOR_WIN95
   satpic.clear();
@@ -276,7 +276,7 @@ void Nod_Ending() {
   TheScreen().visible_view().FillRect(0, 360, 638, 398, 0);
   show.text_page().view().FillRect(0, 360, 638, 398, 0);
 
-  engine::window::HideMouse();
+  TheMouse().Hide();
   TheKeyboard().Clear();
 
   engine::audio::TheAudio().Stop(kanefinl.data());

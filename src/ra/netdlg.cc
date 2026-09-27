@@ -181,6 +181,7 @@
 #include "ra/house.h"
 #include "ra/init.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/ipx.h"
 #include "ra/ipxgconn.h"
@@ -1770,7 +1771,7 @@ static int Net_Join_Dialog() {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -2037,7 +2038,7 @@ static int Net_Join_Dialog() {
         // kTpfText);
       }
 
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -2060,14 +2061,14 @@ static int Net_Join_Dialog() {
     // player's name and messages.
     if (input_event.IsPress(engine::window::MouseButton::kLeft)) {
       if (joinstate > JOIN_NOTHING) {
-        if ((engine::window::MouseX() >= d_count_x &&
-             engine::window::MouseX() <= d_count_x + d_count_w &&
-             engine::window::MouseY() >= d_count_y &&
-             engine::window::MouseY() <= d_aiplayers_y + d_aiplayers_h) ||
-            (engine::window::MouseX() >= d_options_x &&
-             engine::window::MouseX() <= d_options_x + d_options_w &&
-             engine::window::MouseY() >= d_options_y &&
-             engine::window::MouseY() <= d_options_y + d_options_h)) {
+        if ((TheMouse().x() >= d_count_x &&
+             TheMouse().x() <= d_count_x + d_count_w &&
+             TheMouse().y() >= d_count_y &&
+             TheMouse().y() <= d_aiplayers_y + d_aiplayers_h) ||
+            (TheMouse().x() >= d_options_x &&
+             TheMouse().x() <= d_options_x + d_options_w &&
+             TheMouse().y() >= d_options_y &&
+             TheMouse().y() <= d_options_y + d_options_h)) {
           TheSession().Messages.Add_Message(
               nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
               kTpfText, 1200);
@@ -2381,11 +2382,11 @@ static int Net_Join_Dialog() {
         // also erases the cursor).
         //...............................................................
         if (i == 1 || i == 2) {
-          engine::window::HideMouse();
+          TheMouse().Hide();
           Draw_Box(view, d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
                    true);
           TheSession().Messages.Draw(view);
-          engine::window::ShowMouse();
+          TheMouse().Show();
         } else if (i == 3 || i == 4) {
           //...............................................................
           //	If 'Input' returned 3, it means send the current message.
@@ -3004,9 +3005,9 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Restore screen
   //------------------------------------------------------------------------
-  engine::window::HideMouse();
+  TheMouse().Hide();
   Load_Title_Page(true);
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   //------------------------------------------------------------------------
   // Load a game if the game owner told us to
@@ -4460,7 +4461,7 @@ static int Net_New_Dialog() {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -4583,7 +4584,7 @@ static int Net_New_Dialog() {
         // kTpfText);
       }
 
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -4865,11 +4866,11 @@ static int Net_New_Dialog() {
         // message display.
         //...............................................................
         if (i == 1 || i == 2) {
-          engine::window::HideMouse();
+          TheMouse().Hide();
           Draw_Box(view, d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
                    true);  // (erase the cursor)
           TheSession().Messages.Draw(view);
-          engine::window::ShowMouse();
+          TheMouse().Show();
         } else if (i == 3 || i == 4) {
           //...............................................................
           //	If 'input' returned 3, it means send the current message.
@@ -5229,9 +5230,9 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Restore screen
   //------------------------------------------------------------------------
-  engine::window::HideMouse();
+  TheMouse().Hide();
   Load_Title_Page(true);
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   if (load_game) {
     if (!Load_Game(-1)) {
@@ -5711,7 +5712,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     x = 320 - (w / 2);
     y = 200 - (h / 2);
 
-    engine::window::HideMouse();
+    TheMouse().Hide();
     Dialog_Box(x, y, w, h);
 
     Fancy_Text_Print(view, buf1, 320, y + (d_margin * 2), scheme, kTBlack,
@@ -5724,13 +5725,13 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                      y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), scheme,
                      kTBlack, TPF_CENTER | kTpfText);
 
-    engine::window::ShowMouse();
+    TheMouse().Show();
   }
   //------------------------------------------------------------------------
   //	Just update the timeout value on the dialog
   //------------------------------------------------------------------------
   else {
-    engine::window::HideMouse();
+    TheMouse().Hide();
 
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
@@ -5744,7 +5745,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     Fancy_Text_Print(view, buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
                      scheme, kBlack, TPF_CENTER | kTpfText);
 
-    engine::window::ShowMouse();
+    TheMouse().Show();
   }
 } /* end of Net_Reconnect_Dialog */
 

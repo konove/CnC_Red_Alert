@@ -17,10 +17,19 @@
 #include "engine/gfx/rgb.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
+#include "engine/window/hardware_cursor.h"
+#include "ra/input.h"
 
 PaletteClass PaletteClass::CurrentPalette;
 
 unsigned char* CurrentPalette = PaletteClass::CurrentPalette;
+
+// Shows `palette` on the display and recolors the mouse cursor, which SDL
+// draws in the colors it had when the cursor was made.
+static void ShowPalette(std::span<const uint8_t> palette) {
+  engine::window::TheDisplay().SetPalette(palette);
+  TheMouse().UpdatePalette();
+}
 
 void PaletteClass::Set(int fade, void (*callback)()) {
   // A fade to the palette already on screen would spend its whole duration
@@ -52,7 +61,7 @@ void PaletteClass::Set(int fade, void (*callback)()) {
                                        ((new_val - old_val) * cur_time / fade));
       }
 
-      engine::window::TheDisplay().SetPalette(fade_palette);
+      ShowPalette(fade_palette);
       if (callback) {
         callback();
       } else {
@@ -74,7 +83,7 @@ void PaletteClass::Set(int fade, void (*callback)()) {
   }
 
   CurrentPalette = *this;
-  engine::window::TheDisplay().SetPalette(*this);
+  ShowPalette(*this);
 }
 
 // the only code that uses these two (Play_Movie and OptionsClass::Proccess)
@@ -130,5 +139,5 @@ void Set_Palette(std::span<const unsigned char> palette) {
   }
   base::CopyBytes(std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()),
                   std::as_bytes(palette), PaletteClass::COLOR_COUNT * 3);
-  engine::window::TheDisplay().SetPalette(palette);
+  ShowPalette(palette);
 }

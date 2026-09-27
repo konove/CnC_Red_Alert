@@ -1,23 +1,12 @@
 #include "ra/input.h"
 
-#include <memory>
-
-#include "engine/window/hardware_cursor.h"
-
 namespace {
-// The cursor's hot-spot box, in pixels. The original picked a square large
-// enough for every mouse shape the game draws.
+// The largest cursor shape the mouse accepts, in pixels. The original picked
+// a square large enough for every mouse shape the game draws.
 constexpr int kCursorWidth = 48;
 constexpr int kCursorHeight = 48;
 }  // namespace
 
-Input::Input() = default;
+Input::Input() : mouse_(kCursorWidth, kCursorHeight) {}
 
 Input::~Input() = default;
-
-void Input::InstallMouse() {
-  mouse_ = std::make_unique<engine::window::HardwareCursor>(kCursorWidth,
-                                                            kCursorHeight);
-}
-
-void Input::RemoveMouse() { mouse_.reset(); }

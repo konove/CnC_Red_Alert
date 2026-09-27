@@ -56,6 +56,7 @@
 #include "td/event.h"
 #include "td/gadget.h"
 #include "td/goptions.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/network.h"
@@ -198,7 +199,7 @@ void Special_Dialog() {
     if (display) {
       display = false;
 
-      engine::window::HideMouse();
+      TheMouse().Hide();
       Dialog_Box(view, kOptionX, kOptionY, kOptionWidth, kOptionHeight);
       Draw_Caption(view, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
 
@@ -208,7 +209,7 @@ void Special_Dialog() {
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;

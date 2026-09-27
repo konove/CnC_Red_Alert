@@ -218,7 +218,7 @@ void Display::Present(const bool end_frame) {
   SDL_Event_Loop();
 }
 
-void Display::UpdatePalette(const std::span<const uint8_t> palette) {
+void Display::SetPalette(const std::span<const uint8_t> palette) {
   if (palette_surface_ == nullptr) {
     return;
   }

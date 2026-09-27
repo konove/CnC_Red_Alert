@@ -43,6 +43,7 @@
 #include "ra/gadget.h"
 #include "ra/iconlist.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/jshell.h"
 #include "ra/link.h"
@@ -608,7 +609,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -649,15 +650,13 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
       }
 
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (engine::window::MouseHideCount()) {
-      engine::window::ShowMouse();
-    }
+    TheMouse().ForceShow();
     //	Be nice to other apps.
     engine::platform::SleepMs(50);
 

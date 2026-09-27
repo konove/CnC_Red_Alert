@@ -70,6 +70,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/tab.h"
 #include "td/text.h"
@@ -238,11 +239,11 @@ void HelpClass::Help_Text(int text, int x, int y, int color, bool quick,
     */
     X = x;
     if (x == -1) {
-      X = engine::window::MouseX();
+      X = TheMouse().x();
     }
     Y = y;
     if (y == -1) {
-      Y = engine::window::MouseY();
+      Y = TheMouse().y();
     }
     IsRight = y != -1 || x != -1;
 

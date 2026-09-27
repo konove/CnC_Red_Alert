@@ -56,6 +56,7 @@
 #include "td/dialog.h"
 #include "td/gadget.h"
 #include "td/goptions.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/screen.h"
 #include "td/session.h"
@@ -163,7 +164,7 @@ bool ConfirmationClass::Process(const char* string) {
     **	Refresh display if needed.
     */
     if (display) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       /*
       **	Draw the background.
@@ -178,7 +179,7 @@ bool ConfirmationClass::Process(const char* string) {
       **	Draw the titles.
       */
       yesbtn.Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = false;
     }
 

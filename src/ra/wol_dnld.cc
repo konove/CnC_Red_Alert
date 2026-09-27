@@ -33,6 +33,7 @@
 #include "ra/gadget.h"
 #include "ra/gauge.h"
 #include "ra/init.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
@@ -155,7 +156,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
     if (display != REDRAW_NONE) {
       if (display >= REDRAW_BACKGROUND) {
-        engine::window::HideMouse();
+        TheMouse().Hide();
         /*
         ** Redraw backgound & dialog box
         */
@@ -175,7 +176,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         // TBLACK,
         // TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        engine::window::ShowMouse();
+        TheMouse().Show();
       }
 
       if (display >= REDRAW_BUTTONS) {

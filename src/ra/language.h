@@ -16,7 +16,6 @@ struct LanguageText {
   const char* abort;
   const char* insufficient_disk;
   const char* setup_first;
-  const char* no_mouse;
   const char* invalid_option;
   const char* map_error;
   const char* stop;
@@ -29,7 +28,6 @@ inline constexpr LanguageText kEnglishText{
     .abort = "Abort",
     .insufficient_disk = "Insufficient Disk Space to run Red Alert.\n",
     .setup_first = "Run SETUP program first.\n",
-    .no_mouse = "Red Alert is unable to detect your mouse driver.",
     .invalid_option = "Invalid option switch.\n",
     .map_error = "Map Error!",
     .stop = "Stop",
@@ -51,7 +49,6 @@ inline constexpr LanguageText kGermanText{
     .insufficient_disk =
         "Nicht genug Festplattenplatz für Command & Conquer:AR.\n",
     .setup_first = "Bitte erst das SETUP-Programm starten.\n",
-    .no_mouse = "C&C:AR kann Ihren Maustreiber nicht finden...",
     .invalid_option = "Ungültiger Parameter.\n",
     .map_error = "Kartenfehler!",
     .stop = "Halt",
@@ -74,8 +71,6 @@ inline constexpr LanguageText kFrenchText{
     .insufficient_disk =
         "Espace disque insuffisant pour lancer Command & Conquer.\n",
     .setup_first = "Lancez d'abord le programme de configuration SETUP.\n",
-    .no_mouse =
-        "Alerte Rouge ne peut pas détecter votre gestionnaire de souris.",
     .invalid_option = "Commande d'option invalide.\n",
     .map_error = "Erreur de carte!",
     .stop = "Stop",

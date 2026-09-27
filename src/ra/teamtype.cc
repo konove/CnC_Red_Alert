@@ -109,6 +109,7 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/mapedit.h"
@@ -1046,7 +1047,7 @@ bool TeamTypeClass::Edit() {
       /*
       **	Display the dialog box
       */
-      engine::window::HideMouse();
+      TheMouse().Hide();
       Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
 
       Draw_Caption(view, TXT_TEAM_EDIT, kDDialogX, kDDialogY, kDDialogW);
@@ -1096,7 +1097,7 @@ bool TeamTypeClass::Edit() {
       **	Redraw the buttons
       */
       commands->Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
 
       display = false;
     }

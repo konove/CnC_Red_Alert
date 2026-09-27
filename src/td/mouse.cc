@@ -59,6 +59,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "td/defines.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/scroll.h"
 
@@ -127,16 +128,16 @@ void MouseClass::Mouse_Small(bool wwsmall) {
 
   if (wwsmall) {
     if (control->SmallFrame != -1) {
-      engine::window::SetMouseShape(
+      TheMouse().SetShape(
           control->X, control->Y,
           Extract_Shape(MouseShapes, control->SmallFrame + (Frame / 4)));
     } else {
-      engine::window::SetMouseShape(
+      TheMouse().SetShape(
           MouseControl.at(MOUSE_NORMAL).X, MouseControl.at(MOUSE_NORMAL).Y,
           Extract_Shape(MouseShapes, static_cast<int>(MOUSE_NORMAL)));
     }
   } else {
-    engine::window::SetMouseShape(
+    TheMouse().SetShape(
         control->X, control->Y,
         Extract_Shape(MouseShapes, control->StartFrame + (Frame / 4)));
   }
@@ -192,9 +193,8 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
 #endif
     baseshp = wwsmall ? control->SmallFrame : control->StartFrame;
 
-    engine::window::SetMouseShape(
-        control->X, control->Y,
-        Extract_Shape(MouseShapes, baseshp + (Frame / 4)));
+    TheMouse().SetShape(control->X, control->Y,
+                        Extract_Shape(MouseShapes, baseshp + (Frame / 4)));
     CurrentMouseShape = mouse;
     IsSmall = wwsmall;
     return true;
@@ -242,7 +242,7 @@ void MouseClass::AI(engine::window::InputEvent& event, int x, int y) {
       const int baseframe = IsSmall ? control->SmallFrame : control->StartFrame;
       mouse_shape_ptr = Extract_Shape(MouseShapes, baseframe + Frame);
       if (!mouse_shape_ptr.empty()) {
-        engine::window::SetMouseShape(control->X, control->Y, mouse_shape_ptr);
+        TheMouse().SetShape(control->X, control->Y, mouse_shape_ptr);
       }
     }
   }

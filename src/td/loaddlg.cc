@@ -79,6 +79,7 @@
 #include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/init.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/list.h"
 #include "td/mapedit.h"
@@ -308,7 +309,7 @@ bool LoadOptionsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
       /*
       **	Redraw the map.
       */
@@ -338,7 +339,7 @@ bool LoadOptionsClass::Process() {
       **	Redraw the buttons.
       */
       commands->Flag_List_To_Redraw();
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = false;
     }
 
@@ -399,10 +400,10 @@ bool LoadOptionsClass::Process() {
           if (!Load_Game(game_num)) {
             CCMessageBox().Process(TXT_ERROR_LOADING_GAME);
           } else {
-            engine::window::HideMouse();
+            TheMouse().Hide();
             TheScreen().visible_page().view().Clear();
             Set_Palette(ThePalettes().game_palette());
-            engine::window::ShowMouse();
+            TheMouse().Show();
             process = false;
           }
         } else {

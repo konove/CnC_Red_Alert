@@ -230,7 +230,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Draw the dialog.
   */
-  engine::window::HideMouse();
+  TheMouse().Hide();
   if (preserve) {
     back.resize(base::ToSize(width * height));
     TheScreen().visible_view().CopyToBuffer(x, y, width, height,
@@ -264,7 +264,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   if (buttonlist) {
     buttonlist->Draw_All(view);
   }
-  engine::window::ShowMouse();
+  TheMouse().Show();
 
   /*
   **	Main Processing Loop.
@@ -277,7 +277,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       if (display) {
         display = false;
 
-        engine::window::HideMouse();
+        TheMouse().Hide();
 
 #ifdef JAPANESE
         if (IsPicture) {
@@ -306,7 +306,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         if (buttonlist) {
           buttonlist->Draw_All(view);
         }
-        engine::window::ShowMouse();
+        TheMouse().Show();
       }
 
       /*
@@ -440,11 +440,11 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Restore the screen if necessary.
   */
   if (preserve) {
-    engine::window::HideMouse();
+    TheMouse().Hide();
     TheScreen().visible_view().CopyFromBuffer(x, y, width, height,
                                               std::span(back));
     back.clear();
-    engine::window::ShowMouse();
+    TheMouse().Show();
   }
   return retval;
 }

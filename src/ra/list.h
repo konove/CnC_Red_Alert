@@ -58,6 +58,7 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/link.h"
 #include "ra/shapebtn.h"
@@ -454,7 +455,7 @@ bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key,
     }
 
   } else {
-    int index = engine::window::MouseY() - (Y + 1);
+    int index = TheMouse().y() - (Y + 1);
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex = std::min<int>(SelectedIndex, static_cast<int>(List.Count()) - 1);

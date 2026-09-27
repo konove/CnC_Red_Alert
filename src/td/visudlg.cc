@@ -54,6 +54,7 @@
 #include "td/dialog.h"
 #include "td/gadget.h"
 #include "td/goptions.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/screen.h"
 #include "td/session.h"
@@ -217,10 +218,10 @@ void VisualControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
       Dialog_Box(view, option_x, option_y, option_width, option_height);
       Draw_Caption(view, TXT_VISUAL_CONTROLS, option_x, option_y, option_width);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = false;
       partial = true;
     }
@@ -229,7 +230,7 @@ void VisualControlsClass::Process() {
     **	If just the buttons and captions need to be redrawn, then do so now.
     */
     if (partial) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
 
       /*
       **	Draw the titles.
@@ -242,7 +243,7 @@ void VisualControlsClass::Process() {
                 (curbutton == i ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));
       }
       optionsbtn.Draw_All(view);
-      engine::window::ShowMouse();
+      TheMouse().Show();
       partial = false;
     }
 

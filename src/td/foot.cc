@@ -121,6 +121,7 @@
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/network.h"
@@ -1312,8 +1313,8 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
 
     case ACTION_MOVE:
       if (TheGameState().allow_voice()) {
-        const COORDINATE coord = TheMap().Pixel_To_Coord(
-            engine::window::MouseX(), engine::window::MouseY());
+        const COORDINATE coord =
+            TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y());
         TheNetwork().out_list().Add(
             EventClass(ANIM_MOVE_FLASH, ThePlayer()->Class->House, coord));
       }

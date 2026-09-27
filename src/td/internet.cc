@@ -76,6 +76,7 @@
 #include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/init.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/mplayer.h"
 #include "td/msgbox.h"
@@ -527,7 +528,7 @@ bool Do_The_Internet_Menu_Thang() {
   while (process) {
 
     if (display) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
       /*
       ** Redraw backgound & dialog box
       */
@@ -554,7 +555,7 @@ bool Do_The_Internet_Menu_Thang() {
       // buttons->Draw_All();
       cancelbtn.Draw_Me(view, true);
 
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = false;
     }
 

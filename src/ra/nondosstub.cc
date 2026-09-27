@@ -38,7 +38,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "ra/filepcx.h"
 #include "ra/graphics_loader.h"
-#include "ra/input.h"
 #include "ra/interpal.h"
 #include "ra/mapedit.h"
 #include "ra/theme.h"
@@ -63,17 +62,13 @@
 void Focus_Loss() {
   TheTheme().Suspend();
   engine::audio::TheAudio().Pause();
-  if (TheMouse()) {
-    engine::window::HardwareCursor::ReleaseMouse();
-  }
+  engine::window::HardwareCursor::ReleaseMouse();
 }
 
 void Focus_Restore() {
   TheMap().Flag_To_Redraw(true);
   engine::audio::TheAudio().Resume();
-  if (TheMouse()) {
-    engine::window::HardwareCursor::GrabMouse();
-  }
+  engine::window::HardwareCursor::GrabMouse();
 }
 
 void Load_Title_Screen(std::string_view name, PixelView* video_page,

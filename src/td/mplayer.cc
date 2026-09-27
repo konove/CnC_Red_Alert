@@ -266,7 +266,7 @@ GameType Select_MPlayer_Game() {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      engine::window::HideMouse();
+      TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         /*
         ..................... Refresh the backdrop ......................
@@ -285,7 +285,7 @@ GameType Select_MPlayer_Game() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -1290,7 +1290,7 @@ int Surrender_Dialog() {
       /*
       ...................... Display the dialog box ......................
       */
-      engine::window::HideMouse();
+      TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
         Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
@@ -1310,7 +1310,7 @@ int Surrender_Dialog() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      engine::window::ShowMouse();
+      TheMouse().Show();
       display = REDRAW_NONE;
     }
 

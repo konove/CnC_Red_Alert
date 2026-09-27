@@ -48,6 +48,7 @@
 #include "ra/compat.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
+#include "ra/input.h"
 #include "ra/toggle.h"
 
 /***********************************************************************************************
@@ -66,13 +67,13 @@
  *=============================================================================================*/
 bool CheckBoxClass::Draw_Me(PixelView& view, bool forced) {
   if (ToggleClass::Draw_Me(view, forced)) {
-    engine::window::HideMouse();
+    TheMouse().Hide();
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_DOWN, false);
     view.FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, DKGREY);
     if (IsOn) {
       view.FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, kLtGreen);
     }
-    engine::window::ShowMouse();
+    TheMouse().Show();
     return true;
   }
   return false;
