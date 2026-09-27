@@ -52,7 +52,7 @@ static_assert(kShapeHeaderSize == 10);
 // pixels, or nullopt for data that runs out early or holds a zero or overlong
 // count.
 static std::optional<std::vector<uint8_t>> DecodeShapePixels(
-    const Shape_Type& header, std::span<const std::byte> data) {
+    const Shape_Type& header, const std::span<const std::byte> data) {
   std::vector<uint8_t> rle_data(header.DataLength);
   const int32_t rle_bytes =
       LCW_Uncompress(data, std::as_writable_bytes(std::span(rle_data)));
@@ -88,7 +88,7 @@ static std::optional<std::vector<uint8_t>> DecodeShapePixels(
 // Draws the width x height image `src` into the 8-bit `surface`, scaled up by
 // the factor that makes it fill the surface. Nearest-neighbor keeps the pixel
 // art crisp.
-static void ScaleUpNearest(std::span<const uint8_t> src, int width,
+static void ScaleUpNearest(const std::span<const uint8_t> src, const int width,
                            const SDL_Surface& surface) {
   const int scale = surface.w / width;
   // SDL-created surfaces own pitch * h writable bytes; the pitch may include
@@ -160,13 +160,13 @@ HardwareCursor::ShownScope::~ShownScope() {
   }
 }
 
-HardwareCursor::HardwareCursor(int max_width, int max_height)
+HardwareCursor::HardwareCursor(const int max_width, const int max_height)
     : max_width_(max_width), max_height_(max_height) {}
 
 HardwareCursor::~HardwareCursor() = default;
 
-void HardwareCursor::SetShape(int hot_x, int hot_y,
-                              std::span<const std::byte> shape) {
+void HardwareCursor::SetShape(const int hot_x, const int hot_y,
+                              const std::span<const std::byte> shape) {
   if (std::ssize(shape) < kShapeHeaderSize || current_shape_ == shape.data()) {
     return;
   }
@@ -196,41 +196,6 @@ void HardwareCursor::SetShape(int hot_x, int hot_y,
   hot_x_ = hot_x;
   hot_y_ = hot_y;
   DrawSurface(CursorScale());
-}
-
-void HardwareCursor::UpdateScale() {
-  if (shape_pixels_.empty()) {
-    return;
-  }
-  const int scale = CursorScale();
-  if (scale != scale_) {
-    DrawSurface(scale);
-  }
-}
-
-void HardwareCursor::DrawSurface(int scale) {
-  // Scaled pixels are new ones, so the surface owns them rather than
-  // borrowing through SDL_CreateRGBSurfaceFrom.
-  SdlSurfacePtr surface(SDL_CreateRGBSurface(
-      0, shape_width_ * scale, shape_height_ * scale, 8, 0, 0, 0, 0));
-  if (!surface) {
-    return;
-  }
-  ScaleUpNearest(shape_pixels_, shape_width_, *surface);
-
-  if (const SDL_Palette* game_palette = GamePalette()) {
-    CopyGameColors(*game_palette, *surface->format->palette);
-    // An 8-bit surface's palette has 256 entries. SDL_CreateColorCursor()
-    // converts the surface to ARGB through it, so an alpha of 0 on entry 0 is
-    // what makes color 0 see-through.
-    surface->format->palette->colors->a = 0;
-    // The new cursor has the current colors already.
-    palette_stale_ = false;
-  }
-
-  sdl_surface_ = std::move(surface);
-  scale_ = scale;
-  RebuildCursor();
 }
 
 // Only the transitions between a count of 0 and 1 reach SDL.
@@ -282,6 +247,41 @@ void HardwareCursor::UpdatePalette() {
   palette_stale_ = false;
   // Color 0 keeps the alpha of 0 SetShape() gave it.
   CopyGameColors(*game_palette, *sdl_surface_->format->palette);
+  RebuildCursor();
+}
+
+void HardwareCursor::UpdateScale() {
+  if (shape_pixels_.empty()) {
+    return;
+  }
+  const int scale = CursorScale();
+  if (scale != scale_) {
+    DrawSurface(scale);
+  }
+}
+
+void HardwareCursor::DrawSurface(const int scale) {
+  // Scaled pixels are new ones, so the surface owns them rather than
+  // borrowing through SDL_CreateRGBSurfaceFrom.
+  SdlSurfacePtr surface(SDL_CreateRGBSurface(
+      0, shape_width_ * scale, shape_height_ * scale, 8, 0, 0, 0, 0));
+  if (!surface) {
+    return;
+  }
+  ScaleUpNearest(shape_pixels_, shape_width_, *surface);
+
+  if (const SDL_Palette* game_palette = GamePalette()) {
+    CopyGameColors(*game_palette, *surface->format->palette);
+    // An 8-bit surface's palette has 256 entries. SDL_CreateColorCursor()
+    // converts the surface to ARGB through it, so an alpha of 0 on entry 0 is
+    // what makes color 0 see-through.
+    surface->format->palette->colors->a = 0;
+    // The new cursor has the current colors already.
+    palette_stale_ = false;
+  }
+
+  sdl_surface_ = std::move(surface);
+  scale_ = scale;
   RebuildCursor();
 }
 

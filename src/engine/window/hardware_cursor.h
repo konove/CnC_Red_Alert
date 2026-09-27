@@ -151,7 +151,7 @@ class HardwareCursor {
 
   // Records the pointer's position for x() and y(). The games' event handlers
   // report every mouse motion here.
-  void RecordPosition(int x, int y) {
+  void RecordPosition(const int x, const int y) {
     x_ = x;
     y_ = y;
   }
