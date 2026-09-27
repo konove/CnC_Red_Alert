@@ -391,9 +391,9 @@ bool Start_Scenario(char* name, bool briefing) {
   TheTheme().Stop();
 
   if (briefing) {
-    Hide_Mouse();
+    HideMouse();
     TheScreen().visible_page().view().Clear();
-    Show_Mouse();
+    ShowMouse();
     Play_Movie(TheScenario().IntroMovie);
     Play_Movie(TheScenario().BriefMovie);
   }
@@ -411,16 +411,16 @@ bool Start_Scenario(char* name, bool briefing) {
     /*
     ** Make sure the mouse is visible before showing the restatement.
     */
-    while (Get_Mouse_State()) {
-      Show_Mouse();
+    while (MouseHideCount()) {
+      ShowMouse();
     }
     Restate_Mission();
   }
 
   if (briefing) {
-    Hide_Mouse();
+    HideMouse();
     TheScreen().visible_page().view().Clear();
-    Show_Mouse();
+    ShowMouse();
     Play_Movie(TheScenario().ActionMovie, TheScenario().TransitTheme);
   }
 
@@ -508,9 +508,9 @@ bool Read_Scenario(char* name) {
   } else {
     ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
     //		Fade_Palette_To(GamePalette, kFadePaletteFast, ServiceRealTime);
-    Show_Mouse();
+    ShowMouse();
     WWMessageBox().Process(TXT_UNABLE_READ_SCENARIO);
-    Hide_Mouse();
+    HideMouse();
     return false;
   }
   TheWorld().scenario_init()--;
@@ -813,7 +813,7 @@ void Clear_Scenario() {
  *=============================================================================================*/
 void Do_Win() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  Hide_Mouse();
+  HideMouse();
   TheTheme().Queue_Song(THEME_QUIET);
 
   /*
@@ -868,13 +868,13 @@ void Do_Win() {
       }
     }
     TheGameState().active() = false;
-    Show_Mouse();
+    ShowMouse();
     return;
   }
 
-  Hide_Mouse();
+  HideMouse();
   TheScreen().visible_page().view().Clear();
-  Show_Mouse();
+  ShowMouse();
   Play_Movie(TheScenario().WinMovie);
 
   TheKeyboard().Clear();
@@ -899,7 +899,7 @@ void Do_Win() {
 
     if (TheScenario().IsOneTimeOnly) {
       TheGameState().active() = false;
-      Show_Mouse();
+      ShowMouse();
       TheWorld().ants_enabled() = false;
       return;
     }
@@ -916,7 +916,7 @@ void Do_Win() {
       }
       Show_Who_Was_Responsible();
       TheGameState().active() = false;
-      Show_Mouse();
+      ShowMouse();
       TheWorld().ants_enabled() = false;
       return;
     }
@@ -1014,7 +1014,7 @@ void Do_Win() {
   TheMap().Render();
   ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
   //	Fade_Palette_To(GamePalette, kFadePaletteFast, ServiceRealTime);
-  Show_Mouse();
+  ShowMouse();
 }
 
 /***********************************************************************************************
@@ -1034,7 +1034,7 @@ void Do_Win() {
  *=============================================================================================*/
 void Do_Lose() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  Hide_Mouse();
+  HideMouse();
 
   TheTheme().Queue_Song(THEME_QUIET);
 
@@ -1080,13 +1080,13 @@ void Do_Lose() {
       }
     }
     TheGameState().active() = false;
-    Show_Mouse();
+    ShowMouse();
     return;
   }
 
-  Hide_Mouse();
+  HideMouse();
   TheScreen().visible_page().view().Clear();
-  Show_Mouse();
+  ShowMouse();
   DLOG(INFO) << "Trying to play lose movie";
   Play_Movie(TheScenario().LoseMovie);
 
@@ -1094,10 +1094,10 @@ void Do_Lose() {
   ** Start same scenario again
   */
   ThePalettes().game_palette().Set();
-  Show_Mouse();
+  ShowMouse();
   if (!TheSession().Play &&
       !WWMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
-    Hide_Mouse();
+    HideMouse();
     TheKeyboard().Clear();
     Start_Scenario(TheScenario().ScenarioName, false);
 
@@ -1111,12 +1111,12 @@ void Do_Lose() {
 
     TheMap().Render();
   } else {
-    Hide_Mouse();
+    HideMouse();
     TheGameState().active() = false;
   }
 
   ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
-  Show_Mouse();
+  ShowMouse();
 }
 
 /***********************************************************************************************
@@ -1125,7 +1125,7 @@ void Do_Lose() {
  *=============================================================================================*/
 void Do_Draw() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  Hide_Mouse();
+  HideMouse();
 
   TheTheme().Queue_Song(THEME_QUIET);
 
@@ -1170,7 +1170,7 @@ void Do_Draw() {
     }
   }
   TheGameState().active() = false;
-  Show_Mouse();
+  ShowMouse();
 }
 
 /***********************************************************************************************
@@ -1440,7 +1440,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   /*
   **	Draw the dialog.
   */
-  Hide_Mouse();
+  HideMouse();
 
   PaletteClass temp;
   const char* filename = "SOVPAPER.PCX";
@@ -1494,7 +1494,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     }
   } while (base::At(buffer, ++bufindex));
 
-  Show_Mouse();
+  ShowMouse();
   TheKeyboard().Clear();
 
   if (buttonlist) {
@@ -1504,10 +1504,10 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       if (display) {
         display = false;
 
-        Hide_Mouse();
+        HideMouse();
         // Redraw the buttons.
         buttonlist->Draw_All(view);
-        Show_Mouse();
+        ShowMouse();
       }
 
       // Invoke game callback.
@@ -1634,7 +1634,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   /*
   ** Restore the screen.
   */
-  Hide_Mouse();
+  HideMouse();
   // Now set the palette, depending on if we're going to show the video or
   // go back to the main menu.
   switch (retval) {
@@ -1646,7 +1646,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     default:
       break;
   }
-  Show_Mouse();
+  ShowMouse();
 
   GadgetClass::Set_Color_Scheme(
       &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));

@@ -136,8 +136,8 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   *rather only performs any necessary *	graphic updating.
   */
   const bool overbutton =
-      static_cast<unsigned>(Get_Mouse_X() - X) < static_cast<unsigned>(Width) &&
-      static_cast<unsigned>(Get_Mouse_Y() - Y) < static_cast<unsigned>(Height);
+      static_cast<unsigned>(MouseX() - X) < static_cast<unsigned>(Width) &&
+      static_cast<unsigned>(MouseY() - Y) < static_cast<unsigned>(Height);
   if (!flags) {
     if (overbutton) {
       if (!IsPressed) {

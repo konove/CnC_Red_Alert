@@ -1047,7 +1047,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ............................ Draw the dialog .............................
   */
-  Hide_Mouse();
+  HideMouse();
   if (!reconnect) {
     Load_Title_Page(true);
   }
@@ -1058,7 +1058,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor), kCcGreen,
                    kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  Show_Mouse();
+  ShowMouse();
 
   /*
   ** OK, lets not mess about any more. Just turn on echo, verbose, and result
@@ -1371,7 +1371,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   /*
   ............................ Draw the dialog .............................
   */
-  Hide_Mouse();
+  HideMouse();
   if (!reconnect) {
     Load_Title_Page(true);
   }
@@ -1392,7 +1392,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   CCDebugString("C&C95 - About to draw buttons.\n");
   Commands->Draw_All(view);
   CCDebugString("C&C95 - About to show mouse.\n");
-  Show_Mouse();
+  ShowMouse();
 
   // Timer_Test(__LINE__, __FILE__);
 
@@ -1620,7 +1620,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         /*
         ..................... Refresh the backdrop ......................
@@ -1644,7 +1644,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
         Commands->Draw_All(view);
       }
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 

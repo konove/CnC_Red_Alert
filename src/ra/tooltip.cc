@@ -102,8 +102,8 @@ ToolTipClass* ToolTipClass::GetToolTipHit() {
 bool ToolTipClass::bGadgetHit() const {
   //	Returns true if the mouse is currently over the gadget to which *this is
   // bound.
-  const int x = Get_Mouse_X();
-  const int y = Get_Mouse_Y();
+  const int x = MouseX();
+  const int y = MouseY();
   return x > pGadget->X && x < pGadget->X + pGadget->Width && y > pGadget->Y &&
          y < pGadget->Y + pGadget->Height;
 }
@@ -170,7 +170,7 @@ void ToolTipClass::Show(PixelView& view) {
     }
 
     //	Save rect about to be corrupted.
-    Hide_Mouse();
+    HideMouse();
     SaveSurfaceRect(view, xShowUse, yShowUse, wShowUse, hShow, pSaveRect,
                     WINDOW_MAIN);
     //	Draw text.
@@ -181,7 +181,7 @@ void ToolTipClass::Show(PixelView& view) {
                       GadgetClass::Get_Color_Scheme(), kBlack,
                       TPF_TYPE);  // TPF_DROPSHADOW );
     Draw_Box(view, xShowUse, yShowUse, wShowUse, hShow, BOXSTYLE_BOX, false);
-    Show_Mouse();
+    ShowMouse();
     bShowing = true;
   }
 }
@@ -222,10 +222,10 @@ void ToolTipClass::Unshow(PixelView& view) {
       yShowUse = yLastShow;
       wShowUse = wLastShow;
     }
-    Hide_Mouse();
+    HideMouse();
     RestoreSurfaceRect(view, xShowUse, yShowUse, wShowUse, hShow, pSaveRect,
                        WINDOW_MAIN);
-    Show_Mouse();
+    ShowMouse();
     bShowing = false;
   }
 }

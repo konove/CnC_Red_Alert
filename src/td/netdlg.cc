@@ -1053,8 +1053,8 @@ static int Net_Join_Dialog() {
   Load_Title_Page(true);
   Set_Palette(ThePalettes().title_palette());
 
-  while (Get_Mouse_State() > 0) {
-    Show_Mouse();
+  while (MouseHideCount() > 0) {
+    ShowMouse();
   }
 
   /*
@@ -1066,7 +1066,7 @@ static int Net_Join_Dialog() {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -1338,7 +1338,7 @@ static int Net_Join_Dialog() {
         }
       }
 
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -2029,9 +2029,9 @@ static int Net_Join_Dialog() {
   /*------------------------------------------------------------------------
   Restore screen
   ------------------------------------------------------------------------*/
-  Hide_Mouse();
+  HideMouse();
   Load_Title_Page(true);
-  Show_Mouse();
+  ShowMouse();
 
   return rc;
 }
@@ -3214,8 +3214,8 @@ static int Net_New_Dialog() {
 
   Load_Title_Page(true);
   Set_Palette(ThePalettes().title_palette());
-  while (Get_Mouse_State() > 0) {
-    Show_Mouse();
+  while (MouseHideCount() > 0) {
+    ShowMouse();
   }
 
   /*
@@ -3241,7 +3241,7 @@ static int Net_New_Dialog() {
     }
 
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -3320,7 +3320,7 @@ static int Net_New_Dialog() {
         TheSession().messages().Draw(view);
       }
 
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -3379,7 +3379,7 @@ static int Net_New_Dialog() {
             countgauge.Get_Value() +
             base::At(TheSession().unit_count_min(), TheSession().bases());
 
-        Hide_Mouse();
+        HideMouse();
         view.FillRect(d_count_x + d_count_w + (2 * factor), d_count_y,
                       d_count_x + d_count_w + (14 * factor),
                       d_count_y + (6 * factor), kBlack);
@@ -3388,7 +3388,7 @@ static int Net_New_Dialog() {
         Fancy_Text_Print(view, txt, d_count_x + d_count_w + (2 * factor),
                          d_count_y, kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
-        Show_Mouse();
+        ShowMouse();
 
         transmit = 1;
         break;
@@ -3400,7 +3400,7 @@ static int Net_New_Dialog() {
         TheWorld().build_level() =
             std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
 
-        Hide_Mouse();
+        HideMouse();
         view.FillRect(d_level_x + d_level_w + (2 * factor), d_level_y,
                       d_level_x + d_level_w + (14 * factor),
                       d_level_y + (6 * factor), kBlack);
@@ -3413,7 +3413,7 @@ static int Net_New_Dialog() {
         Fancy_Text_Print(view, txt, d_level_x + d_level_w + (2 * factor),
                          d_level_y, kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
-        Show_Mouse();
+        ShowMouse();
 
         transmit = 1;
         break;
@@ -4011,9 +4011,9 @@ static int Net_New_Dialog() {
   /*------------------------------------------------------------------------
   Restore screen
   ------------------------------------------------------------------------*/
-  Hide_Mouse();
+  HideMouse();
   Load_Title_Page(true);
-  Show_Mouse();
+  ShowMouse();
 
   return rc;
 }
@@ -4334,7 +4334,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     x = (160 * factor) - (w / 2);
     y = (100 * factor) - (h / 2);
 
-    Hide_Mouse();
+    HideMouse();
     Dialog_Box(view, x, y, w, h);
 
     Fancy_Text_Print(
@@ -4351,13 +4351,13 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
         y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), kCcGreen, kBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-    Show_Mouse();
+    ShowMouse();
 
   } else {
     /*------------------------------------------------------------------------
     Just update the timeout value on the dialog
     ------------------------------------------------------------------------*/
-    Hide_Mouse();
+    HideMouse();
 
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
@@ -4371,7 +4371,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
         kCcGreen, kBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-    Show_Mouse();
+    ShowMouse();
   }
 }
 
@@ -4625,8 +4625,8 @@ static int Net_Fake_New_Dialog() {
 #endif  // VIRTUAL_SUBNET_SERVER
 
   CCDebugString("C&C95 - About to reveal mouse\n");
-  while (Get_Mouse_State() > 0) {
-    Show_Mouse();
+  while (MouseHideCount() > 0) {
+    ShowMouse();
   }
 
   /*
@@ -4639,7 +4639,7 @@ static int Net_Fake_New_Dialog() {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -4666,7 +4666,7 @@ static int Net_Fake_New_Dialog() {
         commands->Draw_All(view);
       }
 
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -5022,9 +5022,9 @@ static int Net_Fake_New_Dialog() {
   /*------------------------------------------------------------------------
   Restore screen
   ------------------------------------------------------------------------*/
-  Hide_Mouse();
+  HideMouse();
   Load_Title_Page(true);
-  Show_Mouse();
+  ShowMouse();
 
   if (rc) {
     Wait_For_Focus();
@@ -5213,8 +5213,8 @@ static int Net_Fake_Join_Dialog() {
   CCDebugString(a_buffer);
 
   CCDebugString("C&C95 - About to reveal mouse\n");
-  while (Get_Mouse_State() > 0) {
-    Show_Mouse();
+  while (MouseHideCount() > 0) {
+    ShowMouse();
   }
 
   /*
@@ -5227,7 +5227,7 @@ static int Net_Fake_Join_Dialog() {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -5264,7 +5264,7 @@ static int Net_Fake_Join_Dialog() {
         commands->Draw_All(view);
       }
 
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -5699,9 +5699,9 @@ static int Net_Fake_Join_Dialog() {
   /*------------------------------------------------------------------------
   Restore screen
   ------------------------------------------------------------------------*/
-  Hide_Mouse();
+  HideMouse();
   Load_Title_Page(true);
-  Show_Mouse();
+  ShowMouse();
 
   if (rc != -1) {
     Wait_For_Focus();

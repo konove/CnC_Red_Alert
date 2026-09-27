@@ -608,7 +608,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -649,14 +649,14 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
       }
 
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (Get_Mouse_State()) {
-      Show_Mouse();
+    while (MouseHideCount()) {
+      ShowMouse();
     }
     //	Be nice to other apps.
     engine::platform::SleepMs(50);
@@ -1038,9 +1038,9 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           //------------------------------------------------------------------------
           //	Restore screen
           //------------------------------------------------------------------------
-          Hide_Mouse();
+          HideMouse();
           Load_Title_Page(true);
-          Show_Mouse();
+          ShowMouse();
   */
 
   pWO->SaveChat();

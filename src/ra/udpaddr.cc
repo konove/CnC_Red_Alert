@@ -157,7 +157,7 @@ bool Get_Broadcast_Addresses() {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -192,7 +192,7 @@ bool Get_Broadcast_Addresses() {
         commands->Draw_All(view);
       }
 
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -224,10 +224,10 @@ bool Get_Broadcast_Addresses() {
   //------------------------------------------------------------------------
   //	Restore screen
   //------------------------------------------------------------------------
-  Hide_Mouse();
+  HideMouse();
   Load_Title_Page(true);
   ThePalettes().title_palette().Set();  // GamePalette.Set();
-  Show_Mouse();
+  ShowMouse();
 
   for (int i = 0; i < ip_address_list.Count(); i++) {
     std::string addr = ip_address_list.Get_Item(i);

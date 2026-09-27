@@ -160,16 +160,16 @@ void MouseClass::Mouse_Small(bool wsmall) {
 
   if (wsmall) {
     if (control->SmallFrame != -1) {
-      Set_Mouse_Cursor(
+      SetMouseShape(
           control->X, control->Y,
           Extract_Shape(MouseShapes, control->SmallFrame + (Frame / 4)));
     } else {
-      Set_Mouse_Cursor(
-          MouseControl.at(MOUSE_NORMAL).X, MouseControl.at(MOUSE_NORMAL).Y,
-          Extract_Shape(MouseShapes, static_cast<int>(MOUSE_NORMAL)));
+      SetMouseShape(MouseControl.at(MOUSE_NORMAL).X,
+                    MouseControl.at(MOUSE_NORMAL).Y,
+                    Extract_Shape(MouseShapes, static_cast<int>(MOUSE_NORMAL)));
     }
   } else {
-    Set_Mouse_Cursor(
+    SetMouseShape(
         control->X, control->Y,
         Extract_Shape(MouseShapes, control->StartFrame + (Frame / 4)));
   }
@@ -227,8 +227,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
       baseshp = control->StartFrame;
     }
 
-    Set_Mouse_Cursor(control->X, control->Y,
-                     Extract_Shape(MouseShapes, baseshp));
+    SetMouseShape(control->X, control->Y, Extract_Shape(MouseShapes, baseshp));
     CurrentMouseShape = mouse;
     IsSmall = wsmall;
     return true;
@@ -272,8 +271,8 @@ void MouseClass::AI(engine::window::InputEvent& event, int x, int y) {
       if (baseframe == -1) {
         baseframe = control->StartFrame;
       }
-      Set_Mouse_Cursor(control->X, control->Y,
-                       Extract_Shape(MouseShapes, baseframe + Frame));
+      SetMouseShape(control->X, control->Y,
+                    Extract_Shape(MouseShapes, baseframe + Frame));
     }
   }
 

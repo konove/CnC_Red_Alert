@@ -338,7 +338,7 @@ int Test_Null_Modem() {
   /*
   ............................ Draw the dialog .............................
   */
-  Hide_Mouse();
+  HideMouse();
   Load_Title_Page(true);
 
   Dialog_Box(view, x, y, width, height);
@@ -348,8 +348,8 @@ int Test_Null_Modem() {
                    kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   commands->Draw_All(view);
-  while (Get_Mouse_State() > 0) {
-    Show_Mouse();
+  while (MouseHideCount() > 0) {
+    ShowMouse();
   }
 
 #ifdef _WIN32
@@ -692,7 +692,7 @@ static int Reconnect_Null_Modem() {
   /*
   ............................ Draw the dialog .............................
   */
-  Hide_Mouse();
+  HideMouse();
 
   Dialog_Box(view, x, y, width, height);
   Draw_Caption(view, TXT_NONE, x, y, width);
@@ -701,7 +701,7 @@ static int Reconnect_Null_Modem() {
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   commands->Draw_All(view);
-  Show_Mouse();
+  ShowMouse();
 
   /*
   -------------------------- Main Processing Loop --------------------------
@@ -1103,7 +1103,7 @@ GameType Select_Serial_Dialog() {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         /*
         ..................... Refresh the backdrop ......................
@@ -1124,7 +1124,7 @@ GameType Select_Serial_Dialog() {
         Draw_Caption(view, TXT_SELECT_SERIAL_GAME, d_dialog_x, d_dialog_y,
                      d_dialog_w);
       }
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -1536,7 +1536,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -1583,7 +1583,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
         hardwareflowcontrolbutton.Flag_To_Redraw();
       }
 
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -2353,7 +2353,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -2428,7 +2428,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         savebtn.Flag_To_Redraw();
       }
 
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -2946,9 +2946,9 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /*------------------------------------------------------------------------
   Restore screen
   ------------------------------------------------------------------------*/
-  Hide_Mouse();
+  HideMouse();
   Load_Title_Page(true);
-  Show_Mouse();
+  ShowMouse();
 
   /*------------------------------------------------------------------------
   Save values into the Settings structure
@@ -3508,8 +3508,8 @@ int Com_Scenario_Dialog() {
   decltype(SerialPacketType::ResponseTime) theirresponsetime =
       10000;  // an invalid value
   timingtime = lastmsgtime = lastredrawtime = SystemTicks();
-  while (Get_Mouse_State() > 0) {
-    Show_Mouse();
+  while (MouseHideCount() > 0) {
+    ShowMouse();
   }
 
   while (process) {
@@ -3524,7 +3524,7 @@ int Com_Scenario_Dialog() {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -3679,7 +3679,7 @@ int Com_Scenario_Dialog() {
         commands->Flag_List_To_Redraw();
       }
 
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -4557,9 +4557,9 @@ int Com_Scenario_Dialog() {
   /*------------------------------------------------------------------------
   Restore screen
   ------------------------------------------------------------------------*/
-  Hide_Mouse();
+  HideMouse();
   Load_Title_Page(true);
-  Show_Mouse();
+  ShowMouse();
 
   /*------------------------------------------------------------------------
   Save any changes made to our options
@@ -4821,8 +4821,8 @@ int Com_Show_Scenario_Dialog() {
   */
   TheNetwork().null_modem().Reset_Response_Time();  // clear response time
   timingtime = lastmsgtime = lastredrawtime = SystemTicks();
-  while (Get_Mouse_State() > 0) {
-    Show_Mouse();
+  while (MouseHideCount() > 0) {
+    ShowMouse();
   }
 
   while (process) {
@@ -4837,7 +4837,7 @@ int Com_Show_Scenario_Dialog() {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -5108,7 +5108,7 @@ int Com_Show_Scenario_Dialog() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -5762,9 +5762,9 @@ int Com_Show_Scenario_Dialog() {
   /*------------------------------------------------------------------------
   Restore screen
   ------------------------------------------------------------------------*/
-  Hide_Mouse();
+  HideMouse();
   Load_Title_Page(true);
-  Show_Mouse();
+  ShowMouse();
 
   /*------------------------------------------------------------------------
   Save any changes made to our options
@@ -5985,7 +5985,7 @@ static int Phone_Dialog() {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -6018,7 +6018,7 @@ static int Phone_Dialog() {
         cancelbtn.Flag_To_Redraw();
         numedit.Flag_To_Redraw();
       }
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -6592,7 +6592,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       /*
       .................. Redraw backgound & dialog box ...................
       */
@@ -6629,7 +6629,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 

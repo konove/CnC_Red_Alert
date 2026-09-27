@@ -792,7 +792,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   **	Follow the mouse position if no cell number is provided.
   */
   if (pos == -1) {
-    pos = Click_Cell_Calc(Get_Mouse_X(), Get_Mouse_Y());
+    pos = Click_Cell_Calc(MouseX(), MouseY());
   }
 
   if (CursorSize.empty()) {
@@ -983,10 +983,10 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
  *=============================================================================================*/
 void DisplayClass::AI(engine::window::InputEvent& event, int x, int y) {
   if (IsRubberBand &&
-      (Get_Mouse_X() < TacPixelX || Get_Mouse_Y() < TacPixelY ||
-       Get_Mouse_X() >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
-       Get_Mouse_Y() >= TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
-    Mouse_Left_Release(-1, Get_Mouse_X(), Get_Mouse_Y(), nullptr, ACTION_NONE);
+      (MouseX() < TacPixelX || MouseY() < TacPixelY ||
+       MouseX() >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
+       MouseY() >= TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
+    Mouse_Left_Release(-1, MouseX(), MouseY(), nullptr, ACTION_NONE);
   }
 
   MapClass::AI(event, x, y);

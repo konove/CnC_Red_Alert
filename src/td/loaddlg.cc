@@ -308,7 +308,7 @@ bool LoadOptionsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      Hide_Mouse();
+      HideMouse();
       /*
       **	Redraw the map.
       */
@@ -338,7 +338,7 @@ bool LoadOptionsClass::Process() {
       **	Redraw the buttons.
       */
       commands->Flag_List_To_Redraw();
-      Show_Mouse();
+      ShowMouse();
       display = false;
     }
 
@@ -399,10 +399,10 @@ bool LoadOptionsClass::Process() {
           if (!Load_Game(game_num)) {
             CCMessageBox().Process(TXT_ERROR_LOADING_GAME);
           } else {
-            Hide_Mouse();
+            HideMouse();
             TheScreen().visible_page().view().Clear();
             Set_Palette(ThePalettes().game_palette());
-            Show_Mouse();
+            ShowMouse();
             process = false;
           }
         } else {

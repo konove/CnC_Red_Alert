@@ -973,7 +973,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //		}
 
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
 
       /*
       ** Collapse the country list if we are going to redraw the game list
@@ -1240,14 +1240,14 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         pStaticAIPlayers->Draw_Me(view);
       }
 
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (Get_Mouse_State()) {
-      Show_Mouse();
+    while (MouseHideCount()) {
+      ShowMouse();
     }
     //	Be nice to other apps.
     engine::platform::SleepMs(50);
@@ -1310,18 +1310,15 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         (!bWaitingToStart)) {
       //	Check for mouse down on a control when player is not host.
       if ((!bHost) &&
-          ((Get_Mouse_X() >= d_count_x &&
-            Get_Mouse_X() <= d_count_x + d_count_w &&
-            Get_Mouse_Y() >= d_count_y &&
-            Get_Mouse_Y() <= d_aiplayers_y + d_aiplayers_h) ||
-           (Get_Mouse_X() >= d_options_x &&
-            Get_Mouse_X() <= d_options_x + d_options_w &&
-            Get_Mouse_Y() >= d_options_y &&
-            Get_Mouse_Y() <= d_options_y + d_options_h) ||
-           (Get_Mouse_X() >= d_scenariolist_x &&
-            Get_Mouse_X() <= d_scenariolist_x + d_scenariolist_w &&
-            Get_Mouse_Y() >= d_scenariolist_y &&
-            Get_Mouse_Y() <= d_scenariolist_y + d_scenariolist_h))) {
+          ((MouseX() >= d_count_x && MouseX() <= d_count_x + d_count_w &&
+            MouseY() >= d_count_y &&
+            MouseY() <= d_aiplayers_y + d_aiplayers_h) ||
+           (MouseX() >= d_options_x && MouseX() <= d_options_x + d_options_w &&
+            MouseY() >= d_options_y && MouseY() <= d_options_y + d_options_h) ||
+           (MouseX() >= d_scenariolist_x &&
+            MouseX() <= d_scenariolist_x + d_scenariolist_w &&
+            MouseY() >= d_scenariolist_y &&
+            MouseY() <= d_scenariolist_y + d_scenariolist_h))) {
         // Session.Messages.Add_Message(NULL, 0, (char
         // *)Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
         // kTpfText, 1200);

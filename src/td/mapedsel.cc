@@ -513,9 +513,8 @@ int MapEditClass::Move_Grabbed_Object() {
   If infantry, use a free spot in this cell
   ------------------------------------------------------------------------*/
   if (GrabbedObject->Is_Infantry()) {
-    if (Is_Spot_Free(Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()))) {
-      new_coord =
-          Closest_Free_Spot(Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()));
+    if (Is_Spot_Free(Pixel_To_Coord(MouseX(), MouseY()))) {
+      new_coord = Closest_Free_Spot(Pixel_To_Coord(MouseX(), MouseY()));
       /*..................................................................
       Clear the occupied bit in this infantry's cell.
       ..................................................................*/

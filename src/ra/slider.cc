@@ -237,10 +237,10 @@ bool SliderClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     int edge = 0;   // Edge of slider.
 
     if (IsHorizontal) {
-      mouse = Get_Mouse_X();
+      mouse = MouseX();
       edge = X;
     } else {
-      mouse = Get_Mouse_Y();
+      mouse = MouseY();
       edge = Y;
     }
     edge += 1;

@@ -788,7 +788,7 @@ void ScoreClass::Show() {
   Call_Back();
 
   /* --- Now display the background animation --- */
-  Hide_Mouse();
+  HideMouse();
   anim.DrawFrame(TheScreen().sys_mem_page().view(), 1);
   TheScreen().sys_mem_page().view().BlitTo(show.page().view());
   Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30, 63);
@@ -1093,7 +1093,7 @@ void ScoreClass::Show() {
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteFast, nullptr);
   TheScreen().visible_page().view().Clear();
 
-  Show_Mouse();
+  ShowMouse();
   //	Map_Selection();
 
   TheTheme().Queue_Song(THEME_NONE);
@@ -2096,7 +2096,7 @@ void Call_Back_Delay(Presentation& show, int time) {
     // Animate_Score_Objs();
     // Interpolate_2X_Scale(PseudoSeenBuff , &SeenBuff ,NULL);
 
-    // if (Get_Mouse_State()){
+    // if (MouseHideCount()){
     //	Interpolate_2X_Scale(PseudoSeenBuff , &SeenBuff ,NULL);
     // BlitList.Update();
     //}else{
@@ -2191,7 +2191,7 @@ void Multi_Score_Presentation() {
   Set_Palette(ThePalettes().black_palette());
 
   WsaAnimation anim("MLTIPLYR.WSA", ThePalettes().title_palette());
-  Hide_Mouse();
+  HideMouse();
 
   /*
   ** Display the background animation
@@ -2271,5 +2271,5 @@ void Multi_Score_Presentation() {
   Set_Palette(ThePalettes().game_palette());
 
   ControlQ = false;
-  Show_Mouse();
+  ShowMouse();
 }

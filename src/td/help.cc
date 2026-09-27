@@ -238,11 +238,11 @@ void HelpClass::Help_Text(int text, int x, int y, int color, bool quick,
     */
     X = x;
     if (x == -1) {
-      X = Get_Mouse_X();
+      X = MouseX();
     }
     Y = y;
     if (y == -1) {
-      Y = Get_Mouse_Y();
+      Y = MouseY();
     }
     IsRight = y != -1 || x != -1;
 

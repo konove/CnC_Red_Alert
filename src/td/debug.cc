@@ -159,8 +159,7 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
-                       DIR_N);
+          air->Unlimbo(TheMap().Pixel_To_Coord(MouseX(), MouseY()), DIR_N);
         }
       } break;
 
@@ -172,8 +171,7 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
-                       DIR_N);
+          air->Unlimbo(TheMap().Pixel_To_Coord(MouseX(), MouseY()), DIR_N);
         }
       } break;
 
@@ -182,22 +180,20 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
-                       DIR_N);
+          air->Unlimbo(TheMap().Pixel_To_Coord(MouseX(), MouseY()), DIR_N);
         }
       } break;
 
       case KN_GRAVE:
-        base::NewPooled<AnimClass>(
-            ANIM_ART_EXP1,
-            TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()));
-        Explosion_Damage(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
-                         250, nullptr, WARHEAD_HE);
+        base::NewPooled<AnimClass>(ANIM_ART_EXP1,
+                                   TheMap().Pixel_To_Coord(MouseX(), MouseY()));
+        Explosion_Damage(TheMap().Pixel_To_Coord(MouseX(), MouseY()), 250,
+                         nullptr, WARHEAD_HE);
         break;
 
       case KN_Z:
         //				new AnimClass(ANIM_LZ_SMOKE,
-        // Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()));
+        // Map.Pixel_To_Coord(MouseX(), MouseY()));
         GDI_Ending();
         break;
 
@@ -246,13 +242,12 @@ void Debug_Key(unsigned input) {
 #ifdef NEVER
       case KN_G:
         HouseClass::As_Pointer(HOUSE_GOOD)
-            ->Flag_Attach(
-                TheMap().Click_Cell_Calc(Get_Mouse_X(), Get_Mouse_Y()));
+            ->Flag_Attach(TheMap().Click_Cell_Calc(MouseX(), MouseY()));
         break;
 
       case KN_N:
         HouseClass::As_Pointer(HOUSE_BAD)->Flag_Attach(
-            TheMap().Click_Cell_Calc(Get_Mouse_X(), Get_Mouse_Y()));
+            TheMap().Click_Cell_Calc(MouseX(), MouseY()));
         break;
 #endif
 

@@ -1771,7 +1771,7 @@ static int Net_Join_Dialog() {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -2038,7 +2038,7 @@ static int Net_Join_Dialog() {
         // kTpfText);
       }
 
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -2061,14 +2061,12 @@ static int Net_Join_Dialog() {
     // player's name and messages.
     if (input_event.IsPress(engine::window::MouseButton::kLeft)) {
       if (joinstate > JOIN_NOTHING) {
-        if ((Get_Mouse_X() >= d_count_x &&
-             Get_Mouse_X() <= d_count_x + d_count_w &&
-             Get_Mouse_Y() >= d_count_y &&
-             Get_Mouse_Y() <= d_aiplayers_y + d_aiplayers_h) ||
-            (Get_Mouse_X() >= d_options_x &&
-             Get_Mouse_X() <= d_options_x + d_options_w &&
-             Get_Mouse_Y() >= d_options_y &&
-             Get_Mouse_Y() <= d_options_y + d_options_h)) {
+        if ((MouseX() >= d_count_x && MouseX() <= d_count_x + d_count_w &&
+             MouseY() >= d_count_y &&
+             MouseY() <= d_aiplayers_y + d_aiplayers_h) ||
+            (MouseX() >= d_options_x && MouseX() <= d_options_x + d_options_w &&
+             MouseY() >= d_options_y &&
+             MouseY() <= d_options_y + d_options_h)) {
           TheSession().Messages.Add_Message(
               nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
               kTpfText, 1200);
@@ -2382,11 +2380,11 @@ static int Net_Join_Dialog() {
         // also erases the cursor).
         //...............................................................
         if (i == 1 || i == 2) {
-          Hide_Mouse();
+          HideMouse();
           Draw_Box(view, d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
                    true);
           TheSession().Messages.Draw(view);
-          Show_Mouse();
+          ShowMouse();
         } else if (i == 3 || i == 4) {
           //...............................................................
           //	If 'Input' returned 3, it means send the current message.
@@ -3005,9 +3003,9 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Restore screen
   //------------------------------------------------------------------------
-  Hide_Mouse();
+  HideMouse();
   Load_Title_Page(true);
-  Show_Mouse();
+  ShowMouse();
 
   //------------------------------------------------------------------------
   // Load a game if the game owner told us to
@@ -4461,7 +4459,7 @@ static int Net_New_Dialog() {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -4584,7 +4582,7 @@ static int Net_New_Dialog() {
         // kTpfText);
       }
 
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -4866,11 +4864,11 @@ static int Net_New_Dialog() {
         // message display.
         //...............................................................
         if (i == 1 || i == 2) {
-          Hide_Mouse();
+          HideMouse();
           Draw_Box(view, d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
                    true);  // (erase the cursor)
           TheSession().Messages.Draw(view);
-          Show_Mouse();
+          ShowMouse();
         } else if (i == 3 || i == 4) {
           //...............................................................
           //	If 'input' returned 3, it means send the current message.
@@ -5230,9 +5228,9 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Restore screen
   //------------------------------------------------------------------------
-  Hide_Mouse();
+  HideMouse();
   Load_Title_Page(true);
-  Show_Mouse();
+  ShowMouse();
 
   if (load_game) {
     if (!Load_Game(-1)) {
@@ -5712,7 +5710,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     x = 320 - (w / 2);
     y = 200 - (h / 2);
 
-    Hide_Mouse();
+    HideMouse();
     Dialog_Box(x, y, w, h);
 
     Fancy_Text_Print(view, buf1, 320, y + (d_margin * 2), scheme, kTBlack,
@@ -5725,13 +5723,13 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                      y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), scheme,
                      kTBlack, TPF_CENTER | kTpfText);
 
-    Show_Mouse();
+    ShowMouse();
   }
   //------------------------------------------------------------------------
   //	Just update the timeout value on the dialog
   //------------------------------------------------------------------------
   else {
-    Hide_Mouse();
+    HideMouse();
 
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
@@ -5745,7 +5743,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     Fancy_Text_Print(view, buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
                      scheme, kBlack, TPF_CENTER | kTpfText);
 
-    Show_Mouse();
+    ShowMouse();
   }
 } /* end of Net_Reconnect_Dialog */
 

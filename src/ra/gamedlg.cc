@@ -258,20 +258,20 @@ void GameControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      Hide_Mouse();
+      HideMouse();
 
       TheMap().Flag_To_Redraw(true);
       TheMap().Render();
 
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(view, TXT_GAME_CONTROLS, d_dialog_x, d_dialog_y, d_dialog_w);
-      Show_Mouse();
+      ShowMouse();
       display = false;
       refresh = true;
     }
 
     if (refresh) {
-      Hide_Mouse();
+      HideMouse();
 
       /*
       **	Label the game speed slider
@@ -307,7 +307,7 @@ void GameControlsClass::Process() {
 
       commands->Draw_All(view);
 
-      Show_Mouse();
+      ShowMouse();
       refresh = false;
     }
 

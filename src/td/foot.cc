@@ -1312,8 +1312,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
 
     case ACTION_MOVE:
       if (TheGameState().allow_voice()) {
-        const COORDINATE coord =
-            TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
+        const COORDINATE coord = TheMap().Pixel_To_Coord(MouseX(), MouseY());
         TheNetwork().out_list().Add(
             EventClass(ANIM_MOVE_FLASH, ThePlayer()->Class->House, coord));
       }

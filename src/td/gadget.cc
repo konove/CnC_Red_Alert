@@ -447,8 +447,8 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
     mousex = event.x;
     mousey = event.y;
   } else {
-    mousex = Get_Mouse_X();
-    mousey = Get_Mouse_Y();
+    mousex = MouseX();
+    mousey = MouseY();
   }
 
   /*

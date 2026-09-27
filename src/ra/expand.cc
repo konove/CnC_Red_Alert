@@ -446,7 +446,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     if (display) {
       display = false;
 
-      Hide_Mouse();
+      HideMouse();
 
       /*
       **	Load the background picture.
@@ -463,7 +463,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
                      kOptionWidth);
       }
       buttons->Draw_All(view);
-      Show_Mouse();
+      ShowMouse();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;

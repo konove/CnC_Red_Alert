@@ -1089,8 +1089,8 @@ void Map_Selection() {
   Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_TO_ATTACK,
                                                  attackxcoord, 170, greenpal));
   Cycle_Call_Back_Delay(show, 24, progresspalette);
-  while (Get_Mouse_State() > 0) {
-    Show_Mouse();
+  while (MouseHideCount() > 0) {
+    ShowMouse();
   }
 
   TheKeyboard().Clear();
@@ -1104,8 +1104,8 @@ void Map_Selection() {
            selection < base::At(base::At(CountryArray, scenario).Choices,
                                 static_cast<int>(TheWorld().scen_dir()));
            selection++) {
-        color = TheScreen().sys_mem_page().view().GetPixel(Get_Mouse_X() / 2,
-                                                           Get_Mouse_Y() / 2);
+        color = TheScreen().sys_mem_page().view().GetPixel(MouseX() / 2,
+                                                           MouseY() / 2);
 
         /*
         ** Special hack for Egypt the second time through
@@ -1148,7 +1148,7 @@ void Map_Selection() {
     auto countryshape = MixArchive::RetrieveData(
         house == HOUSE_GOOD ? "COUNTRYE.SHP" : "COUNTRYA.SHP");
 
-    Hide_Mouse();
+    HideMouse();
     // erase "Select country to attack"
     show.page().view().FillRect(attackxcoord, 160, attackxcoord + (17 * 6), 178,
                                 kBlack);
@@ -1210,7 +1210,7 @@ void Map_Selection() {
     //		Load_Data(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL",
     // localpalette, 768);
 
-    Hide_Mouse();
+    HideMouse();
 #if (defined(GERMAN) || defined(FRENCH))
     show.page().view().FillRect(attackxcoord, 160, 319, 178,
                                 kBlack);  // erase "Select country to attack"

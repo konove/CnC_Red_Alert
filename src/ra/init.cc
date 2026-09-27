@@ -222,12 +222,12 @@ static std::vector<uint8_t> shape_storage;
  * HISTORY: * 11/03/1996 JLB : Created. *
  *=============================================================================================*/
 static void Load_Prolog_Page() {
-  Hide_Mouse();
+  HideMouse();
   Load_Title_Screen("PROLOG.PCX", &TheScreen().hidden_view(),
                     ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   ThePalettes().title_palette().Set();
-  Show_Mouse();
+  ShowMouse();
 }
 
 /***********************************************************************************************
@@ -367,7 +367,7 @@ bool Init_Game() {
   **	Get authorization to access the game.
   */
   //	Init_Authorization();
-  //	Show_Mouse();
+  //	ShowMouse();
 
   PixelView& view = TheScreen().visible_view();
 
@@ -378,11 +378,11 @@ bool Init_Game() {
   if (!TheSpecial().IsFromInstall) {
     Load_Title_Page(true);
 
-    Hide_Mouse();
+    HideMouse();
     Fancy_Text_Print(view, TXT_STAND_BY, 320, 240,
                      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE),
                      kTBlack, TPF_CENTER | kTpfText | TPF_DROPSHADOW);
-    Show_Mouse();
+    ShowMouse();
 
     ThePalettes().title_palette().Set(kFadePaletteSlow);
     ServiceRealTime();
@@ -477,7 +477,7 @@ bool Select_Game(bool /*fade*/) {
 
   const int cdcheck = 0;
 
-  Show_Mouse();
+  ShowMouse();
 
   TheRules().NewUnitsEnabled = TheRules().SecretUnitsEnabled =
       false;  // Assume new units disabled, unless specifically .INI enabled or
@@ -563,7 +563,7 @@ bool Select_Game(bool /*fade*/) {
       **	Redraw the title page if needed
       */
       if (display) {
-        Hide_Mouse();
+        HideMouse();
 
         /*
         **	Display the title page; fade it in if this is the first time
@@ -582,7 +582,7 @@ bool Select_Game(bool /*fade*/) {
         //				}
 
         display = false;
-        Show_Mouse();
+        ShowMouse();
       }
 
       /*
@@ -772,7 +772,7 @@ bool Select_Game(bool /*fade*/) {
             TheTheme().Fade_Out();
             PlayFirstLaunchIntro(TheScreen().hidden_view(),
                                  TheScreen().visible_view());
-            Hide_Mouse();
+            HideMouse();
             if (TheGameState().current_cd() == 0) {
               TheScenario().Set_Scenario_Name("SCG01EA.INI");
             } else {
@@ -997,9 +997,9 @@ bool Select_Game(bool /*fade*/) {
           if (TheDebugState().developer_mode()) {
             Play_Intro(TheDebugState().developer_mode());
           } else {
-            Hide_Mouse();
+            HideMouse();
             TheScreen().visible_page().view().Clear();
-            Show_Mouse();
+            ShowMouse();
             Play_Movie(VQ_INTRO_MOVIE, THEME_NONE,
                        true);  // no transition picture to briefing
             TheKeyboard().Clear();
@@ -1132,19 +1132,19 @@ bool Select_Game(bool /*fade*/) {
     ** Start_Scenario() changes the palette; so, fade out & clear the screen
     ** before calling it.
     */
-    Hide_Mouse();
+    HideMouse();
 
     if (selection != kSelStartNewGame) {
       ThePalettes().black_palette().Set(kFadePaletteMedium, ServiceRealTime);
       TheScreen().hidden_page().view().Clear();
       TheScreen().visible_page().view().Clear();
     }
-    Show_Mouse();
+    ShowMouse();
     if (!Start_Scenario(TheScenario().ScenarioName)) {
       return false;
     }
     if (TheSpecial().IsFromInstall) {
-      Show_Mouse();
+      ShowMouse();
     }
     TheSpecial().IsFromInstall = false;
   }
@@ -1187,11 +1187,11 @@ bool Select_Game(bool /*fade*/) {
   * cleared the screen to black already.)
   */
   ServiceRealTime();
-  Hide_Mouse();
+  HideMouse();
   ThePalettes().black_palette().Set(kFadePaletteMedium, ServiceRealTime);
   TheScreen().hidden_page().view().Clear();
   TheScreen().visible_page().view().Clear();
-  Show_Mouse();
+  ShowMouse();
   /*
   ** Sidebar is always active in hi-res.
   */
@@ -1269,16 +1269,16 @@ static void Play_Intro(bool sequenced) {
     if (_counter == VQ_TITLE) {
       _counter--;
     }
-    Hide_Mouse();
+    HideMouse();
     TheScreen().visible_page().view().Clear();
-    Show_Mouse();
+    ShowMouse();
     Play_Movie(static_cast<VQType>(_counter--), THEME_NONE);
 
-    //		Show_Mouse();
+    //		ShowMouse();
   } else {
-    Hide_Mouse();
+    HideMouse();
     TheScreen().visible_page().view().Clear();
-    Show_Mouse();
+    ShowMouse();
     Play_Movie(VQ_REDINTRO, THEME_NONE, false);
   }
 }
@@ -2038,7 +2038,7 @@ static void Init_CDROM_Access() {
         case 1:
           TheScreen().visible_page().view().Clear();
           ThePalettes().game_palette().Set();
-          Show_Mouse();
+          ShowMouse();
           WWMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
           // ShutDownEngine();
           EmergencyExit(EXIT_FAILURE);
@@ -2046,23 +2046,23 @@ static void Init_CDROM_Access() {
         case 2:
           TheScreen().visible_page().view().Clear();
           ThePalettes().game_palette().Set();
-          Show_Mouse();
+          ShowMouse();
           if (WWMessageBox().Process(TXT_CD_DIALOG_1, TXT_OK, TXT_CANCEL) ==
               1) {
             // ShutDownEngine();
             EmergencyExit(EXIT_FAILURE);
           }
-          Hide_Mouse();
+          HideMouse();
           break;
 
         default:
           TheScreen().visible_page().view().Clear();
-          Show_Mouse();
+          ShowMouse();
           if (!Force_CD_Available(TheGameState().required_cd())) {
             // ShutDownEngine();
             EmergencyExit(EXIT_FAILURE);
           }
-          Hide_Mouse();
+          HideMouse();
           break;
       }
     } while (error);
@@ -2374,9 +2374,9 @@ static void Init_Mouse() {
   if (TheMouse() != nullptr) {
     const auto temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
     if (!temp_mouse_shapes.empty()) {
-      Set_Mouse_Cursor(0, 0, Extract_Shape(temp_mouse_shapes, 0));
-      while (Get_Mouse_State() > 1) {
-        Show_Mouse();
+      SetMouseShape(0, 0, Extract_Shape(temp_mouse_shapes, 0));
+      while (MouseHideCount() > 1) {
+        ShowMouse();
       }
     }
   } else {
@@ -2389,12 +2389,12 @@ static void Init_Mouse() {
   }
 
   TheMap().Set_Default_Mouse(MOUSE_NORMAL, false);
-  Show_Mouse();
-  while (Get_Mouse_State() > 1) {
-    Show_Mouse();
+  ShowMouse();
+  while (MouseHideCount() > 1) {
+    ShowMouse();
   }
   ServiceRealTime();
-  Hide_Mouse();
+  HideMouse();
 }
 
 /***********************************************************************************************

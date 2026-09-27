@@ -289,7 +289,7 @@ bool KeyBuffer::HandleEvent(const SDL_Event* event) {
       break;
 
     case SDL_MOUSEMOTION:
-      Update_Mouse_Pos(event->motion.x, event->motion.y);
+      RecordMousePosition(event->motion.x, event->motion.y);
       break;
     default:
       break;

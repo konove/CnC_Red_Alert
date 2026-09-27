@@ -163,7 +163,7 @@ bool ConfirmationClass::Process(const char* string) {
     **	Refresh display if needed.
     */
     if (display) {
-      Hide_Mouse();
+      HideMouse();
 
       /*
       **	Draw the background.
@@ -178,7 +178,7 @@ bool ConfirmationClass::Process(const char* string) {
       **	Draw the titles.
       */
       yesbtn.Draw_All(view);
-      Show_Mouse();
+      ShowMouse();
       display = false;
     }
 

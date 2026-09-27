@@ -270,8 +270,8 @@ void GScreenClass::Flag_To_Redraw(bool complete) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
-  x = Get_Mouse_X();
-  y = Get_Mouse_Y();
+  x = MouseX();
+  y = MouseY();
 
   engine::window::InputEvent event;
   if (Buttons != nullptr) {
@@ -377,9 +377,9 @@ void GScreenClass::Render() {
     PixelView& view = TheScreen().hidden_view();
 
     // if (IsToRedraw) {
-    //	Hide_Mouse();
+    //	HideMouse();
     //	SeenBuff.CopyToBuffer(0, 0, 320, 200, ShadowPage);
-    //	Show_Mouse();
+    //	ShowMouse();
     // }
     Draw_It(view, IsScreenToRedraw);
 

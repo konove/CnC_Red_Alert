@@ -537,10 +537,10 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
         MouseClass::Zoom.Draw_Me(view, true);
 
         if (TheScreen().IsVisible(&view)) {
-          Hide_Mouse();
+          HideMouse();
           view.BlitTo(TheScreen().visible_view(), RadX, RadY, RadX, RadY,
                       RadWidth, RadHeight);
-          Show_Mouse();
+          ShowMouse();
         }
       }
 

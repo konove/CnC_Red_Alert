@@ -84,8 +84,7 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
   if (flags & kLeftPress || (flags & kLeftHeld && StuckOn == this)) {
     const FacingType old_facing = facing_;
     // Get the new dial position, snapped to one of the eight directions.
-    direction_ =
-        Desired_Facing8(center_x_, center_y_, Get_Mouse_X(), Get_Mouse_Y());
+    direction_ = Desired_Facing8(center_x_, center_y_, MouseX(), MouseY());
     facing_ = Dir_Facing(direction_);
 
     if (facing_ != old_facing) {
@@ -119,7 +118,7 @@ bool DirectionDial::Draw_Me(PixelView& view, const bool forced) {
   // does not save and restore pixels the drawing is changing.
   const bool on_screen = TheScreen().IsVisible(&view);
   if (on_screen) {
-    Hide_Mouse();
+    HideMouse();
   }
 
   // Draw the background and the eight decorations.
@@ -135,7 +134,7 @@ bool DirectionDial::Draw_Me(PixelView& view, const bool forced) {
   view.DrawLine(center_x_, center_y_, tip[0], tip[1], scheme->Highlight);
 
   if (on_screen) {
-    Show_Mouse();
+    ShowMouse();
   }
   return true;
 }

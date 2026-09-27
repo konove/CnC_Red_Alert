@@ -263,8 +263,8 @@ void GScreenClass::Flag_To_Redraw(bool complete) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
-  x = Get_Mouse_X();
-  y = Get_Mouse_Y();
+  x = MouseX();
+  y = MouseY();
 
   engine::window::InputEvent event;
   if (Buttons != nullptr) {
@@ -428,7 +428,7 @@ void GScreenClass::Blit_Display() {
 void Shake_The_Screen(int shakes) {
   shakes += shakes;
 
-  Hide_Mouse();
+  HideMouse();
   TheScreen().visible_view().BlitTo(TheScreen().hidden_view());
   int old_y_off = 0;
   while (shakes-- != 0) {
@@ -459,5 +459,5 @@ void Shake_The_Screen(int shakes) {
     }
   }
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-  Show_Mouse();
+  ShowMouse();
 }

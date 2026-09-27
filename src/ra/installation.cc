@@ -250,7 +250,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
       }
 
       TheTheme().Stop();
-      int hidden = Get_Mouse_State();
+      int hidden = MouseHideCount();
 
       // Only set the palette if necessary.
       if (PaletteClass::CurrentPalette.at(1).Red_Component() +
@@ -262,20 +262,20 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
       TheKeyboard().Clear();
 
-      while (Get_Mouse_State()) {
-        Show_Mouse();
+      while (MouseHideCount()) {
+        ShowMouse();
       }
 
       if (WWMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
           1) {
         while (hidden--) {
-          Hide_Mouse();
+          HideMouse();
         }
         return false;
       }
 
       while (hidden--) {
-        Hide_Mouse();
+        HideMouse();
       }
     }
   }

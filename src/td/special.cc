@@ -198,7 +198,7 @@ void Special_Dialog() {
     if (display) {
       display = false;
 
-      Hide_Mouse();
+      HideMouse();
       Dialog_Box(view, kOptionX, kOptionY, kOptionWidth, kOptionHeight);
       Draw_Caption(view, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
 
@@ -208,7 +208,7 @@ void Special_Dialog() {
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All(view);
-      Show_Mouse();
+      ShowMouse();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;

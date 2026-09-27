@@ -613,10 +613,10 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
   /*------------------------------------------------------------------------
   Do special mouse processing if the mouse is over the map
   ------------------------------------------------------------------------*/
-  if (Get_Mouse_X() > TacPixelX &&
-      Get_Mouse_X() < TacPixelX + Lepton_To_Pixel(TacLeptonWidth) &&
-      Get_Mouse_Y() > TacPixelY &&
-      Get_Mouse_Y() < TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
+  if (MouseX() > TacPixelX &&
+      MouseX() < TacPixelX + Lepton_To_Pixel(TacLeptonWidth) &&
+      MouseY() > TacPixelY &&
+      MouseY() < TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
     /*.....................................................................
     When the mouse moves over a scrolling edge, ScrollClass changes its
     shape to the appropriate arrow or NO symbol; it's our job to change it
@@ -634,11 +634,11 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
   Set 'ZoneCell' to track the mouse cursor around over the map.  Do this
   even if the map is scrolling.
   .....................................................................*/
-  if (Get_Mouse_X() >= TacPixelX &&
-      Get_Mouse_X() <= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) &&
-      Get_Mouse_Y() >= TacPixelY &&
-      Get_Mouse_Y() <= TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
-    cell = Click_Cell_Calc(Get_Mouse_X(), Get_Mouse_Y());
+  if (MouseX() >= TacPixelX &&
+      MouseX() <= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) &&
+      MouseY() >= TacPixelY &&
+      MouseY() <= TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
+    cell = Click_Cell_Calc(MouseX(), MouseY());
     if (cell != -1) {
       Set_Cursor_Pos(cell);
       if (PendingObject) {
@@ -1489,7 +1489,7 @@ bool MapEditClass::Mouse_Moved() {
   /*
   -------------------------- Return if no motion ---------------------------
   */
-  if (old_mx == Get_Mouse_X() && old_my == Get_Mouse_Y()) {
+  if (old_mx == MouseX() && old_my == MouseY()) {
     return false;
   }
 
@@ -1502,8 +1502,8 @@ bool MapEditClass::Mouse_Moved() {
     if (GrabbedObject) {
       objtype = &GrabbedObject->Class_Of();
     } else {
-      old_mx = Get_Mouse_X();
-      old_my = Get_Mouse_Y();
+      old_mx = MouseX();
+      old_my = MouseY();
       old_zonecell = ZoneCell;
       return false;
     }
@@ -1524,8 +1524,8 @@ bool MapEditClass::Mouse_Moved() {
     retcode = old_zonecell != ZoneCell;
   }
 
-  old_mx = Get_Mouse_X();
-  old_my = Get_Mouse_Y();
+  old_mx = MouseX();
+  old_my = MouseY();
   old_zonecell = ZoneCell;
   return retcode;
 }
@@ -1576,9 +1576,9 @@ void MapEditClass::Main_Menu() {
     /*
     ............................. Invoke menu .............................
     */
-    Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
+    HideMouse();  // Do_Menu assumes the mouse is already hidden
     const int selection = Do_Menu(_menus, true);  // option the user picks
-    Show_Mouse();
+    ShowMouse();
     // Esc, or a click away from the menu, closes it.
     if (const engine::window::InputEvent& unknown =
             TheGameState().unknown_input();
@@ -1761,9 +1761,9 @@ void MapEditClass::AI_Menu() {
     /*
     ............................. Invoke menu .............................
     */
-    Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
+    HideMouse();  // Do_Menu assumes the mouse is already hidden
     const int selection = Do_Menu(_menus, true);  // option the user picks
-    Show_Mouse();
+    ShowMouse();
     // Esc, or a click away from the menu, closes it.
     if (const engine::window::InputEvent& unknown =
             TheGameState().unknown_input();

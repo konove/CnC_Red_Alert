@@ -928,7 +928,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   **	Follow the mouse position if no cell number is provided.
   */
   if (pos == -1) {
-    pos = Click_Cell_Calc(Get_Mouse_X(), Get_Mouse_Y());
+    pos = Click_Cell_Calc(MouseX(), MouseY());
   }
 
   if (CursorSize.empty()) {
@@ -1123,10 +1123,10 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
  *=============================================================================================*/
 void DisplayClass::AI(engine::window::InputEvent& event, int x, int y) {
   if (IsRubberBand &&
-      (Get_Mouse_X() < TacPixelX || Get_Mouse_Y() < TacPixelY ||
-       Get_Mouse_X() >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
-       Get_Mouse_Y() >= TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
-    Mouse_Left_Release(-1, Get_Mouse_X(), Get_Mouse_Y(), nullptr, ACTION_NONE);
+      (MouseX() < TacPixelX || MouseY() < TacPixelY ||
+       MouseX() >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
+       MouseY() >= TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
+    Mouse_Left_Release(-1, MouseX(), MouseY(), nullptr, ACTION_NONE);
   }
 
   MapClass::AI(event, x, y);
@@ -1833,13 +1833,13 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
         **  an overlapped region.
         */
         if (TheScreen().hidden_view().NeedsLock()) {
-          Hide_Mouse();
+          HideMouse();
           TheScreen().visible_view().BlitTo(
               TheScreen().hidden_view(), (oldx < 0 ? -oldx : 0) + TacPixelX,
               (oldy < 0 ? -oldy : 0) + TacPixelY,
               (oldx < 0 ? 0 : oldx) + TacPixelX,
               (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
-          Show_Mouse();
+          ShowMouse();
         } else {
           TheScreen().hidden_view().BlitTo(
               TheScreen().hidden_view(), (oldx < 0 ? -oldx : 0) + TacPixelX,

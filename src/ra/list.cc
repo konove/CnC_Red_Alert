@@ -319,7 +319,7 @@ bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     }
 
   } else {
-    int index = Get_Mouse_Y() - (Y + 1);
+    int index = MouseY() - (Y + 1);
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex = std::min(SelectedIndex, Count() - 1);

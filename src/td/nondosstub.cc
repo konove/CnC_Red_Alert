@@ -70,7 +70,7 @@ void Focus_Loss() {
   TheTheme().Stop();
   engine::audio::TheAudio().Pause();
   if (TheMouse()) {
-    HardwareCursor::Clear_Cursor_Clip();
+    HardwareCursor::ReleaseMouse();
   }
 }
 
@@ -84,7 +84,7 @@ void Focus_Restore() {
   }
 
   if (TheMouse()) {
-    HardwareCursor::Set_Cursor_Clip();
+    HardwareCursor::GrabMouse();
   }
 }
 

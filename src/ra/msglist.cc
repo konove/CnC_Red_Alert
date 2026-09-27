@@ -1126,7 +1126,7 @@ void MessageListClass::Draw(PixelView& view) {
 
   if (IsEdit) {
     if (TheScreen().IsVisible(&view)) {
-      Hide_Mouse();
+      HideMouse();
     }
     EditLabel->Draw_Me(view, true);
 
@@ -1141,16 +1141,16 @@ void MessageListClass::Draw(PixelView& view) {
     }
 
     if (TheScreen().IsVisible(&view)) {
-      Show_Mouse();
+      ShowMouse();
     }
   }
   if (MessageList) {
     if (TheScreen().IsVisible(&view)) {
-      Hide_Mouse();
+      HideMouse();
     }
     MessageList->Draw_All(view);
     if (TheScreen().IsVisible(&view)) {
-      Show_Mouse();
+      ShowMouse();
     }
   }
 

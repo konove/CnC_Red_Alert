@@ -24,16 +24,16 @@ class HardwareCursorTest : public testing::Test {
 TEST_F(HardwareCursorTest, FreeFunctionsForgetADestroyedMouse) {
   auto mouse =
       std::make_unique<HardwareCursor>(nullptr, kCursorSize, kCursorSize);
-  Hide_Mouse();
-  Update_Mouse_Pos(10, 20);
-  ASSERT_EQ(Get_Mouse_State(), 1);
-  ASSERT_EQ(Get_Mouse_X(), 10);
+  HideMouse();
+  RecordMousePosition(10, 20);
+  ASSERT_EQ(MouseHideCount(), 1);
+  ASSERT_EQ(MouseX(), 10);
 
   mouse.reset();
 
-  EXPECT_EQ(Get_Mouse_State(), 0);
-  EXPECT_EQ(Get_Mouse_X(), 0);
-  EXPECT_EQ(Get_Mouse_Y(), 0);
+  EXPECT_EQ(MouseHideCount(), 0);
+  EXPECT_EQ(MouseX(), 0);
+  EXPECT_EQ(MouseY(), 0);
 }
 
 // Input::InstallMouse() replaces a mouse by building the new one before the
@@ -45,10 +45,10 @@ TEST_F(HardwareCursorTest, ReplacingAMouseKeepsTheNewOne) {
       std::make_unique<HardwareCursor>(nullptr, kCursorSize, kCursorSize);
 
   old_mouse.reset();
-  Update_Mouse_Pos(30, 40);
+  RecordMousePosition(30, 40);
 
-  EXPECT_EQ(new_mouse->Get_Mouse_X(), 30);
-  EXPECT_EQ(Get_Mouse_Y(), 40);
+  EXPECT_EQ(new_mouse->x(), 30);
+  EXPECT_EQ(MouseY(), 40);
 }
 
 }  // namespace

@@ -223,7 +223,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       //				Map.Flag_To_Redraw(true);
       //				Audio.Resume();
       //				if (TheMouse())
-      // TheMouse()->Set_Cursor_Clip();
+      // TheMouse()->GrabMouse();
       //			}
       return (0);
 
@@ -354,7 +354,7 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   ** dialog box and we want to have the right windows cursor showing
   ** for it.
   */
-  Hide_Mouse();
+  HideMouse();
   ShowCursor(true);
 
   /*
@@ -374,7 +374,7 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   ** doing things.
   */
   ShowCursor(false);
-  Show_Mouse();
+  ShowMouse();
 }
 
 struct tColourList {
@@ -491,8 +491,8 @@ void Colour_Debug(int call_number) {
 void Memory_Error_Handler() {
   TheScreen().visible_page().Clear();
   ThePalettes().title_palette().Set();
-  while (Get_Mouse_State()) {
-    Show_Mouse();
+  while (MouseHideCount()) {
+    ShowMouse();
   };
   WWMessageBox().Process(kLanguageText.memory_error, kLanguageText.abort,
                          false);

@@ -492,7 +492,7 @@ bool IconListClass::Action(unsigned flags, engine::window::KeyNumber& key,
   //	Overriding of function is for the sake of MultiSelecting only.
   if ((iSelectType == 2) && (!(flags & kLeftRelease)) &&
       (!(flags & kKeyboard))) {
-    int index = Get_Mouse_Y() - (Y + 1);
+    int index = MouseY() - (Y + 1);
     index = index / LineHeight;
     base::ssize iSelected = CurrentTopIndex + index;
     iSelected = std::min<base::ssize>(iSelected, Count() - 1);
@@ -694,7 +694,7 @@ int IconListClass::IndexUnderMouse() {
   //	Returns index of line that mouse is currently over, or -1 for mouse not
   // hitting valid index. 	Assumes that x position of mouse is already
   // known to be over the iconlist.
-  int index = Get_Mouse_Y() - (Y + 1);
+  int index = MouseY() - (Y + 1);
   index = (index / LineHeight) + CurrentTopIndex;
   if (index > Count() - 1 || index < 0) {
     return -1;

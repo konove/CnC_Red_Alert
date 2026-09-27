@@ -27,7 +27,7 @@ bool using_dvd = false;
 int dialog_answer = 0;  // Index of the button the stub dialog "presses".
 int dialogs_shown = 0;
 int movies_played = 0;
-int mouse_hides = 0;  // Hide_Mouse() calls not yet matched by Show_Mouse().
+int mouse_hides = 0;  // HideMouse() calls not yet matched by ShowMouse().
 
 // intro.cc reads the disc number out of the run state, so the test
 // installs one.
@@ -37,8 +37,8 @@ const base::Installed<GameState>::Scope game_state_scope(game_state);
 }  // namespace
 
 bool Using_DVD() { return using_dvd; }
-void Hide_Mouse() { ++mouse_hides; }
-void Show_Mouse() { --mouse_hides; }
+void HideMouse() { ++mouse_hides; }
+void ShowMouse() { --mouse_hides; }
 void Load_Title_Page(bool /*visible*/) {}
 void PaletteClass::Set(int /*time*/, void (* /*callback*/)()) {}
 void Play_Movie(VQType /*name*/, ThemeType /*theme*/, bool /*clear_screen*/) {

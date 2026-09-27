@@ -223,7 +223,7 @@ const char* SimpleEditDlgClass::Show() {
       /*
       **	Display the dialog box.
       */
-      Hide_Mouse();
+      HideMouse();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       if (!szTitle.empty()) {
         Draw_Caption(view, szTitle.c_str(), d_dialog_x, d_dialog_y, d_dialog_w);
@@ -239,7 +239,7 @@ const char* SimpleEditDlgClass::Show() {
                          GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
       }
       commands->Flag_List_To_Redraw();
-      Show_Mouse();
+      ShowMouse();
       display = false;
     }
 

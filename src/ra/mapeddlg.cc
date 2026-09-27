@@ -797,14 +797,14 @@ int MapEditClass::Load_Scenario() {
       **	Refresh display if needed
       */
       if (display) {
-        Hide_Mouse();
+        HideMouse();
         Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
         Draw_Caption(view, caption, kDDialogX, kDDialogY, kDDialogW);
         Fancy_Text_Print(view, "Scenario", kDDialogCx - 5, kDScenY,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_RIGHT | TPF_EFNT | TPF_NOSHADOW);
         commands->Draw_All(view);
-        Show_Mouse();
+        ShowMouse();
 
         display = false;
       }
@@ -1140,7 +1140,7 @@ int MapEditClass::Load_Scenario() {
       **	Refresh display if needed
       */
       if (display != REDRAW_NONE) {
-        Hide_Mouse();
+        HideMouse();
 
         /*
         **	Redraw the background, map border, key, and coord labels
@@ -1366,7 +1366,7 @@ int MapEditClass::Load_Scenario() {
           view.Unlock();
         }
 
-        Show_Mouse();
+        ShowMouse();
         display = REDRAW_NONE;
       }
 
@@ -1435,8 +1435,8 @@ int MapEditClass::Load_Scenario() {
           grabbed = 0;
           display = REDRAW_MAP;
         } else {
-          delta1 = Get_Mouse_X() - mx;
-          delta2 = Get_Mouse_Y() - my;
+          delta1 = MouseX() - mx;
+          delta2 = MouseY() - my;
           if (delta1 == 0 && delta2 == 0) {
             break;
           }
@@ -1459,8 +1459,8 @@ int MapEditClass::Load_Scenario() {
               map_y1 = std::max(map_y1, kDBordY1 + 2);
             }
             display = REDRAW_MAP;
-            mx = Get_Mouse_X();
-            my = Get_Mouse_Y();
+            mx = MouseX();
+            my = MouseY();
           }
 
           /*
@@ -1481,8 +1481,8 @@ int MapEditClass::Load_Scenario() {
               map_y1 = std::max(map_y1, kDBordY1 + 2);
             }
             display = REDRAW_MAP;
-            mx = Get_Mouse_X();
-            my = Get_Mouse_Y();
+            mx = MouseX();
+            my = MouseY();
           }
 
           /*
@@ -1503,8 +1503,8 @@ int MapEditClass::Load_Scenario() {
               map_y2 = std::min(map_y2, kDBordY2 - 2);
             }
             display = REDRAW_MAP;
-            mx = Get_Mouse_X();
-            my = Get_Mouse_Y();
+            mx = MouseX();
+            my = MouseY();
           }
 
           /*
@@ -1525,8 +1525,8 @@ int MapEditClass::Load_Scenario() {
               map_y2 = std::min(map_y2, kDBordY2 - 2);
             }
             display = REDRAW_MAP;
-            mx = Get_Mouse_X();
-            my = Get_Mouse_Y();
+            mx = MouseX();
+            my = MouseY();
           }
 
           /*
@@ -1545,8 +1545,8 @@ int MapEditClass::Load_Scenario() {
               map_y2 += delta2;
             }
             display = REDRAW_MAP;
-            mx = Get_Mouse_X();
-            my = Get_Mouse_Y();
+            mx = MouseX();
+            my = MouseY();
           }
         }
       }
@@ -2126,7 +2126,7 @@ int MapEditClass::Load_Scenario() {
       **	Refresh display if needed
       */
       if (display) {
-        Hide_Mouse();
+        HideMouse();
 
         /*
         **	Draw the background
@@ -2237,7 +2237,7 @@ int MapEditClass::Load_Scenario() {
         lose.Collapse();
         basebtn.Collapse();
         commands->Draw_All(view, true);
-        Show_Mouse();
+        ShowMouse();
         display = false;
         dotext = true;
       }
@@ -2248,7 +2248,7 @@ int MapEditClass::Load_Scenario() {
       */
       if (dotext) {
         dotext = false;
-        Hide_Mouse();
+        HideMouse();
 
         absl::SNPrintF(statictechbuff, sizeof(statictechbuff), "%2d",
                        techlevel.Get_Value());
@@ -2270,7 +2270,7 @@ int MapEditClass::Load_Scenario() {
         smartiesstatic.Set_Text(staticsmartiesbuff);
         smartiesstatic.Draw_Me(view);
 
-        Show_Mouse();
+        ShowMouse();
       }
 
       /*
@@ -2758,12 +2758,12 @@ int MapEditClass::Load_Scenario() {
       **	Refresh display if requested.
       */
       if (display) {
-        Hide_Mouse();
+        HideMouse();
         Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
         Draw_Caption(view, TXT_TRIGGER_EDITOR, kDDialogX, kDDialogY, kDDialogW);
         commands->Flag_List_To_Redraw();
         commands->Draw_All(view);
-        Show_Mouse();
+        ShowMouse();
         display = false;
       }
 

@@ -36,7 +36,7 @@
 //***********************************************************************************************
 bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
   if (ToggleClass::Draw_Me(view, forced)) {
-    Hide_Mouse();
+    HideMouse();
 
     if (!IsOn) {
       if (!IsDisabled) {
@@ -71,7 +71,7 @@ bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
                             Y + BIGCHECK_OFFSETY, pScheme, kTBlack, flags,
                             Width, {});
 
-    Show_Mouse();
+    ShowMouse();
     return true;
   }
   return false;

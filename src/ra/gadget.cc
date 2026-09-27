@@ -450,9 +450,9 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
               TheScreen().visible_view().height());
       char filename[30];
 
-      //			Hide_Mouse();
+      //			HideMouse();
       TheScreen().visible_view().BlitTo(temp_page.view());
-      //			Show_Mouse();
+      //			ShowMouse();
       for (int lp = 0; lp < 99; lp++) {
         absl::SNPrintF(filename, sizeof(filename), "scrsht%02d.pcx", lp);
         if (!FindExistingFile(filename).has_value()) {
@@ -478,8 +478,8 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
     mousex = event.x;
     mousey = event.y;
   } else {
-    mousex = Get_Mouse_X();
-    mousey = Get_Mouse_Y();
+    mousex = MouseX();
+    mousey = MouseY();
   }
 
   /*

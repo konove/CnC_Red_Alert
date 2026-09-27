@@ -494,7 +494,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       ---------------------- Display the dialog box ----------------------
       */
-      Hide_Mouse();
+      HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -633,7 +633,7 @@ int MapEditClass::Placement_Dialog() {
       .......................... Redraw buttons ..........................
       */
       commands->Draw_All(view);
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -1136,9 +1136,8 @@ int MapEditClass::Place_Object() {
     /*
     ....................... Find cell sub-position ........................
     */
-    if (Is_Spot_Free(Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()))) {
-      obj_coord =
-          Closest_Free_Spot(Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()));
+    if (Is_Spot_Free(Pixel_To_Coord(MouseX(), MouseY()))) {
+      obj_coord = Closest_Free_Spot(Pixel_To_Coord(MouseX(), MouseY()));
     } else {
       obj_coord = 0;
     }

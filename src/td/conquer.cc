@@ -282,9 +282,9 @@ void Main_Game() {
     ** Only show the mouse if we're not playing back a recording.
     */
     if (TheSession().playback_game()) {
-      Hide_Mouse();
+      HideMouse();
     } else {
-      Show_Mouse();
+      ShowMouse();
     }
 
     TheGameState().special_dialog() = SDLG_NONE;
@@ -465,7 +465,7 @@ void Main_Game() {
     ** Also, set all variables back to normal, to return to the main menu.
     */
     if (TheSession().playback_game()) {
-      Show_Mouse();
+      ShowMouse();
       TheSession().type() = GAME_NORMAL;
       TheSession().playback_game() = false;
     }
@@ -499,7 +499,7 @@ void Main_Game() {
   }
 
 #ifdef DEMO
-  Hide_Mouse();
+  HideMouse();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, NULL);
   Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
                     ThePalettes().title_palette());
@@ -508,7 +508,7 @@ void Main_Game() {
   TheKeyboard().Clear();
   TheKeyboard().Read();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, NULL);
-//		Show_Mouse();
+//		ShowMouse();
 #else
 
   /*
@@ -1631,8 +1631,8 @@ bool Main_Loop() {
   /*
   ** I think I'm gonna cry if this makes it work
   */
-  if (Get_Mouse_State()) {
-    Show_Mouse();
+  if (MouseHideCount()) {
+    ShowMouse();
   }
 
   /*
@@ -2129,7 +2129,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     *to black as well. *	When the palette has finished fading, wait until
     *the score has finished fading *	before launching the movie.
     */
-    Hide_Mouse();
+    HideMouse();
     // Theme.Stop();
     // Theme.AI();
     TheTheme().Queue_Song(theme);
@@ -2179,7 +2179,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       std::ranges::fill(ThePalettes().black_palette(), 0x00);
       Set_Palette(ThePalettes().black_palette());
     }
-    Show_Mouse();
+    ShowMouse();
   }
 }
 
@@ -3022,7 +3022,7 @@ bool Force_CD_Available(int cd) {
       // The theme was already stopped above, and the only way out of this
       // loop is the cancel below, so there is nothing to remember here.
       TheTheme().Stop();
-      int hidden = Get_Mouse_State();
+      int hidden = MouseHideCount();
       std::ranges::copy(CurrentPalette, std::begin(_palette));
 
       /*
@@ -3038,18 +3038,18 @@ bool Force_CD_Available(int cd) {
 
       TheKeyboard().Clear();
 
-      while (Get_Mouse_State()) {
-        Show_Mouse();
+      while (MouseHideCount()) {
+        ShowMouse();
       }
 
       if (CCMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
           1) {
-        Hide_Mouse();
+        HideMouse();
         TheGameState().in_main_loop() = old_in_main_loop;
         return false;
       }
       while (hidden--) {
-        Hide_Mouse();
+        HideMouse();
       }
       Set_Palette(_palette);
       TheGameState().in_main_loop() = old_in_main_loop;

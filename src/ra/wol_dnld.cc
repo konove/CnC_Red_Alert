@@ -155,7 +155,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
     if (display != REDRAW_NONE) {
       if (display >= REDRAW_BACKGROUND) {
-        Hide_Mouse();
+        HideMouse();
         /*
         ** Redraw backgound & dialog box
         */
@@ -175,7 +175,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         // TBLACK,
         // TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        Show_Mouse();
+        ShowMouse();
       }
 
       if (display >= REDRAW_BUTTONS) {

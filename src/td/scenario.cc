@@ -180,7 +180,7 @@ bool Start_Scenario(char* root, bool briefing) {
     if (TheSession().type() == GAME_NORMAL && !GameFileExists(buffer)) {
       TheScreen().visible_page().view().Clear();
       Set_Palette(ThePalettes().game_palette());
-      //			Show_Mouse();
+      //			ShowMouse();
       /*
       ** Show the mission briefing. Pretend we are inside the main loop so the
       *palette
@@ -190,7 +190,7 @@ bool Start_Scenario(char* root, bool briefing) {
       TheGameState().in_main_loop() = true;
       Restate_Mission(TheWorld().scenario_name(), TXT_OK, TXT_NONE);
       TheGameState().in_main_loop() = oldinmain;
-      //			Hide_Mouse();
+      //			HideMouse();
       if (TheWorld().transit_theme() == THEME_NONE) {
         TheTheme().Queue_Song(THEME_AOI);
       }
@@ -238,9 +238,9 @@ bool Read_Scenario(char* root) {
     Fill_In_Data();
   } else {
     Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteFast, Call_Back);
-    Show_Mouse();
+    ShowMouse();
     CCMessageBox().Process(TXT_UNABLE_READ_SCENARIO);
-    Hide_Mouse();
+    HideMouse();
     return false;
   }
   TheWorld().scenario_init()--;
@@ -359,7 +359,7 @@ void Clear_Scenario() {
  *=============================================================================================*/
 void Do_Win() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  Hide_Mouse();
+  HideMouse();
 
   /*
   ** If this is a multiplayer game, clear the game's name so we won't respond
@@ -407,7 +407,7 @@ void Do_Win() {
       }
     }
     TheGameState().active() = false;
-    Show_Mouse();
+    ShowMouse();
     return;
   }
 
@@ -458,7 +458,7 @@ void Do_Win() {
         TheWorld().score().Show();
         GDI_Ending();
         TheGameState().active() = false;
-        Show_Mouse();
+        ShowMouse();
         return;
         //				ShutDownEngine();
         //				exit(0);
@@ -472,7 +472,7 @@ void Do_Win() {
       TheKeyboard().Clear();
       TheWorld().score().Show();
       TheGameState().active() = false;
-      Show_Mouse();
+      ShowMouse();
       return;
     }
 #endif
@@ -482,7 +482,7 @@ void Do_Win() {
       // ShutDownEngine();
       // exit(0);
       TheScreen().visible_view().Clear();
-      Show_Mouse();
+      ShowMouse();
       TheGameState().active() = false;
       return;
     }
@@ -492,7 +492,7 @@ void Do_Win() {
       // ShutDownEngine();
       // exit(0);
       TheScreen().visible_view().Clear();
-      Show_Mouse();
+      ShowMouse();
       TheGameState().active() = false;
       return;
     }
@@ -570,7 +570,7 @@ void Do_Win() {
 
   TheMap().Render();
   Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteFast, Call_Back);
-  Show_Mouse();
+  ShowMouse();
 }
 
 /***********************************************************************************************
@@ -588,7 +588,7 @@ void Do_Win() {
  *=============================================================================================*/
 void Do_Lose() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  Hide_Mouse();
+  HideMouse();
 
   /*
   ** If this is a multiplayer game, clear the game's name so we won't respond
@@ -624,7 +624,7 @@ void Do_Lose() {
 #ifdef OBSOLETE
   if (Debug_Play_Map) {
     Go_Editor(true);
-    Show_Mouse();
+    ShowMouse();
     return;
   }
 #endif
@@ -642,7 +642,7 @@ void Do_Lose() {
       }
     }
     TheGameState().active() = false;
-    Show_Mouse();
+    ShowMouse();
     return;
   }
 
@@ -652,20 +652,20 @@ void Do_Lose() {
   ** Start same scenario again
   */
   Set_Palette(ThePalettes().game_palette());
-  Show_Mouse();
+  ShowMouse();
   if (!TheSession().playback_game() &&
       !CCMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
-    Hide_Mouse();
+    HideMouse();
     TheKeyboard().Clear();
     Start_Scenario(TheWorld().scenario_name(), false);
     TheMap().Render();
   } else {
-    Hide_Mouse();
+    HideMouse();
     TheGameState().active() = false;
   }
 
   Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteFast, Call_Back);
-  Show_Mouse();
+  ShowMouse();
 }
 
 /***********************************************************************************************
@@ -685,17 +685,17 @@ void Do_Lose() {
  * HISTORY: * 08/24/1995 JLB : Created. *
  *=============================================================================================*/
 void Do_Restart() {
-  const bool hidden = Get_Mouse_State() != 0;
+  const bool hidden = MouseHideCount() != 0;
 
   if (hidden) {
-    Show_Mouse();
+    ShowMouse();
   }
   CCMessageBox().Process(TXT_RESTARTING, TXT_NONE);
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
   TheKeyboard().Clear();
   Start_Scenario(TheWorld().scenario_name(), false);
   if (hidden) {
-    Hide_Mouse();
+    HideMouse();
   }
   TheKeyboard().Clear();
   TheMap().Render();
@@ -758,19 +758,19 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
       base::SafeCopy(_buff, TheWorld().briefing_text());
       // base::SafeCopy(_ShapeBuffer, BriefingText);
 
-      const bool hidden = Get_Mouse_State() != 0;
+      const bool hidden = MouseHideCount() != 0;
       if (hidden) {
-        Show_Mouse();
+        ShowMouse();
       }
 
       if (CCMessageBox(TXT_OBJECTIVE).Process(_buff, right_btn, left_btn)) {
         if (hidden) {
-          Hide_Mouse();
+          HideMouse();
         }
         return true;
       }
       if (hidden) {
-        Hide_Mouse();
+        HideMouse();
       }
       if (!brief) {
         return true;

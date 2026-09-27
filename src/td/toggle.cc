@@ -137,8 +137,8 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   *rather only performs any necessary *	graphic updating.
   */
   if (!flags) {
-    if (static_cast<unsigned>(Get_Mouse_X() - X) < static_cast<unsigned>(Width) &&
-        static_cast<unsigned>(Get_Mouse_Y() - Y) < static_cast<unsigned>(Height)) {
+    if (static_cast<unsigned>(MouseX() - X) < static_cast<unsigned>(Width) &&
+        static_cast<unsigned>(MouseY() - Y) < static_cast<unsigned>(Height)) {
       if (!IsPressed) {
         IsPressed = true;
         Flag_To_Redraw();

@@ -36,8 +36,8 @@ void Check_For_Focus_Loss() {
 void Memory_Error_Handler() {
   TheScreen().visible_page().view().Clear();
   ThePalettes().title_palette().Set();
-  while (Get_Mouse_State()) {
-    Show_Mouse();
+  while (MouseHideCount()) {
+    ShowMouse();
   }
   WWMessageBox().Process(kLanguageText.memory_error, kLanguageText.abort);
 

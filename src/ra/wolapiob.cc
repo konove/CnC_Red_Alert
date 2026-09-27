@@ -2116,7 +2116,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
     absl::SNPrintF(szCommandLine, sizeof(szCommandLine), "\"%s\" %s",
                    szWebBrowser, szURL);
     //		debugprint( "About to CreateProcess: '%s'\n", szCommandLine );
-    Hide_Mouse();
+    HideMouse();
     ThePalettes().black_palette().Set(kFadePaletteFast, ServiceRealTime);
     //		::ShowWindow( MainWindow, SW_SHOWMINIMIZED );
     TheScreen().visible_view().Clear();
@@ -2157,7 +2157,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
       }
       bPump_In_Call_Back = false;
       ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
-      Show_Mouse();
+      ShowMouse();
     }
   }
 
@@ -2172,13 +2172,13 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
       char szError[300];
       Format_Runtime_Text(szError, sizeof(szError), TXT_WOL_CANTLAUNCHBROWSER,
                           szURL);
-      Show_Mouse();
+      ShowMouse();
       WWMessageBox().Process(szError);
       return false;
     }
     //	(We return immediately after launching in this case.)
     ThePalettes().game_palette().Set();
-    Show_Mouse();
+    ShowMouse();
   }
   return true;
 }

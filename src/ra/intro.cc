@@ -41,12 +41,12 @@ void PlayFirstLaunchIntro(PixelView& hidden, PixelView& visible) {
   // holds both campaigns, so the player has to be asked.
   if (Using_DVD()) {
     // Put the title page up as a backdrop for the dialog.
-    Hide_Mouse();
+    HideMouse();
     Load_Title_Page();
     ThePalettes().game_palette() = ThePalettes().title_palette();
     hidden.BlitTo(visible);
     ThePalettes().title_palette().Set();
-    Show_Mouse();
+    ShowMouse();
 
     // Process() returns the index of the button pressed. CurrentCD uses the
     // disc numbering, 0 for the Allied disc and 1 for the Soviet one.
@@ -65,10 +65,10 @@ void PlayFirstLaunchIntro(PixelView& hidden, PixelView& visible) {
     // Fade out and clear so that the movie starts from black. Mouse hides are
     // counted, so this one needs its own show: the caller balances only the
     // hide it makes itself.
-    Hide_Mouse();
+    HideMouse();
     ThePalettes().black_palette().Set(kFadePaletteSlow);
     visible.Clear();
-    Show_Mouse();
+    ShowMouse();
   }
 
   Play_Movie(VQ_INTRO_MOVIE, THEME_NONE, false);

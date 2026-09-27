@@ -714,9 +714,9 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
  *=========================================================================*/
 void MessageListClass::Draw(PixelView& view) {
   if (MessageList) {
-    Hide_Mouse();
+    HideMouse();
     MessageList->Draw_All(view);
-    Show_Mouse();
+    ShowMouse();
   }
 }
 

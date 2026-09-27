@@ -231,14 +231,14 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       //------------------------------------------------------------------------
       //	Clear screen
       //------------------------------------------------------------------------
-      Hide_Mouse();
+      HideMouse();
       Load_Title_Page(true);
-      //			Show_Mouse();
+      //			ShowMouse();
 
       /*
       **	Display the dialog box.
       */
-      //			Hide_Mouse();
+      //			HideMouse();
 
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(view, TXT_WOL_LOGINDIALOG, d_dialog_x, d_dialog_y,
@@ -256,14 +256,14 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                          kTBlack, kTpfText | TPF_CENTER);
         commands->Flag_List_To_Redraw();
       }
-      Show_Mouse();
+      ShowMouse();
       display = false;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (Get_Mouse_State()) {
-      Show_Mouse();
+    while (MouseHideCount()) {
+      ShowMouse();
     }
     //	Be nice to other apps.
     engine::platform::SleepMs(50);
@@ -301,9 +301,9 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
        NULL) { toggle->Turn_On(); toggle->IsPressed = true;
                             }
 
-                            Hide_Mouse();
+                            HideMouse();
                             commands->Draw_All(true);
-                            Show_Mouse();
+                            ShowMouse();
                     }
     */
     /*

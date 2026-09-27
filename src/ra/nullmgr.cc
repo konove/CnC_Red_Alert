@@ -1039,7 +1039,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   /*------------------------------------------------------------------------
   Draw the dialog
   ------------------------------------------------------------------------*/
-  Hide_Mouse();
+  HideMouse();
   if (!reconnect) {
     Load_Title_Page(true);
   }
@@ -1056,7 +1056,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
                      GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
   }
 
-  Show_Mouse();
+  ShowMouse();
 
   /*
   ** OK, lets not mess about any more. Just turn on echo, verbose, and result
@@ -1285,7 +1285,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   /*------------------------------------------------------------------------
   Draw the dialog
   ------------------------------------------------------------------------*/
-  Hide_Mouse();
+  HideMouse();
   if (!reconnect) {
     Load_Title_Page(true);
   }
@@ -1297,7 +1297,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
                    y + 50, GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
 
   Commands->Draw_All(view);
-  Show_Mouse();
+  ShowMouse();
 
   /*
   ** Start waiting for connection response
@@ -1491,7 +1491,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     Refresh display if needed
     .....................................................................*/
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         /*...............................................................
         Refresh the backdrop
@@ -1516,7 +1516,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
         Commands->Draw_All(view);
       }
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 

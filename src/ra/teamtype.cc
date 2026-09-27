@@ -1046,7 +1046,7 @@ bool TeamTypeClass::Edit() {
       /*
       **	Display the dialog box
       */
-      Hide_Mouse();
+      HideMouse();
       Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
 
       Draw_Caption(view, TXT_TEAM_EDIT, kDDialogX, kDDialogY, kDDialogW);
@@ -1096,7 +1096,7 @@ bool TeamTypeClass::Edit() {
       **	Redraw the buttons
       */
       commands->Draw_All(view);
-      Show_Mouse();
+      ShowMouse();
 
       display = false;
     }

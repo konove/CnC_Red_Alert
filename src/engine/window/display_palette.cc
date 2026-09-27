@@ -14,7 +14,7 @@ namespace engine::window {
 
 void Display::SetPalette(std::span<const uint8_t> palette) {
   UpdatePalette(palette);
-  Update_Mouse_Palette();
+  UpdateMousePalette();
 }
 
 }  // namespace engine::window

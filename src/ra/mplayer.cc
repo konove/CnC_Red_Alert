@@ -255,7 +255,7 @@ GameType Select_MPlayer_Game() {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      Hide_Mouse();
+      HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         //...............................................................
         //	Refresh the backdrop
@@ -277,7 +277,7 @@ GameType Select_MPlayer_Game() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      Show_Mouse();
+      ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -565,7 +565,7 @@ int Surrender_Dialog(const char* text) {
       //..................................................................
       //	Display the dialog box
       //..................................................................
-      Hide_Mouse();
+      HideMouse();
       Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
       Draw_Caption(view, TXT_NONE, kDDialogX, kDDialogY, kDDialogW);
 
@@ -581,7 +581,7 @@ int Surrender_Dialog(const char* text) {
       //	Redraw the buttons
       //..................................................................
       commands->Flag_List_To_Redraw();
-      Show_Mouse();
+      ShowMouse();
     }
 
     //.....................................................................
@@ -748,7 +748,7 @@ int Abort_Dialog() {
       //..................................................................
       //	Display the dialog box
       //..................................................................
-      Hide_Mouse();
+      HideMouse();
       Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
       Draw_Caption(view, TXT_NONE, kDDialogX, kDDialogY, kDDialogW);
 
@@ -763,7 +763,7 @@ int Abort_Dialog() {
       //	Redraw the buttons
       //..................................................................
       commands->Flag_List_To_Redraw();
-      Show_Mouse();
+      ShowMouse();
     }
 
     //.....................................................................

@@ -164,13 +164,13 @@ static int Select_To_Entry(int selection, const uint32_t enabled_mask,
 static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
                        int nfgc, int hfgc, int bgc) {
   for (int loop = 0; loop < 3; loop++) {
-    Hide_Mouse();
+    HideMouse();
     Plain_Text_Print(view, text, xpix, ypix, hfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
     engine::window::WaitTicks(2);
     Plain_Text_Print(view, text, xpix, ypix, nfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
-    Show_Mouse();
+    ShowMouse();
     engine::window::WaitTicks(2);
   }
 }
@@ -226,7 +226,7 @@ void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
   Plain_Text_Print(view, 0, 0, 0, kTBlack, kTBlack,
                    TPF_8POINT | TPF_DROPSHADOW);
   const int item_height = FontMaxHeight(TextFontStyle(kMenuTextFlags));
-  Hide_Mouse();
+  HideMouse();
   for (int lp = 0; lp < num; lp++) {
     const int idx = Select_To_Entry(lp, field, index);
     const int drawy = menuy + (lp * item_height) + (lp * skip);
@@ -240,7 +240,7 @@ void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
     // TBLACK);
   }
   MenuSkip = skip;
-  Show_Mouse();
+  ShowMouse();
   TheKeyboard().Clear();
 }
 
@@ -304,8 +304,8 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   const int my2 = my1 + (base::At(menuptr, kItemshigh) * menuskip) -
                   1; /*		necessary			*/
 
-  const int tempy = Get_Mouse_Y();
-  if (Coordinates_In_Region(Get_Mouse_X(), tempy, mx1, my1, mx2, my2) &&
+  const int tempy = MouseY();
+  if (Coordinates_In_Region(MouseX(), tempy, mx1, my1, mx2, my2) &&
       MenuUpdate) {
     newitem = (tempy - my1) / menuskip;
   }
@@ -378,7 +378,7 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   }
 
   if (newitem != item) {
-    Hide_Mouse();
+    HideMouse();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
     Plain_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
@@ -387,16 +387,16 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
     drawy = menuy + (newitem * menuskip);
     Plain_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
                      litcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
-    Show_Mouse(); /* resurrect the mouse	*/
+    ShowMouse(); /* resurrect the mouse	*/
   }
 
   if (select != -1) {
     idx = Select_To_Entry(select, field, index);
-    Hide_Mouse(); /* get rid of the mouse	*/
+    HideMouse(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
     Flash_Line(view, base::At(text, base::ToSize(idx)), menux, drawy, normcol,
                litcol, kTBlack);
-    Show_Mouse();
+    ShowMouse();
     select = idx;
   }
 
@@ -475,7 +475,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   **	Display the menu.
   */
   Change_Window(static_cast<int>(WINDOW_MENU));
-  Show_Mouse();
+  ShowMouse();
   Window_Box(view, WINDOW_MENU, BOXSTYLE_RAISED);
   Setup_Menu(view, 0, strings, 0xFFFFL, 0, 0);
 
@@ -490,7 +490,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
     }
   }
   TheKeyboard().Clear();
-  Hide_Mouse();
+  HideMouse();
 
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   // WindowList[static_cast<int>(WINDOW_MAIN)][2] =
@@ -719,9 +719,9 @@ int Main_Menu(int32_t /*unused*/) {
       /*
       **	Copy the menu to the visible page.
       */
-      Hide_Mouse();
+      HideMouse();
       hidden.BlitTo(view);
-      Show_Mouse();
+      ShowMouse();
 
       display = false;
     }
