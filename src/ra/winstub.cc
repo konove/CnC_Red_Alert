@@ -252,26 +252,6 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
   return DefWindowProc(hwnd, message, wParam, lParam);
 }
 
-HANDLE DebugFile = INVALID_HANDLE_VALUE;
-
-/***********************************************************************************************
- * WWDebugString -- sends a string to the debugger and echos it to disk *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    string *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 10/28/96 12:48PM ST : Created *
- *=============================================================================================*/
-void WWDebugString(const char* string) {
-  string = string;
-  //	debugprint( string );
-}
-
 /***********************************************************************************************
  * Create_Main_Window -- opens the MainWindow for C&C *
  *                                                                                             *

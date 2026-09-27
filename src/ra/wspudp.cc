@@ -60,6 +60,7 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -68,7 +69,6 @@
 #include "engine/net/socket_bytes.h"
 #include "ra/input.h"
 #include "ra/network.h"
-#include "ra/winstub.h"
 #include "ra/wsproto.h"
 
 #ifdef _WIN32
@@ -201,7 +201,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   */
   char hostname[128];
   gethostname(hostname, 128);
-  WWDebugString(hostname);
+  DLOG(INFO) << "Local host name: " << hostname;
   addrinfo hints{};
   hints.ai_family = AF_INET;
   hints.ai_socktype = SOCK_DGRAM;

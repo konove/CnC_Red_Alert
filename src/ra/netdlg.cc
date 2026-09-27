@@ -137,6 +137,7 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "absl/log/log.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
@@ -212,7 +213,6 @@
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
-#include "ra/winstub.h"
 #include "ra/wol_main.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
@@ -5147,7 +5147,7 @@ static int Net_New_Dialog() {
     base::FillBytes(base::ObjectBytes(responses), 0, sizeof(responses));
     int num_responses = 0;
     bool send_scenario = false;
-    WWDebugString("RA95 - About to wait for 'GO' response.");
+    DLOG(INFO) << "About to wait for 'GO' response.";
     // timeout timer for waiting for responses
     // Wait for 10 seconds. If we dont hear by then assume someone crashed
     const Timer<SystemTickSource> response_timer{static_cast<int64_t>(60) * 10};

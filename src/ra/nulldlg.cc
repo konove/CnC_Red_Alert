@@ -64,6 +64,7 @@
 #include <vector>
 
 #include "absl/base/no_destructor.h"
+#include "absl/log/log.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
@@ -141,7 +142,6 @@
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
-#include "ra/winstub.h"
 #include "ra/wol_main.h"
 #include "ra/world.h"
 
@@ -4179,7 +4179,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         * scenario
         ** cant be played.
         */
-        WWDebugString("RA95 - About to wait for 'GO' response.\n");
+        DLOG(INFO) << "About to wait for 'GO' response.";
         do {
           TheNetwork().null_modem().Service();
 
@@ -4209,7 +4209,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             }
 
             if (ReceivePacket.Command == SERIAL_REQ_SCENARIO) {
-              WWDebugString("RA95 - About to call 'Send_Remote_File'.\n");
+              DLOG(INFO) << "About to call 'Send_Remote_File'.";
 
               if (TheSession()
                       .Scenarios.at(TheSession().Options.ScenarioIndex)
@@ -5689,7 +5689,7 @@ int Com_Show_Scenario_Dialog() {
                 }
 
                 if (needcd) {
-                  WWDebugString("RA95 - Counterstrike CD is not in drive\n");
+                  DLOG(INFO) << "Counterstrike CD is not in drive";
 
                   /*
                   ** We should have the scenario but the wrong disk is in.

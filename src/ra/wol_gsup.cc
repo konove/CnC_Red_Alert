@@ -71,7 +71,6 @@
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/winbits.h"
-#include "ra/winstub.h"
 #include "ra/wol_main.h"
 #include "ra/wolapi/chatdefs.h"
 #include "ra/wolapi/wolapi.h"
@@ -85,6 +84,7 @@ using enum engine::window::KeyNumber;
 static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 
 #include "absl/log/check.h"
+#include "absl/log/log.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/search_paths.h"
 #include "engine/platform/sleep.h"
@@ -3762,7 +3762,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   TheNetwork().packet_transport()->Discard_In_Buffers();
   TheNetwork().packet_transport()->Discard_Out_Buffers();
 
-  WWDebugString("RA95 - About to call Init_Network.\n");
+  DLOG(INFO) << "About to call Init_Network.";
   Init_Network();
 
   TheNetwork().ipx().Set_Timing(30,    // retry 2 times per second

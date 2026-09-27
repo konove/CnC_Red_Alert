@@ -166,7 +166,6 @@
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
-#include "ra/winstub.h"
 #include "ra/world.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
@@ -960,7 +959,7 @@ bool Select_Game(bool /*fade*/) {
             **	Network (IPX): start a new network game.
             */
             case GAME_IPX:
-              WWDebugString("RA95 - Game type is IPX.\n");
+              DLOG(INFO) << "Game type is IPX.";
               /*
               ** Init network system & remote-connect
               */
@@ -970,7 +969,7 @@ bool Select_Game(bool /*fade*/) {
                   std::make_unique<UDPInterfaceClass>();
               TheNetwork().packet_transport()->Set_Broadcast_Address(
                   "255.255.255.255");
-              WWDebugString("RA95 - About to call Init_Network.\n");
+              DLOG(INFO) << "About to call Init_Network.";
               if (TheSession().Type == GAME_IPX && Init_Network() &&
                   Remote_Connect()) {
                 TheOptions().ScoreVolume = TheOptions().MultiScoreVolume;

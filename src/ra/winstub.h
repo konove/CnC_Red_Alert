@@ -7,9 +7,6 @@
 // system's error handler.
 [[noreturn]] void Memory_Error_Handler();
 
-// Writes a line to the platform's debug output.
-void WWDebugString(const char* string);
-
 // Pumps the event queue while the window has no focus, so the game does not
 // run on while it is in the background.
 void Check_For_Focus_Loss();

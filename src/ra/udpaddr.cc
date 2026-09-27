@@ -19,6 +19,7 @@
 #include <cstdio>
 #include <string>
 
+#include "absl/log/log.h"
 #include "absl/strings/str_format.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
@@ -41,7 +42,6 @@
 #include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
-#include "ra/winstub.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
 
@@ -141,10 +141,7 @@ bool Get_Broadcast_Addresses() {
       res = ip_ini.Get_String("IP_ADDRESSES", entry_name, "", temp, 128);
       if (res) {
         ip_address_list.Add_Item(temp);
-        char debug[128];
-        absl::SNPrintF(debug, sizeof(debug), "RA95 - Adding address %s\n",
-                       temp);
-        WWDebugString(debug);
+        DLOG(INFO) << "Adding address " << temp;
       }
     } while (res);
   }

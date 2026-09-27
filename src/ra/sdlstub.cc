@@ -23,8 +23,6 @@
 #include "ra/startup.h"
 #include "ra/winstub.h"
 
-void WWDebugString(const char* /*string*/) {}
-
 void Check_For_Focus_Loss() {
   if (!TheGameState().in_focus()) {
     SDL_Event_Loop();
