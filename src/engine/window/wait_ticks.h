@@ -24,8 +24,8 @@
 
 namespace engine::window {
 
-// Waits `ticks` ticks of the 60 Hz tick timer, presenting a frame on each
-// pass so that the window stays responsive meanwhile. Needs InitTickTimer().
+// Waits `ticks` ticks of SystemTicks(), presenting a frame on each pass so
+// that the window stays responsive meanwhile.
 void WaitTicks(int ticks);
 
 }  // namespace engine::window

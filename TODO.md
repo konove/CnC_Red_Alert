@@ -85,6 +85,13 @@
 - Move `engine/window/ww_win.{h,cc}` into `engine::window`
   - `Change_Window`, `SDL_Event_Loop`, `SDL_Send_Quit`, `SetEventHandler`, `SetPumpHandler` are the
     last global names in the library; `keyboard_test.cc` still stubs `SDL_Event_Loop()` globally
+- Move `Get_Time_Ms()` (`engine/platform/tick_clock.cc`) from `SDL_GetTicks()` to
+  `std::chrono::steady_clock`, as `SystemTicks()` already is
+  - It is the last SDL use in `engine_platform`, so the library could drop its SDL2 link
+  - It returns `uint32_t` milliseconds (98 call sites). `SDL_GetTicks()` counts from SDL init, but
+    `steady_clock` counts from boot, so 32 bits would wrap after 49 days of machine uptime instead
+    of 49 days of play. Either widen it to `int64_t`, or audit the call sites that compare two
+    readings instead of subtracting them
 
 ## Testing
 

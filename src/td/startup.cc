@@ -56,7 +56,6 @@
 #include "base/numeric.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/platform/memflag.h"
-#include "engine/platform/tick_clock.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/window/keyboard.h"
 #include "td/defines.h"
@@ -309,8 +308,6 @@ int main(int argc, char* argv[])
     game->set_startup_options(*options);
     ApplyStartupOptions(*options);
 
-    InitTickTimer();
-
     /*
     ** If there is not enough disk space free, dont allow the product to run.
     */
@@ -508,8 +505,6 @@ void ShutDownEngine() {
   CCDebugString("C&C95 - Returned from CloseAudio.\n");
   CCDebugString("C&C95 - Releasing the mouse.\n");
   engine::window::HardwareCursor::ReleaseMouse();
-  CCDebugString("C&C95 - Deleting tick timer.\n");
-  ShutdownTickTimer();
 }
 
 void Print_Error_End_Exit(char* string) {

@@ -12,7 +12,7 @@
 // with `exit_code`.
 [[noreturn]] void EmergencyExit(int exit_code);
 
-// Cleans up the engine systems the game started (audio, mouse, tick timer)
+// Cleans up the engine systems the game started (audio, mouse)
 // before the process exits. ShutDown() calls it.
 void ShutDownEngine();
 

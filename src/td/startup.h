@@ -3,7 +3,7 @@
 
 // Tiberian Dawn's shared exit path. main() itself lives in startup.cc.
 
-// Cleans up the engine systems the game started (audio, mouse, tick timer)
+// Cleans up the engine systems the game started (audio, mouse)
 // before the process exits. ShutDown() calls it.
 void ShutDownEngine();
 

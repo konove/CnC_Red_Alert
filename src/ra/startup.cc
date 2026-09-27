@@ -32,7 +32,6 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/memflag.h"
-#include "engine/platform/tick_clock.h"
 #include "ra/game.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
@@ -323,8 +322,6 @@ int main(const int argc, char* argv[])
   game->set_startup_options(*options);
   ApplyStartupOptions(*options);
 
-  InitTickTimer();
-
   // Refuse to start without 8 MB free for save games and the config file.
   if (FreeDiskSpace() < kInitFreeDiskSpace) {
     absl::PrintF("%s", kLanguageText.insufficient_disk);
@@ -425,7 +422,6 @@ int main(const int argc, char* argv[])
 void ShutDownEngine() {
   engine::audio::TheAudio().Close();
   engine::window::HardwareCursor::ReleaseMouse();
-  ShutdownTickTimer();
 }
 
 void CleanUpAndExitWithError(char* message) {

@@ -6,9 +6,9 @@
 namespace engine::window {
 
 void WaitTicks(int ticks) {
-  const auto target = g_tick_timer->TickCount() + ticks;
+  const auto target = SystemTicks() + ticks;
 
-  while (g_tick_timer->TickCount() < target) {
+  while (SystemTicks() < target) {
     TheDisplay().EndFrame();
   }
 }
