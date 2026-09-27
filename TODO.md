@@ -19,6 +19,17 @@
 - Make typed text honour Shift
   - `KeyBuffer::ToAscii()` maps through `SDL_GetKeyFromScancode()`, which ignores modifiers, so edit
     boxes and chat get no capitals or shifted symbols; doing better needs SDL text-input events
+- Keep the mouse grabbed when `Input::InstallMouse()` replaces the cursor
+  - The new `HardwareCursor`'s constructor grabs, then the old one's destructor releases; latent
+    while each game installs the cursor once per run
+  - Fix at the root: make `mouse_grab_disabled` a `Display` option honoured by `SetMouseGrab()`,
+    drop `HardwareCursor::GrabMouse()`/`ReleaseMouse()`, and have the focus handlers
+    (`ra/nondosstub.cc`, `td/nondosstub.cc`, `td/winstub.cc`, which calls the static through
+    `TheMouse()->`) and `Input` call `TheDisplay().SetMouseGrab()` directly
+- Let `HardwareCursor::SetShape()` retry a shape whose SDL cursor could not be created
+  - It records `current_shape_` even when `SDL_CreateColorCursor()` fails, so the same shape is
+    never tried again and SDL shows its default cursor
+  - The hot spot is not checked against the shape size; SDL rejects one outside the cursor
 
 ## Refactoring
 
@@ -58,6 +69,34 @@
 - Delete dead code that still spells the old keyboard API
   - `td/msgbox.cc`'s `#ifdef NEVER` block (C-style `KeyNumber` casts, `& 0xFF` masks)
   - Commented-out `kKeyReleaseBit` tests in `td/edit.cc` and `ra/woledit.cc`
+- Delete commented-out code that still calls the mouse functions
+  - `ra/gadget.cc`, `ra/init.cc`, `ra/wol_chat.cc`, `ra/wol_logn.cc`, `td/conquer.cc`,
+    `td/debug.cc`, `td/gscreen.cc`, `td/init.cc`, `td/scenario.cc`, `td/score.cc`, and
+    `// TheMouse()->GrabMouse();` in `ra/winstub.cc` and `td/winstub.cc`
+- Reach the live `HardwareCursor` through a `base::Installed<HardwareCursor>` scope
+  - Replaces the file-static `active_cursor` in `engine/window/hardware_cursor.cc`, as
+    `TheDisplay()`/`HasDisplay()` do for the display
+  - `Input::InstallMouse()` must reset the old cursor before building the new one (scopes end in
+    order), which also removes the replacement case the destructor check exists for
+- Stop `Display::SetPalette()` calling up into `UpdateMousePalette()`
+  - A palette generation counter on `Display` that `HardwareCursor` compares on `Show()` and
+    `SetShape()` would replace the call
+  - `UpdatePalette()` recreates the OS cursor on every palette change while the cursor is visible;
+    skipping unchanged colors 1-255 is worth it only if a profile shows the cost
+- Fix the `kCursorWidth`/`kCursorHeight` comments in `ra/input.cc` and `td/input.cc`
+  - They call it "the cursor's hot-spot box"; it is the largest shape `HardwareCursor` accepts
+  - Dropping the limit instead would accept larger shapes, which changes behaviour
+- Share the SDL helpers the engine repeats
+  - `std::unique_ptr` deleters exist separately in `engine/window/hardware_cursor.h`,
+    `src/tools/vqaplay.cc` and `engine/video/vqa/audio_output.h`, and `engine/window/display.cc`
+    frees its `void*` handles by hand
+  - The span over an `SDL_Palette`'s colors (`display.cc` twice, `hardware_cursor.cc`) and the
+    `pitch * h` surface-bytes span (`Display::Lock()`, `hardware_cursor.cc`) repeat with their
+    NOLINTs; the two-argument spans still print `-Wunsafe-buffer-usage-in-container` compiler
+    warnings, since the NOLINT only silences clang-tidy
+- Move `engine/window/ww_win.{h,cc}` into `engine::window`
+  - `Change_Window`, `SDL_Event_Loop`, `SDL_Send_Quit`, `SetEventHandler`, `SetPumpHandler` are the
+    last global names in the library; `keyboard_test.cc` still stubs `SDL_Event_Loop()` globally
 
 ## Testing
 
@@ -66,6 +105,10 @@
     test that relies on `tools/check_layers.py` exempting tests from the no-games rule
 - Make `ww_win_test` (`engine/window/ww_win_test.cc`) check `SDL_Init` and pair it with `SDL_Quit`
   - A failed init now shows up as a confusing "no events seen" failure
+- Unit-test the cursor shape decoding in `engine/window/hardware_cursor.cc`
+  - `DecodeShapePixels()` (LCW plus zero-run decode) and `ScaleUpNearest()` are static and reachable
+    only through SDL cursor creation; expose them in `engine::window::internal` and cover corrupt
+    and truncated data, zero and overlong runs, and each scale
 - Rename `ra/profile_buffer_test.cc` to `profile_test.cc`
   - It tests `ra/profile.h`; the misleading name keeps clang-format from treating `ra/profile.h` as
     its main include, and it shares a basename with `engine/file/profile_buffer_test.cc`
@@ -78,6 +121,8 @@
   - Map editor: right-click menu, object and trigger placement, map-size drag handles, the team
     editor's held +/- buttons
   - Iron Curtain and Chronosphere targeting, alone and in a two-player game
+  - The hardware cursor after the `SetShape()` rewrite: shapes, hot spots and transparency at 1x, 2x
+    and 4x display scale, and its colors through fades
 
 ## Debugging
 
