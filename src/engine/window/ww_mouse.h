@@ -111,12 +111,9 @@ class HardwareCursor {
   // The scaled 8-bit image sdl_cursor_ was made from, kept so that
   // UpdatePalette() can recolor it and make the cursor again.
   SdlSurfacePtr sdl_surface_;
-  // The hot spot as SetShape() received it, in unscaled shape pixels.
-  int hot_x_ = 0;
-  int hot_y_ = 0;
-
-  // The factor the current cursor was scaled by, fixed when it was set.
-  int scale_ = 1;
+  // The hot spot in sdl_surface_'s pixels: SetShape()'s, scaled like the shape.
+  int scaled_hot_x_ = 0;
+  int scaled_hot_y_ = 0;
 
   // The largest shape SetShape() accepts, in pixels.
   int max_width_;
@@ -127,7 +124,7 @@ class HardwareCursor {
   const std::byte* current_shape_ = nullptr;
 
   // Reference count for Hide/Show. Cursor visible when hide_count_ == 0.
-  int hide_count_{0};
+  int hide_count_ = 0;
 
   // The pointer position, as RecordPosition() last recorded it.
   int x_ = 0;

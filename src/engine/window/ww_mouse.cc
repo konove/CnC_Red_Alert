@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
+#include <optional>
 #include <span>
 #include <utility>
 #include <vector>
@@ -46,24 +47,67 @@ static HardwareCursor* active_cursor = nullptr;
 constexpr base::ssize kShapeHeaderSize = offsetof(Shape_Type, Colortable);
 static_assert(kShapeHeaderSize == 10);
 
-// Returns the width x height image `src` scaled up `scale` (at least 1) times.
-// Nearest-neighbor keeps the pixel art crisp.
-[[nodiscard]] static std::vector<uint8_t> ScaleUpNearest(
-    std::span<const uint8_t> src, int width, int height, int scale) {
-  const int dst_width = width * scale;
-  const int dst_height = height * scale;
-  std::vector<uint8_t> dst(
-      base::ToSize(static_cast<base::ssize>(dst_width) * dst_height));
-
-  for (int y = 0; y < dst_height; ++y) {
-    const int src_y = y / scale;
-    for (int x = 0; x < dst_width; ++x) {
-      const int src_x = x / scale;
-      dst.at(base::ToSize((y * dst_width) + x)) =
-          base::At(src, base::ToSize((src_y * width) + src_x));
+// Decodes the pixels of a 256-color shape: `data` is what follows the header,
+// LCW-compressed, and under the LCW the pixels are zero-run-length encoded. A
+// nonzero byte is a pixel, and a zero byte is followed by a count of
+// transparent (color 0) pixels to skip. Returns the Width * OriginalHeight
+// pixels, or nullopt for data that runs out early or holds a zero or overlong
+// count.
+static std::optional<std::vector<uint8_t>> DecodeShapePixels(
+    const Shape_Type& header, std::span<const std::byte> data) {
+  std::vector<uint8_t> rle_data(header.DataLength);
+  const int32_t rle_bytes =
+      LCW_Uncompress(data, std::as_writable_bytes(std::span(rle_data)));
+  auto input = std::span(rle_data).first(base::ToSize(rle_bytes));
+  // Starts out transparent: skipped pixels stay color 0.
+  std::vector<uint8_t> pixels(
+      base::ToSize(int{header.Width} * int{header.OriginalHeight}));
+  auto output = std::span(pixels);
+  while (!output.empty()) {
+    if (input.empty()) {
+      return std::nullopt;
+    }
+    const uint8_t pixel = input.front();
+    input = input.subspan(1);
+    if (pixel != 0) {
+      output.front() = pixel;
+      output = output.subspan(1);
+    } else {
+      if (input.empty()) {
+        return std::nullopt;
+      }
+      const auto transparent_run = input.front();
+      input = input.subspan(1);
+      if (transparent_run == 0 || transparent_run > output.size()) {
+        return std::nullopt;
+      }
+      output = output.subspan(transparent_run);
     }
   }
-  return dst;
+  return pixels;
+}
+
+// Draws the width x height image `src` into the 8-bit `surface`, scaled up by
+// the factor that makes it fill the surface. Nearest-neighbor keeps the pixel
+// art crisp.
+static void ScaleUpNearest(std::span<const uint8_t> src, int width,
+                           const SDL_Surface& surface) {
+  const int scale = surface.w / width;
+  // SDL-created surfaces own pitch * h writable bytes; the pitch may include
+  // padding past the w pixels of a row.
+  const auto surface_pixels =
+      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+      std::span(static_cast<uint8_t*>(surface.pixels),
+                base::ToSize(surface.pitch) * base::ToSize(surface.h));
+  for (int y = 0; y < surface.h; ++y) {
+    const auto src_row =
+        src.subspan(base::ToSize((y / scale) * width), base::ToSize(width));
+    const auto dst_row = surface_pixels.subspan(base::ToSize(y * surface.pitch),
+                                                base::ToSize(surface.w));
+    for (int x = 0; x < surface.w; ++x) {
+      base::At(dst_row, x) = base::At(src_row, x / scale);
+    }
+  }
 }
 
 // Returns the whole factor to scale cursors by on the display the window is on:
@@ -145,69 +189,22 @@ void HardwareCursor::SetShape(int hot_x, int hot_y,
     DLOG(INFO) << "SetShape: shape type " << header.ShapeType;
     return;
   }
-  const int width = header.Width;
-  const int height = header.OriginalHeight;
-
-  std::vector<uint8_t> rle_data(header.DataLength);
-  const int32_t rle_bytes =
-      LCW_Uncompress(shape.subspan(kShapeHeaderSize),
-                     std::as_writable_bytes(std::span(rle_data)));
-  auto input = std::span(rle_data).first(base::ToSize(rle_bytes));
-  // Starts out transparent: skipped pixels stay color 0.
-  std::vector<uint8_t> pixels(base::ToSize(width * height));
-  auto output = std::span(pixels);
-  // Undo the zero-run-length encoding under the LCW: a nonzero byte is a
-  // pixel, and a zero byte is followed by a count of transparent (color 0)
-  // pixels to skip. Data that runs out early or holds a zero or overlong count
-  // is corrupt, and the old cursor stays.
-  while (!output.empty()) {
-    if (input.empty()) {
-      return;
-    }
-    const uint8_t pixel = input.front();
-    input = input.subspan(1);
-    if (pixel != 0) {
-      output.front() = pixel;
-      output = output.subspan(1);
-    } else {
-      if (input.empty()) {
-        return;
-      }
-      const auto transparent_run = input.front();
-      input = input.subspan(1);
-      if (transparent_run == 0 || transparent_run > output.size()) {
-        return;
-      }
-      output = output.subspan(transparent_run);
-    }
+  const auto pixels =
+      DecodeShapePixels(header, shape.subspan(kShapeHeaderSize));
+  if (!pixels) {
+    return;
   }
 
-  const int scale = CursorScaleForDisplay();
-  const int scaled_width = width * scale;
-  const int scaled_height = height * scale;
-  const auto scaled_pixels = ScaleUpNearest(pixels, width, height, scale);
-
-  // The surface outlives scaled_pixels, because UpdatePalette() recolors it
-  // later, so it has to own its pixels: SDL_CreateRGBSurfaceFrom would only
+  // The surface outlives the decoded pixels, because UpdatePalette() recolors
+  // it later, so it has to own its pixels: SDL_CreateRGBSurfaceFrom would only
   // borrow them.
-  SdlSurfacePtr surface(
-      SDL_CreateRGBSurface(0, scaled_width, scaled_height, 8, 0, 0, 0, 0));
+  const int scale = CursorScaleForDisplay();
+  SdlSurfacePtr surface(SDL_CreateRGBSurface(
+      0, header.Width * scale, header.OriginalHeight * scale, 8, 0, 0, 0, 0));
   if (!surface) {
     return;
   }
-  // SDL surface pitch may include padding, so copy row by row.
-  // SDL-created surface owns pitch*h writable bytes.
-  const auto surface_pixels =
-      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-      std::span(static_cast<uint8_t*>(surface->pixels),
-                base::ToSize(surface->pitch) * base::ToSize(surface->h));
-  for (int y = 0; y < scaled_height; ++y) {
-    std::ranges::copy(
-        std::span(scaled_pixels)
-            .subspan(base::ToSize(y * scaled_width),
-                     base::ToSize(scaled_width)),
-        surface_pixels.subspan(base::ToSize(y * surface->pitch)).begin());
-  }
+  ScaleUpNearest(*pixels, header.Width, *surface);
 
   if (const SDL_Palette* game_palette = GamePalette()) {
     CopyGameColors(*game_palette, *surface->format->palette);
@@ -215,13 +212,14 @@ void HardwareCursor::SetShape(int hot_x, int hot_y,
     // converts the surface to ARGB through it, so an alpha of 0 on entry 0 is
     // what makes color 0 see-through.
     surface->format->palette->colors->a = 0;
+    // The new cursor has the current colors already.
+    palette_stale_ = false;
   }
 
   current_shape_ = shape.data();
   sdl_surface_ = std::move(surface);
-  hot_x_ = hot_x;
-  hot_y_ = hot_y;
-  scale_ = scale;
+  scaled_hot_x_ = hot_x * scale;
+  scaled_hot_y_ = hot_y * scale;
   RebuildCursor();
 }
 
@@ -279,8 +277,8 @@ void HardwareCursor::UpdatePalette() {
 }
 
 void HardwareCursor::RebuildCursor() {
-  SdlCursorPtr cursor(SDL_CreateColorCursor(sdl_surface_.get(), hot_x_ * scale_,
-                                            hot_y_ * scale_));
+  SdlCursorPtr cursor(
+      SDL_CreateColorCursor(sdl_surface_.get(), scaled_hot_x_, scaled_hot_y_));
   SDL_SetCursor(cursor.get());
   sdl_cursor_ = std::move(cursor);
 }
@@ -289,8 +287,6 @@ void HardwareCursor::RecordPosition(int x, int y) {
   x_ = x;
   y_ = y;
 }
-
-// The free functions the games call, forwarding to active_cursor.
 
 void HideMouse() {
   if (active_cursor) {
@@ -304,12 +300,8 @@ void ShowMouse() {
   }
 }
 
-int MouseHideCount() {
-  if (active_cursor) {
-    return active_cursor->hide_count();
-  }
-  return 0;
-}
+int MouseHideCount() { return active_cursor ? active_cursor->hide_count() : 0; }
+
 void SetMouseShape(int hot_x, int hot_y, std::span<const std::byte> shape) {
   if (active_cursor) {
     active_cursor->SetShape(hot_x, hot_y, shape);
@@ -324,19 +316,9 @@ bool IsRightButtonDown() {
   return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_RMASK) != 0;
 }
 
-int MouseX() {
-  if (active_cursor) {
-    return active_cursor->x();
-  }
-  return 0;
-}
+int MouseX() { return active_cursor ? active_cursor->x() : 0; }
 
-int MouseY() {
-  if (active_cursor) {
-    return active_cursor->y();
-  }
-  return 0;
-}
+int MouseY() { return active_cursor ? active_cursor->y() : 0; }
 
 void UpdateMousePalette() {
   if (active_cursor) {
