@@ -329,7 +329,6 @@ class DisplayClass : public MapClass {
   static unsigned char ShadowTrans[(kShadowColorCount + 1) * 256];
 
   void Redraw_Icons(PixelView& view);
-  void Redraw_OIcons(PixelView& view);
   void Redraw_Shadow(PixelView& view);
 
   // Draws every object in every layer once, bottom layer first, the ground

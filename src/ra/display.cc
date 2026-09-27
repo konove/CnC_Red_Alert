@@ -1872,40 +1872,6 @@ void DisplayClass::Redraw_Icons(PixelView& view) {
   }
 }
 
-void DisplayClass::Redraw_OIcons(PixelView& view) {
-  for (int y = -Coord_YLepton(TacticalCoord);
-       std::cmp_less_equal(y, TacLeptonHeight); y += CELL_LEPTON_H) {
-    for (int x = -Coord_XLepton(TacticalCoord);
-         std::cmp_less_equal(x, TacLeptonWidth); x += CELL_LEPTON_W) {
-      COORDINATE coord =
-          Coord_Add(TacticalCoord,
-                    XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y)));
-      const CELL cell = Coord_Cell(coord);
-      coord = Coord_Whole(Cell_Coord(cell));
-
-      /*
-      **	Only cells flagged to be redraw are examined.
-      */
-      if (In_View(cell) && Is_Cell_Flagged(cell)) {
-        int xpixel = 0;
-        int ypixel = 0;
-
-        if (Coord_To_Pixel(coord, xpixel, ypixel)) {
-          const CellClass* cellptr = &(*this).at(coord);
-
-          /*
-          **	If there is a portion of the underlying icon that could be
-          *visible, *	then draw it.  Also draw the cell if the shroud is off.
-          */
-          if (cellptr->IsMapped || TheDebugState().unshroud()) {
-            cellptr->Draw_It(view, xpixel, ypixel, true);
-          }
-        }
-      }
-    }
-  }
-}
-
 /***********************************************************************************************
  * DisplayClass::Redraw_Shadow -- Draw the shadow overlay. *
  *                                                                                             *

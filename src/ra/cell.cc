@@ -104,7 +104,6 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
-#include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "magic_enum/magic_enum.hpp"
@@ -379,85 +378,26 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
   return ptr;
 }
 
-/***********************************************************************************************
- * CellClass::Redraw_Objects -- Redraws all objects overlapping this cell. *
- *                                                                                             *
- *    This is a low level routine that marks all objects that overlap this *
- *    cell to be redrawn. It is necessary to call this routine whenever * the
- *underlying icon has to be redrawn. *
- *                                                                                             *
- * INPUT:   forced   -- Should this redraw be forced even if flags * indicate
- *that it would be redundant?                                   *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/18/1994 JLB : Created. * 06/20/1994 JLB : Simplified to use
- *object pointers.                                       * 12/24/1994 JLB : Only
- *checks if cell is in view and not flagged already.                  *
- *=============================================================================================*/
+// Besides flagging the cell, this cuts the occupier chain at an object that
+// died without leaving it. That cleanup is game state (saves hold the chain),
+// so it keeps happening exactly where it always has: in cells that are in view
+// and not flagged yet. Not const: it changes the map's redraw state and the
+// chain.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Redraw_Objects(bool forced) {
   DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   const CELL cell = Cell_Number();
+  if (!TheMap().In_View(cell) ||
+      (!forced && MapEditClass::Is_Cell_Flagged(cell))) {
+    return;
+  }
+  TheMap().Flag_Cell(cell);
 
-  if (TheMap().In_View(cell) &&
-      (forced || !MapEditClass::Is_Cell_Flagged(cell))) {
-    /*
-    **	Flag the icon to be redrawn.
-    */
-    TheMap().Flag_Cell(cell);
-
-    /*
-    **	Flag the main object in the cell to be redrawn.
-    */
-    if (Cell_Occupier() != nullptr) {
-      ObjectClass* optr = Cell_Occupier();
-      while (optr != nullptr && optr->IsActive) {
-        if constexpr (config::kSortDrawEnabled) {
-          if (optr->Is_Techno() &&
-              dynamic_cast<const TechnoClass*>(optr)->Visual_Character() !=
-                  VISUAL_NORMAL) {
-            optr->Mark(MARK_CHANGE);
-          }
-        } else {
-          optr->Mark(MARK_CHANGE);
-        }
-        if (optr->Next != nullptr && !optr->Next->IsActive) {
-          optr->Next = nullptr;
-        }
-        optr = optr->Next;
-      }
-    }
-
-    if constexpr (config::kSortDrawEnabled) {
-      /*
-      **	Flag any overlapping object in this cell to be redrawn.
-      */
-      for (int index = 0; index < std::ssize(Overlappers); index++) {
-        if (base::At(Overlappers, index)) {
-          DCHECK(base::At(Overlappers, index)->IsActive);
-          if (base::At(Overlappers, index)->Is_Techno() &&
-              dynamic_cast<const TechnoClass*>(base::At(Overlappers, index))
-                      ->Visual_Character() != VISUAL_NORMAL) {
-            base::At(Overlappers, index)->Mark(MARK_CHANGE);
-          }
-        }
-      }
-    } else {
-      /*
-      **	Flag any overlapping object in this cell to be redrawn.
-      */
-      for (int index = 0; index < std::ssize(Overlappers); index++) {
-        if (base::At(Overlappers, index) != nullptr) {
-          if (!base::At(Overlappers, index)->IsActive) {
-            base::At(Overlappers, index) = nullptr;
-          } else {
-            base::At(Overlappers, index)->Mark(MARK_CHANGE);
-          }
-        }
-      }
+  for (ObjectClass* optr = Cell_Occupier(); optr != nullptr && optr->IsActive;
+       optr = optr->Next) {
+    if (optr->Next != nullptr && !optr->Next->IsActive) {
+      optr->Next = nullptr;
     }
   }
 }
@@ -980,64 +920,6 @@ InfantryClass* CellClass::Cell_Infantry() const {
   return dynamic_cast<InfantryClass*>(Cell_Find_Object(RTTI_INFANTRY));
 }
 
-// Only the cell-sorted renderer draws partial cells, hence maybe_unused.
-[[maybe_unused]] static bool Calc_Partial_Window(int cellx, int celly,
-                                                 int& drawx, int& drawy) {
-  int& px = base::At(WindowList[static_cast<int>(WINDOW_PARTIAL)], kWindowX);
-  int& py = base::At(WindowList[static_cast<int>(WINDOW_PARTIAL)], kWindowY);
-  int& pw =
-      base::At(WindowList[static_cast<int>(WINDOW_PARTIAL)], kWindowWidth);
-  int& ph =
-      base::At(WindowList[static_cast<int>(WINDOW_PARTIAL)], kWindowHeight);
-  const int& tx =
-      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowX);
-  const int& ty =
-      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowY);
-  const int& tw =
-      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowWidth);
-  const int& th =
-      base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowHeight);
-
-  px = cellx + tx;
-  py = celly + ty;
-  pw = CELL_PIXEL_W;
-  ph = CELL_PIXEL_H;
-
-  if (px < tx) {
-    pw -= tx - px;
-    px = tx;
-  }
-  if (pw < 1) {
-    return false;
-  }
-
-  if (py < ty) {
-    ph -= ty - py;
-    py = ty;
-  }
-  if (ph < 1) {
-    return false;
-  }
-
-  if (px + pw > tx + tw) {
-    pw -= (px + pw) - (tx + tw);
-  }
-  if (pw < 1) {
-    return false;
-  }
-
-  if (py + ph > ty + th) {
-    ph -= (py + ph) - (ty + th);
-  }
-  if (ph < 1) {
-    return false;
-  }
-
-  drawx = drawx - (px - tx);
-  drawy = drawy - (py - ty);
-  return true;
-}
-
 /***********************************************************************************************
  * CellClass::Draw_It -- Draws the cell imagery at the location specified. *
  *                                                                                             *
@@ -1061,403 +943,291 @@ InfantryClass* CellClass::Cell_Infantry() const {
  *BELOW overlays.                                            * 07/22/1996 JLB :
  *Objects added to draw process.                                           *
  *=============================================================================================*/
-void CellClass::Draw_It(PixelView& view, int x, int y, bool objects) const {
+void CellClass::Draw_It(PixelView& view, int x, int y) const {
   DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  if (!objects) {
-    const TemplateTypeClass* ttype = nullptr;
-    int icon = 0;  // The icon number to use from the template set.
-    std::span<const unsigned char> remap;
+  const TemplateTypeClass* ttype = nullptr;
+  int icon = 0;  // The icon number to use from the template set.
+  std::span<const unsigned char> remap;
 
-    /*
-    **	Fetch a pointer to the template type associated with this cell.
-    */
-    if (TType != TEMPLATE_NONE && TType != TEMPLATE_CLEAR1 &&
-        TType != static_cast<TemplateType>(255)) {
-      ttype = &TemplateTypeClass::As_Reference(TType);
-      icon = TIcon;
-    } else {
-      ttype = &TemplateTypeClass::As_Reference(TEMPLATE_CLEAR1);
-      icon = Clear_Icon();
-    }
-
-    bool draw_debug_icon = false;
-    if constexpr (config::kCheatKeysEnabled) {
-      draw_debug_icon = TheDebugState().show_cell_info();
-    }
-
-    if (draw_debug_icon) {
-      /*
-      **	Draw debug cell visualization instead of normal terrain.
-      */
-      const CELL cell = Cell_Number();
-      view.FillRect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
-                    TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
-                    TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
-                    static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
-      Fancy_Text_Print(
-          view, "%02X%02X\r%d%d%d\r%d %d",
-          TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
-          &ThePalettes().grey_scheme(), kTBlack,
-          TPF_EFNT | TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW,
-          Cell_Y(cell), Cell_X(cell), Zones.at(MZONE_NORMAL),
-          Zones.at(MZONE_CRUSHER), Zones.at(MZONE_DESTROYER), Overlay,
-          OverlayData);
-    } else {
-      if constexpr (config::kScenarioEditorEnabled) {
-        /*
-        **	Set up the remap table for this icon.
-        */
-        if (TheDebugState().map_editor_active() &&
-            TheDebugState().show_passability()) {
-          if (TheRules().ground().at(Land).Cost.at(SPEED_FOOT) == 0 ||
-              (Cell_Occupier() != nullptr &&
-               Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
-            remap = DisplayClass::FadingRed;
-          } else {
-            if (TheRules().ground().at(Land).Cost.at(SPEED_FOOT) >
-                fixed(1, 3)) {  // pretty passable
-              remap = DisplayClass::FadingGreen;
-            } else {
-              remap = DisplayClass::FadingYellow;  // moderately passable
-            }
-          }
-        }
-      }
-
-      /*
-      **	This is the underlying terrain icon.
-      */
-      if (!ttype->Get_Image_Data().empty()) {
-        view.DrawStamp(ttype->Get_Image_Data(), icon, x, y, {},
-                       static_cast<int>(WINDOW_TACTICAL));
-        if (!remap.empty()) {
-          view.Remap(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
-                     ICON_PIXEL_W, ICON_PIXEL_H, remap);
-        }
-      }
-
-      if constexpr (config::kScenarioEditorEnabled) {
-        /*
-        **	Draw the map editor's "current" cell. This is the cell that can
-        **	be assigned attributes such as tag labels. This must be drawn
-        **	before the placement cursor, but after drawing the objects in
-        * the *	cell.
-        */
-        if (TheDebugState().map_editor_active() &&
-            TheWorld().current_cell() == Cell_Number()) {
-          view.DrawRect(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
-                        TheMap().TacPixelX + x + CELL_PIXEL_W - 1,
-                        TheMap().TacPixelY + y + CELL_PIXEL_H - 1, kYellow);
-        }
-      }
-
-      /*
-      **	Redraw any smudge.
-      */
-      if (Smudge != SMUDGE_NONE) {
-        SmudgeTypeClass::As_Reference(Smudge).Draw_It(view, x, y, SmudgeData);
-      }
-
-      /*
-      **	Draw the overlay object.
-      */
-      if (Overlay != OVERLAY_NONE) {
-        const OverlayTypeClass& otype = OverlayTypeClass::As_Reference(Overlay);
-        CC_Draw_Shape(view, otype.Get_Image_Data(), OverlayData,
-                      x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
-                      WINDOW_TACTICAL,
-                      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
-                      DisplayClass::UnitShadow);
-      }
-
-      if constexpr (config::kScenarioEditorEnabled) {
-        if (TheDebugState().map_editor_active()) {
-          /*
-          **	Draw the cell's Trigger mnemonic, if it has a trigger
-          */
-          if (Trigger.Is_Valid()) {
-            Fancy_Text_Print(view, Trigger->Class->IniName,
-                             x + TheMap().TacPixelX, y + TheMap().TacPixelY,
-                             &ThePalettes().color_remaps().at(PCOLOR_RED),
-                             kTBlack, TPF_EFNT | TPF_FULLSHADOW);
-          }
-
-          /*
-          **	Draw the cell's Waypoint designation if there is one.
-          */
-          if (IsWaypoint) {
-            char waypt[3];
-            for (int i = 0; i < ScenarioClass::kHomeWaypoint; i++) {
-              if (base::At(TheScenario().Waypoint, i) == Cell_Number()) {
-                if (i < 26) {
-                  base::At(waypt, 0) = static_cast<char>('A' + i);
-                  base::At(waypt, 1) = 0;
-                } else {
-                  base::At(waypt, 0) = static_cast<char>('A' + (i / 26) - 1);
-                  base::At(waypt, 1) = static_cast<char>('A' + (i % 26));
-                  base::At(waypt, 2) = 0;
-                }
-                Fancy_Text_Print(
-                    view, waypt, TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
-                    TheMap().TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
-                    &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
-                    TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
-                break;
-              }
-            }
-            if (base::At(TheScenario().Waypoint,
-                         ScenarioClass::kHomeWaypoint) == Cell_Number()) {
-              Fancy_Text_Print(view, "Home", TheMap().TacPixelX + x,
-                               TheMap().TacPixelY + y + (CELL_PIXEL_H)-7,
-                               &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                               kTBlack, TPF_EFNT | TPF_FULLSHADOW);
-            }
-            if (base::At(TheScenario().Waypoint,
-                         ScenarioClass::kReinforcementWaypoint) ==
-                Cell_Number()) {
-              Fancy_Text_Print(view, "Reinf", TheMap().TacPixelX + x,
-                               TheMap().TacPixelY + y + (CELL_PIXEL_H)-7,
-                               &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                               kTBlack, TPF_EFNT | TPF_FULLSHADOW);
-            }
-          }
-        }
-      }
-
-      /*
-      **	Draw the placement cursor:
-      **	- First, draw the hash-mark cursor, so it will appear underneath
-      **	  any cursor being drawn
-      **	- If the PendingObject is a template, overlay, or smudge, draw
-      *it *	- Otherwise, it's up to the Display.Refresh_Map() routine to
-      *draw it
-      */
-      if (IsCursorHere) {
-        SpeedType loco = SPEED_NONE;
-        if (TheMap().PendingObjectPtr &&
-            (TheMap().PendingObjectPtr->What_Am_I() == RTTI_BUILDING)) {
-          const auto* obj =
-              dynamic_cast<BuildingClass*>(TheMap().PendingObjectPtr);
-          loco = obj->Class->Speed;
-        }
-
-        /*
-        **	Draw the hash-mark cursor:
-        */
-        if (TheMap().ProximityCheck && Is_Clear_To_Build(loco)) {
-          view.DrawStamp(DisplayClass::TransIconset, 0, x, y, {},
-                         static_cast<int>(WINDOW_TACTICAL));
-        } else {
-          view.DrawStamp(DisplayClass::TransIconset, 2, x, y, {},
-                         static_cast<int>(WINDOW_TACTICAL));
-        }
-
-        if constexpr (config::kScenarioEditorEnabled) {
-          if (TheDebugState().map_editor_active() && TheMap().PendingObject) {
-            switch (TheMap().PendingObject->What_Am_I()) {
-              /*
-              **	Draw a template:
-              **	- Compute the icon offset of this cell for this
-              * template, *	  using ZoneCell+ZoneOffset to get the
-              * upper-left corner of *	  the placement cursor *	- Draw
-              * the icon
-              */
-              case RTTI_TEMPLATETYPE: {
-                const auto* tptr = dynamic_cast<const TemplateTypeClass*>(
-                    TheMap().PendingObject);
-                if (!tptr->Get_Image_Data().empty()) {
-                  const CELL cell = Cell_Number();
-                  icon = (Cell_X(cell) -
-                          Cell_X(static_cast<CELL>(TheMap().ZoneCell +
-                                                   TheMap().ZoneOffset))) +
-                         ((Cell_Y(cell) -
-                           Cell_Y(static_cast<CELL>(TheMap().ZoneCell +
-                                                    TheMap().ZoneOffset))) *
-                          tptr->Width);
-                  view.DrawStamp(tptr->Get_Image_Data(), icon, x, y, {},
-                                 static_cast<int>(WINDOW_TACTICAL));
-                }
-                break;
-              }
-
-              /*
-              **	Draw an overlay; just use the existing 'OverlayData'
-              * even *	though it means nothing.
-              */
-              case RTTI_OVERLAYTYPE:
-                OverlayTypeClass::As_Reference(
-                    dynamic_cast<const OverlayTypeClass*>(
-                        TheMap().PendingObject)
-                        ->Type)
-                    .Draw_It(view, x, y, OverlayData);
-                break;
-
-              /*
-              **	Draw a smudge
-              */
-              case RTTI_SMUDGETYPE:
-                SmudgeTypeClass::As_Reference(
-                    dynamic_cast<const SmudgeTypeClass*>(TheMap().PendingObject)
-                        ->Type)
-                    .Draw_It(view, x, y, 0);
-                break;
-
-              case RTTIType::RTTI_NONE:
-              case RTTIType::RTTI_AIRCRAFT:
-              case RTTIType::RTTI_AIRCRAFTTYPE:
-              case RTTIType::RTTI_ANIM:
-              case RTTIType::RTTI_ANIMTYPE:
-              case RTTIType::RTTI_BUILDING:
-              case RTTIType::RTTI_BUILDINGTYPE:
-              case RTTIType::RTTI_BULLET:
-              case RTTIType::RTTI_BULLETTYPE:
-              case RTTIType::RTTI_CELL:
-              case RTTIType::RTTI_FACTORY:
-              case RTTIType::RTTI_HOUSE:
-              case RTTIType::RTTI_HOUSETYPE:
-              case RTTIType::RTTI_INFANTRY:
-              case RTTIType::RTTI_INFANTRYTYPE:
-              case RTTIType::RTTI_OVERLAY:
-              case RTTIType::RTTI_SMUDGE:
-              case RTTIType::RTTI_SPECIAL:
-              case RTTIType::RTTI_TEAM:
-              case RTTIType::RTTI_TEAMTYPE:
-              case RTTIType::RTTI_TEMPLATE:
-              case RTTIType::RTTI_TERRAIN:
-              case RTTIType::RTTI_TERRAINTYPE:
-              case RTTIType::RTTI_TRIGGER:
-              case RTTIType::RTTI_TRIGGERTYPE:
-              case RTTIType::RTTI_UNIT:
-              case RTTIType::RTTI_UNITTYPE:
-              case RTTIType::RTTI_VESSEL:
-              case RTTIType::RTTI_VESSELTYPE:
-              default:
-                break;
-            }
-          }
-        }
-      }
-
-      /*
-      **	Draw the flag if there is one located at this cell.
-      */
-      if (IsFlagged) {
-        const auto flag_remap =
-            HouseClass::As_Pointer(Owner)->Remap_Table(false, REMAP_NORMAL);
-        CC_Draw_Shape(view, MixArchive::RetrieveData("FLAGFLY.SHP"),
-                      static_cast<int>(CurrentFrame() % 14),
-                      x + (ICON_PIXEL_W / 2), y + (ICON_PIXEL_H / 2),
-                      WINDOW_TACTICAL,
-                      SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, flag_remap,
-                      DisplayClass::UnitShadow);
-      }
-    }
+  /*
+  **	Fetch a pointer to the template type associated with this cell.
+  */
+  if (TType != TEMPLATE_NONE && TType != TEMPLATE_CLEAR1 &&
+      TType != static_cast<TemplateType>(255)) {
+    ttype = &TemplateTypeClass::As_Reference(TType);
+    icon = TIcon;
+  } else {
+    ttype = &TemplateTypeClass::As_Reference(TEMPLATE_CLEAR1);
+    icon = Clear_Icon();
   }
 
-  if constexpr (config::kSortDrawEnabled) {
-    if (objects) {
+  bool draw_debug_icon = false;
+  if constexpr (config::kCheatKeysEnabled) {
+    draw_debug_icon = TheDebugState().show_cell_info();
+  }
+
+  if (draw_debug_icon) {
+    /*
+    **	Draw debug cell visualization instead of normal terrain.
+    */
+    const CELL cell = Cell_Number();
+    view.FillRect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
+                  TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
+                  TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
+                  static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
+    Fancy_Text_Print(
+        view, "%02X%02X\r%d%d%d\r%d %d",
+        TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
+        &ThePalettes().grey_scheme(), kTBlack,
+        TPF_EFNT | TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW, Cell_Y(cell),
+        Cell_X(cell), Zones.at(MZONE_NORMAL), Zones.at(MZONE_CRUSHER),
+        Zones.at(MZONE_DESTROYER), Overlay, OverlayData);
+  } else {
+    if constexpr (config::kScenarioEditorEnabled) {
       /*
-      **	Build a list of objects to draw into a working buffer. There is
-      * a *	big presumption here -- it is presumed that if the cell is to be
-      **	redrawn, then all objects in the cell should properly be flagged
-      * to *	be redrawn as well. Normally, this isn't a problem, but for subs
-      **	the IsToDisplay flag MUST REMAIN SET. This is because there is a
-      **	hack overpass after the cells are redrawn so that subs can be
-      **	redrawn separately.
+      **	Set up the remap table for this icon.
       */
-      ObjectClass* optr[20 + kOverlapperCount];
-      int count = 0;
-      ObjectClass* object = Cell_Occupier();
-      while (object != nullptr) {
-        if (!object->IsActive) {
-          break;
-        }
-        base::At(optr, count) = object;
-        object->IsToDisplay = true;
-        object = object->Next;
-        count++;
-      }
-      for (int index = 0; index < std::ssize(Overlappers); index++) {
-        object = base::At(Overlappers, index);
-        if (object != nullptr && object->IsActive) {
-          object->IsToDisplay = true;
-          base::At(optr, count) = object;
-          count++;
-        }
-      }
-
-      /*
-      **	Sort the object list so that objects will be drawn from
-      **	back to front.
-      */
-      switch (count) {
-        /*
-        **	If there are zero or one object, then sorting is
-        **	unnecessary.
-        */
-        case 0:
-        case 1:
-          break;
-
-        /*
-        **	Two objects can be sorted with a single compare and swap.
-        */
-        case 2:
-          if (base::At(optr, 0)->Sort_Y() > base::At(optr, 1)->Sort_Y()) {
-            std::swap(base::At(optr, 0), base::At(optr, 1));
-          }
-          break;
-
-        /*
-        **	Three objects can be sorted with three compares and swaps.
-        */
-        case 3:
-          if (base::At(optr, 0)->Sort_Y() > base::At(optr, 2)->Sort_Y()) {
-            std::swap(base::At(optr, 0), base::At(optr, 2));
-          }
-          if (base::At(optr, 0)->Sort_Y() > base::At(optr, 1)->Sort_Y()) {
-            std::swap(base::At(optr, 0), base::At(optr, 1));
-          }
-          if (base::At(optr, 1)->Sort_Y() > base::At(optr, 2)->Sort_Y()) {
-            std::swap(base::At(optr, 1), base::At(optr, 2));
-          }
-          break;
-
-        /*
-        **	Large number of objects can be effeciently sorted by using
-        **	a quicksort.
-        */
-        default:
-          std::ranges::sort(
-              std::span(optr).first(base::ToSize(count)),
-              [](const ObjectClass* left, const ObjectClass* right) {
-                return *left < *right;  // Compares Sort_Y().
-              });
-          break;
-      }
-
-      /*
-      **	Draw any objects that happen to be in or overlapping this cell.
-      */
-      for (int index = 0; index < count; index++) {
-        object = base::At(optr, index);
-        int xx = 0;
-        int yy = 0;
-        if ((object->IsToDisplay &&
-             (!object->Is_Techno() ||
-              dynamic_cast<const TechnoClass*>(object)->Visual_Character() ==
-                  VISUAL_NORMAL) &&
-             TheMap().Coord_To_Pixel(object->Render_Coord(), xx, yy)) &&
-            Calc_Partial_Window(x, y, xx, yy)) {
-          object->Draw_It(view, xx, yy, WINDOW_PARTIAL);
-          // IsToDisplay clearing moved to frame end in DisplayClass::Draw_It
-          // to prevent flickering when render rate exceeds logic tick rate.
-          if (TheDebugState().map_editor_active()) {
-            object->IsToDisplay = true;
+      if (TheDebugState().map_editor_active() &&
+          TheDebugState().show_passability()) {
+        if (TheRules().ground().at(Land).Cost.at(SPEED_FOOT) == 0 ||
+            (Cell_Occupier() != nullptr &&
+             Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
+          remap = DisplayClass::FadingRed;
+        } else {
+          if (TheRules().ground().at(Land).Cost.at(SPEED_FOOT) >
+              fixed(1, 3)) {  // pretty passable
+            remap = DisplayClass::FadingGreen;
+          } else {
+            remap = DisplayClass::FadingYellow;  // moderately passable
           }
         }
       }
+    }
+
+    /*
+    **	This is the underlying terrain icon.
+    */
+    if (!ttype->Get_Image_Data().empty()) {
+      view.DrawStamp(ttype->Get_Image_Data(), icon, x, y, {},
+                     static_cast<int>(WINDOW_TACTICAL));
+      if (!remap.empty()) {
+        view.Remap(x + TheMap().TacPixelX, y + TheMap().TacPixelY, ICON_PIXEL_W,
+                   ICON_PIXEL_H, remap);
+      }
+    }
+
+    if constexpr (config::kScenarioEditorEnabled) {
+      /*
+      **	Draw the map editor's "current" cell. This is the cell that can
+      **	be assigned attributes such as tag labels. This must be drawn
+      **	before the placement cursor, but after drawing the objects in
+      * the *	cell.
+      */
+      if (TheDebugState().map_editor_active() &&
+          TheWorld().current_cell() == Cell_Number()) {
+        view.DrawRect(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
+                      TheMap().TacPixelX + x + CELL_PIXEL_W - 1,
+                      TheMap().TacPixelY + y + CELL_PIXEL_H - 1, kYellow);
+      }
+    }
+
+    /*
+    **	Redraw any smudge.
+    */
+    if (Smudge != SMUDGE_NONE) {
+      SmudgeTypeClass::As_Reference(Smudge).Draw_It(view, x, y, SmudgeData);
+    }
+
+    /*
+    **	Draw the overlay object.
+    */
+    if (Overlay != OVERLAY_NONE) {
+      const OverlayTypeClass& otype = OverlayTypeClass::As_Reference(Overlay);
+      CC_Draw_Shape(view, otype.Get_Image_Data(), OverlayData,
+                    x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
+                    WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
+                    {}, DisplayClass::UnitShadow);
+    }
+
+    if constexpr (config::kScenarioEditorEnabled) {
+      if (TheDebugState().map_editor_active()) {
+        /*
+        **	Draw the cell's Trigger mnemonic, if it has a trigger
+        */
+        if (Trigger.Is_Valid()) {
+          Fancy_Text_Print(view, Trigger->Class->IniName,
+                           x + TheMap().TacPixelX, y + TheMap().TacPixelY,
+                           &ThePalettes().color_remaps().at(PCOLOR_RED),
+                           kTBlack, TPF_EFNT | TPF_FULLSHADOW);
+        }
+
+        /*
+        **	Draw the cell's Waypoint designation if there is one.
+        */
+        if (IsWaypoint) {
+          char waypt[3];
+          for (int i = 0; i < ScenarioClass::kHomeWaypoint; i++) {
+            if (base::At(TheScenario().Waypoint, i) == Cell_Number()) {
+              if (i < 26) {
+                base::At(waypt, 0) = static_cast<char>('A' + i);
+                base::At(waypt, 1) = 0;
+              } else {
+                base::At(waypt, 0) = static_cast<char>('A' + (i / 26) - 1);
+                base::At(waypt, 1) = static_cast<char>('A' + (i % 26));
+                base::At(waypt, 2) = 0;
+              }
+              Fancy_Text_Print(view, waypt,
+                               TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
+                               TheMap().TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
+                               &ThePalettes().color_remaps().at(PCOLOR_RED),
+                               kTBlack, TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
+              break;
+            }
+          }
+          if (base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) ==
+              Cell_Number()) {
+            Fancy_Text_Print(view, "Home", TheMap().TacPixelX + x,
+                             TheMap().TacPixelY + y + (CELL_PIXEL_H)-7,
+                             &ThePalettes().color_remaps().at(PCOLOR_GREY),
+                             kTBlack, TPF_EFNT | TPF_FULLSHADOW);
+          }
+          if (base::At(TheScenario().Waypoint,
+                       ScenarioClass::kReinforcementWaypoint) ==
+              Cell_Number()) {
+            Fancy_Text_Print(view, "Reinf", TheMap().TacPixelX + x,
+                             TheMap().TacPixelY + y + (CELL_PIXEL_H)-7,
+                             &ThePalettes().color_remaps().at(PCOLOR_GREY),
+                             kTBlack, TPF_EFNT | TPF_FULLSHADOW);
+          }
+        }
+      }
+    }
+
+    /*
+    **	Draw the placement cursor:
+    **	- First, draw the hash-mark cursor, so it will appear underneath
+    **	  any cursor being drawn
+    **	- If the PendingObject is a template, overlay, or smudge, draw
+    *it *	- Otherwise, it's up to the Display.Refresh_Map() routine to
+    *draw it
+    */
+    if (IsCursorHere) {
+      SpeedType loco = SPEED_NONE;
+      if (TheMap().PendingObjectPtr &&
+          (TheMap().PendingObjectPtr->What_Am_I() == RTTI_BUILDING)) {
+        const auto* obj =
+            dynamic_cast<BuildingClass*>(TheMap().PendingObjectPtr);
+        loco = obj->Class->Speed;
+      }
+
+      /*
+      **	Draw the hash-mark cursor:
+      */
+      if (TheMap().ProximityCheck && Is_Clear_To_Build(loco)) {
+        view.DrawStamp(DisplayClass::TransIconset, 0, x, y, {},
+                       static_cast<int>(WINDOW_TACTICAL));
+      } else {
+        view.DrawStamp(DisplayClass::TransIconset, 2, x, y, {},
+                       static_cast<int>(WINDOW_TACTICAL));
+      }
+
+      if constexpr (config::kScenarioEditorEnabled) {
+        if (TheDebugState().map_editor_active() && TheMap().PendingObject) {
+          switch (TheMap().PendingObject->What_Am_I()) {
+            /*
+            **	Draw a template:
+            **	- Compute the icon offset of this cell for this
+            * template, *	  using ZoneCell+ZoneOffset to get the
+            * upper-left corner of *	  the placement cursor *	- Draw
+            * the icon
+            */
+            case RTTI_TEMPLATETYPE: {
+              const auto* tptr = dynamic_cast<const TemplateTypeClass*>(
+                  TheMap().PendingObject);
+              if (!tptr->Get_Image_Data().empty()) {
+                const CELL cell = Cell_Number();
+                icon = (Cell_X(cell) -
+                        Cell_X(static_cast<CELL>(TheMap().ZoneCell +
+                                                 TheMap().ZoneOffset))) +
+                       ((Cell_Y(cell) -
+                         Cell_Y(static_cast<CELL>(TheMap().ZoneCell +
+                                                  TheMap().ZoneOffset))) *
+                        tptr->Width);
+                view.DrawStamp(tptr->Get_Image_Data(), icon, x, y, {},
+                               static_cast<int>(WINDOW_TACTICAL));
+              }
+              break;
+            }
+
+            /*
+            **	Draw an overlay; just use the existing 'OverlayData'
+            * even *	though it means nothing.
+            */
+            case RTTI_OVERLAYTYPE:
+              OverlayTypeClass::As_Reference(
+                  dynamic_cast<const OverlayTypeClass*>(TheMap().PendingObject)
+                      ->Type)
+                  .Draw_It(view, x, y, OverlayData);
+              break;
+
+            /*
+            **	Draw a smudge
+            */
+            case RTTI_SMUDGETYPE:
+              SmudgeTypeClass::As_Reference(
+                  dynamic_cast<const SmudgeTypeClass*>(TheMap().PendingObject)
+                      ->Type)
+                  .Draw_It(view, x, y, 0);
+              break;
+
+            case RTTIType::RTTI_NONE:
+            case RTTIType::RTTI_AIRCRAFT:
+            case RTTIType::RTTI_AIRCRAFTTYPE:
+            case RTTIType::RTTI_ANIM:
+            case RTTIType::RTTI_ANIMTYPE:
+            case RTTIType::RTTI_BUILDING:
+            case RTTIType::RTTI_BUILDINGTYPE:
+            case RTTIType::RTTI_BULLET:
+            case RTTIType::RTTI_BULLETTYPE:
+            case RTTIType::RTTI_CELL:
+            case RTTIType::RTTI_FACTORY:
+            case RTTIType::RTTI_HOUSE:
+            case RTTIType::RTTI_HOUSETYPE:
+            case RTTIType::RTTI_INFANTRY:
+            case RTTIType::RTTI_INFANTRYTYPE:
+            case RTTIType::RTTI_OVERLAY:
+            case RTTIType::RTTI_SMUDGE:
+            case RTTIType::RTTI_SPECIAL:
+            case RTTIType::RTTI_TEAM:
+            case RTTIType::RTTI_TEAMTYPE:
+            case RTTIType::RTTI_TEMPLATE:
+            case RTTIType::RTTI_TERRAIN:
+            case RTTIType::RTTI_TERRAINTYPE:
+            case RTTIType::RTTI_TRIGGER:
+            case RTTIType::RTTI_TRIGGERTYPE:
+            case RTTIType::RTTI_UNIT:
+            case RTTIType::RTTI_UNITTYPE:
+            case RTTIType::RTTI_VESSEL:
+            case RTTIType::RTTI_VESSELTYPE:
+            default:
+              break;
+          }
+        }
+      }
+    }
+
+    /*
+    **	Draw the flag if there is one located at this cell.
+    */
+    if (IsFlagged) {
+      const auto flag_remap =
+          HouseClass::As_Pointer(Owner)->Remap_Table(false, REMAP_NORMAL);
+      CC_Draw_Shape(view, MixArchive::RetrieveData("FLAGFLY.SHP"),
+                    static_cast<int>(CurrentFrame() % 14),
+                    x + (ICON_PIXEL_W / 2), y + (ICON_PIXEL_H / 2),
+                    WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING,
+                    flag_remap, DisplayClass::UnitShadow);
     }
   }
 }

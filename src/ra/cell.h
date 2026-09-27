@@ -48,7 +48,6 @@
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/ccptr.h"
-#include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/foot.h"
 #include "ra/object.h"
@@ -187,10 +186,10 @@ class CellClass {
   ObjectClass* OccupierPtr{nullptr};
 
  public:
-  // The cell-sorted renderer tracks more overlapping objects per cell. This
-  // sets the maximum overlapper count accepted when loading a save.
-  static constexpr base::ssize kOverlapperCount =
-      config::kSortDrawEnabled ? 10 : 6;
+  // Saves hold this many overlappers per cell, and it is the most a save may
+  // hold when loading. The shipped game kept 6; the port kept 10 for its
+  // cell-sorted renderer, and saves since then carry 10.
+  static constexpr base::ssize kOverlapperCount = 10;
   ObjectClass* Overlappers[kOverlapperCount]{};
 
   /*
@@ -296,7 +295,11 @@ class CellClass {
   /*
   **	Display and rendering controls.
   */
-  void Draw_It(PixelView& view, int x, int y, bool objects = false) const;
+  // Draws the cell's terrain, smudge, overlay and flag at pixel `x`, `y` of
+  // the tactical view. Objects are drawn by DisplayClass::RenderObjects().
+  void Draw_It(PixelView& view, int x, int y) const;
+  // Flags the cell for the next repaint of the tactical view, if it is in
+  // view and not flagged already (`forced` flags it regardless).
   void Redraw_Objects(bool forced = false);
   void Shimmer();
 

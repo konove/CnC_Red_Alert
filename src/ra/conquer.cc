@@ -64,7 +64,6 @@
 #include "ra/config.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
-#include "ra/display.h"
 #include "ra/event.h"
 #include "ra/filepcx.h"
 #include "ra/game_clock.h"
@@ -687,15 +686,6 @@ bool RunFrame() {
   // Save map's position & selected objects, if we're recording the game.
   if (TheSession().Record || TheSession().Play) {
     Do_Record_Playback();
-  }
-
-  if constexpr (!config::kSortDrawEnabled) {
-    // Sort the map's ground layer by y-coordinate value.  This is done
-    // outside the IsToRedraw check, for the purposes of keeping the game in
-    // sync between machines; this way, all machines will sort the Map's layer
-    // in the same way, and any processing done that's based on the order of
-    // this layer will remain in sync.
-    DisplayClass::Layer.at(LAYER_GROUND).Sort();
   }
 
   // AI logic operations are performed here.

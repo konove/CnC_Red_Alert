@@ -2,7 +2,8 @@
 
 Written 2026-09-27, on the tree at 69f28795.
 
-**Status: in progress.** Step 0 is c19e606f; step 1 is the commit that records it below.
+**Status: in progress.** Step 0 is c19e606f, step 1 34c350e9, step 2 the commit that records it
+below.
 
 ### Progress
 
