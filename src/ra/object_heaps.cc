@@ -86,6 +86,12 @@ ObjectHeaps::ObjectHeaps() {
 }
 
 ObjectHeaps::~ObjectHeaps() {
+  // The heaps free their buffers without running element destructors, and
+  // the houses own their unit trackers. The units' and buildings'
+  // destructors reach into the game through its globals, so they stay
+  // unrun.
+  house_.Destroy_All();
+
   CCPtr<AircraftClass>::BindHeap(nullptr);
   CCPtr<AnimClass>::BindHeap(nullptr);
   CCPtr<BuildingClass>::BindHeap(nullptr);

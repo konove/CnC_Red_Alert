@@ -776,7 +776,9 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
  *   12/17/1994 JLB : Resets tracker bits.                                 *
  *=========================================================================*/
 void HouseClass::Init() {
-  TheObjectHeaps().house().Free_All();
+  // Destroyed rather than just freed: an Internet game's houses own their
+  // unit trackers.
+  TheObjectHeaps().house().Destroy_All();
 
   for (const HousesType index : magic_enum::enum_values<HousesType>()) {
     TheWorld().house_triggers().at(index).Clear();

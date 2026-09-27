@@ -407,7 +407,10 @@ only where the two games' layouts already match.
   LeakSanitizer reports. The loop runs with the right counts, and
   `__lsan_do_recoverable_leak_check()` reports nothing leaked at that point, but the vectors'
   capacity is unchanged after the loop assigns an empty vector over them, and the final total is the
-  same whether the loop runs or not. A TODO in `type_heaps.cc` records it.
+  same whether the loop runs or not. A TODO in `type_heaps.cc` records it. Fixed 2026-09-27:
+  `vector = {}` picks the `initializer_list` assignment, which empties the vector but keeps its
+  storage. `~TypeHeaps` now runs the type objects' destructors (`TFixedIHeapClass::Destroy_All()`),
+  and the TD `HouseClass` trackers leak is fixed the same way.
 - 2026-09-20: phase 6 done for both games in four steps (460aec01..78aeda09), with the exceptions
   below. `GameClock` (`ra/game_clock.h`, `td/game_clock.h`) holds the frame counter and is the first
   member of `Game`, so it exists before anything that holds a frame-based timer; reads go through

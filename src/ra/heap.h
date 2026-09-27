@@ -44,6 +44,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <new>
 #include <span>
 #include <string>
@@ -273,6 +274,16 @@ class TFixedIHeapClass : public FixedIHeapClass {
   }
 
   T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
+  // Runs the destructor of every active object, then frees every slot.
+  // Free_All() alone hands the slots back without destroying what is in
+  // them, which leaks whatever the objects own; this is for objects whose
+  // destructors only release memory, not ones that act on the game.
+  void Destroy_All() {
+    for (int i = 0; i < Count(); i++) {
+      std::destroy_at(Ptr(i));
+    }
+    Free_All();
+  }
   bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   // Writes the active count, then each object's slot index and contents.
   bool Save(ByteSink& file) const

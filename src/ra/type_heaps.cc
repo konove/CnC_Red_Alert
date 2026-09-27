@@ -52,34 +52,21 @@ TypeHeaps::TypeHeaps() {
 }
 
 TypeHeaps::~TypeHeaps() {
-  // TFixedIHeapClass frees its buffer without running element destructors,
-  // so the owning members of every type object are released by hand. This
-  // ran in ShutDownEngine() before the heaps moved here.
-  //
-  // TODO: it does not actually return the memory. LeakSanitizer reports the
-  // same 26 KB of DimensionData and RadarIcon storage whether this loop runs
-  // or not, and the vectors' capacity is unchanged after the assignment, so
-  // something about reaching them through the heap is wrong. The leak
-  // predates this file; see docs/GLOBALS_PLAN.md.
-  const auto release = [](auto& heap) {
-    for (int i = 0; i < heap.Count(); i++) {
-      ObjectTypeClass* const object_type = heap.Ptr(i);
-      object_type->DimensionData = {};
-      object_type->RadarIcon = {};
-      object_type->ClearImage();
-    }
-  };
-  release(aircraft_);
-  release(anim_);
-  release(building_);
-  release(bullet_);
-  release(infantry_);
-  release(overlay_);
-  release(smudge_);
-  release(template_);
-  release(terrain_);
-  release(unit_);
-  release(vessel_);
+  // The heaps free their buffers without running element destructors, so
+  // the type objects are destroyed here: they own their image dimensions and
+  // radar icons.
+  house_.Destroy_All();
+  building_.Destroy_All();
+  aircraft_.Destroy_All();
+  infantry_.Destroy_All();
+  bullet_.Destroy_All();
+  anim_.Destroy_All();
+  unit_.Destroy_All();
+  vessel_.Destroy_All();
+  template_.Destroy_All();
+  terrain_.Destroy_All();
+  overlay_.Destroy_All();
+  smudge_.Destroy_All();
 
   CCPtr<HouseTypeClass>::BindHeap(nullptr);
   CCPtr<BuildingTypeClass>::BindHeap(nullptr);

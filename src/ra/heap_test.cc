@@ -6,6 +6,7 @@
 #include <span>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
@@ -230,6 +231,35 @@ TEST(HeapSerializeTest, SlotIndexOutOfRangeFails) {
 }  // namespace
 
 namespace {
+
+// Counts how many times its destructor has run.
+class DestructorCounter {
+ public:
+  explicit DestructorCounter(int& destroyed ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : destroyed_(&destroyed) {}
+  ~DestructorCounter() { ++*destroyed_; }
+  DestructorCounter(const DestructorCounter&) = delete;
+  DestructorCounter& operator=(const DestructorCounter&) = delete;
+  DestructorCounter(DestructorCounter&&) = delete;
+  DestructorCounter& operator=(DestructorCounter&&) = delete;
+
+ private:
+  int* destroyed_;
+};
+
+TEST(HeapDestroyTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
+  TFixedIHeapClass<DestructorCounter> heap;
+  heap.Set_Heap(3);
+  int destroyed = 0;
+  std::construct_at(heap.Alloc(), destroyed);
+  std::construct_at(heap.Alloc(), destroyed);
+
+  heap.Destroy_All();
+
+  EXPECT_EQ(destroyed, 2);
+  EXPECT_EQ(heap.Count(), 0);
+  EXPECT_EQ(heap.Avail(), 3);
+}
 
 TEST(RaCheckedContainerTest, VectorAccessPreservesConstnessAndCapacity) {
   VectorClass<int> values(2);
