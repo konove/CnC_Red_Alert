@@ -44,6 +44,7 @@
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/foot.h"
+#include "ra/game_clock.h"
 #include "ra/jshell.h"
 
 /****************************************************************************

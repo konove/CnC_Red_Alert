@@ -45,7 +45,6 @@
 #include "ra/inline.h"
 #include "ra/input.h"
 #include "ra/installation.h"
-#include "ra/jshell.h"
 #include "ra/link.h"
 #include "ra/msgbox.h"
 #include "ra/palettes.h"

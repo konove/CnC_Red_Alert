@@ -53,6 +53,7 @@
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
+#include "ra/game_clock.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
 #include "ra/object.h"

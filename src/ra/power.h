@@ -50,6 +50,7 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/gadget.h"
+#include "ra/game_clock.h"
 #include "ra/jshell.h"
 #include "ra/radar.h"
 

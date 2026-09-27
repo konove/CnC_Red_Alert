@@ -32,10 +32,17 @@
 #include <concepts>
 #include <cstdint>
 
+#include "engine/platform/timer.h"
 
 template <typename T>
 concept TickSource = requires {
   { T::Tick() } -> std::convertible_to<int64_t>;
+};
+
+// Ticks at 60 per second of real time, whether or not the game is running.
+// For menus, animations and network timeouts.
+struct SystemTickSource {
+  static int64_t Tick() { return SystemTicks(); }
 };
 
 // A count-up timer with stop/start (pause/resume).

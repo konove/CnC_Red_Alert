@@ -53,6 +53,7 @@
 #include "engine/platform/ftimer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
+#include "ra/game_clock.h"
 #include "ra/jshell.h"
 #include "ra/object.h"
 #include "ra/teamtype.h"

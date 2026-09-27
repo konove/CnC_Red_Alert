@@ -2,7 +2,7 @@
 
 Written 2026-09-27.
 
-**Status: in progress.** Step 1 done.
+**Status: in progress.** Steps 1 and 2 done.
 
 ## Context
 
@@ -71,7 +71,9 @@ Each step builds, passes ctest and the strict checks, and is its own commit.
    pause/resume for both templates, `Set` while stopped, stopped at zero (the new `Clear()`),
    `Reset`, negative-load rejection. Done.
 2. **Move the tick sources.** `SystemTickSource` into `engine/platform/ftimer.h`; `FrameTickSource`
-   into `ra/game_clock.h`, and a TD copy into `td/game_clock.h`. `ra/jshell.h` loses both.
+   into `ra/game_clock.h`, and a TD copy into `td/game_clock.h`. `ra/jshell.h` loses both. Done;
+   `jshell.h` also dropped its `timer.h` and `game_clock.h` includes, and three `.cc` files that
+   included `jshell.h` only for the tick sources no longer do.
 3. **TD frame countdowns.** `TCountDownTimerClass` → `Timer<FrameTickSource>` in the 34 declarations
    and their uses, compiler-driven: `x = n` → `x.Set(n)`, implicit reads → `x.Value()`, `Time()` →
    `Value()`, `Expired()` → `IsFinished()`, `Clear()` → `Set(0); Stop();`. Rewrite the

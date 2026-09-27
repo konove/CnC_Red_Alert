@@ -57,9 +57,7 @@
 #include "base/numeric.h"
 #include "base/strings/format.h"
 #include "base/types.h"
-#include "engine/platform/timer.h"
 #include "ra/compat.h"
-#include "ra/game_clock.h"
 #include "ra/palette.h"
 
 class ByteStream;
@@ -158,16 +156,6 @@ inline int First_False_Bit(std::span<const uint32_t> array) {
   }
   return -1;
 }
-
-// Tick sources for Ticker<T>. Each provides a Tick() function that
-// returns the current value of a specific time source.
-struct FrameTickSource {
-  static int64_t Tick() { return CurrentFrame(); }
-};
-
-struct SystemTickSource {
-  static int64_t Tick() { return SystemTicks(); }
-};
 
 template <class T>
 void Bubble_Sort(std::span<T> array, int count) {

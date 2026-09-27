@@ -47,6 +47,7 @@
 #include "engine/platform/ftimer.h"
 #include "engine/window/keyboard.h"
 #include "ra/credits.h"
+#include "ra/game_clock.h"
 #include "ra/jshell.h"
 #include "ra/sidebar.h"
 

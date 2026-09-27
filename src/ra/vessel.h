@@ -54,6 +54,7 @@
 #include "ra/drive.h"
 #include "ra/face.h"
 #include "ra/facing.h"
+#include "ra/game_clock.h"
 #include "ra/jshell.h"
 #include "ra/object.h"
 #include "ra/radio.h"

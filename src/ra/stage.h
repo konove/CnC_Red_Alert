@@ -41,6 +41,7 @@
 #define CNC_RED_ALERT_RA_STAGE_H_
 
 #include "engine/platform/ftimer.h"
+#include "ra/game_clock.h"
 #include "ra/jshell.h"
 
 class StageClass {

@@ -14,7 +14,6 @@
 #include "gtest/gtest.h"
 #include "ra/defines.h"
 #include "ra/game_clock.h"
-#include "ra/jshell.h"
 
 // The game clock Game owns in the real game.
 namespace {

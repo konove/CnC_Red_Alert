@@ -57,6 +57,7 @@
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/flasher.h"
+#include "ra/game_clock.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/object.h"

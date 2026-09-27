@@ -49,6 +49,7 @@
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/face.h"
+#include "ra/game_clock.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/object.h"

@@ -51,4 +51,11 @@ inline int64_t CurrentFrame() {
   return base::Installed<GameClock>::IsInstalled() ? TheGameClock().frame() : 0;
 }
 
+// Ticks once per game frame, so it stops while the game is paused and stays
+// in step across a network game. For timers that are part of the simulation
+// and go into a saved game.
+struct FrameTickSource {
+  static int64_t Tick() { return CurrentFrame(); }
+};
+
 #endif  // CNC_RED_ALERT_RA_GAME_CLOCK_H_

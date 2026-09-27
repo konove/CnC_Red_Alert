@@ -62,7 +62,6 @@
 #include "magic_enum/magic_enum.hpp"  // IWYU pragma: keep - used by an DCHECK() below.
 #include "ra/defines.h"
 #include "ra/input.h"
-#include "ra/jshell.h"
 #include "ra/scroll.h"
 
 /*

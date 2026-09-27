@@ -47,6 +47,7 @@
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
 #include "ra/defines.h"
+#include "ra/game_clock.h"
 #include "ra/jshell.h"
 
 /*
