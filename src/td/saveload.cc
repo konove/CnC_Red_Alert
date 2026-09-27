@@ -349,7 +349,7 @@ bool Load_Game(int id) {
   *created, so *	they'll be properly created.
   */
   if (!TheMap().Load(reader)) {
-    DLOG(ERROR) << "Cannot load saved map: " << reader.error();
+    LOG(ERROR) << "Cannot load saved map: " << reader.error();
     return false;
   }
 
@@ -372,7 +372,7 @@ bool Load_Game(int id) {
       !TheObjectHeaps().terrain().Load(reader) ||
       !TheObjectHeaps().unit().Load(reader) ||
       !TheObjectHeaps().factory().Load(reader)) {
-    DLOG(ERROR) << "Cannot load saved heaps: " << reader.error();
+    LOG(ERROR) << "Cannot load saved heaps: " << reader.error();
     return false;
   }
 
@@ -400,7 +400,7 @@ bool Load_Game(int id) {
   */
   TheWorld().logic().Serialize(reader);
   if (!reader.ok()) {
-    DLOG(ERROR) << "Cannot load saved state: " << reader.error();
+    LOG(ERROR) << "Cannot load saved state: " << reader.error();
     return false;
   }
   for (auto& i : MouseClass::Layer) {
@@ -416,7 +416,7 @@ bool Load_Game(int id) {
   */
   TheWorld().score().Serialize(reader);
   if (!reader.ok()) {
-    DLOG(ERROR) << "Cannot load saved state: " << reader.error();
+    LOG(ERROR) << "Cannot load saved state: " << reader.error();
     return false;
   }
 
@@ -425,7 +425,7 @@ bool Load_Game(int id) {
   */
   TheWorld().base().Serialize(reader);
   if (!reader.ok()) {
-    DLOG(ERROR) << "Cannot load saved state: " << reader.error();
+    LOG(ERROR) << "Cannot load saved state: " << reader.error();
     return false;
   }
 
@@ -433,7 +433,7 @@ bool Load_Game(int id) {
   **	Load miscellaneous variables, including the map size & the Theater
   */
   if (!Load_Misc_Values(reader)) {
-    DLOG(ERROR) << "Cannot load saved globals: " << reader.error();
+    LOG(ERROR) << "Cannot load saved globals: " << reader.error();
     return false;
   }
 

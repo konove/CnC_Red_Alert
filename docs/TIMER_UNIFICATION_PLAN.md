@@ -85,7 +85,8 @@ Each step builds, passes ctest and the strict checks, and is its own commit.
    `Set()`, five `Clear()` calls `Set(0); Stop();`, and `MissionClass::Timer` (private) became
    `MissionTimer`, as in RA. Every smoke fixture's state comparison passes; the `--building`,
    `--mobile`, `--globals` and `--map` rejection scripts fail on the pre-change binary too, because
-   the messages they look for are `DLOG`ged and `NDEBUG` builds drop them.
+   the messages they look for are `DLOG`ged and `NDEBUG` builds drop them. Those messages are
+   `LOG(ERROR)` since the timer work, and the scripts pass.
 
 4. **System-tick timers in both games.** `CountDownTimerClass` → `Timer<SystemTickSource>`,
    `TimerClass` → `Stopwatch<SystemTickSource>` (`Set(0, true)` → `Reset()`, `Time()` → `Value()`).
