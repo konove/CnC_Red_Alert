@@ -2,8 +2,9 @@
 
 Written 2026-09-27, on the tree at 69f28795.
 
-**Status: in progress.** Step 0 is c19e606f, step 1 34c350e9, step 2 602da368; step 3 needed no
-code.
+**Status: complete (2026-09-27), apart from the human check on a real display.** Step 0 is c19e606f,
+step 1 34c350e9 (with the cursor fix 02e6cbcd), step 2 602da368, step 3 needed no code, step 4
+1be2194c and the commit that records it below.
 
 ### Progress
 
@@ -24,11 +25,24 @@ code.
   sleeps to hold presents to 70 a second, and each pass renders at most once. That bounds repaints
   at 70 a second, about 22 ms of CPU a second at 310 µs each. Headless SCG10EA to frame 600 used
   2.57 s of user time over 40 s both before step 1 and after step 2.
+- **Step 4 (TD full repaint): done.** Same `Draw_It`/`RenderObjects()` shape as RA, without the
+  vortex; the logic-side `Layer.Sort()` calls stay. Two things turned up on the way:
+  - The removed scroll code called `Set_Cursor_Pos(-1)` when the view moved, which puts `ZoneCell`
+    (saved) on the cell under the mouse. TD's per-frame `mapstate` hash caught its absence; both
+    games call it again (02e6cbcd for RA).
+  - `AircraftClass::Draw_It` stepped `Jitter`, the saved hover bob, on every draw. With every object
+    drawn on every repaint, `td_saveload_smoke.sh --mobile` failed 2 runs in 6. It now steps in
+    `AI()` (1be2194c), and the check passes 6 in 6.
 
-Red Alert draws the map with the cell-sorted renderer (`config::kSortDrawEnabled`); Tiberian Dawn
-still uses the original y-sorted layer. Both exist only to avoid repainting the whole tactical view,
-a 1995 constraint. A full repaint now costs about 0.3 ms. This plan replaces both algorithms with
-one: repaint everything, drawing each object once in sorted order.
+  What still differs from the old binary in the TD state logs is render bookkeeping only:
+  `IsToDisplay` and `RadioClass::LastMessage`, which records the last radio message received
+  (`RADIO_REDRAW` is sent whenever a tethered object is marked) and is never read. Every
+  `td_saveload_smoke.sh` fixture passes.
+
+Before this plan, Red Alert drew the map with the cell-sorted renderer (`config::kSortDrawEnabled`)
+and Tiberian Dawn with the original y-sorted layer. Both exist only to avoid repainting the whole
+tactical view, a 1995 constraint. A full repaint now costs about 0.3 ms. This plan replaces both
+algorithms with one: repaint everything, drawing each object once in sorted order.
 
 ## Findings
 

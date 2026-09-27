@@ -145,7 +145,6 @@
 #include "td/layer.h"
 #include "td/map.h"
 #include "td/mapedit.h"
-#include "td/msglist.h"
 #include "td/network.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
@@ -154,7 +153,6 @@
 #include "td/queue.h"
 #include "td/rand.h"
 #include "td/screen.h"
-#include "td/session.h"
 #include "td/support.h"
 #include "td/target.h"
 #include "td/techno.h"
@@ -1727,357 +1725,100 @@ ObjectClass* DisplayClass::Cell_Object(CELL cell, int x, int y) {
   return (*this).at(cell).Cell_Object(x, y);
 }
 
-/***********************************************************************************************
- * DisplayClass::Draw_It -- Draws the tactical map. *
- *                                                                                             *
- *    This will draw the tactical map at the recorded position.   This * routine
- *is used whenever the tactical map moves or needs to be * completely redrawn.
- *It will handle making the necessary adjustments                      * to
- *accomodate a moving cursor. *
- *                                                                                             *
- * INPUT:      forced   -- bool; force redraw of the entire display? *
- *                                                                                             *
- * OUTPUT:     none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 04/15/1991 JLB : Created. (benchmark = 292) * 04/15/1991 JLB :
- *Added _cell2meta[] reference array (206)                                 *
- *   04/15/1991 JLB : Added actual map reference for terrain (207) * 04/16/1991
- *JLB : _cell2meta converted to int (194) * 04/16/1991 JLB : References actual
- *CellIcon[] array (204)                                 * 04/16/1991 JLB : Cell
- *size increased to 16 x 16 (167)                                     *
- *   04/17/1991 JLB : Cell based tactical map rendering (165) * 04/22/1991 JLB :
- *Uses DrawStamp() for icon rendering (426)                               *
- *   04/22/1991 JLB : DrawStamp uses LogicPage now (276) * 04/23/1991 JLB : Map
- *active location cursor (334)                                         *
- *   05/02/1991 JLB : Added smoothing and 3 icons sets (431) * 05/22/1991 JLB :
- *Broken into Draw_Map() and Refresh_Map().                                *
- *   09/14/1991 JLB : Uses Refresh_Cell when new cells scroll onto display. *
- *   05/12/1992 JLB : Destination page support. * 02/14/1994 JLB : Revamped. *
- *   05/01/1994 JLB : Converted to member function. * 12/15/1994 JLB : Updated
- *to work with display heirarchy.                                  * 12/24/1994
- *JLB : Examines redraw bit intelligently. * 12/24/1994 JLB : Combined with old
- *Refresh_Map() function.                                * 01/10/1995 JLB :
- *Rubber band drawing.                                                     *
- *=============================================================================================*/
+// Nothing is kept from the previous frame: repainting the whole view costs
+// about 0.3 ms, and a partial repaint can only be right if every object
+// touching a repainted cell is repainted with it, in order, and nothing else
+// is. See docs/TACTICAL_REDRAW_PLAN.md.
 void DisplayClass::Draw_It(PixelView& view, bool forced) {
   MapClass::Draw_It(view, forced);
 
-  if (IsDisplayToRedraw || forced) {
-    IsDisplayToRedraw = false;
+  if (!IsDisplayToRedraw && !forced) {
+    return;
+  }
+  IsDisplayToRedraw = false;
 
-    /*
-    **	In rubber band mode, mark all cells under the "rubber band" to be
-    **	redrawn.
-    */
-    Refresh_Band();
-
-    /*
-    ** If the multiplayer message system is displaying one or more messages,
-    ** flag all cells covered by the messages to redraw.  This will prevent
-    ** messages from smearing the map if it scrolls.
-    */
-    const int num = TheSession().messages().Num_Messages();
-    if (num) {
-      // One message covers a single map row, but the first one also claims the
-      // row below it. At most five rows are ever covered.
-      const int rows = std::min(num + 1, 5);
-      const int width = Lepton_To_Cell(TacLeptonWidth) + 1;
-      const int first = Coord_Cell(TacticalCoord);
-      for (int row = 0; row < rows; row++) {
-        const int start = first + (row * MAP_CELL_W);
-        for (int offset = 0; offset < width; offset++) {
-          (*this).at(static_cast<CELL>(start + offset)).Redraw_Objects();
-        }
-      }
+  if (DesiredTacticalCoord != TacticalCoord) {
+    const bool moved = Lepton_To_Pixel(Coord_X(DesiredTacticalCoord)) !=
+                           Lepton_To_Pixel(Coord_X(TacticalCoord)) ||
+                       Lepton_To_Pixel(Coord_Y(DesiredTacticalCoord)) !=
+                           Lepton_To_Pixel(Coord_Y(TacticalCoord));
+    TheWorld().scenario_init()++;
+    Set_Tactical_Position(DesiredTacticalCoord);
+    TheWorld().scenario_init()--;
+    // The map moved under the mouse: move the placement cursor to the cell
+    // now under it, as moving the mouse would.
+    if (moved) {
+      Set_Cursor_Pos(-1);
     }
+  }
 
-    /*
-    **	Check for a movement of the tactical map. If there has been some
-    **	movement, then part (or all) of the icons must be redrawn.
-    */
-    if (Lepton_To_Pixel(Coord_X(DesiredTacticalCoord)) !=
-            Lepton_To_Pixel(Coord_X(TacticalCoord)) ||
-        Lepton_To_Pixel(Coord_Y(DesiredTacticalCoord)) !=
-            Lepton_To_Pixel(Coord_Y(TacticalCoord))) {
-      const int xmod = Lepton_To_Pixel(Coord_X(DesiredTacticalCoord));
-      const int ymod = Lepton_To_Pixel(Coord_Y(DesiredTacticalCoord));
+  CellRedraw.assign(CellRedraw.size(), true);
 
-      int oldx = Lepton_To_Pixel(Coord_X(TacticalCoord)) -
-                 xmod;  // Old relative offset.
-      int oldy = Lepton_To_Pixel(Coord_Y(TacticalCoord)) - ymod;
-
-      int oldw = Lepton_To_Pixel(TacLeptonWidth) -
-                 std::abs(oldx);  // Replicable width.
-      int oldh = Lepton_To_Pixel(TacLeptonHeight) -
-                 std::abs(oldy);  // Replicable height.
-
-      if (oldw < 1) {
-        forced = true;
-      }
-      if (oldh < 1) {
-        forced = true;
-      }
-
-      /*
-      ** Work out which map edges need to be redrawn
-      */
-      const bool redraw_right = oldx < 0;   // Right hand edge
-      const bool redraw_left = oldx > 0;    // Left hand edge
-      const bool redraw_bottom = oldy < 0;  // Bottom edge
-      const bool redraw_top = oldy > 0;     // Top edge
-
-      // Colour_Debug(2);
-      /*
-      **	Blit any replicable block to avoid having to drawstamp.
-      */
-      if (!forced && (oldw != Lepton_To_Pixel(TacLeptonWidth) ||
-                      oldh != Lepton_To_Pixel(TacLeptonHeight))) {
-        Set_Cursor_Pos(-1);
-        TheScreen().hidden_view().BlitTo(
-            TheScreen().hidden_view(), (oldx < 0 ? -oldx : 0) + TacPixelX,
-            (oldy < 0 ? -oldy : 0) + TacPixelY,
-            (oldx < 0 ? 0 : oldx) + TacPixelX,
-            (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
-      } else {
-        forced = true;
-      }
-
-      oldx = std::max(oldx, 0);
-      oldy = std::max(oldy, 0);
-
-      /*
-      ** Record new map position for future reference.
-      */
-      TheWorld().scenario_init()++;
-      Set_Tactical_Position(DesiredTacticalCoord);
-      TheWorld().scenario_init()--;
-
-      if (!forced) {
-        /*
-        **
-        **	Set the 'redraw stamp' bit for any cells that could not be
-        *copied.
-        **
-        */
-        const int startx = -Lepton_To_Pixel(Coord_XLepton(TacticalCoord));
-        const int starty = -Lepton_To_Pixel(Coord_YLepton(TacticalCoord));
-        oldw -= 24;
-        oldh -= 24;
-
-        if (abs(oldx) < 0x25 && abs(oldy) < 0x25) {
-          /*
-          ** The width of the area we redraw depends on the scroll speed
-          */
-          const int extra_x = abs(oldx) >= 16 ? 2 : 1;
-          const int extra_y = abs(oldy) >= 16 ? 2 : 1;
-
-          /*
-          ** Flag the cells across the top of the visible area if required
-          */
-          if (redraw_top) {
-            for (int y = starty; y <= starty + (CELL_PIXEL_H * extra_y);
-                 y += CELL_PIXEL_H) {
-              for (int x = startx;
-                   x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
-                   x += CELL_PIXEL_W) {
-                const CELL c = Click_Cell_Calc(
-                    Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
-                        TacPixelX,
-                    Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1) +
-                        TacPixelY);
-
-                if (c > 0) {
-                  (*this).at(c).Redraw_Objects(true);
-                }
-              }
-            }
-          }
-
-          /*
-          ** Flag the cells across the bottom of the visible area if required
-          */
-          if (redraw_bottom) {
-            for (int y = Lepton_To_Pixel(TacLeptonHeight) -
-                         (CELL_PIXEL_H * (1 + extra_y));
-                 y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 3);
-                 y += CELL_PIXEL_H) {
-              for (int x = startx;
-                   x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
-                   x += CELL_PIXEL_W) {
-                const CELL c = Click_Cell_Calc(
-                    Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
-                        TacPixelX,
-                    Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1) +
-                        TacPixelY);
-
-                if (c > 0) {
-                  (*this).at(c).Redraw_Objects(true);
-                }
-              }
-            }
-          }
-
-          /*
-          ** Flag the cells down the left of the visible area if required
-          */
-          if (redraw_left) {
-            for (int x = startx; x <= startx + (CELL_PIXEL_W * extra_x);
-                 x += CELL_PIXEL_W) {
-              for (int y = starty;
-                   y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
-                   y += CELL_PIXEL_H) {
-                const CELL c = Click_Cell_Calc(
-                    Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
-                        TacPixelX,
-                    Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1) +
-                        TacPixelY);
-
-                if (c > 0) {
-                  (*this).at(c).Redraw_Objects(true);
-                }
-              }
-            }
-          }
-
-          /*
-          ** Flag the cells down the right of the visible area if required
-          */
-          if (redraw_right) {
-            for (int x = Lepton_To_Pixel(TacLeptonWidth) -
-                         (CELL_PIXEL_W * (extra_x + 1));
-                 x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 3);
-                 x += CELL_PIXEL_W) {
-              for (int y = starty;
-                   y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
-                   y += CELL_PIXEL_H) {
-                const CELL c = Click_Cell_Calc(
-                    Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
-                        TacPixelX,
-                    Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1) +
-                        TacPixelY);
-
-                if (c > 0) {
-                  (*this).at(c).Redraw_Objects(true);
-                }
-              }
-            }
-          }
-
-        } else {
-          /*
-          **	Set the 'redraw stamp' bit for any cells that could not be
-          *copied.
-          */
-          const int tactical_x = -Lepton_To_Pixel(Coord_XLepton(TacticalCoord));
-          const int tactical_y = -Lepton_To_Pixel(Coord_YLepton(TacticalCoord));
-          oldw -= 24;
-          oldh -= 24;
-          for (int y = tactical_y;
-               y <= Lepton_To_Pixel(TacLeptonHeight) + (CELL_PIXEL_H * 2);
-               y += CELL_PIXEL_H) {
-            for (int x = tactical_x;
-                 x <= Lepton_To_Pixel(TacLeptonWidth) + (CELL_PIXEL_W * 2);
-                 x += CELL_PIXEL_W) {
-              if (x <= oldx || x >= oldx + oldw || y <= oldy ||
-                  y >= oldy + oldh) {
-                const CELL c = Click_Cell_Calc(
-                    Bound(x, 0, Lepton_To_Pixel(TacLeptonWidth) - 1) +
-                        TacPixelX,
-                    Bound(y, 0, Lepton_To_Pixel(TacLeptonHeight) - 1) +
-                        TacPixelY);
-
-                if (c > 0) {
-                  (*this).at(c).Redraw_Objects(true);
-                }
-              }
-            }
-          }
-        }
-      }
-
-    } else {
-      /*
-      **	Set the tactical coordinate just in case the desired tactical
-      *has changed but *	not enough to result in any visible map change.
-      *This is likely to occur with very *	slow scroll rates.
-      */
-      TheWorld().scenario_init()++;
-      if (DesiredTacticalCoord != TacticalCoord) {
-        Set_Tactical_Position(DesiredTacticalCoord);
-      }
-      TheWorld().scenario_init()--;
-    }
-
-    /*
-    **	If the entire tactical map is forced to be redrawn, then set all the
-    *redraw flags *	and let the normal processing take care of the rest.
-    */
-    if (forced) {
-      CellRedraw.assign(CellRedraw.size(), true);
-    }
-
-    // Colour_Debug(3);
-    /*
-    **	The first order of business is to redraw all the underlying icons that
-    *are *	flagged to be redrawn.
-    */
-    // Redraw_Icons(CELL_BLIT_ONLY);
+  if (view.Lock()) {
+    view.FillRect(TacPixelX, TacPixelY,
+                  TacPixelX + Lepton_To_Pixel(TacLeptonWidth) - 1,
+                  TacPixelY + Lepton_To_Pixel(TacLeptonHeight) - 1, kBlack);
     Redraw_Icons(view, 0);
-    if (TheScreen().hidden_view().Lock()) {
-      // Redraw_Icons(CELL_DRAW_ONLY);
-
-      /*
-      **	Redraw the game objects layer by layer. The layer drawing occurs
-      *on the ground layer *	first and then followed by all the layers in
-      *increasing altituded.
-      */
-      for (LayerType layer = LAYER_GROUND; layer < LAYER_COUNT; layer++) {
-        for (int index = 0; index < Layer.at(layer).Count(); index++) {
-          Layer.at(layer).at(index)->Render(view, forced);
-        }
-      }
-
-      /*
-      **	Finally, redraw the shadow overlay as necessary.
-      */
-      // Colour_Debug(5);
-      Redraw_Shadow(view);
-    }
-
+    RenderObjects(view);
+    Redraw_Shadow(view);
     Redraw_Shadow_Rects(view);
 
-    TheScreen().hidden_view().Unlock();
-
-    // Colour_Debug(8);
-    /*
-    **	Draw the rubber band over the top of it all.
-    */
     if (IsRubberBand) {
       view.DrawRect(BandX + TacPixelX, BandY + TacPixelY, NewX + TacPixelX,
                     NewY + TacPixelY, kWhite);
     }
-    /*
-    **	Clear the redraw flags so that normal redraw flag setting can resume.
-    */
-    CellRedraw.assign(CellRedraw.size(), false);
-    // Colour_Debug(0);
+    view.Unlock();
+  }
 
-    if constexpr (config::kScenarioEditorEnabled) {
-      /*
-      **	If we're placing an object (PendingObject is non-NULL), and that
-      * object *	is NOT an icon, smudge, or overlay, draw it here.
-      **	Terrain, Buildings & Aircraft aren't drawn at the cell's center
-      * coord; *	they're drawn at the upper left coord, so I have to AND
-      * the coord value *	with 0xFF00FF00 to strip off the lepton
-      * coordinates, but leave the *	cell coordinates.
-      */
-      if (TheDebugState().map_editor_active() && PendingObjectPtr) {
-        PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
-            Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)));
-        PendingObjectPtr->Render(view, true);
-      }
+  CellRedraw.assign(CellRedraw.size(), false);
+
+  if constexpr (config::kScenarioEditorEnabled) {
+    // The object being placed in the editor, drawn at the cell under the
+    // cursor. Coord_Fixup() moves it to where that type is anchored:
+    // terrain, buildings and aircraft by their upper left corner rather than
+    // the cell's center.
+    if (TheDebugState().map_editor_active() && PendingObjectPtr) {
+      PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
+          Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)));
+      PendingObjectPtr->Render(view, true);
+    }
+  }
+}
+
+// Every object is flagged before any is drawn, so an object that draws another
+// keeps it from being drawn twice: a building renders the unit leaving it
+// (BuildingClass::Draw_It), which clears that unit's IsToDisplay. Flags left
+// over by objects that chose not to draw are cleared at the end, so the next
+// Mark(MARK_CHANGE) is not ignored.
+void DisplayClass::RenderObjects(PixelView& view) {
+  for (LayerType layer = LAYER_GROUND; layer < LAYER_COUNT; layer++) {
+    for (int index = 0; index < Layer.at(layer).Count(); index++) {
+      Layer.at(layer).at(index)->IsToDisplay = true;
+    }
+  }
+
+  for (LayerType layer = LAYER_GROUND; layer < LAYER_COUNT; layer++) {
+    draw_list_.clear();
+    for (int index = 0; index < Layer.at(layer).Count(); index++) {
+      draw_list_.push_back(Layer.at(layer).at(index));
+    }
+    // The ground layer is kept in y order by one bubble pass per logic frame,
+    // so it can be out of order for a few frames; that order is game state,
+    // so the draw order is sorted in a copy. Sort_Y() compares y and then x.
+    if (layer == LAYER_GROUND) {
+      std::ranges::stable_sort(
+          draw_list_, [](const ObjectClass* left, const ObjectClass* right) {
+            return *left < *right;
+          });
+    }
+    for (ObjectClass* object : draw_list_) {
+      object->Render(view, false);
+    }
+  }
+
+  for (LayerType layer = LAYER_GROUND; layer < LAYER_COUNT; layer++) {
+    for (int index = 0; index < Layer.at(layer).Count(); index++) {
+      Layer.at(layer).at(index)->IsToDisplay = false;
     }
   }
 }

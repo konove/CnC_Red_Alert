@@ -146,6 +146,9 @@ class DisplayClass : public MapClass {
   **	General display/map/interface support functionality.
   */
   void AI(engine::window::InputEvent& event, int x, int y) override;
+  // Repaints the whole tactical view when a cell was flagged or `forced` is
+  // set: terrain, every object in layer order (the ground layer back to front
+  // by Sort_Y()), the shroud and the rubber band.
   void Draw_It(PixelView& view, bool forced = false) override;
 
   /*
@@ -328,6 +331,13 @@ class DisplayClass : public MapClass {
   void Redraw_Icons(PixelView& view, int draw_flags = 0);
   void Redraw_Shadow(PixelView& view);
   void Redraw_Shadow_Rects(PixelView& view);
+
+  // Draws every object in every layer once, bottom layer first, the ground
+  // layer sorted back to front.
+  void RenderObjects(PixelView& view);
+
+  // RenderObjects()'s scratch copy of one layer, kept to reuse its storage.
+  std::vector<ObjectClass*> draw_list_;
 
   /*
   **	This bit array is used to flag cells to be redrawn. If the icon needs to
