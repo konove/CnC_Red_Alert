@@ -50,6 +50,7 @@
 #include "ra/winstub.h"
 
 #include "WSProto.h"
+#include "engine/platform/ftimer.h"
 #include "ra/config.h"
 #include "ra/function.h"
 #include "ra/game_state.h"
@@ -98,7 +99,7 @@ void Check_For_Focus_Loss() {
 
   if (!focus_last_time && TheGameState().in_focus()) {
     engine::audio::TheAudio().SetExtraPaused(true);
-    CountDownTimerClass cd;
+    Timer<SystemTickSource> cd;
     cd.Set(60 * 1);
 
     do {
@@ -110,7 +111,7 @@ void Check_For_Focus_Loss() {
         DispatchMessage(&msg);
       }
 
-    } while (cd.Time());
+    } while (cd.Value());
     engine::audio::TheAudio().SetExtraPaused(false);
     PostMessage(MainWindow, CCFocusMessage, 0, 0);
     //		AllSurfaces.Restore_Surfaces();

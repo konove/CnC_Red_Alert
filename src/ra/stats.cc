@@ -55,7 +55,7 @@
 #include "base/array.h"
 #include "base/unaligned.h"
 #include "engine/net/packet.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/ftimer.h"
 #include "engine/platform/win32/win32_com.h"
 #include "ra/aircraft.h"
 #include "ra/building.h"
@@ -178,7 +178,7 @@ constexpr int kCompletionPlayer2WonByDisconnection = 6;
 // Stalemate games.
 constexpr int kCompletionWash = 64;
 
-static TimerClass GameTimer;
+static Stopwatch<SystemTickSource> GameTimer;
 static int32_t GameEndTime;
 
 #ifdef _WIN32
@@ -891,10 +891,8 @@ void Send_Statistics_Packet() {
   TheNetwork().statistics_sent() = true;
 }
 
-void Register_Game_Start_Time() {
-  GameTimer.Set(0, true);
-}
+void Register_Game_Start_Time() { GameTimer.Reset(); }
 
 extern void Register_Game_End_Time() {
-  GameEndTime = static_cast<int32_t>(GameTimer.Time());
+  GameEndTime = static_cast<int32_t>(GameTimer.Value());
 }

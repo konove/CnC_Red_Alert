@@ -6939,16 +6939,16 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
-    CountDownTimerClass wait;
+    Timer<SystemTickSource> wait;
     ServiceRealTime();
-    wait.Set(60, true);
-    while (wait.Time()) {
+    wait.Set(60);
+    while (wait.Value()) {
       ServiceRealTime();
     }
     engine::audio::TheAudio().Close();
     ServiceRealTime();
-    wait.Set(60, true);
-    while (wait.Time()) {
+    wait.Set(60);
+    while (wait.Value()) {
       ServiceRealTime();
     }
     TheGameState().sound_on() = false;
@@ -7112,16 +7112,16 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
-    CountDownTimerClass wait;
+    Timer<SystemTickSource> wait;
     ServiceRealTime();
-    wait.Set(60, true);
-    while (wait.Time()) {
+    wait.Set(60);
+    while (wait.Value()) {
       ServiceRealTime();
     }
     engine::audio::TheAudio().Close();
     ServiceRealTime();
-    wait.Set(60, true);
-    while (wait.Time()) {
+    wait.Set(60);
+    while (wait.Value()) {
       ServiceRealTime();
     }
     TheGameState().sound_on() = false;
