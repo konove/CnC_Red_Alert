@@ -418,13 +418,27 @@ bool Display::HasInputFocus() const {
           SDL_WINDOW_INPUT_FOCUS) != 0;
 }
 
-int Display::DisplayIndex() const {
-  if (window_ == nullptr) {
-    return 0;
+// SDL_RenderGetScale() is in the renderer's output pixels, which is what the
+// window's size is in too unless the display is high-DPI; the ratio of the two
+// widths converts it. A Display adopted without a window has no window units,
+// so its output pixels stand in for them.
+float Display::PictureScale() const {
+  auto* renderer = static_cast<SDL_Renderer*>(renderer_);
+  if (renderer == nullptr) {
+    return 1.0F;
   }
-  const int index =
-      SDL_GetWindowDisplayIndex(static_cast<SDL_Window*>(window_));
-  return index >= 0 ? index : 0;
+  float scale = 1.0F;
+  SDL_RenderGetScale(renderer, &scale, nullptr);
+  int output_width = 0;
+  if (window_ == nullptr ||
+      SDL_GetRendererOutputSize(renderer, &output_width, nullptr) != 0 ||
+      output_width <= 0) {
+    return scale;
+  }
+  int window_width = 0;
+  SDL_GetWindowSize(static_cast<SDL_Window*>(window_), &window_width, nullptr);
+  return scale * static_cast<float>(window_width) /
+         static_cast<float>(output_width);
 }
 
 void Display::SetMouseGrab(bool grab) {

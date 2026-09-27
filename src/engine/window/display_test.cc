@@ -6,6 +6,7 @@
 
 #include <SDL_pixels.h>
 #include <SDL_render.h>
+#include <SDL_stdinc.h>
 #include <SDL_surface.h>
 
 #include <array>
@@ -56,6 +57,33 @@ TEST(DisplayWithoutVideoModeTest, IgnoresPalettesFramesAndPresents) {
 
   EXPECT_EQ(display.palette(), nullptr);
   EXPECT_FALSE(display.redraw_pending());
+}
+
+TEST(DisplayWithoutVideoModeTest, PictureScaleIsOneWithoutARenderer) {
+  const Display display;
+
+  EXPECT_EQ(display.PictureScale(), 1.0F);
+}
+
+// SDL's integer scaling draws a 640x400 picture at the largest whole factor
+// that fits: 1400x900 fits twice (2.19 across, 2.25 down), not two and a
+// quarter times.
+TEST(DisplayPictureScaleTest, IsTheWholeFactorThePictureIsDrawnAt) {
+  SDL_Surface* target =
+      SDL_CreateRGBSurfaceWithFormat(0, 1400, 900, 32, SDL_PIXELFORMAT_RGBA32);
+  ASSERT_NE(target, nullptr);
+  SDL_Renderer* renderer = SDL_CreateSoftwareRenderer(target);
+  ASSERT_NE(renderer, nullptr);
+  SDL_RenderSetLogicalSize(renderer, 640, 400);
+  SDL_RenderSetIntegerScale(renderer, SDL_TRUE);
+
+  {
+    const Display display(nullptr, renderer);
+    EXPECT_EQ(display.PictureScale(), 2.0F);
+  }
+
+  SDL_DestroyRenderer(renderer);
+  SDL_FreeSurface(target);
 }
 
 TEST(DisplayWithoutVideoModeTest, SetVideoModeNeedsARenderer) {

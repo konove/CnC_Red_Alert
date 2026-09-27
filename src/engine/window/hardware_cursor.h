@@ -27,8 +27,10 @@
 #define CNC_RED_ALERT_ENGINE_WINDOW_HARDWARE_CURSOR_H_
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <span>
+#include <vector>
 
 #include "absl/base/attributes.h"
 
@@ -95,9 +97,10 @@ class HardwareCursor {
   HardwareCursor& operator=(HardwareCursor&&) = delete;
   ~HardwareCursor();
 
-  // Decodes a game cursor shape and makes it the SDL cursor. `shape` is a
-  // Shape_Type header followed by its LCW-compressed pixels; the hot spot is in
-  // the shape's own, unscaled pixels. Only 256-color shapes (ShapeType 0) no
+  // Decodes a game cursor shape and makes it the SDL cursor, scaled like the
+  // game's picture (see UpdateScale()). `shape` is a Shape_Type header followed
+  // by its LCW-compressed pixels; the hot spot is in the shape's own, unscaled
+  // pixels. Only 256-color shapes (ShapeType 0) no
   // larger than the size given to the constructor are accepted. Anything else,
   // and a shape whose data is corrupt, leaves the previous cursor in place.
   // Handing over the same buffer as last time does nothing: the cursor is
@@ -140,6 +143,12 @@ class HardwareCursor {
   // Display::SetPalette().
   void UpdatePalette();
 
+  // Scales the cursor again if the game's picture is now drawn at another
+  // scale, so that the cursor keeps its size next to the game's art. The games'
+  // event handlers call it whenever the window's size changes. Does nothing
+  // before the first cursor.
+  void UpdateScale();
+
   // Records the pointer's position for x() and y(). The games' event handlers
   // report every mouse motion here.
   void RecordPosition(int x, int y) {
@@ -148,6 +157,9 @@ class HardwareCursor {
   }
 
  private:
+  // Draws shape_pixels_ into a new sdl_surface_ at `scale` and makes it the
+  // SDL cursor.
+  void DrawSurface(int scale);
   // Makes sdl_surface_ the SDL cursor, with the hot spot scaled like it.
   void RebuildCursor();
 
@@ -156,9 +168,17 @@ class HardwareCursor {
   // The scaled 8-bit image sdl_cursor_ was made from, kept so that
   // UpdatePalette() can recolor it and make the cursor again.
   SdlSurfacePtr sdl_surface_;
-  // The hot spot in sdl_surface_'s pixels: SetShape()'s, scaled like the shape.
-  int scaled_hot_x_ = 0;
-  int scaled_hot_y_ = 0;
+  // The factor sdl_surface_ is scaled by, 0 before the first SetShape().
+  int scale_ = 0;
+
+  // The current shape's decoded pixels, shape_width_ x shape_height_ and
+  // unscaled, kept so that UpdateScale() can draw them at another scale.
+  std::vector<uint8_t> shape_pixels_;
+  int shape_width_ = 0;
+  int shape_height_ = 0;
+  // The hot spot SetShape() was given, in shape_pixels_.
+  int hot_x_ = 0;
+  int hot_y_ = 0;
 
   // The largest shape SetShape() accepts, in pixels.
   int max_width_;

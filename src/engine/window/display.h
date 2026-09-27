@@ -128,9 +128,13 @@ class Display : public PixelSurface {
   // Whether the window has the keyboard focus.
   [[nodiscard]] bool HasInputFocus() const;
 
-  // The display the window is on, for sizing the mouse cursor. Returns 0
-  // before Init() opens a window.
-  [[nodiscard]] int DisplayIndex() const;
+  // How many window units one pixel of the game's picture spans. SDL draws the
+  // picture at a whole number of screen pixels per game pixel, the largest
+  // that fits the window; on a high-DPI display a window unit spans several
+  // screen pixels, so the result can be fractional. The OS draws the mouse
+  // cursor in window units, which is what this sizes. Returns 1 without a
+  // renderer.
+  [[nodiscard]] float PictureScale() const;
   // Confines the mouse to the window, or releases it.
   void SetMouseGrab(bool grab);
 

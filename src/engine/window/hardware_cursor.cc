@@ -8,9 +8,9 @@
 #include <SDL_mouse.h>
 #include <SDL_pixels.h>
 #include <SDL_surface.h>
-#include <SDL_video.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -108,23 +108,16 @@ static void ScaleUpNearest(std::span<const uint8_t> src, int width,
   }
 }
 
-// Returns the whole factor to scale cursors by on the display the window is on:
-// one step per 500 display lines, from 1 to 4 (1080 lines give 2, 2160 give
-// 4). SDL's logical size scales the game's 400-line picture up to the window,
-// but the OS draws a hardware cursor at the display's own resolution, where an
-// unscaled cursor would shrink.
-static int CursorScaleForDisplay() {
-  const int display_index = HasDisplay() ? TheDisplay().DisplayIndex() : 0;
-
-  SDL_DisplayMode mode;
-  if (SDL_GetCurrentDisplayMode(display_index, &mode) != 0) {
-    // No video subsystem, or no such display: draw the cursor unscaled.
-    return 1;
-  }
-
-  constexpr int kLinesPerScaleStep = 500;
-  constexpr int kMaxScale = 4;
-  return std::clamp(mode.h / kLinesPerScaleStep, 1, kMaxScale);
+// Returns the whole factor to scale cursors by: the scale the game's picture
+// is drawn at, so that the cursor is as big next to the game's art as its
+// authors drew it. SDL scales the picture up to the window, but the OS draws a
+// hardware cursor itself, where an unscaled cursor would shrink. The picture
+// scale is fractional only on a high-DPI display, and rounds to the nearest
+// whole factor there. The cap bounds the surface on very large windows.
+static int CursorScale() {
+  constexpr int kMaxScale = 8;
+  const float picture_scale = HasDisplay() ? TheDisplay().PictureScale() : 1;
+  return std::clamp(static_cast<int>(std::lround(picture_scale)), 1, kMaxScale);
 }
 
 // Returns the display's palette, or nullptr without a display or before it has
@@ -191,22 +184,39 @@ void HardwareCursor::SetShape(int hot_x, int hot_y,
     DLOG(INFO) << "SetShape: shape type " << header.ShapeType;
     return;
   }
-  const auto pixels =
-      DecodeShapePixels(header, shape.subspan(kShapeHeaderSize));
+  auto pixels = DecodeShapePixels(header, shape.subspan(kShapeHeaderSize));
   if (!pixels) {
     return;
   }
 
-  // The surface outlives the decoded pixels, because UpdatePalette() recolors
-  // it later, so it has to own its pixels: SDL_CreateRGBSurfaceFrom would only
-  // borrow them.
-  const int scale = CursorScaleForDisplay();
+  current_shape_ = shape.data();
+  shape_pixels_ = *std::move(pixels);
+  shape_width_ = header.Width;
+  shape_height_ = header.OriginalHeight;
+  hot_x_ = hot_x;
+  hot_y_ = hot_y;
+  DrawSurface(CursorScale());
+}
+
+void HardwareCursor::UpdateScale() {
+  if (shape_pixels_.empty()) {
+    return;
+  }
+  const int scale = CursorScale();
+  if (scale != scale_) {
+    DrawSurface(scale);
+  }
+}
+
+void HardwareCursor::DrawSurface(int scale) {
+  // Scaled pixels are new ones, so the surface owns them rather than
+  // borrowing through SDL_CreateRGBSurfaceFrom.
   SdlSurfacePtr surface(SDL_CreateRGBSurface(
-      0, header.Width * scale, header.OriginalHeight * scale, 8, 0, 0, 0, 0));
+      0, shape_width_ * scale, shape_height_ * scale, 8, 0, 0, 0, 0));
   if (!surface) {
     return;
   }
-  ScaleUpNearest(*pixels, header.Width, *surface);
+  ScaleUpNearest(shape_pixels_, shape_width_, *surface);
 
   if (const SDL_Palette* game_palette = GamePalette()) {
     CopyGameColors(*game_palette, *surface->format->palette);
@@ -218,10 +228,8 @@ void HardwareCursor::SetShape(int hot_x, int hot_y,
     palette_stale_ = false;
   }
 
-  current_shape_ = shape.data();
   sdl_surface_ = std::move(surface);
-  scaled_hot_x_ = hot_x * scale;
-  scaled_hot_y_ = hot_y * scale;
+  scale_ = scale;
   RebuildCursor();
 }
 
@@ -278,8 +286,8 @@ void HardwareCursor::UpdatePalette() {
 }
 
 void HardwareCursor::RebuildCursor() {
-  SdlCursorPtr cursor(
-      SDL_CreateColorCursor(sdl_surface_.get(), scaled_hot_x_, scaled_hot_y_));
+  SdlCursorPtr cursor(SDL_CreateColorCursor(sdl_surface_.get(), hot_x_ * scale_,
+                                            hot_y_ * scale_));
   SDL_SetCursor(cursor.get());
   sdl_cursor_ = std::move(cursor);
 }

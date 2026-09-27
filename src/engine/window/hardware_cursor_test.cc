@@ -67,6 +67,14 @@ TEST(HardwareCursorTest, ShownScopeUndoesUnmatchedCallsInside) {
   EXPECT_EQ(mouse.hide_count(), 1);
 }
 
+TEST(HardwareCursorTest, UpdateScaleWithoutAShapeDoesNothing) {
+  HardwareCursor mouse(kCursorSize, kCursorSize);
+
+  mouse.UpdateScale();
+
+  EXPECT_EQ(mouse.hide_count(), 0);
+}
+
 TEST(HardwareCursorTest, RecordPositionSetsXAndY) {
   HardwareCursor mouse(kCursorSize, kCursorSize);
 
