@@ -38,10 +38,7 @@ void SDLSurfaceDeleter::operator()(SDL_Surface* p) const noexcept {
 }
 
 // The instance the free functions forward to: the one constructed last, or
-// nullptr before the first.
-// TODO: ~WWMouseClass() does not reset this, so after Input::RemoveMouse() the
-// free functions (and Display::SetPalette() through Update_Mouse_Palette())
-// would call into the freed object.
+// nullptr while there is none.
 static WWMouseClass* Mouse = nullptr;
 
 // Returns the src_w x src_h image `src` scaled up `scale` times, and its size
@@ -113,7 +110,14 @@ WWMouseClass::WWMouseClass([[maybe_unused]] PixelView* scr, int max_width,
   Mouse = this;
 }
 
-WWMouseClass::~WWMouseClass() { Clear_Cursor_Clip(); }
+WWMouseClass::~WWMouseClass() {
+  Clear_Cursor_Clip();
+  // Input::InstallMouse() builds a replacement before the old mouse goes, and
+  // then Mouse is already the new one.
+  if (Mouse == this) {
+    Mouse = nullptr;
+  }
+}
 
 void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot,
                               std::span<const std::byte> cursor) {

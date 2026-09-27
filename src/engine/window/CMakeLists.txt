@@ -36,7 +36,7 @@ optimize_in_debug(display.cc)
 include(Testing)
 add_gtest(
         NAME engine_window_test
-        SOURCES display_test.cc ww_win_test.cc
+        SOURCES display_test.cc ww_mouse_test.cc ww_win_test.cc
         LIBS engine_window SDL2::SDL2
 )
 
