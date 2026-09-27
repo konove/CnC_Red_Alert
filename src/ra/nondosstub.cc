@@ -64,7 +64,7 @@ void Focus_Loss() {
   TheTheme().Suspend();
   engine::audio::TheAudio().Pause();
   if (TheMouse()) {
-    WWMouseClass::Clear_Cursor_Clip();
+    HardwareCursor::Clear_Cursor_Clip();
   }
 }
 
@@ -72,7 +72,7 @@ void Focus_Restore() {
   TheMap().Flag_To_Redraw(true);
   engine::audio::TheAudio().Resume();
   if (TheMouse()) {
-    WWMouseClass::Set_Cursor_Clip();
+    HardwareCursor::Set_Cursor_Clip();
   }
 }
 

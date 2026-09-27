@@ -1,4 +1,4 @@
-// Implements WWMouseClass and the free mouse functions: decoding the game's
+// Implements HardwareCursor and the free mouse functions: decoding the game's
 // cursor shapes into SDL color cursors, scaling them for the display, and
 // keeping their colors in step with the palette.
 
@@ -39,7 +39,7 @@ void SDLSurfaceDeleter::operator()(SDL_Surface* p) const noexcept {
 
 // The instance the free functions forward to: the one constructed last, or
 // nullptr while there is none.
-static WWMouseClass* Mouse = nullptr;
+static HardwareCursor* Mouse = nullptr;
 
 // Returns the src_w x src_h image `src` scaled up `scale` times, and its size
 // in *out_w and *out_h; empty, with a size of 0 x 0, for an empty image or a
@@ -100,8 +100,8 @@ static int Get_Display_Scale() {
   return scale;
 }
 
-WWMouseClass::WWMouseClass([[maybe_unused]] PixelView* scr, int max_width,
-                           int max_height)
+HardwareCursor::HardwareCursor([[maybe_unused]] PixelView* scr, int max_width,
+                               int max_height)
     : MouseCursor(
           base::ToSize(static_cast<base::ssize>(max_width) * max_height)),
       MaxWidth(max_width),
@@ -110,7 +110,7 @@ WWMouseClass::WWMouseClass([[maybe_unused]] PixelView* scr, int max_width,
   Mouse = this;
 }
 
-WWMouseClass::~WWMouseClass() {
+HardwareCursor::~HardwareCursor() {
   Clear_Cursor_Clip();
   // Input::InstallMouse() builds a replacement before the old mouse goes, and
   // then Mouse is already the new one.
@@ -119,8 +119,8 @@ WWMouseClass::~WWMouseClass() {
   }
 }
 
-void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot,
-                              std::span<const std::byte> cursor) {
+void HardwareCursor::Set_Cursor(int xhotspot, int yhotspot,
+                                std::span<const std::byte> cursor) {
   // 10 is the size of the Shape_Type header up to and including DataLength;
   // the color table after it belongs to compact shapes, which are rejected
   // below.
@@ -254,13 +254,13 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot,
 }
 
 // Only the transitions between a count of 0 and 1 reach SDL.
-void WWMouseClass::Hide_Mouse() {
+void HardwareCursor::Hide_Mouse() {
   if (!State++) {
     SDL_ShowCursor(SDL_DISABLE);
   }
 }
 
-void WWMouseClass::Show_Mouse() {
+void HardwareCursor::Show_Mouse() {
   if (!State) {
     return;
   }
@@ -272,34 +272,34 @@ void WWMouseClass::Show_Mouse() {
   }
 }
 
-void WWMouseClass::Conditional_Hide_Mouse(int /*x1*/, int /*y1*/, int /*x2*/,
-                                          int /*y2*/) {}
+void HardwareCursor::Conditional_Hide_Mouse(int /*x1*/, int /*y1*/, int /*x2*/,
+                                            int /*y2*/) {}
 
-void WWMouseClass::Conditional_Show_Mouse() {}
+void HardwareCursor::Conditional_Show_Mouse() {}
 
-int WWMouseClass::Get_Mouse_State() const { return State; }
+int HardwareCursor::Get_Mouse_State() const { return State; }
 
-int WWMouseClass::Get_Mouse_X() const { return LastX; }
+int HardwareCursor::Get_Mouse_X() const { return LastX; }
 
-int WWMouseClass::Get_Mouse_Y() const { return LastY; }
+int HardwareCursor::Get_Mouse_Y() const { return LastY; }
 
-void WWMouseClass::Draw_Mouse(PixelView* /*scr*/) {
+void HardwareCursor::Draw_Mouse(PixelView* /*scr*/) {
   // No-op: SDL hardware cursor is drawn by the OS, not by us.
 }
 
-void WWMouseClass::Erase_Mouse(PixelView* /*scr*/, bool /*forced*/) {}
+void HardwareCursor::Erase_Mouse(PixelView* /*scr*/, bool /*forced*/) {}
 
-void WWMouseClass::Set_Cursor_Clip() {
+void HardwareCursor::Set_Cursor_Clip() {
   if (!NoMouseGrab) {
     engine::window::TheDisplay().SetMouseGrab(true);
   }
 }
 
-void WWMouseClass::Clear_Cursor_Clip() {
+void HardwareCursor::Clear_Cursor_Clip() {
   engine::window::TheDisplay().SetMouseGrab(false);
 }
 
-void WWMouseClass::Update_Palette() {
+void HardwareCursor::Update_Palette() {
   if (!engine::window::HasDisplay() ||
       engine::window::TheDisplay().palette() == nullptr || !sdl_surface_) {
     return;
@@ -334,7 +334,7 @@ void WWMouseClass::Update_Palette() {
   sdl_cursor_ = std::move(sdl_cursor);
 }
 
-void WWMouseClass::Update_Pos(int x, int y) {
+void HardwareCursor::Update_Pos(int x, int y) {
   LastX = x;
   LastY = y;
 }

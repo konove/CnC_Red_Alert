@@ -1,4 +1,4 @@
-// Tests for the free mouse functions: which WWMouseClass they reach.
+// Tests for the free mouse functions: which HardwareCursor they reach.
 
 #include "engine/window/ww_mouse.h"
 
@@ -15,15 +15,15 @@ constexpr int kCursorSize = 48;
 
 // Each test gets a Display without a window: the mouse grabs and releases the
 // mouse through it, and SDL ignores a grab of no window.
-class WWMouseTest : public testing::Test {
+class HardwareCursorTest : public testing::Test {
  protected:
   engine::window::Display display_;
   base::Installed<engine::window::Display>::Scope display_scope_{display_};
 };
 
-TEST_F(WWMouseTest, FreeFunctionsForgetADestroyedMouse) {
+TEST_F(HardwareCursorTest, FreeFunctionsForgetADestroyedMouse) {
   auto mouse =
-      std::make_unique<WWMouseClass>(nullptr, kCursorSize, kCursorSize);
+      std::make_unique<HardwareCursor>(nullptr, kCursorSize, kCursorSize);
   Hide_Mouse();
   Update_Mouse_Pos(10, 20);
   ASSERT_EQ(Get_Mouse_State(), 1);
@@ -38,11 +38,11 @@ TEST_F(WWMouseTest, FreeFunctionsForgetADestroyedMouse) {
 
 // Input::InstallMouse() replaces a mouse by building the new one before the
 // old one goes, so the old one's destructor must leave the new one reachable.
-TEST_F(WWMouseTest, ReplacingAMouseKeepsTheNewOne) {
+TEST_F(HardwareCursorTest, ReplacingAMouseKeepsTheNewOne) {
   auto old_mouse =
-      std::make_unique<WWMouseClass>(nullptr, kCursorSize, kCursorSize);
+      std::make_unique<HardwareCursor>(nullptr, kCursorSize, kCursorSize);
   auto new_mouse =
-      std::make_unique<WWMouseClass>(nullptr, kCursorSize, kCursorSize);
+      std::make_unique<HardwareCursor>(nullptr, kCursorSize, kCursorSize);
 
   old_mouse.reset();
   Update_Mouse_Pos(30, 40);

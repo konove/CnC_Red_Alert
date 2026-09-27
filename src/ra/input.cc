@@ -17,7 +17,7 @@ Input::Input() = default;
 Input::~Input() = default;
 
 void Input::InstallMouse(PixelView& page) {
-  mouse_ = std::make_unique<WWMouseClass>(&page, kCursorWidth, kCursorHeight);
+  mouse_ = std::make_unique<HardwareCursor>(&page, kCursorWidth, kCursorHeight);
 }
 
 void Input::RemoveMouse() { mouse_.reset(); }

@@ -11,7 +11,7 @@
 #include "engine/window/keyboard.h"
 
 class PixelView;
-class WWMouseClass;
+class HardwareCursor;
 
 // The two devices the player plays with. The keyboard exists for the whole
 // of a Game, because the startup path reads keys before there is a window;
@@ -39,7 +39,7 @@ class Input {
   }
 
   // The mouse cursor, or null before InstallMouse() and after RemoveMouse().
-  WWMouseClass* mouse() ABSL_ATTRIBUTE_LIFETIME_BOUND { return mouse_.get(); }
+  HardwareCursor* mouse() ABSL_ATTRIBUTE_LIFETIME_BOUND { return mouse_.get(); }
 
   // Creates the cursor over the given page. Called once the video mode is
   // set; calling it again replaces the cursor.
@@ -50,7 +50,7 @@ class Input {
 
  private:
   engine::window::KeyBuffer keyboard_;
-  std::unique_ptr<WWMouseClass> mouse_;
+  std::unique_ptr<HardwareCursor> mouse_;
 };
 
 // Returns the Input that Game installed. CHECK-fails outside a Game's
@@ -61,6 +61,6 @@ inline Input& TheInput() { return base::Installed<Input>::Get(); }
 inline engine::window::KeyBuffer& TheKeyboard() {
   return TheInput().keyboard();
 }
-inline WWMouseClass* TheMouse() { return TheInput().mouse(); }
+inline HardwareCursor* TheMouse() { return TheInput().mouse(); }
 
 #endif  // CNC_RED_ALERT_TD_INPUT_H_

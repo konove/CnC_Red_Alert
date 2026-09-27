@@ -23,7 +23,7 @@
 // high-resolution displays. SDL bakes the colors in when it creates a cursor,
 // so every palette change creates the cursor again. The free functions at the
 // bottom are the interface the games use; they forward to the one live
-// WWMouseClass.
+// HardwareCursor.
 
 #ifndef CNC_RED_ALERT_ENGINE_WINDOW_WW_MOUSE_H_
 #define CNC_RED_ALERT_ENGINE_WINDOW_WW_MOUSE_H_
@@ -60,14 +60,14 @@ using SDLSurfacePtr = std::unique_ptr<SDL_Surface, SDLSurfaceDeleter>;
 // constructing it grabs the mouse into the window and makes it the instance the
 // free functions below reach, and destroying it lets go of the mouse. Both need
 // an installed Display.
-class WWMouseClass {
+class HardwareCursor {
  public:
-  WWMouseClass(PixelView* scr, int max_width, int max_height);
-  WWMouseClass(const WWMouseClass&) = delete;
-  WWMouseClass& operator=(const WWMouseClass&) = delete;
-  WWMouseClass(WWMouseClass&&) = delete;
-  WWMouseClass& operator=(WWMouseClass&&) = delete;
-  ~WWMouseClass();
+  HardwareCursor(PixelView* scr, int max_width, int max_height);
+  HardwareCursor(const HardwareCursor&) = delete;
+  HardwareCursor& operator=(const HardwareCursor&) = delete;
+  HardwareCursor(HardwareCursor&&) = delete;
+  HardwareCursor& operator=(HardwareCursor&&) = delete;
+  ~HardwareCursor();
 
   // Decodes a game cursor shape and makes it the SDL cursor. `cursor` is a
   // Shape_Type header followed by its LCW-compressed pixels; the hot spot is in
@@ -159,7 +159,7 @@ class WWMouseClass {
   bool PaletteDirty = false;
 };
 
-// The interface the games use. Each forwards to the live WWMouseClass and,
+// The interface the games use. Each forwards to the live HardwareCursor and,
 // when there is none, does nothing or returns 0.
 void Hide_Mouse();
 void Show_Mouse();
