@@ -2038,18 +2038,15 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
     if (TheScreen().hidden_view().Lock()) {
       Redraw_Icons(view);
 
-      /*
-      **	Draw the infantry bodies in this special layer.
-      */
-      //			for (int index = 0; index < Anims.Count();
-      // index++) { 				AnimClass * anim =
-      // Anims.Ptr(index); 				if (*anim >=
-      // ANIM_CORPSE1 && *anim <= ANIM_CORPSE3) {
-      // anim->Render(forced);
-      //				}
-      //			}
-
       if constexpr (config::kSortDrawEnabled) {
+        // The cells draw the ground layer's infantry, units and ships next, so
+        // the flat surface layer (infantry corpses, torpedoes) goes down first;
+        // drawn in the layer loop below it would land on top of them.
+        for (int index = 0; index < Layer.at(LAYER_SURFACE).Count(); index++) {
+          ObjectClass* ptr = Layer.at(LAYER_SURFACE).at(index);
+          DCHECK(ptr->IsActive);
+          ptr->Render(view, forced);
+        }
         Redraw_OIcons(view);
       }
 
@@ -2072,6 +2069,9 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
           ObjectClass* ptr = Layer.at(layer).at(index);
 
           if constexpr (config::kSortDrawEnabled) {
+            if (layer == LAYER_SURFACE) {
+              continue;  // Drawn before the cells, above.
+            }
             // Objects with IsFootprint are rendered cell by cell. Skip them here
             // to avoid double-rendering, except cloaked Techno (cells skip
             // those).
