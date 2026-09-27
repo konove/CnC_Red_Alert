@@ -331,7 +331,7 @@ void SoundControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      HideMouse();
+      engine::window::HideMouse();
 
       /*
       **	Draw the background.
@@ -359,7 +359,7 @@ void SoundControlsClass::Process() {
                        kTpfText | TPF_RIGHT);
 
       optionsbtn->Draw_All(view);
-      ShowMouse();
+      engine::window::ShowMouse();
       display = false;
     }
 

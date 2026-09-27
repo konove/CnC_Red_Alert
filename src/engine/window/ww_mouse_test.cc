@@ -8,6 +8,7 @@
 #include "engine/window/display.h"
 #include "gtest/gtest.h"
 
+namespace engine::window {
 namespace {
 
 // A cursor as large as the games ask for.
@@ -17,8 +18,8 @@ constexpr int kCursorSize = 48;
 // mouse through it, and SDL ignores a grab of no window.
 class HardwareCursorTest : public testing::Test {
  protected:
-  engine::window::Display display_;
-  base::Installed<engine::window::Display>::Scope display_scope_{display_};
+  Display display_;
+  base::Installed<Display>::Scope display_scope_{display_};
 };
 
 TEST_F(HardwareCursorTest, FreeFunctionsForgetADestroyedMouse) {
@@ -49,3 +50,4 @@ TEST_F(HardwareCursorTest, ReplacingAMouseKeepsTheNewOne) {
 }
 
 }  // namespace
+}  // namespace engine::window

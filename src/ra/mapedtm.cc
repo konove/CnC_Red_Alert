@@ -326,11 +326,11 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     **	Refresh display if needed
     */
     if (display) {
-      HideMouse();
+      engine::window::HideMouse();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(view, TXT_TEAM_EDIT, kDialogX, kDialogY, kDialogW);
       commands->Draw_All(view);
-      ShowMouse();
+      engine::window::ShowMouse();
       display = false;
     }
 
@@ -645,7 +645,7 @@ int MapEditClass::Team_Members(HousesType house) {
       /*
       **	Display the dialog box.
       */
-      HideMouse();
+      engine::window::HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         /*
         **	Display the constant background of this dialog.
@@ -678,7 +678,7 @@ int MapEditClass::Team_Members(HousesType house) {
       if (display >= REDRAW_BUTTONS) {
         commands->Draw_All(view);
       }
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -727,8 +727,8 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Compute new 'curclass' based on mouse position.
         */
-        i = ((MouseX() - 32 - kDialogX) / kPictureW) +
-            (((MouseY() - (dlg_y + 8 + 11)) / kRowH) * numcols);
+        i = ((engine::window::MouseX() - 32 - kDialogX) / kPictureW) +
+            (((engine::window::MouseY() - (dlg_y + 8 + 11)) / kRowH) * numcols);
 
         /*
         **	If it's changed, update class label.
@@ -739,7 +739,7 @@ int MapEditClass::Team_Members(HousesType house) {
           /*
           **	Clear out the previously printed name of the item.
           */
-          HideMouse();
+          engine::window::HideMouse();
           view.FillRect(kDialogX + 32, msg_y, kDialogX + kDialogW - 64,
                         msg_y + kTxt6H, kBlack);
 
@@ -754,7 +754,7 @@ int MapEditClass::Team_Members(HousesType house) {
           */
           lheld = 0;
           rheld = 0;
-          ShowMouse();
+          engine::window::ShowMouse();
         }
         break;
     }
@@ -903,7 +903,7 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
       kPictureH;
   Change_Window(static_cast<int>(WINDOW_EDITOR));
 
-  HideMouse();
+  engine::window::HideMouse();
   Draw_Box(view, x, y, kPictureW, kPictureH, BOXSTYLE_DOWN, true);
   ptr->Display(view, Screen::kWidth / 2, Screen::kHeight / 2, WINDOW_EDITOR,
                house);
@@ -913,5 +913,5 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
     //		Fancy_Text_Print("%d", x+1, y+kPictureH-8, scheme, TBLACK,
     // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_DROPSHADOW, quant);
   }
-  ShowMouse();
+  engine::window::ShowMouse();
 }

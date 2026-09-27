@@ -285,7 +285,7 @@ void GameOptionsClass::Process() {
       */
       Set_Window(static_cast<int>(WINDOW_EDITOR), OptionX, OptionY, OptionWidth,
                  OptionHeight);
-      HideMouse();
+      engine::window::HideMouse();
 
       /*
       **	Draw the background.
@@ -337,7 +337,7 @@ void GameOptionsClass::Process() {
 
       buttons->Draw_All(view);
       TabClass::Hilite_Tab(view, 0);
-      ShowMouse();
+      engine::window::ShowMouse();
       display = false;
     }
 

@@ -135,9 +135,10 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   *forced call *	must never actually function like a real call, but
   *rather only performs any necessary *	graphic updating.
   */
-  const bool overbutton =
-      static_cast<unsigned>(MouseX() - X) < static_cast<unsigned>(Width) &&
-      static_cast<unsigned>(MouseY() - Y) < static_cast<unsigned>(Height);
+  const bool overbutton = static_cast<unsigned>(engine::window::MouseX() - X) <
+                              static_cast<unsigned>(Width) &&
+                          static_cast<unsigned>(engine::window::MouseY() - Y) <
+                              static_cast<unsigned>(Height);
   if (!flags) {
     if (overbutton) {
       if (!IsPressed) {

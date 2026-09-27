@@ -302,7 +302,7 @@ bool LoadOptionsClass::Process() {
       /*
       **	Display the dialog box.
       */
-      HideMouse();
+      engine::window::HideMouse();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(view, caption, d_dialog_x, d_dialog_y, d_dialog_w);
 
@@ -316,7 +316,7 @@ bool LoadOptionsClass::Process() {
       **	Redraw the buttons.
       */
       commands->Flag_List_To_Redraw();
-      ShowMouse();
+      engine::window::ShowMouse();
       display = false;
     }
 
@@ -386,9 +386,9 @@ bool LoadOptionsClass::Process() {
         default:
           break;
       }
-      HideMouse();
+      engine::window::HideMouse();
       commands->Draw_All(view, true);
-      ShowMouse();
+      engine::window::ShowMouse();
     }
 
     /*
@@ -419,11 +419,11 @@ bool LoadOptionsClass::Process() {
             // "Mission loaded" plays over the fade into the mission rather
             // than holding the load screen until it finishes.
             Speak(VOX_LOAD1);
-            HideMouse();
+            engine::window::HideMouse();
             TheScreen().visible_view().Clear();
             ThePalettes().game_palette().Set();
             //						Set_Palette(GamePalette);
-            ShowMouse();
+            engine::window::ShowMouse();
             process = false;
           }
         } else {

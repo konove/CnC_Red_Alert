@@ -1120,7 +1120,7 @@ bool TriggerTypeClass::Edit() {
       /*
       **	Display the dialog box
       */
-      HideMouse();
+      engine::window::HideMouse();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(view, TXT_TRIGGER_EDITOR, kDialogX, kDialogY, kDialogW);
 
@@ -1513,7 +1513,7 @@ bool TriggerTypeClass::Edit() {
       speechtype1list.Collapse();
       speechtype2list.Collapse();
       commands->Flag_List_To_Redraw();
-      ShowMouse();
+      engine::window::ShowMouse();
       display = false;
     }
 

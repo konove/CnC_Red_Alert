@@ -224,7 +224,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Draw the dialog.
   */
-  HideMouse();
+  engine::window::HideMouse();
   if (preserve) {
     back.resize(base::ToSize(width * height));
     TheScreen().visible_view().CopyToBuffer(x, y, width, height, back);
@@ -244,7 +244,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   if (buttonlist) {
     buttonlist->Draw_All(view);
   }
-  ShowMouse();
+  engine::window::ShowMouse();
 
   /*
   **	Main Processing Loop.
@@ -257,7 +257,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       if (display) {
         display = false;
 
-        HideMouse();
+        engine::window::HideMouse();
         Dialog_Box(x, y, width, height);
         Draw_Caption(view, Caption, x, y, width);
 
@@ -273,7 +273,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         if (buttonlist) {
           buttonlist->Draw_All(view);
         }
-        ShowMouse();
+        engine::window::ShowMouse();
       }
 
       /*
@@ -394,9 +394,9 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
             button->IsPressed = true;
           }
         }
-        HideMouse();
+        engine::window::HideMouse();
         buttonlist->Draw_All(view, true);
-        ShowMouse();
+        engine::window::ShowMouse();
 
         switch (selection) {
           case BUTTON_1:
@@ -429,12 +429,12 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Restore the screen if necessary.
   */
   if (preserve) {
-    HideMouse();
+    engine::window::HideMouse();
     TheScreen().visible_view().CopyFromBuffer(x, y, width, height, back);
 
     back.clear();
 
-    ShowMouse();
+    engine::window::ShowMouse();
   }
   return retval;
 }

@@ -186,7 +186,8 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     /*
     **	Get new dial position (0-255)
     */
-    Direction = Desired_Facing8(FaceX, FaceY, MouseX(), MouseY());
+    Direction = Desired_Facing8(FaceX, FaceY, engine::window::MouseX(),
+                                engine::window::MouseY());
 
     /*
     **	Convert to Facing value (0-7).
@@ -244,7 +245,7 @@ bool Dial8Class::Draw_Me(PixelView& view, bool forced) {
     */
 
     if (TheScreen().IsVisible(&view)) {
-      HideMouse();
+      engine::window::HideMouse();
     }
 
     /*
@@ -272,7 +273,7 @@ bool Dial8Class::Draw_Me(PixelView& view, bool forced) {
     **	Restore the mouse.
     */
     if (TheScreen().IsVisible(&view)) {
-      ShowMouse();
+      engine::window::ShowMouse();
     }
 
     return true;

@@ -527,7 +527,7 @@ bool Do_The_Internet_Menu_Thang() {
   while (process) {
 
     if (display) {
-      HideMouse();
+      engine::window::HideMouse();
       /*
       ** Redraw backgound & dialog box
       */
@@ -554,7 +554,7 @@ bool Do_The_Internet_Menu_Thang() {
       // buttons->Draw_All();
       cancelbtn.Draw_Me(view, true);
 
-      ShowMouse();
+      engine::window::ShowMouse();
       display = false;
     }
 

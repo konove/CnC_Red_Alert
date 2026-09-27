@@ -195,7 +195,7 @@ void Special_Dialog(bool simple) {
     if (display) {
       display = false;
 
-      HideMouse();
+      engine::window::HideMouse();
       Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
       Draw_Caption(view, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
 
@@ -206,7 +206,7 @@ void Special_Dialog(bool simple) {
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All(view);
-      ShowMouse();
+      engine::window::ShowMouse();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;
@@ -413,7 +413,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Draw the background of the dialog.
   */
-  HideMouse();
+  engine::window::HideMouse();
   Dialog_Box(x, y, width, height);
   Draw_Caption(view, caption, x, y, width);
 
@@ -430,7 +430,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   if (buttonlist) {
     buttonlist->Draw_All(view);
   }
-  ShowMouse();
+  engine::window::ShowMouse();
 
   /*
   **	Main Processing Loop.
@@ -546,7 +546,7 @@ int Fetch_Difficulty(bool amath) {
       /*
       **	Draw the background of the dialog.
       */
-      HideMouse();
+      engine::window::HideMouse();
       Dialog_Box(x, y, w, h);
 
       /*
@@ -578,7 +578,7 @@ int Fetch_Difficulty(bool amath) {
       if (buttonlist) {
         buttonlist->Draw_All(view);
       }
-      ShowMouse();
+      engine::window::ShowMouse();
     }
 
     /*

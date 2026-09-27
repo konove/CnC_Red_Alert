@@ -177,7 +177,7 @@ static void ApplyStartupOptions(const StartupOptions& options) {
     PaletteClass::DisableFades();
   }
   bNoMovies = options.no_movies;
-  mouse_grab_disabled = options.no_mouse_grab;
+  engine::window::mouse_grab_disabled = options.no_mouse_grab;
 }
 
 // Reads the config-file options that have to be known before the window and

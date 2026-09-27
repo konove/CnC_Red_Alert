@@ -35,6 +35,8 @@
 class SDL_Cursor;
 class SDL_Surface;
 
+namespace engine::window {
+
 // Deleters that let std::unique_ptr own SDL cursors and surfaces.
 struct SdlCursorDeleter {
   void operator()(SDL_Cursor* cursor) const noexcept;
@@ -157,5 +159,7 @@ void RecordMousePosition(int x, int y);
 // Leaves the mouse free to leave the window, for debugging. Set from the
 // command line before the mouse is created.
 extern bool mouse_grab_disabled;
+
+}  // namespace engine::window
 
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_WW_MOUSE_H_

@@ -49,14 +49,14 @@
 
 bool CheckBoxClass::Draw_Me(PixelView& view, bool forced) {
   if (ToggleClass::Draw_Me(view, forced)) {
-    HideMouse();
+    engine::window::HideMouse();
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, false);
     view.FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, kGrey);
     if (IsOn) {
       view.DrawLine(X + 1, Y + 1, X + Width - 2, Y + Height - 2, kBlack);
       view.DrawLine(X + Width - 2, Y + 1, X + 1, Y + Height - 2, kBlack);
     }
-    ShowMouse();
+    engine::window::ShowMouse();
     return true;
   }
   return false;

@@ -37,8 +37,10 @@ const base::Installed<GameState>::Scope game_state_scope(game_state);
 }  // namespace
 
 bool Using_DVD() { return using_dvd; }
+namespace engine::window {
 void HideMouse() { ++mouse_hides; }
 void ShowMouse() { --mouse_hides; }
+}  // namespace engine::window
 void Load_Title_Page(bool /*visible*/) {}
 void PaletteClass::Set(int /*time*/, void (* /*callback*/)()) {}
 void Play_Movie(VQType /*name*/, ThemeType /*theme*/, bool /*clear_screen*/) {

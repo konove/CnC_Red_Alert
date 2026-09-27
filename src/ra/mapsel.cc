@@ -128,8 +128,8 @@ static void PulseHotspots(PaletteClass& palette) {
 // Each hotspot is a 12x10 pixel rectangle whose top-left corner is in
 // kHotspotCorners.
 static int ChoiceUnderMouse(const bool is_soviet, const int scenario) {
-  const int mouse_x = MouseX() / 2;
-  const int mouse_y = MouseY() / 2;
+  const int mouse_x = engine::window::MouseX() / 2;
+  const int mouse_y = engine::window::MouseY() / 2;
   int choice = 0;
   for (const Point& corner :
        base::At(base::At(kHotspotCorners, is_soviet), scenario)) {
@@ -211,9 +211,10 @@ static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
     if (cursor_timer.IsFinished()) {
       cursor_frame = (cursor_frame + 1) % cursor.FrameCount;
       cursor_timer.Set(cursor.FrameRate);
-      SetMouseShape(cursor.X, cursor.Y,
-                    Extract_Shape(MouseClass::MouseShapes,
-                                  cursor.StartFrame + cursor_frame));
+      engine::window::SetMouseShape(
+          cursor.X, cursor.Y,
+          Extract_Shape(MouseClass::MouseShapes,
+                        cursor.StartFrame + cursor_frame));
     }
 
     if (TheKeyboard().Peek() &&
@@ -239,15 +240,16 @@ ScenarioVarType ChooseMissionVariant() {
 
   TheTheme().Queue_Song(THEME_MAP);
   PlayMapReveal(animation_name, map_palette);
-  ShowMouse();
+  engine::window::ShowMouse();
   TheKeyboard().Clear();
 
   const int choice = WaitForMissionChoice(map_palette, is_soviet);
 
-  HideMouse();
+  engine::window::HideMouse();
 
   // Restore normal cursor before returning.
-  SetMouseShape(0, 0, Extract_Shape(MouseClass::MouseShapes, 0));
+  engine::window::SetMouseShape(0, 0,
+                                Extract_Shape(MouseClass::MouseShapes, 0));
 
   TheKeyboard().Clear();
 

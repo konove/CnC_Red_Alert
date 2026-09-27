@@ -16,7 +16,8 @@ Input::Input() = default;
 Input::~Input() = default;
 
 void Input::InstallMouse() {
-  mouse_ = std::make_unique<HardwareCursor>(kCursorWidth, kCursorHeight);
+  mouse_ = std::make_unique<engine::window::HardwareCursor>(kCursorWidth,
+                                                            kCursorHeight);
 }
 
 void Input::RemoveMouse() { mouse_.reset(); }

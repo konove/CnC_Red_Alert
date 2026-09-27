@@ -347,7 +347,7 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   ** dialog box and we want to have the right windows cursor showing
   ** for it.
   */
-  HideMouse();
+  engine::window::HideMouse();
   ShowCursor(true);
 
   /*
@@ -367,7 +367,7 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   ** doing things.
   */
   ShowCursor(FALSE);
-  ShowMouse();
+  engine::window::ShowMouse();
 }
 
 struct tColourList {
@@ -540,8 +540,8 @@ void SetPalette(unsigned char* palette, long, unsigned long) {
 void Memory_Error_Handler() {
   TheScreen().visible_page().Clear();
   Set_Palette(GamePalette);
-  while (MouseHideCount()) {
-    ShowMouse();
+  while (engine::window::MouseHideCount()) {
+    engine::window::ShowMouse();
   };
   CCMessageBox().Process("Error - out of memory.", "Abort", false);
   ShutDownEngine();

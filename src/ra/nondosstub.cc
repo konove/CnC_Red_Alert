@@ -64,7 +64,7 @@ void Focus_Loss() {
   TheTheme().Suspend();
   engine::audio::TheAudio().Pause();
   if (TheMouse()) {
-    HardwareCursor::ReleaseMouse();
+    engine::window::HardwareCursor::ReleaseMouse();
   }
 }
 
@@ -72,7 +72,7 @@ void Focus_Restore() {
   TheMap().Flag_To_Redraw(true);
   engine::audio::TheAudio().Resume();
   if (TheMouse()) {
-    HardwareCursor::GrabMouse();
+    engine::window::HardwareCursor::GrabMouse();
   }
 }
 

@@ -3429,12 +3429,12 @@ static void Queue_Playback() {
   // playback.
   //------------------------------------------------------------------------
   if (TheSession().allow_attract() && CurrentFrame() > 0 &&
-      (mx != MouseX() || my != MouseY())) {
+      (mx != engine::window::MouseX() || my != engine::window::MouseY())) {
     TheGameState().active() = false;
     return;
   }
-  mx = MouseX();
-  my = MouseY();
+  mx = engine::window::MouseX();
+  my = engine::window::MouseY();
 
   //------------------------------------------------------------------------
   //	Compute the Game's CRC

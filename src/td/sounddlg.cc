@@ -352,7 +352,7 @@ void SoundControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      HideMouse();
+      engine::window::HideMouse();
 
       /*
       **	Draw the background.
@@ -383,7 +383,7 @@ void SoundControlsClass::Process() {
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
       optionsbtn->Draw_All(view);
-      ShowMouse();
+      engine::window::ShowMouse();
       display = false;
     }
 

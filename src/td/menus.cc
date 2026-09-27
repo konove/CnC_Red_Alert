@@ -154,13 +154,13 @@ static int Select_To_Entry(int select, uint32_t bitfield, int index) {
 static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
                        int nfgc, int hfgc, int bgc) {
   for (int loop = 0; loop < 3; loop++) {
-    HideMouse();
+    engine::window::HideMouse();
     Fancy_Text_Print(view, text, xpix, ypix, hfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
     engine::window::WaitTicks(2);
     Fancy_Text_Print(view, text, xpix, ypix, nfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
-    ShowMouse();
+    engine::window::ShowMouse();
     engine::window::WaitTicks(2);
   }
 }
@@ -256,7 +256,7 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
                    TPF_8POINT | TPF_DROPSHADOW);
   const int font_height =
       FontMaxHeight(TextFontStyle(TPF_8POINT | TPF_DROPSHADOW));
-  HideMouse();
+  engine::window::HideMouse();
   for (int i = 0; i < item_count; i++) {
     const int text_index = Select_To_Entry(i, visible_items, bit_offset);
     const int draw_y = menu_y + (i * font_height) + (i * line_spacing);
@@ -267,7 +267,7 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
         kTBlack, TPF_8POINT | TPF_DROPSHADOW);
   }
   MenuSkip = line_spacing;
-  ShowMouse();
+  engine::window::ShowMouse();
   TheKeyboard().Clear();
 }
 
@@ -332,8 +332,9 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
   const int my2 = my1 + (menu.item_count * menuskip) -
                   1; /*		necessary			*/
 
-  const int tempy = MouseY();
-  if (Coordinates_In_Region(MouseX(), tempy, mx1, my1, mx2, my2) &&
+  const int tempy = engine::window::MouseY();
+  if (Coordinates_In_Region(engine::window::MouseX(), tempy, mx1, my1, mx2,
+                            my2) &&
       MenuUpdate) {
     newitem = (tempy - my1) / menuskip;
   }
@@ -406,7 +407,7 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
   }
 
   if (newitem != item) {
-    HideMouse();
+    engine::window::HideMouse();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
     Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
@@ -415,16 +416,16 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     drawy = menuy + (newitem * menuskip);
     Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
                      litcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
-    ShowMouse(); /* resurrect the mouse	*/
+    engine::window::ShowMouse(); /* resurrect the mouse	*/
   }
 
   if (select != -1) {
     idx = Select_To_Entry(select, field, index);
-    HideMouse(); /* get rid of the mouse	*/
+    engine::window::HideMouse(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
     Flash_Line(view, base::At(text, base::ToSize(idx)), menux, drawy, normcol,
                litcol, kTBlack);
-    ShowMouse();
+    engine::window::ShowMouse();
     select = idx;
   }
 
@@ -500,7 +501,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   **	Display the menu.
   */
   Change_Window(static_cast<int>(WINDOW_MENU));
-  ShowMouse();
+  engine::window::ShowMouse();
   Window_Box(view, WINDOW_MENU, blue ? BOXSTYLE_BLUE_UP : BOXSTYLE_RAISED);
   Setup_Menu(view, menu_config, strings, 0xFFFFL, 0, 0);
 
@@ -516,7 +517,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
     }
   }
   TheKeyboard().Clear();
-  HideMouse();
+  engine::window::HideMouse();
 
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Change_Window(static_cast<int>(WINDOW_MAIN));
@@ -815,8 +816,8 @@ int Main_Menu(int timeout) {
 
   TheKeyboard().Clear();
 
-  while (MouseHideCount() > 0) {
-    ShowMouse();
+  while (engine::window::MouseHideCount() > 0) {
+    engine::window::ShowMouse();
   }
 
   /*
@@ -891,9 +892,9 @@ int Main_Menu(int timeout) {
       /*
       **	Copy the menu to the visible page.
       */
-      HideMouse();
+      engine::window::HideMouse();
       TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-      ShowMouse();
+      engine::window::ShowMouse();
 
       startbtn.Draw_All(view);
       display = false;

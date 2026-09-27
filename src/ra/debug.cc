@@ -110,8 +110,8 @@ void Debug_Key(unsigned input) {
         if (TheWorld().chronal_vortex().Is_Active()) {
           TheWorld().chronal_vortex().Disappear();
         } else {
-          const int xxxx = MouseX() + TheMap().TacPixelX;
-          const int yyyy = MouseY() + TheMap().TacPixelY;
+          const int xxxx = engine::window::MouseX() + TheMap().TacPixelX;
+          const int yyyy = engine::window::MouseY() + TheMap().TacPixelY;
           const CELL cell = TheMap().DisplayClass::Click_Cell_Calc(xxxx, yyyy);
           TheWorld().chronal_vortex().Appear(Cell_Coord(cell));
         }
@@ -141,7 +141,9 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Height = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(MouseX(), MouseY()), DIR_N);
+          air->Unlimbo(TheMap().Pixel_To_Coord(engine::window::MouseX(),
+                                               engine::window::MouseY()),
+                       DIR_N);
         }
       } break;
 
@@ -150,13 +152,16 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Height = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(MouseX(), MouseY()), DIR_N);
+          air->Unlimbo(TheMap().Pixel_To_Coord(engine::window::MouseX(),
+                                               engine::window::MouseY()),
+                       DIR_N);
         }
       } break;
 
       case KN_GRAVE: {
         const WarheadType warhead = Random_Pick(WARHEAD_HE, WARHEAD_FIRE);
-        const COORDINATE coord = TheMap().Pixel_To_Coord(MouseX(), MouseY());
+        const COORDINATE coord = TheMap().Pixel_To_Coord(
+            engine::window::MouseX(), engine::window::MouseY());
         const int damage = 1000;
         base::NewPooled<AnimClass>(
             Combat_Anim(damage, warhead, TheMap().at(coord).Land_Type()),

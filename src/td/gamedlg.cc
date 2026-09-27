@@ -232,16 +232,16 @@ void GameControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      HideMouse();
+      engine::window::HideMouse();
       Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(view, TXT_GAME_CONTROLS, d_dialog_x, d_dialog_y, d_dialog_w);
-      ShowMouse();
+      engine::window::ShowMouse();
       display = false;
       refresh = true;
     }
 
     if (refresh) {
-      HideMouse();
+      engine::window::HideMouse();
 
       /*
       **	Label the game speed slider
@@ -281,7 +281,7 @@ void GameControlsClass::Process() {
 
       commands->Draw_All(view);
 
-      ShowMouse();
+      engine::window::ShowMouse();
       refresh = false;
     }
 

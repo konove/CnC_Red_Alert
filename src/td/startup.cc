@@ -209,7 +209,7 @@ static void ApplyStartupOptions(const StartupOptions& options) {
   TheSession().allow_attract() = options.attract;
   TheSession().solo() = options.solo_net_play;
 
-  mouse_grab_disabled = options.no_mouse_grab;
+  engine::window::mouse_grab_disabled = options.no_mouse_grab;
   TheGameState().spawned_from_chat() = options.spawned_from_wchat;
 #ifdef JAPANESE
   ForceEnglish = options.force_english;

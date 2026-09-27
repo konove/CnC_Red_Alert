@@ -422,7 +422,7 @@ int MapEditClass::Select_Team(const char* caption) {
       /*
       ...................... Display the dialog box ......................
       */
-      HideMouse();
+      engine::window::HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -440,7 +440,7 @@ int MapEditClass::Select_Team(const char* caption) {
       if (display >= REDRAW_BUTTONS) {
         commands->Draw_All(view);
       }
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -1030,7 +1030,7 @@ int MapEditClass::Edit_Team() {
       /*
       ...................... Display the dialog box ......................
       */
-      HideMouse();
+      engine::window::HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
 
@@ -1068,7 +1068,7 @@ int MapEditClass::Edit_Team() {
       if (display >= REDRAW_BUTTONS) {
         commands->Draw_All(view);
       }
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -1691,7 +1691,7 @@ int MapEditClass::Team_Members(HousesType house) {
       /*
       **	Display the dialog box.
       */
-      HideMouse();
+      engine::window::HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         /*
         **	Display the constant background of this dialog.
@@ -1728,7 +1728,7 @@ int MapEditClass::Team_Members(HousesType house) {
       if (display >= REDRAW_BUTTONS) {
         commands->Draw_All(view);
       }
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -1777,8 +1777,8 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Compute new 'curclass' based on mouse position.
         */
-        i = ((MouseX() - 16 - kDialogX) / kPictureW) +
-            (((MouseY() - dlg_picture_top) / kRowH) * numcols);
+        i = ((engine::window::MouseX() - 16 - kDialogX) / kPictureW) +
+            (((engine::window::MouseY() - dlg_picture_top) / kRowH) * numcols);
 
         /*
         **	If it's changed, update class label.
@@ -1789,7 +1789,7 @@ int MapEditClass::Team_Members(HousesType house) {
           /*
           **	Clear out the previously printed name of the item.
           */
-          HideMouse();
+          engine::window::HideMouse();
           view.FillRect(kDialogX + 8, msg_y, kDialogX + kDialogW - 9,
                         msg_y + kTxt6H, kBlack);
 
@@ -1805,7 +1805,7 @@ int MapEditClass::Team_Members(HousesType house) {
           */
           lheld = 0;
           rheld = 0;
-          ShowMouse();
+          engine::window::ShowMouse();
         }
         break;
     }
@@ -1954,7 +1954,7 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
            kWindowHeight) = 400;
   Change_Window(static_cast<int>(WINDOW_EDITOR));
 
-  HideMouse();
+  engine::window::HideMouse();
   Draw_Box(view, x, y, kPictureW, kPictureH, BOXSTYLE_GREEN_DOWN, true);
 
   ptr->Display(view, x + (kPictureW / 2), y + (kPictureH / 2), WINDOW_EDITOR,
@@ -1965,7 +1965,7 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_DROPSHADOW, quant);
   }
 
-  ShowMouse();
+  engine::window::ShowMouse();
 }
 
 /***************************************************************************

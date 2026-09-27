@@ -28,6 +28,8 @@
 #include "engine/gfx/shape.h"
 #include "engine/window/display.h"
 
+namespace engine::window {
+
 bool mouse_grab_disabled = false;
 
 void SdlCursorDeleter::operator()(SDL_Cursor* cursor) const noexcept {
@@ -116,9 +118,7 @@ static void ScaleUpNearest(std::span<const uint8_t> src, int width,
 // but the OS draws a hardware cursor at the display's own resolution, where an
 // unscaled cursor would shrink.
 static int CursorScaleForDisplay() {
-  const int display_index = engine::window::HasDisplay()
-                                ? engine::window::TheDisplay().DisplayIndex()
-                                : 0;
+  const int display_index = HasDisplay() ? TheDisplay().DisplayIndex() : 0;
 
   SDL_DisplayMode mode;
   if (SDL_GetCurrentDisplayMode(display_index, &mode) != 0) {
@@ -134,11 +134,10 @@ static int CursorScaleForDisplay() {
 // Returns the display's palette, or nullptr without a display or before it has
 // a video mode.
 static const SDL_Palette* GamePalette() {
-  if (!engine::window::HasDisplay()) {
+  if (!HasDisplay()) {
     return nullptr;
   }
-  return static_cast<const SDL_Palette*>(
-      engine::window::TheDisplay().palette());
+  return static_cast<const SDL_Palette*>(TheDisplay().palette());
 }
 
 // Gives colors 1-255 of the cursor's palette the game's colors. Color 0 is
@@ -250,13 +249,11 @@ int HardwareCursor::y() const { return y_; }
 
 void HardwareCursor::GrabMouse() {
   if (!mouse_grab_disabled) {
-    engine::window::TheDisplay().SetMouseGrab(true);
+    TheDisplay().SetMouseGrab(true);
   }
 }
 
-void HardwareCursor::ReleaseMouse() {
-  engine::window::TheDisplay().SetMouseGrab(false);
-}
+void HardwareCursor::ReleaseMouse() { TheDisplay().SetMouseGrab(false); }
 
 void HardwareCursor::UpdatePalette() {
   const SDL_Palette* game_palette = GamePalette();
@@ -331,3 +328,5 @@ void RecordMousePosition(int x, int y) {
     active_cursor->RecordPosition(x, y);
   }
 }
+
+}  // namespace engine::window

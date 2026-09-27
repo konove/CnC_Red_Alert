@@ -972,7 +972,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //		}
 
     if (display != REDRAW_NONE) {
-      HideMouse();
+      engine::window::HideMouse();
 
       /*
       ** Collapse the country list if we are going to redraw the game list
@@ -1239,14 +1239,14 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         pStaticAIPlayers->Draw_Me(view);
       }
 
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (MouseHideCount()) {
-      ShowMouse();
+    while (engine::window::MouseHideCount()) {
+      engine::window::ShowMouse();
     }
     //	Be nice to other apps.
     engine::platform::SleepMs(50);
@@ -1254,7 +1254,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    if (IsLeftButtonDown() || IsRightButtonDown()) {
+    if (engine::window::IsLeftButtonDown() ||
+        engine::window::IsRightButtonDown()) {
       timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
       if (pToolTipHitLast && pToolTipHitLast->bShowing) {
         pToolTipHitLast->Unshow(view);
@@ -1278,7 +1279,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       if (pToolTipHit == pToolTipHitLast) {
         if (pToolTipHit && !pToolTipHit->bShowing &&
             Get_Time_Ms() > timeToolTipAppear &&
-            !(IsLeftButtonDown() || IsRightButtonDown())) {
+            !(engine::window::IsLeftButtonDown() ||
+              engine::window::IsRightButtonDown())) {
           pToolTipHit->Show(view);
         }
       } else {
@@ -1309,15 +1311,18 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         (!bWaitingToStart)) {
       //	Check for mouse down on a control when player is not host.
       if ((!bHost) &&
-          ((MouseX() >= d_count_x && MouseX() <= d_count_x + d_count_w &&
-            MouseY() >= d_count_y &&
-            MouseY() <= d_aiplayers_y + d_aiplayers_h) ||
-           (MouseX() >= d_options_x && MouseX() <= d_options_x + d_options_w &&
-            MouseY() >= d_options_y && MouseY() <= d_options_y + d_options_h) ||
-           (MouseX() >= d_scenariolist_x &&
-            MouseX() <= d_scenariolist_x + d_scenariolist_w &&
-            MouseY() >= d_scenariolist_y &&
-            MouseY() <= d_scenariolist_y + d_scenariolist_h))) {
+          ((engine::window::MouseX() >= d_count_x &&
+            engine::window::MouseX() <= d_count_x + d_count_w &&
+            engine::window::MouseY() >= d_count_y &&
+            engine::window::MouseY() <= d_aiplayers_y + d_aiplayers_h) ||
+           (engine::window::MouseX() >= d_options_x &&
+            engine::window::MouseX() <= d_options_x + d_options_w &&
+            engine::window::MouseY() >= d_options_y &&
+            engine::window::MouseY() <= d_options_y + d_options_h) ||
+           (engine::window::MouseX() >= d_scenariolist_x &&
+            engine::window::MouseX() <= d_scenariolist_x + d_scenariolist_w &&
+            engine::window::MouseY() >= d_scenariolist_y &&
+            engine::window::MouseY() <= d_scenariolist_y + d_scenariolist_h))) {
         // Session.Messages.Add_Message(NULL, 0, (char
         // *)Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
         // kTpfText, 1200);

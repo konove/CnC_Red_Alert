@@ -573,12 +573,12 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	suspended while the movie plays.
     */
     case TACTION_PLAY_MOVIE:
-      HideMouse();
+      engine::window::HideMouse();
       TheScreen().visible_view().Clear();
       Play_Movie(Data.Movie, THEME_NONE, true);
       ThePalettes().game_palette().Set();
       TheMap().Flag_To_Redraw(true);
-      ShowMouse();
+      engine::window::ShowMouse();
       break;
 
     /*

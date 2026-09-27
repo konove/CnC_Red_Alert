@@ -354,7 +354,7 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   ** dialog box and we want to have the right windows cursor showing
   ** for it.
   */
-  HideMouse();
+  engine::window::HideMouse();
   ShowCursor(true);
 
   /*
@@ -374,7 +374,7 @@ void Window_Dialog_Box(HANDLE hinst, LPCTSTR lpszTemplate, HWND hwndOwner,
   ** doing things.
   */
   ShowCursor(false);
-  ShowMouse();
+  engine::window::ShowMouse();
 }
 
 struct tColourList {
@@ -491,8 +491,8 @@ void Colour_Debug(int call_number) {
 void Memory_Error_Handler() {
   TheScreen().visible_page().Clear();
   ThePalettes().title_palette().Set();
-  while (MouseHideCount()) {
-    ShowMouse();
+  while (engine::window::MouseHideCount()) {
+    engine::window::ShowMouse();
   };
   WWMessageBox().Process(kLanguageText.memory_error, kLanguageText.abort,
                          false);

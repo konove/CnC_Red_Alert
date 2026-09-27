@@ -231,7 +231,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       //------------------------------------------------------------------------
       //	Clear screen
       //------------------------------------------------------------------------
-      HideMouse();
+      engine::window::HideMouse();
       Load_Title_Page(true);
       //			ShowMouse();
 
@@ -256,14 +256,14 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                          kTBlack, kTpfText | TPF_CENTER);
         commands->Flag_List_To_Redraw();
       }
-      ShowMouse();
+      engine::window::ShowMouse();
       display = false;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (MouseHideCount()) {
-      ShowMouse();
+    while (engine::window::MouseHideCount()) {
+      engine::window::ShowMouse();
     }
     //	Be nice to other apps.
     engine::platform::SleepMs(50);

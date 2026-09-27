@@ -16,9 +16,11 @@
 // The hooks keyboard.cc calls out to. Stubbing them keeps the buffer
 // semantics under test deterministic and free of a real event pump.
 void SDL_Event_Loop() {}
-void RecordMousePosition(int /*x*/, int /*y*/) {}
 
 namespace engine::window {
+
+void RecordMousePosition(int /*x*/, int /*y*/) {}
+
 namespace {
 
 // Returns a press of the SDL mouse `button` at `x`, `y`.

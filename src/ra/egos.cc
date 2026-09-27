@@ -701,7 +701,7 @@ void Show_Who_Was_Responsible() {
   int picture_frame = 0;
   int slide_number = 0;
 
-  HideMouse();
+  engine::window::HideMouse();
 
   /*
   ** Save the priority of this process so we can change it back later
@@ -848,7 +848,7 @@ void Show_Who_Was_Responsible() {
   */
   TheScreen().visible_view().Clear();
 
-  ShowMouse();
+  engine::window::ShowMouse();
 
   GadgetClass::Set_Color_Scheme(
       &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));

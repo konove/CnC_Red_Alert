@@ -286,7 +286,8 @@ bool GaugeClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     */
     if (flags & kLeftPress) {
       const int curpix = Value_To_Pixel(CurValue);
-      const int clickpix = IsHorizontal ? MouseX() : MouseY();
+      const int clickpix =
+          IsHorizontal ? engine::window::MouseX() : engine::window::MouseY();
 
       if (clickpix > curpix && clickpix - curpix < Thumb_Pixels()) {
         ClickDiff = clickpix - curpix;
@@ -294,8 +295,9 @@ bool GaugeClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
         ClickDiff = 0;
       }
 
-      int testval = Pixel_To_Value(IsHorizontal ? MouseX() - ClickDiff
-                                                : MouseY() - ClickDiff);
+      int testval =
+          Pixel_To_Value(IsHorizontal ? engine::window::MouseX() - ClickDiff
+                                      : engine::window::MouseY() - ClickDiff);
 
       /*
       ** Correct for round-down errors in Pixel_To_Value() and
@@ -305,8 +307,9 @@ bool GaugeClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
       */
       while (testval < CurValue && ClickDiff > 0) {
         ClickDiff--;
-        testval = Pixel_To_Value(IsHorizontal ? MouseX() - ClickDiff
-                                              : MouseY() - ClickDiff);
+        testval =
+            Pixel_To_Value(IsHorizontal ? engine::window::MouseX() - ClickDiff
+                                        : engine::window::MouseY() - ClickDiff);
       }
     }
 
@@ -315,8 +318,9 @@ bool GaugeClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     ** but turn off the flags so it won't fill in 'key' with the button ID.
     ** Thus, no button ID will be returned by Input.
     */
-    if (!Set_Value(Pixel_To_Value(IsHorizontal ? MouseX() - ClickDiff
-                                               : MouseY() - ClickDiff))) {
+    if (!Set_Value(Pixel_To_Value(
+            IsHorizontal ? engine::window::MouseX() - ClickDiff
+                         : engine::window::MouseY() - ClickDiff))) {
       ControlClass::Action(0, key, x, y);
       key = engine::window::KN_NONE;
       return true;

@@ -217,10 +217,10 @@ void VisualControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      HideMouse();
+      engine::window::HideMouse();
       Dialog_Box(view, option_x, option_y, option_width, option_height);
       Draw_Caption(view, TXT_VISUAL_CONTROLS, option_x, option_y, option_width);
-      ShowMouse();
+      engine::window::ShowMouse();
       display = false;
       partial = true;
     }
@@ -229,7 +229,7 @@ void VisualControlsClass::Process() {
     **	If just the buttons and captions need to be redrawn, then do so now.
     */
     if (partial) {
-      HideMouse();
+      engine::window::HideMouse();
 
       /*
       **	Draw the titles.
@@ -242,7 +242,7 @@ void VisualControlsClass::Process() {
                 (curbutton == i ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));
       }
       optionsbtn.Draw_All(view);
-      ShowMouse();
+      engine::window::ShowMouse();
       partial = false;
     }
 

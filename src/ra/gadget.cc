@@ -478,8 +478,8 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
     mousex = event.x;
     mousey = event.y;
   } else {
-    mousex = MouseX();
-    mousey = MouseY();
+    mousex = engine::window::MouseX();
+    mousey = engine::window::MouseY();
   }
 
   /*
@@ -522,12 +522,12 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
     *isn't being *	held down, then we automatically know that it must be up
     *-- set the flag *	accordingly.
     */
-    if (IsLeftButtonDown()) {
+    if (engine::window::IsLeftButtonDown()) {
       flags |= kLeftHeld;
     } else {
       flags |= kLeftUp;
     }
-    if (IsRightButtonDown()) {
+    if (engine::window::IsRightButtonDown()) {
       flags |= kRightHeld;
     } else {
       flags |= kRightUp;

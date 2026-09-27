@@ -927,7 +927,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   **	Follow the mouse position if no cell number is provided.
   */
   if (pos == -1) {
-    pos = Click_Cell_Calc(MouseX(), MouseY());
+    pos = Click_Cell_Calc(engine::window::MouseX(), engine::window::MouseY());
   }
 
   if (CursorSize.empty()) {
@@ -1121,11 +1121,14 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
  *   06/27/1995 JLB : Breaks out of rubber band mode if mouse leaves map. *
  *=============================================================================================*/
 void DisplayClass::AI(engine::window::InputEvent& event, int x, int y) {
-  if (IsRubberBand &&
-      (MouseX() < TacPixelX || MouseY() < TacPixelY ||
-       MouseX() >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
-       MouseY() >= TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
-    Mouse_Left_Release(-1, MouseX(), MouseY(), nullptr, ACTION_NONE);
+  if (IsRubberBand && (engine::window::MouseX() < TacPixelX ||
+                       engine::window::MouseY() < TacPixelY ||
+                       engine::window::MouseX() >=
+                           TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
+                       engine::window::MouseY() >=
+                           TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
+    Mouse_Left_Release(-1, engine::window::MouseX(), engine::window::MouseY(),
+                       nullptr, ACTION_NONE);
   }
 
   MapClass::AI(event, x, y);
@@ -1832,13 +1835,13 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
         **  an overlapped region.
         */
         if (TheScreen().hidden_view().NeedsLock()) {
-          HideMouse();
+          engine::window::HideMouse();
           TheScreen().visible_view().BlitTo(
               TheScreen().hidden_view(), (oldx < 0 ? -oldx : 0) + TacPixelX,
               (oldy < 0 ? -oldy : 0) + TacPixelY,
               (oldx < 0 ? 0 : oldx) + TacPixelX,
               (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
-          ShowMouse();
+          engine::window::ShowMouse();
         } else {
           TheScreen().hidden_view().BlitTo(
               TheScreen().hidden_view(), (oldx < 0 ? -oldx : 0) + TacPixelX,

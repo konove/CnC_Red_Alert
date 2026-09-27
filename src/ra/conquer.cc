@@ -241,10 +241,10 @@ static void BeginScenario() {
 
   // A recording drives the view on playback, so there is no mouse to show.
   if (TheSession().Play) {
-    HideMouse();
+    engine::window::HideMouse();
     ResetRecordedEvents();
   } else {
-    ShowMouse();
+    engine::window::ShowMouse();
   }
 
   if (TheSession().Type == GAME_INTERNET) {
@@ -306,7 +306,7 @@ static void EndScenario() {
 
   // Return from playback to the main menu with the mouse visible again.
   if (TheSession().Play) {
-    ShowMouse();
+    engine::window::ShowMouse();
     TheSession().Type = GAME_NORMAL;
     TheSession().Play = false;
   }

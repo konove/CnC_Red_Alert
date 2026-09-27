@@ -791,7 +791,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   **	Follow the mouse position if no cell number is provided.
   */
   if (pos == -1) {
-    pos = Click_Cell_Calc(MouseX(), MouseY());
+    pos = Click_Cell_Calc(engine::window::MouseX(), engine::window::MouseY());
   }
 
   if (CursorSize.empty()) {
@@ -981,11 +981,14 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
  *   06/27/1995 JLB : Breaks out of rubber band mode if mouse leaves map. *
  *=============================================================================================*/
 void DisplayClass::AI(engine::window::InputEvent& event, int x, int y) {
-  if (IsRubberBand &&
-      (MouseX() < TacPixelX || MouseY() < TacPixelY ||
-       MouseX() >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
-       MouseY() >= TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
-    Mouse_Left_Release(-1, MouseX(), MouseY(), nullptr, ACTION_NONE);
+  if (IsRubberBand && (engine::window::MouseX() < TacPixelX ||
+                       engine::window::MouseY() < TacPixelY ||
+                       engine::window::MouseX() >=
+                           TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
+                       engine::window::MouseY() >=
+                           TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
+    Mouse_Left_Release(-1, engine::window::MouseX(), engine::window::MouseY(),
+                       nullptr, ACTION_NONE);
   }
 
   MapClass::AI(event, x, y);

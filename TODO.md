@@ -55,8 +55,6 @@
     and the dialogs copy `input = input_event.key;`: transitional aliases that can read the event
   - `GScreenClass::Input(int& x, int& y)` returns the mouse position through out-parameters that
     none of its six callers (`ra/conquer.cc`, `ra/queue.cc`, `td/conquer.cc`, `td/queue.cc`) uses
-- Move `engine/window/ww_mouse.h`'s free functions (`MouseX()`, `IsLeftButtonDown()`, ...) into
-  `engine::window`
 - Delete dead code that still spells the old keyboard API
   - `td/msgbox.cc`'s `#ifdef NEVER` block (C-style `KeyNumber` casts, `& 0xFF` masks)
   - Commented-out `kKeyReleaseBit` tests in `td/edit.cc` and `ra/woledit.cc`

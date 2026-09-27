@@ -787,7 +787,7 @@ void ScoreClass::Show() {
   Call_Back();
 
   /* --- Now display the background animation --- */
-  HideMouse();
+  engine::window::HideMouse();
   anim.DrawFrame(TheScreen().sys_mem_page().view(), 1);
   TheScreen().sys_mem_page().view().BlitTo(show.page().view());
   Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30, 63);
@@ -1092,7 +1092,7 @@ void ScoreClass::Show() {
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteFast, nullptr);
   TheScreen().visible_page().view().Clear();
 
-  ShowMouse();
+  engine::window::ShowMouse();
   //	Map_Selection();
 
   TheTheme().Queue_Song(THEME_NONE);
@@ -2184,7 +2184,7 @@ void Multi_Score_Presentation() {
   Set_Palette(ThePalettes().black_palette());
 
   WsaAnimation anim("MLTIPLYR.WSA", ThePalettes().title_palette());
-  HideMouse();
+  engine::window::HideMouse();
 
   /*
   ** Display the background animation
@@ -2264,5 +2264,5 @@ void Multi_Score_Presentation() {
   Set_Palette(ThePalettes().game_palette());
 
   ControlQ = false;
-  ShowMouse();
+  engine::window::ShowMouse();
 }

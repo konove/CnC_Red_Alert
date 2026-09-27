@@ -608,7 +608,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      HideMouse();
+      engine::window::HideMouse();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -649,14 +649,14 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
       }
 
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (MouseHideCount()) {
-      ShowMouse();
+    while (engine::window::MouseHideCount()) {
+      engine::window::ShowMouse();
     }
     //	Be nice to other apps.
     engine::platform::SleepMs(50);
@@ -664,7 +664,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    if (IsLeftButtonDown() || IsRightButtonDown()) {
+    if (engine::window::IsLeftButtonDown() ||
+        engine::window::IsRightButtonDown()) {
       //	Mouse button is down.
       timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
       if (pToolTipHitLast && pToolTipHitLast->bShowing) {
@@ -702,7 +703,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           //	(Gadget must be
           // in controls list.)
           if (!pToolTipHit->bShowing && Get_Time_Ms() > timeToolTipAppear &&
-              !(IsLeftButtonDown() || IsRightButtonDown())) {
+              !(engine::window::IsLeftButtonDown() ||
+                engine::window::IsRightButtonDown())) {
             pToolTipHit->Show(view);
           } else if (pToolTipHit->bIconList &&
                      pToolTipHit->bOverDifferentLine()) {

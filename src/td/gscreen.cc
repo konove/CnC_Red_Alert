@@ -270,8 +270,8 @@ void GScreenClass::Flag_To_Redraw(bool complete) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
-  x = MouseX();
-  y = MouseY();
+  x = engine::window::MouseX();
+  y = engine::window::MouseY();
 
   engine::window::InputEvent event;
   if (Buttons != nullptr) {

@@ -218,7 +218,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       /*
       **	Display the dialog box.
       */
-      HideMouse();
+      engine::window::HideMouse();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(view, TXT_WOL_CG_TITLE, d_dialog_x, d_dialog_y, d_dialog_w);
       //			Fancy_Text_Print( TXT_WOL_CG_PLAYERS,
@@ -226,14 +226,14 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       //								GadgetClass::Get_Color_Scheme(),
       // TBLACK, kTpfText | TPF_RIGHT );
       commands->Flag_List_To_Redraw();
-      ShowMouse();
+      engine::window::ShowMouse();
       display = false;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    while (MouseHideCount()) {
-      ShowMouse();
+    while (engine::window::MouseHideCount()) {
+      engine::window::ShowMouse();
     }
     //	Be nice to other apps.
     engine::platform::SleepMs(50);

@@ -183,7 +183,7 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
         /*
         **	Increase the scroll rate if the mouse button is held down.
         */
-        if (IsRightButtonDown()) {
+        if (engine::window::IsRightButtonDown()) {
           rate = Bound(
               rate + 1, 4,
               static_cast<int>(sizeof(_rate) / sizeof(base::At(_rate, 0))) - 1);
@@ -217,7 +217,7 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
           **	If the mouse button is pressed or auto scrolling is active, then
           *scroll *	the map if the delay counter indicates.
           */
-          if (IsLeftButtonDown() || IsAutoScroll) {
+          if (engine::window::IsLeftButtonDown() || IsAutoScroll) {
             distance = base::At(_rate, rate);
             Scroll_Map(direction, distance, true);
 

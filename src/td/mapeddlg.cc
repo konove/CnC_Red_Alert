@@ -718,7 +718,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
       /*
       ...................... Display the dialog box ......................
       */
-      HideMouse();
+      engine::window::HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -741,7 +741,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
       if (display >= REDRAW_BUTTONS) {
         commands->Draw_All(view);
       }
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -1027,7 +1027,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     ---------------------- Refresh display if needed ----------------------
     */
     if (display != REDRAW_NONE) {
-      HideMouse();
+      engine::window::HideMouse();
       /*------------------------------------------------------------------
       Redraw the background, map border, key, and coord labels
       ------------------------------------------------------------------*/
@@ -1239,7 +1239,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -1308,8 +1308,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         grabbed = 0;
         display = REDRAW_MAP;
       } else {
-        delta1 = MouseX() - mx;
-        delta2 = MouseY() - my;
+        delta1 = engine::window::MouseX() - mx;
+        delta2 = engine::window::MouseY() - my;
         if (delta1 == 0 && delta2 == 0) {
           break;
         }
@@ -1323,8 +1323,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           map_y1 += delta2;
           map_y1 = std::clamp(map_y1, kBordY1 + 2, map_y2 - 2);
           display = REDRAW_MAP;
-          mx = MouseX();
-          my = MouseY();
+          mx = engine::window::MouseX();
+          my = engine::window::MouseY();
         }
 
         /*
@@ -1336,8 +1336,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           map_y1 += delta2;
           map_y1 = std::clamp(map_y1, kBordY1 + 2, map_y2 - 2);
           display = REDRAW_MAP;
-          mx = MouseX();
-          my = MouseY();
+          mx = engine::window::MouseX();
+          my = engine::window::MouseY();
         }
 
         /*
@@ -1349,8 +1349,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           map_y2 += delta2;
           map_y2 = std::clamp(map_y2, map_y1 + 2, kBordY2 - 2);
           display = REDRAW_MAP;
-          mx = MouseX();
-          my = MouseY();
+          mx = engine::window::MouseX();
+          my = engine::window::MouseY();
         }
 
         /*
@@ -1362,8 +1362,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           map_y2 += delta2;
           map_y2 = std::clamp(map_y2, map_y1 + 2, kBordY2 - 2);
           display = REDRAW_MAP;
-          mx = MouseX();
-          my = MouseY();
+          mx = engine::window::MouseX();
+          my = engine::window::MouseY();
         }
 
         /*
@@ -1380,8 +1380,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
             map_y2 += delta2;
           }
           display = REDRAW_MAP;
-          mx = MouseX();
-          my = MouseY();
+          mx = engine::window::MouseX();
+          my = engine::window::MouseY();
         }
       }
     }
@@ -1788,7 +1788,7 @@ int MapEditClass::Scenario_Dialog() {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      HideMouse();
+      engine::window::HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         /*
         ..................... Draw the background .......................
@@ -1840,7 +1840,7 @@ int MapEditClass::Scenario_Dialog() {
             kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -2388,7 +2388,7 @@ int MapEditClass::Select_Trigger() {
       /*
       ...................... Display the dialog box ......................
       */
-      HideMouse();
+      engine::window::HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -2407,7 +2407,7 @@ int MapEditClass::Select_Trigger() {
       if (display >= REDRAW_BUTTONS) {
         commands->Draw_All(view);
       }
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -2817,7 +2817,7 @@ int MapEditClass::Edit_Trigger() {
       /*
       ...................... Display the dialog box ......................
       */
-      HideMouse();
+      engine::window::HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -2916,7 +2916,7 @@ int MapEditClass::Edit_Trigger() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -3287,7 +3287,7 @@ int MapEditClass::Import_Triggers() {
       /*
       ...................... Display the dialog box ......................
       */
-      HideMouse();
+      engine::window::HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -3305,7 +3305,7 @@ int MapEditClass::Import_Triggers() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 
@@ -3605,7 +3605,7 @@ int MapEditClass::Import_Teams() {
       /*
       ...................... Display the dialog box ......................
       */
-      HideMouse();
+      engine::window::HideMouse();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -3623,7 +3623,7 @@ int MapEditClass::Import_Teams() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      ShowMouse();
+      engine::window::ShowMouse();
       display = REDRAW_NONE;
     }
 

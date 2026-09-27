@@ -305,7 +305,7 @@ bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     }
 
   } else {
-    int index = MouseY() - (Y + 1);
+    int index = engine::window::MouseY() - (Y + 1);
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex = std::min<int>(SelectedIndex, Count() - 1);
