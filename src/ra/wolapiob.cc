@@ -77,7 +77,7 @@
 #include "engine/net/inet_text.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/sleep.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/tick_clock.h"
 #include "engine/platform/win32/win32_com.h"
 #include "engine/platform/win32/win32_registry.h"
 #include "engine/platform/win32/win32_system.h"

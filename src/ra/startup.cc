@@ -32,7 +32,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/memflag.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/tick_clock.h"
 #include "ra/game.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"

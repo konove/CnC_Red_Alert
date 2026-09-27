@@ -157,7 +157,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/random_seed.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/tick_clock.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "magic_enum/magic_enum.hpp"

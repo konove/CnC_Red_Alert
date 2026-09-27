@@ -16,26 +16,12 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/***************************************************************************
- **     C O N F I D E N T I A L --- W E S T W O O D   S T U D I O S       **
- ***************************************************************************
- *                                                                         *
- *                 Project Name : Timer Class Functions                    *
- *                                                                         *
- *                    File Name : TIMER.H                                  *
- *                                                                         *
- *                   Programmer : Scott K. Bowen                           *
- *                                                                         *
- *                   Start Date : July 6, 1994                             *
- *                                                                         *
- *                  Last Update : July 12, 1994   [SKB]                    *
- *                                                                         *
- *-------------------------------------------------------------------------*
- * Functions:                                                              *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+// File: The game's clocks: TickTimer, a 60 Hz tick counter driven by an SDL
+// timer, and the millisecond wall clock. The Stopwatch and Timer templates in
+// engine/platform/ftimer.h measure time against them.
 
-#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
-#define CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_TICK_CLOCK_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_TICK_CLOCK_H_
 
 #include <atomic>
 #include <cstdint>
@@ -86,4 +72,4 @@ inline int64_t SystemTicks() {
   return g_tick_timer == nullptr ? 0 : g_tick_timer->TickCount();
 }
 
-#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_TICK_CLOCK_H_

@@ -129,15 +129,15 @@ class CheckerTest(unittest.TestCase):
         self.assertEqual(self.errors("base/fixed_test.cc"), [])
 
     def test_sdl_only_where_allowed(self):
-        self.write("engine/platform/timer.cc", "#include <SDL_timer.h>\n")
-        self.write("engine/platform/timer.h", "#include <SDL_timer.h>\n")
+        self.write("engine/platform/tick_clock.cc", "#include <SDL_timer.h>\n")
+        self.write("engine/platform/tick_clock.h", "#include <SDL_timer.h>\n")
         self.write(
             "engine/gfx/shape.cc",
             '#include <SDL2/SDL_video.h>\n#include "SDL.h"\n',
         )
         self.write("engine/audio/audio_mixer.h", "#include <SDL_audio.h>\n")
-        self.assertEqual(self.errors("engine/platform/timer.cc"), [])
-        self.assertEqual(len(self.errors("engine/platform/timer.h")), 1)
+        self.assertEqual(self.errors("engine/platform/tick_clock.cc"), [])
+        self.assertEqual(len(self.errors("engine/platform/tick_clock.h")), 1)
         self.assertEqual(len(self.errors("engine/gfx/shape.cc")), 2)
         self.assertEqual(self.errors("engine/audio/audio_mixer.h"), [])
 

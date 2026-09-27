@@ -15,7 +15,7 @@
 #include "base/buffer.h"
 #include "base/bytes_of.h"
 #include "engine/gfx/rgb.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/tick_clock.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "ra/input.h"

@@ -9,7 +9,7 @@
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "engine/platform/ftimer.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/tick_clock.h"
 #include "engine/window/keyboard.h"
 #include "td/defines.h"
 

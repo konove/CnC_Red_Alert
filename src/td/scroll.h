@@ -42,7 +42,7 @@
 #define CNC_RED_ALERT_TD_SCROLL_H_
 
 #include "engine/platform/ftimer.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/tick_clock.h"
 #include "engine/window/keyboard.h"
 #include "td/help.h"
 

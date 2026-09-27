@@ -1,4 +1,4 @@
-#include "engine/platform/timer.h"
+#include "engine/platform/tick_clock.h"
 
 #include <SDL.h>
 #include <SDL_stdinc.h>
@@ -30,9 +30,7 @@ TickTimer::TickTimer(const int tick_rate)
   SDL_Init(SDL_INIT_TIMER);
 }
 
-TickTimer::~TickTimer() {
-  SDL_RemoveTimer(timer_id_);
-}
+TickTimer::~TickTimer() { SDL_RemoveTimer(timer_id_); }
 
 uint32_t Get_Time_Ms() { return SDL_GetTicks(); }
 

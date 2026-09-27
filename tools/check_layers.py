@@ -11,7 +11,7 @@ src/base/ by its path (tools/engine_layout.py) and fails on:
 - an include of a folder the file's library may not see (the plan's
   "Dependency order"), or of src/ra, src/td, src/tools or src/testing;
 - an SDL header outside window/, audio/, video/, video/vqa/ and
-  platform/timer.cc;
+  platform/tick_clock.cc;
 - a quoted include written relative to the including file ("hsv.h") rather
   than to src/, which hides the folder it names, or a project include that
   names no file.

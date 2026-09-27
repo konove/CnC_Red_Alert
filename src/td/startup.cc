@@ -56,7 +56,7 @@
 #include "base/numeric.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/platform/memflag.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/tick_clock.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/window/keyboard.h"
 #include "td/defines.h"

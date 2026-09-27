@@ -32,7 +32,7 @@
 #include <concepts>
 #include <cstdint>
 
-#include "engine/platform/timer.h"
+#include "engine/platform/tick_clock.h"
 
 template <typename T>
 concept TickSource = requires {

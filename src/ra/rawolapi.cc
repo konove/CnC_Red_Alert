@@ -47,7 +47,7 @@
 #include "base/strings/tokenizer.h"
 #include "engine/codec/base64.h"
 #include "engine/platform/platform.h"
-#include "engine/platform/timer.h"
+#include "engine/platform/tick_clock.h"
 #include "engine/platform/win32/win32_com.h"
 #include "engine/platform/win32/win32_system.h"
 #include "engine/platform/win32/win32_types.h"
