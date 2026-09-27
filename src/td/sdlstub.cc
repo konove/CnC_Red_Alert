@@ -74,6 +74,10 @@ static void SDL_Event_Handler(SDL_Event* event) {
           TheGameState().in_focus() = false;
           Focus_Loss();
           break;
+        case SDL_WINDOWEVENT_SIZE_CHANGED:
+        case SDL_WINDOWEVENT_DISPLAY_CHANGED:
+          TheMouse().UpdateScale();
+          break;
         default:
           break;
       }
