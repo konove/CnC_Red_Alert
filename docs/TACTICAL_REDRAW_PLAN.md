@@ -2,11 +2,21 @@
 
 Written 2026-09-27, on the tree at 69f28795.
 
-**Status: planned.** Nothing below has landed.
+**Status: in progress.** Step 0 is c19e606f; step 1 is the commit that records it below.
+
+### Progress
+
+- **Step 1 (RA full repaint): done.** `DisplayClass::Draw_It` repaints the whole view whenever it
+  repaints at all; `RenderObjects()` draws each object once. Headless `-QUITFRAME600` logs match the
+  old binary: SCU05EA line for line, SCG10EA apart from aircraft, which differ between two runs of
+  the old binary too. SCG01EA is not usable for this check: two runs of the old binary already
+  disagree on units and infantry. `ra_saveload_smoke.sh` passes. A full repaint on unshrouded
+  SCG01EA takes 310 µs (max 404), against 445 µs for the cell-sorted full repaint and 263 µs for the
+  old algorithm's; this pass also clears the view, sorts a copy and sweeps the flags twice.
 
 Red Alert draws the map with the cell-sorted renderer (`config::kSortDrawEnabled`); Tiberian Dawn
 still uses the original y-sorted layer. Both exist only to avoid repainting the whole tactical view,
-a 1995 constraint. A full repaint now costs under 0.3 ms. This plan replaces both algorithms with
+a 1995 constraint. A full repaint now costs about 0.3 ms. This plan replaces both algorithms with
 one: repaint everything, drawing each object once in sorted order.
 
 ## Findings
@@ -163,9 +173,11 @@ then serves only the logic lists.
 
 - Build, `tools/strict_tu.py` on each edited file during the edit loop, then a full strict build
   before each commit.
-- **Logic must not change.** Diff `-QUITFRAME600` position logs (SCG01EA, SCU05EA, SCG10EA) from the
-  old and new binaries; they must be identical. Also run `tools/ra_saveload_smoke.sh`,
-  `tools/td_saveload_smoke.sh` and their `--load-fixture` forms.
+- **Logic must not change.** Diff `-QUITFRAME600` position logs (SCU05EA, SCG10EA; TD SCB05EA,
+  SCG10EA) from the old and new binaries. Aircraft differ between two runs of the same binary, so
+  compare the other objects; run the old binary twice first to see what is noise. A fresh working
+  directory needs one warm-up run: the first run copies MIX files and hangs. Also run
+  `tools/ra_saveload_smoke.sh`, `tools/td_saveload_smoke.sh` and their `--load-fixture` forms.
 - **Timing.** Re-apply the probe from Findings. A full repaint on unshrouded SCG01EA should come in
   at or under the old algorithm's 263 µs.
 - **Human check on a real display** (headless never loads palettes):
