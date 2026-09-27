@@ -808,12 +808,8 @@ bool HouseClass::Can_Build(AircraftType aircraft, HousesType house) const {
  *   12/17/1994 JLB : Resets tracker bits.                                 *
  *=========================================================================*/
 void HouseClass::Init() {
-  // Shell loads allocate fresh trackers; release the previous scenario's
-  // owners.
-  while (TheObjectHeaps().house().Count() != 0) {
-    base::DeletePooled(TheObjectHeaps().house().Ptr(0));
-  }
-  TheObjectHeaps().house().Free_All();
+  // Destroyed rather than just freed: the houses own their unit trackers.
+  TheObjectHeaps().house().Destroy_All();
 
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
     TheWorld().house_triggers().at(index).Clear();

@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_HEAP_H_
 
 #include <concepts>
+#include <memory>
 #include <new>
 #include <span>
 #include <vector>
@@ -196,6 +197,16 @@ class TFixedIHeapClass : public FixedIHeapClass {
   // reports every virtual member a translation unit does not instantiate.
   int ID(const T* pointer) { return FixedIHeapClass::ID(pointer); }
   T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
+  // Runs the destructor of every active object, then frees every slot.
+  // Free_All() alone hands the slots back without destroying what is in
+  // them, which leaks whatever the objects own; this is for objects whose
+  // destructors only release memory, not ones that act on the game.
+  void Destroy_All() {
+    for (int i = 0; i < Count(); i++) {
+      std::destroy_at(Ptr(i));
+    }
+    Free_All();
+  }
   bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   bool Save(ArchiveWriter& /*file*/)
     requires Serializable<T>;

@@ -615,6 +615,9 @@ void Uninit_Game() {
   TheObjectHeaps().trigger().Set_Heap(0);
   TheObjectHeaps().team_type().Set_Heap(0);
   TheObjectHeaps().team().Set_Heap(0);
+  // Set_Heap() drops the objects without destroying them, and the houses own
+  // their unit trackers.
+  TheObjectHeaps().house().Destroy_All();
   TheObjectHeaps().house().Set_Heap(0);
 
   Set_Shape_Buffer({});
