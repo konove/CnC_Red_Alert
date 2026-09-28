@@ -2370,9 +2370,9 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
     */
     const auto shape_size =
         Build_Frame(shapefile, static_cast<uint16_t>(shapenum), shape_buffer);
-    if (Get_Last_Frame_Length() > ShapeBufferSize) {
+    if (Get_Last_Frame_Length() > std::ssize(shape_buffer)) {
       LOG(ERROR) << "Shape buffer too small: need " << Get_Last_Frame_Length()
-                 << " bytes, buffer is only " << ShapeBufferSize;
+                 << " bytes, buffer is only " << shape_buffer.size();
     }
 
     if (!shape_size.empty()) {

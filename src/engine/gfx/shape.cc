@@ -7,9 +7,7 @@
 #include "base/numeric.h"
 #include "base/unaligned.h"
 
-char* ShapeBuffer;
 std::span<uint8_t> shape_buffer;
-int ShapeBufferSize;
 
 int CountShapeFrames(std::span<const std::byte> shape_file) {
   if (shape_file.size() < sizeof(uint16_t)) {
@@ -46,13 +44,4 @@ std::span<const std::byte> ExtractShapeFrame(
   return frame_bytes >= 10 && frame_bytes <= frame_data.size()
              ? frame_data.first(frame_bytes)
              : std::span<const std::byte>{};
-}
-
-void SetShapeBuffer(std::span<uint8_t> buffer) {
-  shape_buffer = buffer;
-  // Tiberian Dawn's INI code still reads and writes the buffer as char text
-  // through this alias of the same bytes.
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  ShapeBuffer = reinterpret_cast<char*>(buffer.data());
-  ShapeBufferSize = static_cast<int>(buffer.size());
 }

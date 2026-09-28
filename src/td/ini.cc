@@ -296,7 +296,8 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   *this, since *	the HidPage may be needed for various uncompressions
   *during the INI *	parsing.)
   */
-  char* buffer = ShapeBuffer;  // Scenario.ini staging buffer pointer.
+  char* buffer = base::CharBytes(shape_buffer)
+                     .data();  // Scenario.ini staging buffer pointer.
   std::ranges::fill(shape_buffer, 0);
 
   if (fresh) {
@@ -596,7 +597,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
       absl::SNPrintF(buff, sizeof(buff), "%d", player_index++);
       work.front() = '\0';
       WWGetPrivateProfileString(root, buff, "", work.first(work.size() - 1),
-                                ShapeBuffer);
+                                base::CharBytes(shape_buffer).data());
       if (std::string_view(work.data()).empty()) {
         break;
       }
@@ -714,7 +715,8 @@ void Write_Scenario_Ini(const char* root) {
     **	Get a working pointer to the INI staging buffer. Make sure that the
     *buffer *	starts cleared out of any data.
     */
-    char* buffer = ShapeBuffer;  // Scenario.ini staging buffer pointer.
+    char* buffer = base::CharBytes(shape_buffer)
+                       .data();  // Scenario.ini staging buffer pointer.
     std::ranges::fill(shape_buffer, 0);
 
     switch (TheWorld().scen_player()) {
@@ -747,7 +749,7 @@ void Write_Scenario_Ini(const char* root) {
       in->Read(
           std::as_writable_bytes(shape_buffer).first(shape_buffer.size() - 1));
     } else {
-      absl::SNPrintF(buffer, base::ToSize(ShapeBufferSize),
+      absl::SNPrintF(buffer, shape_buffer.size(),
                      "; Scenario %d control for house %s.\r\n",
                      TheWorld().scenario(),
                      HouseTypeClass::As_Reference(house).IniName);
@@ -809,7 +811,7 @@ void Write_Scenario_Ini(const char* root) {
       in->Read(
           std::as_writable_bytes(shape_buffer).first(shape_buffer.size() - 1));
     } else {
-      absl::SNPrintF(buffer, base::ToSize(ShapeBufferSize),
+      absl::SNPrintF(buffer, shape_buffer.size(),
                      "; Master Trigger & Team List.\r\n");
     }
 

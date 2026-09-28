@@ -55,6 +55,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/bytes_of.h"
 #include "base/enum_array.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/shape.h"
@@ -274,7 +275,7 @@ void Send_Statistics_Packet() {
     */
     char fname[128];
     char namebuffer[40];
-    char* abuffer = ShapeBuffer;
+    char* abuffer = base::CharBytes(shape_buffer).data();
     std::ranges::fill(shape_buffer, 0);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
     if (const auto fileo = OpenGameFile(fname)) {

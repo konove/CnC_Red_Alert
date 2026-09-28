@@ -2307,12 +2307,11 @@ static void Bootstrap() {
 
   /*
   **	This is the shape staging buffer. It must always be available, so it is
-  **	allocated here and never freed. The library sets the globals ShapeBuffer
-  **	and ShapeBufferSize to these values, so it can be accessed for other
-  **	purposes.
+  **	allocated here and never freed. Publishing it as the global
+  **	shape_buffer lets other code borrow it as scratch memory.
   */
   shape_storage.resize(kShapeBufferSize);
-  SetShapeBuffer(shape_storage);
+  shape_buffer = shape_storage;
 
   TheAssets().LoadStrings();
 

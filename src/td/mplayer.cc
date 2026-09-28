@@ -418,7 +418,8 @@ void Read_MultiPlayer_Settings() {
   the HidPage may be needed for various uncompressions during the INI
   parsing.)
   ------------------------------------------------------------------------*/
-  char* buffer = ShapeBuffer;  // INI staging buffer pointer.
+  char* buffer =
+      base::CharBytes(shape_buffer).data();  // INI staging buffer pointer.
   std::ranges::fill(shape_buffer, 0);
 
   /*------------------------------------------------------------------------
@@ -795,7 +796,8 @@ void Write_MultiPlayer_Settings() {
   Get a working pointer to the INI staging buffer. Make sure that the buffer
   starts cleared out of any data.
   ------------------------------------------------------------------------*/
-  char* buffer = ShapeBuffer;  // INI staging buffer pointer.
+  char* buffer =
+      base::CharBytes(shape_buffer).data();  // INI staging buffer pointer.
   std::ranges::fill(shape_buffer, 0);
 
   if (const auto in = OpenGameFile("CONQUER.INI")) {
@@ -971,7 +973,8 @@ void Read_Scenario_Descriptions() {
     Fetch working pointer to the INI staging buffer. Make sure that the
     buffer is cleared out before proceeding.
     .....................................................................*/
-    char* buffer = ShapeBuffer;  // INI staging buffer pointer.
+    char* buffer =
+        base::CharBytes(shape_buffer).data();  // INI staging buffer pointer.
     std::ranges::fill(shape_buffer, 0);
 
     /*.....................................................................

@@ -78,11 +78,10 @@ struct ShapeHeader {
 };
 #pragma pack(pop)
 
-// The shape staging buffer, set by SetShapeBuffer(): three views of the
-// same memory. Empty (nullptr and 0) until the game's startup sets it and
-// after Tiberian Dawn's shutdown clears it.
-extern int ShapeBufferSize;
-extern char* ShapeBuffer;
+// The shape staging buffer: scratch memory that Build_Frame() decompresses
+// frames into and that Tiberian Dawn reuses for INI text. The games point it
+// at storage they own during startup; empty before that and after Tiberian
+// Dawn's shutdown clears it.
 extern std::span<uint8_t> shape_buffer;
 
 // Returns the number of frames in `shape_file`, or 0 when it is too short to
@@ -94,10 +93,5 @@ int CountShapeFrames(std::span<const std::byte> shape_file);
 // for any offset, header or size that points outside `shape_file`.
 std::span<const std::byte> ExtractShapeFrame(
     std::span<const std::byte> shape_file, int frame);
-
-// Makes `buffer` the shape staging buffer, updating all three globals above.
-// The caller owns the memory and must keep it alive until it sets another
-// buffer (an empty one clears them).
-void SetShapeBuffer(std::span<uint8_t> buffer);
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_SHAPE_H_

@@ -244,13 +244,11 @@ bool Init_Game() {
 
   /*
   **	This is the shape staging buffer. It must always be available, so it is
-  **	allocated here and never freed. The library sets the globals ShapeBuffer
-  **	and ShapeBufferSize to these values, so it can be accessed for other
-  **	purposes.
+  **	allocated here and never freed. Publishing it as the global
+  **	shape_buffer lets other code borrow it as scratch memory.
   */
-  DLOG(INFO) << "C&C95 - About to call SetShapeBuffer";
   shape_storage.resize(SHAPE_BUFFER_SIZE);
-  SetShapeBuffer(shape_storage);
+  shape_buffer = shape_storage;
 
   /*
   **	Bootstrap enough of the system so that the error dialog box can
@@ -620,7 +618,7 @@ void Uninit_Game() {
   TheObjectHeaps().house().Destroy_All();
   TheObjectHeaps().house().Set_Heap(0);
 
-  SetShapeBuffer({});
+  shape_buffer = {};
   shape_storage.clear();
   shape_storage.shrink_to_fit();
   ThePalettes().black_palette().clear();
@@ -2603,8 +2601,8 @@ void Parse_INI_File() {
   Fetch working pointer to the INI staging buffer. Make sure that the buffer
   is cleared out before proceeding.
   ------------------------------------------------------------------------*/
-  buffer = static_cast<char*>(ShapeBuffer);
-  memset(buffer, '\0', ShapeBufferSize);
+  buffer = base::CharBytes(shape_buffer).data();
+  std::ranges::fill(shape_buffer, 0);
 
   /*------------------------------------------------------------------------
   Decode the desired section, entry, & name
@@ -2634,7 +2632,7 @@ void Parse_INI_File() {
   if (!file.IsAvailable()) {
     return;
   } else {
-    file.Read(buffer, ShapeBufferSize - 1);
+    file.Read(buffer, std::ssize(shape_buffer) - 1);
   }
   file.Close();
 
