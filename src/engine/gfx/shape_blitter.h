@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_ENGINE_GFX_2KEYFBUF_H_
-#define CNC_RED_ALERT_ENGINE_GFX_2KEYFBUF_H_
+#ifndef CNC_RED_ALERT_ENGINE_GFX_SHAPE_BLITTER_H_
+#define CNC_RED_ALERT_ENGINE_GFX_SHAPE_BLITTER_H_
 
 // File: DrawShapeFrame(), which draws a decompressed shape frame onto
 // a page with the transparency, ghost, fade and predator (cloak) effects, and
@@ -49,4 +49,4 @@ void DrawShapeFrame(int x, int y, int width, int height,
 
 }  // namespace engine::gfx
 
-#endif  // CNC_RED_ALERT_ENGINE_GFX_2KEYFBUF_H_
+#endif  // CNC_RED_ALERT_ENGINE_GFX_SHAPE_BLITTER_H_

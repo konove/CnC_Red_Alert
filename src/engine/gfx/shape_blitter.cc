@@ -1,7 +1,7 @@
 // Re-implemented from the assembler blitter, kept for reference in
 // src/ra/2keyfbuf.asm.
 
-#include "engine/gfx/2keyfbuf.h"
+#include "engine/gfx/shape_blitter.h"
 
 #include <algorithm>
 #include <array>

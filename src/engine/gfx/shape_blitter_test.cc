@@ -1,7 +1,7 @@
 // Tests for DrawShapeFrame: clipping, transparency, the ghost and fading
 // tables, and the predator (cloak) effect's sampling of the page.
 
-#include "engine/gfx/2keyfbuf.h"
+#include "engine/gfx/shape_blitter.h"
 
 #include <cstddef>
 #include <cstdint>
