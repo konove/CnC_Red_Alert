@@ -79,7 +79,6 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wsa_animation.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/platform/tick_clock.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"

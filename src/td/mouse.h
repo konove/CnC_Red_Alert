@@ -48,7 +48,6 @@ class ArchiveWriter;
 #include <span>
 
 #include "base/enum_array.h"
-#include "engine/platform/tick_clock.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "td/defines.h"

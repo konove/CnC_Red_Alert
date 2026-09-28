@@ -60,7 +60,6 @@
 #include <cstdio>
 #include <cstring>
 
-#include "engine/platform/tick_clock.h"
 #include "engine/platform/timer.h"
 #include "td/winstub.h"
 

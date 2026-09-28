@@ -87,7 +87,7 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 #include "base/strings/safe_string.h"
 #include "engine/file/search_paths.h"
 #include "engine/platform/sleep.h"
-#include "engine/platform/tick_clock.h"
+#include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "ra/audio.h"
 #include "ra/cheklist.h"

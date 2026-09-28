@@ -7,7 +7,7 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
-#include "engine/platform/tick_clock.h"
+#include "engine/platform/timer.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "td/input.h"

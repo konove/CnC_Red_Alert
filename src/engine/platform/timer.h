@@ -16,17 +16,18 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: Stopwatch and Timer, the one timer interface of both games,
-// parameterized on where their ticks come from.
+// File: The game's clocks and the one timer interface of both games.
 //
-// Stopwatch<T> -- counts up with stop/start (pause/resume).
-// Timer<T>     -- counts down toward zero with stop/start support.
+// SystemTicks()  -- real time in 60 Hz ticks.
+// Get_Time_Ms()  -- real time in milliseconds.
+// Stopwatch<T>   -- counts up with stop/start (pause/resume).
+// Timer<T>       -- counts down toward zero with stop/start support.
 //
 // T is a tick source: a class with a static `Tick()` returning a monotonically
 // increasing count. SystemTickSource (below) ticks at 60 Hz of real time; each
 // game's FrameTickSource, in its game_clock.h, ticks once per game frame.
 //
-// Both serialize by value through Serialize().
+// Stopwatch and Timer serialize by value through Serialize().
 
 #ifndef CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
 #define CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
@@ -34,7 +35,19 @@
 #include <concepts>
 #include <cstdint>
 
-#include "engine/platform/tick_clock.h"
+// The rate SystemTicks() counts at.
+inline constexpr int kSystemTicksPerSecond = 60;
+
+// Returns real time in milliseconds, read from the same monotonic clock as
+// SystemTicks(). Like it, the zero point means nothing on its own; 64 bits
+// because that clock counts from boot, so 32 bits would wrap after 49 days of
+// machine uptime.
+int64_t Get_Time_Ms();
+
+// Returns real time in ticks of 1/60 second, read from a monotonic clock that
+// needs no setup. The zero point means nothing on its own: callers compare two
+// readings to measure how much time has passed.
+int64_t SystemTicks();
 
 template <typename T>
 concept TickSource = requires {

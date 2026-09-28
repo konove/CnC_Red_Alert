@@ -1,6 +1,6 @@
 #include "engine/window/wait_ticks.h"
 
-#include "engine/platform/tick_clock.h"
+#include "engine/platform/timer.h"
 #include "engine/window/display.h"
 
 namespace engine::window {

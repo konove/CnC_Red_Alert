@@ -1,4 +1,4 @@
-#include "engine/platform/tick_clock.h"
+#include "engine/platform/timer.h"
 
 #include <chrono>
 #include <cstdint>

@@ -5,12 +5,46 @@
 #include <span>
 #include <vector>
 
+#include "engine/platform/sleep.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
 
 namespace {
+
+TEST(SystemClockTest, NeverRunsBackward) {
+  int64_t previous = SystemTicks();
+  for (int i = 0; i < 1000; ++i) {
+    const int64_t now = SystemTicks();
+    EXPECT_GE(now, previous);
+    previous = now;
+  }
+}
+
+TEST(SystemClockTest, CountsSixtyTicksPerSecond) {
+  // 100 ms is 6 ticks; flooring both readings can lose one. Only a lower bound
+  // is checked, since a loaded machine may sleep much longer.
+  const int64_t start = SystemTicks();
+  engine::platform::SleepMs(100);
+  EXPECT_GE(SystemTicks() - start, 5);
+}
+
+TEST(SystemClockTest, MillisecondsNeverRunBackward) {
+  int64_t previous = Get_Time_Ms();
+  for (int i = 0; i < 1000; ++i) {
+    const int64_t now = Get_Time_Ms();
+    EXPECT_GE(now, previous);
+    previous = now;
+  }
+}
+
+TEST(SystemClockTest, CountsMilliseconds) {
+  // Only a lower bound is checked, since a loaded machine may sleep longer.
+  const int64_t start = Get_Time_Ms();
+  engine::platform::SleepMs(100);
+  EXPECT_GE(Get_Time_Ms() - start, 100);
+}
 
 // A tick source the test advances by hand.
 struct FakeTick {
