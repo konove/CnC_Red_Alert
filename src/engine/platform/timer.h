@@ -18,10 +18,10 @@
 
 // File: The game's clocks and the one timer interface of both games.
 //
-// SystemTicks()  -- real time in 60 Hz ticks.
-// SystemMilliseconds()  -- real time in milliseconds.
-// Stopwatch<T>   -- counts up with stop/start (pause/resume).
-// Timer<T>       -- counts down toward zero with stop/start support.
+// SystemTicks()        -- real time in 60 Hz ticks.
+// SystemMilliseconds() -- real time in milliseconds.
+// Stopwatch<T>         -- counts up with stop/start (pause/resume).
+// Timer<T>             -- counts down toward zero with stop/start support.
 //
 // T is a tick source: a class with a static `Tick()` returning a monotonically
 // increasing count. SystemTickSource (below) ticks at 60 Hz of real time; each
@@ -32,6 +32,7 @@
 #ifndef CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
 #define CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
 
+#include <algorithm>
 #include <concepts>
 #include <cstdint>
 
@@ -54,7 +55,7 @@ int64_t SystemTicks();
 // subtract two readings, so they never need to know it.
 template <typename T>
 concept TickSource = requires {
-  { T::Tick() } -> std::convertible_to<int64_t>;
+  { T::Tick() } -> std::same_as<int64_t>;
 };
 
 // Ticks at 60 per second of real time, whether or not the game is running.
@@ -71,22 +72,39 @@ template <TickSource T>
 class Stopwatch {
  public:
   // Creates a running timer starting at zero elapsed ticks.
-  Stopwatch() noexcept;
+  Stopwatch() noexcept : start_tick_(T::Tick()) {}
 
   // Returns the current elapsed tick count, accounting for paused time.
-  [[nodiscard]] int64_t Elapsed() const;
+  [[nodiscard]] int64_t Elapsed() const {
+    return running_ ? accumulated_ticks_ + TicksSinceStart()
+                    : accumulated_ticks_;
+  }
 
   // Resets the timer to zero and activates it.
-  void Reset();
+  void Reset() {
+    start_tick_ = T::Tick();
+    accumulated_ticks_ = 0;
+    running_ = true;
+  }
 
   // Stops (pauses) the timer. Further ticks do not accumulate until Start().
-  void Stop();
+  void Stop() {
+    if (running_) {
+      accumulated_ticks_ += TicksSinceStart();
+      running_ = false;
+    }
+  }
 
   // Starts (resumes) a stopped timer from where it left off.
-  void Start();
+  void Start() {
+    if (!running_) {
+      start_tick_ = T::Tick();
+      running_ = true;
+    }
+  }
 
   // Returns false between Stop() and the next Start() or Reset().
-  [[nodiscard]] bool IsRunning() const;
+  [[nodiscard]] bool IsRunning() const { return running_; }
 
   // Saved-game support. Writes the elapsed value and the running flag, not
   // the anchor tick, so the format does not depend on the tick source. On
@@ -98,7 +116,9 @@ class Stopwatch {
 
  private:
   // Returns ticks elapsed since start_tick_ was last anchored.
-  [[nodiscard]] int64_t TicksSinceStart() const;
+  [[nodiscard]] int64_t TicksSinceStart() const {
+    return T::Tick() - start_tick_;
+  }
 
   // The tick the current running stretch began at. Only read while running;
   // Start() and Reset() re-anchor it.
@@ -108,10 +128,6 @@ class Stopwatch {
   int64_t accumulated_ticks_{0};
   bool running_{true};
 };
-
-template <TickSource T>
-Stopwatch<T>::Stopwatch() noexcept
-    : start_tick_(static_cast<int64_t>(T::Tick())) {}
 
 template <TickSource T>
 template <class Archive>
@@ -125,86 +141,50 @@ void Stopwatch<T>::Serialize(Archive& ar) {
       return;
     }
     accumulated_ticks_ = value;
-    start_tick_ = static_cast<int64_t>(T::Tick());
+    start_tick_ = T::Tick();
     running_ = running;
   }
-}
-
-template <TickSource T>
-int64_t Stopwatch<T>::Elapsed() const {
-  int64_t value = accumulated_ticks_;
-  if (running_) {
-    value += TicksSinceStart();
-  }
-  return value;
-}
-
-template <TickSource T>
-void Stopwatch<T>::Reset() {
-  start_tick_ = static_cast<int64_t>(T::Tick());
-  accumulated_ticks_ = 0;
-  running_ = true;
-}
-
-template <TickSource T>
-void Stopwatch<T>::Stop() {
-  if (running_) {
-    accumulated_ticks_ += TicksSinceStart();
-    running_ = false;
-  }
-}
-
-template <TickSource T>
-void Stopwatch<T>::Start() {
-  if (!running_) {
-    start_tick_ = static_cast<int64_t>(T::Tick());
-    running_ = true;
-  }
-}
-
-template <TickSource T>
-bool Stopwatch<T>::IsRunning() const {
-  return running_;
-}
-
-template <TickSource T>
-int64_t Stopwatch<T>::TicksSinceStart() const {
-  return static_cast<int64_t>(T::Tick()) - start_tick_;
 }
 
 // A countdown timer that counts down from a set duration toward zero.
 //
 // When the value reaches zero the timer is "finished". The timer supports
 // stop/start (pause/resume). Calling Set() with a new duration resets and
-// restarts the countdown.
+// restarts the countdown. It is a Stopwatch measured against a duration, so
+// pausing works the same way in both.
 template <TickSource T>
 class Timer {
  public:
   // Starts counting down from `duration` ticks.
-  explicit Timer(int64_t duration = 0) noexcept;
+  explicit Timer(int64_t duration = 0) noexcept : duration_(duration) {}
 
   // Returns the ticks remaining, or 0 if the countdown has finished.
-  [[nodiscard]] int64_t Remaining() const;
+  [[nodiscard]] int64_t Remaining() const {
+    return std::max<int64_t>(duration_ - watch_.Elapsed(), 0);
+  }
 
   // Resets the countdown to `duration` ticks and restarts it.
-  void Set(int64_t duration);
+  void Set(int64_t duration) {
+    duration_ = duration;
+    watch_.Reset();
+  }
 
   // Stops (pauses) the countdown.
-  void Stop();
+  void Stop() { watch_.Stop(); }
 
   // Starts (resumes) a stopped countdown from where it left off.
-  void Start();
+  void Start() { watch_.Start(); }
 
   // Returns false between Stop() and the next Start() or Set().
   // A countdown that reaches zero keeps running; it just reads 0.
-  [[nodiscard]] bool IsRunning() const;
+  [[nodiscard]] bool IsRunning() const { return watch_.IsRunning(); }
 
   // Returns whether the countdown has reached zero. A stopped timer with time
   // left is not finished.
-  [[nodiscard]] bool IsFinished() const;
+  [[nodiscard]] bool IsFinished() const { return Remaining() == 0; }
 
   // Returns the opposite of IsFinished().
-  [[nodiscard]] bool HasTimeLeft() const;
+  [[nodiscard]] bool HasTimeLeft() const { return Remaining() != 0; }
 
   // Saved-game support. Writes the remaining value and the running flag and
   // re-anchors on read; see Stopwatch::Serialize for the game clock
@@ -214,95 +194,30 @@ class Timer {
   void Serialize(Archive& ar);
 
  private:
-  // Returns ticks elapsed since start_tick_ was last anchored.
-  [[nodiscard]] int64_t TicksSinceStart() const;
-
-  // The tick the countdown last started or resumed at. Only read while
-  // running.
-  int64_t start_tick_;
-  // Ticks remaining as of the last anchor point (construction, Set(), Stop()
-  // or a load). While running, Remaining() subtracts the ticks since
-  // start_tick_.
-  int64_t remaining_at_start_;
-  bool running_{true};
+  // Measures how much of duration_ has run down.
+  Stopwatch<T> watch_;
+  // The ticks to count down from, as of the last Set() or load. A load
+  // stores what was remaining, so it restarts the stopwatch at zero too.
+  int64_t duration_;
 };
-
-template <TickSource T>
-Timer<T>::Timer(int64_t duration) noexcept
-    : start_tick_(static_cast<int64_t>(T::Tick())),
-      remaining_at_start_(duration) {}
 
 template <TickSource T>
 template <class Archive>
 void Timer<T>::Serialize(Archive& ar) {
   int64_t value = Remaining();
-  bool running = running_;
+  bool running = IsRunning();
   ar(value, running);
   if constexpr (Archive::kIsReading) {
     if (value < 0) {
       ar.Fail("negative countdown duration");
       return;
     }
-    remaining_at_start_ = value;
-    start_tick_ = static_cast<int64_t>(T::Tick());
-    running_ = running;
-  }
-}
-
-template <TickSource T>
-int64_t Timer<T>::Remaining() const {
-  const int64_t remaining = remaining_at_start_;
-  if (running_) {
-    const int64_t elapsed = TicksSinceStart();
-    if (elapsed < remaining) {
-      return remaining - elapsed;
+    duration_ = value;
+    watch_.Reset();
+    if (!running) {
+      watch_.Stop();
     }
-    return 0;
   }
-  return remaining;
-}
-
-template <TickSource T>
-void Timer<T>::Set(int64_t duration) {
-  start_tick_ = static_cast<int64_t>(T::Tick());
-  remaining_at_start_ = duration;
-  running_ = true;
-}
-
-template <TickSource T>
-void Timer<T>::Stop() {
-  if (running_) {
-    remaining_at_start_ = Remaining();
-    running_ = false;
-  }
-}
-
-template <TickSource T>
-void Timer<T>::Start() {
-  if (!running_) {
-    start_tick_ = static_cast<int64_t>(T::Tick());
-    running_ = true;
-  }
-}
-
-template <TickSource T>
-bool Timer<T>::IsRunning() const {
-  return running_;
-}
-
-template <TickSource T>
-bool Timer<T>::IsFinished() const {
-  return Remaining() == 0;
-}
-
-template <TickSource T>
-bool Timer<T>::HasTimeLeft() const {
-  return Remaining() != 0;
-}
-
-template <TickSource T>
-int64_t Timer<T>::TicksSinceStart() const {
-  return static_cast<int64_t>(T::Tick()) - start_tick_;
 }
 
 #endif  // CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
