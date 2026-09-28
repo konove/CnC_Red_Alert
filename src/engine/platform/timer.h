@@ -189,18 +189,13 @@ class Timer {
   // Resets the countdown to `duration` ticks and restarts it.
   void Set(int64_t duration);
 
-  // Restarts the countdown from the remaining value it was last given: the
-  // duration from construction or Set(), unless a Stop() or a load since
-  // then replaced it with what was left at that point.
-  void Restart();
-
   // Stops (pauses) the countdown.
   void Stop();
 
   // Starts (resumes) a stopped countdown from where it left off.
   void Start();
 
-  // Returns false between Stop() and the next Start(), Set() or Restart().
+  // Returns false between Stop() and the next Start() or Set().
   // A countdown that reaches zero keeps running; it just reads 0.
   [[nodiscard]] bool IsRunning() const;
 
@@ -271,12 +266,6 @@ template <TickSource T>
 void Timer<T>::Set(int64_t duration) {
   start_tick_ = static_cast<int64_t>(T::Tick());
   remaining_at_start_ = duration;
-  running_ = true;
-}
-
-template <TickSource T>
-void Timer<T>::Restart() {
-  start_tick_ = static_cast<int64_t>(T::Tick());
   running_ = true;
 }
 
