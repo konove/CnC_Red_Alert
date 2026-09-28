@@ -252,9 +252,9 @@ bool Force_CD_Available(int cd_desired)  // ajw
       TheTheme().Stop();
 
       // Only set the palette if necessary.
-      if (PaletteClass::CurrentPalette.at(1).Red_Component() +
-              PaletteClass::CurrentPalette.at(1).Blue_Component() +
-              PaletteClass::CurrentPalette.at(1).Green_Component() ==
+      if (PaletteClass::CurrentPalette.at(1).red() +
+              PaletteClass::CurrentPalette.at(1).blue() +
+              PaletteClass::CurrentPalette.at(1).green() ==
           0) {
         ThePalettes().game_palette().Set();
       }

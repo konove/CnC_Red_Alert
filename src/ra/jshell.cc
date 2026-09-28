@@ -399,7 +399,7 @@ std::span<unsigned char> Make_Fading_Table(const PaletteClass& palette,
       */
       // Try to match this color.
       const PaletteColor trycolor =
-          palette.at(index).Adjusted(frac, palette.at(color));
+          palette.at(index).FadedToward(frac, palette.at(color));
 
       /*
       **	Search through the remap range to find the color that should be
@@ -438,7 +438,7 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
         */
         // Try to match this color.
         const PaletteColor trycolor =
-            palette.at(index).Adjusted(frac, palette.at(color));
+            palette.at(index).FadedToward(frac, palette.at(color));
 
         /*
         **	Search through the remap range to find the color that should be
@@ -449,7 +449,7 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
         int bvalue = 0;
         for (int id = PaletteClass::COLOR_COUNT - 16;
              id < PaletteClass::COLOR_COUNT - 1; id++) {
-          const int diff = palette.at(id).Difference(trycolor);
+          const int diff = palette.at(id).SquaredDistance(trycolor);
           if (best == -1 || diff < bvalue) {
             best = id;
             bvalue = diff;

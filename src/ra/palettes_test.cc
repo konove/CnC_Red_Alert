@@ -11,15 +11,14 @@ namespace {
 
 // Returns `rgb` as one number, 0xRRGGBB, for comparing in expectations.
 int Packed(const PaletteColor& rgb) {
-  return (rgb.Red_Component() * 65536) + (rgb.Green_Component() * 256) +
-         rgb.Blue_Component();
+  return (rgb.red() * 65536) + (rgb.green() * 256) + rgb.blue();
 }
 
 TEST(PalettesTest, BlackAndWhiteAreFilledIn) {
   Palettes palettes;
-  const int white =
-      Packed(PaletteColor(PaletteColor::kMaxValue, PaletteColor::kMaxValue,
-                          PaletteColor::kMaxValue));
+  const int white = Packed(PaletteColor(PaletteColor::kMaxComponent,
+                                        PaletteColor::kMaxComponent,
+                                        PaletteColor::kMaxComponent));
   ASSERT_NE(white, 0);
   for (int i = 0; i < 256; ++i) {
     EXPECT_EQ(Packed(palettes.black_palette().at(i)), 0);

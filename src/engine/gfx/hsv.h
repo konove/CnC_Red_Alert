@@ -35,19 +35,18 @@ class PaletteColor;
 // the value.
 //
 // Red Alert's options dialog converts each palette entry with
-// PaletteColor::ToHSV(), scales the components and assigns the result back.
+// PaletteColor::ToHsv(), scales the components and assigns the result back.
 //
 // Example:
-//   const HsvColor hsv = palette.at(index).ToHSV();
-//   palette.at(index) = HsvColor(hsv.Hue_Component(), 0,
-//   hsv.Value_Component());
+//   const HsvColor hsv = palette.at(index).ToHsv();
+//   palette.at(index) = HsvColor(hsv.hue(), 0, hsv.value());
 class HsvColor {
  public:
   HsvColor(uint8_t hue, uint8_t saturation, uint8_t value) noexcept
-      : Hue(hue), Saturation(saturation), Value(value) {}
+      : hue_(hue), saturation_(saturation), value_(value) {}
 
   // Returns the RGB color that most closely matches this one. The conversion
-  // truncates each gun to the 6 bits PaletteColor keeps, so ToHSV() followed by
+  // truncates each gun to the 6 bits PaletteColor keeps, so ToHsv() followed by
   // this conversion can move a gun down by a step or two.
   //
   // Implicit so the options dialog can assign an HSV color straight into a
@@ -55,14 +54,14 @@ class HsvColor {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator PaletteColor() const;
 
-  [[nodiscard]] int Hue_Component() const { return Hue; }
-  [[nodiscard]] int Saturation_Component() const { return Saturation; }
-  [[nodiscard]] int Value_Component() const { return Value; }
+  [[nodiscard]] int hue() const { return hue_; }
+  [[nodiscard]] int saturation() const { return saturation_; }
+  [[nodiscard]] int value() const { return value_; }
 
  private:
-  uint8_t Hue;
-  uint8_t Saturation;
-  uint8_t Value;
+  uint8_t hue_;
+  uint8_t saturation_;
+  uint8_t value_;
 };
 
 // HSV/RGB conversions for colors stored as VGA 6-bit guns (0..63), with the
@@ -73,10 +72,12 @@ class HsvColor {
 
 // Converts 'r', 'g' and 'b' (each 0..63) and stores the hue, saturation and
 // value in '*h', '*s' and '*v' (each 0..255). A grey has hue and saturation 0.
-void Convert_RGB_To_HSV(int r, int g, int b, int* h, int* s, int* v);
+void Rgb6ToHsv(int red, int green, int blue, int* hue, int* saturation,
+               int* value);
 
 // Converts 'h', 's' and 'v' (each 0..255, clamped if not) and stores the guns
 // in '*r', '*g' and '*b' (each 0..63).
-void Convert_HSV_To_RGB(int h, int s, int v, int* r, int* g, int* b);
+void HsvToRgb6(int hue, int saturation, int value, int* red, int* green,
+               int* blue);
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_HSV_H_

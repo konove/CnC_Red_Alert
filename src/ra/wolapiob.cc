@@ -3341,9 +3341,9 @@ std::array<dib::Color, dib::kPaletteSize> CurrentScreenPalette() {
   for (int i = 0; i != dib::kPaletteSize; i++) {
     const PaletteColor& Entry = PaletteClass::CurrentPalette.at(i);
     dib::Color& color = Palette.at(base::ToSize(i));
-    color.red = static_cast<std::uint8_t>(Entry.Red_Component());
-    color.green = static_cast<std::uint8_t>(Entry.Green_Component());
-    color.blue = static_cast<std::uint8_t>(Entry.Blue_Component());
+    color.red = static_cast<std::uint8_t>(Entry.red());
+    color.green = static_cast<std::uint8_t>(Entry.green());
+    color.blue = static_cast<std::uint8_t>(Entry.blue());
   }
   return Palette;
 }

@@ -74,9 +74,9 @@ class Palettes {
   PaletteClass original_palette_;
   PaletteClass title_palette_;
   PaletteClass black_palette_{PaletteColor(0, 0, 0)};
-  PaletteClass white_palette_{PaletteColor(PaletteColor::kMaxValue,
-                                           PaletteColor::kMaxValue,
-                                           PaletteColor::kMaxValue)};
+  PaletteClass white_palette_{PaletteColor(PaletteColor::kMaxComponent,
+                                           PaletteColor::kMaxComponent,
+                                           PaletteColor::kMaxComponent)};
   base::EnumArray<PlayerColorType, RemapControlType> color_remaps_{};
   RemapControlType metal_scheme_{};
   RemapControlType grey_scheme_{};

@@ -28,13 +28,12 @@
 #include "engine/gfx/rgb.h"
 
 HsvColor::operator PaletteColor() const {
-  const base::Rgb8 color = base::HsvToRgb8(
-      Hue_Component(), Saturation_Component(), Value_Component());
+  const base::Rgb8 color = base::HsvToRgb8(hue(), saturation(), value());
 
   // The PaletteColor constructor drops each gun's low two bits to get the 6-bit
   // VGA value it stores.
   //
-  // TODO: Truncating here, and in ToHSV(), makes the round trip lossy: at the
+  // TODO: Truncating here, and in ToHsv(), makes the round trip lossy: at the
   // options dialog's neutral settings 127,769 of the 262,144 6-bit colors come
   // back a step or two off (the original code: 76,340; TD's rounding pair:
   // 21,612, by one step), so every palette entry the dialog adjusts drifts.
@@ -44,85 +43,91 @@ HsvColor::operator PaletteColor() const {
 
 // The conversions work at the 8-bit HSV scale for better precision than the
 // 6-bit guns would give.
-constexpr int kHsvBase = 255;
+constexpr int kMaxComponent = 255;
 // The brightest VGA gun; 63, not 64, since this is a maximum, not a range.
-constexpr int kRgbBase = 63;
+constexpr int kMaxGun = 63;
 
-void Convert_RGB_To_HSV(int r, int g, int b, int* h, int* s, int* v) {
+void Rgb6ToHsv(int red, int green, int blue, int* hue, int* saturation,
+               int* value) {
   // Scale the 6-bit guns up to the 8-bit HSV scale.
-  r = base::DivideWithRound(r * kHsvBase, kRgbBase);
-  g = base::DivideWithRound(g * kHsvBase, kRgbBase);
-  b = base::DivideWithRound(b * kHsvBase, kRgbBase);
+  const int r = base::DivideWithRound(red * kMaxComponent, kMaxGun);
+  const int g = base::DivideWithRound(green * kMaxComponent, kMaxGun);
+  const int b = base::DivideWithRound(blue * kMaxComponent, kMaxGun);
 
   // A grey has no hue; it stays 0 unless there is saturation below.
-  *h = 0;
+  *hue = 0;
 
   // The value is the brightest gun, which is the dominant primary.
-  *v = r > g ? r : g;
-  *v = std::max(b, *v);
+  *value = r > g ? r : g;
+  *value = std::max(b, *value);
 
   // The dimmest gun is the amount of white mixed in.
-  int m = r < g ? r : g;
-  m = std::min(b, m);
+  int white = r < g ? r : g;
+  white = std::min(b, white);
 
   // The saturation is the share of the value that is not white.
-  if (*v != 0) {
-    *s = base::DivideWithRound((*v - m) * kHsvBase, *v);
+  if (*value != 0) {
+    *saturation =
+        base::DivideWithRound((*value - white) * kMaxComponent, *value);
   } else {
-    *s = 0;
+    *saturation = 0;
   }
 
-  if (*s != 0) {
+  if (*saturation != 0) {
     // Each gun's distance below the brightest, as a fraction of the spread
-    // between brightest and dimmest scaled to 0..kHsvBase. The dimmest gun's
-    // is kHsvBase, the brightest's 0. A non-zero saturation means the spread
-    // is not zero.
-    const int tmp = *v - m;
-    CHECK_NE(tmp, 0);
-    const int r1 = base::DivideWithRound((*v - r) * kHsvBase, tmp);
-    const int g1 = base::DivideWithRound((*v - g) * kHsvBase, tmp);
-    const int b1 = base::DivideWithRound((*v - b) * kHsvBase, tmp);
+    // between brightest and dimmest scaled to 0..kMaxComponent. The dimmest
+    // gun's is kMaxComponent, the brightest's 0. A non-zero saturation means
+    // the spread is not zero.
+    const int spread = *value - white;
+    CHECK_NE(spread, 0);
+    const int red_shortfall =
+        base::DivideWithRound((*value - r) * kMaxComponent, spread);
+    const int green_shortfall =
+        base::DivideWithRound((*value - g) * kMaxComponent, spread);
+    const int blue_shortfall =
+        base::DivideWithRound((*value - b) * kMaxComponent, spread);
 
     // Find the effect of the second most predominant color: which gun is
     // brightest and which dimmest picks the sextant of the color hexagon, and
-    // the middle gun's fraction the position within it. The hue is built at
-    // six times its final scale, one kHsvBase per sextant.
-    if (*v == r) {
-      if (m == g) {
-        *h = (5 * kHsvBase) + b1;
+    // the middle gun's shortfall the position within it. The hue is built at
+    // six times its final scale, one kMaxComponent per sextant.
+    if (*value == r) {
+      if (white == g) {
+        *hue = (5 * kMaxComponent) + blue_shortfall;
       } else {
-        *h = (1 * kHsvBase) - g1;
+        *hue = (1 * kMaxComponent) - green_shortfall;
       }
     } else {
-      if (*v == g) {
-        if (m == b) {
-          *h = (1 * kHsvBase) + r1;
+      if (*value == g) {
+        if (white == b) {
+          *hue = (1 * kMaxComponent) + red_shortfall;
         } else {
-          *h = (3 * kHsvBase) - b1;
+          *hue = (3 * kMaxComponent) - blue_shortfall;
         }
       } else {
-        // *v == b
-        if (m == r) {
-          *h = (3 * kHsvBase) + g1;
+        // *value == b
+        if (white == r) {
+          *hue = (3 * kMaxComponent) + green_shortfall;
         } else {
-          *h = (5 * kHsvBase) - r1;
+          *hue = (5 * kMaxComponent) - red_shortfall;
         }
       }
     }
 
-    // Back to one kHsvBase for the whole circle. A red whose green and blue
-    // tie takes the magenta branch and lands on 6 * kHsvBase, which becomes
-    // kHsvBase, the same hue as 0.
-    *h = base::DivideWithRound(*h, 6);
+    // Back to one kMaxComponent for the whole circle. A red whose green and
+    // blue tie takes the magenta branch and lands on 6 * kMaxComponent, which
+    // becomes kMaxComponent, the same hue as 0.
+    *hue = base::DivideWithRound(*hue, 6);
   }
 }
 
-void Convert_HSV_To_RGB(int h, int s, int v, int* r, int* g, int* b) {
-  const base::Rgb8 color = base::HsvToRgb8(h, s, v);
+void HsvToRgb6(int hue, int saturation, int value, int* red, int* green,
+               int* blue) {
+  const base::Rgb8 color = base::HsvToRgb8(hue, saturation, value);
 
-  // HsvToRgb8() works at kHsvBase; scale each gun down to the VGA kRgbBase,
-  // rounding.
-  *r = base::DivideWithRound(color.red * kRgbBase, kHsvBase);
-  *g = base::DivideWithRound(color.green * kRgbBase, kHsvBase);
-  *b = base::DivideWithRound(color.blue * kRgbBase, kHsvBase);
+  // HsvToRgb8() works at kMaxComponent; scale each gun down to the VGA
+  // kMaxGun, rounding.
+  *red = base::DivideWithRound(color.red * kMaxGun, kMaxComponent);
+  *green = base::DivideWithRound(color.green * kMaxGun, kMaxComponent);
+  *blue = base::DivideWithRound(color.blue * kMaxGun, kMaxComponent);
 }

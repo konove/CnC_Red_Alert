@@ -8,33 +8,33 @@ constexpr PaletteColor kOrange(252, 128, 0);
 constexpr PaletteColor kTeal(0, 128, 252);
 
 void ExpectSameColor(const PaletteColor& actual, const PaletteColor& expected) {
-  EXPECT_EQ(actual.Red_Component(), expected.Red_Component());
-  EXPECT_EQ(actual.Green_Component(), expected.Green_Component());
-  EXPECT_EQ(actual.Blue_Component(), expected.Blue_Component());
+  EXPECT_EQ(actual.red(), expected.red());
+  EXPECT_EQ(actual.green(), expected.green());
+  EXPECT_EQ(actual.blue(), expected.blue());
 }
 
-TEST(RgbAdjustedTest, ZeroRatioKeepsTheColor) {
-  ExpectSameColor(kOrange.Adjusted(0, kTeal), kOrange);
+TEST(PaletteColorFadedTowardTest, ZeroRatioKeepsTheColor) {
+  ExpectSameColor(kOrange.FadedToward(0, kTeal), kOrange);
 }
 
-TEST(RgbAdjustedTest, FullRatioReachesTheTarget) {
-  ExpectSameColor(kOrange.Adjusted(255, kTeal), kTeal);
+TEST(PaletteColorFadedTowardTest, FullRatioReachesTheTarget) {
+  ExpectSameColor(kOrange.FadedToward(255, kTeal), kTeal);
 }
 
-TEST(RgbAdjustedTest, OutOfRangeRatioIsClamped) {
-  ExpectSameColor(kOrange.Adjusted(-5, kTeal), kOrange);
-  ExpectSameColor(kOrange.Adjusted(256, kTeal), kTeal);
+TEST(PaletteColorFadedTowardTest, OutOfRangeRatioIsClamped) {
+  ExpectSameColor(kOrange.FadedToward(-5, kTeal), kOrange);
+  ExpectSameColor(kOrange.FadedToward(256, kTeal), kTeal);
 }
 
-TEST(RgbAdjustedTest, MatchesInPlaceAdjust) {
+TEST(PaletteColorFadedTowardTest, MatchesInPlaceAdjust) {
   PaletteColor in_place = kOrange;
   in_place.Adjust(100, kTeal);
-  ExpectSameColor(kOrange.Adjusted(100, kTeal), in_place);
+  ExpectSameColor(kOrange.FadedToward(100, kTeal), in_place);
 }
 
-TEST(RgbAdjustedTest, LeavesTheSourceUntouched) {
+TEST(PaletteColorFadedTowardTest, LeavesTheSourceUntouched) {
   const PaletteColor source = kOrange;
-  static_cast<void>(source.Adjusted(200, kTeal));
+  static_cast<void>(source.FadedToward(200, kTeal));
   ExpectSameColor(source, kOrange);
 }
 

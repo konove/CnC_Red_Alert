@@ -51,7 +51,7 @@ class GlowPulse {
 
   // Returns `color` dimmed by the current fade.
   [[nodiscard]] PaletteColor Apply(const PaletteColor& color) const {
-    return color.Adjusted(fade_, kBlackColor);
+    return color.FadedToward(fade_, kBlackColor);
   }
 
   // The current PaletteColor::Adjust() ratio toward black, kMinFade..kMaxFade.

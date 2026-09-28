@@ -43,61 +43,62 @@ void PaletteColor::Adjust(const int ratio, const PaletteColor& target) {
                                          static_cast<float>(target.blue_), t));
 }
 
-PaletteColor PaletteColor::Adjusted(const int ratio,
-                                    const PaletteColor& target) const {
+PaletteColor PaletteColor::FadedToward(const int ratio,
+                                       const PaletteColor& target) const {
   PaletteColor result = *this;
   result.Adjust(ratio, target);
   return result;
 }
 
-int PaletteColor::Difference(const PaletteColor& other) const {
-  const auto diff_sq = [](const int a, const int b) {
-    const int d = a - b;
-    return d * d;
+int PaletteColor::SquaredDistance(const PaletteColor& other) const {
+  const auto squared_difference = [](const int a, const int b) {
+    const int difference = a - b;
+    return difference * difference;
   };
 
-  return diff_sq(red_, other.red_) + diff_sq(green_, other.green_) +
-         diff_sq(blue_, other.blue_);
+  return squared_difference(red_, other.red_) +
+         squared_difference(green_, other.green_) +
+         squared_difference(blue_, other.blue_);
 }
 
-HsvColor PaletteColor::ToHSV() const {
-  const int r = Red_Component();
-  const int g = Green_Component();
-  const int b = Blue_Component();
+HsvColor PaletteColor::ToHsv() const {
+  const int r = red();
+  const int g = green();
+  const int b = blue();
 
   const auto [min_val, max_val] = std::minmax({r, g, b});
   // The value, or brightness, is the brightest gun.
   const int value = max_val;
-  const int delta = max_val - min_val;
+  const int spread = max_val - min_val;
 
   int hue = 0;
   int saturation = 0;
 
-  if (delta > 0 && value > 0) {
+  if (spread > 0 && value > 0) {
     // The saturation is the share of the value that is not white, the white
     // being the dimmest gun.
-    saturation = delta * 255 / value;
+    saturation = spread * 255 / value;
 
     // The hue in sextants (0..6) is the dominant gun's sextant plus the
     // difference of the other two over the spread. Keep it multiplied by the
     // spread, as a numerator, so the one division comes last.
-    int segment_numerator = 0;
+    int hue_numerator = 0;
 
     if (max_val == r) {
       // Sextant 0: red is dominant. Towards magenta, where blue exceeds
       // green, this goes negative and wraps round below.
-      segment_numerator = g - b;
+      hue_numerator = g - b;
     } else if (max_val == g) {
       // Sextant 2: green is dominant.
-      segment_numerator = (2 * delta) + (b - r);
+      hue_numerator = (2 * spread) + (b - r);
     } else {
       // Sextant 4: blue is dominant.
-      segment_numerator = (4 * delta) + (r - g);
+      hue_numerator = (4 * spread) + (r - g);
     }
 
-    // Scale the numerator, in [-delta, 5 * delta], so that the six sextants
+    // Scale the numerator, in [-spread, 5 * spread], so that the six sextants
     // of the circle span 0..255.
-    hue = segment_numerator * 255 / (delta * 6);
+    hue = hue_numerator * 255 / (spread * 6);
 
     // Wrap the red-magenta side, -42..-1, round to the top of the circle.
     if (hue < 0) {

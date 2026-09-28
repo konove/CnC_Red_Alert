@@ -488,23 +488,22 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
       **	Convert the working palette entry into an HSV format for
       **	manipulation.
       */
-      const HsvColor hsv = oldpal.at(index).ToHSV();
+      const HsvColor hsv = oldpal.at(index).ToHsv();
 
       /*
       **	Adjust contrast by moving the value toward the center according
       *to the *	percentage indicated.
       */
-      int temp =
-          hsv.Value_Component() * (brightness * 256) / 0x80;  // Brightness
+      int temp = hsv.value() * (brightness * 256) / 0x80;  // Brightness
       temp = Bound(temp, 0, 0xFF);
       int v = temp;
       temp = ((v - 0x80) * (contrast * 256) / 0x80) + 0x80;  // Contrast
       temp = Bound(temp, 0, 0xFF);
       v = temp;
-      temp = hsv.Saturation_Component() * (color * 256) / 0x80;  // Color
+      temp = hsv.saturation() * (color * 256) / 0x80;  // Color
       temp = Bound(temp, 0, 0xFF);
       const int s = temp;
-      temp = hsv.Hue_Component() * (tint * 256) / 0x80;  // Tint
+      temp = hsv.hue() * (tint * 256) / 0x80;  // Tint
       temp = Bound(temp, 0, 0xFF);
       const int h = temp;
 

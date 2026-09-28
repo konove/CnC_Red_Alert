@@ -438,7 +438,7 @@ void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
       int r = base::At(oldpal, (base::ToSize(index) * 3) + 0);
       int g = base::At(oldpal, (base::ToSize(index) * 3) + 1);
       int b = base::At(oldpal, (base::ToSize(index) * 3) + 2);
-      Convert_RGB_To_HSV(r, g, b, &h, &s, &v);
+      Rgb6ToHsv(r, g, b, &h, &s, &v);
 
       /*
       **	Adjust contrast by moving the value toward the center according
@@ -457,7 +457,7 @@ void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
       temp = h * tint / 0x80;  // Tint
       temp = Bound(temp, 0, 0xFF);
       h = temp;
-      Convert_HSV_To_RGB(h, s, v, &r, &g, &b);
+      HsvToRgb6(h, s, v, &r, &g, &b);
       base::At(newpal, (base::ToSize(index) * 3) + 0) =
           static_cast<unsigned char>(r);
       base::At(newpal, (base::ToSize(index) * 3) + 1) =

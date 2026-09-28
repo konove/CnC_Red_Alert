@@ -27,13 +27,13 @@ class HsvColor;
 // One palette color, held at the VGA DAC's 6 bits per gun (0..63).
 //
 // The interface speaks 8-bit components: the constructor takes 0..255 and the
-// *_Component() accessors return 0..252. Red Alert's PaletteClass is an array
+// red(), green() and blue() return 0..252. Red Alert's PaletteClass is an array
 // of these that is also handed out as the raw 768-byte palette, so the three
 // one-byte members are the palette file format.
 //
 // Example:
 //   constexpr PaletteColor kEmber(255, 80, 80);
-//   const PaletteColor dimmed = kEmber.Adjusted(128, kBlackColor);
+//   const PaletteColor dimmed = kEmber.FadedToward(128, kBlackColor);
 class PaletteColor {
  public:
   // Black.
@@ -45,12 +45,12 @@ class PaletteColor {
       : red_(red >> 2), green_(green >> 2), blue_(blue >> 2) {}
 
   // Returns this color as hue, saturation and value, each 0..255, computed
-  // from the 8-bit *_Component() values on the hexagonal color wheel; see
+  // from the 8-bit red(), green() and blue() on the hexagonal color wheel; see
   // HsvColor for the scale. A grey has hue and saturation 0.
-  [[nodiscard]] HsvColor ToHSV() const;
+  [[nodiscard]] HsvColor ToHsv() const;
 
   // The brightest 8-bit component the constructor takes.
-  static constexpr uint8_t kMaxValue = 255;
+  static constexpr uint8_t kMaxComponent = 255;
 
   // Moves this color proportionately toward 'target', as palette fades do.
   //
@@ -60,27 +60,25 @@ class PaletteColor {
   void Adjust(int ratio, const PaletteColor& target);
 
   // Returns a copy of this color adjusted toward 'target'; see Adjust().
-  [[nodiscard]] PaletteColor Adjusted(int ratio,
-                                      const PaletteColor& target) const;
+  [[nodiscard]] PaletteColor FadedToward(int ratio,
+                                         const PaletteColor& target) const;
 
   // Returns the squared Euclidean distance between this color and 'other',
   // measured on the 6-bit guns (0..3 * 63 * 63). Used to find the closest
   // palette match without square roots; 0 means the colors are identical.
-  [[nodiscard]] int Difference(const PaletteColor& other) const;
+  [[nodiscard]] int SquaredDistance(const PaletteColor& other) const;
 
   // The guns back at the 8-bit scale: the stored 6 bits shifted up by two,
   // so full intensity reads as 252, not 255.
   //
   // TODO: The '/ 64' term is the original '>> 6', always 0 for a 6-bit gun;
   // '>> 4' would copy the top bits down and make 63 read as 255. Changing it
-  // shifts ToHSV() values, closest-color matches and the WOLAPI palette.
-  [[nodiscard]] constexpr int Red_Component() const {
-    return (red_ * 4) + (red_ / 64);
-  }
-  [[nodiscard]] constexpr int Green_Component() const {
+  // shifts ToHsv() values, closest-color matches and the WOLAPI palette.
+  [[nodiscard]] constexpr int red() const { return (red_ * 4) + (red_ / 64); }
+  [[nodiscard]] constexpr int green() const {
     return (green_ * 4) + (green_ / 64);
   }
-  [[nodiscard]] constexpr int Blue_Component() const {
+  [[nodiscard]] constexpr int blue() const {
     return (blue_ * 4) + (blue_ / 64);
   }
 

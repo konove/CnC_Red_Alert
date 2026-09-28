@@ -107,10 +107,9 @@ int PaletteClass::Closest_Color(const PaletteColor& col) const {
   int diff = 256 * 3;
 
   for (int i = 0; i < COLOR_COUNT; i++) {
-    const int new_diff =
-        std::abs(col.Red_Component() - base::At(data_, i).Red_Component()) +
-        std::abs(col.Green_Component() - base::At(data_, i).Green_Component()) +
-        std::abs(col.Blue_Component() - base::At(data_, i).Blue_Component());
+    const int new_diff = std::abs(col.red() - base::At(data_, i).red()) +
+                         std::abs(col.green() - base::At(data_, i).green()) +
+                         std::abs(col.blue() - base::At(data_, i).blue());
 
     if (new_diff == 0) {
       return i;
