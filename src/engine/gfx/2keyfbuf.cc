@@ -52,7 +52,7 @@ static int16_t BFPredNegTable[]{-1, -3, -2, -5, -2, -4, -3, -1,
 // How many pixels to the right of the one being drawn a predator pixel
 // samples, walked in order and wrapped. Sampling the page instead of drawing
 // the shape's color shows a displaced copy of the background, the shimmer.
-static int16_t BFPredTable[]{1, 3, 2, 5, 2, 3, 4, 1};
+static constexpr int16_t BFPredTable[]{1, 3, 2, 5, 2, 3, 4, 1};
 
 // The table the walk samples with: BFPredTable, or the computed half of
 // BFPredNegTable for a negative predator offset.
@@ -72,8 +72,8 @@ static void Do_Old_Blit(int line_count, int pixel_count,
                         std::span<const uint8_t> Translucent,
                         std::span<const uint8_t> IsTranslucent, int FadingNum,
                         std::span<const uint8_t> FadingTable) {
-  std::size_t input = 0;
-  std::size_t output = 0;
+  base::ssize input = 0;
+  base::ssize output = 0;
   do {
     // The assembler unrolled this loop 32 times.
     for (int x = 0; x < pixel_count; x++) {
@@ -89,9 +89,9 @@ static void Do_Old_Blit(int line_count, int pixel_count,
             // the shape's own color stays.
             // NOLINTNEXTLINE(bugprone-signed-bitwise)
             const int pred_index = BFPredOffset >> 1;
-            const auto sample =
-                output + base::ToSize(base::At(BFPredSteps, pred_index));
-            if (sample < dst_offset.size()) {
+            const base::ssize sample =
+                output + base::At(BFPredSteps, pred_index);
+            if (sample < std::ssize(dst_offset)) {
               pixel = base::At(dst_offset, sample);
             }
             // NOLINTNEXTLINE(bugprone-signed-bitwise)
@@ -100,8 +100,7 @@ static void Do_Old_Blit(int line_count, int pixel_count,
         }
 
         if (flags & kBlitGhost) {
-          const uint8_t is_trans =
-              base::At(IsTranslucent, static_cast<std::size_t>(pixel));
+          const uint8_t is_trans = base::At(IsTranslucent, pixel);
           // 0xFF marks an opaque color; anything else is a remap row.
           if (is_trans != 0xFF) {
             pixel = base::At(Translucent,
@@ -121,13 +120,13 @@ static void Do_Old_Blit(int line_count, int pixel_count,
       output++;
     }
 
-    input += static_cast<std::size_t>(src_adjust_width);
-    output += static_cast<std::size_t>(dst_adjust_width);
+    input += src_adjust_width;
+    output += dst_adjust_width;
   } while (--line_count);
 }
 
 void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
-                          std::span<std::byte> src, PixelView& dest,
+                          std::span<const std::byte> src, PixelView& dest,
                           ShapeFlags_Type flags, const ShapeEffects& effects) {
   if (src.empty() || w <= 0 || h <= 0) {
     return;
@@ -138,7 +137,7 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
   std::span<const uint8_t> FadingTable;
   int FadingNum = 0;
 
-  if (static_cast<std::size_t>(w) * static_cast<std::size_t>(h) > src.size()) {
+  if (base::ssize{w} * h > std::ssize(src)) {
     return;
   }
   // The kBlit* bits of the effects this draw needs.
@@ -165,7 +164,7 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
     // Refuse a table whose rows do not all exist, so the blit need not check.
     for (const uint8_t row : IsTranslucent) {
       if (row != 0xff &&
-          (static_cast<std::size_t>(row) + 1) * 256 > Translucent.size()) {
+          (base::ssize{row} + 1) * 256 > std::ssize(Translucent)) {
         return;
       }
     }

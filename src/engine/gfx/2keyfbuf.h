@@ -45,8 +45,9 @@ struct ShapeEffects {
 //
 // A predator pixel samples the page to its right (or, for a negative offset,
 // below it), so it picks up whatever was drawn there before this shape.
-void Buffer_Frame_To_Page(int x, int y, int w, int h, std::span<std::byte> src,
-                          PixelView& dest, ShapeFlags_Type flags,
+void Buffer_Frame_To_Page(int x, int y, int w, int h,
+                          std::span<const std::byte> src, PixelView& dest,
+                          ShapeFlags_Type flags,
                           const ShapeEffects& effects = {});
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_2KEYFBUF_H_

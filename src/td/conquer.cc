@@ -2389,7 +2389,7 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
           base::At(base::At(WindowList, static_cast<int>(window)),
                    kWindowHeight));
 
-      const auto shape_pointer = std::as_writable_bytes(shape_size);
+      const auto shape_pointer = std::as_bytes(shape_size);
 
       /*
       **	Special shadow drawing code (used for aircraft and bullets).
