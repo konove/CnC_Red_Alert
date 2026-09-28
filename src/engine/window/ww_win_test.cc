@@ -17,9 +17,9 @@ int events_seen = 0;
 uint32_t last_event_type = 0;
 int pumps_seen = 0;
 
-void RecordEvent(SDL_Event* event) {
+void RecordEvent(const SDL_Event& event) {
   ++events_seen;
-  last_event_type = event->type;
+  last_event_type = event.type;
 }
 
 void RecordPump() { ++pumps_seen; }

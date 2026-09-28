@@ -37,7 +37,7 @@ void PumpEvents() {
       continue;
     }
     if (event_handler) {
-      event_handler(&event);
+      event_handler(event);
     }
   }
 }

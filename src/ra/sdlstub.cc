@@ -35,7 +35,7 @@ static constexpr const char* kWindowName = [] {
   return "Red Alert";
 }();
 
-static void SDL_Event_Handler(SDL_Event* event);
+static void SDL_Event_Handler(const SDL_Event& event);
 
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
@@ -46,17 +46,17 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
   SetPumpHandler(&Socket_Select);
 }
 
-static void SDL_Event_Handler(SDL_Event* event) {
-  if (TheKeyboard().HandleEvent(event)) {
+static void SDL_Event_Handler(const SDL_Event& event) {
+  if (TheKeyboard().HandleEvent(&event)) {
     return;
   }
 
-  switch (event->type) {
+  switch (event.type) {
     case SDL_MOUSEMOTION:
-      TheMouse().RecordPosition(event->motion.x, event->motion.y);
+      TheMouse().RecordPosition(event.motion.x, event.motion.y);
       break;
     case SDL_WINDOWEVENT: {
-      switch (event->window.event) {
+      switch (event.window.event) {
         case SDL_WINDOWEVENT_FOCUS_GAINED:
           TheGameState().in_focus() = true;
           Focus_Restore();

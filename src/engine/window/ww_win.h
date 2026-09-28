@@ -28,7 +28,7 @@
 union SDL_Event;
 
 // Function type for the game's SDL event handler.
-using EventHandler = void (*)(SDL_Event* event);
+using EventHandler = void (*)(const SDL_Event& event);
 
 // Installs the game's event handler, called once for each event
 // PumpEvents polls other than Display's redraw events, which the loop
