@@ -26,12 +26,6 @@ TEST(PaletteColorFadedTowardTest, OutOfRangeRatioIsClamped) {
   ExpectSameColor(kOrange.FadedToward(256, kTeal), kTeal);
 }
 
-TEST(PaletteColorFadedTowardTest, MatchesInPlaceAdjust) {
-  PaletteColor in_place = kOrange;
-  in_place.Adjust(100, kTeal);
-  ExpectSameColor(kOrange.FadedToward(100, kTeal), in_place);
-}
-
 TEST(PaletteColorFadedTowardTest, LeavesTheSourceUntouched) {
   const PaletteColor source = kOrange;
   static_cast<void>(source.FadedToward(200, kTeal));

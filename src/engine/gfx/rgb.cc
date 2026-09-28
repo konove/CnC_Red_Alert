@@ -24,7 +24,8 @@
 
 #include "engine/gfx/hsv.h"
 
-void PaletteColor::Adjust(const int ratio, const PaletteColor& target) {
+PaletteColor PaletteColor::FadedToward(const int ratio,
+                                       const PaletteColor& target) const {
   // The original masked the ratio with 0xFF, so a fade overshooting to 256
   // wrapped back to no change at all. Clamping keeps it at the target.
   const int clamped_ratio = std::clamp(ratio, 0, 255);
@@ -35,18 +36,15 @@ void PaletteColor::Adjust(const int ratio, const PaletteColor& target) {
 
   // std::lerp() stays between the two guns for t in [0, 1], so the result
   // fits the 6-bit range; the cast rounds each gun down.
-  red_ = static_cast<uint8_t>(
-      std::lerp(static_cast<float>(red_), static_cast<float>(target.red_), t));
-  green_ = static_cast<uint8_t>(std::lerp(
-      static_cast<float>(green_), static_cast<float>(target.green_), t));
-  blue_ = static_cast<uint8_t>(std::lerp(static_cast<float>(blue_),
-                                         static_cast<float>(target.blue_), t));
-}
+  const auto fade = [t](const uint8_t from, const uint8_t to) {
+    return static_cast<uint8_t>(
+        std::lerp(static_cast<float>(from), static_cast<float>(to), t));
+  };
 
-PaletteColor PaletteColor::FadedToward(const int ratio,
-                                       const PaletteColor& target) const {
-  PaletteColor result = *this;
-  result.Adjust(ratio, target);
+  PaletteColor result;
+  result.red_ = fade(red_, target.red_);
+  result.green_ = fade(green_, target.green_);
+  result.blue_ = fade(blue_, target.blue_);
   return result;
 }
 
@@ -74,7 +72,7 @@ HsvColor PaletteColor::ToHsv() const {
   int hue = 0;
   int saturation = 0;
 
-  if (spread > 0 && value > 0) {
+  if (spread > 0) {
     // The saturation is the share of the value that is not white, the white
     // being the dimmest gun.
     saturation = spread * 255 / value;

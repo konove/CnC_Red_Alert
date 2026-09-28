@@ -26,7 +26,7 @@ class HsvColor;
 
 // One palette color, held at the VGA DAC's 6 bits per gun (0..63).
 //
-// The interface speaks 8-bit components: the constructor takes 0..255 and the
+// The interface speaks 8-bit components: the constructor takes 0..255 and
 // red(), green() and blue() return 0..252. Red Alert's PaletteClass is an array
 // of these that is also handed out as the raw 768-byte palette, so the three
 // one-byte members are the palette file format.
@@ -52,14 +52,12 @@ class PaletteColor {
   // The brightest 8-bit component the constructor takes.
   static constexpr uint8_t kMaxComponent = 255;
 
-  // Moves this color proportionately toward 'target', as palette fades do.
+  // Returns this color moved proportionately toward 'target', as palette
+  // fades do.
   //
   // 'ratio' is how far to go, from 0 (no change) to 255 (becomes 'target');
   // values outside 0..255 are clamped. Each gun rounds down, so one rising
   // toward the target reaches it only at 255.
-  void Adjust(int ratio, const PaletteColor& target);
-
-  // Returns a copy of this color adjusted toward 'target'; see Adjust().
   [[nodiscard]] PaletteColor FadedToward(int ratio,
                                          const PaletteColor& target) const;
 
@@ -89,6 +87,9 @@ class PaletteColor {
   uint8_t green_{0};
   uint8_t blue_{0};
 };
+
+// PaletteClass hands its entries out as the raw 768-byte palette.
+static_assert(sizeof(PaletteColor) == 3);
 
 // Black, the target of fades to black.
 inline constexpr PaletteColor kBlackColor(0, 0, 0);

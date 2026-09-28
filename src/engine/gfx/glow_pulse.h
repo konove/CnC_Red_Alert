@@ -54,7 +54,8 @@ class GlowPulse {
     return color.FadedToward(fade_, kBlackColor);
   }
 
-  // The current PaletteColor::Adjust() ratio toward black, kMinFade..kMaxFade.
+  // The current PaletteColor::FadedToward() ratio toward black,
+  // kMinFade..kMaxFade.
   [[nodiscard]] int fade() const { return fade_; }
 
  private:
