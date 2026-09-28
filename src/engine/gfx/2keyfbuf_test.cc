@@ -5,6 +5,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <numeric>
 #include <span>
 #include <vector>
 
@@ -22,11 +23,7 @@ constexpr int kPageHeight = 3;
 // shows which page pixel it sampled.
 class DrawShapeFrameTest : public testing::Test {
  protected:
-  DrawShapeFrameTest() {
-    for (std::size_t i = 0; i < pixels_.size(); ++i) {
-      pixels_.at(i) = static_cast<uint8_t>(i);
-    }
-  }
+  DrawShapeFrameTest() { std::ranges::iota(pixels_, uint8_t{0}); }
 
   // Draws the width x height frame of `colors` at x,y.
   void Draw(const std::vector<uint8_t>& colors, const int width,

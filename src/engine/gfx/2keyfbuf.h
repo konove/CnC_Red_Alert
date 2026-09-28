@@ -12,7 +12,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 
-// The tables and counts behind the drawing effects a SHAPE_* flag selects.
+// The tables and the predator offset behind the drawing effects a SHAPE_*
+// flag selects.
 // Each member is read only while its flag is set.
 struct ShapeEffects {
   // SHAPE_GHOST: 256 translucency indices, one per shape color, followed by
@@ -33,12 +34,13 @@ struct ShapeEffects {
 // row, color 0 transparent under SHAPE_TRANS) at x,y on `dest`, clipped to it,
 // with the SHAPE_* `flags` and the tables in `effects` those flags call for.
 // SHAPE_CENTER makes x,y the frame's center; the other flags that do not name
-// an effect are ignored. `dest` must be locked. Draws nothing when frame is
-// empty or holds fewer than width * height bytes, or when a table the flags
-// call for is too short.
+// an effect are ignored. `dest` must be locked. Draws nothing when frame holds
+// fewer than width * height bytes, or when a table the flags call for is too
+// short.
 //
 // A predator pixel samples the page to its right (or, for a negative offset,
-// below it), so it picks up whatever was drawn there before this shape.
+// below and to the left of it), so it picks up whatever was drawn there before
+// this shape.
 void DrawShapeFrame(int x, int y, int width, int height,
                     std::span<const std::byte> frame, PixelView& dest,
                     ShapeFlags_Type flags, const ShapeEffects& effects = {});

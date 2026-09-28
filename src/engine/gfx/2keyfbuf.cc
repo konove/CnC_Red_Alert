@@ -28,6 +28,11 @@ constexpr uint32_t kBlitTransparent = 1;
 constexpr uint32_t kBlitGhost = 2;
 constexpr uint32_t kBlitFading = 4;
 constexpr uint32_t kBlitPredator = 8;
+// One blitter per combination of the bits above.
+constexpr std::size_t kBlitterCount = 16;
+static_assert(kBlitterCount ==
+              (kBlitTransparent | kBlitGhost | kBlitFading | kBlitPredator) +
+                  1);
 
 // How many pixels to the right of the one being drawn a predator pixel
 // samples, walked in order and wrapped. Sampling the page instead of drawing
@@ -96,9 +101,11 @@ uint8_t ApplyEffects(const BlitJob& job, uint8_t color,
 }
 
 // Draws `job` with the effects in kEffects. The assembler had a routine per
-// combination; the template generates them.
+// combination; the template generates them. The job is taken by value: the
+// uint8_t stores into dst may alias anything whose address is known, so a
+// caller's job would have every field reloaded after each pixel.
 template <uint32_t kEffects>
-void BlitWithEffects(const BlitJob& job) {
+void BlitWithEffects(const BlitJob job) {
   if constexpr (kEffects == 0) {
     for (base::ssize line = 0; line < job.line_count; ++line) {
       base::CopyBytes(std::as_writable_bytes(
@@ -126,7 +133,7 @@ void BlitWithEffects(const BlitJob& job) {
   }
 }
 
-using Blitter = void (*)(const BlitJob&);
+using Blitter = void (*)(BlitJob);
 
 template <std::size_t... kIndex>
 constexpr std::array<Blitter, sizeof...(kIndex)> MakeBlitters(
@@ -135,19 +142,16 @@ constexpr std::array<Blitter, sizeof...(kIndex)> MakeBlitters(
 }
 
 // BlitWithEffects for every combination of the kBlit* bits, indexed by them.
-constexpr auto kBlitters = MakeBlitters(
-    std::make_index_sequence<
-        (kBlitTransparent | kBlitGhost | kBlitFading | kBlitPredator) + 1>());
+constexpr auto kBlitters =
+    MakeBlitters(std::make_index_sequence<kBlitterCount>());
 
 }  // namespace
 
 void DrawShapeFrame(int x, int y, const int width, const int height,
                     std::span<const std::byte> frame, PixelView& dest,
                     const ShapeFlags_Type flags, const ShapeEffects& effects) {
-  if (frame.empty() || width <= 0 || height <= 0) {
-    return;
-  }
-  if (base::ssize{width} * height > std::ssize(frame)) {
+  if (width <= 0 || height <= 0 ||
+      base::ssize{width} * height > std::ssize(frame)) {
     return;
   }
 
@@ -166,7 +170,6 @@ void DrawShapeFrame(int x, int y, const int width, const int height,
   }
 
   if (base::Any(flags & SHAPE_GHOST)) {
-    effect_bits |= kBlitGhost;
     if (effects.ghost_table.size() < 256) {
       return;
     }
@@ -179,6 +182,7 @@ void DrawShapeFrame(int x, int y, const int width, const int height,
         return;
       }
     }
+    effect_bits |= kBlitGhost;
   }
 
   if (base::Any(flags & SHAPE_FADING)) {
@@ -205,55 +209,29 @@ void DrawShapeFrame(int x, int y, const int width, const int height,
     }
   }
 
-  // Clip the destination rectangle to the view and move the source origin by
-  // however much came off the left and top. The far corner is tested against
-  // a window one larger because it is exclusive (see OutCodeOf).
-  int src_x0 = 0;
-  int src_y0 = 0;
-
-  int dst_x0 = x;
-  int dst_y0 = y;
-  int dst_x1 = x + width;
-  int dst_y1 = y + height;
-
-  const OutCode near_corner =
-      OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
-  const OutCode far_corner =
-      OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
-
-  // Wholly past one edge.
-  if (base::Any(near_corner & far_corner)) {
+  // Clip the destination rectangle to the view. The source is the whole frame
+  // from its top left, so it starts however far the destination's near corner
+  // was pulled in; clipping the far corner only shortens the lines.
+  int dst_x = x;
+  int dst_y = y;
+  job.pixel_count = width;
+  job.line_count = height;
+  if (!ClipRect(dst_x, dst_y, job.pixel_count, job.line_count, dest.width(),
+                dest.height())) {
     return;
   }
-
-  if (base::Any(near_corner & OutCode::kLeft)) {
-    src_x0 -= dst_x0;
-    dst_x0 = 0;
-  }
-  if (base::Any(far_corner & OutCode::kRight)) {
-    dst_x1 = dest.width();
-  }
-  if (base::Any(near_corner & OutCode::kAbove)) {
-    src_y0 -= dst_y0;
-    dst_y0 = 0;
-  }
-  if (base::Any(far_corner & OutCode::kBelow)) {
-    dst_y1 = dest.height();
-  }
-
   // Clipping can still leave nothing: a far corner exactly on the left or
   // top edge.
-  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
+  if (job.pixel_count <= 0 || job.line_count <= 0) {
     return;
   }
 
   job.src_stride = width;
   job.dst_stride = dest.stride();
-  job.src = frame.subspan(base::ToSize(src_x0 + (src_y0 * job.src_stride)));
+  job.src =
+      frame.subspan(base::ToSize((dst_x - x) + ((dst_y - y) * job.src_stride)));
   job.dst =
-      dest.pixels().subspan(base::ToSize(dst_x0 + (dst_y0 * job.dst_stride)));
-  job.pixel_count = dst_x1 - dst_x0;
-  job.line_count = dst_y1 - dst_y0;
+      dest.pixels().subspan(base::ToSize(dst_x + (dst_y * job.dst_stride)));
 
   kBlitters.at(effect_bits)(job);
 }
