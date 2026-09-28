@@ -49,6 +49,9 @@ int64_t Get_Time_Ms();
 // readings to measure how much time has passed.
 int64_t SystemTicks();
 
+// A clock the timers below can run on: a static Tick() that never decreases.
+// The unit is the source's own (a 60 Hz tick, a game frame); the timers only
+// subtract two readings, so they never need to know it.
 template <typename T>
 concept TickSource = requires {
   { T::Tick() } -> std::convertible_to<int64_t>;
@@ -82,13 +85,14 @@ class Stopwatch {
   // Starts (resumes) a stopped timer from where it left off.
   void Start();
 
+  // Returns false between Stop() and the next Start() or Reset().
   [[nodiscard]] bool IsRunning() const;
 
   // Saved-game support. Writes the elapsed value and the running flag, not
   // the anchor tick, so the format does not depend on the tick source. On
   // read the stopwatch re-anchors to the current tick, which for a frame
-  // tick source means Frame must already be restored. A negative value fails
-  // the archive and leaves the stopwatch unchanged.
+  // tick source means the game clock must already be restored. A negative
+  // value fails the archive and leaves the stopwatch unchanged.
   template <class Archive>
   void Serialize(Archive& ar);
 
@@ -96,8 +100,11 @@ class Stopwatch {
   // Returns ticks elapsed since start_tick_ was last anchored.
   [[nodiscard]] int64_t Elapsed() const;
 
+  // The tick the current running stretch began at. Only read while running;
+  // Start() and Reset() re-anchor it.
   int64_t start_tick_;
-  // Total ticks accumulated across stop/start cycles.
+  // Ticks accumulated by the stretches that have ended, i.e. up to the last
+  // Stop(). Value() adds the current stretch on top while running.
   int64_t accumulated_ticks_{0};
   bool running_{true};
 };
@@ -182,7 +189,9 @@ class Timer {
   // Resets the countdown to `duration` ticks and restarts it.
   void Set(int64_t duration);
 
-  // Restarts the countdown with the same duration.
+  // Restarts the countdown from the remaining value it was last given: the
+  // duration from construction or Set(), unless a Stop() or a load since
+  // then replaced it with what was left at that point.
   void Restart();
 
   // Stops (pauses) the countdown.
@@ -191,12 +200,20 @@ class Timer {
   // Starts (resumes) a stopped countdown from where it left off.
   void Start();
 
+  // Returns false between Stop() and the next Start(), Set() or Restart().
+  // A countdown that reaches zero keeps running; it just reads 0.
   [[nodiscard]] bool IsRunning() const;
+
+  // Returns whether the countdown has reached zero. A stopped timer with time
+  // left is not finished.
   [[nodiscard]] bool IsFinished() const;
+
+  // Returns the opposite of IsFinished().
   [[nodiscard]] bool HasTimeLeft() const;
 
   // Saved-game support. Writes the remaining value and the running flag and
-  // re-anchors on read; see Stopwatch::Serialize for the Frame precondition.
+  // re-anchors on read; see Stopwatch::Serialize for the game clock
+  // precondition.
   // A negative value fails the archive and leaves the timer unchanged.
   template <class Archive>
   void Serialize(Archive& ar);
@@ -205,8 +222,11 @@ class Timer {
   // Returns ticks elapsed since start_tick_ was last anchored.
   [[nodiscard]] int64_t Elapsed() const;
 
+  // The tick the countdown last started or resumed at. Only read while
+  // running.
   int64_t start_tick_;
-  // Ticks remaining as of the last anchor point (Set, Stop, or construction).
+  // Ticks remaining as of the last anchor point (construction, Set(), Stop()
+  // or a load). While running, Value() subtracts the ticks since start_tick_.
   int64_t delay_time_;
   bool running_{true};
 };
