@@ -72,15 +72,15 @@ class PaletteColor {
   // TODO: The '/ 64' term is the original '>> 6', always 0 for a 6-bit gun;
   // '>> 4' would copy the top bits down and make 63 read as 255. Changing it
   // shifts ToHsv() values, closest-color matches and the WOLAPI palette.
-  [[nodiscard]] constexpr int red() const { return (red_ * 4) + (red_ / 64); }
-  [[nodiscard]] constexpr int green() const {
-    return (green_ * 4) + (green_ / 64);
-  }
-  [[nodiscard]] constexpr int blue() const {
-    return (blue_ * 4) + (blue_ / 64);
-  }
+  [[nodiscard]] constexpr int red() const { return ToEightBits(red_); }
+  [[nodiscard]] constexpr int green() const { return ToEightBits(green_); }
+  [[nodiscard]] constexpr int blue() const { return ToEightBits(blue_); }
 
  private:
+  static constexpr int ToEightBits(const uint8_t gun) {
+    return (gun * 4) + (gun / 64);
+  }
+
   // The guns as the VGA DAC takes them, 0..63. Their order and size are the
   // palette's byte layout.
   uint8_t red_{0};

@@ -62,13 +62,12 @@ HsvColor Rgb6ToHsv(int red, int green, int blue) {
   }
 
   // The saturation is the share of the value that is not white.
-  const int saturation =
-      base::DivideWithRound((value - white) * kMaxComponent, value);
+  const int spread = value - white;
+  const int saturation = base::DivideWithRound(spread * kMaxComponent, value);
 
   // Each gun's distance below the brightest, as a fraction of the spread
-  // between brightest and dimmest scaled to 0..kMaxComponent. The dimmest
-  // gun's is kMaxComponent, the brightest's 0.
-  const int spread = value - white;
+  // scaled to 0..kMaxComponent. The dimmest gun's is kMaxComponent, the
+  // brightest's 0.
   const int red_shortfall =
       base::DivideWithRound((value - r) * kMaxComponent, spread);
   const int green_shortfall =

@@ -64,44 +64,41 @@ HsvColor PaletteColor::ToHsv() const {
   const int g = green();
   const int b = blue();
 
-  const auto [min_val, max_val] = std::minmax({r, g, b});
-  // The value, or brightness, is the brightest gun.
-  const int value = max_val;
-  const int spread = max_val - min_val;
+  // The value, or brightness, is the brightest gun; the dimmest is the white
+  // mixed in.
+  const auto [white, value] = std::minmax({r, g, b});
 
-  int hue = 0;
-  int saturation = 0;
+  // A grey (or black) has no saturation, and so no hue.
+  if (value == white) {
+    return {0, 0, static_cast<uint8_t>(value)};
+  }
 
-  if (spread > 0) {
-    // The saturation is the share of the value that is not white, the white
-    // being the dimmest gun.
-    saturation = spread * 255 / value;
+  // The saturation is the share of the value that is not white.
+  const int spread = value - white;
+  const int saturation = spread * 255 / value;
 
-    // The hue in sextants (0..6) is the dominant gun's sextant plus the
-    // difference of the other two over the spread. Keep it multiplied by the
-    // spread, as a numerator, so the one division comes last.
-    int hue_numerator = 0;
+  // The hue in sextants (0..6) is the dominant gun's sextant plus the
+  // difference of the other two over the spread. Keep it multiplied by the
+  // spread, as a numerator, so the one division comes last.
+  int hue_numerator = 0;
+  if (value == r) {
+    // Sextant 0: red is dominant. Towards magenta, where blue exceeds green,
+    // this goes negative and wraps round below.
+    hue_numerator = g - b;
+  } else if (value == g) {
+    // Sextant 2: green is dominant.
+    hue_numerator = (2 * spread) + (b - r);
+  } else {
+    // Sextant 4: blue is dominant.
+    hue_numerator = (4 * spread) + (r - g);
+  }
 
-    if (max_val == r) {
-      // Sextant 0: red is dominant. Towards magenta, where blue exceeds
-      // green, this goes negative and wraps round below.
-      hue_numerator = g - b;
-    } else if (max_val == g) {
-      // Sextant 2: green is dominant.
-      hue_numerator = (2 * spread) + (b - r);
-    } else {
-      // Sextant 4: blue is dominant.
-      hue_numerator = (4 * spread) + (r - g);
-    }
-
-    // Scale the numerator, in [-spread, 5 * spread], so that the six sextants
-    // of the circle span 0..255.
-    hue = hue_numerator * 255 / (spread * 6);
-
-    // Wrap the red-magenta side, -42..-1, round to the top of the circle.
-    if (hue < 0) {
-      hue += 255;
-    }
+  // Scale the numerator, in [-spread, 5 * spread], so that the six sextants of
+  // the circle span 0..255, then wrap the red-magenta side, -42..-1, round to
+  // the top of the circle.
+  int hue = hue_numerator * 255 / (spread * 6);
+  if (hue < 0) {
+    hue += 255;
   }
 
   // The components are 8-bit, so all three are in 0..255.
