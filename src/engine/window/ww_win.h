@@ -27,6 +27,8 @@
 
 union SDL_Event;
 
+namespace engine::window {
+
 // Function type for the game's SDL event handler.
 using EventHandler = void (*)(const SDL_Event& event);
 
@@ -52,5 +54,7 @@ void SetPumpHandler(PumpHandler handler);
 // this loop again so the game's wait-for-input loops keep answering, so a
 // redraw event runs a nested loop that drains the rest of the queue.
 void PumpEvents();
+
+}  // namespace engine::window
 
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_

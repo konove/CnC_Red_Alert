@@ -82,9 +82,6 @@
     `pitch * h` surface-bytes span (`Display::Lock()`, `hardware_cursor.cc`) repeat with their
     NOLINTs; the two-argument spans still print `-Wunsafe-buffer-usage-in-container` compiler
     warnings, since the NOLINT only silences clang-tidy
-- Move `engine/window/ww_win.{h,cc}` into `engine::window`
-  - `PumpEvents`, `SetEventHandler`, `SetPumpHandler` are the last global names in the library;
-    `keyboard_test.cc` still stubs `PumpEvents()` globally
 - Move `engine/platform/file_system.h` into `engine::platform`
   - It is the last header in the folder outside the namespace
 - Run `/fix-ide-issues` on `engine/platform/timer.h` and `timer.cc`

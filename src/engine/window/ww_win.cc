@@ -8,6 +8,8 @@
 #include <emscripten/emscripten.h>
 #endif
 
+namespace engine::window {
+
 namespace {
 // The hooks the game installed; nullptr until it does.
 EventHandler event_handler = nullptr;
@@ -32,8 +34,8 @@ void PumpEvents() {
   while (SDL_PollEvent(&event)) {
     // Display posts this from its timer thread when drawing has waited in the
     // surface long enough; the game never sees it.
-    if (engine::window::TheDisplay().IsRedrawEvent(event.type)) {
-      engine::window::TheDisplay().EndFrame();
+    if (TheDisplay().IsRedrawEvent(event.type)) {
+      TheDisplay().EndFrame();
       continue;
     }
     if (event_handler) {
@@ -41,3 +43,5 @@ void PumpEvents() {
     }
   }
 }
+
+}  // namespace engine::window

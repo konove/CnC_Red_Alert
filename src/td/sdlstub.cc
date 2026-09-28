@@ -25,7 +25,7 @@ void CCDebugString(const char* /*string*/) {}
 
 void Check_For_Focus_Loss() {
   if (!TheGameState().in_focus()) {
-    PumpEvents();
+    engine::window::PumpEvents();
     if (TheGameState().in_focus()) {
       engine::audio::TheAudio().SetExtraPaused(false);
     }
@@ -39,7 +39,7 @@ static void SDL_Event_Handler(const SDL_Event& event);
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
   engine::window::TheDisplay().Init(WINDOW_NAME, width, height);
-  SetEventHandler(&SDL_Event_Handler);
+  engine::window::SetEventHandler(&SDL_Event_Handler);
 }
 
 static void SDL_Event_Handler(const SDL_Event& event) {

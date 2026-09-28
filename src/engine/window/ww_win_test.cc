@@ -11,6 +11,7 @@
 #include "engine/window/display.h"
 #include "gtest/gtest.h"
 
+namespace engine::window {
 namespace {
 
 int events_seen = 0;
@@ -44,9 +45,8 @@ class EventPumpTest : public ::testing::Test {
     SetPumpHandler(nullptr);
   }
 
-  engine::window::Display display_;
-  const base::Installed<engine::window::Display>::Scope display_scope_{
-      display_};
+  Display display_;
+  const base::Installed<Display>::Scope display_scope_{display_};
 };
 
 TEST_F(EventPumpTest, CallsTheInstalledEventHandler) {
@@ -76,3 +76,4 @@ TEST_F(EventPumpTest, DoesNothingExtraWithNoPumpHandlerInstalled) {
 }
 
 }  // namespace
+}  // namespace engine::window
