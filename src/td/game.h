@@ -64,8 +64,11 @@ class Game {
       startup_options_};
   GameClock game_clock_;
   base::Installed<GameClock>::Scope game_clock_scope_{game_clock_};
+  // Before the window's events, which feed its keyboard and mouse.
+  Input input_;
+  base::Installed<Input>::Scope input_scope_{input_};
   // Before the Display, which hands it the window's events.
-  WindowEvents window_events_;
+  GameWindowEvents window_events_{input_};
   // Before Screen, which attaches its visible page to the window.
   engine::window::Display display_{window_events_};
   base::Installed<engine::window::Display>::Scope display_scope_{display_};
@@ -81,8 +84,6 @@ class Game {
   base::Installed<World>::Scope world_scope_{world_};
   GameState game_state_;
   base::Installed<GameState>::Scope game_state_scope_{game_state_};
-  Input input_;
-  base::Installed<Input>::Scope input_scope_{input_};
   GameOptionsClass options_;
   base::Installed<GameOptionsClass>::Scope options_scope_{options_};
   SpecialClass special_{};

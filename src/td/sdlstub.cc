@@ -1,8 +1,5 @@
 // more portable replacements for winstub
 
-#include <SDL_events.h>
-#include <SDL_video.h>
-
 #include <cstdio>
 #include <cstdlib>
 
@@ -11,7 +8,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
-#include "engine/window/keyboard.h"
+#include "engine/window/window_events.h"
 #include "td/game_state.h"
 #include "td/input.h"
 #include "td/nullconn.h"
@@ -38,42 +35,23 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
   engine::window::TheDisplay().Init(WINDOW_NAME, width, height);
 }
 
-void WindowEvents::HandleEvent(const SDL_Event& event) {
-  if (TheKeyboard().HandleEvent(&event)) {
-    return;
-  }
+GameWindowEvents::GameWindowEvents(Input& input)
+    : WindowEvents(input.keyboard(), input.mouse()) {}
 
-  switch (event.type) {
-    case SDL_MOUSEMOTION:
-      TheMouse().RecordPosition(event.motion.x, event.motion.y);
-      break;
-    case SDL_WINDOWEVENT: {
-      switch (event.window.event) {
-        case SDL_WINDOWEVENT_FOCUS_GAINED:
-          TheGameState().in_focus() = true;
-          Focus_Restore();
-          break;
-        case SDL_WINDOWEVENT_FOCUS_LOST:
-          TheGameState().in_focus() = false;
-          Focus_Loss();
-          break;
-        case SDL_WINDOWEVENT_SIZE_CHANGED:
-        case SDL_WINDOWEVENT_DISPLAY_CHANGED:
-          TheMouse().UpdateScale();
-          break;
-        default:
-          break;
-      }
-      break;
-    }
-    case SDL_QUIT:
-      ShutDown();
-
-      fflush(stdout);
-      exit(0);
-    default:
-      break;
+void GameWindowEvents::FocusChanged(const bool in_focus) {
+  TheGameState().in_focus() = in_focus;
+  if (in_focus) {
+    Focus_Restore();
+  } else {
+    Focus_Loss();
   }
+}
+
+void GameWindowEvents::Quit() {
+  ShutDown();
+
+  fflush(stdout);
+  exit(0);
 }
 
 // SHAKESCR.ASM in WIN32LIB

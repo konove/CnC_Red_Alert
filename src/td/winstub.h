@@ -5,7 +5,9 @@
 
 #include <span>
 
-#include "engine/window/display_client.h"
+#include "engine/window/window_events.h"
+
+class Input;
 
 class PixelView;
 
@@ -16,11 +18,18 @@ void CCDebugString(const char* string);
 // run on while it is in the background.
 void Check_For_Focus_Loss();
 
-// Handles what the window's event loop polls: keyboard, mouse, focus and
-// quit events. Game owns the one instance and hands it to its Display.
-class WindowEvents final : public engine::window::DisplayClient {
+// The game's side of the window's events: focus changes pause and resume
+// the game, and closing the window shuts it down. Game owns the one
+// instance and hands it to its Display.
+class GameWindowEvents final : public engine::window::WindowEvents {
  public:
-  void HandleEvent(const SDL_Event& event) override;
+  // Feeds the window's keys, clicks and mouse motion to `input`, which must
+  // outlive this.
+  explicit GameWindowEvents(Input& input);
+
+ private:
+  void FocusChanged(bool in_focus) override;
+  void Quit() override;
 };
 
 // Opens the game's window.
