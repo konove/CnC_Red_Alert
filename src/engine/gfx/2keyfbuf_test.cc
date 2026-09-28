@@ -1,4 +1,4 @@
-// Tests for Buffer_Frame_To_Page: the predator (cloak) effect's sampling of
+// Tests for DrawShapeFrame: the predator (cloak) effect's sampling of
 // the page.
 
 #include "engine/gfx/2keyfbuf.h"
@@ -20,9 +20,9 @@ constexpr int kPageHeight = 3;
 
 // Draws on an 8x3 page whose pixels are numbered 0 to 23, so a drawn pixel
 // shows which page pixel it sampled.
-class BufferFrameToPageTest : public testing::Test {
+class DrawShapeFrameTest : public testing::Test {
  protected:
-  BufferFrameToPageTest() {
+  DrawShapeFrameTest() {
     for (std::size_t i = 0; i < pixels_.size(); ++i) {
       pixels_.at(i) = static_cast<uint8_t>(i);
     }
@@ -34,8 +34,7 @@ class BufferFrameToPageTest : public testing::Test {
     std::array<std::byte, 1> shape{std::byte{99}};
     ShapeEffects effects;
     effects.predator_offset = predator_offset;
-    Buffer_Frame_To_Page(x, y, 1, 1, shape, page_.view(), SHAPE_PREDATOR,
-                         effects);
+    DrawShapeFrame(x, y, 1, 1, shape, page_.view(), SHAPE_PREDATOR, effects);
   }
 
   [[nodiscard]] uint8_t PixelAt(const int x, const int y) const {
@@ -48,7 +47,7 @@ class BufferFrameToPageTest : public testing::Test {
 };
 
 // Offset 1 starts the walk at the second entry, 3 pixels to the right.
-TEST_F(BufferFrameToPageTest, APositiveOffsetSamplesToTheRight) {
+TEST_F(DrawShapeFrameTest, APositiveOffsetSamplesToTheRight) {
   DrawPredator(2, 1, 1);
 
   EXPECT_EQ(PixelAt(2, 1), PixelAt(5, 1));
@@ -56,7 +55,7 @@ TEST_F(BufferFrameToPageTest, APositiveOffsetSamplesToTheRight) {
 
 // Offset -1 starts the walk at the second of the down-and-left entries: one
 // row below and 3 pixels to the left.
-TEST_F(BufferFrameToPageTest, ANegativeOffsetSamplesBelowAndToTheLeft) {
+TEST_F(DrawShapeFrameTest, ANegativeOffsetSamplesBelowAndToTheLeft) {
   DrawPredator(4, 1, -1);
 
   EXPECT_EQ(PixelAt(4, 1), PixelAt(1, 2));

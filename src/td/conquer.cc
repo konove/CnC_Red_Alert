@@ -2416,9 +2416,9 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
             .fading_count = 1,
             .predator_offset = predoffset,
         };
-        Buffer_Frame_To_Page(x, y, Get_Build_Frame_Width(shapefile),
-                             Get_Build_Frame_Height(shapefile), shape_pointer,
-                             draw_window, flags | SHAPE_TRANS, effects);
+        DrawShapeFrame(x, y, Get_Build_Frame_Width(shapefile),
+                       Get_Build_Frame_Height(shapefile), shape_pointer,
+                       draw_window, flags | SHAPE_TRANS, effects);
       }
       draw_window.Unlock();
     }

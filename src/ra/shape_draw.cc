@@ -194,8 +194,8 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
             .fading_count = 1,
             .predator_offset = pred_offset,
         };
-        Buffer_Frame_To_Page(x, y, width, height, std::as_bytes(buffer),
-                             draw_window, flags | SHAPE_TRANS, effects);
+        DrawShapeFrame(x, y, width, height, std::as_bytes(buffer), draw_window,
+                       flags | SHAPE_TRANS, effects);
         draw_window.Unlock();
       }
     }

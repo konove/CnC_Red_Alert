@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_ENGINE_GFX_2KEYFBUF_H_
 #define CNC_RED_ALERT_ENGINE_GFX_2KEYFBUF_H_
 
-// File: Buffer_Frame_To_Page(), which draws a decompressed shape frame onto
+// File: DrawShapeFrame(), which draws a decompressed shape frame onto
 // a page with the transparency, ghost, fade and predator (cloak) effects, and
 // ShapeEffects, the tables those effects read.
 
@@ -35,19 +35,18 @@ struct ShapeEffects {
   int partial_predator = 0;
 };
 
-// Draws the w x h shape frame in `src` (row-major, w bytes per row, color 0
-// transparent under SHAPE_TRANS) at x,y on `dest`, clipped to it, with the
-// SHAPE_* `flags` and the tables in `effects` those flags call for.
+// Draws the width x height shape frame in `frame` (row-major, width bytes per
+// row, color 0 transparent under SHAPE_TRANS) at x,y on `dest`, clipped to it,
+// with the SHAPE_* `flags` and the tables in `effects` those flags call for.
 // SHAPE_CENTER makes x,y the frame's center; the other flags that do not name
-// an effect are ignored. `dest` must be locked. Draws nothing when src is empty
-// or holds fewer than w * h bytes, or when a table the flags call for is too
-// short.
+// an effect are ignored. `dest` must be locked. Draws nothing when frame is
+// empty or holds fewer than width * height bytes, or when a table the flags
+// call for is too short.
 //
 // A predator pixel samples the page to its right (or, for a negative offset,
 // below it), so it picks up whatever was drawn there before this shape.
-void Buffer_Frame_To_Page(int x, int y, int w, int h,
-                          std::span<const std::byte> src, PixelView& dest,
-                          ShapeFlags_Type flags,
-                          const ShapeEffects& effects = {});
+void DrawShapeFrame(int x, int y, int width, int height,
+                    std::span<const std::byte> frame, PixelView& dest,
+                    ShapeFlags_Type flags, const ShapeEffects& effects = {});
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_2KEYFBUF_H_
