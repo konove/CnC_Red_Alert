@@ -16,23 +16,11 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/***************************************************************************
- **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
- ***************************************************************************
- *                                                                         *
- *                 Project Name : Part of the WINDOWS Library              *
- *                                                                         *
- *                    File Name : WINDOWS.H                                *
- *                                                                         *
- *                   Programmer : Barry W. Green                           *
- *                                                                         *
- *                   Start Date : February 16, 1995                        *
- *                                                                         *
- *                  Last Update : February 16, 1995 [BWG]                  *
- *                                                                         *
- *-------------------------------------------------------------------------*
- * Functions:                                                              *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+// File: The SDL event loop the games pump from wherever they wait: it
+// presents the frames Display's redraw timer asks for and hands every other
+// event to the game's handler. What is left of Barry W. Green's Westwood
+// WINDOWS library (February 1995), whose text windows moved to
+// engine/gfx/text_window.h.
 
 #ifndef CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_
 #define CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_
@@ -42,9 +30,9 @@ union SDL_Event;
 // Function type for the game's SDL event handler.
 using EventHandler = void (*)(SDL_Event* event);
 
-// Installs the game's event handler, called once per event SDL_Event_Loop
-// pumps (after Display's own redraw events are consumed and handled
-// internally). With none installed, pumped events are dropped.
+// Installs the game's event handler, called once for each event
+// SDL_Event_Loop polls other than Display's redraw events, which the loop
+// consumes itself. With none installed, those events are dropped.
 void SetEventHandler(EventHandler handler);
 
 // Function type for the game's per-pass pump hook.
@@ -56,7 +44,17 @@ using PumpHandler = void (*)();
 // SDL_Event_Loop does nothing extra per pass.
 void SetPumpHandler(PumpHandler handler);
 
+// Drains SDL's event queue: runs the pump handler, then ends the frame on
+// each of Display's redraw events and passes every other event to the event
+// handler. Returns once the queue is empty; it never waits for an event.
+//
+// It is re-entrant. Ending the frame presents, and Display::Present() pumps
+// this loop again so the game's wait-for-input loops keep answering, so a
+// redraw event runs a nested loop that drains the rest of the queue.
 void SDL_Event_Loop();
+
+// Pushes an SDL_QUIT event, which the game's event handler receives on the
+// next SDL_Event_Loop.
 void SDL_Send_Quit();
 
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_

@@ -9,6 +9,7 @@
 #endif
 
 namespace {
+// The hooks the game installed; nullptr until it does.
 EventHandler g_event_handler = nullptr;
 PumpHandler g_pump_handler = nullptr;
 }  // namespace
@@ -18,8 +19,8 @@ void SetPumpHandler(const PumpHandler handler) { g_pump_handler = handler; }
 
 void SDL_Event_Loop() {
 #ifdef __EMSCRIPTEN__
-  // sometimes we loop waiting for input
-  // which isn't going to happen if the browser never gets control
+  // The games wait for input by spinning on this loop, and the browser only
+  // delivers input while it has control, so yield to it on every pass.
   emscripten_sleep(0);
 #endif
 
@@ -29,6 +30,8 @@ void SDL_Event_Loop() {
 
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
+    // Display posts this from its timer thread when drawing has waited in the
+    // surface long enough; the game never sees it.
     if (engine::window::TheDisplay().IsRedrawEvent(event.type)) {
       engine::window::TheDisplay().EndFrame();
       continue;
