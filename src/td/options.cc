@@ -68,6 +68,7 @@
 #include "td/options.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstring>
 #include <span>
 #include <string_view>
@@ -419,10 +420,6 @@ void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
                                   std::span<unsigned char> newpal,
                                   unsigned char brightness, unsigned char color,
                                   unsigned char tint, unsigned char contrast) {
-  int h = 0;
-  int s = 0;
-  int v = 0;
-
   if (oldpal.size() < 768 || newpal.size() < 768) {
     return;
   }
@@ -435,35 +432,37 @@ void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
       std::ranges::copy(oldpal.subspan(base::ToSize(index) * 3, 3),
                         newpal.subspan(base::ToSize(index) * 3).begin());
     } else {
-      int r = base::At(oldpal, (base::ToSize(index) * 3) + 0);
-      int g = base::At(oldpal, (base::ToSize(index) * 3) + 1);
-      int b = base::At(oldpal, (base::ToSize(index) * 3) + 2);
-      Rgb6ToHsv(r, g, b, &h, &s, &v);
+      const HsvColor hsv =
+          Rgb6ToHsv(base::At(oldpal, (base::ToSize(index) * 3) + 0),
+                    base::At(oldpal, (base::ToSize(index) * 3) + 1),
+                    base::At(oldpal, (base::ToSize(index) * 3) + 2));
 
       /*
       **	Adjust contrast by moving the value toward the center according
       *to the *	percentage indicated.
       */
 
-      int temp = v * brightness / 0x80;  // Brightness
+      int temp = hsv.value() * brightness / 0x80;  // Brightness
       temp = Bound(temp, 0, 0xFF);
-      v = temp;
+      int v = temp;
       temp = ((v - 0x80) * contrast / 0x80) + 0x80;  // Contrast
       temp = Bound(temp, 0, 0xFF);
       v = temp;
-      temp = s * color / 0x80;  // Color
+      temp = hsv.saturation() * color / 0x80;  // Color
       temp = Bound(temp, 0, 0xFF);
-      s = temp;
-      temp = h * tint / 0x80;  // Tint
+      const int s = temp;
+      temp = hsv.hue() * tint / 0x80;  // Tint
       temp = Bound(temp, 0, 0xFF);
-      h = temp;
-      HsvToRgb6(h, s, v, &r, &g, &b);
+      const int h = temp;
+      const Rgb6 rgb =
+          HsvToRgb6(HsvColor(static_cast<uint8_t>(h), static_cast<uint8_t>(s),
+                             static_cast<uint8_t>(v)));
       base::At(newpal, (base::ToSize(index) * 3) + 0) =
-          static_cast<unsigned char>(r);
+          static_cast<unsigned char>(rgb.red);
       base::At(newpal, (base::ToSize(index) * 3) + 1) =
-          static_cast<unsigned char>(g);
+          static_cast<unsigned char>(rgb.green);
       base::At(newpal, (base::ToSize(index) * 3) + 2) =
-          static_cast<unsigned char>(b);
+          static_cast<unsigned char>(rgb.blue);
     }
   }
 }

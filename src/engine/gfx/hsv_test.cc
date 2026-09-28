@@ -1,6 +1,7 @@
 #include "engine/gfx/hsv.h"
 
 #include <array>
+#include <cstdint>
 #include <cstdlib>
 
 #include "engine/gfx/rgb.h"
@@ -9,19 +10,15 @@
 namespace {
 
 std::array<int, 3> RgbToHsv(int r, int g, int b) {
-  int h = 0;
-  int s = 0;
-  int v = 0;
-  Rgb6ToHsv(r, g, b, &h, &s, &v);
-  return {h, s, v};
+  const HsvColor hsv = Rgb6ToHsv(r, g, b);
+  return {hsv.hue(), hsv.saturation(), hsv.value()};
 }
 
 std::array<int, 3> HsvToRgb(int h, int s, int v) {
-  int r = 0;
-  int g = 0;
-  int b = 0;
-  HsvToRgb6(h, s, v, &r, &g, &b);
-  return {r, g, b};
+  const Rgb6 rgb =
+      HsvToRgb6(HsvColor(static_cast<uint8_t>(h), static_cast<uint8_t>(s),
+                         static_cast<uint8_t>(v)));
+  return {rgb.red, rgb.green, rgb.blue};
 }
 
 // Pinned against the unsigned implementation these replaced; Tiberian

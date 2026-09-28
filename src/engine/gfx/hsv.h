@@ -64,20 +64,24 @@ class HsvColor {
   uint8_t value_;
 };
 
-// HSV/RGB conversions for colors stored as VGA 6-bit guns (0..63), with the
-// HSV components in 0..255 as in HsvColor. Unlike HsvColor, both directions
-// round rather than truncate, so a round trip moves a gun by at most one step.
-// Only Tiberian Dawn's options dialog uses these; it keeps its palette as raw
-// bytes rather than PaletteColor.
+// HSV/RGB conversions for colors stored as VGA 6-bit guns (0..63). Unlike
+// HsvColor's conversion to PaletteColor, both directions round rather than
+// truncate, so a round trip moves a gun by at most one step. Only Tiberian
+// Dawn's options dialog uses these; it keeps its palette as raw bytes rather
+// than PaletteColor.
 
-// Converts 'r', 'g' and 'b' (each 0..63) and stores the hue, saturation and
-// value in '*h', '*s' and '*v' (each 0..255). A grey has hue and saturation 0.
-void Rgb6ToHsv(int red, int green, int blue, int* hue, int* saturation,
-               int* value);
+// An RGB color as three VGA 6-bit guns, each 0..63.
+struct Rgb6 {
+  int red;
+  int green;
+  int blue;
+};
 
-// Converts 'h', 's' and 'v' (each 0..255, clamped if not) and stores the guns
-// in '*r', '*g' and '*b' (each 0..63).
-void HsvToRgb6(int hue, int saturation, int value, int* red, int* green,
-               int* blue);
+// Returns the HSV form of the color with guns 'red', 'green' and 'blue' (each
+// 0..63). A grey has hue and saturation 0.
+[[nodiscard]] HsvColor Rgb6ToHsv(int red, int green, int blue);
+
+// Returns the 6-bit guns of 'hsv'.
+[[nodiscard]] Rgb6 HsvToRgb6(const HsvColor& hsv);
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_HSV_H_

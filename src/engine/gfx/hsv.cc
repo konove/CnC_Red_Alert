@@ -23,7 +23,6 @@
 #include <algorithm>
 #include <cstdint>
 
-#include "absl/log/check.h"
 #include "base/hsv.h"
 #include "engine/gfx/rgb.h"
 
@@ -47,87 +46,78 @@ constexpr int kMaxComponent = 255;
 // The brightest VGA gun; 63, not 64, since this is a maximum, not a range.
 constexpr int kMaxGun = 63;
 
-void Rgb6ToHsv(int red, int green, int blue, int* hue, int* saturation,
-               int* value) {
+HsvColor Rgb6ToHsv(int red, int green, int blue) {
   // Scale the 6-bit guns up to the 8-bit HSV scale.
   const int r = base::DivideWithRound(red * kMaxComponent, kMaxGun);
   const int g = base::DivideWithRound(green * kMaxComponent, kMaxGun);
   const int b = base::DivideWithRound(blue * kMaxComponent, kMaxGun);
 
-  // A grey has no hue; it stays 0 unless there is saturation below.
-  *hue = 0;
+  // The value is the brightest gun, which is the dominant primary; the dimmest
+  // is the amount of white mixed in.
+  const auto [white, value] = std::minmax({r, g, b});
 
-  // The value is the brightest gun, which is the dominant primary.
-  *value = r > g ? r : g;
-  *value = std::max(b, *value);
-
-  // The dimmest gun is the amount of white mixed in.
-  int white = r < g ? r : g;
-  white = std::min(b, white);
+  // A grey (or black) has no saturation, and so no hue.
+  if (value == white) {
+    return {0, 0, static_cast<uint8_t>(value)};
+  }
 
   // The saturation is the share of the value that is not white.
-  if (*value != 0) {
-    *saturation =
-        base::DivideWithRound((*value - white) * kMaxComponent, *value);
-  } else {
-    *saturation = 0;
-  }
+  const int saturation =
+      base::DivideWithRound((value - white) * kMaxComponent, value);
 
-  if (*saturation != 0) {
-    // Each gun's distance below the brightest, as a fraction of the spread
-    // between brightest and dimmest scaled to 0..kMaxComponent. The dimmest
-    // gun's is kMaxComponent, the brightest's 0. A non-zero saturation means
-    // the spread is not zero.
-    const int spread = *value - white;
-    CHECK_NE(spread, 0);
-    const int red_shortfall =
-        base::DivideWithRound((*value - r) * kMaxComponent, spread);
-    const int green_shortfall =
-        base::DivideWithRound((*value - g) * kMaxComponent, spread);
-    const int blue_shortfall =
-        base::DivideWithRound((*value - b) * kMaxComponent, spread);
+  // Each gun's distance below the brightest, as a fraction of the spread
+  // between brightest and dimmest scaled to 0..kMaxComponent. The dimmest
+  // gun's is kMaxComponent, the brightest's 0.
+  const int spread = value - white;
+  const int red_shortfall =
+      base::DivideWithRound((value - r) * kMaxComponent, spread);
+  const int green_shortfall =
+      base::DivideWithRound((value - g) * kMaxComponent, spread);
+  const int blue_shortfall =
+      base::DivideWithRound((value - b) * kMaxComponent, spread);
 
-    // Find the effect of the second most predominant color: which gun is
-    // brightest and which dimmest picks the sextant of the color hexagon, and
-    // the middle gun's shortfall the position within it. The hue is built at
-    // six times its final scale, one kMaxComponent per sextant.
-    if (*value == r) {
-      if (white == g) {
-        *hue = (5 * kMaxComponent) + blue_shortfall;
-      } else {
-        *hue = (1 * kMaxComponent) - green_shortfall;
-      }
+  // Find the effect of the second most predominant color: which gun is
+  // brightest and which dimmest picks the sextant of the color hexagon, and
+  // the middle gun's shortfall the position within it. The hue is built at
+  // six times its final scale, one kMaxComponent per sextant.
+  int hue = 0;
+  if (value == r) {
+    if (white == g) {
+      hue = (5 * kMaxComponent) + blue_shortfall;
     } else {
-      if (*value == g) {
-        if (white == b) {
-          *hue = (1 * kMaxComponent) + red_shortfall;
-        } else {
-          *hue = (3 * kMaxComponent) - blue_shortfall;
-        }
-      } else {
-        // *value == b
-        if (white == r) {
-          *hue = (3 * kMaxComponent) + green_shortfall;
-        } else {
-          *hue = (5 * kMaxComponent) - red_shortfall;
-        }
-      }
+      hue = (1 * kMaxComponent) - green_shortfall;
     }
-
-    // Back to one kMaxComponent for the whole circle. A red whose green and
-    // blue tie takes the magenta branch and lands on 6 * kMaxComponent, which
-    // becomes kMaxComponent, the same hue as 0.
-    *hue = base::DivideWithRound(*hue, 6);
+  } else if (value == g) {
+    if (white == b) {
+      hue = (1 * kMaxComponent) + red_shortfall;
+    } else {
+      hue = (3 * kMaxComponent) - blue_shortfall;
+    }
+  } else {
+    // value == b
+    if (white == r) {
+      hue = (3 * kMaxComponent) + green_shortfall;
+    } else {
+      hue = (5 * kMaxComponent) - red_shortfall;
+    }
   }
+
+  // Back to one kMaxComponent for the whole circle. A red whose green and
+  // blue tie takes the magenta branch and lands on 6 * kMaxComponent, which
+  // becomes kMaxComponent, the same hue as 0.
+  hue = base::DivideWithRound(hue, 6);
+
+  return {static_cast<uint8_t>(hue), static_cast<uint8_t>(saturation),
+          static_cast<uint8_t>(value)};
 }
 
-void HsvToRgb6(int hue, int saturation, int value, int* red, int* green,
-               int* blue) {
-  const base::Rgb8 color = base::HsvToRgb8(hue, saturation, value);
+Rgb6 HsvToRgb6(const HsvColor& hsv) {
+  const base::Rgb8 color =
+      base::HsvToRgb8(hsv.hue(), hsv.saturation(), hsv.value());
 
   // HsvToRgb8() works at kMaxComponent; scale each gun down to the VGA
   // kMaxGun, rounding.
-  *red = base::DivideWithRound(color.red * kMaxGun, kMaxComponent);
-  *green = base::DivideWithRound(color.green * kMaxGun, kMaxComponent);
-  *blue = base::DivideWithRound(color.blue * kMaxGun, kMaxComponent);
+  return {.red = base::DivideWithRound(color.red * kMaxGun, kMaxComponent),
+          .green = base::DivideWithRound(color.green * kMaxGun, kMaxComponent),
+          .blue = base::DivideWithRound(color.blue * kMaxGun, kMaxComponent)};
 }
