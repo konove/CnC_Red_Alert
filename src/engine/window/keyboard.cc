@@ -222,11 +222,46 @@ char KeyBuffer::ToAscii(const int key) {
     return '\0';
   }
 
+  const auto scancode = static_cast<int>(bits & kScancodeMask);
+
+  // SDL gives keypad keys their own keycodes, above 'z' whatever the layout,
+  // so they are mapped here. As on Windows, the digits and the decimal point
+  // type only with Num Lock on; with it off they are the navigation keys.
+  constexpr char kKeypadDigits[] = {'1', '2', '3', '4', '5', '6',
+                                    '7', '8', '9', '0', '.'};
+  switch (scancode) {
+    case SDL_SCANCODE_KP_DIVIDE:
+      return '/';
+    case SDL_SCANCODE_KP_MULTIPLY:
+      return '*';
+    case SDL_SCANCODE_KP_MINUS:
+      return '-';
+    case SDL_SCANCODE_KP_PLUS:
+      return '+';
+    case SDL_SCANCODE_KP_1:
+    case SDL_SCANCODE_KP_2:
+    case SDL_SCANCODE_KP_3:
+    case SDL_SCANCODE_KP_4:
+    case SDL_SCANCODE_KP_5:
+    case SDL_SCANCODE_KP_6:
+    case SDL_SCANCODE_KP_7:
+    case SDL_SCANCODE_KP_8:
+    case SDL_SCANCODE_KP_9:
+    case SDL_SCANCODE_KP_0:
+    case SDL_SCANCODE_KP_PERIOD:
+      if ((SDL_GetModState() & KMOD_NUM) == 0) {
+        return '\0';
+      }
+      return base::At(kKeypadDigits, scancode - SDL_SCANCODE_KP_1);
+    default:
+      break;
+  }
+
   // SDL_GetKeyFromScancode maps through the keyboard layout but takes no
   // modifiers, so Shift never changes the result. Doing better needs SDL text
   // input events (or SDL3, whose version takes the modifiers).
   const int keycode =
-      SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(bits & kScancodeMask));
+      SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode));
 
   // SDL keycodes for keys that type a character are that character; every
   // other key's code has SDLK_SCANCODE_MASK set and lands above 'z'.

@@ -326,9 +326,10 @@ class KeyBuffer {
   bool PutClick(MouseButton button, bool release, int x, int y);
 
   // Returns the character `key` types on the current keyboard layout, with
-  // Shift ignored, so letters come back lower case. Returns '\0' for a
-  // release and for a key that types no character up to 'z' (arrows, function
-  // keys, Delete).
+  // Shift ignored, so letters come back lower case. The keypad types its
+  // digits and decimal point only with Num Lock on, and its operators always.
+  // Returns '\0' for a release and for a key that types no character up to
+  // 'z' (arrows, function keys, Delete).
   static char ToAscii(int key);
 
   // Discards every pending entry.

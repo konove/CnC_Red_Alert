@@ -8,9 +8,6 @@
     it has never worked (see `docs/INPUT_EVENTS_PLAN.md`)
   - The call also runs every map layer once with the mouse at (0, 0); cancel the mode directly, as
     `DisplayClass::Mouse_Right_Press()` does, instead
-- Make the numeric keypad's digits type in edit boxes and the message line
-  - `KeyBuffer::ToAscii()` returns `'\0'` for keypad keys (their SDL keycodes lie above `'z'`); the
-    Windows version mapped them through the virtual-key bit, whose dead branches were removed
 - Make typed text honour Shift
   - `KeyBuffer::ToAscii()` maps through `SDL_GetKeyFromScancode()`, which ignores modifiers, so edit
     boxes and chat get no capitals or shifted symbols; doing better needs SDL text-input events

@@ -4,6 +4,8 @@
 #include "engine/window/keyboard.h"
 
 #include <SDL_events.h>
+#include <SDL_keyboard.h>
+#include <SDL_keycode.h>
 #include <SDL_mouse.h>
 #include <SDL_scancode.h>
 #include <SDL_stdinc.h>
@@ -155,6 +157,58 @@ TEST_F(KeyBufferTest, KeyEventIsNoClick) {
   const InputEvent event = keys.Read();
   EXPECT_FALSE(event.IsClick());
   EXPECT_FALSE(event.IsPress(MouseButton::kLeft));
+}
+
+// ToAscii() on the keypad, whose keys have their own SDL keycodes. The
+// fixture sets the Num Lock state and puts back the one it found.
+class KeypadAsciiTest : public ::testing::Test {
+ protected:
+  void TearDown() override { SDL_SetModState(saved_); }
+
+  static void SetNumLock(const bool on) {
+    SDL_SetModState(on ? KMOD_NUM : KMOD_NONE);
+  }
+
+ private:
+  SDL_Keymod saved_ = SDL_GetModState();
+};
+
+TEST_F(KeypadAsciiTest, DigitsTypeWithNumLockOn) {
+  SetNumLock(true);
+
+  EXPECT_EQ(KeyBuffer::ToAscii(SDL_SCANCODE_KP_0), '0');
+  EXPECT_EQ(KeyBuffer::ToAscii(SDL_SCANCODE_KP_1), '1');
+  EXPECT_EQ(KeyBuffer::ToAscii(SDL_SCANCODE_KP_5), '5');
+  EXPECT_EQ(KeyBuffer::ToAscii(SDL_SCANCODE_KP_9), '9');
+  EXPECT_EQ(KeyBuffer::ToAscii(SDL_SCANCODE_KP_PERIOD), '.');
+}
+
+// With Num Lock off the digits are Home, End, the arrows and so on.
+TEST_F(KeypadAsciiTest, DigitsTypeNothingWithNumLockOff) {
+  SetNumLock(false);
+
+  EXPECT_EQ(KeyBuffer::ToAscii(SDL_SCANCODE_KP_0), '\0');
+  EXPECT_EQ(KeyBuffer::ToAscii(SDL_SCANCODE_KP_7), '\0');
+  EXPECT_EQ(KeyBuffer::ToAscii(SDL_SCANCODE_KP_PERIOD), '\0');
+}
+
+TEST_F(KeypadAsciiTest, OperatorsTypeWhateverTheNumLock) {
+  for (const bool num_lock : {true, false}) {
+    SetNumLock(num_lock);
+
+    EXPECT_EQ(KeyBuffer::ToAscii(SDL_SCANCODE_KP_DIVIDE), '/') << num_lock;
+    EXPECT_EQ(KeyBuffer::ToAscii(SDL_SCANCODE_KP_MULTIPLY), '*') << num_lock;
+    EXPECT_EQ(KeyBuffer::ToAscii(SDL_SCANCODE_KP_MINUS), '-') << num_lock;
+    EXPECT_EQ(KeyBuffer::ToAscii(SDL_SCANCODE_KP_PLUS), '+') << num_lock;
+  }
+}
+
+// Modifier bits do not change the character; a release types none.
+TEST_F(KeypadAsciiTest, KeepsModifiersAndDropsReleases) {
+  SetNumLock(true);
+
+  EXPECT_EQ(KeyBuffer::ToAscii(Shift(KN_E_HOME)), '7');
+  EXPECT_EQ(KeyBuffer::ToAscii(Released(KN_E_HOME)), '\0');
 }
 
 // The hotkeys a Steam install's REDALERT.INI stores, as Windows virtual-key
