@@ -86,12 +86,12 @@ inline constexpr bool base::kIsFlagEnum<ShapeFlags_Type> = true;
 #pragma pack(push, 1)
 struct Shape_Type {
   uint16_t ShapeType;            // One of the kMakeshape* values
-  unsigned char Height;          // Height of the shape in scan lines
+  uint8_t Height;                // Height of the shape in scan lines
   uint16_t Width;                // Width in bytes, one per pixel at 256 colors
-  unsigned char OriginalHeight;  // Original height in scan lines
+  uint8_t OriginalHeight;        // Original height in scan lines
   uint16_t ShapeSize;            // Size of the frame, this header included
   uint16_t DataLength;           // Size of the pixel data once decompressed
-  unsigned char Colortable[16];  // kMakeshapeCompact only: the 16 colors
+  uint8_t Colortable[16];        // kMakeshapeCompact only: the 16 colors
 };
 
 // A shape file: the frame count, then one offset per frame. Extract_Shape()
