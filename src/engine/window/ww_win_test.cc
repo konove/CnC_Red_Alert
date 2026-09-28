@@ -37,8 +37,6 @@ class EventPumpTest : public ::testing::Test {
     events_seen = 0;
     last_event_type = 0;
     pumps_seen = 0;
-    SetEventHandler(nullptr);
-    SetPumpHandler(nullptr);
   }
 
   void TearDown() override {
