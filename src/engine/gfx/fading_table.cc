@@ -22,7 +22,8 @@ std::span<uint8_t> Build_Fading_Table(std::span<const uint8_t> palette,
   // Record the target gun values.
   const auto pal8 = palette;
   const uint8_t targetred = base::At(pal8, (color * 3) + 0);
-  const uint8_t targetgreen = base::At(pal8, (color * 3) + 0);
+  const uint8_t targetgreen = base::At(pal8, (color * 3) + 1);
+  const uint8_t targetblue = base::At(pal8, (color * 3) + 2);
 
   // Main loop
 
@@ -34,12 +35,16 @@ std::span<uint8_t> Build_Fading_Table(std::span<const uint8_t> palette,
   for (int remap_index = 1; remap_index < 256; remap_index++) {
     const uint8_t origred = base::At(pal8, (remap_index * 3) + 0);
     const uint8_t origgreen = base::At(pal8, (remap_index * 3) + 1);
+    const uint8_t origblue = base::At(pal8, (remap_index * 3) + 2);
 
     auto tmp = static_cast<uint16_t>((origred - targetred) * (frac / 2));
     const auto idealred = static_cast<uint8_t>(origred - (tmp >> 7));
 
     tmp = static_cast<uint16_t>((origgreen - targetgreen) * (frac / 2));
     const auto idealgreen = static_cast<uint8_t>(origgreen - (tmp >> 7));
+
+    tmp = static_cast<uint16_t>((origblue - targetblue) * (frac / 2));
+    const auto idealblue = static_cast<uint8_t>(origblue - (tmp >> 7));
 
     // Sweep through the entire existing palette to find the closest
     // matching color.  Never matches with color 0.
@@ -59,7 +64,7 @@ std::span<uint8_t> Build_Fading_Table(std::span<const uint8_t> palette,
         compval += diff * diff;
         diff = base::At(palptr, 1) - idealgreen;
         compval += diff * diff;
-        diff = base::At(palptr, 2) - idealgreen;
+        diff = base::At(palptr, 2) - idealblue;
         compval += diff * diff;
 
         if (compval == 0)  // If perfect match found then quit early.
@@ -68,7 +73,9 @@ std::span<uint8_t> Build_Fading_Table(std::span<const uint8_t> palette,
           break;
         }
 
-        if (compval < matchvalue) {
+        // Ties go to the later color, as in the original assembly; the
+        // tables TD ships were built that way.
+        if (compval <= matchvalue) {
           matchcolor = static_cast<uint8_t>(color_index);
           matchvalue = compval;
         }
