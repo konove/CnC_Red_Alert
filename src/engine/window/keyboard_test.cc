@@ -8,7 +8,7 @@
 #include <SDL_scancode.h>
 #include <SDL_stdinc.h>
 
-#include "engine/window/ww_win.h"
+#include "engine/window/event_pump.h"
 #include "gtest/gtest.h"
 
 namespace engine::window {

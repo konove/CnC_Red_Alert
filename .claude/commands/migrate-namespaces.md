@@ -55,7 +55,7 @@ the game defines them. Moving a hook in (and making each game define it inside
 
 **Test stubs.** The opposite case: `engine/window/keyboard_test.cc` compiles `keyboard.cc` alone and
 defines `PumpEvents()` and `RecordMousePosition()` itself at global scope, standing in for the real
-ones in `ww_win.cc` and `hardware_cursor.cc`. Those are library functions, so they move into
+ones in `event_pump.cc` and `hardware_cursor.cc`. Those are library functions, so they move into
 `engine::window`, and `keyboard.cc`'s calls then mean `engine::window::PumpEvents` - the global
 stubs no longer satisfy them. A stub goes in the namespace of the function it replaces.
 `git grep -n 'stub' -- 'src/engine/**'` and the library's `CMakeLists.txt` (`add_gtest` entries that

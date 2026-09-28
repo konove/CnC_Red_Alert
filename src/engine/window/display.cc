@@ -24,7 +24,7 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "engine/gfx/pixel_surface.h"
-#include "engine/window/ww_win.h"
+#include "engine/window/event_pump.h"
 
 namespace engine::window {
 

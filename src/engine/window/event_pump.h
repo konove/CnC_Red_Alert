@@ -22,8 +22,8 @@
 // WINDOWS library (February 1995), whose text windows moved to
 // engine/gfx/text_window.h.
 
-#ifndef CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_
-#define CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_
+#ifndef CNC_RED_ALERT_ENGINE_WINDOW_EVENT_PUMP_H_
+#define CNC_RED_ALERT_ENGINE_WINDOW_EVENT_PUMP_H_
 
 union SDL_Event;
 
@@ -57,4 +57,4 @@ void PumpEvents();
 
 }  // namespace engine::window
 
-#endif  // CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_
+#endif  // CNC_RED_ALERT_ENGINE_WINDOW_EVENT_PUMP_H_

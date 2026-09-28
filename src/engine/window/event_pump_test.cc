@@ -1,6 +1,6 @@
 // Tests for PumpEvents: the event and pump handlers the game installs.
 
-#include "engine/window/ww_win.h"
+#include "engine/window/event_pump.h"
 
 #include <SDL.h>
 #include <SDL_events.h>

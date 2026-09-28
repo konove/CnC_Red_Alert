@@ -109,7 +109,8 @@
 - Move `keyframe_test` from `engine/gfx/` to `src/ra/`
   - It compiles `ra/2keyfram.cc` and includes `ra/keyframe.h`, so it tests game code; it is the only
     test that relies on `tools/check_layers.py` exempting tests from the no-games rule
-- Make `ww_win_test` (`engine/window/ww_win_test.cc`) check `SDL_Init` and pair it with `SDL_Quit`
+- Make `event_pump_test` (`engine/window/event_pump_test.cc`) check `SDL_Init` and pair it with
+  `SDL_Quit`
   - A failed init now shows up as a confusing "no events seen" failure
 - Unit-test the cursor shape decoding in `engine/window/hardware_cursor.cc`
   - `DecodeShapePixels()` (LCW plus zero-run decode) and `ScaleUpNearest()` are static and reachable
@@ -139,7 +140,7 @@
 ## Debugging
 
 - Add a Dear ImGui debug overlay to replace the deleted monochrome debug screen
-  - `engine/window` presents through `SDL_Renderer` (`engine/window/ww_win.cc`,
+  - `engine/window` presents through `SDL_Renderer` (`engine/window/event_pump.cc`,
     `engine/window/display.cc`), so the `imgui_impl_sdl2` + `imgui_impl_sdlrenderer2` backends drop
     in: feed `SDL_PollEvent` and draw before `SDL_RenderPresent`
   - A cheat-key window would show what the mono pages used to: selected object, house, logic/FPS and
