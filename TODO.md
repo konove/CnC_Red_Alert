@@ -85,6 +85,27 @@
 - Move `engine/window/ww_win.{h,cc}` into `engine::window`
   - `Change_Window`, `SDL_Event_Loop`, `SDL_Send_Quit`, `SetEventHandler`, `SetPumpHandler` are the
     last global names in the library; `keyboard_test.cc` still stubs `SDL_Event_Loop()` globally
+- Move `engine/platform/file_system.h` into `engine::platform`
+  - It is the last header in the folder outside the namespace
+- Run `/fix-ide-issues` on `engine/platform/timer.h` and `timer.cc`
+  - Stage 7 of the `/modernize-file` run (`0e463fee..eed3a0d2`) was skipped: CLion's
+    `getDiagnostics` timed out on every file
+- Settle on one spelling of "the countdown has time left"
+  - `HasTimeLeft()` (35 sites), `!IsFinished()` (4: `td/infantry.cc:1357`, `td/team.cc:277`,
+    `td/drive.cc:894`, `engine/gfx/glow_pulse.h:40`) and `Remaining()` compared with 0 (5:
+    `td/mouse.cc:232`, `td/scroll.cc:222` and `:229`, `td/nulldlg.cc:4427`, `td/msgbox.cc:431`)
+  - Either drop `HasTimeLeft()` for `!IsFinished()` or convert the other 9 sites to it
+- Read `Arm.Remaining()` once in `ra/foot.cc:622`
+  - It calls `HasTimeLeft()` and then `Remaining()`, two `Tick()` reads for one answer
+- Consider dropping the double check in `CurrentFrame()` (`ra/game_clock.h`, `td/game_clock.h`)
+  - It tests `IsInstalled()` and then `Get()` checks the same pointer again on every frame-timer
+    `Tick()`; a few ns, worth it only if `base::Installed` gains a get-or-null accessor
+- Consider renaming `engine::platform::Timer<T>` to `Countdown<T>` (149 uses)
+  - `Stopwatch` and `Timer` are both timers; the name kept by `docs/TIMER_UNIFICATION_PLAN.md` does
+    not say which way it counts
+- Delete the commented-out code in `ra/wol_logn.cc:439` and `ra/wolapiob.cc:797`
+  - It still names `Timer<SystemTickSource>` and `SystemMilliseconds()` unqualified, so it no longer
+    matches the code around it
 
 ## Testing
 
@@ -97,6 +118,12 @@
   - `DecodeShapePixels()` (LCW plus zero-run decode) and `ScaleUpNearest()` are static and reachable
     only through SDL cursor creation; expose them in `engine::window::internal` and cover corrupt
     and truncated data, zero and overlong runs, and each scale
+- Replace the tests' private `RecordingSink` copies with `VectorSink`
+  (`engine/stream/vector_sink.h`)
+  - `engine/stream/archive_test.cc`, `ra/heap_test.cc`, `engine/crypto/pk_stream_test.cc`,
+    `engine/crypto/blowfish_stream_test.cc`, and `engine/codec/stream_golden_test.cc`,
+    `codec_corrupt_test.cc`, `codec_state_test.cc`
+  - `engine/file/mix_archive_test.cc:95` defines its own class named `VectorSink`
 - Rename `ra/profile_buffer_test.cc` to `profile_test.cc`
   - It tests `ra/profile.h`; the misleading name keeps clang-format from treating `ra/profile.h` as
     its main include, and it shares a basename with `engine/file/profile_buffer_test.cc`
