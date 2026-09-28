@@ -37,6 +37,7 @@
 
 #include "base/attributes.h"
 #include "base/flags.h"
+#include "base/types.h"
 
 // How a shape is drawn. DrawShapeFrame() (engine/gfx/shape_blitter.h) acts on
 // SHAPE_CENTER, SHAPE_TRANS, SHAPE_GHOST, SHAPE_FADING and SHAPE_PREDATOR, and
@@ -75,6 +76,12 @@ struct ShapeHeader {
   uint8_t color_table[16];      // Format 1 only: the 16 colors
 };
 #pragma pack(pop)
+
+// The size of the ShapeHeader fields every format has, up to and including
+// decompressed_bytes; color_table follows them only in format 1.
+inline constexpr base::ssize kShapeHeaderSize =
+    offsetof(ShapeHeader, color_table);
+static_assert(kShapeHeaderSize == 10);
 
 // The shape staging buffer: scratch memory that Build_Frame() decompresses
 // frames into and that Tiberian Dawn reuses for INI text. The games point it

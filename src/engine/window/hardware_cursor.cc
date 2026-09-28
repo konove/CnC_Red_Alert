@@ -23,7 +23,6 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "base/types.h"
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/gfx/shape.h"
 #include "engine/window/display.h"
@@ -39,11 +38,6 @@ void SdlCursorDeleter::operator()(SDL_Cursor* cursor) const noexcept {
 void SdlSurfaceDeleter::operator()(SDL_Surface* surface) const noexcept {
   SDL_FreeSurface(surface);
 }
-
-// The ShapeHeader fields up to and including decompressed_bytes. The color
-// table after them belongs to compact shapes, which SetShape() rejects.
-constexpr base::ssize kShapeHeaderSize = offsetof(ShapeHeader, color_table);
-static_assert(kShapeHeaderSize == 10);
 
 // Decodes the pixels of a 256-color shape: `data` is what follows the header,
 // LCW-compressed, and under the LCW the pixels are zero-run-length encoded. A
