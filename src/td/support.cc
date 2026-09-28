@@ -33,7 +33,9 @@ std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
   const uint8_t targetred =
       base::At(pal8, (static_cast<size_t>(color) * 3) + 0);
   const uint8_t targetgreen =
-      base::At(pal8, (static_cast<size_t>(color) * 3) + 0);
+      base::At(pal8, (static_cast<size_t>(color) * 3) + 1);
+  const uint8_t targetblue =
+      base::At(pal8, (static_cast<size_t>(color) * 3) + 2);
 
   // Main loop
 
@@ -48,6 +50,8 @@ std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
         base::At(pal8, (static_cast<size_t>(remap_index) * 3) + 0);
     const uint8_t origgreen =
         base::At(pal8, (static_cast<size_t>(remap_index) * 3) + 1);
+    const uint8_t origblue =
+        base::At(pal8, (static_cast<size_t>(remap_index) * 3) + 2);
 
     // The products can be negative; the shifts floor them as the original
     // table builder did, so the palette comes out identical.
@@ -58,6 +62,10 @@ std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
     tmp = (origgreen - targetgreen) * (frac / 2);
     const int idealgreen =
         origgreen - (tmp >> 7);  // NOLINT(bugprone-signed-bitwise)
+
+    tmp = (origblue - targetblue) * (frac / 2);
+    const int idealblue =
+        origblue - (tmp >> 7);  // NOLINT(bugprone-signed-bitwise)
 
     // Sweep through a limited set of existing colors to find the closest
     // matching color.
@@ -76,7 +84,7 @@ std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
       compval += diff * diff;
       diff = base::At(palptr, 1) - idealgreen;
       compval += diff * diff;
-      diff = base::At(palptr, 2) - idealgreen;
+      diff = base::At(palptr, 2) - idealblue;
       compval += diff * diff;
 
       if (compval == 0)  // If perfect match found then quit early.

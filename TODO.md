@@ -2,11 +2,6 @@
 
 ## Bugs
 
-- Fix the colour mix-up in both fading-table builders: `Build_Fading_Table`
-  (`engine/gfx/fading_table.cc`) and TD's own copy in `td/support.cc`
-  - `targetgreen` reads the red gun, and the blue gun is compared against `idealgreen`
-  - Predates the engine folders move and is noted in `docs/CLANG_TIDY_PRIORITIES.md`; fixing it
-    changes the fade and remap tables, so compare palettes in both games before and after
 - Make the Chronosphere's synthetic right-click actually end targeting mode
   - `TechnoClass::Take_Damage()` (`ra/techno.cc`) hands `TheMap().AI()` a right-click event, but no
     map layer acts on one there: the tactical gadget takes real right-clicks before `AI()` runs, so

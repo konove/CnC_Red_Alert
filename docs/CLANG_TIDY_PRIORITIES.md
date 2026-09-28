@@ -2499,7 +2499,9 @@ its byte through a reinterpreting reference into the `int` speed member and now 
 TD's `Get_Ownable` virtual returned a byte although the ownable mask covers ten houses; the
 `ObjectClass` and `TechnoClass` overrides now return `int`, matching RA. Two fading-table builders
 (`sdllib/misc.cc` and `td/support.cc`) read the red gun for the green target; that pre-existing
-defect is noted here and left for separate review.
+defect was left for separate review and fixed on 2026-09-28, together with the full-palette
+builder's tie-break, which kept the first of two equally close colors where the original assembly
+kept the last.
 
 The final isolated and full-config sweeps passed all 908 translation units. Both strict game builds
 and all 228 CTest tests passed. Headless save/load checks matched 240 RA object positions and 5,742

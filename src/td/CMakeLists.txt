@@ -113,6 +113,12 @@ add_gtest(
 )
 
 add_gtest(
+    NAME td_support_test
+    SOURCES support_test.cc support.cc
+    LIBS base engine_gfx absl::check
+)
+
+add_gtest(
     NAME td_heap_test
     SOURCES heap_test.cc heap.cc
     LIBS base engine_stream
