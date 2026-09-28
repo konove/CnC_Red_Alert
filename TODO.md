@@ -167,9 +167,9 @@
     still spells it `255` (the fade ratio and the HSV scale); hoist one `base::` constant into
     `base/hsv.h`
 - Move the rest of `engine/gfx` into `engine::gfx`
-  - Only `palette_color.*`, `hsv_color.*` (`babcd0a9`) and `shape_blitter.*` (`b8ab89fe`) are in it;
-    `glow_pulse.h` and `glow_pulse_test.cc` write `engine::gfx::PaletteColor` and
-    `engine::gfx::kBlackColor` and drop the qualifier when they move
+  - Only `palette_color.*`, `hsv_color.*` (`babcd0a9`), `shape_blitter.*` (`b8ab89fe`) and `shape.*`
+    (`a9332c6d`) are in it; `glow_pulse.h` and `glow_pulse_test.cc` write
+    `engine::gfx::PaletteColor` and `engine::gfx::kBlackColor` and drop the qualifier when they move
 - Run `/fix-ide-issues` on `engine/gfx/palette_color.h`, `palette_color.cc`, `palette_color_test.cc`
   and `hsv_color_test.cc`
   - Stage 7 of the `/modernize-file` run (`dc251088..f60d3070`) was skipped: CLion's
@@ -188,15 +188,39 @@
     `bool` (or the blitter choosing the direction from x and the view width) drops the sign trick.
     Pairs with the RA shimmer-direction bug above
 - Move the aircraft/bullet shadow rewrite out of both `CC_Draw_Shape()`s
-  - `ra/shape_draw.cc:170-176` and `td/conquer.cc:2396-2402` both turn
+  - `ra/shape_draw.cc:172-178` and `td/conquer.cc:2399-2404` both turn
     `SHAPE_FADING | SHAPE_PREDATOR` into `SHAPE_GHOST` with `SpecialGhost`: a meaning of a flag
-    combination that belongs next to the `SHAPE_*` definitions (`engine/gfx/shape.h`), e.g. the
-    `SHAPE_SHADOW` bit, which nothing uses yet, handled once
+    combination that belongs next to the `SHAPE_*` definitions (`engine/gfx/shape.h`), e.g. a shadow
+    bit handled once (the library's `SHAPE_SHADOW`, 0x2000, went unused in `b77c2c21`)
 - Consider making color 0 always transparent in `engine::gfx::DrawShapeFrame()`
-  - Both callers pass `flags | SHAPE_TRANS`, so the eight non-transparent entries of `kBlitters`
+  - Both callers pass `flags | SHAPE_TRANS` (`ra/shape_draw.cc:199`, `td/conquer.cc:2423`) and no
+    other code passes it, so the eight non-transparent entries of `kBlitters`
     (`engine/gfx/shape_blitter.cc`), including the whole-line copy, only run in
-    `shape_blitter_test.cc`; dropping the flag halves the instantiations
-  - `SHAPE_PARTIAL` (`engine/gfx/shape.h:80`) is set and read nowhere since `b08a754d`; delete it
+    `shape_blitter_test.cc`; dropping the flag halves the instantiations and deletes `SHAPE_TRANS`
+    (~6 files: `shape.h`, `shape_blitter.{h,cc}`, its test, the two callers)
+- Move `engine::gfx::ShapeFlags` into `engine/gfx/shape_blitter.h`
+  - The flags are `DrawShapeFrame()`'s parameter; `engine/gfx/shape.h` would then hold only the
+    shape file format (`ShapeHeader`, `ExtractShapeFrame()`) and could become `shape_file.h`. 66
+    files include `engine/gfx/shape.h`, most only for the flags, so it is an include rewrite
+- Give Tiberian Dawn's INI code its own buffer instead of `shape_buffer`
+  - `shape_buffer` (`td/keyframe.h`, `ra/keyframe.h`) is `Build_Frame()`'s output, but TD reads and
+    writes scenario and multiplayer INI text in it (`td/ini.cc`, `mplayer.cc`, `options.cc`,
+    `stats.cc`, `expand.cc`; ~60 uses) and RA reads expansion scenario INI text into it
+    (`ra/expand.cc:362`). A `std::string` or `std::vector<char>` per use would leave the buffer to
+    `Build_Frame()` alone
+  - Until then, `base::CharBytes(shape_buffer)` is spelled out 26 times in `td/ini.cc`, 24 in
+    `mplayer.cc` and 15 in `options.cc`, mostly in runs; one local per function reads better
+  - Each game keeps a `static std::vector<uint8_t> shape_storage` plus the `shape_buffer` span over
+    it (`ra/init.cc`, `td/init.cc`), and RA's `CC_Draw_Shape()` a second static buffer of the same
+    size (`x_buffer`, `ra/shape_draw.cc:138`) for rotated shapes
+- Share one bounds-checked little-endian reader in `base/`
+  - `engine::gfx::ExtractShapeFrame()` (`engine/gfx/shape.cc`), `FrameEntry` in `td/keyframe.cc` and
+    `ra/2keyfram.cc`, `WsaAnimation::ResidentFrameOffset()` (`engine/gfx/wsa_animation.cc`),
+    `Slice`/`ReadWord` in `engine/gfx/font.h` and `ReadU16`/`ReadU32` in `ra/dib.cc` each hand-roll
+    check-size, `base::ReadUnaligned`, `subspan`. Promoting `font.h`'s `Slice` is one starting point
+- Remove Tiberian Dawn's `Parse_INI_File()` (`td/init.cc:2566-2651`)
+  - It and its call (`td/init.cc:510-515`) sit under `#ifdef ONHOLD`, which nothing defines, and it
+    still uses the deleted `GameFile` class; `e2c825c8` edited it without compiling it
 - Share the "clip a destination and shift its source" pattern
   - `base/clip.h:47-50` says a caller carrying a source rectangle must use `OutCodeOf()` directly,
     but `DrawShapeFrame()` and `PixelView::RemapLocked()` show `ClipRect()` works whenever only the
@@ -207,6 +231,9 @@
   `shape_blitter_test.cc`
   - Stage 7 of the `/modernize-file` run (`a5dd8079..b83db634`) was skipped at the user's request
     (the files were not open in CLion)
+- Run `/fix-ide-issues` on `engine/gfx/shape.cc`
+  - Stage 7 of the `/modernize-file` run (`f4f3ea0b..a9332c6d`) was skipped for it: CLion's
+    `getDiagnostics` timed out (`shape.h` answered, with nothing to fix)
 - Consider small clean-ups in `engine/gfx/shape_blitter.cc`
   - The predator walk indexes with `std::array::at()` and a signed `% 8` per predator pixel; an
     `& 7` walk with unchecked indexing is cheaper, but only cloaked units take that path
