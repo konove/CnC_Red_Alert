@@ -38,29 +38,15 @@
 #include "base/attributes.h"
 #include "base/flags.h"
 
-// The ShapeHeader::format values: how a frame's pixels are stored. Only
-// kMakeshapeNormal is drawn anywhere (the hardware cursor rejects the rest).
-inline constexpr uint32_t kMakeshapeNormal =
-    0x0000;  // 256-color, LCW-compressed
-inline constexpr uint32_t kMakeshapeCompact =
-    0x0001;  // 16-color, with its color table in the header
-inline constexpr uint32_t kMakeshapeNocomp = 0x0002;    // Uncompressed
-inline constexpr uint32_t kMakeshapeVariable = 0x0004;  // Fewer than 16 colors
-
-// How a shape is drawn. The low byte moves or transforms the shape, the high
-// byte picks the effects; DrawShapeFrame() (engine/gfx/shape_blitter.h) acts
-// on SHAPE_CENTER, SHAPE_TRANS, SHAPE_GHOST, SHAPE_FADING and SHAPE_PREDATOR,
-// and the tables the effects need travel beside the flags in ShapeEffects.
-// The other bits come from the Westwood library and nothing reads them.
+// How a shape is drawn. DrawShapeFrame() (engine/gfx/shape_blitter.h) acts on
+// SHAPE_CENTER, SHAPE_TRANS, SHAPE_GHOST, SHAPE_FADING and SHAPE_PREDATOR, and
+// the tables the effects need travel beside the flags in ShapeEffects. The
+// values are the Westwood library's, whose other bits nothing here used.
 enum class CNC_FLAG_ENUM ShapeFlags : uint32_t {
-  SHAPE_NORMAL = 0x0000,    // Drawn at x,y as stored
-  SHAPE_HORZ_REV = 0x0001,  // Flipped horizontally
-  SHAPE_VERT_REV = 0x0002,  // Flipped vertically
-  SHAPE_SCALING = 0x0004,   // Scaled
+  SHAPE_NORMAL = 0x0000,  // Drawn at x,y as stored
   // Coordinates are relative to the window rather than the page. The games'
   // draw functions always draw into the window's view, so this bit changes
-  // nothing; SHAPE_VIEWPORT_REL is the library's other name for it.
-  SHAPE_VIEWPORT_REL = 0x0010,
+  // nothing.
   SHAPE_WIN_REL = 0x0010,
   SHAPE_CENTER = 0x0020,  // x,y name the shape's center, not its top left
   SHAPE_TRANS = 0x0040,   // Color 0 is transparent
@@ -68,12 +54,7 @@ enum class CNC_FLAG_ENUM ShapeFlags : uint32_t {
   // SHAPE_PREDATOR it asks the games' draw functions for a shadow instead.
   SHAPE_FADING = 0x0100,
   SHAPE_PREDATOR = 0x0200,  // Cloaked: shows a shimmering copy of the page
-  SHAPE_COMPACT = 0x0400,   // Reserved by the library; never set
-  SHAPE_PRIORITY = 0x0800,  // Drawn through the library's priority system
   SHAPE_GHOST = 0x1000,     // Translucent through ShapeEffects::ghost_table
-  SHAPE_SHADOW = 0x2000,
-  SHAPE_PARTIAL = 0x4000,
-  SHAPE_COLOR = 0x8000  // Colors remapped through a table
 };
 using enum ShapeFlags;
 template <>
@@ -84,23 +65,16 @@ inline constexpr bool base::kIsFlagEnum<ShapeFlags> = true;
 // ten bytes of it out of a frame that ExtractShapeFrame() returned.
 #pragma pack(push, 1)
 struct ShapeHeader {
-  uint16_t format;              // One of the kMakeshape* values
+  // 0 for 256-color LCW-compressed pixels, the only format drawn. The
+  // library also wrote 1 (16 colors, with color_table), 2 (uncompressed) and
+  // 4 (fewer than 16 colors).
+  uint16_t format;
   uint8_t height;               // Height of the shape in scan lines
   uint16_t width;               // Width in bytes, one per pixel at 256 colors
   uint8_t original_height;      // Original height in scan lines
   uint16_t frame_bytes;         // Size of the frame, this header included
   uint16_t decompressed_bytes;  // Size of the pixel data once decompressed
-  uint8_t color_table[16];      // kMakeshapeCompact only: the 16 colors
-};
-
-// A shape file: the frame count, then one offset per frame. ExtractShapeFrame()
-// reads the same layout from a byte span rather than through this struct.
-struct ShapeBlock_Type {
-  uint16_t NumShapes;
-  // One per frame, each counted from the start of this array rather than of
-  // the block. A flexible array, since the offsets follow the count in the
-  // file image. NOLINTNEXTLINE(clang-diagnostic-c99-extensions)
-  uint32_t Offsets[];
+  uint8_t color_table[16];      // Format 1 only: the 16 colors
 };
 #pragma pack(pop)
 
