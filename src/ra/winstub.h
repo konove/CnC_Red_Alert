@@ -3,10 +3,6 @@
 #ifndef CNC_RED_ALERT_RA_WINSTUB_H_
 #define CNC_RED_ALERT_RA_WINSTUB_H_
 
-// Reports that an allocation failed and does not return. Set as the memory
-// system's error handler.
-[[noreturn]] void Memory_Error_Handler();
-
 // Pumps the event queue while the window has no focus, so the game does not
 // run on while it is in the background.
 void Check_For_Focus_Loss();

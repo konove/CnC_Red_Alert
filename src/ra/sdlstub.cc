@@ -6,7 +6,6 @@
 #include <cstdlib>
 
 #include "engine/audio/audio_mixer.h"
-#include "engine/gfx/pixel_buffer.h"
 #include "engine/net/net_select.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
@@ -14,12 +13,7 @@
 #include "ra/config.h"
 #include "ra/game_state.h"
 #include "ra/input.h"
-#include "ra/language.h"
-#include "ra/msgbox.h"
 #include "ra/nullconn.h"
-#include "ra/palette.h"
-#include "ra/palettes.h"
-#include "ra/screen.h"
 #include "ra/startup.h"
 #include "ra/winstub.h"
 
@@ -31,16 +25,6 @@ void Check_For_Focus_Loss() {
     }
   }
 }
-void Memory_Error_Handler() {
-  TheScreen().visible_page().view().Clear();
-  ThePalettes().title_palette().Set();
-  TheMouse().ForceShow();
-  WWMessageBox().Process(kLanguageText.memory_error, kLanguageText.abort);
-
-  ShutDown();
-  exit(EXIT_FAILURE);
-}
-
 static constexpr const char* kWindowName = [] {
   if (config::kIsFrench) {
     return "Alerte Rouge";

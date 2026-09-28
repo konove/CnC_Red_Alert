@@ -85,7 +85,6 @@
 #include "engine/codec/lcw_sink.h"
 #include "engine/codec/lcw_source.h"
 #include "engine/gfx/tile.h"
-#include "engine/platform/memflag.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "magic_enum/magic_enum.hpp"
@@ -1444,9 +1443,9 @@ bool MapClass::Validate() {
     if (ttype != TEMPLATE_NONE) {
       const TemplateTypeClass* tclass = &TemplateTypeClass::As_Reference(ttype);
       const unsigned char ticon = (*this).at(cell).TIcon;
-      Mem_Copy(std::as_bytes(Get_Icon_Set_Map(tclass->Get_Image_Data())),
-               base::ObjectBytes(map),
-               static_cast<size_t>(tclass->Width) * tclass->Height);
+      base::CopyBytes(base::ObjectBytes(map),
+                      std::as_bytes(Get_Icon_Set_Map(tclass->Get_Image_Data())),
+                      tclass->Width * tclass->Height);
       if (ticon >= tclass->Width * tclass->Height ||
           base::At(map, ticon) == 0xff) {
         return false;

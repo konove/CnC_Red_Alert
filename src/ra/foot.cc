@@ -98,7 +98,6 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "engine/platform/memflag.h"
 #include "engine/window/hardware_cursor.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/audio.h"
@@ -328,9 +327,13 @@ bool FootClass::Basic_Path() {
           auto* inf = dynamic_cast<InfantryClass*>(obj);
           if (inf->NavCom == NavCom && inf->Path[0] != FACING_NONE) {
             if (Coord_Cell(inf->Head_To_Coord()) == Coord_Cell(inf->Coord)) {
-              Mem_Copy(std::as_bytes(std::span(inf->Path).subspan(1)), std::as_writable_bytes(std::span(Path)), sizeof(Path) - sizeof(Path[0]));
+              base::CopyBytes(std::as_writable_bytes(std::span(Path)),
+                              std::as_bytes(std::span(inf->Path).subspan(1)),
+                              sizeof(Path) - sizeof(Path[0]));
             } else {
-              Mem_Copy(std::as_bytes(std::span(inf->Path)), std::as_writable_bytes(std::span(Path)), sizeof(Path));
+              base::CopyBytes(std::as_writable_bytes(std::span(Path)),
+                              std::as_bytes(std::span(inf->Path)),
+                              sizeof(Path));
             }
             if (Path[0] != FACING_NONE) {
               skip_path = true;

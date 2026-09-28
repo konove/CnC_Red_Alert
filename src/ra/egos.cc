@@ -60,7 +60,6 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/platform/memflag.h"
 #include "engine/platform/tick_clock.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -790,19 +789,6 @@ void Show_Who_Was_Responsible() {
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 16, 0, 16,
                                      TheScreen().visible_view().width(),
                                      TheScreen().visible_view().height() - 32);
-
-    /*
-    ** Try and prevent Win95 from swapping out pictures we havnt used yet.
-    */
-    if (frame) {
-      for (int i = slide_number + 1; i < NUM_SLIDES; i++) {
-        if (!base::At(SlideBuffers, i)->view().NeedsLock()) {
-          Force_VM_Page_In(base::At(SlideBuffers, i)->view().offset(),
-                           TheScreen().visible_view().width() *
-                               TheScreen().visible_view().height());
-        }
-      }
-    }
 
     /*
     ** If user hits escape then break.

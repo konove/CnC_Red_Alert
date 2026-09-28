@@ -7,10 +7,6 @@
 
 class PixelView;
 
-// Reports that an allocation failed and does not return. Set as the memory
-// system's error handler.
-[[noreturn]] void Memory_Error_Handler();
-
 // Writes a line to the platform's debug output.
 void CCDebugString(const char* string);
 

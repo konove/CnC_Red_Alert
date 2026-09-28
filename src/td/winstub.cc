@@ -521,30 +521,6 @@ void SetPalette(unsigned char* palette, long, unsigned long) {
   Set_Palette(palette);
 }
 
-/***********************************************************************************************
- * Memory_Error_Handler -- Handle a possibly fatal failure to allocate memory *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 5/22/96 3:57PM ST : Created *
- *=============================================================================================*/
-void Memory_Error_Handler() {
-  TheScreen().visible_page().Clear();
-  Set_Palette(GamePalette);
-  TheMouse().ForceShow();
-  CCMessageBox().Process("Error - out of memory.", "Abort", false);
-  ShutDownEngine();
-  Invalidate_Cached_Icons();
-  PostQuitMessage(0);
-  ExitProcess(0);
-}
-
 PixelBuffer* Read_PCX_File(const char* name, unsigned char* Palette, void* Buff,
                            long Size);
 

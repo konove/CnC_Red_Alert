@@ -48,13 +48,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <span>
 
 #include "absl/strings/match.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
@@ -62,7 +62,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/tile.h"
-#include "engine/platform/memflag.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"
@@ -1344,9 +1343,9 @@ std::span<const int16_t> TemplateTypeClass::Occupy_List(
   static int16_t _occupy[(13 * 8) + 5];
   unsigned char map[13 * 8];
 
-  Mem_Copy(std::as_bytes(Get_Icon_Set_Map(Get_Image_Data())),
-           std::as_writable_bytes(std::span(map)),
-           static_cast<size_t>(Width) * Height);
+  base::CopyBytes(std::as_writable_bytes(std::span(map)),
+                  std::as_bytes(Get_Icon_Set_Map(Get_Image_Data())),
+                  Width * Height);
 
   std::span<int16_t> ptr(_occupy);
   for (int index = 0; index < Width * Height; index++) {
@@ -1431,9 +1430,9 @@ void TemplateTypeClass::Display(PixelView& view, int x, int y,
   x += base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) * 8;
   y += base::At(base::At(WindowList, static_cast<int>(window)), kWindowY);
 
-  Mem_Copy(std::as_bytes(Get_Icon_Set_Map(Get_Image_Data())),
-           std::as_writable_bytes(std::span(map)),
-           static_cast<size_t>(Width) * Height);
+  base::CopyBytes(std::as_writable_bytes(std::span(map)),
+                  std::as_bytes(Get_Icon_Set_Map(Get_Image_Data())),
+                  Width * Height);
 
   for (int index = 0; index < w * h; index++) {
     if (base::At(map, index) != 0xFF) {

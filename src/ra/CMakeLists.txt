@@ -26,7 +26,6 @@ list(FILTER RA_SOURCES EXCLUDE REGEX "_test\\.cc$")
 list(REMOVE_ITEM RA_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/startup.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/adpcm.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/alloc.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/cominit.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/dtable.cc"  # ADPCM tables for adpcm.cc

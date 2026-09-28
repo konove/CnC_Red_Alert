@@ -42,8 +42,6 @@
  *the focus loss                               * Create_Main_Window -- opens the
  *MainWindow for C&C                                        * Focus_Loss -- this
  *function is called when a library function detects focus loss          *
- *   Memory_Error_Handler -- Handle a possibly fatal failure to allocate memory
- **
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -455,33 +453,3 @@ void Colour_Debug(int call_number) {
 //{
 //	return (0);
 // }
-
-/***********************************************************************************************
- * Memory_Error_Handler -- Handle a possibly fatal failure to allocate memory *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 5/22/96 3:57PM ST : Created *
- *=============================================================================================*/
-void Memory_Error_Handler() {
-  TheScreen().visible_page().Clear();
-  ThePalettes().title_palette().Set();
-  TheMouse().ForceShow();
-  WWMessageBox().Process(kLanguageText.memory_error, kLanguageText.abort,
-                         false);
-
-  ReadyToQuit = 1;
-
-  PostMessage(MainWindow, WM_DESTROY, 0, 0);
-  do {
-    TheKeyboard().Peek();
-  } while (ReadyToQuit == 1);
-
-  ExitProcess(0);
-}

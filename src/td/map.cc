@@ -68,13 +68,13 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/types.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/tile.h"
-#include "engine/platform/memflag.h"
 #include "engine/platform/platform.h"
 #include "td/cell.h"
 #include "td/defines.h"
@@ -1300,9 +1300,9 @@ bool MapClass::Validate() {
     if (ttype != TEMPLATE_NONE) {
       const TemplateTypeClass* tclass = &TemplateTypeClass::As_Reference(ttype);
       const unsigned char ticon = (*this).at(cell).TIcon;
-      Mem_Copy(std::as_bytes(Get_Icon_Set_Map(tclass->Get_Image_Data())),
-               std::as_writable_bytes(std::span(map)),
-               static_cast<size_t>(tclass->Width) * tclass->Height);
+      base::CopyBytes(std::as_writable_bytes(std::span(map)),
+                      std::as_bytes(Get_Icon_Set_Map(tclass->Get_Image_Data())),
+                      tclass->Width * tclass->Height);
       if (ticon >= tclass->Width * tclass->Height ||
           base::At(map, ticon) == 0xff) {
         return false;

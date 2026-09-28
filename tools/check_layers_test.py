@@ -167,9 +167,9 @@ class CheckerTest(unittest.TestCase):
     def test_project_header_named_like_sdl_is_layer_checked(self):
         self.write("base/SDL_util.h")
         self.write("engine/window/SDL_glue.h")
-        self.write("engine/platform/mem.cc", '#include "base/SDL_util.h"\n')
+        self.write("engine/platform/env.cc", '#include "base/SDL_util.h"\n')
         self.write("engine/gfx/rgb.cc", '#include "engine/window/SDL_glue.h"\n')
-        self.assertEqual(self.errors("engine/platform/mem.cc"), [])
+        self.assertEqual(self.errors("engine/platform/env.cc"), [])
         errors = self.errors("engine/gfx/rgb.cc")
         self.assertEqual(len(errors), 1)
         self.assertIn("may not include window", errors[0])

@@ -18,8 +18,8 @@
 
 // Red Alert's process entry point and exit paths: main() sets up the
 // library systems, reads the options needed before the window exists, and
-// hands over to RunGame(); ShutDownEngine(), EmergencyExit() and the
-// memory-error hooks tear it all down again.
+// hands over to RunGame(); ShutDownEngine() and EmergencyExit() tear it all
+// down again.
 //
 // Originally STARTUP.CPP by Joe L. Bostic, October 1994.
 
@@ -28,10 +28,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "absl/strings/str_format.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/platform/memflag.h"
 #include "ra/game.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
@@ -53,6 +51,7 @@
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
+#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/bytes_of.h"
@@ -95,14 +94,6 @@
 
 #endif  // _WIN32
 
-// Prints `message` and exits with status 1 without any cleanup. Installed as
-// Memory_Error_Exit once the game systems are gone, or when they are being
-// torn down anyway.
-[[noreturn]] static void ExitWithError(char* message) {
-  absl::PrintF("%s\n", message);
-  exit(1);
-}
-
 // The one Game; main() creates it and ShutDown() destroys it. nullptr before
 // main() and after ShutDown().
 static std::unique_ptr<Game> game;
@@ -115,8 +106,6 @@ void ShutDown() {
     return;
   }
 
-  // Nothing is left for an allocation failure from here on to clean up.
-  Memory_Error_Exit = ExitWithError;
   ShutDownEngine();
   game.reset();
 }
@@ -364,8 +353,6 @@ int main(const int argc, char* argv[])
 
   TheOptions().Adjust_Variables_For_Resolution();
 
-  Memory_Error = &Memory_Error_Handler;
-
   // The full-screen and editor windows cover the visible viewport, whose
   // size is only known now that the video mode is set.
   base::At(WindowList[0], kWindowWidth) = TheScreen().visible_view().width();
@@ -405,10 +392,6 @@ int main(const int argc, char* argv[])
     }
   }
 
-  // While the game runs an out-of-memory exit still has everything to
-  // clean up; after RunGame() returns it only has to report.
-  Memory_Error_Exit = CleanUpAndExitWithError;
-
   RunGame();
 
   TheScreen().visible_page().view().Clear();
@@ -422,11 +405,6 @@ int main(const int argc, char* argv[])
 void ShutDownEngine() {
   engine::audio::TheAudio().Close();
   engine::window::HardwareCursor::ReleaseMouse();
-}
-
-void CleanUpAndExitWithError(char* message) {
-  ShutDown();
-  ExitWithError(message);
 }
 
 [[noreturn]] void EmergencyExit(const int exit_code) {

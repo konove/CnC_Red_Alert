@@ -51,18 +51,14 @@
 #include <string_view>
 #include <vector>
 
-#include "absl/strings/str_format.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "engine/audio/audio_mixer.h"
-#include "engine/platform/memflag.h"
 #include "engine/stream/byte_stream.h"
-#include "engine/window/keyboard.h"
 #include "td/defines.h"
 #include "td/game.h"
 #include "td/game_state.h"
 #include "td/init.h"
-#include "td/input.h"
 #include "td/ipxaddr.h"
 #include "td/ipxmgr.h"
 #include "td/network.h"
@@ -111,8 +107,6 @@
 #endif
 
 void Delete_Swap_Files();
-[[maybe_unused]] [[noreturn]] static void Print_Error_End_Exit(char* string);
-[[maybe_unused]] [[noreturn]] static void Print_Error_Exit(char* string);
 
 [[maybe_unused]] static void Read_Setup_Options(ByteStream& config_file,
                                                 const StartupOptions& options);
@@ -239,26 +233,6 @@ int main(int argc, char* argv[])
   */
   //	int temp = Desired_Facing256 (1070, 5419, 1408, 5504);
 
-  if (Ram_Free(MEM_NORMAL) < 5000000) {
-#ifdef GERMAN
-    absl::PrintF("Zuwenig Hauptspeicher verfügbar.\n");
-#else
-#ifdef FRENCH
-    absl::PrintF("Mémoire vive (RAM) insuffisante.\n");
-#else
-    absl::PrintF("Insufficient RAM available.\n");
-#endif
-#endif
-    ShutDown();
-    return EXIT_FAILURE;
-  }
-
-  // void *test_buffer = Alloc(20,MEM_NORMAL);
-
-  // memset ((char*)test_buffer, 0, 21);
-
-  // Free(test_buffer);
-
 #ifdef _WIN32
   ProgramInstance = instance;
 
@@ -361,11 +335,6 @@ int main(int argc, char* argv[])
       WindowList[0][kWindowWidth] = TheScreen().visible_view().width() / 8;
       WindowList[0][kWindowHeight] = TheScreen().visible_view().height();
 
-      /*
-      ** Install the memory error handler
-      */
-      Memory_Error = &Memory_Error_Handler;
-
       CCDebugString("C&C95 - Grabbing the mouse.\n");
       engine::window::HardwareCursor::GrabMouse();
 
@@ -436,8 +405,6 @@ int main(int argc, char* argv[])
         TheGameState().breakout_allowed() = false;
       }
 
-      Memory_Error_Exit = Print_Error_End_Exit;
-
       CCDebugString("C&C95 - Entering main game.\n");
       Main_Game();
 
@@ -507,19 +474,6 @@ void ShutDownEngine() {
   engine::window::HardwareCursor::ReleaseMouse();
 }
 
-void Print_Error_End_Exit(char* string) {
-  absl::PrintF("%s\n", string);
-  TheKeyboard().Read();
-  ShutDown();
-  absl::PrintF("%s\n", string);
-  exit(1);
-}
-
-void Print_Error_Exit(char* string) {
-  absl::PrintF("%s\n", string);
-  exit(1);
-}
-
 void ShutDown() {
   // Everything ShutDownEngine() takes down belongs to the Game, so there is
   // nothing to do before one is built or after one is gone. A test that
@@ -528,8 +482,6 @@ void ShutDown() {
     return;
   }
 
-  // Nothing is left for an allocation failure from here on to clean up.
-  Memory_Error_Exit = Print_Error_Exit;
   ShutDownEngine();
   game.reset();
 }

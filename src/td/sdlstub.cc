@@ -15,10 +15,7 @@
 #include "engine/window/ww_win.h"
 #include "td/game_state.h"
 #include "td/input.h"
-#include "td/msgbox.h"
 #include "td/nullconn.h"
-#include "td/palette.h"
-#include "td/palettes.h"
 #include "td/rand.h"
 #include "td/screen.h"
 #include "td/startup.h"
@@ -33,16 +30,6 @@ void Check_For_Focus_Loss() {
       engine::audio::TheAudio().SetExtraPaused(false);
     }
   }
-}
-
-void Memory_Error_Handler() {
-  TheScreen().visible_page().view().Clear();
-  Set_Palette(ThePalettes().game_palette());
-  TheMouse().ForceShow();
-  CCMessageBox().Process("Error - out of memory.", "Abort");
-
-  ShutDown();
-  exit(EXIT_FAILURE);
 }
 
 #define WINDOW_NAME "Command & Conquer"

@@ -1,7 +1,7 @@
 // Compiled-in messages for the build language: the few strings the game needs
 // before, or outside of, the CONQUER.ENG string table, such as startup
-// failures printed to the console and the out-of-memory dialog. The
-// localized texts keep the DOS code page bytes of the original files.
+// failures printed to the console. The localized texts keep the DOS code page
+// bytes of the original files.
 
 #ifndef CNC_RED_ALERT_RA_LANGUAGE_H_
 #define CNC_RED_ALERT_RA_LANGUAGE_H_
@@ -12,8 +12,6 @@
 #include "ra/config.h"
 
 struct LanguageText {
-  const char* memory_error;
-  const char* abort;
   const char* insufficient_disk;
   const char* setup_first;
   const char* invalid_option;
@@ -24,8 +22,6 @@ struct LanguageText {
 };
 
 inline constexpr LanguageText kEnglishText{
-    .memory_error = "Error - out of memory.",
-    .abort = "Abort",
     .insufficient_disk = "Insufficient Disk Space to run Red Alert.\n",
     .setup_first = "Run SETUP program first.\n",
     .invalid_option = "Invalid option switch.\n",
@@ -44,8 +40,6 @@ inline constexpr LanguageText kEnglishText{
 };
 
 inline constexpr LanguageText kGermanText{
-    .memory_error = "Fehler - Kein Speicher mehr.",
-    .abort = "Abbrechen",
     .insufficient_disk =
         "Nicht genug Festplattenplatz für Command & Conquer:AR.\n",
     .setup_first = "Bitte erst das SETUP-Programm starten.\n",
@@ -66,8 +60,6 @@ inline constexpr LanguageText kGermanText{
 };
 
 inline constexpr LanguageText kFrenchText{
-    .memory_error = "Erreur - Plus de mémoire.",
-    .abort = "Interrompre",
     .insufficient_disk =
         "Espace disque insuffisant pour lancer Command & Conquer.\n",
     .setup_first = "Lancez d'abord le programme de configuration SETUP.\n",
