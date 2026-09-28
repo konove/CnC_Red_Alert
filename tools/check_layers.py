@@ -10,8 +10,7 @@ src/base/ by its path (tools/engine_layout.py) and fails on:
 - a source file under src/engine/ or src/base/ outside the known folders;
 - an include of a folder the file's library may not see (the plan's
   "Dependency order"), or of src/ra, src/td, src/tools or src/testing;
-- an SDL header outside window/, audio/, video/, video/vqa/ and
-  platform/tick_clock.cc;
+- an SDL header outside window/, audio/, video/ and video/vqa/;
 - a quoted include written relative to the including file ("hsv.h") rather
   than to src/, which hides the folder it names, or a project include that
   names no file.
@@ -133,12 +132,7 @@ def include_errors(src_root: Path, path: str) -> list[str]:
     library = layout.library_of(folder)
     allowed = layout.allowed_libraries(library)
     test = layout.is_test(path)
-    name = path.rsplit("/", 1)[-1]
-    sdl_allowed = (
-        test
-        or library in layout.SDL_LIBRARIES
-        or f"{folder}/{name}" in layout.SDL_FILES
-    )
+    sdl_allowed = test or library in layout.SDL_LIBRARIES
     errors: list[str] = []
     text = (src_root / path).read_text(encoding="utf-8", errors="replace")
     for line, delimiter, included in includes(text):

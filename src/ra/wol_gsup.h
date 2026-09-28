@@ -30,6 +30,7 @@
 // class that would handle common input behavior and so forth (one that this
 // class could derive from) 	wasn't written 5 years ago, I don't know...
 
+#include <cstdint>
 #include <memory>
 
 #include "absl/base/attributes.h"
@@ -285,8 +286,8 @@ class WOL_GameSetupDialog {
   GAMEPARAMS GParamsLastSent{};  //	Used merely as a handy container for the
                                // vars I need to set.
 
-  DWORD dwTimeNextParamRefresh = 0;  //	Param changes are sent by host at
-                                 // certain interval.
+  // Param changes are sent by the host at a fixed interval.
+  int64_t dwTimeNextParamRefresh = 0;
 
   HousesType HousePrevious{HOUSE_NONE};
 
@@ -312,7 +313,7 @@ class WOL_GameSetupDialog {
   char szTriggerGameStartInfo[((WOL_NAME_LEN_MAX + 10) * 4) + 60]{};
 
   //	Tooltips...
-  DWORD timeToolTipAppear = 0;
+  int64_t timeToolTipAppear = 0;
   ToolTipClass* pToolTipHead{
       nullptr};  //	Head of list of ToolTips that parallels gadget list.
   ToolTipClass* pToolTipHitLast{

@@ -161,7 +161,7 @@ base/        → Vocabulary types and small value classes, shared by the engine,
                safe_string, tokenizer, number_parse (target `base`) [depends: abseil, magic_enum]
 engine/      → The shared libraries, one folder per domain (docs/ENGINE_FOLDERS_PLAN.md)
   platform/  → OS services: environment, time, sleep, memory, files on disk; win32/ holds the Win32
-               API emulation (target `engine_platform`; links SDL2 for the timer) [depends: base]
+               API emulation (target `engine_platform`) [depends: base]
   stream/    → ByteSink/ByteSource/ByteStream and their adapters: archive, memory/range streams,
                span/stream sinks and sources, tee, readline (target `engine_stream`)
                [depends: engine_platform]

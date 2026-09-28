@@ -19,6 +19,7 @@
 //	wol_chat.cpp
 //	ajw 7/8/98
 
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <string_view>
@@ -31,7 +32,6 @@
 #include "engine/platform/tick_clock.h"
 #include "engine/platform/timer.h"
 #include "engine/platform/win32/win32_com.h"
-#include "engine/platform/win32/win32_types.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "ra/audio.h"
@@ -317,7 +317,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   sendedit.Add_Tail(*commands);
 
   //	Tooltips...
-  DWORD timeToolTipAppear = 0;  //	When the pending tooltip is due.
+  int64_t timeToolTipAppear = 0;  //	When the pending tooltip is due.
   ToolTipClass* pToolTipHead =
       nullptr;  //	Head of list of ToolTips that parallels gadget list.
   ToolTipClass* pToolTipHitLast =

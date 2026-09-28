@@ -23,10 +23,9 @@ target_sources(engine_platform PUBLIC
         FILES ${ENGINE_PLATFORM_HEADERS}
 )
 
-find_package(SDL2 REQUIRED)
 target_link_libraries(engine_platform
         PUBLIC base absl::core_headers
-        PRIVATE SDL2::SDL2 absl::check absl::strings
+        PRIVATE absl::check absl::strings
 )
 
 # Tests

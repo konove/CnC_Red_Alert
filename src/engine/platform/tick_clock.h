@@ -28,7 +28,11 @@
 // The rate SystemTicks() counts at.
 inline constexpr int kSystemTicksPerSecond = 60;
 
-uint32_t Get_Time_Ms();
+// Returns real time in milliseconds, read from the same monotonic clock as
+// SystemTicks(). Like it, the zero point means nothing on its own; 64 bits
+// because that clock counts from boot, so 32 bits would wrap after 49 days of
+// machine uptime.
+int64_t Get_Time_Ms();
 
 // Returns real time in ticks of 1/60 second, read from a monotonic clock that
 // needs no setup. The zero point means nothing on its own: callers compare two

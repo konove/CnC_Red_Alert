@@ -1,12 +1,14 @@
 #include "engine/platform/tick_clock.h"
 
-#include <SDL_timer.h>
-
 #include <chrono>
 #include <cstdint>
 #include <ratio>
 
-uint32_t Get_Time_Ms() { return SDL_GetTicks(); }
+int64_t Get_Time_Ms() {
+  return std::chrono::duration_cast<std::chrono::milliseconds>(
+             std::chrono::steady_clock::now().time_since_epoch())
+      .count();
+}
 
 int64_t SystemTicks() {
   // Computed from the clock rather than counted by a timer thread, so there is

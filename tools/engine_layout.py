@@ -70,10 +70,9 @@ DEPENDS_ON = {
     "video": ("file", "audio", "video/vqa"),
 }
 
-# The libraries whose files may include SDL headers, and the single file
-# outside them that may. Everything else, gfx included, compiles without SDL.
+# The libraries whose files may include SDL headers. Everything else, gfx and
+# platform included, compiles without SDL.
 SDL_LIBRARIES = ("window", "audio", "video", "video/vqa")
-SDL_FILES = ("platform/tick_clock.cc",)
 
 # The suffixes of the files the checker handles. Anything else under
 # src/engine/ (CMakeLists.txt, notes) is not code and is not checked.

@@ -606,10 +606,10 @@ HRESULT WolapiObject::GetChatServer() {
     //		debugprint( "RequestServerList call failed\n" );
     return E_FAIL;
   }
-  const DWORD dwTimeLimit = Get_Time_Ms();  //	ajw My own extra timeout at one
-                                            // minute, in case wolapi chokes.
+  // ajw My own extra timeout at one minute, in case wolapi chokes.
+  const int64_t dwTimeLimit = Get_Time_Ms();
   //	debugprint( "Called RequestServerList...\n" );
-  DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
+  int64_t dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   TheKeyboard().Clear();  //	Set up for escape key checking.
   bool bCancel = false;
   hresPatchResults = 0;
@@ -697,8 +697,8 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
     return CHAT_E_CON_ERROR;
   }
 
-  const DWORD dwTimeStart = Get_Time_Ms();
-  DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = Get_Time_Ms();
+  int64_t dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   TheKeyboard().Clear();  //	Set up for escape key checking.
   bool bCancel = false;
   while (pChatSink->bRequestConnectionWait &&
@@ -757,9 +757,9 @@ void WolapiObject::Logout() {
     //		debugprint( "RequestLogout() call failed\n" );
   }
 
-  const DWORD dwTimePatience =
+  const int64_t dwTimePatience =
       Get_Time_Ms();  //	After 5 seconds we run out of patience and bail.
-  DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
+  int64_t dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestLogoutWait &&
          Get_Time_Ms() - dwTimePatience < 5000) {
     while (Get_Time_Ms() < dwTimeNextPump) {
@@ -794,8 +794,8 @@ bool WolapiObject::UpdateChannels(int iChannelType, CHANNELFILTER ChannelFilter,
     return false;
   }
   /*
-          DWORD dwTimeStart = Get_Time_Ms();
-          DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
+          int64_t dwTimeStart = Get_Time_Ms();
+          int64_t dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
           while( pChatSink->bRequestChannelListWait && Get_Time_Ms() -
      dwTimeStart < EMERGENCY_TIMEOUT )
           {
@@ -1021,8 +1021,8 @@ HRESULT WolapiObject::ChannelJoin(Channel* pChannelToJoin) {
   }
   pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
                                           // lists.
-  const DWORD dwTimeStart = Get_Time_Ms();
-  DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = Get_Time_Ms();
+  int64_t dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelJoinWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
@@ -1072,8 +1072,8 @@ bool WolapiObject::ChannelLeave() {
   }
   pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
                                           // lists.
-  const DWORD dwTimeStart = Get_Time_Ms();
-  DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = Get_Time_Ms();
+  int64_t dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelLeaveWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
@@ -1685,8 +1685,8 @@ bool WolapiObject::ChannelCreate(
   }
   pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
                                           // lists.
-  const DWORD dwTimeStart = Get_Time_Ms();
-  DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = Get_Time_Ms();
+  int64_t dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelCreateWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
@@ -1827,8 +1827,8 @@ HRESULT WolapiObject::Locate(const char* szUser) {
     //		debugprint( "RequestFind() call failed\n" );
     return 0;
   }
-  const DWORD dwTimeStart = Get_Time_Ms();
-  DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = Get_Time_Ms();
+  int64_t dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestFindWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
@@ -1871,8 +1871,8 @@ HRESULT WolapiObject::Page(const char* szUser, const char* szSend,
   if (!bWaitForResult) {
     return 0;
   }
-  const DWORD dwTimeStart = Get_Time_Ms();
-  DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = Get_Time_Ms();
+  int64_t dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestPageWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
@@ -2973,8 +2973,8 @@ bool WolapiObject::GetLobbyChannels() {
     return false;
   }
 
-  const DWORD dwTimeStart = Get_Time_Ms();
-  DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = Get_Time_Ms();
+  int64_t dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelListForLobbiesWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
@@ -3067,8 +3067,8 @@ bool WolapiObject::RequestGameStart() {
     return false;
   }
 
-  const DWORD dwTimeStart = Get_Time_Ms();
-  DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = Get_Time_Ms();
+  int64_t dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestGameStartWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {

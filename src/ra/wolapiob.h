@@ -299,8 +299,8 @@ class WolapiObject {
   bool bEnableNewAftermathUnits = false;  //	Used to pass game parameter back to init
                                   // only.
 
-  DWORD dwTimeNextWolapiPump;
-  DWORD dwTimeNextChannelUpdate{0};
+  int64_t dwTimeNextWolapiPump;
+  int64_t dwTimeNextChannelUpdate{0};
 
   DIBICONINFO DibIconInfos[NUMDIBICONS];
 

@@ -42,7 +42,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/random_seed.h"
-#include "engine/platform/win32/win32_types.h"
 #include "engine/window/keyboard.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/bigcheck.h"
@@ -549,7 +548,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   bProcess = true;       // process while true
   engine::window::KeyNumber input = KN_NONE;
 
-  DWORD timeWaitingToStartTimeout = 0;  //	Set when the wait begins.
+  int64_t timeWaitingToStartTimeout = 0;  //	Set when the wait begins.
 
   char szScenarioNameDisplay[300];
 
@@ -595,8 +594,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                                 // valid value until then.
   }
 
-  DWORD dwTimeNextPlayerPing = Get_Time_Ms() + PING_AND_DISPLAY_WAIT;
-  DWORD dwTimeNextPingDisplay =
+  int64_t dwTimeNextPlayerPing = Get_Time_Ms() + PING_AND_DISPLAY_WAIT;
+  int64_t dwTimeNextPingDisplay =
       dwTimeNextPlayerPing + 1500;  //	Stagger ping and ping display periods.
 
   //------------------------------------------------------------------------

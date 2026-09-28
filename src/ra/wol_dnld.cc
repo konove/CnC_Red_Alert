@@ -20,10 +20,10 @@
 //	ajw 10/12/98
 
 #include <algorithm>
+#include <cstdint>
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/tick_clock.h"
-#include "engine/platform/win32/win32_types.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "ra/config.h"
@@ -56,7 +56,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   // WOLAPI patch.
 
   bool bReturn = true;
-  DWORD dwTimeNextPump = Get_Time_Ms() + WOLAPIPUMPWAIT;
+  int64_t dwTimeNextPump = Get_Time_Ms() + WOLAPIPUMPWAIT;
 
   /*
   ** Dialog & button dimensions
