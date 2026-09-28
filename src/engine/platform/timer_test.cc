@@ -7,8 +7,8 @@
 
 #include "engine/platform/sleep.h"
 #include "engine/stream/archive.h"
-#include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
+#include "engine/stream/vector_sink.h"
 #include "gtest/gtest.h"
 
 namespace {
@@ -53,29 +53,19 @@ struct FakeTickSource {
 };
 int64_t FakeTickSource::now = 0;
 
-class RecordingSink : public ByteSink {
- public:
-  bool Write(std::span<const std::byte> data) override {
-    for (const std::byte byte : data) {
-      bytes.push_back(std::to_integer<uint8_t>(byte));
-    }
-    return true;
-  }
-  std::vector<uint8_t> bytes;
-};
-
 // Writes `subject`, advances the clock by `skew`, and reads it back into a
 // fresh object. The skew models the wall-clock gap between saving and
 // loading, which must not leak into the restored value.
 template <class T>
 T RoundTrip(T& subject, int64_t skew) {
-  RecordingSink sink;
+  std::vector<std::byte> bytes;
+  VectorSink sink(bytes);
   ArchiveWriter writer(sink);
   subject.Serialize(writer);
-  EXPECT_EQ(sink.bytes.size(), 9U);  // int64_t value + bool running
+  EXPECT_EQ(bytes.size(), 9U);  // int64_t value + bool running
 
   FakeTickSource::now += skew;
-  SpanSource source(std::as_bytes(std::span(sink.bytes)));
+  SpanSource source(bytes);
   ArchiveReader reader(source);
   T restored;
   restored.Serialize(reader);
@@ -87,10 +77,11 @@ T RoundTrip(T& subject, int64_t skew) {
 // written. Returns whether the reader accepted it.
 template <class T>
 bool LoadsRaw(T& subject, int64_t value, bool running) {
-  RecordingSink sink;
+  std::vector<std::byte> bytes;
+  VectorSink sink(bytes);
   ArchiveWriter writer(sink);
   writer(value, running);
-  SpanSource source(std::as_bytes(std::span(sink.bytes)));
+  SpanSource source(bytes);
   ArchiveReader reader(source);
   subject.Serialize(reader);
   return reader.ok();
@@ -167,10 +158,7 @@ TEST_F(TimerTest, StopwatchResetZeroesAndRuns) {
   EXPECT_EQ(watch.Elapsed(), 3);
 }
 
-class TimerSerializeTest : public ::testing::Test {
- protected:
-  void SetUp() override { FakeTickSource::now = 1000; }
-};
+using TimerSerializeTest = TimerTest;
 
 TEST_F(TimerSerializeTest, RunningTimerKeepsItsRemainingValue) {
   Timer<FakeTickSource> timer(50);
