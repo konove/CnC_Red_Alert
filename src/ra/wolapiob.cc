@@ -3339,7 +3339,7 @@ std::array<dib::Color, dib::kPaletteSize> CurrentScreenPalette() {
   // dib::RemapToPalette matches in, so the values go across unscaled.
   std::array<dib::Color, dib::kPaletteSize> Palette = {};
   for (int i = 0; i != dib::kPaletteSize; i++) {
-    const PaletteColor& Entry = PaletteClass::CurrentPalette.at(i);
+    const engine::gfx::PaletteColor& Entry = PaletteClass::CurrentPalette.at(i);
     dib::Color& color = Palette.at(base::ToSize(i));
     color.red = static_cast<std::uint8_t>(Entry.red());
     color.green = static_cast<std::uint8_t>(Entry.green());

@@ -7,6 +7,7 @@
 #include "engine/gfx/rgb.h"
 #include "gtest/gtest.h"
 
+namespace engine::gfx {
 namespace {
 
 std::array<int, 3> RgbToHsv(int r, int g, int b) {
@@ -71,3 +72,4 @@ TEST(HsvColorTest, PrimariesConvertToFullGuns) {
 }
 
 }  // namespace
+}  // namespace engine::gfx

@@ -26,6 +26,8 @@
 #include "base/hsv.h"
 #include "engine/gfx/rgb.h"
 
+namespace engine::gfx {
+
 HsvColor::operator PaletteColor() const {
   const base::Rgb8 color = base::HsvToRgb8(hue(), saturation(), value());
 
@@ -120,3 +122,5 @@ Rgb6 HsvToRgb6(const HsvColor& hsv) {
           .green = base::DivideWithRound(color.green * kMaxGun, kMaxComponent),
           .blue = base::DivideWithRound(color.blue * kMaxGun, kMaxComponent)};
 }
+
+}  // namespace engine::gfx

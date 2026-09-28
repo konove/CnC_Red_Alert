@@ -102,7 +102,7 @@ void PaletteClass::Partial_Adjust(int /*unused*/, PaletteClass& /*unused*/,
   absl::PrintF("PaletteClass::%s\n", __func__);
 }
 
-int PaletteClass::Closest_Color(const PaletteColor& col) const {
+int PaletteClass::Closest_Color(const engine::gfx::PaletteColor& col) const {
   int index = -1;
   int diff = 256 * 3;
 

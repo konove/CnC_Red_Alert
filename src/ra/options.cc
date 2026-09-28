@@ -488,7 +488,7 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
       **	Convert the working palette entry into an HSV format for
       **	manipulation.
       */
-      const HsvColor hsv = oldpal.at(index).ToHsv();
+      const engine::gfx::HsvColor hsv = oldpal.at(index).ToHsv();
 
       /*
       **	Adjust contrast by moving the value toward the center according
@@ -511,9 +511,9 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
       **	Replace the working palette entry according to the newly
       *calculated *	hue, saturation, and value.
       */
-      newpal.at(index) =
-          HsvColor(static_cast<uint8_t>(h), static_cast<uint8_t>(s),
-                   static_cast<uint8_t>(v));
+      newpal.at(index) = engine::gfx::HsvColor(static_cast<uint8_t>(h),
+                                               static_cast<uint8_t>(s),
+                                               static_cast<uint8_t>(v));
     }
   }
 }

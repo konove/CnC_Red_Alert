@@ -24,6 +24,8 @@
 
 #include "engine/gfx/hsv.h"
 
+namespace engine::gfx {
+
 PaletteColor PaletteColor::FadedToward(const int ratio,
                                        const PaletteColor& target) const {
   // The original masked the ratio with 0xFF, so a fade overshooting to 256
@@ -105,3 +107,5 @@ HsvColor PaletteColor::ToHsv() const {
   return {static_cast<uint8_t>(hue), static_cast<uint8_t>(saturation),
           static_cast<uint8_t>(value)};
 }
+
+}  // namespace engine::gfx

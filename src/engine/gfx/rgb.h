@@ -22,6 +22,8 @@
 
 #include <cstdint>
 
+namespace engine::gfx {
+
 class HsvColor;
 
 // One palette color, held at the VGA DAC's 6 bits per gun (0..63).
@@ -32,8 +34,9 @@ class HsvColor;
 // one-byte members are the palette file format.
 //
 // Example:
-//   constexpr PaletteColor kEmber(255, 80, 80);
-//   const PaletteColor dimmed = kEmber.FadedToward(128, kBlackColor);
+//   constexpr engine::gfx::PaletteColor kEmber(255, 80, 80);
+//   const engine::gfx::PaletteColor dimmed =
+//       kEmber.FadedToward(128, engine::gfx::kBlackColor);
 class PaletteColor {
  public:
   // Black.
@@ -93,5 +96,7 @@ static_assert(sizeof(PaletteColor) == 3);
 
 // Black, the target of fades to black.
 inline constexpr PaletteColor kBlackColor(0, 0, 0);
+
+}  // namespace engine::gfx
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_RGB_H_

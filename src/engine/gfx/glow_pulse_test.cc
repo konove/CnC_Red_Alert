@@ -59,9 +59,10 @@ TEST_F(GlowPulseTest, ApplyDimsTowardBlackByTheCurrentFade) {
   GlowPulse<FakeTick> pulse(kPeriod);
   ASSERT_TRUE(pulse.Update());
 
-  constexpr PaletteColor kWhite(255, 255, 255);
-  const PaletteColor dimmed = pulse.Apply(kWhite);
-  const PaletteColor expected = kWhite.FadedToward(pulse.fade(), kBlackColor);
+  constexpr engine::gfx::PaletteColor kWhite(255, 255, 255);
+  const engine::gfx::PaletteColor dimmed = pulse.Apply(kWhite);
+  const engine::gfx::PaletteColor expected =
+      kWhite.FadedToward(pulse.fade(), engine::gfx::kBlackColor);
   EXPECT_EQ(dimmed.red(), expected.red());
   EXPECT_LT(dimmed.red(), kWhite.red());
 }

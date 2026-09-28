@@ -25,6 +25,8 @@
 
 #include <cstdint>
 
+namespace engine::gfx {
+
 class PaletteColor;
 
 // A color as hue, saturation and value, each in 0..255.
@@ -38,8 +40,8 @@ class PaletteColor;
 // PaletteColor::ToHsv(), scales the components and assigns the result back.
 //
 // Example:
-//   const HsvColor hsv = palette.at(index).ToHsv();
-//   palette.at(index) = HsvColor(hsv.hue(), 0, hsv.value());
+//   const engine::gfx::HsvColor hsv = palette.at(index).ToHsv();
+//   palette.at(index) = engine::gfx::HsvColor(hsv.hue(), 0, hsv.value());
 class HsvColor {
  public:
   HsvColor(uint8_t hue, uint8_t saturation, uint8_t value) noexcept
@@ -83,5 +85,7 @@ struct Rgb6 {
 
 // Returns the 6-bit guns of 'hsv'.
 [[nodiscard]] Rgb6 HsvToRgb6(const HsvColor& hsv);
+
+}  // namespace engine::gfx
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_HSV_H_

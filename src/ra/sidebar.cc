@@ -1178,7 +1178,7 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     */
     PaletteClass pal = ThePalettes().original_palette();
     std::ranges::fill(pal.colors().subspan(kCycleColorStart, kCycleColorCount),
-                      PaletteColor(0x3f, 0x3f, 0x3f));
+                      engine::gfx::PaletteColor(0x3f, 0x3f, 0x3f));
     Build_Translucent_Table(pal, base::Suffix(ClockCols, 0), 1,
                             ClockTranslucentTable);
 

@@ -398,7 +398,7 @@ std::span<unsigned char> Make_Fading_Table(const PaletteClass& palette,
       *remapped *	to in the special remap range.
       */
       // Try to match this color.
-      const PaletteColor trycolor =
+      const engine::gfx::PaletteColor trycolor =
           palette.at(index).FadedToward(frac, palette.at(color));
 
       /*
@@ -437,7 +437,7 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
         *remapped *	to in the special remap range.
         */
         // Try to match this color.
-        const PaletteColor trycolor =
+        const engine::gfx::PaletteColor trycolor =
             palette.at(index).FadedToward(frac, palette.at(color));
 
         /*

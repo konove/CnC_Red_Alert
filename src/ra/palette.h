@@ -14,8 +14,8 @@ class PaletteClass {
   // Fills every entry with `col`. Implicit, so that a color converts where a
   // palette is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  PaletteClass(const PaletteColor& col) noexcept {
-    for (PaletteColor& entry : data_) {
+  PaletteClass(const engine::gfx::PaletteColor& col) noexcept {
+    for (engine::gfx::PaletteColor& entry : data_) {
       entry = col;
     }
   }
@@ -37,20 +37,22 @@ class PaletteClass {
   static void Partial_Adjust(int /*unused*/, PaletteClass& /*unused*/,
                              char* /*unused*/);
 
-  [[nodiscard]] int Closest_Color(const PaletteColor& /*col*/) const;
+  [[nodiscard]] int Closest_Color(
+      const engine::gfx::PaletteColor& /*col*/) const;
 
   // Returns a palette entry; indices outside [0, 256) fail in every build.
-  PaletteColor& at(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  engine::gfx::PaletteColor& at(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return base::At(data_, index);
   }
-  [[nodiscard]] const PaletteColor& at(int index) const
+  [[nodiscard]] const engine::gfx::PaletteColor& at(int index) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return base::At(data_, index);
   }
-  PaletteColor& operator[](int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  engine::gfx::PaletteColor& operator[](int index)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(index);
   }
-  const PaletteColor& operator[](int index) const
+  const engine::gfx::PaletteColor& operator[](int index) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(index);
   }
@@ -65,12 +67,12 @@ class PaletteClass {
   static const int COLOR_COUNT = 256;
 
   // Bounded views retain the number of colors for bulk palette operations.
-  [[nodiscard]] std::span<PaletteColor, COLOR_COUNT> colors()
+  [[nodiscard]] std::span<engine::gfx::PaletteColor, COLOR_COUNT> colors()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return data_;
   }
-  [[nodiscard]] std::span<const PaletteColor, COLOR_COUNT> colors() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  [[nodiscard]] std::span<const engine::gfx::PaletteColor, COLOR_COUNT> colors()
+      const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return data_;
   }
 
@@ -87,7 +89,7 @@ class PaletteClass {
  private:
   static inline bool fades_disabled_ = false;
 
-  PaletteColor data_[COLOR_COUNT];
+  engine::gfx::PaletteColor data_[COLOR_COUNT];
 };
 
 void Set_Palette(std::span<const unsigned char> palette);

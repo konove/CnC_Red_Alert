@@ -73,10 +73,11 @@ class Palettes {
   PaletteClass game_palette_;
   PaletteClass original_palette_;
   PaletteClass title_palette_;
-  PaletteClass black_palette_{PaletteColor(0, 0, 0)};
-  PaletteClass white_palette_{PaletteColor(PaletteColor::kMaxComponent,
-                                           PaletteColor::kMaxComponent,
-                                           PaletteColor::kMaxComponent)};
+  PaletteClass black_palette_{engine::gfx::PaletteColor(0, 0, 0)};
+  PaletteClass white_palette_{
+      engine::gfx::PaletteColor(engine::gfx::PaletteColor::kMaxComponent,
+                                engine::gfx::PaletteColor::kMaxComponent,
+                                engine::gfx::PaletteColor::kMaxComponent)};
   base::EnumArray<PlayerColorType, RemapControlType> color_remaps_{};
   RemapControlType metal_scheme_{};
   RemapControlType grey_scheme_{};

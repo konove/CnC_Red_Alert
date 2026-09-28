@@ -2,6 +2,7 @@
 
 #include "gtest/gtest.h"
 
+namespace engine::gfx {
 namespace {
 
 constexpr PaletteColor kOrange(252, 128, 0);
@@ -33,3 +34,4 @@ TEST(PaletteColorFadedTowardTest, LeavesTheSourceUntouched) {
 }
 
 }  // namespace
+}  // namespace engine::gfx
