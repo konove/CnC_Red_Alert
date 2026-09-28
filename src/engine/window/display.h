@@ -12,6 +12,7 @@
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "engine/gfx/pixel_surface.h"
+#include "engine/window/display_client.h"
 
 namespace engine::window {
 
@@ -26,6 +27,10 @@ namespace engine::window {
 // PresentScaledFrame() shows its frames stretched to the window until the
 // game draws again.
 //
+// It also runs the SDL event loop the games pump from wherever they wait:
+// PumpEvents() presents the frames the redraw timer asks for and hands every
+// other event to the game's DisplayClient.
+//
 // Constructing a Display opens nothing: Init() creates the window once the
 // configured video mode is known, and SetVideoMode() the surface. A test
 // builds one and either leaves it closed or adopts a window and renderer it
@@ -39,9 +44,13 @@ namespace engine::window {
 //   display.EndFrame();
 class Display : public PixelSurface {
  public:
+  // A Display whose event loop drops the game's events. For tests.
   Display();
-  // Adopts an SDL_Window and SDL_Renderer the caller made and keeps owning.
-  // For tests that need a renderer without a game window.
+  // A Display whose event loop hands the game's events to `client`.
+  explicit Display(DisplayClient& client ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  // Adopts an SDL_Window and SDL_Renderer the caller made and keeps owning,
+  // and drops the game's events. For tests that need a renderer without a
+  // game window.
   Display(void* window ABSL_ATTRIBUTE_LIFETIME_BOUND,
           void* renderer ABSL_ATTRIBUTE_LIFETIME_BOUND);
   ~Display() override;
@@ -116,12 +125,20 @@ class Display : public PixelSurface {
   // which armed the redraw timer is presented even if nothing else draws.
   // Called from an SDL timer thread.
   void PostRedrawEvent();
-  // Whether an event the loop pulled is that redraw event.
-  [[nodiscard]] bool IsRedrawEvent(uint32_t event_type) const;
 
   // Whether the redraw timer is armed, that is whether drawing is waiting in
   // the surface to be presented.
   [[nodiscard]] bool redraw_pending() const { return redraw_timer_ != 0; }
+
+  // Drains SDL's event queue: runs the client's Pump(), then ends the frame
+  // on each redraw event and passes every other event to the client's
+  // HandleEvent(). Returns once the queue is empty; it never waits for an
+  // event. Works before Init(), with no window to post events.
+  //
+  // It is re-entrant. Ending the frame presents, and Present() pumps again so
+  // the game's wait-for-input loops keep answering, so a redraw event runs a
+  // nested loop that drains the rest of the queue.
+  void PumpEvents();
 
   // Brings the window back from minimized and raises it to the front.
   void Restore();
@@ -157,6 +174,9 @@ class Display : public PixelSurface {
   // Converts scaled_frame_ to RGBA with the current palette and uploads it to
   // scaled_frame_texture_. Returns false if SDL refused the texture.
   bool UploadScaledFrame();
+
+  // Where PumpEvents() sends the game's events; never null.
+  DisplayClient* client_;
 
   // SDL types, held as void* so that this header pulls in no SDL headers.
   void* window_ = nullptr;    // SDL_Window*, the program's one window

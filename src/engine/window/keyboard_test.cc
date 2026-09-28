@@ -8,14 +8,9 @@
 #include <SDL_scancode.h>
 #include <SDL_stdinc.h>
 
-#include "engine/window/event_pump.h"
 #include "gtest/gtest.h"
 
 namespace engine::window {
-
-// The event pump keyboard.cc calls out to. Stubbing it keeps the buffer
-// semantics under test deterministic and free of a real event pump.
-void PumpEvents() {}
 
 namespace {
 

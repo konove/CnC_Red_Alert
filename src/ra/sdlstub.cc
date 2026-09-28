@@ -8,7 +8,6 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/net/net_select.h"
 #include "engine/window/display.h"
-#include "engine/window/event_pump.h"
 #include "engine/window/hardware_cursor.h"
 #include "ra/config.h"
 #include "ra/game_state.h"
@@ -19,7 +18,7 @@
 
 void Check_For_Focus_Loss() {
   if (!TheGameState().in_focus()) {
-    engine::window::PumpEvents();
+    engine::window::TheDisplay().PumpEvents();
     if (TheGameState().in_focus()) {
       engine::audio::TheAudio().SetExtraPaused(false);
     }
@@ -35,18 +34,14 @@ static constexpr const char* kWindowName = [] {
   return "Red Alert";
 }();
 
-static void SDL_Event_Handler(const SDL_Event& event);
-
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
   engine::window::TheDisplay().Init(kWindowName, width, height);
-  engine::window::SetEventHandler(&SDL_Event_Handler);
-  // Replaces WSAAsyncSelect, which would send through the Windows event
-  // loop.
-  engine::window::SetPumpHandler(&Socket_Select);
 }
 
-static void SDL_Event_Handler(const SDL_Event& event) {
+void WindowEvents::Pump() { Socket_Select(); }
+
+void WindowEvents::HandleEvent(const SDL_Event& event) {
   if (TheKeyboard().HandleEvent(&event)) {
     return;
   }

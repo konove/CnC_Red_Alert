@@ -5,6 +5,8 @@
 
 #include <span>
 
+#include "engine/window/display_client.h"
+
 class PixelView;
 
 // Writes a line to the platform's debug output.
@@ -13,6 +15,13 @@ void CCDebugString(const char* string);
 // Pumps the event queue while the window has no focus, so the game does not
 // run on while it is in the background.
 void Check_For_Focus_Loss();
+
+// Handles what the window's event loop polls: keyboard, mouse, focus and
+// quit events. Game owns the one instance and hands it to its Display.
+class WindowEvents final : public engine::window::DisplayClient {
+ public:
+  void HandleEvent(const SDL_Event& event) override;
+};
 
 // Opens the game's window.
 void Create_Main_Window(void* instance, int command_show, int width,

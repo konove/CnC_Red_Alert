@@ -25,6 +25,7 @@
 #include "ra/theme.h"
 #include "ra/type_heaps.h"
 #include "ra/version.h"
+#include "ra/winstub.h"
 #include "ra/world.h"
 
 // Owns the game's subsystems and so fixes the order they are built and torn
@@ -66,8 +67,10 @@ class Game {
       startup_options_};
   GameClock game_clock_;
   base::Installed<GameClock>::Scope game_clock_scope_{game_clock_};
+  // Before the Display, which hands it the window's events.
+  WindowEvents window_events_;
   // Before Screen, which attaches its visible page to the window.
-  engine::window::Display display_;
+  engine::window::Display display_{window_events_};
   base::Installed<engine::window::Display>::Scope display_scope_{display_};
   Screen screen_;
   base::Installed<Screen>::Scope screen_scope_{screen_};

@@ -87,18 +87,16 @@
     `pitch * h` surface-bytes span (`Display::Lock()`, `hardware_cursor.cc`) repeat with their
     NOLINTs; the two-argument spans still print `-Wunsafe-buffer-usage-in-container` compiler
     warnings, since the NOLINT only silences clang-tidy
-- Take the redraw special case out of `engine::window::PumpEvents()`
-  - `PumpEvents()` ends the frame on `Display`'s redraw event, and `Display::Present()` pumps events
-    again (`engine/window/display.cc:191`, `:218`), so `event_pump` and `Display` depend on each
-    other and a redraw event runs a nested pump
+- Stop a redraw event running a nested event pump
+  - `Display::PumpEvents()` ends the frame on the redraw event, and `Display::Present()` pumps
+    events again, so a redraw event drains the rest of the queue in a nested loop
   - Either have the redraw timer set an atomic flag that `Display` checks itself (~15-20 lines;
-    removes `redraw_event_`, `IsRedrawEvent()` and `PostRedrawEvent()`), or stop `Present()` pumping
-    (2 lines; first check that no loop that only presents relies on it to see `SDL_QUIT` or focus
-    events)
+    removes `redraw_event_` and `PostRedrawEvent()`), or stop `Present()` pumping (2 lines; first
+    check that no loop that only presents relies on it to see `SDL_QUIT` or focus events)
 - Share one SDL event handler between the games
-  - `SDL_Event_Handler` in `ra/sdlstub.cc` and `td/sdlstub.cc` are near-identical (~35 lines:
-    keyboard, mouse motion, focus, resize, quit); one engine handler with focus and quit callbacks
-    would replace both
+  - `WindowEvents::HandleEvent()` in `ra/sdlstub.cc` and `td/sdlstub.cc` are near-identical (~35
+    lines: keyboard, mouse motion, focus, resize, quit); one engine `DisplayClient` with focus and
+    quit callbacks would replace both
 - Make `engine::window::KeyBuffer::HandleEvent()` take `const SDL_Event&`
   - The games' event handlers now receive a reference and turn it back into a pointer for it
 - Move `engine/platform/file_system.h` into `engine::platform`
@@ -106,9 +104,6 @@
 - Run `/fix-ide-issues` on `engine/platform/timer.h` and `timer.cc`
   - Stage 7 of the `/modernize-file` run (`0e463fee..eed3a0d2`) was skipped: CLion's
     `getDiagnostics` timed out on every file
-- Run `/fix-ide-issues` on `engine/window/event_pump.cc` and `event_pump_test.cc`
-  - Stage 7 of the `/modernize-file` run (`09717739..13c11acb`) was skipped: CLion's
-    `getDiagnostics` timed out on both (`event_pump.h` came back clean)
 - Settle on one spelling of "the countdown has time left"
   - `HasTimeLeft()` (35 sites), `!IsFinished()` (4: `td/infantry.cc:1357`, `td/team.cc:277`,
     `td/drive.cc:894`, `engine/gfx/glow_pulse.h:40`) and `Remaining()` compared with 0 (5:
@@ -131,7 +126,7 @@
 - Move `keyframe_test` from `engine/gfx/` to `src/ra/`
   - It compiles `ra/2keyfram.cc` and includes `ra/keyframe.h`, so it tests game code; it is the only
     test that relies on `tools/check_layers.py` exempting tests from the no-games rule
-- Make `event_pump_test` (`engine/window/event_pump_test.cc`) check `SDL_Init` and pair it with
+- Make `DisplayEventsTest` (`engine/window/display_test.cc`) check `SDL_Init` and pair it with
   `SDL_Quit`
   - A failed init now shows up as a confusing "no events seen" failure
 - Unit-test the cursor shape decoding in `engine/window/hardware_cursor.cc`
@@ -162,9 +157,9 @@
 ## Debugging
 
 - Add a Dear ImGui debug overlay to replace the deleted monochrome debug screen
-  - `engine/window` presents through `SDL_Renderer` (`engine/window/event_pump.cc`,
-    `engine/window/display.cc`), so the `imgui_impl_sdl2` + `imgui_impl_sdlrenderer2` backends drop
-    in: feed `SDL_PollEvent` and draw before `SDL_RenderPresent`
+  - `engine/window` presents through `SDL_Renderer` (`engine/window/display.cc`), so the
+    `imgui_impl_sdl2` + `imgui_impl_sdlrenderer2` backends drop in: feed `SDL_PollEvent` and draw
+    before `SDL_RenderPresent`
   - A cheat-key window would show what the mono pages used to: selected object, house, logic/FPS and
     network queue state, read through accessors instead of a `Debug_Dump` hierarchy
 - RA's `BStart`/`BEnd` benchmark instrumentation is write-only since `Benchmarks()` went away

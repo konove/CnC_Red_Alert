@@ -1,9 +1,11 @@
 // Tests for Display: the paletted surface it lends the window page, the
-// palette it shows it through, and the stretched movie frames it presents
-// instead of it.
+// palette it shows it through, the stretched movie frames it presents
+// instead of it, and the event loop that hands events to its client.
 
 #include "engine/window/display.h"
 
+#include <SDL.h>
+#include <SDL_events.h>
 #include <SDL_pixels.h>
 #include <SDL_render.h>
 #include <SDL_stdinc.h>
@@ -21,6 +23,7 @@
 #include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/pixel_surface.h"
+#include "engine/window/display_client.h"
 #include "gtest/gtest.h"
 
 namespace engine::window {
@@ -223,6 +226,58 @@ TEST_F(DisplayTest, RejectsFramesThatDoNotMatchTheirSize) {
   display().EndFrame();
 
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 0, 0}));
+}
+
+// Counts what the event loop hands it.
+class RecordingClient final : public DisplayClient {
+ public:
+  void HandleEvent(const SDL_Event& event) override {
+    ++events_seen;
+    last_event_type = event.type;
+  }
+  void Pump() override { ++pumps_seen; }
+
+  int events_seen = 0;
+  uint32_t last_event_type = 0;
+  int pumps_seen = 0;
+};
+
+void PushQuitEvent() {
+  SDL_Event event{};
+  event.type = SDL_QUIT;
+  SDL_PushEvent(&event);
+}
+
+// Pumps a Display that has no window: the loop needs only SDL's event queue.
+class DisplayEventsTest : public ::testing::Test {
+ protected:
+  void SetUp() override { SDL_Init(SDL_INIT_EVENTS); }
+
+  RecordingClient client_;
+};
+
+TEST_F(DisplayEventsTest, HandsEventsToTheClient) {
+  Display display(client_);
+  PushQuitEvent();
+  display.PumpEvents();
+  EXPECT_EQ(client_.events_seen, 1);
+  EXPECT_EQ(client_.last_event_type, static_cast<uint32_t>(SDL_QUIT));
+}
+
+TEST_F(DisplayEventsTest, PumpsTheClientOncePerPass) {
+  Display display(client_);
+  display.PumpEvents();
+  display.PumpEvents();
+  EXPECT_EQ(client_.pumps_seen, 2);
+}
+
+TEST_F(DisplayEventsTest, DrainsTheQueueWithoutAClient) {
+  Display display;
+  PushQuitEvent();
+  display.PumpEvents();
+  EXPECT_EQ(
+      SDL_PeepEvents(nullptr, 0, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT),
+      0);
 }
 
 }  // namespace

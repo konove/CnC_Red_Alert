@@ -10,7 +10,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
-#include "engine/window/event_pump.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "td/game_state.h"
@@ -25,7 +24,7 @@ void CCDebugString(const char* /*string*/) {}
 
 void Check_For_Focus_Loss() {
   if (!TheGameState().in_focus()) {
-    engine::window::PumpEvents();
+    engine::window::TheDisplay().PumpEvents();
     if (TheGameState().in_focus()) {
       engine::audio::TheAudio().SetExtraPaused(false);
     }
@@ -34,15 +33,12 @@ void Check_For_Focus_Loss() {
 
 #define WINDOW_NAME "Command & Conquer"
 
-static void SDL_Event_Handler(const SDL_Event& event);
-
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
   engine::window::TheDisplay().Init(WINDOW_NAME, width, height);
-  engine::window::SetEventHandler(&SDL_Event_Handler);
 }
 
-static void SDL_Event_Handler(const SDL_Event& event) {
+void WindowEvents::HandleEvent(const SDL_Event& event) {
   if (TheKeyboard().HandleEvent(&event)) {
     return;
   }

@@ -24,7 +24,11 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "engine/gfx/pixel_surface.h"
-#include "engine/window/event_pump.h"
+#include "engine/window/display_client.h"
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#endif
 
 namespace engine::window {
 
@@ -47,12 +51,27 @@ Uint32 PostRedraw(Uint32 /*interval*/, void* /*param*/) {
   return 0;
 }
 
+// The client of a Display built without one: it drops every event.
+class NoClient final : public DisplayClient {
+ public:
+  void HandleEvent(const SDL_Event& /*event*/) override {}
+};
+
+DisplayClient& DroppingClient() {
+  static NoClient client;
+  return client;
+}
+
 }  // namespace
 
-Display::Display() = default;
+DisplayClient::~DisplayClient() = default;
+
+Display::Display() : client_(&DroppingClient()) {}
+
+Display::Display(DisplayClient& client) : client_(&client) {}
 
 Display::Display(void* window, void* renderer)
-    : window_(window), renderer_(renderer) {}
+    : client_(&DroppingClient()), window_(window), renderer_(renderer) {}
 
 Display::~Display() {
   // Before the renderer goes: the textures belong to it.
@@ -390,8 +409,25 @@ void Display::PostRedrawEvent() {
   SDL_PushEvent(&event);
 }
 
-bool Display::IsRedrawEvent(uint32_t event_type) const {
-  return event_type == redraw_event_;
+void Display::PumpEvents() {
+#ifdef __EMSCRIPTEN__
+  // The games wait for input by spinning on this loop, and the browser only
+  // delivers input while it has control, so yield to it on every pass.
+  emscripten_sleep(0);
+#endif
+
+  client_->Pump();
+
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
+    // PostRedraw() posts this from its timer thread when drawing has waited in
+    // the surface long enough; the game never sees it.
+    if (redraw_event_ != 0 && event.type == redraw_event_) {
+      EndFrame();
+      continue;
+    }
+    client_->HandleEvent(event);
+  }
 }
 
 void Display::ArmRedrawTimer() {

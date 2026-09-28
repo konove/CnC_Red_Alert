@@ -11,7 +11,7 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
-#include "engine/window/event_pump.h"
+#include "engine/window/display.h"
 
 namespace engine::window {
 
@@ -149,7 +149,9 @@ constexpr uint32_t kHotkeyModifierBits =
 InputEvent KeyBuffer::Peek() {
   // Pumping here is what lets the games' "wait for a key" loops, which only
   // call Peek(), ever see new input.
-  PumpEvents();
+  if (HasDisplay()) {
+    TheDisplay().PumpEvents();
+  }
 
   if (head_ == tail_) {
     return {};

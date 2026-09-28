@@ -301,8 +301,9 @@ struct InputEvent {
 class KeyBuffer {
  public:
   // Returns the event at the head of the buffer without removing it, or an
-  // empty event when nothing is pending. Also pumps the SDL event loop, so
-  // callers that only need that side effect may discard the result.
+  // empty event when nothing is pending. Also pumps the installed Display's
+  // event loop, so callers that only need that side effect may discard the
+  // result.
   InputEvent Peek();
 
   // Removes and returns the event at the head of the buffer, pumping SDL

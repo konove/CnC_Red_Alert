@@ -36,14 +36,14 @@ optimize_in_debug(display.cc)
 include(Testing)
 add_gtest(
         NAME engine_window_test
-        SOURCES display_test.cc hardware_cursor_test.cc event_pump_test.cc
+        SOURCES display_test.cc hardware_cursor_test.cc
         LIBS engine_window SDL2::SDL2
 )
 
-# Compiles keyboard.cc directly and stubs the event pump, so the key buffer
-# can be tested without linking the event loop or the mouse cursor code.
+# Installs no Display, so KeyBuffer::Peek() pumps no events and the key
+# buffer is tested on what the test puts in it.
 add_gtest(
         NAME engine_window_keyboard_test
-        SOURCES keyboard_test.cc keyboard.cc
-        LIBS base SDL2::SDL2 absl::strings absl::check absl::log
+        SOURCES keyboard_test.cc
+        LIBS engine_window SDL2::SDL2
 )
