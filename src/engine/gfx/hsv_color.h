@@ -41,20 +41,18 @@ class PaletteColor;
 //
 // Example:
 //   const engine::gfx::HsvColor hsv = palette.at(index).ToHsv();
-//   palette.at(index) = engine::gfx::HsvColor(hsv.hue(), 0, hsv.value());
+//   palette.at(index) =
+//       engine::gfx::HsvColor(hsv.hue(), 0, hsv.value()).ToPaletteColor();
 class HsvColor {
  public:
-  HsvColor(uint8_t hue, uint8_t saturation, uint8_t value) noexcept
+  HsvColor(const uint8_t hue, const uint8_t saturation,
+           const uint8_t value) noexcept
       : hue_(hue), saturation_(saturation), value_(value) {}
 
-  // Returns the RGB color that most closely matches this one. The conversion
-  // truncates each gun to the 6 bits PaletteColor keeps, so ToHsv() followed by
-  // this conversion can move a gun down by a step or two.
-  //
-  // Implicit so the options dialog can assign an HSV color straight into a
-  // palette entry.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator PaletteColor() const;
+  // Returns the palette color that most closely matches this one. The
+  // conversion truncates each gun to the 6 bits PaletteColor keeps, so ToHsv()
+  // followed by this can move a gun down by a step or two.
+  [[nodiscard]] PaletteColor ToPaletteColor() const;
 
   [[nodiscard]] int hue() const { return hue_; }
   [[nodiscard]] int saturation() const { return saturation_; }
@@ -67,10 +65,10 @@ class HsvColor {
 };
 
 // HSV/RGB conversions for colors stored as VGA 6-bit guns (0..63). Unlike
-// HsvColor's conversion to PaletteColor, both directions round rather than
-// truncate, so a round trip moves a gun by at most one step. Only Tiberian
-// Dawn's options dialog uses these; it keeps its palette as raw bytes rather
-// than PaletteColor.
+// HsvColor::ToPaletteColor(), both directions round rather than truncate, so a
+// round trip moves a gun by at most one step. Only Tiberian Dawn's options
+// dialog uses these; it keeps its palette as raw bytes rather than
+// PaletteColor.
 
 // An RGB color as three VGA 6-bit guns, each 0..63.
 struct Rgb6 {

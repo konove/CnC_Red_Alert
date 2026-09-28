@@ -513,7 +513,8 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
       */
       newpal.at(index) = engine::gfx::HsvColor(static_cast<uint8_t>(h),
                                                static_cast<uint8_t>(s),
-                                               static_cast<uint8_t>(v));
+                                               static_cast<uint8_t>(v))
+                             .ToPaletteColor();
     }
   }
 }

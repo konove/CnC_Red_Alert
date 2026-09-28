@@ -10,16 +10,16 @@
 namespace engine::gfx {
 namespace {
 
-std::array<int, 3> RgbToHsv(int r, int g, int b) {
+std::array<int, 3> RgbToHsv(const int r, const int g, const int b) {
   const HsvColor hsv = Rgb6ToHsv(r, g, b);
   return {hsv.hue(), hsv.saturation(), hsv.value()};
 }
 
-std::array<int, 3> HsvToRgb(int h, int s, int v) {
-  const Rgb6 rgb =
+std::array<int, 3> HsvToRgb(const int h, const int s, const int v) {
+  const auto [red, green, blue] =
       HsvToRgb6(HsvColor(static_cast<uint8_t>(h), static_cast<uint8_t>(s),
                          static_cast<uint8_t>(v)));
-  return {rgb.red, rgb.green, rgb.blue};
+  return {red, green, blue};
 }
 
 // Pinned against the unsigned implementation these replaced; Tiberian
@@ -61,11 +61,11 @@ TEST(HsvToRgb6Test, RoundTripIsWithinOneStep) {
 }
 
 TEST(HsvColorTest, PrimariesConvertToFullGuns) {
-  const PaletteColor red = HsvColor(0, 255, 255);
+  const PaletteColor red = HsvColor(0, 255, 255).ToPaletteColor();
   EXPECT_EQ(red.red(), 252);
   EXPECT_EQ(red.green(), 0);
   EXPECT_EQ(red.blue(), 0);
-  const PaletteColor blue = HsvColor(170, 255, 255);
+  const PaletteColor blue = HsvColor(170, 255, 255).ToPaletteColor();
   EXPECT_EQ(blue.red(), 0);
   EXPECT_EQ(blue.green(), 0);
   EXPECT_EQ(blue.blue(), 252);

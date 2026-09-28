@@ -16,7 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// HsvColor's conversion to RGB and Tiberian Dawn's 6-bit HSV/RGB conversions.
+// HsvColor's conversion to PaletteColor and Tiberian Dawn's 6-bit HSV/RGB
+// conversions.
 
 #include "engine/gfx/hsv_color.h"
 
@@ -28,7 +29,7 @@
 
 namespace engine::gfx {
 
-HsvColor::operator PaletteColor() const {
+PaletteColor HsvColor::ToPaletteColor() const {
   const auto [red, green, blue] = base::HsvToRgb8(hue(), saturation(), value());
 
   // The PaletteColor constructor drops each gun's low two bits to get the 6-bit

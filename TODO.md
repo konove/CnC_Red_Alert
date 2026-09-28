@@ -37,8 +37,8 @@
   - Options: round in both directions (small; changes RA's palette); skip `Adjust_Palette()` at
     neutral settings (smallest; drift remains off-neutral); or give both games one conversion pair,
     a `base::Rgb8ToHsv()` next to `base::HsvToRgb8()` in `base/hsv.h` built from `Rgb6ToHsv()`'s
-    8-bit core, with `ToHsv()` and `operator PaletteColor()` on top (~45 lines of sextant logic kept
-    once; changes whichever game's pair is dropped)
+    8-bit core, with `ToHsv()` and `ToPaletteColor()` on top (~45 lines of sextant logic kept once;
+    changes whichever game's pair is dropped)
   - Unifying also retires `Rgb6`, a third RGB type: a raw-gun constructor and accessors on
     `PaletteColor` would let TD's 768-byte palette be `PaletteColor`s (same layout, see the
     `static_assert` in `engine/gfx/palette_color.h`)
