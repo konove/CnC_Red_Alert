@@ -4,7 +4,8 @@
 
 #include <SDL.h>
 #include <SDL_events.h>
-#include <SDL_stdinc.h>
+
+#include <cstdint>
 
 #include "base/installed.h"
 #include "engine/window/display.h"
@@ -13,7 +14,7 @@
 namespace {
 
 int events_seen = 0;
-Uint32 last_event_type = 0;
+uint32_t last_event_type = 0;
 int pumps_seen = 0;
 
 void RecordEvent(SDL_Event* event) {
@@ -49,7 +50,7 @@ TEST_F(WwWinTest, EventLoopCallsTheInstalledHandler) {
   SDL_Send_Quit();
   SDL_Event_Loop();
   EXPECT_EQ(events_seen, 1);
-  EXPECT_EQ(last_event_type, static_cast<Uint32>(SDL_QUIT));
+  EXPECT_EQ(last_event_type, static_cast<uint32_t>(SDL_QUIT));
 }
 
 TEST_F(WwWinTest, EventLoopDropsEventsWithNoHandlerInstalled) {
