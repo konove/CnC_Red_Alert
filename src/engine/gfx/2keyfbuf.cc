@@ -157,14 +157,6 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
     if (!FadingNum) {
       flags &= ~SHAPE_FADING;  // don't fade
     }
-
-    // ShapeJumpTableAddress[4] = Single_Line_Single_Fade
-    // ShapeJumpTableAddress[5] = Single_Line_Single_Fade_Trans
-
-    if (FadingNum != 1) {
-      // ShapeJumpTableAddress[4] = Single_Line_Fading
-      // ShapeJumpTableAddress[5] = Single_Line_Fading_Trans
-    }
   }
 
   if (base::Any(flags & SHAPE_PREDATOR))  // is predator effect on
