@@ -1046,8 +1046,8 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
       const OverlayTypeClass& otype = OverlayTypeClass::As_Reference(Overlay);
       CC_Draw_Shape(view, otype.Get_Image_Data(), OverlayData,
                     x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
-                    WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST,
-                    {}, DisplayClass::UnitShadow);
+                    WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_GHOST, {},
+                    DisplayClass::UnitShadow);
     }
 
     if constexpr (config::kScenarioEditorEnabled) {

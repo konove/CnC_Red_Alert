@@ -42,12 +42,10 @@
 // SHAPE_CENTER, SHAPE_TRANS, SHAPE_GHOST, SHAPE_FADING and SHAPE_PREDATOR, and
 // the tables the effects need travel beside the flags in ShapeEffects. The
 // values are the Westwood library's, whose other bits nothing here used.
+// Draws are always relative to the window they name, which the library's
+// SHAPE_WIN_REL (0x0010) used to ask for.
 enum class CNC_FLAG_ENUM ShapeFlags : uint32_t {
   SHAPE_NORMAL = 0x0000,  // Drawn at x,y as stored
-  // Coordinates are relative to the window rather than the page. The games'
-  // draw functions always draw into the window's view, so this bit changes
-  // nothing.
-  SHAPE_WIN_REL = 0x0010,
   SHAPE_CENTER = 0x0020,  // x,y name the shape's center, not its top left
   SHAPE_TRANS = 0x0040,   // Color 0 is transparent
   // Every drawn pixel goes through ShapeEffects::fading_table. Together with

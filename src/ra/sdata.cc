@@ -388,7 +388,7 @@ void SmudgeTypeClass::Display(PixelView& view, int x, int y,
     for (int w = 0; w < Width; w++) {
       for (int h = 0; h < Height; h++) {
         CC_Draw_Shape(view, ptr, w + (h * Width), x + (w * ICON_PIXEL_W),
-                      y + (h * ICON_PIXEL_H), WINDOW_TACTICAL, SHAPE_WIN_REL);
+                      y + (h * ICON_PIXEL_H), WINDOW_TACTICAL, SHAPE_NORMAL);
       }
     }
   }
@@ -481,7 +481,7 @@ ObjectClass* SmudgeTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
 void SmudgeTypeClass::Draw_It(PixelView& view, int x, int y, int data) const {
   const auto ptr = Get_Image_Data();
   if (!ptr.empty()) {
-    CC_Draw_Shape(view, ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
+    CC_Draw_Shape(view, ptr, data, x, y, WINDOW_TACTICAL, SHAPE_NORMAL);
   }
 }
 

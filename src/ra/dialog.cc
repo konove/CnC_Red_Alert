@@ -113,53 +113,51 @@ void Dialog_Box(int x, int y, int w, int h) {
   const int cy = h / 2;
   auto shapedata = MixArchive::RetrieveData("DD-BKGND.SHP");
   CC_Draw_Shape(view, shapedata, 0, cx - 312, cy - 192, WINDOW_PARTIAL,
-                SHAPE_WIN_REL);
-  CC_Draw_Shape(view, shapedata, 1, cx, cy - 192, WINDOW_PARTIAL,
-                SHAPE_WIN_REL);
-  CC_Draw_Shape(view, shapedata, 2, cx - 312, cy, WINDOW_PARTIAL,
-                SHAPE_WIN_REL);
-  CC_Draw_Shape(view, shapedata, 3, cx, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
+                SHAPE_NORMAL);
+  CC_Draw_Shape(view, shapedata, 1, cx, cy - 192, WINDOW_PARTIAL, SHAPE_NORMAL);
+  CC_Draw_Shape(view, shapedata, 2, cx - 312, cy, WINDOW_PARTIAL, SHAPE_NORMAL);
+  CC_Draw_Shape(view, shapedata, 3, cx, cy, WINDOW_PARTIAL, SHAPE_NORMAL);
   /*
   **	Draw the side strips.
   */
   shapedata = MixArchive::RetrieveData("DD-EDGE.SHP");
   for (int yy = 0; yy < h; yy += 6) {
-    CC_Draw_Shape(view, shapedata, 0, 14, yy, WINDOW_PARTIAL, SHAPE_WIN_REL);
+    CC_Draw_Shape(view, shapedata, 0, 14, yy, WINDOW_PARTIAL, SHAPE_NORMAL);
     CC_Draw_Shape(view, shapedata, 1, w - ((7 + 8) * 2), yy, WINDOW_PARTIAL,
-                  SHAPE_WIN_REL);
+                  SHAPE_NORMAL);
   }
 
   /*
   **	Draw the border bars.
   */
   shapedata = MixArchive::RetrieveData("DD-LEFT.SHP");
-  CC_Draw_Shape(view, shapedata, 0, 0, cy - 200, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(view, shapedata, 0, 0, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 0, 0, cy - 200, WINDOW_PARTIAL, SHAPE_NORMAL);
+  CC_Draw_Shape(view, shapedata, 0, 0, cy, WINDOW_PARTIAL, SHAPE_NORMAL);
 
   shapedata = MixArchive::RetrieveData("DD-RIGHT.SHP");
   const int rightx = w - 14;
   CC_Draw_Shape(view, shapedata, 0, rightx, cy - 200, WINDOW_PARTIAL,
-                SHAPE_WIN_REL);
-  CC_Draw_Shape(view, shapedata, 0, rightx, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
+                SHAPE_NORMAL);
+  CC_Draw_Shape(view, shapedata, 0, rightx, cy, WINDOW_PARTIAL, SHAPE_NORMAL);
 
   shapedata = MixArchive::RetrieveData("DD-BOTM.SHP");
   CC_Draw_Shape(view, shapedata, 0, cx - 320, h - 16, WINDOW_PARTIAL,
-                SHAPE_WIN_REL);
-  CC_Draw_Shape(view, shapedata, 0, cx, h - 16, WINDOW_PARTIAL, SHAPE_WIN_REL);
+                SHAPE_NORMAL);
+  CC_Draw_Shape(view, shapedata, 0, cx, h - 16, WINDOW_PARTIAL, SHAPE_NORMAL);
 
   shapedata = MixArchive::RetrieveData("DD-TOP.SHP");
-  CC_Draw_Shape(view, shapedata, 0, cx - 320, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(view, shapedata, 0, cx, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 0, cx - 320, 0, WINDOW_PARTIAL, SHAPE_NORMAL);
+  CC_Draw_Shape(view, shapedata, 0, cx, 0, WINDOW_PARTIAL, SHAPE_NORMAL);
 
   /*
   **	Draw the corner caps.
   */
   shapedata = MixArchive::RetrieveData("DD-CRNR.SHP");
-  CC_Draw_Shape(view, shapedata, 0, 0, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(view, shapedata, 1, w - 23, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(view, shapedata, 2, 0, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 0, 0, 0, WINDOW_PARTIAL, SHAPE_NORMAL);
+  CC_Draw_Shape(view, shapedata, 1, w - 23, 0, WINDOW_PARTIAL, SHAPE_NORMAL);
+  CC_Draw_Shape(view, shapedata, 2, 0, h - 24, WINDOW_PARTIAL, SHAPE_NORMAL);
   CC_Draw_Shape(view, shapedata, 3, w - 23, h - 24, WINDOW_PARTIAL,
-                SHAPE_WIN_REL);
+                SHAPE_NORMAL);
 
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), x, y, x, y, w,
                                    h);

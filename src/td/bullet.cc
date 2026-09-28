@@ -555,8 +555,8 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
   */
   if (Altitude) {
     CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
-                  SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
-                  {}, MouseClass::FadingShade);
+                  SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING, {},
+                  MouseClass::FadingShade);
     y -= Lepton_To_Pixel(Altitude);
   }
 
@@ -567,9 +567,8 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
   if (Class->IsTranslucent) {
     flags = SHAPE_GHOST;
   }
-  CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
-                flags | SHAPE_CENTER | SHAPE_WIN_REL, {},
-                MouseClass::UnitShadow);
+  CC_Draw_Shape(view, shapeptr, shapenum, x, y, window, flags | SHAPE_CENTER,
+                {}, MouseClass::UnitShadow);
 }
 
 /***********************************************************************************************

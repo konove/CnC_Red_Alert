@@ -896,8 +896,7 @@ void ChronalVortexClass::Render(PixelView& view) {
                             cellptr->OverlayData,
                             (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
                             (y * CELL_PIXEL_H) + (CELL_PIXEL_H >> 1),
-                            WINDOW_TACTICAL,
-                            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
+                            WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_GHOST, {},
                             DisplayClass::UnitShadow);
             }
           }

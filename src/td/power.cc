@@ -213,9 +213,9 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
       ** Draw the unfilled section
       */
       CC_Draw_Shape(view, PowerBarShape, 0, PowX, PowY, WINDOW_CUSTOM,
-                    SHAPE_WIN_REL);
+                    SHAPE_NORMAL);
       CC_Draw_Shape(view, PowerBarShape, 1, PowX, PowY + 100, WINDOW_CUSTOM,
-                    SHAPE_WIN_REL);
+                    SHAPE_NORMAL);
 
       /*
       ** Set up the clip region for the filled section
@@ -248,7 +248,7 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
                       PowY - base::At(base::At(WindowList,
                                                static_cast<int>(WINDOW_CUSTOM)),
                                       kWindowY),
-                      WINDOW_CUSTOM, SHAPE_WIN_REL);
+                      WINDOW_CUSTOM, SHAPE_NORMAL);
 
         CC_Draw_Shape(
             view, PowerBarShape, 3 + power_color, PowX,
@@ -256,7 +256,7 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
                 base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
                          kWindowY) +
                 100,
-            WINDOW_CUSTOM, SHAPE_WIN_REL);
+            WINDOW_CUSTOM, SHAPE_NORMAL);
       }
 
       /*

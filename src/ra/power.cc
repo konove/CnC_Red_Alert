@@ -177,14 +177,14 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
       }
 
       CC_Draw_Shape(view, PowerBarShape, 0, 480, 176, WINDOW_MAIN,
-                    flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
+                    flags | SHAPE_NORMAL, remap);
 
       /*
       ** Hires power strip is too big to fit into a shape so it is in two
       *parts
       */
       CC_Draw_Shape(view, PowerBarShape, 1, 480, 176 + 112, WINDOW_MAIN,
-                    flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
+                    flags | SHAPE_NORMAL, remap);
       /*
       **	Determine how much the power production exceeds or falls short
       **	of power demands.

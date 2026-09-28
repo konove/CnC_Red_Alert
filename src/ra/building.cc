@@ -843,7 +843,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
     */
     if (IsRepairing && IsWrenchVisible) {
       CC_Draw_Shape(view, ObjectTypeClass::SelectShapes, kSelectWrench, x, y,
-                    window, SHAPE_CENTER | SHAPE_WIN_REL);
+                    window, SHAPE_CENTER);
     }
   }
 
@@ -875,7 +875,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
       const TechnoClass* obj = factory->Get_Object();
       if (obj != nullptr) {
         CC_Draw_Shape(view, obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y,
-                      window, SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_NORMAL, {});
+                      window, SHAPE_CENTER | SHAPE_NORMAL, {});
       }
     }
   }

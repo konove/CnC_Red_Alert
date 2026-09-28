@@ -1020,17 +1020,17 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
       switch (Smudge) {
         case SMUDGE_BIB1:
           CC_Draw_Shape(view, Bib1, SmudgeData, x, y, WINDOW_TACTICAL,
-                        SHAPE_WIN_REL);
+                        SHAPE_NORMAL);
           break;
 
         case SMUDGE_BIB2:
           CC_Draw_Shape(view, Bib2, SmudgeData, x, y, WINDOW_TACTICAL,
-                        SHAPE_WIN_REL);
+                        SHAPE_NORMAL);
           break;
 
         case SMUDGE_BIB3:
           CC_Draw_Shape(view, Bib3, SmudgeData, x, y, WINDOW_TACTICAL,
-                        SHAPE_WIN_REL);
+                        SHAPE_NORMAL);
           break;
       }
 #endif
@@ -1045,8 +1045,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
         const OverlayTypeClass& otype = OverlayTypeClass::As_Reference(Overlay);
         CC_Draw_Shape(view, otype.Get_Image_Data(), OverlayData,
                       x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
-                      WINDOW_TACTICAL,
-                      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
+                      WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_GHOST, {},
                       MouseClass::UnitShadow);
       }
 

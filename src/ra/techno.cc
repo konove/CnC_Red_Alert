@@ -3200,12 +3200,11 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
         if (!remap.empty()) {
           CC_Draw_Shape(view, TheAssets().lightning_shapes(),
                         base::At(_shape, facing) + (shots ? 4 : 0), x, y,
-                        WINDOW_TACTICAL,
-                        SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL, remap);
+                        WINDOW_TACTICAL, SHAPE_FADING | SHAPE_CENTER, remap);
         } else {
           CC_Draw_Shape(view, TheAssets().lightning_shapes(),
                         base::At(_shape, facing) + (shots ? 4 : 0), x, y,
-                        WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_WIN_REL);
+                        WINDOW_TACTICAL, SHAPE_CENTER);
         }
         lastfacing = facing;
       }
@@ -4647,48 +4646,44 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
 #ifdef PREDATOR
     if (visual != VISUAL_HIDDEN && visual != VISUAL_RIPPLE) {
       if (visual == VISUAL_SHADOWY) {
-        CC_Draw_Shape(
-            view, shapefile, shapenum, x, y, window,
-            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR, {},
-            TheMap().FadingShade, rotation, scale);
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                      SHAPE_CENTER | SHAPE_FADING | SHAPE_PREDATOR, {},
+                      TheMap().FadingShade, rotation, scale);
       } else {
         CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
-                      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_GHOST,
-                      remap, shadow, rotation, scale);
+                      SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST, remap, shadow,
+                      rotation, scale);
       }
       if (visual == VISUAL_DARKEN) {
-        CC_Draw_Shape(
-            view, shapefile, shapenum, x, y, window,
-            SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, remap,
-            TheMap().FadingShade, rotation, scale);
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                      SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING, remap,
+                      TheMap().FadingShade, rotation, scale);
       }
     }
     if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {
       CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
-                    SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL, {}, {},
-                    rotation, scale);
+                    SHAPE_PREDATOR | SHAPE_CENTER, {}, {}, rotation, scale);
     }
 #else
     switch (visual) {
       case VISUAL_NORMAL:
         CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
-                      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_GHOST,
-                      remap, shadow, rotation, scale);
+                      SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST, remap, shadow,
+                      rotation, scale);
         break;
 
       case VISUAL_INDISTINCT:
       case VISUAL_DARKEN:
         CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
-                      SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL, remap,
+                      SHAPE_FADING | SHAPE_CENTER, remap,
                       MouseClass::FadingShade, rotation, scale);
         break;
 
       case VISUAL_SHADOWY:
       case VISUAL_RIPPLE:
-        CC_Draw_Shape(
-            view, shapefile, shapenum, x, y, window,
-            SHAPE_PREDATOR | SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL, {},
-            MouseClass::FadingShade, rotation, scale);
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                      SHAPE_PREDATOR | SHAPE_FADING | SHAPE_CENTER, {},
+                      MouseClass::FadingShade, rotation, scale);
         break;
 
       case VISUAL_HIDDEN:
@@ -5792,7 +5787,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
         object = object->Next;
       }
       CC_Draw_Shape(view, ObjectTypeClass::PipShapes, static_cast<int>(pip),
-                    x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+                    x + (index * 3), y, window, SHAPE_CENTER);
     }
 
   } else {
@@ -5835,7 +5830,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
           }
         }
         CC_Draw_Shape(view, ObjectTypeClass::PipShapes, static_cast<int>(shape),
-                      x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+                      x + (index * 3), y, window, SHAPE_CENTER);
       }
     } else if (What_Am_I() == RTTI_UNIT &&
                *dynamic_cast<const UnitClass*>(this) == UNIT_CHRONOTANK) {
@@ -5864,7 +5859,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
           }
         }
         CC_Draw_Shape(view, ObjectTypeClass::PipShapes, static_cast<int>(shape),
-                      x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+                      x + (index * 3), y, window, SHAPE_CENTER);
       }
     } else {
       bool building = false;
@@ -5887,20 +5882,18 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
            index++) {
         if (building) {
           CC_Draw_Shape(view, ObjectTypeClass::PipShapes, static_cast<int>(pip),
-                        x, y - (index * 3), window,
-                        SHAPE_CENTER | SHAPE_WIN_REL);
+                        x, y - (index * 3), window, SHAPE_CENTER);
         } else {
           CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
                         static_cast<int>(index < pips ? PIP_FULL : PIP_EMPTY),
-                        x + (index * 3), y, window,
-                        SHAPE_CENTER | SHAPE_WIN_REL);
+                        x + (index * 3), y, window, SHAPE_CENTER);
         }
       }
 
       // BG			for (int index = 0; index <
       // Class_Of().Max_Pips(); index++) { BG
       // CC_Draw_Shape(Class_Of().PipShapes, (index < pips) ? PIP_FULL :
-      // PIP_EMPTY, x+index*3, y, window, SHAPE_CENTER|SHAPE_WIN_REL); BG
+      // PIP_EMPTY, x+index*3, y, window, SHAPE_CENTER); BG
       // }
     }
   }
@@ -5910,7 +5903,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
   */
   if (What_Am_I() == RTTI_INFANTRY && Combat_Damage() < 0) {
     CC_Draw_Shape(view, ObjectTypeClass::PipShapes, static_cast<int>(PIP_MEDIC),
-                  x + 8, y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+                  x + 8, y, window, SHAPE_CENTER);
   }
 
   /*
@@ -5926,7 +5919,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
     }
     CC_Draw_Shape(view, ObjectTypeClass::PipShapes, static_cast<int>(prishape),
                   x - 2, y - 3, window,
-                  /*SHAPE_CENTER|*/ SHAPE_WIN_REL);
+                  /*SHAPE_CENTER|*/ SHAPE_NORMAL);
   }
 
   /*
@@ -5947,7 +5940,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
 
     CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
                   static_cast<int>(PIP_NUMBERS) + group, x + 2, y + yval,
-                  window, SHAPE_CENTER | SHAPE_WIN_REL);
+                  window, SHAPE_CENTER);
 
     /*
     ** If this unit is part of a formation, draw an 'F' after the group
@@ -5957,7 +5950,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
         kNoFormationOffset) {
       CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
                     static_cast<int>(PIP_LETTERF), x + 8, y + yval, window,
-                    SHAPE_CENTER | SHAPE_WIN_REL);
+                    SHAPE_CENTER);
     }
   }
 
@@ -5991,7 +5984,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
         (spiedby || IsOwnedByPlayer)) {
       CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
                     static_cast<int>(PIP_DECOY), x, y - 16, window,
-                    SHAPE_WIN_REL);
+                    SHAPE_NORMAL);
     }
 
     /*
@@ -6019,7 +6012,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
         money /= 10;
         CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
                       static_cast<int>(PIP_NUMBERS) + xdigit, startx, y - 6,
-                      window, SHAPE_CENTER | SHAPE_WIN_REL);
+                      window, SHAPE_CENTER);
         startx -= 6;
       }
     }

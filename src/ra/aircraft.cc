@@ -517,7 +517,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   */
   if (Visual_Character() <= VISUAL_DARKEN) {
     CC_Draw_Shape(view, shapefile, shapenum, x + 1, y + 2, window,
-                  SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
+                  SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING,
                   DisplayClass::FadingShade, {});
   }
 
@@ -559,7 +559,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
  *=============================================================================================*/
 void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
                                 WindowNumberType window) const {
-  ShapeFlags flags = SHAPE_CENTER | SHAPE_WIN_REL;
+  ShapeFlags flags = SHAPE_CENTER;
   int shapenum = 0;
 
   /*

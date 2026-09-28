@@ -765,11 +765,11 @@ void SidebarClass::Draw_It(PixelView& view, bool complete) {
       *three chunks.
       */
       CC_Draw_Shape(view, SidebarShape, 0, kSideX * 2, 16, WINDOW_MAIN,
-                    SHAPE_WIN_REL);
+                    SHAPE_NORMAL);
       CC_Draw_Shape(view, SidebarMiddleShape, shape, kSideX * 2, (8 + 80) * 2,
-                    WINDOW_MAIN, SHAPE_WIN_REL);
+                    WINDOW_MAIN, SHAPE_NORMAL);
       CC_Draw_Shape(view, SidebarBottomShape, shape, kSideX * 2,
-                    (8 + 80 + 50) * 2, WINDOW_MAIN, SHAPE_WIN_REL);
+                    (8 + 80 + 50) * 2, WINDOW_MAIN, SHAPE_NORMAL);
 
       Repair.Draw_Me(view, true);
       Upgrade.Draw_Me(view, true);
@@ -1599,8 +1599,8 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
     ** New sidebar needs to be drawn not filled
     */
     if (BuildableCount < kMaxVisible) {
-      CC_Draw_Shape(view, LogoShapes, ID, X + 4, Y, WINDOW_MAIN,
-                    SHAPE_WIN_REL | SHAPE_NORMAL, {});
+      CC_Draw_Shape(view, LogoShapes, ID, X + 4, Y, WINDOW_MAIN, SHAPE_NORMAL,
+                    {});
     }
 
     /*
@@ -1736,17 +1736,17 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
       *6:01PM
       */
       if (shapenum != kSbBlank || shapefile.data() != LogoShapes.data()) {
-        CC_Draw_Shape(view, shapefile, shapenum,
-                      x -
-                          base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
-                                   kWindowX) +
-                          (kLeftEdgeOffset * 2),
-                      y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
-                                   kWindowY),
-                      WINDOW_SIDEBAR,
-                      SHAPE_NORMAL | SHAPE_WIN_REL |
-                          (!remapper.empty() ? SHAPE_FADING : SHAPE_NORMAL),
-                      remapper);
+        CC_Draw_Shape(
+            view, shapefile, shapenum,
+            x -
+                base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+                         kWindowX) +
+                (kLeftEdgeOffset * 2),
+            y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
+                         kWindowY),
+            WINDOW_SIDEBAR,
+            SHAPE_NORMAL | (!remapper.empty() ? SHAPE_FADING : SHAPE_NORMAL),
+            remapper);
 
         /*
         **	Darken this object because it cannot be produced or is otherwise
@@ -1761,7 +1761,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
                   (kLeftEdgeOffset * 2),
               y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
                            kWindowY),
-              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, {},
+              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_GHOST, {},
               ClockTranslucentTable);
         }
       }
@@ -1796,7 +1796,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
                   (kLeftEdgeOffset * 2),
               y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
                            kWindowY),
-              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_WIN_REL | SHAPE_GHOST, {},
+              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_GHOST, {},
               ClockTranslucentTable);
 
           /*

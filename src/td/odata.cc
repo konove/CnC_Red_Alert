@@ -777,7 +777,7 @@ void OverlayTypeClass::Display(PixelView& view, int x, int y,
     }
 
     CC_Draw_Shape(view, Get_Image_Data(), frame, x, y, window,
-                  SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
+                  SHAPE_NORMAL | SHAPE_CENTER);
   }
 }
 
@@ -870,8 +870,7 @@ void OverlayTypeClass::Draw_It(PixelView& view, int x, int y, int data) const {
   CC_Draw_Shape(view, Get_Image_Data(), data,
                 TheMap().TacPixelX + x + (CELL_PIXEL_W >> 1),
                 TheMap().TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
-                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
-                MouseClass::UnitShadow);
+                SHAPE_CENTER | SHAPE_GHOST, {}, MouseClass::UnitShadow);
 }
 
 /***********************************************************************************************

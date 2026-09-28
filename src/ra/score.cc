@@ -191,7 +191,7 @@ void ScoreTimeClass::Update() {
       Stage = 0;
     }
     CC_Draw_Shape(TheScreen().visible_view(), DataPtr, Stage, XPos, YPos,
-                  WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
+                  WINDOW_MAIN, SHAPE_NORMAL, {}, {});
   }
 }
 
@@ -213,7 +213,7 @@ void ScoreCredsClass::Update() {
     engine::audio::TheAudio().Play(Clock1, 255,
                                    TheOptions().Normalize_Volume(130));
     CC_Draw_Shape(TheScreen().visible_view(), DataPtr, Stage, XPos, YPos,
-                  WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
+                  WINDOW_MAIN, SHAPE_NORMAL, {}, {});
   }
 }
 
@@ -796,13 +796,13 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   PixelView& hidden = TheScreen().hidden_view();
   PixelView& view = TheScreen().visible_view();
   hidden.FillRect(0, 0, 248, 18, kTBlack);
-  CC_Draw_Shape(hidden, redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
+  CC_Draw_Shape(hidden, redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_NORMAL, {}, {});
   const std::span<const uint8_t> top_palette = house ? redpal : bluepal;
 
   for (int i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
       CC_Draw_Shape(view, yellowptr, i, xpos * 2, ypos * 2, WINDOW_MAIN,
-                    SHAPE_WIN_REL, {}, {});
+                    SHAPE_NORMAL, {}, {});
     } else {
       hidden.BlitTo(view, 0, 0, xpos * 2, ypos * 2, (3 + gdikilled) * 2, 16);
     }
@@ -814,7 +814,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
     TickScoreScreen(2);
   }
   CC_Draw_Shape(view, yellowptr, gdikilled, xpos * 2, ypos * 2, WINDOW_MAIN,
-                SHAPE_WIN_REL, {}, {});
+                SHAPE_NORMAL, {}, {});
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2, top_palette);
   /*BG	if (!TheKeyboard().Peek()) */ TickScoreScreen(40);
 
@@ -822,7 +822,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   for (int i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
       CC_Draw_Shape(view, redptr, i, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
-                    SHAPE_WIN_REL, {}, {});
+                    SHAPE_NORMAL, {}, {});
     } else {
       hidden.BlitTo(view, 0, 0, xpos * 2, (ypos + 12) * 2, (3 + nodkilled) * 2,
                     16);
@@ -838,7 +838,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   // Make sure accurate count is printed at end: with no losses the loop above
   // never runs.
   CC_Draw_Shape(view, redptr, nodkilled, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
-                SHAPE_WIN_REL, {}, {});
+                SHAPE_NORMAL, {}, {});
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14, bottom_palette);
   /*BG	if (!TheKeyboard().Peek()) */ TickScoreScreen(40);
 }

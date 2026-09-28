@@ -3273,25 +3273,23 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
 
     if (visual != VISUAL_HIDDEN && visual != VISUAL_RIPPLE) {
       if (visual == VISUAL_SHADOWY) {
-        CC_Draw_Shape(
-            view, shapefile, shapenum, x, y, window,
-            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR, {},
-            MouseClass::FadingShade);
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                      SHAPE_CENTER | SHAPE_FADING | SHAPE_PREDATOR, {},
+                      MouseClass::FadingShade);
       } else {
         CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
-                      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_GHOST,
-                      remap, MouseClass::UnitShadow);
+                      SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST, remap,
+                      MouseClass::UnitShadow);
       }
       if (visual == VISUAL_DARKEN) {
-        CC_Draw_Shape(
-            view, shapefile, shapenum, x, y, window,
-            SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, remap,
-            MouseClass::FadingShade);
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                      SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING, remap,
+                      MouseClass::FadingShade);
       }
     }
     if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {
       CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
-                    SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL);
+                    SHAPE_PREDATOR | SHAPE_CENTER);
     }
   }
 }
@@ -4092,7 +4090,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
         object = object->Next;
       }
       CC_Draw_Shape(view, ObjectTypeClass::PipShapes, static_cast<int>(pip),
-                    x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+                    x + (index * 3), y, window, SHAPE_CENTER);
     }
 
   } else {
@@ -4104,7 +4102,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
     for (int index = 0; index < Class_Of().Max_Pips(); index++) {
       CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
                     static_cast<int>(index < pips ? PIP_FULL : PIP_EMPTY),
-                    x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+                    x + (index * 3), y, window, SHAPE_CENTER);
     }
   }
 
@@ -4114,7 +4112,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
   if (IsLeader) {
     CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
                   static_cast<int>(PIP_PRIMARY), x - 2, y - 3, window,
-                  /*SHAPE_CENTER|*/ SHAPE_WIN_REL);
+                  /*SHAPE_CENTER|*/ SHAPE_NORMAL);
   }
 }
 

@@ -1962,7 +1962,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
 
         CC_Draw_Shape(view, UnitTypeClass::WakeShapes,
                       shapestart + (Fetch_Stage() % 6), xx - 1, yy + 3, window,
-                      SHAPE_CENTER | SHAPE_WIN_REL);
+                      SHAPE_CENTER);
 
         if (Health_Ratio() < 0x0080) {
           shapenum += 32;

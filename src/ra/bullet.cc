@@ -589,13 +589,12 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
       CC_Draw_Shape(
           view, AnimTypeClass::As_Reference(ANIM_PARA_BOMB).Get_Image_Data(), 1,
           x + Lepton_To_Pixel(static_cast<LEPTON>(Height / 2)), y + 10, window,
-          SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, {},
+          SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING, {},
           DisplayClass::UnitShadow);
     } else {
-      CC_Draw_Shape(
-          view, shapeptr, shapenum, x, y, window,
-          SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, {},
-          DisplayClass::UnitShadow);
+      CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
+                    SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING, {},
+                    DisplayClass::UnitShadow);
     }
     y -= Lepton_To_Pixel(static_cast<LEPTON>(Height));
   }
@@ -608,14 +607,12 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
     flags = SHAPE_GHOST;
   }
   if (Class->IsSubSurface) {
-    CC_Draw_Shape(
-        view, shapeptr, shapenum, x, y, window,
-        flags | SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
-        {}, DisplayClass::FadingShade);
-  } else {
     CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
-                  flags | SHAPE_CENTER | SHAPE_WIN_REL, {},
-                  DisplayClass::UnitShadow);
+                  flags | SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING, {},
+                  DisplayClass::FadingShade);
+  } else {
+    CC_Draw_Shape(view, shapeptr, shapenum, x, y, window, flags | SHAPE_CENTER,
+                  {}, DisplayClass::UnitShadow);
   }
 }
 

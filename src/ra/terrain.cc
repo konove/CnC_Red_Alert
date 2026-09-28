@@ -355,9 +355,8 @@ void TerrainClass::Draw_It(PixelView& view, int x, int y,
     /*
     **Terrain is always theater specific so flag it as such for Build_Frame
     */
-    CC_Draw_Shape(view, shapedata, shapenum, x, y, window,
-                  flags | SHAPE_WIN_REL | SHAPE_GHOST, MouseClass::FadingLight,
-                  MouseClass::UnitShadow);
+    CC_Draw_Shape(view, shapedata, shapenum, x, y, window, flags | SHAPE_GHOST,
+                  MouseClass::FadingLight, MouseClass::UnitShadow);
   }
 }
 
