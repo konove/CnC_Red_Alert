@@ -762,7 +762,7 @@ void OverlayTypeClass::Display(PixelView& view, int x, int y,
     }
 
     CC_Draw_Shape(view, Get_Image_Data(), frame, x, y, window,
-                  ShapeFlags::kNone | ShapeFlags::kCentered);
+                  ShapeFlags::kCentered);
   }
 }
 

@@ -1747,8 +1747,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
             y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
                          kWindowY),
             WINDOW_SIDEBAR,
-            ShapeFlags::kNone |
-                (!remapper.empty() ? ShapeFlags::kFading : ShapeFlags::kNone),
+            !remapper.empty() ? ShapeFlags::kFading : ShapeFlags::kNone,
             remapper);
 
         /*
@@ -1764,8 +1763,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
                   (kLeftEdgeOffset * 2),
               y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
                            kWindowY),
-              WINDOW_SIDEBAR, ShapeFlags::kNone | ShapeFlags::kGhost, {},
-              ClockTranslucentTable);
+              WINDOW_SIDEBAR, ShapeFlags::kGhost, {}, ClockTranslucentTable);
         }
       }
 
@@ -1799,8 +1797,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
                   (kLeftEdgeOffset * 2),
               y - base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
                            kWindowY),
-              WINDOW_SIDEBAR, ShapeFlags::kNone | ShapeFlags::kGhost, {},
-              ClockTranslucentTable);
+              WINDOW_SIDEBAR, ShapeFlags::kGhost, {}, ClockTranslucentTable);
 
           /*
           **	Display text showing that the construction is temporarily on

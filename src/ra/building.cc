@@ -877,7 +877,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
       const TechnoClass* obj = factory->Get_Object();
       if (obj != nullptr) {
         CC_Draw_Shape(view, obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y,
-                      window, ShapeFlags::kCentered | ShapeFlags::kNone, {});
+                      window, ShapeFlags::kCentered, {});
       }
     }
   }

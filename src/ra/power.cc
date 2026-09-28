@@ -178,15 +178,15 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
         remap = FadingRed;
       }
 
-      CC_Draw_Shape(view, PowerBarShape, 0, 480, 176, WINDOW_MAIN,
-                    flags | ShapeFlags::kNone, remap);
+      CC_Draw_Shape(view, PowerBarShape, 0, 480, 176, WINDOW_MAIN, flags,
+                    remap);
 
       /*
       ** Hires power strip is too big to fit into a shape so it is in two
       *parts
       */
-      CC_Draw_Shape(view, PowerBarShape, 1, 480, 176 + 112, WINDOW_MAIN,
-                    flags | ShapeFlags::kNone, remap);
+      CC_Draw_Shape(view, PowerBarShape, 1, 480, 176 + 112, WINDOW_MAIN, flags,
+                    remap);
       /*
       **	Determine how much the power production exceeds or falls short
       **	of power demands.
@@ -240,8 +240,7 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
       **	Draw the power drain threshold marker.
       */
       CC_Draw_Shape(view, PowerShape, 0, (kPowerX * 2) + 2,
-                    bottom - (drain_height + 4), WINDOW_MAIN,
-                    flags | ShapeFlags::kNone, remap);
+                    bottom - (drain_height + 4), WINDOW_MAIN, flags, remap);
     }
     view.Unlock();
   }

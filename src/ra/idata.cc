@@ -1181,9 +1181,8 @@ void InfantryTypeClass::Display(PixelView& view, int x, int y,
       shape = 2;
     }
 
-    CC_Draw_Shape(
-        view, ptr, shape, x, y, window,
-        engine::gfx::ShapeFlags::kNone | engine::gfx::ShapeFlags::kCentered);
+    CC_Draw_Shape(view, ptr, shape, x, y, window,
+                  engine::gfx::ShapeFlags::kCentered);
   }
 }
 
