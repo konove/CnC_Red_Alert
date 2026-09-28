@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef CNC_RED_ALERT_ENGINE_GFX_RGB_H_
-#define CNC_RED_ALERT_ENGINE_GFX_RGB_H_
+#ifndef CNC_RED_ALERT_ENGINE_GFX_PALETTE_COLOR_H_
+#define CNC_RED_ALERT_ENGINE_GFX_PALETTE_COLOR_H_
 
 // A palette entry: one color as the VGA DAC stores it. Originally Westwood's
 // RGB.H (Joe L. Bostic, December 1995).
@@ -99,4 +99,4 @@ inline constexpr PaletteColor kBlackColor(0, 0, 0);
 
 }  // namespace engine::gfx
 
-#endif  // CNC_RED_ALERT_ENGINE_GFX_RGB_H_
+#endif  // CNC_RED_ALERT_ENGINE_GFX_PALETTE_COLOR_H_

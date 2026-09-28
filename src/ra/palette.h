@@ -6,7 +6,7 @@
 #include "absl/base/attributes.h"
 #include "base/array.h"
 #include "base/buffer.h"
-#include "engine/gfx/rgb.h"
+#include "engine/gfx/palette_color.h"
 
 class PaletteClass {
  public:

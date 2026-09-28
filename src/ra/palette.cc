@@ -14,7 +14,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/bytes_of.h"
-#include "engine/gfx/rgb.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"

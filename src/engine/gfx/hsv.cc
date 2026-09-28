@@ -24,7 +24,7 @@
 #include <cstdint>
 
 #include "base/hsv.h"
-#include "engine/gfx/rgb.h"
+#include "engine/gfx/palette_color.h"
 
 namespace engine::gfx {
 

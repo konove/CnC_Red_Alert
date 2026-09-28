@@ -130,7 +130,7 @@ def library_folder_of(path: str) -> str | None:
     """Returns the folder path belongs in, or None if it has none.
 
     path is relative to src/. A file directly in a known folder
-    ("engine/gfx/rgb.h" -> "gfx", "base/strings/format.h" -> "base/strings")
+    ("engine/gfx/palette_color.h" -> "gfx", "base/strings/format.h" -> "base/strings")
     is placed by its own path; a file in an unknown one and everything else
     (the games, tools, testing) returns None.
     """

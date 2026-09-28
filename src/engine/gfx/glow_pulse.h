@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 
-#include "engine/gfx/rgb.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/platform/timer.h"
 
 // A fade toward black that swings back and forth, one step per `period` ticks

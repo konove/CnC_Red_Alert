@@ -66,7 +66,7 @@
 #include "engine/codec/compressed_block.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/fading_table.h"
-#include "engine/gfx/rgb.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/gfx/text_window.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"

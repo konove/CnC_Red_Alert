@@ -3,7 +3,7 @@
 #include "ra/palettes.h"
 
 #include "base/installed.h"
-#include "engine/gfx/rgb.h"
+#include "engine/gfx/palette_color.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
 

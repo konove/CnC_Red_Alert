@@ -77,7 +77,7 @@
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/hsv.h"
-#include "engine/gfx/rgb.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/window/keyboard.h"
 #include "ra/audio.h"
 #include "ra/defines.h"

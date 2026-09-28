@@ -1,4 +1,4 @@
-#include "engine/gfx/rgb.h"
+#include "engine/gfx/palette_color.h"
 
 #include "gtest/gtest.h"
 

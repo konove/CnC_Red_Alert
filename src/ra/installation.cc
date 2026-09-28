@@ -32,7 +32,7 @@
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
-#include "engine/gfx/rgb.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/win32/win32_registry.h"
 #include "engine/window/hardware_cursor.h"

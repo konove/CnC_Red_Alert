@@ -6,7 +6,7 @@
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
 #include "base/installed.h"
-#include "engine/gfx/rgb.h"
+#include "engine/gfx/palette_color.h"
 #include "ra/defines.h"
 #include "ra/palette.h"
 
