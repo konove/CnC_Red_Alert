@@ -619,7 +619,7 @@ int FootClass::Mission_Guard() {
     }
   }
 
-  return Arm.HasTimeLeft() ? static_cast<int>(Arm.Value())
+  return Arm.HasTimeLeft() ? static_cast<int>(Arm.Remaining())
                            : dtime + Random_Pick(0, 2);
 }
 

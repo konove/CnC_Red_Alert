@@ -19,7 +19,7 @@
 // File: The game's clocks and the one timer interface of both games.
 //
 // SystemTicks()  -- real time in 60 Hz ticks.
-// Get_Time_Ms()  -- real time in milliseconds.
+// SystemMilliseconds()  -- real time in milliseconds.
 // Stopwatch<T>   -- counts up with stop/start (pause/resume).
 // Timer<T>       -- counts down toward zero with stop/start support.
 //
@@ -42,7 +42,7 @@ inline constexpr int kSystemTicksPerSecond = 60;
 // SystemTicks(). Like it, the zero point means nothing on its own; 64 bits
 // because that clock counts from boot, so 32 bits would wrap after 49 days of
 // machine uptime.
-int64_t Get_Time_Ms();
+int64_t SystemMilliseconds();
 
 // Returns real time in ticks of 1/60 second, read from a monotonic clock that
 // needs no setup. The zero point means nothing on its own: callers compare two
@@ -74,7 +74,7 @@ class Stopwatch {
   Stopwatch() noexcept;
 
   // Returns the current elapsed tick count, accounting for paused time.
-  [[nodiscard]] int64_t Value() const;
+  [[nodiscard]] int64_t Elapsed() const;
 
   // Resets the timer to zero and activates it.
   void Reset();
@@ -98,13 +98,13 @@ class Stopwatch {
 
  private:
   // Returns ticks elapsed since start_tick_ was last anchored.
-  [[nodiscard]] int64_t Elapsed() const;
+  [[nodiscard]] int64_t TicksSinceStart() const;
 
   // The tick the current running stretch began at. Only read while running;
   // Start() and Reset() re-anchor it.
   int64_t start_tick_;
   // Ticks accumulated by the stretches that have ended, i.e. up to the last
-  // Stop(). Value() adds the current stretch on top while running.
+  // Stop(). Elapsed() adds the current stretch on top while running.
   int64_t accumulated_ticks_{0};
   bool running_{true};
 };
@@ -116,7 +116,7 @@ Stopwatch<T>::Stopwatch() noexcept
 template <TickSource T>
 template <class Archive>
 void Stopwatch<T>::Serialize(Archive& ar) {
-  int64_t value = Value();
+  int64_t value = Elapsed();
   bool running = running_;
   ar(value, running);
   if constexpr (Archive::kIsReading) {
@@ -131,10 +131,10 @@ void Stopwatch<T>::Serialize(Archive& ar) {
 }
 
 template <TickSource T>
-int64_t Stopwatch<T>::Value() const {
+int64_t Stopwatch<T>::Elapsed() const {
   int64_t value = accumulated_ticks_;
   if (running_) {
-    value += Elapsed();
+    value += TicksSinceStart();
   }
   return value;
 }
@@ -149,7 +149,7 @@ void Stopwatch<T>::Reset() {
 template <TickSource T>
 void Stopwatch<T>::Stop() {
   if (running_) {
-    accumulated_ticks_ += Elapsed();
+    accumulated_ticks_ += TicksSinceStart();
     running_ = false;
   }
 }
@@ -168,7 +168,7 @@ bool Stopwatch<T>::IsRunning() const {
 }
 
 template <TickSource T>
-int64_t Stopwatch<T>::Elapsed() const {
+int64_t Stopwatch<T>::TicksSinceStart() const {
   return static_cast<int64_t>(T::Tick()) - start_tick_;
 }
 
@@ -180,11 +180,11 @@ int64_t Stopwatch<T>::Elapsed() const {
 template <TickSource T>
 class Timer {
  public:
-  // Starts counting down from `set` ticks.
-  explicit Timer(int64_t set = 0) noexcept;
+  // Starts counting down from `duration` ticks.
+  explicit Timer(int64_t duration = 0) noexcept;
 
   // Returns the ticks remaining, or 0 if the countdown has finished.
-  [[nodiscard]] int64_t Value() const;
+  [[nodiscard]] int64_t Remaining() const;
 
   // Resets the countdown to `duration` ticks and restarts it.
   void Set(int64_t duration);
@@ -220,25 +220,27 @@ class Timer {
 
  private:
   // Returns ticks elapsed since start_tick_ was last anchored.
-  [[nodiscard]] int64_t Elapsed() const;
+  [[nodiscard]] int64_t TicksSinceStart() const;
 
   // The tick the countdown last started or resumed at. Only read while
   // running.
   int64_t start_tick_;
   // Ticks remaining as of the last anchor point (construction, Set(), Stop()
-  // or a load). While running, Value() subtracts the ticks since start_tick_.
-  int64_t delay_time_;
+  // or a load). While running, Remaining() subtracts the ticks since
+  // start_tick_.
+  int64_t remaining_at_start_;
   bool running_{true};
 };
 
 template <TickSource T>
-Timer<T>::Timer(int64_t set) noexcept
-    : start_tick_(static_cast<int64_t>(T::Tick())), delay_time_(set) {}
+Timer<T>::Timer(int64_t duration) noexcept
+    : start_tick_(static_cast<int64_t>(T::Tick())),
+      remaining_at_start_(duration) {}
 
 template <TickSource T>
 template <class Archive>
 void Timer<T>::Serialize(Archive& ar) {
-  int64_t value = Value();
+  int64_t value = Remaining();
   bool running = running_;
   ar(value, running);
   if constexpr (Archive::kIsReading) {
@@ -246,29 +248,29 @@ void Timer<T>::Serialize(Archive& ar) {
       ar.Fail("negative countdown duration");
       return;
     }
-    delay_time_ = value;
+    remaining_at_start_ = value;
     start_tick_ = static_cast<int64_t>(T::Tick());
     running_ = running;
   }
 }
 
 template <TickSource T>
-int64_t Timer<T>::Value() const {
-  const int64_t remain = delay_time_;
+int64_t Timer<T>::Remaining() const {
+  const int64_t remaining = remaining_at_start_;
   if (running_) {
-    const int64_t elapsed = Elapsed();
-    if (elapsed < remain) {
-      return remain - elapsed;
+    const int64_t elapsed = TicksSinceStart();
+    if (elapsed < remaining) {
+      return remaining - elapsed;
     }
     return 0;
   }
-  return remain;
+  return remaining;
 }
 
 template <TickSource T>
 void Timer<T>::Set(int64_t duration) {
   start_tick_ = static_cast<int64_t>(T::Tick());
-  delay_time_ = duration;
+  remaining_at_start_ = duration;
   running_ = true;
 }
 
@@ -281,7 +283,7 @@ void Timer<T>::Restart() {
 template <TickSource T>
 void Timer<T>::Stop() {
   if (running_) {
-    delay_time_ = Value();
+    remaining_at_start_ = Remaining();
     running_ = false;
   }
 }
@@ -301,16 +303,16 @@ bool Timer<T>::IsRunning() const {
 
 template <TickSource T>
 bool Timer<T>::IsFinished() const {
-  return Value() == 0;
+  return Remaining() == 0;
 }
 
 template <TickSource T>
 bool Timer<T>::HasTimeLeft() const {
-  return Value() != 0;
+  return Remaining() != 0;
 }
 
 template <TickSource T>
-int64_t Timer<T>::Elapsed() const {
+int64_t Timer<T>::TicksSinceStart() const {
   return static_cast<int64_t>(T::Tick()) - start_tick_;
 }
 

@@ -86,7 +86,7 @@ TEST(SaveGlobalsTest, ScorePreservesWideCountersAndPausedTime) {
   GlobalsSink pipe;
   ArchiveWriter writer(pipe);
   writer(score);
-  EXPECT_EQ(score.RealTime.Value(), elapsed);
+  EXPECT_EQ(score.RealTime.Elapsed(), elapsed);
   EXPECT_FALSE(score.RealTime.IsRunning());
 
   ScoreClass loaded;
@@ -94,7 +94,7 @@ TEST(SaveGlobalsTest, ScorePreservesWideCountersAndPausedTime) {
   EXPECT_EQ(loaded.NKilled, 17);
   EXPECT_EQ(loaded.GHarvested, 123456);
   EXPECT_EQ(loaded.ElapsedTime, kLargeElapsedTime);
-  EXPECT_EQ(loaded.RealTime.Value(), elapsed);
+  EXPECT_EQ(loaded.RealTime.Elapsed(), elapsed);
   EXPECT_FALSE(loaded.RealTime.IsRunning());
 
   score.RealTime.Start();

@@ -153,11 +153,12 @@ void TabClass::Draw_Credits_Tab(PixelView& view) {
   /*
   ** Use the new sidebar art for 640x400
   */
-  CC_Draw_Shape(view, TabShape, TheMap().MoneyFlashTimer.Value() > 1 ? 8 : 6,
+  CC_Draw_Shape(view, TabShape,
+                TheMap().MoneyFlashTimer.Remaining() > 1 ? 8 : 6,
                 (320 - EVA_WIDTH) * 2, 0, WINDOW_MAIN, SHAPE_NORMAL);
 
   if (TheScenario().MissionTimer.IsRunning()) {
-    const bool light = TheScenario().MissionTimer.Value() <
+    const bool light = TheScenario().MissionTimer.Remaining() <
                            kTicksPerMinute * TheRules().TimerWarning ||
                        TheMap().FlasherTimer.HasTimeLeft();
     CC_Draw_Shape(view, TabShape, light ? 4 : 2, 320, 0, WINDOW_MAIN,
@@ -233,7 +234,7 @@ void TabClass::AI(engine::window::InputEvent& event, int x, int y) {
     }
   }
 
-  if (MoneyFlashTimer.Value() == 1) {
+  if (MoneyFlashTimer.Remaining() == 1) {
     IsTabToRedraw = true;
     Flag_To_Redraw(false);
   }

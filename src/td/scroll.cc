@@ -219,14 +219,14 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
             distance = base::At(_rate, rate);
             Scroll_Map(direction, distance, true);
 
-            if (Counter.Value() == 0 && player_scrolled) {
+            if (Counter.Remaining() == 0 && player_scrolled) {
               Counter.Set(SCROLL_DELAY);
               Inertia++;
             }
           }
         }
       }
-      if ((!player_scrolled) && (Counter.Value() == 0)) {
+      if ((!player_scrolled) && (Counter.Remaining() == 0)) {
         Inertia--;
         if (Inertia < 0) {
           Inertia++;

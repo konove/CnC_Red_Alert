@@ -4395,7 +4395,7 @@ static void Wait_For_Focus() {
     do {
       CCDebugString(".");
       TheKeyboard().Peek();
-      if (!focus_timer.Value()) {
+      if (!focus_timer.Remaining()) {
         focus_timer.Set(int64_t{5} * 60);
       }
 
@@ -4759,7 +4759,7 @@ static int Net_Fake_New_Dialog() {
             join_timer.Set(int64_t{3} * 60);
             break;
           }
-          if (join_timer.Value()) {
+          if (join_timer.Remaining()) {
             break;
           }
 

@@ -171,7 +171,7 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
       ShapeFlags_Type flags = SHAPE_NORMAL;
       std::span<const unsigned char> remap;
 
-      if (FlashTimer.Value() > 1 && (FlashTimer.Value() % 3) % 2 != 0) {
+      if (FlashTimer.Remaining() > 1 && (FlashTimer.Remaining() % 3) % 2 != 0) {
         flags = flags | SHAPE_FADING;
         remap = FadingRed;
       }

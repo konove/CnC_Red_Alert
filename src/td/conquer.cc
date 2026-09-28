@@ -1212,7 +1212,7 @@ bool Color_Cycle() {
   **	Process the fading white color. It is used for the radar box and other
   *glowing *	game interface elements.
   */
-  if (!_ftimer.Value()) {
+  if (!_ftimer.Remaining()) {
     _ftimer.Set(kTimerSecond / 8);
 
 /*
@@ -1247,7 +1247,7 @@ bool Color_Cycle() {
   /*
   **	Process the color cycling effects -- water.
   */
-  if (!_timer.Value()) {
+  if (!_timer.Remaining()) {
     unsigned char colors[3];
 
     _timer.Set(kTimerSecond / 4);
@@ -1586,7 +1586,7 @@ static void Sync_Delay() {
   /*
   **	Delay one tick.
   */
-  while (frame_timer.Value()) {
+  while (frame_timer.Remaining()) {
     Color_Cycle();
     Call_Back();
 
@@ -1734,7 +1734,7 @@ bool Main_Loop() {
   // Measure how long it took to process the AI
   //
   TheSession().process_ticks() =
-      static_cast<int>(TheSession().process_ticks() + process_timer.Value());
+      static_cast<int>(TheSession().process_ticks() + process_timer.Elapsed());
   TheSession().process_frames()++;
 
   //	Heap_Dump_Check( "Before Queue_AI" );

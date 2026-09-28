@@ -2203,7 +2203,7 @@ static int Process_Reconnect_Dialog(
   //------------------------------------------------------------------------
   // Convert the timer to seconds
   //------------------------------------------------------------------------
-  const int new_time = static_cast<int>(timeout_timer->Value()) / 60;
+  const int new_time = static_cast<int>(timeout_timer->Remaining()) / 60;
 
   //------------------------------------------------------------------------
   // If the timer has changed, or 'fresh' is set, redraw the dialog

@@ -127,7 +127,7 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
                      TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, Current);
 
     if (TheScenario().MissionTimer.IsRunning()) {
-      int64_t secs = TheScenario().MissionTimer.Value() / kTicksPerSecond;
+      int64_t secs = TheScenario().MissionTimer.Remaining() / kTicksPerSecond;
       int64_t mins = secs / 60;
       const int64_t hours = mins / 60;
       secs %= 60;
@@ -137,31 +137,31 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
       **	Speak mission timer reminders.
       */
       VoxType vox = VOX_NONE;
-      if (TheScenario().MissionTimer.Value() == 1 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Remaining() == 1 * kTicksPerMinute) {
         vox = VOX_TIME_1;
       }
-      if (TheScenario().MissionTimer.Value() == 2 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Remaining() == 2 * kTicksPerMinute) {
         vox = VOX_TIME_2;
       }
-      if (TheScenario().MissionTimer.Value() == 3 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Remaining() == 3 * kTicksPerMinute) {
         vox = VOX_TIME_3;
       }
-      if (TheScenario().MissionTimer.Value() == 4 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Remaining() == 4 * kTicksPerMinute) {
         vox = VOX_TIME_4;
       }
-      if (TheScenario().MissionTimer.Value() == 5 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Remaining() == 5 * kTicksPerMinute) {
         vox = VOX_TIME_5;
       }
-      if (TheScenario().MissionTimer.Value() == 10 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Remaining() == 10 * kTicksPerMinute) {
         vox = VOX_TIME_10;
       }
-      if (TheScenario().MissionTimer.Value() == 20 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Remaining() == 20 * kTicksPerMinute) {
         vox = VOX_TIME_20;
       }
-      if (TheScenario().MissionTimer.Value() == 30 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Remaining() == 30 * kTicksPerMinute) {
         vox = VOX_TIME_30;
       }
-      if (TheScenario().MissionTimer.Value() == 40 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Remaining() == 40 * kTicksPerMinute) {
         vox = VOX_TIME_40;
       }
       if (vox != VOX_NONE) {

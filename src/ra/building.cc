@@ -4439,7 +4439,7 @@ int BuildingClass::Mission_Attack() {
 
     case FIRE_REARM:
       PrimaryFacing.Set_Desired(Direction(TarCom));
-      return static_cast<int>(Arm.Value());
+      return static_cast<int>(Arm.Remaining());
 
     case FIRE_BUSY:
       return 1;

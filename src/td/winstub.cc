@@ -141,7 +141,7 @@ void Check_For_Focus_Loss() {
         DispatchMessage(&msg);
       }
 
-    } while (cd.Value());
+    } while (cd.Remaining());
     engine::audio::TheAudio().SetExtraPaused(false);
     // AllSurfaces.Restore_Surfaces();
     // VisiblePage.Clear();

@@ -269,7 +269,7 @@ void ScenarioClass::Do_Fade_AI() {
     }
     const fixed newsat =
         TheOptions().Get_Saturation() *
-        fixed(static_cast<int>(kGrayFadeTime - FadeTimer.Value()),
+        fixed(static_cast<int>(kGrayFadeTime - FadeTimer.Remaining()),
               static_cast<int>(kGrayFadeTime));
     GameOptionsClass::Adjust_Palette(
         ThePalettes().original_palette(), ThePalettes().game_palette(),
@@ -283,7 +283,7 @@ void ScenarioClass::Do_Fade_AI() {
     }
     const fixed newsat =
         TheOptions().Get_Saturation() *
-        fixed(static_cast<int>(FadeTimer.Value()), kGrayFadeTime);
+        fixed(static_cast<int>(FadeTimer.Remaining()), kGrayFadeTime);
     GameOptionsClass::Adjust_Palette(
         ThePalettes().original_palette(), ThePalettes().game_palette(),
         TheOptions().Get_Brightness(), newsat, TheOptions().Get_Tint(),
@@ -879,7 +879,7 @@ void Do_Win() {
 
   TheWorld().save_tanya() = TheWorld().is_tanya_dead();
   TheScenario().CarryOverTimer =
-      static_cast<int>(TheScenario().MissionTimer.Value());
+      static_cast<int>(TheScenario().MissionTimer.Remaining());
   //	int timer = Scen.MissionTimer;
 
   /*

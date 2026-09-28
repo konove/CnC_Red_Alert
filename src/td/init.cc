@@ -1196,7 +1196,7 @@ bool Select_Game(bool fade) {
                   while (TheNetwork().winsock().Read(temp_buffer, 1024)) {
                     DLOG(INFO) << "C&C95 - Discarding a packet.";
                     ptimer.Set(30);
-                    while (ptimer.Value()) {
+                    while (ptimer.Remaining()) {
                     }
                     DLOG(INFO) << "C&C95 - Ready to check for more packets.";
                   }
@@ -1352,7 +1352,7 @@ bool Select_Game(bool fade) {
             }
             TheKeyboard().Clear();
             count.Set(int64_t{kTimerSecond} * 3);
-            while (count.Value()) {
+            while (count.Remaining()) {
               Call_Back();
             }
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
@@ -1376,7 +1376,7 @@ bool Select_Game(bool fade) {
             }
             TheKeyboard().Clear();
             count.Set(int64_t{kTimerSecond} * 3);
-            while (count.Value()) {
+            while (count.Remaining()) {
               Call_Back();
             }
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
@@ -1400,7 +1400,7 @@ bool Select_Game(bool fade) {
             }
             TheKeyboard().Clear();
             count.Set(int64_t{kTimerSecond} * 3);
-            while (count.Value()) {
+            while (count.Remaining()) {
               Call_Back();
             }
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
@@ -1423,7 +1423,7 @@ bool Select_Game(bool fade) {
           }
           TheKeyboard().Clear();
           count.Set(int64_t{kTimerSecond} * 3);
-          while (count.Value()) {
+          while (count.Remaining()) {
             Call_Back();
           }
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,

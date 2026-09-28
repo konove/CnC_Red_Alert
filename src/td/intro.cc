@@ -226,7 +226,7 @@ void Choose_Side() {
     ** If the sample has stopped or is about to then restart it
     */
     if (!engine::audio::TheAudio().IsPlaying(staticaud.data()) ||
-        !sample_timer.Value()) {
+        !sample_timer.Remaining()) {
       engine::audio::TheAudio().Stop(statichandle);
       statichandle = engine::audio::TheAudio().Play(staticaud, 255, 64);
       sample_timer.Set(0x3f);

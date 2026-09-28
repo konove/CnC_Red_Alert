@@ -530,7 +530,7 @@ void WOL_GameSetupDialog::Initialize() {
   pWO->LinkToGameDlg(pILDisc.get(), pILPlayers.get());
   pWO->pGSupDlg = this;
 
-  dwTimeNextParamRefresh = Get_Time_Ms();
+  dwTimeNextParamRefresh = SystemMilliseconds();
 }
 
 //***********************************************************************************************
@@ -594,7 +594,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                                 // valid value until then.
   }
 
-  int64_t dwTimeNextPlayerPing = Get_Time_Ms() + PING_AND_DISPLAY_WAIT;
+  int64_t dwTimeNextPlayerPing = SystemMilliseconds() + PING_AND_DISPLAY_WAIT;
   int64_t dwTimeNextPingDisplay =
       dwTimeNextPlayerPing + 1500;  //	Stagger ping and ping display periods.
 
@@ -816,13 +816,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //	Display of ping results is on a parallel timer, slightly behind the ping
     // so that we'll be likely to have 	a fresh average to show. Not too big a
     // deal if OnPings haven't arrived by then (though they should have).
-    if (Get_Time_Ms() > dwTimeNextPlayerPing) {
+    if (SystemMilliseconds() > dwTimeNextPlayerPing) {
       pWO->RequestPlayerPings();
-      dwTimeNextPlayerPing = Get_Time_Ms() + PING_AND_DISPLAY_WAIT;
+      dwTimeNextPlayerPing = SystemMilliseconds() + PING_AND_DISPLAY_WAIT;
     }
-    if (Get_Time_Ms() > dwTimeNextPingDisplay) {
+    if (SystemMilliseconds() > dwTimeNextPingDisplay) {
       pWO->ListChannelUsers();
-      dwTimeNextPingDisplay = Get_Time_Ms() + PING_AND_DISPLAY_WAIT;
+      dwTimeNextPingDisplay = SystemMilliseconds() + PING_AND_DISPLAY_WAIT;
     }
 
     if (pWO->bShowRankUpdated) {
@@ -831,7 +831,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     }
 
     //	Regularly check for incoming messages from wolapi.
-    if (Get_Time_Ms() > pWO->dwTimeNextWolapiPump) {
+    if (SystemMilliseconds() > pWO->dwTimeNextWolapiPump) {
       pWO->pChat->PumpMessages();
       pWO->pNetUtil->PumpMessages();
       //	Special post-callback processing...
@@ -846,7 +846,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         // false;
         display = REDRAW_ALL;
       }
-      pWO->dwTimeNextWolapiPump = Get_Time_Ms() + WOLAPIPUMPWAIT;
+      pWO->dwTimeNextWolapiPump = SystemMilliseconds() + WOLAPIPUMPWAIT;
     }
 
     if (bHostSayGo) {
@@ -926,7 +926,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     }
 
     if (bHost && bWaitingToStart && !bExitForGameTrigger &&
-        Get_Time_Ms() > timeWaitingToStartTimeout) {
+        SystemMilliseconds() > timeWaitingToStartTimeout) {
       ClearAllAccepts();  //	Results in all required steps to cancel game
                           // start.
       WOL_PrintMessage(*pILDisc, TXT_WOL_STARTTIMEOUT,
@@ -936,13 +936,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
     //	Regularly send game param changes if I'm the host.
     if (bHost && !bHostSayGo && !bExitForGameTrigger &&
-        Get_Time_Ms() > dwTimeNextParamRefresh) {
+        SystemMilliseconds() > dwTimeNextParamRefresh) {
       if (bParamsUnfresh()) {
         nHostLastParamID++;
         SendParams();
         ClearAllAccepts();
       }
-      dwTimeNextParamRefresh = Get_Time_Ms() + PARAMREFRESHWAIT;
+      dwTimeNextParamRefresh = SystemMilliseconds() + PARAMREFRESHWAIT;
     }
 
     if (!bProcess) {  //	Avoid redrawing if we're about to bail.
@@ -1254,7 +1254,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //.....................................................................
     if (engine::window::IsLeftButtonDown() ||
         engine::window::IsRightButtonDown()) {
-      timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
+      timeToolTipAppear = SystemMilliseconds() + TOOLTIPDELAY;
       if (pToolTipHitLast && pToolTipHitLast->bShowing) {
         pToolTipHitLast->Unshow(view);
       }
@@ -1276,7 +1276,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       ToolTipClass* pToolTipHit = pToolTipHead->GetToolTipHit();
       if (pToolTipHit == pToolTipHitLast) {
         if (pToolTipHit && !pToolTipHit->bShowing &&
-            Get_Time_Ms() > timeToolTipAppear &&
+            SystemMilliseconds() > timeToolTipAppear &&
             !(engine::window::IsLeftButtonDown() ||
               engine::window::IsRightButtonDown())) {
           pToolTipHit->Show(view);
@@ -1286,7 +1286,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           pToolTipHitLast->Unshow(view);
         }
         pToolTipHitLast = pToolTipHit;
-        timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
+        timeToolTipAppear = SystemMilliseconds() + TOOLTIPDELAY;
       }
     }
 
@@ -1658,7 +1658,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             //	Go into "waiting to start" mode, tell guests to, and
             // wait for responses.
             bWaitingToStart = true;
-            timeWaitingToStartTimeout = Get_Time_Ms() + 30000;
+            timeWaitingToStartTimeout = SystemMilliseconds() + 30000;
             nHostLastParamID++;
             InformAboutStart();
             WWMessageBox().Process(TXT_WOL_WAITINGTOSTART, TXT_NONE);

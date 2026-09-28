@@ -31,9 +31,9 @@ TEST(SystemClockTest, CountsSixtyTicksPerSecond) {
 }
 
 TEST(SystemClockTest, MillisecondsNeverRunBackward) {
-  int64_t previous = Get_Time_Ms();
+  int64_t previous = SystemMilliseconds();
   for (int i = 0; i < 1000; ++i) {
-    const int64_t now = Get_Time_Ms();
+    const int64_t now = SystemMilliseconds();
     EXPECT_GE(now, previous);
     previous = now;
   }
@@ -41,17 +41,17 @@ TEST(SystemClockTest, MillisecondsNeverRunBackward) {
 
 TEST(SystemClockTest, CountsMilliseconds) {
   // Only a lower bound is checked, since a loaded machine may sleep longer.
-  const int64_t start = Get_Time_Ms();
+  const int64_t start = SystemMilliseconds();
   engine::platform::SleepMs(100);
-  EXPECT_GE(Get_Time_Ms() - start, 100);
+  EXPECT_GE(SystemMilliseconds() - start, 100);
 }
 
 // A tick source the test advances by hand.
-struct FakeTick {
+struct FakeTickSource {
   static int64_t now;
   static int64_t Tick() { return now; }
 };
-int64_t FakeTick::now = 0;
+int64_t FakeTickSource::now = 0;
 
 class RecordingSink : public ByteSink {
  public:
@@ -74,9 +74,9 @@ T RoundTrip(T& subject, int64_t skew) {
   subject.Serialize(writer);
   EXPECT_EQ(sink.bytes.size(), 9U);  // int64_t value + bool running
 
-  FakeTick::now += skew;
-  SpanSource straw(std::as_bytes(std::span(sink.bytes)));
-  ArchiveReader reader(straw);
+  FakeTickSource::now += skew;
+  SpanSource source(std::as_bytes(std::span(sink.bytes)));
+  ArchiveReader reader(source);
   T restored;
   restored.Serialize(reader);
   EXPECT_TRUE(reader.ok());
@@ -90,162 +90,162 @@ bool LoadsRaw(T& subject, int64_t value, bool running) {
   RecordingSink sink;
   ArchiveWriter writer(sink);
   writer(value, running);
-  SpanSource straw(std::as_bytes(std::span(sink.bytes)));
-  ArchiveReader reader(straw);
+  SpanSource source(std::as_bytes(std::span(sink.bytes)));
+  ArchiveReader reader(source);
   subject.Serialize(reader);
   return reader.ok();
 }
 
 class TimerTest : public ::testing::Test {
  protected:
-  void SetUp() override { FakeTick::now = 1000; }
+  void SetUp() override { FakeTickSource::now = 1000; }
 };
 
 TEST_F(TimerTest, CountsDownAndStopsAtZero) {
-  const Timer<FakeTick> timer(30);
+  const Timer<FakeTickSource> timer(30);
   EXPECT_TRUE(timer.IsRunning());
   EXPECT_TRUE(timer.HasTimeLeft());
-  FakeTick::now += 10;
-  EXPECT_EQ(timer.Value(), 20);
-  FakeTick::now += 25;
-  EXPECT_EQ(timer.Value(), 0);
+  FakeTickSource::now += 10;
+  EXPECT_EQ(timer.Remaining(), 20);
+  FakeTickSource::now += 25;
+  EXPECT_EQ(timer.Remaining(), 0);
   EXPECT_TRUE(timer.IsFinished());
   EXPECT_TRUE(timer.IsRunning());
 }
 
 TEST_F(TimerTest, StopFreezesAndStartResumes) {
-  Timer<FakeTick> timer(50);
-  FakeTick::now += 10;
+  Timer<FakeTickSource> timer(50);
+  FakeTickSource::now += 10;
   timer.Stop();
   EXPECT_FALSE(timer.IsRunning());
-  FakeTick::now += 100;
-  EXPECT_EQ(timer.Value(), 40);
+  FakeTickSource::now += 100;
+  EXPECT_EQ(timer.Remaining(), 40);
 
   timer.Start();
-  FakeTick::now += 5;
-  EXPECT_EQ(timer.Value(), 35);
+  FakeTickSource::now += 5;
+  EXPECT_EQ(timer.Remaining(), 35);
 }
 
 TEST_F(TimerTest, SetWhileStoppedRestartsTheCountdown) {
-  Timer<FakeTick> timer(50);
+  Timer<FakeTickSource> timer(50);
   timer.Stop();
   timer.Set(20);
   EXPECT_TRUE(timer.IsRunning());
-  FakeTick::now += 5;
-  EXPECT_EQ(timer.Value(), 15);
+  FakeTickSource::now += 5;
+  EXPECT_EQ(timer.Remaining(), 15);
 }
 
 TEST_F(TimerTest, StoppedAtZeroReadsFinished) {
-  Timer<FakeTick> timer(50);
+  Timer<FakeTickSource> timer(50);
   timer.Set(0);
   timer.Stop();
   EXPECT_FALSE(timer.IsRunning());
   EXPECT_TRUE(timer.IsFinished());
-  EXPECT_EQ(timer.Value(), 0);
+  EXPECT_EQ(timer.Remaining(), 0);
 }
 
 TEST_F(TimerTest, StopwatchPausesAndResumes) {
-  Stopwatch<FakeTick> watch;
-  FakeTick::now += 10;
+  Stopwatch<FakeTickSource> watch;
+  FakeTickSource::now += 10;
   watch.Stop();
-  FakeTick::now += 100;
-  EXPECT_EQ(watch.Value(), 10);
+  FakeTickSource::now += 100;
+  EXPECT_EQ(watch.Elapsed(), 10);
 
   watch.Start();
-  FakeTick::now += 5;
-  EXPECT_EQ(watch.Value(), 15);
+  FakeTickSource::now += 5;
+  EXPECT_EQ(watch.Elapsed(), 15);
 }
 
 TEST_F(TimerTest, StopwatchResetZeroesAndRuns) {
-  Stopwatch<FakeTick> watch;
-  FakeTick::now += 10;
+  Stopwatch<FakeTickSource> watch;
+  FakeTickSource::now += 10;
   watch.Stop();
   watch.Reset();
   EXPECT_TRUE(watch.IsRunning());
-  EXPECT_EQ(watch.Value(), 0);
-  FakeTick::now += 3;
-  EXPECT_EQ(watch.Value(), 3);
+  EXPECT_EQ(watch.Elapsed(), 0);
+  FakeTickSource::now += 3;
+  EXPECT_EQ(watch.Elapsed(), 3);
 }
 
 class TimerSerializeTest : public ::testing::Test {
  protected:
-  void SetUp() override { FakeTick::now = 1000; }
+  void SetUp() override { FakeTickSource::now = 1000; }
 };
 
 TEST_F(TimerSerializeTest, RunningTimerKeepsItsRemainingValue) {
-  Timer<FakeTick> timer(50);
-  FakeTick::now += 20;
-  ASSERT_EQ(timer.Value(), 30);
+  Timer<FakeTickSource> timer(50);
+  FakeTickSource::now += 20;
+  ASSERT_EQ(timer.Remaining(), 30);
 
-  const Timer<FakeTick> restored = RoundTrip(timer, 500);
-  EXPECT_EQ(restored.Value(), 30);
+  const Timer<FakeTickSource> restored = RoundTrip(timer, 500);
+  EXPECT_EQ(restored.Remaining(), 30);
   EXPECT_TRUE(restored.IsRunning());
 
-  FakeTick::now += 10;
-  EXPECT_EQ(restored.Value(), 20);
+  FakeTickSource::now += 10;
+  EXPECT_EQ(restored.Remaining(), 20);
 }
 
 TEST_F(TimerSerializeTest, StoppedTimerStaysStopped) {
-  Timer<FakeTick> timer(50);
-  FakeTick::now += 5;
+  Timer<FakeTickSource> timer(50);
+  FakeTickSource::now += 5;
   timer.Stop();
 
-  Timer<FakeTick> restored = RoundTrip(timer, 500);
+  Timer<FakeTickSource> restored = RoundTrip(timer, 500);
   EXPECT_FALSE(restored.IsRunning());
-  EXPECT_EQ(restored.Value(), 45);
-  FakeTick::now += 100;
-  EXPECT_EQ(restored.Value(), 45);
+  EXPECT_EQ(restored.Remaining(), 45);
+  FakeTickSource::now += 100;
+  EXPECT_EQ(restored.Remaining(), 45);
 
   restored.Start();
-  FakeTick::now += 5;
-  EXPECT_EQ(restored.Value(), 40);
+  FakeTickSource::now += 5;
+  EXPECT_EQ(restored.Remaining(), 40);
 }
 
 TEST_F(TimerSerializeTest, FinishedTimerStaysFinished) {
-  Timer<FakeTick> timer(10);
-  FakeTick::now += 100;
+  Timer<FakeTickSource> timer(10);
+  FakeTickSource::now += 100;
   ASSERT_TRUE(timer.IsFinished());
 
-  const Timer<FakeTick> restored = RoundTrip(timer, 500);
+  const Timer<FakeTickSource> restored = RoundTrip(timer, 500);
   EXPECT_TRUE(restored.IsFinished());
-  EXPECT_EQ(restored.Value(), 0);
+  EXPECT_EQ(restored.Remaining(), 0);
 }
 
 TEST_F(TimerSerializeTest, StopwatchKeepsAccumulatedTicks) {
-  Stopwatch<FakeTick> watch;
-  FakeTick::now += 40;
-  ASSERT_EQ(watch.Value(), 40);
+  Stopwatch<FakeTickSource> watch;
+  FakeTickSource::now += 40;
+  ASSERT_EQ(watch.Elapsed(), 40);
 
-  const Stopwatch<FakeTick> restored = RoundTrip(watch, 500);
-  EXPECT_EQ(restored.Value(), 40);
+  const Stopwatch<FakeTickSource> restored = RoundTrip(watch, 500);
+  EXPECT_EQ(restored.Elapsed(), 40);
   EXPECT_TRUE(restored.IsRunning());
-  FakeTick::now += 2;
-  EXPECT_EQ(restored.Value(), 42);
+  FakeTickSource::now += 2;
+  EXPECT_EQ(restored.Elapsed(), 42);
 }
 
 TEST_F(TimerSerializeTest, StoppedStopwatchStaysStopped) {
-  Stopwatch<FakeTick> watch;
-  FakeTick::now += 40;
+  Stopwatch<FakeTickSource> watch;
+  FakeTickSource::now += 40;
   watch.Stop();
 
-  const Stopwatch<FakeTick> restored = RoundTrip(watch, 500);
+  const Stopwatch<FakeTickSource> restored = RoundTrip(watch, 500);
   EXPECT_FALSE(restored.IsRunning());
-  FakeTick::now += 100;
-  EXPECT_EQ(restored.Value(), 40);
+  FakeTickSource::now += 100;
+  EXPECT_EQ(restored.Elapsed(), 40);
 }
 
 TEST_F(TimerSerializeTest, NegativeRemainingValueIsRejected) {
-  Timer<FakeTick> timer(50);
+  Timer<FakeTickSource> timer(50);
   EXPECT_FALSE(LoadsRaw(timer, -5, true));
-  EXPECT_EQ(timer.Value(), 50);
+  EXPECT_EQ(timer.Remaining(), 50);
   EXPECT_TRUE(timer.IsRunning());
 }
 
 TEST_F(TimerSerializeTest, NegativeElapsedValueIsRejected) {
-  Stopwatch<FakeTick> watch;
-  FakeTick::now += 7;
+  Stopwatch<FakeTickSource> watch;
+  FakeTickSource::now += 7;
   EXPECT_FALSE(LoadsRaw(watch, -5, false));
-  EXPECT_EQ(watch.Value(), 7);
+  EXPECT_EQ(watch.Elapsed(), 7);
   EXPECT_TRUE(watch.IsRunning());
 }
 

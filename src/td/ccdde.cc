@@ -252,7 +252,7 @@ BOOL DDEServerClass::Callback(unsigned char* data, int32_t length) {
       case DDE_PACKET_HEART_BEAT:
         CCDebugString("C&C95 - Received heart beat packet.");
         if (GameTimerInUse) {
-          LastHeartbeat = GameTimer.Value();
+          LastHeartbeat = GameTimer.Elapsed();
         } else {
           LastHeartbeat = 0;
         }
@@ -318,7 +318,7 @@ void DDEServerClass::Delete_MPlayer_Game_Info() {
  * HISTORY: * 6/9/96 11:05PM ST : Created *
  *=============================================================================================*/
 int DDEServerClass::Time_Since_Heartbeat() {
-  return (GameTimer.Value() - LastHeartbeat);
+  return (GameTimer.Elapsed() - LastHeartbeat);
 }
 
 /***********************************************************************************************

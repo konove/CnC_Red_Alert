@@ -367,7 +367,7 @@ int Test_Null_Modem() {
   SerialPort->Write_To_Serial_Port("ATH\r", strlen("ATH\r"));
   Timer<SystemTickSource> time;
   time.Set(2 * 60);
-  while (time.Value()) {
+  while (time.Remaining()) {
   }
 
   /*
@@ -4424,7 +4424,7 @@ int Com_Scenario_Dialog() {
     /*
     ** If user has clicked 'GO' and the timeout has elapsed then quit the loop
     */
-    if (ready_to_go && ready_time.Value() == 0) {
+    if (ready_to_go && ready_time.Remaining() == 0) {
       rc = 1;
       process = false;
     }
@@ -6825,13 +6825,13 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     Timer<SystemTickSource> wait;
     Call_Back();
     wait.Set(60);
-    while (wait.Value()) {
+    while (wait.Remaining()) {
       Call_Back();
     }
     engine::audio::TheAudio().Close();
     Call_Back();
     wait.Set(60);
-    while (wait.Value()) {
+    while (wait.Remaining()) {
       Call_Back();
     }
     TheGameState().sound_on() = false;
@@ -7001,13 +7001,13 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     Timer<SystemTickSource> wait;
     Call_Back();
     wait.Set(60);
-    while (wait.Value()) {
+    while (wait.Remaining()) {
       Call_Back();
     }
     engine::audio::TheAudio().Close();
     Call_Back();
     wait.Set(60);
-    while (wait.Value()) {
+    while (wait.Remaining()) {
       Call_Back();
     }
     TheGameState().sound_on() = false;

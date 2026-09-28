@@ -229,7 +229,7 @@ void MouseClass::AI(engine::window::InputEvent& event, int x, int y) {
   std::span<const std::byte> mouse_shape_ptr;
   const MouseStruct* control = &MouseControl.at(CurrentMouseShape);
 
-  if (control->FrameRate && AnimTimer.Value() == 0) {
+  if (control->FrameRate && AnimTimer.Remaining() == 0) {
     Frame++;
     Frame %= control->FrameCount;
     AnimTimer.Set(control->FrameRate);

@@ -118,7 +118,7 @@ void GDI_Ending() {
                     Call_Back);
     TheKeyboard().Clear();
     count.Set(int64_t{kTimerSecond} * 3);
-    while (count.Value()) {
+    while (count.Remaining()) {
       Call_Back();
     }
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
@@ -139,7 +139,7 @@ void GDI_Ending() {
   TheKeyboard().Clear();
   //	Timer<SystemTickSource> count;
   count.Set(int64_t{kTimerSecond} * 3);
-  while (count.Value()) {
+  while (count.Remaining()) {
     Call_Back();
   }
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
@@ -301,7 +301,7 @@ void Nod_Ending() {
                     Call_Back);
     TheKeyboard().Clear();
     count.Set(int64_t{kTimerSecond} * 3);
-    while (count.Value()) {
+    while (count.Remaining()) {
       Call_Back();
     }
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
@@ -322,7 +322,7 @@ void Nod_Ending() {
   TheKeyboard().Clear();
   //	Timer<SystemTickSource> count;
   count.Set(int64_t{kTimerSecond} * 3);
-  while (count.Value()) {
+  while (count.Remaining()) {
     Call_Back();
   }
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);

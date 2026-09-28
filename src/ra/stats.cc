@@ -894,5 +894,5 @@ void Send_Statistics_Packet() {
 void Register_Game_Start_Time() { GameTimer.Reset(); }
 
 extern void Register_Game_End_Time() {
-  GameEndTime = static_cast<int32_t>(GameTimer.Value());
+  GameEndTime = static_cast<int32_t>(GameTimer.Elapsed());
 }

@@ -595,7 +595,7 @@ bool UnitClass::Edge_Of_World_AI() {
 void UnitClass::Reload_AI() {
   if (*this == UNIT_V2_LAUNCHER && Ammo < Class->MaxAmmo) {
     if (IsDriving) {
-      Reload.Set(Reload.Value() + 1);
+      Reload.Set(Reload.Remaining() + 1);
     } else {
       if (Reload.IsFinished()) {
         Ammo++;
@@ -3991,7 +3991,8 @@ int UnitClass::Pip_Count() const {
 
   if (*this == UNIT_CHRONOTANK) {
     const int fulldur = TheRules().ChronoTankDuration * kTicksPerMinute;
-    return (fulldur - static_cast<int>(MoebiusCountDown.Value())) / (fulldur / 5);
+    return (fulldur - static_cast<int>(MoebiusCountDown.Remaining())) /
+           (fulldur / 5);
   }
   return 0;
 }

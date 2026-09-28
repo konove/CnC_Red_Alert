@@ -652,7 +652,7 @@ void Send_Statistics_Packet() {
                                   DDEServerClass::DDE_PACKET_GAME_RESULTS)) {
     CCDebugString("C&C95 - Stats packet send failed.\n");
     send_timer.Set(60);
-    while (send_timer.Value()) {
+    while (send_timer.Remaining()) {
     }
   }
 #endif
@@ -665,5 +665,5 @@ void Send_Statistics_Packet() {
 void Register_Game_Start_Time() { GameTimer.Reset(); }
 
 extern void Register_Game_End_Time() {
-  GameEndTime = static_cast<int32_t>(GameTimer.Value());
+  GameEndTime = static_cast<int32_t>(GameTimer.Elapsed());
 }

@@ -65,15 +65,15 @@ TEST(TdSaveValuesTest, CountdownReanchorsAndKeepsWideRemainingTime) {
   TheGameClock().set_frame(100);
   Timer<FrameTickSource> timer(int64_t{1} * 1024 * 1024 * 1024 * 1024);
   TheGameClock().set_frame(CurrentFrame() + 17);
-  const int64_t remaining = timer.Value();
+  const int64_t remaining = timer.Remaining();
   const auto bytes = Save(timer);
   TheGameClock().set_frame(10000);
   Timer<FrameTickSource> loaded;
   Restore(loaded, bytes);
   EXPECT_TRUE(loaded.IsRunning());
-  EXPECT_EQ(loaded.Value(), remaining);
+  EXPECT_EQ(loaded.Remaining(), remaining);
   TheGameClock().set_frame(CurrentFrame() + 9);
-  EXPECT_EQ(loaded.Value(), remaining - 9);
+  EXPECT_EQ(loaded.Remaining(), remaining - 9);
 }
 
 TEST(TdSaveValuesTest, ClearedAndExpiredCountdownsRemainDistinct) {
@@ -83,7 +83,7 @@ TEST(TdSaveValuesTest, ClearedAndExpiredCountdownsRemainDistinct) {
   Timer<FrameTickSource> loaded;
   Restore(loaded, Save(timer));
   EXPECT_TRUE(loaded.IsRunning());
-  EXPECT_EQ(loaded.Value(), 0);
+  EXPECT_EQ(loaded.Remaining(), 0);
   // What TCountDownTimerClass::Clear() did: nothing left, and not running.
   timer.Set(0);
   timer.Stop();

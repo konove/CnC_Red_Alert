@@ -353,7 +353,7 @@ ScoreTimeClass::ScoreTimeClass(Presentation& show, int xpos, int ypos,
 }
 
 void ScoreTimeClass::Update() {
-  if (!AnimTimer.Value()) {
+  if (!AnimTimer.Remaining()) {
     AnimTimer.Set(TimerReset);
     if (++Stage >= MaxStage) {
       Stage = 0;
@@ -375,7 +375,7 @@ ScoreCredsClass::ScoreCredsClass(Presentation& show, int xpos, int ypos,
 }
 
 void ScoreCredsClass::Update() {
-  if (!AnimTimer.Value()) {
+  if (!AnimTimer.Remaining()) {
     AnimTimer.Set(TimerReset);
     if (++Stage >= MaxStage) {
       Stage = 0;
@@ -428,7 +428,7 @@ void ScorePrintClass::Update() {
 
   StillUpdating = true;
 
-  if (!AnimTimer.Value()) {
+  if (!AnimTimer.Remaining()) {
     AnimTimer.Set(1);
 
     const int pos = XPos + (Stage * 6);
@@ -503,7 +503,7 @@ void MultiStagePrintClass::Update() {
 
   StillUpdating = true;
 
-  if (!AnimTimer.Value()) {
+  if (!AnimTimer.Remaining()) {
     AnimTimer.Set(1);
 
     /*
@@ -565,7 +565,7 @@ void ScoreScaleClass::Update() {
   /*
   ** Restore the background for the scaled-up letter
   */
-  if (!AnimTimer.Value()) {
+  if (!AnimTimer.Remaining()) {
     AnimTimer.Set(1);
     if (Stage != 5) {
       show_.text_page().view().BlitTo(
@@ -1849,7 +1849,7 @@ void Animate_Cursor(Presentation& show, int pos, int ypos) {
   /*
   ** Toggle the color of the cursor, green or black, if it's time to do so.
   */
-  if (!_timer.Value()) {
+  if (!_timer.Remaining()) {
     _state = !_state;
     _timer.Set(5);
   }
@@ -2095,7 +2095,7 @@ void Call_Back_Delay(Presentation& show, int time) {
     show.DrawTextRects();
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
     //}
-  } while (cd.Value());
+  } while (cd.Remaining());
 }
 
 void Animate_Score_Objs() {

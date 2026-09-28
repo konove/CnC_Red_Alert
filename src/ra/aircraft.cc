@@ -845,7 +845,7 @@ int AircraftClass::Mission_Hunt() {
             if (Class->Is_Two_Shooter()) {
               Fire_At(targ, 0);
             }
-            return static_cast<int>(Arm.Value());
+            return static_cast<int>(Arm.Remaining());
 
           case FIRE_RANGE:
           case FIRE_FACING:
@@ -1546,7 +1546,7 @@ int AircraftClass::Paradrop_Cargo() {
       Arm.Set(0);
     }
   }
-  return static_cast<int>(Arm.Value());
+  return static_cast<int>(Arm.Remaining());
 }
 
 /***********************************************************************************************

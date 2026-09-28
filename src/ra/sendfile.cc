@@ -99,10 +99,10 @@ void PumpWolapi() {
   if constexpr (config::kWolapiEnabled) {
     if (TheSession().Type == GAME_INTERNET &&
         TheNetwork().wolapi() != nullptr &&
-        Get_Time_Ms() > TheNetwork().wolapi()->dwTimeNextWolapiPump) {
+        SystemMilliseconds() > TheNetwork().wolapi()->dwTimeNextWolapiPump) {
       TheNetwork().wolapi()->pChat->PumpMessages();
       TheNetwork().wolapi()->dwTimeNextWolapiPump =
-          Get_Time_Ms() + WOLAPIPUMPWAIT;
+          SystemMilliseconds() + WOLAPIPUMPWAIT;
     }
   }
 }

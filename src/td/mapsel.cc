@@ -627,7 +627,7 @@ void Map_Selection() {
 
   Stop_Speaking();
 
-  while (TheGameState().speech_timer().Value() || Is_Speaking()) {
+  while (TheGameState().speech_timer().Remaining() || Is_Speaking()) {
     Call_Back();
     //		if (TheKeyboard().Peek()) CountDownTimer.Set(0);
   }

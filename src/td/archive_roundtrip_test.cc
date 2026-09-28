@@ -306,7 +306,7 @@ TEST_F(TdArchiveRoundTripTest, HouseRestoresEconomyFlagsTimersAndTypeIdentity) {
   EXPECT_EQ(restored.InitialCredits, house.InitialCredits);
   EXPECT_TRUE(restored.IsHuman && restored.IsAlerted);
   EXPECT_EQ(restored.NukePieces, 5);
-  EXPECT_EQ(restored.BorrowedTime.Value(), 777);
+  EXPECT_EQ(restored.BorrowedTime.Remaining(), 777);
   EXPECT_EQ(restored.UnitsKilled.at(HOUSE_BAD), 19);
   EXPECT_EQ(Save(restored), bytes);
 }
@@ -330,7 +330,7 @@ TEST_F(TdArchiveRoundTripTest, UnitRestoresBaseFieldsReferencesTimersAndPathTail
   EXPECT_EQ(restored->Strength, 123);
   EXPECT_EQ(restored->NavCom, unit->NavCom);
   EXPECT_EQ(restored->Flagged, HOUSE_BAD);
-  EXPECT_EQ(restored->Reload.Value(), 87);
+  EXPECT_EQ(restored->Reload.Remaining(), 87);
   EXPECT_EQ(restored->Path[0], FACING_E);
   EXPECT_EQ(restored->Path[1], FACING_NONE);
   EXPECT_EQ(restored->Path[kConquerPathMax - 1], FACING_S);

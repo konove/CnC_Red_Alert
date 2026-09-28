@@ -389,7 +389,7 @@ void Do_Win() {
   TheGameState().speech_timer().Set(int64_t{kTimerSecond} * 3);
   Stop_Speaking();
   Speak(VOX_ACCOMPLISHED);
-  while (TheGameState().speech_timer().Value() || Is_Speaking()) {
+  while (TheGameState().speech_timer().Remaining() || Is_Speaking()) {
     Call_Back();
   }
 
@@ -616,7 +616,7 @@ void Do_Lose() {
   TheGameState().speech_timer().Set(int64_t{kTimerSecond} * 3);
   Stop_Speaking();
   Speak(VOX_FAIL);
-  while (TheGameState().speech_timer().Value() || Is_Speaking()) {
+  while (TheGameState().speech_timer().Remaining() || Is_Speaking()) {
     Call_Back();
   }
 

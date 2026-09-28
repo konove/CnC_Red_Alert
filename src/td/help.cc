@@ -139,7 +139,7 @@ void HelpClass::Init_Clear() {
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
 std::span<const int16_t> HelpClass::Overlap_List() const {
-  if (Text == TXT_NONE || CountDownTimer.Value()) {
+  if (Text == TXT_NONE || CountDownTimer.Remaining()) {
     base::At(OverlapList, 0) = REFRESH_EOL;
   }
   return OverlapList;
@@ -173,7 +173,7 @@ void HelpClass::AI(engine::window::InputEvent& event, int x, int y) {
   //		Help_Text(TXT_NONE);
   //	}
 
-  if (!CountDownTimer.Value() && !IsRight && (x != X || y != Y)) {
+  if (!CountDownTimer.Remaining() && !IsRight && (x != X || y != Y)) {
     Help_Text(TXT_NONE);
   }
 
@@ -181,7 +181,7 @@ void HelpClass::AI(engine::window::InputEvent& event, int x, int y) {
   **	Process the countdown timer only if it hasn't already expired and there
   *is *	a real help text message to display.
   */
-  if (CountDownTimer.Value() && !HelpText && Text != TXT_NONE) {
+  if (CountDownTimer.Remaining() && !HelpText && Text != TXT_NONE) {
     /*
     **	If the mouse has moved, then reset the timer since a moving mouse is not
     **	supposed to bring up the help text.
@@ -276,7 +276,7 @@ void HelpClass::Help_Text(int text, int x, int y, int color, bool quick,
 void HelpClass::Draw_It(PixelView& view, bool forced) {
   TabClass::Draw_It(view, forced);
 
-  if ((Text != TXT_NONE && (forced || !CountDownTimer.Value())) &&
+  if ((Text != TXT_NONE && (forced || !CountDownTimer.Remaining())) &&
       view.Lock()) {
     Fancy_Text_Print(view, Text, DrawX, DrawY, Color, kBlack,
                      TPF_MAP | TPF_NOSHADOW);

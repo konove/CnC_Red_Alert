@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <ratio>
 
-int64_t Get_Time_Ms() {
+int64_t SystemMilliseconds() {
   return std::chrono::duration_cast<std::chrono::milliseconds>(
              std::chrono::steady_clock::now().time_since_epoch())
       .count();

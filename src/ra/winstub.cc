@@ -109,7 +109,7 @@ void Check_For_Focus_Loss() {
         DispatchMessage(&msg);
       }
 
-    } while (cd.Value());
+    } while (cd.Remaining());
     engine::audio::TheAudio().SetExtraPaused(false);
     PostMessage(MainWindow, CCFocusMessage, 0, 0);
     //		AllSurfaces.Restore_Surfaces();

@@ -6941,13 +6941,13 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     Timer<SystemTickSource> wait;
     ServiceRealTime();
     wait.Set(60);
-    while (wait.Value()) {
+    while (wait.Remaining()) {
       ServiceRealTime();
     }
     engine::audio::TheAudio().Close();
     ServiceRealTime();
     wait.Set(60);
-    while (wait.Value()) {
+    while (wait.Remaining()) {
       ServiceRealTime();
     }
     TheGameState().sound_on() = false;
@@ -7114,13 +7114,13 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     Timer<SystemTickSource> wait;
     ServiceRealTime();
     wait.Set(60);
-    while (wait.Value()) {
+    while (wait.Remaining()) {
       ServiceRealTime();
     }
     engine::audio::TheAudio().Close();
     ServiceRealTime();
     wait.Set(60);
-    while (wait.Value()) {
+    while (wait.Remaining()) {
       ServiceRealTime();
     }
     TheGameState().sound_on() = false;

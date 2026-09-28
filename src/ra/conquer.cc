@@ -347,7 +347,7 @@ void RunGame() {
 // modal dialog over the chat screen has asked for it.
 [[maybe_unused]] static void ServiceWolapi() {
   if (!TheNetwork().wolapi() ||
-      Get_Time_Ms() <= TheNetwork().wolapi()->dwTimeNextWolapiPump) {
+      SystemMilliseconds() <= TheNetwork().wolapi()->dwTimeNextWolapiPump) {
     return;
   }
 
@@ -355,7 +355,7 @@ void RunGame() {
     if (TheNetwork().wolapi()->bPump_In_Call_Back) {
       PumpWolapiMessages();
       TheNetwork().wolapi()->dwTimeNextWolapiPump =
-          Get_Time_Ms() + WOLAPIPUMPWAIT;
+          SystemMilliseconds() + WOLAPIPUMPWAIT;
     }
     return;
   }
@@ -365,7 +365,7 @@ void RunGame() {
   }
   PumpWolapiMessages();
   TheNetwork().wolapi()->dwTimeNextWolapiPump =
-      Get_Time_Ms() + WOLAPIPUMPWAIT + 700;
+      SystemMilliseconds() + WOLAPIPUMPWAIT + 700;
   if (TheNetwork().wolapi()->bConnectionDown) {
     // The Wolapi object is kept rather than deleted, so that the game results
     // can still be sent.

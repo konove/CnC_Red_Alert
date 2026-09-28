@@ -428,7 +428,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     **	enough to read the text.
     */
     const Timer<SystemTickSource> timer{int64_t{kTicksPerSecond} * 4};
-    while (timer.Value() > 0) {
+    while (timer.Remaining() > 0) {
       Call_Back();
     }
     TheKeyboard().Clear();

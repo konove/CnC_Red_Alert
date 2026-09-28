@@ -376,7 +376,7 @@ void UnitClass::AI() {
   */
   if (*this == UNIT_MSAM && Ammo < Class->MaxAmmo) {
     if (IsDriving) {
-      Reload.Set(Reload.Value() + 1);
+      Reload.Set(Reload.Remaining() + 1);
     } else {
       if (Reload.IsFinished()) {
         Ammo++;
