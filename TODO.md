@@ -49,6 +49,20 @@
     `gun >> 4` would copy the top bits down (63 -> 255), as was probably meant
   - Changes `ToHsv()` values (the options palette), `PaletteClass::Closest_Color()` matches and the
     palette `ra/wolapiob.cc` exports
+- Make Red Alert's cloak shimmer walk the other way on the right half of the window
+  - `CC_Draw_Shape()` (`ra/shape_draw.cc:184`) negates the predator offset when
+    `x > WindowList[window][kWindowWidth] * 4`, TD's formula; TD stores window widths in 8-pixel
+    units, RA in pixels (`engine/gfx/pixel_buffer.h:361`), so RA's test is "past four window widths"
+    and never holds for a visible shape. RA never uses the down-and-left sample offsets
+  - Fix: `x > width / 2` in pixels (one line); visual only, not simulation. Found in the
+    `shape_blitter` `/modernize-file` run (`a5dd8079..b83db634`)
+- Decide what a ghost or fading draw without its table should do
+  - `engine::gfx::DrawShapeFrame()` (`engine/gfx/shape_blitter.cc`) silently draws nothing when the
+    table a SHAPE_GHOST or SHAPE_FADING flag needs is missing or too short; RA's `CC_Draw_Shape()`
+    substitutes `DisplayClass::SpecialGhost`/`FadingShade` first (the "E3 kludge",
+    `ra/shape_draw.cc:127-133`), TD's (`td/conquer.cc`) does not
+  - Options: give TD the same substitution (small; draws what now vanishes), and/or make a missing
+    table a `CHECK` in the blitter instead of a no-op (turns a silent miss into a crash)
 
 ## Refactoring
 
@@ -66,16 +80,13 @@
     miswritten pattern stop compiling; guaranteed copy elision means it needs no move constructor
   - `ra/winbits.h`'s `LockedWindow` is the same idea already hand-rolled for one caller, and would
     fold into it
-  - 9 of the sites genuinely need the lock (`Buffer_Frame_To_Page` subspans `dest.pixels()` without
+  - 9 of the sites genuinely need the lock (`DrawShapeFrame` subspans `dest.pixels()` without
     locking, so its callers must hold one); the other 22 hold it to batch a render loop, since each
     outer unlock also runs `DropScaledFrame()` and arms `Present(false)`
   - `ra/radar.cc:1036` and `:1044` are early-return unwinds inside an outer lock - the shape a guard
     most obviously fixes
 - Make `Display::DropScaledFrame()` and `Display::UpdatePalette()` private
   - Only `Display` itself and the tests call them; the games use `PresentScaledFrame()`
-- Tidy `Buffer_Frame_To_Page` (`engine/gfx/2keyfbuf.*`) now the uncompressed-shape cache is gone
-  - Its source span can be `std::span<const std::byte>`: the cached-header write was the only write
-  - Rename `Do_Old_Blit`/`kBlitOld`; there is no "new" blit path any more
 - Remove the blank lines left where the `AllSurfaces.SurfacesRestored` blocks were deleted
   - About 44 `while (process) {` loops now open with a blank line, some sites have two in a row
     (`td/nulldlg.cc`, `td/queue.cc`, `ra/goptions.cc`); `git clang-format` does not touch lines that
@@ -156,9 +167,9 @@
     still spells it `255` (the fade ratio and the HSV scale); hoist one `base::` constant into
     `base/hsv.h`
 - Move the rest of `engine/gfx` into `engine::gfx`
-  - Only `palette_color.*` and `hsv_color.*` are in it (`babcd0a9`); `glow_pulse.h` and
-    `glow_pulse_test.cc` write `engine::gfx::PaletteColor` and `engine::gfx::kBlackColor` and drop
-    the qualifier when they move
+  - Only `palette_color.*`, `hsv_color.*` (`babcd0a9`) and `shape_blitter.*` (`b8ab89fe`) are in it;
+    `glow_pulse.h` and `glow_pulse_test.cc` write `engine::gfx::PaletteColor` and
+    `engine::gfx::kBlackColor` and drop the qualifier when they move
 - Run `/fix-ide-issues` on `engine/gfx/palette_color.h`, `palette_color.cc`, `palette_color_test.cc`
   and `hsv_color_test.cc`
   - Stage 7 of the `/modernize-file` run (`dc251088..f60d3070`) was skipped: CLion's
@@ -170,6 +181,39 @@
     options dialog only), and could take a `const Rgb6&` to mirror `HsvToRgb6()`
   - Names the run was unsure of: `PaletteColor` (alternative `VgaColor`), `FadedToward()`
     (`Blend()`), and `red()` returning the 8-bit value while `red_` holds the 6-bit gun (`red8()`)
+- Split `engine::gfx::ShapeEffects::predator_offset` into a start and a direction
+  - One `int` carries both: its magnitude mod 8 picks the first sample offset and its sign picks the
+    right-hand or the down-and-left table (`engine/gfx/shape_blitter.h`); both `CC_Draw_Shape()`s
+    build it as `CurrentFrame()` negated on the right half of the window. A `predator_start` plus a
+    `bool` (or the blitter choosing the direction from x and the view width) drops the sign trick.
+    Pairs with the RA shimmer-direction bug above
+- Move the aircraft/bullet shadow rewrite out of both `CC_Draw_Shape()`s
+  - `ra/shape_draw.cc:170-176` and `td/conquer.cc:2396-2402` both turn
+    `SHAPE_FADING | SHAPE_PREDATOR` into `SHAPE_GHOST` with `SpecialGhost`: a meaning of a flag
+    combination that belongs next to the `SHAPE_*` definitions (`engine/gfx/shape.h`), e.g. the
+    `SHAPE_SHADOW` bit, which nothing uses yet, handled once
+- Consider making color 0 always transparent in `engine::gfx::DrawShapeFrame()`
+  - Both callers pass `flags | SHAPE_TRANS`, so the eight non-transparent entries of `kBlitters`
+    (`engine/gfx/shape_blitter.cc`), including the whole-line copy, only run in
+    `shape_blitter_test.cc`; dropping the flag halves the instantiations
+  - `SHAPE_PARTIAL` (`engine/gfx/shape.h:80`) is set and read nowhere since `b08a754d`; delete it
+- Share the "clip a destination and shift its source" pattern
+  - `base/clip.h:47-50` says a caller carrying a source rectangle must use `OutCodeOf()` directly,
+    but `DrawShapeFrame()` and `PixelView::RemapLocked()` show `ClipRect()` works whenever only the
+    near corner moves the source (source shift = how far that corner moved); fix the comment
+  - `PixelView::CopyFromBufferLocked()` (`engine/gfx/pixel_buffer.cc:272-313`) and the clips at
+    `pixel_buffer.cc:282`, `370` and `541` still hand-write the outcode clip
+- Run `/fix-ide-issues` on `engine/gfx/shape_blitter.h`, `shape_blitter.cc` and
+  `shape_blitter_test.cc`
+  - Stage 7 of the `/modernize-file` run (`a5dd8079..b83db634`) was skipped at the user's request
+    (the files were not open in CLion)
+- Consider small clean-ups in `engine/gfx/shape_blitter.cc`
+  - The predator walk indexes with `std::array::at()` and a signed `% 8` per predator pixel; an
+    `& 7` walk with unchecked indexing is cheaper, but only cloaked units take that path
+  - Names the run was unsure of: `shape_blitter.*` (alternative `draw_shape_frame.*`) and
+    `DrawShapeFrame()` (`BlitShapeFrame()`)
+  - `docs/CLANG_TIDY_PRIORITIES.md:1759-1762` still describes the negative-predator-offset `TODO` in
+    `tech/2keyfbuf.cc`, fixed by `7e41ec60`; annotate it if the doc is kept current
 - Decide what `PaletteClass::Adjust()` and `Partial_Adjust()` (`ra/palette.cc:88-103`) should do
   - Both are empty stubs; the `Adjust()` callers (`ra/movie.cc`, `ra/goptions.cc`) only nudge the
     black palette and back, but `ra/egos.cc:325,345` fades the credits with `Partial_Adjust()`,
