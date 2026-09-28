@@ -19,6 +19,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 
+namespace engine::gfx {
 namespace {
 
 // The effects one draw needs, one bit each, computed from the SHAPE_* flags on
@@ -235,3 +236,5 @@ void DrawShapeFrame(int x, int y, const int width, const int height,
 
   kBlitters.at(effect_bits)(job);
 }
+
+}  // namespace engine::gfx

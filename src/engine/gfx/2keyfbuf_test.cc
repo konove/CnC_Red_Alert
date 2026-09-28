@@ -14,6 +14,7 @@
 #include "engine/gfx/shape.h"
 #include "gtest/gtest.h"
 
+namespace engine::gfx {
 namespace {
 
 constexpr int kPageWidth = 8;
@@ -165,3 +166,4 @@ TEST_F(DrawShapeFrameTest, ANegativeOffsetSamplesBelowAndToTheLeft) {
 }
 
 }  // namespace
+}  // namespace engine::gfx

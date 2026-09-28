@@ -188,13 +188,13 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
       }
 
       if (draw_window.Lock()) {
-        const ShapeEffects effects{
+        const engine::gfx::ShapeEffects effects{
             .ghost_table = ghostdata,
             .fading_table = fading_data,
             .predator_offset = pred_offset,
         };
-        DrawShapeFrame(x, y, width, height, std::as_bytes(buffer), draw_window,
-                       flags | SHAPE_TRANS, effects);
+        engine::gfx::DrawShapeFrame(x, y, width, height, std::as_bytes(buffer),
+                                    draw_window, flags | SHAPE_TRANS, effects);
         draw_window.Unlock();
       }
     }

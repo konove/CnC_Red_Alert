@@ -12,6 +12,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 
+namespace engine::gfx {
+
 // The tables and the predator offset behind the drawing effects a SHAPE_*
 // flag selects.
 // Each member is read only while its flag is set.
@@ -44,5 +46,7 @@ struct ShapeEffects {
 void DrawShapeFrame(int x, int y, int width, int height,
                     std::span<const std::byte> frame, PixelView& dest,
                     ShapeFlags_Type flags, const ShapeEffects& effects = {});
+
+}  // namespace engine::gfx
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_2KEYFBUF_H_

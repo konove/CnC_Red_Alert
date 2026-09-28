@@ -2410,14 +2410,15 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
       }
 
       if (draw_window.Lock()) {
-        const ShapeEffects effects{
+        const engine::gfx::ShapeEffects effects{
             .ghost_table = ghostdata,
             .fading_table = fadingdata,
             .predator_offset = predoffset,
         };
-        DrawShapeFrame(x, y, Get_Build_Frame_Width(shapefile),
-                       Get_Build_Frame_Height(shapefile), shape_pointer,
-                       draw_window, flags | SHAPE_TRANS, effects);
+        engine::gfx::DrawShapeFrame(x, y, Get_Build_Frame_Width(shapefile),
+                                    Get_Build_Frame_Height(shapefile),
+                                    shape_pointer, draw_window,
+                                    flags | SHAPE_TRANS, effects);
       }
       draw_window.Unlock();
     }
