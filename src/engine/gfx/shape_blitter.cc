@@ -38,13 +38,13 @@ static_assert(kBlitterCount ==
 // How many pixels to the right of the one being drawn a predator pixel
 // samples, walked in order and wrapped. Sampling the page instead of drawing
 // the shape's color shows a displaced copy of the background, the shimmer.
-constexpr std::array<int, 8> kPredatorRightOffsets{1, 3, 2, 5, 2, 3, 4, 1};
+constexpr std::array kPredatorRightOffsets{1, 3, 2, 5, 2, 3, 4, 1};
 
 // The same walk for a negative predator offset: how many pixels to the left,
 // one row down. The assembler reached these by indexing the right-hand table
 // with the offset made negative, which landed 256 bytes below it on a copy it
 // had filled in with the page's stride.
-constexpr std::array<int, 8> kPredatorLeftOffsets{1, 3, 2, 5, 2, 4, 3, 1};
+constexpr std::array kPredatorLeftOffsets{1, 3, 2, 5, 2, 4, 3, 1};
 
 // One clipped draw: line_count lines of pixel_count pixels, read from `src`
 // and written to `dst`, whose rows are src_stride and dst_stride apart, with
@@ -149,7 +149,7 @@ constexpr auto kBlitters =
 }  // namespace
 
 void DrawShapeFrame(int x, int y, const int width, const int height,
-                    std::span<const std::byte> frame, PixelView& dest,
+                    const std::span<const std::byte> frame, PixelView& dest,
                     const ShapeFlags flags, const ShapeEffects& effects) {
   if (width <= 0 || height <= 0 ||
       base::ssize{width} * height > std::ssize(frame)) {
