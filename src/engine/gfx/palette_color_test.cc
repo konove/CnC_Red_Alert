@@ -28,7 +28,7 @@ TEST(PaletteColorFadedTowardTest, OutOfRangeRatioIsClamped) {
 }
 
 TEST(PaletteColorFadedTowardTest, LeavesTheSourceUntouched) {
-  const PaletteColor source = kOrange;
+  constexpr PaletteColor source = kOrange;
   static_cast<void>(source.FadedToward(200, kTeal));
   ExpectSameColor(source, kOrange);
 }
