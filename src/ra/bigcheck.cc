@@ -34,6 +34,8 @@
 #include "ra/shape_draw.h"
 #include "ra/toggle.h"
 
+using enum engine::gfx::ShapeFlags;
+
 //***********************************************************************************************
 bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
   if (ToggleClass::Draw_Me(view, forced)) {

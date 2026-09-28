@@ -135,6 +135,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 // #define FIXUP 0
 
 /***********************************************************************************************

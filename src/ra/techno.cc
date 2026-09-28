@@ -219,6 +219,8 @@
 #include "ra/weapon.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 /***************************************************************************
 **	Cloaking control values.
 */

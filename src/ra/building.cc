@@ -190,6 +190,8 @@
 #include "ra/weapon.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 // SAM site launcher states kept in Status.
 constexpr int kSamReady =
     0;  // Launcher can be facing any direction tracking targets.

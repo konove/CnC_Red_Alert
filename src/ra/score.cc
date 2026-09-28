@@ -89,6 +89,8 @@
 #include "ra/type.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 // Layout, in 320x200 coordinates.
 
 // Length in pixels of a full Do_GDI_Graph() bar. Frame N of a bar shape file is

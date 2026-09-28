@@ -128,6 +128,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 // void const * RadarClass::CoverShape;
 RadarClass::TacticalClass RadarClass::RadarButton;
 

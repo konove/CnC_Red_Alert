@@ -1170,9 +1170,10 @@ void Map_Selection() {
                           static_cast<int>(TheWorld().scen_dir())),
                  selection);
     const int xshuffled_rows = shape + (house == HOUSE_GOOD ? 0 : 18);
-    CC_Draw_Shape(
-        view, countryshape, shape, base::At(_countryx, xshuffled_rows),
-        base::At(_countryy, xshuffled_rows), WINDOW_MAIN, SHAPE_CENTER, {}, {});
+    CC_Draw_Shape(view, countryshape, shape,
+                  base::At(_countryx, xshuffled_rows),
+                  base::At(_countryy, xshuffled_rows), WINDOW_MAIN,
+                  engine::gfx::SHAPE_CENTER, {}, {});
     TheScreen().sys_mem_page().view().BlitTo(show.page().view());
     Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
 

@@ -184,6 +184,8 @@
 #include "td/winstub.h"
 #include "td/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */

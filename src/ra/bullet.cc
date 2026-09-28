@@ -101,6 +101,8 @@
 #include "ra/vessel.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 /***********************************************************************************************
  * BulletClass::BulletClass -- Bullet constructor. *
  *                                                                                             *
@@ -602,7 +604,7 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
   /*
   **	Draw the main body of the projectile.
   */
-  ShapeFlags flags = SHAPE_NORMAL;
+  engine::gfx::ShapeFlags flags = SHAPE_NORMAL;
   if (Class->IsTranslucent) {
     flags = SHAPE_GHOST;
   }

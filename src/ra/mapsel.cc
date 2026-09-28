@@ -211,9 +211,10 @@ static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
     if (cursor_timer.IsFinished()) {
       cursor_frame = (cursor_frame + 1) % cursor.FrameCount;
       cursor_timer.Set(cursor.FrameRate);
-      TheMouse().SetShape(cursor.X, cursor.Y,
-                          ExtractShapeFrame(MouseClass::MouseShapes,
-                                            cursor.StartFrame + cursor_frame));
+      TheMouse().SetShape(
+          cursor.X, cursor.Y,
+          engine::gfx::ExtractShapeFrame(MouseClass::MouseShapes,
+                                         cursor.StartFrame + cursor_frame));
     }
 
     if (TheKeyboard().Peek() &&
@@ -247,7 +248,8 @@ ScenarioVarType ChooseMissionVariant() {
   TheMouse().Hide();
 
   // Restore normal cursor before returning.
-  TheMouse().SetShape(0, 0, ExtractShapeFrame(MouseClass::MouseShapes, 0));
+  TheMouse().SetShape(
+      0, 0, engine::gfx::ExtractShapeFrame(MouseClass::MouseShapes, 0));
 
   TheKeyboard().Clear();
 

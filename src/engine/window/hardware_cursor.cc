@@ -46,7 +46,7 @@ void SdlSurfaceDeleter::operator()(SDL_Surface* surface) const noexcept {
 // pixels, or nullopt for data that runs out early or holds a zero or overlong
 // count.
 static std::optional<std::vector<uint8_t>> DecodeShapePixels(
-    const ShapeHeader& header, const std::span<const std::byte> data) {
+    const gfx::ShapeHeader& header, const std::span<const std::byte> data) {
   std::vector<uint8_t> rle_data(header.decompressed_bytes);
   const int32_t rle_bytes =
       LCW_Uncompress(data, std::as_writable_bytes(std::span(rle_data)));
@@ -161,11 +161,12 @@ HardwareCursor::~HardwareCursor() = default;
 
 void HardwareCursor::SetShape(const int hot_x, const int hot_y,
                               const std::span<const std::byte> shape) {
-  if (std::ssize(shape) < kShapeHeaderSize || current_shape_ == shape.data()) {
+  if (std::ssize(shape) < gfx::kShapeHeaderSize ||
+      current_shape_ == shape.data()) {
     return;
   }
-  ShapeHeader header{};
-  base::CopyBytes(base::ObjectBytes(header), shape, kShapeHeaderSize);
+  gfx::ShapeHeader header{};
+  base::CopyBytes(base::ObjectBytes(header), shape, gfx::kShapeHeaderSize);
 
   if (header.width == 0 || header.original_height == 0 ||
       std::cmp_greater(header.width, max_width_) ||
@@ -178,7 +179,7 @@ void HardwareCursor::SetShape(const int hot_x, const int hot_y,
     DLOG(INFO) << "SetShape: shape type " << header.format;
     return;
   }
-  auto pixels = DecodeShapePixels(header, shape.subspan(kShapeHeaderSize));
+  auto pixels = DecodeShapePixels(header, shape.subspan(gfx::kShapeHeaderSize));
   if (!pixels) {
     return;
   }

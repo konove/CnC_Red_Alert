@@ -156,7 +156,8 @@ bool ShapeButtonClass::Draw_Me(PixelView& view, bool forced) {
         shapenum = IsOn;
       }
     }
-    CC_Draw_Shape(view, ShapeData, shapenum, X, Y, WINDOW_MAIN, SHAPE_NORMAL);
+    CC_Draw_Shape(view, ShapeData, shapenum, X, Y, WINDOW_MAIN,
+                  engine::gfx::SHAPE_NORMAL);
     return true;
   }
   return false;

@@ -85,6 +85,8 @@
 #include "ra/type_heaps.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 static const OverlayTypeClass Sandbag(
     OVERLAY_SANDBAG_WALL,  // Overlay type number.
     "SBAG",                // INI name of overlay.

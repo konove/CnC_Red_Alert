@@ -69,6 +69,8 @@
 #include "ra/text_ids.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 std::span<const std::byte> TabClass::TabShape = {};
 
 /***********************************************************************************************

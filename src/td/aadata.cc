@@ -341,7 +341,8 @@ void AircraftTypeClass::Display(PixelView& view, int x, int y,
     ptr = Get_Image_Data();
     shape = 5;
   }
-  CC_Draw_Shape(view, ptr, shape, x, y, window, SHAPE_CENTER | SHAPE_FADING,
+  CC_Draw_Shape(view, ptr, shape, x, y, window,
+                engine::gfx::SHAPE_CENTER | engine::gfx::SHAPE_FADING,
                 HouseClass::As_Pointer(house)->Remap_Table(false, true));
 }
 

@@ -36,6 +36,8 @@
 #include "base/flags.h"
 #include "base/types.h"
 
+namespace engine::gfx {
+
 // How a shape is drawn. DrawShapeFrame() (engine/gfx/shape_blitter.h) acts on
 // SHAPE_CENTER, SHAPE_TRANS, SHAPE_GHOST, SHAPE_FADING and SHAPE_PREDATOR, and
 // the tables the effects need travel beside the flags in ShapeEffects. The
@@ -53,8 +55,6 @@ enum class CNC_FLAG_ENUM ShapeFlags : uint32_t {
   SHAPE_GHOST = 0x1000,     // Translucent through ShapeEffects::ghost_table
 };
 using enum ShapeFlags;
-template <>
-inline constexpr bool base::kIsFlagEnum<ShapeFlags> = true;
 
 // The header in front of each frame of a shape file, as stored (packed, so
 // the multi-byte fields are unaligned). The hardware cursor copies the first
@@ -89,5 +89,10 @@ int CountShapeFrames(std::span<const std::byte> shape_file);
 // for any offset, header or size that points outside `shape_file`.
 std::span<const std::byte> ExtractShapeFrame(
     std::span<const std::byte> shape_file, int frame);
+
+}  // namespace engine::gfx
+
+template <>
+inline constexpr bool base::kIsFlagEnum<engine::gfx::ShapeFlags> = true;
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_SHAPE_H_

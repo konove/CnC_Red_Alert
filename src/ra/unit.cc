@@ -172,6 +172,8 @@
 #include "ra/weapon.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 /***********************************************************************************************
  * Recoil_Adjust -- Adjust pixel values in direction specified. *
  *                                                                                             *

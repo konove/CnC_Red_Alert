@@ -2372,7 +2372,8 @@ static void Init_Mouse() {
   */
   const auto temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
   if (!temp_mouse_shapes.empty()) {
-    TheMouse().SetShape(0, 0, ExtractShapeFrame(temp_mouse_shapes, 0));
+    TheMouse().SetShape(0, 0,
+                        engine::gfx::ExtractShapeFrame(temp_mouse_shapes, 0));
   }
 
   TheMap().Set_Default_Mouse(MOUSE_NORMAL, false);

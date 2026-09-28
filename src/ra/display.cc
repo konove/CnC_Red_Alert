@@ -1921,7 +1921,8 @@ void DisplayClass::Redraw_Shadow(PixelView& view) {
             }
             if (shadow >= 0) {
               CC_Draw_Shape(view, ShadowShapes, shadow, xpixel, ypixel,
-                            WINDOW_TACTICAL, SHAPE_GHOST, {}, ShadowTrans);
+                            WINDOW_TACTICAL, engine::gfx::SHAPE_GHOST, {},
+                            ShadowTrans);
             } else {
               if (shadow != -1) {
                 int ww = CELL_PIXEL_W;

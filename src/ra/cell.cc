@@ -151,6 +151,8 @@
 #include "ra/vortex.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 /***********************************************************************************************
  * CellClass::CellClass -- Constructor for cell objects. *
  *                                                                                             *

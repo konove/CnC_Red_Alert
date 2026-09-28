@@ -147,6 +147,8 @@
 #include "ra/type.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 std::span<const std::byte> SidebarClass::SidebarShape = {};
 std::span<const std::byte> SidebarClass::SidebarMiddleShape = {};
 std::span<const std::byte> SidebarClass::SidebarBottomShape = {};

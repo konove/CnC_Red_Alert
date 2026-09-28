@@ -727,7 +727,7 @@ void TerrainTypeClass::Display(PixelView& view, int x, int y,
                                WindowNumberType window,
                                HousesType /*unused*/) const {
   CC_Draw_Shape(view, Get_Image_Data(), 0, x, y, window,
-                SHAPE_NORMAL | SHAPE_CENTER);
+                engine::gfx::SHAPE_NORMAL | engine::gfx::SHAPE_CENTER);
 }
 
 /***********************************************************************************************

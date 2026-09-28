@@ -141,6 +141,8 @@
 #include "td/type.h"
 #include "td/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 using enum engine::window::KeyNumber;
 
 /***************************************************************************

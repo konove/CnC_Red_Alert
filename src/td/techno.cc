@@ -222,6 +222,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 using enum engine::window::KeyNumber;
 
 /***************************************************************************

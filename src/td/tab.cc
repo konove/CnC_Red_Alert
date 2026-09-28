@@ -63,6 +63,8 @@
 #include "td/special.h"
 #include "td/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 std::span<const std::byte> TabClass::TabShape = {};
 
 /***********************************************************************************************

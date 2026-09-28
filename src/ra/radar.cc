@@ -131,6 +131,8 @@
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;
 

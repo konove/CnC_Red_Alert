@@ -181,6 +181,7 @@
 #include "td/ccdde.h"
 #endif
 
+using enum engine::gfx::ShapeFlags;
 using enum engine::window::KeyNumber;
 
 // Holds the end of the current frame; Main_Loop() sets it and Sync_Delay()
@@ -2362,7 +2363,8 @@ void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
  *=============================================================================================*/
 void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
                    int shapenum, int x, int y, WindowNumberType window,
-                   ShapeFlags flags, std::span<const uint8_t> fadingdata,
+                   engine::gfx::ShapeFlags flags,
+                   std::span<const uint8_t> fadingdata,
                    std::span<const uint8_t> ghostdata) {
   if (!shapefile.empty() && shapenum >= 0) {
     /*

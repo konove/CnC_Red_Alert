@@ -111,6 +111,8 @@
 #include "td/winstub.h"
 #include "td/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 #define SCORETEXT_X 184
 // #define SCORETEXT_Y 8
 #define CASUALTY_Y 88
@@ -1243,13 +1245,13 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
                                              320 - BUILDING_X, 48);
     int shapenum = 0;  // no damage
     if (i >= 60) {
-      shapenum = CountShapeFrames(factptr) - 2;  // some damage
+      shapenum = engine::gfx::CountShapeFrames(factptr) - 2;  // some damage
       if (i == 60) {
         ShakeScreen(6);
         Sound_Effect(VOC_CRUMBLE, VOL_FULL, 0);
       }
       if (i > 65) {
-        shapenum = CountShapeFrames(factptr) - 1;  // mega damage
+        shapenum = engine::gfx::CountShapeFrames(factptr) - 1;  // mega damage
       }
     }
 
@@ -1265,7 +1267,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
     ** Now draw some fires, if appropriate
     */
     if (i >= 61) {
-      const int firecount = CountShapeFrames(fball1ptr);
+      const int firecount = engine::gfx::CountShapeFrames(fball1ptr);
       int shapeindex = (i - 61) / 2;
       if (shapeindex < firecount) {
         CC_Draw_Shape(view, fball1ptr, shapeindex, 10, 10, WINDOW_MAIN,

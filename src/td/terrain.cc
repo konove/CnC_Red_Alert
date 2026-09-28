@@ -112,6 +112,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 #define BARNACLE_STAGE 22
 #define FIRST_SPORE_STAGE 30
 // #define FIRST_SPORABLE_LEVEL 7
@@ -403,7 +405,7 @@ void TerrainClass::Draw_It(PixelView& view, int x, int y,
       }
     }
 
-    ShapeFlags flags = SHAPE_NORMAL;
+    engine::gfx::ShapeFlags flags = SHAPE_NORMAL;
     if (IsSelected && TheDebugState().map_editor_active()) {
       flags = flags | SHAPE_FADING;
     }

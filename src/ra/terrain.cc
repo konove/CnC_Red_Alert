@@ -101,6 +101,8 @@
 #include "ra/type_heaps.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 /***********************************************************************************************
  * TerrainClass::~TerrainClass -- Default destructor for terrain class objects.
  **
@@ -347,7 +349,7 @@ void TerrainClass::Draw_It(PixelView& view, int x, int y,
       }
     }
 
-    ShapeFlags flags = SHAPE_NORMAL;
+    engine::gfx::ShapeFlags flags = SHAPE_NORMAL;
     if (IsSelected && TheDebugState().map_editor_active()) {
       flags = flags | SHAPE_FADING;
     }

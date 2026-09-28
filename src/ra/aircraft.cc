@@ -170,6 +170,8 @@
 #include "ra/weapon.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 /***********************************************************************************************
  * _Counts_As_Civ_Evac -- Is the specified object a candidate for civilian evac
  *logic?         *
@@ -559,7 +561,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
  *=============================================================================================*/
 void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
                                 WindowNumberType window) const {
-  ShapeFlags flags = SHAPE_CENTER;
+  engine::gfx::ShapeFlags flags = SHAPE_CENTER;
   int shapenum = 0;
 
   /*

@@ -77,6 +77,8 @@
 #include "td/type.h"
 #include "td/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 static const OverlayTypeClass Road(
     OVERLAY_ROAD,  // Overlay type number.
     "ROAD",        // INI name of overlay.

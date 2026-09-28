@@ -72,6 +72,8 @@
 #include "td/screen.h"
 #include "td/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 std::span<const std::byte> PowerClass::PowerShape;
 std::span<const std::byte> PowerClass::PowerBarShape;
 

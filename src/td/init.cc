@@ -309,7 +309,8 @@ bool Init_Game() {
   */
   temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
   if (!temp_mouse_shapes.empty()) {
-    TheMouse().SetShape(0, 0, ExtractShapeFrame(temp_mouse_shapes, 0));
+    TheMouse().SetShape(0, 0,
+                        engine::gfx::ExtractShapeFrame(temp_mouse_shapes, 0));
   }
 
   DLOG(INFO) << "C&C95 - About to enter wait for focus loop";

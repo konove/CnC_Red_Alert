@@ -83,6 +83,8 @@
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
 
+using enum engine::gfx::ShapeFlags;
+
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *
  *                                                                                             *

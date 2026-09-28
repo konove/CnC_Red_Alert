@@ -12,6 +12,7 @@
 #include "base/numeric.h"
 #include "gtest/gtest.h"
 
+namespace engine::gfx {
 namespace {
 
 // Shape file images, built little-endian.
@@ -124,3 +125,4 @@ TEST(ExtractShapeFrameTest, SizePastTheEndIsEmpty) {
 }
 
 }  // namespace
+}  // namespace engine::gfx

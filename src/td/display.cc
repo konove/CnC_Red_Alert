@@ -1918,7 +1918,8 @@ void DisplayClass::Redraw_Shadow(PixelView& view) {
               const int shadow = Cell_Shadow(cell);
               if (shadow >= 0) {
                 CC_Draw_Shape(view, ShadowShapes, shadow, xpixel, ypixel,
-                              WINDOW_TACTICAL, SHAPE_GHOST, {}, ShadowTrans);
+                              WINDOW_TACTICAL, engine::gfx::SHAPE_GHOST, {},
+                              ShadowTrans);
               }
             }
           }

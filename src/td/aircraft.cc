@@ -161,6 +161,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 /*
 ** This contains the value of the Virtual Function Table Pointer
 */
@@ -443,7 +445,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   *shapes occur after the first *	32 shapes of the helicopter body.
   */
   if (Class->IsRotorEquipped) {
-    ShapeFlags flags = SHAPE_CENTER;
+    engine::gfx::ShapeFlags flags = SHAPE_CENTER;
 
     /*
     **	The rotor shape number depends on whether the helicopter is idling

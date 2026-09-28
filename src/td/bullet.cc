@@ -89,6 +89,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 #define GRAVITY 3
 
 /***********************************************************************************************
@@ -563,7 +565,7 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
   /*
   **	Draw the main body of the projectile.
   */
-  ShapeFlags flags = SHAPE_NORMAL;
+  engine::gfx::ShapeFlags flags = SHAPE_NORMAL;
   if (Class->IsTranslucent) {
     flags = SHAPE_GHOST;
   }

@@ -9,6 +9,8 @@
 #include "base/types.h"
 #include "base/unaligned.h"
 
+namespace engine::gfx {
+
 int CountShapeFrames(const std::span<const std::byte> shape_file) {
   if (shape_file.size() < sizeof(uint16_t)) {
     return 0;
@@ -45,3 +47,5 @@ std::span<const std::byte> ExtractShapeFrame(
              ? frame_data.first(base::ToSize(frame_bytes))
              : std::span<const std::byte>{};
 }
+
+}  // namespace engine::gfx

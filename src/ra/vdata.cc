@@ -378,7 +378,7 @@ void VesselTypeClass::Display(PixelView& view, int x, int y,
     ptr = Get_Image_Data();
     shape = Rotation / 6;
   }
-  CC_Draw_Shape(view, ptr, shape, x, y, window, SHAPE_CENTER);
+  CC_Draw_Shape(view, ptr, shape, x, y, window, engine::gfx::SHAPE_CENTER);
 }
 
 /***********************************************************************************************

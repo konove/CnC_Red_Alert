@@ -1395,7 +1395,8 @@ void UnitTypeClass::Display(PixelView& view, int x, int y,
     ptr = Get_Image_Data();
     shape = IsChunkyShape ? 0 : 5;
   }
-  CC_Draw_Shape(view, ptr, shape, x, y, window, SHAPE_FADING | SHAPE_CENTER,
+  CC_Draw_Shape(view, ptr, shape, x, y, window,
+                engine::gfx::SHAPE_FADING | engine::gfx::SHAPE_CENTER,
                 HouseTypeClass::As_Reference(house).RemapTable);
 }
 

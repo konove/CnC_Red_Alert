@@ -129,18 +129,19 @@ void MouseClass::Mouse_Small(bool wwsmall) {
 
   if (wwsmall) {
     if (control->SmallFrame != -1) {
-      TheMouse().SetShape(
-          control->X, control->Y,
-          ExtractShapeFrame(MouseShapes, control->SmallFrame + (Frame / 4)));
+      TheMouse().SetShape(control->X, control->Y,
+                          engine::gfx::ExtractShapeFrame(
+                              MouseShapes, control->SmallFrame + (Frame / 4)));
     } else {
-      TheMouse().SetShape(
-          MouseControl.at(MOUSE_NORMAL).X, MouseControl.at(MOUSE_NORMAL).Y,
-          ExtractShapeFrame(MouseShapes, static_cast<int>(MOUSE_NORMAL)));
+      TheMouse().SetShape(MouseControl.at(MOUSE_NORMAL).X,
+                          MouseControl.at(MOUSE_NORMAL).Y,
+                          engine::gfx::ExtractShapeFrame(
+                              MouseShapes, static_cast<int>(MOUSE_NORMAL)));
     }
   } else {
-    TheMouse().SetShape(
-        control->X, control->Y,
-        ExtractShapeFrame(MouseShapes, control->StartFrame + (Frame / 4)));
+    TheMouse().SetShape(control->X, control->Y,
+                        engine::gfx::ExtractShapeFrame(
+                            MouseShapes, control->StartFrame + (Frame / 4)));
   }
 }
 
@@ -194,8 +195,9 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
 #endif
     baseshp = wwsmall ? control->SmallFrame : control->StartFrame;
 
-    TheMouse().SetShape(control->X, control->Y,
-                        ExtractShapeFrame(MouseShapes, baseshp + (Frame / 4)));
+    TheMouse().SetShape(
+        control->X, control->Y,
+        engine::gfx::ExtractShapeFrame(MouseShapes, baseshp + (Frame / 4)));
     CurrentMouseShape = mouse;
     IsSmall = wwsmall;
     return true;
@@ -241,7 +243,8 @@ void MouseClass::AI(engine::window::InputEvent& event, int x, int y) {
 
     if (!IsSmall || control->SmallFrame != -1) {
       const int baseframe = IsSmall ? control->SmallFrame : control->StartFrame;
-      mouse_shape_ptr = ExtractShapeFrame(MouseShapes, baseframe + Frame);
+      mouse_shape_ptr =
+          engine::gfx::ExtractShapeFrame(MouseShapes, baseframe + Frame);
       if (!mouse_shape_ptr.empty()) {
         TheMouse().SetShape(control->X, control->Y, mouse_shape_ptr);
       }

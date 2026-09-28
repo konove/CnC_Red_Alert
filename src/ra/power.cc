@@ -68,6 +68,8 @@
 #include "ra/text_ids.h"
 #include "ra/world.h"
 
+using enum engine::gfx::ShapeFlags;
+
 /*
 **	Points to the shape to use for the "desired" power level indicator.
 */
@@ -168,7 +170,7 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
   if ((complete || IsPowerToRedraw) && view.Lock()) {
     if (TheMap().IsSidebarActive) {
       IsPowerToRedraw = false;
-      ShapeFlags flags = SHAPE_NORMAL;
+      engine::gfx::ShapeFlags flags = SHAPE_NORMAL;
       std::span<const unsigned char> remap;
 
       if (FlashTimer.Remaining() > 1 && (FlashTimer.Remaining() % 3) % 2 != 0) {

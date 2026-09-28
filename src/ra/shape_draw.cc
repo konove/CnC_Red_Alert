@@ -47,6 +47,8 @@
 #include "ra/keyframe.h"
 #include "ra/screen.h"
 
+using enum engine::gfx::ShapeFlags;
+
 namespace {
 
 // Draws the width x height shape `pixels` into `out`, scaled by `scale` (24.8
@@ -118,7 +120,7 @@ std::span<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
 
 void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
                    const int shape_num, const int x, const int y,
-                   const WindowNumberType window, ShapeFlags flags,
+                   const WindowNumberType window, engine::gfx::ShapeFlags flags,
                    std::span<const uint8_t> fading_data,
                    std::span<const uint8_t> ghostdata, const DirType rotation,
                    const int32_t scale) {
