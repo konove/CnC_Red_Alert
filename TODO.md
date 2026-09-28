@@ -28,6 +28,27 @@
     (and deleted in `09717739`) they are always 0, so `ra/menus.cc`, `td/menus.cc`, `ra/object.cc`
     and `td/object.cc` place menus and text as if every window sat at the screen's top-left
   - Either delete them (no visible change) or set them from `WindowList` where the window changes
+- Stop Red Alert's options palette drifting from the art at neutral settings
+  - `OptionsClass::Adjust_Palette()` (`ra/options.cc`) runs every entry through
+    `engine::gfx::PaletteColor::ToHsv()` and back through `HsvColor`'s conversion
+    (`engine/gfx/hsv_color.cc`, TODO there); both truncate, so at the neutral slider settings
+    127,769 of the 262,144 6-bit colors come back one or two steps off (the original code: 76,340;
+    Tiberian Dawn's rounding `Rgb6ToHsv()`/`HsvToRgb6()`: 21,612, by one step)
+  - Options: round in both directions (small; changes RA's palette); skip `Adjust_Palette()` at
+    neutral settings (smallest; drift remains off-neutral); or give both games one conversion pair,
+    a `base::Rgb8ToHsv()` next to `base::HsvToRgb8()` in `base/hsv.h` built from `Rgb6ToHsv()`'s
+    8-bit core, with `ToHsv()` and `operator PaletteColor()` on top (~45 lines of sextant logic kept
+    once; changes whichever game's pair is dropped)
+  - Unifying also retires `Rgb6`, a third RGB type: a raw-gun constructor and accessors on
+    `PaletteColor` would let TD's 768-byte palette be `PaletteColor`s (same layout, see the
+    `static_assert` in `engine/gfx/palette_color.h`)
+  - Found in the hsv/rgb `/modernize-file` run (`dc251088..f60d3070`); visual only, not simulation
+- Decide whether `PaletteColor::red()`/`green()`/`blue()` should read full intensity as 255
+  - `ToEightBits()` (`engine/gfx/palette_color.h`, TODO there) is `gun * 4 + gun / 64`, the original
+    `(gun << 2) | (gun >> 6)`; the second term is always 0 for a 6-bit gun, so 63 reads as 252.
+    `gun >> 4` would copy the top bits down (63 -> 255), as was probably meant
+  - Changes `ToHsv()` values (the options palette), `PaletteClass::Closest_Color()` matches and the
+    palette `ra/wolapiob.cc` exports
 
 ## Refactoring
 
@@ -111,9 +132,10 @@
 - Consider renaming `engine::platform::Timer<T>` to `Countdown<T>` (149 uses)
   - `Stopwatch` and `Timer` are both timers; the name kept by `docs/TIMER_UNIFICATION_PLAN.md` does
     not say which way it counts
-- Delete the commented-out code in `ra/wol_logn.cc:439` and `ra/wolapiob.cc:797`
-  - It still names `Timer<SystemTickSource>` and `SystemMilliseconds()` unqualified, so it no longer
-    matches the code around it
+- Delete the commented-out code in `ra/wol_logn.cc:439`, `ra/wolapiob.cc:797` and `ra/jshell.cc:420`
+  - `jshell.cc` still builds an `HsvColor` from a palette entry, which no longer compiles
+  - The first two still name `Timer<SystemTickSource>` and `SystemMilliseconds()` unqualified, so it
+    no longer matches the code around it
 - Consider stepping the source coordinates incrementally in `ScaleRotateShape()`
   (`ra/shape_draw.cc`)
   - Each destination pixel recomputes `bx`/`by` with four multiplies; adding a constant per x (DDA)
@@ -123,6 +145,35 @@
   - `engine/gfx/bitmap.h` (`BitmapClass`, `TPoint2D`) was deleted for having one caller;
     `ra/mapsel.cc` has a file-local `Point` and `VqaFrameView` (`engine/video/vqa/vqa_player.h`) is
     a width/height/pixels view that could become the shared one
+- Share the options dialogs' brightness, contrast, color and tint math
+  - `OptionsClass::Adjust_Palette()` in `ra/options.cc` and `td/options.cc` repeat the same ~25
+    lines; only the slider scale differs (RA's `fixed * 256`, TD's `unsigned char`). One
+    `engine/gfx` function over an `HsvColor` and four 0..255 levels would do, best after the
+    palette-drift bug above settles on one HSV conversion
+- Define the 0..255 HSV scale once
+  - `kMaxComponent` = 255 is a local in `base::HsvToRgb8()` (`base/hsv.h`), a file constant in
+    `engine/gfx/hsv_color.cc` and `PaletteColor::kMaxComponent`, and `engine/gfx/palette_color.cc`
+    still spells it `255` (the fade ratio and the HSV scale); hoist one `base::` constant into
+    `base/hsv.h`
+- Move the rest of `engine/gfx` into `engine::gfx`
+  - Only `palette_color.*` and `hsv_color.*` are in it (`babcd0a9`); `glow_pulse.h` and
+    `glow_pulse_test.cc` write `engine::gfx::PaletteColor` and `engine::gfx::kBlackColor` and drop
+    the qualifier when they move
+- Run `/fix-ide-issues` on `engine/gfx/palette_color.h`, `palette_color.cc`, `hsv_color.cc`,
+  `palette_color_test.cc` and `hsv_color_test.cc`
+  - Stage 7 of the `/modernize-file` run (`dc251088..f60d3070`) was skipped: CLion's
+    `getDiagnostics` timed out on them (only `hsv_color.h` answered, with nothing to fix)
+- Consider small clean-ups in `engine/gfx/palette_color.cc` and `hsv_color.cc`
+  - `PaletteColor::FadedToward()` does three float `std::lerp()`s per entry; an integer form is
+    cheaper but rounds a falling gun toward its start instead of down, so it changes fades
+  - `Rgb6ToHsv()` computes all three shortfalls where each branch uses one (two wasted divides, TD's
+    options dialog only), and could take a `const Rgb6&` to mirror `HsvToRgb6()`
+  - Names the run was unsure of: `PaletteColor` (alternative `VgaColor`), `FadedToward()`
+    (`Blend()`), and `red()` returning the 8-bit value while `red_` holds the 6-bit gun (`red8()`)
+- Decide what `PaletteClass::Adjust()` and `Partial_Adjust()` (`ra/palette.cc:88-103`) should do
+  - Both are empty stubs; the `Adjust()` callers (`ra/movie.cc`, `ra/goptions.cc`) only nudge the
+    black palette and back, but `ra/egos.cc:325,345` fades the credits with `Partial_Adjust()`,
+    which prints its name and does nothing
 
 ## Testing
 
