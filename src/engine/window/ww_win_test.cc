@@ -24,6 +24,12 @@ void RecordEvent(SDL_Event* event) {
 
 void RecordPump() { ++pumps_seen; }
 
+void PushQuitEvent() {
+  SDL_Event event{};
+  event.type = SDL_QUIT;
+  SDL_PushEvent(&event);
+}
+
 class EventPumpTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -47,14 +53,14 @@ class EventPumpTest : public ::testing::Test {
 
 TEST_F(EventPumpTest, CallsTheInstalledEventHandler) {
   SetEventHandler(&RecordEvent);
-  SDL_Send_Quit();
+  PushQuitEvent();
   PumpEvents();
   EXPECT_EQ(events_seen, 1);
   EXPECT_EQ(last_event_type, static_cast<uint32_t>(SDL_QUIT));
 }
 
 TEST_F(EventPumpTest, DropsEventsWithNoHandlerInstalled) {
-  SDL_Send_Quit();
+  PushQuitEvent();
   PumpEvents();
   EXPECT_EQ(events_seen, 0);
 }

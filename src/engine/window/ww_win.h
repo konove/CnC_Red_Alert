@@ -53,8 +53,4 @@ void SetPumpHandler(PumpHandler handler);
 // redraw event runs a nested loop that drains the rest of the queue.
 void PumpEvents();
 
-// Pushes an SDL_QUIT event, which the game's event handler receives on the
-// next PumpEvents.
-void SDL_Send_Quit();
-
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_
