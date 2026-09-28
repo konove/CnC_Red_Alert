@@ -27,19 +27,15 @@ constexpr uint32_t kBlitOld =
 
 // The predator walk keeps the assembler's arithmetic: BFPredOffset is a byte
 // offset into a table of 16-bit entries, so it steps by 2 and PRED_MASK keeps
-// it on the eight entries (0..14). A negative predator offset becomes
-// 0xFFFFFF00 | k, which the assembler added to BFPredTable's address to land
-// in BFPredNegTable's computed half, 256 bytes below it in its data segment;
-// its step only touched the low byte, so the walk stayed there.
-// TODO: in C++ that value indexes BFPredTable at -128 + k / 2, which base::At
-// rejects with a CHECK failure, and the step's mask would drop the high bits
-// anyway. Tiberian Dawn negates the offset for every shape on the right half
-// of the window, so a cloaking Stealth Tank there crashes the game.
+// it on the eight entries (0..14). The assembler made a negative predator
+// offset 0xFFFFFF00 | k, which added to BFPredTable's address landed in
+// BFPredNegTable's computed half, 256 bytes below it in its data segment; here
+// BFPredSteps says which of the two tables the walk is on.
 constexpr int PRED_MASK = 0xE;
 
 // Predator state for the draw in progress, reset by each draw that asks for
 // the effect.
-// The byte offset of the next BFPredTable entry to sample with (see above).
+// The byte offset of the next BFPredSteps entry to sample with (see above).
 static int BFPredOffset;
 // Accumulates BFPartialPred per pixel; each time it passes 256 the pixel gets
 // the effect and the count keeps the remainder.
@@ -57,6 +53,10 @@ static int16_t BFPredNegTable[]{-1, -3, -2, -5, -2, -4, -3, -1,
 // samples, walked in order and wrapped. Sampling the page instead of drawing
 // the shape's color shows a displaced copy of the background, the shimmer.
 static int16_t BFPredTable[]{1, 3, 2, 5, 2, 3, 4, 1};
+
+// The table the walk samples with: BFPredTable, or the computed half of
+// BFPredNegTable for a negative predator offset.
+static std::span<const int16_t> BFPredSteps;
 
 // Draws line_count lines of pixel_count pixels with the effects in `flags`,
 // stepping src_adjust_width and dst_adjust_width past the end of each line to
@@ -90,7 +90,7 @@ static void Do_Old_Blit(int line_count, int pixel_count,
             // NOLINTNEXTLINE(bugprone-signed-bitwise)
             const int pred_index = BFPredOffset >> 1;
             const auto sample =
-                output + base::ToSize(base::At(BFPredTable, pred_index));
+                output + base::ToSize(base::At(BFPredSteps, pred_index));
             if (sample < dst_offset.size()) {
               pixel = base::At(dst_offset, sample);
             }
@@ -193,10 +193,11 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
     offset *= 2;
 
     if (offset < 0) {
-      // NOLINTNEXTLINE(bugprone-signed-bitwise)
-      offset = (-offset & PRED_MASK) | ~0xFF;  // 0xFFFFFF00..0xFFFFFF0E
+      offset = -offset & PRED_MASK;  // NOLINT(bugprone-signed-bitwise)
+      BFPredSteps = std::span(BFPredNegTable).subspan(8);
     } else {
       offset &= PRED_MASK;  // NOLINT(bugprone-signed-bitwise)
+      BFPredSteps = BFPredTable;
     }
 
     BFPredOffset = offset;
