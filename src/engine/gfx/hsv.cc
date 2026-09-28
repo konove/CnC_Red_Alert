@@ -42,25 +42,17 @@ HSVClass::operator RGBClass() const {
           static_cast<uint8_t>(color.blue)};
 }
 
-// base::DivideWithRound() over the unsigned values the conversions below
-// work in. Originally from WIN32LIB/MISC/LIB.CPP.
-static unsigned Divide_With_Round(unsigned num, unsigned den) {
-  return static_cast<unsigned>(
-      base::DivideWithRound(static_cast<int>(num), static_cast<int>(den)));
-}
-
 // The conversions work at the 8-bit HSV scale for better precision than the
 // 6-bit guns would give.
-#define HSV_BASE 255
+constexpr int kHsvBase = 255;
 // The brightest VGA gun; 63, not 64, since this is a maximum, not a range.
-#define RGB_BASE 63
+constexpr int kRgbBase = 63;
 
-void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
-                        unsigned int* h, unsigned int* s, unsigned int* v) {
+void Convert_RGB_To_HSV(int r, int g, int b, int* h, int* s, int* v) {
   // Scale the 6-bit guns up to the 8-bit HSV scale.
-  r = Divide_With_Round(r * HSV_BASE, RGB_BASE);
-  g = Divide_With_Round(g * HSV_BASE, RGB_BASE);
-  b = Divide_With_Round(b * HSV_BASE, RGB_BASE);
+  r = base::DivideWithRound(r * kHsvBase, kRgbBase);
+  g = base::DivideWithRound(g * kHsvBase, kRgbBase);
+  b = base::DivideWithRound(b * kHsvBase, kRgbBase);
 
   // A grey has no hue; it stays 0 unless there is saturation below.
   *h = 0;
@@ -70,72 +62,67 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
   *v = std::max(b, *v);
 
   // The dimmest gun is the amount of white mixed in.
-  unsigned int m = r < g ? r : g;
+  int m = r < g ? r : g;
   m = std::min(b, m);
 
   // The saturation is the share of the value that is not white.
   if (*v != 0) {
-    *s = Divide_With_Round((*v - m) * HSV_BASE, *v);
+    *s = base::DivideWithRound((*v - m) * kHsvBase, *v);
   } else {
     *s = 0;
   }
 
   if (*s != 0) {
     // Each gun's distance below the brightest, as a fraction of the spread
-    // between brightest and dimmest scaled to 0..HSV_BASE. The dimmest gun's
-    // is HSV_BASE, the brightest's 0. A non-zero saturation means the spread
+    // between brightest and dimmest scaled to 0..kHsvBase. The dimmest gun's
+    // is kHsvBase, the brightest's 0. A non-zero saturation means the spread
     // is not zero.
-    const unsigned int tmp = *v - m;
-    CHECK_NE(tmp, 0U);
-    const unsigned int r1 = Divide_With_Round((*v - r) * HSV_BASE, tmp);
-    const unsigned int g1 = Divide_With_Round((*v - g) * HSV_BASE, tmp);
-    const unsigned int b1 = Divide_With_Round((*v - b) * HSV_BASE, tmp);
+    const int tmp = *v - m;
+    CHECK_NE(tmp, 0);
+    const int r1 = base::DivideWithRound((*v - r) * kHsvBase, tmp);
+    const int g1 = base::DivideWithRound((*v - g) * kHsvBase, tmp);
+    const int b1 = base::DivideWithRound((*v - b) * kHsvBase, tmp);
 
     // Find the effect of the second most predominant color: which gun is
     // brightest and which dimmest picks the sextant of the color hexagon, and
     // the middle gun's fraction the position within it. The hue is built at
-    // six times its final scale, one HSV_BASE per sextant.
+    // six times its final scale, one kHsvBase per sextant.
     if (*v == r) {
       if (m == g) {
-        *h = (5 * HSV_BASE) + b1;
+        *h = (5 * kHsvBase) + b1;
       } else {
-        *h = (1 * HSV_BASE) - g1;
+        *h = (1 * kHsvBase) - g1;
       }
     } else {
       if (*v == g) {
         if (m == b) {
-          *h = (1 * HSV_BASE) + r1;
+          *h = (1 * kHsvBase) + r1;
         } else {
-          *h = (3 * HSV_BASE) - b1;
+          *h = (3 * kHsvBase) - b1;
         }
       } else {
         // *v == b
         if (m == r) {
-          *h = (3 * HSV_BASE) + g1;
+          *h = (3 * kHsvBase) + g1;
         } else {
-          *h = (5 * HSV_BASE) - r1;
+          *h = (5 * kHsvBase) - r1;
         }
       }
     }
 
-    // Back to one HSV_BASE for the whole circle. A red whose green and blue
-    // tie takes the magenta branch and lands on 6 * HSV_BASE, which becomes
-    // HSV_BASE, the same hue as 0.
-    *h = Divide_With_Round(*h, 6);
+    // Back to one kHsvBase for the whole circle. A red whose green and blue
+    // tie takes the magenta branch and lands on 6 * kHsvBase, which becomes
+    // kHsvBase, the same hue as 0.
+    *h = base::DivideWithRound(*h, 6);
   }
 }
 
-void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
-                        unsigned int* r, unsigned int* g, unsigned int* b) {
-  const base::Rgb8 color = base::HsvToRgb8(
-      static_cast<int>(h), static_cast<int>(s), static_cast<int>(v));
+void Convert_HSV_To_RGB(int h, int s, int v, int* r, int* g, int* b) {
+  const base::Rgb8 color = base::HsvToRgb8(h, s, v);
 
-  // HsvToRgb8() works at HSV_BASE; scale each gun down to the VGA RGB_BASE,
+  // HsvToRgb8() works at kHsvBase; scale each gun down to the VGA kRgbBase,
   // rounding.
-  *r = static_cast<unsigned int>(
-      base::DivideWithRound(color.red * RGB_BASE, HSV_BASE));
-  *g = static_cast<unsigned int>(
-      base::DivideWithRound(color.green * RGB_BASE, HSV_BASE));
-  *b = static_cast<unsigned int>(
-      base::DivideWithRound(color.blue * RGB_BASE, HSV_BASE));
+  *r = base::DivideWithRound(color.red * kRgbBase, kHsvBase);
+  *g = base::DivideWithRound(color.green * kRgbBase, kHsvBase);
+  *b = base::DivideWithRound(color.blue * kRgbBase, kHsvBase);
 }

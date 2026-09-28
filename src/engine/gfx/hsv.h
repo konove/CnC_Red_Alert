@@ -23,6 +23,8 @@
 // use to apply the brightness, color, tint and contrast sliders to a palette.
 // Originally Westwood's HSV.H (Joe L. Bostic, December 1995).
 
+#include <cstdint>
+
 class RGBClass;
 
 // A color as hue, saturation and value, each in 0..255.
@@ -41,8 +43,7 @@ class RGBClass;
 //   hsv.Value_Component());
 class HSVClass {
  public:
-  HSVClass(unsigned char hue, unsigned char saturation,
-           unsigned char value) noexcept
+  HSVClass(uint8_t hue, uint8_t saturation, uint8_t value) noexcept
       : Hue(hue), Saturation(saturation), Value(value) {}
 
   // Returns the RGB color that most closely matches this one. The conversion
@@ -59,9 +60,9 @@ class HSVClass {
   [[nodiscard]] int Value_Component() const { return Value; }
 
  private:
-  unsigned char Hue;
-  unsigned char Saturation;
-  unsigned char Value;
+  uint8_t Hue;
+  uint8_t Saturation;
+  uint8_t Value;
 };
 
 // HSV/RGB conversions for colors stored as VGA 6-bit guns (0..63), with the
@@ -72,12 +73,10 @@ class HSVClass {
 
 // Converts 'r', 'g' and 'b' (each 0..63) and stores the hue, saturation and
 // value in '*h', '*s' and '*v' (each 0..255). A grey has hue and saturation 0.
-void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
-                        unsigned int* h, unsigned int* s, unsigned int* v);
+void Convert_RGB_To_HSV(int r, int g, int b, int* h, int* s, int* v);
 
 // Converts 'h', 's' and 'v' (each 0..255, clamped if not) and stores the guns
 // in '*r', '*g' and '*b' (each 0..63).
-void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
-                        unsigned int* r, unsigned int* g, unsigned int* b);
+void Convert_HSV_To_RGB(int h, int s, int v, int* r, int* g, int* b);
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_HSV_H_

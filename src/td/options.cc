@@ -419,9 +419,9 @@ void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
                                   std::span<unsigned char> newpal,
                                   unsigned char brightness, unsigned char color,
                                   unsigned char tint, unsigned char contrast) {
-  unsigned h = 0;
-  unsigned s = 0;
-  unsigned v = 0;
+  int h = 0;
+  int s = 0;
+  int v = 0;
 
   if (oldpal.size() < 768 || newpal.size() < 768) {
     return;
@@ -435,9 +435,9 @@ void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
       std::ranges::copy(oldpal.subspan(base::ToSize(index) * 3, 3),
                         newpal.subspan(base::ToSize(index) * 3).begin());
     } else {
-      unsigned r = base::At(oldpal, (base::ToSize(index) * 3) + 0);
-      unsigned g = base::At(oldpal, (base::ToSize(index) * 3) + 1);
-      unsigned b = base::At(oldpal, (base::ToSize(index) * 3) + 2);
+      int r = base::At(oldpal, (base::ToSize(index) * 3) + 0);
+      int g = base::At(oldpal, (base::ToSize(index) * 3) + 1);
+      int b = base::At(oldpal, (base::ToSize(index) * 3) + 2);
       Convert_RGB_To_HSV(r, g, b, &h, &s, &v);
 
       /*
@@ -447,17 +447,16 @@ void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
 
       int temp = v * brightness / 0x80;  // Brightness
       temp = Bound(temp, 0, 0xFF);
-      v = static_cast<unsigned>(temp);
-      temp =
-          ((static_cast<int>(v) - 0x80) * contrast / 0x80) + 0x80;  // Contrast
+      v = temp;
+      temp = ((v - 0x80) * contrast / 0x80) + 0x80;  // Contrast
       temp = Bound(temp, 0, 0xFF);
-      v = static_cast<unsigned>(temp);
+      v = temp;
       temp = s * color / 0x80;  // Color
       temp = Bound(temp, 0, 0xFF);
-      s = static_cast<unsigned>(temp);
+      s = temp;
       temp = h * tint / 0x80;  // Tint
       temp = Bound(temp, 0, 0xFF);
-      h = static_cast<unsigned>(temp);
+      h = temp;
       Convert_HSV_To_RGB(h, s, v, &r, &g, &b);
       base::At(newpal, (base::ToSize(index) * 3) + 0) =
           static_cast<unsigned char>(r);

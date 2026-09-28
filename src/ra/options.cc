@@ -69,6 +69,8 @@
 
 #include "ra/options.h"
 
+#include <cstdint>
+
 #include "base/array.h"
 #include "base/fixed.h"
 #include "engine/audio/audio_mixer.h"
@@ -511,8 +513,8 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
       *calculated *	hue, saturation, and value.
       */
       newpal.at(index) =
-          HSVClass(static_cast<unsigned char>(h), static_cast<unsigned char>(s),
-                   static_cast<unsigned char>(v));
+          HSVClass(static_cast<uint8_t>(h), static_cast<uint8_t>(s),
+                   static_cast<uint8_t>(v));
     }
   }
 }
