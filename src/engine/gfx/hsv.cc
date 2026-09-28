@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// HSVClass's conversion to RGB and Tiberian Dawn's 6-bit HSV/RGB conversions.
+// HsvColor's conversion to RGB and Tiberian Dawn's 6-bit HSV/RGB conversions.
 
 #include "engine/gfx/hsv.h"
 
@@ -27,11 +27,11 @@
 #include "base/hsv.h"
 #include "engine/gfx/rgb.h"
 
-HSVClass::operator RGBClass() const {
+HsvColor::operator PaletteColor() const {
   const base::Rgb8 color = base::HsvToRgb8(
       Hue_Component(), Saturation_Component(), Value_Component());
 
-  // The RGBClass constructor drops each gun's low two bits to get the 6-bit
+  // The PaletteColor constructor drops each gun's low two bits to get the 6-bit
   // VGA value it stores.
   //
   // TODO: Truncating here, and in ToHSV(), makes the round trip lossy: at the

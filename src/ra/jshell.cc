@@ -398,7 +398,7 @@ std::span<unsigned char> Make_Fading_Table(const PaletteClass& palette,
       *remapped *	to in the special remap range.
       */
       // Try to match this color.
-      const RGBClass trycolor =
+      const PaletteColor trycolor =
           palette.at(index).Adjusted(frac, palette.at(color));
 
       /*
@@ -417,7 +417,7 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
     int frac) {
   if (dest.size() >= PaletteClass::COLOR_COUNT) {
     auto ptr = dest.begin();
-    //		HSVClass desthsv = palette[color];
+    //		HsvColor desthsv = palette[color];
 
     /*
     **	Find an appropriate remap color index for every color in the palette.
@@ -437,7 +437,7 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
         *remapped *	to in the special remap range.
         */
         // Try to match this color.
-        const RGBClass trycolor =
+        const PaletteColor trycolor =
             palette.at(index).Adjusted(frac, palette.at(color));
 
         /*

@@ -50,11 +50,11 @@ class GlowPulse {
   }
 
   // Returns `color` dimmed by the current fade.
-  [[nodiscard]] RGBClass Apply(const RGBClass& color) const {
+  [[nodiscard]] PaletteColor Apply(const PaletteColor& color) const {
     return color.Adjusted(fade_, kBlackColor);
   }
 
-  // The current RGBClass::Adjust() ratio toward black, kMinFade..kMaxFade.
+  // The current PaletteColor::Adjust() ratio toward black, kMinFade..kMaxFade.
   [[nodiscard]] int fade() const { return fade_; }
 
  private:

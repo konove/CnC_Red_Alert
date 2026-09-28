@@ -25,7 +25,7 @@
 
 #include <cstdint>
 
-class RGBClass;
+class PaletteColor;
 
 // A color as hue, saturation and value, each in 0..255.
 //
@@ -35,25 +35,25 @@ class RGBClass;
 // the value.
 //
 // Red Alert's options dialog converts each palette entry with
-// RGBClass::ToHSV(), scales the components and assigns the result back.
+// PaletteColor::ToHSV(), scales the components and assigns the result back.
 //
 // Example:
-//   const HSVClass hsv = palette.at(index).ToHSV();
-//   palette.at(index) = HSVClass(hsv.Hue_Component(), 0,
+//   const HsvColor hsv = palette.at(index).ToHSV();
+//   palette.at(index) = HsvColor(hsv.Hue_Component(), 0,
 //   hsv.Value_Component());
-class HSVClass {
+class HsvColor {
  public:
-  HSVClass(uint8_t hue, uint8_t saturation, uint8_t value) noexcept
+  HsvColor(uint8_t hue, uint8_t saturation, uint8_t value) noexcept
       : Hue(hue), Saturation(saturation), Value(value) {}
 
   // Returns the RGB color that most closely matches this one. The conversion
-  // truncates each gun to the 6 bits RGBClass keeps, so ToHSV() followed by
+  // truncates each gun to the 6 bits PaletteColor keeps, so ToHSV() followed by
   // this conversion can move a gun down by a step or two.
   //
   // Implicit so the options dialog can assign an HSV color straight into a
   // palette entry.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  operator RGBClass() const;
+  operator PaletteColor() const;
 
   [[nodiscard]] int Hue_Component() const { return Hue; }
   [[nodiscard]] int Saturation_Component() const { return Saturation; }
@@ -66,10 +66,10 @@ class HSVClass {
 };
 
 // HSV/RGB conversions for colors stored as VGA 6-bit guns (0..63), with the
-// HSV components in 0..255 as in HSVClass. Unlike HSVClass, both directions
+// HSV components in 0..255 as in HsvColor. Unlike HsvColor, both directions
 // round rather than truncate, so a round trip moves a gun by at most one step.
 // Only Tiberian Dawn's options dialog uses these; it keeps its palette as raw
-// bytes rather than RGBClass.
+// bytes rather than PaletteColor.
 
 // Converts 'r', 'g' and 'b' (each 0..63) and stores the hue, saturation and
 // value in '*h', '*s' and '*v' (each 0..255). A grey has hue and saturation 0.

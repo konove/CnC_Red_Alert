@@ -123,7 +123,7 @@
 static void CyclePalette() {
   // The embers' slot holds the last faded value, so each pulse fades this
   // anew rather than reading the slot back.
-  constexpr RGBClass kEmberBase(255, 80, 80);
+  constexpr PaletteColor kEmberBase(255, 80, 80);
 
   static engine::platform::Timer<engine::platform::SystemTickSource>
       water_timer;

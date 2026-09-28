@@ -3335,11 +3335,11 @@ std::array<dib::Color, dib::kPaletteSize> CurrentScreenPalette() {
   // them. The game keeps those same 256 colours in
   // PaletteClass::CurrentPalette, so there is nobody left to ask.
   //
-  // RGBClass stores the VGA's six bits per channel, which is the space
+  // PaletteColor stores the VGA's six bits per channel, which is the space
   // dib::RemapToPalette matches in, so the values go across unscaled.
   std::array<dib::Color, dib::kPaletteSize> Palette = {};
   for (int i = 0; i != dib::kPaletteSize; i++) {
-    const RGBClass& Entry = PaletteClass::CurrentPalette.at(i);
+    const PaletteColor& Entry = PaletteClass::CurrentPalette.at(i);
     dib::Color& color = Palette.at(base::ToSize(i));
     color.red = static_cast<std::uint8_t>(Entry.Red_Component());
     color.green = static_cast<std::uint8_t>(Entry.Green_Component());

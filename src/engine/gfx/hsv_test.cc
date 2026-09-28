@@ -63,11 +63,11 @@ TEST(ConvertHsvToRgbTest, RoundTripIsWithinOneStep) {
 }
 
 TEST(HsvClassTest, PrimariesConvertToFullGuns) {
-  const RGBClass red = HSVClass(0, 255, 255);
+  const PaletteColor red = HsvColor(0, 255, 255);
   EXPECT_EQ(red.Red_Component(), 252);
   EXPECT_EQ(red.Green_Component(), 0);
   EXPECT_EQ(red.Blue_Component(), 0);
-  const RGBClass blue = HSVClass(170, 255, 255);
+  const PaletteColor blue = HsvColor(170, 255, 255);
   EXPECT_EQ(blue.Red_Component(), 0);
   EXPECT_EQ(blue.Green_Component(), 0);
   EXPECT_EQ(blue.Blue_Component(), 252);

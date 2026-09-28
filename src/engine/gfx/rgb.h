@@ -22,7 +22,7 @@
 
 #include <cstdint>
 
-class HSVClass;
+class HsvColor;
 
 // One palette color, held at the VGA DAC's 6 bits per gun (0..63).
 //
@@ -32,22 +32,22 @@ class HSVClass;
 // one-byte members are the palette file format.
 //
 // Example:
-//   constexpr RGBClass kEmber(255, 80, 80);
-//   const RGBClass dimmed = kEmber.Adjusted(128, kBlackColor);
-class RGBClass {
+//   constexpr PaletteColor kEmber(255, 80, 80);
+//   const PaletteColor dimmed = kEmber.Adjusted(128, kBlackColor);
+class PaletteColor {
  public:
   // Black.
-  constexpr RGBClass() = default;
+  constexpr PaletteColor() = default;
 
   // Takes 8-bit components and keeps their top 6 bits.
-  constexpr RGBClass(const uint8_t red, const uint8_t green,
-                     const uint8_t blue) noexcept
+  constexpr PaletteColor(const uint8_t red, const uint8_t green,
+                         const uint8_t blue) noexcept
       : red_(red >> 2), green_(green >> 2), blue_(blue >> 2) {}
 
   // Returns this color as hue, saturation and value, each 0..255, computed
   // from the 8-bit *_Component() values on the hexagonal color wheel; see
-  // HSVClass for the scale. A grey has hue and saturation 0.
-  [[nodiscard]] HSVClass ToHSV() const;
+  // HsvColor for the scale. A grey has hue and saturation 0.
+  [[nodiscard]] HsvColor ToHSV() const;
 
   // The brightest 8-bit component the constructor takes.
   static constexpr uint8_t kMaxValue = 255;
@@ -57,15 +57,16 @@ class RGBClass {
   // 'ratio' is how far to go, from 0 (no change) to 255 (becomes 'target');
   // values outside 0..255 are clamped. Each gun rounds down, so one rising
   // toward the target reaches it only at 255.
-  void Adjust(int ratio, const RGBClass& target);
+  void Adjust(int ratio, const PaletteColor& target);
 
   // Returns a copy of this color adjusted toward 'target'; see Adjust().
-  [[nodiscard]] RGBClass Adjusted(int ratio, const RGBClass& target) const;
+  [[nodiscard]] PaletteColor Adjusted(int ratio,
+                                      const PaletteColor& target) const;
 
   // Returns the squared Euclidean distance between this color and 'other',
   // measured on the 6-bit guns (0..3 * 63 * 63). Used to find the closest
   // palette match without square roots; 0 means the colors are identical.
-  [[nodiscard]] int Difference(const RGBClass& other) const;
+  [[nodiscard]] int Difference(const PaletteColor& other) const;
 
   // The guns back at the 8-bit scale: the stored 6 bits shifted up by two,
   // so full intensity reads as 252, not 255.
@@ -92,6 +93,6 @@ class RGBClass {
 };
 
 // Black, the target of fades to black.
-inline constexpr RGBClass kBlackColor(0, 0, 0);
+inline constexpr PaletteColor kBlackColor(0, 0, 0);
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_RGB_H_

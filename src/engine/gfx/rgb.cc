@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// RGBClass's fades, color distance and conversion to HSV.
+// PaletteColor's fades, color distance and conversion to HSV.
 
 #include "engine/gfx/rgb.h"
 
@@ -24,7 +24,7 @@
 
 #include "engine/gfx/hsv.h"
 
-void RGBClass::Adjust(const int ratio, const RGBClass& target) {
+void PaletteColor::Adjust(const int ratio, const PaletteColor& target) {
   // The original masked the ratio with 0xFF, so a fade overshooting to 256
   // wrapped back to no change at all. Clamping keeps it at the target.
   const int clamped_ratio = std::clamp(ratio, 0, 255);
@@ -43,13 +43,14 @@ void RGBClass::Adjust(const int ratio, const RGBClass& target) {
                                          static_cast<float>(target.blue_), t));
 }
 
-RGBClass RGBClass::Adjusted(const int ratio, const RGBClass& target) const {
-  RGBClass result = *this;
+PaletteColor PaletteColor::Adjusted(const int ratio,
+                                    const PaletteColor& target) const {
+  PaletteColor result = *this;
   result.Adjust(ratio, target);
   return result;
 }
 
-int RGBClass::Difference(const RGBClass& other) const {
+int PaletteColor::Difference(const PaletteColor& other) const {
   const auto diff_sq = [](const int a, const int b) {
     const int d = a - b;
     return d * d;
@@ -59,7 +60,7 @@ int RGBClass::Difference(const RGBClass& other) const {
          diff_sq(blue_, other.blue_);
 }
 
-HSVClass RGBClass::ToHSV() const {
+HsvColor PaletteColor::ToHSV() const {
   const int r = Red_Component();
   const int g = Green_Component();
   const int b = Blue_Component();

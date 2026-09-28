@@ -1095,7 +1095,7 @@ void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
         *remapped *	to in the special remap range.
         */
         // Try to match this color.
-        const RGBClass trycolor =
+        const PaletteColor trycolor =
             palette.at(index).Adjusted(frac, palette.at(color));
 
         /*

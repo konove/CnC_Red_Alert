@@ -14,8 +14,8 @@ class PaletteClass {
   // Fills every entry with `col`. Implicit, so that a color converts where a
   // palette is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  PaletteClass(const RGBClass& col) noexcept {
-    for (RGBClass& entry : data_) {
+  PaletteClass(const PaletteColor& col) noexcept {
+    for (PaletteColor& entry : data_) {
       entry = col;
     }
   }
@@ -37,20 +37,21 @@ class PaletteClass {
   static void Partial_Adjust(int /*unused*/, PaletteClass& /*unused*/,
                              char* /*unused*/);
 
-  [[nodiscard]] int Closest_Color(const RGBClass& /*col*/) const;
+  [[nodiscard]] int Closest_Color(const PaletteColor& /*col*/) const;
 
   // Returns a palette entry; indices outside [0, 256) fail in every build.
-  RGBClass& at(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  PaletteColor& at(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return base::At(data_, index);
   }
-  [[nodiscard]] const RGBClass& at(int index) const
+  [[nodiscard]] const PaletteColor& at(int index) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return base::At(data_, index);
   }
-  RGBClass& operator[](int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  PaletteColor& operator[](int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(index);
   }
-  const RGBClass& operator[](int index) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  const PaletteColor& operator[](int index) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(index);
   }
 
@@ -64,11 +65,11 @@ class PaletteClass {
   static const int COLOR_COUNT = 256;
 
   // Bounded views retain the number of colors for bulk palette operations.
-  [[nodiscard]] std::span<RGBClass, COLOR_COUNT> colors()
+  [[nodiscard]] std::span<PaletteColor, COLOR_COUNT> colors()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return data_;
   }
-  [[nodiscard]] std::span<const RGBClass, COLOR_COUNT> colors() const
+  [[nodiscard]] std::span<const PaletteColor, COLOR_COUNT> colors() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return data_;
   }
@@ -86,7 +87,7 @@ class PaletteClass {
  private:
   static inline bool fades_disabled_ = false;
 
-  RGBClass data_[COLOR_COUNT];
+  PaletteColor data_[COLOR_COUNT];
 };
 
 void Set_Palette(std::span<const unsigned char> palette);

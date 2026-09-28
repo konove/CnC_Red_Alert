@@ -744,7 +744,7 @@ void Cycle_Wait_Click(bool cycle) {
     if (cycle) {
       counter = (counter + 1) % 8;
       if (counter == 0 && TheOptions().IsPaletteScroll) {
-        const RGBClass rgb = score_palette.at(233);
+        const PaletteColor rgb = score_palette.at(233);
         for (int i = 233; i < 237; i++) {
           score_palette.at(i) = score_palette.at(i + 1);
         }
