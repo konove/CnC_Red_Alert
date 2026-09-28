@@ -18,7 +18,7 @@ struct Rgb8 {
 // Both arguments must be non-negative and 'denominator' must be non-zero.
 // This reproduces the original WWLIB Divide_With_Round; the palette
 // conversions depend on its exact rounding.
-constexpr int DivideWithRound(int numerator, int denominator) {
+constexpr int DivideWithRound(const int numerator, const int denominator) {
   return (numerator / denominator) +
          (numerator % denominator >= (denominator + 1) / 2 ? 1 : 0);
 }
@@ -57,24 +57,24 @@ constexpr Rgb8 HsvToRgb8(int hue, int saturation, int value) {
                DivideWithRound(saturation * fraction, kMaxComponent)),
       kMaxComponent);
   const int rising = DivideWithRound(
-      value * (kMaxComponent - DivideWithRound(saturation *
-                                                   (kMaxComponent - fraction),
-                                               kMaxComponent)),
+      value * (kMaxComponent -
+               DivideWithRound(saturation * (kMaxComponent - fraction),
+                               kMaxComponent)),
       kMaxComponent);
 
   switch (sextant) {
     case 0:
-      return {value, rising, minimum};
+      return {.red = value, .green = rising, .blue = minimum};
     case 1:
-      return {falling, value, minimum};
+      return {.red = falling, .green = value, .blue = minimum};
     case 2:
-      return {minimum, value, rising};
+      return {.red = minimum, .green = value, .blue = rising};
     case 3:
-      return {minimum, falling, value};
+      return {.red = minimum, .green = falling, .blue = value};
     case 4:
-      return {rising, minimum, value};
+      return {.red = rising, .green = minimum, .blue = value};
     default:  // Sextant 5.
-      return {value, minimum, falling};
+      return {.red = value, .green = minimum, .blue = falling};
   }
 }
 
