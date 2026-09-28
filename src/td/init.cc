@@ -116,6 +116,7 @@
 #include "td/ipx.h"
 #include "td/ipxaddr.h"
 #include "td/jshell.h"
+#include "td/keyframe.h"
 #include "td/loaddlg.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
@@ -162,6 +163,7 @@
 #endif
 
 static std::vector<uint8_t> shape_storage;
+std::span<uint8_t> shape_buffer;
 
 /****************************************
 **	Function prototypes for this module **

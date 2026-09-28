@@ -9,8 +9,6 @@
 #include "base/types.h"
 #include "base/unaligned.h"
 
-std::span<uint8_t> shape_buffer;
-
 int CountShapeFrames(const std::span<const std::byte> shape_file) {
   if (shape_file.size() < sizeof(uint16_t)) {
     return 0;

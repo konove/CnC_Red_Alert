@@ -20,13 +20,10 @@
 // the Westwood 32-bit library's SHAPE.H (Bill Randolph, May 1994).
 //
 // A shape file is a block of frames: a count, a table of offsets, and the
-// frames, each a ShapeHeader header followed by its pixels. The game draws its
+// frames, each a ShapeHeader followed by its pixels. The game draws its
 // sprites from the keyframe format instead (Build_Frame()); the shape format
 // is left holding the mouse cursors (MOUSE.SHP), which ExtractShapeFrame()
 // pulls apart for the hardware cursor.
-//
-// The file also owns the shape staging buffer, the scratch memory Build_Frame()
-// decompresses frames into and that Tiberian Dawn reuses for reading INI text.
 
 #ifndef CNC_RED_ALERT_ENGINE_GFX_SHAPE_H_
 #define CNC_RED_ALERT_ENGINE_GFX_SHAPE_H_
@@ -82,12 +79,6 @@ struct ShapeHeader {
 inline constexpr base::ssize kShapeHeaderSize =
     offsetof(ShapeHeader, color_table);
 static_assert(kShapeHeaderSize == 10);
-
-// The shape staging buffer: scratch memory that Build_Frame() decompresses
-// frames into and that Tiberian Dawn reuses for INI text. The games point it
-// at storage they own during startup; empty before that and after Tiberian
-// Dawn's shutdown clears it.
-extern std::span<uint8_t> shape_buffer;
 
 // Returns the number of frames in `shape_file`, or 0 when it is too short to
 // hold the count.

@@ -7,6 +7,11 @@
 
 #include "absl/base/attributes.h"
 
+// The shape staging buffer: scratch memory that Build_Frame() decompresses
+// frames into, and that the INI code borrows for text. Init_Game() points it
+// at storage it owns; empty before that and after the shutdown clears it.
+extern std::span<uint8_t> shape_buffer;
+
 int Get_Last_Frame_Length();
 std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame,
                                std::span<uint8_t> destination);
