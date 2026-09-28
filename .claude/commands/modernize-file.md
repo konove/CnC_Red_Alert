@@ -1,5 +1,5 @@
 ---
-description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names, simplification, the engine namespace, IDE inspections, and finally the file name - committing each stage. Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /migrate-namespaces and /fix-ide-issues on the same file.'
+description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names, simplification, the engine namespace, IDE inspections, and the file name - committing each stage, then recording every open item in TODO.md. Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /migrate-namespaces and /fix-ide-issues on the same file.'
 ---
 
 Modernize: $ARGUMENTS
@@ -29,8 +29,10 @@ Each stage makes the next one cheaper or more accurate:
    `src/engine` files; `src/ra` and `src/td` stay global.
 7. **IDE inspections** as the polish on the code as it finally stands; any earlier and the next
    stage would change what the IDE flags.
-8. **The file name last**, alone in its commit, so git's rename detection holds and every earlier
-   commit reads under the path reviewers know.
+8. **The file name** after the code is final, alone in its commit, so git's rename detection holds
+   and every earlier commit reads under the path reviewers know.
+9. **Leftovers to `TODO.md`** at the very end, once the ledger has stopped growing and every entry
+   can name the file by its final path.
 
 ## Before starting
 
@@ -44,7 +46,9 @@ Each stage makes the next one cheaper or more accurate:
   (unused or constant parameters, redundant checks, tables that could be `constexpr`, functions
   doing two jobs), and **for the user** (anything that changes simulation behaviour, names you were
   unsure of). Every stage appends to it; later stages read it. It is what makes the stages add up
-  instead of each rediscovering the same things.
+  instead of each rediscovering the same things, and at the end it is the source for stage 9. Put
+  everything on it, including what lies outside the files' scope and what a subagent reported: an
+  item that is only in the conversation is lost when the run ends.
 
 ## The stages
 
@@ -108,6 +112,18 @@ rather than guess.
 naming rules under "The file name is part of the pass"). If the name already fits, record why and
 make no commit.
 
+**9. Leftovers to `TODO.md`** - every open item from the ledger, however small, following
+`/add-todo` for wording and section: bugs not fixed (behaviour-changing, out of scope, twin not
+done), **noticed** items not acted on, **for the user** decisions, design ideas `/simplify` raised
+but did not apply, stages skipped (a CLion timeout becomes "Run `/fix-ide-issues` on ..."), and
+things spotted outside the files' scope. Give each entry what it takes to act without re-reading the
+run: the files and lines, what is wrong or possible, the options with their size, and the run's
+commit range. Before adding, grep `TODO.md` for an entry that already covers it (an existing item
+may only need the new file name or an extra detail); delete entries this run finished (a "move X
+into its namespace" item the namespace stage closed). Run Prettier on `TODO.md` (the pre-commit hook
+rejects it otherwise) and commit it alone, as `c8a9d6c4` did: "Add the <file> modernization's
+leftovers to TODO.md". A run whose ledger ends empty says so in the report and makes no commit.
+
 **Bugs found in any stage** go on the ledger when found and are fixed at the end of that stage, as
 their own commit, following the "Fixing the bugs the pass found" rules in `/update-comments`:
 confirm against the callers, failing test first where the code is reachable from one, smallest fix,
@@ -124,4 +140,5 @@ that ends with it unclean is a failed run, however many stages committed.
 - Bugs fixed, each with its commit and whether the twin got it.
 - **For the user**: behaviour-changing fixes not applied (what would play differently), names you
   were unsure of with the alternative, anything skipped (e.g. the IDE never answered).
+- The `TODO.md` commit from stage 9, with its entries in one line each.
 - What is still uncommitted, if anything, and why.
