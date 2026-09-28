@@ -56,27 +56,24 @@ enum class CNC_FLAG_ENUM ShapeFlags : uint32_t {
 };
 
 // The header in front of each frame of a shape file, as stored (packed, so
-// the multi-byte fields are unaligned). The hardware cursor copies the first
-// ten bytes of it out of a frame that ExtractShapeFrame() returned.
+// the multi-byte fields are unaligned). The hardware cursor copies it out of a
+// frame that ExtractShapeFrame() returned.
 #pragma pack(push, 1)
 struct ShapeHeader {
   // 0 for 256-color LCW-compressed pixels, the only format drawn. The
-  // library also wrote 1 (16 colors, with color_table), 2 (uncompressed) and
-  // 4 (fewer than 16 colors).
+  // library also wrote 1 (16 colors, with a 16-byte color table after this
+  // header), 2 (uncompressed) and 4 (fewer than 16 colors).
   uint16_t format;
   uint8_t height;               // Height of the shape in scan lines
   uint16_t width;               // Width in bytes, one per pixel at 256 colors
   uint8_t original_height;      // Original height in scan lines
   uint16_t frame_bytes;         // Size of the frame, this header included
   uint16_t decompressed_bytes;  // Size of the pixel data once decompressed
-  uint8_t color_table[16];      // Format 1 only: the 16 colors
 };
 #pragma pack(pop)
 
-// The size of the ShapeHeader fields every format has, up to and including
-// decompressed_bytes; color_table follows them only in format 1.
-inline constexpr base::ssize kShapeHeaderSize =
-    offsetof(ShapeHeader, color_table);
+// The size of a ShapeHeader as stored.
+inline constexpr base::ssize kShapeHeaderSize = sizeof(ShapeHeader);
 static_assert(kShapeHeaderSize == 10);
 
 // Returns the number of frames in `shape_file`, or 0 when it is too short to
