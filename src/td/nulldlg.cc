@@ -249,8 +249,8 @@ void Modem_Signoff() {
     TheNetwork().null_modem().Send_Message(base::ObjectBytes(event),
                                            sizeof(EventClass), 0);
 
-    const int64_t starttime = SystemTicks();
-    while (SystemTicks() - starttime < 30) {
+    const int64_t starttime = engine::platform::SystemTicks();
+    while (engine::platform::SystemTicks() - starttime < 30) {
       TheNetwork().null_modem().Service();
     }
   }
@@ -365,7 +365,7 @@ int Test_Null_Modem() {
   ** Send hangup command
   */
   SerialPort->Write_To_Serial_Port("ATH\r", strlen("ATH\r"));
-  Timer<SystemTickSource> time;
+  engine::platform::Timer<engine::platform::SystemTickSource> time;
   time.Set(2 * 60);
   while (time.Remaining()) {
   }
@@ -387,16 +387,16 @@ int Test_Null_Modem() {
   Note: The initial time must be a little longer than the resend delay.
           Just in case we just missed the packet.
   ------------------------------------------------------------------------*/
-  starttime = SystemTicks();
-  while (SystemTicks() - starttime < 80) {
+  starttime = engine::platform::SystemTicks();
+  while (engine::platform::SystemTicks() - starttime < 80) {
     TheNetwork().null_modem().Service();
     if ((TheNetwork().null_modem().Get_Message(base::ObjectBytes(ReceivePacket),
                                                &packetlen) > 0) &&
         (ReceivePacket.Command == SERIAL_CONNECT)) {
       // Smart_Printf( "Received SERIAL_CONNECT %d, ID %d \n",
       // ReceivePacket.Seed, ReceivePacket.ID );
-      starttime = SystemTicks();
-      while (SystemTicks() - starttime < 30) {
+      starttime = engine::platform::SystemTicks();
+      while (engine::platform::SystemTicks() - starttime < 30) {
         TheNetwork().null_modem().Service();
       }
       process = false;
@@ -415,7 +415,7 @@ int Test_Null_Modem() {
     //
     // put time from start of game for determining the host in case of tie.
     //
-    SendPacket.Seed = static_cast<int>(SystemTicks());
+    SendPacket.Seed = static_cast<int>(engine::platform::SystemTicks());
     // address of buffer for more uniqueness.
     SendPacket.ID = static_cast<unsigned char>(
         std::bit_cast<uintptr_t>(&base::At(buffer, 0)));
@@ -425,16 +425,16 @@ int Test_Null_Modem() {
     TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                            sizeof(SendPacket), 1);
 
-    starttime = SystemTicks();
-    while (SystemTicks() - starttime < 80) {
+    starttime = engine::platform::SystemTicks();
+    while (engine::platform::SystemTicks() - starttime < 80) {
       TheNetwork().null_modem().Service();
       if ((TheNetwork().null_modem().Get_Message(
                base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
           (ReceivePacket.Command == SERIAL_CONNECT)) {
         // Smart_Printf( "Received2 SERIAL_CONNECT %d, ID %d \n",
         // ReceivePacket.Seed, ReceivePacket.ID );
-        starttime = SystemTicks();
-        while (SystemTicks() - starttime < 30) {
+        starttime = engine::platform::SystemTicks();
+        while (engine::platform::SystemTicks() - starttime < 30) {
           TheNetwork().null_modem().Service();
         }
 
@@ -464,7 +464,7 @@ int Test_Null_Modem() {
     }
   }
 
-  starttime = SystemTicks();
+  starttime = engine::platform::SystemTicks();
 
   /*
   -------------------------- Main Processing Loop --------------------------
@@ -506,8 +506,8 @@ int Test_Null_Modem() {
         if (ReceivePacket.Command == SERIAL_CONNECT) {
           // Smart_Printf( "Received3 SERIAL_CONNECT %d, ID %d \n",
           // ReceivePacket.Seed, ReceivePacket.ID );
-          starttime = SystemTicks();
-          while (SystemTicks() - starttime < 30) {
+          starttime = engine::platform::SystemTicks();
+          while (engine::platform::SystemTicks() - starttime < 30) {
             TheNetwork().null_modem().Service();
           }
 
@@ -544,7 +544,8 @@ int Test_Null_Modem() {
       }
     }
 
-    if (SystemTicks() - starttime > 3600) {  // only wait 1 minute
+    if (engine::platform::SystemTicks() - starttime >
+        3600) {  // only wait 1 minute
       retval = 0;
       process = false;
     }
@@ -704,7 +705,7 @@ static int Reconnect_Null_Modem() {
   /*
   -------------------------- Main Processing Loop --------------------------
   */
-  int64_t starttime = lastmsgtime = SystemTicks();
+  int64_t starttime = lastmsgtime = engine::platform::SystemTicks();
   while (process) {
 
     /*
@@ -738,8 +739,8 @@ static int Reconnect_Null_Modem() {
     /*.....................................................................
     Resend our message if it's time
     .....................................................................*/
-    if (SystemTicks() - starttime > PACKET_RETRANS_TIME) {
-      starttime = SystemTicks();
+    if (engine::platform::SystemTicks() - starttime > PACKET_RETRANS_TIME) {
+      starttime = engine::platform::SystemTicks();
       SendPacket.Command = SERIAL_CONNECT;
       SendPacket.ID = TheSession().local_id();
       // Smart_Printf( "Sending a SERIAL_CONNECT packet !!!!!!!!\n" );
@@ -752,7 +753,7 @@ static int Reconnect_Null_Modem() {
     .....................................................................*/
     if (TheNetwork().null_modem().Get_Message(base::ObjectBytes(ReceivePacket),
                                               &packetlen) > 0) {
-      lastmsgtime = SystemTicks();
+      lastmsgtime = engine::platform::SystemTicks();
 
       if (ReceivePacket.Command == SERIAL_CONNECT) {
         // Smart_Printf( "Received a SERIAL_CONNECT packet !!!!!!!!\n" );
@@ -773,8 +774,8 @@ static int Reconnect_Null_Modem() {
         SendPacket.ID = TheSession().local_id();
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                                sizeof(SendPacket), 1);
-        starttime = SystemTicks();
-        while (SystemTicks() - starttime < 60) {
+        starttime = engine::platform::SystemTicks();
+        while (engine::platform::SystemTicks() - starttime < 60) {
           TheNetwork().null_modem().Service();
         }
         retval = 1;
@@ -785,7 +786,7 @@ static int Reconnect_Null_Modem() {
     //
     // timeout if we do not get any packets
     //
-    if (SystemTicks() - lastmsgtime > PACKET_CANCEL_TIMEOUT) {
+    if (engine::platform::SystemTicks() - lastmsgtime > PACKET_CANCEL_TIMEOUT) {
       retval = 0;
       process = false;
     }
@@ -3270,7 +3271,7 @@ int Com_Scenario_Dialog() {
   uint16_t magic_number = 0;
   uint16_t crc = 0;
   bool ready_to_go = false;
-  Timer<SystemTickSource> ready_time;
+  engine::platform::Timer<engine::platform::SystemTickSource> ready_time;
 
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
@@ -3505,7 +3506,7 @@ int Com_Scenario_Dialog() {
   TheNetwork().null_modem().Reset_Response_Time();  // clear response time
   decltype(SerialPacketType::ResponseTime) theirresponsetime =
       10000;  // an invalid value
-  timingtime = lastmsgtime = lastredrawtime = SystemTicks();
+  timingtime = lastmsgtime = lastredrawtime = engine::platform::SystemTicks();
   TheMouse().ForceShow();
 
   while (process) {
@@ -3939,10 +3940,11 @@ int Com_Scenario_Dialog() {
             TheNetwork().null_modem().Send_Message(
                 base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
 
-            starttime = SystemTicks();
+            starttime = engine::platform::SystemTicks();
 
             while (TheNetwork().null_modem().Num_Send() &&
-                   SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) {
+                   engine::platform::SystemTicks() - starttime <
+                       PACKET_SENDING_TIMEOUT) {
               TheNetwork().null_modem().Service();
               TheKeyboard().Peek();  // Make sure the message loop gets called
             }
@@ -4152,7 +4154,8 @@ int Com_Scenario_Dialog() {
     should be set, so we send out our default options; we'll then send
     any changes we make to the defaults.
     ---------------------------------------------------------------------*/
-    if (transmit && SystemTicks() - transmittime > PACKET_RETRANS_TIME) {
+    if (transmit &&
+        engine::platform::SystemTicks() - transmittime > PACKET_RETRANS_TIME) {
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       base::SafeCopy(SendPacket.Name, TheSession().player_name());
 #ifdef PATCH
@@ -4189,12 +4192,13 @@ int Com_Scenario_Dialog() {
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 1);
 
-      transmittime = SystemTicks();
+      transmittime = engine::platform::SystemTicks();
       transmit = 0;
 
-      starttime = SystemTicks();
+      starttime = engine::platform::SystemTicks();
       while (TheNetwork().null_modem().Num_Send() &&
-             SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) {
+             engine::platform::SystemTicks() - starttime <
+                 PACKET_SENDING_TIMEOUT) {
         TheNetwork().null_modem().Service();
         TheKeyboard().Peek();  // Make sure the message loop gets called
       }
@@ -4203,7 +4207,7 @@ int Com_Scenario_Dialog() {
     //
     // send a timing packet if enough time has gone by.
     //
-    if (SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
+    if (engine::platform::SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
       SendPacket.Command = SERIAL_TIMING;
       SendPacket.ResponseTime =
           static_cast<uint32_t>(TheNetwork().null_modem().Response_Time());
@@ -4212,7 +4216,7 @@ int Com_Scenario_Dialog() {
 
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 0);
-      timingtime = SystemTicks();
+      timingtime = engine::platform::SystemTicks();
     }
 
     /*---------------------------------------------------------------------
@@ -4222,7 +4226,7 @@ int Com_Scenario_Dialog() {
                base::ObjectBytes(ReceivePacket), &packetlen) > 0) {
       // Smart_Printf( "received packet of length %d\n", packetlen );
 
-      lastmsgtime = SystemTicks();
+      lastmsgtime = engine::platform::SystemTicks();
       msg_timeout = 600;  // reset timeout value to 10 seconds
                           // (only the 1st time through is 20 seconds)
 
@@ -4236,7 +4240,7 @@ int Com_Scenario_Dialog() {
         CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
         // to skip the other system not responding msg
-        lastmsgtime = SystemTicks();
+        lastmsgtime = engine::platform::SystemTicks();
 
         process = false;
         rc = 0;
@@ -4249,8 +4253,9 @@ int Com_Scenario_Dialog() {
       const auto event =
           base::ReadUnaligned<EventClass>(base::ObjectBytes(ReceivePacket));
       if (event.Type <= EventClass::FRAMEINFO) {
-        if (SystemTicks() - lastredrawtime > PACKET_REDRAW_TIME) {
-          lastredrawtime = SystemTicks();
+        if (engine::platform::SystemTicks() - lastredrawtime >
+            PACKET_REDRAW_TIME) {
+          lastredrawtime = engine::platform::SystemTicks();
           oppscorescreen = true;
 
           if (display != REDRAW_ALL) {
@@ -4268,14 +4273,14 @@ int Com_Scenario_Dialog() {
           ..................................................................*/
           case SERIAL_SIGN_OFF:
             // Smart_Printf( "received sign off\n" );
-            starttime = SystemTicks();
-            while (SystemTicks() - starttime < 60) {
+            starttime = engine::platform::SystemTicks();
+            while (engine::platform::SystemTicks() - starttime < 60) {
               TheNetwork().null_modem().Service();
             }
             CCMessageBox().Process(TXT_USER_SIGNED_OFF);
 
             // to skip the other system not responding msg
-            lastmsgtime = SystemTicks();
+            lastmsgtime = engine::platform::SystemTicks();
 
             process = false;
             rc = 0;
@@ -4320,7 +4325,7 @@ int Com_Scenario_Dialog() {
               CCMessageBox().Process(TXT_YOURGAME_OUTDATED);
 
               // to skip the other system not responding msg
-              lastmsgtime = SystemTicks();
+              lastmsgtime = engine::platform::SystemTicks();
 
               process = false;
               rc = 0;
@@ -4329,7 +4334,7 @@ int Com_Scenario_Dialog() {
                 CCMessageBox().Process(TXT_DESTGAME_OUTDATED);
 
                 // to skip the other system not responding msg
-                lastmsgtime = SystemTicks();
+                lastmsgtime = engine::platform::SystemTicks();
 
                 process = false;
                 rc = 0;
@@ -4407,7 +4412,7 @@ int Com_Scenario_Dialog() {
 
     // if we haven't received a msg for 10 seconds exit
 
-    if (SystemTicks() - lastmsgtime > msg_timeout) {
+    if (engine::platform::SystemTicks() - lastmsgtime > msg_timeout) {
       CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
       process = false;
       rc = 0;
@@ -4499,9 +4504,10 @@ int Com_Scenario_Dialog() {
     TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                            sizeof(SendPacket), 1);
 
-    starttime = SystemTicks();
+    starttime = engine::platform::SystemTicks();
     while (TheNetwork().null_modem().Num_Send() &&
-           SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) {
+           engine::platform::SystemTicks() - starttime <
+               PACKET_SENDING_TIMEOUT) {
       TheNetwork().null_modem().Service();
       TheKeyboard().Peek();  // Make sure the message loop gets called
     }
@@ -4521,9 +4527,10 @@ int Com_Scenario_Dialog() {
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 1);
 
-      starttime = SystemTicks();
+      starttime = engine::platform::SystemTicks();
       while (TheNetwork().null_modem().Num_Send() &&
-             SystemTicks() - starttime < PACKET_CANCEL_TIMEOUT) {
+             engine::platform::SystemTicks() - starttime <
+                 PACKET_CANCEL_TIMEOUT) {
         if ((TheNetwork().null_modem().Get_Message(
                  base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
             (ReceivePacket.Command == SERIAL_SIGN_OFF &&
@@ -4816,7 +4823,7 @@ int Com_Show_Scenario_Dialog() {
   ---------------------------- Processing loop -----------------------------
   */
   TheNetwork().null_modem().Reset_Response_Time();  // clear response time
-  timingtime = lastmsgtime = lastredrawtime = SystemTicks();
+  timingtime = lastmsgtime = lastredrawtime = engine::platform::SystemTicks();
   TheMouse().ForceShow();
 
   while (process) {
@@ -5364,7 +5371,8 @@ int Com_Show_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     If our Transmit flag is set, we need to send out a game option packet
     ---------------------------------------------------------------------*/
-    if (transmit && SystemTicks() - transmittime > PACKET_RETRANS_TIME) {
+    if (transmit &&
+        engine::platform::SystemTicks() - transmittime > PACKET_RETRANS_TIME) {
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       base::SafeCopy(SendPacket.Name, TheSession().player_name());
 #ifdef PATCH
@@ -5384,14 +5392,14 @@ int Com_Show_Scenario_Dialog() {
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 1);
 
-      transmittime = SystemTicks();
+      transmittime = engine::platform::SystemTicks();
       transmit = 0;
     }
 
     //
     // send a timing packet if enough time has gone by.
     //
-    if (SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
+    if (engine::platform::SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
       SendPacket.Command = SERIAL_TIMING;
       SendPacket.ResponseTime =
           static_cast<uint32_t>(TheNetwork().null_modem().Response_Time());
@@ -5400,7 +5408,7 @@ int Com_Show_Scenario_Dialog() {
 
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 0);
-      timingtime = SystemTicks();
+      timingtime = engine::platform::SystemTicks();
     }
 
     /*---------------------------------------------------------------------
@@ -5410,7 +5418,7 @@ int Com_Show_Scenario_Dialog() {
                                               &packetlen) > 0) {
       // Smart_Printf( "received packet of length %d\n", packetlen );
 
-      lastmsgtime = SystemTicks();
+      lastmsgtime = engine::platform::SystemTicks();
 
       msg_timeout = 600;
 
@@ -5434,8 +5442,9 @@ int Com_Show_Scenario_Dialog() {
       const auto event =
           base::ReadUnaligned<EventClass>(base::ObjectBytes(ReceivePacket));
       if (event.Type <= EventClass::FRAMEINFO) {
-        if (SystemTicks() - lastredrawtime > PACKET_REDRAW_TIME) {
-          lastredrawtime = SystemTicks();
+        if (engine::platform::SystemTicks() - lastredrawtime >
+            PACKET_REDRAW_TIME) {
+          lastredrawtime = engine::platform::SystemTicks();
           oppscorescreen = true;
           display = REDRAW_MESSAGE;
           parms_received = 1;
@@ -5454,14 +5463,14 @@ int Com_Show_Scenario_Dialog() {
           a message.
           ..................................................................*/
           case SERIAL_SIGN_OFF:
-            starttime = SystemTicks();
-            while (SystemTicks() - starttime < 60) {
+            starttime = engine::platform::SystemTicks();
+            while (engine::platform::SystemTicks() - starttime < 60) {
               TheNetwork().null_modem().Service();
             }
             CCMessageBox().Process(TXT_USER_SIGNED_OFF);
 
             // to skip the other system not responding msg
-            lastmsgtime = SystemTicks();
+            lastmsgtime = engine::platform::SystemTicks();
 
             process = false;
             rc = 0;
@@ -5549,7 +5558,7 @@ int Com_Show_Scenario_Dialog() {
               CCMessageBox().Process(TXT_YOURGAME_OUTDATED);
 
               // to skip the other system not responding msg
-              lastmsgtime = SystemTicks();
+              lastmsgtime = engine::platform::SystemTicks();
 
               process = false;
               rc = 0;
@@ -5558,7 +5567,7 @@ int Com_Show_Scenario_Dialog() {
                 CCMessageBox().Process(TXT_DESTGAME_OUTDATED);
 
                 // to skip the other system not responding msg
-                lastmsgtime = SystemTicks();
+                lastmsgtime = engine::platform::SystemTicks();
 
                 process = false;
                 rc = 0;
@@ -5653,7 +5662,7 @@ int Com_Show_Scenario_Dialog() {
     //(Winsock.Get_Connected() && Winsock.Get_Connection_Status ==
     // TcpipManagerClass::CONNECTION_LOST)) {
 
-    if (SystemTicks() - lastmsgtime > msg_timeout) {
+    if (engine::platform::SystemTicks() - lastmsgtime > msg_timeout) {
       CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
       process = false;
       rc = 0;
@@ -5709,9 +5718,10 @@ int Com_Show_Scenario_Dialog() {
     TheWorld().scenario() =
         TheSession().scenario_files().at(TheSession().scenario_index());
 
-    starttime = SystemTicks();
+    starttime = engine::platform::SystemTicks();
     while (TheNetwork().null_modem().Num_Send() &&
-           SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) {
+           engine::platform::SystemTicks() - starttime <
+               PACKET_SENDING_TIMEOUT) {
       TheNetwork().null_modem().Service();
       TheKeyboard().Peek();  // Make sure the message loop gets called
     }
@@ -5731,9 +5741,10 @@ int Com_Show_Scenario_Dialog() {
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 1);
 
-      starttime = SystemTicks();
+      starttime = engine::platform::SystemTicks();
       while (TheNetwork().null_modem().Num_Send() &&
-             SystemTicks() - starttime < PACKET_CANCEL_TIMEOUT) {
+             engine::platform::SystemTicks() - starttime <
+                 PACKET_CANCEL_TIMEOUT) {
         if ((TheNetwork().null_modem().Get_Message(
                  base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
             (ReceivePacket.Command == SERIAL_SIGN_OFF &&
@@ -6822,7 +6833,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
-    Timer<SystemTickSource> wait;
+    engine::platform::Timer<engine::platform::SystemTickSource> wait;
     Call_Back();
     wait.Set(60);
     while (wait.Remaining()) {
@@ -6998,7 +7009,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
-    Timer<SystemTickSource> wait;
+    engine::platform::Timer<engine::platform::SystemTickSource> wait;
     Call_Back();
     wait.Set(60);
     while (wait.Remaining()) {

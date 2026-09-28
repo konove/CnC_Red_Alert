@@ -90,7 +90,7 @@ void ShakeScreen(int shakes) {
   const int oldyoff = 0;
   int newyoff = 0;
   while (shakes--) {
-    const int x = static_cast<int>(SystemTicks());
+    const int x = static_cast<int>(engine::platform::SystemTicks());
 
     do {
       newyoff = Sim_Random_Pick(0, 2) - 1;
@@ -110,7 +110,7 @@ void ShakeScreen(int shakes) {
       default:
         break;
     }
-    while (x == SystemTicks()) {
+    while (x == engine::platform::SystemTicks()) {
       engine::window::TheDisplay().EndFrame();
     }
   }

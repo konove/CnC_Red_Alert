@@ -56,7 +56,7 @@ class StageClass {
   **	to zero, then the stage increments by one and the time cycle starts
   **	over again.
   */
-  Timer<FrameTickSource> StageTimer;
+  engine::platform::Timer<FrameTickSource> StageTimer;
 
   /*
   **	This is the value to assign the StageTimer whenever it needs to be

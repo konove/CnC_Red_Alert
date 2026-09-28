@@ -81,7 +81,7 @@ class ScoreClass {
 
   // Wall-clock counterpart of ElapsedTime. Reset by Init() and saved, but
   // nothing reads it.
-  Stopwatch<SystemTickSource> RealTime;
+  engine::platform::Stopwatch<engine::platform::SystemTickSource> RealTime;
 
   // Zeroes every statistic. Called when a scenario starts.
   void Init();
@@ -148,7 +148,7 @@ class ScoreAnimClass {
   int XPos;
   int YPos;
   // Counts down to the next animation step; Update() does nothing until then.
-  Timer<SystemTickSource> AnimTimer;
+  engine::platform::Timer<engine::platform::SystemTickSource> AnimTimer;
   // Shape file, for the shape-style animations; empty otherwise.
   std::span<const std::byte> DataPtr;
   // Text, for the text-style animations; empty otherwise.

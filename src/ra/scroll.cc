@@ -60,7 +60,8 @@
 
 #define SCROLL_DELAY 1
 
-Timer<SystemTickSource> ScrollClass::Counter;
+engine::platform::Timer<engine::platform::SystemTickSource>
+    ScrollClass::Counter;
 
 /***********************************************************************************************
  * ScrollClass::ScrollClass -- Constructor for the scroll class object. *

@@ -277,8 +277,8 @@ void Modem_Signoff() {
     TheNetwork().null_modem().Send_Message(base::ObjectBytes(event),
                                            sizeof(EventClass), 0);
 
-    const int64_t starttime = SystemTicks();
-    while (SystemTicks() - starttime < 30) {
+    const int64_t starttime = engine::platform::SystemTicks();
+    while (engine::platform::SystemTicks() - starttime < 30) {
       TheNetwork().null_modem().Service();
     }
   }
@@ -381,14 +381,14 @@ int Test_Null_Modem() {
   ** Note: The initial time must be a little longer than the resend delay.
   ** 	Just in case we just missed the packet.
   */
-  int64_t starttime = SystemTicks();
-  while (SystemTicks() - starttime < 80) {
+  int64_t starttime = engine::platform::SystemTicks();
+  while (engine::platform::SystemTicks() - starttime < 80) {
     TheNetwork().null_modem().Service();
     if ((TheNetwork().null_modem().Get_Message(base::ObjectBytes(ReceivePacket),
                                                &packetlen) > 0) &&
         (ReceivePacket.Command == SERIAL_CONNECT)) {
-      starttime = SystemTicks();
-      while (SystemTicks() - starttime < 30) {
+      starttime = engine::platform::SystemTicks();
+      while (engine::platform::SystemTicks() - starttime < 30) {
         TheNetwork().null_modem().Service();
       }
       process = false;
@@ -407,21 +407,22 @@ int Test_Null_Modem() {
     //
     // put time from start of game for determining the host in case of tie.
     //
-    SendPacket.ScenarioInfo.Seed = static_cast<int>(SystemTicks());
+    SendPacket.ScenarioInfo.Seed =
+        static_cast<int>(engine::platform::SystemTicks());
     SendPacket.ID = static_cast<unsigned char>(std::bit_cast<uintptr_t>(
         &buffer[0]));  // address of buffer for more uniqueness.
 
     TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                            sizeof(SendPacket), 1);
 
-    starttime = SystemTicks();
-    while (SystemTicks() - starttime < 80) {
+    starttime = engine::platform::SystemTicks();
+    while (engine::platform::SystemTicks() - starttime < 80) {
       TheNetwork().null_modem().Service();
       if ((TheNetwork().null_modem().Get_Message(
                base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
           (ReceivePacket.Command == SERIAL_CONNECT)) {
-        starttime = SystemTicks();
-        while (SystemTicks() - starttime < 30) {
+        starttime = engine::platform::SystemTicks();
+        while (engine::platform::SystemTicks() - starttime < 30) {
           TheNetwork().null_modem().Service();
         }
 
@@ -450,7 +451,7 @@ int Test_Null_Modem() {
     }
   }
 
-  starttime = SystemTicks();
+  starttime = engine::platform::SystemTicks();
 
   /*
   ** Main Processing Loop
@@ -487,8 +488,8 @@ int Test_Null_Modem() {
       if (TheNetwork().null_modem().Get_Message(
               base::ObjectBytes(ReceivePacket), &packetlen) > 0) {
         if (ReceivePacket.Command == SERIAL_CONNECT) {
-          starttime = SystemTicks();
-          while (SystemTicks() - starttime < 30) {
+          starttime = engine::platform::SystemTicks();
+          while (engine::platform::SystemTicks() - starttime < 30) {
             TheNetwork().null_modem().Service();
           }
 
@@ -524,7 +525,8 @@ int Test_Null_Modem() {
       }
     }
 
-    if (SystemTicks() - starttime > 3600) {  // only wait 1 minute
+    if (engine::platform::SystemTicks() - starttime >
+        3600) {  // only wait 1 minute
       retval = 0;
       process = false;
     }
@@ -677,7 +679,7 @@ static int Reconnect_Null_Modem() {
   /*
   ** Main Processing Loop
   */
-  int64_t starttime = lastmsgtime = SystemTicks();
+  int64_t starttime = lastmsgtime = engine::platform::SystemTicks();
   while (process) {
     /*
     ** Invoke game callback
@@ -710,8 +712,8 @@ static int Reconnect_Null_Modem() {
     /*
     ** Resend our message if it's time
     */
-    if (SystemTicks() - starttime > PACKET_RETRANS_TIME) {
-      starttime = SystemTicks();
+    if (engine::platform::SystemTicks() - starttime > PACKET_RETRANS_TIME) {
+      starttime = engine::platform::SystemTicks();
       base::FillBytes(base::ObjectBytes(SendPacket), 0,
                       sizeof(SerialPacketType));
       SendPacket.Command = SERIAL_CONNECT;
@@ -725,7 +727,7 @@ static int Reconnect_Null_Modem() {
     */
     if (TheNetwork().null_modem().Get_Message(base::ObjectBytes(ReceivePacket),
                                               &packetlen) > 0) {
-      lastmsgtime = SystemTicks();
+      lastmsgtime = engine::platform::SystemTicks();
 
       if (ReceivePacket.Command == SERIAL_CONNECT) {
         // are we getting our own packets back??
@@ -747,8 +749,8 @@ static int Reconnect_Null_Modem() {
         SendPacket.ID = static_cast<unsigned char>(TheSession().ColorIdx);
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                                sizeof(SendPacket), 1);
-        starttime = SystemTicks();
-        while (SystemTicks() - starttime < 60) {
+        starttime = engine::platform::SystemTicks();
+        while (engine::platform::SystemTicks() - starttime < 60) {
           TheNetwork().null_modem().Service();
         }
         retval = 1;
@@ -759,7 +761,7 @@ static int Reconnect_Null_Modem() {
     //
     // timeout if we do not get any packets
     //
-    if (SystemTicks() - lastmsgtime > PACKET_CANCEL_TIMEOUT) {
+    if (engine::platform::SystemTicks() - lastmsgtime > PACKET_CANCEL_TIMEOUT) {
       retval = 0;
       process = false;
     }
@@ -2756,8 +2758,9 @@ int Com_Scenario_Dialog(bool skirmish) {
 
   PixelView& view = TheScreen().visible_view();
 
-  Timer<SystemTickSource> kludge_timer;  // Timer to allow a wait after client
-                                         // joins game before game can start
+  engine::platform::Timer<engine::platform::SystemTickSource>
+      kludge_timer;  // Timer to allow a wait after client
+                     // joins game before game can start
   bool ok_button_added = false;
 
   /*........................................................................
@@ -3072,7 +3075,7 @@ int Com_Scenario_Dialog(bool skirmish) {
     TheNetwork().null_modem().Reset_Response_Time();  // clear response time
   }
   theirresponsetime = 10000;  // initialize to an invalid value
-  timingtime = lastmsgtime = lastredrawtime = SystemTicks();
+  timingtime = lastmsgtime = lastredrawtime = engine::platform::SystemTicks();
 
   bool retry_setup = true;
   while (retry_setup) {
@@ -3670,7 +3673,8 @@ int Com_Scenario_Dialog(bool skirmish) {
         transmit = false;
       }
 
-      if (transmit && SystemTicks() - transmittime > PACKET_RETRANS_TIME) {
+      if (transmit && engine::platform::SystemTicks() - transmittime >
+                          PACKET_RETRANS_TIME) {
         base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_GAME_OPTIONS;
         base::SafeCopy(SendPacket.Name, namebuf);
@@ -3727,7 +3731,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                                sizeof(SendPacket), 1);
 
-        transmittime = SystemTicks();
+        transmittime = engine::platform::SystemTicks();
         transmit = false;
 
         //..................................................................
@@ -3765,7 +3769,8 @@ int Com_Scenario_Dialog(bool skirmish) {
       //
       // send a timing packet if enough time has gone by.
       //
-      if (!skirmish && SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
+      if (!skirmish && engine::platform::SystemTicks() - timingtime >
+                           PACKET_TIMING_TIMEOUT) {
         base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_TIMING;
         SendPacket.ScenarioInfo.ResponseTime =
@@ -3774,7 +3779,7 @@ int Com_Scenario_Dialog(bool skirmish) {
 
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                                sizeof(SendPacket), 0);
-        timingtime = SystemTicks();
+        timingtime = engine::platform::SystemTicks();
       }
 
       /*---------------------------------------------------------------------
@@ -3782,7 +3787,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       ---------------------------------------------------------------------*/
       if (!skirmish && TheNetwork().null_modem().Get_Message(
                            base::ObjectBytes(ReceivePacket), &packetlen) > 0) {
-        lastmsgtime = SystemTicks();
+        lastmsgtime = engine::platform::SystemTicks();
         msg_timeout = 600;  // reset timeout value to 10 seconds
                             // (only the 1st time through is 20 seconds)
 
@@ -3796,7 +3801,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
           // to skip the other system not responding msg
-          lastmsgtime = SystemTicks();
+          lastmsgtime = engine::platform::SystemTicks();
 
           process = false;
           rc = 0;
@@ -3809,8 +3814,9 @@ int Com_Scenario_Dialog(bool skirmish) {
         const auto event_type = base::ReadUnaligned<EventClass::EventType>(
             base::ObjectBytes(ReceivePacket));
         if (event_type <= EventClass::FRAMEINFO) {
-          if (SystemTicks() - lastredrawtime > PACKET_REDRAW_TIME) {
-            lastredrawtime = SystemTicks();
+          if (engine::platform::SystemTicks() - lastredrawtime >
+              PACKET_REDRAW_TIME) {
+            lastredrawtime = engine::platform::SystemTicks();
             display = std::max(display, REDRAW_MESSAGE);
           }
         } else {
@@ -3820,14 +3826,14 @@ int Com_Scenario_Dialog(bool skirmish) {
             message, and exit.
             ..................................................................*/
             case SERIAL_SIGN_OFF:
-              starttime = SystemTicks();
-              while (SystemTicks() - starttime < 60) {
+              starttime = engine::platform::SystemTicks();
+              while (engine::platform::SystemTicks() - starttime < 60) {
                 TheNetwork().null_modem().Service();
               }
               WWMessageBox().Process(TXT_USER_SIGNED_OFF);
 
               // to skip the other system not responding msg
-              lastmsgtime = SystemTicks();
+              lastmsgtime = engine::platform::SystemTicks();
 
               process = false;
               rc = 0;
@@ -3864,7 +3870,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                 WWMessageBox().Process(TXT_DESTGAME_OUTDATED);
 
                 // to skip the other system not responding msg
-                lastmsgtime = SystemTicks();
+                lastmsgtime = engine::platform::SystemTicks();
 
                 process = false;
                 rc = 0;
@@ -3876,7 +3882,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                 WWMessageBox().Process(TXT_YOURGAME_OUTDATED);
 
                 // to skip the other system not responding msg
-                lastmsgtime = SystemTicks();
+                lastmsgtime = engine::platform::SystemTicks();
 
                 process = false;
                 rc = 0;
@@ -3886,7 +3892,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                   WWMessageBox().Process(TXT_MISMATCH);
 
                   // to skip the other system not responding msg
-                  lastmsgtime = SystemTicks();
+                  lastmsgtime = engine::platform::SystemTicks();
 
                   process = false;
                   rc = 0;
@@ -4026,7 +4032,8 @@ int Com_Scenario_Dialog(bool skirmish) {
 
       // if we haven't received a msg for 10 seconds exit
 
-      if (!skirmish && SystemTicks() - lastmsgtime > msg_timeout) {
+      if (!skirmish &&
+          engine::platform::SystemTicks() - lastmsgtime > msg_timeout) {
         WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
         process = false;
         rc = 0;
@@ -4165,10 +4172,11 @@ int Com_Scenario_Dialog(bool skirmish) {
       if (!skirmish) {
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                                sizeof(SendPacket), 1);
-        starttime = SystemTicks();
+        starttime = engine::platform::SystemTicks();
         while ((TheNetwork().null_modem().Num_Send() &&
-                SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) ||
-               SystemTicks() - starttime < 60) {
+                engine::platform::SystemTicks() - starttime <
+                    PACKET_SENDING_TIMEOUT) ||
+               engine::platform::SystemTicks() - starttime < 60) {
           TheNetwork().null_modem().Service();
         }
 
@@ -4202,7 +4210,7 @@ int Com_Scenario_Dialog(bool skirmish) {
               */
               process = true;
               display = REDRAW_ALL;
-              lastmsgtime = SystemTicks();
+              lastmsgtime = engine::platform::SystemTicks();
               retry_setup = true;
               break;
             }
@@ -4246,10 +4254,11 @@ int Com_Scenario_Dialog(bool skirmish) {
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                                sizeof(SendPacket), 1);
 
-        starttime = SystemTicks();
+        starttime = engine::platform::SystemTicks();
         while ((TheNetwork().null_modem().Num_Send() &&
-                SystemTicks() - starttime < PACKET_CANCEL_TIMEOUT) ||
-               SystemTicks() - starttime < 60) {
+                engine::platform::SystemTicks() - starttime <
+                    PACKET_CANCEL_TIMEOUT) ||
+               engine::platform::SystemTicks() - starttime < 60) {
           if ((TheNetwork().null_modem().Get_Message(
                    base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
               (ReceivePacket.Command == SERIAL_SIGN_OFF &&
@@ -4849,7 +4858,7 @@ int Com_Show_Scenario_Dialog() {
   ---------------------------- Processing loop -----------------------------
   */
   TheNetwork().null_modem().Reset_Response_Time();  // clear response time
-  timingtime = lastmsgtime = lastredrawtime = SystemTicks();
+  timingtime = lastmsgtime = lastredrawtime = engine::platform::SystemTicks();
 
   bool process = true;  // process while true
   while (process) {
@@ -5269,7 +5278,8 @@ int Com_Show_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     If our Transmit flag is set, we need to send out a game option packet
     ---------------------------------------------------------------------*/
-    if (transmit && SystemTicks() - transmittime > PACKET_RETRANS_TIME) {
+    if (transmit &&
+        engine::platform::SystemTicks() - transmittime > PACKET_RETRANS_TIME) {
       base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       base::SafeCopy(SendPacket.Name, namebuf);
@@ -5284,7 +5294,7 @@ int Com_Show_Scenario_Dialog() {
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 1);
 
-      transmittime = SystemTicks();
+      transmittime = engine::platform::SystemTicks();
       transmit = false;
 
       //..................................................................
@@ -5322,7 +5332,7 @@ int Com_Show_Scenario_Dialog() {
     //
     // send a timing packet if enough time has gone by.
     //
-    if (SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
+    if (engine::platform::SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
       base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       SendPacket.Command = SERIAL_TIMING;
       SendPacket.ScenarioInfo.ResponseTime =
@@ -5331,7 +5341,7 @@ int Com_Show_Scenario_Dialog() {
 
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 0);
-      timingtime = SystemTicks();
+      timingtime = engine::platform::SystemTicks();
     }
 
     /*---------------------------------------------------------------------
@@ -5339,7 +5349,7 @@ int Com_Show_Scenario_Dialog() {
     ---------------------------------------------------------------------*/
     if (TheNetwork().null_modem().Get_Message(base::ObjectBytes(ReceivePacket),
                                               &packetlen) > 0) {
-      lastmsgtime = SystemTicks();
+      lastmsgtime = engine::platform::SystemTicks();
 
       msg_timeout = 600;
 
@@ -5363,8 +5373,9 @@ int Com_Show_Scenario_Dialog() {
       const auto event_type = base::ReadUnaligned<EventClass::EventType>(
           base::ObjectBytes(ReceivePacket));
       if (event_type <= EventClass::FRAMEINFO) {
-        if (SystemTicks() - lastredrawtime > PACKET_REDRAW_TIME) {
-          lastredrawtime = SystemTicks();
+        if (engine::platform::SystemTicks() - lastredrawtime >
+            PACKET_REDRAW_TIME) {
+          lastredrawtime = engine::platform::SystemTicks();
           oppscorescreen = true;
           display = std::max(display, REDRAW_MESSAGE);
           parms_received = true;
@@ -5376,14 +5387,14 @@ int Com_Show_Scenario_Dialog() {
           a message.
           ..................................................................*/
           case SERIAL_SIGN_OFF:
-            starttime = SystemTicks();
-            while (SystemTicks() - starttime < 60) {
+            starttime = engine::platform::SystemTicks();
+            while (engine::platform::SystemTicks() - starttime < 60) {
               TheNetwork().null_modem().Service();
             }
             WWMessageBox().Process(TXT_USER_SIGNED_OFF);
 
             // to skip the other system not responding msg
-            lastmsgtime = SystemTicks();
+            lastmsgtime = engine::platform::SystemTicks();
 
             process = false;
             rc = 0;
@@ -5520,7 +5531,7 @@ int Com_Show_Scenario_Dialog() {
               WWMessageBox().Process(TXT_DESTGAME_OUTDATED);
 
               // to skip the other system not responding msg
-              lastmsgtime = SystemTicks();
+              lastmsgtime = engine::platform::SystemTicks();
 
               process = false;
               rc = 0;
@@ -5532,7 +5543,7 @@ int Com_Show_Scenario_Dialog() {
               WWMessageBox().Process(TXT_YOURGAME_OUTDATED);
 
               // to skip the other system not responding msg
-              lastmsgtime = SystemTicks();
+              lastmsgtime = engine::platform::SystemTicks();
 
               process = false;
               rc = 0;
@@ -5547,7 +5558,7 @@ int Com_Show_Scenario_Dialog() {
                 WWMessageBox().Process(TXT_MISMATCH);
 
                 // to skip the other system not responding msg
-                lastmsgtime = SystemTicks();
+                lastmsgtime = engine::platform::SystemTicks();
 
                 process = false;
                 rc = 0;
@@ -5700,10 +5711,11 @@ int Com_Show_Scenario_Dialog() {
                   TheNetwork().null_modem().Send_Message(
                       base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
 
-                  starttime = SystemTicks();
+                  starttime = engine::platform::SystemTicks();
                   while ((TheNetwork().null_modem().Num_Send() &&
-                          SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) ||
-                         SystemTicks() - starttime < 60) {
+                          engine::platform::SystemTicks() - starttime <
+                              PACKET_SENDING_TIMEOUT) ||
+                         engine::platform::SystemTicks() - starttime < 60) {
                     TheNetwork().null_modem().Service();
                   }
                   ready_packet_was_sent = true;
@@ -5722,7 +5734,7 @@ int Com_Show_Scenario_Dialog() {
                   /*
                   ** Make sure we dont time out because of the disk swap
                   */
-                  lastmsgtime = SystemTicks();
+                  lastmsgtime = engine::platform::SystemTicks();
                 }
               }
 
@@ -5746,11 +5758,12 @@ int Com_Show_Scenario_Dialog() {
                   SendPacket.Command = SERIAL_READY_TO_GO;
                   TheNetwork().null_modem().Send_Message(
                       base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
-                  starttime = SystemTicks();
+                  starttime = engine::platform::SystemTicks();
 
                   while ((TheNetwork().null_modem().Num_Send() &&
-                          SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) ||
-                         SystemTicks() - starttime < 60) {
+                          engine::platform::SystemTicks() - starttime <
+                              PACKET_SENDING_TIMEOUT) ||
+                         engine::platform::SystemTicks() - starttime < 60) {
                     TheNetwork().null_modem().Service();
                   }
                 }
@@ -5768,7 +5781,7 @@ int Com_Show_Scenario_Dialog() {
                 /*
                  ** Make sure we dont time-out because of the download
                  */
-                lastmsgtime = SystemTicks();
+                lastmsgtime = engine::platform::SystemTicks();
               }
             } else {
               /*
@@ -5779,11 +5792,12 @@ int Com_Show_Scenario_Dialog() {
               SendPacket.Command = SERIAL_READY_TO_GO;
               TheNetwork().null_modem().Send_Message(
                   base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
-              starttime = SystemTicks();
+              starttime = engine::platform::SystemTicks();
 
               while ((TheNetwork().null_modem().Num_Send() &&
-                      SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) ||
-                     SystemTicks() - starttime < 60) {
+                      engine::platform::SystemTicks() - starttime <
+                          PACKET_SENDING_TIMEOUT) ||
+                     engine::platform::SystemTicks() - starttime < 60) {
                 TheNetwork().null_modem().Service();
               }
             }
@@ -5871,7 +5885,7 @@ int Com_Show_Scenario_Dialog() {
 
     // if we haven't received a msg for 10 seconds exit
 
-    if (SystemTicks() - lastmsgtime > msg_timeout) {
+    if (engine::platform::SystemTicks() - lastmsgtime > msg_timeout) {
       WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
       process = false;
       rc = 0;
@@ -5921,10 +5935,11 @@ int Com_Show_Scenario_Dialog() {
     who->Player.Color = TheirColor;
     who->Player.ProcessTime = -1;
 
-    starttime = SystemTicks();
+    starttime = engine::platform::SystemTicks();
     while ((TheNetwork().null_modem().Num_Send() &&
-            SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) ||
-           SystemTicks() - starttime < 60) {
+            engine::platform::SystemTicks() - starttime <
+                PACKET_SENDING_TIMEOUT) ||
+           engine::platform::SystemTicks() - starttime < 60) {
       TheNetwork().null_modem().Service();
     }
 
@@ -5944,10 +5959,11 @@ int Com_Show_Scenario_Dialog() {
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 1);
 
-      starttime = SystemTicks();
+      starttime = engine::platform::SystemTicks();
       while ((TheNetwork().null_modem().Num_Send() &&
-              SystemTicks() - starttime < PACKET_CANCEL_TIMEOUT) ||
-             SystemTicks() - starttime < 60) {
+              engine::platform::SystemTicks() - starttime <
+                  PACKET_CANCEL_TIMEOUT) ||
+             engine::platform::SystemTicks() - starttime < 60) {
         if ((TheNetwork().null_modem().Get_Message(
                  base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
             (ReceivePacket.Command == SERIAL_SIGN_OFF &&
@@ -6938,7 +6954,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
-    Timer<SystemTickSource> wait;
+    engine::platform::Timer<engine::platform::SystemTickSource> wait;
     ServiceRealTime();
     wait.Set(60);
     while (wait.Remaining()) {
@@ -7111,7 +7127,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
-    Timer<SystemTickSource> wait;
+    engine::platform::Timer<engine::platform::SystemTickSource> wait;
     ServiceRealTime();
     wait.Set(60);
     while (wait.Remaining()) {

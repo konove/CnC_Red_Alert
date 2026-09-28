@@ -97,7 +97,7 @@ void Check_For_Focus_Loss() {
 
   if (!focus_last_time && TheGameState().in_focus()) {
     engine::audio::TheAudio().SetExtraPaused(true);
-    Timer<SystemTickSource> cd;
+    engine::platform::Timer<engine::platform::SystemTickSource> cd;
     cd.Set(60 * 1);
 
     do {

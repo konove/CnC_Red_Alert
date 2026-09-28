@@ -80,7 +80,7 @@ class InfantryClass final : public FootClass {
   *an *	amount of time has expired subsequent to an significant event. This is
   *the *	timer the counts down.
   */
-  Timer<FrameTickSource> Comment{0};
+  engine::platform::Timer<FrameTickSource> Comment{0};
 
   /*
   **	If this civilian is actually a technician, then this flag will be true.

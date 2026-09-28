@@ -178,7 +178,8 @@ constexpr int kCompletionPlayer2WonByDisconnection = 6;
 // Stalemate games.
 constexpr int kCompletionWash = 64;
 
-static Stopwatch<SystemTickSource> GameTimer;
+static engine::platform::Stopwatch<engine::platform::SystemTickSource>
+    GameTimer;
 static int32_t GameEndTime;
 
 #ifdef _WIN32

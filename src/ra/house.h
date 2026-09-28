@@ -378,20 +378,20 @@ class HouseClass {
   **	performing repair actions. This timer regulates that delay. If the
   **	timer has not expired, then no repair initiation is allowed.
   */
-  Timer<FrameTickSource> RepairTimer{0};
+  engine::platform::Timer<FrameTickSource> RepairTimer{0};
 
   /*
   **	This timer controls the computer auto-attack logic. When this timer
   *expires *	and the house has been alerted, then it will create a set of
   *attack *	teams.
   */
-  Timer<FrameTickSource> AlertTime{0};
+  engine::platform::Timer<FrameTickSource> AlertTime{0};
 
   /*
   **	This timer is used to handle the delay between some catastrophic
   **	event trigger and when it is actually carried out.
   */
-  Timer<FrameTickSource> BorrowedTime{0};
+  engine::platform::Timer<FrameTickSource> BorrowedTime{0};
 
   /*
   **	This is the last working scan bits for buildings. If a building is
@@ -616,7 +616,7 @@ class HouseClass {
   **	When this timer expires, send most of this house's units in an
   **	attack.
   */
-  Timer<FrameTickSource> Attack{0};
+  engine::platform::Timer<FrameTickSource> Attack{0};
 
  public:
   /*
@@ -632,7 +632,7 @@ class HouseClass {
   *intervals. Not only will *	this distribute the overhead more evenly, but
   *will add variety to play.
   */
-  Timer<FrameTickSource> AITimer{0};
+  engine::platform::Timer<FrameTickSource> AITimer{0};
 
   /*
   ** For the moebius effect, this is a pointer to the unit that we
@@ -894,27 +894,27 @@ class HouseClass {
   **	General low-power related damaged is doled out whenever this timer
   **	expires.
   */
-  Timer<FrameTickSource> DamageTime;
+  engine::platform::Timer<FrameTickSource> DamageTime;
 
   /*
   **	Team creation is done whenever this timer expires.
   */
-  Timer<FrameTickSource> TeamTime;
+  engine::platform::Timer<FrameTickSource> TeamTime;
 
   /*
   **	This controls the rate that the trigger time logic is processed.
   */
-  Timer<FrameTickSource> TriggerTime{0};
+  engine::platform::Timer<FrameTickSource> TriggerTime{0};
 
   /*
   **	At various times, the computer may announce the player's condition. The
   *following *	variables are used as countdown timers so that these
   *announcements are paced *	far enough apart to reduce annoyance.
   */
-  Timer<FrameTickSource> SpeakAttackDelay{1};
-  Timer<FrameTickSource> SpeakPowerDelay{1};
-  Timer<FrameTickSource> SpeakMoneyDelay{1};
-  Timer<FrameTickSource> SpeakMaxedDelay{1};
+  engine::platform::Timer<FrameTickSource> SpeakAttackDelay{1};
+  engine::platform::Timer<FrameTickSource> SpeakPowerDelay{1};
+  engine::platform::Timer<FrameTickSource> SpeakMoneyDelay{1};
+  engine::platform::Timer<FrameTickSource> SpeakMaxedDelay{1};
 
   /*
   **	This structure is used to record a build request as determined by

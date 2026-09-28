@@ -101,7 +101,7 @@ class SuperClass {
   bool IsReady : 1 = false;
   bool IsSuspended : 1 = false;
 
-  Timer<FrameTickSource> Control;
+  engine::platform::Timer<FrameTickSource> Control;
   int OldStage = -1;
   int SuspendTime = 0;
 

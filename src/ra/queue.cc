@@ -245,7 +245,8 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
                        std::span<const uint16_t> their_sent,
                        std::span<const uint16_t> their_recv);
 static int Process_Reconnect_Dialog(
-    const Timer<SystemTickSource>* timeout_timer,
+    const engine::platform::Timer<engine::platform::SystemTickSource>*
+        timeout_timer,
     std::span<const int64_t> their_frame, int num_conn, bool reconn,
     bool fresh);
 static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
@@ -269,7 +270,7 @@ static int Breakup_Receive_Packet(std::span<const std::byte> buf, int bufsize);
 //...........................................................................
 static int Execute_DoList(
     int max_houses, HousesType base_house, ConnManClass* net,
-    const Timer<FrameTickSource>* skip_crc,
+    const engine::platform::Timer<FrameTickSource>* skip_crc,
     //	ConnManClass *net, TCountDownTimerClass *skip_crc,
     std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
     std::span<uint16_t> their_recv);
@@ -682,7 +683,8 @@ static void Queue_AI_Multiplayer() {
   //........................................................................
   // Timing variables
   //........................................................................
-  static Timer<FrameTickSource> skip_crc;  // to delay the CRC check
+  static engine::platform::Timer<FrameTickSource>
+      skip_crc;  // to delay the CRC check
   //	static TCountDownTimerClass skip_crc;	// to delay the CRC check
 
   //........................................................................
@@ -984,9 +986,12 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   //........................................................................
   // Timing variables
   //........................................................................
-  Timer<SystemTickSource> retry_timer;  // time between FRAMESYNC packet resends
-  Timer<SystemTickSource> dialog_timer;   // time to pop up a dialog
-  Timer<SystemTickSource> timeout_timer;  // general-purpose timeout
+  engine::platform::Timer<engine::platform::SystemTickSource>
+      retry_timer;  // time between FRAMESYNC packet resends
+  engine::platform::Timer<engine::platform::SystemTickSource>
+      dialog_timer;  // time to pop up a dialog
+  engine::platform::Timer<engine::platform::SystemTickSource>
+      timeout_timer;  // general-purpose timeout
 
   //........................................................................
   // Dialog variables
@@ -2195,7 +2200,8 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Process_Reconnect_Dialog(
-    const Timer<SystemTickSource>* timeout_timer,
+    const engine::platform::Timer<engine::platform::SystemTickSource>*
+        timeout_timer,
     std::span<const int64_t> their_frame, int num_conn, bool reconn,
     bool fresh) {
   static int displayed_time = 0;  // time value currently displayed
@@ -3419,12 +3425,11 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Execute_DoList(int max_houses, HousesType base_house,
-                          ConnManClass* net,
-                          const Timer<FrameTickSource>* skip_crc,
-                          std::span<int64_t> their_frame,
-                          std::span<uint16_t> their_sent,
-                          std::span<uint16_t> their_recv) {
+static int Execute_DoList(
+    int max_houses, HousesType base_house, ConnManClass* net,
+    const engine::platform::Timer<FrameTickSource>* skip_crc,
+    std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
+    std::span<uint16_t> their_recv) {
   int index = 0;
   int check_crc = 0;
 

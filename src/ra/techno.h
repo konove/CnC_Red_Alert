@@ -186,13 +186,13 @@ class TechnoClass : public RadioClass,
   *by *	this timer. When the timer expires an idle animation occurs. Then the
   **	timer is reinitialized to some random (bounded) setting.
   */
-  Timer<FrameTickSource> IdleTimer;
+  engine::platform::Timer<FrameTickSource> IdleTimer;
 
   /*
   ** This timer keeps track of how long the unit is under the influence
   ** of the iron curtain.
   */
-  Timer<FrameTickSource> IronCurtainCountDown;
+  engine::platform::Timer<FrameTickSource> IronCurtainCountDown;
 
   /*
   ** This is a list of bits of which houses are spying on this building,
@@ -220,7 +220,7 @@ class TechnoClass : public RadioClass,
   */
   CloakType Cloak;
   StageClass CloakingDevice;
-  Timer<FrameTickSource> CloakDelay;
+  engine::platform::Timer<FrameTickSource> CloakDelay;
 
   /* (Targeting Computer)
   **	This is the target value for the item that this vehicle should ATTACK.
@@ -239,7 +239,7 @@ class TechnoClass : public RadioClass,
   **	This is the arming countdown. It represents the time necessary
   **	to reload the weapon.
   */
-  Timer<FrameTickSource> Arm;
+  engine::platform::Timer<FrameTickSource> Arm;
 
   /*
   **	The number of shot this object can fire before running out of ammo. If

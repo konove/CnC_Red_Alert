@@ -461,7 +461,7 @@ bool LoadOptionsClass::Process() {
           // "Mission saved" plays while the message is up, rather than
           // before it; it finishes after the dialog closes if need be.
           Speak(VOX_SAVE1);
-          Timer<SystemTickSource> timer;
+          engine::platform::Timer<engine::platform::SystemTickSource> timer;
           timer.Set(int64_t{kTicksPerSecond} * 4);  // 60 ticks: one second
 
           WWMessageBox().Process(TXT_GAME_WAS_SAVED, TXT_NONE, TXT_NONE);

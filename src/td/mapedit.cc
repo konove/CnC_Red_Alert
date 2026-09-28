@@ -1127,7 +1127,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
             .................. Check for double-click ....................
             */
             if (TheWorld().current_object().Count() &&
-                ((SystemTicks() - LastClickTime) < 15)) {
+                ((engine::platform::SystemTicks() - LastClickTime) < 15)) {
             } else {
               /*
               ................ Single-click: select object .................
@@ -1147,7 +1147,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
             }
           }
         }
-        LastClickTime = SystemTicks();
+        LastClickTime = engine::platform::SystemTicks();
         input = KN_NONE;
       } else {
         /*

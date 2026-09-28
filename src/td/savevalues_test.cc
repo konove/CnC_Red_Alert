@@ -63,12 +63,13 @@ void Restore(T& value, const std::array<uint8_t, 64>& bytes) {
 
 TEST(TdSaveValuesTest, CountdownReanchorsAndKeepsWideRemainingTime) {
   TheGameClock().set_frame(100);
-  Timer<FrameTickSource> timer(int64_t{1} * 1024 * 1024 * 1024 * 1024);
+  engine::platform::Timer<FrameTickSource> timer(int64_t{1} * 1024 * 1024 *
+                                                 1024 * 1024);
   TheGameClock().set_frame(CurrentFrame() + 17);
   const int64_t remaining = timer.Remaining();
   const auto bytes = Save(timer);
   TheGameClock().set_frame(10000);
-  Timer<FrameTickSource> loaded;
+  engine::platform::Timer<FrameTickSource> loaded;
   Restore(loaded, bytes);
   EXPECT_TRUE(loaded.IsRunning());
   EXPECT_EQ(loaded.Remaining(), remaining);
@@ -78,9 +79,9 @@ TEST(TdSaveValuesTest, CountdownReanchorsAndKeepsWideRemainingTime) {
 
 TEST(TdSaveValuesTest, ClearedAndExpiredCountdownsRemainDistinct) {
   TheGameClock().set_frame(100);
-  Timer<FrameTickSource> timer(1);
+  engine::platform::Timer<FrameTickSource> timer(1);
   TheGameClock().set_frame(102);
-  Timer<FrameTickSource> loaded;
+  engine::platform::Timer<FrameTickSource> loaded;
   Restore(loaded, Save(timer));
   EXPECT_TRUE(loaded.IsRunning());
   EXPECT_EQ(loaded.Remaining(), 0);
@@ -93,7 +94,7 @@ TEST(TdSaveValuesTest, ClearedAndExpiredCountdownsRemainDistinct) {
 }
 
 TEST(TdSaveValuesTest, CountdownRejectsTruncationAndNegativeDuration) {
-  Timer<FrameTickSource> timer;
+  engine::platform::Timer<FrameTickSource> timer;
   std::array<uint8_t, 9> bytes{};
   SpanSource short_source(std::as_bytes(std::span(bytes).first(8)));
   ArchiveReader short_reader(short_source);

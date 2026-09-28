@@ -427,7 +427,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     **	Delay for a brief moment so that the dialog box will be visible long
     **	enough to read the text.
     */
-    const Timer<SystemTickSource> timer{int64_t{kTicksPerSecond} * 4};
+    const engine::platform::Timer<engine::platform::SystemTickSource> timer{
+        int64_t{kTicksPerSecond} * 4};
     while (timer.Remaining() > 0) {
       Call_Back();
     }

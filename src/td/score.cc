@@ -1102,7 +1102,7 @@ void ScoreClass::Show() {
 void Cycle_Wait_Click(Presentation& show) {
   int counter = 0;
   int minclicks = 20;
-  int64_t timingtime = SystemTicks();
+  int64_t timingtime = engine::platform::SystemTicks();
   SerialPacketType sendpacket{.Command = SERIAL_SCORE_SCREEN,
                               .Name = {},
                               .Version = 0,
@@ -1152,7 +1152,8 @@ void Cycle_Wait_Click(Presentation& show) {
       //
       // send a timing packet if enough time has gone by.
       //
-      if (SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
+      if (engine::platform::SystemTicks() - timingtime >
+          PACKET_TIMING_TIMEOUT) {
         sendpacket.Command = SERIAL_SCORE_SCREEN;
         sendpacket.ResponseTime =
             static_cast<uint32_t>(TheNetwork().null_modem().Response_Time());
@@ -1161,7 +1162,7 @@ void Cycle_Wait_Click(Presentation& show) {
 
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(sendpacket),
                                                sizeof(sendpacket), 0);
-        timingtime = SystemTicks();
+        timingtime = engine::platform::SystemTicks();
       }
 
       if (TheNetwork().null_modem().Get_Message(
@@ -1823,7 +1824,7 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
 void Animate_Cursor(Presentation& show, int pos, int ypos) {
   static int _lastpos;
   static bool _state;
-  static Timer<SystemTickSource> _timer;
+  static engine::platform::Timer<engine::platform::SystemTickSource> _timer;
 
   ypos += 7;  // move cursor to bottom of letter
 
@@ -2067,7 +2068,7 @@ void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
  *   04/13/1995 BWG : Created.                                             *
  *=========================================================================*/
 void Call_Back_Delay(Presentation& show, int time) {
-  Timer<SystemTickSource> cd;
+  engine::platform::Timer<engine::platform::SystemTickSource> cd;
 
   if ((!ControlQ) &&
       (engine::window::IsCtrlDown() &&

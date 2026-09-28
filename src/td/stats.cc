@@ -161,7 +161,8 @@ constexpr int kCompletionPlayer2Won = 4;
 constexpr int kCompletionPlayer2WonByResignation = 5;
 constexpr int kCompletionPlayer2WonByDisconnection = 6;
 
-static Stopwatch<SystemTickSource> GameTimer;
+static engine::platform::Stopwatch<engine::platform::SystemTickSource>
+    GameTimer;
 static int32_t GameEndTime;
 
 /***********************************************************************************************
@@ -645,7 +646,7 @@ void Send_Statistics_Packet() {
   ** Send it.....
   */
 #ifdef _WIN32
-  Timer<SystemTickSource> send_timer;
+  engine::platform::Timer<engine::platform::SystemTickSource> send_timer;
   CCDebugString("C&C95 - About to send stats packet to DDE server.\n");
   while (!Send_Data_To_DDE_Server(packet.data(),
                                   static_cast<int>(packet.size()),

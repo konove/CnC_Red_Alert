@@ -20,7 +20,7 @@
 //     palette.at(kPulseColor) = pulse.Apply(palette.at(kWhite));
 //     palette.Set();
 //   }
-template <TickSource T>
+template <engine::platform::TickSource T>
 class GlowPulse {
  public:
   // Six steps carry the fade across its range, so a full swing out and back
@@ -58,7 +58,7 @@ class GlowPulse {
   [[nodiscard]] int fade() const { return fade_; }
 
  private:
-  Timer<T> timer_;
+  engine::platform::Timer<T> timer_;
   int64_t period_;
   int fade_ = kMaxFade;
   int step_ = -kFadeStep;  // Signed; flips at either end of the range.

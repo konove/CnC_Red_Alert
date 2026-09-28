@@ -36,6 +36,8 @@
 #include <concepts>
 #include <cstdint>
 
+namespace engine::platform {
+
 // The rate SystemTicks() counts at.
 inline constexpr int kSystemTicksPerSecond = 60;
 
@@ -219,5 +221,7 @@ void Timer<T>::Serialize(Archive& ar) {
     }
   }
 }
+
+}  // namespace engine::platform
 
 #endif  // CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_

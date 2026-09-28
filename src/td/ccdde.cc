@@ -71,7 +71,8 @@ Instance_Class* DDE_Class = NULL;  // pointer for client callback
 bool CC95AlreadyRunning =
     FALSE;  // Was there an instance of C&C 95 already running when we started?
 
-extern Stopwatch<SystemTickSource> GameTimer;
+extern engine::platform::Stopwatch<engine::platform::SystemTickSource>
+    GameTimer;
 extern bool GameTimerInUse;
 extern void CCDebugString(const char* string);
 

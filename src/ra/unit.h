@@ -122,7 +122,7 @@ class UnitClass final : public DriveClass {
   **	This is the timer that controls the reload rate. The MSAM rocket
   **	launcher is the primary user of this.
   */
-  Timer<FrameTickSource> Reload{0};
+  engine::platform::Timer<FrameTickSource> Reload{0};
 
   /*
   **	This is the facing of the turret. It can be, and usually is,

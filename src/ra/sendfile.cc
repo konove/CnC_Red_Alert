@@ -99,10 +99,11 @@ void PumpWolapi() {
   if constexpr (config::kWolapiEnabled) {
     if (TheSession().Type == GAME_INTERNET &&
         TheNetwork().wolapi() != nullptr &&
-        SystemMilliseconds() > TheNetwork().wolapi()->dwTimeNextWolapiPump) {
+        engine::platform::SystemMilliseconds() >
+            TheNetwork().wolapi()->dwTimeNextWolapiPump) {
       TheNetwork().wolapi()->pChat->PumpMessages();
       TheNetwork().wolapi()->dwTimeNextWolapiPump =
-          SystemMilliseconds() + WOLAPIPUMPWAIT;
+          engine::platform::SystemMilliseconds() + WOLAPIPUMPWAIT;
     }
   }
 }
@@ -141,7 +142,7 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
 
   IPXAddressClass sender_address;
 
-  Timer<SystemTickSource>
+  engine::platform::Timer<engine::platform::SystemTickSource>
       response_timer;  // timeout timer for waiting for responses
 
   /*
@@ -535,7 +536,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   // rather than the shared string table.
   std::string info_string(Text_String(TXT_SENDING_SCENARIO));
 
-  Timer<SystemTickSource>
+  engine::platform::Timer<engine::platform::SystemTickSource>
       response_timer;  // timeout timer for waiting for responses
 
   Format_Window_String(TextFontStyle(TPF_CENTER | TPF_6PT_GRAD |

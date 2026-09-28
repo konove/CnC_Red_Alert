@@ -1841,7 +1841,7 @@ static int Net_Join_Dialog() {
     - Send queries for the new selected game, if there is one
     ---------------------------------------------------------------------*/
     for (i = 0; i < std::ssize(TheNetwork().games()); i++) {
-      if (SystemTicks() -
+      if (engine::platform::SystemTicks() -
               TheNetwork().games().at(base::ToSize(i))->Game.LastTime >
           400) {
         TheNetwork().games().erase(TheNetwork().games().begin() + i);
@@ -2004,8 +2004,9 @@ static int Net_Join_Dialog() {
     ---------------------------------------------------------------------*/
     i = std::max<int>(
         static_cast<int>(TheNetwork().ipx().Global_Response_Time()) * 2, 60);
-    starttime = SystemTicks();
-    while (SystemTicks() - starttime < static_cast<int64_t>(i)) {
+    starttime = engine::platform::SystemTicks();
+    while (engine::platform::SystemTicks() - starttime <
+           static_cast<int64_t>(i)) {
       TheNetwork().ipx().Service();
     }
   }
@@ -2252,8 +2253,8 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
   Send the game-name query if the time has expired, or we're told to do
   it right now
   ------------------------------------------------------------------------*/
-  if (SystemTicks() - lasttime1 > 120 || gamenow) {
-    lasttime1 = static_cast<int>(SystemTicks());
+  if (engine::platform::SystemTicks() - lasttime1 > 120 || gamenow) {
+    lasttime1 = static_cast<int>(engine::platform::SystemTicks());
 
     base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                     sizeof(GlobalPacketType));
@@ -2281,8 +2282,8 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
   right now
   ------------------------------------------------------------------------*/
   if (curgame != -1 && curgame < std::ssize(TheNetwork().games()) &&
-      (SystemTicks() - lasttime2 > 35 || playernow)) {
-    lasttime2 = static_cast<int>(SystemTicks());
+      (engine::platform::SystemTicks() - lasttime2 > 35 || playernow)) {
+    lasttime2 = static_cast<int>(engine::platform::SystemTicks());
 
     base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                     sizeof(GlobalPacketType));
@@ -2399,7 +2400,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         /*...............................................................
         If name was found, update the node's time stamp & IsOpen flag.
         ...............................................................*/
-        TheNetwork().games().at(base::ToSize(i))->Game.LastTime = SystemTicks();
+        TheNetwork().games().at(base::ToSize(i))->Game.LastTime =
+            engine::platform::SystemTicks();
         if (TheNetwork().games().at(base::ToSize(i))->Game.IsOpen !=
             TheNetwork().global_packet().GameInfo.IsOpen) {
           if (TheNetwork().global_packet().GameInfo.IsOpen) {
@@ -2443,7 +2445,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       who->Address = TheNetwork().global_address();
       who->Game.Version = TheNetwork().global_packet().GameInfo.Version;
       who->Game.IsOpen = TheNetwork().global_packet().GameInfo.IsOpen;
-      who->Game.LastTime = SystemTicks();
+      who->Game.LastTime = engine::platform::SystemTicks();
 
       /*..................................................................
       Create a string for "xxx's Game", leaving room for brackets around
@@ -3552,7 +3554,7 @@ static int Net_New_Dialog() {
         i = std::max<int>(
             static_cast<int>(TheNetwork().ipx().Global_Response_Time()) * 2,
             60);
-        while (SystemTicks() - ok_timer < i) {
+        while (engine::platform::SystemTicks() - ok_timer < i) {
           TheNetwork().ipx().Service();
         }
 
@@ -3813,7 +3815,7 @@ static int Net_New_Dialog() {
     ---------------------------------------------------------------------*/
     const JoinEventType whahoppa = Get_NewGame_Responses(&playerlist);
     if (whahoppa == EV_NEW_PLAYER) {
-      ok_timer = SystemTicks();
+      ok_timer = engine::platform::SystemTicks();
       transmit = 1;
     } else {
       if (whahoppa == EV_MESSAGE) {
@@ -3864,7 +3866,7 @@ static int Net_New_Dialog() {
     Ping every player in my game, to force the Global Channel to measure
     the connection response time.
     ---------------------------------------------------------------------*/
-    if (SystemTicks() - ping_timer > 15) {
+    if (engine::platform::SystemTicks() - ping_timer > 15) {
       base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                       sizeof(GlobalPacketType));
       TheNetwork().global_packet().Command = NET_PING;
@@ -3874,7 +3876,7 @@ static int Net_New_Dialog() {
             sizeof(GlobalPacketType), 1,
             &TheNetwork().players().at(base::ToSize(i))->Address);
       }
-      ping_timer = SystemTicks();
+      ping_timer = engine::platform::SystemTicks();
     }
 
     /*---------------------------------------------------------------------
@@ -4385,7 +4387,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
  * HISTORY: * 1/6/97 3:23PM ST : Created *
  *=============================================================================================*/
 static void Wait_For_Focus() {
-  Timer<SystemTickSource> focus_timer;
+  engine::platform::Timer<engine::platform::SystemTickSource> focus_timer;
   focus_timer.Set(int64_t{5} * 60);
   /*
   ** Process the message loop until we are in focus.
@@ -4455,7 +4457,7 @@ static int Net_Fake_New_Dialog() {
 #endif  // GERMAN | FRENCH
 
   bool player_joined = false;
-  Timer<SystemTickSource> join_timer;
+  engine::platform::Timer<engine::platform::SystemTickSource> join_timer;
 
   // Format_Window_String inserts line breaks in place, so format a copy rather
   // than the shared string table.
@@ -4773,7 +4775,7 @@ static int Net_Fake_New_Dialog() {
           i = std::max<int>(
               static_cast<int>(TheNetwork().ipx().Global_Response_Time()) * 2,
               120);
-          while (SystemTicks() - ok_timer < i) {
+          while (engine::platform::SystemTicks() - ok_timer < i) {
             TheNetwork().ipx().Service();
           }
 
@@ -4796,7 +4798,7 @@ static int Net_Fake_New_Dialog() {
     ---------------------------------------------------------------------*/
     whahoppa = Get_NewGame_Responses(&playerlist);
     if (whahoppa == EV_NEW_PLAYER) {
-      ok_timer = SystemTicks();
+      ok_timer = engine::platform::SystemTicks();
       transmit = 1;
     } else {
       if (whahoppa == EV_MESSAGE) {
@@ -4847,7 +4849,7 @@ static int Net_Fake_New_Dialog() {
     Ping every player in my game, to force the Global Channel to measure
     the connection response time.
     ---------------------------------------------------------------------*/
-    if (SystemTicks() - ping_timer > 15) {
+    if (engine::platform::SystemTicks() - ping_timer > 15) {
       base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                       sizeof(GlobalPacketType));
       TheNetwork().global_packet().Command = NET_PING;
@@ -4857,7 +4859,7 @@ static int Net_Fake_New_Dialog() {
             sizeof(GlobalPacketType), 1,
             &TheNetwork().players().at(base::ToSize(i))->Address);
       }
-      ping_timer = SystemTicks();
+      ping_timer = engine::platform::SystemTicks();
     }
 
     /*---------------------------------------------------------------------
@@ -5478,7 +5480,7 @@ static int Net_Fake_Join_Dialog() {
     - Send queries for the new selected game, if there is one
     ---------------------------------------------------------------------*/
     for (i = 0; i < std::ssize(TheNetwork().games()); i++) {
-      if (SystemTicks() -
+      if (engine::platform::SystemTicks() -
               TheNetwork().games().at(base::ToSize(i))->Game.LastTime >
           400) {
         TheNetwork().games().erase(TheNetwork().games().begin() + i);
@@ -5668,8 +5670,9 @@ static int Net_Fake_Join_Dialog() {
     ---------------------------------------------------------------------*/
     i = std::max<int>(
         static_cast<int>(TheNetwork().ipx().Global_Response_Time()) * 2, 120);
-    starttime = SystemTicks();
-    while (SystemTicks() - starttime < static_cast<int64_t>(i)) {
+    starttime = engine::platform::SystemTicks();
+    while (engine::platform::SystemTicks() - starttime <
+           static_cast<int64_t>(i)) {
       TheNetwork().ipx().Service();
     }
   }

@@ -79,7 +79,7 @@ class CrateClass {
     CrateTimer.Stop();
   }
 
-  Timer<FrameTickSource> CrateTimer;
+  engine::platform::Timer<FrameTickSource> CrateTimer;
   CELL Cell = -1;
 };
 

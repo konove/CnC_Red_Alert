@@ -58,7 +58,7 @@ class ScrollClass : public HelpClass {
   *reaches zero, *	scroll the map in the direction required and reset this
   *timer.
   */
-  static Timer<SystemTickSource> Counter;
+  static engine::platform::Timer<engine::platform::SystemTickSource> Counter;
 
   /*
   **	These are the delays used (as countdown timers) to regulate the scroll

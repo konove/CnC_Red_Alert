@@ -71,7 +71,7 @@ class DriveClass : public FootClass {
   ** This controls how long a unit can exist in its alternate location
   ** before being pulled back by the chronosphere into its normal location.
   */
-  Timer<FrameTickSource> MoebiusCountDown{0};
+  engine::platform::Timer<FrameTickSource> MoebiusCountDown{0};
 
   /*
   ** This is the coord the unit will be taken back to once its moebius

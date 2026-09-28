@@ -173,7 +173,7 @@ class TeamClass : public AbstractClass {
   /*
   ** This is the amount of time the team is suspended for.
   */
-  Timer<FrameTickSource> SuspendTimer;
+  engine::platform::Timer<FrameTickSource> SuspendTimer;
 
   //------------------------------------------------------------
   // Loading constructs an active shell without changing team counts.
@@ -242,7 +242,7 @@ class TeamClass : public AbstractClass {
   **	Some missions will time out. This is the timer that keeps track of the
   **	time to transition between missions.
   */
-  Timer<FrameTickSource> TimeOut;
+  engine::platform::Timer<FrameTickSource> TimeOut;
 
   void Coordinate_Unload();
   bool Coordinate_Regroup();

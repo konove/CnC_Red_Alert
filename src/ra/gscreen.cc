@@ -432,7 +432,7 @@ void Shake_The_Screen(int shakes) {
   while (shakes-- != 0) {
     // Hold each offset for exactly one tick, so the shake runs at game speed
     // rather than as fast as the machine can blit.
-    const int64_t x = SystemTicks();
+    const int64_t x = engine::platform::SystemTicks();
     // Never repeat the previous offset, so every tick visibly moves the screen.
     int new_y_off = 0;
     do {
@@ -452,7 +452,7 @@ void Shake_The_Screen(int shakes) {
         TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
         break;
     }
-    while (x == SystemTicks()) {
+    while (x == engine::platform::SystemTicks()) {
       engine::window::TheDisplay().EndFrame();
     }
   }

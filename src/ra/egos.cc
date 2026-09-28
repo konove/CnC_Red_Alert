@@ -695,7 +695,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Init misc timing variables.
   */
-  const int time = static_cast<int>(SystemTicks());
+  const int time = static_cast<int>(engine::platform::SystemTicks());
   int frame = 0;
   int picture_frame = 0;
   int slide_number = 0;
@@ -777,7 +777,8 @@ void Show_Who_Was_Responsible() {
     /*
     ** Kill any spare time before blitting the hid page forward.
     */
-    while (SystemTicks() - time < static_cast<int64_t>(frame) * speed &&
+    while (engine::platform::SystemTicks() - time <
+               static_cast<int64_t>(frame) * speed &&
            !TheKeyboard().Peek()) {
     }
 
@@ -823,7 +824,8 @@ void Show_Who_Was_Responsible() {
       /*
       ** Kill any spare time
       */
-      while (SystemTicks() - time < static_cast<int64_t>(frame) * speed &&
+      while (engine::platform::SystemTicks() - time <
+                 static_cast<int64_t>(frame) * speed &&
              !TheKeyboard().Peek()) {
       }
     }

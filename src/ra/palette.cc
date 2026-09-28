@@ -40,12 +40,12 @@ void PaletteClass::Set(int fade, void (*callback)()) {
   }
 
   if (fade) {
-    const auto start_time = SystemTicks();
+    const auto start_time = engine::platform::SystemTicks();
 
     PaletteClass fade_palette;
 
     while (true) {
-      const int64_t now = SystemTicks();
+      const int64_t now = engine::platform::SystemTicks();
       const int cur_time =
           static_cast<int>(std::min<int64_t>(now - start_time, fade));
 
@@ -76,7 +76,7 @@ void PaletteClass::Set(int fade, void (*callback)()) {
       // The blend only changes when the tick does, so presenting again
       // before then redraws an identical frame. Unpaced, this loop presented
       // over a thousand times a second and kept a core busy for the fade.
-      while (SystemTicks() == now) {
+      while (engine::platform::SystemTicks() == now) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
       }
     }

@@ -772,8 +772,9 @@ int MapEditClass::Team_Members(HousesType house) {
       *decrement *	tindex to go to the next time delay, which is longer;
       *then, decr. *	again to go to the 1st time delay which is the shortest.
       */
-      if (SystemTicks() - heldtime > base::At(tdelay, tindex)) {
-        heldtime = SystemTicks();
+      if (engine::platform::SystemTicks() - heldtime >
+          base::At(tdelay, tindex)) {
+        heldtime = engine::platform::SystemTicks();
         if (tindex) {
           tindex--;
         }
@@ -806,11 +807,12 @@ int MapEditClass::Team_Members(HousesType house) {
       *decrement *	tindex to go to the next time delay, which is longer;
       *then, decr. *	again to go to the 1st time delay which is the shortest.
       */
-      if (rheld && (SystemTicks() - heldtime > base::At(tdelay, tindex))) {
+      if (rheld && (engine::platform::SystemTicks() - heldtime >
+                    base::At(tdelay, tindex))) {
         if (tindex) {
           tindex--;
         }
-        heldtime = SystemTicks();
+        heldtime = engine::platform::SystemTicks();
 
         if (base::At(teamcount, curclass) > 0) {
           base::At(teamcount, curclass)--;

@@ -186,7 +186,7 @@ class BuildingClass : public TechnoClass {
   **	it won't actually be removed from the map until this value reaches
   **	zero. This delay is for cosmetic reasons.
   */
-  Timer<FrameTickSource> CountDown{0};
+  engine::platform::Timer<FrameTickSource> CountDown{0};
 
   /*
   **	This is the current animation processing state that the building is
@@ -225,7 +225,7 @@ class BuildingClass : public TechnoClass {
   **	This is the countdown timer that regulates placement retry logic
   **	for factory type buildings.
   */
-  Timer<FrameTickSource> PlacementDelay{0};
+  engine::platform::Timer<FrameTickSource> PlacementDelay{0};
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   BuildingClass() : ActLike(HOUSE_NONE) {}

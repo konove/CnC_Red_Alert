@@ -132,7 +132,7 @@ class MissionClass : public ObjectClass {
   **	This the thread processing timer. When this value counts down to zero,
   *then *	more script processing may occur.
   */
-  Timer<FrameTickSource> MissionTimer;
+  engine::platform::Timer<FrameTickSource> MissionTimer;
 
   /*
   **	These are the order names as ASCII strings.

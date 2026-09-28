@@ -698,7 +698,7 @@ void Cycle_Wait_Click(bool cycle) {
   int counter = 0;
   // Ticks left during which input is thrown away.
   int minclicks = 20;
-  int64_t timingtime = SystemTicks();
+  int64_t timingtime = engine::platform::SystemTicks();
   SerialPacketType sendpacket{
       .Command = SERIAL_SCORE_SCREEN, .Name = {}, .ID = 0, .ScenarioInfo = {}};
   SerialPacketType receivepacket{
@@ -711,7 +711,8 @@ void Cycle_Wait_Click(bool cycle) {
         TheSession().Type == GAME_MODEM) {
       // Send a timing packet if enough time has gone by, so the other machine
       // keeps measuring the link while both sit on this screen.
-      if (SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
+      if (engine::platform::SystemTicks() - timingtime >
+          PACKET_TIMING_TIMEOUT) {
         base::FillBytes(base::ObjectBytes(sendpacket), 0,
                         sizeof(SerialPacketType));
         sendpacket.Command = SERIAL_SCORE_SCREEN;
@@ -721,7 +722,7 @@ void Cycle_Wait_Click(bool cycle) {
 
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(sendpacket),
                                                sizeof(sendpacket), 0);
-        timingtime = SystemTicks();
+        timingtime = engine::platform::SystemTicks();
       }
 
       if (TheNetwork().null_modem().Get_Message(
@@ -1024,7 +1025,7 @@ void Animate_Cursor(int pos, int ypos) {
   static int _lastpos = 0;
   // 0 draws the cursor transparent (hidden), 1 draws it blue.
   static int _state;
-  static Timer<SystemTickSource> _timer;
+  static engine::platform::Timer<engine::platform::SystemTickSource> _timer;
 
   ypos += 6;  // move cursor to bottom of letter
 
@@ -1059,7 +1060,8 @@ void TickScoreScreen(const int ticks) {
 
   // ServiceRealTime() presents the frame, so each pass lasts one display
   // refresh and the objects animate at the refresh rate.
-  const Timer<SystemTickSource> wait{ControlQ ? 0 : ticks};
+  const engine::platform::Timer<engine::platform::SystemTickSource> wait{
+      ControlQ ? 0 : ticks};
   do {
     ServiceRealTime();
     Animate_Score_Objs();

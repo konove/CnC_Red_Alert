@@ -125,8 +125,9 @@ static void CyclePalette() {
   // anew rather than reading the slot back.
   constexpr RGBClass kEmberBase(255, 80, 80);
 
-  static Timer<SystemTickSource> water_timer;
-  static GlowPulse<SystemTickSource> pulse(kTimerSecond / 6);
+  static engine::platform::Timer<engine::platform::SystemTickSource>
+      water_timer;
+  static GlowPulse<engine::platform::SystemTickSource> pulse(kTimerSecond / 6);
 
   if (!TheOptions().IsPaletteScroll) {
     return;
@@ -347,7 +348,8 @@ void RunGame() {
 // modal dialog over the chat screen has asked for it.
 [[maybe_unused]] static void ServiceWolapi() {
   if (!TheNetwork().wolapi() ||
-      SystemMilliseconds() <= TheNetwork().wolapi()->dwTimeNextWolapiPump) {
+      engine::platform::SystemMilliseconds() <=
+          TheNetwork().wolapi()->dwTimeNextWolapiPump) {
     return;
   }
 
@@ -355,7 +357,7 @@ void RunGame() {
     if (TheNetwork().wolapi()->bPump_In_Call_Back) {
       PumpWolapiMessages();
       TheNetwork().wolapi()->dwTimeNextWolapiPump =
-          SystemMilliseconds() + WOLAPIPUMPWAIT;
+          engine::platform::SystemMilliseconds() + WOLAPIPUMPWAIT;
     }
     return;
   }
@@ -365,7 +367,7 @@ void RunGame() {
   }
   PumpWolapiMessages();
   TheNetwork().wolapi()->dwTimeNextWolapiPump =
-      SystemMilliseconds() + WOLAPIPUMPWAIT + 700;
+      engine::platform::SystemMilliseconds() + WOLAPIPUMPWAIT + 700;
   if (TheNetwork().wolapi()->bConnectionDown) {
     // The Wolapi object is kept rather than deleted, so that the game results
     // can still be sent.
@@ -383,7 +385,7 @@ void ServiceRealTime() {
 }
 
 void ServiceRealTimeFor(const int ticks) {
-  const Timer<SystemTickSource> wait{ticks};
+  const engine::platform::Timer<engine::platform::SystemTickSource> wait{ticks};
   do {
     ServiceRealTime();
   } while (wait.HasTimeLeft());
@@ -415,7 +417,7 @@ void ServiceBackgroundTasks() {
 
 // Holds the end of the current frame; StartFrameTimer() sets it and
 // WaitForNextFrame() waits it out.
-static Timer<SystemTickSource> frame_timer;
+static engine::platform::Timer<engine::platform::SystemTickSource> frame_timer;
 
 // Spins until the frame timer expires, holding the game to the rate set by the
 // game-speed option.
@@ -659,7 +661,7 @@ bool RunFrame() {
   }
 
   // Initialize our AI processing timer
-  TheSession().ProcessTimer = SystemTicks();
+  TheSession().ProcessTimer = engine::platform::SystemTicks();
 
   // If there is no theme playing, but it looks like one is required, then
   // start one playing. This is usually the symptom of there being no
@@ -706,7 +708,8 @@ bool RunFrame() {
   //
   // Multiplayer uses this running average to pick a frame rate every machine
   // in the session can actually keep up with.
-  TheSession().ProcessTicks += SystemTicks() - TheSession().ProcessTimer;
+  TheSession().ProcessTicks +=
+      engine::platform::SystemTicks() - TheSession().ProcessTimer;
   TheSession().ProcessFrames++;
 
   // Process all commands that are ready to be processed.

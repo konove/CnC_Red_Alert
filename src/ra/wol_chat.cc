@@ -220,7 +220,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   bool process = true;              // process while true
   engine::window::KeyNumber input = KN_NONE;
 
-  Stopwatch<SystemTickSource> lastclick_timer;
+  engine::platform::Stopwatch<engine::platform::SystemTickSource>
+      lastclick_timer;
   int lastclick_idx = 0;  // index of item last clicked on
 
   //------------------------------------------------------------------------
@@ -445,7 +446,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   while (process) {
 
     //	Regularly check for incoming messages from wolapi.
-    if (SystemMilliseconds() > pWO->dwTimeNextWolapiPump) {
+    if (engine::platform::SystemMilliseconds() > pWO->dwTimeNextWolapiPump) {
       /*
                               //	Lame hack. Problem is draws that occur
          in callbacks. if( pToolTipHitLast && pToolTipHitLast->bShowing ) {
@@ -497,7 +498,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         chanlistTitle.Set_Text(pWO->szChannelListTitle);
         pWO->bChannelListTitleUpdated = false;
       }
-      pWO->dwTimeNextWolapiPump = SystemMilliseconds() + WOLAPIPUMPWAIT;
+      pWO->dwTimeNextWolapiPump =
+          engine::platform::SystemMilliseconds() + WOLAPIPUMPWAIT;
     }
 
     //	Synch rank toggle buttons state.
@@ -548,7 +550,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
          pWO->CurrentLevel == WOL_LEVEL_USERCHAT ||
          pWO->CurrentLevel == WOL_LEVEL_LOBBIES ||
          pWO->CurrentLevel == WOL_LEVEL_INLOBBY) &&
-        SystemMilliseconds() > pWO->dwTimeNextChannelUpdate) {
+        engine::platform::SystemMilliseconds() > pWO->dwTimeNextChannelUpdate) {
       switch (pWO->CurrentLevel) {
         case WOL_LEVEL_OFFICIALCHAT:
           pWO->UpdateChannels(0, CHANNELFILTER_OFFICIAL, false);
@@ -572,7 +574,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         default:
           break;
       }
-      pWO->dwTimeNextChannelUpdate = SystemMilliseconds() + CHANNELUPDATEWAIT;
+      pWO->dwTimeNextChannelUpdate =
+          engine::platform::SystemMilliseconds() + CHANNELUPDATEWAIT;
     }
 
     /*
@@ -664,7 +667,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     if (engine::window::IsLeftButtonDown() ||
         engine::window::IsRightButtonDown()) {
       //	Mouse button is down.
-      timeToolTipAppear = SystemMilliseconds() + TOOLTIPDELAY;
+      timeToolTipAppear = engine::platform::SystemMilliseconds() + TOOLTIPDELAY;
       if (pToolTipHitLast && pToolTipHitLast->bShowing) {
         pToolTipHitLast->Unshow(view);
       }
@@ -700,7 +703,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           //	(Gadget must be
           // in controls list.)
           if (!pToolTipHit->bShowing &&
-              SystemMilliseconds() > timeToolTipAppear &&
+              engine::platform::SystemMilliseconds() > timeToolTipAppear &&
               !(engine::window::IsLeftButtonDown() ||
                 engine::window::IsRightButtonDown())) {
             pToolTipHit->Show(view);
@@ -715,7 +718,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           pToolTipHitLast->Unshow(view);
         }
         pToolTipHitLast = pToolTipHit;
-        timeToolTipAppear = SystemMilliseconds() + TOOLTIPDELAY;
+        timeToolTipAppear =
+            engine::platform::SystemMilliseconds() + TOOLTIPDELAY;
       }
     }
 
@@ -917,7 +921,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         break;
 
       case engine::window::ButtonKey(kButtonRefresh):
-        pWO->dwTimeNextChannelUpdate = SystemMilliseconds();
+        pWO->dwTimeNextChannelUpdate = engine::platform::SystemMilliseconds();
         break;
 
       case engine::window::ButtonKey(kButtonSquelch):

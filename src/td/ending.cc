@@ -103,7 +103,7 @@ void GDI_Ending() {
     Play_Movie("GDIEND1");
   }
 
-  Timer<SystemTickSource> count;
+  engine::platform::Timer<engine::platform::SystemTickSource> count;
   if (GameFileExists("TRAILER.VQA")) {
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                     Call_Back);
@@ -286,7 +286,7 @@ void Nod_Ending() {
   TheGameState().preserve_movie_screen() = true;
   Play_Movie(fname);
 
-  Timer<SystemTickSource> count;
+  engine::platform::Timer<engine::platform::SystemTickSource> count;
   if (GameFileExists("TRAILER.VQA")) {
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                     Call_Back);

@@ -759,7 +759,7 @@ int Main_Menu(int timeout) {
   */
   PixelView& view = TheScreen().visible_view();
   TheKeyboard().Clear();
-  starttime = SystemTicks();
+  starttime = engine::platform::SystemTicks();
 
   /*
   **	Create the list
@@ -827,7 +827,7 @@ int Main_Menu(int timeout) {
     /*
     **	If timeout expires, bail
     */
-    if (timeout && SystemTicks() - starttime > timeout) {
+    if (timeout && engine::platform::SystemTicks() - starttime > timeout) {
       retval = -1;
       process = false;
     }

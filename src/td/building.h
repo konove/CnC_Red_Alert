@@ -144,7 +144,7 @@ class BuildingClass final : public TechnoClass {
   **	it won't actually be removed from the map until this value reaches
   **	zero. This delay is for cosmetic reasons.
   */
-  Timer<FrameTickSource> CountDown;
+  engine::platform::Timer<FrameTickSource> CountDown;
 
   /*
   **	This is the current animation processing state that the building is
@@ -176,7 +176,7 @@ class BuildingClass final : public TechnoClass {
   **	This is the countdown timer that regulates placement retry logic
   **	for factory type buildings.
   */
-  Timer<FrameTickSource> PlacementDelay;
+  engine::platform::Timer<FrameTickSource> PlacementDelay;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

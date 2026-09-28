@@ -371,7 +371,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   if (timeout == -1) {
     label->UserData = 0;
   } else {
-    label->UserData = SystemTicks() + timeout;
+    label->UserData = engine::platform::SystemTicks() + timeout;
   }
 
   /*------------------------------------------------------------------------
@@ -545,7 +545,8 @@ int MessageListClass::Manage() {
     /*.....................................................................
     If this message's time is up, remove it from the list
     .....................................................................*/
-    if (txtlabel->UserData != 0 && SystemTicks() > txtlabel->UserData) {
+    if (txtlabel->UserData != 0 &&
+        engine::platform::SystemTicks() > txtlabel->UserData) {
       /*..................................................................
       If we're about to delete the edit message, clear our edit message
       values.

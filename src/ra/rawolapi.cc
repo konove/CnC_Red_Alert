@@ -1413,7 +1413,7 @@ STDMETHODIMP RAChatEventSink::OnUserKick(HRESULT hRes, Channel* /*channel*/,
                           WolText(pUserKicker->name));
       pOwner->PrintMessage(szPrint, WOLCOLORREMAP_KICKORBAN);
       //	Ensure that the bGotKickedTrigger is acted upon immediately...
-      pOwner->dwTimeNextWolapiPump = SystemMilliseconds();
+      pOwner->dwTimeNextWolapiPump = engine::platform::SystemMilliseconds();
     } else {
       char szPrint[kMessageMax];
       Format_Runtime_Text(szPrint, sizeof(szPrint), TXT_WOL_USERKICKEDUSER,

@@ -11,6 +11,7 @@
 #include "engine/stream/vector_sink.h"
 #include "gtest/gtest.h"
 
+namespace engine::platform {
 namespace {
 
 TEST(SystemClockTest, NeverRunsBackward) {
@@ -26,7 +27,7 @@ TEST(SystemClockTest, CountsSixtyTicksPerSecond) {
   // 100 ms is 6 ticks; flooring both readings can lose one. Only a lower bound
   // is checked, since a loaded machine may sleep much longer.
   const int64_t start = SystemTicks();
-  engine::platform::SleepMs(100);
+  SleepMs(100);
   EXPECT_GE(SystemTicks() - start, 5);
 }
 
@@ -42,7 +43,7 @@ TEST(SystemClockTest, MillisecondsNeverRunBackward) {
 TEST(SystemClockTest, CountsMilliseconds) {
   // Only a lower bound is checked, since a loaded machine may sleep longer.
   const int64_t start = SystemMilliseconds();
-  engine::platform::SleepMs(100);
+  SleepMs(100);
   EXPECT_GE(SystemMilliseconds() - start, 100);
 }
 
@@ -238,3 +239,4 @@ TEST_F(TimerSerializeTest, NegativeElapsedValueIsRejected) {
 }
 
 }  // namespace
+}  // namespace engine::platform

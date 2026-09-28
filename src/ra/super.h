@@ -88,7 +88,7 @@ class SuperClass {
   bool IsOneTime : 1 = false;
   bool IsReady : 1 = false;
 
-  Timer<FrameTickSource> Control;
+  engine::platform::Timer<FrameTickSource> Control;
   int OldStage = -1;
 
   VoxType VoxRecharge = VOX_NONE;

@@ -72,7 +72,7 @@ class TabClass : public SidebarClass {
 
   CreditClass Credits;
 
-  Timer<FrameTickSource> FlasherTimer;
+  engine::platform::Timer<FrameTickSource> FlasherTimer;
 
  protected:
   /*
@@ -83,7 +83,7 @@ class TabClass : public SidebarClass {
  private:
   static void Set_Active(int select);
 
-  Timer<FrameTickSource> MoneyFlashTimer;
+  engine::platform::Timer<FrameTickSource> MoneyFlashTimer;
 
   static std::span<const std::byte> TabShape;
 };

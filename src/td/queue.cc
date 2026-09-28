@@ -200,9 +200,9 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
                        std::span<const int> their_frame,
                        std::span<const uint16_t> their_sent,
                        std::span<const uint16_t> their_recv);
-static int Process_Reconnect_Dialog(Timer<SystemTickSource>* timeout_timer,
-                                    std::span<const int> their_frame,
-                                    int num_conn, bool reconn, bool fresh);
+static int Process_Reconnect_Dialog(
+    engine::platform::Timer<engine::platform::SystemTickSource>* timeout_timer,
+    std::span<const int> their_frame, int num_conn, bool reconn, bool fresh);
 static int Handle_Timeout(ConnManClass* net, std::span<int> their_frame,
                           std::span<uint16_t> their_sent,
                           std::span<uint16_t> their_recv);
@@ -226,7 +226,8 @@ static int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
 // DoList management:
 //...........................................................................
 static int Execute_DoList(int max_houses, HousesType base_house,
-                          ConnManClass* net, Timer<FrameTickSource>* skip_crc,
+                          ConnManClass* net,
+                          engine::platform::Timer<FrameTickSource>* skip_crc,
                           std::span<int> their_frame,
                           std::span<uint16_t> their_sent,
                           std::span<uint16_t> their_recv);
@@ -866,9 +867,12 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   //........................................................................
   // Timing variables
   //........................................................................
-  Timer<SystemTickSource> retry_timer;  // time between FRAMESYNC packet resends
-  Timer<SystemTickSource> dialog_timer;   // time to pop up a dialog
-  Timer<SystemTickSource> timeout_timer;  // general-purpose timeout
+  engine::platform::Timer<engine::platform::SystemTickSource>
+      retry_timer;  // time between FRAMESYNC packet resends
+  engine::platform::Timer<engine::platform::SystemTickSource>
+      dialog_timer;  // time to pop up a dialog
+  engine::platform::Timer<engine::platform::SystemTickSource>
+      timeout_timer;  // general-purpose timeout
 
   //........................................................................
   // Dialog variables
@@ -1967,9 +1971,9 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Process_Reconnect_Dialog(Timer<SystemTickSource>* timeout_timer,
-                                    std::span<const int> their_frame,
-                                    int num_conn, bool reconn, bool fresh) {
+static int Process_Reconnect_Dialog(
+    engine::platform::Timer<engine::platform::SystemTickSource>* timeout_timer,
+    std::span<const int> their_frame, int num_conn, bool reconn, bool fresh) {
   static int displayed_time = 0;  // time value currently displayed
   int oldest_index = 0;  // index of person requiring a reconnect
 
@@ -3042,7 +3046,8 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
-                          ConnManClass* net, Timer<FrameTickSource>* /*unused*/,
+                          ConnManClass* net,
+                          engine::platform::Timer<FrameTickSource>* /*unused*/,
                           std::span<int> their_frame,
                           std::span<uint16_t> their_sent,
                           std::span<uint16_t> their_recv) {

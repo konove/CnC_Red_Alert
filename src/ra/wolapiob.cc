@@ -103,7 +103,8 @@ static void HostNameFromGameChannelName(std::span<char> szNameToSet,
 WolapiObject::WolapiObject()
     :
 
-      dwTimeNextWolapiPump(SystemMilliseconds() + WOLAPIPUMPWAIT) {
+      dwTimeNextWolapiPump(engine::platform::SystemMilliseconds() +
+                           WOLAPIPUMPWAIT) {
   *szMyName = 0;
   *szMyRecord = 0;
   *szMyRecordAM = 0;
@@ -607,15 +608,16 @@ HRESULT WolapiObject::GetChatServer() {
     return E_FAIL;
   }
   // ajw My own extra timeout at one minute, in case wolapi chokes.
-  const int64_t dwTimeLimit = SystemMilliseconds();
+  const int64_t dwTimeLimit = engine::platform::SystemMilliseconds();
   //	debugprint( "Called RequestServerList...\n" );
-  int64_t dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+  int64_t dwTimeNextPump =
+      engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   TheKeyboard().Clear();  //	Set up for escape key checking.
   bool bCancel = false;
   hresPatchResults = 0;
   while (pChatSink->bRequestServerListWait &&
-         SystemMilliseconds() - dwTimeLimit < 60000) {
-    while (SystemMilliseconds() < dwTimeNextPump) {
+         engine::platform::SystemMilliseconds() - dwTimeLimit < 60000) {
+    while (engine::platform::SystemMilliseconds() < dwTimeNextPump) {
       ServiceRealTime();
       if (engine::window::KeyBuffer::IsDown(engine::window::KN_ESC)) {
         bCancel = true;
@@ -624,7 +626,7 @@ HRESULT WolapiObject::GetChatServer() {
     }
     //		debugprint( "PumpMessages after RequestServerList...\n" );
     pChat->PumpMessages();
-    dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+    dwTimeNextPump = engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
     //        engine::platform::SleepMs( PUMPSLEEPDURATION );	//	Can't do
     //        because we want to ServiceRealTime()
     //	If an "update list" of patches has been received, instead of a server
@@ -697,13 +699,15 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
     return CHAT_E_CON_ERROR;
   }
 
-  const int64_t dwTimeStart = SystemMilliseconds();
-  int64_t dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = engine::platform::SystemMilliseconds();
+  int64_t dwTimeNextPump =
+      engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   TheKeyboard().Clear();  //	Set up for escape key checking.
   bool bCancel = false;
   while (pChatSink->bRequestConnectionWait &&
-         SystemMilliseconds() - dwTimeStart < EMERGENCY_TIMEOUT) {
-    while (SystemMilliseconds() < dwTimeNextPump) {
+         engine::platform::SystemMilliseconds() - dwTimeStart <
+             EMERGENCY_TIMEOUT) {
+    while (engine::platform::SystemMilliseconds() < dwTimeNextPump) {
       ServiceRealTime();
       if (engine::window::KeyBuffer::IsDown(engine::window::KN_ESC)) {
         bCancel = true;
@@ -714,7 +718,7 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
       break;
     }
     pChat->PumpMessages();
-    dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+    dwTimeNextPump = engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
     //        Sleep( PUMPSLEEPDURATION );	//	Can't do because we want
     //        to ServiceRealTime()
   }
@@ -758,15 +762,17 @@ void WolapiObject::Logout() {
   }
 
   const int64_t dwTimePatience =
-      SystemMilliseconds();  //	After 5 seconds we run out of patience and bail.
-  int64_t dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+      engine::platform::SystemMilliseconds();  //	After 5 seconds we run
+                                               //out of patience and bail.
+  int64_t dwTimeNextPump =
+      engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestLogoutWait &&
-         SystemMilliseconds() - dwTimePatience < 5000) {
-    while (SystemMilliseconds() < dwTimeNextPump) {
+         engine::platform::SystemMilliseconds() - dwTimePatience < 5000) {
+    while (engine::platform::SystemMilliseconds() < dwTimeNextPump) {
       ServiceRealTime();
     }
     pChat->PumpMessages();
-    dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+    dwTimeNextPump = engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   }
 
   pChatSink->bConnected = false;
@@ -1021,15 +1027,17 @@ HRESULT WolapiObject::ChannelJoin(Channel* pChannelToJoin) {
   }
   pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
                                           // lists.
-  const int64_t dwTimeStart = SystemMilliseconds();
-  int64_t dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = engine::platform::SystemMilliseconds();
+  int64_t dwTimeNextPump =
+      engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelJoinWait &&
-         SystemMilliseconds() - dwTimeStart < EMERGENCY_TIMEOUT) {
-    while (SystemMilliseconds() < dwTimeNextPump) {
+         engine::platform::SystemMilliseconds() - dwTimeStart <
+             EMERGENCY_TIMEOUT) {
+    while (engine::platform::SystemMilliseconds() < dwTimeNextPump) {
       ServiceRealTime();
     }
     pChat->PumpMessages();
-    dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+    dwTimeNextPump = engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   }
   pChatSink->bIgnoreChannelLists =
       false;  //	Turn on response to channel lists.
@@ -1072,15 +1080,17 @@ bool WolapiObject::ChannelLeave() {
   }
   pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
                                           // lists.
-  const int64_t dwTimeStart = SystemMilliseconds();
-  int64_t dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = engine::platform::SystemMilliseconds();
+  int64_t dwTimeNextPump =
+      engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelLeaveWait &&
-         SystemMilliseconds() - dwTimeStart < EMERGENCY_TIMEOUT) {
-    while (SystemMilliseconds() < dwTimeNextPump) {
+         engine::platform::SystemMilliseconds() - dwTimeStart <
+             EMERGENCY_TIMEOUT) {
+    while (engine::platform::SystemMilliseconds() < dwTimeNextPump) {
       ServiceRealTime();
     }
     pChat->PumpMessages();
-    dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+    dwTimeNextPump = engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   }
   pChatSink->bIgnoreChannelLists = false;
 
@@ -1685,15 +1695,17 @@ bool WolapiObject::ChannelCreate(
   }
   pChatSink->bIgnoreChannelLists = true;  //	Turn off response to channel
                                           // lists.
-  const int64_t dwTimeStart = SystemMilliseconds();
-  int64_t dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = engine::platform::SystemMilliseconds();
+  int64_t dwTimeNextPump =
+      engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelCreateWait &&
-         SystemMilliseconds() - dwTimeStart < EMERGENCY_TIMEOUT) {
-    while (SystemMilliseconds() < dwTimeNextPump) {
+         engine::platform::SystemMilliseconds() - dwTimeStart <
+             EMERGENCY_TIMEOUT) {
+    while (engine::platform::SystemMilliseconds() < dwTimeNextPump) {
       ServiceRealTime();
     }
     pChat->PumpMessages();
-    dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+    dwTimeNextPump = engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   }
   pChatSink->bIgnoreChannelLists = false;
 
@@ -1827,16 +1839,18 @@ HRESULT WolapiObject::Locate(const char* szUser) {
     //		debugprint( "RequestFind() call failed\n" );
     return 0;
   }
-  const int64_t dwTimeStart = SystemMilliseconds();
-  int64_t dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = engine::platform::SystemMilliseconds();
+  int64_t dwTimeNextPump =
+      engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestFindWait &&
-         SystemMilliseconds() - dwTimeStart < EMERGENCY_TIMEOUT) {
-    while (SystemMilliseconds() < dwTimeNextPump) {
+         engine::platform::SystemMilliseconds() - dwTimeStart <
+             EMERGENCY_TIMEOUT) {
+    while (engine::platform::SystemMilliseconds() < dwTimeNextPump) {
       ServiceRealTime();
     }
     pChat->PumpMessages();
     //		debugprint( ">Find pump\n" );
-    dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+    dwTimeNextPump = engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   }
 
   if (pChatSink->bRequestFindWait) {
@@ -1871,16 +1885,18 @@ HRESULT WolapiObject::Page(const char* szUser, const char* szSend,
   if (!bWaitForResult) {
     return 0;
   }
-  const int64_t dwTimeStart = SystemMilliseconds();
-  int64_t dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = engine::platform::SystemMilliseconds();
+  int64_t dwTimeNextPump =
+      engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestPageWait &&
-         SystemMilliseconds() - dwTimeStart < EMERGENCY_TIMEOUT) {
-    while (SystemMilliseconds() < dwTimeNextPump) {
+         engine::platform::SystemMilliseconds() - dwTimeStart <
+             EMERGENCY_TIMEOUT) {
+    while (engine::platform::SystemMilliseconds() < dwTimeNextPump) {
       ServiceRealTime();
     }
     pChat->PumpMessages();
     //		debugprint( ">Page pump\n" );
-    dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+    dwTimeNextPump = engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   }
 
   if (pChatSink->bRequestPageWait) {
@@ -2013,7 +2029,7 @@ void WolapiObject::DoOptions() {
   bPump_In_Call_Back = false;
   //	Set trigger for an immediate channel list update, in case local lobby
   // games filter was changed.
-  dwTimeNextChannelUpdate = SystemMilliseconds();
+  dwTimeNextChannelUpdate = engine::platform::SystemMilliseconds();
 }
 
 //***********************************************************************************************
@@ -2237,8 +2253,8 @@ bool WolapiObject::EnterLevel_OfficialChat() {
   pILChannels->Add_Item(TXT_WOL_CHANNELLISTLOADING, CHANNELTYPE_LOADING,
                         nullptr, ICON_SHAPE, CHANNELTYPE_LOADING);
   dwTimeNextChannelUpdate =
-      SystemMilliseconds();  //	Set trigger for an
-                             // immediate channel list update.
+      engine::platform::SystemMilliseconds();  //	Set trigger for an
+                                               // immediate channel list update.
 
   //	Set wol buttons enabled/disabled.
   pShpBtnLeave->Disable();
@@ -2268,8 +2284,8 @@ bool WolapiObject::EnterLevel_UserChat() {
   pILChannels->Add_Item(TXT_WOL_CHANNELLISTLOADING, CHANNELTYPE_LOADING,
                         nullptr, ICON_SHAPE, CHANNELTYPE_LOADING);
   dwTimeNextChannelUpdate =
-      SystemMilliseconds();  //	Set trigger for an
-                             // immediate channel list update.
+      engine::platform::SystemMilliseconds();  //	Set trigger for an
+                                               // immediate channel list update.
 
   //	Set wol buttons enabled/disabled.
   pShpBtnLeave->Disable();
@@ -2372,8 +2388,8 @@ bool WolapiObject::EnterLevel_GamesOfType(WOL_GAMETYPEINFO* pGameTypeInfo) {
   pILChannels->Add_Item(TXT_WOL_CHANNELLISTLOADING, CHANNELTYPE_LOADING,
                         nullptr, ICON_SHAPE, CHANNELTYPE_LOADING);
   dwTimeNextChannelUpdate =
-      SystemMilliseconds();  //	Set trigger for an
-                             // immediate channel list update.
+      engine::platform::SystemMilliseconds();  //	Set trigger for an
+                                               // immediate channel list update.
 
   //	Set wol buttons enabled/disabled.
   pShpBtnLeave->Disable();
@@ -2402,8 +2418,8 @@ bool WolapiObject::EnterLevel_Lobbies() {
   pILChannels->Add_Item(TXT_WOL_CHANNELLISTLOADING, CHANNELTYPE_LOADING,
                         nullptr, ICON_SHAPE, CHANNELTYPE_LOADING);
   dwTimeNextChannelUpdate =
-      SystemMilliseconds();  //	Set trigger for an
-                             // immediate channel list update.
+      engine::platform::SystemMilliseconds();  //	Set trigger for an
+                                               // immediate channel list update.
 
   //	Set wol buttons enabled/disabled.
   pShpBtnLeave->Disable();
@@ -2484,8 +2500,9 @@ bool WolapiObject::OnEnteringChatChannel(const char* szChannelName,
     ChannelListTitle(szLobbyName);
     iLobbyLast = iLobby;
     dwTimeNextChannelUpdate =
-        SystemMilliseconds();  //	Set trigger for an
-                               // immediate channel list update.
+        engine::platform::SystemMilliseconds();  //	Set trigger for an
+                                                 // immediate channel list
+                                                 // update.
   }
 
   base::SafeCopy(szChannelNameCurrent, szChannelName);
@@ -2978,15 +2995,17 @@ bool WolapiObject::GetLobbyChannels() {
     return false;
   }
 
-  const int64_t dwTimeStart = SystemMilliseconds();
-  int64_t dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = engine::platform::SystemMilliseconds();
+  int64_t dwTimeNextPump =
+      engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestChannelListForLobbiesWait &&
-         SystemMilliseconds() - dwTimeStart < EMERGENCY_TIMEOUT) {
-    while (SystemMilliseconds() < dwTimeNextPump) {
+         engine::platform::SystemMilliseconds() - dwTimeStart <
+             EMERGENCY_TIMEOUT) {
+    while (engine::platform::SystemMilliseconds() < dwTimeNextPump) {
       ServiceRealTime();
     }
     pChat->PumpMessages();
-    dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+    dwTimeNextPump = engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   }
 
   return !pChatSink->bRequestChannelListForLobbiesWait;
@@ -3072,15 +3091,17 @@ bool WolapiObject::RequestGameStart() {
     return false;
   }
 
-  const int64_t dwTimeStart = SystemMilliseconds();
-  int64_t dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+  const int64_t dwTimeStart = engine::platform::SystemMilliseconds();
+  int64_t dwTimeNextPump =
+      engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   while (pChatSink->bRequestGameStartWait &&
-         SystemMilliseconds() - dwTimeStart < EMERGENCY_TIMEOUT) {
-    while (SystemMilliseconds() < dwTimeNextPump) {
+         engine::platform::SystemMilliseconds() - dwTimeStart <
+             EMERGENCY_TIMEOUT) {
+    while (engine::platform::SystemMilliseconds() < dwTimeNextPump) {
       ServiceRealTime();
     }
     pChat->PumpMessages();
-    dwTimeNextPump = SystemMilliseconds() + PUMPSLEEPDURATION;
+    dwTimeNextPump = engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
   }
 
   if (pChatSink->bRequestGameStartWait) {
@@ -3145,10 +3166,11 @@ bool WolapiObject::Pump_DisconnectPinging() {
   // requests new pings when previous results have been received. 	Returns
   // true when the required number of pings have been completed.
 
-  if (SystemMilliseconds() > dwTimeNextWolapiPump) {
+  if (engine::platform::SystemMilliseconds() > dwTimeNextWolapiPump) {
     pChat->PumpMessages();
     pNetUtil->PumpMessages();
-    dwTimeNextWolapiPump = SystemMilliseconds() + WOLAPIPUMPWAIT;
+    dwTimeNextWolapiPump =
+        engine::platform::SystemMilliseconds() + WOLAPIPUMPWAIT;
   }
 
   switch (base::At(DisconnectPingResult_Server, iDisconnectPingCurrent)) {

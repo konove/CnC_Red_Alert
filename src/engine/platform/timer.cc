@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <ratio>
 
+namespace engine::platform {
+
 int64_t SystemMilliseconds() {
   return std::chrono::duration_cast<std::chrono::milliseconds>(
              std::chrono::steady_clock::now().time_since_epoch())
@@ -20,3 +22,5 @@ int64_t SystemTicks() {
              std::chrono::steady_clock::now().time_since_epoch())
       .count();
 }
+
+}  // namespace engine::platform

@@ -1546,7 +1546,8 @@ static int Net_Join_Dialog() {
   int found = 0;
   NodeNameType* who = nullptr;                  // node to add to Players
   RejectType why = REJECT_NONE;                 // reason for rejection
-  Stopwatch<SystemTickSource> lastclick_timer;  // time b/w send periods
+  engine::platform::Stopwatch<engine::platform::SystemTickSource>
+      lastclick_timer;                          // time b/w send periods
   int lastclick_idx = 0;                        // index of item last clicked on
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   TheSession().Options.ScenarioDescription[0] =
@@ -2786,7 +2787,9 @@ static int Net_Join_Dialog() {
       //	- Send queries for the new selected game, if there is one
       //.....................................................................
       for (i = 1; i < TheSession().Games.Count(); i++) {
-        if (SystemTicks() - TheSession().Games.at(i)->Game.LastTime > 400) {
+        if (engine::platform::SystemTicks() -
+                TheSession().Games.at(i)->Game.LastTime >
+            400) {
           TheSession().Games.Delete(i);
 
           gamelist.Remove_Item(i);
@@ -2826,9 +2829,12 @@ static int Net_Join_Dialog() {
       // for a chat announcement; he then has 1 second to reply.
       //.....................................................................
       for (i = 1; i < TheSession().Chat.Count(); i++) {
-        if (SystemTicks() - TheSession().Chat.at(i)->Chat.LastTime > 360) {
+        if (engine::platform::SystemTicks() -
+                TheSession().Chat.at(i)->Chat.LastTime >
+            360) {
           TheSession().Chat.Delete(i);
-        } else if (SystemTicks() - TheSession().Chat.at(i)->Chat.LastTime >
+        } else if (engine::platform::SystemTicks() -
+                           TheSession().Chat.at(i)->Chat.LastTime >
                        300 &&
                    TheSession().Chat.at(i)->Chat.LastChance == 0) {
           base::FillBytes(base::ObjectBytes(TheSession().GPacket), 0,
@@ -2974,8 +2980,9 @@ static int Net_Join_Dialog() {
     //.....................................................................
     const int j = std::max<int>(
         static_cast<int>(TheNetwork().ipx().Global_Response_Time()) * 2, 60);
-    starttime = SystemTicks();
-    while (SystemTicks() - starttime < static_cast<int64_t>(j)) {
+    starttime = engine::platform::SystemTicks();
+    while (engine::platform::SystemTicks() - starttime <
+           static_cast<int64_t>(j)) {
       TheNetwork().ipx().Service();
     }
   }
@@ -3267,10 +3274,11 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
   constexpr int kGameQueryTime = 120;
   constexpr int kPlayerQueryTime = 35;
   constexpr int kChatAnnounceTime = 83;
-  static Timer<SystemTickSource> game_timer;  // time between NET_QUERY_GAME's
-  static Timer<SystemTickSource>
+  static engine::platform::Timer<engine::platform::SystemTickSource>
+      game_timer;  // time between NET_QUERY_GAME's
+  static engine::platform::Timer<engine::platform::SystemTickSource>
       player_timer;  // time between NET_QUERY_PLAYERS's
-  static Timer<SystemTickSource>
+  static engine::platform::Timer<engine::platform::SystemTickSource>
       chat_timer;  // time between NET_CHAT_ANNOUNCE's
 
   //------------------------------------------------------------------------
@@ -3462,7 +3470,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         //	If name was found, update the node's time stamp & IsOpen flag.
         //...............................................................
-        TheSession().Games.at(i)->Game.LastTime = SystemTicks();
+        TheSession().Games.at(i)->Game.LastTime =
+            engine::platform::SystemTicks();
         if (TheSession().Games.at(i)->Game.IsOpen !=
             TheSession().GPacket.GameInfo.IsOpen) {
           if (TheSession().GPacket.GameInfo.IsOpen) {
@@ -3524,7 +3533,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
       who->Game.IsOpen = TheSession().GPacket.GameInfo.IsOpen;
-      who->Game.LastTime = SystemTicks();
+      who->Game.LastTime = engine::platform::SystemTicks();
 
       //..................................................................
       //	Create a string for "xxx's Game", leaving room for brackets
@@ -3952,7 +3961,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         if (TheSession().Chat.at(i)->Address == TheSession().GAddress) {
           base::SafeCopy(TheSession().Chat.at(i)->Name,
                          TheSession().GPacket.Name);
-          TheSession().Chat.at(i)->Chat.LastTime = SystemTicks();
+          TheSession().Chat.at(i)->Chat.LastTime =
+              engine::platform::SystemTicks();
           TheSession().Chat.at(i)->Chat.LastChance = 0;
           TheSession().Chat.at(i)->Chat.Color = TheSession().GPacket.Chat.Color;
           found = 1;
@@ -3967,7 +3977,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       who = TheSession().Chat.Add(std::make_unique<NodeNameType>());
       base::SafeCopy(who->Name, TheSession().GPacket.Name);
       who->Address = TheSession().GAddress;
-      who->Chat.LastTime = SystemTicks();
+      who->Chat.LastTime = engine::platform::SystemTicks();
       who->Chat.LastChance = 0;
       who->Chat.Color = TheSession().GPacket.Chat.Color;
     }
@@ -4757,7 +4767,7 @@ static int Net_New_Dialog() {
         i = std::max<int>(
             static_cast<int>(TheNetwork().ipx().Global_Response_Time()) * 2,
             60);
-        while (SystemTicks() - ok_timer < i) {
+        while (engine::platform::SystemTicks() - ok_timer < i) {
           TheNetwork().ipx().Service();
         }
 
@@ -4936,7 +4946,7 @@ static int Net_New_Dialog() {
     //.....................................................................
     whahoppa = Get_NewGame_Responses(&playerlist, color_used);
     if (whahoppa == EV_NEW_PLAYER) {
-      ok_timer = SystemTicks();
+      ok_timer = engine::platform::SystemTicks();
       aiplayersgauge.Set_Maximum(
           TheRules().MaxPlayers -
           static_cast<int>(TheSession().Players.Count()));
@@ -5055,7 +5065,7 @@ static int Net_New_Dialog() {
     // measure 	the connection response time.  Don't ping myself (index
     // 0).
     //.....................................................................
-    if (SystemTicks() - ping_timer > 15) {
+    if (engine::platform::SystemTicks() - ping_timer > 15) {
       base::FillBytes(base::ObjectBytes(TheSession().GPacket), 0,
                       sizeof(TheSession().GPacket));
       TheSession().GPacket.Command = NET_PING;
@@ -5064,7 +5074,7 @@ static int Net_New_Dialog() {
             base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType),
             1, &TheSession().Players.at(i)->Address);
       }
-      ping_timer = SystemTicks();
+      ping_timer = engine::platform::SystemTicks();
     }
 
     //.....................................................................
@@ -5149,7 +5159,8 @@ static int Net_New_Dialog() {
     DLOG(INFO) << "About to wait for 'GO' response.";
     // timeout timer for waiting for responses
     // Wait for 10 seconds. If we dont hear by then assume someone crashed
-    const Timer<SystemTickSource> response_timer{static_cast<int64_t>(60) * 10};
+    const engine::platform::Timer<engine::platform::SystemTickSource>
+        response_timer{static_cast<int64_t>(60) * 10};
 
     do {
       TheNetwork().ipx().Service();
@@ -7262,7 +7273,8 @@ static struct WWPerson WWPersons[] = {
      0},
 };
 
-static Timer<SystemTickSource> wwperson_timer;
+static engine::platform::Timer<engine::platform::SystemTickSource>
+    wwperson_timer;
 
 void Start_WWChat(ColorListClass* playerlist) {
   char item[kGameListItemSize];
@@ -7364,7 +7376,8 @@ int Update_WWChat() {
   //------------------------------------------------------------------------
   const int j = sizeof(WWPersons) / sizeof(struct WWPerson);
   const int i = Random_Pick(0, j - 1);
-  if (SystemTicks() - base::At(WWPersons, i).LastTime < 1800 &&
+  if (engine::platform::SystemTicks() - base::At(WWPersons, i).LastTime <
+          1800 &&
       base::At(WWPersons, i).LastTime != 0) {
     return 0;
   }
@@ -7372,7 +7385,7 @@ int Update_WWChat() {
   TheSession().Messages.Add_Message(base::At(WWPersons, i).Name, 0,
                                     base::At(WWPersons, i).Phrase,
                                     base::At(WWPersons, i).Color, kTpfText, -1);
-  base::At(WWPersons, i).LastTime = SystemTicks();
+  base::At(WWPersons, i).LastTime = engine::platform::SystemTicks();
 
   return 1;
 

@@ -56,7 +56,8 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   // WOLAPI patch.
 
   bool bReturn = true;
-  int64_t dwTimeNextPump = SystemMilliseconds() + WOLAPIPUMPWAIT;
+  int64_t dwTimeNextPump =
+      engine::platform::SystemMilliseconds() + WOLAPIPUMPWAIT;
 
   /*
   ** Dialog & button dimensions
@@ -207,7 +208,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
       }
     }
 
-    if (SystemMilliseconds() > dwTimeNextPump) {
+    if (engine::platform::SystemMilliseconds() > dwTimeNextPump) {
       pDownload->PumpMessages();
       if (pDownloadSink->bFlagEnd) {
         pDownloadSink->bFlagEnd = false;
@@ -265,7 +266,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         display = std::max(display, REDRAW_BUTTONS);
       }
 
-      dwTimeNextPump = SystemMilliseconds() + WOLAPIPUMPWAIT;
+      dwTimeNextPump = engine::platform::SystemMilliseconds() + WOLAPIPUMPWAIT;
     }
 
     //	Invoke game callback

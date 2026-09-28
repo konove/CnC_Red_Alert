@@ -115,7 +115,7 @@ constexpr int kHotspotPaletteIndex = 254;
 // Keeps the highlight on the clickable map locations pulsing in `palette`.
 // Call it every pass of the selection loop.
 static void PulseHotspots(PaletteClass& palette) {
-  static GlowPulse<SystemTickSource> pulse(kTimerSecond / 6);
+  static GlowPulse<engine::platform::SystemTickSource> pulse(kTimerSecond / 6);
 
   if (pulse.Update()) {
     palette.at(kHotspotPaletteIndex) =
@@ -197,7 +197,7 @@ static void PlayMapReveal(const std::string& animation_name,
 // Waits for the player to click one of the hotspots on the map, which pulse in
 // `palette` meanwhile, and returns that choice (0-2).
 static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
-  Timer<SystemTickSource> cursor_timer;
+  engine::platform::Timer<engine::platform::SystemTickSource> cursor_timer;
   int cursor_frame = 0;
   while (true) {
     PulseHotspots(palette);

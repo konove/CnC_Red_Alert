@@ -185,10 +185,12 @@ using enum engine::window::KeyNumber;
 
 // Holds the end of the current frame; Main_Loop() sets it and Sync_Delay()
 // waits it out.
-static Timer<SystemTickSource> frame_timer{int64_t{0}};
+static engine::platform::Timer<engine::platform::SystemTickSource> frame_timer{
+    int64_t{0}};
 
 // Measures how long one frame's logic takes, for the multiplayer frame rate.
-static Stopwatch<SystemTickSource> process_timer;
+static engine::platform::Stopwatch<engine::platform::SystemTickSource>
+    process_timer;
 
 // Where the message being typed goes: a broadcast address after F4, or the
 // player picked with F1-F3. IPX only.
@@ -1203,8 +1205,10 @@ static void Message_Input(engine::window::KeyNumber& input) {
  *text fade color.                                                 *
  *=============================================================================================*/
 bool Color_Cycle() {
-  static Timer<SystemTickSource> _timer(int64_t{0});
-  static Timer<SystemTickSource> _ftimer(int64_t{0});
+  static engine::platform::Timer<engine::platform::SystemTickSource> _timer(
+      int64_t{0});
+  static engine::platform::Timer<engine::platform::SystemTickSource> _ftimer(
+      int64_t{0});
   static bool _up = false;
   bool changed = false;
 
