@@ -1,4 +1,6 @@
-// re-implemented from assembly in 2keyfbuf.asm
+// Re-implemented from the assembler blitter, kept for reference in
+// src/ra/2keyfbuf.asm.
+
 #include "engine/gfx/2keyfbuf.h"
 
 #include <cstddef>
@@ -13,7 +15,9 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 
-// Per-line blit effect bits, computed fresh for every draw.
+// The effects one draw needs, one bit each, computed from the SHAPE_* flags on
+// every call. Together they pick the Do_Old_Blit instantiation, as the
+// assembler's FLAG_* bits indexed its table of line routines.
 constexpr uint32_t kBlitTransparent = 1;
 constexpr uint32_t kBlitGhost = 2;
 constexpr uint32_t kBlitFading = 4;
@@ -21,24 +25,45 @@ constexpr uint32_t kBlitPredator = 8;
 constexpr uint32_t kBlitOld =
     kBlitTransparent | kBlitGhost | kBlitFading | kBlitPredator;
 
-// The predator table walk is legacy signed byte-offset arithmetic from the
-// assembler blitter: a negative predator offset is meant to walk backwards
-// into BFPredNegTable, so these masks stay on the signed value.
-// TODO: a negative offset becomes ~0xFF | k and indexes BFPredTable at
-// about -126, well before BFPredNegTable; that read is out of bounds.
+// The predator walk keeps the assembler's arithmetic: BFPredOffset is a byte
+// offset into a table of 16-bit entries, so it steps by 2 and PRED_MASK keeps
+// it on the eight entries (0..14). A negative predator offset becomes
+// 0xFFFFFF00 | k, which the assembler added to BFPredTable's address to land
+// in BFPredNegTable's computed half, 256 bytes below it in its data segment;
+// its step only touched the low byte, so the walk stayed there.
+// TODO: in C++ that value indexes BFPredTable at -128 + k / 2, which base::At
+// rejects with a CHECK failure, and the step's mask would drop the high bits
+// anyway. Tiberian Dawn negates the offset for every shape on the right half
+// of the window, so a cloaking Stealth Tank there crashes the game.
 constexpr int PRED_MASK = 0xE;
 
+// Predator state for the draw in progress, reset by each draw that asks for
+// the effect.
+// The byte offset of the next BFPredTable entry to sample with (see above).
 static int BFPredOffset;
+// Accumulates BFPartialPred per pixel; each time it passes 256 the pixel gets
+// the effect and the count keeps the remainder.
 static int BFPartialCount;
+// How many pixels in 256 get the effect; 256 means all of them.
 static int BFPartialPred;
+// The offsets a negative predator offset samples at. The first eight are the
+// assembler's; the second eight are computed per draw as one row down plus
+// the first eight, that is one row below and one to five pixels left.
 static int16_t BFPredNegTable[]{-1, -3, -2, -5, -2, -4, -3, -1,
                                 // calculated
                                 0, 0, 0, 0, 0, 0, 0, 0};
 
+// How many pixels to the right of the one being drawn a predator pixel
+// samples, walked in order and wrapped. Sampling the page instead of drawing
+// the shape's color shows a displaced copy of the background, the shimmer.
 static int16_t BFPredTable[]{1, 3, 2, 5, 2, 3, 4, 1};
 
-// single helper that handles all combinations
-// templated on flags to avoid writing every combination
+// Draws line_count lines of pixel_count pixels with the effects in `flags`,
+// stepping src_adjust_width and dst_adjust_width past the end of each line to
+// reach the start of the next. The assembler had a routine per combination;
+// the template generates them. The effects apply in the assembler's order:
+// the predator sample replaces the shape's color, the ghost table blends that
+// with the page, and the fading table remaps the result.
 template <uint32_t flags>
 static void Do_Old_Blit(int line_count, int pixel_count,
                         std::span<const std::byte> src_offset,
@@ -50,17 +75,18 @@ static void Do_Old_Blit(int line_count, int pixel_count,
   std::size_t input = 0;
   std::size_t output = 0;
   do {
-    // original asm unrolled this 32 times
+    // The assembler unrolled this loop 32 times.
     for (int x = 0; x < pixel_count; x++) {
       auto pixel = std::to_integer<uint8_t>(base::At(src_offset, input++));
       if (pixel || !(flags & kBlitTransparent)) {
         if (flags & kBlitPredator) {
           const int pred = BFPartialCount + BFPartialPred;
           BFPartialCount = pred % 256;
-          // is this a predator pixel?
+          // Is this a predator pixel?
           if (pred >= 256) {
-            // pick up a color offset a pseudo-random amount from the current
-            // viewport address
+            // Take the color from the page a table-driven distance to the
+            // right. Near the end of the page there is nothing to sample and
+            // the shape's own color stays.
             // NOLINTNEXTLINE(bugprone-signed-bitwise)
             const int pred_index = BFPredOffset >> 1;
             const auto sample =
@@ -76,14 +102,15 @@ static void Do_Old_Blit(int line_count, int pixel_count,
         if (flags & kBlitGhost) {
           const uint8_t is_trans =
               base::At(IsTranslucent, static_cast<std::size_t>(pixel));
-          if (is_trans != 0xFF) {  // is it a translucent color?
+          // 0xFF marks an opaque color; anything else is a remap row.
+          if (is_trans != 0xFF) {
             pixel = base::At(Translucent,
                              (is_trans * 256) + base::At(dst_offset, output));
           }
         }
 
         if (flags & kBlitFading) {
-          // run color through fading table
+          // Run the color through the fading table once per fade step.
           for (int f = 0; f < FadingNum; f++) {
             pixel = base::At(FadingTable, pixel);
           }
@@ -114,9 +141,10 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
   if (static_cast<std::size_t>(w) * static_cast<std::size_t>(h) > src.size()) {
     return;
   }
-  uint32_t jflags = 0;  // clear jump flags
+  // The kBlit* bits of the effects this draw needs.
+  uint32_t jflags = 0;
 
-  // See if we need to center the frame
+  // SHAPE_CENTER: x,y name the frame's center rather than its top left.
   if (base::Any(flags & SHAPE_CENTER)) {
     x -= w / 2;
     y -= h / 2;
@@ -127,7 +155,6 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
   }
 
   if (base::Any(flags & SHAPE_GHOST)) {
-    // are we ghosting this shape
     jflags |= kBlitGhost;
     IsTranslucent = effects.ghost_table;
     if (IsTranslucent.size() < 256) {
@@ -135,6 +162,7 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
     }
     Translucent = IsTranslucent.subspan(256);
     IsTranslucent = IsTranslucent.first(256);
+    // Refuse a table whose rows do not all exist, so the blit need not check.
     for (const uint8_t row : IsTranslucent) {
       if (row != 0xff &&
           (static_cast<std::size_t>(row) + 1) * 256 > Translucent.size()) {
@@ -143,40 +171,41 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
     }
   }
 
-  // are we fading this shape
   if (base::Any(flags & SHAPE_FADING)) {
-    // save address of fading tbl
     FadingTable = effects.fading_table;
     if (FadingTable.size() < 256) {
       return;
     }
-    // get fade num, no need for more than 63
+    // The assembler kept the low six bits: no fade needs more than 63 steps.
     FadingNum = effects.fading_count % 64;
     jflags |= kBlitFading;
 
     if (!FadingNum) {
-      flags &= ~SHAPE_FADING;  // don't fade
+      flags &= ~SHAPE_FADING;
     }
   }
 
-  if (base::Any(flags & SHAPE_PREDATOR))  // is predator effect on
-  {
+  if (base::Any(flags & SHAPE_PREDATOR)) {
     int offset = effects.predator_offset;
     jflags |= kBlitPredator;
 
+    // Entries are two bytes wide.
     offset *= 2;
 
     if (offset < 0) {
       // NOLINTNEXTLINE(bugprone-signed-bitwise)
-      offset = (-offset & PRED_MASK) | ~0xFF;  // will be ffffff00-ffffff0E
+      offset = (-offset & PRED_MASK) | ~0xFF;  // 0xFFFFFF00..0xFFFFFF0E
     } else {
       offset &= PRED_MASK;  // NOLINT(bugprone-signed-bitwise)
     }
 
     BFPredOffset = offset;
-    BFPartialCount = 0;   // clear the partial count
-    BFPartialPred = 256;  // init partial to off
+    BFPartialCount = 0;
+    // Every pixel, unless SHAPE_PARTIAL below says otherwise.
+    BFPartialPred = 256;
 
+    // The page's stride changes from view to view, so the down-and-left
+    // offsets are worked out afresh for this one.
     for (int off = 0; off < 8; off++) {
       base::At(BFPredNegTable, off + 8) =
           static_cast<int16_t>(base::At(BFPredNegTable, off) + dest.width() +
@@ -184,12 +213,13 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
     }
   }
 
-  // is this a partial pred?
   if (base::Any(flags & SHAPE_PARTIAL)) {
     BFPartialPred = effects.partial_predator % 256;
   }
 
-  // clip dest
+  // Clip the destination rectangle to the view and move the source origin by
+  // however much came off the left and top. The far corner is tested against
+  // a window one larger because it is exclusive (see OutCodeOf).
   int src_x0 = 0;
   int src_y0 = 0;
 
@@ -202,13 +232,12 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
   const OutCode code1 =
       OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
 
-  // outside
+  // Wholly past one edge.
   if (base::Any(code0 & code1)) {
     return;
   }
 
   if (base::Any(code0 | code1)) {
-    // apply clip
     if (base::Any(code0 & OutCode::kLeft)) {
       src_x0 -= dst_x0;
       dst_x0 = 0;
@@ -225,7 +254,8 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
     }
   }
 
-  // do blit
+  // The first source and destination pixels, and how far past the end of a
+  // clipped line each must skip to reach the start of the next.
   auto src_offset = src.subspan(
       base::ToSize(src_x0 + (static_cast<base::ssize>(src_y0) * w)));
   const int src_adjust_width = w - (dst_x1 - dst_x0);
@@ -235,6 +265,8 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
       dest.pixels().subspan(base::ToSize(dst_x0 + (dst_y0 * dst_area)));
   const int dst_adjust_width = static_cast<int>(dst_area - (dst_x1 - dst_x0));
 
+  // Clipping can still leave nothing: a far corner exactly on the left or
+  // top edge.
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
     return;
   }
@@ -243,9 +275,9 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
   int line_count = dst_y1 - dst_y0;
 
   switch (jflags & kBlitOld) {
-    case 0:  // BF_Copy
-    {
-      // copy lines
+    case 0: {  // BF_Copy
+      // No effects: whole lines at a time. The advance is skipped after the
+      // last line, whose tail may be all the buffer has left.
       do {
         base::CopyBytes(std::as_writable_bytes(dst_offset), src_offset,
                         pixel_count);

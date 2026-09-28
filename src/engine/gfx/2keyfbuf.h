@@ -1,6 +1,10 @@
 #ifndef CNC_RED_ALERT_ENGINE_GFX_2KEYFBUF_H_
 #define CNC_RED_ALERT_ENGINE_GFX_2KEYFBUF_H_
 
+// File: Buffer_Frame_To_Page(), which draws a decompressed shape frame onto
+// a page with the transparency, ghost, fade and predator (cloak) effects, and
+// ShapeEffects, the tables those effects read.
+
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -11,24 +15,36 @@
 // The tables and counts behind the drawing effects a SHAPE_* flag selects.
 // Each member is read only while its flag is set.
 struct ShapeEffects {
-  // SHAPE_GHOST: 256 translucency indices (0xFF for an opaque color) followed
-  // by the 256-entry remap rows the index selects from.
+  // SHAPE_GHOST: 256 translucency indices, one per shape color, followed by
+  // the 256-entry remap rows they select. An index of 0xFF marks an opaque
+  // color; any other index N remaps the page pixel under the shape through
+  // row N, which is what lets the page show through.
   std::span<const uint8_t> ghost_table;
   // SHAPE_FADING: a 256-entry remap applied fading_count times; 0 turns the
   // fade off. Only the low six bits of the count are used.
   std::span<const uint8_t> fading_table;
   int fading_count = 0;
-  // SHAPE_PREDATOR: the frame-dependent sample offset that makes a cloaked
-  // shape shimmer; negative walks it the other way.
+  // SHAPE_PREDATOR: the frame-dependent start of the walk through the sample
+  // offsets that makes a cloaked shape shimmer. Only the low three bits of
+  // its magnitude matter. Negative uses the second set of offsets, which sample
+  // the row below instead of the same row.
   int predator_offset = 0;
-  // SHAPE_PARTIAL: the low byte is the fraction of pixels that get the
-  // predator effect.
+  // SHAPE_PARTIAL: how many pixels in 256 get the predator effect, taken
+  // from the low byte; without the flag every pixel does. The rest are drawn
+  // as the shape's own color.
   int partial_predator = 0;
 };
 
-// Draws the w x h shape at `src`, clipped to `dest`, at x,y with the SHAPE_*
-// `flags` and the tables in `effects` those flags call for. A nullptr src
-// draws nothing.
+// Draws the w x h shape frame in `src` (row-major, w bytes per row, color 0
+// transparent under SHAPE_TRANS) at x,y on `dest`, clipped to it, with the
+// SHAPE_* `flags` and the tables in `effects` those flags call for.
+// SHAPE_CENTER makes x,y the frame's center; the other flags that do not name
+// an effect are ignored. `dest` must be locked. Draws nothing when src is empty
+// or holds fewer than w * h bytes, or when a table the flags call for is too
+// short.
+//
+// A predator pixel samples the page to its right (or, for a negative offset,
+// below it), so it picks up whatever was drawn there before this shape.
 void Buffer_Frame_To_Page(int x, int y, int w, int h, std::span<std::byte> src,
                           PixelView& dest, ShapeFlags_Type flags,
                           const ShapeEffects& effects = {});
