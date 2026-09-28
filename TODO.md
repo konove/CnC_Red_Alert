@@ -93,9 +93,6 @@
   - Either have the redraw timer set an atomic flag that `Display` checks itself (~15-20 lines;
     removes `redraw_event_` and `PostRedrawEvent()`), or stop `Present()` pumping (2 lines; first
     check that no loop that only presents relies on it to see `SDL_QUIT` or focus events)
-- Make `engine::window::KeyBuffer::HandleEvent()` take `const SDL_Event&`
-  - `engine::window::WindowEvents::HandleEvent()`, its only caller, receives a reference and turns
-    it back into a pointer for it
 - Move `engine/platform/file_system.h` into `engine::platform`
   - It is the last header in the folder outside the namespace
 - Run `/fix-ide-issues` on `engine/platform/timer.h` and `timer.cc`

@@ -109,7 +109,7 @@ TEST_F(KeyBufferTest, ClickIntoAFullBufferIsDropped) {
   }
   const SDL_Event click = MakeClick(SDL_BUTTON_LEFT, 10, 20);
 
-  keys.HandleEvent(&click);
+  keys.HandleEvent(click);
 
   for (int i = 0; i < 255; ++i) {
     ASSERT_EQ(keys.Read().key, KN_A);
@@ -120,7 +120,7 @@ TEST_F(KeyBufferTest, ClickIntoAFullBufferIsDropped) {
 TEST_F(KeyBufferTest, ClickIsQueuedWithItsButtonAndPosition) {
   const SDL_Event click = MakeClick(SDL_BUTTON_RIGHT, 10, 20);
 
-  EXPECT_TRUE(keys.HandleEvent(&click));
+  EXPECT_TRUE(keys.HandleEvent(click));
 
   const InputEvent event = keys.Read();
   EXPECT_TRUE(event.IsPress(MouseButton::kRight));

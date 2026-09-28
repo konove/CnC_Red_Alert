@@ -262,31 +262,31 @@ bool KeyBuffer::IsDown(const int key) {
   return false;
 }
 
-bool KeyBuffer::HandleEvent(const SDL_Event* event) {
-  switch (event->type) {
+bool KeyBuffer::HandleEvent(const SDL_Event& event) {
+  switch (event.type) {
     case SDL_MOUSEBUTTONDOWN:
     case SDL_MOUSEBUTTONUP: {
       MouseButton button = MouseButton::kNone;
-      if (event->button.button == SDL_BUTTON_LEFT) {
+      if (event.button.button == SDL_BUTTON_LEFT) {
         button = MouseButton::kLeft;
-      } else if (event->button.button == SDL_BUTTON_RIGHT) {
+      } else if (event.button.button == SDL_BUTTON_RIGHT) {
         button = MouseButton::kRight;
-      } else if (event->button.button == SDL_BUTTON_MIDDLE) {
+      } else if (event.button.button == SDL_BUTTON_MIDDLE) {
         button = MouseButton::kMiddle;
       } else {
         // The extra buttons have no meaning in the games.
         return false;
       }
 
-      PutClick(button, event->button.state == SDL_RELEASED, event->button.x,
-               event->button.y);
+      PutClick(button, event.button.state == SDL_RELEASED, event.button.x,
+               event.button.y);
       return true;
     }
 
     case SDL_KEYDOWN:
     case SDL_KEYUP:
       // The key codes are SDL scancodes, so the scancode goes in unchanged.
-      PutKey(event->key.keysym.scancode, event->key.state == SDL_RELEASED);
+      PutKey(event.key.keysym.scancode, event.key.state == SDL_RELEASED);
       break;
 
     default:

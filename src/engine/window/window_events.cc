@@ -12,7 +12,7 @@ WindowEvents::WindowEvents(KeyBuffer& keyboard, HardwareCursor& mouse)
     : keyboard_(&keyboard), mouse_(&mouse) {}
 
 void WindowEvents::HandleEvent(const SDL_Event& event) {
-  if (keyboard_->HandleEvent(&event)) {
+  if (keyboard_->HandleEvent(event)) {
     return;
   }
 
