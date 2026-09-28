@@ -16,27 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/HSV.CPP 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : HSV.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 12/02/95 *
- *                                                                                             *
- *                  Last Update : February 20, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * HSVClass::operator
- *RGBClass -- Conversion operator for RGBClass object.                   *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// HSVClass's conversion to RGB and Tiberian Dawn's 6-bit HSV/RGB conversions.
 
 #include "engine/gfx/hsv.h"
 
@@ -47,58 +27,53 @@
 #include "base/hsv.h"
 #include "engine/gfx/rgb.h"
 
-/***********************************************************************************************
- * HSVClass::operator RGBClass -- Conversion operator for RGBClass object. *
- *                                                                                             *
- *    This conversion operator will convert the HSV object into an RGB object. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  Returns with a reference (implied) of the RGBClass object that most
- *closely        * matches this HSVClass object. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/20/1996 JLB : Created. *
- *=============================================================================================*/
 HSVClass::operator RGBClass() const {
   const base::Rgb8 color = base::HsvToRgb8(
       Hue_Component(), Saturation_Component(), Value_Component());
 
-  // RGBClass narrows each 8-bit gun to the 6-bit VGA range it stores.
+  // The RGBClass constructor drops each gun's low two bits to get the 6-bit
+  // VGA value it stores.
+  //
+  // TODO: Truncating here, and in ToHSV(), makes the round trip lossy: at the
+  // options dialog's neutral settings 127,769 of the 262,144 6-bit colors come
+  // back a step or two off (the original code: 76,340; TD's rounding pair:
+  // 21,612, by one step), so every palette entry the dialog adjusts drifts.
   return {static_cast<uint8_t>(color.red), static_cast<uint8_t>(color.green),
           static_cast<uint8_t>(color.blue)};
 }
 
-// from WIN32LIB/MISC/LIB.CPP
+// base::DivideWithRound() over the unsigned values the conversions below
+// work in. Originally from WIN32LIB/MISC/LIB.CPP.
 static unsigned Divide_With_Round(unsigned num, unsigned den) {
   return static_cast<unsigned>(
       base::DivideWithRound(static_cast<int>(num), static_cast<int>(den)));
 }
 
-#define HSV_BASE \
-  255  // This is used to get a little better persion on HSV conversion.
-#define RGB_BASE 63  // Not 64, this is really the max value.
+// The conversions work at the 8-bit HSV scale for better precision than the
+// 6-bit guns would give.
+#define HSV_BASE 255
+// The brightest VGA gun; 63, not 64, since this is a maximum, not a range.
+#define RGB_BASE 63
 
 void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
                         unsigned int* h, unsigned int* s, unsigned int* v) {
-  // Convert RGB base to HSV base.
+  // Scale the 6-bit guns up to the 8-bit HSV scale.
   r = Divide_With_Round(r * HSV_BASE, RGB_BASE);
   g = Divide_With_Round(g * HSV_BASE, RGB_BASE);
   b = Divide_With_Round(b * HSV_BASE, RGB_BASE);
 
-  // Set hue to default.
+  // A grey has no hue; it stays 0 unless there is saturation below.
   *h = 0;
 
-  // Set v = Max(r,g,b) to find dominant primary color.
+  // The value is the brightest gun, which is the dominant primary.
   *v = r > g ? r : g;
   *v = std::max(b, *v);
 
-  // Set m = min(r,g,b) to find amount of white.
+  // The dimmest gun is the amount of white mixed in.
   unsigned int m = r < g ? r : g;
   m = std::min(b, m);
 
-  // Determine the normalized saturation.
+  // The saturation is the share of the value that is not white.
   if (*v != 0) {
     *s = Divide_With_Round((*v - m) * HSV_BASE, *v);
   } else {
@@ -106,14 +81,20 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
   }
 
   if (*s != 0) {
+    // Each gun's distance below the brightest, as a fraction of the spread
+    // between brightest and dimmest scaled to 0..HSV_BASE. The dimmest gun's
+    // is HSV_BASE, the brightest's 0. A non-zero saturation means the spread
+    // is not zero.
     const unsigned int tmp = *v - m;
     CHECK_NE(tmp, 0U);
     const unsigned int r1 = Divide_With_Round((*v - r) * HSV_BASE, tmp);
     const unsigned int g1 = Divide_With_Round((*v - g) * HSV_BASE, tmp);
     const unsigned int b1 = Divide_With_Round((*v - b) * HSV_BASE, tmp);
 
-    // Find effect of second most predominant color.
-    // In which section of the hexagon of colors does the color lie?
+    // Find the effect of the second most predominant color: which gun is
+    // brightest and which dimmest picks the sextant of the color hexagon, and
+    // the middle gun's fraction the position within it. The hue is built at
+    // six times its final scale, one HSV_BASE per sextant.
     if (*v == r) {
       if (m == g) {
         *h = (5 * HSV_BASE) + b1;
@@ -137,7 +118,9 @@ void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
       }
     }
 
-    // Divide by six and round.
+    // Back to one HSV_BASE for the whole circle. A red whose green and blue
+    // tie takes the magenta branch and lands on 6 * HSV_BASE, which becomes
+    // HSV_BASE, the same hue as 0.
     *h = Divide_With_Round(*h, 6);
   }
 }
@@ -147,7 +130,8 @@ void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
   const base::Rgb8 color = base::HsvToRgb8(
       static_cast<int>(h), static_cast<int>(s), static_cast<int>(v));
 
-  // HsvToRgb8 works at HSV_BASE; scale each gun down to the VGA RGB_BASE.
+  // HsvToRgb8() works at HSV_BASE; scale each gun down to the VGA RGB_BASE,
+  // rounding.
   *r = static_cast<unsigned int>(
       base::DivideWithRound(color.red * RGB_BASE, HSV_BASE));
   *g = static_cast<unsigned int>(

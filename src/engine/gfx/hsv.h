@@ -16,43 +16,41 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/HSV.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : HSV.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 12/02/95 *
- *                                                                                             *
- *                  Last Update : December 2, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
-
 #ifndef CNC_RED_ALERT_ENGINE_GFX_HSV_H_
 #define CNC_RED_ALERT_ENGINE_GFX_HSV_H_
 
+// Colors as hue, saturation and value, the form the games' options dialogs
+// use to apply the brightness, color, tint and contrast sliders to a palette.
+// Originally Westwood's HSV.H (Joe L. Bostic, December 1995).
+
 class RGBClass;
 
-/*
-**	Each color entry is represented by this class. It holds the values for
-*the color *	attributes. The values are recorded in a range from 0 to 255
-*with 255 being the *	maximum.
-*/
+// A color as hue, saturation and value, each in 0..255.
+//
+// The hue runs once around the six-sided color wheel over 0..255, so 255 is
+// the same red as 0 (see base::HsvToRgb8()). The value is the brightest gun
+// and the saturation how far the dimmest gun falls below it, relative to
+// the value.
+//
+// Red Alert's options dialog converts each palette entry with
+// RGBClass::ToHSV(), scales the components and assigns the result back.
+//
+// Example:
+//   const HSVClass hsv = palette.at(index).ToHSV();
+//   palette.at(index) = HSVClass(hsv.Hue_Component(), 0,
+//   hsv.Value_Component());
 class HSVClass {
  public:
   HSVClass(unsigned char hue, unsigned char saturation,
            unsigned char value) noexcept
       : Hue(hue), Saturation(saturation), Value(value) {}
-  // legacy C interfaces take the object where a pointer or name is expected.
+
+  // Returns the RGB color that most closely matches this one. The conversion
+  // truncates each gun to the 6 bits RGBClass keeps, so ToHSV() followed by
+  // this conversion can move a gun down by a step or two.
+  //
+  // Implicit so the options dialog can assign an HSV color straight into a
+  // palette entry.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator RGBClass() const;
 
@@ -66,11 +64,19 @@ class HSVClass {
   unsigned char Value;
 };
 
-// Free-function HSV/RGB conversions at the VGA 6-bit gun range (0..63),
-// distinct from HSVClass and base::HsvToRgb8(), which work at the full
-// 8-bit range. Only Tiberian Dawn's options dialog uses these.
+// HSV/RGB conversions for colors stored as VGA 6-bit guns (0..63), with the
+// HSV components in 0..255 as in HSVClass. Unlike HSVClass, both directions
+// round rather than truncate, so a round trip moves a gun by at most one step.
+// Only Tiberian Dawn's options dialog uses these; it keeps its palette as raw
+// bytes rather than RGBClass.
+
+// Converts 'r', 'g' and 'b' (each 0..63) and stores the hue, saturation and
+// value in '*h', '*s' and '*v' (each 0..255). A grey has hue and saturation 0.
 void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
                         unsigned int* h, unsigned int* s, unsigned int* v);
+
+// Converts 'h', 's' and 'v' (each 0..255, clamped if not) and stores the guns
+// in '*r', '*g' and '*b' (each 0..63).
 void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
                         unsigned int* r, unsigned int* g, unsigned int* b);
 

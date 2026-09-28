@@ -17,52 +17,62 @@
 #ifndef CNC_RED_ALERT_ENGINE_GFX_RGB_H_
 #define CNC_RED_ALERT_ENGINE_GFX_RGB_H_
 
+// A palette entry: one color as the VGA DAC stores it. Originally Westwood's
+// RGB.H (Joe L. Bostic, December 1995).
+
 #include <cstdint>
 
-// Forward declaration
 class HSVClass;
 
-// RGB color class.
+// One palette color, held at the VGA DAC's 6 bits per gun (0..63).
 //
-// Provides color representation in RGB color space with 6-bit components
-// (0-63 range) and conversion to HSV color space.
+// The interface speaks 8-bit components: the constructor takes 0..255 and the
+// *_Component() accessors return 0..252. Red Alert's PaletteClass is an array
+// of these that is also handed out as the raw 768-byte palette, so the three
+// one-byte members are the palette file format.
+//
+// Example:
+//   constexpr RGBClass kEmber(255, 80, 80);
+//   const RGBClass dimmed = kEmber.Adjusted(128, kBlackColor);
 class RGBClass {
  public:
-  // Default constructor (Zero initialization)
+  // Black.
   constexpr RGBClass() = default;
 
-  // Handles the bit-shift conversion from 8-bit (0-255) to VGA 6-bit (0-63)
+  // Takes 8-bit components and keeps their top 6 bits.
   constexpr RGBClass(const uint8_t red, const uint8_t green,
                      const uint8_t blue) noexcept
       : red_(red >> 2), green_(green >> 2), blue_(blue >> 2) {}
 
-  // Converts this RGB color to the HSV color space.
-  //
-  // The conversion uses a hexagonal color wheel model to determine hue.
+  // Returns this color as hue, saturation and value, each 0..255, computed
+  // from the 8-bit *_Component() values on the hexagonal color wheel; see
+  // HSVClass for the scale. A grey has hue and saturation 0.
   [[nodiscard]] HSVClass ToHSV() const;
 
+  // The brightest 8-bit component the constructor takes.
   static constexpr uint8_t kMaxValue = 255;
 
-  // Adjusts the current color proportionately toward the 'target' color.
+  // Moves this color proportionately toward 'target', as palette fades do.
   //
-  // This is typically used for fading effects. The 'ratio' argument defines
-  // the interpolation step:
-  //  - 0:   No change (keeps current color).
-  //  - 255: Fully transforms to the 'target' color.
-  //
-  // If 'ratio' is outside the [0, 255] range, it is clamped.
+  // 'ratio' is how far to go, from 0 (no change) to 255 (becomes 'target');
+  // values outside 0..255 are clamped. Each gun rounds down, so one rising
+  // toward the target reaches it only at 255.
   void Adjust(int ratio, const RGBClass& target);
 
   // Returns a copy of this color adjusted toward 'target'; see Adjust().
   [[nodiscard]] RGBClass Adjusted(int ratio, const RGBClass& target) const;
 
-  // Returns the squared Euclidean distance between this color and 'other'.
-  //
-  // This is used to find the closest color match without calculating square
-  // roots. A result of 0 indicates the colors are identical.
+  // Returns the squared Euclidean distance between this color and 'other',
+  // measured on the 6-bit guns (0..3 * 63 * 63). Used to find the closest
+  // palette match without square roots; 0 means the colors are identical.
   [[nodiscard]] int Difference(const RGBClass& other) const;
 
-  // Logic: Restores 6-bit storage to 8-bit range using original bitwise logic.
+  // The guns back at the 8-bit scale: the stored 6 bits shifted up by two,
+  // so full intensity reads as 252, not 255.
+  //
+  // TODO: The '/ 64' term is the original '>> 6', always 0 for a 6-bit gun;
+  // '>> 4' would copy the top bits down and make 63 read as 255. Changing it
+  // shifts ToHSV() values, closest-color matches and the WOLAPI palette.
   [[nodiscard]] constexpr int Red_Component() const {
     return (red_ * 4) + (red_ / 64);
   }
@@ -74,15 +84,14 @@ class RGBClass {
   }
 
  private:
-  // These hold the actual color gun values in machine dependant scale.
-  // Values range from 0 to 63 (VGA standard).
-
+  // The guns as the VGA DAC takes them, 0..63. Their order and size are the
+  // palette's byte layout.
   uint8_t red_{0};
   uint8_t green_{0};
   uint8_t blue_{0};
 };
 
-// Common color constant - initialized at compile time.
+// Black, the target of fades to black.
 inline constexpr RGBClass kBlackColor(0, 0, 0);
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_RGB_H_
