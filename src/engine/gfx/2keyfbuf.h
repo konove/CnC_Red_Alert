@@ -20,19 +20,13 @@ struct ShapeEffects {
   // color; any other index N remaps the page pixel under the shape through
   // row N, which is what lets the page show through.
   std::span<const uint8_t> ghost_table;
-  // SHAPE_FADING: a 256-entry remap applied fading_count times; 0 turns the
-  // fade off. Only the low six bits of the count are used.
+  // SHAPE_FADING: a 256-entry remap applied to every drawn pixel.
   std::span<const uint8_t> fading_table;
-  int fading_count = 0;
   // SHAPE_PREDATOR: the frame-dependent start of the walk through the sample
   // offsets that makes a cloaked shape shimmer. Only the low three bits of
   // its magnitude matter. Negative uses the second set of offsets, which sample
   // the row below instead of the same row.
   int predator_offset = 0;
-  // SHAPE_PARTIAL: how many pixels in 256 get the predator effect, taken
-  // from the low byte; without the flag every pixel does. The rest are drawn
-  // as the shape's own color.
-  int partial_predator = 0;
 };
 
 // Draws the width x height shape frame in `frame` (row-major, width bytes per

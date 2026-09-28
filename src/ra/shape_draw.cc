@@ -191,7 +191,6 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
         const ShapeEffects effects{
             .ghost_table = ghostdata,
             .fading_table = fading_data,
-            .fading_count = 1,
             .predator_offset = pred_offset,
         };
         DrawShapeFrame(x, y, width, height, std::as_bytes(buffer), draw_window,
