@@ -48,11 +48,7 @@ class RGBClass;
 *with 255 being the *	maximum.
 */
 class HSVClass {
- private:
-  static const HSVClass BlackColor;
-
  public:
-  HSVClass() noexcept : Hue(0), Saturation(0), Value(0) {}
   HSVClass(unsigned char hue, unsigned char saturation,
            unsigned char value) noexcept
       : Hue(hue), Saturation(saturation), Value(value) {}
@@ -60,10 +56,6 @@ class HSVClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator RGBClass() const;
 
-  static constexpr int kMaxValue = 255;
-
-  void Adjust(int ratio, const HSVClass& hsv);
-  [[nodiscard]] int Difference(const HSVClass& hsv) const;
   [[nodiscard]] int Hue_Component() const { return Hue; }
   [[nodiscard]] int Saturation_Component() const { return Saturation; }
   [[nodiscard]] int Value_Component() const { return Value; }

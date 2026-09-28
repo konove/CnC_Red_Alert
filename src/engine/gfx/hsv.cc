@@ -33,9 +33,7 @@
  *                  Last Update : February 20, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * HSVClass::Adjust -- Adjust an HSV color toward specified color.
- ** HSVClass::Difference -- Finds the difference between two HSV color objects.
- ** HSVClass::Set -- Set the palette for this color object. * HSVClass::operator
+ * Functions: * HSVClass::operator
  *RGBClass -- Conversion operator for RGBClass object.                   *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
@@ -48,86 +46,6 @@
 #include "absl/log/check.h"
 #include "base/hsv.h"
 #include "engine/gfx/rgb.h"
-
-const HSVClass HSVClass::BlackColor(0, 0, 0);
-
-/***********************************************************************************************
- * HSVClass::Adjust -- Adjust an HSV color toward specified color. *
- *                                                                                             *
- *    This routine will adjust the HSV color object toward the color of the
- *specified HSV      * object. Typical users of this would be palette morphing
- *or fading routines.              *
- *                                                                                             *
- * INPUT:   ratio    -- The ratio to move the HSV object toward the color
- *specified. A value   * of zero means no movement at all. A value of 255 means
- *move completely * toward the specified color (changed completely). *
- *                                                                                             *
- *          hsv      -- A reference to the color that the current HSV object is
- *to change      * toward. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/20/1996 JLB : Created. *
- *=============================================================================================*/
-void HSVClass::Adjust(int ratio, const HSVClass& hsv) {
-  /*
-  **	Ratio conversion is limited to 0 through 100%. This is
-  **	the range of 0 to 255.
-  */
-  ratio %= 256;
-
-  /*
-  **	Adjust the color guns by the ratio specified toward the
-  **	destination color.
-  */
-  const int value = hsv.Value_Component() - Value_Component();
-  Value = static_cast<unsigned char>(Value_Component() + (value * ratio / 256));
-
-  const int saturation = hsv.Saturation_Component() - Saturation_Component();
-  Saturation = static_cast<unsigned char>(Saturation_Component() +
-                                          (saturation * ratio / 256));
-
-  const int hue = hsv.Hue_Component() - Hue_Component();
-  Hue = static_cast<unsigned char>(Hue_Component() + (hue * ratio / 256));
-}
-
-/***********************************************************************************************
- * HSVClass::Difference -- Finds the difference between two HSV color objects. *
- *                                                                                             *
- *    This routine will determine a color difference between two HSV objects.
- *The difference   * has no particular meaning other that larger numbers meaning
- *greater difference.          *
- *                                                                                             *
- * INPUT:   hsv   -- The other HSV object to compare this HSV object to. *
- *                                                                                             *
- * OUTPUT:  Returns with a relative distance (in arbitrary units) between this
- *HSV object and  * the HSV object supplied. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 02/20/1996 JLB : Created. *
- *=============================================================================================*/
-int HSVClass::Difference(const HSVClass& hsv) const {
-  int hue = static_cast<int>(Hue) - static_cast<int>(hsv.Hue);
-  if (hue < 0) {
-    hue = -hue;
-  }
-
-  int saturation =
-      static_cast<int>(Saturation) - static_cast<int>(hsv.Saturation);
-  if (saturation < 0) {
-    saturation = -saturation;
-  }
-
-  int value = static_cast<int>(Value) - static_cast<int>(hsv.Value);
-  if (value < 0) {
-    value = -value;
-  }
-
-  return (hue * hue) + (saturation * saturation) + (value * value);
-}
 
 /***********************************************************************************************
  * HSVClass::operator RGBClass -- Conversion operator for RGBClass object. *
