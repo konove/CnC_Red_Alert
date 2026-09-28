@@ -18,7 +18,7 @@
 
 // HsvColor's conversion to RGB and Tiberian Dawn's 6-bit HSV/RGB conversions.
 
-#include "engine/gfx/hsv.h"
+#include "engine/gfx/hsv_color.h"
 
 #include <algorithm>
 #include <cstdint>

@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CNC_RED_ALERT_ENGINE_GFX_HSV_H_
-#define CNC_RED_ALERT_ENGINE_GFX_HSV_H_
+#ifndef CNC_RED_ALERT_ENGINE_GFX_HSV_COLOR_H_
+#define CNC_RED_ALERT_ENGINE_GFX_HSV_COLOR_H_
 
 // Colors as hue, saturation and value, the form the games' options dialogs
 // use to apply the brightness, color, tint and contrast sliders to a palette.
@@ -88,4 +88,4 @@ struct Rgb6 {
 
 }  // namespace engine::gfx
 
-#endif  // CNC_RED_ALERT_ENGINE_GFX_HSV_H_
+#endif  // CNC_RED_ALERT_ENGINE_GFX_HSV_COLOR_H_

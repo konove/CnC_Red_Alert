@@ -80,7 +80,7 @@
 #include "engine/crypto/key_phrase_hash.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
-#include "engine/gfx/hsv.h"
+#include "engine/gfx/hsv_color.h"
 #include "engine/gfx/shape.h"
 #include "td/audio.h"
 #include "td/conquer.h"

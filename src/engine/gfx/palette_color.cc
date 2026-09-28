@@ -22,7 +22,7 @@
 #include <cmath>
 #include <cstdint>
 
-#include "engine/gfx/hsv.h"
+#include "engine/gfx/hsv_color.h"
 
 namespace engine::gfx {
 

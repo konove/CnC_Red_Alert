@@ -76,7 +76,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
-#include "engine/gfx/hsv.h"
+#include "engine/gfx/hsv_color.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/window/keyboard.h"
 #include "ra/audio.h"

@@ -34,7 +34,7 @@ optimize_in_debug(fading_table.cc pixel_buffer.cc)
 include(Testing)
 add_gtest(
         NAME engine_gfx_test
-        SOURCES font_test.cc glow_pulse_test.cc hsv_test.cc palette_color_test.cc
+        SOURCES font_test.cc glow_pulse_test.cc hsv_color_test.cc palette_color_test.cc
             pixel_buffer_test.cc stamp_test.cc wsa_animation_test.cc
         LIBS engine_gfx
 )
