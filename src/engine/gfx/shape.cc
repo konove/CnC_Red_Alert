@@ -28,11 +28,15 @@ std::span<const std::byte> Extract_Shape(std::span<const std::byte> buffer,
   if (entry > buffer.size() || buffer.size() - entry < sizeof(uint32_t)) {
     return {};
   }
+  // Offsets count from the end of the two-byte frame count, not from the
+  // start of the block.
   const auto offset = base::ReadUnaligned<uint32_t>(buffer.subspan(entry));
   if (buffer.size() < 2 || offset > buffer.size() - 2) {
     return {};
   }
   const auto data = buffer.subspan(2 + offset);
+  // 10 is the header through Shape_Type::DataLength, and ShapeSize sits at
+  // byte 6 of it; a frame shorter than its own header is corrupt.
   if (data.size() < 10) {
     return {};
   }
@@ -43,7 +47,8 @@ std::span<const std::byte> Extract_Shape(std::span<const std::byte> buffer,
 
 void Set_Shape_Buffer(std::span<uint8_t> buffer) {
   ShapeBufferBytes = buffer;
-  // char aliases the byte allocation for legacy identity-only callers.
+  // Tiberian Dawn's INI code still reads and writes the buffer as char text
+  // through this alias of the same bytes.
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   ShapeBuffer = reinterpret_cast<char*>(buffer.data());
   ShapeBufferSize = static_cast<int>(buffer.size());
