@@ -23,6 +23,11 @@
   - It records `current_shape_` even when `SDL_CreateColorCursor()` fails, so the same shape is
     never tried again and SDL shows its default cursor
   - The hot spot is not checked against the shape size; SDL rejects one outside the cursor
+- Decide what `WinX`/`WinY` (`engine/gfx/text_window.h`) should be now nothing writes them
+  - The original `Change_Window()` set them to the active text window's origin; since it was stubbed
+    (and deleted in `09717739`) they are always 0, so `ra/menus.cc`, `td/menus.cc`, `ra/object.cc`
+    and `td/object.cc` place menus and text as if every window sat at the screen's top-left
+  - Either delete them (no visible change) or set them from `WindowList` where the window changes
 
 ## Refactoring
 
@@ -82,11 +87,28 @@
     `pitch * h` surface-bytes span (`Display::Lock()`, `hardware_cursor.cc`) repeat with their
     NOLINTs; the two-argument spans still print `-Wunsafe-buffer-usage-in-container` compiler
     warnings, since the NOLINT only silences clang-tidy
+- Take the redraw special case out of `engine::window::PumpEvents()`
+  - `PumpEvents()` ends the frame on `Display`'s redraw event, and `Display::Present()` pumps events
+    again (`engine/window/display.cc:191`, `:218`), so `event_pump` and `Display` depend on each
+    other and a redraw event runs a nested pump
+  - Either have the redraw timer set an atomic flag that `Display` checks itself (~15-20 lines;
+    removes `redraw_event_`, `IsRedrawEvent()` and `PostRedrawEvent()`), or stop `Present()` pumping
+    (2 lines; first check that no loop that only presents relies on it to see `SDL_QUIT` or focus
+    events)
+- Share one SDL event handler between the games
+  - `SDL_Event_Handler` in `ra/sdlstub.cc` and `td/sdlstub.cc` are near-identical (~35 lines:
+    keyboard, mouse motion, focus, resize, quit); one engine handler with focus and quit callbacks
+    would replace both
+- Make `engine::window::KeyBuffer::HandleEvent()` take `const SDL_Event&`
+  - The games' event handlers now receive a reference and turn it back into a pointer for it
 - Move `engine/platform/file_system.h` into `engine::platform`
   - It is the last header in the folder outside the namespace
 - Run `/fix-ide-issues` on `engine/platform/timer.h` and `timer.cc`
   - Stage 7 of the `/modernize-file` run (`0e463fee..eed3a0d2`) was skipped: CLion's
     `getDiagnostics` timed out on every file
+- Run `/fix-ide-issues` on `engine/window/event_pump.cc` and `event_pump_test.cc`
+  - Stage 7 of the `/modernize-file` run (`09717739..13c11acb`) was skipped: CLion's
+    `getDiagnostics` timed out on both (`event_pump.h` came back clean)
 - Settle on one spelling of "the countdown has time left"
   - `HasTimeLeft()` (35 sites), `!IsFinished()` (4: `td/infantry.cc:1357`, `td/team.cc:277`,
     `td/drive.cc:894`, `engine/gfx/glow_pulse.h:40`) and `Remaining()` compared with 0 (5:
