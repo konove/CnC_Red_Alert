@@ -2312,7 +2312,7 @@ static void Bootstrap() {
   **	purposes.
   */
   shape_storage.resize(kShapeBufferSize);
-  Set_Shape_Buffer(shape_storage);
+  SetShapeBuffer(shape_storage);
 
   TheAssets().LoadStrings();
 
@@ -2371,7 +2371,7 @@ static void Init_Mouse() {
   */
   const auto temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
   if (!temp_mouse_shapes.empty()) {
-    TheMouse().SetShape(0, 0, Extract_Shape(temp_mouse_shapes, 0));
+    TheMouse().SetShape(0, 0, ExtractShapeFrame(temp_mouse_shapes, 0));
   }
 
   TheMap().Set_Default_Mouse(MOUSE_NORMAL, false);

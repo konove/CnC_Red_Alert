@@ -40,8 +40,7 @@
 // take the slower rotate-and-scale path when either differs from its default.
 void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
                    int shape_num, int x, int y, WindowNumberType window,
-                   ShapeFlags_Type flags,
-                   std::span<const uint8_t> fading_data = {},
+                   ShapeFlags flags, std::span<const uint8_t> fading_data = {},
                    std::span<const uint8_t> ghostdata = {},
                    DirType rotation = DIR_N, int32_t scale = 0x0100);
 

@@ -98,13 +98,13 @@ class HardwareCursor {
   ~HardwareCursor();
 
   // Decodes a game cursor shape and makes it the SDL cursor, scaled like the
-  // game's picture (see UpdateScale()). `shape` is a Shape_Type header followed
-  // by its LCW-compressed pixels; the hot spot is in the shape's own, unscaled
-  // pixels. Only 256-color shapes (ShapeType 0) no
-  // larger than the size given to the constructor are accepted. Anything else,
-  // and a shape whose data is corrupt, leaves the previous cursor in place.
-  // Handing over the same buffer as last time does nothing: the cursor is
-  // recognized by its address, not its contents.
+  // game's picture (see UpdateScale()). `shape` is a ShapeHeader header
+  // followed by its LCW-compressed pixels; the hot spot is in the shape's own,
+  // unscaled pixels. Only 256-color shapes (format 0) no larger than the size
+  // given to the constructor are accepted. Anything else, and a shape whose
+  // data is corrupt, leaves the previous cursor in place. Handing over the same
+  // buffer as last time does nothing: the cursor is recognized by its address,
+  // not its contents.
   void SetShape(int hot_x, int hot_y, std::span<const std::byte> shape);
 
   // Reference-counted visibility control. Hide increments the hide count,

@@ -248,9 +248,9 @@ bool Init_Game() {
   **	and ShapeBufferSize to these values, so it can be accessed for other
   **	purposes.
   */
-  DLOG(INFO) << "C&C95 - About to call Set_Shape_Buffer";
+  DLOG(INFO) << "C&C95 - About to call SetShapeBuffer";
   shape_storage.resize(SHAPE_BUFFER_SIZE);
-  Set_Shape_Buffer(shape_storage);
+  SetShapeBuffer(shape_storage);
 
   /*
   **	Bootstrap enough of the system so that the error dialog box can
@@ -309,7 +309,7 @@ bool Init_Game() {
   */
   temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
   if (!temp_mouse_shapes.empty()) {
-    TheMouse().SetShape(0, 0, Extract_Shape(temp_mouse_shapes, 0));
+    TheMouse().SetShape(0, 0, ExtractShapeFrame(temp_mouse_shapes, 0));
   }
 
   DLOG(INFO) << "C&C95 - About to enter wait for focus loop";
@@ -620,7 +620,7 @@ void Uninit_Game() {
   TheObjectHeaps().house().Destroy_All();
   TheObjectHeaps().house().Set_Heap(0);
 
-  Set_Shape_Buffer({});
+  SetShapeBuffer({});
   shape_storage.clear();
   shape_storage.shrink_to_fit();
   ThePalettes().black_palette().clear();

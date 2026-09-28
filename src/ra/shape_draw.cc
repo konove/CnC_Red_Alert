@@ -118,7 +118,7 @@ std::span<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
 
 void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
                    const int shape_num, const int x, const int y,
-                   const WindowNumberType window, ShapeFlags_Type flags,
+                   const WindowNumberType window, ShapeFlags flags,
                    std::span<const uint8_t> fading_data,
                    std::span<const uint8_t> ghostdata, const DirType rotation,
                    const int32_t scale) {
@@ -140,8 +140,8 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
     int height = Get_Build_Frame_Height(shapefile);
 
     // In WIn95, build shape returns a pointer to the shape not its size
-    const auto shape_pointer = Build_Frame(
-        shapefile, static_cast<uint16_t>(shape_num), ShapeBufferBytes);
+    const auto shape_pointer =
+        Build_Frame(shapefile, static_cast<uint16_t>(shape_num), shape_buffer);
     if (!shape_pointer.empty()) {
       PixelView draw_window(
           view.buffer(),
@@ -210,8 +210,8 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
     return rect;
   }
 
-  const auto sh = Build_Frame(shapedata, static_cast<uint16_t>(shape_num),
-                              ShapeBufferBytes);
+  const auto sh =
+      Build_Frame(shapedata, static_cast<uint16_t>(shape_num), shape_buffer);
   if (sh.empty()) {
     return rect;
   }

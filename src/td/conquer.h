@@ -823,8 +823,7 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
                                     int shapenum, int frames, int zoomfactor);
 void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
                    int shapenum, int x, int y, WindowNumberType window,
-                   ShapeFlags_Type flags,
-                   std::span<const uint8_t> fadingdata = {},
+                   ShapeFlags flags, std::span<const uint8_t> fadingdata = {},
                    std::span<const uint8_t> ghostdata = {});
 void Go_Editor(bool flag);
 

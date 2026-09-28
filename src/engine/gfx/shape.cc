@@ -8,45 +8,48 @@
 #include "base/unaligned.h"
 
 char* ShapeBuffer;
-std::span<uint8_t> ShapeBufferBytes;
+std::span<uint8_t> shape_buffer;
 int ShapeBufferSize;
 
-int Extract_Shape_Count(std::span<const std::byte> buffer) {
-  if (buffer.size() < sizeof(uint16_t)) {
+int CountShapeFrames(std::span<const std::byte> shape_file) {
+  if (shape_file.size() < sizeof(uint16_t)) {
     return 0;
   }
-  return base::ReadUnaligned<uint16_t>(buffer);
+  return base::ReadUnaligned<uint16_t>(shape_file);
 }
 
-std::span<const std::byte> Extract_Shape(std::span<const std::byte> buffer,
-                                         int shape) {
-  if (shape < 0 || shape >= Extract_Shape_Count(buffer)) {
+std::span<const std::byte> ExtractShapeFrame(
+    std::span<const std::byte> shape_file, int frame) {
+  if (frame < 0 || frame >= CountShapeFrames(shape_file)) {
     return {};
   }
-  const auto entry =
-      sizeof(uint16_t) + (base::ToSize(shape) * sizeof(uint32_t));
-  if (entry > buffer.size() || buffer.size() - entry < sizeof(uint32_t)) {
+  const auto entry_offset =
+      sizeof(uint16_t) + (base::ToSize(frame) * sizeof(uint32_t));
+  if (entry_offset > shape_file.size() ||
+      shape_file.size() - entry_offset < sizeof(uint32_t)) {
     return {};
   }
   // Offsets count from the end of the two-byte frame count, not from the
   // start of the block.
-  const auto offset = base::ReadUnaligned<uint32_t>(buffer.subspan(entry));
-  if (buffer.size() < 2 || offset > buffer.size() - 2) {
+  const auto frame_offset =
+      base::ReadUnaligned<uint32_t>(shape_file.subspan(entry_offset));
+  if (shape_file.size() < 2 || frame_offset > shape_file.size() - 2) {
     return {};
   }
-  const auto data = buffer.subspan(2 + offset);
-  // 10 is the header through Shape_Type::DataLength, and ShapeSize sits at
-  // byte 6 of it; a frame shorter than its own header is corrupt.
-  if (data.size() < 10) {
+  const auto frame_data = shape_file.subspan(2 + frame_offset);
+  // 10 is the header through ShapeHeader::decompressed_bytes, and frame_bytes
+  // sits at byte 6 of it; a frame shorter than its own header is corrupt.
+  if (frame_data.size() < 10) {
     return {};
   }
-  const auto size = base::ReadUnaligned<uint16_t>(data.subspan(6));
-  return size >= 10 && size <= data.size() ? data.first(size)
-                                           : std::span<const std::byte>{};
+  const auto frame_bytes = base::ReadUnaligned<uint16_t>(frame_data.subspan(6));
+  return frame_bytes >= 10 && frame_bytes <= frame_data.size()
+             ? frame_data.first(frame_bytes)
+             : std::span<const std::byte>{};
 }
 
-void Set_Shape_Buffer(std::span<uint8_t> buffer) {
-  ShapeBufferBytes = buffer;
+void SetShapeBuffer(std::span<uint8_t> buffer) {
+  shape_buffer = buffer;
   // Tiberian Dawn's INI code still reads and writes the buffer as char text
   // through this alias of the same bytes.
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)

@@ -150,7 +150,7 @@ constexpr auto kBlitters =
 
 void DrawShapeFrame(int x, int y, const int width, const int height,
                     std::span<const std::byte> frame, PixelView& dest,
-                    const ShapeFlags_Type flags, const ShapeEffects& effects) {
+                    const ShapeFlags flags, const ShapeEffects& effects) {
   if (width <= 0 || height <= 0 ||
       base::ssize{width} * height > std::ssize(frame)) {
     return;

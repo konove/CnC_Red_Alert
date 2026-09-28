@@ -40,26 +40,26 @@ void SdlSurfaceDeleter::operator()(SDL_Surface* surface) const noexcept {
   SDL_FreeSurface(surface);
 }
 
-// The Shape_Type fields up to and including DataLength. The color table after
-// them belongs to compact shapes, which SetShape() rejects.
-constexpr base::ssize kShapeHeaderSize = offsetof(Shape_Type, Colortable);
+// The ShapeHeader fields up to and including decompressed_bytes. The color
+// table after them belongs to compact shapes, which SetShape() rejects.
+constexpr base::ssize kShapeHeaderSize = offsetof(ShapeHeader, color_table);
 static_assert(kShapeHeaderSize == 10);
 
 // Decodes the pixels of a 256-color shape: `data` is what follows the header,
 // LCW-compressed, and under the LCW the pixels are zero-run-length encoded. A
 // nonzero byte is a pixel, and a zero byte is followed by a count of
-// transparent (color 0) pixels to skip. Returns the Width * OriginalHeight
+// transparent (color 0) pixels to skip. Returns the width * original_height
 // pixels, or nullopt for data that runs out early or holds a zero or overlong
 // count.
 static std::optional<std::vector<uint8_t>> DecodeShapePixels(
-    const Shape_Type& header, const std::span<const std::byte> data) {
-  std::vector<uint8_t> rle_data(header.DataLength);
+    const ShapeHeader& header, const std::span<const std::byte> data) {
+  std::vector<uint8_t> rle_data(header.decompressed_bytes);
   const int32_t rle_bytes =
       LCW_Uncompress(data, std::as_writable_bytes(std::span(rle_data)));
   auto input = std::span(rle_data).first(base::ToSize(rle_bytes));
   // Starts out transparent: skipped pixels stay color 0.
   std::vector<uint8_t> pixels(
-      base::ToSize(int{header.Width} * int{header.OriginalHeight}));
+      base::ToSize(int{header.width} * int{header.original_height}));
   auto output = std::span(pixels);
   while (!output.empty()) {
     if (input.empty()) {
@@ -170,18 +170,18 @@ void HardwareCursor::SetShape(const int hot_x, const int hot_y,
   if (std::ssize(shape) < kShapeHeaderSize || current_shape_ == shape.data()) {
     return;
   }
-  Shape_Type header{};
+  ShapeHeader header{};
   base::CopyBytes(base::ObjectBytes(header), shape, kShapeHeaderSize);
 
-  if (header.Width == 0 || header.OriginalHeight == 0 ||
-      std::cmp_greater(header.Width, max_width_) ||
-      std::cmp_greater(header.OriginalHeight, max_height_)) {
+  if (header.width == 0 || header.original_height == 0 ||
+      std::cmp_greater(header.width, max_width_) ||
+      std::cmp_greater(header.original_height, max_height_)) {
     return;
   }
 
-  // Only ShapeType 0 (LCW compressed, 256-color) is supported here.
-  if (header.ShapeType != 0) {
-    DLOG(INFO) << "SetShape: shape type " << header.ShapeType;
+  // Only format 0 (LCW compressed, 256-color) is supported here.
+  if (header.format != 0) {
+    DLOG(INFO) << "SetShape: shape type " << header.format;
     return;
   }
   auto pixels = DecodeShapePixels(header, shape.subspan(kShapeHeaderSize));
@@ -191,8 +191,8 @@ void HardwareCursor::SetShape(const int hot_x, const int hot_y,
 
   current_shape_ = shape.data();
   shape_pixels_ = *std::move(pixels);
-  shape_width_ = header.Width;
-  shape_height_ = header.OriginalHeight;
+  shape_width_ = header.width;
+  shape_height_ = header.original_height;
   hot_x_ = hot_x;
   hot_y_ = hot_y;
   DrawSurface(CursorScale());

@@ -45,7 +45,7 @@ struct ShapeEffects {
 // this shape.
 void DrawShapeFrame(int x, int y, int width, int height,
                     std::span<const std::byte> frame, PixelView& dest,
-                    ShapeFlags_Type flags, const ShapeEffects& effects = {});
+                    ShapeFlags flags, const ShapeEffects& effects = {});
 
 }  // namespace engine::gfx
 

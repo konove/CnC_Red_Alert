@@ -300,7 +300,7 @@ void AnimClass::Draw_It(PixelView& view, int x, int y,
       **	Set the shape flags to properly take into account any fading or
       *ghosting *	table necessary.
       */
-      ShapeFlags_Type flags = SHAPE_CENTER | SHAPE_WIN_REL;
+      ShapeFlags flags = SHAPE_CENTER | SHAPE_WIN_REL;
       if (!transtable.empty()) {
         flags = flags | SHAPE_GHOST;
       }

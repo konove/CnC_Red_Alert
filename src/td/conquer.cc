@@ -2310,7 +2310,7 @@ void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
     return;
   }
   const auto pixels =
-      Build_Frame(shapefile, static_cast<uint16_t>(shapenum), ShapeBufferBytes);
+      Build_Frame(shapefile, static_cast<uint16_t>(shapenum), shape_buffer);
   const int source_width = Get_Build_Frame_Width(shapefile);
   const int source_height = Get_Build_Frame_Height(shapefile);
   if (pixels.empty() || source_width == 0 || source_height == 0 ||
@@ -2362,14 +2362,14 @@ void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
  *=============================================================================================*/
 void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
                    int shapenum, int x, int y, WindowNumberType window,
-                   ShapeFlags_Type flags, std::span<const uint8_t> fadingdata,
+                   ShapeFlags flags, std::span<const uint8_t> fadingdata,
                    std::span<const uint8_t> ghostdata) {
   if (!shapefile.empty() && shapenum >= 0) {
     /*
     ** Build frame returns a pointer now instead of the shapes length
     */
-    const auto shape_size = Build_Frame(
-        shapefile, static_cast<uint16_t>(shapenum), ShapeBufferBytes);
+    const auto shape_size =
+        Build_Frame(shapefile, static_cast<uint16_t>(shapenum), shape_buffer);
     if (Get_Last_Frame_Length() > ShapeBufferSize) {
       LOG(ERROR) << "Shape buffer too small: need " << Get_Last_Frame_Length()
                  << " bytes, buffer is only " << ShapeBufferSize;

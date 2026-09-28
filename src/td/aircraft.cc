@@ -443,7 +443,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   *shapes occur after the first *	32 shapes of the helicopter body.
   */
   if (Class->IsRotorEquipped) {
-    ShapeFlags_Type flags = SHAPE_CENTER | SHAPE_WIN_REL;
+    ShapeFlags flags = SHAPE_CENTER | SHAPE_WIN_REL;
 
     /*
     **	The rotor shape number depends on whether the helicopter is idling

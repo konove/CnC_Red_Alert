@@ -603,7 +603,7 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
   /*
   **	Draw the main body of the projectile.
   */
-  ShapeFlags_Type flags = SHAPE_NORMAL;
+  ShapeFlags flags = SHAPE_NORMAL;
   if (Class->IsTranslucent) {
     flags = SHAPE_GHOST;
   }

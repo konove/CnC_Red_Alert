@@ -131,16 +131,16 @@ void MouseClass::Mouse_Small(bool wwsmall) {
     if (control->SmallFrame != -1) {
       TheMouse().SetShape(
           control->X, control->Y,
-          Extract_Shape(MouseShapes, control->SmallFrame + (Frame / 4)));
+          ExtractShapeFrame(MouseShapes, control->SmallFrame + (Frame / 4)));
     } else {
       TheMouse().SetShape(
           MouseControl.at(MOUSE_NORMAL).X, MouseControl.at(MOUSE_NORMAL).Y,
-          Extract_Shape(MouseShapes, static_cast<int>(MOUSE_NORMAL)));
+          ExtractShapeFrame(MouseShapes, static_cast<int>(MOUSE_NORMAL)));
     }
   } else {
     TheMouse().SetShape(
         control->X, control->Y,
-        Extract_Shape(MouseShapes, control->StartFrame + (Frame / 4)));
+        ExtractShapeFrame(MouseShapes, control->StartFrame + (Frame / 4)));
   }
 }
 
@@ -195,7 +195,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
     baseshp = wwsmall ? control->SmallFrame : control->StartFrame;
 
     TheMouse().SetShape(control->X, control->Y,
-                        Extract_Shape(MouseShapes, baseshp + (Frame / 4)));
+                        ExtractShapeFrame(MouseShapes, baseshp + (Frame / 4)));
     CurrentMouseShape = mouse;
     IsSmall = wwsmall;
     return true;
@@ -241,7 +241,7 @@ void MouseClass::AI(engine::window::InputEvent& event, int x, int y) {
 
     if (!IsSmall || control->SmallFrame != -1) {
       const int baseframe = IsSmall ? control->SmallFrame : control->StartFrame;
-      mouse_shape_ptr = Extract_Shape(MouseShapes, baseframe + Frame);
+      mouse_shape_ptr = ExtractShapeFrame(MouseShapes, baseframe + Frame);
       if (!mouse_shape_ptr.empty()) {
         TheMouse().SetShape(control->X, control->Y, mouse_shape_ptr);
       }

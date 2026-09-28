@@ -20,10 +20,10 @@
 // the Westwood 32-bit library's SHAPE.H (Bill Randolph, May 1994).
 //
 // A shape file is a block of frames: a count, a table of offsets, and the
-// frames, each a Shape_Type header followed by its pixels. The game draws its
+// frames, each a ShapeHeader header followed by its pixels. The game draws its
 // sprites from the keyframe format instead (Build_Frame()); the shape format
-// is left holding the mouse cursors (MOUSE.SHP), which Extract_Shape() pulls
-// apart for the hardware cursor.
+// is left holding the mouse cursors (MOUSE.SHP), which ExtractShapeFrame()
+// pulls apart for the hardware cursor.
 //
 // The file also owns the shape staging buffer, the scratch memory Build_Frame()
 // decompresses frames into and that Tiberian Dawn reuses for reading INI text.
@@ -38,9 +38,8 @@
 #include "base/attributes.h"
 #include "base/flags.h"
 
-// The ShapeType values a shape header can carry: how its pixels are stored.
-// Only kMakeshapeNormal is drawn anywhere (the hardware cursor rejects the
-// rest).
+// The ShapeHeader::format values: how a frame's pixels are stored. Only
+// kMakeshapeNormal is drawn anywhere (the hardware cursor rejects the rest).
 inline constexpr uint32_t kMakeshapeNormal =
     0x0000;  // 256-color, LCW-compressed
 inline constexpr uint32_t kMakeshapeCompact =
@@ -53,7 +52,7 @@ inline constexpr uint32_t kMakeshapeVariable = 0x0004;  // Fewer than 16 colors
 // on SHAPE_CENTER, SHAPE_TRANS, SHAPE_GHOST, SHAPE_FADING and SHAPE_PREDATOR,
 // and the tables the effects need travel beside the flags in ShapeEffects.
 // The other bits come from the Westwood library and nothing reads them.
-enum class CNC_FLAG_ENUM ShapeFlags_Type : uint32_t {
+enum class CNC_FLAG_ENUM ShapeFlags : uint32_t {
   SHAPE_NORMAL = 0x0000,    // Drawn at x,y as stored
   SHAPE_HORZ_REV = 0x0001,  // Flipped horizontally
   SHAPE_VERT_REV = 0x0002,  // Flipped vertically
@@ -76,25 +75,25 @@ enum class CNC_FLAG_ENUM ShapeFlags_Type : uint32_t {
   SHAPE_PARTIAL = 0x4000,
   SHAPE_COLOR = 0x8000  // Colors remapped through a table
 };
-using enum ShapeFlags_Type;
+using enum ShapeFlags;
 template <>
-inline constexpr bool base::kIsFlagEnum<ShapeFlags_Type> = true;
+inline constexpr bool base::kIsFlagEnum<ShapeFlags> = true;
 
 // The header in front of each frame of a shape file, as stored (packed, so
 // the multi-byte fields are unaligned). The hardware cursor copies the first
-// ten bytes of it out of a frame that Extract_Shape() returned.
+// ten bytes of it out of a frame that ExtractShapeFrame() returned.
 #pragma pack(push, 1)
-struct Shape_Type {
-  uint16_t ShapeType;            // One of the kMakeshape* values
-  uint8_t Height;                // Height of the shape in scan lines
-  uint16_t Width;                // Width in bytes, one per pixel at 256 colors
-  uint8_t OriginalHeight;        // Original height in scan lines
-  uint16_t ShapeSize;            // Size of the frame, this header included
-  uint16_t DataLength;           // Size of the pixel data once decompressed
-  uint8_t Colortable[16];        // kMakeshapeCompact only: the 16 colors
+struct ShapeHeader {
+  uint16_t format;              // One of the kMakeshape* values
+  uint8_t height;               // Height of the shape in scan lines
+  uint16_t width;               // Width in bytes, one per pixel at 256 colors
+  uint8_t original_height;      // Original height in scan lines
+  uint16_t frame_bytes;         // Size of the frame, this header included
+  uint16_t decompressed_bytes;  // Size of the pixel data once decompressed
+  uint8_t color_table[16];      // kMakeshapeCompact only: the 16 colors
 };
 
-// A shape file: the frame count, then one offset per frame. Extract_Shape()
+// A shape file: the frame count, then one offset per frame. ExtractShapeFrame()
 // reads the same layout from a byte span rather than through this struct.
 struct ShapeBlock_Type {
   uint16_t NumShapes;
@@ -105,27 +104,26 @@ struct ShapeBlock_Type {
 };
 #pragma pack(pop)
 
-// The shape staging buffer, set by Set_Shape_Buffer(): three views of the
+// The shape staging buffer, set by SetShapeBuffer(): three views of the
 // same memory. Empty (nullptr and 0) until the game's startup sets it and
 // after Tiberian Dawn's shutdown clears it.
 extern int ShapeBufferSize;
 extern char* ShapeBuffer;
-extern std::span<uint8_t> ShapeBufferBytes;
+extern std::span<uint8_t> shape_buffer;
 
-// Returns the number of frames in the shape file `buffer`, or 0 when it is too
-// short to hold the count.
-int Extract_Shape_Count(std::span<const std::byte> buffer);
+// Returns the number of frames in `shape_file`, or 0 when it is too short to
+// hold the count.
+int CountShapeFrames(std::span<const std::byte> shape_file);
 
-// Returns frame `shape` of the shape file `buffer`, its Shape_Type header
-// included, as a view into `buffer`. Returns an empty span for a frame number
-// out of range and for any offset, header or size that points outside
-// `buffer`.
-std::span<const std::byte> Extract_Shape(std::span<const std::byte> buffer,
-                                         int shape);
+// Returns frame `frame` of `shape_file`, its ShapeHeader included, as a view
+// into `shape_file`. Returns an empty span for a frame number out of range and
+// for any offset, header or size that points outside `shape_file`.
+std::span<const std::byte> ExtractShapeFrame(
+    std::span<const std::byte> shape_file, int frame);
 
 // Makes `buffer` the shape staging buffer, updating all three globals above.
 // The caller owns the memory and must keep it alive until it sets another
 // buffer (an empty one clears them).
-void Set_Shape_Buffer(std::span<uint8_t> buffer);
+void SetShapeBuffer(std::span<uint8_t> buffer);
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_SHAPE_H_

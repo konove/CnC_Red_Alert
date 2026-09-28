@@ -559,7 +559,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
  *=============================================================================================*/
 void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
                                 WindowNumberType window) const {
-  ShapeFlags_Type flags = SHAPE_CENTER | SHAPE_WIN_REL;
+  ShapeFlags flags = SHAPE_CENTER | SHAPE_WIN_REL;
   int shapenum = 0;
 
   /*

@@ -275,10 +275,10 @@ void Send_Statistics_Packet() {
     char fname[128];
     char namebuffer[40];
     char* abuffer = ShapeBuffer;
-    std::ranges::fill(ShapeBufferBytes, 0);
+    std::ranges::fill(shape_buffer, 0);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
     if (const auto fileo = OpenGameFile(fname)) {
-      fileo->Read(ShapeBufferBytes.first(ShapeBufferBytes.size() - 1));
+      fileo->Read(shape_buffer.first(shape_buffer.size() - 1));
     }
     WWGetPrivateProfileString(
         "Basic", "Name", "Nulls-Ville",

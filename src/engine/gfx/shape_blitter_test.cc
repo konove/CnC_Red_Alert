@@ -29,7 +29,7 @@ class DrawShapeFrameTest : public testing::Test {
   // Draws the width x height frame of `colors` at x,y.
   void Draw(const std::vector<uint8_t>& colors, const int width,
             const int height, const int x, const int y,
-            const ShapeFlags_Type flags = SHAPE_NORMAL,
+            const ShapeFlags flags = SHAPE_NORMAL,
             const ShapeEffects& effects = {}) {
     DrawShapeFrame(x, y, width, height, std::as_bytes(std::span(colors)),
                    page_.view(), flags, effects);

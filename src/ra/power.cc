@@ -168,7 +168,7 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
   if ((complete || IsPowerToRedraw) && view.Lock()) {
     if (TheMap().IsSidebarActive) {
       IsPowerToRedraw = false;
-      ShapeFlags_Type flags = SHAPE_NORMAL;
+      ShapeFlags flags = SHAPE_NORMAL;
       std::span<const unsigned char> remap;
 
       if (FlashTimer.Remaining() > 1 && (FlashTimer.Remaining() % 3) % 2 != 0) {

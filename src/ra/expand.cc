@@ -359,7 +359,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   */
   char buffer[128];
   char buffer2[128];
-  const auto sbuffer = base::CharBytes(ShapeBufferBytes);
+  const auto sbuffer = base::CharBytes(shape_buffer);
   for (int index = 20; index < 36 + 18; index++) {
 #ifndef CS_DEBUG
     base::SafeCopy(buffer, base::At(ExpandNames, index - 20));

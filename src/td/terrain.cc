@@ -403,7 +403,7 @@ void TerrainClass::Draw_It(PixelView& view, int x, int y,
       }
     }
 
-    ShapeFlags_Type flags = SHAPE_NORMAL;
+    ShapeFlags flags = SHAPE_NORMAL;
     if (IsSelected && TheDebugState().map_editor_active()) {
       flags = flags | SHAPE_FADING;
     }

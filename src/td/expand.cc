@@ -174,7 +174,7 @@ bool Expansion_Dialog() {
   /*
   **	Add in all the expansion scenarios.
   */
-  const auto sbuffer = base::CharBytes(ShapeBufferBytes);
+  const auto sbuffer = base::CharBytes(shape_buffer);
   for (int index = 20; index < 60; index++) {
     char buffer[128];
 
