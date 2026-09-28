@@ -37,15 +37,7 @@
 #ifndef CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_
 #define CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_
 
-#include <cstdint>
-
 union SDL_Event;
-
-/*=========================================================================*/
-/* The following prototypes are for the file: WINDOWS.CPP
- */
-/*=========================================================================*/
-int Change_Window(int windnum);
 
 // Function type for the game's SDL event handler.
 using EventHandler = void (*)(SDL_Event* event);
@@ -66,20 +58,5 @@ void SetPumpHandler(PumpHandler handler);
 
 void SDL_Event_Loop();
 void SDL_Send_Quit();
-
-extern int WindowColumns;
-extern int WindowLines;
-extern int WindowWidth;
-extern unsigned int WinB;
-extern unsigned int WinC;
-extern unsigned int WinCx;
-extern unsigned int WinCy;
-extern unsigned int WinH;
-extern unsigned int WinW;
-
-extern int MoreOn;
-extern char* TXT_MoreText;
-
-extern void (*Window_More_Ptr)(const char*, int, int, int);
 
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_

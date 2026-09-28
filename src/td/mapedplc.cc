@@ -66,7 +66,6 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/ww_win.h"
 #include "td/base.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -516,7 +515,6 @@ int MapEditClass::Placement_Dialog() {
                  kWindowWidth) = kPictureW / 8;
         base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
                  kWindowHeight) = kPictureH;
-        Change_Window(static_cast<int>(WINDOW_EDITOR));
         Draw_Box(view, kPictureX, kPictureY, kPictureW, kPictureH,
                  BOXSTYLE_GREEN_DOWN, true);
         curobj->Display(view, Screen::kWidth * 4, Screen::kHeight / 2,

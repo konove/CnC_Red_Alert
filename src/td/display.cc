@@ -120,7 +120,6 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/ww_win.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -631,10 +630,6 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
            kWindowWidth) = width / 8;
   base::At(base::At(WindowList, static_cast<int>(WINDOW_TACTICAL)),
            kWindowHeight) = height;
-  if (Window == static_cast<unsigned>(WINDOW_TACTICAL)) {
-    Change_Window(0);
-    Change_Window(static_cast<int>(Window));
-  }
   IsDisplayToRedraw = true;
   Flag_To_Redraw(false);
 

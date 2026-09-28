@@ -58,7 +58,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
-#include "engine/window/ww_win.h"
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/control.h"
@@ -499,7 +498,6 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   /*
   **	Display the menu.
   */
-  Change_Window(static_cast<int>(WINDOW_MENU));
   TheMouse().Show();
   Window_Box(view, WINDOW_MENU, blue ? BOXSTYLE_BLUE_UP : BOXSTYLE_RAISED);
   Setup_Menu(view, menu_config, strings, 0xFFFFL, 0, 0);
@@ -519,7 +517,6 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   TheMouse().Hide();
 
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-  Change_Window(static_cast<int>(WINDOW_MAIN));
   TheMap().Flag_To_Redraw(true);
   return selection;
 }

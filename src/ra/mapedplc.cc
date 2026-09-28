@@ -67,7 +67,6 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/ww_win.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
 #include "ra/building.h"
@@ -390,13 +389,10 @@ int MapEditClass::Placement_Dialog() {
           kPictureW;
       base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
           kPictureH;
-      Change_Window(static_cast<int>(WINDOW_EDITOR));
       Draw_Box(view, kPictureX, kPictureY, kPictureW, kPictureH, BOXSTYLE_DOWN,
                false);
       curobj->Display(view, Screen::kWidth / 2, Screen::kHeight / 2,
                       WINDOW_EDITOR, LastHouse);
-      //			curobj->Display(WinW<<2, WinH>>1, WINDOW_EDITOR,
-      // LastHouse);
 
       /*
       **	Erase the grid

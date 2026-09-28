@@ -2,9 +2,6 @@
 
 #include <SDL_events.h>
 
-#include <cstdio>
-
-#include "absl/strings/str_format.h"
 #include "engine/window/display.h"
 
 #ifdef __EMSCRIPTEN__
@@ -18,11 +15,6 @@ PumpHandler g_pump_handler = nullptr;
 
 void SetEventHandler(const EventHandler handler) { g_event_handler = handler; }
 void SetPumpHandler(const PumpHandler handler) { g_pump_handler = handler; }
-
-int Change_Window(int /*windnum*/) {
-  absl::PrintF("%s\n", __func__);
-  return 0;
-}
 
 void SDL_Event_Loop() {
 #ifdef __EMSCRIPTEN__

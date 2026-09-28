@@ -7,4 +7,3 @@ int WindowList[kWindowCount][8]{};
 
 unsigned int WinX;
 unsigned int WinY;
-unsigned int Window;

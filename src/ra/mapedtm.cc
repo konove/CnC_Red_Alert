@@ -50,7 +50,6 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/ww_win.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
@@ -904,7 +903,6 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
       kPictureW;
   base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
       kPictureH;
-  Change_Window(static_cast<int>(WINDOW_EDITOR));
 
   TheMouse().Hide();
   Draw_Box(view, x, y, kPictureW, kPictureH, BOXSTYLE_DOWN, true);

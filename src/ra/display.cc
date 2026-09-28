@@ -136,7 +136,6 @@
 #include "engine/stream/span_source.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/ww_win.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/assets.h"
@@ -659,10 +658,6 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
       Lepton_To_Pixel(TacLeptonWidth);
   base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowHeight) =
       Lepton_To_Pixel(TacLeptonHeight);
-  if (Window == static_cast<unsigned>(WINDOW_TACTICAL)) {
-    Change_Window(0);
-    Change_Window(static_cast<int>(Window));
-  }
   IsDisplayToRedraw = true;
   Flag_To_Redraw(false);
 

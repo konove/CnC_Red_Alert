@@ -29,6 +29,5 @@ inline constexpr int kWindowCount = 7;
 extern int WindowList[kWindowCount][8];
 extern unsigned int WinX;
 extern unsigned int WinY;
-extern unsigned int Window;
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_TEXT_WINDOW_H_
