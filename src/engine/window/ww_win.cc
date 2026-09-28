@@ -10,22 +10,22 @@
 
 namespace {
 // The hooks the game installed; nullptr until it does.
-EventHandler g_event_handler = nullptr;
-PumpHandler g_pump_handler = nullptr;
+EventHandler event_handler = nullptr;
+PumpHandler pump_handler = nullptr;
 }  // namespace
 
-void SetEventHandler(const EventHandler handler) { g_event_handler = handler; }
-void SetPumpHandler(const PumpHandler handler) { g_pump_handler = handler; }
+void SetEventHandler(const EventHandler handler) { event_handler = handler; }
+void SetPumpHandler(const PumpHandler handler) { pump_handler = handler; }
 
-void SDL_Event_Loop() {
+void PumpEvents() {
 #ifdef __EMSCRIPTEN__
   // The games wait for input by spinning on this loop, and the browser only
   // delivers input while it has control, so yield to it on every pass.
   emscripten_sleep(0);
 #endif
 
-  if (g_pump_handler) {
-    g_pump_handler();
+  if (pump_handler) {
+    pump_handler();
   }
 
   SDL_Event event;
@@ -36,8 +36,8 @@ void SDL_Event_Loop() {
       engine::window::TheDisplay().EndFrame();
       continue;
     }
-    if (g_event_handler) {
-      g_event_handler(&event);
+    if (event_handler) {
+      event_handler(&event);
     }
   }
 }

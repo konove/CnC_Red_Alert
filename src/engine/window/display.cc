@@ -188,7 +188,7 @@ void Display::Present(const bool end_frame) {
     SDL_RenderCopy(renderer, static_cast<SDL_Texture*>(scaled_frame_texture_),
                    nullptr, nullptr);
     PresentFrame();
-    SDL_Event_Loop();
+    PumpEvents();
     return;
   }
 
@@ -215,7 +215,7 @@ void Display::Present(const bool end_frame) {
 
   // The game presents from its loops that wait for input, so pumping events
   // here keeps them answering.
-  SDL_Event_Loop();
+  PumpEvents();
 }
 
 void Display::SetPalette(const std::span<const uint8_t> palette) {

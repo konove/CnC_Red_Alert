@@ -149,7 +149,7 @@ constexpr uint32_t kHotkeyModifierBits =
 InputEvent KeyBuffer::Peek() {
   // Pumping here is what lets the games' "wait for a key" loops, which only
   // call Peek(), ever see new input.
-  SDL_Event_Loop();
+  PumpEvents();
 
   if (head_ == tail_) {
     return {};

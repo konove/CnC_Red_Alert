@@ -1,4 +1,4 @@
-// Tests for SDL_Event_Loop: the event and pump handlers the game installs.
+// Tests for PumpEvents: the event and pump handlers the game installs.
 
 #include "engine/window/ww_win.h"
 
@@ -24,7 +24,7 @@ void RecordEvent(SDL_Event* event) {
 
 void RecordPump() { ++pumps_seen; }
 
-class WwWinTest : public ::testing::Test {
+class EventPumpTest : public ::testing::Test {
  protected:
   void SetUp() override {
     SDL_Init(SDL_INIT_EVENTS);
@@ -45,29 +45,29 @@ class WwWinTest : public ::testing::Test {
       display_};
 };
 
-TEST_F(WwWinTest, EventLoopCallsTheInstalledHandler) {
+TEST_F(EventPumpTest, CallsTheInstalledEventHandler) {
   SetEventHandler(&RecordEvent);
   SDL_Send_Quit();
-  SDL_Event_Loop();
+  PumpEvents();
   EXPECT_EQ(events_seen, 1);
   EXPECT_EQ(last_event_type, static_cast<uint32_t>(SDL_QUIT));
 }
 
-TEST_F(WwWinTest, EventLoopDropsEventsWithNoHandlerInstalled) {
+TEST_F(EventPumpTest, DropsEventsWithNoHandlerInstalled) {
   SDL_Send_Quit();
-  SDL_Event_Loop();
+  PumpEvents();
   EXPECT_EQ(events_seen, 0);
 }
 
-TEST_F(WwWinTest, EventLoopCallsTheInstalledPumpHandlerOncePerPass) {
+TEST_F(EventPumpTest, CallsTheInstalledPumpHandlerOncePerPass) {
   SetPumpHandler(&RecordPump);
-  SDL_Event_Loop();
-  SDL_Event_Loop();
+  PumpEvents();
+  PumpEvents();
   EXPECT_EQ(pumps_seen, 2);
 }
 
-TEST_F(WwWinTest, EventLoopDoesNothingExtraWithNoPumpHandlerInstalled) {
-  SDL_Event_Loop();
+TEST_F(EventPumpTest, DoesNothingExtraWithNoPumpHandlerInstalled) {
+  PumpEvents();
   EXPECT_EQ(pumps_seen, 0);
 }
 

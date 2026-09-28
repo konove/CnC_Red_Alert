@@ -31,17 +31,17 @@ union SDL_Event;
 using EventHandler = void (*)(SDL_Event* event);
 
 // Installs the game's event handler, called once for each event
-// SDL_Event_Loop polls other than Display's redraw events, which the loop
+// PumpEvents polls other than Display's redraw events, which the loop
 // consumes itself. With none installed, those events are dropped.
 void SetEventHandler(EventHandler handler);
 
 // Function type for the game's per-pass pump hook.
 using PumpHandler = void (*)();
 
-// Installs the game's pump handler, called once per SDL_Event_Loop pass,
+// Installs the game's pump handler, called once per PumpEvents pass,
 // before events are polled. Red Alert uses this to pump its sockets
 // (Socket_Select); Tiberian Dawn installs none. With none installed,
-// SDL_Event_Loop does nothing extra per pass.
+// PumpEvents does nothing extra per pass.
 void SetPumpHandler(PumpHandler handler);
 
 // Drains SDL's event queue: runs the pump handler, then ends the frame on
@@ -51,10 +51,10 @@ void SetPumpHandler(PumpHandler handler);
 // It is re-entrant. Ending the frame presents, and Display::Present() pumps
 // this loop again so the game's wait-for-input loops keep answering, so a
 // redraw event runs a nested loop that drains the rest of the queue.
-void SDL_Event_Loop();
+void PumpEvents();
 
 // Pushes an SDL_QUIT event, which the game's event handler receives on the
-// next SDL_Event_Loop.
+// next PumpEvents.
 void SDL_Send_Quit();
 
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_

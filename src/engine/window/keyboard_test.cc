@@ -13,7 +13,7 @@
 
 // The event pump keyboard.cc calls out to. Stubbing it keeps the buffer
 // semantics under test deterministic and free of a real event pump.
-void SDL_Event_Loop() {}
+void PumpEvents() {}
 
 namespace engine::window {
 

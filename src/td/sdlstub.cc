@@ -25,7 +25,7 @@ void CCDebugString(const char* /*string*/) {}
 
 void Check_For_Focus_Loss() {
   if (!TheGameState().in_focus()) {
-    SDL_Event_Loop();
+    PumpEvents();
     if (TheGameState().in_focus()) {
       engine::audio::TheAudio().SetExtraPaused(false);
     }
