@@ -21,17 +21,19 @@
 #include "ra/shape_draw.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <numbers>
 #include <span>
 #include <utility>
 #include <vector>
 
+#include "absl/log/check.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "engine/gfx/2keyfbuf.h"
-#include "engine/gfx/bitmap.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
@@ -44,6 +46,75 @@
 #include "ra/interpal.h"
 #include "ra/keyframe.h"
 #include "ra/screen.h"
+
+namespace {
+
+// Draws the width x height shape `pixels` into `out`, scaled by `scale` (24.8
+// fixed point, 0x100 = 1.0; zero draws nothing) and turned to `rotation`, and
+// returns the part of `out` that holds it: a (2 * width) x (2 * height) image
+// with the shape's centre at its centre, so a quarter turn of a non-square
+// shape still fits. Pixel 0 is transparent, and whatever falls outside the
+// doubled frame is cropped.
+std::span<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
+                                    const int width, const int height,
+                                    const std::span<uint8_t> out,
+                                    const DirType rotation,
+                                    const int32_t scale) {
+  const int out_width = width * 2;
+  const int out_height = height * 2;
+  const auto out_size = base::ToSize(out_width) * base::ToSize(out_height);
+  CHECK_LE(out_size, out.size());
+  const auto dst = out.first(out_size);
+  std::ranges::fill(dst, uint8_t{0});
+  if (scale == 0) {
+    return dst;
+  }
+
+  // Walks the destination rather than the source: every destination pixel is
+  // mapped back through the inverse transform to the shape pixel it came
+  // from. Walking the source instead would scatter its pixels and leave holes
+  // wherever the scale stretches the image.
+  //
+  // The matrix below is [[sin, cos], [-cos, sin]], a rotation by `angle`
+  // minus a quarter turn, so converting the facing negates it and adds that
+  // quarter turn back. Angles are in 256ths of a circle, like DirType.
+  const auto angle =
+      static_cast<uint8_t>(256 - static_cast<int>(rotation) + 64);
+  const double radians = angle * 2.0 * std::numbers::pi / 256.0;
+  const double cos_a = std::cos(radians);
+  const double sin_a = std::sin(radians);
+
+  // scale is 24.8 fixed point, so 256 / scale is its reciprocal, which is
+  // what the destination-to-source direction needs. The matrix's determinant
+  // is 1, so undoing the scale is this single multiply.
+  const double inv_scale = 256.0 / scale;
+  const double src_cx = width / 2.0;
+  const double src_cy = height / 2.0;
+
+  for (int y = 0; y < out_height; y++) {
+    const double ry = y - height;
+    const double row_x = cos_a * ry;
+    const double row_y = sin_a * ry;
+    for (int x = 0; x < out_width; x++) {
+      const double rx = x - width;
+      const int bx =
+          static_cast<int>((((sin_a * rx) + row_x) * inv_scale) + src_cx);
+      const int by =
+          static_cast<int>((((-cos_a * rx) + row_y) * inv_scale) + src_cy);
+
+      // Destination pixels that map outside the shape stay transparent.
+      if (bx >= 0 && bx < width && by >= 0 && by < height) {
+        const uint8_t pixel = base::At(pixels, (by * width) + bx);
+        if (pixel != 0) {
+          base::At(dst, (y * out_width) + x) = pixel;
+        }
+      }
+    }
+  }
+  return dst;
+}
+
+}  // namespace
 
 void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
                    const int shape_num, const int x, const int y,
@@ -88,19 +159,10 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
       // 0x0100 is 1.0 in the 24.8 fixed point scale, so this is "no rotation
       // and no scaling" -- the common case, which skips the slow path below.
       if (rotation != DIR_N || scale != 0x0100) {
-        buffer = shape_pointer;
-
-        const BitmapClass bm(width, height, buffer);
+        buffer = ScaleRotateShape(shape_pointer, width, height, x_buffer,
+                                  rotation, scale);
         width *= 2;
         height *= 2;
-        std::ranges::fill(x_buffer, uint8_t{0});
-        PixelBuffer gb(width, height, x_buffer);
-        const TPoint2D pt(width / 2, height / 2);
-
-        gb.DrawScaledRotated(
-            bm, pt, scale,
-            static_cast<uint8_t>(256 - static_cast<int>(rotation) + 64));
-        buffer = x_buffer;
       }
 
       // Special shadow drawing code (used for aircraft and bullets). Both bits

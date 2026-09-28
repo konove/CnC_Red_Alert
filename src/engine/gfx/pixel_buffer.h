@@ -43,7 +43,6 @@
 
 #include "absl/base/attributes.h"
 #include "base/array.h"
-#include "engine/gfx/bitmap.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/gfx/text_window.h"
 
@@ -326,14 +325,6 @@ class PixelBuffer {
   // How deep the nested LockSurface() calls are; the surface is locked while
   // this is non-zero.
   [[nodiscard]] int lock_count() const { return lock_count_; }
-
-  // Draws `bitmap` onto this buffer with its centre landing on `center`, scaled
-  // and rotated. `scale` is 24.8 fixed point (0x100 = 1.0) and is ignored when
-  // zero; `angle` is 0-255 over the full circle. Pixel 0 is transparent.
-  // Whatever falls outside the buffer is dropped, so a bitmap that does not
-  // fit is silently cropped.
-  void DrawScaledRotated(const BitmapClass& bitmap, const TPoint2D& center,
-                         int32_t scale, uint8_t angle);
 
  private:
   int width_ = 0;

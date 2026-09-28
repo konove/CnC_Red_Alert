@@ -114,6 +114,15 @@
 - Delete the commented-out code in `ra/wol_logn.cc:439` and `ra/wolapiob.cc:797`
   - It still names `Timer<SystemTickSource>` and `SystemMilliseconds()` unqualified, so it no longer
     matches the code around it
+- Consider stepping the source coordinates incrementally in `ScaleRotateShape()`
+  (`ra/shape_draw.cc`)
+  - Each destination pixel recomputes `bx`/`by` with four multiplies; adding a constant per x (DDA)
+    is cheaper, but the accumulated rounding can move pixels, so check it against a pixel diff of
+    rotated and scaled shapes
+- Add a shared `engine::gfx` point type or const image view only when a second user appears
+  - `engine/gfx/bitmap.h` (`BitmapClass`, `TPoint2D`) was deleted for having one caller;
+    `ra/mapsel.cc` has a file-local `Point` and `VqaFrameView` (`engine/video/vqa/vqa_player.h`) is
+    a width/height/pixels view that could become the shared one
 
 ## Testing
 
