@@ -159,8 +159,8 @@
   - Only `palette_color.*` and `hsv_color.*` are in it (`babcd0a9`); `glow_pulse.h` and
     `glow_pulse_test.cc` write `engine::gfx::PaletteColor` and `engine::gfx::kBlackColor` and drop
     the qualifier when they move
-- Run `/fix-ide-issues` on `engine/gfx/palette_color.h`, `palette_color.cc`, `hsv_color.cc`,
-  `palette_color_test.cc` and `hsv_color_test.cc`
+- Run `/fix-ide-issues` on `engine/gfx/palette_color.h`, `palette_color.cc`, `palette_color_test.cc`
+  and `hsv_color_test.cc`
   - Stage 7 of the `/modernize-file` run (`dc251088..f60d3070`) was skipped: CLion's
     `getDiagnostics` timed out on them (only `hsv_color.h` answered, with nothing to fix)
 - Consider small clean-ups in `engine/gfx/palette_color.cc` and `hsv_color.cc`

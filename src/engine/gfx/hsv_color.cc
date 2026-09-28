@@ -29,7 +29,7 @@
 namespace engine::gfx {
 
 HsvColor::operator PaletteColor() const {
-  const base::Rgb8 color = base::HsvToRgb8(hue(), saturation(), value());
+  const auto [red, green, blue] = base::HsvToRgb8(hue(), saturation(), value());
 
   // The PaletteColor constructor drops each gun's low two bits to get the 6-bit
   // VGA value it stores.
@@ -38,8 +38,8 @@ HsvColor::operator PaletteColor() const {
   // options dialog's neutral settings 127,769 of the 262,144 6-bit colors come
   // back a step or two off (the original code: 76,340; TD's rounding pair:
   // 21,612, by one step), so every palette entry the dialog adjusts drifts.
-  return {static_cast<uint8_t>(color.red), static_cast<uint8_t>(color.green),
-          static_cast<uint8_t>(color.blue)};
+  return {static_cast<uint8_t>(red), static_cast<uint8_t>(green),
+          static_cast<uint8_t>(blue)};
 }
 
 // The conversions work at the 8-bit HSV scale for better precision than the
@@ -48,7 +48,7 @@ constexpr int kMaxComponent = 255;
 // The brightest VGA gun; 63, not 64, since this is a maximum, not a range.
 constexpr int kMaxGun = 63;
 
-HsvColor Rgb6ToHsv(int red, int green, int blue) {
+HsvColor Rgb6ToHsv(const int red, const int green, const int blue) {
   // Scale the 6-bit guns up to the 8-bit HSV scale.
   const int r = base::DivideWithRound(red * kMaxComponent, kMaxGun);
   const int g = base::DivideWithRound(green * kMaxComponent, kMaxGun);
@@ -113,14 +113,14 @@ HsvColor Rgb6ToHsv(int red, int green, int blue) {
 }
 
 Rgb6 HsvToRgb6(const HsvColor& hsv) {
-  const base::Rgb8 color =
+  const auto [red, green, blue] =
       base::HsvToRgb8(hsv.hue(), hsv.saturation(), hsv.value());
 
   // HsvToRgb8() works at kMaxComponent; scale each gun down to the VGA
   // kMaxGun, rounding.
-  return {.red = base::DivideWithRound(color.red * kMaxGun, kMaxComponent),
-          .green = base::DivideWithRound(color.green * kMaxGun, kMaxComponent),
-          .blue = base::DivideWithRound(color.blue * kMaxGun, kMaxComponent)};
+  return {.red = base::DivideWithRound(red * kMaxGun, kMaxComponent),
+          .green = base::DivideWithRound(green * kMaxGun, kMaxComponent),
+          .blue = base::DivideWithRound(blue * kMaxGun, kMaxComponent)};
 }
 
 }  // namespace engine::gfx
