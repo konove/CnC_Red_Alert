@@ -11,12 +11,12 @@ namespace base {
 // should also carry CNC_FLAG_ENUM (base/attributes.h), which tells the
 // analyzer that combinations of its enumerators are valid values:
 //
-//   enum class CNC_FLAG_ENUM ShapeFlags : uint32_t { kNormal = 0, kGhost = 0x0400 };
-//   template <>
-//   inline constexpr bool base::kIsFlagEnum<ShapeFlags> = true;
+//   enum class CNC_FLAG_ENUM ShapeFlags : uint32_t { kNone = 0, kGhost = 0x1000
+//   }; template <> inline constexpr bool base::kIsFlagEnum<ShapeFlags> = true;
 //
-// The operators below are then found for it, and `base::Any(flags & kGhost)`
-// tests a bit. Nothing is defined for an enum that has not opted in.
+// The operators below are then found for it, and `base::Any(flags &
+// ShapeFlags::kGhost)` tests a bit. Nothing is defined for an enum that has not
+// opted in.
 template <class E>
 inline constexpr bool kIsFlagEnum = false;
 

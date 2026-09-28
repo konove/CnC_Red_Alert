@@ -112,7 +112,7 @@
 #include "td/vector.h"
 #include "td/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 #define BARNACLE_STAGE 22
 #define FIRST_SPORE_STAGE 30
@@ -405,13 +405,14 @@ void TerrainClass::Draw_It(PixelView& view, int x, int y,
       }
     }
 
-    engine::gfx::ShapeFlags flags = SHAPE_NORMAL;
+    ShapeFlags flags = ShapeFlags::kNone;
     if (IsSelected && TheDebugState().map_editor_active()) {
-      flags = flags | SHAPE_FADING;
+      flags = flags | ShapeFlags::kFading;
     }
 
-    CC_Draw_Shape(view, shapedata, shapenum, x, y, window, flags | SHAPE_GHOST,
-                  MouseClass::FadingLight, MouseClass::UnitShadow);
+    CC_Draw_Shape(view, shapedata, shapenum, x, y, window,
+                  flags | ShapeFlags::kGhost, MouseClass::FadingLight,
+                  MouseClass::UnitShadow);
   }
 }
 

@@ -460,7 +460,7 @@ void IconListClass::Draw_Entry(PixelView& view, int index, int x, int y,
       CC_Draw_Shape(view, pExtras->FixedIcon.pIcon.shape, 0,
                     x + pExtras->FixedIcon.xOffset,
                     y + pExtras->FixedIcon.yOffset, WINDOW_MAIN,
-                    engine::gfx::SHAPE_NORMAL);
+                    engine::gfx::ShapeFlags::kNone);
     }
     //	Put similar code in here for shapes if used...
     else {
@@ -476,7 +476,7 @@ void IconListClass::Draw_Entry(PixelView& view, int index, int x, int y,
       x += PREICONGAP;
       if (base::At(pExtras->IconKind, iIcon) == ICON_SHAPE) {
         CC_Draw_Shape(view, base::At(pExtras->pIcon, iIcon).shape, 0, x, y,
-                      WINDOW_MAIN, engine::gfx::SHAPE_NORMAL);
+                      WINDOW_MAIN, engine::gfx::ShapeFlags::kNone);
       }
       //	Put similar code in here for shapes if used...
       else {

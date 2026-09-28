@@ -161,7 +161,7 @@
 #include "td/vector.h"
 #include "td/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 /*
 ** This contains the value of the Virtual Function Table Pointer
@@ -425,9 +425,10 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   **	Special manual shadow draw code.
   */
   if (Visual_Character() <= VISUAL_DARKEN) {
-    CC_Draw_Shape(view, shapefile, shapenum, x + 1, y + 2, window,
-                  SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING,
-                  MouseClass::FadingShade, {});
+    CC_Draw_Shape(
+        view, shapefile, shapenum, x + 1, y + 2, window,
+        ShapeFlags::kPredator | ShapeFlags::kCentered | ShapeFlags::kFading,
+        MouseClass::FadingShade, {});
   }
 
   /*
@@ -436,7 +437,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   Techno_Draw_Object(view, shapefile, shapenum, x, y - Altitude + jitter,
                      window);
   // CC_Draw_Shape(shapefile, shapenum, x, (y-Altitude)+jitter, window,
-  // SHAPE_FADING|SHAPE_CENTER|SHAPE_GHOST,
+  // ShapeFlags::kFading|ShapeFlags::kCentered|ShapeFlags::kGhost,
   // House->Remap_Table(IsBlushing, true), Map.UnitShadow);
 
   /*
@@ -445,7 +446,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   *shapes occur after the first *	32 shapes of the helicopter body.
   */
   if (Class->IsRotorEquipped) {
-    engine::gfx::ShapeFlags flags = SHAPE_CENTER;
+    ShapeFlags flags = ShapeFlags::kCentered;
 
     /*
     **	The rotor shape number depends on whether the helicopter is idling
@@ -453,10 +454,10 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
     */
     if (Altitude == 0) {
       shapenum = (Fetch_Stage() % 8) + 4;
-      flags = flags | SHAPE_GHOST;
+      flags = flags | ShapeFlags::kGhost;
     } else {
       shapenum = Fetch_Stage() % 4;
-      flags = flags | SHAPE_FADING | SHAPE_PREDATOR;
+      flags = flags | ShapeFlags::kFading | ShapeFlags::kPredator;
     }
 
     if (*this == AIRCRAFT_TRANSPORT) {

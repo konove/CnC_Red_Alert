@@ -39,22 +39,21 @@
 namespace engine::gfx {
 
 // How a shape is drawn. DrawShapeFrame() (engine/gfx/shape_blitter.h) acts on
-// SHAPE_CENTER, SHAPE_TRANS, SHAPE_GHOST, SHAPE_FADING and SHAPE_PREDATOR, and
-// the tables the effects need travel beside the flags in ShapeEffects. The
+// every flag, and the tables the effects need travel beside the flags in
+// ShapeEffects. The
 // values are the Westwood library's, whose other bits nothing here used.
 // Draws are always relative to the window they name, which the library's
 // SHAPE_WIN_REL (0x0010) used to ask for.
 enum class CNC_FLAG_ENUM ShapeFlags : uint32_t {
-  SHAPE_NORMAL = 0x0000,  // Drawn at x,y as stored
-  SHAPE_CENTER = 0x0020,  // x,y name the shape's center, not its top left
-  SHAPE_TRANS = 0x0040,   // Color 0 is transparent
+  kNone = 0x0000,         // Drawn at x,y as stored
+  kCentered = 0x0020,     // x,y name the shape's center, not its top left
+  kTransparent = 0x0040,  // Color 0 is transparent
   // Every drawn pixel goes through ShapeEffects::fading_table. Together with
-  // SHAPE_PREDATOR it asks the games' draw functions for a shadow instead.
-  SHAPE_FADING = 0x0100,
-  SHAPE_PREDATOR = 0x0200,  // Cloaked: shows a shimmering copy of the page
-  SHAPE_GHOST = 0x1000,     // Translucent through ShapeEffects::ghost_table
+  // kPredator it asks the games' draw functions for a shadow instead.
+  kFading = 0x0100,
+  kPredator = 0x0200,  // Cloaked: shows a shimmering copy of the page
+  kGhost = 0x1000,     // Translucent through ShapeEffects::ghost_table
 };
-using enum ShapeFlags;
 
 // The header in front of each frame of a shape file, as stored (packed, so
 // the multi-byte fields are unaligned). The hardware cursor copies the first

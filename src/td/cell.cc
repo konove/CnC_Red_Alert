@@ -135,7 +135,7 @@
 #include "td/vector.h"
 #include "td/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 // #define FIXUP 0
 
@@ -1022,17 +1022,17 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
       switch (Smudge) {
         case SMUDGE_BIB1:
           CC_Draw_Shape(view, Bib1, SmudgeData, x, y, WINDOW_TACTICAL,
-                        SHAPE_NORMAL);
+                        ShapeFlags::kNone);
           break;
 
         case SMUDGE_BIB2:
           CC_Draw_Shape(view, Bib2, SmudgeData, x, y, WINDOW_TACTICAL,
-                        SHAPE_NORMAL);
+                        ShapeFlags::kNone);
           break;
 
         case SMUDGE_BIB3:
           CC_Draw_Shape(view, Bib3, SmudgeData, x, y, WINDOW_TACTICAL,
-                        SHAPE_NORMAL);
+                        ShapeFlags::kNone);
           break;
       }
 #endif
@@ -1047,7 +1047,8 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
         const OverlayTypeClass& otype = OverlayTypeClass::As_Reference(Overlay);
         CC_Draw_Shape(view, otype.Get_Image_Data(), OverlayData,
                       x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
-                      WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_GHOST, {},
+                      WINDOW_TACTICAL,
+                      ShapeFlags::kCentered | ShapeFlags::kGhost, {},
                       MouseClass::UnitShadow);
       }
 
@@ -1194,12 +1195,12 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
       if (IsFlagged) {
         const auto const_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
-        CC_Draw_Shape(view, MixArchive::RetrieveData("FLAGFLY.SHP"),
-                      static_cast<int>(CurrentFrame() % 14),
-                      x + (ICON_PIXEL_W / 2), y + (ICON_PIXEL_H / 2),
-                      WINDOW_TACTICAL,
-                      SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, const_remap,
-                      MouseClass::UnitShadow);
+        CC_Draw_Shape(
+            view, MixArchive::RetrieveData("FLAGFLY.SHP"),
+            static_cast<int>(CurrentFrame() % 14), x + (ICON_PIXEL_W / 2),
+            y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
+            ShapeFlags::kCentered | ShapeFlags::kGhost | ShapeFlags::kFading,
+            const_remap, MouseClass::UnitShadow);
       }
     }
   }

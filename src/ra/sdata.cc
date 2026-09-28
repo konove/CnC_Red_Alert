@@ -389,7 +389,7 @@ void SmudgeTypeClass::Display(PixelView& view, int x, int y,
       for (int h = 0; h < Height; h++) {
         CC_Draw_Shape(view, ptr, w + (h * Width), x + (w * ICON_PIXEL_W),
                       y + (h * ICON_PIXEL_H), WINDOW_TACTICAL,
-                      engine::gfx::SHAPE_NORMAL);
+                      engine::gfx::ShapeFlags::kNone);
       }
     }
   }
@@ -483,7 +483,7 @@ void SmudgeTypeClass::Draw_It(PixelView& view, int x, int y, int data) const {
   const auto ptr = Get_Image_Data();
   if (!ptr.empty()) {
     CC_Draw_Shape(view, ptr, data, x, y, WINDOW_TACTICAL,
-                  engine::gfx::SHAPE_NORMAL);
+                  engine::gfx::ShapeFlags::kNone);
   }
 }
 

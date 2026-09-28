@@ -892,13 +892,14 @@ void ChronalVortexClass::Render(PixelView& view) {
             if (cellptr->Overlay != OVERLAY_NONE) {
               const OverlayTypeClass& otype =
                   OverlayTypeClass::As_Reference(cellptr->Overlay);
-              CC_Draw_Shape(
-                  RenderBuffer.view(), otype.Get_Image_Data(),
-                  cellptr->OverlayData,
-                  (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
-                  (y * CELL_PIXEL_H) + (CELL_PIXEL_H >> 1), WINDOW_TACTICAL,
-                  engine::gfx::SHAPE_CENTER | engine::gfx::SHAPE_GHOST, {},
-                  DisplayClass::UnitShadow);
+              CC_Draw_Shape(RenderBuffer.view(), otype.Get_Image_Data(),
+                            cellptr->OverlayData,
+                            (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
+                            (y * CELL_PIXEL_H) + (CELL_PIXEL_H >> 1),
+                            WINDOW_TACTICAL,
+                            engine::gfx::ShapeFlags::kCentered |
+                                engine::gfx::ShapeFlags::kGhost,
+                            {}, DisplayClass::UnitShadow);
             }
           }
         }

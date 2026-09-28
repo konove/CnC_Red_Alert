@@ -172,7 +172,7 @@
 #include "ra/weapon.h"
 #include "ra/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 /***********************************************************************************************
  * Recoil_Adjust -- Adjust pixel values in direction specified. *
@@ -2175,7 +2175,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
     CC_Draw_Shape(
         view, MixArchive::RetrieveData("FLAGFLY.SHP"),
         static_cast<int>(CurrentFrame() % 14), x, y, window,
-        SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
+        ShapeFlags::kCentered | ShapeFlags::kFading | ShapeFlags::kGhost,
         HouseClass::As_Pointer(Flagged)->Remap_Table(false, Class->Remap),
         MouseClass::UnitShadow);
   }

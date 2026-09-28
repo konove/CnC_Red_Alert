@@ -101,7 +101,7 @@
 #include "ra/vessel.h"
 #include "ra/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 /***********************************************************************************************
  * BulletClass::BulletClass -- Bullet constructor. *
@@ -591,12 +591,13 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
       CC_Draw_Shape(
           view, AnimTypeClass::As_Reference(ANIM_PARA_BOMB).Get_Image_Data(), 1,
           x + Lepton_To_Pixel(static_cast<LEPTON>(Height / 2)), y + 10, window,
-          SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING, {},
-          DisplayClass::UnitShadow);
+          ShapeFlags::kPredator | ShapeFlags::kCentered | ShapeFlags::kFading,
+          {}, DisplayClass::UnitShadow);
     } else {
-      CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
-                    SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING, {},
-                    DisplayClass::UnitShadow);
+      CC_Draw_Shape(
+          view, shapeptr, shapenum, x, y, window,
+          ShapeFlags::kPredator | ShapeFlags::kCentered | ShapeFlags::kFading,
+          {}, DisplayClass::UnitShadow);
     }
     y -= Lepton_To_Pixel(static_cast<LEPTON>(Height));
   }
@@ -604,17 +605,18 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
   /*
   **	Draw the main body of the projectile.
   */
-  engine::gfx::ShapeFlags flags = SHAPE_NORMAL;
+  ShapeFlags flags = ShapeFlags::kNone;
   if (Class->IsTranslucent) {
-    flags = SHAPE_GHOST;
+    flags = ShapeFlags::kGhost;
   }
   if (Class->IsSubSurface) {
     CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
-                  flags | SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING, {},
-                  DisplayClass::FadingShade);
+                  flags | ShapeFlags::kPredator | ShapeFlags::kCentered |
+                      ShapeFlags::kFading,
+                  {}, DisplayClass::FadingShade);
   } else {
-    CC_Draw_Shape(view, shapeptr, shapenum, x, y, window, flags | SHAPE_CENTER,
-                  {}, DisplayClass::UnitShadow);
+    CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
+                  flags | ShapeFlags::kCentered, {}, DisplayClass::UnitShadow);
   }
 }
 

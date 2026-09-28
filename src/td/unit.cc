@@ -184,7 +184,7 @@
 #include "td/winstub.h"
 #include "td/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 /*
 ** This contains the value of the Virtual Function Table Pointer
@@ -1964,7 +1964,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
 
         CC_Draw_Shape(view, UnitTypeClass::WakeShapes,
                       shapestart + (Fetch_Stage() % 6), xx - 1, yy + 3, window,
-                      SHAPE_CENTER);
+                      ShapeFlags::kCentered);
 
         if (Health_Ratio() < 0x0080) {
           shapenum += 32;
@@ -2133,11 +2133,12 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
   *else.
   */
   if (Flagged != HOUSE_NONE) {
-    CC_Draw_Shape(view, MixArchive::RetrieveData("FLAGFLY.SHP"),
-                  static_cast<int>(CurrentFrame() % 14), x, y, window,
-                  SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
-                  HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),
-                  MouseClass::UnitShadow);
+    CC_Draw_Shape(
+        view, MixArchive::RetrieveData("FLAGFLY.SHP"),
+        static_cast<int>(CurrentFrame() % 14), x, y, window,
+        ShapeFlags::kCentered | ShapeFlags::kFading | ShapeFlags::kGhost,
+        HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),
+        MouseClass::UnitShadow);
   }
 
   TarComClass::Draw_It(view, x, y, window);

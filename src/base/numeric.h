@@ -67,8 +67,8 @@ constexpr T Bit(E index) noexcept {
 }
 
 // True when any bit of a flag enum value is set. A scoped enum is not
-// contextually convertible to bool, so `if (flags & SHAPE_GHOST)` is written
-// `if (base::Any(flags & SHAPE_GHOST))`.
+// contextually convertible to bool, so `if (flags & ShapeFlags::kGhost)` is
+// written `if (base::Any(flags & ShapeFlags::kGhost))`.
 //
 // Example:
 //   if (base::Any(threat & THREAT_RANGE)) ...

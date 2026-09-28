@@ -645,7 +645,7 @@ void InfantryClass::Draw_It(PixelView& view, int x, int y,
   */
   Techno_Draw_Object(view, shapefile, shapenum, x, y, window);
   //	CC_Draw_Shape(shapefile, shapenum, x, y, window,
-  // SHAPE_FADING|SHAPE_CENTER|SHAPE_GHOST,
+  // ShapeFlags::kFading|ShapeFlags::kCentered|ShapeFlags::kGhost,
   // House->Remap_Table(IsBlushing, true), Map.UnitShadow);
 
   FootClass::Draw_It(view, x, y, window);

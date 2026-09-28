@@ -128,7 +128,7 @@
 #include "td/vector.h"
 #include "td/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 // void const * RadarClass::CoverShape;
 RadarClass::TacticalClass RadarClass::RadarButton;
@@ -466,7 +466,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
 
       } else {
         CC_Draw_Shape(view, RadarAnim, kRadarActivatedFrame, RadX, RadY + 1,
-                      WINDOW_MAIN, SHAPE_NORMAL);
+                      WINDOW_MAIN, ShapeFlags::kNone);
         if (BaseX || BaseY) {
           view.FillRect(RadX + RadOffX, RadY + RadOffY,
                         RadX + RadOffX + RadIWidth - 1,
@@ -502,7 +502,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
       //			if (forced) {
       const int val = DoesRadarExist ? kMaxRadarFrames : 0;
       CC_Draw_Shape(view, RadarAnim, val, RadX, RadY + 1, WINDOW_MAIN,
-                    SHAPE_NORMAL);
+                    ShapeFlags::kNone);
       FullRedraw = false;
       IsRadarToRedraw = false;
       //			}
@@ -1310,7 +1310,7 @@ void RadarClass::Radar_Anim(PixelView& view) {
            RadIHeight + 2, BOXSTYLE_RAISED, true);
   draw_window.Clear();
   CC_Draw_Shape(view, RadarAnim, RadarAnimFrame, RadX, RadY + 1, WINDOW_MAIN,
-                SHAPE_NORMAL);
+                ShapeFlags::kNone);
 
   Flag_To_Redraw(false);
 }
@@ -1854,7 +1854,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
   }
 
   CC_Draw_Shape(view, RadarAnim, kRadarActivatedFrame, RadX, RadY + 1,
-                WINDOW_MAIN, SHAPE_NORMAL);
+                WINDOW_MAIN, ShapeFlags::kNone);
   view.FillRect(RadX + RadOffX, RadY + RadOffY, RadX + RadOffX + RadIWidth - 1,
                 RadY + RadOffY + RadIHeight - 1, kBlack);
 

@@ -58,8 +58,8 @@
     `shape_blitter` `/modernize-file` run (`a5dd8079..b83db634`)
 - Decide what a ghost or fading draw without its table should do
   - `engine::gfx::DrawShapeFrame()` (`engine/gfx/shape_blitter.cc`) silently draws nothing when the
-    table a SHAPE_GHOST or SHAPE_FADING flag needs is missing or too short; RA's `CC_Draw_Shape()`
-    substitutes `DisplayClass::SpecialGhost`/`FadingShade` first (the "E3 kludge",
+    table a `ShapeFlags::kGhost` or `kFading` draw needs is missing or too short; RA's
+    `CC_Draw_Shape()` substitutes `DisplayClass::SpecialGhost`/`FadingShade` first (the "E3 kludge",
     `ra/shape_draw.cc:127-133`), TD's (`td/conquer.cc`) does not
   - Options: give TD the same substitution (small; draws what now vanishes), and/or make a missing
     table a `CHECK` in the blitter instead of a no-op (turns a silent miss into a crash)
@@ -188,15 +188,15 @@
     `bool` (or the blitter choosing the direction from x and the view width) drops the sign trick.
     Pairs with the RA shimmer-direction bug above
 - Move the aircraft/bullet shadow rewrite out of both `CC_Draw_Shape()`s
-  - `ra/shape_draw.cc:172-178` and `td/conquer.cc:2399-2404` both turn
-    `SHAPE_FADING | SHAPE_PREDATOR` into `SHAPE_GHOST` with `SpecialGhost`: a meaning of a flag
-    combination that belongs next to the `SHAPE_*` definitions (`engine/gfx/shape.h`), e.g. a shadow
-    bit handled once (the library's `SHAPE_SHADOW`, 0x2000, went unused in `b77c2c21`)
+  - `ra/shape_draw.cc:172-178` and `td/conquer.cc:2399-2404` both turn `kFading | kPredator` into
+    `kGhost` with `SpecialGhost`: a meaning of a flag combination that belongs next to the
+    `ShapeFlags` definition (`engine/gfx/shape.h`), e.g. a shadow bit handled once (the library's
+    `SHAPE_SHADOW`, 0x2000, went unused in `b77c2c21`)
 - Consider making color 0 always transparent in `engine::gfx::DrawShapeFrame()`
-  - Both callers pass `flags | SHAPE_TRANS` (`ra/shape_draw.cc:199`, `td/conquer.cc:2423`) and no
-    other code passes it, so the eight non-transparent entries of `kBlitters`
-    (`engine/gfx/shape_blitter.cc`), including the whole-line copy, only run in
-    `shape_blitter_test.cc`; dropping the flag halves the instantiations and deletes `SHAPE_TRANS`
+  - Both callers pass `flags | ShapeFlags::kTransparent` (`ra/shape_draw.cc:199`,
+    `td/conquer.cc:2423`) and no other code passes it, so the eight non-transparent entries of
+    `kBlitters` (`engine/gfx/shape_blitter.cc`), including the whole-line copy, only run in
+    `shape_blitter_test.cc`; dropping the flag halves the instantiations and deletes `kTransparent`
     (~6 files: `shape.h`, `shape_blitter.{h,cc}`, its test, the two callers)
 - Move `engine::gfx::ShapeFlags` into `engine/gfx/shape_blitter.h`
   - The flags are `DrawShapeFrame()`'s parameter; `engine/gfx/shape.h` would then hold only the

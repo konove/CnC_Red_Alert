@@ -658,10 +658,10 @@ void Draw_Caption(PixelView& view, int text, int x, int y, int w) {
   if (option != OPTION_NONE) {
     CC_Draw_Shape(view, MixArchive::RetrieveData("OPTIONS.SHP"),
                   static_cast<int>(option), x + 12, y + 11, WINDOW_MAIN,
-                  engine::gfx::SHAPE_CENTER);
+                  engine::gfx::ShapeFlags::kCentered);
     CC_Draw_Shape(view, MixArchive::RetrieveData("OPTIONS.SHP"),
                   static_cast<int>(option) + 1, x + w - 14, y + 11, WINDOW_MAIN,
-                  engine::gfx::SHAPE_CENTER);
+                  engine::gfx::ShapeFlags::kCentered);
   }
 
   /*

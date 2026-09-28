@@ -29,7 +29,7 @@ class DrawShapeFrameTest : public testing::Test {
   // Draws the width x height frame of `colors` at x,y.
   void Draw(const std::vector<uint8_t>& colors, const int width,
             const int height, const int x, const int y,
-            const ShapeFlags flags = SHAPE_NORMAL,
+            const ShapeFlags flags = ShapeFlags::kNone,
             const ShapeEffects& effects = {}) {
     DrawShapeFrame(x, y, width, height, std::as_bytes(std::span(colors)),
                    page_.view(), flags, effects);
@@ -40,7 +40,7 @@ class DrawShapeFrameTest : public testing::Test {
   void DrawPredator(const int x, const int y, const int predator_offset) {
     ShapeEffects effects;
     effects.predator_offset = predator_offset;
-    Draw({99}, 1, 1, x, y, SHAPE_PREDATOR, effects);
+    Draw({99}, 1, 1, x, y, ShapeFlags::kPredator, effects);
   }
 
   [[nodiscard]] uint8_t PixelAt(const int x, const int y) const {
@@ -63,7 +63,7 @@ TEST_F(DrawShapeFrameTest, CopiesEveryColorWithoutEffects) {
 }
 
 TEST_F(DrawShapeFrameTest, ColorZeroIsTransparentUnderShapeTrans) {
-  Draw({0, 50}, 2, 1, 1, 0, SHAPE_TRANS);
+  Draw({0, 50}, 2, 1, 1, 0, ShapeFlags::kTransparent);
 
   EXPECT_EQ(PixelAt(1, 0), 1);
   EXPECT_EQ(PixelAt(2, 0), 50);
@@ -86,7 +86,7 @@ TEST_F(DrawShapeFrameTest, ClipsAtTheBottomRight) {
 }
 
 TEST_F(DrawShapeFrameTest, CentersTheFrameOnXY) {
-  Draw({50, 51, 52, 53}, 2, 2, 2, 2, SHAPE_CENTER);
+  Draw({50, 51, 52, 53}, 2, 2, 2, 2, ShapeFlags::kCentered);
 
   EXPECT_EQ(PixelAt(1, 1), 50);
   EXPECT_EQ(PixelAt(2, 2), 53);
@@ -110,7 +110,7 @@ TEST_F(DrawShapeFrameTest, GhostColorsRemapThePageUnderThem) {
   ShapeEffects effects;
   effects.ghost_table = ghost;
 
-  Draw({50, 51}, 2, 1, 3, 1, SHAPE_GHOST, effects);
+  Draw({50, 51}, 2, 1, 3, 1, ShapeFlags::kGhost, effects);
 
   EXPECT_EQ(PixelAt(3, 1), 111);
   EXPECT_EQ(PixelAt(4, 1), 51);
@@ -122,7 +122,7 @@ TEST_F(DrawShapeFrameTest, DrawsNothingWithAGhostRowMissing) {
   ShapeEffects effects;
   effects.ghost_table = ghost;
 
-  Draw({50}, 1, 1, 0, 0, SHAPE_GHOST, effects);
+  Draw({50}, 1, 1, 0, 0, ShapeFlags::kGhost, effects);
 
   EXPECT_EQ(PixelAt(0, 0), 0);
 }
@@ -135,7 +135,7 @@ TEST_F(DrawShapeFrameTest, FadingRemapsTheColorOnce) {
   ShapeEffects effects;
   effects.fading_table = fade;
 
-  Draw({10}, 1, 1, 0, 0, SHAPE_FADING, effects);
+  Draw({10}, 1, 1, 0, 0, ShapeFlags::kFading, effects);
 
   EXPECT_EQ(PixelAt(0, 0), 245);
 }
@@ -143,7 +143,7 @@ TEST_F(DrawShapeFrameTest, FadingRemapsTheColorOnce) {
 // Offset 0 walks 1, 3, 2 pixels to the right, reading each sample before
 // this shape overwrites it.
 TEST_F(DrawShapeFrameTest, ThePredatorWalkAdvancesPerPixel) {
-  Draw({99, 99, 99}, 3, 1, 0, 0, SHAPE_PREDATOR);
+  Draw({99, 99, 99}, 3, 1, 0, 0, ShapeFlags::kPredator);
 
   EXPECT_EQ(PixelAt(0, 0), 1);
   EXPECT_EQ(PixelAt(1, 0), 4);

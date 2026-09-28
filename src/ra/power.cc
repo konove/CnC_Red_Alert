@@ -68,7 +68,7 @@
 #include "ra/text_ids.h"
 #include "ra/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 /*
 **	Points to the shape to use for the "desired" power level indicator.
@@ -170,23 +170,23 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
   if ((complete || IsPowerToRedraw) && view.Lock()) {
     if (TheMap().IsSidebarActive) {
       IsPowerToRedraw = false;
-      engine::gfx::ShapeFlags flags = SHAPE_NORMAL;
+      ShapeFlags flags = ShapeFlags::kNone;
       std::span<const unsigned char> remap;
 
       if (FlashTimer.Remaining() > 1 && (FlashTimer.Remaining() % 3) % 2 != 0) {
-        flags = flags | SHAPE_FADING;
+        flags = flags | ShapeFlags::kFading;
         remap = FadingRed;
       }
 
       CC_Draw_Shape(view, PowerBarShape, 0, 480, 176, WINDOW_MAIN,
-                    flags | SHAPE_NORMAL, remap);
+                    flags | ShapeFlags::kNone, remap);
 
       /*
       ** Hires power strip is too big to fit into a shape so it is in two
       *parts
       */
       CC_Draw_Shape(view, PowerBarShape, 1, 480, 176 + 112, WINDOW_MAIN,
-                    flags | SHAPE_NORMAL, remap);
+                    flags | ShapeFlags::kNone, remap);
       /*
       **	Determine how much the power production exceeds or falls short
       **	of power demands.
@@ -241,7 +241,7 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
       */
       CC_Draw_Shape(view, PowerShape, 0, (kPowerX * 2) + 2,
                     bottom - (drain_height + 4), WINDOW_MAIN,
-                    flags | SHAPE_NORMAL, remap);
+                    flags | ShapeFlags::kNone, remap);
     }
     view.Unlock();
   }

@@ -111,7 +111,7 @@
 #include "td/winstub.h"
 #include "td/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 #define SCORETEXT_X 184
 // #define SCORETEXT_Y 8
@@ -361,7 +361,7 @@ void ScoreTimeClass::Update() {
       Stage = 0;
     }
     CC_Draw_Shape(show_.page().view(), DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
-                  SHAPE_NORMAL, {}, {});
+                  ShapeFlags::kNone, {}, {});
   }
 }
 
@@ -392,7 +392,7 @@ void ScoreCredsClass::Update() {
       }
     }
     CC_Draw_Shape(show_.page().view(), DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
-                  SHAPE_NORMAL, {}, {});
+                  ShapeFlags::kNone, {}, {});
   }
 }
 
@@ -827,7 +827,7 @@ void ScoreClass::Show() {
     */
     const auto logoptr = MixArchive::RetrieveData("LOGOS.SHP");
     CC_Draw_Shape(TheScreen().sys_mem_page().view(), logoptr, 1, 0, 0,
-                  WINDOW_MAIN, SHAPE_NORMAL, {}, {});
+                  WINDOW_MAIN, ShapeFlags::kNone, {}, {});
 
     Bit_It_In(show, 0, 0, 128, 104 - 16, &TheScreen().sys_mem_page(),
               &show.page(), 1);
@@ -1259,8 +1259,9 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
     ** Draw the building before Rambo
     */
     if (i < 68) {
-      CC_Draw_Shape(view, factptr, shapenum, 0, 0, WINDOW_MAIN, SHAPE_FADING,
-                    ScoreRemapBldg, MouseClass::UnitShadow);
+      CC_Draw_Shape(view, factptr, shapenum, 0, 0, WINDOW_MAIN,
+                    ShapeFlags::kFading, ScoreRemapBldg,
+                    MouseClass::UnitShadow);
     }
 
     /*
@@ -1270,15 +1271,17 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
       const int firecount = engine::gfx::CountShapeFrames(fball1ptr);
       int shapeindex = (i - 61) / 2;
       if (shapeindex < firecount) {
-        CC_Draw_Shape(view, fball1ptr, shapeindex, 10, 10, WINDOW_MAIN,
-                      SHAPE_FADING | SHAPE_CENTER,  //|SHAPE_GHOST,
-                      ScoreRemapFBall, {});
+        CC_Draw_Shape(
+            view, fball1ptr, shapeindex, 10, 10, WINDOW_MAIN,
+            ShapeFlags::kFading | ShapeFlags::kCentered,  //|ShapeFlags::kGhost,
+            ScoreRemapFBall, {});
       }
       if (i > 64) {
         shapeindex = (i - 64) / 2;
         if (shapeindex < firecount) {
           CC_Draw_Shape(view, fball1ptr, shapeindex, 50, 30, WINDOW_MAIN,
-                        SHAPE_FADING | SHAPE_CENTER,  //|SHAPE_GHOST,
+                        ShapeFlags::kFading |
+                            ShapeFlags::kCentered,  //|ShapeFlags::kGhost,
                         ScoreRemapFBall, {});
         }
       }
@@ -1286,13 +1289,14 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
     /*
     ** Draw the Rambo character running away from the building
     */
-    CC_Draw_Shape(view, rmboptr,
-                  ramboclass->DoControls.at(DO_WALK).Frame +
-                      (ramboclass->DoControls.at(DO_WALK).Jump * 6) +
-                      ((i / 2) % ramboclass->DoControls.at(DO_WALK).Count),
-                  i + 32, 40, WINDOW_MAIN,
-                  SHAPE_FADING | SHAPE_CENTER,  //|SHAPE_GHOST,
-                  ScoreRemapYellow, MouseClass::UnitShadow);
+    CC_Draw_Shape(
+        view, rmboptr,
+        ramboclass->DoControls.at(DO_WALK).Frame +
+            (ramboclass->DoControls.at(DO_WALK).Jump * 6) +
+            ((i / 2) % ramboclass->DoControls.at(DO_WALK).Count),
+        i + 32, 40, WINDOW_MAIN,
+        ShapeFlags::kFading | ShapeFlags::kCentered,  //|ShapeFlags::kGhost,
+        ScoreRemapYellow, MouseClass::UnitShadow);
     TheScreen().sys_mem_page().view().BlitTo(
         show.page().view(), 0, 0, BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48);
 
@@ -1368,7 +1372,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
   // Draw the white-flash shape on the hidpage
   TheScreen().sys_mem_page().view().FillRect(0, 0, 124, 9, kTBlack);
   CC_Draw_Shape(TheScreen().sys_mem_page().view(), redptr, 120, 0, 0,
-                WINDOW_MAIN, SHAPE_NORMAL, {}, {});
+                WINDOW_MAIN, ShapeFlags::kNone, {}, {});
 
   // Everything below draws the bars themselves, onto the pseudo seen page.
   PixelView& view = show.page().view();
@@ -1377,8 +1381,8 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
 
   for (int i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
-      CC_Draw_Shape(view, yellowptr, i, 172, ypos, WINDOW_MAIN, SHAPE_NORMAL,
-                    {}, {});
+      CC_Draw_Shape(view, yellowptr, i, 172, ypos, WINDOW_MAIN,
+                    ShapeFlags::kNone, {}, {});
     } else {
       TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0, 172,
                                                ypos, 3 + gdikilled, 9);
@@ -1392,7 +1396,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
     }
   }
   CC_Draw_Shape(view, yellowptr, gdikilled, 172, ypos, WINDOW_MAIN,
-                SHAPE_NORMAL, {}, {});
+                ShapeFlags::kNone, {}, {});
   Count_Up_Print(show, font, "%d", gkilled, gkilled, 297, ypos + 2);
   if (!TheKeyboard().Peek()) {
     Call_Back_Delay(show, 40);
@@ -1401,8 +1405,8 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
   show.AddTextRect(594, 2 * (ypos + 14), 594, 2 * (ypos + 14), 5 * 12, 12);
   for (int i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
-      CC_Draw_Shape(view, redptr, i, 172, ypos + 12, WINDOW_MAIN, SHAPE_NORMAL,
-                    {}, {});
+      CC_Draw_Shape(view, redptr, i, 172, ypos + 12, WINDOW_MAIN,
+                    ShapeFlags::kNone, {}, {});
     } else {
       TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0, 172,
                                                ypos + 12, 3 + nodkilled, 9);
@@ -1423,7 +1427,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
   ** Make sure accurate count is printed at end
   */
   CC_Draw_Shape(view, redptr, nodkilled, 172, ypos + 12, WINDOW_MAIN,
-                SHAPE_NORMAL, {}, {});
+                ShapeFlags::kNone, {}, {});
   Count_Up_Print(show, font, "%d", nkilled, nkilled, 297, ypos + 14);
   if (!TheKeyboard().Peek()) {
     Call_Back_Delay(show, 40);
@@ -1918,11 +1922,12 @@ void Draw_InfantryMan(PixelView& view, int index) {
           .at(static_cast<DoType>(base::At(InfantryMan, index).anim))
           .Frame;
 
-  CC_Draw_Shape(view, base::At(InfantryMan, index).shapefile, stage,
-                base::At(InfantryMan, index).xpos,
-                base::At(InfantryMan, index).ypos, WINDOW_MAIN,
-                SHAPE_FADING | SHAPE_CENTER,  //|SHAPE_GHOST,
-                base::At(InfantryMan, index).remap, MouseClass::UnitShadow);
+  CC_Draw_Shape(
+      view, base::At(InfantryMan, index).shapefile, stage,
+      base::At(InfantryMan, index).xpos, base::At(InfantryMan, index).ypos,
+      WINDOW_MAIN,
+      ShapeFlags::kFading | ShapeFlags::kCentered,  //|ShapeFlags::kGhost,
+      base::At(InfantryMan, index).remap, MouseClass::UnitShadow);
   /*
   ** see if it's time to run a new anim
   */

@@ -190,7 +190,7 @@
 #include "ra/weapon.h"
 #include "ra/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 // SAM site launcher states kept in Status.
 constexpr int kSamReady =
@@ -845,7 +845,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
     */
     if (IsRepairing && IsWrenchVisible) {
       CC_Draw_Shape(view, ObjectTypeClass::SelectShapes, kSelectWrench, x, y,
-                    window, SHAPE_CENTER);
+                    window, ShapeFlags::kCentered);
     }
   }
 
@@ -877,7 +877,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
       const TechnoClass* obj = factory->Get_Object();
       if (obj != nullptr) {
         CC_Draw_Shape(view, obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y,
-                      window, SHAPE_CENTER | SHAPE_NORMAL, {});
+                      window, ShapeFlags::kCentered | ShapeFlags::kNone, {});
       }
     }
   }

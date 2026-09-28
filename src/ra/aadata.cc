@@ -478,7 +478,8 @@ void AircraftTypeClass::Display(PixelView& view, int x, int y,
     ptr = Get_Image_Data();
     shape = 5;
   }
-  CC_Draw_Shape(view, ptr, shape, x, y, window, engine::gfx::SHAPE_CENTER);
+  CC_Draw_Shape(view, ptr, shape, x, y, window,
+                engine::gfx::ShapeFlags::kCentered);
 }
 
 /***********************************************************************************************

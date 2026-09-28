@@ -35,9 +35,10 @@
 //
 // x,y are pixel coordinates, interpreted according to flags, and window is the
 // clipping window within `view` to draw inside. fadingdata is required by
-// SHAPE_FADING and ghostdata by SHAPE_GHOST; if either is omitted the display
-// class's default table is substituted. rotation and scale (24.8 fixed point)
-// take the slower rotate-and-scale path when either differs from its default.
+// ShapeFlags::kFading and ghostdata by ShapeFlags::kGhost; if either is omitted
+// the display class's default table is substituted. rotation and scale (24.8
+// fixed point) take the slower rotate-and-scale path when either differs from
+// its default.
 void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
                    int shape_num, int x, int y, WindowNumberType window,
                    engine::gfx::ShapeFlags flags,

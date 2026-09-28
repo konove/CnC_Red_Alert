@@ -72,7 +72,7 @@
 #include "td/screen.h"
 #include "td/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 std::span<const std::byte> PowerClass::PowerShape;
 std::span<const std::byte> PowerClass::PowerBarShape;
@@ -215,9 +215,9 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
       ** Draw the unfilled section
       */
       CC_Draw_Shape(view, PowerBarShape, 0, PowX, PowY, WINDOW_CUSTOM,
-                    SHAPE_NORMAL);
+                    ShapeFlags::kNone);
       CC_Draw_Shape(view, PowerBarShape, 1, PowX, PowY + 100, WINDOW_CUSTOM,
-                    SHAPE_NORMAL);
+                    ShapeFlags::kNone);
 
       /*
       ** Set up the clip region for the filled section
@@ -250,7 +250,7 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
                       PowY - base::At(base::At(WindowList,
                                                static_cast<int>(WINDOW_CUSTOM)),
                                       kWindowY),
-                      WINDOW_CUSTOM, SHAPE_NORMAL);
+                      WINDOW_CUSTOM, ShapeFlags::kNone);
 
         CC_Draw_Shape(
             view, PowerBarShape, 3 + power_color, PowX,
@@ -258,14 +258,14 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
                 base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
                          kWindowY) +
                 100,
-            WINDOW_CUSTOM, SHAPE_NORMAL);
+            WINDOW_CUSTOM, ShapeFlags::kNone);
       }
 
       /*
       **	Draw the power drain threshold marker.
       */
       CC_Draw_Shape(view, PowerShape, 0, PowX, bottom - drain_height + 1,
-                    WINDOW_MAIN, SHAPE_NORMAL);
+                    WINDOW_MAIN, ShapeFlags::kNone);
     }
     view.Unlock();
   }

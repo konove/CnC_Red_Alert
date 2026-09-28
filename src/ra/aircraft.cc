@@ -170,7 +170,7 @@
 #include "ra/weapon.h"
 #include "ra/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 /***********************************************************************************************
  * _Counts_As_Civ_Evac -- Is the specified object a candidate for civilian evac
@@ -518,9 +518,10 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   **	Special manual shadow draw code.
   */
   if (Visual_Character() <= VISUAL_DARKEN) {
-    CC_Draw_Shape(view, shapefile, shapenum, x + 1, y + 2, window,
-                  SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING,
-                  DisplayClass::FadingShade, {});
+    CC_Draw_Shape(
+        view, shapefile, shapenum, x + 1, y + 2, window,
+        ShapeFlags::kPredator | ShapeFlags::kCentered | ShapeFlags::kFading,
+        DisplayClass::FadingShade, {});
   }
 
   /*
@@ -561,7 +562,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
  *=============================================================================================*/
 void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
                                 WindowNumberType window) const {
-  engine::gfx::ShapeFlags flags = SHAPE_CENTER;
+  ShapeFlags flags = ShapeFlags::kCentered;
   int shapenum = 0;
 
   /*
@@ -570,10 +571,10 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
   */
   if (Height == 0) {
     shapenum = (Fetch_Stage() % 8) + 4;
-    flags = flags | SHAPE_GHOST;
+    flags = flags | ShapeFlags::kGhost;
   } else {
     shapenum = Fetch_Stage() % 4;
-    flags = flags | SHAPE_FADING | SHAPE_PREDATOR;
+    flags = flags | ShapeFlags::kFading | ShapeFlags::kPredator;
   }
 
   if (*this == AIRCRAFT_TRANSPORT) {

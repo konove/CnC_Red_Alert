@@ -3816,9 +3816,10 @@ void BuildingTypeClass::Display(PixelView& view, int x, int y,
   if (ptr.empty()) {
     ptr = Get_Image_Data();
   }
-  CC_Draw_Shape(view, ptr, 0, x, y, window,
-                engine::gfx::SHAPE_FADING | engine::gfx::SHAPE_CENTER,
-                HouseTypeClass::As_Reference(house).RemapTable);
+  CC_Draw_Shape(
+      view, ptr, 0, x, y, window,
+      engine::gfx::ShapeFlags::kFading | engine::gfx::ShapeFlags::kCentered,
+      HouseTypeClass::As_Reference(house).RemapTable);
 }
 
 /***********************************************************************************************

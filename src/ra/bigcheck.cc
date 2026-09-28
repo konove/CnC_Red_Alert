@@ -34,7 +34,7 @@
 #include "ra/shape_draw.h"
 #include "ra/toggle.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 //***********************************************************************************************
 bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
@@ -44,18 +44,18 @@ bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
     if (!IsOn) {
       if (!IsDisabled) {
         CC_Draw_Shape(view, MixArchive::RetrieveData("bigcheck.shp"), 0, X, Y,
-                      WINDOW_MAIN, SHAPE_NORMAL);
+                      WINDOW_MAIN, ShapeFlags::kNone);
       } else {
         CC_Draw_Shape(view, MixArchive::RetrieveData("bigcheck.shp"), 2, X, Y,
-                      WINDOW_MAIN, SHAPE_NORMAL);
+                      WINDOW_MAIN, ShapeFlags::kNone);
       }
     } else {
       if (!IsDisabled) {
         CC_Draw_Shape(view, MixArchive::RetrieveData("bigcheck.shp"), 1, X, Y,
-                      WINDOW_MAIN, SHAPE_NORMAL);
+                      WINDOW_MAIN, ShapeFlags::kNone);
       } else {
         CC_Draw_Shape(view, MixArchive::RetrieveData("bigcheck.shp"), 3, X, Y,
-                      WINDOW_MAIN, SHAPE_NORMAL);
+                      WINDOW_MAIN, ShapeFlags::kNone);
       }
     }
 

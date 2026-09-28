@@ -341,9 +341,10 @@ void AircraftTypeClass::Display(PixelView& view, int x, int y,
     ptr = Get_Image_Data();
     shape = 5;
   }
-  CC_Draw_Shape(view, ptr, shape, x, y, window,
-                engine::gfx::SHAPE_CENTER | engine::gfx::SHAPE_FADING,
-                HouseClass::As_Pointer(house)->Remap_Table(false, true));
+  CC_Draw_Shape(
+      view, ptr, shape, x, y, window,
+      engine::gfx::ShapeFlags::kCentered | engine::gfx::ShapeFlags::kFading,
+      HouseClass::As_Pointer(house)->Remap_Table(false, true));
 }
 
 std::span<const int16_t> AircraftTypeClass::Occupy_List(

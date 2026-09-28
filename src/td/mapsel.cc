@@ -1173,7 +1173,7 @@ void Map_Selection() {
     CC_Draw_Shape(view, countryshape, shape,
                   base::At(_countryx, xshuffled_rows),
                   base::At(_countryy, xshuffled_rows), WINDOW_MAIN,
-                  engine::gfx::SHAPE_CENTER, {}, {});
+                  engine::gfx::ShapeFlags::kCentered, {}, {});
     TheScreen().sys_mem_page().view().BlitTo(show.page().view());
     Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
 

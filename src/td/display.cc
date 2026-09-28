@@ -449,7 +449,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   //	MouseDrawPtr = MouseTranslucentTable;
   //	MouseDrawPtr2 = Add_Long_To_Pointer(MouseTranslucentTable, 256L);
   //	MouseDrawVal = 1;
-  //	MouseDrawFlags = (int)SHAPE_GHOST;
+  //	MouseDrawFlags = (int)ShapeFlags::kGhost;
 
   if (const auto file = OpenGameFile(Fading_Table_Name("TRANS", theater))) {
     file->ReadObject(TranslucentTable);
@@ -1918,8 +1918,8 @@ void DisplayClass::Redraw_Shadow(PixelView& view) {
               const int shadow = Cell_Shadow(cell);
               if (shadow >= 0) {
                 CC_Draw_Shape(view, ShadowShapes, shadow, xpixel, ypixel,
-                              WINDOW_TACTICAL, engine::gfx::SHAPE_GHOST, {},
-                              ShadowTrans);
+                              WINDOW_TACTICAL, engine::gfx::ShapeFlags::kGhost,
+                              {}, ShadowTrans);
               }
             }
           }

@@ -131,7 +131,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;
@@ -494,7 +494,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
 
       } else {
         CC_Draw_Shape(view, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
-                      SHAPE_NORMAL);
+                      ShapeFlags::kNone);
         if (BaseX || BaseY) {
           if (!IsZoomed && BaseX && BaseY && RadarWidth < RadIWidth - 1 &&
               RadarHeight < RadIHeight - 1) {
@@ -525,7 +525,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
           }
           if (IsPulseActive) {
             CC_Draw_Shape(view, RadarPulse, RadarPulseFrame++, RadX + RadOffX,
-                          RadY + 2, WINDOW_MAIN, SHAPE_NORMAL);
+                          RadY + 2, WINDOW_MAIN, ShapeFlags::kNone);
           }
           view.Unlock();
         }
@@ -553,7 +553,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
       */
       const int val = DoesRadarExist ? kMaxRadarFrames : 0;
       CC_Draw_Shape(view, RadarAnim, val, RadX, RadY + 2, WINDOW_MAIN,
-                    SHAPE_NORMAL);
+                    ShapeFlags::kNone);
       FullRedraw = false;
       IsRadarToRedraw = false;
 
@@ -1513,7 +1513,7 @@ void RadarClass::Radar_Anim(PixelView& view) {
            RadIHeight + 2, BOXSTYLE_RAISED, true);
   draw_window.Clear();
   CC_Draw_Shape(view, RadarAnim, RadarAnimFrame, RadX, RadY + 2, WINDOW_MAIN,
-                SHAPE_NORMAL);
+                ShapeFlags::kNone);
   Flag_To_Redraw(false);
 }
 
@@ -2163,7 +2163,8 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
   if (!TheMap().IsSidebarActive) {
     return false;
   }
-  CC_Draw_Shape(view, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN, SHAPE_NORMAL);
+  CC_Draw_Shape(view, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
+                ShapeFlags::kNone);
   int y = RadY + RadOffY + 4;
 
   MouseClass::Repair.Draw_Me(view, true);
@@ -2253,8 +2254,9 @@ void RadarClass::Draw_Names(PixelView& view) const {
   }
 
   //	CC_Draw_Shape(RadarAnim, kRadarActivatedFrame, RADAR_X, RADAR_Y+1,
-  //		WINDOW_MAIN, SHAPE_NORMAL);
-  CC_Draw_Shape(view, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN, SHAPE_NORMAL);
+  //		WINDOW_MAIN, ShapeFlags::kNone);
+  CC_Draw_Shape(view, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
+                ShapeFlags::kNone);
 
   int y = RadY + RadOffY + 4;
 

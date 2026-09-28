@@ -222,7 +222,7 @@
 #include "td/vector.h"
 #include "td/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 using enum engine::window::KeyNumber;
 
@@ -3275,23 +3275,26 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
 
     if (visual != VISUAL_HIDDEN && visual != VISUAL_RIPPLE) {
       if (visual == VISUAL_SHADOWY) {
-        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
-                      SHAPE_CENTER | SHAPE_FADING | SHAPE_PREDATOR, {},
-                      MouseClass::FadingShade);
+        CC_Draw_Shape(
+            view, shapefile, shapenum, x, y, window,
+            ShapeFlags::kCentered | ShapeFlags::kFading | ShapeFlags::kPredator,
+            {}, MouseClass::FadingShade);
       } else {
-        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
-                      SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST, remap,
-                      MouseClass::UnitShadow);
+        CC_Draw_Shape(
+            view, shapefile, shapenum, x, y, window,
+            ShapeFlags::kCentered | ShapeFlags::kFading | ShapeFlags::kGhost,
+            remap, MouseClass::UnitShadow);
       }
       if (visual == VISUAL_DARKEN) {
-        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
-                      SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING, remap,
-                      MouseClass::FadingShade);
+        CC_Draw_Shape(
+            view, shapefile, shapenum, x, y, window,
+            ShapeFlags::kPredator | ShapeFlags::kCentered | ShapeFlags::kFading,
+            remap, MouseClass::FadingShade);
       }
     }
     if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {
       CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
-                    SHAPE_PREDATOR | SHAPE_CENTER);
+                    ShapeFlags::kPredator | ShapeFlags::kCentered);
     }
   }
 }
@@ -4092,7 +4095,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
         object = object->Next;
       }
       CC_Draw_Shape(view, ObjectTypeClass::PipShapes, static_cast<int>(pip),
-                    x + (index * 3), y, window, SHAPE_CENTER);
+                    x + (index * 3), y, window, ShapeFlags::kCentered);
     }
 
   } else {
@@ -4104,7 +4107,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
     for (int index = 0; index < Class_Of().Max_Pips(); index++) {
       CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
                     static_cast<int>(index < pips ? PIP_FULL : PIP_EMPTY),
-                    x + (index * 3), y, window, SHAPE_CENTER);
+                    x + (index * 3), y, window, ShapeFlags::kCentered);
     }
   }
 
@@ -4114,7 +4117,7 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
   if (IsLeader) {
     CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
                   static_cast<int>(PIP_PRIMARY), x - 2, y - 3, window,
-                  /*SHAPE_CENTER|*/ SHAPE_NORMAL);
+                  /*ShapeFlags::kCentered|*/ ShapeFlags::kNone);
   }
 }
 

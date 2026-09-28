@@ -181,7 +181,7 @@
 #include "td/ccdde.h"
 #endif
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 using enum engine::window::KeyNumber;
 
 // Holds the end of the current frame; Main_Loop() sets it and Sync_Delay()
@@ -2349,11 +2349,11 @@ void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
  *          flags       -- The custom draw shape flags. This controls how the
  *parameters       * are used (if any). *
  *                                                                                             *
- *          fadingdata  -- If SHAPE_FADING is desired, then this points to the
- *fading          * data table. *
+ *          fadingdata  -- If ShapeFlags::kFading is desired, then this points
+ * to the fading          * data table. *
  *                                                                                             *
- *          ghostdata   -- If SHAPE_GHOST is desired, then this points to the
- *ghost remap      * table. *
+ *          ghostdata   -- If ShapeFlags::kGhost is desired, then this points to
+ * the ghost remap      * table. *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -2363,8 +2363,7 @@ void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
  *=============================================================================================*/
 void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
                    int shapenum, int x, int y, WindowNumberType window,
-                   engine::gfx::ShapeFlags flags,
-                   std::span<const uint8_t> fadingdata,
+                   ShapeFlags flags, std::span<const uint8_t> fadingdata,
                    std::span<const uint8_t> ghostdata) {
   if (!shapefile.empty() && shapenum >= 0) {
     /*
@@ -2396,10 +2395,10 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
       /*
       **	Special shadow drawing code (used for aircraft and bullets).
       */
-      if ((flags & (SHAPE_FADING | SHAPE_PREDATOR)) ==
-          (SHAPE_FADING | SHAPE_PREDATOR)) {
-        flags = flags & ~(SHAPE_FADING | SHAPE_PREDATOR);
-        flags = flags | SHAPE_GHOST;
+      if ((flags & (ShapeFlags::kFading | ShapeFlags::kPredator)) ==
+          (ShapeFlags::kFading | ShapeFlags::kPredator)) {
+        flags = flags & ~(ShapeFlags::kFading | ShapeFlags::kPredator);
+        flags = flags | ShapeFlags::kGhost;
         ghostdata = MouseClass::SpecialGhost;
       }
 
@@ -2420,7 +2419,7 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
         engine::gfx::DrawShapeFrame(x, y, Get_Build_Frame_Width(shapefile),
                                     Get_Build_Frame_Height(shapefile),
                                     shape_pointer, draw_window,
-                                    flags | SHAPE_TRANS, effects);
+                                    flags | ShapeFlags::kTransparent, effects);
       }
       draw_window.Unlock();
     }

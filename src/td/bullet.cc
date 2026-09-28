@@ -89,7 +89,7 @@
 #include "td/vector.h"
 #include "td/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 #define GRAVITY 3
 
@@ -556,21 +556,22 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
   *body *	render position.
   */
   if (Altitude) {
-    CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
-                  SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_FADING, {},
-                  MouseClass::FadingShade);
+    CC_Draw_Shape(
+        view, shapeptr, shapenum, x, y, window,
+        ShapeFlags::kPredator | ShapeFlags::kCentered | ShapeFlags::kFading, {},
+        MouseClass::FadingShade);
     y -= Lepton_To_Pixel(Altitude);
   }
 
   /*
   **	Draw the main body of the projectile.
   */
-  engine::gfx::ShapeFlags flags = SHAPE_NORMAL;
+  ShapeFlags flags = ShapeFlags::kNone;
   if (Class->IsTranslucent) {
-    flags = SHAPE_GHOST;
+    flags = ShapeFlags::kGhost;
   }
-  CC_Draw_Shape(view, shapeptr, shapenum, x, y, window, flags | SHAPE_CENTER,
-                {}, MouseClass::UnitShadow);
+  CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
+                flags | ShapeFlags::kCentered, {}, MouseClass::UnitShadow);
 }
 
 /***********************************************************************************************

@@ -63,7 +63,7 @@
 #include "td/special.h"
 #include "td/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 std::span<const std::byte> TabClass::TabShape = {};
 
@@ -118,9 +118,9 @@ void TabClass::Draw_It(PixelView& view, bool complete) {
   if (complete || IsTabToRedraw) {
     if (view.Lock()) {
       view.FillRect(0, 0, rightx, Tab_Height - 2, kBlack);
-      CC_Draw_Shape(view, TabShape, 0, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
+      CC_Draw_Shape(view, TabShape, 0, 0, 0, WINDOW_MAIN, ShapeFlags::kNone);
       CC_Draw_Shape(view, TabShape, 0, width - Eva_Width, 0, WINDOW_MAIN,
-                    SHAPE_NORMAL);
+                    ShapeFlags::kNone);
       Draw_Credits_Tab(view);
       view.DrawLine(0, Tab_Height - 1, rightx, Tab_Height - 1, kBlack);
 
@@ -139,7 +139,7 @@ void TabClass::Draw_It(PixelView& view, bool complete) {
 }
 
 void TabClass::Draw_Credits_Tab(PixelView& view) {
-  CC_Draw_Shape(view, TabShape, 0, 320, 0, WINDOW_MAIN, SHAPE_NORMAL);
+  CC_Draw_Shape(view, TabShape, 0, 320, 0, WINDOW_MAIN, ShapeFlags::kNone);
 }
 
 /***********************************************************************************************
@@ -157,7 +157,7 @@ void TabClass::Draw_Credits_Tab(PixelView& view) {
  *=============================================================================================*/
 
 void TabClass::Hilite_Tab(PixelView& view, int /*tab*/) {
-  CC_Draw_Shape(view, TabShape, 1, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
+  CC_Draw_Shape(view, TabShape, 1, 0, 0, WINDOW_MAIN, ShapeFlags::kNone);
   Fancy_Text_Print(view, TXT_TAB_BUTTON_CONTROLS, 80, 0, 11, kTBlack,
                    TPF_GREEN12 | TPF_CENTER | TPF_USE_GRAD_PAL);
 }

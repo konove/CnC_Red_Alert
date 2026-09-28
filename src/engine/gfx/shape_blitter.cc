@@ -22,7 +22,7 @@
 namespace engine::gfx {
 namespace {
 
-// The effects one draw needs, one bit each, computed from the SHAPE_* flags on
+// The effects one draw needs, one bit each, computed from the ShapeFlags on
 // every call. Together they index kBlitters, as the assembler's FLAG_* bits
 // indexed its table of line routines.
 constexpr uint32_t kBlitTransparent = 1;
@@ -56,12 +56,12 @@ struct BlitJob {
   base::ssize dst_stride = 0;
   int pixel_count = 0;
   int line_count = 0;
-  // SHAPE_GHOST: ShapeEffects::ghost_table split into its two parts.
+  // ShapeFlags::kGhost: ShapeEffects::ghost_table split into its two parts.
   std::span<const uint8_t> ghost_row_of_color;
   std::span<const uint8_t> ghost_rows;
   std::span<const uint8_t> fading_table;
-  // SHAPE_PREDATOR: the offsets from the pixel being drawn to the page pixel
-  // it samples, and the one the walk starts on.
+  // ShapeFlags::kPredator: the offsets from the pixel being drawn to the page
+  // pixel it samples, and the one the walk starts on.
   std::array<base::ssize, kPredatorRightOffsets.size()> predator_offsets{};
   int predator_start = 0;
 };
@@ -160,17 +160,18 @@ void DrawShapeFrame(int x, int y, const int width, const int height,
   // The kBlit* bits of the effects this draw needs.
   uint32_t effect_bits = 0;
 
-  // SHAPE_CENTER: x,y name the frame's center rather than its top left.
-  if (base::Any(flags & SHAPE_CENTER)) {
+  // ShapeFlags::kCentered: x,y name the frame's center rather than its top
+  // left.
+  if (base::Any(flags & ShapeFlags::kCentered)) {
     x -= width / 2;
     y -= height / 2;
   }
 
-  if (base::Any(flags & SHAPE_TRANS)) {
+  if (base::Any(flags & ShapeFlags::kTransparent)) {
     effect_bits |= kBlitTransparent;
   }
 
-  if (base::Any(flags & SHAPE_GHOST)) {
+  if (base::Any(flags & ShapeFlags::kGhost)) {
     if (effects.ghost_table.size() < 256) {
       return;
     }
@@ -186,7 +187,7 @@ void DrawShapeFrame(int x, int y, const int width, const int height,
     effect_bits |= kBlitGhost;
   }
 
-  if (base::Any(flags & SHAPE_FADING)) {
+  if (base::Any(flags & ShapeFlags::kFading)) {
     job.fading_table = effects.fading_table;
     if (job.fading_table.size() < 256) {
       return;
@@ -194,7 +195,7 @@ void DrawShapeFrame(int x, int y, const int width, const int height,
     effect_bits |= kBlitFading;
   }
 
-  if (base::Any(flags & SHAPE_PREDATOR)) {
+  if (base::Any(flags & ShapeFlags::kPredator)) {
     effect_bits |= kBlitPredator;
     const int64_t start = effects.predator_offset;
     job.predator_start =

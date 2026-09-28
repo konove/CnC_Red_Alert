@@ -85,7 +85,7 @@
 #include "ra/type_heaps.h"
 #include "ra/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 static const OverlayTypeClass Sandbag(
     OVERLAY_SANDBAG_WALL,  // Overlay type number.
@@ -762,7 +762,7 @@ void OverlayTypeClass::Display(PixelView& view, int x, int y,
     }
 
     CC_Draw_Shape(view, Get_Image_Data(), frame, x, y, window,
-                  SHAPE_NORMAL | SHAPE_CENTER);
+                  ShapeFlags::kNone | ShapeFlags::kCentered);
   }
 }
 
@@ -856,7 +856,8 @@ void OverlayTypeClass::Draw_It(PixelView& view, int x, int y, int data) const {
   CC_Draw_Shape(view, Get_Image_Data(), data,
                 TheMap().TacPixelX + x + (CELL_PIXEL_W >> 1),
                 TheMap().TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
-                SHAPE_CENTER | SHAPE_GHOST, {}, MouseClass::UnitShadow);
+                ShapeFlags::kCentered | ShapeFlags::kGhost, {},
+                MouseClass::UnitShadow);
 }
 
 /***********************************************************************************************

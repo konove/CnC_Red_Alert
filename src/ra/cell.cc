@@ -151,7 +151,7 @@
 #include "ra/vortex.h"
 #include "ra/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 /***********************************************************************************************
  * CellClass::CellClass -- Constructor for cell objects. *
@@ -1048,8 +1048,8 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
       const OverlayTypeClass& otype = OverlayTypeClass::As_Reference(Overlay);
       CC_Draw_Shape(view, otype.Get_Image_Data(), OverlayData,
                     x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
-                    WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_GHOST, {},
-                    DisplayClass::UnitShadow);
+                    WINDOW_TACTICAL, ShapeFlags::kCentered | ShapeFlags::kGhost,
+                    {}, DisplayClass::UnitShadow);
     }
 
     if constexpr (config::kScenarioEditorEnabled) {
@@ -1225,11 +1225,12 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
     if (IsFlagged) {
       const auto flag_remap =
           HouseClass::As_Pointer(Owner)->Remap_Table(false, REMAP_NORMAL);
-      CC_Draw_Shape(view, MixArchive::RetrieveData("FLAGFLY.SHP"),
-                    static_cast<int>(CurrentFrame() % 14),
-                    x + (ICON_PIXEL_W / 2), y + (ICON_PIXEL_H / 2),
-                    WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING,
-                    flag_remap, DisplayClass::UnitShadow);
+      CC_Draw_Shape(
+          view, MixArchive::RetrieveData("FLAGFLY.SHP"),
+          static_cast<int>(CurrentFrame() % 14), x + (ICON_PIXEL_W / 2),
+          y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
+          ShapeFlags::kCentered | ShapeFlags::kGhost | ShapeFlags::kFading,
+          flag_remap, DisplayClass::UnitShadow);
     }
   }
 }

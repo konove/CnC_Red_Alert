@@ -839,7 +839,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
     */
     if (IsRepairing && IsWrenchVisible) {
       CC_Draw_Shape(view, ObjectTypeClass::SelectShapes, kSelectWrench, x, y,
-                    window, engine::gfx::SHAPE_CENTER);
+                    window, engine::gfx::ShapeFlags::kCentered);
     }
   }
 

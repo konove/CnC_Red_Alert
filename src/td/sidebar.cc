@@ -141,7 +141,7 @@
 #include "td/type.h"
 #include "td/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 using enum engine::window::KeyNumber;
 
@@ -722,13 +722,13 @@ void SidebarClass::Draw_It(PixelView& view, bool complete) {
       */
 
       // CC_Draw_Shape(SidebarShape1, (int)complete, SideX, 158, WINDOW_MAIN,
-      // SHAPE_NORMAL); CC_Draw_Shape(SidebarShape2, (int)complete, SideX,
-      // 158+118, WINDOW_MAIN, SHAPE_NORMAL);
+      // ShapeFlags::kNone); CC_Draw_Shape(SidebarShape2, (int)complete, SideX,
+      // 158+118, WINDOW_MAIN, ShapeFlags::kNone);
       view.DrawLine(SideX, 157, TheScreen().visible_view().width() - 1, 157, 0);
       CC_Draw_Shape(view, SidebarShape1, 0, SideX, 158, WINDOW_MAIN,
-                    SHAPE_NORMAL);
+                    ShapeFlags::kNone);
       CC_Draw_Shape(view, SidebarShape2, 0, SideX, 158 + 118, WINDOW_MAIN,
-                    SHAPE_NORMAL);
+                    ShapeFlags::kNone);
 
       // Repair.Draw_Me(true);
       // Upgrade.Draw_Me(true);
@@ -1683,7 +1683,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
     */
     if (BuildableCount < kMaxVisible) {
       CC_Draw_Shape(view, LogoShapes, ID, X + 3, Y - 1, WINDOW_MAIN,
-                    SHAPE_NORMAL, {});
+                    ShapeFlags::kNone, {});
     }
 
     /*
@@ -1857,7 +1857,8 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
             y - base::At(base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
                          kWindowY),
             WINDOW_SIDEBAR,
-            SHAPE_NORMAL | (!remapper.empty() ? SHAPE_FADING : SHAPE_NORMAL),
+            ShapeFlags::kNone |
+                (!remapper.empty() ? ShapeFlags::kFading : ShapeFlags::kNone),
             remapper);
 
         /*
@@ -1876,7 +1877,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
               y - base::At(
                       base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
                       kWindowY),
-              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_GHOST, {},
+              WINDOW_SIDEBAR, ShapeFlags::kNone | ShapeFlags::kGhost, {},
               ClockTranslucentTable);
         }
       }
@@ -1905,7 +1906,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
                       kWindowY) +
                   ObjectHeight -
                   Get_Build_Frame_Height(ObjectTypeClass::PipShapes) - 8,
-              WINDOW_SIDEBAR, SHAPE_CENTER);
+              WINDOW_SIDEBAR, ShapeFlags::kCentered);
           //					Fancy_Text_Print(TXT_READY,
           // x+kTextXOffset, y+kTextYOffset, kTextColor, TBLACK,
           // TPF_6POINT|TPF_CENTER|TPF_NOSHADOW);
@@ -1921,7 +1922,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
               y - base::At(
                       base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
                       kWindowY),
-              WINDOW_SIDEBAR, SHAPE_NORMAL | SHAPE_GHOST, {},
+              WINDOW_SIDEBAR, ShapeFlags::kNone | ShapeFlags::kGhost, {},
               ClockTranslucentTable);
           /*
           **	Display text showing that the construction is temporarily on
@@ -1943,7 +1944,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
                     ObjectHeight -
                     Get_Build_Frame_Height(ObjectTypeClass::PipShapes) -
                     8,  // Moved up now that icons have names on them
-                WINDOW_SIDEBAR, SHAPE_CENTER);
+                WINDOW_SIDEBAR, ShapeFlags::kCentered);
             //						Fancy_Text_Print(TXT_HOLDING,
             // x+kTextXOffset, y+kTextYOffset, kTextColor, TBLACK,
             // TPF_6POINT|TPF_CENTER|TPF_NOSHADOW);

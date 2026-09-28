@@ -47,7 +47,7 @@
 #include "ra/keyframe.h"
 #include "ra/screen.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 namespace {
 
@@ -120,7 +120,7 @@ std::span<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
 
 void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
                    const int shape_num, const int x, const int y,
-                   const WindowNumberType window, engine::gfx::ShapeFlags flags,
+                   const WindowNumberType window, ShapeFlags flags,
                    std::span<const uint8_t> fading_data,
                    std::span<const uint8_t> ghostdata, const DirType rotation,
                    const int32_t scale) {
@@ -128,10 +128,10 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
   //
   // Callers that ask for ghosting or fading without supplying the table get
   // the display class's default rather than a null dereference.
-  if (base::Any(flags & SHAPE_GHOST) && ghostdata.empty()) {
+  if (base::Any(flags & ShapeFlags::kGhost) && ghostdata.empty()) {
     ghostdata = DisplayClass::SpecialGhost;
   }
-  if (base::Any(flags & SHAPE_FADING) && fading_data.empty()) {
+  if (base::Any(flags & ShapeFlags::kFading) && fading_data.empty()) {
     fading_data = DisplayClass::FadingShade;
   }
 
@@ -169,11 +169,11 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
 
       // Special shadow drawing code (used for aircraft and bullets). Both bits
       // together mean a shadow; either one alone means something else.
-      constexpr auto kShadowMask = SHAPE_FADING | SHAPE_PREDATOR;
+      constexpr auto kShadowMask = ShapeFlags::kFading | ShapeFlags::kPredator;
       const auto shadow_bits = flags & kShadowMask;
       if (shadow_bits == kShadowMask) {
         flags = flags & ~kShadowMask;
-        flags = flags | SHAPE_GHOST;
+        flags = flags | ShapeFlags::kGhost;
         ghostdata = DisplayClass::SpecialGhost;
       }
 
@@ -196,7 +196,8 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
             .predator_offset = pred_offset,
         };
         engine::gfx::DrawShapeFrame(x, y, width, height, std::as_bytes(buffer),
-                                    draw_window, flags | SHAPE_TRANS, effects);
+                                    draw_window,
+                                    flags | ShapeFlags::kTransparent, effects);
         draw_window.Unlock();
       }
     }

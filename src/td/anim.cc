@@ -100,7 +100,7 @@
 #include "td/winstub.h"
 #include "td/world.h"
 
-using enum engine::gfx::ShapeFlags;
+using engine::gfx::ShapeFlags;
 
 /***********************************************************************************************
  * AnimClass::Validate -- validates anim pointer
@@ -376,13 +376,13 @@ void AnimClass::Draw_It(PixelView& view, int x, int y,
       **	Set the shape flags to properly take into account any fading or
       *ghosting *	table necessary.
       */
-      engine::gfx::ShapeFlags flags = SHAPE_CENTER;
+      ShapeFlags flags = ShapeFlags::kCentered;
       if (IsAlternate) {
-        flags = flags | SHAPE_FADING;
+        flags = flags | ShapeFlags::kFading;
         remap = base::At(MouseClass::RemapTables.at(HOUSE_GOOD), 0);
       }
       if (!transtable.empty()) {
-        flags = flags | SHAPE_GHOST;
+        flags = flags | ShapeFlags::kGhost;
       }
 
       /*
