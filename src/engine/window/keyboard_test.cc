@@ -10,6 +10,10 @@
 #include <SDL_scancode.h>
 #include <SDL_stdinc.h>
 
+#include <algorithm>
+#include <iterator>
+#include <string_view>
+
 #include "gtest/gtest.h"
 
 namespace engine::window {
@@ -25,6 +29,23 @@ SDL_Event MakeClick(const Uint8 button, const Sint32 x, const Sint32 y) {
   click.button.x = x;
   click.button.y = y;
   return click;
+}
+
+// Returns a press, or a `release`, of the key with `scancode`.
+SDL_Event MakeKey(const SDL_Scancode scancode, const bool release = false) {
+  SDL_Event key{};
+  key.key.type = release ? SDL_KEYUP : SDL_KEYDOWN;
+  key.key.state = release ? SDL_RELEASED : SDL_PRESSED;
+  key.key.keysym.scancode = scancode;
+  return key;
+}
+
+// Returns the text-input event SDL sends for a key that typed `text` (UTF-8).
+SDL_Event MakeText(const std::string_view text) {
+  SDL_Event typed{};
+  typed.text.type = SDL_TEXTINPUT;
+  std::ranges::copy(text, std::begin(typed.text.text));
+  return typed;
 }
 
 class KeyBufferTest : public ::testing::Test {
@@ -157,6 +178,59 @@ TEST_F(KeyBufferTest, KeyEventIsNoClick) {
   const InputEvent event = keys.Read();
   EXPECT_FALSE(event.IsClick());
   EXPECT_FALSE(event.IsPress(MouseButton::kLeft));
+}
+
+// Shift+1 on a US layout: the press, then the text SDL reports for it.
+TEST_F(KeyBufferTest, TextInputGivesThePressItsCharacter) {
+  keys.HandleEvent(MakeKey(SDL_SCANCODE_1));
+  keys.HandleEvent(MakeText("!"));
+
+  const InputEvent event = keys.Read();
+  EXPECT_EQ(KeyCode(event.key), KN_1);
+  EXPECT_EQ(event.character, '!');
+  EXPECT_EQ(KeyBuffer::Character(event), '!');
+}
+
+TEST_F(KeyBufferTest, TypedCharacterReadsTheEventJustRead) {
+  keys.HandleEvent(MakeKey(SDL_SCANCODE_A));
+  keys.HandleEvent(MakeText("A"));
+
+  const InputEvent event = keys.Read();
+  EXPECT_EQ(keys.TypedCharacter(event.key), 'A');
+  // Any other key falls back to ToAscii().
+  EXPECT_EQ(keys.TypedCharacter(KN_B), KeyBuffer::ToAscii(KN_B));
+}
+
+// Without text input a key types what ToAscii() says.
+TEST_F(KeyBufferTest, CharacterFallsBackToToAscii) {
+  EXPECT_EQ(KeyBuffer::Character({.key = KN_RETURN}),
+            KeyBuffer::ToAscii(KN_RETURN));
+}
+
+// The games' fonts have no characters beyond ASCII.
+TEST_F(KeyBufferTest, TextBeyondAsciiIsDropped) {
+  keys.HandleEvent(MakeKey(SDL_SCANCODE_E));
+  keys.HandleEvent(MakeText("\u00e9"));
+
+  EXPECT_EQ(keys.Read().character, '\0');
+}
+
+TEST_F(KeyBufferTest, TextWithoutAPendingPressIsDropped) {
+  keys.HandleEvent(MakeText("a"));
+  EXPECT_FALSE(keys.Peek());
+
+  keys.HandleEvent(MakeKey(SDL_SCANCODE_A, /*release=*/true));
+  keys.HandleEvent(MakeText("a"));
+  EXPECT_EQ(keys.Read().character, '\0');
+}
+
+// Each text event belongs to one press; a second one does not overwrite it.
+TEST_F(KeyBufferTest, SecondTextDoesNotReplaceTheFirst) {
+  keys.HandleEvent(MakeKey(SDL_SCANCODE_A));
+  keys.HandleEvent(MakeText("A"));
+  keys.HandleEvent(MakeText("b"));
+
+  EXPECT_EQ(keys.Read().character, 'A');
 }
 
 // ToAscii() on the keypad, whose keys have their own SDL keycodes. The

@@ -260,6 +260,11 @@ enum class MouseButton { kNone, kLeft, kRight, kMiddle };
 //   }
 struct InputEvent {
   KeyNumber key = KN_NONE;  // the key, with its modifier and release bits
+  // For a key press, the character it typed with Shift, Caps Lock and the
+  // keyboard layout applied, as SDL's text input reported it. '\0' when SDL
+  // reported none (Ctrl combinations, navigation keys) or the text was not a
+  // single printable ASCII character.
+  char character = '\0';
   MouseButton button = MouseButton::kNone;  // kNone for a key
   bool release = false;  // for a click, whether the button came up
   // For a click, where it happened, in game pixels. A gadget that takes the
@@ -329,8 +334,19 @@ class KeyBuffer {
   // Shift ignored, so letters come back lower case. The keypad types its
   // digits and decimal point only with Num Lock on, and its operators always.
   // Returns '\0' for a release and for a key that types no character up to
-  // 'z' (arrows, function keys, Delete).
+  // 'z' (arrows, function keys, Delete). For hotkeys, which should not depend
+  // on Shift; text entry wants Character() or TypedCharacter().
   static char ToAscii(int key);
+
+  // Returns the character `event` typed: event.character when SDL's text
+  // input reported one, so Shift and the layout count, and ToAscii(event.key)
+  // otherwise (Return, Backspace, Escape, Ctrl combinations).
+  static char Character(const InputEvent& event);
+
+  // Returns Character() of the event Read() last returned when `key` is that
+  // event's key, and ToAscii(key) otherwise. For code that is handed only the
+  // key number of the event just read, such as a gadget's Action().
+  [[nodiscard]] char TypedCharacter(KeyNumber key) const;
 
   // Discards every pending entry.
   void Clear();
@@ -342,7 +358,8 @@ class KeyBuffer {
   // IsRightButtonDown() in hardware_cursor.h.
   static bool IsDown(int key);
 
-  // Queues the key or click an SDL event carries. Returns true only for a
+  // Queues the key or click an SDL event carries, and gives a text-input
+  // event's character to the key press it belongs to. Returns true only for a
   // click, which it consumes, so the game's own handler can skip it;
   // everything else, mouse motion included, goes on to that handler.
   bool HandleEvent(const SDL_Event& event);
@@ -355,6 +372,8 @@ class KeyBuffer {
   InputEvent events_[kBufferSize]{};
   int head_ = 0;  // the event Read() returns next
   int tail_ = 0;  // where Put() writes the next event
+
+  InputEvent last_read_;  // what Read() last returned, for TypedCharacter()
 };
 
 }  // namespace engine::window

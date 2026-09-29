@@ -163,9 +163,9 @@ InputEvent KeyBuffer::Read() {
   // Peek() pumps SDL events, so the wait ends as soon as an event arrives.
   while (!Peek()) {
   }
-  const InputEvent event = base::At(events_, head_);
+  last_read_ = base::At(events_, head_);
   head_ = (head_ + 1) % kBufferSize;
-  return event;
+  return last_read_;
 }
 
 bool KeyBuffer::Put(const InputEvent& event) {
@@ -258,14 +258,22 @@ char KeyBuffer::ToAscii(const int key) {
   }
 
   // SDL_GetKeyFromScancode maps through the keyboard layout but takes no
-  // modifiers, so Shift never changes the result. Doing better needs SDL text
-  // input events (or SDL3, whose version takes the modifiers).
+  // modifiers, so Shift never changes the result; Character() has the
+  // shifted one from SDL's text input.
   const int keycode =
       SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode));
 
   // SDL keycodes for keys that type a character are that character; every
   // other key's code has SDLK_SCANCODE_MASK set and lands above 'z'.
   return keycode <= SDLK_z ? static_cast<char>(keycode) : '\0';
+}
+
+char KeyBuffer::Character(const InputEvent& event) {
+  return event.character != '\0' ? event.character : ToAscii(event.key);
+}
+
+char KeyBuffer::TypedCharacter(const KeyNumber key) const {
+  return key == last_read_.key ? Character(last_read_) : ToAscii(key);
 }
 
 void KeyBuffer::Clear() { head_ = tail_; }
@@ -323,6 +331,26 @@ bool KeyBuffer::HandleEvent(const SDL_Event& event) {
       // The key codes are SDL scancodes, so the scancode goes in unchanged.
       PutKey(event.key.keysym.scancode, event.key.state == SDL_RELEASED);
       break;
+
+    case SDL_TEXTINPUT: {
+      // SDL reports what a key typed in an event of its own, straight after
+      // the key's press and within the same pump, so the press is still the
+      // newest entry in the buffer. Only a lone printable ASCII character is
+      // kept: the games' fonts have nothing else, and a UTF-8 lead byte is
+      // negative as a char, so it fails the range test.
+      const char typed = base::At(event.text.text, 0);
+      if (typed < ' ' || typed > '~' || base::At(event.text.text, 1) != '\0' ||
+          head_ == tail_) {
+        break;
+      }
+      InputEvent& newest =
+          base::At(events_, (tail_ + kBufferSize - 1) % kBufferSize);
+      if (newest.key != KN_NONE && !IsRelease(newest.key) &&
+          newest.character == '\0') {
+        newest.character = typed;
+      }
+      break;
+    }
 
     default:
       break;
