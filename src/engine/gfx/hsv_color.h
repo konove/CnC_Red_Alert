@@ -50,9 +50,10 @@ class HsvColor {
            const uint8_t value) noexcept
       : hue_(hue), saturation_(saturation), value_(value) {}
 
-  // Returns the palette color that most closely matches this one, each gun
-  // rounded to the 6 bits PaletteColor keeps. PaletteColor::ToHsv() followed
-  // by this returns the original color or one a single step off in some guns.
+  // Returns the palette color that most closely matches this one.
+  // PaletteColor::ToHsv() followed by this returns the original color or one
+  // up to 4 of 255 off in some components, the precision of this class's own
+  // 8-bit hue, saturation and value.
   [[nodiscard]] PaletteColor ToPaletteColor() const;
 
   [[nodiscard]] int hue() const { return hue_; }

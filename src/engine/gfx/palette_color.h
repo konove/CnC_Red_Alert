@@ -57,8 +57,6 @@ class PaletteColor {
 
   // The brightest component.
   static constexpr uint8_t kMaxComponent = 255;
-  // The brightest VGA gun; 63, not 64, since this is a maximum, not a range.
-  static constexpr int kMaxGun = 63;
 
   // Returns this color moved proportionately toward 'target', as palette
   // fades do.

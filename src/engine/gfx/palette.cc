@@ -13,12 +13,17 @@
 #include "engine/stream/byte_stream.h"
 
 namespace engine::gfx {
+namespace {
+
+// The levels of a VGA gun, 0..63; the DAC ignored the top two bits.
+constexpr int kVgaLevels = 64;
+
+}  // namespace
 
 Palette Palette::FromVga(const std::span<const uint8_t, kVgaSize> vga) noexcept {
   std::array<uint8_t, kVgaSize> rgb{};
   for (int i = 0; i < kVgaSize; ++i) {
-    base::At(std::span(rgb), i) =
-        ExpandGun(base::At(vga, i) % (PaletteColor::kMaxGun + 1));
+    base::At(std::span(rgb), i) = ExpandGun(base::At(vga, i) % kVgaLevels);
   }
   return FromRgb(rgb);
 }

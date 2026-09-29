@@ -422,7 +422,8 @@ void OptionsClass::Adjust_Palette(const engine::gfx::Palette& oldpal,
                                   unsigned char brightness, unsigned char color,
                                   unsigned char tint, unsigned char contrast) {
   // At the neutral settings every slider leaves its component unchanged, but
-  // the HSV round trip would still move some guns a step; copy the art instead.
+  // the HSV round trip would still move most colors by up to 4 of 255 in some
+  // components; copy the art instead.
   constexpr unsigned char kNeutral = 0x80;
   if (brightness == kNeutral && color == kNeutral && tint == kNeutral &&
       contrast == kNeutral) {

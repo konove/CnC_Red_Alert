@@ -2,7 +2,7 @@
 
 Written 2026-09-28, on the tree at 30c71670.
 
-**Status: in progress.** Steps 1–4 done.
+**Status: done** (2026-09-29, b3887174..HEAD); see [Outcome](#outcome).
 
 The palettes on disk hold 6 bits per gun (0..63, what the VGA DAC took). Both games keep that 6-bit
 form in memory, compute fades, slider adjustments and brightened movie palettes in it, and expand to
@@ -120,3 +120,34 @@ change no pixel; step 4 is the switch; step 5 collects the gains.
 - Step 5: the options round trip over all 16,777,216 8-bit colors is within one 8-bit step; a fade
   shows 256 distinct steps.
 - Full strict build before each commit.
+
+## Outcome
+
+All five steps landed, one commit each, plus one drive-by fix:
+
+- **b3887174** (found in step 1): the WOLAPI icons were matched by `dib::RemapToPalette()` against a
+  palette four times brighter than their own colors (6-bit icon, 8-bit target). Matching is now
+  8-bit on both sides.
+- **Step 1** (75ae7b74): `engine::gfx::ExpandGun()`. The HSV round-trip count moved from 21,612 to
+  21,468 and one pinned Tiberian Dawn value from 202 to 203, as predicted.
+- **Step 2** (b88cee17): `engine::gfx::Palette`; `PaletteClass` derives from it. Red Alert's theater
+  palette had been read by casting `MixArchive::Retrieve()`'s `void*` to `PaletteClass*`.
+- **Step 3** (8055804f): Tiberian Dawn on `Palette`, plus `ReadVgaPalette()`. `td/winstub.cc`, which
+  the inventory lists, is not compiled and was left alone.
+- **Step 4** (7603889a): 8-bit storage. Some of step 5 came along: the fades blend at 8 bits through
+  the shared `BlendedPalette()` once the masks were gone, and `Increase_Palette_Luminance()` lost
+  its cap (always 63) and works at 8 bits. PCX palettes read and write through
+  `FromRgb()`/`ToRgb()`. Remap tables: 7 to 859 entries change per table across the three theaters
+  of each game. Re-deriving the fading tables in Python matched the dumped tables exactly, and in
+  about 97% of the changed entries the new pick is closer to the exact target color. The rest come
+  from the integer floor of the target, so none is a bug. Headless logic logs matched the tree
+  before byte for byte.
+- **Step 5**: `HsvColor::ToPaletteColor()` returns `HsvToRgb8()`'s result directly and `kMaxGun` is
+  gone. The plan's target, a round trip within one 8-bit step, turned out to be wrong: `HsvColor`'s
+  own 8-bit hue, saturation and value limit it to **4 of 255** (9,966,339 of the 16,777,216 colors
+  move). The old 6-bit path was off by up to 6. So the neutral-slider copy stays; it is still the
+  only way to keep the art exact at the default settings.
+
+Verification used SDL's `offscreen` video driver, which loads real palettes without a window, plus a
+scratch frame-hash hook. The title screens matched byte for byte through step 3. Missions matched
+within the run-to-run noise: frames the redraw timer presents half-drawn, and the shroud reveal.

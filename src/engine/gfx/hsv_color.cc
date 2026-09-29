@@ -20,6 +20,8 @@
 
 #include "engine/gfx/hsv_color.h"
 
+#include <cstdint>
+
 #include "base/hsv.h"
 #include "engine/gfx/palette_color.h"
 
@@ -28,14 +30,9 @@ namespace engine::gfx {
 PaletteColor HsvColor::ToPaletteColor() const {
   const auto [red, green, blue] = base::HsvToRgb8(hue(), saturation(), value());
 
-  // Round each component to the nearest 6-bit VGA step rather than dropping
-  // the low two bits, which is what keeps PaletteColor::ToHsv() followed by
-  // this within one step of the original color.
-  const auto to_vga_step = [](const int component) {
-    return ExpandGun(base::DivideWithRound(component * PaletteColor::kMaxGun,
-                                           PaletteColor::kMaxComponent));
-  };
-  return {to_vga_step(red), to_vga_step(green), to_vga_step(blue)};
+  // HsvToRgb8() keeps all three in 0..255.
+  return {static_cast<uint8_t>(red), static_cast<uint8_t>(green),
+          static_cast<uint8_t>(blue)};
 }
 
 }  // namespace engine::gfx

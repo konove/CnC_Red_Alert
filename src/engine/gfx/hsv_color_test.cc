@@ -1,5 +1,6 @@
 #include "engine/gfx/hsv_color.h"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <cstdlib>
@@ -16,15 +17,12 @@ PaletteColor Guns(const int r, const int g, const int b) {
   return {ExpandGun(r), ExpandGun(g), ExpandGun(b)};
 }
 
-// A component's top six bits, the VGA gun it came from.
-int GunOf(const int component) { return component / 4; }
-
-std::array<int, 3> HsvToGuns(const int h, const int s, const int v) {
+std::array<int, 3> HsvToRgb(const int h, const int s, const int v) {
   const PaletteColor color =
       HsvColor(static_cast<uint8_t>(h), static_cast<uint8_t>(s),
                static_cast<uint8_t>(v))
           .ToPaletteColor();
-  return {GunOf(color.red()), GunOf(color.green()), GunOf(color.blue())};
+  return {color.red(), color.green(), color.blue()};
 }
 
 std::array<int, 3> GunsToHsv(const int r, const int g, const int b) {
@@ -45,10 +43,10 @@ TEST(HsvColorTest, ToHsvPinnedValues) {
 }
 
 TEST(HsvColorTest, ToPaletteColorPinnedValues) {
-  EXPECT_EQ(HsvToGuns(0, 255, 255), (std::array{63, 0, 0}));
-  EXPECT_EQ(HsvToGuns(85, 255, 255), (std::array{0, 63, 0}));
-  EXPECT_EQ(HsvToGuns(170, 255, 255), (std::array{0, 0, 63}));
-  EXPECT_EQ(HsvToGuns(30, 128, 200), (std::array{49, 42, 25}));
+  EXPECT_EQ(HsvToRgb(0, 255, 255), (std::array{255, 0, 0}));
+  EXPECT_EQ(HsvToRgb(85, 255, 255), (std::array{0, 255, 0}));
+  EXPECT_EQ(HsvToRgb(170, 255, 255), (std::array{0, 0, 255}));
+  EXPECT_EQ(HsvToRgb(30, 128, 200), (std::array{200, 170, 100}));
 }
 
 TEST(HsvColorTest, PrimariesConvertToFullGuns) {
@@ -62,28 +60,31 @@ TEST(HsvColorTest, PrimariesConvertToFullGuns) {
   EXPECT_EQ(blue.blue(), 255);
 }
 
-TEST(HsvColorTest, PaletteRoundTripIsWithinOneStep) {
+// Every 8-bit color survives the trip through HsvColor to within 4 of 255
+// per component: HsvColor's own 8-bit hue, saturation and value are the
+// limit, since a sextant of the hue circle spans only 42 or 43 hues.
+TEST(HsvColorTest, PaletteRoundTripIsWithinFourSteps) {
+  constexpr int kMax = PaletteColor::kMaxComponent;
   int changed = 0;
-  for (int r = 0; r <= PaletteColor::kMaxGun; ++r) {
-    for (int g = 0; g <= PaletteColor::kMaxGun; ++g) {
-      for (int b = 0; b <= PaletteColor::kMaxGun; ++b) {
-        const PaletteColor color = Guns(r, g, b).ToHsv().ToPaletteColor();
-        ASSERT_LE(std::abs(GunOf(color.red()) - r), 1)
-            << r << "," << g << "," << b;
-        ASSERT_LE(std::abs(GunOf(color.green()) - g), 1)
-            << r << "," << g << "," << b;
-        ASSERT_LE(std::abs(GunOf(color.blue()) - b), 1)
-            << r << "," << g << "," << b;
-        if (color != Guns(r, g, b)) {
+  int worst = 0;
+  for (int r = 0; r <= kMax; ++r) {
+    for (int g = 0; g <= kMax; ++g) {
+      for (int b = 0; b <= kMax; ++b) {
+        const PaletteColor original(static_cast<uint8_t>(r),
+                                    static_cast<uint8_t>(g),
+                                    static_cast<uint8_t>(b));
+        const PaletteColor color = original.ToHsv().ToPaletteColor();
+        worst =
+            std::max({worst, std::abs(color.red() - r),
+                      std::abs(color.green() - g), std::abs(color.blue() - b)});
+        if (color != original) {
           ++changed;
         }
       }
     }
   }
-  // The residue of the 8-bit HSV grid; truncating either direction instead of
-  // rounding would raise it (127,769 when both truncated). Scaling up by
-  // rounding gun * 255 / 63 instead of ExpandGun() left 21,612.
-  EXPECT_EQ(changed, 21'468);
+  EXPECT_EQ(worst, 4);
+  EXPECT_EQ(changed, 9'966'339);
 }
 
 TEST(HsvColorTest, FullGunsReadAsFullValue) {
