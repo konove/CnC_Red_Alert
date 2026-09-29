@@ -591,13 +591,10 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
       CC_Draw_Shape(
           view, AnimTypeClass::As_Reference(ANIM_PARA_BOMB).Get_Image_Data(), 1,
           x + Lepton_To_Pixel(static_cast<LEPTON>(Height / 2)), y + 10, window,
-          ShapeFlags::kPredator | ShapeFlags::kCentered | ShapeFlags::kFading,
-          {}, DisplayClass::UnitShadow);
+          ShapeFlags::kShadow | ShapeFlags::kCentered);
     } else {
-      CC_Draw_Shape(
-          view, shapeptr, shapenum, x, y, window,
-          ShapeFlags::kPredator | ShapeFlags::kCentered | ShapeFlags::kFading,
-          {}, DisplayClass::UnitShadow);
+      CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
+                    ShapeFlags::kShadow | ShapeFlags::kCentered);
     }
     y -= Lepton_To_Pixel(static_cast<LEPTON>(Height));
   }
@@ -605,16 +602,12 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
   /*
   **	Draw the main body of the projectile.
   */
-  ShapeFlags flags = ShapeFlags::kNone;
-  if (Class->IsTranslucent) {
-    flags = ShapeFlags::kGhost;
-  }
   if (Class->IsSubSurface) {
     CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
-                  flags | ShapeFlags::kPredator | ShapeFlags::kCentered |
-                      ShapeFlags::kFading,
-                  {}, DisplayClass::FadingShade);
+                  ShapeFlags::kShadow | ShapeFlags::kCentered);
   } else {
+    const ShapeFlags flags =
+        Class->IsTranslucent ? ShapeFlags::kGhost : ShapeFlags::kNone;
     CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
                   flags | ShapeFlags::kCentered, {}, DisplayClass::UnitShadow);
   }

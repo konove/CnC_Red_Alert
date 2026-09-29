@@ -4649,10 +4649,9 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
 #ifdef PREDATOR
     if (visual != VISUAL_HIDDEN && visual != VISUAL_RIPPLE) {
       if (visual == VISUAL_SHADOWY) {
-        CC_Draw_Shape(
-            view, shapefile, shapenum, x, y, window,
-            ShapeFlags::kCentered | ShapeFlags::kFading | ShapeFlags::kPredator,
-            {}, TheMap().FadingShade, rotation, scale);
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                      ShapeFlags::kCentered | ShapeFlags::kShadow, {}, {},
+                      rotation, scale);
       } else {
         CC_Draw_Shape(
             view, shapefile, shapenum, x, y, window,
@@ -4660,10 +4659,9 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
             remap, shadow, rotation, scale);
       }
       if (visual == VISUAL_DARKEN) {
-        CC_Draw_Shape(
-            view, shapefile, shapenum, x, y, window,
-            ShapeFlags::kPredator | ShapeFlags::kCentered | ShapeFlags::kFading,
-            remap, TheMap().FadingShade, rotation, scale);
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                      ShapeFlags::kShadow | ShapeFlags::kCentered, {}, {},
+                      rotation, scale);
       }
     }
     if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {
@@ -4689,10 +4687,9 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
 
       case VISUAL_SHADOWY:
       case VISUAL_RIPPLE:
-        CC_Draw_Shape(
-            view, shapefile, shapenum, x, y, window,
-            ShapeFlags::kPredator | ShapeFlags::kFading | ShapeFlags::kCentered,
-            {}, MouseClass::FadingShade, rotation, scale);
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                      ShapeFlags::kShadow | ShapeFlags::kCentered, {}, {},
+                      rotation, scale);
         break;
 
       case VISUAL_HIDDEN:

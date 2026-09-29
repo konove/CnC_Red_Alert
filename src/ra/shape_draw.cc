@@ -167,16 +167,6 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
         height *= 2;
       }
 
-      // Special shadow drawing code (used for aircraft and bullets). Both bits
-      // together mean a shadow; either one alone means something else.
-      constexpr auto kShadowMask = ShapeFlags::kFading | ShapeFlags::kPredator;
-      const auto shadow_bits = flags & kShadowMask;
-      if (shadow_bits == kShadowMask) {
-        flags = flags & ~kShadowMask;
-        flags = flags | ShapeFlags::kGhost;
-        ghostdata = DisplayClass::SpecialGhost;
-      }
-
       // The predator (cloaking) effect samples the screen at an offset that
       // walks with the frame counter, which is what makes it shimmer. Objects
       // on the right half of the window walk it the other way, so that two
@@ -193,6 +183,7 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
         const engine::gfx::ShapeEffects effects{
             .ghost_table = ghostdata,
             .fading_table = fading_data,
+            .shadow_table = base::Suffix(DisplayClass::SpecialGhost, 256),
             .predator_offset = pred_offset,
         };
         engine::gfx::DrawShapeFrame(x, y, width, height, std::as_bytes(buffer),
