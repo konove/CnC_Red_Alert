@@ -136,7 +136,6 @@
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
 #include "ra/jshell.h"
-#include "ra/keyframe.h"
 #include "ra/language.h"
 #include "ra/loaddlg.h"
 #include "ra/logic.h"
@@ -202,9 +201,6 @@ static bool Save_Recording_Values(ByteStream& file);
 
 #include "ra/expand.h"
 #include "ra/wol_main.h"
-
-static std::vector<uint8_t> shape_storage;
-std::span<uint8_t> shape_buffer;
 
 /***********************************************************************************************
  * Load_Prolog_Page -- Loads the special pre-prolog "please wait" page. *
@@ -2302,13 +2298,6 @@ static void Bootstrap() {
   **	Setup the keyboard processor in preparation for the game.
   */
   TheKeyboard().Clear();
-
-  /*
-  **	This is the buffer Build_Frame() uncompresses keyframe shapes into. It
-  **	must always be available, so it is allocated here and never freed.
-  */
-  shape_storage.resize(kShapeBufferSize);
-  shape_buffer = shape_storage;
 
   TheAssets().LoadStrings();
 

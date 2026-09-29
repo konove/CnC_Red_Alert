@@ -143,7 +143,7 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
 
     // In WIn95, build shape returns a pointer to the shape not its size
     const auto shape_pointer =
-        Build_Frame(shapefile, static_cast<uint16_t>(shape_num), shape_buffer);
+        Build_Frame(shapefile, static_cast<uint16_t>(shape_num));
     if (!shape_pointer.empty()) {
       PixelView draw_window(
           view.buffer(),
@@ -204,8 +204,7 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
     return rect;
   }
 
-  const auto sh =
-      Build_Frame(shapedata, static_cast<uint16_t>(shape_num), shape_buffer);
+  const auto sh = Build_Frame(shapedata, static_cast<uint16_t>(shape_num));
   if (sh.empty()) {
     return rect;
   }
