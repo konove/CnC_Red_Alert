@@ -34,6 +34,7 @@
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/game_state.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 
 using enum engine::window::KeyNumber;
@@ -107,7 +108,7 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
       flags = 0;
 
     } else {
-      const auto ascii = engine::window::KeyBuffer::ToAscii(key);
+      const auto ascii = TheKeyboard().TypedCharacter(key);
 
       //
       // Filter out all special keys except return and backspace
