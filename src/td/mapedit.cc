@@ -973,7 +973,9 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     case Alt(KN_Y):
     case Alt(KN_Z):
       if (TheWorld().current_cell() != 0) {
-        waypt_idx = engine::window::KeyBuffer::ToAscii(KeyCode(input)) - 'a';
+        // Key numbers are SDL scancodes, which run from A to Z and from 1 to 9
+        // in order, whatever the keyboard layout types.
+        waypt_idx = KeyCode(input) - KN_A;
         /*...............................................................
         Unflag cell for this waypoint if there is one
         ...............................................................*/
@@ -1004,7 +1006,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       If there's a current cell, place the flag & waypoint there.
       ------------------------------------------------------------------*/
       if (TheWorld().current_cell() != 0) {
-        waypt_idx = (engine::window::KeyBuffer::ToAscii(KeyCode(input)) - '1');
+        waypt_idx = KeyCode(input) - KN_1;
         house =
             static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + waypt_idx);
         if (HouseClass::As_Pointer(house)) {
@@ -1017,8 +1019,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         waypoint.
         ------------------------------------------------------------------*/
         if (TheWorld().current_object().at(0) != nullptr) {
-          waypt_idx =
-              (engine::window::KeyBuffer::ToAscii(KeyCode(input)) - '1');
+          waypt_idx = KeyCode(input) - KN_1;
           house = static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) +
                                           waypt_idx);
           if (HouseClass::As_Pointer(house) &&
