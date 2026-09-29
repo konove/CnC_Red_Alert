@@ -177,11 +177,6 @@
   - The flags are `DrawShapeFrame()`'s parameter; `engine/gfx/shape.h` would then hold only the
     shape file format (`ShapeHeader`, `ExtractShapeFrame()`) and could become `shape_file.h`. 66
     files include `engine/gfx/shape.h`, most only for the flags, so it is an include rewrite
-- Share one bounds-checked little-endian reader in `base/`
-  - `engine::gfx::ExtractShapeFrame()` (`engine/gfx/shape.cc`), `FrameEntry` in `td/keyframe.cc` and
-    `ra/2keyfram.cc`, `WsaAnimation::ResidentFrameOffset()` (`engine/gfx/wsa_animation.cc`),
-    `Slice`/`ReadWord` in `engine/gfx/font.h` and `ReadU16`/`ReadU32` in `ra/dib.cc` each hand-roll
-    check-size, `base::ReadUnaligned`, `subspan`. Promoting `font.h`'s `Slice` is one starting point
 - Remove Tiberian Dawn's `Parse_INI_File()` (`td/init.cc:2566-2651`)
   - It and its call (`td/init.cc:510-515`) sit under `#ifdef ONHOLD`, which nothing defines, and it
     still uses the deleted `GameFile` class; `e2c825c8` edited it without compiling it

@@ -78,12 +78,13 @@ KeyFrameHeaderType Header(std::span<const std::byte> data) {
 
 bool FrameEntry(std::span<const std::byte> data, uint16_t frame,
                 uint32_t& offset, uint32_t& reference) {
-  const auto entry = sizeof(KeyFrameHeaderType) + (size_t{frame} * 8);
-  if (entry > data.size() || data.size() - entry < 8) {
+  const auto entry = base::SliceOrEmpty(
+      data, sizeof(KeyFrameHeaderType) + (size_t{frame} * 8), 8);
+  if (entry.empty()) {
     return false;
   }
-  offset = base::ReadUnaligned<uint32_t>(data.subspan(entry));
-  reference = base::ReadUnaligned<uint32_t>(data.subspan(entry + 4));
+  offset = base::ReadLittleEndian<uint32_t>(entry, 0);
+  reference = base::ReadLittleEndian<uint32_t>(entry, 4);
   return true;
 }
 }  // namespace
