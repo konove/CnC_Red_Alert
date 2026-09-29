@@ -3,14 +3,18 @@
 #include <algorithm>
 #include <cctype>
 #include <cstddef>
+#include <iterator>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "absl/base/attributes.h"
 #include "absl/strings/match.h"
-#include "base/strings/safe_string.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
+#include "engine/stream/byte_stream.h"
 
 namespace engine::file {
 namespace {
@@ -141,14 +145,10 @@ std::optional<std::size_t> ReadProfile(std::string_view text,
   return found->body;
 }
 
-bool WriteProfile(std::span<char> storage, std::string_view section,
+void WriteProfile(std::string& profile, std::string_view section,
                   const char* key, const char* value) {
-  const auto nul = std::ranges::find(storage, '\0');
-  if (nul == storage.end()) {
-    return false;
-  }
-  // Work separately so overlapping inputs and capacity failure are atomic.
-  std::string result(storage.begin(), nul);
+  // Edit a copy, since key or value may point into profile.
+  std::string result = profile;
   const auto found = FindSection(result, section);
   if (key == nullptr) {
     if (found) {
@@ -174,11 +174,29 @@ bool WriteProfile(std::span<char> storage, std::string_view section,
     result += value;
     result += "\r\n";
   }
-  if (result.size() >= storage.size()) {
-    return false;
+  profile = std::move(result);
+}
+
+std::string ReadProfileText(ByteStream& stream) {
+  std::string text = stream.ReadString(stream.Size() - stream.Tell());
+  if (const auto nul = text.find('\0'); nul != std::string::npos) {
+    text.resize(nul);
   }
-  base::SafeCopy(storage.first(result.size() + 1), result.c_str());
-  return true;
+  return text;
+}
+
+std::optional<std::string> ReadProfileFile(std::string_view name) {
+  const auto file = OpenGameFile(name);
+  if (!file) {
+    return std::nullopt;
+  }
+  return ReadProfileText(*file);
+}
+
+bool WriteProfileFile(std::string_view name, std::string_view profile) {
+  const auto file = OpenGameFile(name, FileAccess::kWrite);
+  return file != nullptr &&
+         file->Write(std::as_bytes(std::span(profile))) == std::ssize(profile);
 }
 
 }  // namespace engine::file

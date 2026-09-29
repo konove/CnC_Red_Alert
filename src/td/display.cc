@@ -99,6 +99,7 @@
 #include <iterator>
 #include <numeric>
 #include <span>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -1223,7 +1224,7 @@ void DisplayClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-void DisplayClass::Write_INI(std::span<char> buffer) {
+void DisplayClass::Write_INI(std::string& buffer) {
   char entry[20];
 
   /*

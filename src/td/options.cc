@@ -67,18 +67,17 @@
 
 #include "td/options.h"
 
-#include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 
 #include "base/array.h"
-#include "base/bytes_of.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/crypto/key_phrase_hash.h"
-#include "engine/file/file_access.h"
-#include "engine/file/game_file.h"
+#include "engine/file/profile_buffer.h"
 #include "engine/gfx/hsv_color.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
@@ -87,7 +86,6 @@
 #include "td/defines.h"
 #include "td/game_state.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/palette.h"
 #include "td/palettes.h"
 #include "td/profile.h"
@@ -477,26 +475,11 @@ void OptionsClass::Adjust_Palette(const engine::gfx::Palette& oldpal,
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void OptionsClass::Load_Settings() {
-
-  /*
-  **	Fetch working pointer to the INI staging buffer. Make sure that the
-  *buffer *	is cleared out before proceeding.  (Don't use the HidPage for
-  *this, since *	the HidPage may be needed for various uncompressions
-  *during the INI *	parsing.)
-  */
-  char* buffer =
-      base::CharBytes(shape_buffer).data();  // INI staging buffer pointer.
-  std::ranges::fill(shape_buffer, 0);
-
-  /*
-  **	Create filename and read the file.
-  */
-  const auto file = OpenGameFile("CONQUER.INI");
-  if (!file) {
+  std::optional<std::string> ini = engine::file::ReadProfileFile("CONQUER.INI");
+  if (!ini) {
     return;
   }
-  file->Read(
-      std::as_writable_bytes(shape_buffer).first(shape_buffer.size() - 1));
+  const char* buffer = ini->data();
 
   /*
   **	Read in the Options values
@@ -648,56 +631,27 @@ void OptionsClass::Load_Settings() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void OptionsClass::Save_Settings() const {
-  /*
-  **	Get a working pointer to the INI staging buffer. Make sure that the
-  *buffer *	starts cleared out of any data.
-  */
-  char* buffer =
-      base::CharBytes(shape_buffer).data();  // INI staging buffer pointer.
-  std::ranges::fill(shape_buffer, 0);
-
-  if (const auto in = OpenGameFile("CONQUER.INI")) {
-    in->Read(
-        std::as_writable_bytes(shape_buffer).first(shape_buffer.size() - 1));
-  }
+  std::string ini = engine::file::ReadProfileFile("CONQUER.INI").value_or("");
 
   /*
   **	Save Options settings
   */
   WWWritePrivateProfileInt("Options", "GameSpeed", static_cast<int>(GameSpeed),
-                           base::CharBytes(shape_buffer));
-  WWWritePrivateProfileInt("Options", "ScrollRate", ScrollRate,
-                           base::CharBytes(shape_buffer));
-  WWWritePrivateProfileInt("Options", "Brightness", Brightness,
-                           base::CharBytes(shape_buffer));
-  WWWritePrivateProfileInt("Options", "Volume", Volume,
-                           base::CharBytes(shape_buffer));
-  WWWritePrivateProfileInt("Options", "ScoreVolume", ScoreVolume,
-                           base::CharBytes(shape_buffer));
-  WWWritePrivateProfileInt("Options", "Contrast", Contrast,
-                           base::CharBytes(shape_buffer));
-  WWWritePrivateProfileInt("Options", "Color", Color,
-                           base::CharBytes(shape_buffer));
-  WWWritePrivateProfileInt("Options", "Tint", Tint,
-                           base::CharBytes(shape_buffer));
-  WWWritePrivateProfileInt("Options", "AutoScroll", AutoScroll,
-                           base::CharBytes(shape_buffer));
-  WWWritePrivateProfileInt("Options", "IsScoreRepeat", IsScoreRepeat,
-                           base::CharBytes(shape_buffer));
-  WWWritePrivateProfileInt("Options", "IsScoreShuffle", IsScoreShuffle,
-                           base::CharBytes(shape_buffer));
-  WWWritePrivateProfileInt("Options", "DeathAnnounce", IsDeathAnnounce,
-                           base::CharBytes(shape_buffer));
-  WWWritePrivateProfileInt("Options", "FreeScrolling", IsFreeScroll,
-                           base::CharBytes(shape_buffer));
+                           ini);
+  WWWritePrivateProfileInt("Options", "ScrollRate", ScrollRate, ini);
+  WWWritePrivateProfileInt("Options", "Brightness", Brightness, ini);
+  WWWritePrivateProfileInt("Options", "Volume", Volume, ini);
+  WWWritePrivateProfileInt("Options", "ScoreVolume", ScoreVolume, ini);
+  WWWritePrivateProfileInt("Options", "Contrast", Contrast, ini);
+  WWWritePrivateProfileInt("Options", "Color", Color, ini);
+  WWWritePrivateProfileInt("Options", "Tint", Tint, ini);
+  WWWritePrivateProfileInt("Options", "AutoScroll", AutoScroll, ini);
+  WWWritePrivateProfileInt("Options", "IsScoreRepeat", IsScoreRepeat, ini);
+  WWWritePrivateProfileInt("Options", "IsScoreShuffle", IsScoreShuffle, ini);
+  WWWritePrivateProfileInt("Options", "DeathAnnounce", IsDeathAnnounce, ini);
+  WWWritePrivateProfileInt("Options", "FreeScrolling", IsFreeScroll, ini);
 
-  /*
-  **	Write the INI data out to a file.
-  */
-  if (const auto out = OpenGameFile("CONQUER.INI", FileAccess::kWrite)) {
-    out->Write(
-        std::as_bytes(shape_buffer).first(std::string_view(buffer).size()));
-  }
+  engine::file::WriteProfileFile("CONQUER.INI", ini);
 }
 
 /***********************************************************************************************

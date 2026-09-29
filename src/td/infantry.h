@@ -47,6 +47,7 @@ class ArchiveWriter;
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <string>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -239,7 +240,7 @@ class InfantryClass final : public FootClass {
   **	File I/O.
   */
   static void Read_INI(char* buffer);
-  static void Write_INI(std::span<char> buffer);
+  static void Write_INI(std::string& buffer);
   static const char* INI_Name() { return "INFANTRY"; }
 
   /*

@@ -56,7 +56,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 #include <system_error>
 #include <vector>
@@ -68,7 +70,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
-#include "engine/file/game_file.h"
+#include "engine/file/profile_buffer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
@@ -3183,19 +3185,17 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Read the file into the staging buffer
   ........................................................................*/
-  std::vector<char> profile_storage(30000);
-  char* inibuf = profile_storage.data();  // working INI buffer
-  const auto file = OpenGameFile("MASTER.INI");
-  if (!file) {
+  const std::optional<std::string> master =
+      engine::file::ReadProfileFile("MASTER.INI");
+  if (!master) {
     return (-1);
   }
-  file->Read(std::as_writable_bytes(std::span(profile_storage))
-                 .first(profile_storage.size() - 1));
+  const char* inibuf = master->c_str();  // working INI buffer
 
   /*........................................................................
   Read all entry names in the Triggers section into a temp buffer
   ........................................................................*/
-  std::vector<char> key_storage(std::string_view(inibuf).size() + 2);
+  std::vector<char> key_storage(master->size() + 2);
   auto key_cursor = std::span(key_storage);
   char* tbuffer = key_cursor.data();  // Accumulation buffer of trigger IDs.
   WWGetPrivateProfileString(TriggerClass::INI_Name(), nullptr, nullptr,
@@ -3500,18 +3500,16 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Read the file into the staging buffer
   ........................................................................*/
-  std::vector<char> profile_storage(30000);
-  char* inibuf = profile_storage.data();  // working INI buffer
-  const auto file = OpenGameFile("MASTER.INI");
-  if (!file) {
+  const std::optional<std::string> master =
+      engine::file::ReadProfileFile("MASTER.INI");
+  if (!master) {
     return (-1);
   }
-  file->Read(std::as_writable_bytes(std::span(profile_storage))
-                 .first(profile_storage.size() - 1));
+  const char* inibuf = master->c_str();  // working INI buffer
   /*........................................................................
   Read all entry names in the TeamTypes section into a temp buffer
   ........................................................................*/
-  std::vector<char> key_storage(std::string_view(inibuf).size() + 2);
+  std::vector<char> key_storage(master->size() + 2);
   auto key_cursor = std::span(key_storage);
   char* tbuffer = key_cursor.data();  // Accumulation buffer of team IDs.
   WWGetPrivateProfileString(TeamTypeClass::INI_Name(), nullptr, nullptr,

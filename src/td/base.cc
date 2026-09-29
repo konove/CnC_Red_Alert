@@ -67,6 +67,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
+#include <string>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -208,7 +209,7 @@ void BaseClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-void BaseClass::Write_INI(std::span<char> buffer) {
+void BaseClass::Write_INI(std::string& buffer) {
   char buf[128];
   char uname[10];
 

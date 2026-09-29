@@ -177,17 +177,11 @@
   - The flags are `DrawShapeFrame()`'s parameter; `engine/gfx/shape.h` would then hold only the
     shape file format (`ShapeHeader`, `ExtractShapeFrame()`) and could become `shape_file.h`. 66
     files include `engine/gfx/shape.h`, most only for the flags, so it is an include rewrite
-- Give Tiberian Dawn's INI code its own buffer instead of `shape_buffer`
-  - `shape_buffer` (`td/keyframe.h`, `ra/keyframe.h`) is `Build_Frame()`'s output, but TD reads and
-    writes scenario and multiplayer INI text in it (`td/ini.cc`, `mplayer.cc`, `options.cc`,
-    `stats.cc`, `expand.cc`; ~60 uses) and RA reads expansion scenario INI text into it
-    (`ra/expand.cc:362`). A `std::string` or `std::vector<char>` per use would leave the buffer to
-    `Build_Frame()` alone
-  - Until then, `base::CharBytes(shape_buffer)` is spelled out 26 times in `td/ini.cc`, 24 in
-    `mplayer.cc` and 15 in `options.cc`, mostly in runs; one local per function reads better
-  - Each game keeps a `static std::vector<uint8_t> shape_storage` plus the `shape_buffer` span over
-    it (`ra/init.cc`, `td/init.cc`), and RA's `CC_Draw_Shape()` a second static buffer of the same
-    size (`x_buffer`, `ra/shape_draw.cc:138`) for rotated shapes
+- Let each game's keyframe code own `shape_buffer`
+  - Only `Build_Frame()` and its callers (`td/conquer.cc`, `ra/shape_draw.cc`) use it now, yet each
+    game keeps a `static std::vector<uint8_t> shape_storage` plus the `shape_buffer` span over it in
+    `init.cc`, and RA's `CC_Draw_Shape()` a second static buffer of the same size (`x_buffer`,
+    `ra/shape_draw.cc:138`) for rotated shapes. The storage could live next to `Build_Frame()`
 - Share one bounds-checked little-endian reader in `base/`
   - `engine::gfx::ExtractShapeFrame()` (`engine/gfx/shape.cc`), `FrameEntry` in `td/keyframe.cc` and
     `ra/2keyfram.cc`, `WsaAnimation::ResidentFrameOffset()` (`engine/gfx/wsa_animation.cc`),

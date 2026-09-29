@@ -247,9 +247,9 @@ bool Init_Game() {
   TheKeyboard().Clear();
 
   /*
-  **	This is the shape staging buffer. It must always be available, so it is
-  **	allocated here and never freed. Publishing it as the global
-  **	shape_buffer lets other code borrow it as scratch memory.
+  **	This is the buffer Build_Frame() uncompresses keyframe shapes into. It
+  **	must always be available, so it is allocated here and only released at
+  **	shutdown.
   */
   shape_storage.resize(SHAPE_BUFFER_SIZE);
   shape_buffer = shape_storage;
@@ -2576,7 +2576,6 @@ std::optional<StartupOptions> Parse_Command_Line(
  * HISTORY: * 08/18/1995 BRR : Created. *
  *=============================================================================================*/
 void Parse_INI_File() {
-  char* buffer;  // INI staging buffer pointer.
   char buf[128];
   static char section[40];
   static char entry[40];
@@ -2596,13 +2595,6 @@ void Parse_INI_File() {
   static char coded_section[] = {154, 184, 194, 191, 194, 186, 188, 182, 0};
   static char coded_entry[] = {163, 184, 197, 188, 194, 183, 0};
   static char coded_name[] = {157, 200, 197, 180, 198, 198, 188, 182, 0};
-
-  /*------------------------------------------------------------------------
-  Fetch working pointer to the INI staging buffer. Make sure that the buffer
-  is cleared out before proceeding.
-  ------------------------------------------------------------------------*/
-  buffer = base::CharBytes(shape_buffer).data();
-  std::ranges::fill(shape_buffer, 0);
 
   /*------------------------------------------------------------------------
   Decode the desired section, entry, & name
@@ -2628,13 +2620,11 @@ void Parse_INI_File() {
   /*------------------------------------------------------------------------
   Create filename and read the file.
   ------------------------------------------------------------------------*/
-  GameFile file("CONQUER.INI");
-  if (!file.IsAvailable()) {
+  std::optional<std::string> ini = engine::file::ReadProfileFile("CONQUER.INI");
+  if (!ini) {
     return;
-  } else {
-    file.Read(buffer, std::ssize(shape_buffer) - 1);
   }
-  file.Close();
+  const char* buffer = ini->data();
 
   WWGetPrivateProfileString(section, entry, "", buf, buffer);
 

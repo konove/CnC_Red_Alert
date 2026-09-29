@@ -25,6 +25,7 @@ class ArchiveWriter;
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <string>
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -150,7 +151,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	File I/O.
   */
   static void Read_INI(char* buffer);
-  static void Write_INI(std::span<char> buffer);
+  static void Write_INI(std::string& buffer);
   static const char* INI_Name() { return "AIRCRAFT"; }
 
   // Debugging support.

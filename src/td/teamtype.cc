@@ -58,6 +58,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -424,7 +425,7 @@ void TeamTypeClass::Fill_In(char* name, char* entry) {
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-void TeamTypeClass::Write_INI(std::span<char> buffer, bool refresh) {
+void TeamTypeClass::Write_INI(std::string& buffer, bool refresh) {
   char buf[500];
   const char* hname = nullptr;
 

@@ -1,7 +1,11 @@
 #include "engine/file/profile_buffer.h"
 
 #include <array>
+#include <filesystem>
+#include <optional>
 #include <span>
+#include <string>
+#include <string_view>
 
 #include "gtest/gtest.h"
 
@@ -59,43 +63,64 @@ TEST(ProfileBufferTest, EnumeratesWholeKeysWithDoubleNullTermination) {
 }
 
 TEST(ProfileBufferTest, UpdatesAndDeletesWithoutChangingOtherSections) {
-  char text[128] = "[S]\r\nA=1\r\nB=2\r\n[T]\r\nC=3\r\n";
-  ASSERT_TRUE(engine::file::WriteProfile(text, "s", "a", "new"));
-  EXPECT_STREQ(text, "[S]\r\na=new\r\nB=2\r\n[T]\r\nC=3\r\n");
-  ASSERT_TRUE(engine::file::WriteProfile(text, "S", "B", nullptr));
-  EXPECT_STREQ(text, "[S]\r\na=new\r\n[T]\r\nC=3\r\n");
-  ASSERT_TRUE(engine::file::WriteProfile(text, "S", nullptr, nullptr));
-  EXPECT_STREQ(text, "[T]\r\nC=3\r\n");
-  ASSERT_TRUE(engine::file::WriteProfile(text, "Missing", "K", nullptr));
-  EXPECT_STREQ(text, "[T]\r\nC=3\r\n");
+  std::string text = "[S]\r\nA=1\r\nB=2\r\n[T]\r\nC=3\r\n";
+  engine::file::WriteProfile(text, "s", "a", "new");
+  EXPECT_EQ(text, "[S]\r\na=new\r\nB=2\r\n[T]\r\nC=3\r\n");
+  engine::file::WriteProfile(text, "S", "B", nullptr);
+  EXPECT_EQ(text, "[S]\r\na=new\r\n[T]\r\nC=3\r\n");
+  engine::file::WriteProfile(text, "S", nullptr, nullptr);
+  EXPECT_EQ(text, "[T]\r\nC=3\r\n");
+  engine::file::WriteProfile(text, "Missing", "K", nullptr);
+  EXPECT_EQ(text, "[T]\r\nC=3\r\n");
 }
 
-TEST(ProfileBufferTest, CapacityFailureIsAtomicAndRejectsUnterminatedStorage) {
-  char text[] = "[S]\r\nA=1\r\n";
-  EXPECT_FALSE(
-      engine::file::WriteProfile(text, "S", "A", "a much longer value"));
-  EXPECT_STREQ(text, "[S]\r\nA=1\r\n");
-  char unterminated[] = {'x', 'y'};
-  EXPECT_FALSE(engine::file::WriteProfile(unterminated, "S", "A", "1"));
-  EXPECT_EQ(unterminated[0], 'x');
-  EXPECT_EQ(unterminated[1], 'y');
+TEST(ProfileBufferTest, GrowsWithoutACapacity) {
+  std::string text = "[S]\r\nA=1\r\n";
+  const std::string long_value(100000, 'v');
+  engine::file::WriteProfile(text, "S", "A", long_value.c_str());
+  EXPECT_EQ(text, "[S]\r\nA=" + long_value + "\r\n");
 }
 
 TEST(ProfileBufferTest, AppendsSectionAndAcceptsAliasedValue) {
-  char text[64] = "";
-  ASSERT_TRUE(engine::file::WriteProfile(text, "S", "A", "value"));
-  EXPECT_STREQ(text, "\r\n[S]\r\nA=value\r\n");
-  char aliased[64] = "value";
-  ASSERT_TRUE(engine::file::WriteProfile(aliased, "S", "A", aliased));
+  std::string text;
+  engine::file::WriteProfile(text, "S", "A", "value");
+  EXPECT_EQ(text, "\r\n[S]\r\nA=value\r\n");
+  std::string aliased = "value";
+  engine::file::WriteProfile(aliased, "S", "A", aliased.c_str());
   char output[16];
   engine::file::ReadProfile(aliased, "S", "A", nullptr, output);
   EXPECT_STREQ(output, "value");
 }
 
 TEST(ProfileBufferTest, InsertsIntoSectionWithoutTrailingNewline) {
-  char text[32] = "[S]";
-  ASSERT_TRUE(engine::file::WriteProfile(text, "S", "A", "1"));
-  EXPECT_STREQ(text, "[S]\r\nA=1\r\n");
+  std::string text = "[S]";
+  engine::file::WriteProfile(text, "S", "A", "1");
+  EXPECT_EQ(text, "[S]\r\nA=1\r\n");
+}
+
+// A loose file in the current directory, where writes go and reads look first.
+constexpr const char* kFileName = "PROFILE_BUFFER_TEST.INI";
+
+class ProfileFileTest : public testing::Test {
+ protected:
+  void TearDown() override { std::filesystem::remove(kFileName); }
+};
+
+TEST_F(ProfileFileTest, ReadOfMissingFileIsNullopt) {
+  EXPECT_EQ(engine::file::ReadProfileFile(kFileName), std::nullopt);
+}
+
+TEST_F(ProfileFileTest, WritesAndReadsBackTheWholeText) {
+  const std::string text = "[S]\r\nA=" + std::string(100000, 'v') + "\r\n";
+  ASSERT_TRUE(engine::file::WriteProfileFile(kFileName, text));
+  EXPECT_EQ(engine::file::ReadProfileFile(kFileName), text);
+}
+
+TEST_F(ProfileFileTest, ReadStopsAtNul) {
+  constexpr std::string_view kText("[S]\r\nA=1\r\n\0stale", 16);
+  ASSERT_TRUE(engine::file::WriteProfileFile(kFileName, kText));
+  EXPECT_EQ(std::filesystem::file_size(kFileName), kText.size());
+  EXPECT_EQ(engine::file::ReadProfileFile(kFileName), "[S]\r\nA=1\r\n");
 }
 
 }  // namespace

@@ -45,6 +45,7 @@ class ArchiveReader;
 class ArchiveWriter;
 
 #include <span>
+#include <string>
 
 #include "td/building.h"
 #include "td/defines.h"
@@ -90,7 +91,7 @@ class BaseClass {
   ** The standard suite of load/save support routines
   */
   void Read_INI(char* buffer);
-  void Write_INI(std::span<char> buffer);
+  void Write_INI(std::string& buffer);
   static const char* INI_Name() { return "Base"; }
   template <class Archive>
   void Serialize(Archive& ar);

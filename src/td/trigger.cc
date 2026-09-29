@@ -70,6 +70,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -1232,7 +1233,7 @@ void TriggerClass::Fill_In(char* name, char* entry) {
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Write_INI(std::span<char> buffer, bool refresh) {
+void TriggerClass::Write_INI(std::string& buffer, bool refresh) {
   char buf[128];
   const char* hname = nullptr;
   const char* tname = nullptr;

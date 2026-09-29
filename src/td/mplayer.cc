@@ -56,7 +56,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -65,14 +67,13 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
-#include "base/bytes_of.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
-#include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
+#include "engine/file/profile_buffer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
@@ -89,7 +90,6 @@
 #include "td/input.h"
 #include "td/ipxmgr.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/msglist.h"
 #include "td/network.h"
@@ -413,16 +413,6 @@ void Read_MultiPlayer_Settings() {
   int i = 0;
 
   /*------------------------------------------------------------------------
-  Fetch working pointer to the INI staging buffer. Make sure that the buffer
-  is cleared out before proceeding.  (Don't use the HidPage for this, since
-  the HidPage may be needed for various uncompressions during the INI
-  parsing.)
-  ------------------------------------------------------------------------*/
-  char* buffer =
-      base::CharBytes(shape_buffer).data();  // INI staging buffer pointer.
-  std::ranges::fill(shape_buffer, 0);
-
-  /*------------------------------------------------------------------------
   Clear the initstring entries
   ------------------------------------------------------------------------*/
   TheNetwork().init_strings().clear();
@@ -435,12 +425,11 @@ void Read_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Create filename and read the file.
   ------------------------------------------------------------------------*/
-  const auto file = OpenGameFile("CONQUER.INI");
-  if (!file) {
+  std::optional<std::string> ini = engine::file::ReadProfileFile("CONQUER.INI");
+  if (!ini) {
     return;
   }
-  file->Read(
-      std::as_writable_bytes(shape_buffer).first(shape_buffer.size() - 1));
+  const char* buffer = ini->data();
 
   if (!TheSpecial().IsFromWChat) {
     /*------------------------------------------------------------------------
@@ -792,91 +781,65 @@ void Write_MultiPlayer_Settings() {
   char entrytext[4];
   char buf[128];  // buffer for parsing INI entry
 
-  /*------------------------------------------------------------------------
-  Get a working pointer to the INI staging buffer. Make sure that the buffer
-  starts cleared out of any data.
-  ------------------------------------------------------------------------*/
-  char* buffer =
-      base::CharBytes(shape_buffer).data();  // INI staging buffer pointer.
-  std::ranges::fill(shape_buffer, 0);
-
-  if (const auto in = OpenGameFile("CONQUER.INI")) {
-    in->Read(
-        std::as_writable_bytes(shape_buffer).first(shape_buffer.size() - 1));
-  }
+  std::string ini = engine::file::ReadProfileFile("CONQUER.INI").value_or("");
 
   /*------------------------------------------------------------------------
   Save the player's last-used Handle & Color
   ------------------------------------------------------------------------*/
   WWWritePrivateProfileInt("MultiPlayer", "PhoneIndex",
-                           TheNetwork().current_phone_index(),
-                           base::CharBytes(shape_buffer));
+                           TheNetwork().current_phone_index(), ini);
   WWWritePrivateProfileInt("MultiPlayer", "Color",
-                           TheSession().preferred_color(),
-                           base::CharBytes(shape_buffer));
+                           TheSession().preferred_color(), ini);
   WWWritePrivateProfileInt("MultiPlayer", "Side",
-                           static_cast<int>(TheSession().house()),
-                           base::CharBytes(shape_buffer));
+                           static_cast<int>(TheSession().house()), ini);
   WWWritePrivateProfileString("MultiPlayer", "Handle",
-                              TheSession().player_name(),
-                              base::CharBytes(shape_buffer));
+                              TheSession().player_name(), ini);
 
   /*------------------------------------------------------------------------
   Clear all existing SerialDefault entries.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("SerialDefaults", nullptr, nullptr,
-                              base::CharBytes(shape_buffer));
+  WWWritePrivateProfileString("SerialDefaults", nullptr, nullptr, ini);
 
   /*------------------------------------------------------------------------
   Save default serial settings in opposite order you want to see them
   ------------------------------------------------------------------------*/
   WWWritePrivateProfileString("SerialDefaults", "CallWaitString",
                               TheNetwork().serial_defaults().CallWaitString,
-                              base::CharBytes(shape_buffer));
+                              ini);
   WWWritePrivateProfileInt("SerialDefaults", "CallWaitStringIndex",
                            TheNetwork().serial_defaults().CallWaitStringIndex,
-                           base::CharBytes(shape_buffer));
+                           ini);
   WWWritePrivateProfileInt("SerialDefaults", "InitStringIndex",
-                           TheNetwork().serial_defaults().InitStringIndex,
-                           base::CharBytes(shape_buffer));
+                           TheNetwork().serial_defaults().InitStringIndex, ini);
   WWWritePrivateProfileInt("SerialDefaults", "Init",
-                           TheNetwork().serial_defaults().Init ? 1 : 0,
-                           base::CharBytes(shape_buffer));
+                           TheNetwork().serial_defaults().Init ? 1 : 0, ini);
   WWWritePrivateProfileString(
       "SerialDefaults", "DialMethod",
-      kDialMethodCheck.at(TheNetwork().serial_defaults().DialMethod),
-      base::CharBytes(shape_buffer));
+      kDialMethodCheck.at(TheNetwork().serial_defaults().DialMethod), ini);
   WWWritePrivateProfileInt("SerialDefaults", "Baud",
-                           TheNetwork().serial_defaults().Baud,
-                           base::CharBytes(shape_buffer));
+                           TheNetwork().serial_defaults().Baud, ini);
   WWWritePrivateProfileInt("SerialDefaults", "IRQ",
-                           TheNetwork().serial_defaults().IRQ,
-                           base::CharBytes(shape_buffer));
+                           TheNetwork().serial_defaults().IRQ, ini);
   absl::SNPrintF(
       buf, sizeof(buf), "%x",
       static_cast<unsigned int>(TheNetwork().serial_defaults().Port));
-  WWWritePrivateProfileString("SerialDefaults", "Port", buf,
-                              base::CharBytes(shape_buffer));
+  WWWritePrivateProfileString("SerialDefaults", "Port", buf, ini);
   WWWritePrivateProfileString("SerialDefaults", "ModemName",
-                              TheNetwork().serial_defaults().ModemName,
-                              base::CharBytes(shape_buffer));
+                              TheNetwork().serial_defaults().ModemName, ini);
   WWWritePrivateProfileInt("SerialDefaults", "Compression",
                            TheNetwork().serial_defaults().Compression ? 1 : 0,
-                           base::CharBytes(shape_buffer));
+                           ini);
   WWWritePrivateProfileInt(
       "SerialDefaults", "ErrorCorrection",
-      TheNetwork().serial_defaults().ErrorCorrection ? 1 : 0,
-      base::CharBytes(shape_buffer));
+      TheNetwork().serial_defaults().ErrorCorrection ? 1 : 0, ini);
   WWWritePrivateProfileInt(
       "SerialDefaults", "HardwareFlowControl",
-      TheNetwork().serial_defaults().HardwareFlowControl ? 1 : 0,
-      base::CharBytes(shape_buffer));
+      TheNetwork().serial_defaults().HardwareFlowControl ? 1 : 0, ini);
 
   /*------------------------------------------------------------------------
   Clear all existing InitString entries.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("InitStrings", nullptr, nullptr,
-                              base::CharBytes(shape_buffer));
+  WWWritePrivateProfileString("InitStrings", nullptr, nullptr, ini);
 
   /*------------------------------------------------------------------------
   Save all InitString entries.  In descending order so they come out in
@@ -887,15 +850,13 @@ void Write_MultiPlayer_Settings() {
     absl::SNPrintF(buf, sizeof(buf), "%03d", i);
     WWWritePrivateProfileString(
         "InitStrings", buf,
-        TheNetwork().init_strings().at(base::ToSize(i)).get(),
-        base::CharBytes(shape_buffer));
+        TheNetwork().init_strings().at(base::ToSize(i)).get(), ini);
   }
 
   /*------------------------------------------------------------------------
   Clear all existing Phone Book entries.
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileString("PhoneBook", nullptr, nullptr,
-                              base::CharBytes(shape_buffer));
+  WWWritePrivateProfileString("PhoneBook", nullptr, nullptr, ini);
 
   /*------------------------------------------------------------------------
   Save all Phone Book entries.
@@ -916,17 +877,13 @@ void Write_MultiPlayer_Settings() {
         phone.Settings.InitStringIndex, phone.Settings.CallWaitStringIndex,
         phone.Settings.CallWaitString);
     absl::SNPrintF(entrytext, sizeof(entrytext), "%03d", i);
-    WWWritePrivateProfileString("PhoneBook", entrytext, buf,
-                                base::CharBytes(shape_buffer));
+    WWWritePrivateProfileString("PhoneBook", entrytext, buf, ini);
   }
 
   /*------------------------------------------------------------------------
   Write the INI data out to a file.
   ------------------------------------------------------------------------*/
-  if (const auto out = OpenGameFile("CONQUER.INI", FileAccess::kWrite)) {
-    out->Write(
-        std::as_bytes(shape_buffer).first(std::string_view(buffer).size()));
-  }
+  engine::file::WriteProfileFile("CONQUER.INI", ini);
 }
 
 /***********************************************************************************************
@@ -970,24 +927,13 @@ void Read_Scenario_Descriptions() {
   ------------------------------------------------------------------------*/
   for (int i = 0; i < TheSession().scenario_files().Count(); i++) {
     /*.....................................................................
-    Fetch working pointer to the INI staging buffer. Make sure that the
-    buffer is cleared out before proceeding.
-    .....................................................................*/
-    char* buffer =
-        base::CharBytes(shape_buffer).data();  // INI staging buffer pointer.
-    std::ranges::fill(shape_buffer, 0);
-
-    /*.....................................................................
     Create filename and read the file.
     .....................................................................*/
     Set_Scenario_Name(TheWorld().scenario_name(),
                       TheSession().scenario_files().at(i), SCEN_PLAYER_MPLAYER,
                       SCEN_DIR_EAST, SCEN_VAR_A);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
-    if (const auto file = OpenGameFile(fname)) {
-      file->Read(
-          std::as_writable_bytes(shape_buffer).first(shape_buffer.size() - 1));
-    }
+    const std::string ini = engine::file::ReadProfileFile(fname).value_or("");
 
     /*.....................................................................
     Extract description & add it to the list.
@@ -995,7 +941,7 @@ void Read_Scenario_Descriptions() {
     WWGetPrivateProfileString("Basic", "Name", "Nulls-Ville",
                               std::span(base::At(mplayer_descriptions, i))
                                   .first(static_cast<std::size_t>(40)),
-                              buffer);
+                              ini.c_str());
     TheSession().scenarios().Add(base::At(mplayer_descriptions, i));
   }
 }

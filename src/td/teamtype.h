@@ -42,6 +42,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 #include <span>
+#include <string>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -126,7 +127,7 @@ class TeamTypeClass : public AbstractTypeClass {
   */
   static void Read_INI(char* buffer);
   void Fill_In(char* name, char* entry);
-  static void Write_INI(std::span<char> buffer, bool refresh);
+  static void Write_INI(std::string& buffer, bool refresh);
   static void Read_Old_INI(char* buffer);
   static const char* INI_Name() { return "TeamTypes"; }
   // Field-wise saved-game support, defined in ioobj.cc.

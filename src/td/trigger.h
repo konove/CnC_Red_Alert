@@ -47,6 +47,7 @@ class ArchiveWriter;
 #include <cstdint>
 #include <cstring>
 #include <span>
+#include <string>
 
 #include "absl/base/attributes.h"
 #include "base/array.h"
@@ -160,7 +161,7 @@ class TriggerClass {
   */
   static void Read_INI(char* buffer);
   void Fill_In(char* name, char* entry);
-  static void Write_INI(std::span<char> buffer, bool refresh);
+  static void Write_INI(std::string& buffer, bool refresh);
   static const char* INI_Name() { return "Triggers"; }
   // Field-wise saved-game support, defined in ioobj.cc.
   template <class Archive>

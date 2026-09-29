@@ -46,8 +46,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <string>
 #include <string_view>
 
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
@@ -90,11 +92,10 @@ int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
   return base::ParseIntegerOr<int>(buffer, def);
 }
 
-bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
-                              std::span<char> profile) {
-  char buffer[16];
-  absl::SNPrintF(buffer, sizeof(buffer), "%d", value);
-  return WWWritePrivateProfileString(section, entry, buffer, profile);
+void WWWritePrivateProfileInt(const char* section, const char* entry, int value,
+                              std::string& profile) {
+  WWWritePrivateProfileString(section, entry, absl::StrCat(value).c_str(),
+                              profile);
 }
 
 const char* WWGetPrivateProfileString(const char* section, const char* key,
@@ -109,10 +110,9 @@ const char* WWGetPrivateProfileString(const char* section, const char* key,
   return found ? text.substr(*found).data() : nullptr;
 }
 
-bool WWWritePrivateProfileString(const char* section, const char* entry,
-                                 const char* string, std::span<char> profile) {
-  if (profile.empty() || section == nullptr) {
-    return true;
+void WWWritePrivateProfileString(const char* section, const char* entry,
+                                 const char* string, std::string& profile) {
+  if (section != nullptr) {
+    engine::file::WriteProfile(profile, section, entry, string);
   }
-  return engine::file::WriteProfile(profile, section, entry, string);
 }

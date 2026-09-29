@@ -59,18 +59,19 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
-#include "base/bytes_of.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
-#include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
+#include "engine/file/profile_buffer.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
 #include "td/base.h"
@@ -85,7 +86,6 @@
 #include "td/infantry.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/mplayer.h"
 #include "td/object.h"
@@ -290,16 +290,6 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
 
   TheWorld().scenario_init()++;
 
-  /*
-  **	Fetch working pointer to the INI staging buffer. Make sure that the
-  *buffer *	is cleared out before proceeding.  (Don't use the HidPage for
-  *this, since *	the HidPage may be needed for various uncompressions
-  *during the INI *	parsing.)
-  */
-  char* buffer = base::CharBytes(shape_buffer)
-                     .data();  // Scenario.ini staging buffer pointer.
-  std::ranges::fill(shape_buffer, 0);
-
   if (fresh) {
     Clear_Scenario();
   }
@@ -349,12 +339,11 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   */
 
   absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
-  const auto file = OpenGameFile(fname);
-  if (!file) {
+  std::optional<std::string> ini = engine::file::ReadProfileFile(fname);
+  if (!ini) {
     return false;
   }
-  file->Read(
-      std::as_writable_bytes(shape_buffer).first(shape_buffer.size() - 1));
+  char* buffer = ini->data();
 
   /*
   ** Init the Scenario CRC value
@@ -579,11 +568,8 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	the mission.ini file.
   */
   if (base::At(TheWorld().briefing_text(), 0) == '\0') {
-    std::ranges::fill(shape_buffer, 0);
-    if (const auto mission_file = OpenGameFile("MISSION.INI")) {
-      mission_file->Read(
-          std::as_writable_bytes(shape_buffer).first(shape_buffer.size() - 1));
-    }
+    const std::string mission =
+        engine::file::ReadProfileFile("MISSION.INI").value_or("");
 
     std::span<char> work(TheWorld().briefing_text());
     int player_index = 1;
@@ -597,7 +583,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
       absl::SNPrintF(buff, sizeof(buff), "%d", player_index++);
       work.front() = '\0';
       WWGetPrivateProfileString(root, buff, "", work.first(work.size() - 1),
-                                base::CharBytes(shape_buffer).data());
+                                mission.c_str());
       if (std::string_view(work.data()).empty()) {
         break;
       }
@@ -711,14 +697,6 @@ void Write_Scenario_Ini(const char* root) {
                engine::platform::kMaxExt];  // full scenario name
     HousesType house = HOUSE_NONE;
 
-    /*
-    **	Get a working pointer to the INI staging buffer. Make sure that the
-    *buffer *	starts cleared out of any data.
-    */
-    char* buffer = base::CharBytes(shape_buffer)
-                       .data();  // Scenario.ini staging buffer pointer.
-    std::ranges::fill(shape_buffer, 0);
-
     switch (TheWorld().scen_player()) {
       case SCEN_PLAYER_GDI:
         house = HOUSE_GOOD;
@@ -742,86 +720,64 @@ void Write_Scenario_Ini(const char* root) {
     }
 
     /*
-    **	Create scenario filename and clear the buffer to empty.
+    **	Read the scenario file, or start a new one with a header comment.
     */
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
-    if (const auto in = OpenGameFile(fname)) {
-      in->Read(
-          std::as_writable_bytes(shape_buffer).first(shape_buffer.size() - 1));
-    } else {
-      absl::SNPrintF(buffer, shape_buffer.size(),
-                     "; Scenario %d control for house %s.\r\n",
-                     TheWorld().scenario(),
-                     HouseTypeClass::As_Reference(house).IniName);
-    }
+    std::string ini =
+        engine::file::ReadProfileFile(fname).value_or(absl::StrFormat(
+            "; Scenario %d control for house %s.\r\n", TheWorld().scenario(),
+            HouseTypeClass::As_Reference(house).IniName));
 
     WWWritePrivateProfileString("Basic", "Intro", TheWorld().intro_movie(),
-                                base::CharBytes(shape_buffer));
+                                ini);
     WWWritePrivateProfileString("Basic", "Brief", TheWorld().brief_movie(),
-                                base::CharBytes(shape_buffer));
-    WWWritePrivateProfileString("Basic", "Win", TheWorld().win_movie(),
-                                base::CharBytes(shape_buffer));
-    WWWritePrivateProfileString("Basic", "Lose", TheWorld().lose_movie(),
-                                base::CharBytes(shape_buffer));
+                                ini);
+    WWWritePrivateProfileString("Basic", "Win", TheWorld().win_movie(), ini);
+    WWWritePrivateProfileString("Basic", "Lose", TheWorld().lose_movie(), ini);
     WWWritePrivateProfileString("Basic", "Action", TheWorld().action_movie(),
-                                base::CharBytes(shape_buffer));
+                                ini);
     WWWritePrivateProfileString("Basic", "Player", ThePlayer()->Class->IniName,
-                                base::CharBytes(shape_buffer));
+                                ini);
     WWWritePrivateProfileString(
         "Basic", "Theme", ThemeClass::Base_Name(TheWorld().transit_theme()),
-        base::CharBytes(shape_buffer));
+        ini);
     WWWritePrivateProfileInt("Basic", "BuildLevel", TheWorld().build_level(),
-                             base::CharBytes(shape_buffer));
+                             ini);
     WWWritePrivateProfileInt(
         "Basic", "CarryOverMoney",
-        Fixed_To_Cardinal(100, TheWorld().carry_over_percent()),
-        base::CharBytes(shape_buffer));
-    WWWritePrivateProfileInt("Basic", "carry_over_cap", carry_over_cap,
-                             base::CharBytes(shape_buffer));
+        Fixed_To_Cardinal(100, TheWorld().carry_over_percent()), ini);
+    WWWritePrivateProfileInt("Basic", "carry_over_cap", carry_over_cap, ini);
 
-    TeamTypeClass::Write_INI(base::CharBytes(shape_buffer), true);
-    TriggerClass::Write_INI(base::CharBytes(shape_buffer), true);
-    TheMap().Write_INI(base::CharBytes(shape_buffer));
+    TeamTypeClass::Write_INI(ini, true);
+    TriggerClass::Write_INI(ini, true);
+    TheMap().Write_INI(ini);
     MapEditClass::Write_Binary(root);
-    HouseClass::Write_INI(base::CharBytes(shape_buffer));
-    UnitClass::Write_INI(base::CharBytes(shape_buffer));
-    InfantryClass::Write_INI(base::CharBytes(shape_buffer));
-    BuildingClass::Write_INI(base::CharBytes(shape_buffer));
-    TerrainClass::Write_INI(base::CharBytes(shape_buffer));
-    OverlayClass::Write_INI(base::CharBytes(shape_buffer));
-    SmudgeClass::Write_INI(base::CharBytes(shape_buffer));
+    HouseClass::Write_INI(ini);
+    UnitClass::Write_INI(ini);
+    InfantryClass::Write_INI(ini);
+    BuildingClass::Write_INI(ini);
+    TerrainClass::Write_INI(ini);
+    OverlayClass::Write_INI(ini);
+    SmudgeClass::Write_INI(ini);
 
-    TheWorld().base().Write_INI(base::CharBytes(shape_buffer));
+    TheWorld().base().Write_INI(ini);
 
     /*
     **	Write the scenario data out to a file.
     */
-    if (const auto out = OpenGameFile(fname, FileAccess::kWrite)) {
-      out->Write(
-          std::as_bytes(shape_buffer).first(std::string_view(buffer).size()));
-    }
+    engine::file::WriteProfileFile(fname, ini);
 
     /*
     **	Now update the Master INI file, containing the master list of triggers &
     *teams
     */
-    std::ranges::fill(shape_buffer, 0);
+    ini = engine::file::ReadProfileFile("MASTER.INI")
+              .value_or("; Master Trigger & Team List.\r\n");
 
-    if (const auto in = OpenGameFile("MASTER.INI")) {
-      in->Read(
-          std::as_writable_bytes(shape_buffer).first(shape_buffer.size() - 1));
-    } else {
-      absl::SNPrintF(buffer, shape_buffer.size(),
-                     "; Master Trigger & Team List.\r\n");
-    }
+    TeamTypeClass::Write_INI(ini, false);
+    TriggerClass::Write_INI(ini, false);
 
-    TeamTypeClass::Write_INI(base::CharBytes(shape_buffer), false);
-    TriggerClass::Write_INI(base::CharBytes(shape_buffer), false);
-
-    if (const auto out = OpenGameFile("MASTER.INI", FileAccess::kWrite)) {
-      out->Write(
-          std::as_bytes(shape_buffer).first(std::string_view(buffer).size()));
-    }
+    engine::file::WriteProfileFile("MASTER.INI", ini);
   }
 }
 

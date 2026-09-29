@@ -57,6 +57,7 @@
 #include <array>
 #include <memory>
 #include <span>
+#include <string>
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
@@ -199,7 +200,7 @@ class MapEditClass : public MouseClass {
   bool Scroll_Map(DirType facing, int& distance, bool really = true) override;
   //		virtual void Flag_To_Redraw(bool complete);
   void Read_INI(char* buffer) override;
-  void Write_INI(std::span<char> buffer) override;
+  void Write_INI(std::string& buffer) override;
   void Detach(ObjectClass* object) override;
   void Clear_List();
   bool Add_To_List(const ObjectTypeClass* object);

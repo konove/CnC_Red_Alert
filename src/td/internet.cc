@@ -50,13 +50,12 @@
  *- - */
 #include "td/internet.h"
 
-#include <algorithm>
-#include <array>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
 #include <span>
+#include <string>
 #include <string_view>
 
 #include "base/array.h"
@@ -65,6 +64,7 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/disk_stream.h"
 #include "engine/file/game_file.h"
+#include "engine/file/profile_buffer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/stream/byte_stream.h"
@@ -121,36 +121,27 @@ void Check_From_WChat(const char* wchat_name) {
 
   char default_string[] = {"Error"};
   char key_string[256];
-  std::array<char, 8192> ini_storage{};
-  char* ini_file = nullptr;
+  std::string ini_storage;
+  const char* ini_file = nullptr;
   std::unique_ptr<DiskStream> wchat_file;
 
   /*
   ** Get a pointer to C&CSPAWN.INI either by reading it from disk or getting it
-  *from
-  ** the DDE server.
+  ** from the DDE server.
   */
   if (wchat_name) {
-    ini_file = ini_storage.data();
+    wchat_file = OpenDiskFile(wchat_name);
+    if (wchat_file) {
+      ini_storage = engine::file::ReadProfileText(*wchat_file);
+    }
+    ini_file = ini_storage.c_str();
   } else {
 #ifdef _WIN32
     ini_file = DDEServer.Get_MPlayer_Game_Info();
 #endif
   }
 
-  if (wchat_name) {
-    wchat_file = OpenDiskFile(wchat_name);
-  }
-
   if (!wchat_name || wchat_file) {
-    /*
-    ** Read the ini file from disk if we founf it there
-    */
-    if (wchat_name) {
-      wchat_file->Read(std::span(ini_storage).first(ini_storage.size() - 1),
-                       std::min<int64_t>(wchat_file->Size(), 8191));
-    }
-
     /*
     ** Get the IP address
     */
@@ -237,8 +228,8 @@ void Check_From_WChat(const char* wchat_name) {
  *   01/11/1996 BRR : Created.                                             *
  *=========================================================================*/
 int Read_Game_Options(const char* name) {
-  std::array<char, 8192> ini_storage{};
-  char* buffer = nullptr;
+  std::string ini_storage;
+  const char* buffer = nullptr;
 
   char filename[256] = {"INVALID.123"};
 
@@ -257,9 +248,8 @@ int Read_Game_Options(const char* name) {
     }
   }
   if (name) {
-    buffer = ini_storage.data();  // INI staging buffer pointer.
-
-    file->Read(std::span(ini_storage).first(8191));
+    ini_storage = engine::file::ReadProfileText(*file);
+    buffer = ini_storage.c_str();
   } else {
 #ifdef _WIN32
     buffer = DDEServer.Get_MPlayer_Game_Info();

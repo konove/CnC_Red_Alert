@@ -48,12 +48,12 @@
 #include <cstring>
 #include <memory>
 #include <span>
+#include <string>
 #include <string_view>
-#include <vector>
 
 #include "base/buffer.h"
-#include "base/numeric.h"
 #include "engine/audio/audio_mixer.h"
+#include "engine/file/profile_buffer.h"
 #include "engine/stream/byte_stream.h"
 #include "td/defines.h"
 #include "td/game.h"
@@ -75,12 +75,13 @@
 #ifndef TD_NO_ENTRY_POINT
 #include <filesystem>
 #include <optional>
-#include <string>
+#include <vector>
 
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
 #include "absl/strings/match.h"
+#include "base/numeric.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
 #include "engine/file/search_paths.h"
@@ -342,12 +343,11 @@ int main(int argc, char* argv[])
       ** See if we should run the intro
       */
       CCDebugString("C&C95 - Reading CONQUER.INI.\n");
-      std::vector<char> profile_storage(64000);
-      char* buffer = profile_storage.data();
+      std::string profile;
       if (const auto config_read = OpenDiskFile("CONQUER.INI")) {
-        config_read->Read(std::as_writable_bytes(std::span(profile_storage))
-                              .first(profile_storage.size() - 1));
+        profile = engine::file::ReadProfileText(*config_read);
       }
+      const char* buffer = profile.c_str();
 
       /*
       **	Check for forced intro movie run disabling. If the conquer
@@ -375,12 +375,8 @@ int main(int argc, char* argv[])
       ** Regardless of whether we should run it or not, here we're
       ** gonna change it to say "no" in the future.
       */
-      WWWritePrivateProfileString("Intro", "PlayIntro", "No", profile_storage);
-      if (const auto config_write =
-              OpenDiskFile("CONQUER.INI", FileAccess::kWrite)) {
-        config_write->Write(std::as_bytes(std::span(profile_storage))
-                                .first(std::string_view(buffer).size()));
-      }
+      WWWritePrivateProfileString("Intro", "PlayIntro", "No", profile);
+      engine::file::WriteProfileFile("CONQUER.INI", profile);
 
 #ifdef _WIN32
       CCDebugString(
@@ -502,11 +498,8 @@ void ShutDown() {
  *=============================================================================================*/
 void Read_Setup_Options(ByteStream& config_file,
                         const StartupOptions& options) {
-  std::vector<char> profile_storage(base::ToSize(config_file.Size() + 1));
-  char* buffer = profile_storage.data();
-
-  config_file.Read(std::as_writable_bytes(std::span(profile_storage))
-                       .first(profile_storage.size() - 1));
+  const std::string profile = engine::file::ReadProfileText(config_file);
+  const char* buffer = profile.c_str();
 
   // Resolution=yes and -480 both ask for a 480-line mode; Screen::Init()
   // letterboxes the 400-line game area inside it.

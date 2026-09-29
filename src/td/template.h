@@ -46,6 +46,7 @@ class ArchiveWriter;
 
 #include <cstddef>
 #include <span>
+#include <string>
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -121,7 +122,7 @@ class TemplateClass : public ObjectClass {
   **	File I/O.
   */
   static void Read_INI(char* buffer);
-  static void Write_INI(std::span<char> buffer);
+  static void Write_INI(std::string& buffer);
   static const char* INI_Name() { return "TEMPLATE"; }
   // Field-wise saved-game support, defined in ioobj.cc.
   template <class Archive>

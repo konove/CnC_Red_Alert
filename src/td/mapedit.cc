@@ -67,6 +67,7 @@
 #include <cstdlib>
 #include <memory>
 #include <span>
+#include <string>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -350,7 +351,7 @@ void MapEditClass::Read_INI(char* buffer) {
  * HISTORY:                                                                *
  *   11/16/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Write_INI(std::span<char> buffer) {
+void MapEditClass::Write_INI(std::string& buffer) {
   /*
   ----------------------- Invoke parent's Write_INI ------------------------
   */

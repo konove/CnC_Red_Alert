@@ -44,6 +44,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <string>
 #include <vector>
 
 #include "base/enum_array.h"
@@ -132,7 +133,7 @@ class DisplayClass : public MapClass {
   DisplayClass();
 
   virtual void Read_INI(char* buffer);
-  virtual void Write_INI(std::span<char> buffer);
+  virtual void Write_INI(std::string& buffer);
 
   /*
   ** Initialization

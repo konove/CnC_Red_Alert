@@ -48,6 +48,7 @@ class ArchiveWriter;
 #include <cstdint>
 #include <memory>
 #include <span>
+#include <string>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -492,7 +493,7 @@ class HouseClass {
   **	File I/O.
   */
   static void Read_INI(char* buffer);
-  static void Write_INI(std::span<char> buffer);
+  static void Write_INI(std::string& buffer);
   static void Read_Flag_INI(char* buffer);
   static void Write_Flag_INI(char* buffer);
   // Field-wise saved-game support, defined in ioobj.cc.

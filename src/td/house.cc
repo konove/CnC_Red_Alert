@@ -131,6 +131,7 @@
 #include <cstring>
 #include <memory>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -1781,7 +1782,7 @@ void HouseClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Write_INI(std::span<char> buffer) {
+void HouseClass::Write_INI(std::string& buffer) {
   for (HousesType i = HOUSE_FIRST; i < HOUSE_COUNT; i++) {
     const HouseClass* p = As_Pointer(i);
 

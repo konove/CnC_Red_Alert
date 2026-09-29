@@ -139,6 +139,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -3575,14 +3576,14 @@ void BuildingClass::Read_INI(char* buffer) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Write_INI(std::span<char> buffer) {
+void BuildingClass::Write_INI(std::string& buffer) {
   char uname[10];
   char buf[127];
 
   /*
   **	First, clear out all existing building data from the ini file.
   */
-  std::vector<char> key_storage(std::string_view(buffer.data()).size() + 2);
+  std::vector<char> key_storage(buffer.size() + 2);
   auto key_cursor = std::span(key_storage);
   char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor,

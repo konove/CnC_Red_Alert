@@ -43,21 +43,20 @@
 
 #include "td/stats.h"
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <memory>
 #include <span>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
-#include "base/bytes_of.h"
 #include "base/enum_array.h"
-#include "engine/file/game_file.h"
+#include "engine/file/profile_buffer.h"
 #include "engine/net/packet.h"
 #include "engine/platform/timer.h"
 #include "td/aircraft.h"
@@ -69,7 +68,6 @@
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
-#include "td/keyframe.h"
 #include "td/network.h"
 #include "td/object_heaps.h"
 #include "td/profile.h"
@@ -275,15 +273,11 @@ void Send_Statistics_Packet() {
     */
     char fname[128];
     char namebuffer[40];
-    char* abuffer = base::CharBytes(shape_buffer).data();
-    std::ranges::fill(shape_buffer, 0);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
-    if (const auto fileo = OpenGameFile(fname)) {
-      fileo->Read(shape_buffer.first(shape_buffer.size() - 1));
-    }
+    const std::string ini = engine::file::ReadProfileFile(fname).value_or("");
     WWGetPrivateProfileString(
         "Basic", "Name", "Nulls-Ville",
-        std::span(namebuffer).first(static_cast<std::size_t>(40)), abuffer);
+        std::span(namebuffer).first(static_cast<std::size_t>(40)), ini.c_str());
     stats.Add_Field(FIELD_SCENARIO, namebuffer);
     // stats.Add_Field(FIELD_SCENARIO, MPlayerScenarios[ScenarioIdx]);
 
