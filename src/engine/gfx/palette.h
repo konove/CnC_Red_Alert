@@ -18,9 +18,10 @@ namespace engine::gfx {
 
 // 256 PaletteColors, indexed by the 8-bit pixel values of a PixelBuffer.
 //
-// Files store palettes as 768 bytes of VGA guns (red, green, blue per entry,
-// 0..63 each); FromVga() and ToVga() convert at that boundary, and everything
-// else works on the colors.
+// Palette files store 768 bytes, red, green and blue per entry: .PAL files,
+// CPS pictures and WSA animations as the VGA's 6-bit guns (FromVga() and
+// ToVga()), PCX pictures at 8 bits (FromRgb() and ToRgb()). Everything else
+// works on the colors.
 //
 // Example:
 //   engine::gfx::Palette palette = engine::gfx::Palette::FromVga(file_bytes);
@@ -29,7 +30,7 @@ namespace engine::gfx {
 class Palette {
  public:
   static constexpr int kColorCount = 256;
-  // The size of a palette in the VGA file format: one byte per gun.
+  // The size of a palette in a file: one byte per component.
   static constexpr int kVgaSize = kColorCount * 3;
 
   // All black.
@@ -38,12 +39,22 @@ class Palette {
   // Every entry `fill`.
   explicit Palette(const PaletteColor& fill) noexcept { colors_.fill(fill); }
 
-  // Returns the palette stored in `vga`, 256 triples of 6-bit guns.
+  // Returns the palette stored in `vga`, 256 triples of 6-bit guns, each
+  // expanded by ExpandGun(). The top two bits of each byte are ignored, as
+  // the VGA DAC ignored them.
   [[nodiscard]] static Palette FromVga(
       std::span<const uint8_t, kVgaSize> vga) noexcept;
 
-  // Returns this palette as 256 triples of 6-bit guns, as files store it.
+  // Returns this palette as 256 triples of 6-bit guns: each component's top
+  // six bits.
   [[nodiscard]] std::array<uint8_t, kVgaSize> ToVga() const noexcept;
+
+  // Returns the palette stored in `rgb`, 256 triples of 8-bit components.
+  [[nodiscard]] static Palette FromRgb(
+      std::span<const uint8_t, kVgaSize> rgb) noexcept;
+
+  // Returns this palette as 256 triples of 8-bit components.
+  [[nodiscard]] std::array<uint8_t, kVgaSize> ToRgb() const noexcept;
 
   // Returns an entry; indices outside [0, 256) fail in every build.
   //
@@ -74,6 +85,12 @@ class Palette {
  private:
   std::array<PaletteColor, kColorCount> colors_{};
 };
+
+// Returns the palette `step` of `steps` of the way from `from` to `to`, as a
+// fade shows it: each component moves linearly and rounds toward `from`.
+// `steps` must be positive and `step` within 0..steps.
+[[nodiscard]] Palette BlendedPalette(const Palette& from, const Palette& to,
+                                     int step, int steps);
 
 // Reads a palette in the VGA file format (a .PAL file) from `stream`'s current
 // position. Returns nullopt if the stream ends first.

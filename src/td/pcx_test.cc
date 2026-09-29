@@ -112,7 +112,7 @@ TEST(PcxTest, WrittenFileReadsBack) {
         static_cast<uint8_t>(x % 2 == 0 ? 0xC5 : x);  // Literals and escapes.
   }
   engine::gfx::Palette palette;
-  palette.at(1) = engine::gfx::PaletteColor::FromGuns(63, 20, 1);
+  palette.at(1) = engine::gfx::PaletteColor(255, 80, 3);
 
   Write_PCX_File(path.string().c_str(), picture.view(), palette);
 

@@ -98,11 +98,8 @@ int Write_PCX_File(const char* name, PixelView& pic,
         *file, pixels.subspan(i * static_cast<std::size_t>(VP_Scan_Line),
                               static_cast<std::size_t>(header.byte_per_line)));
   }
-  // Scale the 6-bit palette components to 8 bits.
-  std::array<uint8_t, engine::gfx::Palette::kVgaSize> palcopy = palette.ToVga();
-  for (uint8_t& component : palcopy) {
-    component = static_cast<unsigned char>(component << 2);
-  }
+  const std::array<uint8_t, engine::gfx::Palette::kVgaSize> palcopy =
+      palette.ToRgb();
   i = 0x0c;
   file->Write(base::ObjectBytes(i).first(1));
   file->Write(std::as_bytes(std::span(palcopy)));

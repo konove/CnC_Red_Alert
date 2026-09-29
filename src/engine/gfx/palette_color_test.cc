@@ -41,17 +41,11 @@ TEST(ExpandGunTest, CopiesTheTopBitsDown) {
   EXPECT_EQ(ExpandGun(63), 255);
 }
 
-TEST(PaletteColorTest, FullGunsReadAsFullComponents) {
-  const PaletteColor white = PaletteColor::FromGuns(63, 63, 63);
-  EXPECT_EQ(white.red(), 255);
-  EXPECT_EQ(white.green(), 255);
-  EXPECT_EQ(white.blue(), 255);
-}
-
-TEST(PaletteColorTest, ComponentsUseTheDisplaysExpansion) {
-  for (int gun = 0; gun <= PaletteColor::kMaxGun; ++gun) {
-    EXPECT_EQ(PaletteColor::FromGuns(gun, gun, gun).red(), ExpandGun(gun));
-  }
+TEST(PaletteColorTest, KeepsEightBitComponents) {
+  constexpr PaletteColor color(255, 130, 3);
+  EXPECT_EQ(color.red(), 255);
+  EXPECT_EQ(color.green(), 130);
+  EXPECT_EQ(color.blue(), 3);
 }
 
 }  // namespace

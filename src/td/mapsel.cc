@@ -576,7 +576,7 @@ void Map_Selection() {
   show.page().view().Clear();
   TheScreen().hidden_page().view().Clear();
 
-  Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30, 63);
+  Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30);
 
   //	SeenBuff.Blit(HidPage);
   greyearth.DrawFrame(TheScreen().sys_mem_page().view(), 0);
@@ -587,7 +587,7 @@ void Map_Selection() {
 
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), "MAP1.PAL");
 
-  Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
+  Increase_Palette_Luminance(localpalette, 30, 30, 30);
 
   engine::audio::TheAudio().Play(appear1, 255,
                                  TheOptions().Normalize_Sound(110));
@@ -603,7 +603,7 @@ void Map_Selection() {
   TheScreen().sys_mem_page().view().Clear();
   greyearth2.DrawFrame(TheScreen().sys_mem_page().view(), 0);
 
-  Increase_Palette_Luminance(grey2palette, 30, 30, 30, 63);
+  Increase_Palette_Luminance(grey2palette, 30, 30, 30);
   engine::window::TheDisplay().EndFrame();
   Set_Palette(grey2palette);
 
@@ -793,7 +793,7 @@ void Map_Selection() {
 
   TheScreen().sys_mem_page().view().BlitTo(show.page().view());
 
-  Increase_Palette_Luminance(progresspalette, 30, 30, 30, 63);
+  Increase_Palette_Luminance(progresspalette, 30, 30, 30);
 
   PixelBuffer europe(TheScreen().sys_mem_page().width(),
                      TheScreen().sys_mem_page().height());
@@ -1188,7 +1188,7 @@ void Map_Selection() {
       }
     }
     //		Load_Data("DARK_E.PAL", localpalette, 768);
-    Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
+    Increase_Palette_Luminance(localpalette, 30, 30, 30);
     Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
                          "MAP_LOC2.PAL");
     Fade_Palette_To(localpalette, kFadePaletteMedium, Call_Back);
@@ -1204,7 +1204,7 @@ void Map_Selection() {
         localpalette = *palette;
       }
     }
-    Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
+    Increase_Palette_Luminance(localpalette, 30, 30, 30);
     Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
                          "MAP_LOC3.PAL");
     Set_Palette(localpalette);

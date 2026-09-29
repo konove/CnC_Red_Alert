@@ -1224,25 +1224,29 @@ bool Color_Cycle() {
 /*
 **	Pulse the pulsing text color.
 */
-#define STEP_RATE 5
-    // The last color steps every gun together; the blue gun decides when
-    // it turns around. Each gun wraps as the byte it was stored in.
+#define STEP_RATE 20
+    // The last color steps every component together; the blue one decides
+    // when it turns around.
     engine::gfx::PaletteColor& pulse = ThePalettes().game_palette().at(255);
     const int step = _up ? STEP_RATE : -STEP_RATE;
-    const auto stepped = [step](const int gun) {
-      return static_cast<uint8_t>(gun + step);
-    };
-    pulse = engine::gfx::PaletteColor::FromGuns(stepped(pulse.red_gun()),
-                                                stepped(pulse.green_gun()),
-                                                stepped(pulse.blue_gun()));
-    if (_up && pulse.blue_gun() > MAX_CYCLE_COLOR) {
-      pulse = engine::gfx::PaletteColor::FromGuns(
-          MAX_CYCLE_COLOR, MAX_CYCLE_COLOR, MAX_CYCLE_COLOR);
+    const int blue = pulse.blue() + step;
+    if (_up && blue > MAX_CYCLE_COLOR) {
+      pulse = engine::gfx::PaletteColor(MAX_CYCLE_COLOR, MAX_CYCLE_COLOR,
+                                        MAX_CYCLE_COLOR);
       _up = false;
-    } else if (!_up && pulse.blue_gun() < MIN_CYCLE_COLOR) {
-      pulse = engine::gfx::PaletteColor::FromGuns(
-          MIN_CYCLE_COLOR, MIN_CYCLE_COLOR, MIN_CYCLE_COLOR);
+    } else if (!_up && blue < MIN_CYCLE_COLOR) {
+      pulse = engine::gfx::PaletteColor(MIN_CYCLE_COLOR, MIN_CYCLE_COLOR,
+                                        MIN_CYCLE_COLOR);
       _up = true;
+    } else {
+      const auto stepped = [step](const int component) {
+        return static_cast<uint8_t>(std::clamp(
+            component + step, 0,
+            static_cast<int>(engine::gfx::PaletteColor::kMaxComponent)));
+      };
+      pulse = engine::gfx::PaletteColor(stepped(pulse.red()),
+                                        stepped(pulse.green()),
+                                        static_cast<uint8_t>(blue));
     }
     changed = true;
   }
@@ -2124,8 +2128,8 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                       Call_Back);
       TheScreen().visible_page().view().Clear();
-      ThePalettes().black_palette() = engine::gfx::Palette(
-          engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01));
+      ThePalettes().black_palette() =
+          engine::gfx::Palette(engine::gfx::kNearBlackColor);
       Set_Palette(ThePalettes().black_palette());
       ThePalettes().black_palette() = engine::gfx::Palette();
     }
@@ -2162,8 +2166,8 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     */
     if (clear_screen) {
       TheScreen().visible_page().view().Clear();
-      ThePalettes().black_palette() = engine::gfx::Palette(
-          engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01));
+      ThePalettes().black_palette() =
+          engine::gfx::Palette(engine::gfx::kNearBlackColor);
       Set_Palette(ThePalettes().black_palette());
       ThePalettes().black_palette() = engine::gfx::Palette();
       Set_Palette(ThePalettes().black_palette());

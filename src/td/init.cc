@@ -288,11 +288,11 @@ bool Init_Game() {
   ThePalettes().game_palette() = engine::gfx::Palette();
   ThePalettes().original_palette() = engine::gfx::Palette();
   ThePalettes().white_palette() =
-      engine::gfx::Palette(engine::gfx::PaletteColor::FromGuns(63, 63, 63));
+      engine::gfx::Palette(engine::gfx::kWhiteColor);
 
   DLOG(INFO) << "C&C95 - About to set palette";
-  ThePalettes().black_palette() = engine::gfx::Palette(
-      engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01));
+  ThePalettes().black_palette() =
+      engine::gfx::Palette(engine::gfx::kNearBlackColor);
   if (!TheSpecial().IsFromInstall) {
     Set_Palette(ThePalettes().black_palette());
   }
@@ -474,8 +474,7 @@ bool Init_Game() {
   *routine *	will skip that color; the VQ player will have changed that color
   *(behind *	WWLIB's back), so it will be incorrect.
   */
-  CurrentPalette = engine::gfx::Palette(
-      engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01));
+  CurrentPalette = engine::gfx::Palette(engine::gfx::kNearBlackColor);
 
   if (!TheSpecial().IsFromInstall) {
     Load_Title_Page(true);

@@ -93,11 +93,8 @@ class MovieScreen final : public VqaClient {
     std::array<uint8_t, engine::gfx::Palette::kVgaSize> colors{};
     std::ranges::copy(palette.first(std::min(palette.size(), colors.size())),
                       colors.begin());
-    for (uint8_t& color : colors) {
-      color &= 63;
-    }
     engine::gfx::Palette brightened = engine::gfx::Palette::FromVga(colors);
-    Increase_Palette_Luminance(brightened, 15, 15, 15, 63);
+    Increase_Palette_Luminance(brightened, 15, 15, 15);
     Set_Palette(brightened);
   }
 

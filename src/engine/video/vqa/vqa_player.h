@@ -61,9 +61,9 @@ struct VqaFrameView {
   int height = 0;
   // width * height 8-bit palette indexes, row by row.
   std::span<const uint8_t> pixels;
-  // The palette to show the frame with, as 8-bit R,G,B triplets of up to 256
-  // colors; empty when the palette is unchanged. A skipped frame's palette is
-  // carried over to the next frame shown.
+  // The palette to show the frame with, as R,G,B triplets of the VGA's 6-bit
+  // guns, up to 256 colors; empty when the palette is unchanged. A skipped
+  // frame's palette is carried over to the next frame shown.
   std::span<const uint8_t> palette;
 };
 

@@ -17,8 +17,8 @@
 #ifndef CNC_RED_ALERT_ENGINE_GFX_PALETTE_COLOR_H_
 #define CNC_RED_ALERT_ENGINE_GFX_PALETTE_COLOR_H_
 
-// A palette entry: one color as the VGA DAC stores it. Originally Westwood's
-// RGB.H (Joe L. Bostic, December 1995).
+// A palette entry: one color at 8 bits a component. Originally Westwood's
+// RGB.H (Joe L. Bostic, December 1995), which held the VGA DAC's 6-bit guns.
 
 #include <cstdint>
 
@@ -27,19 +27,15 @@ namespace engine::gfx {
 class HsvColor;
 
 // Returns the 6-bit VGA gun 'gun' (0..63) at 8 bits, copying its top bits into
-// the bottom two so that 0 stays 0 and 63 becomes 255. The one expansion the
-// display, the 8-bit accessors and the HSV conversion all use; it is
-// (gun << 2) | (gun >> 4), written arithmetically.
-[[nodiscard]] constexpr int ExpandGun(const int gun) {
-  return (gun * 4) + (gun / 16);
+// the bottom two so that 0 stays 0 and 63 becomes 255, as the VGA DAC showed
+// it. Palette files store 6-bit guns and are expanded this way on loading; it
+// is (gun << 2) | (gun >> 4), written arithmetically.
+[[nodiscard]] constexpr uint8_t ExpandGun(const int gun) {
+  return static_cast<uint8_t>((gun * 4) + (gun / 16));
 }
 
-// One palette color, held at the VGA DAC's 6 bits per gun (0..63).
-//
-// The interface speaks 8-bit components: the constructor takes 0..255 and
-// red(), green() and blue() return 0..255. Red Alert's PaletteClass is an array
-// of these that is also handed out as the raw 768-byte palette, so the three
-// one-byte members are the palette file format.
+// One palette color: red, green and blue, 0..255 each, as the screen shows
+// them.
 //
 // Example:
 //   constexpr engine::gfx::PaletteColor kEmber(255, 80, 80);
@@ -50,30 +46,16 @@ class PaletteColor {
   // Black.
   constexpr PaletteColor() = default;
 
-  // Takes 8-bit components and keeps their top 6 bits.
   constexpr PaletteColor(const uint8_t red, const uint8_t green,
                          const uint8_t blue) noexcept
-      : red_(red >> 2), green_(green >> 2), blue_(blue >> 2) {}
-
-  // Returns the color with VGA guns 'red', 'green' and 'blue', each 0..63, as
-  // a raw 768-byte palette stores them.
-  [[nodiscard]] static constexpr PaletteColor FromGuns(const int red,
-                                                       const int green,
-                                                       const int blue) {
-    PaletteColor color;
-    color.red_ = static_cast<uint8_t>(red);
-    color.green_ = static_cast<uint8_t>(green);
-    color.blue_ = static_cast<uint8_t>(blue);
-    return color;
-  }
+      : red_(red), green_(green), blue_(blue) {}
 
   // Returns this color as hue, saturation and value, each 0..255, on the
-  // hexagonal color wheel; see HsvColor for the scale. The guns are read at 8
-  // bits, as red(), green() and blue() return them. A grey has hue and
+  // hexagonal color wheel; see HsvColor for the scale. A grey has hue and
   // saturation 0.
   [[nodiscard]] HsvColor ToHsv() const;
 
-  // The brightest 8-bit component the constructor takes.
+  // The brightest component.
   static constexpr uint8_t kMaxComponent = 255;
   // The brightest VGA gun; 63, not 64, since this is a maximum, not a range.
   static constexpr int kMaxGun = 63;
@@ -82,43 +64,44 @@ class PaletteColor {
   // fades do.
   //
   // 'ratio' is how far to go, from 0 (no change) to 255 (becomes 'target');
-  // values outside 0..255 are clamped. Each gun rounds down, so one rising
-  // toward the target reaches it only at 255.
+  // values outside 0..255 are clamped. Each component rounds down, so one
+  // rising toward the target reaches it only at 255.
   [[nodiscard]] PaletteColor FadedToward(int ratio,
                                          const PaletteColor& target) const;
 
-  // Returns the squared Euclidean distance between this color and 'other',
-  // measured on the 6-bit guns (0..3 * 63 * 63). Used to find the closest
-  // palette match without square roots; 0 means the colors are identical.
+  // Returns the squared Euclidean distance between this color and 'other'
+  // (0..3 * 255 * 255). Used to find the closest palette match without square
+  // roots; 0 means the colors are identical.
   [[nodiscard]] int SquaredDistance(const PaletteColor& other) const;
 
-  // The guns at the 8-bit scale, 0..255, expanded by ExpandGun() as the
-  // display does.
-  [[nodiscard]] constexpr int red() const { return ExpandGun(red_); }
-  [[nodiscard]] constexpr int green() const { return ExpandGun(green_); }
-  [[nodiscard]] constexpr int blue() const { return ExpandGun(blue_); }
-
-  // The VGA guns as stored, 0..63.
-  [[nodiscard]] constexpr int red_gun() const { return red_; }
-  [[nodiscard]] constexpr int green_gun() const { return green_; }
-  [[nodiscard]] constexpr int blue_gun() const { return blue_; }
+  [[nodiscard]] constexpr int red() const { return red_; }
+  [[nodiscard]] constexpr int green() const { return green_; }
+  [[nodiscard]] constexpr int blue() const { return blue_; }
 
   friend constexpr bool operator==(const PaletteColor&,
                                    const PaletteColor&) = default;
 
  private:
-  // The guns as the VGA DAC takes them, 0..63. Their order and size are the
-  // palette's byte layout.
   uint8_t red_{0};
   uint8_t green_{0};
   uint8_t blue_{0};
 };
 
-// PaletteClass hands its entries out as the raw 768-byte palette.
+// A palette of 256 entries stays 768 bytes.
 static_assert(sizeof(PaletteColor) == 3);
 
 // Black, the target of fades to black.
 inline constexpr PaletteColor kBlackColor(0, 0, 0);
+
+// Full-intensity white.
+inline constexpr PaletteColor kWhiteColor(PaletteColor::kMaxComponent,
+                                          PaletteColor::kMaxComponent,
+                                          PaletteColor::kMaxComponent);
+
+// The darkest grey the VGA could show (gun 1). The games briefly set an
+// all-near-black palette so that the black one after it differs in every
+// entry.
+inline constexpr PaletteColor kNearBlackColor(4, 4, 4);
 
 }  // namespace engine::gfx
 

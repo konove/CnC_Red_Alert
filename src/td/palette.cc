@@ -3,7 +3,6 @@
 #include <algorithm>
 
 #include "engine/gfx/palette.h"
-#include "engine/gfx/palette_color.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
@@ -24,30 +23,12 @@ void Fade_Palette_To(const engine::gfx::Palette& palette, int fade,
     // fade to new palette
     const auto start_time = engine::platform::SystemTicks();
 
-    engine::gfx::Palette fade_palette;
-
     while (true) {
       const int cur_time = std::min<int>(
           static_cast<int>(engine::platform::SystemTicks() - start_time), fade);
 
-      // Each gun steps linearly from the current palette's to the new one's.
-      const auto blend = [cur_time, fade](const int old_gun,
-                                          const int new_gun) {
-        const auto six_bits = [](const int gun) {
-          return static_cast<int>(static_cast<unsigned>(gun) & 0x3FU);
-        };
-        const int old_val = six_bits(old_gun);
-        const int new_val = six_bits(new_gun);
-        return old_val + ((new_val - old_val) * cur_time / fade);
-      };
-      for (int i = 0; i < engine::gfx::Palette::kColorCount; ++i) {
-        const engine::gfx::PaletteColor& from = CurrentPalette.at(i);
-        const engine::gfx::PaletteColor& to = palette.at(i);
-        fade_palette.at(i) = engine::gfx::PaletteColor::FromGuns(
-            blend(from.red_gun(), to.red_gun()),
-            blend(from.green_gun(), to.green_gun()),
-            blend(from.blue_gun(), to.blue_gun()));
-      }
+      const engine::gfx::Palette fade_palette =
+          engine::gfx::BlendedPalette(CurrentPalette, palette, cur_time, fade);
 
       ShowPalette(fade_palette);
       if (callback) {

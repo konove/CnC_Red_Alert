@@ -10,16 +10,25 @@
 namespace engine::gfx {
 namespace {
 
+// The color with VGA guns `r`, `g` and `b` (0..63), as a palette file
+// loads it.
+PaletteColor Guns(const int r, const int g, const int b) {
+  return {ExpandGun(r), ExpandGun(g), ExpandGun(b)};
+}
+
+// A component's top six bits, the VGA gun it came from.
+int GunOf(const int component) { return component / 4; }
+
 std::array<int, 3> HsvToGuns(const int h, const int s, const int v) {
   const PaletteColor color =
       HsvColor(static_cast<uint8_t>(h), static_cast<uint8_t>(s),
                static_cast<uint8_t>(v))
           .ToPaletteColor();
-  return {color.red_gun(), color.green_gun(), color.blue_gun()};
+  return {GunOf(color.red()), GunOf(color.green()), GunOf(color.blue())};
 }
 
 std::array<int, 3> GunsToHsv(const int r, const int g, const int b) {
-  const HsvColor hsv = PaletteColor::FromGuns(r, g, b).ToHsv();
+  const HsvColor hsv = Guns(r, g, b).ToHsv();
   return {hsv.hue(), hsv.saturation(), hsv.value()};
 }
 
@@ -58,15 +67,14 @@ TEST(HsvColorTest, PaletteRoundTripIsWithinOneStep) {
   for (int r = 0; r <= PaletteColor::kMaxGun; ++r) {
     for (int g = 0; g <= PaletteColor::kMaxGun; ++g) {
       for (int b = 0; b <= PaletteColor::kMaxGun; ++b) {
-        const PaletteColor color =
-            PaletteColor::FromGuns(r, g, b).ToHsv().ToPaletteColor();
-        ASSERT_LE(std::abs(color.red_gun() - r), 1)
+        const PaletteColor color = Guns(r, g, b).ToHsv().ToPaletteColor();
+        ASSERT_LE(std::abs(GunOf(color.red()) - r), 1)
             << r << "," << g << "," << b;
-        ASSERT_LE(std::abs(color.green_gun() - g), 1)
+        ASSERT_LE(std::abs(GunOf(color.green()) - g), 1)
             << r << "," << g << "," << b;
-        ASSERT_LE(std::abs(color.blue_gun() - b), 1)
+        ASSERT_LE(std::abs(GunOf(color.blue()) - b), 1)
             << r << "," << g << "," << b;
-        if (color.SquaredDistance(PaletteColor::FromGuns(r, g, b)) != 0) {
+        if (color != Guns(r, g, b)) {
           ++changed;
         }
       }
@@ -79,8 +87,8 @@ TEST(HsvColorTest, PaletteRoundTripIsWithinOneStep) {
 }
 
 TEST(HsvColorTest, FullGunsReadAsFullValue) {
-  EXPECT_EQ(PaletteColor::FromGuns(63, 63, 63).ToHsv().value(), 255);
-  EXPECT_EQ(PaletteColor::FromGuns(0, 0, 63).ToHsv().hue(), 170);
+  EXPECT_EQ(Guns(63, 63, 63).ToHsv().value(), 255);
+  EXPECT_EQ(Guns(0, 0, 63).ToHsv().hue(), 170);
 }
 
 }  // namespace

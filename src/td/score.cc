@@ -788,7 +788,7 @@ void ScoreClass::Show() {
   TheMouse().Hide();
   anim.DrawFrame(TheScreen().sys_mem_page().view(), 1);
   TheScreen().sys_mem_page().view().BlitTo(show.page().view());
-  Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30, 63);
+  Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30);
 
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), inter_pal);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteFast, Call_Back);
@@ -2180,7 +2180,7 @@ void Multi_Score_Presentation() {
   ** Display the background animation
   */
   TheScreen().visible_page().view().Clear();
-  Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30, 63);
+  Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30);
   anim.DrawFrame(show.page().view(), 1);
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
                        "MULTSCOR.PAL");

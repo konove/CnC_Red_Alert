@@ -113,6 +113,12 @@ add_gtest(
 )
 
 add_gtest(
+    NAME td_interpal_test
+    SOURCES interpal_test.cc interpal.cc
+    LIBS base engine_window
+)
+
+add_gtest(
     NAME td_support_test
     SOURCES support_test.cc support.cc
     LIBS base engine_gfx absl::check

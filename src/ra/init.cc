@@ -347,14 +347,12 @@ bool Init_Game() {
       Play_Intro();
       MarkLogoPlayed();
     }
-    PaletteClass::CurrentPalette =
-        engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01);
+    PaletteClass::CurrentPalette = engine::gfx::kNearBlackColor;
     ThePalettes().white_palette().Set();
   } else {
     // The first launch plays the full intro instead, which counts.
     MarkLogoPlayed();
-    PaletteClass::CurrentPalette =
-        engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01);
+    PaletteClass::CurrentPalette = engine::gfx::kNearBlackColor;
   }
 
   /*

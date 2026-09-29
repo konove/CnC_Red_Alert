@@ -314,8 +314,8 @@ void Choose_Side() {
     ** Make sure the screen's fully clear after the movie plays
     */
     TheScreen().visible_page().view().Clear();
-    ThePalettes().black_palette() = engine::gfx::Palette(
-        engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01));
+    ThePalettes().black_palette() =
+        engine::gfx::Palette(engine::gfx::kNearBlackColor);
     Set_Palette(ThePalettes().black_palette());
     ThePalettes().black_palette() = engine::gfx::Palette();
   } else {

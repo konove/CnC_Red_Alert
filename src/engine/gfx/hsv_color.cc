@@ -28,15 +28,14 @@ namespace engine::gfx {
 PaletteColor HsvColor::ToPaletteColor() const {
   const auto [red, green, blue] = base::HsvToRgb8(hue(), saturation(), value());
 
-  // Round each gun to the nearest 6-bit step rather than dropping the low two
-  // bits, which is what keeps PaletteColor::ToHsv() followed by this within
-  // one step of the original color.
-  const auto scale_down = [](const int component) {
-    return base::DivideWithRound(component * PaletteColor::kMaxGun,
-                                 PaletteColor::kMaxComponent);
+  // Round each component to the nearest 6-bit VGA step rather than dropping
+  // the low two bits, which is what keeps PaletteColor::ToHsv() followed by
+  // this within one step of the original color.
+  const auto to_vga_step = [](const int component) {
+    return ExpandGun(base::DivideWithRound(component * PaletteColor::kMaxGun,
+                                           PaletteColor::kMaxComponent));
   };
-  return PaletteColor::FromGuns(scale_down(red), scale_down(green),
-                                scale_down(blue));
+  return {to_vga_step(red), to_vga_step(green), to_vga_step(blue)};
 }
 
 }  // namespace engine::gfx

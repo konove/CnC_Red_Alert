@@ -34,7 +34,9 @@ namespace {
 // Returns a 6-bit VGA palette that is black but for `color` at `index`.
 engine::gfx::Palette PaletteWith(int index, int red, int green, int blue) {
   engine::gfx::Palette palette;
-  palette.at(index) = engine::gfx::PaletteColor::FromGuns(red, green, blue);
+  palette.at(index) = engine::gfx::PaletteColor(engine::gfx::ExpandGun(red),
+                                                engine::gfx::ExpandGun(green),
+                                                engine::gfx::ExpandGun(blue));
   return palette;
 }
 
@@ -170,6 +172,20 @@ TEST_F(DisplayTest, PresentsWhatThePageDrewInThePalette) {
   display().EndFrame();
 
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 0, 255}));
+}
+
+// Palettes hold 8-bit components, and the screen shows them unchanged.
+TEST_F(DisplayTest, ShowsEveryEightBitComponent) {
+  PixelBuffer page;
+  page.Init(2, 2, display());
+  engine::gfx::Palette palette;
+  palette.at(1) = engine::gfx::PaletteColor(1, 129, 254);
+  display().SetPalette(palette);
+
+  page.view().Clear(1);
+  display().EndFrame();
+
+  EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{1, 129, 254}));
 }
 
 TEST_F(DisplayTest, ResetVideoModeTakesTheSurfaceAway) {

@@ -220,16 +220,13 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
       }
     }
     if (palette != nullptr) {
-      // The file's palette is 8 bits a gun; the VGA took the top 6.
-      std::array<uint8_t, engine::gfx::Palette::kVgaSize> vga{};
+      // The file's palette is 8 bits a component.
+      std::array<uint8_t, engine::gfx::Palette::kVgaSize> rgb{};
       file_handle->Seek(-engine::gfx::Palette::kVgaSize, SeekOrigin::kEnd);
-      if (file_handle->Read(std::span(vga)) != engine::gfx::Palette::kVgaSize) {
+      if (file_handle->Read(std::span(rgb)) != engine::gfx::Palette::kVgaSize) {
         return false;
       }
-      for (auto& color : vga) {
-        color >>= 2;
-      }
-      *palette = engine::gfx::Palette::FromVga(vga);
+      *palette = engine::gfx::Palette::FromRgb(rgb);
     }
     return true;
   }();

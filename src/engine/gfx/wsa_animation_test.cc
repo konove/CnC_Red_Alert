@@ -205,8 +205,8 @@ TEST(WsaTest, ReadsTheAttachedPalette) {
   const WsaAnimation animation(stream, &palette);
   ASSERT_TRUE(animation.is_open());
 
-  EXPECT_EQ(palette.at(0), engine::gfx::PaletteColor::FromGuns(0, 1, 2));
-  EXPECT_EQ(palette.at(70), engine::gfx::PaletteColor::FromGuns(6, 1, 2));
+  EXPECT_EQ(palette.at(0), engine::gfx::PaletteColor(0, 4, 8));
+  EXPECT_EQ(palette.at(70), engine::gfx::PaletteColor(24, 4, 8));
 }
 
 TEST(WsaTest, AnimateStopsAtFrameItCannotLoad) {

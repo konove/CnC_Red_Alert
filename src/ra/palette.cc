@@ -33,34 +33,16 @@ void PaletteClass::Set(int fade, void (*callback)()) {
     fade = 0;
   }
 
-  if (fade) {
+  if (fade > 0) {
     const auto start_time = engine::platform::SystemTicks();
-
-    engine::gfx::Palette fade_palette;
 
     while (true) {
       const int64_t now = engine::platform::SystemTicks();
       const int cur_time =
           static_cast<int>(std::min<int64_t>(now - start_time, fade));
 
-      // Each gun steps linearly from the current palette's to this one's.
-      const auto blend = [cur_time, fade](const int old_gun,
-                                          const int new_gun) {
-        const auto six_bits = [](const int gun) {
-          return static_cast<int>(static_cast<unsigned>(gun) & 0x3FU);
-        };
-        const int old_val = six_bits(old_gun);
-        const int new_val = six_bits(new_gun);
-        return old_val + ((new_val - old_val) * cur_time / fade);
-      };
-      for (int i = 0; i < COLOR_COUNT; i++) {
-        const engine::gfx::PaletteColor& from = CurrentPalette.at(i);
-        const engine::gfx::PaletteColor& to = at(i);
-        fade_palette.at(i) = engine::gfx::PaletteColor::FromGuns(
-            blend(from.red_gun(), to.red_gun()),
-            blend(from.green_gun(), to.green_gun()),
-            blend(from.blue_gun(), to.blue_gun()));
-      }
+      const engine::gfx::Palette fade_palette =
+          engine::gfx::BlendedPalette(CurrentPalette, *this, cur_time, fade);
 
       ShowPalette(fade_palette);
       if (callback) {

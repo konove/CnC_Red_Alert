@@ -55,9 +55,11 @@ class Palette;
 #define SIZE_OF_PALETTE 256
 
 // Palette interpolation functions
+// Brightens every color of `palette` by the given percentages, each component
+// stopping at full intensity.
 void Increase_Palette_Luminance(engine::gfx::Palette& palette,
                                 int red_percentage, int green_percentage,
-                                int blue_percentage, int cap);
+                                int blue_percentage);
 void Interpolate_2X_Scale(PixelBuffer* source, PixelView* dest,
                           const char* palette_file_name);
 

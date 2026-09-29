@@ -77,8 +77,10 @@ TEST(OptionsHotkeysTest, RoundTripsEveryDefault) {
 PaletteClass SpreadPalette() {
   PaletteClass palette;
   for (int index = 0; index < PaletteClass::COLOR_COUNT; ++index) {
-    palette.at(index) = engine::gfx::PaletteColor::FromGuns(
-        index % 64, (index * 7) % 64, (index * 13) % 64);
+    palette.at(index) =
+        engine::gfx::PaletteColor(engine::gfx::ExpandGun(index % 64),
+                                  engine::gfx::ExpandGun((index * 7) % 64),
+                                  engine::gfx::ExpandGun((index * 13) % 64));
   }
   return palette;
 }
@@ -116,8 +118,8 @@ TEST(OptionsAdjustPaletteTest, NoColorTurnsEveryEntryGrey) {
       continue;
     }
     const engine::gfx::PaletteColor& color = adjusted.at(index);
-    EXPECT_EQ(color.red_gun(), color.green_gun()) << "index " << index;
-    EXPECT_EQ(color.green_gun(), color.blue_gun()) << "index " << index;
+    EXPECT_EQ(color.red(), color.green()) << "index " << index;
+    EXPECT_EQ(color.green(), color.blue()) << "index " << index;
   }
 }
 

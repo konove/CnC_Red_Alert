@@ -14,10 +14,12 @@ using engine::gfx::Palette;
 using engine::gfx::PaletteColor;
 
 void SetColor(Palette& palette, int index, int red, int green, int blue) {
-  palette.at(index) = PaletteColor::FromGuns(red, green, blue);
+  palette.at(index) =
+      PaletteColor(engine::gfx::ExpandGun(red), engine::gfx::ExpandGun(green),
+                   engine::gfx::ExpandGun(blue));
 }
 
-constexpr PaletteColor kWhiteGuns = PaletteColor::FromGuns(63, 63, 63);
+constexpr PaletteColor kWhiteGuns(255, 255, 255);
 
 TEST(BuildFadingTableTest, FullFadeReachesTargetWithDistinctGuns) {
   // Every gun of the target differs, so a builder that mixes up the guns

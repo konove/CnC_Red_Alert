@@ -44,6 +44,7 @@
 #include "ra/interpal.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <span>
 
 #include "engine/gfx/palette.h"
@@ -60,7 +61,6 @@
  * percentage increase of red
  * percentage increase of green
  * percentage increase of blue
- * cap value for colours
  *                                                                                             *
  *                                                                                             *
  * OUTPUT:   Nothing *
@@ -72,21 +72,16 @@
 
 void Increase_Palette_Luminance(engine::gfx::Palette& palette,
                                 int red_percentage, int green_percentage,
-                                int blue_percentage, int cap) {
+                                int blue_percentage) {
+  const auto brighten = [](const int component, const int percentage) {
+    return static_cast<uint8_t>(
+        std::min<int>(component + (component * percentage / 100),
+                      engine::gfx::PaletteColor::kMaxComponent));
+  };
   for (engine::gfx::PaletteColor& color : palette.colors()) {
-    int red = color.red_gun();
-    int green = color.green_gun();
-    int blue = color.blue_gun();
-
-    red += red * red_percentage / 100;
-    green += green * green_percentage / 100;
-    blue += blue * blue_percentage / 100;
-
-    red = std::min(cap, red);
-    green = std::min(cap, green);
-    blue = std::min(cap, blue);
-
-    color = engine::gfx::PaletteColor::FromGuns(red, green, blue);
+    color = engine::gfx::PaletteColor(brighten(color.red(), red_percentage),
+                                      brighten(color.green(), green_percentage),
+                                      brighten(color.blue(), blue_percentage));
   }
 }
 

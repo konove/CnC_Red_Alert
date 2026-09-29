@@ -1779,10 +1779,11 @@ inline constexpr int kArmorCount = static_cast<int>(ARMOR_COUNT);
 #define CYCLE_COLOR_COUNT 7
 
 /**********************************************************************
-**	Magic color fading pulsing effect limts -- color gun value.
+**	Magic color fading pulsing effect limts -- color component value, the
+**	VGA guns 16 and 63 at 8 bits.
 */
-#define MIN_CYCLE_COLOR 16
-#define MAX_CYCLE_COLOR 63
+#define MIN_CYCLE_COLOR 65
+#define MAX_CYCLE_COLOR 255
 
 /**********************************************************************
 **	The game's six and eight point fonts have these names.

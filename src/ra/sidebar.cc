@@ -1176,11 +1176,14 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     };
 
     /*
-    **	Make sure that remapping doesn't occur on the colors that cycle.
+    **	Make sure that remapping doesn't occur on the colors that cycle, by
+    **	making them white, far from anything a fade toward black aims at. The
+    **	original meant the same with the 6-bit 0x3F, which its 8-bit
+    **	constructor turned into dark grey.
     */
     PaletteClass pal = ThePalettes().original_palette();
     std::ranges::fill(pal.colors().subspan(kCycleColorStart, kCycleColorCount),
-                      engine::gfx::PaletteColor(0x3f, 0x3f, 0x3f));
+                      engine::gfx::kWhiteColor);
     Build_Translucent_Table(pal, base::Suffix(ClockCols, 0), 1,
                             ClockTranslucentTable);
 

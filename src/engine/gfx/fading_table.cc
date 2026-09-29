@@ -18,11 +18,11 @@ std::span<uint8_t> Build_Fading_Table(const engine::gfx::Palette& palette,
   // Fractions above 255 become 255.
   frac = std::min<int>(frac, 255);
 
-  // Record the target gun values.
+  // Record the target components.
   const engine::gfx::PaletteColor& target = palette.at(color);
-  const auto targetred = static_cast<uint8_t>(target.red_gun());
-  const auto targetgreen = static_cast<uint8_t>(target.green_gun());
-  const auto targetblue = static_cast<uint8_t>(target.blue_gun());
+  const auto targetred = static_cast<uint8_t>(target.red());
+  const auto targetgreen = static_cast<uint8_t>(target.green());
+  const auto targetblue = static_cast<uint8_t>(target.blue());
 
   // Main loop
 
@@ -33,9 +33,9 @@ std::span<uint8_t> Build_Fading_Table(const engine::gfx::Palette& palette,
 
   for (int remap_index = 1; remap_index < 256; remap_index++) {
     const engine::gfx::PaletteColor& orig = palette.at(remap_index);
-    const auto origred = static_cast<uint8_t>(orig.red_gun());
-    const auto origgreen = static_cast<uint8_t>(orig.green_gun());
-    const auto origblue = static_cast<uint8_t>(orig.blue_gun());
+    const auto origred = static_cast<uint8_t>(orig.red());
+    const auto origgreen = static_cast<uint8_t>(orig.green());
+    const auto origblue = static_cast<uint8_t>(orig.blue());
 
     auto tmp = static_cast<uint16_t>((origred - targetred) * (frac / 2));
     const auto idealred = static_cast<uint8_t>(origred - (tmp >> 7));
@@ -59,11 +59,11 @@ std::span<uint8_t> Build_Fading_Table(const engine::gfx::Palette& palette,
         // Build the comparison value based on the sum of the differences of the
         // color guns squared
         const engine::gfx::PaletteColor& candidate = palette.at(color_index);
-        int diff = candidate.red_gun() - idealred;
+        int diff = candidate.red() - idealred;
         compval += diff * diff;
-        diff = candidate.green_gun() - idealgreen;
+        diff = candidate.green() - idealgreen;
         compval += diff * diff;
-        diff = candidate.blue_gun() - idealblue;
+        diff = candidate.blue() - idealblue;
         compval += diff * diff;
 
         if (compval == 0)  // If perfect match found then quit early.

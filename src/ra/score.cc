@@ -389,7 +389,7 @@ void ScoreClass::Presentation() {
   TheMouse().Hide();
   Load_Title_Screen(base::At(ScreenNames, house), &TheScreen().hidden_view(),
                     score_palette);
-  Increase_Palette_Luminance(score_palette, 30, 30, 30, 63);
+  Increase_Palette_Luminance(score_palette, 30, 30, 30);
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   score_palette.Set(kFadePaletteFast, ServiceRealTime);
   engine::audio::TheAudio().Play(country4, 255,

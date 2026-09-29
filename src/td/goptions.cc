@@ -461,8 +461,8 @@ void GameOptionsClass::Process() {
               Play_Movie(TheWorld().action_movie());
             }
             // BreakoutAllowed = false;
-            ThePalettes().black_palette() = engine::gfx::Palette(
-                engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01));
+            ThePalettes().black_palette() =
+                engine::gfx::Palette(engine::gfx::kNearBlackColor);
             Set_Palette(ThePalettes().black_palette());
             ThePalettes().black_palette() = engine::gfx::Palette();
             Set_Palette(ThePalettes().black_palette());

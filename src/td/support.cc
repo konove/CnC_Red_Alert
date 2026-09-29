@@ -27,11 +27,11 @@ std::span<uint8_t> Conquer_Build_Fading_Table(
   // Fractions above 255 become 255.
   frac = std::min(frac, 255);
 
-  // Record the target gun values.
+  // Record the target components.
   const engine::gfx::PaletteColor& target = palette.at(color);
-  const int targetred = target.red_gun();
-  const int targetgreen = target.green_gun();
-  const int targetblue = target.blue_gun();
+  const int targetred = target.red();
+  const int targetgreen = target.green();
+  const int targetblue = target.blue();
 
   // Main loop
 
@@ -43,9 +43,9 @@ std::span<uint8_t> Conquer_Build_Fading_Table(
   int remap_index = 0;
   for (remap_index = 1; remap_index < ALLOWED_START; remap_index++) {
     const engine::gfx::PaletteColor& orig = palette.at(remap_index);
-    const int origred = orig.red_gun();
-    const int origgreen = orig.green_gun();
-    const int origblue = orig.blue_gun();
+    const int origred = orig.red();
+    const int origgreen = orig.green();
+    const int origblue = orig.blue();
 
     // The products can be negative; the shifts floor them as the original
     // table builder did, so the palette comes out identical.
@@ -73,11 +73,11 @@ std::span<uint8_t> Conquer_Build_Fading_Table(
       // Build the comparison value based on the sum of the differences of the
       // color guns squared
       const engine::gfx::PaletteColor& candidate = palette.at(color_index);
-      int diff = candidate.red_gun() - idealred;
+      int diff = candidate.red() - idealred;
       compval += diff * diff;
-      diff = candidate.green_gun() - idealgreen;
+      diff = candidate.green() - idealgreen;
       compval += diff * diff;
-      diff = candidate.blue_gun() - idealblue;
+      diff = candidate.blue() - idealblue;
       compval += diff * diff;
 
       if (compval == 0)  // If perfect match found then quit early.

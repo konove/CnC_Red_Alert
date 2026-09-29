@@ -37,8 +37,8 @@ PaletteColor PaletteColor::FadedToward(const int ratio,
   // target; dividing by 255 makes 255 land on it exactly.
   const float t = static_cast<float>(clamped_ratio) / 255.0F;
 
-  // std::lerp() stays between the two guns for t in [0, 1], so the result
-  // fits the 6-bit range; the cast rounds each gun down.
+  // std::lerp() stays between the two components for t in [0, 1], so the
+  // result fits a byte; the cast rounds each one down.
   const auto fade = [t](const uint8_t from, const uint8_t to) {
     return static_cast<uint8_t>(
         std::lerp(static_cast<float>(from), static_cast<float>(to), t));

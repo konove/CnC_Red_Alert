@@ -15,7 +15,9 @@ using engine::gfx::Palette;
 using engine::gfx::PaletteColor;
 
 void SetColor(Palette& palette, int index, int red, int green, int blue) {
-  palette.at(index) = PaletteColor::FromGuns(red, green, blue);
+  palette.at(index) =
+      PaletteColor(engine::gfx::ExpandGun(red), engine::gfx::ExpandGun(green),
+                   engine::gfx::ExpandGun(blue));
 }
 
 TEST(ConquerBuildFadingTableTest, FullFadeReachesTargetWithDistinctGuns) {
@@ -37,7 +39,7 @@ TEST(ConquerBuildFadingTableTest, FullFadeReachesTargetWithDistinctGuns) {
 }
 
 TEST(ConquerBuildFadingTableTest, CandidateColorsMapToThemselves) {
-  Palette palette(PaletteColor::FromGuns(30, 30, 30));
+  Palette palette(PaletteColor(121, 121, 121));
   std::array<uint8_t, 256> table{};
 
   Conquer_Build_Fading_Table(palette, table, 245, 200);

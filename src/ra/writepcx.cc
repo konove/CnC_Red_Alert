@@ -139,13 +139,8 @@ int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
   const unsigned char ender = 0x0C;
   file.WriteObject(ender);
 
-  /*
-  **	Convert the palette from 6 bit to 8 bit format.
-  */
-  std::array<uint8_t, engine::gfx::Palette::kVgaSize> palcopy = palette.ToVga();
-  for (uint8_t& component : palcopy) {
-    component = static_cast<unsigned char>(component << 2);
-  }
+  const std::array<uint8_t, engine::gfx::Palette::kVgaSize> palcopy =
+      palette.ToRgb();
 
   /*
   **	Write the palette out.
