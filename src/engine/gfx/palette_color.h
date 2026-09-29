@@ -26,10 +26,18 @@ namespace engine::gfx {
 
 class HsvColor;
 
+// Returns the 6-bit VGA gun 'gun' (0..63) at 8 bits, copying its top bits into
+// the bottom two so that 0 stays 0 and 63 becomes 255. The one expansion the
+// display, the 8-bit accessors and the HSV conversion all use; it is
+// (gun << 2) | (gun >> 4), written arithmetically.
+[[nodiscard]] constexpr int ExpandGun(const int gun) {
+  return (gun * 4) + (gun / 16);
+}
+
 // One palette color, held at the VGA DAC's 6 bits per gun (0..63).
 //
 // The interface speaks 8-bit components: the constructor takes 0..255 and
-// red(), green() and blue() return 0..252. Red Alert's PaletteClass is an array
+// red(), green() and blue() return 0..255. Red Alert's PaletteClass is an array
 // of these that is also handed out as the raw 768-byte palette, so the three
 // one-byte members are the palette file format.
 //
@@ -60,9 +68,9 @@ class PaletteColor {
   }
 
   // Returns this color as hue, saturation and value, each 0..255, on the
-  // hexagonal color wheel; see HsvColor for the scale. The guns are scaled to
-  // 0..255 with 63 reading as 255, unlike red(), green() and blue(). A grey
-  // has hue and saturation 0.
+  // hexagonal color wheel; see HsvColor for the scale. The guns are read at 8
+  // bits, as red(), green() and blue() return them. A grey has hue and
+  // saturation 0.
   [[nodiscard]] HsvColor ToHsv() const;
 
   // The brightest 8-bit component the constructor takes.
@@ -84,15 +92,11 @@ class PaletteColor {
   // palette match without square roots; 0 means the colors are identical.
   [[nodiscard]] int SquaredDistance(const PaletteColor& other) const;
 
-  // The guns back at the 8-bit scale: the stored 6 bits shifted up by two,
-  // so full intensity reads as 252, not 255.
-  //
-  // TODO: The '/ 64' term is the original '>> 6', always 0 for a 6-bit gun;
-  // '>> 4' would copy the top bits down and make 63 read as 255. Changing it
-  // shifts closest-color matches and the WOLAPI palette.
-  [[nodiscard]] constexpr int red() const { return ToEightBits(red_); }
-  [[nodiscard]] constexpr int green() const { return ToEightBits(green_); }
-  [[nodiscard]] constexpr int blue() const { return ToEightBits(blue_); }
+  // The guns at the 8-bit scale, 0..255, expanded by ExpandGun() as the
+  // display does.
+  [[nodiscard]] constexpr int red() const { return ExpandGun(red_); }
+  [[nodiscard]] constexpr int green() const { return ExpandGun(green_); }
+  [[nodiscard]] constexpr int blue() const { return ExpandGun(blue_); }
 
   // The VGA guns as stored, 0..63.
   [[nodiscard]] constexpr int red_gun() const { return red_; }
@@ -100,10 +104,6 @@ class PaletteColor {
   [[nodiscard]] constexpr int blue_gun() const { return blue_; }
 
  private:
-  static constexpr int ToEightBits(const uint8_t gun) {
-    return (gun * 4) + (gun / 64);
-  }
-
   // The guns as the VGA DAC takes them, 0..63. Their order and size are the
   // palette's byte layout.
   uint8_t red_{0};

@@ -33,5 +33,26 @@ TEST(PaletteColorFadedTowardTest, LeavesTheSourceUntouched) {
   ExpectSameColor(source, kOrange);
 }
 
+TEST(ExpandGunTest, CopiesTheTopBitsDown) {
+  EXPECT_EQ(ExpandGun(0), 0);
+  EXPECT_EQ(ExpandGun(1), 4);
+  EXPECT_EQ(ExpandGun(16), 65);
+  EXPECT_EQ(ExpandGun(48), 195);
+  EXPECT_EQ(ExpandGun(63), 255);
+}
+
+TEST(PaletteColorTest, FullGunsReadAsFullComponents) {
+  const PaletteColor white = PaletteColor::FromGuns(63, 63, 63);
+  EXPECT_EQ(white.red(), 255);
+  EXPECT_EQ(white.green(), 255);
+  EXPECT_EQ(white.blue(), 255);
+}
+
+TEST(PaletteColorTest, ComponentsUseTheDisplaysExpansion) {
+  for (int gun = 0; gun <= PaletteColor::kMaxGun; ++gun) {
+    EXPECT_EQ(PaletteColor::FromGuns(gun, gun, gun).red(), ExpandGun(gun));
+  }
+}
+
 }  // namespace
 }  // namespace engine::gfx

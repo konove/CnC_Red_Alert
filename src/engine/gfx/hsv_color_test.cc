@@ -23,13 +23,15 @@ std::array<int, 3> GunsToHsv(const int r, const int g, const int b) {
   return {hsv.hue(), hsv.saturation(), hsv.value()};
 }
 
-// Pinned against Tiberian Dawn's original conversions, which these reproduce
-// exactly; its options dialog builds its palette from them.
+// Pinned against Tiberian Dawn's original conversions, which its options
+// dialog builds its palette from. Those scaled a gun up by rounding gun * 255 /
+// 63; ExpandGun() differs at 10 of the 64 levels, so 50 now reads as 203, not
+// 202.
 TEST(HsvColorTest, ToHsvPinnedValues) {
   EXPECT_EQ(GunsToHsv(63, 0, 0), (std::array{255, 255, 255}));
   EXPECT_EQ(GunsToHsv(0, 63, 0), (std::array{85, 255, 255}));
   EXPECT_EQ(GunsToHsv(63, 32, 0), (std::array{22, 255, 255}));
-  EXPECT_EQ(GunsToHsv(10, 40, 50), (std::array{138, 205, 202}));
+  EXPECT_EQ(GunsToHsv(10, 40, 50), (std::array{138, 205, 203}));
   EXPECT_EQ(GunsToHsv(32, 32, 32), (std::array{0, 0, 130}));
 }
 
@@ -42,13 +44,13 @@ TEST(HsvColorTest, ToPaletteColorPinnedValues) {
 
 TEST(HsvColorTest, PrimariesConvertToFullGuns) {
   const PaletteColor red = HsvColor(0, 255, 255).ToPaletteColor();
-  EXPECT_EQ(red.red(), 252);
+  EXPECT_EQ(red.red(), 255);
   EXPECT_EQ(red.green(), 0);
   EXPECT_EQ(red.blue(), 0);
   const PaletteColor blue = HsvColor(170, 255, 255).ToPaletteColor();
   EXPECT_EQ(blue.red(), 0);
   EXPECT_EQ(blue.green(), 0);
-  EXPECT_EQ(blue.blue(), 252);
+  EXPECT_EQ(blue.blue(), 255);
 }
 
 TEST(HsvColorTest, PaletteRoundTripIsWithinOneStep) {
@@ -71,8 +73,9 @@ TEST(HsvColorTest, PaletteRoundTripIsWithinOneStep) {
     }
   }
   // The residue of the 8-bit HSV grid; truncating either direction instead of
-  // rounding would raise it (127,769 when both truncated).
-  EXPECT_EQ(changed, 21'612);
+  // rounding would raise it (127,769 when both truncated). Scaling up by
+  // rounding gun * 255 / 63 instead of ExpandGun() left 21,612.
+  EXPECT_EQ(changed, 21'468);
 }
 
 TEST(HsvColorTest, FullGunsReadAsFullValue) {

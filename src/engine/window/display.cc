@@ -23,6 +23,7 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/window/display_client.h"
 
@@ -254,14 +255,12 @@ void Display::SetPalette(const std::span<const uint8_t> palette) {
   bool changed = false;
 
   for (int i = 0; i < sdl_palette->ncolors; i++) {
-    // Scale the 6-bit VGA guns to 8 bits, copying the top bits into the
-    // bottom ones so that 63 becomes 255.
-    const int new_r = (base::At(palette, base::ToSize((i * 3) + 0)) * 4) +
-                      (base::At(palette, base::ToSize((i * 3) + 0)) / 16);
-    const int new_g = (base::At(palette, base::ToSize((i * 3) + 1)) * 4) +
-                      (base::At(palette, base::ToSize((i * 3) + 1)) / 16);
-    const int new_b = (base::At(palette, base::ToSize((i * 3) + 2)) * 4) +
-                      (base::At(palette, base::ToSize((i * 3) + 2)) / 16);
+    const int new_r =
+        engine::gfx::ExpandGun(base::At(palette, base::ToSize((i * 3) + 0)));
+    const int new_g =
+        engine::gfx::ExpandGun(base::At(palette, base::ToSize((i * 3) + 1)));
+    const int new_b =
+        engine::gfx::ExpandGun(base::At(palette, base::ToSize((i * 3) + 2)));
     changed = changed ||
               std::cmp_not_equal(base::At(colors, base::ToSize(i)).r, new_r) ||
               std::cmp_not_equal(base::At(colors, base::ToSize(i)).g, new_g) ||

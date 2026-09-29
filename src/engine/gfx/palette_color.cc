@@ -63,14 +63,7 @@ int PaletteColor::SquaredDistance(const PaletteColor& other) const {
 }
 
 HsvColor PaletteColor::ToHsv() const {
-  // Scale each gun to the full 8-bit range, rounding, so that 63 reads as 255
-  // and the conversion back in HsvColor::ToPaletteColor() can round to the
-  // same gun.
-  const auto scale_up = [](const int gun) {
-    return base::DivideWithRound(gun * kMaxComponent, kMaxGun);
-  };
-  const auto [hue, saturation, value] =
-      base::Rgb8ToHsv(scale_up(red_), scale_up(green_), scale_up(blue_));
+  const auto [hue, saturation, value] = base::Rgb8ToHsv(red(), green(), blue());
 
   // Rgb8ToHsv() keeps all three in 0..255.
   return {static_cast<uint8_t>(hue), static_cast<uint8_t>(saturation),
