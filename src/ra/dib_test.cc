@@ -135,7 +135,7 @@ TEST(DibRemapTest, EveryPixelPointsAtTheNearestColourInTheTarget) {
   // Two target entries, far apart. Both source colours are nearly black, so
   // both should land on entry 1.
   const std::vector<dib::Color> target = {
-      dib::Color{63, 63, 63, 0},
+      dib::Color{255, 255, 255, 0},
       dib::Color{0, 0, 0, 0},
   };
   dib::RemapToPalette(*image, target);
@@ -161,8 +161,8 @@ TEST(DibRemapTest, IndexZeroGoesToBlackRatherThanItsOwnColour) {
   base::At(image->MutableBits(), 0) = 0;
 
   const std::vector<dib::Color> target = {
-      dib::Color{63, 63, 63, 0},  // white
-      dib::Color{0, 0, 0, 0},     // black
+      dib::Color{255, 255, 255, 0},  // white
+      dib::Color{0, 0, 0, 0},        // black
   };
   dib::RemapToPalette(*image, target);
 
@@ -170,10 +170,10 @@ TEST(DibRemapTest, IndexZeroGoesToBlackRatherThanItsOwnColour) {
       << "entry 0 is transparent, so it maps black";
 }
 
-TEST(DibRemapTest, MatchingHappensInTheVgaSixBitSpace) {
-  // 0xFF red reduces to 63, which is an exact hit on a 6-bit palette entry of
-  // 63. Matching in 8-bit space would have found no exact match and picked
-  // whichever entry was merely closest.
+TEST(DibRemapTest, MatchingHappensAtEightBits) {
+  // 0xFF red is an exact hit on a target entry of 255. Reducing the image to
+  // the VGA's 6 bits first would have compared 63 against 255 and picked the
+  // dimmer entry as merely closest.
   std::vector<std::uint8_t> bmp = MakeBmp(1, 1);
   const std::size_t table = 14 + 40;
   bmp.at(table + 4) = 0;    // entry 1, blue
@@ -185,8 +185,8 @@ TEST(DibRemapTest, MatchingHappensInTheVgaSixBitSpace) {
 
   const std::vector<dib::Color> target = {
       dib::Color{0, 0, 0, 0},
-      dib::Color{0, 0, 40, 0},
-      dib::Color{0, 0, 63, 0},  // exactly 0xFF >> 2
+      dib::Color{0, 0, 160, 0},
+      dib::Color{0, 0, 255, 0},
   };
   dib::RemapToPalette(*image, target);
 

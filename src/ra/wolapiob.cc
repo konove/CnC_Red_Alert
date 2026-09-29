@@ -3334,9 +3334,6 @@ std::array<dib::Color, dib::kPaletteSize> CurrentScreenPalette() {
   // entries out and hand them to CreatePalette so GDI could match against
   // them. The game keeps those same 256 colours in
   // PaletteClass::CurrentPalette, so there is nobody left to ask.
-  //
-  // PaletteColor stores the VGA's six bits per channel, which is the space
-  // dib::RemapToPalette matches in, so the values go across unscaled.
   std::array<dib::Color, dib::kPaletteSize> Palette = {};
   for (int i = 0; i != dib::kPaletteSize; i++) {
     const engine::gfx::PaletteColor& Entry = PaletteClass::CurrentPalette.at(i);

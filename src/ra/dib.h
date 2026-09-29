@@ -102,9 +102,8 @@ class Image {
 // transparency here, so it is mapped to the nearest thing to black rather
 // than to whatever colour the file happens to name.
 //
-// Matching happens in the VGA's 6 bits per channel, which is what the game's
-// palette holds, so `target` is expected to carry values already reduced that
-// way and the image's own 8-bit colours are reduced to match.
+// Matching happens at 8 bits per channel, so `target` carries the game's
+// palette as the screen shows it (PaletteColor::red() and friends).
 void RemapToPalette(Image& image, std::span<const Color> target);
 
 }  // namespace dib

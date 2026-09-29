@@ -122,13 +122,12 @@ void RemapToPalette(Image& image, std::span<const Color> target) {
   }
 
   // The nearest entry in `target` to one of the image's own colours, by the
-  // sum of the per-channel differences. That is the metric the game's own
-  // PaletteClass::Closest_Color uses, and it runs in the palette's 6-bit
-  // space, so the image's 8-bit channels are shifted down to meet it.
+  // sum of the per-channel differences, the metric the game's own
+  // PaletteClass::Closest_Color uses.
   const auto nearest = [target](const Color& color) {
-    const int red = color.red >> 2U;
-    const int green = color.green >> 2U;
-    const int blue = color.blue >> 2U;
+    const int red = color.red;
+    const int green = color.green;
+    const int blue = color.blue;
 
     base::ssize best = 0;
     int best_difference = std::numeric_limits<int>::max();
