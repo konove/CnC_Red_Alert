@@ -48,11 +48,14 @@ enum class CNC_FLAG_ENUM ShapeFlags : uint32_t {
   kNone = 0x0000,         // Drawn at x,y as stored
   kCentered = 0x0020,     // x,y name the shape's center, not its top left
   kTransparent = 0x0040,  // Color 0 is transparent
-  // Every drawn pixel goes through ShapeEffects::fading_table. Together with
-  // kPredator it asks the games' draw functions for a shadow instead.
-  kFading = 0x0100,
+  kFading = 0x0100,    // Every drawn pixel through ShapeEffects::fading_table
   kPredator = 0x0200,  // Cloaked: shows a shimmering copy of the page
   kGhost = 0x1000,     // Translucent through ShapeEffects::ghost_table
+  // Darkens the page under the shape through ShapeEffects::shadow_table
+  // instead of drawing its colors, so kGhost, kFading and kPredator do nothing
+  // beside it. Aircraft, rotor and bullet shadows, and shadowy cloaked units.
+  // The games used to ask for it as kFading | kPredator.
+  kShadow = 0x2000,
 };
 
 // The header in front of each frame of a shape file, as stored (packed, so

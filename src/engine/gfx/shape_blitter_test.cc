@@ -1,8 +1,9 @@
-// Tests for DrawShapeFrame: clipping, transparency, the ghost and fading
-// tables, and the predator (cloak) effect's sampling of the page.
+// Tests for DrawShapeFrame: clipping, transparency, the ghost, fading and
+// shadow tables, and the predator (cloak) effect's sampling of the page.
 
 #include "engine/gfx/shape_blitter.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <numeric>
@@ -123,6 +124,37 @@ TEST_F(DrawShapeFrameTest, DrawsNothingWithAGhostRowMissing) {
   effects.ghost_table = ghost;
 
   Draw({50}, 1, 1, 0, 0, ShapeFlags::kGhost, effects);
+
+  EXPECT_EQ(PixelAt(0, 0), 0);
+}
+
+// The shadow table subtracts 10 from the page pixel under every color, and
+// the ghost, fading and predator effects asked for beside it do nothing.
+TEST_F(DrawShapeFrameTest, ShadowRemapsThePageUnderEveryColor) {
+  std::ranges::fill(pixels_, uint8_t{40});
+  std::vector<uint8_t> shadow(256);
+  for (std::size_t page_color = 0; page_color < shadow.size(); ++page_color) {
+    shadow.at(page_color) = static_cast<uint8_t>(page_color - 10);
+  }
+  ShapeEffects effects;
+  effects.shadow_table = shadow;
+
+  Draw({50, 0, 51}, 3, 1, 0, 0,
+       ShapeFlags::kShadow | ShapeFlags::kTransparent | ShapeFlags::kGhost |
+           ShapeFlags::kFading | ShapeFlags::kPredator,
+       effects);
+
+  EXPECT_EQ(PixelAt(0, 0), 30);
+  EXPECT_EQ(PixelAt(1, 0), 40);
+  EXPECT_EQ(PixelAt(2, 0), 30);
+}
+
+TEST_F(DrawShapeFrameTest, DrawsNothingWithAShortShadowTable) {
+  const std::vector<uint8_t> shadow(255);
+  ShapeEffects effects;
+  effects.shadow_table = shadow;
+
+  Draw({50}, 1, 1, 0, 0, ShapeFlags::kShadow, effects);
 
   EXPECT_EQ(PixelAt(0, 0), 0);
 }

@@ -2,7 +2,8 @@
 #define CNC_RED_ALERT_ENGINE_GFX_SHAPE_BLITTER_H_
 
 // File: DrawShapeFrame(), which draws a decompressed shape frame onto
-// a page with the transparency, ghost, fade and predator (cloak) effects, and
+// a page with the transparency, ghost, fade, predator (cloak) and shadow
+// effects, and
 // ShapeEffects, the tables those effects read.
 
 #include <cstddef>
@@ -25,6 +26,9 @@ struct ShapeEffects {
   std::span<const uint8_t> ghost_table;
   // ShapeFlags::kFading: a 256-entry remap applied to every drawn pixel.
   std::span<const uint8_t> fading_table;
+  // ShapeFlags::kShadow: a 256-entry remap of the page pixel under each drawn
+  // pixel.
+  std::span<const uint8_t> shadow_table;
   // ShapeFlags::kPredator: the frame-dependent start of the walk through the
   // sample offsets that makes a cloaked shape shimmer. Only the low three bits
   // of its magnitude matter. Negative uses the second set of offsets, which

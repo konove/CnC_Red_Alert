@@ -50,6 +50,9 @@ static_assert(std::has_single_bit(kPredatorRightOffsets.size()));
 // had filled in with the page's stride.
 constexpr std::array kPredatorLeftOffsets{1, 3, 2, 5, 2, 4, 3, 1};
 
+// A shadow is a ghost draw in which every color picks row 0, the shadow table.
+constexpr std::array<uint8_t, 256> kShadowRowOfColor{};
+
 // One clipped draw: line_count lines of pixel_count pixels, read from `src`
 // and written to `dst`, whose rows are src_stride and dst_stride apart, with
 // the tables its effects read.
@@ -176,43 +179,52 @@ void DrawShapeFrame(int x, int y, const int width, const int height,
     effect_bits |= kBlitTransparent;
   }
 
-  if (base::Any(flags & ShapeFlags::kGhost)) {
-    if (effects.ghost_table.size() < 256) {
+  if (base::Any(flags & ShapeFlags::kShadow)) {
+    if (effects.shadow_table.size() < 256) {
       return;
     }
-    job.ghost_row_of_color = effects.ghost_table.first(256);
-    job.ghost_rows = effects.ghost_table.subspan(256);
-    // Refuse a table whose rows do not all exist, so the blit need not check.
-    for (const uint8_t ghost_row : job.ghost_row_of_color) {
-      if (ghost_row != 0xff &&
-          (base::ssize{ghost_row} + 1) * 256 > std::ssize(job.ghost_rows)) {
+    job.ghost_row_of_color = kShadowRowOfColor;
+    job.ghost_rows = effects.shadow_table.first(256);
+    effect_bits |= kBlitGhost;
+  } else {
+    if (base::Any(flags & ShapeFlags::kGhost)) {
+      if (effects.ghost_table.size() < 256) {
         return;
       }
+      job.ghost_row_of_color = effects.ghost_table.first(256);
+      job.ghost_rows = effects.ghost_table.subspan(256);
+      // Refuse a table whose rows do not all exist, so the blit need not check.
+      for (const uint8_t ghost_row : job.ghost_row_of_color) {
+        if (ghost_row != 0xff &&
+            (base::ssize{ghost_row} + 1) * 256 > std::ssize(job.ghost_rows)) {
+          return;
+        }
+      }
+      effect_bits |= kBlitGhost;
     }
-    effect_bits |= kBlitGhost;
-  }
 
-  if (base::Any(flags & ShapeFlags::kFading)) {
-    job.fading_table = effects.fading_table;
-    if (job.fading_table.size() < 256) {
-      return;
+    if (base::Any(flags & ShapeFlags::kFading)) {
+      job.fading_table = effects.fading_table;
+      if (job.fading_table.size() < 256) {
+        return;
+      }
+      effect_bits |= kBlitFading;
     }
-    effect_bits |= kBlitFading;
-  }
 
-  if (base::Any(flags & ShapeFlags::kPredator)) {
-    effect_bits |= kBlitPredator;
-    const int64_t start = effects.predator_offset;
-    job.predator_start = static_cast<uint32_t>(
-        std::abs(start) % std::ssize(job.predator_offsets));
-    if (start < 0) {
-      // The page's stride changes from view to view, so the down-and-left
-      // offsets are worked out afresh for this one.
-      std::ranges::transform(
-          kPredatorLeftOffsets, job.predator_offsets.begin(),
-          [&dest](const int left) { return dest.stride() - left; });
-    } else {
-      std::ranges::copy(kPredatorRightOffsets, job.predator_offsets.begin());
+    if (base::Any(flags & ShapeFlags::kPredator)) {
+      effect_bits |= kBlitPredator;
+      const int64_t start = effects.predator_offset;
+      job.predator_start = static_cast<uint32_t>(
+          std::abs(start) % std::ssize(job.predator_offsets));
+      if (start < 0) {
+        // The page's stride changes from view to view, so the down-and-left
+        // offsets are worked out afresh for this one.
+        std::ranges::transform(
+            kPredatorLeftOffsets, job.predator_offsets.begin(),
+            [&dest](const int left) { return dest.stride() - left; });
+      } else {
+        std::ranges::copy(kPredatorRightOffsets, job.predator_offsets.begin());
+      }
     }
   }
 
