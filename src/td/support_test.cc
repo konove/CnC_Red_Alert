@@ -5,24 +5,24 @@
 #include <span>
 
 #include "base/array.h"
+#include "engine/gfx/palette.h"
+#include "engine/gfx/palette_color.h"
 #include "gtest/gtest.h"
 
 namespace {
 
-using Palette = std::array<uint8_t, 768>;
+using engine::gfx::Palette;
+using engine::gfx::PaletteColor;
 
-void SetColor(std::span<uint8_t> palette, int index, uint8_t red, uint8_t green,
-              uint8_t blue) {
-  base::At(palette, (index * 3) + 0) = red;
-  base::At(palette, (index * 3) + 1) = green;
-  base::At(palette, (index * 3) + 2) = blue;
+void SetColor(Palette& palette, int index, int red, int green, int blue) {
+  palette.at(index) = PaletteColor::FromGuns(red, green, blue);
 }
 
 TEST(ConquerBuildFadingTableTest, FullFadeReachesTargetWithDistinctGuns) {
   // Only the last 16 colors are candidates. Every gun of the target (240)
   // differs, and the other candidates sit where a builder that mixes up the
   // guns would aim.
-  Palette palette{};
+  Palette palette;
   for (int index = 241; index < 256; index++) {
     SetColor(palette, index, 10, 10, 10);
   }
@@ -37,8 +37,7 @@ TEST(ConquerBuildFadingTableTest, FullFadeReachesTargetWithDistinctGuns) {
 }
 
 TEST(ConquerBuildFadingTableTest, CandidateColorsMapToThemselves) {
-  Palette palette{};
-  palette.fill(30);
+  Palette palette(PaletteColor::FromGuns(30, 30, 30));
   std::array<uint8_t, 256> table{};
 
   Conquer_Build_Fading_Table(palette, table, 245, 200);

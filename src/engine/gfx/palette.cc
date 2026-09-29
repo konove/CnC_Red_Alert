@@ -4,10 +4,12 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 #include <span>
 
 #include "base/array.h"
 #include "engine/gfx/palette_color.h"
+#include "engine/stream/byte_stream.h"
 
 namespace engine::gfx {
 
@@ -30,6 +32,14 @@ std::array<uint8_t, Palette::kVgaSize> Palette::ToVga() const noexcept {
     base::At(std::span(vga), (i * 3) + 2) = static_cast<uint8_t>(color.blue_gun());
   }
   return vga;
+}
+
+std::optional<Palette> ReadVgaPalette(ByteStream& stream) {
+  std::array<uint8_t, Palette::kVgaSize> vga{};
+  if (stream.Read(std::span(vga)) != Palette::kVgaSize) {
+    return std::nullopt;
+  }
+  return Palette::FromVga(vga);
 }
 
 }  // namespace engine::gfx

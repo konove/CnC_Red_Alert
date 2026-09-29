@@ -56,6 +56,7 @@
 #include "absl/strings/str_format.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
@@ -110,7 +111,7 @@ void GDI_Ending() {
     if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
       Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                       TheScreen().sys_mem_page().bytes(),
-                      ThePalettes().title_palette());
+                      &ThePalettes().title_palette());
     }
     TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                             0, 320, 199, 640, 398);
@@ -131,7 +132,7 @@ void GDI_Ending() {
   if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
     Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                     TheScreen().sys_mem_page().bytes(),
-                    ThePalettes().title_palette());
+                    &ThePalettes().title_palette());
   }
   TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                           0, 320, 199, 640, 398);
@@ -177,13 +178,15 @@ void Nod_Ending() {
   TheScreen().hidden_view().Clear();
   show.page().view().Clear();
 
-  std::vector<std::byte> localpal;
+  engine::gfx::Palette localpal;
   if (const auto file = OpenGameFile("SATSEL.PAL")) {
-    localpal = LoadAllocData(*file);
+    if (const auto palette = engine::gfx::ReadVgaPalette(*file)) {
+      localpal = *palette;
+    }
   }
   if (const auto file = OpenGameFile("SATSEL.CPS")) {
     Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                    TheScreen().sys_mem_page().bytes(), {});
+                    TheScreen().sys_mem_page().bytes(), nullptr);
   }
 #ifdef NOT_FOR_WIN95
   base::CopyBytes(std::as_writable_bytes(std::span(satpic)),
@@ -206,15 +209,14 @@ void Nod_Ending() {
 
   TheMouse().Hide();
   engine::window::TheDisplay().EndFrame();
-  Set_Palette(base::UnsignedBytes(std::span(localpal)));
+  Set_Palette(localpal);
 #ifdef NOT_FOR_WIN95
   base::CopyBytes(std::as_writable_bytes(TheScreen().visible_view().bytes()),
                   std::as_writable_bytes(std::span(satpic)), satpic.size());
 #endif  // NOT_FOR_WIN95
   TheMouse().Show();
 
-  Increase_Palette_Luminance(base::UnsignedBytes(std::span(localpal)), 30, 30,
-                             30, 63);
+  Increase_Palette_Luminance(localpal, 30, 30, 30, 63);
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
                        "SATSELIN.PAL");
 
@@ -293,7 +295,7 @@ void Nod_Ending() {
     if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
       Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                       TheScreen().sys_mem_page().bytes(),
-                      ThePalettes().title_palette());
+                      &ThePalettes().title_palette());
     }
     TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                             0, 320, 199, 640, 398);
@@ -314,7 +316,7 @@ void Nod_Ending() {
   if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
     Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                     TheScreen().sys_mem_page().bytes(),
-                    ThePalettes().title_palette());
+                    &ThePalettes().title_palette());
   }
   TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                           0, 320, 199, 640, 398);

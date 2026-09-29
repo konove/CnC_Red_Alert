@@ -5,6 +5,7 @@
 
 #include <span>
 
+#include "engine/gfx/palette.h"
 #include "engine/window/window_events.h"
 
 class Input;
@@ -38,7 +39,7 @@ void Create_Main_Window(void* instance, int command_show, int width,
 
 // Reads a title screen picture into the given page and its palette.
 void Load_Title_Screen(const char* name, PixelView* video_page,
-                       std::span<unsigned char> palette);
+                       engine::gfx::Palette& palette);
 
 // Jolts the visible page up and down `shakes` times, for explosions.
 void ShakeScreen(int shakes);

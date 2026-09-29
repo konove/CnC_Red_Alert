@@ -49,6 +49,7 @@
 #include "td/jshell.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -70,11 +71,11 @@
 #include "base/unaligned.h"
 #include "engine/codec/compressed_block.h"
 #include "engine/gfx/fading_table.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/tile.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
-#include "td/palette.h"
 #include "td/startup.h"
 #include "td/support.h"
 
@@ -214,7 +215,7 @@ void File_Fatal(const char* message) {
  *=============================================================================================*/
 int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
                         std::span<uint8_t> dest_buff,
-                        std::span<unsigned char> reserved_data) {
+                        engine::gfx::Palette* const palette) {
   const auto decode = [&] -> int32_t {
     uint16_t stored_size = 0;
     CompressedBlockHeader header{};
@@ -228,12 +229,15 @@ int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
     }
     if (header.skip_bytes != 0) {
       size -= base::ToSize(header.skip_bytes);
-      if (!reserved_data.empty()) {
-        if (base::ToSize(header.skip_bytes) > reserved_data.size() ||
-            file.Read(reserved_data.first(base::ToSize(header.skip_bytes))) !=
-                header.skip_bytes) {
+      if (palette != nullptr) {
+        // A short palette replaces only the colors it holds.
+        std::array<uint8_t, engine::gfx::Palette::kVgaSize> vga =
+            palette->ToVga();
+        if (header.skip_bytes > engine::gfx::Palette::kVgaSize ||
+            file.Read(std::span(vga), header.skip_bytes) != header.skip_bytes) {
           return 0;
         }
+        *palette = engine::gfx::Palette::FromVga(vga);
       } else {
         file.Seek(header.skip_bytes, SeekOrigin::kCurrent);
       }
@@ -323,9 +327,8 @@ int32_t Translucent_Table_Size(int count) { return 256 + (256 * count); }
  * HISTORY: * 04/02/1994 JLB : Created. *
  *=============================================================================================*/
 std::span<unsigned char> Build_Translucent_Table(
-    std::span<const unsigned char> palette,
-    std::span<const TLucentType> control, int count,
-    std::span<unsigned char> buffer) {
+    const engine::gfx::Palette& palette, std::span<const TLucentType> control,
+    int count, std::span<unsigned char> buffer) {
   if (count <= 0 || std::cmp_greater(count, control.size())) {
     return buffer;
   }
@@ -342,7 +345,7 @@ std::span<unsigned char> Build_Translucent_Table(
   for (int index = 0; index < count; ++index) {
     const auto& item = base::At(control, base::ToSize(index));
     base::At(buffer, item.SourceColor) = static_cast<unsigned char>(index);
-    Build_Fading_Table(VgaPalette(palette),
+    Build_Fading_Table(palette,
                        buffer.subspan(base::ToSize(index + 1) * 256, 256),
                        item.DestColor, item.Fading);
   }
@@ -379,9 +382,8 @@ std::span<unsigned char> Build_Translucent_Table(
  * HISTORY: * 06/27/1994 JLB : Created. *
  *=============================================================================================*/
 std::span<unsigned char> Conquer_Build_Translucent_Table(
-    std::span<const unsigned char> palette,
-    std::span<const TLucentType> control, int count,
-    std::span<unsigned char> buffer) {
+    const engine::gfx::Palette& palette, std::span<const TLucentType> control,
+    int count, std::span<unsigned char> buffer) {
   if (count <= 0 || std::cmp_greater(count, control.size())) {
     return buffer;
   }

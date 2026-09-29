@@ -29,6 +29,7 @@
 #include "absl/base/attributes.h"
 #include "base/numeric.h"
 #include "engine/file/game_file.h"
+#include "engine/gfx/palette.h"
 #include "engine/stream/seek_origin.h"
 #include "td/defines.h"
 #include "td/game_state.h"
@@ -98,9 +99,9 @@ void Focus_Restore() {
  *=============================================================================================*/
 
 void Load_Title_Screen(const char* name, PixelView* video_page,
-                       std::span<unsigned char> palette) {
+                       engine::gfx::Palette& palette) {
   const std::unique_ptr<PixelBuffer> load_buffer =
-      Read_PCX_File(name, palette, {}, 0);
+      Read_PCX_File(name, &palette, {}, 0);
 
   if (load_buffer) {
     load_buffer->view().BlitTo(*video_page);
@@ -179,7 +180,7 @@ class BufferedFileReader {
 };
 
 std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
-                                           std::span<uint8_t> palette,
+                                           engine::gfx::Palette* palette,
                                            std::span<uint8_t> buff,
                                            int32_t size) {
   const auto file_handle = OpenGameFile(name);
@@ -244,19 +245,18 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
       column += count;
     }
   }
-  if (!palette.empty()) {
-    if (palette.size() < 768) {
+  if (palette != nullptr) {
+    // The file's palette is 8 bits a gun; the VGA took the top 6.
+    std::array<uint8_t, engine::gfx::Palette::kVgaSize> vga{};
+    file_handle->Seek(-engine::gfx::Palette::kVgaSize, SeekOrigin::kEnd);
+    if (file_handle->Read(std::span(vga)) != engine::gfx::Palette::kVgaSize) {
       pic.reset();
       return pic;
     }
-    file_handle->Seek(-768, SeekOrigin::kEnd);
-    if (file_handle->Read(std::as_writable_bytes(palette.first(768))) != 768) {
-      pic.reset();
-      return pic;
-    }
-    for (auto& color : palette.first(768)) {
+    for (auto& color : vga) {
       color >>= 2;
     }
+    *palette = engine::gfx::Palette::FromVga(vga);
   }
   return pic;
 }

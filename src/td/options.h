@@ -43,6 +43,8 @@
 
 #include <span>
 
+#include "engine/gfx/palette.h"
+
 class OptionsClass {
  public:
   static constexpr int kMaxScrollSetting = 7;
@@ -96,8 +98,8 @@ class OptionsClass {
   bool IsFreeScroll : 1 {false};         // Allow free direction scrolling?
 
  protected:
-  static void Adjust_Palette(std::span<const unsigned char> oldpal,
-                             std::span<unsigned char> newpal,
+  static void Adjust_Palette(const engine::gfx::Palette& oldpal,
+                             engine::gfx::Palette& newpal,
                              unsigned char brightness, unsigned char color,
                              unsigned char tint, unsigned char contrast);
 

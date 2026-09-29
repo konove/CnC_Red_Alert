@@ -3,17 +3,19 @@
 #include "td/palettes.h"
 
 #include "base/installed.h"
+#include "engine/gfx/palette.h"
 #include "gtest/gtest.h"
 
 namespace {
 
-TEST(PalettesTest, PalettesStartEmpty) {
+TEST(PalettesTest, PalettesStartBlack) {
   Palettes palettes;
-  EXPECT_TRUE(palettes.game_palette().empty());
-  EXPECT_TRUE(palettes.original_palette().empty());
-  EXPECT_TRUE(palettes.title_palette().empty());
-  EXPECT_TRUE(palettes.black_palette().empty());
-  EXPECT_TRUE(palettes.white_palette().empty());
+  const engine::gfx::Palette black;
+  EXPECT_EQ(palettes.game_palette(), black);
+  EXPECT_EQ(palettes.original_palette(), black);
+  EXPECT_EQ(palettes.title_palette(), black);
+  EXPECT_EQ(palettes.black_palette(), black);
+  EXPECT_EQ(palettes.white_palette(), black);
 }
 
 TEST(PalettesTest, SlowPaletteDefaultsToOn) {

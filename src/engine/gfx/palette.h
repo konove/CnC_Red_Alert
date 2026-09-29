@@ -5,11 +5,14 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 #include <span>
 
 #include "absl/base/attributes.h"
 #include "base/array.h"
 #include "engine/gfx/palette_color.h"
+
+class ByteStream;
 
 namespace engine::gfx {
 
@@ -71,6 +74,10 @@ class Palette {
  private:
   std::array<PaletteColor, kColorCount> colors_{};
 };
+
+// Reads a palette in the VGA file format (a .PAL file) from `stream`'s current
+// position. Returns nullopt if the stream ends first.
+[[nodiscard]] std::optional<Palette> ReadVgaPalette(ByteStream& stream);
 
 }  // namespace engine::gfx
 

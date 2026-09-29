@@ -3,8 +3,11 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
+#include <span>
 
 #include "engine/gfx/palette_color.h"
+#include "engine/stream/memory_stream.h"
 #include "gtest/gtest.h"
 
 namespace engine::gfx {
@@ -53,6 +56,20 @@ TEST(PaletteTest, EqualityComparesEveryEntry) {
   EXPECT_EQ(a, b);
   b.at(200) = PaletteColor::FromGuns(1, 0, 0);
   EXPECT_NE(a, b);
+}
+
+TEST(ReadVgaPaletteTest, ReadsTheFileFormat) {
+  const std::array<uint8_t, Palette::kVgaSize> vga = CountingVga();
+  MemoryStream stream(std::as_bytes(std::span(vga)));
+  const std::optional<Palette> palette = ReadVgaPalette(stream);
+  ASSERT_TRUE(palette.has_value());
+  EXPECT_EQ(*palette, Palette::FromVga(vga));
+}
+
+TEST(ReadVgaPaletteTest, RejectsAShortFile) {
+  const std::array<uint8_t, Palette::kVgaSize - 1> vga{};
+  MemoryStream stream(std::as_bytes(std::span(vga)));
+  EXPECT_FALSE(ReadVgaPalette(stream).has_value());
 }
 
 TEST(PaletteDeathTest, AtRejectsIndicesOutsideThePalette) {

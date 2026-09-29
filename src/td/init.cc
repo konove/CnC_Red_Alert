@@ -80,6 +80,8 @@
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
+#include "engine/gfx/palette.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"
@@ -282,18 +284,19 @@ bool Init_Game() {
 #endif
   DLOG(INFO) << "C&C95 - About to load fonts";
   TheAssets().LoadFonts();
-  ThePalettes().black_palette().assign(768, 0);
-  ThePalettes().game_palette().assign(768, 0);
-  ThePalettes().original_palette().assign(768, 0);
-  ThePalettes().white_palette().assign(768, 0);
-  std::ranges::fill(ThePalettes().white_palette(), 63);
+  ThePalettes().black_palette() = engine::gfx::Palette();
+  ThePalettes().game_palette() = engine::gfx::Palette();
+  ThePalettes().original_palette() = engine::gfx::Palette();
+  ThePalettes().white_palette() =
+      engine::gfx::Palette(engine::gfx::PaletteColor::FromGuns(63, 63, 63));
 
   DLOG(INFO) << "C&C95 - About to set palette";
-  std::ranges::fill(ThePalettes().black_palette(), 0x01);
+  ThePalettes().black_palette() = engine::gfx::Palette(
+      engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01));
   if (!TheSpecial().IsFromInstall) {
     Set_Palette(ThePalettes().black_palette());
   }
-  std::ranges::fill(ThePalettes().black_palette(), 0);
+  ThePalettes().black_palette() = engine::gfx::Palette();
   if (!TheSpecial().IsFromInstall) {
     Set_Palette(ThePalettes().black_palette());
     DLOG(INFO) << "C&C95 - About to clear visible page";
@@ -330,7 +333,9 @@ bool Init_Game() {
   **	but only the non terrain specific colors matter.
   */
   if (const auto palfile = OpenGameFile("TEMPERAT.PAL")) {
-    palfile->Read(std::span(ThePalettes().game_palette()), 768L);
+    if (const auto palette = engine::gfx::ReadVgaPalette(*palfile)) {
+      ThePalettes().game_palette() = *palette;
+    }
   }
 
 #ifdef DEMO
@@ -469,7 +474,8 @@ bool Init_Game() {
   *routine *	will skip that color; the VQ player will have changed that color
   *(behind *	WWLIB's back), so it will be incorrect.
   */
-  base::FillBytes(base::ObjectBytes(CurrentPalette), 0x01, 768);
+  CurrentPalette = engine::gfx::Palette(
+      engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01));
 
   if (!TheSpecial().IsFromInstall) {
     Load_Title_Page(true);
@@ -577,10 +583,8 @@ bool Init_Game() {
   ** because the options Load routine uses these palettes to set the brightness,
   *etc.
   */
-  std::ranges::copy(ThePalettes().title_palette(),
-                    ThePalettes().game_palette().begin());
-  std::ranges::copy(ThePalettes().title_palette(),
-                    ThePalettes().original_palette().begin());
+  ThePalettes().game_palette() = ThePalettes().title_palette();
+  ThePalettes().original_palette() = ThePalettes().title_palette();
 
   /*
   **	Read game options, so the GameSpeed is initialized when multiplayer
@@ -624,11 +628,6 @@ void Uninit_Game() {
   shape_buffer = {};
   shape_storage.clear();
   shape_storage.shrink_to_fit();
-  ThePalettes().black_palette().clear();
-  ThePalettes().game_palette().clear();
-  ThePalettes().original_palette().clear();
-  ThePalettes().white_palette().clear();
-  ThePalettes().title_palette().clear();
 }
 
 extern int ShowCommand;
@@ -843,8 +842,7 @@ bool Select_Game(bool fade) {
         **	through the loop, and the 'fade' flag is true
         */
         Load_Title_Page(true);
-        std::ranges::copy(ThePalettes().title_palette(),
-                          ThePalettes().game_palette().begin());
+        ThePalettes().game_palette() = ThePalettes().title_palette();
 
         if (fade) {
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteSlow,
@@ -1346,7 +1344,7 @@ bool Select_Game(bool fade) {
             if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
               Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                               TheScreen().sys_mem_page().bytes(),
-                              ThePalettes().title_palette());
+                              &ThePalettes().title_palette());
               TheScreen().sys_mem_page().view().Scale(
                   TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
@@ -1370,7 +1368,7 @@ bool Select_Game(bool fade) {
             if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
               Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                               TheScreen().sys_mem_page().bytes(),
-                              ThePalettes().title_palette());
+                              &ThePalettes().title_palette());
               TheScreen().sys_mem_page().view().Scale(
                   TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
@@ -1394,7 +1392,7 @@ bool Select_Game(bool fade) {
             if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
               Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                               TheScreen().sys_mem_page().bytes(),
-                              ThePalettes().title_palette());
+                              &ThePalettes().title_palette());
               TheScreen().sys_mem_page().view().Scale(
                   TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
@@ -1417,7 +1415,7 @@ bool Select_Game(bool fade) {
           if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
             Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                             TheScreen().sys_mem_page().bytes(),
-                            ThePalettes().title_palette());
+                            &ThePalettes().title_palette());
             TheScreen().sys_mem_page().view().Scale(
                 TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
             Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,

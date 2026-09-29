@@ -54,6 +54,7 @@
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
@@ -460,9 +461,10 @@ void GameOptionsClass::Process() {
               Play_Movie(TheWorld().action_movie());
             }
             // BreakoutAllowed = false;
-            std::ranges::fill(ThePalettes().black_palette(), 0x01);
+            ThePalettes().black_palette() = engine::gfx::Palette(
+                engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01));
             Set_Palette(ThePalettes().black_palette());
-            std::ranges::fill(ThePalettes().black_palette(), 0x00);
+            ThePalettes().black_palette() = engine::gfx::Palette();
             Set_Palette(ThePalettes().black_palette());
             TheMap().Flag_To_Redraw(true);
             TheTheme().Queue_Song(THEME_PICK_ANOTHER);

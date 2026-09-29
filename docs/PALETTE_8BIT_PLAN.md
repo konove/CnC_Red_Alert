@@ -2,7 +2,7 @@
 
 Written 2026-09-28, on the tree at 30c71670.
 
-**Status: in progress.** Steps 1–2 done.
+**Status: in progress.** Steps 1–3 done.
 
 The palettes on disk hold 6 bits per gun (0..63, what the VGA DAC took). Both games keep that 6-bit
 form in memory, compute fades, slider adjustments and brightened movie palettes in it, and expand to

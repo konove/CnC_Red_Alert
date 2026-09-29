@@ -102,6 +102,7 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -114,6 +115,7 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
@@ -147,7 +149,6 @@
 #include "td/network.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
-#include "td/palette.h"
 #include "td/palettes.h"
 #include "td/profile.h"
 #include "td/queue.h"
@@ -420,13 +421,14 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   */
   absl::SNPrintF(fullname, sizeof(fullname), "%s.PAL",
                  Theaters.at(theater).Root);
-  const auto ptr = MixArchive::RetrieveData(fullname);
-  base::CopyBytes(
-      std::as_writable_bytes(std::span(ThePalettes().game_palette())), ptr,
-      768);
+  const auto palette_data = MixArchive::RetrieveData(fullname);
+  CHECK_GE(std::ssize(palette_data), engine::gfx::Palette::kVgaSize)
+      << fullname;
+  ThePalettes().game_palette() = engine::gfx::Palette::FromVga(
+      base::UnsignedBytes(palette_data)
+          .first<engine::gfx::Palette::kVgaSize>());
 
-  std::ranges::copy(ThePalettes().game_palette(),
-                    ThePalettes().original_palette().begin());
+  ThePalettes().original_palette() = ThePalettes().game_palette();
 
   if (const auto file = OpenGameFile(Fading_Table_Name("GREEN", theater))) {
     file->ReadObject(FadingGreen);
@@ -485,8 +487,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
     base::At(SpecialGhost, index) = 0;
   }
 
-  Build_Fading_Table(VgaPalette(ThePalettes().game_palette()), FadingBrighten,
-                     kWhite, 25);
+  Build_Fading_Table(ThePalettes().game_palette(), FadingBrighten, kWhite, 25);
 
   /*
   **	Adjust the palette according to the visual control option settings.

@@ -57,6 +57,7 @@
 #include "base/numeric.h"
 #include "base/strings/format.h"
 #include "base/types.h"
+#include "engine/gfx/palette.h"
 
 class ByteStream;
 
@@ -196,17 +197,20 @@ std::span<std::byte> Load_Alloc_Data(ByteStream& file);
 
 // Reads a file into owned byte storage.
 std::vector<std::byte> LoadAllocData(ByteStream& file);
+// Reads one compressed picture from `file` and uncompresses it into
+// `dest_buff`, staging it in `uncomp_buff` (which may be the same buffer).
+// The bytes a picture reserves ahead of its data are its palette; they are
+// read into `*palette` when `palette` is not nullptr and skipped otherwise.
+// Returns the uncompressed size, 0 on failure.
 int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
                         std::span<uint8_t> dest_buff,
-                        std::span<unsigned char> reserved_data);
+                        engine::gfx::Palette* palette);
 int32_t Translucent_Table_Size(int count);
 std::span<unsigned char> Build_Translucent_Table(
-    std::span<const unsigned char> palette,
-    std::span<const TLucentType> control, int count,
-    std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
+    const engine::gfx::Palette& palette, std::span<const TLucentType> control,
+    int count, std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
 std::span<unsigned char> Conquer_Build_Translucent_Table(
-    std::span<const unsigned char> palette,
-    std::span<const TLucentType> control, int count,
-    std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
+    const engine::gfx::Palette& palette, std::span<const TLucentType> control,
+    int count, std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
 #endif  // CNC_RED_ALERT_TD_JSHELL_H_

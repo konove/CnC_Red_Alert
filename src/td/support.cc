@@ -9,19 +9,18 @@
 
 #include "base/array.h"
 #include "base/buffer.h"
-#include "base/numeric.h"
 #include "base/strings/safe_string.h"
+#include "engine/gfx/palette.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 
-std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
-                                              std::span<uint8_t> dest,
-                                              int color, int frac) {
+std::span<uint8_t> Conquer_Build_Fading_Table(
+    const engine::gfx::Palette& palette, std::span<uint8_t> dest, int color,
+    int frac) {
   const int ALLOWED_COUNT = 16;
   const int ALLOWED_START = 256 - ALLOWED_COUNT;
 
-  // If the source palette is NULL, then just return with current fading table
-  // pointer.
-  if (palette.size() < 768 || dest.size() < 256 || color < 0 || color >= 256) {
+  if (dest.size() < 256 || color < 0 || color >= 256) {
     return dest;
   }
 
@@ -29,13 +28,10 @@ std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
   frac = std::min(frac, 255);
 
   // Record the target gun values.
-  const auto pal8 = palette;
-  const uint8_t targetred =
-      base::At(pal8, (static_cast<size_t>(color) * 3) + 0);
-  const uint8_t targetgreen =
-      base::At(pal8, (static_cast<size_t>(color) * 3) + 1);
-  const uint8_t targetblue =
-      base::At(pal8, (static_cast<size_t>(color) * 3) + 2);
+  const engine::gfx::PaletteColor& target = palette.at(color);
+  const int targetred = target.red_gun();
+  const int targetgreen = target.green_gun();
+  const int targetblue = target.blue_gun();
 
   // Main loop
 
@@ -46,12 +42,10 @@ std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
 
   int remap_index = 0;
   for (remap_index = 1; remap_index < ALLOWED_START; remap_index++) {
-    const uint8_t origred =
-        base::At(pal8, (static_cast<size_t>(remap_index) * 3) + 0);
-    const uint8_t origgreen =
-        base::At(pal8, (static_cast<size_t>(remap_index) * 3) + 1);
-    const uint8_t origblue =
-        base::At(pal8, (static_cast<size_t>(remap_index) * 3) + 2);
+    const engine::gfx::PaletteColor& orig = palette.at(remap_index);
+    const int origred = orig.red_gun();
+    const int origgreen = orig.green_gun();
+    const int origblue = orig.blue_gun();
 
     // The products can be negative; the shifts floor them as the original
     // table builder did, so the palette comes out identical.
@@ -73,18 +67,17 @@ std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
     int matchcolor = color;    // Default color (self).
     int matchvalue = INT_MAX;  // Ridiculous match value init.
 
-    auto palptr = pal8.subspan(base::ToSize(ALLOWED_START) * 3);
-
     for (int color_index = ALLOWED_START; color_index < 256; color_index++) {
       int compval = 0;
 
       // Build the comparison value based on the sum of the differences of the
       // color guns squared
-      int diff = base::At(palptr, 0) - idealred;
+      const engine::gfx::PaletteColor& candidate = palette.at(color_index);
+      int diff = candidate.red_gun() - idealred;
       compval += diff * diff;
-      diff = base::At(palptr, 1) - idealgreen;
+      diff = candidate.green_gun() - idealgreen;
       compval += diff * diff;
-      diff = base::At(palptr, 2) - idealblue;
+      diff = candidate.blue_gun() - idealblue;
       compval += diff * diff;
 
       if (compval == 0)  // If perfect match found then quit early.
@@ -97,8 +90,6 @@ std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
         matchcolor = color_index;
         matchvalue = compval;
       }
-
-      palptr = palptr.subspan(3);
     }
 
     // When the loop exits, we have found the closest match.

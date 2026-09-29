@@ -37,6 +37,7 @@
 
 #include "engine/gfx/pcx_file.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -46,6 +47,7 @@
 #include "base/numeric.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/byte_stream.h"
 
@@ -72,8 +74,7 @@ static void Write_Pcx_ScanLine(ByteStream& file,
  *   08/01/1995 SKB : Copy the palette so it is not modified.              *
  *=========================================================================*/
 int Write_PCX_File(const char* name, PixelView& pic,
-                   std::span<const unsigned char> palette) {
-  unsigned char palcopy[256 * 3];
+                   const engine::gfx::Palette& palette) {
   unsigned i = 0;
   PCX_HEADER header = {10,  5,   1,  8, 0, 0,   319, 199,
                        320, 200, {}, 0, 1, 320, 1,   {}};
@@ -97,15 +98,14 @@ int Write_PCX_File(const char* name, PixelView& pic,
         *file, pixels.subspan(i * static_cast<std::size_t>(VP_Scan_Line),
                               static_cast<std::size_t>(header.byte_per_line)));
   }
-  base::CopyBytes(base::ObjectBytes(palcopy), std::as_bytes(palette),
-                  sizeof(palcopy));
   // Scale the 6-bit palette components to 8 bits.
-  for (unsigned char& component : palcopy) {
+  std::array<uint8_t, engine::gfx::Palette::kVgaSize> palcopy = palette.ToVga();
+  for (uint8_t& component : palcopy) {
     component = static_cast<unsigned char>(component << 2);
   }
   i = 0x0c;
   file->Write(base::ObjectBytes(i).first(1));
-  file->Write(base::ObjectBytes(palcopy));
+  file->Write(std::as_bytes(std::span(palcopy)));
   return 0;
 }
 

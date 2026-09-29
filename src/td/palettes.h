@@ -3,16 +3,13 @@
 #ifndef CNC_RED_ALERT_TD_PALETTES_H_
 #define CNC_RED_ALERT_TD_PALETTES_H_
 
-#include <vector>
-
 #include "absl/base/attributes.h"
 #include "base/installed.h"
+#include "engine/gfx/palette.h"
 
-// The 768-byte palettes (256 entries of 6-bit red, green and blue) the game
-// switches between. Game owns the one Palettes; everything else reaches it
-// through ThePalettes(). A new Palettes has every palette empty: main() sizes
-// title_palette() and Init_Game() the others, and Uninit_Game() empties them
-// again.
+// The palettes the game switches between. Game owns the one Palettes;
+// everything else reaches it through ThePalettes(). A new Palettes has every
+// palette black; Init_Game() fills in the white one.
 //
 // Example:
 //   Set_Palette(ThePalettes().black_palette());
@@ -28,22 +25,22 @@ class Palettes {
 
   // The palette the map is drawn in: the theater palette with the player's
   // brightness, color and tint applied.
-  std::vector<unsigned char>& game_palette() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  engine::gfx::Palette& game_palette() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return game_palette_;
   }
   // The theater palette before those adjustments.
-  std::vector<unsigned char>& original_palette() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  engine::gfx::Palette& original_palette() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return original_palette_;
   }
   // The palette of the title screens, movies and other full-screen pictures.
-  std::vector<unsigned char>& title_palette() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  engine::gfx::Palette& title_palette() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return title_palette_;
   }
   // All black and all white, for fades.
-  std::vector<unsigned char>& black_palette() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  engine::gfx::Palette& black_palette() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return black_palette_;
   }
-  std::vector<unsigned char>& white_palette() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  engine::gfx::Palette& white_palette() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return white_palette_;
   }
 
@@ -53,11 +50,11 @@ class Palettes {
   void set_slow_palette(bool slow_palette) { slow_palette_ = slow_palette; }
 
  private:
-  std::vector<unsigned char> game_palette_;
-  std::vector<unsigned char> original_palette_;
-  std::vector<unsigned char> title_palette_;
-  std::vector<unsigned char> black_palette_;
-  std::vector<unsigned char> white_palette_;
+  engine::gfx::Palette game_palette_;
+  engine::gfx::Palette original_palette_;
+  engine::gfx::Palette title_palette_;
+  engine::gfx::Palette black_palette_;
+  engine::gfx::Palette white_palette_;
   bool slow_palette_ = true;
 };
 

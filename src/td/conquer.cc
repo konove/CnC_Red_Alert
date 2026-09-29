@@ -91,6 +91,7 @@
 #include "engine/crypto/crc.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/shape_blitter.h"
@@ -1224,27 +1225,24 @@ bool Color_Cycle() {
 **	Pulse the pulsing text color.
 */
 #define STEP_RATE 5
-    if (_up) {
-      ThePalettes().game_palette().at(767) += STEP_RATE;
-      ThePalettes().game_palette().at(766) += STEP_RATE;
-      ThePalettes().game_palette().at(765) += STEP_RATE;
-      if (ThePalettes().game_palette().at(767) > MAX_CYCLE_COLOR) {
-        ThePalettes().game_palette().at(767) = MAX_CYCLE_COLOR;
-        ThePalettes().game_palette().at(766) = MAX_CYCLE_COLOR;
-        ThePalettes().game_palette().at(765) = MAX_CYCLE_COLOR;
-        _up = false;
-      }
-    } else {
-      ThePalettes().game_palette().at(767) -= STEP_RATE;
-      ThePalettes().game_palette().at(766) -= STEP_RATE;
-      ThePalettes().game_palette().at(765) -= STEP_RATE;
-      if (static_cast<unsigned>(ThePalettes().game_palette().at(767)) <
-          MIN_CYCLE_COLOR) {
-        ThePalettes().game_palette().at(767) = MIN_CYCLE_COLOR;
-        ThePalettes().game_palette().at(766) = MIN_CYCLE_COLOR;
-        ThePalettes().game_palette().at(765) = MIN_CYCLE_COLOR;
-        _up = true;
-      }
+    // The last color steps every gun together; the blue gun decides when
+    // it turns around. Each gun wraps as the byte it was stored in.
+    engine::gfx::PaletteColor& pulse = ThePalettes().game_palette().at(255);
+    const int step = _up ? STEP_RATE : -STEP_RATE;
+    const auto stepped = [step](const int gun) {
+      return static_cast<uint8_t>(gun + step);
+    };
+    pulse = engine::gfx::PaletteColor::FromGuns(stepped(pulse.red_gun()),
+                                                stepped(pulse.green_gun()),
+                                                stepped(pulse.blue_gun()));
+    if (_up && pulse.blue_gun() > MAX_CYCLE_COLOR) {
+      pulse = engine::gfx::PaletteColor::FromGuns(
+          MAX_CYCLE_COLOR, MAX_CYCLE_COLOR, MAX_CYCLE_COLOR);
+      _up = false;
+    } else if (!_up && pulse.blue_gun() < MIN_CYCLE_COLOR) {
+      pulse = engine::gfx::PaletteColor::FromGuns(
+          MIN_CYCLE_COLOR, MIN_CYCLE_COLOR, MIN_CYCLE_COLOR);
+      _up = true;
     }
     changed = true;
   }
@@ -1253,22 +1251,12 @@ bool Color_Cycle() {
   **	Process the color cycling effects -- water.
   */
   if (!_timer.Remaining()) {
-    unsigned char colors[3];
-
     _timer.Set(kTimerSecond / 4);
 
-    const auto palette_bytes =
-        std::as_writable_bytes(std::span(ThePalettes().game_palette()));
-    base::CopyBytes(base::ObjectBytes(colors),
-                    palette_bytes.subspan(base::ToSize(
-                        (CYCLE_COLOR_START + CYCLE_COLOR_COUNT - 1) * 3)),
-                    sizeof(colors));
-    base::MoveBytes(
-        palette_bytes.subspan(base::ToSize((CYCLE_COLOR_START + 1) * 3)),
-        palette_bytes.subspan(base::ToSize(CYCLE_COLOR_START * 3)),
-        base::ToSize((CYCLE_COLOR_COUNT - 1) * 3));
-    base::CopyBytes(palette_bytes.subspan(base::ToSize(CYCLE_COLOR_START * 3)),
-                    base::ObjectBytes(colors), sizeof(colors));
+    // Every water color moves up one entry and the last wraps to the first.
+    const auto water = ThePalettes().game_palette().colors().subspan(
+        CYCLE_COLOR_START, CYCLE_COLOR_COUNT);
+    std::ranges::rotate(water, water.end() - 1);
     changed = true;
   }
 
@@ -2136,9 +2124,10 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                       Call_Back);
       TheScreen().visible_page().view().Clear();
-      std::ranges::fill(ThePalettes().black_palette(), 0x01);
+      ThePalettes().black_palette() = engine::gfx::Palette(
+          engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01));
       Set_Palette(ThePalettes().black_palette());
-      std::ranges::fill(ThePalettes().black_palette(), 0x00);
+      ThePalettes().black_palette() = engine::gfx::Palette();
     }
     TheGameState().preserve_movie_screen() = false;
     TheKeyboard().Clear();
@@ -2173,9 +2162,10 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     */
     if (clear_screen) {
       TheScreen().visible_page().view().Clear();
-      std::ranges::fill(ThePalettes().black_palette(), 0x01);
+      ThePalettes().black_palette() = engine::gfx::Palette(
+          engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01));
       Set_Palette(ThePalettes().black_palette());
-      std::ranges::fill(ThePalettes().black_palette(), 0x00);
+      ThePalettes().black_palette() = engine::gfx::Palette();
       Set_Palette(ThePalettes().black_palette());
     }
     TheMouse().Show();
@@ -2933,7 +2923,7 @@ bool Force_CD_Available(int cd) {
 #ifndef DEMO
   static int _last = -1;
 #endif
-  static unsigned char _palette[768];
+  static engine::gfx::Palette _palette;
   static const char* _volid[] = {"GDI", "NOD", "COVERT"};
 
   int new_cd_drive = 0;
@@ -3021,7 +3011,7 @@ bool Force_CD_Available(int cd) {
       // The theme was already stopped above, and the only way out of this
       // loop is the cancel below, so there is nothing to remember here.
       TheTheme().Stop();
-      std::ranges::copy(CurrentPalette, std::begin(_palette));
+      _palette = CurrentPalette;
 
       /*
       **	Only set the palette if necessary.

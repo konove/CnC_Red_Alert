@@ -75,12 +75,12 @@
 
 #include "base/array.h"
 #include "base/bytes_of.h"
-#include "base/numeric.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/crypto/key_phrase_hash.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/hsv_color.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "td/audio.h"
 #include "td/conquer.h"
@@ -417,20 +417,16 @@ int OptionsClass::Get_Tint() const { return Tint; }
  *                                                                                             *
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
-                                  std::span<unsigned char> newpal,
+void OptionsClass::Adjust_Palette(const engine::gfx::Palette& oldpal,
+                                  engine::gfx::Palette& newpal,
                                   unsigned char brightness, unsigned char color,
                                   unsigned char tint, unsigned char contrast) {
-  if (oldpal.size() < 768 || newpal.size() < 768) {
-    return;
-  }
-
   // At the neutral settings every slider leaves its component unchanged, but
   // the HSV round trip would still move some guns a step; copy the art instead.
   constexpr unsigned char kNeutral = 0x80;
   if (brightness == kNeutral && color == kNeutral && tint == kNeutral &&
       contrast == kNeutral) {
-    std::ranges::copy(oldpal.first(768), newpal.begin());
+    newpal = oldpal;
     return;
   }
 
@@ -439,15 +435,9 @@ void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
   */
   for (int index = 0; index < 256; index++) {
     if (/*index == LTGREEN ||*/ index == 255) {
-      std::ranges::copy(oldpal.subspan(base::ToSize(index) * 3, 3),
-                        newpal.subspan(base::ToSize(index) * 3).begin());
+      newpal.at(index) = oldpal.at(index);
     } else {
-      const engine::gfx::HsvColor hsv =
-          engine::gfx::PaletteColor::FromGuns(
-              base::At(oldpal, (base::ToSize(index) * 3) + 0),
-              base::At(oldpal, (base::ToSize(index) * 3) + 1),
-              base::At(oldpal, (base::ToSize(index) * 3) + 2))
-              .ToHsv();
+      const engine::gfx::HsvColor hsv = oldpal.at(index).ToHsv();
 
       /*
       **	Adjust contrast by moving the value toward the center according
@@ -466,17 +456,10 @@ void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
       temp = hsv.hue() * tint / 0x80;  // Tint
       temp = Bound(temp, 0, 0xFF);
       const int h = temp;
-      const engine::gfx::PaletteColor rgb =
-          engine::gfx::HsvColor(static_cast<uint8_t>(h),
-                                static_cast<uint8_t>(s),
-                                static_cast<uint8_t>(v))
-              .ToPaletteColor();
-      base::At(newpal, (base::ToSize(index) * 3) + 0) =
-          static_cast<unsigned char>(rgb.red_gun());
-      base::At(newpal, (base::ToSize(index) * 3) + 1) =
-          static_cast<unsigned char>(rgb.green_gun());
-      base::At(newpal, (base::ToSize(index) * 3) + 2) =
-          static_cast<unsigned char>(rgb.blue_gun());
+      newpal.at(index) = engine::gfx::HsvColor(static_cast<uint8_t>(h),
+                                               static_cast<uint8_t>(s),
+                                               static_cast<uint8_t>(v))
+                             .ToPaletteColor();
     }
   }
 }

@@ -40,7 +40,6 @@
 
 #include "td/intro.h"
 
-#include <algorithm>
 #include <cstddef>
 #include <cstring>
 #include <memory>
@@ -52,6 +51,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/palette.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wsa_animation.h"
 #include "engine/platform/timer.h"
@@ -166,9 +166,7 @@ void Choose_Side() {
     TheGameState().breakout_allowed() = true;
   }
 
-  engine::gfx::Palette anim_palette = VgaPalette(ThePalettes().title_palette());
-  WsaAnimation anim("CHOOSE.WSA", &anim_palette);
-  StoreVga(anim_palette, ThePalettes().title_palette());
+  WsaAnimation anim("CHOOSE.WSA", &ThePalettes().title_palette());
   Call_Back();
 
   nodbrief = Open_Movie(nodbrief_io, movie_screen, audio, "NOD1PRE.VQA");
@@ -316,9 +314,10 @@ void Choose_Side() {
     ** Make sure the screen's fully clear after the movie plays
     */
     TheScreen().visible_page().view().Clear();
-    std::ranges::fill(ThePalettes().black_palette(), 0x01);
+    ThePalettes().black_palette() = engine::gfx::Palette(
+        engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01));
     Set_Palette(ThePalettes().black_palette());
-    std::ranges::fill(ThePalettes().black_palette(), 0x00);
+    ThePalettes().black_palette() = engine::gfx::Palette();
   } else {
     TheGameState().preserve_movie_screen() = true;
   }

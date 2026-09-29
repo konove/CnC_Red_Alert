@@ -317,7 +317,7 @@ int main(int argc, char* argv[])
       TheGameState().sound_on() =
           engine::audio::TheAudio().Open(11025 * 2, /*stereo=*/false);
 
-      ThePalettes().title_palette().assign(768, 0);
+      ThePalettes().title_palette() = engine::gfx::Palette();
 
       CCDebugString("C&C95 - Setting video mode.\n");
       if (!TheScreen().Init()) {

@@ -10,6 +10,8 @@
 #include <system_error>
 
 #include "base/array.h"
+#include "engine/gfx/palette.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "gtest/gtest.h"
@@ -52,7 +54,7 @@ class PcxFile {
 
   // Load without a palette so EOF is exactly the end of the encoded pixels.
   [[nodiscard]] std::unique_ptr<PixelBuffer> Load() const {
-    return Read_PCX_File(path_.string().c_str(), {}, {}, 0);
+    return Read_PCX_File(path_.string().c_str(), nullptr, {}, 0);
   }
 
  private:
@@ -109,14 +111,14 @@ TEST(PcxTest, WrittenFileReadsBack) {
     base::At(pixels, kWidth + x) =
         static_cast<uint8_t>(x % 2 == 0 ? 0xC5 : x);  // Literals and escapes.
   }
-  std::array<uint8_t, 768> palette{};
-  palette.at(3) = 63;
+  engine::gfx::Palette palette;
+  palette.at(1) = engine::gfx::PaletteColor::FromGuns(63, 20, 1);
 
   Write_PCX_File(path.string().c_str(), picture.view(), palette);
 
-  std::array<uint8_t, 768> loaded_palette{};
+  engine::gfx::Palette loaded_palette;
   const std::unique_ptr<PixelBuffer> loaded =
-      Read_PCX_File(path.string().c_str(), loaded_palette, {}, 0);
+      Read_PCX_File(path.string().c_str(), &loaded_palette, {}, 0);
   std::error_code ignored;
   std::filesystem::remove(path, ignored);
 
@@ -127,7 +129,7 @@ TEST(PcxTest, WrittenFileReadsBack) {
   for (int i = 0; i < 2 * kWidth; i++) {
     ASSERT_EQ(base::At(loaded_pixels, i), base::At(pixels, i)) << i;
   }
-  EXPECT_EQ(loaded_palette.at(3), 63);
+  EXPECT_EQ(loaded_palette, palette);
 }
 
 TEST(PcxTest, DecodesLiteralPixels) {

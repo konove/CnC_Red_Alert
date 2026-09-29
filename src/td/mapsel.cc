@@ -40,7 +40,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include <array>
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <memory>
@@ -92,7 +92,7 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
 static void Print_Statistics(Presentation& show, int country, int xpos,
                              int ypos);
 static void Cycle_Call_Back_Delay(Presentation& show, int time,
-                                  std::span<unsigned char> pal);
+                                  engine::gfx::Palette& pal);
 [[maybe_unused]] static int LowMedHiStr(int percentage);
 
 #ifdef OBSOLETE
@@ -485,7 +485,7 @@ struct nodstats {
  * HISTORY: * 04/17/1995 BWG : Created. *
  *=============================================================================================*/
 void Map_Selection() {
-  unsigned char localpalette[768]{};
+  engine::gfx::Palette localpalette;
   bool lastscenario = false;
   const HousesType house = ThePlayer()->Class->House;
   int attackxcoord = 0;
@@ -508,8 +508,8 @@ void Map_Selection() {
       0x26, 0x26, 0x26, 0x26, 0x26, 0x26, 0x26, 0x26};
   PixelBuffer backpage(20 * 6, 8);
 
-  std::array<unsigned char, 768> grey2palette{};
-  std::array<unsigned char, 768> progresspalette{};
+  engine::gfx::Palette grey2palette;
+  engine::gfx::Palette progresspalette;
 
   TheKeyboard().Clear();
   // The score animations print this screen's captions in the score font; the
@@ -543,27 +543,20 @@ void Map_Selection() {
   /*
   ** Now start the process where we fade the gray earth in.
   */
-  engine::gfx::Palette greyearth_palette = VgaPalette(localpalette);
-  WsaAnimation greyearth("GREYERTH.WSA", &greyearth_palette);
-  StoreVga(greyearth_palette, localpalette);
-  engine::gfx::Palette greyearth2_palette = VgaPalette(grey2palette);
-  WsaAnimation greyearth2("E-BWTOCL.WSA", &greyearth2_palette);
-  StoreVga(greyearth2_palette, grey2palette);
+  WsaAnimation greyearth("GREYERTH.WSA", &localpalette);
+  WsaAnimation greyearth2("E-BWTOCL.WSA", &grey2palette);
 
   /*
   ** Load the spinning-globe anim
   */
   const bool good = house == HOUSE_GOOD;
-  engine::gfx::Palette anim_palette = VgaPalette(ThePalettes().title_palette());
-  WsaAnimation anim(good ? "HEARTH_E.WSA" : "HEARTH_A.WSA", &anim_palette);
-  StoreVga(anim_palette, ThePalettes().title_palette());
+  WsaAnimation anim(good ? "HEARTH_E.WSA" : "HEARTH_A.WSA",
+                    &ThePalettes().title_palette());
   const char* progress_name = lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA";
   if (good) {
     progress_name = lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA";
   }
-  engine::gfx::Palette progress_palette = VgaPalette(progresspalette);
-  WsaAnimation progress(progress_name, &progress_palette);
-  StoreVga(progress_palette, progresspalette);
+  WsaAnimation progress(progress_name, &progresspalette);
 
   const auto appear1 = MixArchive::RetrieveData("APPEAR1.AUD");
   const auto sfx4 = MixArchive::RetrieveData("SFX4.AUD");
@@ -1075,13 +1068,13 @@ void Map_Selection() {
     if (const auto file =
             OpenGameFile(lastscenario ? "CLICK_EB.CPS" : "CLICK_E.CPS")) {
       Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                      TheScreen().sys_mem_page().bytes(), {});
+                      TheScreen().sys_mem_page().bytes(), nullptr);
     }
   } else {
     if (const auto file =
             OpenGameFile(lastscenario ? "CLICK_SA.CPS" : "CLICK_A.CPS")) {
       Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                      TheScreen().sys_mem_page().bytes(), {});
+                      TheScreen().sys_mem_page().bytes(), nullptr);
     }
     if (lastscenario) {
       attackxcoord = 200;
@@ -1190,7 +1183,9 @@ void Map_Selection() {
     ** the palette down
     */
     if (const auto file = OpenGameFile("DARK_E.PAL")) {
-      file->Read(localpalette, 768);
+      if (const auto palette = engine::gfx::ReadVgaPalette(*file)) {
+        localpalette = *palette;
+      }
     }
     //		Load_Data("DARK_E.PAL", localpalette, 768);
     Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
@@ -1205,7 +1200,9 @@ void Map_Selection() {
   } else {
     if (const auto file =
             OpenGameFile(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL")) {
-      file->Read(localpalette, 768);
+      if (const auto palette = engine::gfx::ReadVgaPalette(*file)) {
+        localpalette = *palette;
+      }
     }
     Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
     Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
@@ -1595,28 +1592,17 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
 #endif
 
 void Cycle_Call_Back_Delay(Presentation& show, int time,
-                           std::span<unsigned char> pal) {
+                           engine::gfx::Palette& pal) {
   static int _counter;
 
   while (time--) {
     _counter = (_counter + 1) % 4;
 
     if (_counter == 0) {
-      const unsigned char r = base::At(pal, (249 * 3) + 0);
-      const unsigned char g = base::At(pal, (249 * 3) + 1);
-      const unsigned char b = base::At(pal, (249 * 3) + 2);
-
-      for (int i = 249; i < 254; i++) {
-        base::At(pal, (base::ToSize(i) * 3) + 0) =
-            base::At(pal, (base::ToSize(i + 1) * 3) + 0);
-        base::At(pal, (base::ToSize(i) * 3) + 1) =
-            base::At(pal, (base::ToSize(i + 1) * 3) + 1);
-        base::At(pal, (base::ToSize(i) * 3) + 2) =
-            base::At(pal, (base::ToSize(i + 1) * 3) + 2);
-      }
-      base::At(pal, (254 * 3) + 0) = r;
-      base::At(pal, (254 * 3) + 1) = g;
-      base::At(pal, (254 * 3) + 2) = b;
+      // Colors 249..254 each move down one entry and the first wraps to the
+      // last.
+      const auto cycle = pal.colors().subspan(249, 6);
+      std::ranges::rotate(cycle, cycle.begin() + 1);
 
       Set_Palette(pal);
     }

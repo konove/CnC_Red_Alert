@@ -709,9 +709,8 @@ void ScoreClass::Show() {
   /*
   ** Load the background for the score screen
   */
-  engine::gfx::Palette anim_palette = VgaPalette(ThePalettes().title_palette());
-  WsaAnimation anim(base::At(ScreenNames, house), &anim_palette);
-  StoreVga(anim_palette, ThePalettes().title_palette());
+  WsaAnimation anim(base::At(ScreenNames, house),
+                    &ThePalettes().title_palette());
 
   const int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
 
@@ -1186,21 +1185,10 @@ void Cycle_Wait_Click(Presentation& show) {
     counter = (counter + 1) % 8;
 
     if (counter == 0) {
-      const unsigned char r = ThePalettes().title_palette().at((233 * 3) + 0);
-      const unsigned char g = ThePalettes().title_palette().at((233 * 3) + 1);
-      const unsigned char b = ThePalettes().title_palette().at((233 * 3) + 2);
-
-      for (int i = 233; i < 237; i++) {
-        ThePalettes().title_palette().at(base::ToSize((i * 3) + 0)) =
-            ThePalettes().title_palette().at(base::ToSize(((i + 1) * 3) + 0));
-        ThePalettes().title_palette().at(base::ToSize((i * 3) + 1)) =
-            ThePalettes().title_palette().at(base::ToSize(((i + 1) * 3) + 1));
-        ThePalettes().title_palette().at(base::ToSize((i * 3) + 2)) =
-            ThePalettes().title_palette().at(base::ToSize(((i + 1) * 3) + 2));
-      }
-      ThePalettes().title_palette().at((237 * 3) + 0) = r;
-      ThePalettes().title_palette().at((237 * 3) + 1) = g;
-      ThePalettes().title_palette().at((237 * 3) + 2) = b;
+      // Colors 233..237 each move down one entry and the first wraps to the
+      // last.
+      const auto cycle = ThePalettes().title_palette().colors().subspan(233, 5);
+      std::ranges::rotate(cycle, cycle.begin() + 1);
 
       Set_Palette(ThePalettes().title_palette());
     }
@@ -2185,9 +2173,7 @@ void Multi_Score_Presentation() {
 
   Set_Palette(ThePalettes().black_palette());
 
-  engine::gfx::Palette anim_palette = VgaPalette(ThePalettes().title_palette());
-  WsaAnimation anim("MLTIPLYR.WSA", &anim_palette);
-  StoreVga(anim_palette, ThePalettes().title_palette());
+  WsaAnimation anim("MLTIPLYR.WSA", &ThePalettes().title_palette());
   TheMouse().Hide();
 
   /*
