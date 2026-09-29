@@ -2386,16 +2386,6 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
 
       const auto shape_pointer = std::as_bytes(shape_size);
 
-      /*
-      **	Special shadow drawing code (used for aircraft and bullets).
-      */
-      if ((flags & (ShapeFlags::kFading | ShapeFlags::kPredator)) ==
-          (ShapeFlags::kFading | ShapeFlags::kPredator)) {
-        flags = flags & ~(ShapeFlags::kFading | ShapeFlags::kPredator);
-        flags = flags | ShapeFlags::kGhost;
-        ghostdata = MouseClass::SpecialGhost;
-      }
-
       int predoffset = static_cast<int>(CurrentFrame());
 
       if (x > base::At(base::At(WindowList, static_cast<int>(window)),
@@ -2408,6 +2398,7 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
         const engine::gfx::ShapeEffects effects{
             .ghost_table = ghostdata,
             .fading_table = fadingdata,
+            .shadow_table = base::Suffix(MouseClass::SpecialGhost, 256),
             .predator_offset = predoffset,
         };
         engine::gfx::DrawShapeFrame(x, y, Get_Build_Frame_Width(shapefile),

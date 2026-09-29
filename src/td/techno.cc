@@ -3275,10 +3275,8 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
 
     if (visual != VISUAL_HIDDEN && visual != VISUAL_RIPPLE) {
       if (visual == VISUAL_SHADOWY) {
-        CC_Draw_Shape(
-            view, shapefile, shapenum, x, y, window,
-            ShapeFlags::kCentered | ShapeFlags::kFading | ShapeFlags::kPredator,
-            {}, MouseClass::FadingShade);
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                      ShapeFlags::kCentered | ShapeFlags::kShadow);
       } else {
         CC_Draw_Shape(
             view, shapefile, shapenum, x, y, window,
@@ -3286,10 +3284,8 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
             remap, MouseClass::UnitShadow);
       }
       if (visual == VISUAL_DARKEN) {
-        CC_Draw_Shape(
-            view, shapefile, shapenum, x, y, window,
-            ShapeFlags::kPredator | ShapeFlags::kCentered | ShapeFlags::kFading,
-            remap, MouseClass::FadingShade);
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                      ShapeFlags::kShadow | ShapeFlags::kCentered);
       }
     }
     if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {

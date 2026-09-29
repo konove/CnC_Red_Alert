@@ -30,7 +30,7 @@
   - Changes `ToHsv()` values (the options palette), `PaletteClass::Closest_Color()` matches and the
     palette `ra/wolapiob.cc` exports
 - Make Red Alert's cloak shimmer walk the other way on the right half of the window
-  - `CC_Draw_Shape()` (`ra/shape_draw.cc:184`) negates the predator offset when
+  - `CC_Draw_Shape()` (`ra/shape_draw.cc:179`) negates the predator offset when
     `x > WindowList[window][kWindowWidth] * 4`, TD's formula; TD stores window widths in 8-pixel
     units, RA in pixels (`engine/gfx/pixel_buffer.h:361`), so RA's test is "past four window widths"
     and never holds for a visible shape. RA never uses the down-and-left sample offsets
@@ -167,14 +167,9 @@
     build it as `CurrentFrame()` negated on the right half of the window. A `predator_start` plus a
     `bool` (or the blitter choosing the direction from x and the view width) drops the sign trick.
     Pairs with the RA shimmer-direction bug above
-- Move the aircraft/bullet shadow rewrite out of both `CC_Draw_Shape()`s
-  - `ra/shape_draw.cc:172-178` and `td/conquer.cc:2399-2404` both turn `kFading | kPredator` into
-    `kGhost` with `SpecialGhost`: a meaning of a flag combination that belongs next to the
-    `ShapeFlags` definition (`engine/gfx/shape.h`), e.g. a shadow bit handled once (the library's
-    `SHAPE_SHADOW`, 0x2000, went unused in `b77c2c21`)
 - Consider making color 0 always transparent in `engine::gfx::DrawShapeFrame()`
-  - Both callers pass `flags | ShapeFlags::kTransparent` (`ra/shape_draw.cc:199`,
-    `td/conquer.cc:2423`) and no other code passes it, so the eight non-transparent entries of
+  - Both callers pass `flags | ShapeFlags::kTransparent` (`ra/shape_draw.cc:191`,
+    `td/conquer.cc:2407`) and no other code passes it, so the eight non-transparent entries of
     `kBlitters` (`engine/gfx/shape_blitter.cc`), including the whole-line copy, only run in
     `shape_blitter_test.cc`; dropping the flag halves the instantiations and deletes `kTransparent`
     (~6 files: `shape.h`, `shape_blitter.{h,cc}`, its test, the two callers)

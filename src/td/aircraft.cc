@@ -425,10 +425,8 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   **	Special manual shadow draw code.
   */
   if (Visual_Character() <= VISUAL_DARKEN) {
-    CC_Draw_Shape(
-        view, shapefile, shapenum, x + 1, y + 2, window,
-        ShapeFlags::kPredator | ShapeFlags::kCentered | ShapeFlags::kFading,
-        MouseClass::FadingShade, {});
+    CC_Draw_Shape(view, shapefile, shapenum, x + 1, y + 2, window,
+                  ShapeFlags::kShadow | ShapeFlags::kCentered);
   }
 
   /*
@@ -457,7 +455,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
       flags = flags | ShapeFlags::kGhost;
     } else {
       shapenum = Fetch_Stage() % 4;
-      flags = flags | ShapeFlags::kFading | ShapeFlags::kPredator;
+      flags = flags | ShapeFlags::kShadow;
     }
 
     if (*this == AIRCRAFT_TRANSPORT) {

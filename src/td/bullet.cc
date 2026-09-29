@@ -556,10 +556,8 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
   *body *	render position.
   */
   if (Altitude) {
-    CC_Draw_Shape(
-        view, shapeptr, shapenum, x, y, window,
-        ShapeFlags::kPredator | ShapeFlags::kCentered | ShapeFlags::kFading, {},
-        MouseClass::FadingShade);
+    CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
+                  ShapeFlags::kShadow | ShapeFlags::kCentered);
     y -= Lepton_To_Pixel(Altitude);
   }
 
