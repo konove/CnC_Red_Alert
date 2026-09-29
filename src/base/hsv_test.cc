@@ -1,6 +1,7 @@
 #include "base/hsv.h"
 
 #include <algorithm>
+#include <array>
 
 #include "gtest/gtest.h"
 
@@ -101,6 +102,44 @@ TEST(HsvToRgb8Test, ValueBoundsTheBrightestGun) {
       const auto [red, green, blue] = HsvToRgb8(hue, saturation, 180);
       const int brightest = std::max({red, green, blue});
       EXPECT_EQ(brightest, 180) << "hue " << hue << " sat " << saturation;
+    }
+  }
+}
+
+std::array<int, 3> RgbToHsv(const int red, const int green, const int blue) {
+  const auto [hue, saturation, value] = Rgb8ToHsv(red, green, blue);
+  return {hue, saturation, value};
+}
+
+// Pinned against Tiberian Dawn's original conversion, which this reproduces.
+TEST(Rgb8ToHsvTest, PinnedValues) {
+  EXPECT_EQ(RgbToHsv(255, 0, 0), (std::array{255, 255, 255}));
+  EXPECT_EQ(RgbToHsv(0, 255, 0), (std::array{85, 255, 255}));
+  EXPECT_EQ(RgbToHsv(0, 0, 255), (std::array{170, 255, 255}));
+  EXPECT_EQ(RgbToHsv(255, 130, 0), (std::array{22, 255, 255}));
+  EXPECT_EQ(RgbToHsv(40, 162, 202), (std::array{138, 205, 202}));
+  EXPECT_EQ(RgbToHsv(202, 20, 121), (std::array{231, 230, 202}));
+}
+
+TEST(Rgb8ToHsvTest, GreyHasNoHueOrSaturation) {
+  EXPECT_EQ(RgbToHsv(0, 0, 0), (std::array{0, 0, 0}));
+  EXPECT_EQ(RgbToHsv(130, 130, 130), (std::array{0, 0, 130}));
+  EXPECT_EQ(RgbToHsv(255, 255, 255), (std::array{0, 0, 255}));
+}
+
+TEST(Rgb8ToHsvTest, IsUsableInConstantExpressions) {
+  static_assert(Rgb8ToHsv(0, 0, 255).hue == 170);
+}
+
+TEST(Rgb8ToHsvTest, RoundTripKeepsTheBrightestGun) {
+  for (int red = 0; red <= 255; red += 5) {
+    for (int green = 0; green <= 255; green += 5) {
+      for (int blue = 0; blue <= 255; blue += 5) {
+        const auto [hue, saturation, value] = Rgb8ToHsv(red, green, blue);
+        const auto [r, g, b] = HsvToRgb8(hue, saturation, value);
+        ASSERT_EQ(std::max({r, g, b}), std::max({red, green, blue}))
+            << red << "," << green << "," << blue;
+      }
     }
   }
 }
