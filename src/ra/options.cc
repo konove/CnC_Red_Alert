@@ -477,6 +477,14 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
     return;
   }
 
+  // At the neutral settings every slider leaves its component unchanged, but
+  // the HSV round trip would still move some guns a step; copy the art instead.
+  if (brightness == fixed::_1_2 && color == fixed::_1_2 &&
+      tint == fixed::_1_2 && contrast == fixed::_1_2) {
+    newpal = oldpal;
+    return;
+  }
+
   /*
   **	Adjust for palette.
   */

@@ -1,11 +1,16 @@
 // Tests for reading and writing the [WinHotkeys] bindings, which REDALERT.INI
-// stores as Windows virtual-key codes.
+// stores as Windows virtual-key codes, and for the palette sliders.
 
 #include "ra/options.h"
 
+#include "base/fixed.h"
+#include "engine/gfx/hsv_color.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/window/keyboard.h"
 #include "gtest/gtest.h"
+#include "ra/defines.h"
 #include "ra/ini.h"
+#include "ra/palette.h"
 
 namespace {
 
@@ -66,6 +71,54 @@ TEST(OptionsHotkeysTest, RoundTripsEveryDefault) {
   EXPECT_EQ(loaded.KeyTeam1, defaults.KeyTeam1);
   EXPECT_EQ(loaded.KeyForceMove2, defaults.KeyForceMove2);
   EXPECT_EQ(loaded.KeySidebarDown, defaults.KeySidebarDown);
+}
+
+// A palette whose entries spread over the 6-bit color cube.
+PaletteClass SpreadPalette() {
+  PaletteClass palette;
+  for (int index = 0; index < PaletteClass::COLOR_COUNT; ++index) {
+    palette.at(index) = engine::gfx::PaletteColor::FromGuns(
+        index % 64, (index * 7) % 64, (index * 13) % 64);
+  }
+  return palette;
+}
+
+TEST(OptionsAdjustPaletteTest, NeutralSettingsKeepTheArt) {
+  const PaletteClass original = SpreadPalette();
+  // The HSV round trip on its own moves some of these entries, so a copy is
+  // the only way to keep them all.
+  int moved = 0;
+  for (const engine::gfx::PaletteColor& color : original.colors()) {
+    if (color.ToHsv().ToPaletteColor().SquaredDistance(color) != 0) {
+      ++moved;
+    }
+  }
+  ASSERT_GT(moved, 0);
+
+  PaletteClass adjusted;
+  OptionsClass::Adjust_Palette(original, adjusted, fixed::_1_2, fixed::_1_2,
+                               fixed::_1_2, fixed::_1_2);
+
+  for (int index = 0; index < PaletteClass::COLOR_COUNT; ++index) {
+    EXPECT_EQ(adjusted.at(index).SquaredDistance(original.at(index)), 0)
+        << "index " << index;
+  }
+}
+
+TEST(OptionsAdjustPaletteTest, NoColorTurnsEveryEntryGrey) {
+  const PaletteClass original = SpreadPalette();
+  PaletteClass adjusted;
+  OptionsClass::Adjust_Palette(original, adjusted, fixed::_1_2, fixed(0),
+                               fixed::_1_2, fixed::_1_2);
+
+  for (int index = 0; index < PaletteClass::COLOR_COUNT; ++index) {
+    if (index == kMouseColor) {
+      continue;
+    }
+    const engine::gfx::PaletteColor& color = adjusted.at(index);
+    EXPECT_EQ(color.red_gun(), color.green_gun()) << "index " << index;
+    EXPECT_EQ(color.green_gun(), color.blue_gun()) << "index " << index;
+  }
 }
 
 }  // namespace

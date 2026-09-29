@@ -425,6 +425,15 @@ void OptionsClass::Adjust_Palette(std::span<const unsigned char> oldpal,
     return;
   }
 
+  // At the neutral settings every slider leaves its component unchanged, but
+  // the HSV round trip would still move some guns a step; copy the art instead.
+  constexpr unsigned char kNeutral = 0x80;
+  if (brightness == kNeutral && color == kNeutral && tint == kNeutral &&
+      contrast == kNeutral) {
+    std::ranges::copy(oldpal.first(768), newpal.begin());
+    return;
+  }
+
   /*
   **	Adjust for palette.
   */
