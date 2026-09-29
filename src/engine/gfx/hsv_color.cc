@@ -32,15 +32,15 @@ namespace engine::gfx {
 PaletteColor HsvColor::ToPaletteColor() const {
   const auto [red, green, blue] = base::HsvToRgb8(hue(), saturation(), value());
 
-  // The PaletteColor constructor drops each gun's low two bits to get the 6-bit
-  // VGA value it stores.
-  //
-  // TODO: Truncating here, and in ToHsv(), makes the round trip lossy: at the
-  // options dialog's neutral settings 127,769 of the 262,144 6-bit colors come
-  // back a step or two off (the original code: 76,340; TD's rounding pair:
-  // 21,612, by one step), so every palette entry the dialog adjusts drifts.
-  return {static_cast<uint8_t>(red), static_cast<uint8_t>(green),
-          static_cast<uint8_t>(blue)};
+  // Round each gun to the nearest 6-bit step rather than dropping the low two
+  // bits, which is what keeps PaletteColor::ToHsv() followed by this within
+  // one step of the original color.
+  const auto scale_down = [](const int component) {
+    return base::DivideWithRound(component * PaletteColor::kMaxGun,
+                                 PaletteColor::kMaxComponent);
+  };
+  return PaletteColor::FromGuns(scale_down(red), scale_down(green),
+                                scale_down(blue));
 }
 
 // The conversions work at the 8-bit HSV scale for better precision than the

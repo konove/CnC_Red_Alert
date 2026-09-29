@@ -71,5 +71,34 @@ TEST(HsvColorTest, PrimariesConvertToFullGuns) {
   EXPECT_EQ(blue.blue(), 252);
 }
 
+TEST(HsvColorTest, PaletteRoundTripIsWithinOneStep) {
+  int changed = 0;
+  for (int r = 0; r <= PaletteColor::kMaxGun; ++r) {
+    for (int g = 0; g <= PaletteColor::kMaxGun; ++g) {
+      for (int b = 0; b <= PaletteColor::kMaxGun; ++b) {
+        const PaletteColor color =
+            PaletteColor::FromGuns(r, g, b).ToHsv().ToPaletteColor();
+        ASSERT_LE(std::abs(color.red_gun() - r), 1)
+            << r << "," << g << "," << b;
+        ASSERT_LE(std::abs(color.green_gun() - g), 1)
+            << r << "," << g << "," << b;
+        ASSERT_LE(std::abs(color.blue_gun() - b), 1)
+            << r << "," << g << "," << b;
+        if (color.SquaredDistance(PaletteColor::FromGuns(r, g, b)) != 0) {
+          ++changed;
+        }
+      }
+    }
+  }
+  // The residue of the 8-bit HSV grid; truncating either direction instead of
+  // rounding would raise it (127,769 when both truncated).
+  EXPECT_EQ(changed, 21'612);
+}
+
+TEST(HsvColorTest, FullGunsReadAsFullValue) {
+  EXPECT_EQ(PaletteColor::FromGuns(63, 63, 63).ToHsv().value(), 255);
+  EXPECT_EQ(PaletteColor::FromGuns(0, 0, 63).ToHsv().hue(), 170);
+}
+
 }  // namespace
 }  // namespace engine::gfx

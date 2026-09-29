@@ -47,13 +47,28 @@ class PaletteColor {
                          const uint8_t blue) noexcept
       : red_(red >> 2), green_(green >> 2), blue_(blue >> 2) {}
 
-  // Returns this color as hue, saturation and value, each 0..255, computed
-  // from the 8-bit red(), green() and blue() on the hexagonal color wheel; see
-  // HsvColor for the scale. A grey has hue and saturation 0.
+  // Returns the color with VGA guns 'red', 'green' and 'blue', each 0..63, as
+  // a raw 768-byte palette stores them.
+  [[nodiscard]] static constexpr PaletteColor FromGuns(const int red,
+                                                       const int green,
+                                                       const int blue) {
+    PaletteColor color;
+    color.red_ = static_cast<uint8_t>(red);
+    color.green_ = static_cast<uint8_t>(green);
+    color.blue_ = static_cast<uint8_t>(blue);
+    return color;
+  }
+
+  // Returns this color as hue, saturation and value, each 0..255, on the
+  // hexagonal color wheel; see HsvColor for the scale. The guns are scaled to
+  // 0..255 with 63 reading as 255, unlike red(), green() and blue(). A grey
+  // has hue and saturation 0.
   [[nodiscard]] HsvColor ToHsv() const;
 
   // The brightest 8-bit component the constructor takes.
   static constexpr uint8_t kMaxComponent = 255;
+  // The brightest VGA gun; 63, not 64, since this is a maximum, not a range.
+  static constexpr int kMaxGun = 63;
 
   // Returns this color moved proportionately toward 'target', as palette
   // fades do.
@@ -74,10 +89,15 @@ class PaletteColor {
   //
   // TODO: The '/ 64' term is the original '>> 6', always 0 for a 6-bit gun;
   // '>> 4' would copy the top bits down and make 63 read as 255. Changing it
-  // shifts ToHsv() values, closest-color matches and the WOLAPI palette.
+  // shifts closest-color matches and the WOLAPI palette.
   [[nodiscard]] constexpr int red() const { return ToEightBits(red_); }
   [[nodiscard]] constexpr int green() const { return ToEightBits(green_); }
   [[nodiscard]] constexpr int blue() const { return ToEightBits(blue_); }
+
+  // The VGA guns as stored, 0..63.
+  [[nodiscard]] constexpr int red_gun() const { return red_; }
+  [[nodiscard]] constexpr int green_gun() const { return green_; }
+  [[nodiscard]] constexpr int blue_gun() const { return blue_; }
 
  private:
   static constexpr int ToEightBits(const uint8_t gun) {

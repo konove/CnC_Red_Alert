@@ -22,6 +22,7 @@
 #include <cmath>
 #include <cstdint>
 
+#include "base/hsv.h"
 #include "engine/gfx/hsv_color.h"
 
 namespace engine::gfx {
@@ -62,48 +63,16 @@ int PaletteColor::SquaredDistance(const PaletteColor& other) const {
 }
 
 HsvColor PaletteColor::ToHsv() const {
-  const int r = red();
-  const int g = green();
-  const int b = blue();
+  // Scale each gun to the full 8-bit range, rounding, so that 63 reads as 255
+  // and the conversion back in HsvColor::ToPaletteColor() can round to the
+  // same gun.
+  const auto scale_up = [](const int gun) {
+    return base::DivideWithRound(gun * kMaxComponent, kMaxGun);
+  };
+  const auto [hue, saturation, value] =
+      base::Rgb8ToHsv(scale_up(red_), scale_up(green_), scale_up(blue_));
 
-  // The value, or brightness, is the brightest gun; the dimmest is the white
-  // mixed in.
-  const auto [white, value] = std::minmax({r, g, b});
-
-  // A grey (or black) has no saturation, and so no hue.
-  if (value == white) {
-    return {0, 0, static_cast<uint8_t>(value)};
-  }
-
-  // The saturation is the share of the value that is not white.
-  const int spread = value - white;
-  const int saturation = spread * 255 / value;
-
-  // The hue in sextants (0..6) is the dominant gun's sextant plus the
-  // difference of the other two over the spread. Keep it multiplied by the
-  // spread, as a numerator, so the one division comes last.
-  int hue_numerator = 0;
-  if (value == r) {
-    // Sextant 0: red is dominant. Towards magenta, where blue exceeds green,
-    // this goes negative and wraps round below.
-    hue_numerator = g - b;
-  } else if (value == g) {
-    // Sextant 2: green is dominant.
-    hue_numerator = (2 * spread) + (b - r);
-  } else {
-    // Sextant 4: blue is dominant.
-    hue_numerator = (4 * spread) + (r - g);
-  }
-
-  // Scale the numerator, in [-spread, 5 * spread], so that the six sextants of
-  // the circle span 0..255, then wrap the red-magenta side, -42..-1, round to
-  // the top of the circle.
-  int hue = hue_numerator * 255 / (spread * 6);
-  if (hue < 0) {
-    hue += 255;
-  }
-
-  // The components are 8-bit, so all three are in 0..255.
+  // Rgb8ToHsv() keeps all three in 0..255.
   return {static_cast<uint8_t>(hue), static_cast<uint8_t>(saturation),
           static_cast<uint8_t>(value)};
 }
