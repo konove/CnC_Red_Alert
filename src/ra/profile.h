@@ -9,10 +9,6 @@
 
 int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
                            const char* profile);
-bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
-                              std::span<char> profile);
-bool WWWritePrivateProfileString(const char* section, const char* entry,
-                                 const char* string, std::span<char> profile);
 
 // Reads a value into bounded output, or enumerates keys when key is nullptr.
 // Returns the key-line pointer (section body for enumeration), or nullptr when

@@ -35,8 +35,6 @@
  *---------------------------------------------------------------------------------------------*
  * Functions: * WWGetPrivateProfileInt -- Fetches integer value from INI. *
  *   WWGetPrivateProfileString -- Fetch string from INI. *
- *   WWWritePrivateProfileInt -- Write a profile int to the profile data block.
- ** WWWritePrivateProfileString -- Write a string to the profile data block. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -71,13 +69,6 @@ int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
   return base::ParseIntegerOr<int>(buffer, def);
 }
 
-bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
-                              std::span<char> profile) {
-  char buffer[16];
-  absl::SNPrintF(buffer, sizeof(buffer), "%d", value);
-  return WWWritePrivateProfileString(section, entry, buffer, profile);
-}
-
 const char* WWGetPrivateProfileString(const char* section, const char* key,
                                      const char* def, std::span<char> dest,
                                      const char* ini_data) {
@@ -88,14 +79,6 @@ const char* WWGetPrivateProfileString(const char* section, const char* key,
   const std::string_view text(ini_data);
   const auto found = engine::file::ReadProfile(text, section, key, def, dest);
   return found ? text.substr(*found).data() : nullptr;
-}
-
-bool WWWritePrivateProfileString(const char* section, const char* entry,
-                                 const char* string, std::span<char> profile) {
-  if (profile.empty() || section == nullptr) {
-    return true;
-  }
-  return engine::file::WriteProfile(profile, section, entry, string);
 }
 
 namespace {
