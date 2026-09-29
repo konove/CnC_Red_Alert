@@ -17,21 +17,12 @@
     (and deleted in `09717739`) they are always 0, so `ra/menus.cc`, `td/menus.cc`, `ra/object.cc`
     and `td/object.cc` place menus and text as if every window sat at the screen's top-left
   - Either delete them (no visible change) or set them from `WindowList` where the window changes
-- Stop Red Alert's options palette drifting from the art at neutral settings
-  - `OptionsClass::Adjust_Palette()` (`ra/options.cc`) runs every entry through
-    `engine::gfx::PaletteColor::ToHsv()` and back through `HsvColor`'s conversion
-    (`engine/gfx/hsv_color.cc`, TODO there); both truncate, so at the neutral slider settings
-    127,769 of the 262,144 6-bit colors come back one or two steps off (the original code: 76,340;
-    Tiberian Dawn's rounding `Rgb6ToHsv()`/`HsvToRgb6()`: 21,612, by one step)
-  - Options: round in both directions (small; changes RA's palette); skip `Adjust_Palette()` at
-    neutral settings (smallest; drift remains off-neutral); or give both games one conversion pair,
-    a `base::Rgb8ToHsv()` next to `base::HsvToRgb8()` in `base/hsv.h` built from `Rgb6ToHsv()`'s
-    8-bit core, with `ToHsv()` and `ToPaletteColor()` on top (~45 lines of sextant logic kept once;
-    changes whichever game's pair is dropped)
-  - Unifying also retires `Rgb6`, a third RGB type: a raw-gun constructor and accessors on
-    `PaletteColor` would let TD's 768-byte palette be `PaletteColor`s (same layout, see the
-    `static_assert` in `engine/gfx/palette_color.h`)
-  - Found in the hsv/rgb `/modernize-file` run (`dc251088..f60d3070`); visual only, not simulation
+- Pass Red Alert's stored brightness and contrast to `Adjust_Palette()` during grey fades
+  - `ScenarioClass::Do_Fade_AI()` (`ra/scenario.cc`) passes `Get_Brightness()` and `Get_Contrast()`,
+    the slider positions, but `OptionsClass` stores and applies `1/4 + slider / 2`; off centre, the
+    palette's brightness and contrast jump for the length of a Chronosphere/grey fade (slider at 1:
+    value times 2 instead of 1.5)
+  - Found while unifying the HSV conversions (`docs/PALETTE_HSV_PLAN.md`)
 - Decide whether `PaletteColor::red()`/`green()`/`blue()` should read full intensity as 255
   - `ToEightBits()` (`engine/gfx/palette_color.h`, TODO there) is `gun * 4 + gun / 64`, the original
     `(gun << 2) | (gun >> 6)`; the second term is always 0 for a 6-bit gun, so 63 reads as 252.

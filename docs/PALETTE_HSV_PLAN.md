@@ -2,7 +2,18 @@
 
 Written 2026-09-28, on the tree at 72791611.
 
-**Status: in progress.**
+**Status: complete (2026-09-28).** Step 0 is 1c17a537, step 1 49969b45, step 2 3f9fcf3f, step 3
+58e77fb0, step 4 3a492d93; step 5 is the commit that records this.
+
+### Progress
+
+- **Steps 1–2: done.** RA's round trip now moves 21,612 colors by one step (was 127,769 by up to
+  two); `HsvColorTest.PaletteRoundTripIsWithinOneStep` pins the count.
+- **Step 3: done.** The new pair matched `Rgb6ToHsv()`/`HsvToRgb6()` on all 262,144 colors and all
+  16,777,216 HSV triples before they were deleted, so TD's palettes are unchanged.
+- **Step 4: done.** `OptionsAdjustPaletteTest.NeutralSettingsKeepTheArt` fails without the copy.
+- Found on the way, not fixed: RA's grey fades pass slider positions where `Adjust_Palette()` wants
+  the stored values (TODO.md).
 
 Measured over all 262,144 6-bit colors, converting to HSV and straight back (the options dialog's
 neutral settings, where every slider leaves its component unchanged), counting colors whose guns do
