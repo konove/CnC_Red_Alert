@@ -2304,9 +2304,8 @@ static void Bootstrap() {
   TheKeyboard().Clear();
 
   /*
-  **	This is the shape staging buffer. It must always be available, so it is
-  **	allocated here and never freed. Publishing it as the global
-  **	shape_buffer lets other code borrow it as scratch memory.
+  **	This is the buffer Build_Frame() uncompresses keyframe shapes into. It
+  **	must always be available, so it is allocated here and never freed.
   */
   shape_storage.resize(kShapeBufferSize);
   shape_buffer = shape_storage;

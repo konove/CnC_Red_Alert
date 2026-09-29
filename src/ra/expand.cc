@@ -39,6 +39,7 @@
 
 #include "ra/expand.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdio>
 #include <span>
@@ -47,7 +48,6 @@
 #include "absl/base/attributes.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
-#include "base/bytes_of.h"
 #include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/game_file.h"
@@ -66,7 +66,6 @@
 #include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/jshell.h"
-#include "ra/keyframe.h"
 #include "ra/list.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
@@ -359,7 +358,10 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   */
   char buffer[128];
   char buffer2[128];
-  const auto sbuffer = base::CharBytes(shape_buffer);
+  // The start of each scenario file, where its [Basic] Name is, plus a line
+  // end and the terminator.
+  std::array<char, 2000 + 3> header{};
+  const std::span<char> sbuffer(header);
   for (int index = 20; index < 36 + 18; index++) {
 #ifndef CS_DEBUG
     base::SafeCopy(buffer, base::At(ExpandNames, index - 20));
