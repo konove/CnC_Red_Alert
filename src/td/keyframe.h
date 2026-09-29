@@ -7,14 +7,14 @@
 
 #include "absl/base/attributes.h"
 
-// The shape staging buffer: scratch memory that Build_Frame() decompresses
-// frames into, and that the INI code borrows for text. Init_Game() points it
-// at storage it owns; empty before that and after the shutdown clears it.
-extern std::span<uint8_t> shape_buffer;
-
-int Get_Last_Frame_Length();
+// Decompresses `frame` of the keyframe shape `data` into `destination`.
+// Returns the frame's width * height pixels at the front of `destination`, or
+// an empty span if the frame is out of range, corrupt or does not fit.
 std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame,
                                std::span<uint8_t> destination);
+// As above, into staging storage that every call of this overload reuses: the
+// result is only valid until the next call.
+std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame);
 uint16_t Get_Build_Frame_Count(std::span<const std::byte> data);
 uint16_t Get_Build_Frame_X(std::span<const std::byte> data);
 uint16_t Get_Build_Frame_Y(std::span<const std::byte> data);

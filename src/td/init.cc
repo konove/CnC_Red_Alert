@@ -118,7 +118,6 @@
 #include "td/ipx.h"
 #include "td/ipxaddr.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/loaddlg.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
@@ -163,9 +162,6 @@
 #include "td/ccdde.h"
 
 #endif
-
-static std::vector<uint8_t> shape_storage;
-std::span<uint8_t> shape_buffer;
 
 /****************************************
 **	Function prototypes for this module **
@@ -245,14 +241,6 @@ bool Init_Game() {
 #endif  // FIX_ME_LATER
   TheKeyboard().Clear();
   TheKeyboard().Clear();
-
-  /*
-  **	This is the buffer Build_Frame() uncompresses keyframe shapes into. It
-  **	must always be available, so it is allocated here and only released at
-  **	shutdown.
-  */
-  shape_storage.resize(SHAPE_BUFFER_SIZE);
-  shape_buffer = shape_storage;
 
   /*
   **	Bootstrap enough of the system so that the error dialog box can
@@ -623,10 +611,6 @@ void Uninit_Game() {
   // their unit trackers.
   TheObjectHeaps().house().Destroy_All();
   TheObjectHeaps().house().Set_Heap(0);
-
-  shape_buffer = {};
-  shape_storage.clear();
-  shape_storage.shrink_to_fit();
 }
 
 extern int ShowCommand;

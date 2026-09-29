@@ -46,6 +46,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "base/buffer.h"
 #include "base/unaligned.h"
@@ -63,12 +64,10 @@ struct KeyFrameHeaderType {
   int16_t flags;
 };
 
-// Only the uncompressed-shape cache recorded a frame length, so this stays 0.
-static int Length;
-
-int Get_Last_Frame_Length() { return Length; }
-
 namespace {
+// The largest uncompressed frame the staging Build_Frame() can build.
+constexpr int kShapeBufferSize = 40000;
+
 KeyFrameHeaderType Header(std::span<const std::byte> data) {
   KeyFrameHeaderType header{};
   if (data.size() >= sizeof(header)) {
@@ -143,6 +142,12 @@ std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame,
     ApplyXorDelta(output, data.subspan(delta_offset));
   }
   return output.subspan(0);
+}
+
+std::span<uint8_t> Build_Frame(std::span<const std::byte> data,
+                               uint16_t frame) {
+  static std::vector<uint8_t> staging(kShapeBufferSize);
+  return Build_Frame(data, frame, staging);
 }
 
 uint16_t Get_Build_Frame_Count(std::span<const std::byte> data) {

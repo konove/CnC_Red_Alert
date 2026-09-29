@@ -194,15 +194,6 @@ using enum RTTIType;
 */
 #define SPEECH_BUFFER_SIZE 50000L
 
-/**********************************************************************
-**	This is the size of the shape buffer. This buffer is used as a staging
-**	buffer for the shape drawing technology. It MUST be as big as the
-**	largest shape (uncompressed) that will be drawn. If this value is
-**	changed, be sure to update the makefile and rebuild all of the shape
-**	data files.
-*/
-#define SHAPE_BUFFER_SIZE 40000L
-
 // Use this to allow keep track of versions as they affect saved games.
 #define VERSION_NUMBER 1
 #define RELEASE_NUMBER 01

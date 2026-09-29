@@ -72,7 +72,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
-#include <iterator>
 #include <span>
 #include <string>
 #include <string_view>
@@ -2304,8 +2303,7 @@ void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
   if (shapefile.empty() || shapenum < 0) {
     return;
   }
-  const auto pixels =
-      Build_Frame(shapefile, static_cast<uint16_t>(shapenum), shape_buffer);
+  const auto pixels = Build_Frame(shapefile, static_cast<uint16_t>(shapenum));
   const int source_width = Get_Build_Frame_Width(shapefile);
   const int source_height = Get_Build_Frame_Height(shapefile);
   if (pixels.empty() || source_width == 0 || source_height == 0 ||
@@ -2364,11 +2362,7 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
     ** Build frame returns a pointer now instead of the shapes length
     */
     const auto shape_size =
-        Build_Frame(shapefile, static_cast<uint16_t>(shapenum), shape_buffer);
-    if (Get_Last_Frame_Length() > std::ssize(shape_buffer)) {
-      LOG(ERROR) << "Shape buffer too small: need " << Get_Last_Frame_Length()
-                 << " bytes, buffer is only " << shape_buffer.size();
-    }
+        Build_Frame(shapefile, static_cast<uint16_t>(shapenum));
 
     if (!shape_size.empty()) {
       PixelView draw_window(

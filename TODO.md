@@ -177,11 +177,6 @@
   - The flags are `DrawShapeFrame()`'s parameter; `engine/gfx/shape.h` would then hold only the
     shape file format (`ShapeHeader`, `ExtractShapeFrame()`) and could become `shape_file.h`. 66
     files include `engine/gfx/shape.h`, most only for the flags, so it is an include rewrite
-- Let each game's keyframe code own `shape_buffer`
-  - Only `Build_Frame()` and its callers (`td/conquer.cc`, `ra/shape_draw.cc`) use it now, yet each
-    game keeps a `static std::vector<uint8_t> shape_storage` plus the `shape_buffer` span over it in
-    `init.cc`, and RA's `CC_Draw_Shape()` a second static buffer of the same size (`x_buffer`,
-    `ra/shape_draw.cc:138`) for rotated shapes. The storage could live next to `Build_Frame()`
 - Share one bounds-checked little-endian reader in `base/`
   - `engine::gfx::ExtractShapeFrame()` (`engine/gfx/shape.cc`), `FrameEntry` in `td/keyframe.cc` and
     `ra/2keyfram.cc`, `WsaAnimation::ResidentFrameOffset()` (`engine/gfx/wsa_animation.cc`),
