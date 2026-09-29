@@ -1759,7 +1759,9 @@ not provide (the original 32-bit `long` wrapped at 32). `ScanBit(type)` in each 
 0 for a type past 64; nothing names those types in a prerequisite, trigger or AI test. A second
 suspected defect is recorded as a `TODO` in `tech/2keyfbuf.cc`: a negative predator offset becomes
 `~0xFF | k` and indexes `BFPredTable` about 126 entries before its start, before `BFPredNegTable`
-too. The arithmetic is unchanged.
+too. The arithmetic is unchanged. (Since fixed by `7e41ec60`: the offset crashed Tiberian Dawn on a
+Stealth Tank cloaking on the right half of the window, and now samples the down-and-left walk as the
+assembler did; the blitter lives in `engine/gfx/shape_blitter.cc`.)
 
 Behavior is otherwise preserved: every shift rewritten as arithmetic is on a non-negative value, and
 `Put_Buildings` now takes the `uint64_t` mask `Get_Buildings` returns instead of the low 32 bits.

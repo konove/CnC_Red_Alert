@@ -214,13 +214,6 @@
 - Run `/fix-ide-issues` on `engine/gfx/shape.cc`
   - Stage 7 of the `/modernize-file` run (`f4f3ea0b..a9332c6d`) was skipped for it: CLion's
     `getDiagnostics` timed out (`shape.h` answered, with nothing to fix)
-- Consider small clean-ups in `engine/gfx/shape_blitter.cc`
-  - The predator walk indexes with `std::array::at()` and a signed `% 8` per predator pixel; an
-    `& 7` walk with unchecked indexing is cheaper, but only cloaked units take that path
-  - Names the run was unsure of: `shape_blitter.*` (alternative `draw_shape_frame.*`) and
-    `DrawShapeFrame()` (`BlitShapeFrame()`)
-  - `docs/CLANG_TIDY_PRIORITIES.md:1759-1762` still describes the negative-predator-offset `TODO` in
-    `tech/2keyfbuf.cc`, fixed by `7e41ec60`; annotate it if the doc is kept current
 - Decide what `PaletteClass::Adjust()` and `Partial_Adjust()` (`ra/palette.cc:88-103`) should do
   - Both are empty stubs; the `Adjust()` callers (`ra/movie.cc`, `ra/goptions.cc`) only nudge the
     black palette and back, but `ra/egos.cc:325,345` fades the credits with `Partial_Adjust()`,
