@@ -12,14 +12,15 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
+#include "base/unaligned.h"
 
 namespace dib {
 namespace {
 
 // A BMP begins with a 14-byte file header and a 40-byte info header, both
 // little-endian and neither of them aligned. They are read field by field
-// rather than mapped onto a packed struct, so the code does not depend on the
-// host's alignment rules or byte order.
+// with base::ReadLittleEndian() rather than mapped onto a packed struct, so the
+// code does not depend on the host's alignment rules or byte order.
 constexpr base::ssize kFileHeaderSize = 14;
 constexpr base::ssize kInfoHeaderSize = 40;
 
@@ -28,38 +29,24 @@ constexpr std::uint16_t kUncompressed = 0;
 constexpr int kPalettisedBitCount = 8;
 constexpr base::ssize kMaxColors = kPaletteSize;
 
-std::uint16_t ReadU16(std::span<const std::uint8_t> data, base::ssize offset) {
-  return static_cast<std::uint16_t>(
-      static_cast<unsigned>(base::At(data, static_cast<std::size_t>(offset))) |
-      (static_cast<unsigned>(
-           base::At(data, static_cast<std::size_t>(offset) + 1))
-       << 8U));
-}
-
-std::uint32_t ReadU32(std::span<const std::uint8_t> data, base::ssize offset) {
-  std::uint32_t value = 0;
-  for (base::ssize i = 3; i >= 0; --i) {
-    value <<= 8U;
-    value |= base::At(data, static_cast<std::size_t>(offset + i));
-  }
-  return value;
-}
-
 }  // namespace
 
 std::optional<Image> Image::FromBmp(std::span<const std::uint8_t> bmp) {
   if (std::ssize(bmp) < kFileHeaderSize + kInfoHeaderSize) {
     return std::nullopt;
   }
-  if (ReadU16(bmp, 0) != kBitmapSignature) {
+  const auto bytes = std::as_bytes(bmp);
+  if (base::ReadLittleEndian<std::uint16_t>(bytes, 0) != kBitmapSignature) {
     return std::nullopt;
   }
 
-  const auto info = bmp.subspan(static_cast<std::size_t>(kFileHeaderSize));
-  const auto width = static_cast<std::int32_t>(ReadU32(info, 4));
-  const auto height = static_cast<std::int32_t>(ReadU32(info, 8));
-  const std::uint16_t bit_count = ReadU16(info, 14);
-  const std::uint32_t compression = ReadU32(info, 16);
+  const auto info = bytes.subspan(static_cast<std::size_t>(kFileHeaderSize));
+  const auto width =
+      static_cast<std::int32_t>(base::ReadLittleEndian<std::uint32_t>(info, 4));
+  const auto height =
+      static_cast<std::int32_t>(base::ReadLittleEndian<std::uint32_t>(info, 8));
+  const auto bit_count = base::ReadLittleEndian<std::uint16_t>(info, 14);
+  const auto compression = base::ReadLittleEndian<std::uint32_t>(info, 16);
 
   // Only what the game actually receives. A negative height means a top-down
   // bitmap, which nothing here produces and which would silently flip the art.
@@ -69,7 +56,7 @@ std::optional<Image> Image::FromBmp(std::span<const std::uint8_t> bmp) {
   }
 
   // biClrUsed of 0 means the table is full for the bit depth.
-  const std::uint32_t declared_colors = ReadU32(info, 32);
+  const auto declared_colors = base::ReadLittleEndian<std::uint32_t>(info, 32);
   const base::ssize color_count =
       declared_colors == 0 ? kMaxColors
                            : static_cast<base::ssize>(declared_colors);
@@ -89,14 +76,14 @@ std::optional<Image> Image::FromBmp(std::span<const std::uint8_t> bmp) {
   image.height_ = height;
 
   image.colors_.resize(static_cast<std::size_t>(color_count));
-  base::CopyBytes(
-      std::as_writable_bytes(std::span(image.colors_)),
-      std::as_bytes(bmp.subspan(static_cast<size_t>(color_table_start))),
-      color_table_bytes);
+  base::CopyBytes(std::as_writable_bytes(std::span(image.colors_)),
+                  bytes.subspan(static_cast<size_t>(color_table_start)),
+                  color_table_bytes);
 
   // bfOffBits says where the pixels start. Trust it only if it lands inside
   // the data and past the headers; some writers leave it at zero.
-  const auto declared_offset = static_cast<base::ssize>(ReadU32(bmp, 10));
+  const auto declared_offset = static_cast<base::ssize>(
+      base::ReadLittleEndian<std::uint32_t>(bytes, 10));
   const base::ssize bits_start =
       declared_offset >= color_table_start + color_table_bytes &&
               declared_offset < std::ssize(bmp)
@@ -110,8 +97,7 @@ std::optional<Image> Image::FromBmp(std::span<const std::uint8_t> bmp) {
 
   image.bits_.resize(static_cast<std::size_t>(needed));
   base::CopyBytes(std::as_writable_bytes(std::span(image.bits_)),
-                  std::as_bytes(bmp.subspan(static_cast<size_t>(bits_start))),
-                  needed);
+                  bytes.subspan(static_cast<size_t>(bits_start)), needed);
 
   return image;
 }
