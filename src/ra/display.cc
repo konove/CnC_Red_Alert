@@ -128,6 +128,7 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/fading_table.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
@@ -434,9 +435,12 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   */
   absl::SNPrintF(fullname, sizeof(fullname), "%s.PAL",
                  Theaters.at(theater).Root);
-  const auto* ptr =
-      static_cast<const PaletteClass*>(MixArchive::Retrieve(fullname));
-  ThePalettes().game_palette() = *ptr;
+  const auto palette_data = MixArchive::RetrieveData(fullname);
+  CHECK_GE(std::ssize(palette_data), engine::gfx::Palette::kVgaSize)
+      << fullname;
+  ThePalettes().game_palette() = engine::gfx::Palette::FromVga(
+      base::UnsignedBytes(palette_data)
+          .first<engine::gfx::Palette::kVgaSize>());
 
   ThePalettes().original_palette() = ThePalettes().game_palette();
 

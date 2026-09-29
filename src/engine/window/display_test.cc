@@ -21,6 +21,8 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
+#include "engine/gfx/palette.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/window/display_client.h"
@@ -30,12 +32,9 @@ namespace engine::window {
 namespace {
 
 // Returns a 6-bit VGA palette that is black but for `color` at `index`.
-std::array<uint8_t, 768> PaletteWith(size_t index, uint8_t red, uint8_t green,
-                                     uint8_t blue) {
-  std::array<uint8_t, 768> palette{};
-  palette.at(index * 3) = red;
-  palette.at((index * 3) + 1) = green;
-  palette.at((index * 3) + 2) = blue;
+engine::gfx::Palette PaletteWith(int index, int red, int green, int blue) {
+  engine::gfx::Palette palette;
+  palette.at(index) = engine::gfx::PaletteColor::FromGuns(red, green, blue);
   return palette;
 }
 

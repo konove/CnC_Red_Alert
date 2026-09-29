@@ -461,7 +461,7 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
       }
 
       if (const auto file = OpenDiskFile(filename, FileAccess::kWrite)) {
-        Write_PCX_File(*file, temp_page, &ThePalettes().game_palette());
+        Write_PCX_File(*file, temp_page, ThePalettes().game_palette());
       }
       PlaySoundEffect(VOC_BEEP);
     }

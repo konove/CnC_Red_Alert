@@ -11,6 +11,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/window/display_client.h"
 
@@ -86,12 +87,11 @@ class Display : public PixelSurface {
   // engine_window's own drawing code; nullptr before Init().
   [[nodiscard]] void* renderer() const { return renderer_; }
 
-  // Sets the 256 6-bit VGA RGB triples in `palette` that the paletted pixels
-  // are shown through, and redraws with them. Anything already presented
-  // changes color, the way a VGA palette write did. Does nothing before
-  // SetVideoMode() or if `palette` holds fewer than 256 triples. The mouse
-  // cursor bakes its colors in, so the games recolor it after this.
-  void SetPalette(std::span<const uint8_t> palette);
+  // Sets the palette the paletted pixels are shown through, and redraws with
+  // it. Anything already presented changes color, the way a VGA palette write
+  // did. Does nothing before SetVideoMode(). The mouse cursor bakes its colors
+  // in, so the games recolor it after this.
+  void SetPalette(const engine::gfx::Palette& palette);
   // The SDL_Palette of the paletted surface, as a void* so that callers need
   // no SDL header; nullptr before SetVideoMode().
   [[nodiscard]] const void* palette() const;

@@ -2,18 +2,14 @@
 
 #include <algorithm>
 #include <chrono>
-#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <span>
 #include <thread>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/bytes_of.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
@@ -22,11 +18,9 @@
 
 PaletteClass PaletteClass::CurrentPalette;
 
-unsigned char* CurrentPalette = PaletteClass::CurrentPalette;
-
 // Shows `palette` on the display and recolors the mouse cursor, which SDL
 // draws in the colors it had when the cursor was made.
-static void ShowPalette(std::span<const uint8_t> palette) {
+static void ShowPalette(const engine::gfx::Palette& palette) {
   engine::window::TheDisplay().SetPalette(palette);
   TheMouse().UpdatePalette();
 }
@@ -35,30 +29,37 @@ void PaletteClass::Set(int fade, void (*callback)()) {
   // A fade to the palette already on screen would spend its whole duration
   // redrawing an unchanged screen, e.g. the fade to black before a movie
   // that starts from black.
-  if (fades_disabled_ || std::ranges::equal(bytes(), CurrentPalette.bytes())) {
+  if (fades_disabled_ || *this == CurrentPalette) {
     fade = 0;
   }
 
   if (fade) {
     const auto start_time = engine::platform::SystemTicks();
 
-    PaletteClass fade_palette;
+    engine::gfx::Palette fade_palette;
 
     while (true) {
       const int64_t now = engine::platform::SystemTicks();
       const int cur_time =
           static_cast<int>(std::min<int64_t>(now - start_time, fade));
 
-      const auto old_bytes = CurrentPalette.bytes();
-      const auto new_bytes = bytes();
-      const auto out_bytes = fade_palette.bytes();
-
-      for (int c = 0; c < COLOR_COUNT * 3; c++) {
-        const int new_val = base::At(new_bytes, static_cast<size_t>(c)) & 0x3F;
-        const int old_val = base::At(old_bytes, static_cast<size_t>(c)) & 0x3F;
-        base::At(out_bytes, static_cast<size_t>(c)) =
-            static_cast<unsigned char>(old_val +
-                                       ((new_val - old_val) * cur_time / fade));
+      // Each gun steps linearly from the current palette's to this one's.
+      const auto blend = [cur_time, fade](const int old_gun,
+                                          const int new_gun) {
+        const auto six_bits = [](const int gun) {
+          return static_cast<int>(static_cast<unsigned>(gun) & 0x3FU);
+        };
+        const int old_val = six_bits(old_gun);
+        const int new_val = six_bits(new_gun);
+        return old_val + ((new_val - old_val) * cur_time / fade);
+      };
+      for (int i = 0; i < COLOR_COUNT; i++) {
+        const engine::gfx::PaletteColor& from = CurrentPalette.at(i);
+        const engine::gfx::PaletteColor& to = at(i);
+        fade_palette.at(i) = engine::gfx::PaletteColor::FromGuns(
+            blend(from.red_gun(), to.red_gun()),
+            blend(from.green_gun(), to.green_gun()),
+            blend(from.blue_gun(), to.blue_gun()));
       }
 
       ShowPalette(fade_palette);
@@ -107,9 +108,10 @@ int PaletteClass::Closest_Color(const engine::gfx::PaletteColor& col) const {
   int diff = 256 * 3;
 
   for (int i = 0; i < COLOR_COUNT; i++) {
-    const int new_diff = std::abs(col.red() - base::At(data_, i).red()) +
-                         std::abs(col.green() - base::At(data_, i).green()) +
-                         std::abs(col.blue() - base::At(data_, i).blue());
+    const engine::gfx::PaletteColor& entry = at(i);
+    const int new_diff = std::abs(col.red() - entry.red()) +
+                         std::abs(col.green() - entry.green()) +
+                         std::abs(col.blue() - entry.blue());
 
     if (new_diff == 0) {
       return i;
@@ -124,19 +126,7 @@ int PaletteClass::Closest_Color(const engine::gfx::PaletteColor& col) const {
   return index;
 }
 
-PaletteClass::operator unsigned char*() noexcept {
-  return base::BytesOf(data_);
-}
-
-PaletteClass::operator const unsigned char*() const {
-  return base::BytesOf(data_);
-}
-
-void Set_Palette(std::span<const unsigned char> palette) {
-  if (palette.size() < static_cast<size_t>(PaletteClass::COLOR_COUNT) * 3) {
-    return;
-  }
-  base::CopyBytes(std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()),
-                  std::as_bytes(palette), PaletteClass::COLOR_COUNT * 3);
+void Set_Palette(const engine::gfx::Palette& palette) {
+  PaletteClass::CurrentPalette = palette;
   ShowPalette(palette);
 }

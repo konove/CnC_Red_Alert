@@ -1,5 +1,6 @@
 #include "engine/gfx/wsa_animation.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -17,6 +18,7 @@
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/codec/xor_delta.h"
 #include "engine/file/game_file.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
@@ -78,26 +80,24 @@ struct WsaFileHeader {
 constexpr int kWsaFileHeaderSize{sizeof(WsaFileHeader) -
                                  (2 * sizeof(uint32_t))};
 
-// The bytes of an attached palette: 256 RGB triples.
-constexpr size_t kPaletteSize = 768;
-
 }  // namespace
 
 WsaAnimation::WsaAnimation(const std::string_view file_name,
-                           const std::span<uint8_t> palette) {
+                           engine::gfx::Palette* const palette) {
   const auto file = OpenGameFile(file_name);
   if (file) {
     Load(*file, palette);
   }
 }
 
-WsaAnimation::WsaAnimation(ByteStream& file, const std::span<uint8_t> palette) {
+WsaAnimation::WsaAnimation(ByteStream& file,
+                           engine::gfx::Palette* const palette) {
   Load(file, palette);
 }
 
 void WsaAnimation::Close() { *this = WsaAnimation(); }
 
-void WsaAnimation::Load(ByteStream& file, const std::span<uint8_t> palette) {
+void WsaAnimation::Load(ByteStream& file, engine::gfx::Palette* const palette) {
   WsaFileHeader file_header;
   if (!file.ReadObject(file_header)) {
     return;
@@ -111,15 +111,17 @@ void WsaAnimation::Load(ByteStream& file, const std::span<uint8_t> palette) {
   const int table_end = kWsaFileHeaderSize + offset_table_size;
 
   // An attached palette sits between the offset table and the first frame,
-  // and the table's offsets do not count it. It is read in if the caller gave
-  // us room for it.
+  // and the table's offsets do not count it. It is read in if the caller asked
+  // for it.
   const int palette_size =
       base::Any(file_header.flags & WsaFileFlags::kHasPalette)
-          ? int{kPaletteSize}
+          ? engine::gfx::Palette::kVgaSize
           : 0;
-  if (palette_size != 0 && palette.size() >= kPaletteSize) {
+  if (palette_size != 0 && palette != nullptr) {
+    std::array<uint8_t, engine::gfx::Palette::kVgaSize> vga{};
     file.Seek(table_end, SeekOrigin::kBegin);
-    file.Read(palette.first(kPaletteSize));
+    file.Read(std::span(vga));
+    *palette = engine::gfx::Palette::FromVga(vga);
   }
 
   // A zero offset means the file has no frame 0. Otherwise its size is cut to

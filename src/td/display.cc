@@ -147,6 +147,7 @@
 #include "td/network.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
+#include "td/palette.h"
 #include "td/palettes.h"
 #include "td/profile.h"
 #include "td/queue.h"
@@ -484,7 +485,8 @@ void DisplayClass::Init_Theater(TheaterType theater) {
     base::At(SpecialGhost, index) = 0;
   }
 
-  Build_Fading_Table(ThePalettes().game_palette(), FadingBrighten, kWhite, 25);
+  Build_Fading_Table(VgaPalette(ThePalettes().game_palette()), FadingBrighten,
+                     kWhite, 25);
 
   /*
   **	Adjust the palette according to the visual control option settings.

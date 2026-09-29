@@ -57,6 +57,7 @@
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wsa_animation.h"
@@ -542,20 +543,27 @@ void Map_Selection() {
   /*
   ** Now start the process where we fade the gray earth in.
   */
-  WsaAnimation greyearth("GREYERTH.WSA", localpalette);
-  WsaAnimation greyearth2("E-BWTOCL.WSA", grey2palette);
+  engine::gfx::Palette greyearth_palette = VgaPalette(localpalette);
+  WsaAnimation greyearth("GREYERTH.WSA", &greyearth_palette);
+  StoreVga(greyearth_palette, localpalette);
+  engine::gfx::Palette greyearth2_palette = VgaPalette(grey2palette);
+  WsaAnimation greyearth2("E-BWTOCL.WSA", &greyearth2_palette);
+  StoreVga(greyearth2_palette, grey2palette);
 
   /*
   ** Load the spinning-globe anim
   */
   const bool good = house == HOUSE_GOOD;
-  WsaAnimation anim(good ? "HEARTH_E.WSA" : "HEARTH_A.WSA",
-                    ThePalettes().title_palette());
+  engine::gfx::Palette anim_palette = VgaPalette(ThePalettes().title_palette());
+  WsaAnimation anim(good ? "HEARTH_E.WSA" : "HEARTH_A.WSA", &anim_palette);
+  StoreVga(anim_palette, ThePalettes().title_palette());
   const char* progress_name = lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA";
   if (good) {
     progress_name = lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA";
   }
-  WsaAnimation progress(progress_name, progresspalette);
+  engine::gfx::Palette progress_palette = VgaPalette(progresspalette);
+  WsaAnimation progress(progress_name, &progress_palette);
+  StoreVga(progress_palette, progresspalette);
 
   const auto appear1 = MixArchive::RetrieveData("APPEAR1.AUD");
   const auto sfx4 = MixArchive::RetrieveData("SFX4.AUD");

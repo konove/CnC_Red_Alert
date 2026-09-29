@@ -36,16 +36,16 @@
  * int Save_PCX_File (char* name, PixelView& pic, char* palette)*
  *= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
+#include <array>
 #include <cstdint>
 #include <cstring>
 #include <span>
 
 #include "base/array.h"
-#include "base/buffer.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/byte_stream.h"
 #include "ra/filepcx.h"
-#include "ra/palette.h"
 
 static void Write_Pcx_ScanLine(ByteStream& file, int scansize,
                                std::span<const uint8_t> pixels);
@@ -98,8 +98,7 @@ static const unsigned char rle_full_run =
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
-                   const PaletteClass* palette) {
-  unsigned char palcopy[256 * sizeof(RGB)];
+                   const engine::gfx::Palette& palette) {
   const PCX_HEADER header = {10,
                              5,
                              1,
@@ -143,9 +142,8 @@ int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
   /*
   **	Convert the palette from 6 bit to 8 bit format.
   */
-  base::CopyBytes(base::ObjectBytes(palcopy), std::as_bytes(palette->bytes()),
-                  sizeof(palcopy));
-  for (unsigned char& component : palcopy) {
+  std::array<uint8_t, engine::gfx::Palette::kVgaSize> palcopy = palette.ToVga();
+  for (uint8_t& component : palcopy) {
     component = static_cast<unsigned char>(component << 2);
   }
 

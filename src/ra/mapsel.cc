@@ -167,7 +167,7 @@ static void PlayMapReveal(const std::string& animation_name,
   // The artwork is drawn at this size and scaled up to the screen.
   PixelBuffer page(320, 200);
   page.view().Clear();
-  WsaAnimation animation(animation_name, palette);
+  WsaAnimation animation(animation_name, &palette);
 
   TheKeyboard().Clear();
   TheScreen().visible_view().Clear();

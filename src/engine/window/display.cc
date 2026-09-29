@@ -13,6 +13,7 @@
 #include <SDL_timer.h>
 #include <SDL_video.h>
 
+#include <algorithm>
 #include <chrono>
 #include <cstddef>
 #include <cstdint>
@@ -23,7 +24,7 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
-#include "engine/gfx/palette_color.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/window/display_client.h"
 
@@ -238,15 +239,12 @@ void Display::Present(const bool end_frame) {
   PumpEvents();
 }
 
-void Display::SetPalette(const std::span<const uint8_t> palette) {
+void Display::SetPalette(const engine::gfx::Palette& palette) {
   if (palette_surface_ == nullptr) {
     return;
   }
   SDL_Palette* sdl_palette =
       static_cast<SDL_Surface*>(palette_surface_)->format->palette;
-  if (palette.size() / 3 < base::ToSize(sdl_palette->ncolors)) {
-    return;
-  }
   // SDL owns exactly ncolors entries in the surface palette.
   const auto colors =
       // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
@@ -254,13 +252,12 @@ void Display::SetPalette(const std::span<const uint8_t> palette) {
 
   bool changed = false;
 
-  for (int i = 0; i < sdl_palette->ncolors; i++) {
-    const int new_r =
-        engine::gfx::ExpandGun(base::At(palette, base::ToSize((i * 3) + 0)));
-    const int new_g =
-        engine::gfx::ExpandGun(base::At(palette, base::ToSize((i * 3) + 1)));
-    const int new_b =
-        engine::gfx::ExpandGun(base::At(palette, base::ToSize((i * 3) + 2)));
+  for (int i = 0;
+       i < std::min(sdl_palette->ncolors, engine::gfx::Palette::kColorCount);
+       i++) {
+    const int new_r = palette.at(i).red();
+    const int new_g = palette.at(i).green();
+    const int new_b = palette.at(i).blue();
     changed = changed ||
               std::cmp_not_equal(base::At(colors, base::ToSize(i)).r, new_r) ||
               std::cmp_not_equal(base::At(colors, base::ToSize(i)).g, new_g) ||

@@ -42,8 +42,8 @@ size);
 #include <cstdint>
 #include <memory>
 
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "ra/palette.h"
 
 class ByteStream;
 
@@ -73,20 +73,18 @@ struct PCX_HEADER {
 };
 
 // Reads the PCX picture `name` into a new buffer, backed by `backing` when it
-// is not empty (at most `size` bytes of it, 0 meaning all). Fills `palette`
-// with the file's 6-bit palette when it is not empty. Returns null if the file
-// is missing, malformed or does not fit.
+// is not empty (at most `size` bytes of it, 0 meaning all). Fills `*palette`
+// with the file's palette when `palette` is not nullptr. Returns null if the
+// file is missing, malformed or does not fit.
 std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
-                                           std::span<uint8_t> palette,
+                                           engine::gfx::Palette* palette,
                                            std::span<uint8_t> backing,
                                            int32_t size);
 
-// Writes pic as a PCX picture with palette (6-bit components, widened to the
-// file's 8 bits) to file, which the caller has opened for writing; the
-// picture starts at the stream's current position and the stream is left
-// open. palette must not be null; it is dereferenced unconditionally.
-// Returns 0.
+// Writes pic as a PCX picture with palette to file, which the caller has
+// opened for writing; the picture starts at the stream's current position and
+// the stream is left open. Returns 0.
 int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
-                   const PaletteClass* palette);
+                   const engine::gfx::Palette& palette);
 
 #endif  // CNC_RED_ALERT_RA_FILEPCX_H_

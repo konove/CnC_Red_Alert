@@ -1102,7 +1102,7 @@ void Multi_Score_Presentation() {
   TheScreen().visible_view().Clear();
   TheScreen().hidden_view().Clear();
   TheMouse().Hide();
-  WsaAnimation anim("MLTIPLYR.WSA", score_palette);
+  WsaAnimation anim("MLTIPLYR.WSA", &score_palette);
   // Display the background animation. The first frame goes up under a black
   // palette and is faded in; the remaining frames then play at two ticks each.
   pseudoseenbuff.view().Clear();

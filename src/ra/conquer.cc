@@ -618,7 +618,7 @@ static void CaptureMotionFrame() {
                     frame_bytes);
     const std::string name = absl::StrFormat("cap%04d.pcx", index);
     if (const auto file = OpenDiskFile(name, FileAccess::kWrite)) {
-      Write_PCX_File(*file, frame_page, &ThePalettes().game_palette());
+      Write_PCX_File(*file, frame_page, ThePalettes().game_palette());
     }
   }
 

@@ -44,17 +44,18 @@
 #ifndef CNC_RED_ALERT_RA_INTERPAL_H_
 #define CNC_RED_ALERT_RA_INTERPAL_H_
 
-#include <span>
-
 // Forward declarations
 class PixelBuffer;
 class PixelView;
+namespace engine::gfx {
+class Palette;
+}  // namespace engine::gfx
 
 // Constants
 #define SIZE_OF_PALETTE 256
 
 // Palette interpolation functions
-void Increase_Palette_Luminance(std::span<unsigned char> palette,
+void Increase_Palette_Luminance(engine::gfx::Palette& palette,
                                 int red_percentage, int green_percentage,
                                 int blue_percentage, int cap);
 void Interpolate_2X_Scale(PixelBuffer* source, PixelView* dest,

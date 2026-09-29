@@ -4,24 +4,25 @@
 #include <cstdint>
 #include <span>
 
-#include "base/array.h"
+#include "engine/gfx/palette.h"
+#include "engine/gfx/palette_color.h"
 #include "gtest/gtest.h"
 
 namespace {
 
-using Palette = std::array<uint8_t, 768>;
+using engine::gfx::Palette;
+using engine::gfx::PaletteColor;
 
-void SetColor(std::span<uint8_t> palette, int index, uint8_t red, uint8_t green,
-              uint8_t blue) {
-  base::At(palette, (index * 3) + 0) = red;
-  base::At(palette, (index * 3) + 1) = green;
-  base::At(palette, (index * 3) + 2) = blue;
+void SetColor(Palette& palette, int index, int red, int green, int blue) {
+  palette.at(index) = PaletteColor::FromGuns(red, green, blue);
 }
+
+constexpr PaletteColor kWhiteGuns = PaletteColor::FromGuns(63, 63, 63);
 
 TEST(BuildFadingTableTest, FullFadeReachesTargetWithDistinctGuns) {
   // Every gun of the target differs, so a builder that mixes up the guns
   // aims somewhere else. The unset entries are black.
-  Palette palette{};
+  Palette palette;
   SetColor(palette, 1, 10, 20, 50);
   SetColor(palette, 2, 50, 20, 10);
   SetColor(palette, 3, 20, 50, 10);
@@ -36,8 +37,7 @@ TEST(BuildFadingTableTest, FullFadeReachesTargetWithDistinctGuns) {
 
 TEST(BuildFadingTableTest, TiesGoToTheLaterColor) {
   // With no fade, entry 1 is equally far from entries 2 and 3.
-  Palette palette{};
-  palette.fill(63);
+  Palette palette(kWhiteGuns);
   SetColor(palette, 1, 20, 20, 20);
   SetColor(palette, 2, 18, 20, 20);
   SetColor(palette, 3, 22, 20, 20);
@@ -49,8 +49,7 @@ TEST(BuildFadingTableTest, TiesGoToTheLaterColor) {
 }
 
 TEST(BuildFadingTableTest, PerfectMatchTakesTheFirstColor) {
-  Palette palette{};
-  palette.fill(63);
+  Palette palette(kWhiteGuns);
   SetColor(palette, 1, 20, 20, 20);
   std::array<uint8_t, 256> table{};
 
@@ -60,9 +59,9 @@ TEST(BuildFadingTableTest, PerfectMatchTakesTheFirstColor) {
   EXPECT_EQ(table.at(4), 2);
 }
 
-TEST(BuildFadingTableTest, RejectsShortBuffers) {
-  const std::array<uint8_t, 767> palette{};
-  std::array<uint8_t, 256> table{};
+TEST(BuildFadingTableTest, RejectsShortTables) {
+  const Palette palette;
+  std::array<uint8_t, 255> table{};
   table.fill(7);
 
   Build_Fading_Table(palette, table, 1, 128);

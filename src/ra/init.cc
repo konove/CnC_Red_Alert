@@ -347,16 +347,14 @@ bool Init_Game() {
       Play_Intro();
       MarkLogoPlayed();
     }
-    base::FillBytes(
-        std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()), 0x01,
-        768);
+    PaletteClass::CurrentPalette =
+        engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01);
     ThePalettes().white_palette().Set();
   } else {
     // The first launch plays the full intro instead, which counts.
     MarkLogoPlayed();
-    base::FillBytes(
-        std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()), 0x01,
-        768);
+    PaletteClass::CurrentPalette =
+        engine::gfx::PaletteColor::FromGuns(0x01, 0x01, 0x01);
   }
 
   /*
@@ -2321,7 +2319,7 @@ static void Bootstrap() {
   **	Default palette initialization.
   */
   const auto palette_data = MixArchive::RetrieveData("TEMPERAT.PAL");
-  if (palette_data.empty()) {
+  if (std::ssize(palette_data) < engine::gfx::Palette::kVgaSize) {
     // Missing data files are a user setup problem, not a bug: report and exit
     // quietly rather than abort with a stack trace.
     LOG(QFATAL) << "Cannot find TEMPERAT.PAL: game data files not found. "
@@ -2329,8 +2327,9 @@ static void Bootstrap() {
                    "-CD\"<Steam library>/steamapps/common/Command & Conquer "
                    "Red Alert\"";
   }
-  base::CopyBytes(std::as_writable_bytes(ThePalettes().game_palette().bytes()),
-                  palette_data, 768);
+  ThePalettes().game_palette() = engine::gfx::Palette::FromVga(
+      base::UnsignedBytes(palette_data)
+          .first<engine::gfx::Palette::kVgaSize>());
   ThePalettes().white_palette().at(0) = ThePalettes().black_palette().at(0);
   //	GamePalette.Set();
 

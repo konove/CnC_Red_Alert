@@ -31,6 +31,7 @@
 #include "absl/log/log.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/video/game_file_vqa_io.h"
 #include "engine/video/mixer_vqa_audio.h"
@@ -89,14 +90,15 @@ class MovieScreen final : public VqaClient {
   // Movie palettes are 6 bits a color; brighten them the way the DOS game
   // did, then set them.
   static void SetPalette(const std::span<const uint8_t> palette) {
-    std::array<uint8_t, 768> colors{};
+    std::array<uint8_t, engine::gfx::Palette::kVgaSize> colors{};
     std::ranges::copy(palette.first(std::min(palette.size(), colors.size())),
                       colors.begin());
     for (uint8_t& color : colors) {
       color &= 63;
     }
-    Increase_Palette_Luminance(colors, 15, 15, 15, 63);
-    Set_Palette(colors);
+    engine::gfx::Palette brightened = engine::gfx::Palette::FromVga(colors);
+    Increase_Palette_Luminance(brightened, 15, 15, 15, 63);
+    Set_Palette(brightened);
   }
 
   // Shows the page and services the keyboard and the window's focus. Returns

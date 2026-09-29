@@ -1,24 +1,21 @@
 #ifndef CNC_RED_ALERT_RA_PALETTE_H_
 #define CNC_RED_ALERT_RA_PALETTE_H_
 
-#include <span>
-
-#include "absl/base/attributes.h"
-#include "base/array.h"
-#include "base/buffer.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 
-class PaletteClass {
+// Red Alert's palette: the shared engine::gfx::Palette plus fading to it on
+// screen and the closest-color search the remap tables use.
+class PaletteClass : public engine::gfx::Palette {
  public:
   PaletteClass() = default;
   // Fills every entry with `col`. Implicit, so that a color converts where a
   // palette is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
-  PaletteClass(const engine::gfx::PaletteColor& col) noexcept {
-    for (engine::gfx::PaletteColor& entry : data_) {
-      entry = col;
-    }
-  }
+  PaletteClass(const engine::gfx::PaletteColor& col) noexcept : Palette(col) {}
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  PaletteClass(const engine::gfx::Palette& palette) noexcept
+      : Palette(palette) {}
 
   // Makes this the current palette, blending to it over `fade` ticks
   // (kTimerSecond per second) when fade is nonzero. While fading, calls
@@ -40,60 +37,15 @@ class PaletteClass {
   [[nodiscard]] int Closest_Color(
       const engine::gfx::PaletteColor& /*col*/) const;
 
-  // Returns a palette entry; indices outside [0, 256) fail in every build.
-  engine::gfx::PaletteColor& at(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return base::At(data_, index);
-  }
-  [[nodiscard]] const engine::gfx::PaletteColor& at(int index) const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return base::At(data_, index);
-  }
-  engine::gfx::PaletteColor& operator[](int index)
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return at(index);
-  }
-  const engine::gfx::PaletteColor& operator[](int index) const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return at(index);
-  }
-
-  // legacy C interfaces take the object where a pointer or name is expected.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator unsigned char*() noexcept ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  // legacy C interfaces take the object where a pointer or name is expected.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator const unsigned char*() const ABSL_ATTRIBUTE_LIFETIME_BOUND;
-
-  static const int COLOR_COUNT = 256;
-
-  // Bounded views retain the number of colors for bulk palette operations.
-  [[nodiscard]] std::span<engine::gfx::PaletteColor, COLOR_COUNT> colors()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return data_;
-  }
-  [[nodiscard]] std::span<const engine::gfx::PaletteColor, COLOR_COUNT> colors()
-      const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return data_;
-  }
-
-  [[nodiscard]] std::span<unsigned char> bytes() { return base::UnsignedBytes(colors()); }
-  [[nodiscard]] std::span<const unsigned char> bytes() const { return base::UnsignedBytes(colors()); }
-  // Palette objects serve as bounded byte ranges to legacy rendering APIs.
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator std::span<unsigned char>() { return bytes(); }
-  // NOLINTNEXTLINE(*-explicit-constructor)
-  operator std::span<const unsigned char>() const { return bytes(); }
+  static constexpr int COLOR_COUNT = kColorCount;
 
   static PaletteClass CurrentPalette;
 
  private:
   static inline bool fades_disabled_ = false;
-
-  engine::gfx::PaletteColor data_[COLOR_COUNT];
 };
 
-void Set_Palette(std::span<const unsigned char> palette);
-
-extern unsigned char* CurrentPalette;
+// Makes `palette` current and shows it at once.
+void Set_Palette(const engine::gfx::Palette& palette);
 
 #endif  // CNC_RED_ALERT_RA_PALETTE_H_

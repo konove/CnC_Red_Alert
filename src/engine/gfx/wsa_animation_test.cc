@@ -10,6 +10,8 @@
 #include <span>
 #include <vector>
 
+#include "engine/gfx/palette.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/memory_stream.h"
 #include "gtest/gtest.h"
@@ -168,7 +170,10 @@ std::vector<char> MakeDeltaWsa(const std::vector<std::vector<uint8_t>>& deltas,
   PutUint32(out, offset);  // End of the last frame.
   PutUint32(out, 0);       // No loop frame.
   if (palette) {
-    out.insert(out.end(), 768, '\0');
+    // Entry i is guns (i % 64, 1, 2).
+    for (int i = 0; i < 256; ++i) {
+      out.insert(out.end(), {static_cast<char>(i % 64), 1, 2});
+    }
   }
   for (const auto& delta : deltas) {
     out.insert(out.end(), delta.begin(), delta.end());
@@ -190,6 +195,18 @@ TEST(WsaTest, AnimationWithPaletteDoesNotWrapWithoutLoopFrame) {
   // there is none, so both deltas have to be applied.
   EXPECT_TRUE(animation.DrawFrame(buffer.view(), 2));
   EXPECT_EQ(page.front(), 0x03);
+}
+
+TEST(WsaTest, ReadsTheAttachedPalette) {
+  const std::vector<char> image =
+      MakeDeltaWsa({XorFirstPixel(0x01)}, /*palette=*/true);
+  MemoryStream stream(std::as_bytes(std::span(image)));
+  engine::gfx::Palette palette;
+  const WsaAnimation animation(stream, &palette);
+  ASSERT_TRUE(animation.is_open());
+
+  EXPECT_EQ(palette.at(0), engine::gfx::PaletteColor::FromGuns(0, 1, 2));
+  EXPECT_EQ(palette.at(70), engine::gfx::PaletteColor::FromGuns(6, 1, 2));
 }
 
 TEST(WsaTest, AnimateStopsAtFrameItCannotLoad) {

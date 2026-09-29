@@ -7,6 +7,7 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
+#include "engine/gfx/palette.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
@@ -16,8 +17,18 @@ unsigned char CurrentPalette[3 * 256];
 
 // Shows `palette` on the display and recolors the mouse cursor, which SDL
 // draws in the colors it had when the cursor was made.
+engine::gfx::Palette VgaPalette(const std::span<const unsigned char> vga) {
+  return engine::gfx::Palette::FromVga(
+      vga.first<engine::gfx::Palette::kVgaSize>());
+}
+
+void StoreVga(const engine::gfx::Palette& palette,
+              const std::span<unsigned char> vga) {
+  std::ranges::copy(palette.ToVga(), vga.begin());
+}
+
 static void ShowPalette(std::span<const uint8_t> palette) {
-  engine::window::TheDisplay().SetPalette(palette);
+  engine::window::TheDisplay().SetPalette(VgaPalette(palette));
   TheMouse().UpdatePalette();
 }
 

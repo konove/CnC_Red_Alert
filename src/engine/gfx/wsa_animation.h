@@ -41,6 +41,7 @@
 #include <string_view>
 #include <vector>
 
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 
 class ByteStream;
@@ -59,13 +60,13 @@ class WsaAnimation {
 
   // Loads the animation in the game file `file_name`, loose or packed in a
   // mixfile; it stays closed if the file is missing or corrupt. If the file has
-  // a palette and `palette` holds at least 768 bytes (256 RGB triples), it is
-  // read into `palette`.
+  // a palette and `palette` is not nullptr, it is read into `*palette`.
   explicit WsaAnimation(std::string_view file_name,
-                        std::span<uint8_t> palette = {});
+                        engine::gfx::Palette* palette = nullptr);
 
   // As above, reading from `file`'s current position; `file` is left open.
-  explicit WsaAnimation(ByteStream& file, std::span<uint8_t> palette = {});
+  explicit WsaAnimation(ByteStream& file,
+                        engine::gfx::Palette* palette = nullptr);
 
   // A loaded animation always holds its offset table.
   [[nodiscard]] bool is_open() const { return !file_buffer_.empty(); }
@@ -92,7 +93,7 @@ class WsaAnimation {
  private:
   // Does the constructors' work on the open file. A file that fails its checks
   // leaves the animation untouched, and so closed.
-  void Load(ByteStream& file, std::span<uint8_t> palette);
+  void Load(ByteStream& file, engine::gfx::Palette* palette);
 
   // Returns the position in file_buffer_ of the delta that produces `frame`, or
   // 0 if the offset table has no entry for it. 0 is never a real position,

@@ -103,6 +103,9 @@ class PaletteColor {
   [[nodiscard]] constexpr int green_gun() const { return green_; }
   [[nodiscard]] constexpr int blue_gun() const { return blue_; }
 
+  friend constexpr bool operator==(const PaletteColor&,
+                                   const PaletteColor&) = default;
+
  private:
   // The guns as the VGA DAC takes them, 0..63. Their order and size are the
   // palette's byte layout.

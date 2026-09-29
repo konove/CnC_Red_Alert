@@ -51,6 +51,7 @@
 
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wsa_animation.h"
 #include "engine/platform/timer.h"
@@ -165,7 +166,9 @@ void Choose_Side() {
     TheGameState().breakout_allowed() = true;
   }
 
-  WsaAnimation anim("CHOOSE.WSA", ThePalettes().title_palette());
+  engine::gfx::Palette anim_palette = VgaPalette(ThePalettes().title_palette());
+  WsaAnimation anim("CHOOSE.WSA", &anim_palette);
+  StoreVga(anim_palette, ThePalettes().title_palette());
   Call_Back();
 
   nodbrief = Open_Movie(nodbrief_io, movie_screen, audio, "NOD1PRE.VQA");

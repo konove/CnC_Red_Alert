@@ -44,11 +44,10 @@
 #include "ra/interpal.h"
 
 #include <algorithm>
-#include <cstddef>
 #include <span>
 
-#include "absl/log/check.h"
-#include "base/array.h"
+#include "engine/gfx/palette.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/display.h"
 
@@ -71,15 +70,13 @@
  * HISTORY: * 12/12/95 12:16PM ST : Created *
  *=============================================================================================*/
 
-void Increase_Palette_Luminance(std::span<unsigned char> palette,
+void Increase_Palette_Luminance(engine::gfx::Palette& palette,
                                 int red_percentage, int green_percentage,
                                 int blue_percentage, int cap) {
-  CHECK_GE(palette.size(), static_cast<std::size_t>(SIZE_OF_PALETTE) * 3);
-  for (std::size_t i = 0; i < static_cast<std::size_t>(SIZE_OF_PALETTE) * 3;
-       i += 3) {
-    int red = base::At(palette, i);
-    int green = base::At(palette, i + 1);
-    int blue = base::At(palette, i + 2);
+  for (engine::gfx::PaletteColor& color : palette.colors()) {
+    int red = color.red_gun();
+    int green = color.green_gun();
+    int blue = color.blue_gun();
 
     red += red * red_percentage / 100;
     green += green * green_percentage / 100;
@@ -89,9 +86,7 @@ void Increase_Palette_Luminance(std::span<unsigned char> palette,
     green = std::min(cap, green);
     blue = std::min(cap, blue);
 
-    base::At(palette, i) = static_cast<unsigned char>(red);
-    base::At(palette, i + 1) = static_cast<unsigned char>(green);
-    base::At(palette, i + 2) = static_cast<unsigned char>(blue);
+    color = engine::gfx::PaletteColor::FromGuns(red, green, blue);
   }
 }
 

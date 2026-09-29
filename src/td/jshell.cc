@@ -74,6 +74,7 @@
 #include "engine/gfx/tile.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
+#include "td/palette.h"
 #include "td/startup.h"
 #include "td/support.h"
 
@@ -341,7 +342,7 @@ std::span<unsigned char> Build_Translucent_Table(
   for (int index = 0; index < count; ++index) {
     const auto& item = base::At(control, base::ToSize(index));
     base::At(buffer, item.SourceColor) = static_cast<unsigned char>(index);
-    Build_Fading_Table(palette,
+    Build_Fading_Table(VgaPalette(palette),
                        buffer.subspan(base::ToSize(index + 1) * 256, 256),
                        item.DestColor, item.Fading);
   }

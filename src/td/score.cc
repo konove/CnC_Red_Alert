@@ -75,6 +75,7 @@
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wsa_animation.h"
@@ -708,8 +709,9 @@ void ScoreClass::Show() {
   /*
   ** Load the background for the score screen
   */
-  WsaAnimation anim(base::At(ScreenNames, house),
-                    ThePalettes().title_palette());
+  engine::gfx::Palette anim_palette = VgaPalette(ThePalettes().title_palette());
+  WsaAnimation anim(base::At(ScreenNames, house), &anim_palette);
+  StoreVga(anim_palette, ThePalettes().title_palette());
 
   const int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
 
@@ -2183,7 +2185,9 @@ void Multi_Score_Presentation() {
 
   Set_Palette(ThePalettes().black_palette());
 
-  WsaAnimation anim("MLTIPLYR.WSA", ThePalettes().title_palette());
+  engine::gfx::Palette anim_palette = VgaPalette(ThePalettes().title_palette());
+  WsaAnimation anim("MLTIPLYR.WSA", &anim_palette);
+  StoreVga(anim_palette, ThePalettes().title_palette());
   TheMouse().Hide();
 
   /*

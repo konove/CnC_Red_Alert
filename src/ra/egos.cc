@@ -43,6 +43,7 @@
 #include "ra/egos.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <cstring>
 #include <iterator>
@@ -58,6 +59,8 @@
 #include "base/types.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette.h"
+#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
@@ -114,7 +117,7 @@ static char SlideNames[NUM_SLIDES][13] = {
 /*
 ** Array of all the palettes required for the slides
 */
-static unsigned char SlidePals[NUM_SLIDES][256 * 3];
+static engine::gfx::Palette SlidePals[NUM_SLIDES];
 
 /*
 ** Array of graphic buffers containing the slides
@@ -131,11 +134,6 @@ static std::unique_ptr<PixelBuffer> BackgroundPage;
 **  palette.
 */
 static PaletteClass ComboPalette;
-
-/*
-** Ptr to the combo palette.
-*/
-static std::span<uint8_t> ComboPalPtr;
 
 /*
 ** Lookup table. If an entry is non-zero then it should be faded in/out when the
@@ -248,9 +246,7 @@ void EgoClass::Wipe(PixelView& view, PixelBuffer* background) const {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:59PM ST : Created *
  *=============================================================================================*/
-static void Set_Pal(const PaletteClass* palette) {
-  Set_Palette(palette->bytes());
-}
+static void Set_Pal(const PaletteClass* palette) { Set_Palette(*palette); }
 
 /***********************************************************************************************
  * Slide_Show -- Handles the blitting and fading of the background pictures. *
@@ -267,11 +263,6 @@ static void Set_Pal(const PaletteClass* palette) {
  * HISTORY: * 9/10/96 0:16AM ST : Created *
  *=============================================================================================*/
 static void Slide_Show(int slide, int frame) {
-  /*
-  ** Temprary storage to save CCPalette to
-  */
-  char save_palette[256 * 3];
-
   if (frame >= 1 && frame <= 4) {
     /*
     ** Blit in a quarter of the new frame to the background page.
@@ -300,14 +291,7 @@ static void Slide_Show(int slide, int frame) {
     */
     for (int index = 0; index < 256; index++) {
       if (base::At(PaletteLUT, index)) {
-        base::At(ComboPalPtr,
-                 base::ToSize(static_cast<base::ssize>(index) * 3)) =
-            base::At(base::At(SlidePals, slide),
-                     static_cast<base::ssize>(index) * 3);
-        base::At(ComboPalPtr, base::ToSize((index * 3) + 1)) =
-            base::At(base::At(SlidePals, slide), (index * 3) + 1);
-        base::At(ComboPalPtr, base::ToSize((index * 3) + 2)) =
-            base::At(base::At(SlidePals, slide), (index * 3) + 2);
+        ComboPalette.at(index) = base::At(SlidePals, slide).at(index);
       }
     }
     return;
@@ -317,18 +301,14 @@ static void Slide_Show(int slide, int frame) {
     /*
     ** Fade up the picture in the background. The text colors never fade.
     */
-    base::CopyBytes(base::ObjectBytes(save_palette),
-                    std::as_bytes(ThePalettes().title_palette().bytes()),
-                    sizeof(save_palette));
+    const PaletteClass save_palette = ThePalettes().title_palette();
     // CCPalette.Partial_Adjust (std::min (6*(frame-5), 255), ComboPalette,
     // PaletteLUT);
     PaletteClass::Partial_Adjust(std::min(255 / FADE_DELAY * (frame - 10), 255),
                                  ComboPalette, PaletteLUT);
     Set_Pal(&ThePalettes().title_palette());
     if (frame != 9 + FADE_DELAY) {
-      base::CopyBytes(
-          std::as_writable_bytes(ThePalettes().title_palette().bytes()),
-          base::ObjectBytes(save_palette), sizeof(save_palette));
+      ThePalettes().title_palette() = save_palette;
     } else {
       ThePalettes().title_palette() = PaletteClass::CurrentPalette;
     }
@@ -339,28 +319,20 @@ static void Slide_Show(int slide, int frame) {
     /*
     ** Fade down the picture in the background. The text colors never fade.
     */
-    base::CopyBytes(base::ObjectBytes(save_palette),
-                    std::as_bytes(ThePalettes().title_palette().bytes()),
-                    sizeof(save_palette));
+    const PaletteClass save_palette = ThePalettes().title_palette();
     PaletteClass::Partial_Adjust(
         std::min(255 / FADE_DELAY * (frame - FRAME_DELAY), 255), PaletteLUT);
     if (frame != FRAME_DELAY + FADE_DELAY - 1) {
       Set_Pal(&ThePalettes().title_palette());
-      base::CopyBytes(
-          std::as_writable_bytes(ThePalettes().title_palette().bytes()),
-          base::ObjectBytes(save_palette), sizeof(save_palette));
+      ThePalettes().title_palette() = save_palette;
     } else {
       /*
       ** If this is the last fade down frame then zero the picture palette
       *entries.
       */
-      const auto ccpalptr = ThePalettes().title_palette().bytes();
       for (int index = 0; index < 256; index++) {
         if (base::At(PaletteLUT, index)) {
-          base::At(ccpalptr,
-                   base::ToSize(static_cast<base::ssize>(index) * 3)) = 0;
-          base::At(ccpalptr, base::ToSize((index * 3) + 1)) = 0;
-          base::At(ccpalptr, base::ToSize((index * 3) + 2)) = 0;
+          ThePalettes().title_palette().at(index) = engine::gfx::kBlackColor;
         }
       }
       Set_Pal(&ThePalettes().title_palette());
@@ -626,21 +598,20 @@ void Show_Who_Was_Responsible() {
   ** Load the reference palette for the font.
   */
   if (const auto file = OpenGameFile("EGOPAL.PAL")) {
-    file->ReadObject(ThePalettes().title_palette());
+    std::array<uint8_t, engine::gfx::Palette::kVgaSize> vga{};
+    if (file->ReadObject(vga)) {
+      ThePalettes().title_palette() = engine::gfx::Palette::FromVga(vga);
+    }
   }
 
   /*
   ** Copy the font palette entries into the combo palette.
   */
-  ComboPalPtr = ComboPalette;
   ComboPalette = ThePalettes().title_palette();
 
   for (int index = 0; index < 256; index++) {
     if (base::At(PaletteLUT, index)) {
-      base::At(ComboPalPtr, base::ToSize(static_cast<base::ssize>(index) * 3)) =
-          0;
-      base::At(ComboPalPtr, base::ToSize((index * 3) + 1)) = 0;
-      base::At(ComboPalPtr, base::ToSize((index * 3) + 2)) = 0;
+      ComboPalette.at(index) = engine::gfx::kBlackColor;
     }
   }
 
