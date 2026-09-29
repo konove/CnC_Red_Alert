@@ -65,6 +65,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/gadget.h"
+#include "td/input.h"
 #include "td/jshell.h"
 
 using enum engine::window::KeyNumber;
@@ -258,7 +259,7 @@ bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
       flags = 0;
 
     } else {
-      const auto ascii = engine::window::KeyBuffer::ToAscii(key);
+      const auto ascii = TheKeyboard().TypedCharacter(key);
 
       /*
       ** Filter out all special keys except return and backspace

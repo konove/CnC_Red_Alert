@@ -624,7 +624,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
   If we're in 'edit mode', handle keys
   ------------------------------------------------------------------------*/
   if (EditLabel) {
-    const auto ascii = engine::window::KeyBuffer::ToAscii(input);
+    const auto ascii = TheKeyboard().TypedCharacter(input);
 
     /*
     ** Filter out all special keys except return, escape and backspace

@@ -8,9 +8,6 @@
     it has never worked (see `docs/INPUT_EVENTS_PLAN.md`)
   - The call also runs every map layer once with the mouse at (0, 0); cancel the mode directly, as
     `DisplayClass::Mouse_Right_Press()` does, instead
-- Make typed text honour Shift
-  - `KeyBuffer::ToAscii()` maps through `SDL_GetKeyFromScancode()`, which ignores modifiers, so edit
-    boxes and chat get no capitals or shifted symbols; doing better needs SDL text-input events
 - Let `HardwareCursor::SetShape()` retry a shape whose SDL cursor could not be created
   - It records `current_shape_` even when `SDL_CreateColorCursor()` fails, so the same shape is
     never tried again and SDL shows its default cursor
