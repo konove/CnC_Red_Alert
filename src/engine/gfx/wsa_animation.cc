@@ -262,13 +262,8 @@ bool WsaAnimation::DrawFrame(PixelView& view, const int frame_number) {
 }
 
 int64_t WsaAnimation::ResidentFrameOffset(const int frame) const {
-  const std::span<const std::byte> file_buffer = file_buffer_;
-  if (frame < 0 ||
-      base::ToSize(frame) >= file_buffer.size() / sizeof(uint32_t)) {
-    return 0;
-  }
-  const auto offset = base::ReadUnaligned<uint32_t>(
-      file_buffer.subspan(base::ToSize(frame) * sizeof(uint32_t)));
+  const auto offset =
+      base::ReadLittleEndian<uint32_t>(file_buffer_, base::ssize{frame} * 4);
   return offset == 0 ? 0 : offset - offset_bias_;
 }
 

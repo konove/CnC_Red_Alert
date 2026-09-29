@@ -25,6 +25,20 @@ TEST(UnalignedTest, ReadsAndWritesNativeValuesAtEveryByteOffset) {
     EXPECT_EQ(bytes.at(base::ToSize(offset) + sizeof(kValue)), 0xa5);
   }
 }
+
+TEST(UnalignedTest, ReadLittleEndianIgnoresHostOrderAndBounds) {
+  constexpr std::array<unsigned char, 5> kBytes = {0x01, 0x02, 0x03, 0x04,
+                                                   0x05};
+  const auto bytes = std::as_bytes(std::span(kBytes));
+  EXPECT_EQ(base::ReadLittleEndian<uint8_t>(bytes, 4), 0x05);
+  EXPECT_EQ(base::ReadLittleEndian<uint16_t>(bytes, 1), 0x0302);
+  EXPECT_EQ(base::ReadLittleEndian<uint32_t>(bytes, 1), 0x05040302U);
+  EXPECT_EQ(base::ReadLittleEndian<int16_t>(bytes, 0), 0x0201);
+  EXPECT_EQ(base::ReadLittleEndian<uint16_t>(bytes, 4), 0);
+  EXPECT_EQ(base::ReadLittleEndian<uint32_t>(bytes, 2), 0U);
+  EXPECT_EQ(base::ReadLittleEndian<uint8_t>(bytes, 5), 0);
+  EXPECT_EQ(base::ReadLittleEndian<uint8_t>(bytes, -1), 0);
+}
 }  // namespace
 
 TEST(AlignedBufferTest, RecoversOriginalObjectAndRejectsInteriorByte) {

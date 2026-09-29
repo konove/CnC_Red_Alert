@@ -87,6 +87,24 @@ TEST(BufferTest, CompareUsesUnsignedBytes) {
       0);
 }
 
+TEST(BufferTest, SliceOrEmptyReturnsInBoundsBytesOnly) {
+  constexpr unsigned char values[4] = {1, 2, 3, 4};
+  const auto bytes = base::ObjectBytes(values);
+  const auto middle = base::SliceOrEmpty(bytes, 1, 2);
+  ASSERT_EQ(middle.size(), 2);
+  EXPECT_EQ(middle.data(), &base::At(bytes, 1));
+  EXPECT_EQ(base::SliceOrEmpty(bytes, 2, 2).size(), 2);
+  EXPECT_EQ(base::SliceOrEmpty(bytes, 4, 0).size(), 0);
+  EXPECT_TRUE(base::SliceOrEmpty(bytes, 3, 2).empty());
+  EXPECT_TRUE(base::SliceOrEmpty(bytes, 5, 0).empty());
+  EXPECT_TRUE(base::SliceOrEmpty(bytes, -1, 1).empty());
+  EXPECT_TRUE(base::SliceOrEmpty(bytes, 0, -1).empty());
+  EXPECT_EQ(base::SliceOrEmpty(bytes, 1).size(), 3);
+  EXPECT_TRUE(base::SliceOrEmpty(bytes, 4).empty());
+  EXPECT_TRUE(base::SliceOrEmpty(bytes, 5).empty());
+  EXPECT_TRUE(base::SliceOrEmpty(bytes, -1).empty());
+}
+
 TEST(BufferDeathTest, RejectsInvalidCountsBeforeAccess) {
   unsigned char bytes[3] = {};
   constexpr unsigned char source[2] = {};

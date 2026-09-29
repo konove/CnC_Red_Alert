@@ -50,6 +50,32 @@ auto UnsignedBytes(std::span<T, Extent> objects) {
                          objects.size_bytes());
 }
 
+// Returns the count bytes of data starting at offset, or an empty span if any
+// of them lies outside data. A negative offset or count lies outside. For
+// parsing untrusted file data, where a bad offset is a malformed file rather
+// than a programmer error.
+inline std::span<const std::byte> SliceOrEmpty(
+    const std::span<const std::byte> data, const std::integral auto offset,
+    const std::integral auto count) {
+  if (std::cmp_less(offset, 0) || std::cmp_less(count, 0) ||
+      std::cmp_greater(offset, data.size()) ||
+      std::cmp_greater(count, data.size() - static_cast<std::size_t>(offset))) {
+    return {};
+  }
+  return data.subspan(static_cast<std::size_t>(offset),
+                      static_cast<std::size_t>(count));
+}
+
+// Returns data from offset to its end, or an empty span if offset lies outside
+// data.
+inline std::span<const std::byte> SliceOrEmpty(
+    const std::span<const std::byte> data, const std::integral auto offset) {
+  if (std::cmp_less(offset, 0) || std::cmp_greater(offset, data.size())) {
+    return {};
+  }
+  return data.subspan(static_cast<std::size_t>(offset));
+}
+
 // Copies count bytes, checking both spans before access. The ranges must not
 // overlap unless their starts are identical; use MoveBytes for overlap.
 void CopyBytes(const std::span<std::byte> dest,

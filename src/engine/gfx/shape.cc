@@ -2,20 +2,16 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <iterator>
 #include <span>
 
-#include "base/numeric.h"
+#include "base/buffer.h"
 #include "base/types.h"
 #include "base/unaligned.h"
 
 namespace engine::gfx {
 
 int CountShapeFrames(const std::span<const std::byte> shape_file) {
-  if (shape_file.size() < sizeof(uint16_t)) {
-    return 0;
-  }
-  return base::ReadUnaligned<uint16_t>(shape_file);
+  return base::ReadLittleEndian<uint16_t>(shape_file, 0);
 }
 
 std::span<const std::byte> ExtractShapeFrame(
@@ -26,25 +22,19 @@ std::span<const std::byte> ExtractShapeFrame(
   // The offset table, and the offsets in it, count from the end of the frame
   // count rather than from the start of the file.
   const auto frames = shape_file.subspan(sizeof(uint16_t));
-  const auto entry_offset = base::ToSize(frame) * sizeof(uint32_t);
-  if (frames.size() < entry_offset + sizeof(uint32_t)) {
+  const auto entry =
+      base::SliceOrEmpty(frames, base::ssize{frame} * 4, sizeof(uint32_t));
+  if (entry.empty()) {
     return {};
   }
-  const auto frame_offset =
-      base::ReadUnaligned<uint32_t>(frames.subspan(entry_offset));
-  if (frame_offset > frames.size()) {
-    return {};
-  }
-  const auto frame_data = frames.subspan(frame_offset);
-  // A frame shorter than its own header is corrupt.
-  if (std::ssize(frame_data) < kShapeHeaderSize) {
-    return {};
-  }
-  const base::ssize frame_bytes = base::ReadUnaligned<uint16_t>(
-      frame_data.subspan(offsetof(ShapeHeader, frame_bytes)));
-  return frame_bytes >= kShapeHeaderSize &&
-                 frame_bytes <= std::ssize(frame_data)
-             ? frame_data.first(base::ToSize(frame_bytes))
+  const auto frame_data =
+      base::SliceOrEmpty(frames, base::ReadLittleEndian<uint32_t>(entry, 0));
+  // A frame shorter than its own header is corrupt, and SliceOrEmpty() rejects
+  // one that runs past the end of the file.
+  const base::ssize frame_bytes = base::ReadLittleEndian<uint16_t>(
+      frame_data, offsetof(ShapeHeader, frame_bytes));
+  return frame_bytes >= kShapeHeaderSize
+             ? base::SliceOrEmpty(frame_data, 0, frame_bytes)
              : std::span<const std::byte>{};
 }
 

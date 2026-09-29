@@ -32,7 +32,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "base/numeric.h"
+#include "base/buffer.h"
 #include "base/types.h"
 #include "base/unaligned.h"
 
@@ -64,9 +64,10 @@ static_assert(sizeof(FontHeader) == 14,
 // per-glyph metric tables, which are byte-packed and unaligned in the blob.
 // Cheap to construct and copy; the font data must outlive the view.
 //
-// Malformed data never reads out of bounds: a table offset past the end of the
-// data, or a glyph entry past the end of its table, reads as 0 (or as an empty
-// span for GlyphData()), so a truncated font draws as blank glyphs.
+// Malformed data never reads out of bounds: every read goes through
+// base::SliceOrEmpty() or base::ReadLittleEndian(), so a table offset past the
+// end of the data, or a glyph entry past the end of its table, reads as 0 (or
+// as an empty span for GlyphData()), so a truncated font draws as blank glyphs.
 //
 // Each glyph is a box GlyphWidth() pixels wide and MaxHeight() rows tall:
 // GlyphBlankRowsAbove() empty rows, then GlyphHeight() rows of pixel data, then
@@ -90,10 +91,12 @@ class FontView {
       return;
     }
     const auto header = base::ReadUnaligned<FontHeader>(font_);
-    info_ = DataFrom(header.info_block);
-    offsets_ = DataFrom(header.offset_block);
-    widths_ = DataFrom(header.width_block);
-    heights_ = DataFrom(header.height_block);
+    // Tables carry no length in the header, so each is bounded only by the end
+    // of the data.
+    info_ = base::SliceOrEmpty(font_, header.info_block);
+    offsets_ = base::SliceOrEmpty(font_, header.offset_block);
+    widths_ = base::SliceOrEmpty(font_, header.width_block);
+    heights_ = base::SliceOrEmpty(font_, header.height_block);
   }
 
   // The font data the view reads; empty for a default-constructed view.
@@ -101,14 +104,14 @@ class FontView {
 
   // Height and width of the tallest and widest glyphs, in pixels.
   [[nodiscard]] int MaxHeight() const {
-    return ReadByte(info_, kFontInfoMaxHeight);
+    return base::ReadLittleEndian<uint8_t>(info_, kFontInfoMaxHeight);
   }
   [[nodiscard]] int MaxWidth() const {
-    return ReadByte(info_, kFontInfoMaxWidth);
+    return base::ReadLittleEndian<uint8_t>(info_, kFontInfoMaxWidth);
   }
   // Width of the glyph for character in pixels, not counting any spacing.
   [[nodiscard]] int GlyphWidth(const uint8_t character) const {
-    return ReadByte(widths_, character);
+    return base::ReadLittleEndian<uint8_t>(widths_, character);
   }
   // Number of pixel rows stored for the glyph for character.
   [[nodiscard]] int GlyphHeight(const uint8_t character) const {
@@ -129,43 +132,16 @@ class FontView {
     // per glyph.
     const base::ssize glyph_bytes =
         base::ssize{(GlyphWidth(character) + 1) / 2} * GlyphHeight(character);
-    return Slice(font_, ReadWord(offsets_, base::ssize{2} * character),
-                 glyph_bytes);
+    return base::SliceOrEmpty(
+        font_,
+        base::ReadLittleEndian<uint16_t>(offsets_, base::ssize{2} * character),
+        glyph_bytes);
   }
 
  private:
-  // Returns count bytes of data from offset, or an empty span if any of them
-  // lies outside data. Every read goes through here, which is what keeps a
-  // malformed font in bounds; see the class comment.
-  static std::span<const std::byte> Slice(const std::span<const std::byte> data,
-                                          const base::ssize offset,
-                                          const base::ssize count) {
-    if (offset < 0 || count < 0 || offset > std::ssize(data) ||
-        count > std::ssize(data) - offset) {
-      return {};
-    }
-    return data.subspan(base::ToSize(offset), base::ToSize(count));
-  }
-  // ReadByte and ReadWord return 0 for an offset outside data.
-  static uint8_t ReadByte(const std::span<const std::byte> data,
-                          const base::ssize offset) {
-    const auto bytes = Slice(data, offset, 1);
-    return bytes.empty() ? 0 : std::to_integer<uint8_t>(bytes.front());
-  }
-  static uint16_t ReadWord(const std::span<const std::byte> data,
-                           const base::ssize offset) {
-    const auto bytes = Slice(data, offset, sizeof(uint16_t));
-    return bytes.empty() ? 0 : base::ReadUnaligned<uint16_t>(bytes);
-  }
   [[nodiscard]] int PackedHeight(const uint8_t character) const {
-    return ReadWord(heights_, base::ssize{2} * character);
-  }
-  // Returns the font data from offset to the end, or an empty span if offset
-  // is past it. Tables carry no length in the header, so each is bounded only
-  // by the end of the data.
-  [[nodiscard]] std::span<const std::byte> DataFrom(
-      const base::ssize offset) const {
-    return Slice(font_, offset, std::ssize(font_) - offset);
+    return base::ReadLittleEndian<uint16_t>(heights_,
+                                            base::ssize{2} * character);
   }
   std::span<const std::byte> font_;  // The whole font file.
   // The header's tables, each running to the end of font_; empty if the
