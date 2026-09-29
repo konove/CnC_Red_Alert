@@ -39,6 +39,7 @@
 
 #include "td/expand.h"
 
+#include <array>
 #include <cstddef>
 #include <format>
 #include <span>
@@ -47,7 +48,6 @@
 #include <vector>
 
 #include "base/array.h"
-#include "base/bytes_of.h"
 #include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "engine/file/game_file.h"
@@ -65,7 +65,6 @@
 #include "td/init.h"
 #include "td/input.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/list.h"
 #include "td/profile.h"
 #include "td/screen.h"
@@ -174,7 +173,10 @@ bool Expansion_Dialog() {
   /*
   **	Add in all the expansion scenarios.
   */
-  const auto sbuffer = base::CharBytes(shape_buffer);
+  // The start of each scenario file, where its [Basic] Name is, plus a line
+  // end and the terminator.
+  std::array<char, 1000 + 3> header{};
+  const std::span<char> sbuffer(header);
   for (int index = 20; index < 60; index++) {
     char buffer[128];
 
