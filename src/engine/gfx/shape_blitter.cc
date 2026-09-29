@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -39,6 +40,9 @@ static_assert(kBlitterCount ==
 // samples, walked in order and wrapped. Sampling the page instead of drawing
 // the shape's color shows a displaced copy of the background, the shimmer.
 constexpr std::array kPredatorRightOffsets{1, 3, 2, 5, 2, 3, 4, 1};
+// ApplyEffects() lets its step counter wrap at 2^32, which keeps the walk in
+// order only while the table's size divides that.
+static_assert(std::has_single_bit(kPredatorRightOffsets.size()));
 
 // The same walk for a negative predator offset: how many pixels to the left,
 // one row down. The assembler reached these by indexing the right-hand table
@@ -63,7 +67,7 @@ struct BlitJob {
   // ShapeFlags::kPredator: the offsets from the pixel being drawn to the page
   // pixel it samples, and the one the walk starts on.
   std::array<base::ssize, kPredatorRightOffsets.size()> predator_offsets{};
-  int predator_start = 0;
+  uint32_t predator_start = 0;
 };
 
 // Returns the color the shape's `color` becomes at dst_index in job.dst with
@@ -73,17 +77,18 @@ struct BlitJob {
 // result.
 template <uint32_t kEffects>
 uint8_t ApplyEffects(const BlitJob& job, uint8_t color,
-                     const base::ssize dst_index, int& predator_step) {
+                     const base::ssize dst_index, uint32_t& predator_step) {
   if constexpr ((kEffects & kBlitPredator) != 0) {
     // Take the color from the page a table-driven distance away. Near the end
     // of the page there is nothing to sample and the shape's own color stays.
+    // Reducing the step at the index rather than on each step lets the
+    // compiler see the index is in range and drop the at() check.
     const base::ssize sample_index =
-        dst_index + job.predator_offsets.at(base::ToSize(predator_step));
+        dst_index +
+        job.predator_offsets.at(predator_step++ % job.predator_offsets.size());
     if (sample_index < std::ssize(job.dst)) {
       color = base::At(job.dst, sample_index);
     }
-    predator_step =
-        (predator_step + 1) % static_cast<int>(job.predator_offsets.size());
   }
 
   if constexpr ((kEffects & kBlitGhost) != 0) {
@@ -115,7 +120,7 @@ void BlitWithEffects(const BlitJob job) {
                       job.pixel_count);
     }
   } else {
-    int predator_step = job.predator_start;
+    uint32_t predator_step = job.predator_start;
     for (base::ssize line = 0; line < job.line_count; ++line) {
       const base::ssize src_start = line * job.src_stride;
       const base::ssize dst_start = line * job.dst_stride;
@@ -198,8 +203,8 @@ void DrawShapeFrame(int x, int y, const int width, const int height,
   if (base::Any(flags & ShapeFlags::kPredator)) {
     effect_bits |= kBlitPredator;
     const int64_t start = effects.predator_offset;
-    job.predator_start =
-        static_cast<int>(std::abs(start) % std::ssize(job.predator_offsets));
+    job.predator_start = static_cast<uint32_t>(
+        std::abs(start) % std::ssize(job.predator_offsets));
     if (start < 0) {
       // The page's stride changes from view to view, so the down-and-left
       // offsets are worked out afresh for this one.
