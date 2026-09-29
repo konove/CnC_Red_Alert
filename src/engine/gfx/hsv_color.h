@@ -36,8 +36,9 @@ class PaletteColor;
 // and the saturation how far the dimmest gun falls below it, relative to
 // the value.
 //
-// Red Alert's options dialog converts each palette entry with
-// PaletteColor::ToHsv(), scales the components and assigns the result back.
+// Both games' options dialogs convert each palette entry with
+// PaletteColor::ToHsv(), scale the components and convert the result back
+// with ToPaletteColor().
 //
 // Example:
 //   const engine::gfx::HsvColor hsv = palette.at(index).ToHsv();
@@ -63,26 +64,6 @@ class HsvColor {
   uint8_t saturation_;
   uint8_t value_;
 };
-
-// HSV/RGB conversions for colors stored as VGA 6-bit guns (0..63). Unlike
-// HsvColor::ToPaletteColor(), both directions round rather than truncate, so a
-// round trip moves a gun by at most one step. Only Tiberian Dawn's options
-// dialog uses these; it keeps its palette as raw bytes rather than
-// PaletteColor.
-
-// An RGB color as three VGA 6-bit guns, each 0..63.
-struct Rgb6 {
-  int red;
-  int green;
-  int blue;
-};
-
-// Returns the HSV form of the color with guns 'red', 'green' and 'blue' (each
-// 0..63). A grey has hue and saturation 0.
-[[nodiscard]] HsvColor Rgb6ToHsv(int red, int green, int blue);
-
-// Returns the 6-bit guns of 'hsv'.
-[[nodiscard]] Rgb6 HsvToRgb6(const HsvColor& hsv);
 
 }  // namespace engine::gfx
 
