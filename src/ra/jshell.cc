@@ -187,10 +187,6 @@ void Format_Runtime_Text(std::span<char> buffer, const size_t size,
  *                                                                                             *
  *          dest_buff   -- The buffer that will hold the uncompressed data. *
  *                                                                                             *
- *          reserved_data  -- This is an optional pointer to a buffer that will
- *hold any       * reserved data the compressed file may contain. This is *
- *                            typically a palette. *
- *                                                                                             *
  * OUTPUT:  Returns with the size of the uncompressed data in the destination
  *buffer.          *
  *                                                                                             *
@@ -199,8 +195,7 @@ void Format_Runtime_Text(std::span<char> buffer, const size_t size,
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
-                        std::span<uint8_t> dest_buff,
-                        std::span<unsigned char> reserved_data) {
+                        std::span<uint8_t> dest_buff) {
   const auto decode = [&] -> int32_t {
     uint16_t stored_size = 0;
     CompressedBlockHeader header{};
@@ -214,15 +209,7 @@ int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
     }
     if (header.skip_bytes != 0) {
       size -= base::ToSize(header.skip_bytes);
-      if (!reserved_data.empty()) {
-        if (std::cmp_greater(header.skip_bytes, reserved_data.size()) ||
-            file.Read(reserved_data.first(base::ToSize(header.skip_bytes))) !=
-                header.skip_bytes) {
-          return 0;
-        }
-      } else {
-        file.Seek(header.skip_bytes, SeekOrigin::kCurrent);
-      }
+      file.Seek(header.skip_bytes, SeekOrigin::kCurrent);
       header.skip_bytes = 0;
     }
     auto source = uncomp_buff;
@@ -249,12 +236,12 @@ int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
 }
 
 int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
-                 std::span<uint8_t> destbuf, std::span<unsigned char> palette) {
+                 std::span<uint8_t> destbuf) {
   const auto file = OpenGameFile(filename);
   if (!file) {
     return 0;
   }
-  return Load_Uncompress(*file, scratchbuf, destbuf, palette) / 8000;
+  return Load_Uncompress(*file, scratchbuf, destbuf) / 8000;
 }
 
 /***********************************************************************************************

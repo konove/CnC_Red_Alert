@@ -139,7 +139,7 @@ int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
   const unsigned char ender = 0x0C;
   file.WriteObject(ender);
 
-  const std::array<uint8_t, engine::gfx::Palette::kVgaSize> palcopy =
+  const std::array<uint8_t, engine::gfx::Palette::kFileSize> palcopy =
       palette.ToRgb();
 
   /*

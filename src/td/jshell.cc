@@ -230,14 +230,16 @@ int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
     if (header.skip_bytes != 0) {
       size -= base::ToSize(header.skip_bytes);
       if (palette != nullptr) {
-        // A short palette replaces only the colors it holds.
-        std::array<uint8_t, engine::gfx::Palette::kVgaSize> vga =
-            palette->ToVga();
-        if (header.skip_bytes > engine::gfx::Palette::kVgaSize ||
+        std::array<uint8_t, engine::gfx::Palette::kFileSize> vga{};
+        if (header.skip_bytes > engine::gfx::Palette::kFileSize ||
             file.Read(std::span(vga), header.skip_bytes) != header.skip_bytes) {
           return 0;
         }
-        *palette = engine::gfx::Palette::FromVga(vga);
+        // A short palette replaces only the colors it holds whole.
+        const engine::gfx::Palette loaded = engine::gfx::Palette::FromVga(vga);
+        std::ranges::copy(
+            loaded.colors().first(base::ToSize(header.skip_bytes / 3)),
+            palette->colors().begin());
       } else {
         file.Seek(header.skip_bytes, SeekOrigin::kCurrent);
       }

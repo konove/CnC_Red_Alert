@@ -199,8 +199,9 @@ std::span<std::byte> Load_Alloc_Data(ByteStream& file);
 std::vector<std::byte> LoadAllocData(ByteStream& file);
 // Reads one compressed picture from `file` and uncompresses it into
 // `dest_buff`, staging it in `uncomp_buff` (which may be the same buffer).
-// The bytes a picture reserves ahead of its data are its palette; they are
-// read into `*palette` when `palette` is not nullptr and skipped otherwise.
+// The bytes a picture reserves ahead of its data are its palette; the colors
+// they hold replace those of `*palette` when `palette` is not nullptr, and are
+// skipped otherwise.
 // Returns the uncompressed size, 0 on failure.
 int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
                         std::span<uint8_t> dest_buff,

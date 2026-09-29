@@ -31,7 +31,8 @@
 namespace engine::window {
 namespace {
 
-// Returns a 6-bit VGA palette that is black but for `color` at `index`.
+// Returns a palette that is black but for the color with VGA guns `red`,
+// `green` and `blue` at `index`.
 engine::gfx::Palette PaletteWith(int index, int red, int green, int blue) {
   engine::gfx::Palette palette;
   palette.at(index) = engine::gfx::PaletteColor(engine::gfx::ExpandGun(red),

@@ -2,6 +2,7 @@
 
 #include "engine/gfx/palette.h"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <optional>
@@ -20,16 +21,17 @@ constexpr int kVgaLevels = 64;
 
 }  // namespace
 
-Palette Palette::FromVga(const std::span<const uint8_t, kVgaSize> vga) noexcept {
-  std::array<uint8_t, kVgaSize> rgb{};
-  for (int i = 0; i < kVgaSize; ++i) {
+Palette Palette::FromVga(
+    const std::span<const uint8_t, kFileSize> vga) noexcept {
+  std::array<uint8_t, kFileSize> rgb{};
+  for (int i = 0; i < kFileSize; ++i) {
     base::At(std::span(rgb), i) = ExpandGun(base::At(vga, i) % kVgaLevels);
   }
   return FromRgb(rgb);
 }
 
-std::array<uint8_t, Palette::kVgaSize> Palette::ToVga() const noexcept {
-  std::array<uint8_t, kVgaSize> vga = ToRgb();
+std::array<uint8_t, Palette::kFileSize> Palette::ToVga() const noexcept {
+  std::array<uint8_t, kFileSize> vga = ToRgb();
   for (uint8_t& component : vga) {
     component = static_cast<uint8_t>(component / 4);
   }
@@ -37,7 +39,7 @@ std::array<uint8_t, Palette::kVgaSize> Palette::ToVga() const noexcept {
 }
 
 Palette Palette::FromRgb(
-    const std::span<const uint8_t, kVgaSize> rgb) noexcept {
+    const std::span<const uint8_t, kFileSize> rgb) noexcept {
   Palette palette;
   for (int i = 0; i < kColorCount; ++i) {
     palette.at(i) =
@@ -47,8 +49,8 @@ Palette Palette::FromRgb(
   return palette;
 }
 
-std::array<uint8_t, Palette::kVgaSize> Palette::ToRgb() const noexcept {
-  std::array<uint8_t, kVgaSize> rgb{};
+std::array<uint8_t, Palette::kFileSize> Palette::ToRgb() const noexcept {
+  std::array<uint8_t, kFileSize> rgb{};
   for (int i = 0; i < kColorCount; ++i) {
     const PaletteColor& color = at(i);
     base::At(std::span(rgb), (i * 3) + 0) = static_cast<uint8_t>(color.red());
@@ -76,9 +78,23 @@ Palette BlendedPalette(const Palette& from, const Palette& to, const int step,
   return blended;
 }
 
+void BrightenPalette(Palette& palette, const int red_percentage,
+                     const int green_percentage, const int blue_percentage) {
+  const auto brighten = [](const int component, const int percentage) {
+    return static_cast<uint8_t>(
+        std::min<int>(component + (component * percentage / 100),
+                      PaletteColor::kMaxComponent));
+  };
+  for (PaletteColor& color : palette.colors()) {
+    color = PaletteColor(brighten(color.red(), red_percentage),
+                         brighten(color.green(), green_percentage),
+                         brighten(color.blue(), blue_percentage));
+  }
+}
+
 std::optional<Palette> ReadVgaPalette(ByteStream& stream) {
-  std::array<uint8_t, Palette::kVgaSize> vga{};
-  if (stream.Read(std::span(vga)) != Palette::kVgaSize) {
+  std::array<uint8_t, Palette::kFileSize> vga{};
+  if (stream.Read(std::span(vga)) != Palette::kFileSize) {
     return std::nullopt;
   }
   return Palette::FromVga(vga);

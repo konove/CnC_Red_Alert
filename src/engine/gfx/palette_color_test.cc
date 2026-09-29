@@ -33,14 +33,6 @@ TEST(PaletteColorFadedTowardTest, LeavesTheSourceUntouched) {
   ExpectSameColor(source, kOrange);
 }
 
-TEST(ExpandGunTest, CopiesTheTopBitsDown) {
-  EXPECT_EQ(ExpandGun(0), 0);
-  EXPECT_EQ(ExpandGun(1), 4);
-  EXPECT_EQ(ExpandGun(16), 65);
-  EXPECT_EQ(ExpandGun(48), 195);
-  EXPECT_EQ(ExpandGun(63), 255);
-}
-
 TEST(PaletteColorTest, KeepsEightBitComponents) {
   constexpr PaletteColor color(255, 130, 3);
   EXPECT_EQ(color.red(), 255);

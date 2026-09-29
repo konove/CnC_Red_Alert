@@ -90,11 +90,11 @@ class MovieScreen final : public VqaClient {
   // Movie palettes are 6 bits a color; brighten them the way the DOS game
   // did, then set them.
   static void SetPalette(const std::span<const uint8_t> palette) {
-    std::array<uint8_t, engine::gfx::Palette::kVgaSize> colors{};
+    std::array<uint8_t, engine::gfx::Palette::kFileSize> colors{};
     std::ranges::copy(palette.first(std::min(palette.size(), colors.size())),
                       colors.begin());
     engine::gfx::Palette brightened = engine::gfx::Palette::FromVga(colors);
-    Increase_Palette_Luminance(brightened, 15, 15, 15);
+    engine::gfx::BrightenPalette(brightened, 15, 15, 15);
     Set_Palette(brightened);
   }
 

@@ -98,7 +98,7 @@ int Write_PCX_File(const char* name, PixelView& pic,
         *file, pixels.subspan(i * static_cast<std::size_t>(VP_Scan_Line),
                               static_cast<std::size_t>(header.byte_per_line)));
   }
-  const std::array<uint8_t, engine::gfx::Palette::kVgaSize> palcopy =
+  const std::array<uint8_t, engine::gfx::Palette::kFileSize> palcopy =
       palette.ToRgb();
   i = 0x0c;
   file->Write(base::ObjectBytes(i).first(1));

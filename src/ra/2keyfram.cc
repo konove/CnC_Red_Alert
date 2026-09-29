@@ -153,16 +153,3 @@ uint16_t Get_Build_Frame_Width(std::span<const std::byte> data) {
 uint16_t Get_Build_Frame_Height(std::span<const std::byte> data) {
   return Header(data).height;
 }
-
-bool Get_Build_Frame_Palette(std::span<const std::byte> data,
-                             std::span<uint8_t> palette) {
-  const auto header = Header(data);
-  const auto start =
-      (size_t{header.frames} * 8) + 16 + sizeof(KeyFrameHeaderType);
-  if ((static_cast<uint16_t>(header.flags) & 1U) == 0 || palette.size() < 768 ||
-      start > data.size() || data.size() - start < 768) {
-    return false;
-  }
-  base::CopyBytes(std::as_writable_bytes(palette), data.subspan(start), 768);
-  return true;
-}

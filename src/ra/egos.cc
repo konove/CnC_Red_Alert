@@ -598,7 +598,7 @@ void Show_Who_Was_Responsible() {
   ** Load the reference palette for the font.
   */
   if (const auto file = OpenGameFile("EGOPAL.PAL")) {
-    std::array<uint8_t, engine::gfx::Palette::kVgaSize> vga{};
+    std::array<uint8_t, engine::gfx::Palette::kFileSize> vga{};
     if (file->ReadObject(vga)) {
       ThePalettes().title_palette() = engine::gfx::Palette::FromVga(vga);
     }

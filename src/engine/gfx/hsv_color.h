@@ -32,9 +32,9 @@ class PaletteColor;
 // A color as hue, saturation and value, each in 0..255.
 //
 // The hue runs once around the six-sided color wheel over 0..255, so 255 is
-// the same red as 0 (see base::HsvToRgb8()). The value is the brightest gun
-// and the saturation how far the dimmest gun falls below it, relative to
-// the value.
+// the same red as 0 (see base::HsvToRgb8()). The value is the brightest
+// component and the saturation how far the dimmest falls below it, relative
+// to the value.
 //
 // Both games' options dialogs convert each palette entry with
 // PaletteColor::ToHsv(), scale the components and convert the result back

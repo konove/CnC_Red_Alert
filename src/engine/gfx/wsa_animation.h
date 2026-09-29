@@ -27,7 +27,8 @@
 // back to frame 0.
 //
 // Example:
-//   WsaAnimation anim("TITLE.WSA", palette);
+//   engine::gfx::Palette palette;
+//   WsaAnimation anim("TITLE.WSA", &palette);
 //   for (int i = 0; i < anim.frame_count(); ++i) {
 //     anim.DrawFrame(view, i);
 //   }

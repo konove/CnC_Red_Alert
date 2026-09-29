@@ -51,6 +51,7 @@
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -389,7 +390,7 @@ void ScoreClass::Presentation() {
   TheMouse().Hide();
   Load_Title_Screen(base::At(ScreenNames, house), &TheScreen().hidden_view(),
                     score_palette);
-  Increase_Palette_Luminance(score_palette, 30, 30, 30);
+  engine::gfx::BrightenPalette(score_palette, 30, 30, 30);
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   score_palette.Set(kFadePaletteFast, ServiceRealTime);
   engine::audio::TheAudio().Play(country4, 255,

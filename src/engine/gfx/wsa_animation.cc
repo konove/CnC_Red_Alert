@@ -115,10 +115,10 @@ void WsaAnimation::Load(ByteStream& file, engine::gfx::Palette* const palette) {
   // for it.
   const int palette_size =
       base::Any(file_header.flags & WsaFileFlags::kHasPalette)
-          ? engine::gfx::Palette::kVgaSize
+          ? engine::gfx::Palette::kFileSize
           : 0;
   if (palette_size != 0 && palette != nullptr) {
-    std::array<uint8_t, engine::gfx::Palette::kVgaSize> vga{};
+    std::array<uint8_t, engine::gfx::Palette::kFileSize> vga{};
     file.Seek(table_end, SeekOrigin::kBegin);
     file.Read(std::span(vga));
     *palette = engine::gfx::Palette::FromVga(vga);

@@ -224,8 +224,11 @@ struct TLucentType {
   unsigned char reserved;
 };
 
+// Loads the compressed picture `filename` into `destbuf`, staging it in
+// `scratchbuf`, and skips the palette it may carry. Returns the uncompressed
+// size in units of 8000 bytes, 0 on failure.
 int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
-                 std::span<uint8_t> destbuf, std::span<unsigned char> palette);
+                 std::span<uint8_t> destbuf);
 std::span<unsigned char> Conquer_Build_Fading_Table(
     const PaletteClass& palette,
     std::span<unsigned char> dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color,
@@ -233,9 +236,12 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
 std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
                                           int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
+// Reads one compressed picture from `file` and uncompresses it into
+// `dest_buff`, staging it in `uncomp_buff` (which may be the same buffer),
+// skipping the palette it may carry. Returns the uncompressed size, 0 on
+// failure.
 int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
-                        std::span<uint8_t> dest_buff,
-                        std::span<unsigned char> reserved_data);
+                        std::span<uint8_t> dest_buff);
 int32_t Translucent_Table_Size(int count);
 std::span<unsigned char> Build_Translucent_Table(
     const PaletteClass& palette, std::span<const TLucentType> control,

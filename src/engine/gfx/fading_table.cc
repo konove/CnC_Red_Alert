@@ -56,8 +56,7 @@ std::span<uint8_t> Build_Fading_Table(const engine::gfx::Palette& palette,
       if (color_index != remap_index) {
         int compval = 0;
 
-        // Build the comparison value based on the sum of the differences of the
-        // color guns squared
+        // The comparison value is the sum of the squared component differences.
         const engine::gfx::PaletteColor& candidate = palette.at(color_index);
         int diff = candidate.red() - idealred;
         compval += diff * diff;

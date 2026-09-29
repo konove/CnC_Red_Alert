@@ -216,7 +216,7 @@ void Nod_Ending() {
 #endif  // NOT_FOR_WIN95
   TheMouse().Show();
 
-  Increase_Palette_Luminance(localpal, 30, 30, 30);
+  engine::gfx::BrightenPalette(localpal, 30, 30, 30);
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
                        "SATSELIN.PAL");
 

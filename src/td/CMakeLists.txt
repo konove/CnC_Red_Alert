@@ -61,7 +61,7 @@ include(Testing)
 # Real engine serializers, with startup helpers but no game entry point.
 add_gtest(
     NAME td_archive_roundtrip_test
-    SOURCES archive_roundtrip_test.cc pcx_test.cc number_parse_test.cc queue_alignment_test.cc list_test.cc startup.cc
+    SOURCES archive_roundtrip_test.cc jshell_test.cc pcx_test.cc number_parse_test.cc queue_alignment_test.cc list_test.cc startup.cc
     LIBS td_engine absl::core_headers
 )
 target_compile_definitions(td_archive_roundtrip_test PRIVATE TD_NO_ENTRY_POINT=1)
@@ -109,12 +109,6 @@ add_gtest(
 add_gtest(
     NAME td_screen_test
     SOURCES screen_test.cc screen.cc
-    LIBS base engine_window
-)
-
-add_gtest(
-    NAME td_interpal_test
-    SOURCES interpal_test.cc interpal.cc
     LIBS base engine_window
 )
 

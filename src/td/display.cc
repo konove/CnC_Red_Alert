@@ -422,11 +422,11 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   absl::SNPrintF(fullname, sizeof(fullname), "%s.PAL",
                  Theaters.at(theater).Root);
   const auto palette_data = MixArchive::RetrieveData(fullname);
-  CHECK_GE(std::ssize(palette_data), engine::gfx::Palette::kVgaSize)
+  CHECK_GE(std::ssize(palette_data), engine::gfx::Palette::kFileSize)
       << fullname;
   ThePalettes().game_palette() = engine::gfx::Palette::FromVga(
       base::UnsignedBytes(palette_data)
-          .first<engine::gfx::Palette::kVgaSize>());
+          .first<engine::gfx::Palette::kFileSize>());
 
   ThePalettes().original_palette() = ThePalettes().game_palette();
 

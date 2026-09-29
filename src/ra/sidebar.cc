@@ -90,7 +90,6 @@
 
 #include "ra/sidebar.h"
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -106,7 +105,6 @@
 #include "base/fixed.h"
 #include "base/numeric.h"
 #include "engine/file/mix_archive.h"
-#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
@@ -133,7 +131,6 @@
 #include "ra/network.h"
 #include "ra/object.h"
 #include "ra/object_heaps.h"
-#include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/power.h"
 #include "ra/queue.h"
@@ -1176,23 +1173,15 @@ void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
     };
 
     /*
-    **	Make sure that remapping doesn't occur on the colors that cycle, by
-    **	making them white, far from anything a fade toward black aims at. The
-    **	original meant the same with the 6-bit 0x3F, which its 8-bit
-    **	constructor turned into dark grey.
+    **	The translucent table sends green to its fading half; that half is then
+    **	rebuilt from the game palette with only the last 16 colors as
+    **	candidates, so the palette given here shapes nothing else. (The
+    **	original first hid the cycling colors from it, which the rebuild made
+    **	moot.)
     */
-    PaletteClass pal = ThePalettes().original_palette();
-    std::ranges::fill(pal.colors().subspan(kCycleColorStart, kCycleColorCount),
-                      engine::gfx::kWhiteColor);
-    Build_Translucent_Table(pal, base::Suffix(ClockCols, 0), 1,
+    Build_Translucent_Table(ThePalettes().original_palette(),
+                            base::Suffix(ClockCols, 0), 1,
                             ClockTranslucentTable);
-
-    /*
-    **	Create the translucent table used for the sidebar.
-    */
-    //		Build_Translucent_Table(GamePalette,ClockCols, 1,
-    //(void*)ClockTranslucentTable); 		GamePalette = OriginalPalette;
-
     Conquer_Build_Fading_Table(ThePalettes().game_palette(),
                                base::Suffix(ClockTranslucentTable, 256), kBlack,
                                100);

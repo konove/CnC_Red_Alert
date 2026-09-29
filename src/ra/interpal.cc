@@ -35,7 +35,6 @@
  *animations on a 640x400 screen  *
  *                                                                                             *
  * Functions:
- *  Increase_Palette_Luminance -- increase the contrast of a palette *
  *  Interpolate_2X_Scale -- Stretch a 320x200 graphic buffer into 640x400 *
  *                                                                                             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -43,47 +42,10 @@
 
 #include "ra/interpal.h"
 
-#include <algorithm>
-#include <cstdint>
 #include <span>
 
-#include "engine/gfx/palette.h"
-#include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/display.h"
-
-/***********************************************************************************************
- * Increase_Palette_Luminance -- increase contrast of colours in a palette *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    ptr to palette
- * percentage increase of red
- * percentage increase of green
- * percentage increase of blue
- *                                                                                             *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 12/12/95 12:16PM ST : Created *
- *=============================================================================================*/
-
-void Increase_Palette_Luminance(engine::gfx::Palette& palette,
-                                int red_percentage, int green_percentage,
-                                int blue_percentage) {
-  const auto brighten = [](const int component, const int percentage) {
-    return static_cast<uint8_t>(
-        std::min<int>(component + (component * percentage / 100),
-                      engine::gfx::PaletteColor::kMaxComponent));
-  };
-  for (engine::gfx::PaletteColor& color : palette.colors()) {
-    color = engine::gfx::PaletteColor(brighten(color.red(), red_percentage),
-                                      brighten(color.green(), green_percentage),
-                                      brighten(color.blue(), blue_percentage));
-  }
-}
 
 /***************************************************************************
  * INTERPOLATE_2X_SCALE                                                    *

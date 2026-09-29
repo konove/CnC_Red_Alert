@@ -1716,7 +1716,7 @@ static void Init_Color_Remaps() {
 
   TheScreen().sys_mem_page().view().Clear();
   Load_Picture("PALETTE.CPS", TheScreen().sys_mem_page().bytes(),
-               TheScreen().sys_mem_page().bytes(), {});
+               TheScreen().sys_mem_page().bytes());
   TheScreen().sys_mem_page().view().BlitTo(TheScreen().hidden_view());
   for (const PlayerColorType pcolor :
        magic_enum::enum_values<PlayerColorType>()) {
@@ -2317,7 +2317,7 @@ static void Bootstrap() {
   **	Default palette initialization.
   */
   const auto palette_data = MixArchive::RetrieveData("TEMPERAT.PAL");
-  if (std::ssize(palette_data) < engine::gfx::Palette::kVgaSize) {
+  if (std::ssize(palette_data) < engine::gfx::Palette::kFileSize) {
     // Missing data files are a user setup problem, not a bug: report and exit
     // quietly rather than abort with a stack trace.
     LOG(QFATAL) << "Cannot find TEMPERAT.PAL: game data files not found. "
@@ -2327,7 +2327,7 @@ static void Bootstrap() {
   }
   ThePalettes().game_palette() = engine::gfx::Palette::FromVga(
       base::UnsignedBytes(palette_data)
-          .first<engine::gfx::Palette::kVgaSize>());
+          .first<engine::gfx::Palette::kFileSize>());
   ThePalettes().white_palette().at(0) = ThePalettes().black_palette().at(0);
   //	GamePalette.Set();
 

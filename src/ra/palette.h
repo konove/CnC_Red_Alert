@@ -18,7 +18,7 @@ class PaletteClass : public engine::gfx::Palette {
       : Palette(palette) {}
 
   // Makes this the current palette, blending to it over `fade` ticks
-  // (kTimerSecond per second) when fade is nonzero. While fading, calls
+  // (kTimerSecond per second) when fade is positive. While fading, calls
   // `callback` once per displayed step, or presents the frame itself when
   // callback is nullptr. Switches at once when fades are disabled or when
   // this palette is already current.

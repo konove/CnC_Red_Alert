@@ -26,14 +26,6 @@ namespace engine::gfx {
 
 class HsvColor;
 
-// Returns the 6-bit VGA gun 'gun' (0..63) at 8 bits, copying its top bits into
-// the bottom two so that 0 stays 0 and 63 becomes 255, as the VGA DAC showed
-// it. Palette files store 6-bit guns and are expanded this way on loading; it
-// is (gun << 2) | (gun >> 4), written arithmetically.
-[[nodiscard]] constexpr uint8_t ExpandGun(const int gun) {
-  return static_cast<uint8_t>((gun * 4) + (gun / 16));
-}
-
 // One palette color: red, green and blue, 0..255 each, as the screen shows
 // them.
 //

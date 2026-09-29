@@ -15,9 +15,9 @@ namespace {
 
 // A VGA palette whose byte i is i % 64, so every gun differs from its
 // neighbors and stays in the VGA's 0..63.
-std::array<uint8_t, Palette::kVgaSize> CountingVga() {
-  std::array<uint8_t, Palette::kVgaSize> vga{};
-  for (int i = 0; i < Palette::kVgaSize; ++i) {
+std::array<uint8_t, Palette::kFileSize> CountingVga() {
+  std::array<uint8_t, Palette::kFileSize> vga{};
+  for (int i = 0; i < Palette::kFileSize; ++i) {
     vga.at(static_cast<size_t>(i)) = static_cast<uint8_t>(i % 64);
   }
   return vga;
@@ -40,26 +40,26 @@ TEST(PaletteTest, FromVgaExpandsRgbTriples) {
 TEST(PaletteTest, ToVgaKeepsTheTopSixBits) {
   Palette palette;
   palette.at(0) = PaletteColor(255, 130, 3);
-  const std::array<uint8_t, Palette::kVgaSize> vga = palette.ToVga();
+  const std::array<uint8_t, Palette::kFileSize> vga = palette.ToVga();
   EXPECT_EQ(vga.at(0), 63);
   EXPECT_EQ(vga.at(1), 32);
   EXPECT_EQ(vga.at(2), 0);
 }
 
 TEST(PaletteTest, ToVgaWritesWhatFromVgaRead) {
-  const std::array<uint8_t, Palette::kVgaSize> vga = CountingVga();
+  const std::array<uint8_t, Palette::kFileSize> vga = CountingVga();
   EXPECT_EQ(Palette::FromVga(vga).ToVga(), vga);
 }
 
 TEST(PaletteTest, FromVgaIgnoresTheTopTwoBits) {
-  std::array<uint8_t, Palette::kVgaSize> vga{};
+  std::array<uint8_t, Palette::kFileSize> vga{};
   vga.at(0) = 0xFF;
   EXPECT_EQ(Palette::FromVga(vga).at(0), PaletteColor(255, 0, 0));
 }
 
 TEST(PaletteTest, RgbRoundTripsEveryComponent) {
-  std::array<uint8_t, Palette::kVgaSize> rgb{};
-  for (int i = 0; i < Palette::kVgaSize; ++i) {
+  std::array<uint8_t, Palette::kFileSize> rgb{};
+  for (int i = 0; i < Palette::kFileSize; ++i) {
     rgb.at(static_cast<size_t>(i)) = static_cast<uint8_t>(i * 7);
   }
   const Palette palette = Palette::FromRgb(rgb);
@@ -112,8 +112,28 @@ TEST(BlendedPaletteTest, TakesEveryEightBitStep) {
   EXPECT_EQ(steps, 256);
 }
 
+TEST(BrightenPaletteTest, BrightensEachComponentByItsPercentage) {
+  Palette palette(PaletteColor(100, 50, 10));
+  BrightenPalette(palette, 30, 10, 0);
+  EXPECT_EQ(palette.at(7), PaletteColor(130, 55, 10));
+}
+
+TEST(BrightenPaletteTest, StopsAtFullIntensity) {
+  Palette palette(PaletteColor(240, 250, 255));
+  BrightenPalette(palette, 30, 30, 30);
+  EXPECT_EQ(palette.at(0), kWhiteColor);
+}
+
+TEST(ExpandGunTest, CopiesTheTopBitsDown) {
+  EXPECT_EQ(ExpandGun(0), 0);
+  EXPECT_EQ(ExpandGun(1), 4);
+  EXPECT_EQ(ExpandGun(16), 65);
+  EXPECT_EQ(ExpandGun(48), 195);
+  EXPECT_EQ(ExpandGun(63), 255);
+}
+
 TEST(ReadVgaPaletteTest, ReadsTheFileFormat) {
-  const std::array<uint8_t, Palette::kVgaSize> vga = CountingVga();
+  const std::array<uint8_t, Palette::kFileSize> vga = CountingVga();
   MemoryStream stream(std::as_bytes(std::span(vga)));
   const std::optional<Palette> palette = ReadVgaPalette(stream);
   ASSERT_TRUE(palette.has_value());
@@ -121,7 +141,7 @@ TEST(ReadVgaPaletteTest, ReadsTheFileFormat) {
 }
 
 TEST(ReadVgaPaletteTest, RejectsAShortFile) {
-  const std::array<uint8_t, Palette::kVgaSize - 1> vga{};
+  const std::array<uint8_t, Palette::kFileSize - 1> vga{};
   MemoryStream stream(std::as_bytes(std::span(vga)));
   EXPECT_FALSE(ReadVgaPalette(stream).has_value());
 }

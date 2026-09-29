@@ -2,7 +2,7 @@
 
 Written 2026-09-28, on the tree at 30c71670.
 
-**Status: done** (2026-09-29, b3887174..HEAD); see [Outcome](#outcome).
+**Status: done** (2026-09-29, b3887174..a6f95f21 and a cleanup after it); see [Outcome](#outcome).
 
 The palettes on disk hold 6 bits per gun (0..63, what the VGA DAC took). Both games keep that 6-bit
 form in memory, compute fades, slider adjustments and brightened movie palettes in it, and expand to
@@ -141,12 +141,22 @@ All five steps landed, one commit each, plus one drive-by fix:
   of each game. Re-deriving the fading tables in Python matched the dumped tables exactly, and in
   about 97% of the changed entries the new pick is closer to the exact target color. The rest come
   from the integer floor of the target, so none is a bug. Headless logic logs matched the tree
-  before byte for byte.
+  before byte for byte. The fades' 256 levels are what `BlendedPalette()` can produce, not what a
+  player sees: a fade lasts `kTimerSecond / 8` to `/ 2`, 7 to 30 ticks, and shows one blend per
+  tick. The gain is that each of those frames rounds its colors at 8 bits, which matters most for
+  dim colors.
 - **Step 5**: `HsvColor::ToPaletteColor()` returns `HsvToRgb8()`'s result directly and `kMaxGun` is
   gone. The plan's target, a round trip within one 8-bit step, turned out to be wrong: `HsvColor`'s
   own 8-bit hue, saturation and value limit it to **4 of 255** (9,966,339 of the 16,777,216 colors
   move). The old 6-bit path was off by up to 6. So the neutral-slider copy stays; it is still the
   only way to keep the art exact at the default settings.
+- **Cleanup**: `Increase_Palette_Luminance()`, identical in both games, became
+  `engine::gfx::BrightenPalette()`, and `ExpandGun()` moved next to `FromVga()` in `palette.h`.
+  `Palette::kVgaSize` is `kFileSize`, since the 8-bit PCX palettes use it too. Tiberian Dawn's
+  `Load_Uncompress()` again leaves the colors a short reserved palette does not hold untouched; step
+  4 had started rounding them to 6 bits. Red Alert's `Load_Uncompress()`/`Load_Picture()` lost their
+  palette parameter, which no caller used, and the uncalled `Get_Build_Frame_Palette()` is gone from
+  both games.
 
 Verification used SDL's `offscreen` video driver, which loads real palettes without a window, plus a
 scratch frame-hash hook. The title screens matched byte for byte through step 3. Missions matched

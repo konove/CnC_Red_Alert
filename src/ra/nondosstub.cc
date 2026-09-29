@@ -221,9 +221,10 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
     }
     if (palette != nullptr) {
       // The file's palette is 8 bits a component.
-      std::array<uint8_t, engine::gfx::Palette::kVgaSize> rgb{};
-      file_handle->Seek(-engine::gfx::Palette::kVgaSize, SeekOrigin::kEnd);
-      if (file_handle->Read(std::span(rgb)) != engine::gfx::Palette::kVgaSize) {
+      std::array<uint8_t, engine::gfx::Palette::kFileSize> rgb{};
+      file_handle->Seek(-engine::gfx::Palette::kFileSize, SeekOrigin::kEnd);
+      if (file_handle->Read(std::span(rgb)) !=
+          engine::gfx::Palette::kFileSize) {
         return false;
       }
       *palette = engine::gfx::Palette::FromRgb(rgb);

@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "gtest/gtest.h"
 

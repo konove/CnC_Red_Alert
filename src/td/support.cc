@@ -70,8 +70,7 @@ std::span<uint8_t> Conquer_Build_Fading_Table(
     for (int color_index = ALLOWED_START; color_index < 256; color_index++) {
       int compval = 0;
 
-      // Build the comparison value based on the sum of the differences of the
-      // color guns squared
+      // The comparison value is the sum of the squared component differences.
       const engine::gfx::PaletteColor& candidate = palette.at(color_index);
       int diff = candidate.red() - idealred;
       compval += diff * diff;

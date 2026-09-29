@@ -5,6 +5,7 @@
 
 #include "base/fixed.h"
 #include "engine/gfx/hsv_color.h"
+#include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/window/keyboard.h"
 #include "gtest/gtest.h"
