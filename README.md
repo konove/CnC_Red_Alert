@@ -59,8 +59,9 @@ git config core.hooksPath .githooks
 
 The hook blocks commits when staged Markdown fails Prettier's check. It checks the staged contents,
 so partial staging is supported, and does not modify files or the index. Format the reported files,
-stage the fixes, and retry. Prettier must be on the committing process's `PATH`, including when
-committing from CLion; keep CLion's **Run Git hooks** option enabled.
+stage the fixes, and retry. The hook runs Prettier from the committing process's `PATH`, or else
+from the newest nvm-installed Node that has it, which covers IDEs started from the desktop without
+nvm's shell setup. When committing from CLion, keep its **Run Git hooks** option enabled.
 
 Git hooks are local and can be bypassed with `--no-verify`. For team-wide enforcement, also run
 formatting checks in CI and require that check before merging.
