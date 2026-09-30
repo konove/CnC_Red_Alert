@@ -66,7 +66,6 @@
 #include "td/conquer.h"
 
 #include <algorithm>
-#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -2258,8 +2257,8 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
   const int step = 24 / zoomfactor;
   size_t out = 2;
   for (int frame = 0; frame < frames; ++frame) {
-    const auto pixels = engine::gfx::BuildFrame(
-        shapefile, shapenum + frame, TheScreen().sys_mem_page().bytes());
+    const std::vector<uint8_t> pixels =
+        engine::gfx::BuildFrame(shapefile, shapenum + frame);
     if (pixels.empty()) {
       out += frame_pixels;
       continue;
@@ -2279,8 +2278,8 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
                     sample_y >= pixel_height) {
                   continue;
                 }
-                pixel = base::At(
-                    pixels, base::ToSize((sample_y * pixel_width) + sample_x));
+                pixel = pixels.at(
+                    base::ToSize((sample_y * pixel_width) + sample_x));
                 if (pixel == kLtGreen) {
                   pixel = 0;
                 }
@@ -2298,28 +2297,13 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
   return result;
 }
 
-namespace {
-
-// The largest uncompressed frame BuildFrameInStaging() can build.
-constexpr int kShapeBufferSize = 40000;
-
-// Decompresses `frame` of `shape_file` into staging storage that every call
-// reuses, so the result is only valid until the next call. Returns an empty
-// span as engine::gfx::BuildFrame() does.
-std::span<uint8_t> BuildFrameInStaging(std::span<const std::byte> shape_file,
-                                       int frame) {
-  static std::array<uint8_t, kShapeBufferSize> staging{};
-  return engine::gfx::BuildFrame(shape_file, frame, staging);
-}
-
-}  // namespace
-
 void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
                      int shapenum, int xpos, int ypos, int width, int height) {
   if (shapefile.empty() || shapenum < 0) {
     return;
   }
-  const auto pixels = BuildFrameInStaging(shapefile, shapenum);
+  const std::vector<uint8_t> pixels =
+      engine::gfx::BuildFrame(shapefile, shapenum);
   const int source_width = engine::gfx::KeyframeWidth(shapefile);
   const int source_height = engine::gfx::KeyframeHeight(shapefile);
   if (pixels.empty() || source_width == 0 || source_height == 0 ||
@@ -2330,8 +2314,8 @@ void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
     for (int x = 0; x < width; ++x) {
       view.PutPixel(
           xpos + x, ypos + y,
-          base::At(pixels, base::ToSize(((y % source_height) * source_width) +
-                                        (x % source_width))));
+          pixels.at(base::ToSize(((y % source_height) * source_width) +
+                                 (x % source_width))));
     }
   }
   view.Unlock();
@@ -2377,9 +2361,10 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
     /*
     ** Build frame returns a pointer now instead of the shapes length
     */
-    const auto shape_size = BuildFrameInStaging(shapefile, shapenum);
+    const std::vector<uint8_t> frame_pixels =
+        engine::gfx::BuildFrame(shapefile, shapenum);
 
-    if (!shape_size.empty()) {
+    if (!frame_pixels.empty()) {
       PixelView draw_window(
           view.buffer(),
           (base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) *
@@ -2393,7 +2378,7 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
           base::At(base::At(WindowList, static_cast<int>(window)),
                    kWindowHeight));
 
-      const auto shape_pointer = std::as_bytes(shape_size);
+      const auto shape_pointer = std::as_bytes(std::span(frame_pixels));
 
       int predoffset = static_cast<int>(CurrentFrame());
 

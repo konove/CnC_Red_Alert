@@ -60,12 +60,12 @@
     value changes; found by the `/simplify` stage of the `base/fixed` `/modernize-file` run
     (`4e995aa2..8fd12531`)
 - Reject a keyframe shape frame whose LCW data ends early in `engine::gfx::BuildFrame()`
-  (`engine/gfx/keyframe.cc:148`, `175`)
+  (`engine/gfx/keyframe.cc:144`, `169`)
   - It ignores `LCW_Uncompress()`'s byte count, so a key frame that stops short leaves the rest of
-    the destination as it was, which for the games' shared staging buffers is the previous frame
-    drawn; returning `{}` when fewer than width \* height bytes were written would drop such a frame
-    instead. Only malformed data reaches it (the keyframe.h comment documents it). Found by the
-    `ra/2keyfram.cc` `/modernize-file` run (`dfc0fa2b..193f2624`)
+    the frame 0, which draws as transparent; returning `{}` when fewer than width \* height bytes
+    were written would drop such a frame instead. Only malformed data reaches it (the keyframe.h
+    comment documents it). Found by the `ra/2keyfram.cc` `/modernize-file` run
+    (`dfc0fa2b..193f2624`)
 
 ## Refactoring
 
@@ -212,13 +212,16 @@
     `CountKeyframeFrames()` (parallel to `engine::gfx::CountShapeFrames()`)
 - Measure whether `BuildFrame()`'s chain replay is worth a decoded-frame cache
   - Every call LCW-decompresses the key frame and XORs on every delta from the chain's start to the
-    frame (`engine/gfx/keyframe.cc:126-188`), and each game's `CC_Draw_Shape()` calls it for each
-    sprite drawn each frame. A per-shape cache of decoded frames would skip that; the original had
-    one (`UseBigShapeBuffer`), which no game ever enabled. Profile first
-- Make `CC_Draw_Shape()`'s `x_buffer` a `static std::array` (`ra/shape_draw.cc:147`)
-  - It is a `static std::vector<uint8_t>(kShapeBufferSize)`, which the strict build warns about
-    (`-Wexit-time-destructors`); the keyframe staging buffer next to it became a `std::array` in
-    `10eaf017`. `ScaleRotateShape()` takes it as a span either way
+    frame into a newly allocated vector (`engine/gfx/keyframe.cc:129-200`), and each game's
+    `CC_Draw_Shape()` calls it for each sprite drawn each frame. A per-shape cache of decoded frames
+    would skip that; the original had one (`UseBigShapeBuffer`), which no game ever enabled. Profile
+    first
+
+- Have `ScaleRotateShape()` return its own `std::vector` (`ra/shape_draw.cc:58`, `136`)
+  - `CC_Draw_Shape()` hands it `x_buffer`, a `static std::vector<uint8_t>(kShapeBufferSize)` that
+    the strict build warns about (`-Wexit-time-destructors`), and it `CHECK`s the rotated frame
+    fits. `engine::gfx::BuildFrame()` already returns an owned frame, so the static goes and the
+    `CHECK` with it
 - Share the "clip a destination and shift its source" pattern
   - `base/clip.h:47-50` says a caller carrying a source rectangle must use `OutCodeOf()` directly,
     but `DrawShapeFrame()` and `PixelView::RemapLocked()` show `ClipRect()` works whenever only the

@@ -21,7 +21,6 @@
 #include "ra/shape_draw.h"
 
 #include <algorithm>
-#include <array>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -45,7 +44,6 @@
 #include "ra/face.h"
 #include "ra/game_clock.h"
 #include "ra/interpal.h"
-#include "ra/screen.h"
 
 using engine::gfx::ShapeFlags;
 
@@ -116,15 +114,6 @@ std::span<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
   return dst;
 }
 
-// Decompresses `frame` of `shape_file` into staging storage that every call
-// reuses, so the result is only valid until the next call. Returns an empty
-// span as BuildFrame() does.
-std::span<uint8_t> BuildFrameInStaging(std::span<const std::byte> shape_file,
-                                       int frame) {
-  static std::array<uint8_t, kShapeBufferSize> staging{};
-  return engine::gfx::BuildFrame(shape_file, frame, staging);
-}
-
 }  // namespace
 
 void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
@@ -151,8 +140,9 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
     int height = engine::gfx::KeyframeHeight(shapefile);
 
     // In WIn95, build shape returns a pointer to the shape not its size
-    const auto shape_pointer = BuildFrameInStaging(shapefile, shape_num);
-    if (!shape_pointer.empty()) {
+    const std::vector<uint8_t> frame_pixels =
+        engine::gfx::BuildFrame(shapefile, shape_num);
+    if (!frame_pixels.empty()) {
       PixelView draw_window(
           view.buffer(),
           base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) +
@@ -163,13 +153,13 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
                    kWindowWidth),
           base::At(base::At(WindowList, static_cast<int>(window)),
                    kWindowHeight));
-      auto buffer = shape_pointer;
+      std::span<const uint8_t> buffer = frame_pixels;
 
       // Rotation and scale handler.
       // 0x0100 is 1.0 in the 24.8 fixed point scale, so this is "no rotation
       // and no scaling" -- the common case, which skips the slow path below.
       if (rotation != DIR_N || scale != 0x0100) {
-        buffer = ScaleRotateShape(shape_pointer, width, height, x_buffer,
+        buffer = ScaleRotateShape(frame_pixels, width, height, x_buffer,
                                   rotation, scale);
         width *= 2;
         height *= 2;
@@ -207,7 +197,8 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
                       const int shape_num) {
   Rect rect;
 
-  const auto shape = BuildFrameInStaging(shapedata, shape_num);
+  const std::vector<uint8_t> shape =
+      engine::gfx::BuildFrame(shapedata, shape_num);
   if (shape.empty()) {
     return rect;
   }
@@ -226,7 +217,7 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   // Find top edge of the shape.
   for (int y = 0; y <= y_limit; y++) {
     for (int x = 0; x <= x_limit; x++) {
-      if (base::At(shape, base::ToSize((y * width) + x)) != 0) {
+      if (shape.at(base::ToSize((y * width) + x)) != 0) {
         rect.Y = y;
         rect.X = x;
         // Pushing y past the limit breaks the outer loop too -- the first row
@@ -240,7 +231,7 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   // Find bottom edge of the shape.
   for (int y = y_limit; y >= rect.Y; y--) {
     for (int x = x_limit; x >= 0; x--) {
-      if (base::At(shape, base::ToSize((y * width) + x)) != 0) {
+      if (shape.at(base::ToSize((y * width) + x)) != 0) {
         rect.Height = y - rect.Y + 1;
         x_limit = x;
         y = rect.Y - 1;
@@ -252,7 +243,7 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   // Find left edge of the shape.
   for (int x = 0; x < rect.X; x++) {
     for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
-      if (base::At(shape, base::ToSize((y * width) + x)) != 0) {
+      if (shape.at(base::ToSize((y * width) + x)) != 0) {
         rect.X = x;
         x = rect.X;
         break;
@@ -263,7 +254,7 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   // Find the right edge of the shape.
   for (int x = width - 1; x >= x_limit; x--) {
     for (int y = rect.Y; y < rect.Y + rect.Height; y++) {
-      if (base::At(shape, base::ToSize((y * width) + x)) != 0) {
+      if (shape.at(base::ToSize((y * width) + x)) != 0) {
         rect.Width = x - rect.X + 1;
         x = x_limit - 1;
         break;
@@ -332,8 +323,8 @@ std::vector<unsigned char> Get_Radar_Icon(
     // Build the current frame.  If the frame can not be built then we
     // just need to skip past this set of icons and try to build the
     // next frame.
-    const auto ptr = engine::gfx::BuildFrame(
-        shapefile, shape_num + frame_num, TheScreen().sys_mem_page().bytes());
+    const std::vector<uint8_t> ptr =
+        engine::gfx::BuildFrame(shapefile, shape_num + frame_num);
     if (!ptr.empty()) {
       // Loop through the icon width and the icon height building icons
       // into the buffer pointer.  When the getx or gety falls outside of
@@ -353,8 +344,8 @@ std::vector<unsigned char> Get_Radar_Icon(
                       sample_y >= pixel_height) {
                     continue;
                   }
-                  pixel = base::At(
-                      ptr, base::ToSize((sample_y * pixel_width) + sample_x));
+                  pixel =
+                      ptr.at(base::ToSize((sample_y * pixel_width) + sample_x));
 
                   if (pixel == kLtGreen) {
                     pixel = 0;

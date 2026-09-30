@@ -29,6 +29,7 @@
 #include <cstdint>
 #include <optional>
 #include <span>
+#include <vector>
 
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -121,34 +122,27 @@ std::span<const std::byte> DataAt(const std::span<const std::byte> shape_file,
       shape_file, base::ssize{word & kOffsetMask} + header.palette_bytes);
 }
 
-}  // namespace
-
-std::span<uint8_t> BuildFrame(const std::span<const std::byte> shape_file,
-                              const int frame,
-                              const std::span<uint8_t> destination) {
-  const KeyframeHeader header = ReadHeader(shape_file);
-  const base::ssize pixel_count = base::ssize{header.width} * header.height;
-  if (frame < 0 || frame >= header.frame_count || pixel_count == 0 ||
-      pixel_count > std::ssize(destination)) {
-    return {};
-  }
+// Decodes `frame` into `output`, which holds exactly the frame's pixels and
+// starts zeroed. Returns false if the offset table or an offset in it points
+// past the end of `shape_file`, or the frame names a chain that starts after
+// it.
+bool DecodeFrame(const std::span<const std::byte> shape_file,
+                 const KeyframeHeader& header, const int frame,
+                 const std::span<uint8_t> output) {
   const auto entry = ReadFrameEntry(shape_file, frame);
   if (!entry) {
-    return {};
+    return false;
   }
-  const auto output = destination.first(base::ToSize(pixel_count));
   const auto frame_flags = static_cast<uint8_t>(entry->offset_word >> 24);
 
   // A key frame stands alone: its data is the whole image, LCW-compressed.
   if ((frame_flags & kKfKeyFrame) != 0) {
     const auto key_frame = DataAt(shape_file, header, entry->offset_word);
     if (key_frame.empty()) {
-      return {};
+      return false;
     }
     LCW_Uncompress(key_frame, std::as_writable_bytes(output));
-    // A copy rather than `output` itself: with other paths returning {}, the
-    // named span cannot be elided, which -Wnrvo reports.
-    return output.subspan(0);
+    return true;
   }
 
   // Anything else is rebuilt from the key frame by XORing on the deltas from
@@ -161,30 +155,48 @@ std::span<uint8_t> BuildFrame(const std::span<const std::byte> shape_file,
           ? static_cast<int>(entry->reference_word & 0xffffU)
           : frame;
   if (chain_start > frame) {
-    return {};
+    return false;
   }
   const auto chain_entry = ReadFrameEntry(shape_file, chain_start);
   if (!chain_entry) {
-    return {};
+    return false;
   }
   const auto key_frame =
       DataAt(shape_file, header, chain_entry->reference_word);
   if (key_frame.empty()) {
-    return {};
+    return false;
   }
   LCW_Uncompress(key_frame, std::as_writable_bytes(output));
   for (int delta_frame = chain_start; delta_frame <= frame; ++delta_frame) {
     const auto delta_entry = ReadFrameEntry(shape_file, delta_frame);
     if (!delta_entry) {
-      return {};
+      return false;
     }
     const auto delta = DataAt(shape_file, header, delta_entry->offset_word);
     if (delta.empty()) {
-      return {};
+      return false;
     }
     ApplyXorDelta(output, delta);
   }
-  return output.subspan(0);
+  return true;
+}
+
+}  // namespace
+
+std::vector<uint8_t> BuildFrame(const std::span<const std::byte> shape_file,
+                                const int frame) {
+  const KeyframeHeader header = ReadHeader(shape_file);
+  const base::ssize pixel_count = base::ssize{header.width} * header.height;
+  if (frame < 0 || frame >= header.frame_count || pixel_count == 0 ||
+      pixel_count > kMaxFramePixels) {
+    return {};
+  }
+  // One return of the named vector, so it is never copied (-Wnrvo).
+  std::vector<uint8_t> pixels(base::ToSize(pixel_count));
+  if (!DecodeFrame(shape_file, header, frame, pixels)) {
+    pixels.clear();
+  }
+  return pixels;
 }
 
 int KeyframeFrameCount(const std::span<const std::byte> shape_file) {
