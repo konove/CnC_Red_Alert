@@ -3146,7 +3146,7 @@ void BuildingTypeClass::One_Time() {
     building.BuildupData = dataptr;
     if (!dataptr.empty()) {
       int timedelay = 1;
-      const int count = Get_Build_Frame_Count(dataptr);
+      const int count = KeyframeFrameCount(dataptr);
       if (count > 0) {
         timedelay = TheRules().BuildupTime * kTicksPerMinute / count;
       }
@@ -3377,7 +3377,7 @@ void BuildingTypeClass::Init(TheaterType theater) {
         classptr->BuildupData = MixArchive::RetrieveData(fullname);
         if (!classptr->BuildupData.empty()) {
           int timedelay = 1;
-          const int count = Get_Build_Frame_Count(classptr->BuildupData);
+          const int count = KeyframeFrameCount(classptr->BuildupData);
           if (count != 0) {
             timedelay = 5 * kTicksPerSecond / count;
           }

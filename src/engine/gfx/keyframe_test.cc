@@ -35,24 +35,24 @@ TEST(KeyFrameBoundsTest, BuildsKeyAndChainedDeltaFrames) {
   const auto data = FrameFile();
   std::array<uint8_t, 6> output{};
   output.fill(0xa5);
-  ASSERT_EQ(Build_Frame(data, 0, output).size(), 4);
+  ASSERT_EQ(BuildFrame(data, 0, output).size(), 4);
   EXPECT_EQ(output, (std::array<uint8_t, 6>{1, 2, 3, 4, 0xa5, 0xa5}));
-  ASSERT_EQ(Build_Frame(data, 1, output).size(), 4);
+  ASSERT_EQ(BuildFrame(data, 1, output).size(), 4);
   EXPECT_EQ(output, (std::array<uint8_t, 6>{0, 3, 2, 5, 0xa5, 0xa5}));
-  ASSERT_EQ(Build_Frame(data, 2, output).size(), 4);
+  ASSERT_EQ(BuildFrame(data, 2, output).size(), 4);
   EXPECT_EQ(output, (std::array<uint8_t, 6>{2, 1, 0, 7, 0xa5, 0xa5}));
 }
 
 TEST(KeyFrameBoundsTest, RejectsSmallDestinationsAndInvalidOffsets) {
   auto data = FrameFile();
   std::array<uint8_t, 3> output{0xa5, 0xa5, 0xa5};
-  EXPECT_TRUE(Build_Frame(data, 0, output).empty());
+  EXPECT_TRUE(BuildFrame(data, 0, output).empty());
   EXPECT_EQ(output.front(), 0xa5);
   std::array<uint8_t, 4> full{};
-  EXPECT_TRUE(Build_Frame(data, -1, full).empty());
-  EXPECT_TRUE(Build_Frame(data, 3, full).empty());
-  EXPECT_TRUE(Build_Frame(std::span(data).first(15), 0, full).empty());
+  EXPECT_TRUE(BuildFrame(data, -1, full).empty());
+  EXPECT_TRUE(BuildFrame(data, 3, full).empty());
+  EXPECT_TRUE(BuildFrame(std::span(data).first(15), 0, full).empty());
   base::WriteUnaligned<uint32_t>(std::span(data).subspan(14), 0x80ffffffU);
-  EXPECT_TRUE(Build_Frame(data, 0, full).empty());
+  EXPECT_TRUE(BuildFrame(data, 0, full).empty());
 }
 }  // namespace

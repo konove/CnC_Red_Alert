@@ -137,11 +137,11 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
   static std::vector<uint8_t> x_buffer(kShapeBufferSize);
 
   if (!shapefile.empty() && shape_num != -1) {
-    int width = Get_Build_Frame_Width(shapefile);
-    int height = Get_Build_Frame_Height(shapefile);
+    int width = KeyframeWidth(shapefile);
+    int height = KeyframeHeight(shapefile);
 
     // In WIn95, build shape returns a pointer to the shape not its size
-    const auto shape_pointer = Build_Frame(shapefile, shape_num);
+    const auto shape_pointer = BuildFrame(shapefile, shape_num);
     if (!shape_pointer.empty()) {
       PixelView draw_window(
           view.buffer(),
@@ -198,18 +198,18 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   Rect rect;
 
   if (shapedata.empty() || shape_num < 0 ||
-      shape_num >= Get_Build_Frame_Count(shapedata)) {
+      shape_num >= KeyframeFrameCount(shapedata)) {
     return rect;
   }
 
-  const auto sh = Build_Frame(shapedata, shape_num);
+  const auto sh = BuildFrame(shapedata, shape_num);
   if (sh.empty()) {
     return rect;
   }
   const auto shape = sh;
 
-  const int width = Get_Build_Frame_Width(shapedata);
-  const int height = Get_Build_Frame_Height(shapedata);
+  const int width = KeyframeWidth(shapedata);
+  const int height = KeyframeHeight(shapedata);
 
   // Four scans, one per edge, each narrowing the search area for the next:
   // the top scan also gives a first guess at the left edge, the bottom scan
@@ -296,8 +296,8 @@ std::vector<unsigned char> Get_Radar_Icon(
 
   // Get the pixel width and height of the frame we built.  This will
   // be used to extract icons and build pixels.
-  const int pixel_width = Get_Build_Frame_Width(shapefile);
-  const int pixel_height = Get_Build_Frame_Height(shapefile);
+  const int pixel_width = KeyframeWidth(shapefile);
+  const int pixel_height = KeyframeHeight(shapefile);
 
   // Find the width and height in icons, adjust these by half an
   // icon because the artists may be sloppy and miss the edge of an
@@ -308,7 +308,7 @@ std::vector<unsigned char> Get_Radar_Icon(
   // If we have been told to build as many frames as possible, then
   // find out how many frames there are to build.
   if (frames == -1) {
-    frames = Get_Build_Frame_Count(shapefile);
+    frames = KeyframeFrameCount(shapefile);
   }
 
   // Allocate a position to store our icons.  If the alloc fails then
@@ -328,8 +328,8 @@ std::vector<unsigned char> Get_Radar_Icon(
     // Build the current frame.  If the frame can not be built then we
     // just need to skip past this set of icons and try to build the
     // next frame.
-    const auto ptr = Build_Frame(shapefile, shape_num + frame_num,
-                                 TheScreen().sys_mem_page().bytes());
+    const auto ptr = BuildFrame(shapefile, shape_num + frame_num,
+                                TheScreen().sys_mem_page().bytes());
     if (!ptr.empty()) {
       // Loop through the icon width and the icon height building icons
       // into the buffer pointer.  When the getx or gety falls outside of

@@ -355,7 +355,7 @@ void TerrainClass::Draw_It(PixelView& view, int x, int y,
     }
 
     /*
-    **Terrain is always theater specific so flag it as such for Build_Frame
+    **Terrain is always theater specific so flag it as such for BuildFrame
     */
     CC_Draw_Shape(view, shapedata, shapenum, x, y, window,
                   flags | ShapeFlags::kGhost, MouseClass::FadingLight,
@@ -527,7 +527,7 @@ void TerrainClass::AI() {
     **	last stage of the crumbling animation, delete the terrain object.
     */
     if (IsCrumbling &&
-        Fetch_Stage() == Get_Build_Frame_Count(Class->Get_Image_Data()) - 1) {
+        Fetch_Stage() == KeyframeFrameCount(Class->Get_Image_Data()) - 1) {
       delete this;
 
       TheMap().Zone_Reset(kZoneFlagNormal | kZoneFlagCrusher |

@@ -116,8 +116,8 @@ ShapeButtonClass::ShapeButtonClass(unsigned id, std::span<const std::byte> shape
 void ShapeButtonClass::Set_Shape(std::span<const std::byte> data) {
   ShapeData = data;
   if (!ShapeData.empty()) {
-    Width = Get_Build_Frame_Width(ShapeData);
-    Height = Get_Build_Frame_Height(ShapeData);
+    Width = KeyframeWidth(ShapeData);
+    Height = KeyframeHeight(ShapeData);
   }
 }
 

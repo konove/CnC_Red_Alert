@@ -57,13 +57,14 @@
 
 DropListClass::DropListClass(int id, std::span<char> text, int max_len,
                              TextPrintType flags, int x, int y, int w, int h,
-                             std::span<const std::byte> up, std::span<const std::byte> down)
+                             std::span<const std::byte> up,
+                             std::span<const std::byte> down)
     : EditClass(id, text, max_len, flags, x, y, w, 18, kAlphanumeric),
 
       ListHeight(h),
       DropButton(0, down, x + w, y),
-      List(0, x, y + Get_Build_Frame_Height(down),
-           w + Get_Build_Frame_Width(down), h, flags, up, down) {
+      List(0, x, y + KeyframeHeight(down), w + KeyframeWidth(down), h, flags,
+           up, down) {
   Height = FontMaxHeight(TextFontStyle(flags)) + 1;
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);
@@ -161,7 +162,7 @@ void DropListClass::Collapse() {
 
 void DropListClass::Set_Position(int x, int y) {
   EditClass::Set_Position(x, y);
-  List.Set_Position(x, y + Get_Build_Frame_Height(DropButton.Get_Shape_Data()));
+  List.Set_Position(x, y + KeyframeHeight(DropButton.Get_Shape_Data()));
   DropButton.Set_Position(x + Width, y);
 }
 

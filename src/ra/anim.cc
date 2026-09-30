@@ -494,7 +494,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord, int timedelay,
       Class(TheTypeHeaps().anim().Ptr(static_cast<int>(animnum))),
       Delay(timedelay) {
   if (Class->Stages == -1) {
-    Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
+    Class->Stages = KeyframeFrameCount(Class->Get_Image_Data());
   }
   if (Class->LoopEnd == -1) {
     Class->LoopEnd = Class->Stages;
@@ -653,7 +653,7 @@ void AnimClass::AI() {
   }
 
   if (Class->Stages == -1) {
-    Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
+    Class->Stages = KeyframeFrameCount(Class->Get_Image_Data());
   }
   if (Class->LoopEnd == -1) {
     Class->LoopEnd = Class->Stages;
@@ -666,7 +666,7 @@ void AnimClass::AI() {
     }
   } else {
     if (Class->Stages == -1) {
-      Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
+      Class->Stages = KeyframeFrameCount(Class->Get_Image_Data());
     }
     if (Class->LoopEnd == -1) {
       Class->LoopEnd = Class->Stages;
@@ -743,7 +743,7 @@ void AnimClass::AI() {
             Class = &AnimTypeClass::As_Reference(Class->ChainTo);
 
             if (Class->Stages == -1) {
-              Class->Stages = Get_Build_Frame_Count(Class->Get_Image_Data());
+              Class->Stages = KeyframeFrameCount(Class->Get_Image_Data());
             }
             if (Class->LoopEnd == -1) {
               Class->LoopEnd = Class->Stages;

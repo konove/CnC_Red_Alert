@@ -21,7 +21,7 @@
 //
 // A shape file is a block of frames: a count, a table of offsets, and the
 // frames, each a ShapeHeader followed by its pixels. The game draws its
-// sprites from the keyframe format instead (Build_Frame()); the shape format
+// sprites from the keyframe format instead (BuildFrame()); the shape format
 // is left holding the mouse cursors (MOUSE.SHP), which ExtractShapeFrame()
 // pulls apart for the hardware cursor.
 

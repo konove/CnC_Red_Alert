@@ -185,17 +185,16 @@ class TDropListClass : public EditClass {
 };
 
 template <class T>
-TDropListClass<T>::TDropListClass(
-    int id,
-    std::span<char> text,
-    int max_len, TextPrintType flags, int x, int y, int w, int h,
-    std::span<const std::byte> up, std::span<const std::byte> down)
+TDropListClass<T>::TDropListClass(int id, std::span<char> text, int max_len,
+                                  TextPrintType flags, int x, int y, int w,
+                                  int h, std::span<const std::byte> up,
+                                  std::span<const std::byte> down)
     : EditClass(id, text, max_len, flags, x, y, w, 9, kAlphanumeric),
 
       ListHeight(h),
       DropButton(0, down, x + w, y),
-      List(0, x, y + Get_Build_Frame_Height(down),
-           w + Get_Build_Frame_Width(down), h, flags, up, down) {
+      List(0, x, y + KeyframeHeight(down), w + KeyframeWidth(down), h, flags,
+           up, down) {
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);
 }
@@ -313,7 +312,7 @@ void TDropListClass<T>::Collapse() {
 template <class T>
 void TDropListClass<T>::Set_Position(int x, int y) {
   EditClass::Set_Position(x, y);
-  List.Set_Position(x, y + Get_Build_Frame_Height(DropButton.Get_Shape_Data()));
+  List.Set_Position(x, y + KeyframeHeight(DropButton.Get_Shape_Data()));
   DropButton.Set_Position(x + Width, y);
 }
 

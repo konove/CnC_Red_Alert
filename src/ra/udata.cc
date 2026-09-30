@@ -1091,8 +1091,8 @@ void UnitTypeClass::One_Time() {
     // store just moved from.
     const auto ptr = uclass.Get_Image_Data();
     if (!ptr.empty()) {
-      largest = std::max(largest, Get_Build_Frame_Width(ptr));
-      largest = std::max(largest, Get_Build_Frame_Height(ptr));
+      largest = std::max(largest, KeyframeWidth(ptr));
+      largest = std::max(largest, KeyframeHeight(ptr));
     }
 
     uclass.MaxSize = std::max(largest, 8);
