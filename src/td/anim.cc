@@ -67,6 +67,7 @@
 
 #include "base/array.h"
 #include "base/pooled.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "td/audio.h"
@@ -81,7 +82,6 @@
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/inline.h"
-#include "td/keyframe.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
@@ -272,7 +272,7 @@ void AnimClass::Draw_It(PixelView& view, int x, int y,
       */
       switch (Class->Type) {
         case ANIM_ION_CANNON:
-          y -= Get_Build_Frame_Height(shapefile) >> 1;
+          y -= engine::gfx::KeyframeHeight(shapefile) / 2;
           y += 12;
           break;
 

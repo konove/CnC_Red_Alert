@@ -75,6 +75,7 @@
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "td/assets.h"
@@ -90,7 +91,6 @@
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
@@ -3732,7 +3732,7 @@ void BuildingTypeClass::One_Time() {
     building.Set_Buildup_Data(dataptr);
     if (!dataptr.empty()) {
       int timedelay = 1;
-      const int count = Get_Build_Frame_Count(dataptr);
+      const int count = engine::gfx::KeyframeFrameCount(dataptr);
       if (count) {
         timedelay = 5 * kTicksPerSecond / count;
       }

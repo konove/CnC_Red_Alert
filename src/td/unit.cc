@@ -137,6 +137,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/platform/timer.h"
@@ -162,7 +163,6 @@
 #include "td/infantry.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/layer.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
@@ -457,7 +457,8 @@ void UnitClass::AI() {
       Set_Rate(2);
     }
     Graphic_Logic();
-    if (Fetch_Stage() >= Get_Build_Frame_Count(Class->Get_Image_Data()) - 1) {
+    if (Fetch_Stage() >=
+        engine::gfx::KeyframeFrameCount(Class->Get_Image_Data()) - 1) {
       Set_Stage(0);
     }
   }

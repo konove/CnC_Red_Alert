@@ -66,6 +66,7 @@
 #include "td/conquer.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -90,6 +91,7 @@
 #include "engine/crypto/crc.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -139,7 +141,6 @@
 #include "td/ipxgconn.h"
 #include "td/ipxmgr.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/layer.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
@@ -2238,12 +2239,12 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
   if (shapefile.empty() || shapenum < 0 || zoomfactor <= 0 || zoomfactor > 24) {
     return {};
   }
-  const int pixel_width = Get_Build_Frame_Width(shapefile);
-  const int pixel_height = Get_Build_Frame_Height(shapefile);
+  const int pixel_width = engine::gfx::KeyframeWidth(shapefile);
+  const int pixel_height = engine::gfx::KeyframeHeight(shapefile);
   const int icon_width = (pixel_width + 12) / 24;
   const int icon_height = (pixel_height + 12) / 24;
   if (frames == -1) {
-    frames = Get_Build_Frame_Count(shapefile) - shapenum;
+    frames = engine::gfx::KeyframeFrameCount(shapefile) - shapenum;
   }
   if (frames <= 0 || icon_width <= 0 || icon_height <= 0) {
     return {};
@@ -2257,9 +2258,8 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
   const int step = 24 / zoomfactor;
   size_t out = 2;
   for (int frame = 0; frame < frames; ++frame) {
-    const auto pixels =
-        Build_Frame(shapefile, static_cast<uint16_t>(shapenum + frame),
-                    TheScreen().sys_mem_page().bytes());
+    const auto pixels = engine::gfx::BuildFrame(
+        shapefile, shapenum + frame, TheScreen().sys_mem_page().bytes());
     if (pixels.empty()) {
       out += frame_pixels;
       continue;
@@ -2298,14 +2298,30 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
   return result;
 }
 
+namespace {
+
+// The largest uncompressed frame BuildFrameInStaging() can build.
+constexpr int kShapeBufferSize = 40000;
+
+// Decompresses `frame` of `shape_file` into staging storage that every call
+// reuses, so the result is only valid until the next call. Returns an empty
+// span as engine::gfx::BuildFrame() does.
+std::span<uint8_t> BuildFrameInStaging(std::span<const std::byte> shape_file,
+                                       int frame) {
+  static std::array<uint8_t, kShapeBufferSize> staging{};
+  return engine::gfx::BuildFrame(shape_file, frame, staging);
+}
+
+}  // namespace
+
 void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
                      int shapenum, int xpos, int ypos, int width, int height) {
   if (shapefile.empty() || shapenum < 0) {
     return;
   }
-  const auto pixels = Build_Frame(shapefile, static_cast<uint16_t>(shapenum));
-  const int source_width = Get_Build_Frame_Width(shapefile);
-  const int source_height = Get_Build_Frame_Height(shapefile);
+  const auto pixels = BuildFrameInStaging(shapefile, shapenum);
+  const int source_width = engine::gfx::KeyframeWidth(shapefile);
+  const int source_height = engine::gfx::KeyframeHeight(shapefile);
   if (pixels.empty() || source_width == 0 || source_height == 0 ||
       !view.Lock()) {
     return;
@@ -2361,8 +2377,7 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
     /*
     ** Build frame returns a pointer now instead of the shapes length
     */
-    const auto shape_size =
-        Build_Frame(shapefile, static_cast<uint16_t>(shapenum));
+    const auto shape_size = BuildFrameInStaging(shapefile, shapenum);
 
     if (!shape_size.empty()) {
       PixelView draw_window(
@@ -2395,8 +2410,8 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
             .shadow_table = base::Suffix(MouseClass::SpecialGhost, 256),
             .predator_offset = predoffset,
         };
-        engine::gfx::DrawShapeFrame(x, y, Get_Build_Frame_Width(shapefile),
-                                    Get_Build_Frame_Height(shapefile),
+        engine::gfx::DrawShapeFrame(x, y, engine::gfx::KeyframeWidth(shapefile),
+                                    engine::gfx::KeyframeHeight(shapefile),
                                     shape_pointer, draw_window,
                                     flags | ShapeFlags::kTransparent, effects);
       }

@@ -88,6 +88,7 @@
 #include "base/random.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "td/anim.h"
@@ -101,7 +102,6 @@
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/inline.h"
-#include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object_heaps.h"
@@ -561,7 +561,8 @@ void TerrainClass::AI() {
     **	last stage of the crumbling animation, delete the terrain object.
     */
     if (IsCrumbling &&
-        Fetch_Stage() == Get_Build_Frame_Count(Class->Get_Image_Data()) - 1) {
+        Fetch_Stage() ==
+            engine::gfx::KeyframeFrameCount(Class->Get_Image_Data()) - 1) {
       delete this;
     }
   }
@@ -584,7 +585,7 @@ void TerrainClass::AI() {
         */
         if (IsSporing) {
           if (Fetch_Stage() >=
-              Get_Build_Frame_Count(Class->Get_Image_Data()) - 1) {
+              engine::gfx::KeyframeFrameCount(Class->Get_Image_Data()) - 1) {
             Explosion_Damage(Sort_Y(), 5, nullptr, WARHEAD_SPORE);
             Set_Stage(FIRST_SPORE_STAGE);
             if (Random() & 1) {

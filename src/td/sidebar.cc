@@ -105,6 +105,7 @@
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
@@ -125,7 +126,6 @@
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/network.h"
 #include "td/object.h"
@@ -1903,7 +1903,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
                       base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
                       kWindowY) +
                   ObjectHeight -
-                  Get_Build_Frame_Height(ObjectTypeClass::PipShapes) - 8,
+                  engine::gfx::KeyframeHeight(ObjectTypeClass::PipShapes) - 8,
               WINDOW_SIDEBAR, ShapeFlags::kCentered);
           //					Fancy_Text_Print(TXT_READY,
           // x+kTextXOffset, y+kTextYOffset, kTextColor, TBLACK,
@@ -1939,7 +1939,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
                         base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
                         kWindowY) +
                     ObjectHeight -
-                    Get_Build_Frame_Height(ObjectTypeClass::PipShapes) -
+                    engine::gfx::KeyframeHeight(ObjectTypeClass::PipShapes) -
                     8,  // Moved up now that icons have names on them
                 WINDOW_SIDEBAR, ShapeFlags::kCentered);
             //						Fancy_Text_Print(TXT_HOLDING,

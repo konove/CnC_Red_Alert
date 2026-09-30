@@ -46,10 +46,10 @@
 #include "base/enum_array.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/keyframe.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/type.h"
 
 // Dinosaur death animations
@@ -2283,7 +2283,7 @@ void AnimTypeClass::One_Time() {
     // must be ready for both restored animations and newly created ones.
     const auto& type = As_Reference(index);
     if (type.Stages == -1) {
-      type.Stages = Get_Build_Frame_Count(type.Get_Image_Data());
+      type.Stages = engine::gfx::KeyframeFrameCount(type.Get_Image_Data());
     }
     if (type.LoopEnd == -1) {
       type.LoopEnd = type.Stages;

@@ -2656,14 +2656,6 @@ struct MPlayerScoreType {
   int Color;
 };
 
-// Frame flags in the high byte of a key-frame shape's offset table.
-inline constexpr uint8_t kKfNumber = 0x08;
-inline constexpr uint8_t kKfUncomp = 0x10;
-inline constexpr uint8_t kKfDelta = 0x20;
-inline constexpr uint8_t kKfKeyDelta = 0x40;
-inline constexpr uint8_t kKfKeyFrame = 0x80;
-inline constexpr uint8_t kKfMask = 0xF0;
-
 //--------------------------------------------------------------------
 // New Config structure for .CFG files
 //--------------------------------------------------------------------

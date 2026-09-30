@@ -151,6 +151,7 @@
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/platform/timer.h"
@@ -181,7 +182,6 @@
 #include "td/infantry.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/network.h"
 #include "td/object.h"
@@ -745,7 +745,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
       **	worst state possible.
       */
       if (Strength <= 1) {
-        shapenum = Get_Build_Frame_Count(shapefile) - 1;
+        shapenum = engine::gfx::KeyframeFrameCount(shapefile) - 1;
       } else {
         if (*this == STRUCT_WEAP) {
           shapenum = 0;
@@ -795,7 +795,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
                 /*
                 **	Presume that the damage stage is the end frame.
                 */
-                shapenum = Get_Build_Frame_Count(shapefile) - 2;
+                shapenum = engine::gfx::KeyframeFrameCount(shapefile) - 2;
               }
             }
           }

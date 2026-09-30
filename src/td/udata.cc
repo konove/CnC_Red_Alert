@@ -63,6 +63,7 @@
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "td/building.h"
@@ -73,7 +74,6 @@
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
@@ -1480,10 +1480,8 @@ void UnitTypeClass::One_Time() {
       if (index == UNIT_MLRS || index == UNIT_MSAM) {
         largest = 26;
       } else {
-        largest =
-            std::max(largest, static_cast<int>(Get_Build_Frame_Width(ptr)));
-        largest =
-            std::max(largest, static_cast<int>(Get_Build_Frame_Height(ptr)));
+        largest = std::max(largest, engine::gfx::KeyframeWidth(ptr));
+        largest = std::max(largest, engine::gfx::KeyframeHeight(ptr));
       }
     }
 
