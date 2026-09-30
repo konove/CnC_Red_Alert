@@ -28,6 +28,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "absl/base/no_destructor.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/game.h"
@@ -95,19 +96,23 @@
 #endif  // _WIN32
 
 // The one Game; main() creates it and ShutDown() destroys it. nullptr before
-// main() and after ShutDown().
-static std::unique_ptr<Game> game;
+// main() and after ShutDown(). The pointer itself is never destroyed: a Game
+// still alive at a bare exit() is left to the OS, because tearing it down from
+// a static destructor reaches SDL after its video driver has unloaded.
+// A null unique_ptr cannot throw.
+// NOLINTNEXTLINE(bugprone-throwing-static-initialization)
+static absl::NoDestructor<std::unique_ptr<Game>> game;
 
 void ShutDown() {
   // Everything ShutDownEngine() takes down belongs to the Game, so there is
   // nothing to do before one is built or after one is gone. A test that
   // reaches an error exit without a Game gets here too.
-  if (game == nullptr) {
+  if (*game == nullptr) {
     return;
   }
 
   ShutDownEngine();
-  game.reset();
+  game->reset();
 }
 
 // The test that links this file defines RA_NO_ENTRY_POINT: it needs
@@ -221,7 +226,7 @@ int main(const int argc, char* argv[])
   absl::InitializeLog();
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
 
-  game = std::make_unique<Game>();
+  *game = std::make_unique<Game>();
 
 #ifdef _WIN32
 
@@ -308,7 +313,7 @@ int main(const int argc, char* argv[])
     return EXIT_SUCCESS;
   }
   InitWindowList();
-  game->set_startup_options(*options);
+  (*game)->set_startup_options(*options);
   ApplyStartupOptions(*options);
 
   // Refuse to start without 8 MB free for save games and the config file.
