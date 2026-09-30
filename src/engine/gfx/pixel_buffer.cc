@@ -708,12 +708,8 @@ void PixelView::PrintLocked(const FontStyle& style, const char* text, int x,
   }
 
   const int start_x = x;
-  const base::ssize buffer_stride = stride();
-  auto line_start = pixels().begin() + (buffer_stride * y);
-
   const int max_glyph_height = font.MaxHeight();
-  y += max_glyph_height;
-  if (y > height_) {
+  if (y + max_glyph_height > height_) {
     return;
   }
 
@@ -724,7 +720,16 @@ void PixelView::PrintLocked(const FontStyle& style, const char* text, int x,
   palette.at(1) = static_cast<uint8_t>(fore_color);
   palette.at(0) = background;
 
-  auto next_glyph_start = line_start + x;
+  // The line checks keep every row inside the view, but a glyph can still
+  // hang off either side: left of a negative x, or right of a glyph wider
+  // than the room left after a wrap. Those columns are clipped.
+  const std::span<uint8_t> out = pixels();
+  const base::ssize buffer_stride = stride();
+  const auto plot = [&](const int px, const int py, const uint8_t color) {
+    if (px >= 0 && px < width_) {
+      base::At(out, (py * buffer_stride) + px) = color;
+    }
+  };
 
   for (const char character : std::string_view(text)) {
     // Unsigned so characters >= 128 index the metric tables correctly.
@@ -733,7 +738,6 @@ void PixelView::PrintLocked(const FontStyle& style, const char* text, int x,
       return;
     }
 
-    auto draw_ptr = next_glyph_start;
     const int glyph_width = font.GlyphWidth(ch);
 
     if (ch == '\n' || ch == '\r' ||
@@ -741,41 +745,31 @@ void PixelView::PrintLocked(const FontStyle& style, const char* text, int x,
       // Advance to the next line: '\n' returns to the viewport edge, '\r'
       // and auto-wrap return to the starting column.
       const int line_height = max_glyph_height + style.y_spacing;
-      if (height_ < y + line_height) {
+      if (height_ < y + max_glyph_height + line_height) {
         return;  // No room for another line.
       }
 
-      line_start += buffer_stride * line_height;
       y += line_height;
       x = ch == '\n' ? 0 : start_x;
-      next_glyph_start = line_start + x;
 
       if (ch == '\n' || ch == '\r') {
         continue;
       }
-      draw_ptr = next_glyph_start;  // The wrapped glyph draws on the new line.
     }
 
+    const int glyph_x = x;
     x += glyph_width + style.x_spacing;
-    next_glyph_start = draw_ptr + style.x_spacing + glyph_width;
 
-    // Distance from the end of a glyph row to the start of the next one.
-    const int row_skip = static_cast<int>(buffer_stride - glyph_width);
     const int glyph_height = font.GlyphHeight(ch);
     const int blank_rows_above = font.GlyphBlankRowsAbove(ch);
-    const int blank_rows_below =
-        max_glyph_height - (glyph_height + blank_rows_above);
+    const int glyph_top = y + blank_rows_above;
+    const int glyph_bottom = glyph_top + glyph_height;
 
-    // Fill the blank rows above the glyph, or skip them if transparent.
-    if (blank_rows_above != 0) {
-      if (background == 0) {
-        draw_ptr += blank_rows_above * buffer_stride;
-      } else {
-        for (int row = 0; row < blank_rows_above; ++row) {
-          for (int col = 0; col < glyph_width; ++col) {
-            *draw_ptr++ = background;
-          }
-          draw_ptr += row_skip;
+    // Fill the blank rows above the glyph unless transparent.
+    if (background != 0) {
+      for (int row = y; row < glyph_top; ++row) {
+        for (int col = 0; col < glyph_width; ++col) {
+          plot(glyph_x + col, row, background);
         }
       }
     }
@@ -788,38 +782,31 @@ void PixelView::PrintLocked(const FontStyle& style, const char* text, int x,
       if (glyph.empty()) {
         return;
       }
-      auto glyph_data = glyph.begin();
-      for (int row = 0; row < glyph_height; ++row) {
-        int cols_left = glyph_width;
-        while (cols_left > 0) {
-          const auto pixel_pair = std::to_integer<uint8_t>(*glyph_data++);
+      base::ssize data_index = 0;
+      for (int row = glyph_top; row < glyph_bottom; ++row) {
+        for (int col = 0; col < glyph_width; col += 2) {
+          const auto pixel_pair =
+              std::to_integer<uint8_t>(base::At(glyph, data_index++));
 
           const uint8_t left = base::At(std::span(palette), pixel_pair & 0x0F);
           if (left != 0) {
-            *draw_ptr = left;
+            plot(glyph_x + col, row, left);
           }
-          ++draw_ptr;
-          --cols_left;
-
-          if (cols_left > 0) {
+          if (col + 1 < glyph_width) {
             const uint8_t right = base::At(std::span(palette), pixel_pair >> 4);
             if (right != 0) {
-              *draw_ptr = right;
+              plot(glyph_x + col + 1, row, right);
             }
-            ++draw_ptr;
-            --cols_left;
           }
         }
-        draw_ptr += row_skip;
       }
 
       // Fill the blank rows below the glyph unless transparent.
-      if (blank_rows_below != 0 && background != 0) {
-        for (int row = 0; row < blank_rows_below; ++row) {
+      if (background != 0) {
+        for (int row = glyph_bottom; row < y + max_glyph_height; ++row) {
           for (int col = 0; col < glyph_width; ++col) {
-            *draw_ptr++ = background;
+            plot(glyph_x + col, row, background);
           }
-          draw_ptr += row_skip;
         }
       }
     }

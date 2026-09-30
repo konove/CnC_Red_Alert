@@ -188,7 +188,8 @@ class PixelView {
   // that stand in for glyph values 1 and 0, and a `back_color` of 0 leaves the
   // background untouched; the integer overload prints the number in decimal.
   // Does nothing if `text` is null, the style has no font, or `y` is above
-  // the top; stops at the first line that would run past the bottom.
+  // the top; stops at the first line that would run past the bottom. Glyph
+  // columns left or right of the view are clipped.
   void Print(const FontStyle& style, const char* text, int x, int y,
              int fore_color, int back_color);
   void Print(const FontStyle& style, int value, int x, int y, int fore_color,
