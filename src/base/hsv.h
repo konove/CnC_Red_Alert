@@ -110,29 +110,25 @@ constexpr Hsv8 Rgb8ToHsv(const int red, const int green, const int blue) {
   const int spread = value - white;
   const int saturation = DivideWithRound(spread * kMaxComponent, value);
 
-  // Each gun's distance below the brightest, as a fraction of the spread
-  // scaled to 0..kMaxComponent. The dimmest gun's is kMaxComponent, the
-  // brightest's 0.
-  const int red_shortfall =
-      DivideWithRound((value - red) * kMaxComponent, spread);
-  const int green_shortfall =
-      DivideWithRound((value - green) * kMaxComponent, spread);
-  const int blue_shortfall =
-      DivideWithRound((value - blue) * kMaxComponent, spread);
+  // A gun's distance below the brightest, as a fraction of the spread scaled
+  // to 0..kMaxComponent. The dimmest gun's is kMaxComponent, the brightest's 0.
+  const auto shortfall = [value, spread](const int gun) {
+    return DivideWithRound((value - gun) * kMaxComponent, spread);
+  };
 
   // Which gun is brightest and which dimmest picks the sextant of the color
   // hexagon, and the middle gun's shortfall the position within it. The hue is
   // built at six times its final scale, one kMaxComponent per sextant.
   int hue = 0;
   if (value == red) {
-    hue = white == green ? (5 * kMaxComponent) + blue_shortfall
-                         : (1 * kMaxComponent) - green_shortfall;
+    hue = white == green ? (5 * kMaxComponent) + shortfall(blue)
+                         : (1 * kMaxComponent) - shortfall(green);
   } else if (value == green) {
-    hue = white == blue ? (1 * kMaxComponent) + red_shortfall
-                        : (3 * kMaxComponent) - blue_shortfall;
+    hue = white == blue ? (1 * kMaxComponent) + shortfall(red)
+                        : (3 * kMaxComponent) - shortfall(blue);
   } else {
-    hue = white == red ? (3 * kMaxComponent) + green_shortfall
-                       : (5 * kMaxComponent) - red_shortfall;
+    hue = white == red ? (3 * kMaxComponent) + shortfall(green)
+                       : (5 * kMaxComponent) - shortfall(red);
   }
 
   // Back to one kMaxComponent for the whole circle. A red whose green and
