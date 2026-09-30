@@ -51,8 +51,7 @@
  *Register and cache secondary mixfiles.                         *
  *   Load_Recording_Values -- Loads recording values from recording file *
  *   Load_Title_Page -- Load the background art for the title page. *
- *   Parse_Command_Line -- Parses the command line parameters. * Parse_INI_File
- *-- Parses CONQUER.INI for special options                                  *
+ *   Parse_Command_Line -- Parses the command line parameters. *
  *   Play_Intro -- plays the introduction & logo movies * Save_Recording_Values
  *-- Saves recording values to a recording file                       *
  *   Select_Game -- The game's main menu * Load_Prolog_Page -- Loads the special

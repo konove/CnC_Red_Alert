@@ -17,7 +17,6 @@ bool Select_Game(bool fade = false);
 // nothing on "-?" or an invalid "-X" option.
 std::optional<StartupOptions> Parse_Command_Line(
     std::span<const std::string_view> arguments);
-void Parse_INI_File();
 
 // Returns the network across an IPX bridge that `address` names, the
 // "-DESTNET" switch's value or the config file's DestNet option: up to ten
