@@ -1,5 +1,5 @@
-// Re-implemented from the assembler blitter, kept for reference in
-// src/ra/2keyfbuf.asm.
+// Re-implemented from the assembler blitter 2KEYFBUF.ASM, which git history
+// holds (deleted with the other .asm sources).
 
 #include "engine/gfx/shape_blitter.h"
 
