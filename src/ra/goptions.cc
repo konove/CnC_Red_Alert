@@ -264,18 +264,19 @@ void GameOptionsClass::Process() {
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  (new GadgetClass(OptionX, OptionY, OptionWidth, OptionHeight,
-                   GadgetClass::kLeftPress))
-      ->Add_Tail(*buttons);
+  const auto dialog_area = std::make_unique<GadgetClass>(
+      OptionX, OptionY, OptionWidth, OptionHeight, GadgetClass::kLeftPress);
+  dialog_area->Add_Tail(*buttons);
 
   /*
   **	This cause a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to game button.
   */
-  (new ControlClass(kButtonResume, 0, 0, TheScreen().visible_view().width(),
-                    TheScreen().visible_view().height(),
-                    GadgetClass::kLeftPress | GadgetClass::kRightPress))
-      ->Add_Tail(*buttons);
+  const auto outside_click = std::make_unique<ControlClass>(
+      kButtonResume, 0, 0, TheScreen().visible_view().width(),
+      TheScreen().visible_view().height(),
+      GadgetClass::kLeftPress | GadgetClass::kRightPress);
+  outside_click->Add_Tail(*buttons);
 
   TheKeyboard().Clear();
 
@@ -297,7 +298,6 @@ void GameOptionsClass::Process() {
         process = false;
       }
     }
-
 
     /*
     **	Refresh display if needed.
