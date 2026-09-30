@@ -70,13 +70,13 @@ Fixed Fixed::FromString(const std::string_view text) {
     // result; dropping them keeps the numerator and denominator within int.
     constexpr std::string_view::size_type kMaxFractionDigits = 8;
     // The digits are a numerator over 10^digits: ".016" is 16/1000.
-    const LeadingInt numerator =
+    const auto [numerator, digit_count] =
         ParseLeadingInt(trimmed.substr(dot + 1, kMaxFractionDigits));
     int denominator = 1;
-    for (base::ssize i = 0; i < numerator.length; ++i) {
+    for (base::ssize i = 0; i < digit_count; ++i) {
       denominator *= 10;
     }
-    result.raw_ |= Fixed(numerator.value, denominator).raw_;
+    result.raw_ |= Fixed(numerator, denominator).raw_;
   }
   return result;
 }
