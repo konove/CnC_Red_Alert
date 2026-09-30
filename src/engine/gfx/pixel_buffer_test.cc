@@ -376,4 +376,18 @@ TEST(PrintTest, DrawsThroughTheStylesPaletteAndSpacing) {
                                           0, 7, 50, 0, 7, 60, 0, 0}));
 }
 
+// The Red Alert credits print each line until it has scrolled 15 rows above
+// the page; those rows must not land in the memory before the pixels.
+TEST(PrintTest, DrawsNothingForALineStartingAboveTheTop) {
+  const std::vector<std::byte> blob = MakePrintFont();
+  const FontStyle style{.font = FontView(blob)};
+  // One guard row in front of the 8x2 page.
+  std::vector<uint8_t> memory(size_t{8} * 3, 0);
+  PixelBuffer page(8, 2, std::span(memory).subspan(8));
+
+  page.view().Print(style, "\x01", 0, -1, 7, 0);
+
+  EXPECT_EQ(memory, std::vector<uint8_t>(size_t{8} * 3, 0));
+}
+
 }  // namespace

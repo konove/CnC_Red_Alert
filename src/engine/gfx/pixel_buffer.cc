@@ -701,6 +701,11 @@ void PixelView::PrintLocked(const FontStyle& style, const char* text, int x,
   if (!text || font.data().empty()) {
     return;
   }
+  // Only the bottom is checked per line below; a line starting above the top
+  // would draw into whatever memory precedes the pixels.
+  if (y < 0) {
+    return;
+  }
 
   const int start_x = x;
   const base::ssize buffer_stride = stride();
