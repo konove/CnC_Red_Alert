@@ -139,6 +139,10 @@ class MixArchive {
 
   static MixArchive* Finder(std::string_view filename);
 
+  // The registry of every open mixfile, which owns them, in registration
+  // order. Never destroyed, so Free_All() works from any static destructor.
+  static std::vector<std::unique_ptr<MixArchive>>& Archives();
+
   std::string filename_;
 
   bool has_digest_ = false;    // True if mixfile has an attached SHA-1 digest.
@@ -149,10 +153,6 @@ class MixArchive {
 
   std::vector<FileEntry> file_index_;  // Sorted by CRC.
   std::vector<std::byte> data_;        // Cached file data.
-
-  // Global registry of all open mixfiles, which owns them, in registration
-  // order.
-  static std::vector<std::unique_ptr<MixArchive>> MixList;
 };
 
 #endif  // CNC_RED_ALERT_ENGINE_FILE_MIX_ARCHIVE_H_

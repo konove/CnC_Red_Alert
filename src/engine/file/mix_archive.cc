@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/base/no_destructor.h"
 #include "absl/log/check.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
@@ -124,7 +125,10 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
   return true;
 }
 
-std::vector<std::unique_ptr<MixArchive>> MixArchive::MixList;
+std::vector<std::unique_ptr<MixArchive>>& MixArchive::Archives() {
+  static absl::NoDestructor<std::vector<std::unique_ptr<MixArchive>>> archives;
+  return *archives;
+}
 
 MixArchive::~MixArchive() = default;
 
@@ -205,7 +209,7 @@ std::optional<MixArchive::FileLocation> MixArchive::Offset(
 
   // Iterate through mixfiles (Most Recently Added / Tail priority is typical
   // for override mods)
-  for (const auto& mix : MixList) {
+  for (const auto& mix : Archives()) {
     // Use C++20/23 ranges::lower_bound with projection
     const auto it =
         std::ranges::lower_bound(mix->file_index_, crc, {}, &FileEntry::crc);
@@ -257,22 +261,22 @@ MixArchive* MixArchive::Register(std::string_view filename, const PKey* key) {
   if (!mix->Open(filename, key)) {
     return nullptr;
   }
-  return MixList.emplace_back(std::move(mix)).get();
+  return Archives().emplace_back(std::move(mix)).get();
 }
 
 bool MixArchive::Unregister(std::string_view filename) {
   if (const auto* mix = Finder(filename)) {
-    std::erase_if(MixList,
+    std::erase_if(Archives(),
                   [mix](const auto& entry) { return entry.get() == mix; });
     return true;
   }
   return false;
 }
 
-void MixArchive::Free_All() { MixList.clear(); }
+void MixArchive::Free_All() { Archives().clear(); }
 
 MixArchive* MixArchive::Finder(const std::string_view filename) {
-  for (const auto& ptr : MixList) {
+  for (const auto& ptr : Archives()) {
     // Compare basename only; paths may differ.
     const auto basename =
         std::filesystem::path(ptr->filename_).filename().string();
