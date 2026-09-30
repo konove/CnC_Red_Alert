@@ -158,12 +158,6 @@ std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file,
 int KeyframeFrameCount(std::span<const std::byte> shape_file) {
   return ReadHeader(shape_file).frame_count;
 }
-int Get_Build_Frame_X(std::span<const std::byte> data) {
-  return ReadHeader(data).x;
-}
-int Get_Build_Frame_Y(std::span<const std::byte> data) {
-  return ReadHeader(data).y;
-}
 int KeyframeWidth(std::span<const std::byte> shape_file) {
   return ReadHeader(shape_file).width;
 }

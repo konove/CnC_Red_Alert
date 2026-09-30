@@ -23,12 +23,10 @@ std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file, int frame,
 // this overload reuses: the result is only valid until the next call.
 std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file, int frame);
 
-// The fields of the shape's header: its frame count, its x and y, and the width
-// and height every frame shares, in pixels. All return 0 if `shape_file` is too
-// short to hold a header.
+// The fields of the shape's header: its frame count, and the width and height
+// every frame shares, in pixels. All return 0 if `shape_file` is too short to
+// hold a header.
 int KeyframeFrameCount(std::span<const std::byte> shape_file);
-int Get_Build_Frame_X(std::span<const std::byte> data);
-int Get_Build_Frame_Y(std::span<const std::byte> data);
 int KeyframeWidth(std::span<const std::byte> shape_file);
 int KeyframeHeight(std::span<const std::byte> shape_file);
 
