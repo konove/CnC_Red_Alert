@@ -4613,7 +4613,8 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
     if (shapenum >= 0 && shapefile.data() == ttype->Get_Image_Data().data() &&
         shapenum < Get_Build_Frame_Count(shapefile) - 1) {
       if (ttype->DimensionData.empty()) {
-        ttype->DimensionData.resize(Get_Build_Frame_Count(shapefile));
+        ttype->DimensionData.resize(
+            base::ToSize(Get_Build_Frame_Count(shapefile)));
       }
       if (base::ToSize(shapenum) < ttype->DimensionData.size() &&
           !ttype->DimensionData.at(base::ToSize(shapenum)).Is_Valid()) {

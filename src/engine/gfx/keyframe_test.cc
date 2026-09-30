@@ -49,6 +49,8 @@ TEST(KeyFrameBoundsTest, RejectsSmallDestinationsAndInvalidOffsets) {
   EXPECT_TRUE(Build_Frame(data, 0, output).empty());
   EXPECT_EQ(output.front(), 0xa5);
   std::array<uint8_t, 4> full{};
+  EXPECT_TRUE(Build_Frame(data, -1, full).empty());
+  EXPECT_TRUE(Build_Frame(data, 3, full).empty());
   EXPECT_TRUE(Build_Frame(std::span(data).first(15), 0, full).empty());
   base::WriteUnaligned<uint32_t>(std::span(data).subspan(14), 0x80ffffffU);
   EXPECT_TRUE(Build_Frame(data, 0, full).empty());

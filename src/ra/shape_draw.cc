@@ -26,7 +26,6 @@
 #include <cstdint>
 #include <numbers>
 #include <span>
-#include <utility>
 #include <vector>
 
 #include "absl/log/check.h"
@@ -142,8 +141,7 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
     int height = Get_Build_Frame_Height(shapefile);
 
     // In WIn95, build shape returns a pointer to the shape not its size
-    const auto shape_pointer =
-        Build_Frame(shapefile, static_cast<uint16_t>(shape_num));
+    const auto shape_pointer = Build_Frame(shapefile, shape_num);
     if (!shape_pointer.empty()) {
       PixelView draw_window(
           view.buffer(),
@@ -200,11 +198,11 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
   Rect rect;
 
   if (shapedata.empty() || shape_num < 0 ||
-      std::cmp_greater_equal(shape_num, Get_Build_Frame_Count(shapedata))) {
+      shape_num >= Get_Build_Frame_Count(shapedata)) {
     return rect;
   }
 
-  const auto sh = Build_Frame(shapedata, static_cast<uint16_t>(shape_num));
+  const auto sh = Build_Frame(shapedata, shape_num);
   if (sh.empty()) {
     return rect;
   }
@@ -330,9 +328,8 @@ std::vector<unsigned char> Get_Radar_Icon(
     // Build the current frame.  If the frame can not be built then we
     // just need to skip past this set of icons and try to build the
     // next frame.
-    const auto ptr =
-        Build_Frame(shapefile, static_cast<uint16_t>(shape_num + frame_num),
-                    TheScreen().sys_mem_page().bytes());
+    const auto ptr = Build_Frame(shapefile, shape_num + frame_num,
+                                 TheScreen().sys_mem_page().bytes());
     if (!ptr.empty()) {
       // Loop through the icon width and the icon height building icons
       // into the buffer pointer.  When the getx or gety falls outside of

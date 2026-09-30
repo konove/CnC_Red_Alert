@@ -23,12 +23,14 @@
 // Originally KEYFRAME.CPP (Counterstrike's 2KEYFRAM.CPP) by Joe L. Bostic,
 // started June 25, 1995.
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <span>
-#include <vector>
 
 #include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "base/unaligned.h"
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/codec/xor_delta.h"
@@ -68,10 +70,11 @@ KeyFrameHeaderType Header(std::span<const std::byte> data) {
 // a kKfDelta frame's the index of the kKfKeyDelta frame that starts its chain.
 // Returns false, leaving both outputs alone, if the entry lies past the end of
 // `data`.
-bool FrameEntry(std::span<const std::byte> data, uint16_t frame,
-                uint32_t& offset, uint32_t& reference) {
+bool FrameEntry(std::span<const std::byte> data, int frame, uint32_t& offset,
+                uint32_t& reference) {
   const auto entry = base::SliceOrEmpty(
-      data, sizeof(KeyFrameHeaderType) + (size_t{frame} * 8), 8);
+      data, base::ssize{sizeof(KeyFrameHeaderType)} + (base::ssize{frame} * 8),
+      8);
   if (entry.empty()) {
     return false;
   }
@@ -81,31 +84,31 @@ bool FrameEntry(std::span<const std::byte> data, uint16_t frame,
 }
 }  // namespace
 
-std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame,
+std::span<uint8_t> Build_Frame(std::span<const std::byte> data, int frame,
                                std::span<uint8_t> destination) {
   const auto header = Header(data);
-  const auto pixels = size_t{header.width} * header.height;
-  if (frame >= header.frames || pixels == 0 || pixels > destination.size()) {
+  const base::ssize pixels = base::ssize{header.width} * header.height;
+  if (frame < 0 || frame >= int{header.frames} || pixels == 0 ||
+      pixels > std::ssize(destination)) {
     return {};
   }
-  const auto output = destination.first(pixels);
+  const auto output = destination.first(base::ToSize(pixels));
   uint32_t offset = 0;
   uint32_t reference = 0;
   if (!FrameEntry(data, frame, offset, reference)) {
     return {};
   }
   const auto flags = static_cast<uint8_t>(offset >> 24);
-  const size_t palette_bytes =
-      (static_cast<uint16_t>(header.flags) & 1U) != 0 ? 768 : 0;
+  const base::ssize palette_bytes = (header.flags & 1U) != 0 ? 768 : 0;
 
   // A key frame stands alone: its data is the whole image, LCW-compressed.
   if ((flags & kKfKeyFrame) != 0) {
-    const auto start =
-        static_cast<size_t>(offset & 0x00ffffffU) + palette_bytes;
-    if (start >= data.size()) {
+    const base::ssize start = base::ssize{offset & 0x00ffffffU} + palette_bytes;
+    if (start >= std::ssize(data)) {
       return {};
     }
-    LCW_Uncompress(data.subspan(start), std::as_writable_bytes(output));
+    LCW_Uncompress(data.subspan(base::ToSize(start)),
+                   std::as_writable_bytes(output));
     return output.subspan(0);
   }
 
@@ -113,53 +116,54 @@ std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame,
   // the start of its chain to `frame`. A key delta starts the chain itself; a
   // delta names the key delta that starts it, whose entry then gives the key
   // frame.
-  uint16_t first_delta = frame;
+  int first_delta = frame;
   if ((flags & kKfDelta) != 0) {
-    first_delta = static_cast<uint16_t>(reference);
+    // Frame numbers are 16 bits; the word's high half is not part of one.
+    first_delta = static_cast<int>(reference & 0xffffU);
     if (first_delta > frame ||
         !FrameEntry(data, first_delta, offset, reference)) {
       return {};
     }
   }
-  const auto key_offset =
-      static_cast<size_t>(reference & 0x00ffffffU) + palette_bytes;
-  if (key_offset >= data.size()) {
+  const base::ssize key_offset =
+      base::ssize{reference & 0x00ffffffU} + palette_bytes;
+  if (key_offset >= std::ssize(data)) {
     return {};
   }
-  LCW_Uncompress(data.subspan(key_offset), std::as_writable_bytes(output));
-  for (uint32_t current = first_delta; current <= frame; ++current) {
-    if (!FrameEntry(data, static_cast<uint16_t>(current), offset, reference)) {
+  LCW_Uncompress(data.subspan(base::ToSize(key_offset)),
+                 std::as_writable_bytes(output));
+  for (int current = first_delta; current <= frame; ++current) {
+    if (!FrameEntry(data, current, offset, reference)) {
       return {};
     }
     // The palette is skipped here too, as the original did for delta data.
-    const auto delta_offset =
-        static_cast<size_t>(offset & 0x00ffffffU) + palette_bytes;
-    if (delta_offset >= data.size()) {
+    const base::ssize delta_offset =
+        base::ssize{offset & 0x00ffffffU} + palette_bytes;
+    if (delta_offset >= std::ssize(data)) {
       return {};
     }
-    ApplyXorDelta(output, data.subspan(delta_offset));
+    ApplyXorDelta(output, data.subspan(base::ToSize(delta_offset)));
   }
   return output.subspan(0);
 }
 
-std::span<uint8_t> Build_Frame(std::span<const std::byte> data,
-                               uint16_t frame) {
-  static std::vector<uint8_t> staging(kShapeBufferSize);
+std::span<uint8_t> Build_Frame(std::span<const std::byte> data, int frame) {
+  static std::array<uint8_t, kShapeBufferSize> staging{};
   return Build_Frame(data, frame, staging);
 }
 
-uint16_t Get_Build_Frame_Count(std::span<const std::byte> data) {
+int Get_Build_Frame_Count(std::span<const std::byte> data) {
   return Header(data).frames;
 }
-uint16_t Get_Build_Frame_X(std::span<const std::byte> data) {
+int Get_Build_Frame_X(std::span<const std::byte> data) {
   return Header(data).x;
 }
-uint16_t Get_Build_Frame_Y(std::span<const std::byte> data) {
+int Get_Build_Frame_Y(std::span<const std::byte> data) {
   return Header(data).y;
 }
-uint16_t Get_Build_Frame_Width(std::span<const std::byte> data) {
+int Get_Build_Frame_Width(std::span<const std::byte> data) {
   return Header(data).width;
 }
-uint16_t Get_Build_Frame_Height(std::span<const std::byte> data) {
+int Get_Build_Frame_Height(std::span<const std::byte> data) {
   return Header(data).height;
 }
