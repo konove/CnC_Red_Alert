@@ -67,6 +67,7 @@
 #include "absl/strings/match.h"
 #include "base/fixed.h"
 #include "base/pooled.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "magic_enum/magic_enum.hpp"
@@ -85,7 +86,6 @@
 #include "ra/gscreen.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
-#include "ra/keyframe.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
@@ -494,7 +494,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord, int timedelay,
       Class(TheTypeHeaps().anim().Ptr(static_cast<int>(animnum))),
       Delay(timedelay) {
   if (Class->Stages == -1) {
-    Class->Stages = KeyframeFrameCount(Class->Get_Image_Data());
+    Class->Stages = engine::gfx::KeyframeFrameCount(Class->Get_Image_Data());
   }
   if (Class->LoopEnd == -1) {
     Class->LoopEnd = Class->Stages;
@@ -653,7 +653,7 @@ void AnimClass::AI() {
   }
 
   if (Class->Stages == -1) {
-    Class->Stages = KeyframeFrameCount(Class->Get_Image_Data());
+    Class->Stages = engine::gfx::KeyframeFrameCount(Class->Get_Image_Data());
   }
   if (Class->LoopEnd == -1) {
     Class->LoopEnd = Class->Stages;
@@ -666,7 +666,7 @@ void AnimClass::AI() {
     }
   } else {
     if (Class->Stages == -1) {
-      Class->Stages = KeyframeFrameCount(Class->Get_Image_Data());
+      Class->Stages = engine::gfx::KeyframeFrameCount(Class->Get_Image_Data());
     }
     if (Class->LoopEnd == -1) {
       Class->LoopEnd = Class->Stages;
@@ -743,7 +743,8 @@ void AnimClass::AI() {
             Class = &AnimTypeClass::As_Reference(Class->ChainTo);
 
             if (Class->Stages == -1) {
-              Class->Stages = KeyframeFrameCount(Class->Get_Image_Data());
+              Class->Stages =
+                  engine::gfx::KeyframeFrameCount(Class->Get_Image_Data());
             }
             if (Class->LoopEnd == -1) {
               Class->LoopEnd = Class->Stages;

@@ -48,11 +48,11 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/strings/safe_string.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/window/keyboard.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/edit.h"
-#include "ra/keyframe.h"
 #include "ra/link.h"
 #include "ra/list.h"
 #include "ra/shapebtn.h"
@@ -193,8 +193,8 @@ TDropListClass<T>::TDropListClass(int id, std::span<char> text, int max_len,
 
       ListHeight(h),
       DropButton(0, down, x + w, y),
-      List(0, x, y + KeyframeHeight(down), w + KeyframeWidth(down), h, flags,
-           up, down) {
+      List(0, x, y + engine::gfx::KeyframeHeight(down),
+           w + engine::gfx::KeyframeWidth(down), h, flags, up, down) {
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);
 }
@@ -312,7 +312,8 @@ void TDropListClass<T>::Collapse() {
 template <class T>
 void TDropListClass<T>::Set_Position(int x, int y) {
   EditClass::Set_Position(x, y);
-  List.Set_Position(x, y + KeyframeHeight(DropButton.Get_Shape_Data()));
+  List.Set_Position(
+      x, y + engine::gfx::KeyframeHeight(DropButton.Get_Shape_Data()));
   DropButton.Set_Position(x + Width, y);
 }
 

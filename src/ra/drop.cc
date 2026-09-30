@@ -47,12 +47,12 @@
 #include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "engine/gfx/font.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/window/keyboard.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/edit.h"
 #include "ra/gadget.h"
-#include "ra/keyframe.h"
 #include "ra/link.h"
 
 DropListClass::DropListClass(int id, std::span<char> text, int max_len,
@@ -63,8 +63,8 @@ DropListClass::DropListClass(int id, std::span<char> text, int max_len,
 
       ListHeight(h),
       DropButton(0, down, x + w, y),
-      List(0, x, y + KeyframeHeight(down), w + KeyframeWidth(down), h, flags,
-           up, down) {
+      List(0, x, y + engine::gfx::KeyframeHeight(down),
+           w + engine::gfx::KeyframeWidth(down), h, flags, up, down) {
   Height = FontMaxHeight(TextFontStyle(flags)) + 1;
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);
@@ -162,7 +162,8 @@ void DropListClass::Collapse() {
 
 void DropListClass::Set_Position(int x, int y) {
   EditClass::Set_Position(x, y);
-  List.Set_Position(x, y + KeyframeHeight(DropButton.Get_Shape_Data()));
+  List.Set_Position(
+      x, y + engine::gfx::KeyframeHeight(DropButton.Get_Shape_Data()));
   DropButton.Set_Position(x + Width, y);
 }
 

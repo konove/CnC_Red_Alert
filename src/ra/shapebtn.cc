@@ -45,11 +45,11 @@
 #include <cstddef>
 #include <span>
 
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "ra/control.h"
 #include "ra/defines.h"
-#include "ra/keyframe.h"
 #include "ra/shape_draw.h"
 #include "ra/toggle.h"
 
@@ -116,8 +116,8 @@ ShapeButtonClass::ShapeButtonClass(unsigned id, std::span<const std::byte> shape
 void ShapeButtonClass::Set_Shape(std::span<const std::byte> data) {
   ShapeData = data;
   if (!ShapeData.empty()) {
-    Width = KeyframeWidth(ShapeData);
-    Height = KeyframeHeight(ShapeData);
+    Width = engine::gfx::KeyframeWidth(ShapeData);
+    Height = engine::gfx::KeyframeHeight(ShapeData);
   }
 }
 

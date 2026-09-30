@@ -33,6 +33,7 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
@@ -44,7 +45,6 @@
 #include "ra/face.h"
 #include "ra/game_clock.h"
 #include "ra/interpal.h"
-#include "ra/keyframe.h"
 #include "ra/screen.h"
 
 using engine::gfx::ShapeFlags;
@@ -122,7 +122,7 @@ std::span<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
 std::span<uint8_t> BuildFrameInStaging(std::span<const std::byte> shape_file,
                                        int frame) {
   static std::array<uint8_t, kShapeBufferSize> staging{};
-  return BuildFrame(shape_file, frame, staging);
+  return engine::gfx::BuildFrame(shape_file, frame, staging);
 }
 
 }  // namespace
@@ -147,8 +147,8 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
   static std::vector<uint8_t> x_buffer(kShapeBufferSize);
 
   if (!shapefile.empty() && shape_num != -1) {
-    int width = KeyframeWidth(shapefile);
-    int height = KeyframeHeight(shapefile);
+    int width = engine::gfx::KeyframeWidth(shapefile);
+    int height = engine::gfx::KeyframeHeight(shapefile);
 
     // In WIn95, build shape returns a pointer to the shape not its size
     const auto shape_pointer = BuildFrameInStaging(shapefile, shape_num);
@@ -212,8 +212,8 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
     return rect;
   }
 
-  const int width = KeyframeWidth(shapedata);
-  const int height = KeyframeHeight(shapedata);
+  const int width = engine::gfx::KeyframeWidth(shapedata);
+  const int height = engine::gfx::KeyframeHeight(shapedata);
 
   // Four scans, one per edge, each narrowing the search area for the next:
   // the top scan also gives a first guess at the left edge, the bottom scan
@@ -300,8 +300,8 @@ std::vector<unsigned char> Get_Radar_Icon(
 
   // Get the pixel width and height of the frame we built.  This will
   // be used to extract icons and build pixels.
-  const int pixel_width = KeyframeWidth(shapefile);
-  const int pixel_height = KeyframeHeight(shapefile);
+  const int pixel_width = engine::gfx::KeyframeWidth(shapefile);
+  const int pixel_height = engine::gfx::KeyframeHeight(shapefile);
 
   // Find the width and height in icons, adjust these by half an
   // icon because the artists may be sloppy and miss the edge of an
@@ -312,7 +312,7 @@ std::vector<unsigned char> Get_Radar_Icon(
   // If we have been told to build as many frames as possible, then
   // find out how many frames there are to build.
   if (frames == -1) {
-    frames = KeyframeFrameCount(shapefile);
+    frames = engine::gfx::KeyframeFrameCount(shapefile);
   }
 
   // Allocate a position to store our icons.  If the alloc fails then
@@ -332,8 +332,8 @@ std::vector<unsigned char> Get_Radar_Icon(
     // Build the current frame.  If the frame can not be built then we
     // just need to skip past this set of icons and try to build the
     // next frame.
-    const auto ptr = BuildFrame(shapefile, shape_num + frame_num,
-                                TheScreen().sys_mem_page().bytes());
+    const auto ptr = engine::gfx::BuildFrame(
+        shapefile, shape_num + frame_num, TheScreen().sys_mem_page().bytes());
     if (!ptr.empty()) {
       // Loop through the icon width and the icon height building icons
       // into the buffer pointer.  When the getx or gety falls outside of

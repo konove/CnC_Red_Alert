@@ -16,14 +16,14 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Decodes Red Alert's keyframe shapes (.SHP): the frames of building, unit
-// and interface images, each stored as an LCW-compressed key frame or as XOR
-// deltas that rebuild it from one.
+// Decodes the keyframe shapes (.SHP) of both games: the frames of building,
+// unit and interface images, each stored as an LCW-compressed key frame or as
+// XOR deltas that rebuild it from one.
 //
 // Originally KEYFRAME.CPP (Counterstrike's 2KEYFRAM.CPP) by Joe L. Bostic,
 // started June 25, 1995.
 
-#include "ra/keyframe.h"
+#include "engine/gfx/keyframe.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -37,8 +37,8 @@
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/codec/xor_delta.h"
 #include "engine/gfx/palette.h"
-#include "ra/defines.h"
 
+namespace engine::gfx {
 namespace {
 
 // The file header is seven little-endian 16-bit words: the frame count, x, y,
@@ -48,14 +48,22 @@ namespace {
 constexpr base::ssize kHeaderSize = 14;
 constexpr base::ssize kEntrySize = 8;
 
-// A header flag: a palette (engine::gfx::Palette::kFileSize bytes) sits in the
-// file that the frame offsets do not count, so every offset read from the
-// table has to skip it.
+// A header flag: a palette (Palette::kFileSize bytes) sits in the file that
+// the frame offsets do not count, so every offset read from the table has to
+// skip it.
 constexpr uint16_t kHasPalette = 0x01;
 
 // The bits of an offset-table word that hold a file offset; the top byte holds
 // the frame's kKf* flags.
 constexpr uint32_t kOffsetMask = 0x00ffffffU;
+
+// The frame flags in an offset word's top byte that decoding tells apart. A
+// key frame is a whole image, LCW-compressed; a delta is an XOR delta that
+// continues a chain. A frame with neither is a key delta (0x40), the delta that
+// starts a chain against a key frame. The original also named 0x08 (a frame
+// number) and 0x10 (LCW compression), which decoding does not read.
+constexpr uint8_t kKfDelta = 0x20;
+constexpr uint8_t kKfKeyFrame = 0x80;
 
 // What the decoder needs from the header.
 struct KeyframeHeader {
@@ -76,16 +84,14 @@ KeyframeHeader ReadHeader(const std::span<const std::byte> shape_file) {
   return {.frame_count = base::ReadLittleEndian<uint16_t>(shape_file, 0),
           .width = base::ReadLittleEndian<uint16_t>(shape_file, 6),
           .height = base::ReadLittleEndian<uint16_t>(shape_file, 8),
-          .palette_bytes =
-              (flags & kHasPalette) != 0 ? engine::gfx::Palette::kFileSize : 0};
+          .palette_bytes = (flags & kHasPalette) != 0 ? Palette::kFileSize : 0};
 }
 
 // One frame's entry in the offset table. `offset_word` packs the frame's kKf*
 // flags into the top byte and the offset of its data into kOffsetMask.
-// `reference_word` depends on the kind of frame: a kKfKeyDelta frame's holds
-// the offset of the key frame it is a delta against (under kOffsetMask again),
-// and a kKfDelta frame's the index of the kKfKeyDelta frame that starts its
-// chain.
+// `reference_word` depends on the kind of frame: a key delta's holds the offset
+// of the key frame it is a delta against (under kOffsetMask again), and a
+// kKfDelta frame's the index of the key delta that starts its chain.
 struct FrameEntry {
   uint32_t offset_word = 0;
   uint32_t reference_word = 0;
@@ -190,3 +196,5 @@ int KeyframeWidth(const std::span<const std::byte> shape_file) {
 int KeyframeHeight(const std::span<const std::byte> shape_file) {
   return ReadHeader(shape_file).height;
 }
+
+}  // namespace engine::gfx

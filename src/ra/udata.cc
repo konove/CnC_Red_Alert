@@ -65,6 +65,7 @@
 #include "base/pooled.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "magic_enum/magic_enum.hpp"
@@ -76,7 +77,6 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
-#include "ra/keyframe.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/shape_draw.h"
@@ -1091,8 +1091,8 @@ void UnitTypeClass::One_Time() {
     // store just moved from.
     const auto ptr = uclass.Get_Image_Data();
     if (!ptr.empty()) {
-      largest = std::max(largest, KeyframeWidth(ptr));
-      largest = std::max(largest, KeyframeHeight(ptr));
+      largest = std::max(largest, engine::gfx::KeyframeWidth(ptr));
+      largest = std::max(largest, engine::gfx::KeyframeHeight(ptr));
     }
 
     uclass.MaxSize = std::max(largest, 8);

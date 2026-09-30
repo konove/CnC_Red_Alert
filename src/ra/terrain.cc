@@ -74,6 +74,7 @@
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "ra/anim.h"
@@ -88,7 +89,6 @@
 #include "ra/game_state.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
-#include "ra/keyframe.h"
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
@@ -527,7 +527,8 @@ void TerrainClass::AI() {
     **	last stage of the crumbling animation, delete the terrain object.
     */
     if (IsCrumbling &&
-        Fetch_Stage() == KeyframeFrameCount(Class->Get_Image_Data()) - 1) {
+        Fetch_Stage() ==
+            engine::gfx::KeyframeFrameCount(Class->Get_Image_Data()) - 1) {
       delete this;
 
       TheMap().Zone_Reset(kZoneFlagNormal | kZoneFlagCrusher |

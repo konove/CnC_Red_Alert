@@ -81,6 +81,7 @@
 #include "base/fixed.h"
 #include "base/pooled.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "magic_enum/magic_enum.hpp"
@@ -99,7 +100,6 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/keyframe.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/rules.h"
@@ -3146,7 +3146,7 @@ void BuildingTypeClass::One_Time() {
     building.BuildupData = dataptr;
     if (!dataptr.empty()) {
       int timedelay = 1;
-      const int count = KeyframeFrameCount(dataptr);
+      const int count = engine::gfx::KeyframeFrameCount(dataptr);
       if (count > 0) {
         timedelay = TheRules().BuildupTime * kTicksPerMinute / count;
       }
@@ -3377,7 +3377,8 @@ void BuildingTypeClass::Init(TheaterType theater) {
         classptr->BuildupData = MixArchive::RetrieveData(fullname);
         if (!classptr->BuildupData.empty()) {
           int timedelay = 1;
-          const int count = KeyframeFrameCount(classptr->BuildupData);
+          const int count =
+              engine::gfx::KeyframeFrameCount(classptr->BuildupData);
           if (count != 0) {
             timedelay = 5 * kTicksPerSecond / count;
           }

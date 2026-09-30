@@ -1,4 +1,4 @@
-#include "ra/keyframe.h"
+#include "engine/gfx/keyframe.h"
 
 #include <array>
 #include <cstddef>
@@ -9,6 +9,7 @@
 #include "base/unaligned.h"
 #include "gtest/gtest.h"
 
+namespace engine::gfx {
 namespace {
 std::vector<std::byte> FrameFile() {
   // Three 2x2 frames: an LCW key frame, a key delta, and a chained delta.
@@ -56,3 +57,4 @@ TEST(KeyFrameBoundsTest, RejectsSmallDestinationsAndInvalidOffsets) {
   EXPECT_TRUE(BuildFrame(data, 0, full).empty());
 }
 }  // namespace
+}  // namespace engine::gfx

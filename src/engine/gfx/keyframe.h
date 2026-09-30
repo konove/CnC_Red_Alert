@@ -1,13 +1,15 @@
-#ifndef CNC_RED_ALERT_RA_KEYFRAME_H_
-#define CNC_RED_ALERT_RA_KEYFRAME_H_
+#ifndef CNC_RED_ALERT_ENGINE_GFX_KEYFRAME_H_
+#define CNC_RED_ALERT_ENGINE_GFX_KEYFRAME_H_
 
 #include <cstddef>
 #include <cstdint>
 #include <span>
 
-// Red Alert's keyframe shapes: building, unit and interface images, stored as
-// LCW-compressed key frames and XOR deltas against them. `shape_file` is always
-// the whole file, as loaded.
+// Both games' keyframe shapes (.SHP): building, unit and interface images,
+// stored as LCW-compressed key frames and XOR deltas against them. `shape_file`
+// is always the whole file, as loaded.
+
+namespace engine::gfx {
 
 // Decompresses `frame` of `shape_file` into `destination`.
 // Returns the frame's width * height pixels at the front of `destination`, or
@@ -25,4 +27,6 @@ int KeyframeFrameCount(std::span<const std::byte> shape_file);
 int KeyframeWidth(std::span<const std::byte> shape_file);
 int KeyframeHeight(std::span<const std::byte> shape_file);
 
-#endif  // CNC_RED_ALERT_RA_KEYFRAME_H_
+}  // namespace engine::gfx
+
+#endif  // CNC_RED_ALERT_ENGINE_GFX_KEYFRAME_H_

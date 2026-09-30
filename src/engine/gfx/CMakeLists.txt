@@ -35,14 +35,7 @@ include(Testing)
 add_gtest(
         NAME engine_gfx_test
         SOURCES fading_table_test.cc font_test.cc glow_pulse_test.cc hsv_color_test.cc
-            palette_color_test.cc palette_test.cc pixel_buffer_test.cc shape_blitter_test.cc shape_test.cc
+            keyframe_test.cc palette_color_test.cc palette_test.cc pixel_buffer_test.cc shape_blitter_test.cc shape_test.cc
             stamp_test.cc wsa_animation_test.cc
-        LIBS engine_gfx
-)
-
-# Exercises the game's key-frame/delta chain using the real bounded LCW decoder.
-add_gtest(
-        NAME keyframe_test
-        SOURCES keyframe_test.cc ../../ra/keyframe.cc
         LIBS engine_gfx
 )

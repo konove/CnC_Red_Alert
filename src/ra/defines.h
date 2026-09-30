@@ -2909,14 +2909,6 @@ struct PathType {
 */
 inline constexpr int kMaxEvents = 64;
 
-// Frame flags in the high byte of a key-frame shape's offset table.
-inline constexpr uint8_t kKfNumber = 0x08;
-inline constexpr uint8_t kKfLcw = 0x10;
-inline constexpr uint8_t kKfDelta = 0x20;
-inline constexpr uint8_t kKfKeyDelta = 0x40;
-inline constexpr uint8_t kKfKeyFrame = 0x80;
-inline constexpr uint8_t kKfMask = 0xF0;
-
 /****************************************************************************
 **	These are the types of dialogs that can pop up outside of the main loop,
 ** an call the game in the background.

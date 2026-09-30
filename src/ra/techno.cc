@@ -159,6 +159,7 @@
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
+#include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
@@ -190,7 +191,6 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/keyframe.h"
 #include "ra/layer.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
@@ -4610,7 +4610,7 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
     // this when the shapefile matches the type's own image data, because the
     // cache is shared across all instances of this type.
     const TechnoTypeClass* ttype = Techno_Type_Class();
-    const int frame_count = KeyframeFrameCount(shapefile);
+    const int frame_count = engine::gfx::KeyframeFrameCount(shapefile);
     if (shapenum >= 0 && shapefile.data() == ttype->Get_Image_Data().data() &&
         shapenum < frame_count - 1) {
       if (ttype->DimensionData.empty()) {
