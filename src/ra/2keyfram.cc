@@ -26,6 +26,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <span>
 
 #include "base/buffer.h"
@@ -37,80 +38,107 @@
 #include "ra/defines.h"
 #include "ra/keyframe.h"
 
-// The file header: seven little-endian 16-bit words, of which width and height
-// give every frame's size in pixels. Nothing reads x, y or largest_frame_size.
-// An offset table of one 8-byte entry per frame follows it (see
-// ReadFrameEntry()).
+namespace {
+
+// The file header is seven little-endian 16-bit words: the frame count, x, y,
+// width, height, largest_frame_size and flags. Width and height give every
+// frame's size in pixels; nothing reads x, y or largest_frame_size. An offset
+// table of kEntrySize bytes per frame follows it (see ReadFrameEntry()).
+constexpr base::ssize kHeaderSize = 14;
+constexpr base::ssize kEntrySize = 8;
+
+// A header flag: a palette of kPaletteSize bytes sits in the file that the
+// frame offsets do not count, so every offset read from the table has to skip
+// it.
+constexpr uint16_t kHasPalette = 0x01;
+constexpr base::ssize kPaletteSize = 768;
+
+// The bits of an offset-table word that hold a file offset; the top byte holds
+// the frame's kKf* flags.
+constexpr uint32_t kOffsetMask = 0x00ffffffU;
+
+// The header fields the decoder uses.
 struct KeyframeHeader {
-  uint16_t frame_count;
-  uint16_t x;
-  uint16_t y;
-  uint16_t width;
-  uint16_t height;
-  uint16_t largest_frame_size;
-  // Bit 0: a 768-byte palette sits in the file that the frame offsets do not
-  // count, so every offset read from the table has to skip it.
-  uint16_t flags;
+  int frame_count = 0;
+  int width = 0;
+  int height = 0;
+  uint16_t flags = 0;
 };
 
-namespace {
 // Returns the header of `shape_file`, or all zeroes (so no frames) if
 // `shape_file` is too short to hold one.
 KeyframeHeader ReadHeader(std::span<const std::byte> shape_file) {
-  KeyframeHeader header{};
-  if (shape_file.size() >= sizeof(header)) {
-    base::CopyBytes(base::ObjectBytes(header), shape_file, sizeof(header));
+  if (std::ssize(shape_file) < kHeaderSize) {
+    return {};
   }
-  return header;
+  return {.frame_count = base::ReadLittleEndian<uint16_t>(shape_file, 0),
+          .width = base::ReadLittleEndian<uint16_t>(shape_file, 6),
+          .height = base::ReadLittleEndian<uint16_t>(shape_file, 8),
+          .flags = base::ReadLittleEndian<uint16_t>(shape_file, 12)};
 }
 
-// Reads `frame`'s entry from the offset table. Its first word packs the frame's
-// kKf* flags into the top byte and the offset of its data into the low 24 bits.
-// The second word depends on the kind of frame: a kKfKeyDelta frame's holds the
-// offset of the key frame it is a delta against (in the low 24 bits again), and
-// a kKfDelta frame's the index of the kKfKeyDelta frame that starts its chain.
-// Returns false, leaving both outputs alone, if the entry lies past the end of
-// `shape_file`.
-bool ReadFrameEntry(std::span<const std::byte> shape_file, int frame,
-                    uint32_t& offset_word, uint32_t& reference_word) {
+// One frame's entry in the offset table. `offset_word` packs the frame's kKf*
+// flags into the top byte and the offset of its data into kOffsetMask.
+// `reference_word` depends on the kind of frame: a kKfKeyDelta frame's holds
+// the offset of the key frame it is a delta against (under kOffsetMask again),
+// and a kKfDelta frame's the index of the kKfKeyDelta frame that starts its
+// chain.
+struct FrameEntry {
+  uint32_t offset_word = 0;
+  uint32_t reference_word = 0;
+};
+
+// Returns `frame`'s entry from the offset table, or nullopt if the entry lies
+// past the end of `shape_file`.
+std::optional<FrameEntry> ReadFrameEntry(std::span<const std::byte> shape_file,
+                                         int frame) {
   const auto entry = base::SliceOrEmpty(
-      shape_file,
-      base::ssize{sizeof(KeyframeHeader)} + (base::ssize{frame} * 8), 8);
+      shape_file, kHeaderSize + (base::ssize{frame} * kEntrySize), kEntrySize);
   if (entry.empty()) {
-    return false;
+    return std::nullopt;
   }
-  offset_word = base::ReadLittleEndian<uint32_t>(entry, 0);
-  reference_word = base::ReadLittleEndian<uint32_t>(entry, 4);
-  return true;
+  return FrameEntry{
+      .offset_word = base::ReadLittleEndian<uint32_t>(entry, 0),
+      .reference_word = base::ReadLittleEndian<uint32_t>(entry, 4)};
 }
+
+// Returns the data from the offset in `word` (plus `palette_bytes`) to the end
+// of `shape_file`, or an empty span if that offset is not inside the file.
+std::span<const std::byte> DataAt(std::span<const std::byte> shape_file,
+                                  uint32_t word, base::ssize palette_bytes) {
+  return base::SliceOrEmpty(shape_file,
+                            base::ssize{word & kOffsetMask} + palette_bytes);
+}
+
 }  // namespace
 
 std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file, int frame,
                               std::span<uint8_t> destination) {
-  const auto header = ReadHeader(shape_file);
+  const KeyframeHeader header = ReadHeader(shape_file);
   const base::ssize pixel_count = base::ssize{header.width} * header.height;
-  if (frame < 0 || frame >= int{header.frame_count} || pixel_count == 0 ||
+  if (frame < 0 || frame >= header.frame_count || pixel_count == 0 ||
       pixel_count > std::ssize(destination)) {
     return {};
   }
-  const auto output = destination.first(base::ToSize(pixel_count));
-  uint32_t offset_word = 0;
-  uint32_t reference_word = 0;
-  if (!ReadFrameEntry(shape_file, frame, offset_word, reference_word)) {
+  const auto entry = ReadFrameEntry(shape_file, frame);
+  if (!entry) {
     return {};
   }
-  const auto frame_flags = static_cast<uint8_t>(offset_word >> 24);
-  const base::ssize palette_bytes = (header.flags & 1U) != 0 ? 768 : 0;
+  const auto output = destination.first(base::ToSize(pixel_count));
+  const auto frame_flags = static_cast<uint8_t>(entry->offset_word >> 24);
+  const base::ssize palette_bytes =
+      (header.flags & kHasPalette) != 0 ? kPaletteSize : 0;
 
   // A key frame stands alone: its data is the whole image, LCW-compressed.
   if ((frame_flags & kKfKeyFrame) != 0) {
-    const base::ssize data_offset =
-        base::ssize{offset_word & 0x00ffffffU} + palette_bytes;
-    if (data_offset >= std::ssize(shape_file)) {
+    const auto key_frame =
+        DataAt(shape_file, entry->offset_word, palette_bytes);
+    if (key_frame.empty()) {
       return {};
     }
-    LCW_Uncompress(shape_file.subspan(base::ToSize(data_offset)),
-                   std::as_writable_bytes(output));
+    LCW_Uncompress(key_frame, std::as_writable_bytes(output));
+    // A copy rather than `output` itself: with other paths returning {}, the
+    // named span cannot be elided, which -Wnrvo reports.
     return output.subspan(0);
   }
 
@@ -119,32 +147,36 @@ std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file, int frame,
   // delta names the key delta that starts it, whose entry then gives the key
   // frame.
   int chain_start = frame;
+  auto chain_entry = entry;
   if ((frame_flags & kKfDelta) != 0) {
     // Frame numbers are 16 bits; the word's high half is not part of one.
-    chain_start = static_cast<int>(reference_word & 0xffffU);
-    if (chain_start > frame ||
-        !ReadFrameEntry(shape_file, chain_start, offset_word, reference_word)) {
+    chain_start = static_cast<int>(entry->reference_word & 0xffffU);
+    if (chain_start > frame) {
+      return {};
+    }
+    chain_entry = ReadFrameEntry(shape_file, chain_start);
+    if (!chain_entry) {
       return {};
     }
   }
-  const base::ssize key_frame_offset =
-      base::ssize{reference_word & 0x00ffffffU} + palette_bytes;
-  if (key_frame_offset >= std::ssize(shape_file)) {
+  const auto key_frame =
+      DataAt(shape_file, chain_entry->reference_word, palette_bytes);
+  if (key_frame.empty()) {
     return {};
   }
-  LCW_Uncompress(shape_file.subspan(base::ToSize(key_frame_offset)),
-                 std::as_writable_bytes(output));
+  LCW_Uncompress(key_frame, std::as_writable_bytes(output));
   for (int delta_frame = chain_start; delta_frame <= frame; ++delta_frame) {
-    if (!ReadFrameEntry(shape_file, delta_frame, offset_word, reference_word)) {
+    const auto delta_entry = ReadFrameEntry(shape_file, delta_frame);
+    if (!delta_entry) {
       return {};
     }
     // The palette is skipped here too, as the original did for delta data.
-    const base::ssize delta_offset =
-        base::ssize{offset_word & 0x00ffffffU} + palette_bytes;
-    if (delta_offset >= std::ssize(shape_file)) {
+    const auto delta =
+        DataAt(shape_file, delta_entry->offset_word, palette_bytes);
+    if (delta.empty()) {
       return {};
     }
-    ApplyXorDelta(output, shape_file.subspan(base::ToSize(delta_offset)));
+    ApplyXorDelta(output, delta);
   }
   return output.subspan(0);
 }

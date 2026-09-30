@@ -5,8 +5,6 @@
 #include <cstdint>
 #include <span>
 
-#include "absl/base/attributes.h"
-
 // Red Alert's keyframe shapes: building, unit and interface images, stored as
 // LCW-compressed key frames and XOR deltas against them. `shape_file` is always
 // the whole file, as loaded.
