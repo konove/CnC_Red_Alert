@@ -43,6 +43,30 @@
     `ra/shape_draw.cc:127-133`), TD's (`td/conquer.cc`) does not
   - Options: give TD the same substitution (small; draws what now vanishes), and/or make a missing
     table a `CHECK` in the blitter instead of a no-op (turns a silent miss into a crash)
+- Decide whether `int / Fixed` should round by half the divisor
+  - `operator/(int, const Fixed&)` (`base/fixed.h`, TODO there) adds 128, half of 256, where
+    `rhs.raw_ / 2` rounds to nearest, so `1 / Fixed(3, 4)` is 2 instead of 1; the original did the
+    same
+  - Callers: `ra/factory.cc:432` (build time over the power fraction) and `ra/aircraft.cc:3098`
+    (landing speed over `AirspeedBias`). The fix is one line but changes production rates and
+    landing speed, so replays and multiplayer sync against an unfixed peer. Found in the
+    `base/fixed` `/modernize-file` run (`4e995aa2..8fd12531`)
+- Decide what a warhead with fewer than five `Verses` entries should get
+  - `ra/warhead.cc:173-177` reads each missing entry as `Fixed::FromString(nullptr)`, i.e. 0%, so
+    that armor takes no damage from the warhead; keeping the previous modifier instead would change
+    how such a modded rules file plays
+  - The default `"100%%,..."` there is a leftover printf escape; it reads as 100% only because the
+    percentage parse stops at the first `%`
+  - Once the warhead (or `base::Tokenizer::Next()`, returning a `std::string_view`) handles the
+    missing token, `Fixed::FromString(const char*)` can go: it exists only for that null
+- Decide how `Fixed::FromString()` (`base/fixed.cc`) should read "12.5%" and oversized numbers
+  - "12.5%" reads as 12%, since the percentage takes only the leading digits; the original read it
+    as the decimal 12.5, because it counted a `%` only right after the digits. A whole part past
+    INT_MAX reads as 0, while smaller ones keep their low byte
+  - Parsing once into a decimal (int64 digits over 10^k, at most eight fraction digits) and scaling
+    to 8.8 once would read "12.5%" as 12.5% and wrap every oversized value alike. No shipped rules
+    value changes; found by the `/simplify` stage of the `base/fixed` `/modernize-file` run
+    (`4e995aa2..8fd12531`)
 
 ## Refactoring
 
@@ -200,6 +224,22 @@
   - Both are empty stubs; the `Adjust()` callers (`ra/movie.cc`, `ra/goptions.cc`) only nudge the
     black palette and back, but `ra/egos.cc:325,345` fades the credits with `Partial_Adjust()`,
     which prints its name and does nothing
+- Move `Fixed` (`base/fixed.h`) into namespace `base`
+  - The other `base/` headers are in `base::` except `clip.h`, `random.h` and the macros in
+    `attributes.h`; `/modernize-file` namespaces only `src/engine` files, so the `base/fixed`
+    `/modernize-file` run (`4e995aa2..8fd12531`) left `Fixed` global. 578 lines in 49 Red Alert
+    files name it
+- Run `/fix-ide-issues` on `base/fixed.h` and `base/fixed_test.cc`
+  - Stage 7 of the `base/fixed` `/modernize-file` run (`4e995aa2..8fd12531`): `fixed.cc` answered
+    (fixed in `7b451a36`); `fixed_test.cc` timed out every time, and `fixed.h` answered once with
+    nothing to fix, then timed out
+- Reject a zero cap in `Fixed::SaturateBelow()` (`base/fixed.h`)
+  - A cap of 0 wraps to 255 255/256 (documented there); all nine callers pass 1. A `DCHECK_GT` or a
+    no-argument `SaturateBelowOne()` would each do; `Saturate()` is likewise only called with 1
+- Share `Fixed`'s round-to-nearest `(raw + 128) / 256` between `ToInt()` and `operator*(int)`
+  (`base/fixed.h`); raised by `/simplify` in the `base/fixed` `/modernize-file` run
+  (`4e995aa2..8fd12531`), not applied
+- Delete the commented-out `UNIT_BUILD_BIAS` defines at `ra/techno.cc:699-702`
 
 ## Testing
 
@@ -233,6 +273,10 @@
   - Iron Curtain and Chronosphere targeting, alone and in a two-player game
   - The hardware cursor after the `SetShape()` rewrite: shapes, hot spots and transparency at 1x, 2x
     and 4x display scale, and its colors through fades
+- Turn the `Fixed::FromString()` tests (`base/fixed_test.cc`) into one table of text and raw value
+  - About 20 tests each spend five lines checking `whole()` and `fraction()`; one `{text, raw}`
+    table checked with `EXPECT_EQ(Fixed::FromString(text), Fixed(raw, 256))` saves about 150 lines.
+    Raised by `/simplify` in the `base/fixed` `/modernize-file` run (`4e995aa2..8fd12531`)
 
 ## Debugging
 
