@@ -722,13 +722,13 @@ int TechnoClass::Time_To_Build() const {
   if (power > 1) {
     power = Fixed(1);
   }
-  if (power < 1 && power > Fixed::_3_4) {
-    power = Fixed::_3_4;
+  if (power < 1 && power > Fixed::kThreeQuarters) {
+    power = Fixed::kThreeQuarters;
   }
-  if (power < Fixed::_1_2) {
-    power = Fixed::_1_2;
+  if (power < Fixed::kHalf) {
+    power = Fixed::kHalf;
   }
-  power.Inverse();
+  power.Invert();
   val *= power;
 
   const int divisor = House->Factory_Count(What_Am_I());

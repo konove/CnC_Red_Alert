@@ -252,7 +252,7 @@ void OptionsClass::Set_Repeat(bool on) { IsScoreRepeat = on; }
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Score_Volume(Fixed volume, bool feedback) {
-  ScoreVolume = Fixed(volume).Sub_Saturate(1);
+  ScoreVolume = Fixed(volume).SaturateBelow(1);
   engine::audio::TheAudio().SetScoreVolume(ScoreVolume * 256);
   if (feedback && !TheTheme().Still_Playing()) {
     PlaySoundEffect(VOC_BEEP, ScoreVolume);
@@ -277,7 +277,7 @@ void OptionsClass::Set_Score_Volume(Fixed volume, bool feedback) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Sound_Volume(Fixed volume, bool feedback) {
-  Volume = Fixed(volume).Sub_Saturate(1);
+  Volume = Fixed(volume).SaturateBelow(1);
   if (feedback) {
     PlaySoundEffect(VOC_BEEP);
   }
@@ -300,7 +300,7 @@ void OptionsClass::Set_Sound_Volume(Fixed volume, bool feedback) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Brightness(Fixed brightness) {
-  Brightness = Fixed::_1_4 + Fixed::_1_2 * brightness;
+  Brightness = Fixed::kQuarter + Fixed::kHalf * brightness;
   Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
                  Brightness, Saturation, Tint, Contrast);
   ThePalettes().game_palette().Set();
@@ -322,7 +322,7 @@ void OptionsClass::Set_Brightness(Fixed brightness) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 Fixed OptionsClass::Get_Brightness() const {
-  return (Brightness - Fixed::_1_4) / Fixed::_1_2;
+  return (Brightness - Fixed::kQuarter) / Fixed::kHalf;
 }
 
 /***********************************************************************************************
@@ -379,7 +379,7 @@ Fixed OptionsClass::Get_Saturation() const { return Saturation; }
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Contrast(Fixed contrast) {
-  Contrast = Fixed::_1_4 + Fixed::_1_2 * contrast;
+  Contrast = Fixed::kQuarter + Fixed::kHalf * contrast;
   Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
                  Brightness, Saturation, Tint, Contrast);
   ThePalettes().game_palette().Set();
@@ -401,7 +401,7 @@ void OptionsClass::Set_Contrast(Fixed contrast) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 Fixed OptionsClass::Get_Contrast() const {
-  return (Contrast - Fixed::_1_4) / Fixed::_1_2;
+  return (Contrast - Fixed::kQuarter) / Fixed::kHalf;
 }
 
 /***********************************************************************************************
@@ -476,8 +476,8 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
   // At the neutral settings every slider leaves its component unchanged, but
   // the HSV round trip would still move most colors by up to 4 of 255 in some
   // components; copy the art instead.
-  if (brightness == Fixed::_1_2 && color == Fixed::_1_2 &&
-      tint == Fixed::_1_2 && contrast == Fixed::_1_2) {
+  if (brightness == Fixed::kHalf && color == Fixed::kHalf &&
+      tint == Fixed::kHalf && contrast == Fixed::kHalf) {
     newpal = oldpal;
     return;
   }

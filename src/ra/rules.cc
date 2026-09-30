@@ -757,14 +757,14 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
 
     if (ini.Is_Present(_lands.at(land))) {
       gptr->Cost.at(SPEED_FOOT) =
-          ini.Get_Fixed(_lands.at(land), "Foot", Fixed(1)).Sub_Saturate(1);
+          ini.Get_Fixed(_lands.at(land), "Foot", Fixed(1)).SaturateBelow(1);
       gptr->Cost.at(SPEED_TRACK) =
-          ini.Get_Fixed(_lands.at(land), "Track", Fixed(1)).Sub_Saturate(1);
+          ini.Get_Fixed(_lands.at(land), "Track", Fixed(1)).SaturateBelow(1);
       gptr->Cost.at(SPEED_WHEEL) =
-          ini.Get_Fixed(_lands.at(land), "Wheel", Fixed(1)).Sub_Saturate(1);
-      gptr->Cost.at(SPEED_WINGED) = Fixed(1).Sub_Saturate(1);
+          ini.Get_Fixed(_lands.at(land), "Wheel", Fixed(1)).SaturateBelow(1);
+      gptr->Cost.at(SPEED_WINGED) = Fixed(1).SaturateBelow(1);
       gptr->Cost.at(SPEED_FLOAT) =
-          ini.Get_Fixed(_lands.at(land), "Float", Fixed(1)).Sub_Saturate(1);
+          ini.Get_Fixed(_lands.at(land), "Float", Fixed(1)).SaturateBelow(1);
       gptr->Build = ini.Get_Bool(_lands.at(land), "Buildable", false);
     }
   }

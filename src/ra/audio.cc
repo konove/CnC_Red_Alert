@@ -306,7 +306,7 @@ void PlaySoundEffectAt(const VocType voc, const COORDINATE coord,
 
   // A sound on screen, or with no location, plays at full volume.
   // Off screen it fades linearly with the distance in cells, reaching silence
-  // 192 cells away (1.5 map widths). Sub_Saturate() keeps a sliver of 1/256
+  // 192 cells away (1.5 map widths). SaturateBelow() keeps a sliver of 1/256
   // even there.
   Fixed volume(1);
   if (coord && !TheMap().In_View(cell)) {
@@ -319,7 +319,7 @@ void PlaySoundEffectAt(const VocType voc, const COORDINATE coord,
                            static_cast<LEPTON>(TheMap().TacLeptonHeight / 2)));
     const int distance_cells = Distance(coord, view_center) / CELL_LEPTON_W;
     auto fade = Fixed(distance_cells, 128 + 64);
-    fade.Sub_Saturate(1);
+    fade.SaturateBelow(1);
     volume = Fixed(1) - fade;
   }
 
@@ -402,7 +402,7 @@ int PlaySoundEffect(VocType voc, Fixed volume, const int variation,
   if (!sample.empty()) {
     // Clamp to 255/256 so that volume * 256 fits the mixer's 0..255 range. A
     // quieter sound also plays at a lower priority.
-    volume.Sub_Saturate(1);
+    volume.SaturateBelow(1);
     return engine::audio::TheAudio().Play(
         sample, kSoundEffects.at(voc).priority * volume, volume * 256);
   }

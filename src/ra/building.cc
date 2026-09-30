@@ -4798,11 +4798,11 @@ int BuildingClass::Mission_Repair() {
           }
           Fixed pfrac = House->Power_Fraction();
           pfrac.Saturate(1);
-          if (pfrac < Fixed::_1_2) {
-            pfrac = Fixed::_1_2;
+          if (pfrac < Fixed::kHalf) {
+            pfrac = Fixed::kHalf;
           }
           const int time =
-              pfrac.Inverse() * TheRules().ReloadRate * kTicksPerMinute;
+              pfrac.Invert() * TheRules().ReloadRate * kTicksPerMinute;
           IsReadyToCommence = false;
           return time;
         }

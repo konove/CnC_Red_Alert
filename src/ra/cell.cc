@@ -2378,7 +2378,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
               dynamic_cast<TechnoClass*>(obj)->ArmorBias == 1) {
             const Fixed val =
                 dynamic_cast<TechnoClass*>(obj)->ArmorBias *
-                Fixed(TheRules().crate_data().at(powerup), 256).Inverse();
+                Fixed(TheRules().crate_data().at(powerup), 256).Invert();
             dynamic_cast<TechnoClass*>(obj)->ArmorBias = val;
             if (obj->Owner() == ThePlayer()->Class->House) {
               tospeak = true;

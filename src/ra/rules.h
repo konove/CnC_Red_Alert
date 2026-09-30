@@ -960,8 +960,8 @@ class RulesClass {
 
   // What a time quake does to each kind of target, and how many frames one
   // lasts.
-  Fixed QuakeUnitDamage{Fixed::_1_2};
-  Fixed QuakeBuildingDamage{Fixed::_1_4};
+  Fixed QuakeUnitDamage{Fixed::kHalf};
+  Fixed QuakeBuildingDamage{Fixed::kQuarter};
   int QuakeInfantryDamage{0};
   int QuakeDelay{120};
 
@@ -972,7 +972,7 @@ class RulesClass {
   // What fraction of a building's strength an engineer takes off, and the
   // damage level a building must be at before one can capture it instead.
   // EngineerCaptureLevel starts at ConditionRed's default.
-  Fixed EngineerDamage{Fixed::_1_3};
+  Fixed EngineerDamage{Fixed::kThird};
   Fixed EngineerCaptureLevel;
 
   // The delay (in frames) between a carrier's aircraft launches.

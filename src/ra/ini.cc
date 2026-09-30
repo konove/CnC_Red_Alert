@@ -1228,7 +1228,7 @@ Fixed INIClass::Get_Fixed(const char* section, const char* entry,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool INIClass::Put_Fixed(const char* section, const char* entry, Fixed value) {
-  return Put_String(section, entry, value.AsString().c_str());
+  return Put_String(section, entry, value.ToString().c_str());
 }
 
 /***********************************************************************************************

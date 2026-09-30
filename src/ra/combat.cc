@@ -476,7 +476,7 @@ void Wide_Area_Damage(COORDINATE coord, LEPTON radius, int rawdamage,
                    XY_Coord(static_cast<LEPTON>(cell_radius),
                             static_cast<LEPTON>(cell_radius)));
       const int damage =
-          rawdamage * Fixed(cell_radius, dist_from_center).Inverse();
+          rawdamage * Fixed(cell_radius, dist_from_center).Invert();
       Explosion_Damage(Cell_Coord(tcell), damage, source, warhead);
       if (warhead == WARHEAD_FIRE && damage > 100) {
         base::NewPooled<SmudgeClass>(

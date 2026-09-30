@@ -416,10 +416,10 @@ void VisualControlsClass::Process() {
           color.Set_Value(128);
           tint.Set_Value(128);
 
-          TheOptions().Set_Brightness(Fixed::_1_2);
-          TheOptions().Set_Contrast(Fixed::_1_2);
-          TheOptions().Set_Saturation(Fixed::_1_2);
-          TheOptions().Set_Tint(Fixed::_1_2);
+          TheOptions().Set_Brightness(Fixed::kHalf);
+          TheOptions().Set_Contrast(Fixed::kHalf);
+          TheOptions().Set_Saturation(Fixed::kHalf);
+          TheOptions().Set_Tint(Fixed::kHalf);
           break;
 
         case kButtonOptions:

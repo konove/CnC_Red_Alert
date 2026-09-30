@@ -173,8 +173,8 @@ TEST(FixedFromStringTest, LargeWholePartKeepsLowByte) {
 // FromString: accepts std::string_view and std::string.
 
 TEST(FixedFromStringTest, StringView) {
-  constexpr std::string_view sv = "1.5";
-  const Fixed f = Fixed::FromString(sv);
+  constexpr std::string_view view = "1.5";
+  const Fixed f = Fixed::FromString(view);
   EXPECT_EQ(f.whole(), 1);
   EXPECT_EQ(f.fraction(), 128);
 }
@@ -182,8 +182,8 @@ TEST(FixedFromStringTest, StringView) {
 TEST(FixedFromStringTest, StringViewSubstr) {
   // Verify non-null-terminated string_view works correctly.
   constexpr std::string_view full = "1.5extra";
-  constexpr std::string_view sv = full.substr(0, 3);  // "1.5"
-  const Fixed f = Fixed::FromString(sv);
+  constexpr std::string_view view = full.substr(0, 3);  // "1.5"
+  const Fixed f = Fixed::FromString(view);
   EXPECT_EQ(f.whole(), 1);
   EXPECT_EQ(f.fraction(), 128);
 }
@@ -215,70 +215,70 @@ TEST(FixedFromStringTest, WholeNumberOnly) {
   EXPECT_EQ(f.fraction(), 0);
 }
 
-// AsString: whole numbers.
+// ToString: whole numbers.
 
-TEST(FixedAsStringTest, Zero) { EXPECT_EQ(Fixed().AsString(), "0"); }
+TEST(FixedAsStringTest, Zero) { EXPECT_EQ(Fixed().ToString(), "0"); }
 
 TEST(FixedAsStringTest, WholeNumber) {
-  EXPECT_EQ(Fixed(uint8_t{3}).AsString(), "3");
+  EXPECT_EQ(Fixed(uint8_t{3}).ToString(), "3");
 }
 
 TEST(FixedAsStringTest, WholeOne) {
-  EXPECT_EQ(Fixed(uint8_t{1}).AsString(), "1");
+  EXPECT_EQ(Fixed(uint8_t{1}).ToString(), "1");
 }
 
-// AsString: common constants.
+// ToString: common constants.
 
-TEST(FixedAsStringTest, OneHalf) { EXPECT_EQ(Fixed::_1_2.AsString(), "0.5"); }
+TEST(FixedAsStringTest, OneHalf) { EXPECT_EQ(Fixed::kHalf.ToString(), "0.5"); }
 
 TEST(FixedAsStringTest, OneQuarter) {
-  EXPECT_EQ(Fixed::_1_4.AsString(), "0.25");
+  EXPECT_EQ(Fixed::kQuarter.ToString(), "0.25");
 }
 
 TEST(FixedAsStringTest, ThreeQuarters) {
-  EXPECT_EQ(Fixed::_3_4.AsString(), "0.75");
+  EXPECT_EQ(Fixed::kThreeQuarters.ToString(), "0.75");
 }
 
 TEST(FixedAsStringTest, OneThird) {
   // 1/3 in 8.8 is 85/256, exactly 0.33203125.
-  EXPECT_EQ(Fixed::_1_3.AsString(), "0.33203125");
+  EXPECT_EQ(Fixed::kThird.ToString(), "0.33203125");
 }
 
 TEST(FixedAsStringTest, TwoThirds) {
   // 2/3 in 8.8 is 170/256, exactly 0.6640625.
-  EXPECT_EQ(Fixed::_2_3.AsString(), "0.6640625");
+  EXPECT_EQ(Fixed::_2_3.ToString(), "0.6640625");
 }
 
-// AsString: small fractions keep their leading zeros.
+// ToString: small fractions keep their leading zeros.
 
 TEST(FixedAsStringTest, SmallFraction) {
-  EXPECT_EQ(Fixed(12, 256).AsString(), "0.046875");
-  EXPECT_EQ(Fixed(1, 256).AsString(), "0.00390625");
+  EXPECT_EQ(Fixed(12, 256).ToString(), "0.046875");
+  EXPECT_EQ(Fixed(1, 256).ToString(), "0.00390625");
 }
 
-// AsString: FromString reads every value back unchanged, as the options INI
+// ToString: FromString reads every value back unchanged, as the options INI
 // needs when it saves and reloads the volumes.
 
 TEST(FixedAsStringTest, RoundTripsThroughFromString) {
   for (int whole = 0; whole < 256; ++whole) {
     for (int fraction = 0; fraction < 256; ++fraction) {
       const Fixed value((whole * 256) + fraction, 256);
-      ASSERT_EQ(Fixed::FromString(value.AsString()), value) << value.AsString();
+      ASSERT_EQ(Fixed::FromString(value.ToString()), value) << value.ToString();
     }
   }
 }
 
-// AsString: values with whole and fractional parts.
+// ToString: values with whole and fractional parts.
 
 TEST(FixedAsStringTest, OnePointFive) {
-  EXPECT_EQ(Fixed::FromString("1.5").AsString(), "1.5");
+  EXPECT_EQ(Fixed::FromString("1.5").ToString(), "1.5");
 }
 
-// AsString: trailing zeros are stripped.
+// ToString: trailing zeros are stripped.
 
 TEST(FixedAsStringTest, StripsTrailingZeros) {
-  // Fixed(1, 4) has fraction 64 → 64*1000/256 = 250 → "0.250" → "0.25"
-  EXPECT_EQ(Fixed(1, 4).AsString(), "0.25");
+  // Fixed(1, 4) has fraction 64, formatted as "0.25000000" before the zeros go.
+  EXPECT_EQ(Fixed(1, 4).ToString(), "0.25");
 }
 
 // Arithmetic with large ints: the int is scaled by 256, which must not
@@ -327,8 +327,8 @@ TEST(FixedSerializeTest, RoundTripsRawBits) {
     out.Serialize(writer);
     EXPECT_EQ(sink.bytes.size(), 2U);
 
-    SpanSource straw(std::as_bytes(std::span(sink.bytes)));
-    ArchiveReader reader(straw);
+    SpanSource source(std::as_bytes(std::span(sink.bytes)));
+    ArchiveReader reader(source);
     Fixed in;
     in.Serialize(reader);
     EXPECT_TRUE(reader.ok());

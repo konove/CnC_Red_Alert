@@ -4677,7 +4677,7 @@ UrgencyType HouseClass::Check_Build_Power() const {
     /*
     **	Very low power condition is considered a higher priority.
     */
-    if (frac < Fixed::_3_4) {
+    if (frac < Fixed::kThreeQuarters) {
       urgency = URGENCY_MEDIUM;
     }
 
@@ -5174,7 +5174,7 @@ int HouseClass::AI_Building() {
     int current = BQuantity.at(STRUCT_REFINERY);
     if (!IsTiberiumShort &&
         (TheRules().RefineryRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() > current &&
+                .RoundUp() > current &&
         current < TheRules().RefineryLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
       if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
@@ -5194,7 +5194,7 @@ int HouseClass::AI_Building() {
     */
     current = BQuantity.at(STRUCT_BARRACKS) + BQuantity.at(STRUCT_TENT);
     if ((TheRules().BarracksRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() > current &&
+                .RoundUp() > current &&
         current < TheRules().BarracksLimit && (money > 300 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_BARRACKS);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5249,7 +5249,7 @@ int HouseClass::AI_Building() {
     */
     current = BQuantity.at(STRUCT_WEAP);
     if ((TheRules().WarRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() > current &&
+                .RoundUp() > current &&
         current < TheRules().WarLimit && (money > 2000 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5267,7 +5267,7 @@ int HouseClass::AI_Building() {
     current = BQuantity.at(STRUCT_PILLBOX) + BQuantity.at(STRUCT_CAMOPILLBOX) +
               BQuantity.at(STRUCT_TURRET) + BQuantity.at(STRUCT_FLAME_TURRET);
     if ((TheRules().DefenseRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() > current &&
+                .RoundUp() > current &&
         current < TheRules().DefenseLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_FLAME_TURRET);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5301,7 +5301,7 @@ int HouseClass::AI_Building() {
     */
     current = BQuantity.at(STRUCT_SAM) + BQuantity.at(STRUCT_AAGUN);
     if ((TheRules().AARatio * Fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() > current &&
+                .RoundUp() > current &&
         current < TheRules().AALimit) {
       /*
       **	Building air defense only makes sense if the opponent has
@@ -5361,7 +5361,7 @@ int HouseClass::AI_Building() {
     */
     current = BQuantity.at(STRUCT_TESLA);
     if ((TheRules().TeslaRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() > current &&
+                .RoundUp() > current &&
         current < TheRules().TeslaLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_TESLA);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
@@ -5403,7 +5403,7 @@ int HouseClass::AI_Building() {
     */
     current = BQuantity.at(STRUCT_HELIPAD);
     if ((TheRules().HelipadRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() > current &&
+                .RoundUp() > current &&
         current < TheRules().HelipadLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
@@ -5426,7 +5426,7 @@ int HouseClass::AI_Building() {
     */
     current = BQuantity.at(STRUCT_AIRSTRIP);
     if ((TheRules().AirstripRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
-                .Round_Up() > current &&
+                .RoundUp() > current &&
         current < TheRules().AirstripLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
