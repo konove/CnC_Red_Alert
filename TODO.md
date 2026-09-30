@@ -210,13 +210,6 @@
     once. That would also settle the free functions' names, which the run was unsure of: the
     alternatives were `BuildFrameCount()`/`Width()`/`Height()` (nearer the legacy names) and
     `CountKeyframeFrames()` (parallel to `engine::gfx::CountShapeFrames()`)
-- Measure whether `BuildFrame()`'s chain replay is worth a decoded-frame cache
-  - Every call LCW-decompresses the key frame and XORs on every delta from the chain's start to the
-    frame into a newly allocated vector (`engine/gfx/keyframe.cc:129-200`), and each game's
-    `CC_Draw_Shape()` calls it for each sprite drawn each frame. A per-shape cache of decoded frames
-    would skip that; the original had one (`UseBigShapeBuffer`), which no game ever enabled. Profile
-    first
-
 - Share the "clip a destination and shift its source" pattern
   - `base/clip.h:47-50` says a caller carrying a source rectangle must use `OutCodeOf()` directly,
     but `DrawShapeFrame()` and `PixelView::RemapLocked()` show `ClipRect()` works whenever only the
