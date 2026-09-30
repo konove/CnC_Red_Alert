@@ -16,29 +16,12 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/2KEYFRAM.CPP 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : KEYFRAME.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 06/25/95 *
- *                                                                                             *
- *                  Last Update : June 25, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * Get_Build_Frame_Count -- Fetches the number of frames in data
- *block.                      * Get_Build_Frame_Width -- Fetches the width of
- *the shape image.                            * Get_Build_Frame_Height --
- *Fetches the height of the shape image.                          *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Decodes Red Alert's keyframe shapes (.SHP): the frames of building, unit
+// and interface images, each stored as an LCW-compressed key frame or as XOR
+// deltas that rebuild it from one.
+//
+// Originally KEYFRAME.CPP (Counterstrike's 2KEYFRAM.CPP) by Joe L. Bostic,
+// started June 25, 1995.
 
 #include <cstddef>
 #include <cstdint>
@@ -52,6 +35,9 @@
 #include "ra/defines.h"
 #include "ra/keyframe.h"
 
+// The file header: seven little-endian 16-bit words, of which width and height
+// give every frame's size in pixels. Nothing reads x, y or largest_frame_size.
+// An offset table of one 8-byte entry per frame follows it (see FrameEntry()).
 struct KeyFrameHeaderType {
   uint16_t frames;
   uint16_t x;
@@ -59,10 +45,14 @@ struct KeyFrameHeaderType {
   uint16_t width;
   uint16_t height;
   uint16_t largest_frame_size;
+  // Bit 0: a 768-byte palette sits in the file that the frame offsets do not
+  // count, so every offset read from the table has to skip it.
   uint16_t flags;
 };
 
 namespace {
+// Returns the header of `data`, or all zeroes (so no frames) if `data` is too
+// short to hold one.
 KeyFrameHeaderType Header(std::span<const std::byte> data) {
   KeyFrameHeaderType header{};
   if (data.size() >= sizeof(header)) {
@@ -71,6 +61,13 @@ KeyFrameHeaderType Header(std::span<const std::byte> data) {
   return header;
 }
 
+// Reads `frame`'s entry from the offset table. Its first word packs the frame's
+// kKf* flags into the top byte and the offset of its data into the low 24 bits.
+// The second word depends on the kind of frame: a kKfKeyDelta frame's holds the
+// offset of the key frame it is a delta against (in the low 24 bits again), and
+// a kKfDelta frame's the index of the kKfKeyDelta frame that starts its chain.
+// Returns false, leaving both outputs alone, if the entry lies past the end of
+// `data`.
 bool FrameEntry(std::span<const std::byte> data, uint16_t frame,
                 uint32_t& offset, uint32_t& reference) {
   const auto entry = base::SliceOrEmpty(
@@ -101,6 +98,7 @@ std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame,
   const size_t palette_bytes =
       (static_cast<uint16_t>(header.flags) & 1U) != 0 ? 768 : 0;
 
+  // A key frame stands alone: its data is the whole image, LCW-compressed.
   if ((flags & kKfKeyFrame) != 0) {
     const auto start =
         static_cast<size_t>(offset & 0x00ffffffU) + palette_bytes;
@@ -111,6 +109,10 @@ std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame,
     return output.subspan(0);
   }
 
+  // Anything else is rebuilt from the key frame by XORing on the deltas from
+  // the start of its chain to `frame`. A key delta starts the chain itself; a
+  // delta names the key delta that starts it, whose entry then gives the key
+  // frame.
   uint16_t first_delta = frame;
   if ((flags & kKfDelta) != 0) {
     first_delta = static_cast<uint16_t>(reference);
@@ -129,7 +131,7 @@ std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame,
     if (!FrameEntry(data, static_cast<uint16_t>(current), offset, reference)) {
       return {};
     }
-    // Palette bytes were also added to the delta base in the original format.
+    // The palette is skipped here too, as the original did for delta data.
     const auto delta_offset =
         static_cast<size_t>(offset & 0x00ffffffU) + palette_bytes;
     if (delta_offset >= data.size()) {
