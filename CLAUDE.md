@@ -238,9 +238,10 @@ Chromium-style paths relative to the `src/` include root (configured via
 ```
 
 clang-tidy's `misc-include-cleaner` requires every `.cc` file to include the headers it uses
-directly and nothing more. It misses two kinds of use: a complete type needed only for an implicit
-derived-to-base conversion, and a header that supplies template definitions for an explicit
-instantiation. Keep those with `#include "td/vector_impl.h"  // IWYU pragma: keep`.
+directly and nothing more. It misses three kinds of use: a complete type needed only for an implicit
+derived-to-base conversion, a header that supplies template definitions for an explicit
+instantiation, and a comparison C++20 rewrites to a header's `operator<=>` (`ra/power.cc`'s
+`Power_Fraction() < 1`). Keep those with `#include "td/vector_impl.h"  // IWYU pragma: keep`.
 
 ### New Files
 

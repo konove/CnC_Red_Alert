@@ -53,7 +53,7 @@
 #include <span>
 
 #include "base/array.h"
-#include "base/fixed.h"
+#include "base/fixed.h"  // IWYU pragma: keep (Fixed < int via operator<=>)
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"

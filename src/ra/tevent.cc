@@ -57,7 +57,7 @@
 #include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
-#include "base/fixed.h"
+#include "base/fixed.h"  // IWYU pragma: keep (Fixed < int via operator<=>)
 #include "base/numeric.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
