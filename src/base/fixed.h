@@ -85,8 +85,8 @@ class fixed {
   [[nodiscard]] int ToInt() const { return (raw_ + kRoundingBias) / 256; }
 
   // The whole part, and the fraction in 1/256ths.
-  [[nodiscard]] uint8_t whole() const { return raw_ >> 8; }
-  [[nodiscard]] uint8_t fraction() const { return raw_ & 0xFF; }
+  [[nodiscard]] int whole() const { return raw_ >> 8; }
+  [[nodiscard]] int fraction() const { return raw_ & 0xFF; }
 
   // Resets the value to zero.
   void Clear() { raw_ = 0; }
@@ -226,7 +226,7 @@ class fixed {
   // TODO: The rounding bias should be half the divisor (rvalue.raw_ / 2), not
   // half of 256, so 1 / fixed(3, 4) gives 2 instead of 1. It is the shipped
   // behaviour of factory production rates and aircraft landing speed.
-  friend int32_t operator/(const int32_t lvalue, const fixed& rvalue) {
+  friend int operator/(const int lvalue, const fixed& rvalue) {
     if (rvalue.raw_ == 0 || rvalue.raw_ == 256) {
       return lvalue;
     }

@@ -19,13 +19,13 @@
 #include "base/fixed.h"
 
 #include <charconv>
-#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <string_view>
 
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
+#include "base/types.h"
 
 // Conversion between fixed and the decimal text INI files hold.
 
@@ -76,7 +76,7 @@ fixed fixed::FromString(const std::string_view str_in) {
         frac_part.data(), frac_part.substr(frac_part.size()).data(), frac);
     // NOLINTEND(bugprone-suspicious-stringview-data-usage)
     int base = 1;
-    for (std::ptrdiff_t i = 0; i < ptr - frac_part.data(); ++i) {
+    for (base::ssize i = 0; i < ptr - frac_part.data(); ++i) {
       base *= 10;
     }
     result.raw_ |= static_cast<uint16_t>(int64_t{256} * frac / base);
