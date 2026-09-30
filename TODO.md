@@ -177,9 +177,6 @@
   - The flags are `DrawShapeFrame()`'s parameter; `engine/gfx/shape.h` would then hold only the
     shape file format (`ShapeHeader`, `ExtractShapeFrame()`) and could become `shape_file.h`. 66
     files include `engine/gfx/shape.h`, most only for the flags, so it is an include rewrite
-- Remove Tiberian Dawn's `Parse_INI_File()` (`td/init.cc:2566-2651`)
-  - It and its call (`td/init.cc:510-515`) sit under `#ifdef ONHOLD`, which nothing defines, and it
-    still uses the deleted `GameFile` class; `e2c825c8` edited it without compiling it
 - Give the keyframe staging buffers a trivial destructor
   - The two-argument `Build_Frame()` keeps `static std::vector<uint8_t> staging(kShapeBufferSize)`
     (`td/keyframe.cc:150`, from `1818e8af`; `ra/2keyfram.cc:145`, from `c66b4d19`); the strict build

@@ -20,7 +20,6 @@ bool Select_Game(bool fade = false);
 // not start: the usage text was asked for or a switch is invalid.
 std::optional<StartupOptions> Parse_Command_Line(
     std::span<const std::string_view> arguments);
-void Parse_INI_File();
 int Version_Number();
 // Writes the recording's header (session, scenario and seed) to the open
 // `file`, flushing it to disk at once in super-record mode.

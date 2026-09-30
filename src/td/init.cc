@@ -35,8 +35,7 @@
  * Functions: *
  *   Init_Game -- Main game initialization routine. * Load_Recording_Values --
  *Loads recording values from recording file                       *
- *   Parse_Command_Line -- Parses the command line parameters. * Parse_INI_File
- *-- Parses CONQUER.INI for special options                                  *
+ *   Parse_Command_Line -- Parses the command line parameters. *
  *   Play_Intro -- plays the introduction & logo movies * Save_Recording_Values
  *-- Saves recording values to a recording file                       *
  *   Select_Game -- The game's main menu * Version_Number -- Determines the
@@ -499,14 +498,6 @@ bool Init_Game() {
 #endif
 
   //	malloc(2);
-
-#ifdef ONHOLD
-  /*
-  ** Check for addition options not specified on the command-line.  This must
-  ** be done before the One_Time calls, but after the shape buffer is set up.
-  */
-  Parse_INI_File();
-#endif
 
   /*
   **	Perform one-time game system initializations.
@@ -2440,15 +2431,6 @@ std::optional<StartupOptions> Parse_Command_Line(
     if (string.starts_with("-X")) {
       for (const char code : std::string_view(string).substr(2)) {
         switch (toupper(code)) {
-#ifdef ONHOLD
-          /*
-          **	Should human generated sound effects be used?
-          */
-          case 'J':
-            TheSpecial().IsJuvenile = true;
-            break;
-#endif
-
           /*
           **	Inert weapons -- no units take damage.
           */
@@ -2498,15 +2480,6 @@ std::optional<StartupOptions> Parse_Command_Line(
             }
             break;
 
-#ifdef ONHOLD
-          /*
-          **	Bonus scenario enable.
-          */
-          case 'Z':
-            TheSpecial().IsJurassic = true;
-            break;
-#endif
-
           /*
           **	Quiet mode override control.
           */
@@ -2543,84 +2516,6 @@ std::optional<StartupOptions> Parse_Command_Line(
   }
   return options;
 }
-
-#ifdef ONHOLD
-/***********************************************************************************************
- * Parse_INI_File -- Parses CONQUER.INI for certain options *
- *                                                                                             *
- * INPUT: * none.
- **
- *                                                                                             *
- * OUTPUT: * none.
- **
- *                                                                                             *
- * WARNINGS: * none.
- **
- *                                                                                             *
- * HISTORY: * 08/18/1995 BRR : Created. *
- *=============================================================================================*/
-void Parse_INI_File() {
-  char buf[128];
-  static char section[40];
-  static char entry[40];
-  static char name[40];
-  int len;
-  int i;
-
-  /*
-  ** These arrays store the coded version of the names Geologic, Period, &
-  *Jurassic.
-  ** Decode them by subtracting 83.  For you curious types, the names look like:
-  ** ��¿º��
-  ** ��ż·
-  ** ��Ŵ�Ƽ�
-  ** If these INI entries aren't found, the IsJurassic flag does nothing.
-  */
-  static char coded_section[] = {154, 184, 194, 191, 194, 186, 188, 182, 0};
-  static char coded_entry[] = {163, 184, 197, 188, 194, 183, 0};
-  static char coded_name[] = {157, 200, 197, 180, 198, 198, 188, 182, 0};
-
-  /*------------------------------------------------------------------------
-  Decode the desired section, entry, & name
-  ------------------------------------------------------------------------*/
-  base::SafeCopy(section, coded_section);
-  len = strlen(coded_section);
-  for (i = 0; i < len; i++) {
-    section[i] -= 83;
-  }
-
-  base::SafeCopy(entry, coded_entry);
-  len = strlen(coded_entry);
-  for (i = 0; i < len; i++) {
-    entry[i] -= 83;
-  }
-
-  base::SafeCopy(name, coded_name);
-  len = strlen(coded_name);
-  for (i = 0; i < len; i++) {
-    name[i] -= 83;
-  }
-
-  /*------------------------------------------------------------------------
-  Create filename and read the file.
-  ------------------------------------------------------------------------*/
-  std::optional<std::string> ini = engine::file::ReadProfileFile("CONQUER.INI");
-  if (!ini) {
-    return;
-  }
-  const char* buffer = ini->data();
-
-  WWGetPrivateProfileString(section, entry, "", buf, buffer);
-
-  if (absl::EqualsIgnoreCase(buf, name)) {
-    TheGameState().thingies_enabled() = true;
-  }
-
-  memset(section, 0, sizeof(section));
-  memset(entry, 0, sizeof(entry));
-  memset(name, 0, sizeof(name));
-}
-#endif
 
 /***********************************************************************************************
  * Version_Number -- Determines the version number. *
