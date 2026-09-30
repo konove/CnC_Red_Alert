@@ -90,15 +90,13 @@ std::string fixed::AsString() const {
     return std::to_string(whole());
   }
 
-  // Convert 8-bit fraction (0-255) to thousandths for decimal display.
-  // TODO: "%02d" drops a digit below 100 thousandths, so 12/256 (0.046) prints
-  // as "0.46". Truncating to thousandths also loses up to 1/256 on each trip
-  // through FromString(): 102/256 prints "0.398" and reads back as 101/256.
-  // OptionsClass::Save_Settings() writes the volumes this way.
-  const int frac = fraction() * 1000 / 256;
+  // 1/256 is 0.00390625, so eight decimal places hold every fraction
+  // exactly, and FromString() reads the text back to the same value.
+  constexpr int kHundredMillionthsPer256th = 390625;
+  const int frac = fraction() * kHundredMillionthsPer256th;
 
   // Strip trailing zeros from the fractional part.
-  std::string result = absl::StrFormat("%d.%02d", whole(), frac);
+  std::string result = absl::StrFormat("%d.%08d", whole(), frac);
   const auto last_nonzero = result.find_last_not_of('0');
   if (last_nonzero != std::string::npos) {
     result.erase(last_nonzero + 1);

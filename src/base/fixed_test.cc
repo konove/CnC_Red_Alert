@@ -240,13 +240,32 @@ TEST(FixedAsStringTest, ThreeQuarters) {
 }
 
 TEST(FixedAsStringTest, OneThird) {
-  // 1/3 in 8.8 = 85/256 ≈ 0.332
-  EXPECT_EQ(fixed::_1_3.AsString(), "0.332");
+  // 1/3 in 8.8 is 85/256, exactly 0.33203125.
+  EXPECT_EQ(fixed::_1_3.AsString(), "0.33203125");
 }
 
 TEST(FixedAsStringTest, TwoThirds) {
-  // 2/3 in 8.8 = 170/256 ≈ 0.664
-  EXPECT_EQ(fixed::_2_3.AsString(), "0.664");
+  // 2/3 in 8.8 is 170/256, exactly 0.6640625.
+  EXPECT_EQ(fixed::_2_3.AsString(), "0.6640625");
+}
+
+// AsString: small fractions keep their leading zeros.
+
+TEST(FixedAsStringTest, SmallFraction) {
+  EXPECT_EQ(fixed(12, 256).AsString(), "0.046875");
+  EXPECT_EQ(fixed(1, 256).AsString(), "0.00390625");
+}
+
+// AsString: FromString reads every value back unchanged, as the options INI
+// needs when it saves and reloads the volumes.
+
+TEST(FixedAsStringTest, RoundTripsThroughFromString) {
+  for (int whole = 0; whole < 256; ++whole) {
+    for (int fraction = 0; fraction < 256; ++fraction) {
+      const fixed value((whole * 256) + fraction, 256);
+      ASSERT_EQ(fixed::FromString(value.AsString()), value) << value.AsString();
+    }
+  }
 }
 
 // AsString: values with whole and fractional parts.

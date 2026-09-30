@@ -336,9 +336,9 @@ class fixed {
     return *this;
   }
 
-  // Returns the value as a decimal with trailing zeros dropped ("1.5", "0.75",
-  // "3"), the fraction truncated to thousandths. INI files store it, and
-  // FromString() reads it back.
+  // Returns the value as an exact decimal with trailing zeros dropped ("1.5",
+  // "0.75", "3", "0.33203125" for 85/256). INI files store it, and
+  // FromString() reads it back unchanged.
   [[nodiscard]] std::string AsString() const;
 
   // Common fractions, truncated like fixed(n, d): _1_3 is 85/256.
