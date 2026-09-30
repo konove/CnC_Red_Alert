@@ -23,16 +23,10 @@
     palette's brightness and contrast jump for the length of a Chronosphere/grey fade (slider at 1:
     value times 2 instead of 1.5)
   - Found while unifying the HSV conversions (`docs/PALETTE_HSV_PLAN.md`)
-- Decide whether `PaletteColor::red()`/`green()`/`blue()` should read full intensity as 255
-  - `ToEightBits()` (`engine/gfx/palette_color.h`, TODO there) is `gun * 4 + gun / 64`, the original
-    `(gun << 2) | (gun >> 6)`; the second term is always 0 for a 6-bit gun, so 63 reads as 252.
-    `gun >> 4` would copy the top bits down (63 -> 255), as was probably meant
-  - Changes `ToHsv()` values (the options palette), `PaletteClass::Closest_Color()` matches and the
-    palette `ra/wolapiob.cc` exports
 - Make Red Alert's cloak shimmer walk the other way on the right half of the window
-  - `CC_Draw_Shape()` (`ra/shape_draw.cc:179`) negates the predator offset when
+  - `CC_Draw_Shape()` (`ra/shape_draw.cc:163`) negates the predator offset when
     `x > WindowList[window][kWindowWidth] * 4`, TD's formula; TD stores window widths in 8-pixel
-    units, RA in pixels (`engine/gfx/pixel_buffer.h:361`), so RA's test is "past four window widths"
+    units, RA in pixels (`engine/gfx/pixel_buffer.h:363`), so RA's test is "past four window widths"
     and never holds for a visible shape. RA never uses the down-and-left sample offsets
   - Fix: `x > width / 2` in pixels (one line); visual only, not simulation. Found in the
     `shape_blitter` `/modernize-file` run (`a5dd8079..b83db634`)
@@ -40,7 +34,7 @@
   - `engine::gfx::DrawShapeFrame()` (`engine/gfx/shape_blitter.cc`) silently draws nothing when the
     table a `ShapeFlags::kGhost` or `kFading` draw needs is missing or too short; RA's
     `CC_Draw_Shape()` substitutes `DisplayClass::SpecialGhost`/`FadingShade` first (the "E3 kludge",
-    `ra/shape_draw.cc:127-133`), TD's (`td/conquer.cc`) does not
+    `ra/shape_draw.cc:118-127`), TD's (`td/conquer.cc`) does not
   - Options: give TD the same substitution (small; draws what now vanishes), and/or make a missing
     table a `CHECK` in the blitter instead of a no-op (turns a silent miss into a crash)
 - Decide what a warhead with fewer than five `Verses` entries should get
@@ -76,9 +70,9 @@
   - See `docs/TYPE_MIGRATION.md` for full conversion rules
   - Use `/migrate-types <file>` command for per-file migration
 - Replace the manual `PixelView::Lock()`/`Unlock()` pairs with an RAII guard
-  - 31 sites left in `ra/`, `td/`, `engine/gfx/` and `engine/window/`, in five different shapes:
-    unlock inside the `if`, unlock outside it, bare `Lock()` with the result dropped, `Lock()`
-    folded into a larger `&&`, and two-view locks with hand-written unwind
+  - About 30 sites left in `ra/`, `td/` and `engine/gfx/`, in five different shapes: unlock inside
+    the `if`, unlock outside it, bare `Lock()` with the result dropped, `Lock()` folded into a
+    larger `&&`, and two-view locks with hand-written unwind
   - A `[[nodiscard]] PixelLock` returned by `Lock()`, with `Unlock()` made private, would make the
     miswritten pattern stop compiling; guaranteed copy elision means it needs no move constructor
   - `ra/winbits.h`'s `LockedWindow` is the same idea already hand-rolled for one caller, and would
@@ -86,14 +80,16 @@
   - 9 of the sites genuinely need the lock (`DrawShapeFrame` subspans `dest.pixels()` without
     locking, so its callers must hold one); the other 22 hold it to batch a render loop, since each
     outer unlock also runs `DropScaledFrame()` and arms `Present(false)`
-  - `ra/radar.cc:1036` and `:1044` are early-return unwinds inside an outer lock - the shape a guard
+  - `ra/radar.cc:1033` and `:1041` are early-return unwinds inside an outer lock - the shape a guard
     most obviously fixes
-- Make `Display::DropScaledFrame()` and `Display::UpdatePalette()` private
-  - Only `Display` itself and the tests call them; the games use `PresentScaledFrame()`
+- Make `Display::DropScaledFrame()` private
+  - Only `Display` itself calls it (`engine/window/display.cc`); the games use
+    `PresentScaledFrame()`
 - Remove the blank lines left where the `AllSurfaces.SurfacesRestored` blocks were deleted
-  - About 44 `while (process) {` loops now open with a blank line, some sites have two in a row
-    (`td/nulldlg.cc`, `td/queue.cc`, `ra/goptions.cc`); `git clang-format` does not touch lines that
-    were only deleted
+  (`6be19256`)
+  - 44 `while (process) {` loops in 20 files now open with a blank line (most in `td/nulldlg.cc`,
+    `td/mapeddlg.cc`, `td/netdlg.cc`), and `td/nulldlg.cc:166`, `:3514` and `:4831` have two in a
+    row; `git clang-format` does not touch lines that were only deleted
 - Finish moving the games' input handling onto `engine::window::InputEvent`
   - The map layers' `AI(InputEvent& event, ...)` still open with `KeyNumber& input = event.key;`,
     and the dialogs copy `input = input_event.key;`: transitional aliases that can read the event
@@ -103,9 +99,9 @@
   - `td/msgbox.cc`'s `#ifdef NEVER` block (C-style `KeyNumber` casts, `& 0xFF` masks)
   - Commented-out `kKeyReleaseBit` tests in `td/edit.cc` and `ra/woledit.cc`
 - Delete commented-out code that still calls the mouse functions
-  - `ra/gadget.cc`, `ra/init.cc`, `ra/wol_chat.cc`, `ra/wol_logn.cc`, `td/conquer.cc`,
-    `td/debug.cc`, `td/gscreen.cc`, `td/init.cc`, `td/scenario.cc`, `td/score.cc`, and
-    `// TheMouse()->GrabMouse();` in `ra/winstub.cc` and `td/winstub.cc`
+  - `ra/gadget.cc`, `ra/init.cc`, `ra/wol_logn.cc`, `td/conquer.cc`, `td/debug.cc`, `td/gscreen.cc`,
+    `td/init.cc`, `td/scenario.cc`, `td/score.cc`, and `// TheMouse()->GrabMouse();` in
+    `ra/winstub.cc` and `td/winstub.cc`
 - Move the mouse grab into `Display`
   - Make `mouse_grab_disabled` a `Display` option honoured by `SetMouseGrab()`, drop the static
     `HardwareCursor::GrabMouse()`/`ReleaseMouse()`, and have the startup and shutdown code
@@ -134,19 +130,21 @@
   - Stage 7 of the `/modernize-file` run (`0e463fee..eed3a0d2`) was skipped: CLion's
     `getDiagnostics` timed out on every file
 - Settle on one spelling of "the countdown has time left"
-  - `HasTimeLeft()` (35 sites), `!IsFinished()` (4: `td/infantry.cc:1357`, `td/team.cc:277`,
-    `td/drive.cc:894`, `engine/gfx/glow_pulse.h:40`) and `Remaining()` compared with 0 (5:
-    `td/mouse.cc:232`, `td/scroll.cc:222` and `:229`, `td/nulldlg.cc:4427`, `td/msgbox.cc:431`)
-  - Either drop `HasTimeLeft()` for `!IsFinished()` or convert the other 9 sites to it
+  - `HasTimeLeft()` (35 sites), `!IsFinished()` (5: `td/infantry.cc:1358`, `td/team.cc:277`,
+    `td/drive.cc:894`, `td/techno.cc:3553`, `engine/gfx/glow_pulse.h:40`) and `Remaining()` compared
+    with 0 (5: `td/mouse.cc:235`, `td/scroll.cc:223` and `:230`, `td/nulldlg.cc:4432`,
+    `td/msgbox.cc:432`)
+  - Either drop `HasTimeLeft()` for `!IsFinished()` or convert the other 10 sites to it
 - Read `Arm.Remaining()` once in `ra/foot.cc:622`
   - It calls `HasTimeLeft()` and then `Remaining()`, two `Tick()` reads for one answer
 - Consider dropping the double check in `CurrentFrame()` (`ra/game_clock.h`, `td/game_clock.h`)
   - It tests `IsInstalled()` and then `Get()` checks the same pointer again on every frame-timer
     `Tick()`; a few ns, worth it only if `base::Installed` gains a get-or-null accessor
-- Consider renaming `engine::platform::Timer<T>` to `Countdown<T>` (149 uses)
+- Consider renaming `engine::platform::Timer<T>` to `Countdown<T>` (162 uses)
   - `Stopwatch` and `Timer` are both timers; the name kept by `docs/TIMER_UNIFICATION_PLAN.md` does
     not say which way it counts
-- Delete the commented-out code in `ra/wol_logn.cc:439`, `ra/wolapiob.cc:797` and `ra/jshell.cc:420`
+  - `td/credits.h:75` has an `int Countdown` member that the new name would shadow
+- Delete the commented-out code in `ra/wol_logn.cc:439`, `ra/wolapiob.cc:801` and `ra/jshell.cc:407`
   - `jshell.cc` still builds an `HsvColor` from a palette entry, which no longer compiles
   - The first two still name `Timer<SystemTickSource>` and `SystemMilliseconds()` unqualified, so it
     no longer matches the code around it
@@ -161,18 +159,19 @@
     a width/height/pixels view that could become the shared one
 - Share the options dialogs' brightness, contrast, color and tint math
   - `OptionsClass::Adjust_Palette()` in `ra/options.cc` and `td/options.cc` repeat the same ~25
-    lines; only the slider scale differs (RA's `Fixed * 256`, TD's `unsigned char`). One
-    `engine/gfx` function over an `HsvColor` and four 0..255 levels would do, best after the
-    palette-drift bug above settles on one HSV conversion
+    lines, neutral-slider copy included; only the slider scale (RA's `Fixed * 256`, TD's
+    `unsigned char`) and the skipped index (`kMouseColor` vs 255) differ. One `engine/gfx` function
+    over an `HsvColor` and four 0..255 levels would do
 - Define the 0..255 HSV scale once
-  - `kMaxComponent` = 255 is a local in `base::HsvToRgb8()` (`base/hsv.h`), a file constant in
-    `engine/gfx/hsv_color.cc` and `PaletteColor::kMaxComponent`, and `engine/gfx/palette_color.cc`
-    still spells it `255` (the fade ratio and the HSV scale); hoist one `base::` constant into
+  - `kMaxComponent` = 255 is a local in both `base::HsvToRgb8()` and `base::Rgb8ToHsv()`
+    (`base/hsv.h:43`, `:100`) and again `PaletteColor::kMaxComponent`; `FadedToward()` still clamps
+    with a literal 255 (`engine/gfx/palette_color.cc:33`). Hoist one `base::` constant into
     `base/hsv.h`
 - Move the rest of `engine/gfx` into `engine::gfx`
-  - Only `palette_color.*`, `hsv_color.*` (`babcd0a9`), `shape_blitter.*` (`b8ab89fe`) and `shape.*`
-    (`a9332c6d`) are in it; `glow_pulse.h` and `glow_pulse_test.cc` write
-    `engine::gfx::PaletteColor` and `engine::gfx::kBlackColor` and drop the qualifier when they move
+  - Only `palette_color.*`, `hsv_color.*` (`babcd0a9`), `palette.*` (`b88cee17`), `keyframe.*`
+    (`b98babe6`), `shape_blitter.*` (`b8ab89fe`) and `shape.*` (`a9332c6d`) are in it;
+    `glow_pulse.h` and `glow_pulse_test.cc` write `engine::gfx::PaletteColor` and
+    `engine::gfx::kBlackColor` and drop the qualifier when they move
 - Run `/fix-ide-issues` on `engine/gfx/palette_color.h`, `palette_color.cc`, `palette_color_test.cc`
   and `hsv_color_test.cc`
   - Stage 7 of the `/modernize-file` run (`dc251088..f60d3070`) was skipped: CLion's
@@ -184,8 +183,8 @@
     `bool` (or the blitter choosing the direction from x and the view width) drops the sign trick.
     Pairs with the RA shimmer-direction bug above
 - Consider making color 0 always transparent in `engine::gfx::DrawShapeFrame()`
-  - Both callers pass `flags | ShapeFlags::kTransparent` (`ra/shape_draw.cc:191`,
-    `td/conquer.cc:2407`) and no other code passes it, so the eight non-transparent entries of
+  - Both callers pass `flags | ShapeFlags::kTransparent` (`ra/shape_draw.cc:178`,
+    `td/conquer.cc:2401`) and no other code passes it, so the eight non-transparent entries of
     `kBlitters` (`engine/gfx/shape_blitter.cc`), including the whole-line copy, only run in
     `shape_blitter_test.cc`; dropping the flag halves the instantiations and deletes `kTransparent`
     (~6 files: `shape.h`, `shape_blitter.{h,cc}`, its test, the two callers)
@@ -195,9 +194,9 @@
     files include `engine/gfx/shape.h`, most only for the flags, so it is an include rewrite
 - Parse a keyframe shape's header once for callers that want its width and height
   - `KeyframeWidth()` and `KeyframeHeight()` (`engine/gfx/keyframe.h`) each re-read the header, and
-    most callers ask for both: `ra/shape_draw.cc:150-151`, `215-216`, `303-304`,
+    most callers ask for both: `ra/shape_draw.cc:130-131`, `195-196`, `283-284`,
     `ra/udata.cc:1094-1095`, `ra/shapebtn.cc:119-120`, `ra/drop.cc:66-67`/`ra/drop.h:196-197`,
-    `td/conquer.cc:2242-2243`, `2323-2324`, `2413-2414`, `td/udata.cc:1483-1484`,
+    `td/conquer.cc:2241-2242`, `2307-2308`, `2398-2399`, `td/udata.cc:1483-1484`,
     `td/shapebtn.cc:109-110`. A size getter, or a small `KeyframeShape` view over the file with
     `frame_count()`, `width()`, `height()` and `BuildFrame()` (~25 call-site lines), would parse
     once. That would also settle the free functions' names, which the run was unsure of: the
@@ -207,19 +206,18 @@
   - `base/clip.h:47-50` says a caller carrying a source rectangle must use `OutCodeOf()` directly,
     but `DrawShapeFrame()` and `PixelView::RemapLocked()` show `ClipRect()` works whenever only the
     near corner moves the source (source shift = how far that corner moved); fix the comment
-  - `PixelView::CopyFromBufferLocked()` (`engine/gfx/pixel_buffer.cc:272-313`) and the clips at
+  - `PixelView::CopyFromBufferLocked()` (`engine/gfx/pixel_buffer.cc:270-331`) and the clips at
     `pixel_buffer.cc:282`, `370` and `541` still hand-write the outcode clip
-- Run `/fix-ide-issues` on `engine/gfx/shape_blitter.h`, `shape_blitter.cc` and
-  `shape_blitter_test.cc`
+- Run `/fix-ide-issues` on `engine/gfx/shape_blitter.h` and `shape_blitter_test.cc`
   - Stage 7 of the `/modernize-file` run (`a5dd8079..b83db634`) was skipped at the user's request
-    (the files were not open in CLion)
+    (the files were not open in CLion); `shape_blitter.cc` was cleared later in `0af052ad`
 - Run `/fix-ide-issues` on `engine/gfx/shape.cc`
   - Stage 7 of the `/modernize-file` run (`f4f3ea0b..a9332c6d`) was skipped for it: CLion's
     `getDiagnostics` timed out (`shape.h` answered, with nothing to fix)
 - Move `Fixed` (`base/fixed.h`) into namespace `base`
   - The other `base/` headers are in `base::` except `clip.h`, `random.h` and the macros in
     `attributes.h`; `/modernize-file` namespaces only `src/engine` files, so the `base/fixed`
-    `/modernize-file` run (`4e995aa2..8fd12531`) left `Fixed` global. 578 lines in 49 Red Alert
+    `/modernize-file` run (`4e995aa2..8fd12531`) left `Fixed` global. 471 lines in 62 Red Alert
     files name it
 - Run `/fix-ide-issues` on `base/fixed.h` and `base/fixed_test.cc`
   - Stage 7 of the `base/fixed` `/modernize-file` run (`4e995aa2..8fd12531`): `fixed.cc` answered
@@ -228,7 +226,8 @@
 - Reject a zero cap in `Fixed::SaturateBelow()` (`base/fixed.h`)
   - A cap of 0 wraps to 255 255/256 (documented there); all nine callers pass 1. A `DCHECK_GT` or a
     no-argument `SaturateBelowOne()` would each do; `Saturate()` is likewise only called with 1
-- Delete the commented-out `UNIT_BUILD_BIAS` defines at `ra/techno.cc:699-702`
+- Delete the commented-out `UNIT_BUILD_BIAS` defines at `ra/techno.cc:699-702` (and the
+  `// UNIT_BUILD_BIAS;` at `:714`)
 
 ## Testing
 
@@ -243,7 +242,7 @@
   (`engine/stream/vector_sink.h`)
   - `engine/stream/archive_test.cc`, `ra/heap_test.cc`, `engine/crypto/pk_stream_test.cc`,
     `engine/crypto/blowfish_stream_test.cc`, and `engine/codec/stream_golden_test.cc`,
-    `codec_corrupt_test.cc`, `codec_state_test.cc`
+    `codec_corrupt_test.cc`, `codec_state_test.cc`, `lcw_comp_test.cc`, `stream_error_test.cc`
   - `engine/file/mix_archive_test.cc:95` defines its own class named `VectorSink`
 - Rename `ra/profile_buffer_test.cc` to `profile_test.cc`
   - It tests `ra/profile.h`; the misleading name keeps clang-format from treating `ra/profile.h` as
@@ -272,8 +271,6 @@
     before `SDL_RenderPresent`
   - A cheat-key window would show what the mono pages used to: selected object, house, logic/FPS and
     network queue state, read through accessors instead of a `Debug_Dump` hierarchy
-- RA's `BStart`/`BEnd` benchmark instrumentation is write-only since `Benchmarks()` went away
-  - Either delete it or make the overlay its reader
 
 ## Other
 
