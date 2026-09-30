@@ -3979,7 +3979,7 @@ int UnitClass::Pip_Count() const {
   if (*this == UNIT_MINELAYER) {
     int retval = 0;
     if (Ammo > 0) {
-      retval = Class->Max_Pips() * fixed(Ammo, Class->MaxAmmo);
+      retval = Class->Max_Pips() * Fixed(Ammo, Class->MaxAmmo);
       if (!retval) {
         retval = 1;
       }
@@ -4361,13 +4361,13 @@ const ObjectTypeClass& UnitClass::Class_Of() const {
  *                                                                                             *
  * HISTORY: * 03/17/1995 JLB : Created. *
  *=============================================================================================*/
-fixed UnitClass::Tiberium_Load() const {
+Fixed UnitClass::Tiberium_Load() const {
   DCHECK(IsActive);
 
   if (*this == UNIT_HARVESTER) {
     return {Tiberium, TheRules().BailCount};
   }
-  return fixed(0);
+  return Fixed(0);
 }
 
 /***********************************************************************************************
@@ -4746,7 +4746,7 @@ void UnitClass::Read_INI(CCINIClass& ini) {
 
           if (unit->Unlimbo(coord, dir)) {
             unit->Strength = static_cast<int16_t>(unit->Class->MaxStrength *
-                                                  fixed(strength, 256));
+                                                  Fixed(strength, 256));
             if (unit->Strength > unit->Class->MaxStrength - 3) {
               unit->Strength = unit->Class->MaxStrength;
             }

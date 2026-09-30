@@ -308,7 +308,7 @@ void PlaySoundEffectAt(const VocType voc, const COORDINATE coord,
   // Off screen it fades linearly with the distance in cells, reaching silence
   // 192 cells away (1.5 map widths). Sub_Saturate() keeps a sliver of 1/256
   // even there.
-  fixed volume(1);
+  Fixed volume(1);
   if (coord && !TheMap().In_View(cell)) {
     // Measured from the centre of the view: TacticalCoord is its upper-left
     // corner, which would make sounds below and right of the screen quieter
@@ -318,15 +318,15 @@ void PlaySoundEffectAt(const VocType voc, const COORDINATE coord,
                   XY_Coord(static_cast<LEPTON>(TheMap().TacLeptonWidth / 2),
                            static_cast<LEPTON>(TheMap().TacLeptonHeight / 2)));
     const int distance_cells = Distance(coord, view_center) / CELL_LEPTON_W;
-    auto fade = fixed(distance_cells, 128 + 64);
+    auto fade = Fixed(distance_cells, 128 + 64);
     fade.Sub_Saturate(1);
-    volume = fixed(1) - fade;
+    volume = Fixed(1) - fade;
   }
 
   PlaySoundEffect(voc, volume, variation, house);
 }
 
-int PlaySoundEffect(VocType voc, fixed volume, const int variation,
+int PlaySoundEffect(VocType voc, Fixed volume, const int variation,
                     HousesType house) {
   // A VocType cast from scenario or INI data can be out of range; indexing
   // the table with it would fail the at() check.

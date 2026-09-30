@@ -191,7 +191,7 @@ class UnitClass final : public DriveClass {
   [[nodiscard]] DirType Fire_Direction() const override;
   bool Ok_To_Move(DirType dir) override;
   [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
-  [[nodiscard]] fixed Tiberium_Load() const override;
+  [[nodiscard]] Fixed Tiberium_Load() const override;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and

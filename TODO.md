@@ -138,7 +138,7 @@
     a width/height/pixels view that could become the shared one
 - Share the options dialogs' brightness, contrast, color and tint math
   - `OptionsClass::Adjust_Palette()` in `ra/options.cc` and `td/options.cc` repeat the same ~25
-    lines; only the slider scale differs (RA's `fixed * 256`, TD's `unsigned char`). One
+    lines; only the slider scale differs (RA's `Fixed * 256`, TD's `unsigned char`). One
     `engine/gfx` function over an `HsvColor` and four 0..255 levels would do, best after the
     palette-drift bug above settles on one HSV conversion
 - Define the 0..255 HSV scale once

@@ -97,7 +97,7 @@
  * HISTORY: * 06/17/1996 JLB : Created. *
  *=============================================================================================*/
 static inline int Scale_To_256(int val) {
-  val = fixed(100, 256) * val;
+  val = Fixed(100, 256) * val;
   val = std::min(val, 255);
   return val;
 }
@@ -118,53 +118,53 @@ static inline int Scale_To_256(int val) {
  * HISTORY: * 06/17/1996 JLB : Created. *
  *=============================================================================================*/
 RulesClass::RulesClass()
-    : TurboBoost(fixed::FromString("1.5")),
+    : TurboBoost(Fixed::FromString("1.5")),
       AttackInterval(3),
       AttackDelay(5),
-      PowerEmergencyFraction(fixed(3, 4)),
+      PowerEmergencyFraction(Fixed(3, 4)),
 
-      AirstripRatio(fixed::FromString(".12")),
+      AirstripRatio(Fixed::FromString(".12")),
 
-      HelipadRatio(fixed::FromString(".12")),
+      HelipadRatio(Fixed::FromString(".12")),
 
-      TeslaRatio(fixed::FromString(".16")),
+      TeslaRatio(Fixed::FromString(".16")),
 
-      AARatio(fixed::FromString(".14")),
+      AARatio(Fixed::FromString(".14")),
 
-      DefenseRatio(fixed::FromString(".5")),
+      DefenseRatio(Fixed::FromString(".5")),
 
-      WarRatio(fixed::FromString(".1")),
+      WarRatio(Fixed::FromString(".1")),
 
-      BarracksRatio(fixed::FromString(".16")),
+      BarracksRatio(Fixed::FromString(".16")),
 
-      RefineryRatio(fixed::FromString(".16")),
+      RefineryRatio(Fixed::FromString(".16")),
 
       ChronoDuration(3),
-      WaterCrateChance(fixed::FromString(".2")),
+      WaterCrateChance(Fixed::FromString(".2")),
 
-      PatrolTime(fixed::FromString(".016")),
-      TeamDelay(fixed::FromString(".6")),
+      PatrolTime(Fixed::FromString(".016")),
+      TeamDelay(Fixed::FromString(".6")),
       CloakDelay(0),
       GameSpeedBias(1),
       NervousBias(1),
 
-      VortexChance(fixed::FromString(".2")),
-      ExplosionSpread(fixed(1, 2)),
+      VortexChance(Fixed::FromString(".2")),
+      ExplosionSpread(Fixed(1, 2)),
 
-      MessageDelay(fixed::FromString(".6")),
-      SavourDelay(fixed::FromString(".03")),
+      MessageDelay(Fixed::FromString(".6")),
+      SavourDelay(Fixed::FromString(".03")),
 
-      BaseDefenseDelay(fixed(1, 4)),
+      BaseDefenseDelay(Fixed(1, 4)),
 
       SuspendDelay(2),
-      SurvivorFraction(fixed(1, 2)),
-      ReloadRate(fixed::FromString(".05")),
+      SurvivorFraction(Fixed(1, 2)),
+      ReloadRate(Fixed::FromString(".05")),
       AutocreateTime(5),
-      BuildupTime(fixed::FromString(".05")),
+      BuildupTime(Fixed::FromString(".05")),
 
-      ProneDamageBias(fixed(1, 2)),
-      QuakeDamagePercent(fixed::FromString(".33")),
-      QuakeChance(fixed::FromString(".2")),
+      ProneDamageBias(Fixed(1, 2)),
+      QuakeDamagePercent(Fixed::FromString(".33")),
+      QuakeChance(Fixed::FromString(".2")),
       GrowthRate(2),
       ShroudRate(4),
       CrateTime(10),
@@ -181,25 +181,25 @@ RulesClass::RulesClass()
       SpeakDelay(2),
       DamageDelay(1),
 
-      GapRegenInterval(fixed::FromString(".1")),
+      GapRegenInterval(Fixed::FromString(".1")),
 
-      RepairPercent(fixed(1, 4)),
+      RepairPercent(Fixed(1, 4)),
 
-      URepairPercent(fixed(1, 4)),
-      RepairRate(fixed::FromString(".016")),
+      URepairPercent(Fixed(1, 4)),
+      RepairRate(Fixed::FromString(".016")),
       ConditionGreen(1),
-      ConditionYellow(fixed(1, 2)),
-      ConditionRed(fixed(1, 4)),
-      RandomAnimateTime(fixed::FromString(".083")),
+      ConditionYellow(Fixed(1, 2)),
+      ConditionRed(Fixed(1, 4)),
+      RandomAnimateTime(Fixed::FromString(".083")),
 
-      RefundPercent(fixed(1, 2)),
-      IronCurtainDuration(fixed(1, 2)),
+      RefundPercent(Fixed(1, 2)),
+      IronCurtainDuration(Fixed(1, 2)),
 
       BuildSpeedBias(1),
-      C4Delay(fixed::FromString(".03")),
+      C4Delay(Fixed::FromString(".03")),
 
-      PathDelay(fixed::FromString(".016")),
-      MovieTime(fixed(1, 4)),
+      PathDelay(Fixed::FromString(".016")),
+      MovieTime(Fixed(1, 4)),
       // Declared after ConditionRed, so it picks up that rule's default.
       // Reading a different ConditionRed from the rules file does not move
       // it, which is how it has always behaved.
@@ -226,18 +226,18 @@ RulesClass::RulesClass()
 static void Difficulty_Get(const CCINIClass& ini, DifficultyClass& diff,
                            const char* section) {
   if (ini.Is_Present(section)) {
-    diff.FirepowerBias = ini.Get_Fixed(section, "FirePower", fixed(1));
-    diff.GroundspeedBias = ini.Get_Fixed(section, "Groundspeed", fixed(1));
-    diff.AirspeedBias = ini.Get_Fixed(section, "Airspeed", fixed(1));
-    diff.ArmorBias = ini.Get_Fixed(section, "Armor", fixed(1));
-    diff.ROFBias = ini.Get_Fixed(section, "ROF", fixed(1));
-    diff.CostBias = ini.Get_Fixed(section, "Cost", fixed(1));
+    diff.FirepowerBias = ini.Get_Fixed(section, "FirePower", Fixed(1));
+    diff.GroundspeedBias = ini.Get_Fixed(section, "Groundspeed", Fixed(1));
+    diff.AirspeedBias = ini.Get_Fixed(section, "Airspeed", Fixed(1));
+    diff.ArmorBias = ini.Get_Fixed(section, "Armor", Fixed(1));
+    diff.ROFBias = ini.Get_Fixed(section, "ROF", Fixed(1));
+    diff.CostBias = ini.Get_Fixed(section, "Cost", Fixed(1));
     diff.RepairDelay =
-        ini.Get_Fixed(section, "RepairDelay", fixed::FromString(".02"));
+        ini.Get_Fixed(section, "RepairDelay", Fixed::FromString(".02"));
     diff.BuildDelay =
-        ini.Get_Fixed(section, "BuildDelay", fixed::FromString(".03"));
+        ini.Get_Fixed(section, "BuildDelay", Fixed::FromString(".03"));
     diff.IsBuildSlowdown = ini.Get_Bool(section, "BuildSlowdown", false);
-    diff.BuildSpeedBias = ini.Get_Fixed(section, "BuildTime", fixed(1));
+    diff.BuildSpeedBias = ini.Get_Fixed(section, "BuildTime", Fixed(1));
     diff.IsWallDestroyer = ini.Get_Bool(section, "DestroyWalls", true);
     diff.IsContentScan = ini.Get_Bool(section, "ContentScan", false);
   }
@@ -336,7 +336,7 @@ bool RulesClass::General(CCINIClass& ini) {
     GPSTechLevel = ini.Get_Int(GENERAL, "GPSTechLevel", GPSTechLevel);
     UnitCrateType = ini.Get_UnitType(GENERAL, "UnitCrateType", UnitCrateType);
     IsExplosiveHarvester = ini.Get_Fixed(GENERAL, "OreExplosive",
-                                         fixed(IsExplosiveHarvester ? 1 : 0))
+                                         Fixed(IsExplosiveHarvester ? 1 : 0))
                                .ToInt() != 0;
     GapRegenInterval =
         ini.Get_Fixed(GENERAL, "GapRegenInterval", GapRegenInterval);
@@ -385,7 +385,7 @@ bool RulesClass::General(CCINIClass& ini) {
         ini.Get_Lepton(GENERAL, "BallisticScatter", BallisticScatter);
     BridgeStrength = ini.Get_Int(GENERAL, "BridgeStrength", BridgeStrength);
     BuildSpeedBias = ini.Get_Fixed(GENERAL, "BuildSpeed", BuildSpeedBias);
-    ConditionGreen = fixed(1);
+    ConditionGreen = Fixed(1);
     ConditionRed = ini.Get_Fixed(GENERAL, "ConditionRed", ConditionRed);
     ConditionYellow =
         ini.Get_Fixed(GENERAL, "ConditionYellow", ConditionYellow);
@@ -717,7 +717,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         if (token != nullptr) {
           if ((std::string_view(token).contains('.') ||
                std::string_view(token).contains('%'))) {
-            crate_data_.at(crate) = fixed::FromString(token) * 256;
+            crate_data_.at(crate) = Fixed::FromString(token) * 256;
           } else {
             strtrim(base::MutableCString(token));
             crate_data_.at(crate) = base::ParseIntegerOr<int>(token, 0);
@@ -757,14 +757,14 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
 
     if (ini.Is_Present(_lands.at(land))) {
       gptr->Cost.at(SPEED_FOOT) =
-          ini.Get_Fixed(_lands.at(land), "Foot", fixed(1)).Sub_Saturate(1);
+          ini.Get_Fixed(_lands.at(land), "Foot", Fixed(1)).Sub_Saturate(1);
       gptr->Cost.at(SPEED_TRACK) =
-          ini.Get_Fixed(_lands.at(land), "Track", fixed(1)).Sub_Saturate(1);
+          ini.Get_Fixed(_lands.at(land), "Track", Fixed(1)).Sub_Saturate(1);
       gptr->Cost.at(SPEED_WHEEL) =
-          ini.Get_Fixed(_lands.at(land), "Wheel", fixed(1)).Sub_Saturate(1);
-      gptr->Cost.at(SPEED_WINGED) = fixed(1).Sub_Saturate(1);
+          ini.Get_Fixed(_lands.at(land), "Wheel", Fixed(1)).Sub_Saturate(1);
+      gptr->Cost.at(SPEED_WINGED) = Fixed(1).Sub_Saturate(1);
       gptr->Cost.at(SPEED_FLOAT) =
-          ini.Get_Fixed(_lands.at(land), "Float", fixed(1)).Sub_Saturate(1);
+          ini.Get_Fixed(_lands.at(land), "Float", Fixed(1)).Sub_Saturate(1);
       gptr->Build = ini.Get_Bool(_lands.at(land), "Buildable", false);
     }
   }

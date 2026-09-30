@@ -62,16 +62,16 @@ class OptionsClass {
   void Fixup_Palette() const;
   void Set_Shuffle(bool on);
   void Set_Repeat(bool on);
-  void Set_Score_Volume(fixed volume, bool feedback);
-  void Set_Sound_Volume(fixed volume, bool feedback);
-  void Set_Brightness(fixed brightness);
-  [[nodiscard]] fixed Get_Brightness() const;
-  void Set_Saturation(fixed color);
-  [[nodiscard]] fixed Get_Saturation() const;
-  void Set_Contrast(fixed contrast);
-  [[nodiscard]] fixed Get_Contrast() const;
-  void Set_Tint(fixed tint);
-  [[nodiscard]] fixed Get_Tint() const;
+  void Set_Score_Volume(Fixed volume, bool feedback);
+  void Set_Sound_Volume(Fixed volume, bool feedback);
+  void Set_Brightness(Fixed brightness);
+  [[nodiscard]] Fixed Get_Brightness() const;
+  void Set_Saturation(Fixed color);
+  [[nodiscard]] Fixed Get_Saturation() const;
+  void Set_Contrast(Fixed contrast);
+  [[nodiscard]] Fixed Get_Contrast() const;
+  void Set_Tint(Fixed tint);
+  [[nodiscard]] Fixed Get_Tint() const;
   [[nodiscard]] int Normalize_Delay(int delay) const;
   [[nodiscard]] int Normalize_Volume(int volume) const;
 
@@ -98,13 +98,13 @@ class OptionsClass {
   unsigned int GameSpeed{3};
 
   int ScrollRate{3};             // Distance to scroll.
-  fixed Volume;                  // Volume for sound effects.
-  fixed ScoreVolume;             // Volume for scores.
-  fixed MultiScoreVolume;        // Volume for scores during multiplayer games.
-  fixed Brightness;              // Brightness.
-  fixed Tint;                    // Hue
-  fixed Saturation;              // Saturation
-  fixed Contrast;                // Value
+  Fixed Volume;                  // Volume for sound effects.
+  Fixed ScoreVolume;             // Volume for scores.
+  Fixed MultiScoreVolume;        // Volume for scores during multiplayer games.
+  Fixed Brightness;              // Brightness.
+  Fixed Tint;                    // Hue
+  Fixed Saturation;              // Saturation
+  Fixed Contrast;                // Value
   bool AutoScroll : 1 {true};    // Does map autoscroll?
   bool IsScoreRepeat : 1 {false};   // Score should repeat?
   bool IsScoreShuffle : 1 {false};  // Score list should shuffle?
@@ -164,8 +164,8 @@ class OptionsClass {
   engine::window::KeyNumber KeyTeam10{engine::window::KN_0};
 
   static void Adjust_Palette(const PaletteClass& oldpal, PaletteClass& newpal,
-                             fixed brightness, fixed color, fixed tint,
-                             fixed contrast);
+                             Fixed brightness, Fixed color, Fixed tint,
+                             Fixed contrast);
 
  protected:
  private:

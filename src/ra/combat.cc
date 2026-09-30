@@ -383,10 +383,10 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
       //	Fixed math error
       if (land == LAND_WATER) {
         return base::At(_waterlist, (std::ssize(_waterlist) - 1) *
-                                        fixed(std::min(damage, 90), 90));
+                                        Fixed(std::min(damage, 90), 90));
       }
       return base::At(
-          _aplist, (std::ssize(_aplist) - 1) * fixed(std::min(damage, 90), 90));
+          _aplist, (std::ssize(_aplist) - 1) * Fixed(std::min(damage, 90), 90));
 
     case 5:
       if (land == LAND_NONE) {
@@ -394,10 +394,10 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
       }
       if (land == LAND_WATER) {
         return base::At(_waterlist, (std::ssize(_waterlist) - 1) *
-                                        fixed(std::min(damage, 130), 130));
+                                        Fixed(std::min(damage, 130), 130));
       }
       return base::At(_helist, (std::ssize(_helist) - 1) *
-                                   fixed(std::min(damage, 130), 130));
+                                   Fixed(std::min(damage, 130), 130));
 
     case 3:
       if (land == LAND_NONE) {
@@ -405,10 +405,10 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
       }
       if (land == LAND_WATER) {
         return base::At(_waterlist, (std::ssize(_waterlist) - 1) *
-                                        fixed(std::min(damage, 150), 150));
+                                        Fixed(std::min(damage, 150), 150));
       }
       return base::At(_firelist, (std::ssize(_firelist) - 1) *
-                                     fixed(std::min(damage, 150), 150));
+                                     Fixed(std::min(damage, 150), 150));
 
     case 1:
       return ANIM_PIFF;
@@ -476,7 +476,7 @@ void Wide_Area_Damage(COORDINATE coord, LEPTON radius, int rawdamage,
                    XY_Coord(static_cast<LEPTON>(cell_radius),
                             static_cast<LEPTON>(cell_radius)));
       const int damage =
-          rawdamage * fixed(cell_radius, dist_from_center).Inverse();
+          rawdamage * Fixed(cell_radius, dist_from_center).Inverse();
       Explosion_Damage(Cell_Coord(tcell), damage, source, warhead);
       if (warhead == WARHEAD_FIRE && damage > 100) {
         base::NewPooled<SmudgeClass>(

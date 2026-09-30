@@ -122,12 +122,12 @@ class INIClass {
   int Get_UUBlock(const char* section, std::span<std::byte> block,
                   int len) const;
   [[nodiscard]] PKey Get_PKey(bool fast) const;
-  fixed Get_Fixed(const char* section, const char* entry, fixed defvalue) const;
+  Fixed Get_Fixed(const char* section, const char* entry, Fixed defvalue) const;
 
   /*
   **	Put a data type to the section and entry specified.
   */
-  bool Put_Fixed(const char* section, const char* entry, fixed value);
+  bool Put_Fixed(const char* section, const char* entry, Fixed value);
   bool Put_String(const char* section, const char* entry, const char* string);
   bool Put_Hex(const char* section, const char* entry, int number);
   bool Put_Int(const char* section, const char* entry, int number,

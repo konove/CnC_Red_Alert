@@ -751,7 +751,7 @@ void AnimClass::AI() {
 
             IsToDelete = false;
             Loops = static_cast<unsigned char>(Class->Loops);
-            Accum = fixed(0);
+            Accum = Fixed(0);
             if (Class->IsNormalized) {
               Set_Rate(TheOptions().Normalize_Delay(Class->Delay));
             } else {

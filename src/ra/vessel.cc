@@ -2001,7 +2001,7 @@ void VesselClass::Read_INI(CCINIClass& ini) {
 
           if (vessel->Unlimbo(coord, dir)) {
             vessel->Strength = static_cast<int16_t>(vessel->Class->MaxStrength *
-                                                    fixed(strength, 256));
+                                                    Fixed(strength, 256));
             if (vessel->Strength > vessel->Class->MaxStrength - 3) {
               vessel->Strength = vessel->Class->MaxStrength;
             }

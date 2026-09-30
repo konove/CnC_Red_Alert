@@ -34,10 +34,10 @@
 // It cannot hold a negative value and detects no overflow or underflow; the
 // raw 16 bits simply wrap.
 //
-// An arithmetic operator with an int operand returns int, not fixed, as C's
+// An arithmetic operator with an int operand returns int, not Fixed, as C's
 // promotion would if int were the wider type, so `f * 300` can exceed 255.
 // That result is rounded to the nearest whole number (halves up) instead of
-// truncated. For a fixed result, make both operands fixed.
+// truncated. For a Fixed result, make both operands Fixed.
 //
 // The int operands must not be negative. The original computed several
 // operators in unsigned arithmetic; this port rounds a negative result towards
@@ -46,23 +46,23 @@
 // constructor.
 //
 // Example:
-//   const fixed ratio = fixed::FromString("75%");  // 192/256
+//   const Fixed ratio = Fixed::FromString("75%");  // 192/256
 //   const int cost = 400 * ratio;                  // 300
-class fixed {
+class Fixed {
  public:
   // Default-constructs to zero.
-  constexpr fixed() noexcept : raw_(0) {}
+  constexpr Fixed() noexcept : raw_(0) {}
 
   // Constructs numerator / denominator, truncated to a multiple of 1/256:
-  // fixed(3, 4) is 0.75, fixed(1, 3) is 85/256. A zero denominator gives zero.
-  constexpr fixed(const int numerator, const int denominator) noexcept
+  // Fixed(3, 4) is 0.75, Fixed(1, 3) is 85/256. A zero denominator gives zero.
+  constexpr Fixed(const int numerator, const int denominator) noexcept
       : raw_(denominator == 0 ? uint16_t{0}
                               : static_cast<uint16_t>(int64_t{numerator} * 256 /
                                                       denominator)) {}
 
   // Constructs the whole number `value`. An int argument keeps only its low
   // 8 bits, as the original's constructor did.
-  explicit fixed(const uint8_t value) noexcept
+  explicit Fixed(const uint8_t value) noexcept
       : raw_(static_cast<uint16_t>(value << 8)) {}
 
   // Parses an INI value. Text ending in '%' is a percentage ("75%" is 0.75);
@@ -70,11 +70,11 @@ class fixed {
   // skipped, each number is read up to its first non-digit, and text with no
   // digits reads as zero. The fraction is truncated to 1/256 steps: ".016" is
   // 4/256, not 0.016.
-  static fixed FromString(std::string_view str);
+  static Fixed FromString(std::string_view str);
 
   // As above, for C strings from INI buffers and tokenizers; a null pointer
   // parses as zero.
-  static fixed FromString(const char* str) {
+  static Fixed FromString(const char* str) {
     if (str == nullptr) {
       return {};
     }
@@ -99,48 +99,48 @@ class fixed {
 
   // In-place arithmetic. Dividing by zero leaves the value unchanged; dividing
   // by 1.0 is skipped as a shortcut.
-  fixed& operator*=(const fixed& rvalue) {
+  Fixed& operator*=(const Fixed& rvalue) {
     // Divide by 256 to remove extra 8.8 scale factor.
     raw_ = static_cast<uint16_t>(int64_t{raw_} * rvalue.raw_ / 256);
     return *this;
   }
-  fixed& operator*=(const int rvalue) {
+  Fixed& operator*=(const int rvalue) {
     raw_ = static_cast<uint16_t>(raw_ * rvalue);
     return *this;
   }
-  fixed& operator/=(const fixed& rvalue) {
+  Fixed& operator/=(const Fixed& rvalue) {
     if (rvalue.raw_ != 0 && rvalue.raw_ != 256) {
       raw_ = static_cast<uint16_t>(raw_ * 256 / rvalue.raw_);
     }
     return *this;
   }
-  fixed& operator/=(const int rvalue) {
+  Fixed& operator/=(const int rvalue) {
     if (rvalue) {
       raw_ = static_cast<uint16_t>(raw_ / rvalue);
     }
     return *this;
   }
-  fixed& operator+=(const fixed& rvalue) {
+  Fixed& operator+=(const Fixed& rvalue) {
     raw_ += rvalue.raw_;
     return *this;
   }
-  fixed& operator+=(const int rvalue) {
+  Fixed& operator+=(const int rvalue) {
     raw_ += static_cast<uint16_t>(rvalue * 256);
     return *this;
   }
-  fixed& operator-=(const fixed& rvalue) {
+  Fixed& operator-=(const Fixed& rvalue) {
     raw_ -= rvalue.raw_;
     return *this;
   }
-  fixed& operator-=(const int rvalue) {
+  Fixed& operator-=(const int rvalue) {
     raw_ -= static_cast<uint16_t>(rvalue * 256);
     return *this;
   }
 
   // Binary arithmetic. The original called the int overloads faster than the
-  // fixed ones; they return int, rounded as the class comment describes.
-  fixed operator*(const fixed& rvalue) const {
-    fixed temp = *this;
+  // Fixed ones; they return int, rounded as the class comment describes.
+  Fixed operator*(const Fixed& rvalue) const {
+    Fixed temp = *this;
     // Divide by 256 to remove extra 8.8 scale factor.
     temp.raw_ = static_cast<uint16_t>(int64_t{temp.raw_} * rvalue.raw_ / 256);
     return temp;
@@ -149,8 +149,8 @@ class fixed {
   int operator*(const int rvalue) const {
     return static_cast<int>(((int64_t{raw_} * rvalue) + kRoundingBias) / 256);
   }
-  fixed operator/(const fixed& rvalue) const {
-    fixed temp = *this;
+  Fixed operator/(const Fixed& rvalue) const {
+    Fixed temp = *this;
     if (rvalue.raw_ != 0 && rvalue.raw_ != 256) {
       temp.raw_ = static_cast<uint16_t>(temp.raw_ * 256 / rvalue.raw_);
     }
@@ -164,15 +164,15 @@ class fixed {
     }
     return ToInt();
   }
-  fixed operator+(const fixed& rvalue) const {
-    fixed temp = *this;
+  Fixed operator+(const Fixed& rvalue) const {
+    Fixed temp = *this;
     temp += rvalue;
     return temp;
   }
   // Rounds this value first, as does int subtraction below.
   int operator+(const int rvalue) const { return ToInt() + rvalue; }
-  fixed operator-(const fixed& rvalue) const {
-    fixed temp = *this;
+  Fixed operator-(const Fixed& rvalue) const {
+    Fixed temp = *this;
     temp -= rvalue;
     return temp;
   }
@@ -180,36 +180,36 @@ class fixed {
 
   // Multiply or divide by a power of two by shifting the raw bits; bits
   // shifted out are lost.
-  fixed& operator>>=(const unsigned rvalue) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Fixed& operator>>=(const unsigned rvalue) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     raw_ >>= rvalue;
     return *this;
   }
-  fixed& operator<<=(const unsigned rvalue) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Fixed& operator<<=(const unsigned rvalue) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     raw_ <<= rvalue;
     return *this;
   }
-  fixed operator>>(const unsigned rvalue) const {
-    fixed temp = *this;
+  Fixed operator>>(const unsigned rvalue) const {
+    Fixed temp = *this;
     temp >>= rvalue;
     return temp;
   }
-  fixed operator<<(const unsigned rvalue) const {
-    fixed temp = *this;
+  Fixed operator<<(const unsigned rvalue) const {
+    Fixed temp = *this;
     temp <<= rvalue;
     return temp;
   }
 
-  // Comparison operators (fixed vs fixed).
-  bool operator==(const fixed& rvalue) const { return raw_ == rvalue.raw_; }
-  bool operator!=(const fixed& rvalue) const { return raw_ != rvalue.raw_; }
-  bool operator<(const fixed& rvalue) const { return raw_ < rvalue.raw_; }
-  bool operator>(const fixed& rvalue) const { return raw_ > rvalue.raw_; }
-  bool operator<=(const fixed& rvalue) const { return raw_ <= rvalue.raw_; }
-  bool operator>=(const fixed& rvalue) const { return raw_ >= rvalue.raw_; }
+  // Comparison operators (Fixed vs Fixed).
+  bool operator==(const Fixed& rvalue) const { return raw_ == rvalue.raw_; }
+  bool operator!=(const Fixed& rvalue) const { return raw_ != rvalue.raw_; }
+  bool operator<(const Fixed& rvalue) const { return raw_ < rvalue.raw_; }
+  bool operator>(const Fixed& rvalue) const { return raw_ > rvalue.raw_; }
+  bool operator<=(const Fixed& rvalue) const { return raw_ <= rvalue.raw_; }
+  bool operator>=(const Fixed& rvalue) const { return raw_ >= rvalue.raw_; }
   bool operator!() const { return raw_ == 0; }
 
   // Comparison with a whole number, which is scaled to 8.8 so the fraction
-  // still counts: fixed(1, 2) < 1 holds.
+  // still counts: Fixed(1, 2) < 1 holds.
   bool operator<(const int rvalue) const {
     return raw_ < int64_t{rvalue} * 256;
   }
@@ -229,57 +229,57 @@ class fixed {
 
   // The same operators with the int on the left (5 * f). The compound ones
   // store the int result back into the int.
-  friend int operator*(const int lvalue, const fixed& rvalue) {
+  friend int operator*(const int lvalue, const Fixed& rvalue) {
     return rvalue * lvalue;
   }
   // Dividing by zero or by 1.0 returns lvalue.
   // TODO: The rounding bias should be half the divisor (rvalue.raw_ / 2), not
-  // half of 256, so 1 / fixed(3, 4) gives 2 instead of 1. It is the shipped
+  // half of 256, so 1 / Fixed(3, 4) gives 2 instead of 1. It is the shipped
   // behaviour of factory production rates and aircraft landing speed.
-  friend int operator/(const int lvalue, const fixed& rvalue) {
+  friend int operator/(const int lvalue, const Fixed& rvalue) {
     if (rvalue.raw_ == 0 || rvalue.raw_ == 256) {
       return lvalue;
     }
     return static_cast<int>(((int64_t{lvalue} * 256) + kRoundingBias) /
                             rvalue.raw_);
   }
-  friend int operator+(const int lvalue, const fixed& rvalue) {
+  friend int operator+(const int lvalue, const Fixed& rvalue) {
     return rvalue + lvalue;
   }
-  friend int operator-(const int lvalue, const fixed& rvalue) {
+  friend int operator-(const int lvalue, const Fixed& rvalue) {
     return ((lvalue * 256) - rvalue.raw_ + kRoundingBias) / 256;
   }
-  friend bool operator<(const unsigned lvalue, const fixed& rvalue) {
+  friend bool operator<(const unsigned lvalue, const Fixed& rvalue) {
     return lvalue * 256 < rvalue.raw_;
   }
-  friend bool operator>(const unsigned lvalue, const fixed& rvalue) {
+  friend bool operator>(const unsigned lvalue, const Fixed& rvalue) {
     return lvalue * 256 > rvalue.raw_;
   }
-  friend bool operator<=(const unsigned lvalue, const fixed& rvalue) {
+  friend bool operator<=(const unsigned lvalue, const Fixed& rvalue) {
     return lvalue * 256 <= rvalue.raw_;
   }
-  friend bool operator>=(const unsigned lvalue, const fixed& rvalue) {
+  friend bool operator>=(const unsigned lvalue, const Fixed& rvalue) {
     return lvalue * 256 >= rvalue.raw_;
   }
-  friend bool operator==(const unsigned lvalue, const fixed& rvalue) {
+  friend bool operator==(const unsigned lvalue, const Fixed& rvalue) {
     return lvalue * 256 == rvalue.raw_;
   }
-  friend bool operator!=(const unsigned lvalue, const fixed& rvalue) {
+  friend bool operator!=(const unsigned lvalue, const Fixed& rvalue) {
     return lvalue * 256 != rvalue.raw_;
   }
-  friend int operator*=(int& lvalue, const fixed& rvalue) {
+  friend int operator*=(int& lvalue, const Fixed& rvalue) {
     lvalue = lvalue * rvalue;
     return lvalue;
   }
-  friend int operator/=(int& lvalue, const fixed& rvalue) {
+  friend int operator/=(int& lvalue, const Fixed& rvalue) {
     lvalue = lvalue / rvalue;
     return lvalue;
   }
-  friend int operator+=(int& lvalue, const fixed& rvalue) {
+  friend int operator+=(int& lvalue, const Fixed& rvalue) {
     lvalue = lvalue + rvalue;
     return lvalue;
   }
-  friend int operator-=(int& lvalue, const fixed& rvalue) {
+  friend int operator-=(int& lvalue, const Fixed& rvalue) {
     lvalue = lvalue - rvalue;
     return lvalue;
   }
@@ -291,7 +291,7 @@ class fixed {
   // (not 256) avoids carrying into the whole part when fraction is zero.
   // Values of 255.0 and above are left unchanged, fraction and all, since
   // 256.0 does not fit.
-  fixed& Round_Up() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Fixed& Round_Up() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (raw_ < 0xFF00) {
       raw_ += 255;
       raw_ &= 0xFF00;
@@ -299,12 +299,12 @@ class fixed {
     return *this;
   }
   // Drops the fraction.
-  fixed& Round_Down() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Fixed& Round_Down() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     raw_ &= 0xFF00;
     return *this;
   }
   // Rounds to the nearest whole number, halves up.
-  fixed& Round() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Fixed& Round() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (fraction() >= kRoundingBias) {
       Round_Up();
     }
@@ -312,13 +312,13 @@ class fixed {
     return *this;
   }
   // Caps the value at `cap`.
-  fixed& Saturate(const unsigned cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Fixed& Saturate(const unsigned cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (raw_ > cap * 256) {
       raw_ = static_cast<uint16_t>(cap * 256);
     }
     return *this;
   }
-  fixed& Saturate(const fixed& cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Fixed& Saturate(const Fixed& cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (*this > cap) {
       *this = cap;
     }
@@ -327,13 +327,13 @@ class fixed {
   // Caps the value just below `cap`, at cap - 1/256. Volumes use a cap of 1 so
   // that `volume * 256` still fits in a byte. `cap` must be positive: zero
   // wraps round to 255 255/256.
-  fixed& Sub_Saturate(const unsigned cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Fixed& Sub_Saturate(const unsigned cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (raw_ >= cap * 256) {
       raw_ = static_cast<uint16_t>((cap * 256) - 1);
     }
     return *this;
   }
-  fixed& Sub_Saturate(const fixed& cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Fixed& Sub_Saturate(const Fixed& cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (*this >= cap) {
       raw_ = static_cast<uint16_t>(cap.raw_ - 1);
     }
@@ -342,8 +342,8 @@ class fixed {
   // Replaces the value with 1 / value. Zero becomes 1.0, because dividing by
   // zero leaves the dividend alone; Wide_Area_Damage() relies on that to give
   // the centre cell full damage. 1/256 overflows to zero.
-  fixed& Inverse() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    *this = fixed(1) / *this;
+  Fixed& Inverse() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    *this = Fixed(1) / *this;
     return *this;
   }
 
@@ -352,12 +352,12 @@ class fixed {
   // FromString() reads it back unchanged.
   [[nodiscard]] std::string AsString() const;
 
-  // Common fractions, truncated like fixed(n, d): _1_3 is 85/256.
-  static const fixed _1_2;  // 1/2
-  static const fixed _1_3;  // 1/3
-  static const fixed _1_4;  // 1/4
-  static const fixed _3_4;  // 3/4
-  static const fixed _2_3;  // 2/3
+  // Common fractions, truncated like Fixed(n, d): _1_3 is 85/256.
+  static const Fixed _1_2;  // 1/2
+  static const Fixed _1_3;  // 1/3
+  static const Fixed _1_4;  // 1/4
+  static const Fixed _3_4;  // 3/4
+  static const Fixed _2_3;  // 2/3
 
  private:
   // Half the fractional range, added before integer division for
@@ -372,10 +372,10 @@ class fixed {
 // Defined outside the class because a static member of the class's own type
 // needs the class complete. constinit keeps them out of static
 // initialization order, and inline lets every includer share one definition.
-inline constinit const fixed fixed::_1_2{1, 2};
-inline constinit const fixed fixed::_1_3{1, 3};
-inline constinit const fixed fixed::_1_4{1, 4};
-inline constinit const fixed fixed::_3_4{3, 4};
-inline constinit const fixed fixed::_2_3{2, 3};
+inline constinit const Fixed Fixed::_1_2{1, 2};
+inline constinit const Fixed Fixed::_1_3{1, 3};
+inline constinit const Fixed Fixed::_1_4{1, 4};
+inline constinit const Fixed Fixed::_3_4{3, 4};
+inline constinit const Fixed Fixed::_2_3{2, 3};
 
 #endif  // CNC_RED_ALERT_BASE_FIXED_H_

@@ -664,9 +664,9 @@ int Main_Menu(int32_t /*unused*/) {
 
   TheKeyboard().Clear();
 
-  const fixed oldvolume = TheOptions().ScoreVolume;
+  const Fixed oldvolume = TheOptions().ScoreVolume;
   if (oldvolume == 0) {
-    TheOptions().Set_Score_Volume(fixed(4, 10), false);
+    TheOptions().Set_Score_Volume(Fixed(4, 10), false);
   }
   TheTheme().Play_Song(THEME_INTRO);
 

@@ -426,10 +426,10 @@ bool FactoryClass::Start() {
             .IsBuildSlowdown) {
       time =
           time *
-          fixed(House->IQ + TheRules().MaxIQ, TheRules().MaxIQ * 2).Inverse();
+          Fixed(House->IQ + TheRules().MaxIQ, TheRules().MaxIQ * 2).Inverse();
     }
 
-    int rate = time / Bound(House->Power_Fraction(), fixed(1, 16), fixed(1));
+    int rate = time / Bound(House->Power_Fraction(), Fixed(1, 16), Fixed(1));
     //			int frac = House->Power_Fraction();
     //			frac = Bound(frac, 0x0010, 0x0100);
     //			int rate = (time*256) / frac;

@@ -177,7 +177,7 @@ class AnimClass final : public ObjectClass, public StageClass {
   *the accumulated *	fractions reach 256, then one damage point is applied to
   *the attached object.
   */
-  fixed Accum;
+  Fixed Accum;
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   AnimClass() = default;

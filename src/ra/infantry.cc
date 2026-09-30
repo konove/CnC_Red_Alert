@@ -2328,7 +2328,7 @@ void InfantryClass::Response_Select() {
     } else {
       response = VOC_GUY_YEAH;
     }
-    PlaySoundEffect(response, fixed(1), ID + 1);
+    PlaySoundEffect(response, Fixed(1), ID + 1);
 
   } else {
     static const VocType _eng_response[] = {VOC_ENG_YES, VOC_ENG_ENG};
@@ -2435,7 +2435,7 @@ void InfantryClass::Response_Select() {
     if (!response.empty()) {
       PlaySoundEffect(
           base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
-          fixed(1), ID + 1, house);
+          Fixed(1), ID + 1, house);
     }
   }
 }
@@ -2465,7 +2465,7 @@ void InfantryClass::Response_Move() {
 
   if (Class->IsCivilian && *this != INFANTRY_EINSTEIN) {
     const VocType response = Class->IsFemale ? VOC_GIRL_OKAY : VOC_GUY_OKAY;
-    PlaySoundEffect(response, fixed(1), ID + 1);
+    PlaySoundEffect(response, Fixed(1), ID + 1);
 
   } else {
     static const VocType _eng_response[] = {VOC_ENG_AFFIRM, VOC_ENG_AFFIRM};
@@ -2580,7 +2580,7 @@ void InfantryClass::Response_Move() {
     if (!response.empty()) {
       PlaySoundEffect(
           base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
-          fixed(1), ID + 1, house);
+          Fixed(1), ID + 1, house);
     }
   }
 }
@@ -2611,7 +2611,7 @@ void InfantryClass::Response_Attack() {
 
   if (Class->IsCivilian && *this != INFANTRY_EINSTEIN) {
     const VocType response = Class->IsFemale ? VOC_GIRL_OKAY : VOC_GUY_OKAY;
-    PlaySoundEffect(response, fixed(1), ID + 1);
+    PlaySoundEffect(response, Fixed(1), ID + 1);
 
   } else {
     static const VocType _eng_response[] = {VOC_ENG_AFFIRM, VOC_ENG_AFFIRM};
@@ -2727,7 +2727,7 @@ void InfantryClass::Response_Attack() {
     if (!response.empty()) {
       PlaySoundEffect(
           base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
-          fixed(1), ID + 1, house);
+          Fixed(1), ID + 1, house);
     }
   }
 }
@@ -3362,7 +3362,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
 
           if (infantry->Unlimbo(coord, dir)) {
             infantry->Strength = static_cast<int16_t>(
-                infantry->Class_Of().MaxStrength * fixed(strength, 256));
+                infantry->Class_Of().MaxStrength * Fixed(strength, 256));
             if (infantry->Strength > infantry->Class->MaxStrength - 3) {
               infantry->Strength = infantry->Class->MaxStrength;
             }
@@ -4063,7 +4063,7 @@ void InfantryClass::Movement_AI() {
 
         Coord = Coord_Move(Coord, Direction(Head_To_Coord()),
                            static_cast<uint16_t>(static_cast<int>(maxspeed) *
-                                                 fixed(movespeed, 256)));
+                                                 Fixed(movespeed, 256)));
       }
       Mark(MARK_DOWN);
     }

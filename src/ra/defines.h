@@ -2886,7 +2886,7 @@ struct RemapControlType {
 **	corresponding GroundType structure.
 */
 struct GroundType {
-  base::EnumArray<SpeedType, fixed> Cost;  // Terrain effect cost
+  base::EnumArray<SpeedType, Fixed> Cost;  // Terrain effect cost
                                            // (normal).
   bool Build = false;  // Can build on this terrain?
 };

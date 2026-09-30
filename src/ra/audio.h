@@ -49,7 +49,7 @@ const char* VocName(VocType voc);
 // `house` picks the accent, defaulting to the house the player acts like.
 // Other sounds ignore both. Returns the mixer's sound handle, or -1 if
 // nothing was played.
-int PlaySoundEffect(VocType voc, fixed volume = fixed(1), int variation = 1,
+int PlaySoundEffect(VocType voc, Fixed volume = Fixed(1), int variation = 1,
                     HousesType house = HOUSE_NONE);
 
 // Has EVA say `voice`. Only one voice waits in the queue: the request is

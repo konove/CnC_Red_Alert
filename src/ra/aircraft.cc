@@ -673,7 +673,7 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
             base::DeletePooled(air);
           } else {
             air->Strength = static_cast<int16_t>(air->Class->MaxStrength *
-                                                 fixed(strength, 256));
+                                                 Fixed(strength, 256));
             if (air->Unlimbo(coord, dir)) {
               air->Assign_Mission(Mission_From_Name(tokens.Next(",\n\r")));
             } else {
@@ -3317,7 +3317,7 @@ int AircraftClass::Pip_Count() const {
     retval = How_Many();
   } else {
     if (Ammo) {
-      retval = Class->Max_Pips() * fixed(Ammo, Class->MaxAmmo);
+      retval = Class->Max_Pips() * Fixed(Ammo, Class->MaxAmmo);
       if (!retval) {
         retval = 1;
       }
@@ -3983,7 +3983,7 @@ void AircraftClass::Response_Attack() {
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (TheGameState().allow_voice()) {
-    PlaySoundEffect(response, fixed(1), -(ID + 1));
+    PlaySoundEffect(response, Fixed(1), -(ID + 1));
   }
 }
 
@@ -4008,7 +4008,7 @@ void AircraftClass::Response_Move() {
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (TheGameState().allow_voice()) {
-    PlaySoundEffect(response, fixed(1), -(ID + 1));
+    PlaySoundEffect(response, Fixed(1), -(ID + 1));
   }
 }
 
@@ -4034,7 +4034,7 @@ void AircraftClass::Response_Select() {
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (TheGameState().allow_voice()) {
-    PlaySoundEffect(response, fixed(1), -(ID + 1));
+    PlaySoundEffect(response, Fixed(1), -(ID + 1));
   }
 }
 

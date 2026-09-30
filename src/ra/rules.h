@@ -51,16 +51,16 @@
 
 class DifficultyClass {
  public:
-  fixed FirepowerBias;
-  fixed GroundspeedBias;
-  fixed AirspeedBias;
-  fixed ArmorBias;
-  fixed ROFBias;
-  fixed CostBias;
-  fixed BuildSpeedBias;
+  Fixed FirepowerBias;
+  Fixed GroundspeedBias;
+  Fixed AirspeedBias;
+  Fixed ArmorBias;
+  Fixed ROFBias;
+  Fixed CostBias;
+  Fixed BuildSpeedBias;
 
-  fixed RepairDelay;
-  fixed BuildDelay;
+  Fixed RepairDelay;
+  Fixed BuildDelay;
 
   bool IsBuildSlowdown : 1 = false;
   bool IsWallDestroyer : 1 = false;
@@ -128,27 +128,27 @@ class RulesClass {
   *upon *	aircraft and the weapon is specified as having a turbo boost
   *bonus.
   */
-  fixed TurboBoost;
+  Fixed TurboBoost;
 
   /*
   **	This specifies the average number of minutes between each computer
   *attack.
   */
-  fixed AttackInterval;
+  Fixed AttackInterval;
 
   /*
   **	This specifies the average minutes delay before the computer will begin
   **	its first attack upon the player. The duration is also modified by the
   **	difficulty level.
   */
-  fixed AttackDelay;
+  Fixed AttackDelay;
 
   /*
   **	If the power ratio falls below this percentage, then a power emergency
   *is *	in effect. At such times, the computer might decide to sell off some
   **	power hungry buildings in order to alleviate the situation.
   */
-  fixed PowerEmergencyFraction;
+  Fixed PowerEmergencyFraction;
 
   /*
   **	The number of badgers that arrive when the parabomb option is used.
@@ -159,7 +159,7 @@ class RulesClass {
   **	This specifies the percentage of the base (by building quantity) that
   *should *	be composed of airstrips.
   */
-  fixed AirstripRatio;
+  Fixed AirstripRatio;
 
   /*
   **	Limit the number of airstrips to this amount.
@@ -170,7 +170,7 @@ class RulesClass {
   **	This specifies the percentage of the base (by building quantity) that
   *should *	be composed of helipads.
   */
-  fixed HelipadRatio;
+  Fixed HelipadRatio;
 
   /*
   **	Limit the number of helipads to this amount.
@@ -181,7 +181,7 @@ class RulesClass {
   **	This specifies the percentage of the base (by building quantity) that
   *should *	be composed of Tesla Coils.
   */
-  fixed TeslaRatio;
+  Fixed TeslaRatio;
 
   /*
   **	Limit tesla coil production to this maximum.
@@ -192,7 +192,7 @@ class RulesClass {
   **	This specifies the percentage of the base (by building quantity) that
   *should *	be composed of anti-aircraft defense.
   */
-  fixed AARatio;
+  Fixed AARatio;
 
   /*
   **	Limit anti-aircraft building quantity to this amount.
@@ -203,7 +203,7 @@ class RulesClass {
   **	This specifies the percentage of the base (by building quantity) that
   *should *	be composed of defensive structures.
   */
-  fixed DefenseRatio;
+  Fixed DefenseRatio;
 
   /*
   **	This is the limit to the number of defensive building that can be built.
@@ -214,7 +214,7 @@ class RulesClass {
   **	This specifies the percentage of the base (by building quantity) that
   *should *	be composed of war factories.
   */
-  fixed WarRatio;
+  Fixed WarRatio;
 
   /*
   **	War factories are limited to this quantity for the computer controlled
@@ -226,7 +226,7 @@ class RulesClass {
   **	This specifies the percentage of the base (by building quantity) that
   *should *	be composed of infantry producing structures.
   */
-  fixed BarracksRatio;
+  Fixed BarracksRatio;
 
   /*
   **	No more than this many barracks can be built.
@@ -242,7 +242,7 @@ class RulesClass {
   **	This specifies the percentage of the base (by building quantity) that
   *should *	be composed of refineries.
   */
-  fixed RefineryRatio;
+  Fixed RefineryRatio;
 
   /*
   **	The computer is limited in the size of the base it can build. It is
@@ -273,13 +273,13 @@ class RulesClass {
   **	This specifies the duration that a unit will remain chronoshifted before
   *it *	will be returned to its starting location.
   */
-  fixed ChronoDuration;
+  Fixed ChronoDuration;
 
   /*
   **	Percent chance that a water crate will be generated instead of a land
   **	crate when crates are on and in a multiplay game.
   */
-  fixed WaterCrateChance;
+  Fixed WaterCrateChance;
 
   /*
   **	Solo play has money crate amount fixed according to this rule value.
@@ -300,32 +300,32 @@ class RulesClass {
   /*
   **	This is the time to delay between patrol-to-waypoint target scanning.
   */
-  fixed PatrolTime;
+  Fixed PatrolTime;
 
   /*
   **	This is the time interval that checking to create teams will span. The
   **	smaller this number, the more often checking for team creation will
   *occur.
   */
-  fixed TeamDelay;
+  Fixed TeamDelay;
 
   /*
   **	This is the arbitrary delay to make all cloaking objects remain
   *uncloaked *	before having it recloak.
   */
-  fixed CloakDelay;
+  Fixed CloakDelay;
 
   /*
   **	This is an overall game apparent speed bias to use for object
   **	movement purposes.
   */
-  fixed GameSpeedBias;
+  Fixed GameSpeedBias;
 
   /*
   **	If a potential target is close to the base then increase
   **	the likelyhood of attacking it by this bias factor.
   */
-  fixed NervousBias;
+  Fixed NervousBias;
 
   /*
   **	Controls the Chronal vortex characteristics.
@@ -333,7 +333,7 @@ class RulesClass {
   LEPTON VortexRange{10 * CELL_LEPTON_W};
   MPHType VortexSpeed{static_cast<MPHType>(10)};
   int VortexDamage{200};
-  fixed VortexChance;
+  Fixed VortexChance;
 
   /*
   **	When an explosive object explodes, the damage will spread out
@@ -341,7 +341,7 @@ class RulesClass {
   **	that the damage will spread for every 100 points of raw damage at
   **	the explosion center point.
   */
-  fixed ExplosionSpread;
+  Fixed ExplosionSpread;
 
   /*
   **	For weapons specially marked to check for nearby friendly buildings
@@ -475,13 +475,13 @@ class RulesClass {
   /*
   **	This is the delay that multiplayer messages will remain on the screen.
   */
-  fixed MessageDelay;
+  Fixed MessageDelay;
 
   /*
   **	Savour delay between when scenario detects end and the actual
   **	end of the play.
   */
-  fixed SavourDelay;
+  Fixed SavourDelay;
 
   /*
   **	This specifies the damage to inflict for two differnt styles of
@@ -500,7 +500,7 @@ class RulesClass {
   *under *	attack. This delay gives the previously assigned units a chance
   *to affect the *	attacker before the computer sends more.
   */
-  fixed BaseDefenseDelay;
+  Fixed BaseDefenseDelay;
 
   /*
   **	These values control the team suspension logic for dealing with immedate
@@ -509,7 +509,7 @@ class RulesClass {
   *minutes specified.
   */
   int SuspendPriority{20};
-  fixed SuspendDelay;
+  Fixed SuspendDelay;
 
   /*
   **	This serves as the fraction of a building's original cost that is
@@ -517,23 +517,23 @@ class RulesClass {
   *marginal *	fudge effects, but this value is the greatest control over the
   *survivor rate.
   */
-  fixed SurvivorFraction;
+  Fixed SurvivorFraction;
 
   /*
   **	This is the aircraft reload rate expressed in minutes per ammo load.
   */
-  fixed ReloadRate;
+  Fixed ReloadRate;
 
   /*
   **	The average time (in minutes) between the computer autocreating a team
   **	from the team's autocreate list.
   */
-  fixed AutocreateTime;
+  Fixed AutocreateTime;
 
   /*
   **	Build up time for buildings (minutes).
   */
-  fixed BuildupTime;
+  Fixed BuildupTime;
 
   /*
   **	Ore truck speed for dumping.
@@ -668,65 +668,65 @@ class RulesClass {
   **	they are less prone to damage. This specifies the multiplier to the
   *damage *	(as a fixed point number).
   */
-  fixed ProneDamageBias;
+  Fixed ProneDamageBias;
 
   /*
   **	The time quake will do this percentage of damage to all units and
   *buildings *	in the game. The number is expressed as a fixed point
   *percentage.
   */
-  fixed QuakeDamagePercent;
+  Fixed QuakeDamagePercent;
 
   /*
   **	Percentage chance that a time quake will occur with each chronoshift
   *use.
   */
-  fixed QuakeChance;
+  Fixed QuakeChance;
 
   /*
   **	Ore (Tiberium) growth rate. The value is the number of minutes between
   **	growth steps.
   */
-  fixed GrowthRate;
+  Fixed GrowthRate;
 
   /*
   **	This specifies the number of minutes between each shroud regrowth
   *process.
   */
-  fixed ShroudRate;
+  Fixed ShroudRate;
 
   /*
   **	This is the average minutes between each generation of a random crate
   **	to be placed on the map if generating of random crates is indicated.
   */
-  fixed CrateTime;
+  Fixed CrateTime;
 
   /*
   **	This specifies the number of minutes remaining before that if the
   *mission timer *	gets to this level or below, it will be displayed in
   *red.
   */
-  fixed TimerWarning;
+  Fixed TimerWarning;
 
   /*
   **	This specifies the minutes of delay between recharges for these
   **	special weapon types.
   */
-  fixed SonarTime;
-  fixed ChronoTime;
-  fixed ParaBombTime;
-  fixed ParaInfantryTime;
-  fixed ParaSaboteurTime;
-  fixed SpyTime;
-  fixed IronCurtainTime;
-  fixed GPSTime;
-  fixed NukeTime;
+  Fixed SonarTime;
+  Fixed ChronoTime;
+  Fixed ParaBombTime;
+  Fixed ParaInfantryTime;
+  Fixed ParaSaboteurTime;
+  Fixed SpyTime;
+  Fixed IronCurtainTime;
+  Fixed GPSTime;
+  Fixed NukeTime;
 
   /*
   **	Other miscellaneous delay times.
   */
-  fixed SpeakDelay;
-  fixed DamageDelay;
+  Fixed SpeakDelay;
+  Fixed DamageDelay;
 
   /*
   **	This is the gravity constant used to control the arcing and descent of
@@ -743,7 +743,7 @@ class RulesClass {
   **	This is the minute interval between the gap generators refreshing
   **	their zones of gapping.
   */
-  fixed GapRegenInterval;
+  Fixed GapRegenInterval;
 
   /*
   **	Mobile radar jammer radius of effect.
@@ -773,29 +773,29 @@ class RulesClass {
   **	the cost to build it from scratch.
   */
   int RepairStep{5};
-  fixed RepairPercent;
+  Fixed RepairPercent;
   int URepairStep{5};
-  fixed URepairPercent;
+  Fixed URepairPercent;
 
   /*
   **	This is the rate that objects with self healing will heal. They will
   *repair a bit *	every 'this' number of minutes.
   */
-  fixed RepairRate;
+  Fixed RepairRate;
 
   /*
   **	These fixed point values are used to determine the status (health bar
   **	color) of the game objects. Objects in the 'yellow' are in a cautionary
   **	state. Object in the 'red' are in a danger state.
   */
-  fixed ConditionGreen;
-  fixed ConditionYellow;
-  fixed ConditionRed;
+  Fixed ConditionGreen;
+  Fixed ConditionYellow;
+  Fixed ConditionRed;
 
   /*
   **	Average number of minutes between infantry random idle animations.
   */
-  fixed RandomAnimateTime;
+  Fixed RandomAnimateTime;
 
   /*
   **	These control the capacity and value of the ore types that a harvester
@@ -868,12 +868,12 @@ class RulesClass {
   **	This is the refund percentage when selling off buildings and units
   **	on the repair pad (service depot).
   */
-  fixed RefundPercent;
+  Fixed RefundPercent;
 
   /*
   **	The Iron Curtain invulnerability effect lasts for this many minutes.
   */
-  fixed IronCurtainDuration;
+  Fixed IronCurtainDuration;
 
   /*
   **	The strength of bridges is held here. By corollary, the strength of the
@@ -885,7 +885,7 @@ class RulesClass {
   **	This is the overall build speed bias. Multiply this value by the normal
   *build *	delay to get the effective build delay.
   */
-  fixed BuildSpeedBias;
+  Fixed BuildSpeedBias;
 
   /*
   **	Weapon type array pointer should go here. Dynamic type.
@@ -905,7 +905,7 @@ class RulesClass {
   *demolitioner *	type. The short the delay, the less time the victim has
   *to sell the building *	off.
   */
-  fixed C4Delay;
+  Fixed C4Delay;
 
   /*
   **	The computer will only repair a structure if it has spare money greater
@@ -920,13 +920,13 @@ class RulesClass {
   *longer the *	delay the faster the system, but the longer the units take to
   *react to a blocked *	terrain event.
   */
-  fixed PathDelay;
+  Fixed PathDelay;
 
   /*
   **	This is the special (debug version only) movie recorder timeout value.
   *Each second *	results in about 2-3 megabytes.
   */
-  fixed MovieTime;
+  Fixed MovieTime;
 
   /*
   ** This is the level at or above which the chronosphere facility can
@@ -960,20 +960,20 @@ class RulesClass {
 
   // What a time quake does to each kind of target, and how many frames one
   // lasts.
-  fixed QuakeUnitDamage{fixed::_1_2};
-  fixed QuakeBuildingDamage{fixed::_1_4};
+  Fixed QuakeUnitDamage{Fixed::_1_2};
+  Fixed QuakeBuildingDamage{Fixed::_1_4};
   int QuakeInfantryDamage{0};
   int QuakeDelay{120};
 
   // How long (in minutes) a chrono tank stays at its destination before it
   // is pulled back.
-  fixed ChronoTankDuration{3};
+  Fixed ChronoTankDuration{3};
 
   // What fraction of a building's strength an engineer takes off, and the
   // damage level a building must be at before one can capture it instead.
   // EngineerCaptureLevel starts at ConditionRed's default.
-  fixed EngineerDamage{fixed::_1_3};
-  fixed EngineerCaptureLevel;
+  Fixed EngineerDamage{Fixed::_1_3};
+  Fixed EngineerCaptureLevel;
 
   // The delay (in frames) between a carrier's aircraft launches.
   int CarrierLaunchDelay{60};

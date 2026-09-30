@@ -201,7 +201,7 @@ class ScenarioClass {
   **	The percentage of money that is allowed to be carried over into the
   **	following scenario.
   */
-  fixed CarryOverPercent;
+  Fixed CarryOverPercent;
 
   /*
   **	This is the amount of money that was left over in the previous

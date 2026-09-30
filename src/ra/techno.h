@@ -178,8 +178,8 @@ class TechnoClass : public RadioClass,
   *Normally, *	these values are fixed at 0x0100, but they can be modified by
   *certain *	crate powerups.
   */
-  fixed ArmorBias;
-  fixed FirepowerBias;
+  Fixed ArmorBias;
+  Fixed FirepowerBias;
 
   /*
   **	Idle animations (if any are supported by the object type) are regulated
@@ -346,7 +346,7 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] virtual bool Is_Allowed_To_Recloak() const;
   [[nodiscard]] bool Can_Repair() const override;
   [[nodiscard]] virtual bool Is_Weapon_Equipped() const;
-  [[nodiscard]] virtual fixed Tiberium_Load() const;
+  [[nodiscard]] virtual Fixed Tiberium_Load() const;
   [[nodiscard]] virtual int Pip_Count() const;
   [[nodiscard]] virtual int Rearm_Delay(bool second = true,
                                         int which = 0) const;
@@ -371,7 +371,7 @@ class TechnoClass : public RadioClass,
   /*
   **	Combat related.
   */
-  [[nodiscard]] fixed Area_Modify(CELL cell) const;
+  [[nodiscard]] Fixed Area_Modify(CELL cell) const;
   virtual int Made_A_Kill() { return Crew.Add_Kill(); }
   void Base_Is_Attacked(TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);

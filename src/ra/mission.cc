@@ -477,7 +477,7 @@ bool MissionClass::Is_Recruitable_Mission(MissionType mission) {
 }
 
 MissionControlClass::MissionControlClass()
-    : Rate(fixed::FromString(".016")), AARate(fixed::FromString(".016")) {}
+    : Rate(Fixed::FromString(".016")), AARate(Fixed::FromString(".016")) {}
 
 const char* MissionControlClass::Name() const {
   if (Mission == MISSION_NONE) {
@@ -495,7 +495,7 @@ bool MissionControlClass::Read_INI(CCINIClass& ini) {
     IsRetaliate = ini.Get_Bool(Name(), "Retaliate", IsRetaliate);
     IsScatter = ini.Get_Bool(Name(), "Scatter", IsScatter);
     Rate = ini.Get_Fixed(Name(), "Rate", Rate);
-    AARate = ini.Get_Fixed(Name(), "AARate", fixed(0));
+    AARate = ini.Get_Fixed(Name(), "AARate", Fixed(0));
     if (AARate == 0) {
       AARate = Rate;
     }

@@ -168,13 +168,13 @@ class HouseTypeClass : public AbstractTypeClass {
   **	unit and building ratings. The default value for these ratings is
   **	a fixed point number of 1.0.
   */
-  fixed FirepowerBias;
-  fixed GroundspeedBias;
-  fixed AirspeedBias;
-  fixed ArmorBias;
-  fixed ROFBias;
-  fixed CostBias;
-  fixed BuildSpeedBias;
+  Fixed FirepowerBias;
+  Fixed GroundspeedBias;
+  Fixed AirspeedBias;
+  Fixed ArmorBias;
+  Fixed ROFBias;
+  Fixed CostBias;
+  Fixed BuildSpeedBias;
 
   //------------------------------------------------------------------------
   HouseTypeClass(HousesType house, const char* ini, int fullname,
@@ -1732,7 +1732,7 @@ class AnimTypeClass : public ObjectTypeClass {
   *frame. *	Because it is a fixed point fraction, the damage can be very
   *slight.
   */
-  fixed Damage;
+  Fixed Damage;
 
   /*
   **	Simple animation delay value between advancing of frames. This can
@@ -1789,7 +1789,7 @@ class AnimTypeClass : public ObjectTypeClass {
   AnimTypeClass(AnimType anim, const char* name, int size, int biggest,
                 bool istheater, bool isnormal, bool iswhite, bool isscorcher,
                 bool iscrater, bool issticky, bool ground, bool istrans,
-                bool isflame, fixed damage, int delaytime, int start,
+                bool isflame, Fixed damage, int delaytime, int start,
                 int loopstart, int loopend, int stages, int loops,
                 VocType sound, AnimType chainto) noexcept;
   ~AnimTypeClass() override;

@@ -476,7 +476,7 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
 
     return TheRules().ground().at(Land_Type()).Build;
   }
-  if (TheRules().ground().at(Land_Type()).Cost.at(loco) == fixed(0)) {
+  if (TheRules().ground().at(Land_Type()).Cost.at(loco) == Fixed(0)) {
     return false;
   }
   return true;
@@ -998,7 +998,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
           remap = DisplayClass::FadingRed;
         } else {
           if (TheRules().ground().at(Land).Cost.at(SPEED_FOOT) >
-              fixed(1, 3)) {  // pretty passable
+              Fixed(1, 3)) {  // pretty passable
             remap = DisplayClass::FadingGreen;
           } else {
             remap = DisplayClass::FadingYellow;  // moderately passable
@@ -2376,9 +2376,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
               Distance(Cell_Coord(), obj->Center_Coord()) <
                   TheRules().CrateRadius &&
               dynamic_cast<TechnoClass*>(obj)->ArmorBias == 1) {
-            const fixed val =
+            const Fixed val =
                 dynamic_cast<TechnoClass*>(obj)->ArmorBias *
-                fixed(TheRules().crate_data().at(powerup), 256).Inverse();
+                Fixed(TheRules().crate_data().at(powerup), 256).Inverse();
             dynamic_cast<TechnoClass*>(obj)->ArmorBias = val;
             if (obj->Owner() == ThePlayer()->Class->House) {
               tospeak = true;
@@ -2402,8 +2402,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
               obj->What_Am_I() != RTTI_AIRCRAFT) {
             auto* foot = dynamic_cast<FootClass*>(obj);
 
-            const fixed val = foot->SpeedBias *
-                              fixed(TheRules().crate_data().at(powerup), 256);
+            const Fixed val = foot->SpeedBias *
+                              Fixed(TheRules().crate_data().at(powerup), 256);
             foot->SpeedBias = val;
             if (foot->IsOwnedByPlayer) {
               tospeak = true;
@@ -2424,8 +2424,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
               Distance(Cell_Coord(), obj->Center_Coord()) <
                   TheRules().CrateRadius &&
               dynamic_cast<TechnoClass*>(obj)->FirepowerBias == 1) {
-            const fixed val = dynamic_cast<TechnoClass*>(obj)->FirepowerBias *
-                              fixed(TheRules().crate_data().at(powerup), 256);
+            const Fixed val = dynamic_cast<TechnoClass*>(obj)->FirepowerBias *
+                              Fixed(TheRules().crate_data().at(powerup), 256);
             dynamic_cast<TechnoClass*>(obj)->FirepowerBias = val;
             if (obj->Owner() == ThePlayer()->Class->House) {
               tospeak = true;
@@ -2447,7 +2447,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
                   TheRules().CrateRadius) {
             dynamic_cast<TechnoClass*>(obj)->IronCurtainCountDown.Set(
                 kTicksPerMinute *
-                fixed(TheRules().crate_data().at(powerup), 256));
+                Fixed(TheRules().crate_data().at(powerup), 256));
             obj->Mark(MARK_CHANGE);
           }
         }

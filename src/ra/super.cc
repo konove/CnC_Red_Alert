@@ -307,7 +307,7 @@ int SuperClass::Anim_Stage() const {
     //		}
 
     int stage = kAnimationStages *
-                fixed(RechargeTime - static_cast<int>(Control.Remaining()),
+                Fixed(RechargeTime - static_cast<int>(Control.Remaining()),
                       RechargeTime);
     stage = std::min(stage, kAnimationStages - 1);
     return stage;

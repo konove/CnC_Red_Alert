@@ -171,13 +171,13 @@ constexpr Hotkey kHotkeys[] = {
  * HISTORY: * 07/21/1994 JLB : Created. *
  *=============================================================================================*/
 OptionsClass::OptionsClass()
-    : Volume(fixed::FromString(".40")),  // was .295
-      ScoreVolume(fixed::FromString(".25")),
-      MultiScoreVolume(fixed::FromString("0")),
-      Brightness(fixed(1, 2)),
-      Tint(fixed(1, 2)),
-      Saturation(fixed(1, 2)),
-      Contrast(fixed(1, 2)) {}
+    : Volume(Fixed::FromString(".40")),  // was .295
+      ScoreVolume(Fixed::FromString(".25")),
+      MultiScoreVolume(Fixed::FromString("0")),
+      Brightness(Fixed(1, 2)),
+      Tint(Fixed(1, 2)),
+      Saturation(Fixed(1, 2)),
+      Contrast(Fixed(1, 2)) {}
 
 /***********************************************************************************************
  * OptionsClass::One_Time -- This performs any one time initialization for the
@@ -251,8 +251,8 @@ void OptionsClass::Set_Repeat(bool on) { IsScoreRepeat = on; }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Score_Volume(fixed volume, bool feedback) {
-  ScoreVolume = fixed(volume).Sub_Saturate(1);
+void OptionsClass::Set_Score_Volume(Fixed volume, bool feedback) {
+  ScoreVolume = Fixed(volume).Sub_Saturate(1);
   engine::audio::TheAudio().SetScoreVolume(ScoreVolume * 256);
   if (feedback && !TheTheme().Still_Playing()) {
     PlaySoundEffect(VOC_BEEP, ScoreVolume);
@@ -276,8 +276,8 @@ void OptionsClass::Set_Score_Volume(fixed volume, bool feedback) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Sound_Volume(fixed volume, bool feedback) {
-  Volume = fixed(volume).Sub_Saturate(1);
+void OptionsClass::Set_Sound_Volume(Fixed volume, bool feedback) {
+  Volume = Fixed(volume).Sub_Saturate(1);
   if (feedback) {
     PlaySoundEffect(VOC_BEEP);
   }
@@ -299,8 +299,8 @@ void OptionsClass::Set_Sound_Volume(fixed volume, bool feedback) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Brightness(fixed brightness) {
-  Brightness = fixed::_1_4 + fixed::_1_2 * brightness;
+void OptionsClass::Set_Brightness(Fixed brightness) {
+  Brightness = Fixed::_1_4 + Fixed::_1_2 * brightness;
   Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
                  Brightness, Saturation, Tint, Contrast);
   ThePalettes().game_palette().Set();
@@ -321,8 +321,8 @@ void OptionsClass::Set_Brightness(fixed brightness) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-fixed OptionsClass::Get_Brightness() const {
-  return (Brightness - fixed::_1_4) / fixed::_1_2;
+Fixed OptionsClass::Get_Brightness() const {
+  return (Brightness - Fixed::_1_4) / Fixed::_1_2;
 }
 
 /***********************************************************************************************
@@ -340,7 +340,7 @@ fixed OptionsClass::Get_Brightness() const {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Saturation(fixed color) {
+void OptionsClass::Set_Saturation(Fixed color) {
   Saturation = color;
   Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
                  Brightness, Saturation, Tint, Contrast);
@@ -362,7 +362,7 @@ void OptionsClass::Set_Saturation(fixed color) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-fixed OptionsClass::Get_Saturation() const { return Saturation; }
+Fixed OptionsClass::Get_Saturation() const { return Saturation; }
 
 /***********************************************************************************************
  * OptionsClass::Set_Contrast -- Sets the contrast to the value specified. *
@@ -378,8 +378,8 @@ fixed OptionsClass::Get_Saturation() const { return Saturation; }
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Contrast(fixed contrast) {
-  Contrast = fixed::_1_4 + fixed::_1_2 * contrast;
+void OptionsClass::Set_Contrast(Fixed contrast) {
+  Contrast = Fixed::_1_4 + Fixed::_1_2 * contrast;
   Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
                  Brightness, Saturation, Tint, Contrast);
   ThePalettes().game_palette().Set();
@@ -400,8 +400,8 @@ void OptionsClass::Set_Contrast(fixed contrast) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-fixed OptionsClass::Get_Contrast() const {
-  return (Contrast - fixed::_1_4) / fixed::_1_2;
+Fixed OptionsClass::Get_Contrast() const {
+  return (Contrast - Fixed::_1_4) / Fixed::_1_2;
 }
 
 /***********************************************************************************************
@@ -419,7 +419,7 @@ fixed OptionsClass::Get_Contrast() const {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void OptionsClass::Set_Tint(fixed tint) {
+void OptionsClass::Set_Tint(Fixed tint) {
   Tint = tint;
   Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
                  Brightness, Saturation, Tint, Contrast);
@@ -441,7 +441,7 @@ void OptionsClass::Set_Tint(fixed tint) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-fixed OptionsClass::Get_Tint() const { return Tint; }
+Fixed OptionsClass::Get_Tint() const { return Tint; }
 
 /***********************************************************************************************
  * OptionsClass::Adjust_Palette -- Adjusts the palette according to the settings
@@ -471,13 +471,13 @@ fixed OptionsClass::Get_Tint() const { return Tint; }
  *objects.                                              *
  *=============================================================================================*/
 void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
-                                  PaletteClass& newpal, fixed brightness,
-                                  fixed color, fixed tint, fixed contrast) {
+                                  PaletteClass& newpal, Fixed brightness,
+                                  Fixed color, Fixed tint, Fixed contrast) {
   // At the neutral settings every slider leaves its component unchanged, but
   // the HSV round trip would still move most colors by up to 4 of 255 in some
   // components; copy the art instead.
-  if (brightness == fixed::_1_2 && color == fixed::_1_2 &&
-      tint == fixed::_1_2 && contrast == fixed::_1_2) {
+  if (brightness == Fixed::_1_2 && color == Fixed::_1_2 &&
+      tint == Fixed::_1_2 && contrast == Fixed::_1_2) {
     newpal = oldpal;
     return;
   }

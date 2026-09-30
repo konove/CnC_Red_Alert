@@ -99,8 +99,8 @@ TEST(OptionsAdjustPaletteTest, NeutralSettingsKeepTheArt) {
   ASSERT_GT(moved, 0);
 
   PaletteClass adjusted;
-  OptionsClass::Adjust_Palette(original, adjusted, fixed::_1_2, fixed::_1_2,
-                               fixed::_1_2, fixed::_1_2);
+  OptionsClass::Adjust_Palette(original, adjusted, Fixed::_1_2, Fixed::_1_2,
+                               Fixed::_1_2, Fixed::_1_2);
 
   for (int index = 0; index < PaletteClass::COLOR_COUNT; ++index) {
     EXPECT_EQ(adjusted.at(index).SquaredDistance(original.at(index)), 0)
@@ -111,8 +111,8 @@ TEST(OptionsAdjustPaletteTest, NeutralSettingsKeepTheArt) {
 TEST(OptionsAdjustPaletteTest, NoColorTurnsEveryEntryGrey) {
   const PaletteClass original = SpreadPalette();
   PaletteClass adjusted;
-  OptionsClass::Adjust_Palette(original, adjusted, fixed::_1_2, fixed(0),
-                               fixed::_1_2, fixed::_1_2);
+  OptionsClass::Adjust_Palette(original, adjusted, Fixed::_1_2, Fixed(0),
+                               Fixed::_1_2, Fixed::_1_2);
 
   for (int index = 0; index < PaletteClass::COLOR_COUNT; ++index) {
     if (index == kMouseColor) {

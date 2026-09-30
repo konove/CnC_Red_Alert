@@ -1197,13 +1197,13 @@ PKey INIClass::Get_PKey(bool fast) const {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-fixed INIClass::Get_Fixed(const char* section, const char* entry,
-                          fixed defvalue) const {
+Fixed INIClass::Get_Fixed(const char* section, const char* entry,
+                          Fixed defvalue) const {
   char buffer[128];
-  fixed retval = defvalue;
+  Fixed retval = defvalue;
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    retval = fixed::FromString(buffer);
+    retval = Fixed::FromString(buffer);
   }
   return retval;
 }
@@ -1227,7 +1227,7 @@ fixed INIClass::Get_Fixed(const char* section, const char* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool INIClass::Put_Fixed(const char* section, const char* entry, fixed value) {
+bool INIClass::Put_Fixed(const char* section, const char* entry, Fixed value) {
   return Put_String(section, entry, value.AsString().c_str());
 }
 

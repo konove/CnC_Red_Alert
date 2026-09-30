@@ -4264,7 +4264,7 @@ int BuildingClass::Mission_Deconstruction() {
             **	Unlimbo the MCV onto the map. The MCV should start in the same
             **	health condition that the construction yard was in.
             */
-            const fixed ratio = Health_Ratio();
+            const Fixed ratio = Health_Ratio();
             const int money = Refund_Amount();
             const TARGET arch = ArchiveTarget;
             const COORDINATE place = Coord_Snap(Adjacent_Cell(Coord, DIR_SE));
@@ -4796,10 +4796,10 @@ int BuildingClass::Mission_Repair() {
             Contact_With_Whom()->Assign_Mission(MISSION_GUARD);
             return 1;
           }
-          fixed pfrac = House->Power_Fraction();
+          Fixed pfrac = House->Power_Fraction();
           pfrac.Saturate(1);
-          if (pfrac < fixed::_1_2) {
-            pfrac = fixed::_1_2;
+          if (pfrac < Fixed::_1_2) {
+            pfrac = Fixed::_1_2;
           }
           const int time =
               pfrac.Inverse() * TheRules().ReloadRate * kTicksPerMinute;
@@ -5310,7 +5310,7 @@ int BuildingClass::Power_Output() const {
   DCHECK(IsActive);
 
   if (Class->Power) {
-    return Class->Power * fixed(LastStrength, Class->MaxStrength);
+    return Class->Power * Fixed(LastStrength, Class->MaxStrength);
   }
   return 0;
 }
@@ -5852,7 +5852,7 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
 
         if (b->Unlimbo(Cell_Coord(cell), facing)) {
           strength = std::min(strength, 0x100);
-          strength = b->Class->MaxStrength * fixed(strength, 256);
+          strength = b->Class->MaxStrength * Fixed(strength, 256);
           b->Strength = static_cast<int16_t>(strength);
           if (b->Strength > b->Class->MaxStrength - 3) {
             b->Strength = b->Class->MaxStrength;

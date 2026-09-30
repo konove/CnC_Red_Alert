@@ -481,7 +481,7 @@ void ScoreClass::Presentation() {
   if (!leadership) {
     leadership++;
   }
-  leadership = 100 * fixed(leadership, house ? NKilled + NBKilled + leadership
+  leadership = 100 * Fixed(leadership, house ? NKilled + NBKilled + leadership
                                              : GKilled + GBKilled + leadership);
   leadership = std::min(150, leadership);
 
@@ -491,7 +491,7 @@ void ScoreClass::Presentation() {
   // at 150%.
   int economy =
       100 *
-      fixed(static_cast<int>(ThePlayer()->Available_Money()) + 1 +
+      Fixed(static_cast<int>(ThePlayer()->Available_Money()) + 1 +
                 ThePlayer()->StolenBuildingsCredits,
             ThePlayer()->HarvestedCredits +
                 static_cast<int>(ThePlayer()->Control.InitialCredits) + 1);

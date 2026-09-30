@@ -164,15 +164,15 @@ class HouseClass {
   /*
   **	Override handicap control values.
   */
-  fixed FirepowerBias{1, 1};
-  fixed GroundspeedBias{1, 1};
-  fixed AirspeedBias{1, 1};
-  fixed ArmorBias{1, 1};
-  fixed ROFBias{1, 1};
-  fixed CostBias{1, 1};
-  fixed BuildSpeedBias{1, 1};
-  fixed RepairDelay{0, 1};
-  fixed BuildDelay{0, 1};
+  Fixed FirepowerBias{1, 1};
+  Fixed GroundspeedBias{1, 1};
+  Fixed AirspeedBias{1, 1};
+  Fixed ArmorBias{1, 1};
+  Fixed ROFBias{1, 1};
+  Fixed CostBias{1, 1};
+  Fixed BuildSpeedBias{1, 1};
+  Fixed RepairDelay{0, 1};
+  Fixed BuildDelay{0, 1};
 
   /*
   **	The initial house data as loaded from the scenario control file is
@@ -767,8 +767,8 @@ class HouseClass {
   void Adjust_Drain(int adjust);
   static void Update_Spied_Power_Plants();
   int Adjust_Capacity(int adjust, bool inanger = false);
-  [[nodiscard]] fixed Power_Fraction() const;
-  [[nodiscard]] fixed Tiberium_Fraction() const;
+  [[nodiscard]] Fixed Power_Fraction() const;
+  [[nodiscard]] Fixed Tiberium_Fraction() const;
   void Begin_Production() { IsStarted = true; }
   TeamTypeClass* Suggested_New_Team(bool alertcheck = false);
   void Adjust_Threat(int region, int threat);

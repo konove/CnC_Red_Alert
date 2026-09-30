@@ -77,7 +77,7 @@
 WarheadTypeClass::WarheadTypeClass(const char* name)
     : ID(TheTypeHeaps().warhead().ID(this)), IniName(name) {
   for (const ArmorType armor : magic_enum::enum_values<ArmorType>()) {
-    Modifier.at(armor) = fixed(1);
+    Modifier.at(armor) = Fixed(1);
   }
 }
 
@@ -174,7 +174,7 @@ bool WarheadTypeClass::Read_INI(CCINIClass& ini) {
                        buffer, sizeof(buffer))) {
       base::Tokenizer tokens(buffer, ",");
       for (const ArmorType armor : magic_enum::enum_values<ArmorType>()) {
-        Modifier.at(armor) = fixed::FromString(tokens.Next());
+        Modifier.at(armor) = Fixed::FromString(tokens.Next());
       }
     }
 

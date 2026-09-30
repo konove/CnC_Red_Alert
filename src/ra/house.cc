@@ -258,9 +258,9 @@ HouseClass::operator HousesType() const {
  *                                                                                             *
  * HISTORY: * 07/31/1996 JLB : Created. *
  *=============================================================================================*/
-fixed HouseClass::Tiberium_Fraction() const {
+Fixed HouseClass::Tiberium_Fraction() const {
   if (Tiberium == 0) {
-    return fixed(0);
+    return Fixed(0);
   }
   return {static_cast<int>(Tiberium), static_cast<int>(Capacity)};
 }
@@ -3951,17 +3951,17 @@ void HouseClass::Init_Data(PlayerColorType color, HousesType house,
  *                                                                                             *
  * HISTORY: * 07/22/1995 JLB : Created. *
  *=============================================================================================*/
-fixed HouseClass::Power_Fraction() const {
+Fixed HouseClass::Power_Fraction() const {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (Power >= Drain || Drain == 0) {
-    return fixed(1);
+    return Fixed(1);
   }
 
   if (Power) {
     return {Power, Drain};
   }
-  return fixed(0);
+  return Fixed(0);
 }
 
 /***********************************************************************************************
@@ -4668,7 +4668,7 @@ int HouseClass::Expert_AI() {
 UrgencyType HouseClass::Check_Build_Power() const {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
-  const fixed frac = Power_Fraction();
+  const Fixed frac = Power_Fraction();
   UrgencyType urgency = URGENCY_NONE;
 
   if (frac < 1 && Can_Make_Money()) {
@@ -4677,7 +4677,7 @@ UrgencyType HouseClass::Check_Build_Power() const {
     /*
     **	Very low power condition is considered a higher priority.
     */
-    if (frac < fixed::_3_4) {
+    if (frac < Fixed::_3_4) {
       urgency = URGENCY_MEDIUM;
     }
 
@@ -5173,7 +5173,7 @@ int HouseClass::AI_Building() {
     */
     int current = BQuantity.at(STRUCT_REFINERY);
     if (!IsTiberiumShort &&
-        (TheRules().RefineryRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+        (TheRules().RefineryRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < TheRules().RefineryLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
@@ -5193,7 +5193,7 @@ int HouseClass::AI_Building() {
     **	will be sufficient money to train troopers.
     */
     current = BQuantity.at(STRUCT_BARRACKS) + BQuantity.at(STRUCT_TENT);
-    if ((TheRules().BarracksRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().BarracksRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < TheRules().BarracksLimit && (money > 300 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_BARRACKS);
@@ -5248,7 +5248,7 @@ int HouseClass::AI_Building() {
     **	be sufficient money to build vehicles.
     */
     current = BQuantity.at(STRUCT_WEAP);
-    if ((TheRules().WarRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().WarRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < TheRules().WarLimit && (money > 2000 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
@@ -5266,7 +5266,7 @@ int HouseClass::AI_Building() {
     */
     current = BQuantity.at(STRUCT_PILLBOX) + BQuantity.at(STRUCT_CAMOPILLBOX) +
               BQuantity.at(STRUCT_TURRET) + BQuantity.at(STRUCT_FLAME_TURRET);
-    if ((TheRules().DefenseRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().DefenseRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < TheRules().DefenseLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_FLAME_TURRET);
@@ -5300,7 +5300,7 @@ int HouseClass::AI_Building() {
     **	Build some air defense.
     */
     current = BQuantity.at(STRUCT_SAM) + BQuantity.at(STRUCT_AAGUN);
-    if ((TheRules().AARatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().AARatio * Fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < TheRules().AALimit) {
       /*
@@ -5360,7 +5360,7 @@ int HouseClass::AI_Building() {
     **	Advanced base defense would be good.
     */
     current = BQuantity.at(STRUCT_TESLA);
-    if ((TheRules().TeslaRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().TeslaRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < TheRules().TeslaLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_TESLA);
@@ -5402,7 +5402,7 @@ int HouseClass::AI_Building() {
     **	A helipad would be good.
     */
     current = BQuantity.at(STRUCT_HELIPAD);
-    if ((TheRules().HelipadRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().HelipadRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < TheRules().HelipadLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
@@ -5425,7 +5425,7 @@ int HouseClass::AI_Building() {
     **	An airstrip would be good.
     */
     current = BQuantity.at(STRUCT_AIRSTRIP);
-    if ((TheRules().AirstripRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().AirstripRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
         current < TheRules().AirstripLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);

@@ -160,7 +160,7 @@ int GaugeClass::Pixel_To_Value(int pixel) {
   }
   maximum -= 2;
   pixel = Bound(pixel, 0, maximum);
-  return MaxValue * fixed(pixel, maximum);
+  return MaxValue * Fixed(pixel, maximum);
   //	return(Fixed_To_Cardinal(MaxValue, Cardinal_To_Fixed(maximum, pixel)));
 }
 
@@ -190,7 +190,7 @@ int GaugeClass::Value_To_Pixel(int value) {
     start = Y;
   }
   maximum -= 2;
-  return start + maximum * fixed(value, MaxValue);
+  return start + maximum * Fixed(value, MaxValue);
   //	return(start + Fixed_To_Cardinal(maximum, Cardinal_To_Fixed(MaxValue,
   // value)));
 }

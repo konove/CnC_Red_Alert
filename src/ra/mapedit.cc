@@ -1307,7 +1307,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         */
         int strength =
             TheWorld().current_object().at(0)->Class_Of().MaxStrength *
-            fixed(HealthGauge->Get_Value(), 256);
+            Fixed(HealthGauge->Get_Value(), 256);
         //				strength =
         // Fixed_To_Cardinal((unsigned)CurrentObject[0]->Class_Of().MaxStrength,
         //(unsigned)HealthGauge->Get_Value());

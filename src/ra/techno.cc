@@ -711,22 +711,22 @@ int TechnoClass::Time_To_Build() const {
       val *= House->BuildSpeedBias;
     } else {
       val *= House->BuildSpeedBias *
-             fixed(TheRules().UnitBuildPenalty, 100);  // UNIT_BUILD_BIAS;
+             Fixed(TheRules().UnitBuildPenalty, 100);  // UNIT_BUILD_BIAS;
     }
   }
 
   /*
   **	Adjust the time to build based on the power output of the owning house.
   */
-  fixed power = House->Power_Fraction();
+  Fixed power = House->Power_Fraction();
   if (power > 1) {
-    power = fixed(1);
+    power = Fixed(1);
   }
-  if (power < 1 && power > fixed::_3_4) {
-    power = fixed::_3_4;
+  if (power < 1 && power > Fixed::_3_4) {
+    power = Fixed::_3_4;
   }
-  if (power < fixed::_1_2) {
-    power = fixed::_1_2;
+  if (power < Fixed::_1_2) {
+    power = Fixed::_1_2;
   }
   power.Inverse();
   val *= power;
@@ -1195,7 +1195,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
     Class_Of().Dimensions(width, height);
 
     if (Strength && (House->Is_Ally(ThePlayer()) || TheRules().IsHealthBar)) {
-      const fixed ratio = Health_Ratio();
+      const Fixed ratio = Health_Ratio();
 
       const int xx = x - (width / 2);
       const int yy = y - (height / 2);
@@ -1420,15 +1420,15 @@ bool TechnoClass::In_Range(COORDINATE coord, int which) const {
  *                                                                                             *
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
-fixed TechnoClass::Area_Modify(CELL cell) const {
+Fixed TechnoClass::Area_Modify(CELL cell) const {
   //	DCHECK(Techno_Type_Class()->PrimaryWeapon != nullptr);
   if (Techno_Type_Class()->PrimaryWeapon == nullptr ||
       !Techno_Type_Class()->PrimaryWeapon->IsSupressed) {
-    return fixed(1);
+    return Fixed(1);
   }
 
   const int crange = Lepton_To_Cell(TheRules().SupressRadius);
-  fixed odds(1);
+  Fixed odds(1);
 
   for (int radius = 1; radius < crange; radius++) {
     /*
@@ -1923,7 +1923,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   *friendly *	structures and the primary weapon of this object is flagged for
   **	friendly fire supression special check logic.
   */
-  const fixed areamod = Area_Modify(Coord_Cell(object->Center_Coord()));
+  const Fixed areamod = Area_Modify(Coord_Cell(object->Center_Coord()));
   if (areamod != 1) {
     value = areamod * value;
   }
@@ -4574,7 +4574,7 @@ VisualType TechnoClass::Visual_Character(bool raw) const {
     return VISUAL_NORMAL;
   }
 
-  stage = fixed(stage, MAX_UNCLOAK_STAGE) * 256;
+  stage = Fixed(stage, MAX_UNCLOAK_STAGE) * 256;
 
   if (stage < 0x0040) {
     return VISUAL_INDISTINCT;
@@ -5376,7 +5376,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   *target. Don't retaliate *	if it is currently attacking the greater threat.
   */
   if (!House->IsHuman && Percent_Chance(50)) {
-    auto source_val = fixed(0);
+    auto source_val = Fixed(0);
     int primary = What_Weapon_Should_I_Use(source->As_Target());
     const WeaponTypeClass* weapon =
         primary == 0 ? source->Techno_Type_Class()->PrimaryWeapon
@@ -5386,7 +5386,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
       source_val = weapon->WarheadPtr->Modifier.at(Techno_Type_Class()->Armor);
     }
 
-    auto current_val = fixed(0);
+    auto current_val = Fixed(0);
     const TechnoClass* tech = As_Techno(TarCom);
     if (tech != nullptr) {
       primary = What_Weapon_Should_I_Use(tech->As_Target());
@@ -5475,10 +5475,10 @@ int TechnoClass::Risk() const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-fixed TechnoClass::Tiberium_Load() const {
+Fixed TechnoClass::Tiberium_Load() const {
   DCHECK(IsActive);
 
-  return fixed(0);
+  return Fixed(0);
 }
 
 /***********************************************************************************************
@@ -5813,8 +5813,8 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
 
       const int iron = harv->Gems;
       const int nickel = harv->Gold;
-      int graypips = pips * fixed(iron, TheRules().BailCount);
-      int greenpips = pips * fixed(nickel, TheRules().BailCount);
+      int graypips = pips * Fixed(iron, TheRules().BailCount);
+      int greenpips = pips * Fixed(nickel, TheRules().BailCount);
 
       while (greenpips + graypips < pips) {
         if (iron > nickel) {
@@ -6409,7 +6409,7 @@ uint32_t TechnoTypeClass::Get_Ownable() const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 int TechnoTypeClass::Time_To_Build() const {
-  return Cost * TheRules().BuildSpeedBias * fixed(kTicksPerMinute, 1000);
+  return Cost * TheRules().BuildSpeedBias * Fixed(kTicksPerMinute, 1000);
 }
 
 /***********************************************************************************************
@@ -6611,7 +6611,7 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
     SightRange = ini.Get_Int(Name(), "Sight", SightRange);
     Level = ini.Get_Int(Name(), "TechLevel", Level);
     MaxSpeed = static_cast<MPHType>(Scale_To_256(ini.Get_Int(
-        Name(), "Speed", fixed(static_cast<int>(MaxSpeed), 256) * 100)));
+        Name(), "Speed", Fixed(static_cast<int>(MaxSpeed), 256) * 100)));
     Cost = ini.Get_Int(Name(), "Cost", Cost);
     MaxAmmo = ini.Get_Int(Name(), "Ammo", MaxAmmo);
     Risk = Reward = Points = ini.Get_Int(Name(), "Points", Points);

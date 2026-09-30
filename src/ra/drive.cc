@@ -117,7 +117,7 @@ void DriveClass::Response_Select() {
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (TheGameState().allow_voice()) {
-    PlaySoundEffect(response, fixed(1), -(ID + 1));
+    PlaySoundEffect(response, Fixed(1), -(ID + 1));
   }
 }
 
@@ -145,7 +145,7 @@ void DriveClass::Response_Move() {
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (TheGameState().allow_voice()) {
-    PlaySoundEffect(response, fixed(1), -(ID + 1));
+    PlaySoundEffect(response, Fixed(1), -(ID + 1));
   }
 }
 
@@ -170,7 +170,7 @@ void DriveClass::Response_Attack() {
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (TheGameState().allow_voice()) {
-    PlaySoundEffect(response, fixed(1), -(ID + 1));
+    PlaySoundEffect(response, Fixed(1), -(ID + 1));
   }
 }
 
@@ -604,9 +604,9 @@ bool DriveClass::While_Moving() {
   int actual = 0;  // Working movement addition value.
   if (What_Am_I() == RTTI_UNIT &&
       dynamic_cast<UnitClass*>(this)->Flagged != HOUSE_NONE) {
-    actual = SpeedAccum + static_cast<int>(maxspeed) / 2 * fixed(Speed, 256);
+    actual = SpeedAccum + static_cast<int>(maxspeed) / 2 * Fixed(Speed, 256);
   } else {
-    actual = SpeedAccum + static_cast<int>(maxspeed) * fixed(Speed, 256);
+    actual = SpeedAccum + static_cast<int>(maxspeed) * Fixed(Speed, 256);
   }
 
   if (actual > PIXEL_LEPTON_W) {

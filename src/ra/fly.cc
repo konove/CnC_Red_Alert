@@ -135,6 +135,6 @@ ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
  *=============================================================================================*/
 void FlyClass::Fly_Speed(int speed, MPHType maximum) {
   SpeedAdd =
-      static_cast<MPHType>(static_cast<int>(maximum) * fixed(speed, 256));
+      static_cast<MPHType>(static_cast<int>(maximum) * Fixed(speed, 256));
   //	SpeedAdd = (MPHType)Fixed_To_Cardinal((int)maximum, speed);
 }

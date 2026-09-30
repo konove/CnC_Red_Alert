@@ -27,7 +27,7 @@
 #include "absl/strings/str_format.h"
 #include "base/types.h"
 
-// Conversion between fixed and the decimal text INI files hold.
+// Conversion between Fixed and the decimal text INI files hold.
 
 // Parses leading digits from a string_view into an int. Returns 0 on failure.
 static int ParseInt(const std::string_view s) {
@@ -38,7 +38,7 @@ static int ParseInt(const std::string_view s) {
   return value;
 }
 
-fixed fixed::FromString(const std::string_view str_in) {
+Fixed Fixed::FromString(const std::string_view str_in) {
   const auto str = absl::StripLeadingAsciiWhitespace(str_in);
   if (str.empty()) {
     return {};
@@ -46,14 +46,14 @@ fixed fixed::FromString(const std::string_view str_in) {
 
   // Percentage: "75%" → 75 * 256 / 100 ≈ 0.75 in 8.8 fixed point.
   if (str.ends_with('%')) {
-    fixed result;
+    Fixed result;
     result.raw_ = static_cast<uint16_t>(
         int64_t{ParseInt(str.substr(0, str.size() - 1))} * 256 / 100);
     return result;
   }
 
   // Parse decimal number (e.g., "1.5", ".016", "3").
-  fixed result;
+  Fixed result;
   const auto dot = str.find('.');
   const auto whole_part = str.substr(0, dot);
   if (!whole_part.empty()) {
@@ -85,7 +85,7 @@ fixed fixed::FromString(const std::string_view str_in) {
   return result;
 }
 
-std::string fixed::AsString() const {
+std::string Fixed::AsString() const {
   if (fraction() == 0) {
     return std::to_string(whole());
   }

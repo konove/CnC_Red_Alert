@@ -211,13 +211,13 @@ class MissionControlClass {
   *the delay between mundane mission processing *	in order to achieve less
   *game overhead.
   */
-  fixed Rate;
+  Fixed Rate;
 
   /*
   **	Anti-Aircraft buildings (and units) in guard or guard area mode will use
   *this override *	delay interval instead of the normal "Rate" value.
   */
-  fixed AARate;
+  Fixed AARate;
 };
 
 #endif  // CNC_RED_ALERT_RA_MISSION_H_

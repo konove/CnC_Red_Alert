@@ -382,7 +382,7 @@ void SoundControlsClass::Process() {
       **	Control music volume.
       */
       case engine::window::ButtonKey(kSliderMusic):
-        TheOptions().Set_Score_Volume(fixed(music.Get_Value(), 256), true);
+        TheOptions().Set_Score_Volume(Fixed(music.Get_Value(), 256), true);
         if (TheSession().Type != GAME_NORMAL) {
           TheOptions().MultiScoreVolume = TheOptions().ScoreVolume;
         }
@@ -392,7 +392,7 @@ void SoundControlsClass::Process() {
       **	Control sound volume.
       */
       case engine::window::ButtonKey(kSliderSound):
-        TheOptions().Set_Sound_Volume(fixed(sound.Get_Value(), 256), true);
+        TheOptions().Set_Sound_Volume(Fixed(sound.Get_Value(), 256), true);
         break;
 
       case engine::window::ButtonKey(kButtonListbox):

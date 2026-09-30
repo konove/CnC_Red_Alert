@@ -78,7 +78,7 @@ static const AnimTypeClass AtomBomb(
     false,            // Ground level animation?
     false,            // Translucent colors in this animation?
     false,            // Is this a flame thrower animation?
-    fixed(0),         // Damage to apply per tick (fixed point).
+    Fixed(0),         // Damage to apply per tick (fixed point).
     1,                // Delay between frames.
     0,                // Starting frame number.
     0,                // Loop start frame number.
@@ -102,7 +102,7 @@ static const AnimTypeClass SputDoor(
     false,          // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(0),       // Damage to apply per tick (fixed point).
+    Fixed(0),       // Damage to apply per tick (fixed point).
     1,              // Delay between frames.
     0,              // Starting frame number.
     0,              // Loop start frame number.
@@ -127,7 +127,7 @@ static const AnimTypeClass ElectricDie(
     true,            // Ground level animation?
     false,           // Translucent colors in this animation?
     false,           // Is this a flame thrower animation?
-    fixed(0),        // Damage to apply per tick (fixed point).
+    Fixed(0),        // Damage to apply per tick (fixed point).
     1,               // Delay between frames.
     0,               // Starting frame number.
     0,               // Loop start frame number.
@@ -152,7 +152,7 @@ static const AnimTypeClass DogElectricDie(
     true,                // Ground level animation?
     false,               // Translucent colors in this animation?
     false,               // Is this a flame thrower animation?
-    fixed(0),            // Damage to apply per tick (fixed point).
+    Fixed(0),            // Damage to apply per tick (fixed point).
     1,                   // Delay between frames.
     0,                   // Starting frame number.
     0,                   // Loop start frame number.
@@ -176,7 +176,7 @@ static const AnimTypeClass SAMN(
     false,       // Ground level animation?
     false,       // Translucent colors in this animation?
     false,       // Is this a flame thrower animation?
-    fixed(0),    // Damage to apply per tick (fixed point).
+    Fixed(0),    // Damage to apply per tick (fixed point).
     1,           // Delay between frames.
     18 * 0,      // Starting frame number.
     0,           // Loop start frame number.
@@ -199,7 +199,7 @@ static const AnimTypeClass SAMNW(
     false,        // Ground level animation?
     false,        // Translucent colors in this animation?
     false,        // Is this a flame thrower animation?
-    fixed(0),     // Damage to apply per tick (fixed point).
+    Fixed(0),     // Damage to apply per tick (fixed point).
     1,            // Delay between frames.
     18 * 1,       // Starting frame number.
     0,            // Loop start frame number.
@@ -222,7 +222,7 @@ static const AnimTypeClass SAMW(
     false,       // Ground level animation?
     false,       // Translucent colors in this animation?
     false,       // Is this a flame thrower animation?
-    fixed(0),    // Damage to apply per tick (fixed point).
+    Fixed(0),    // Damage to apply per tick (fixed point).
     1,           // Delay between frames.
     18 * 2,      // Starting frame number.
     0,           // Loop start frame number.
@@ -245,7 +245,7 @@ static const AnimTypeClass SAMSW(
     false,        // Ground level animation?
     false,        // Translucent colors in this animation?
     false,        // Is this a flame thrower animation?
-    fixed(0),     // Damage to apply per tick (fixed point).
+    Fixed(0),     // Damage to apply per tick (fixed point).
     1,            // Delay between frames.
     18 * 3,       // Starting frame number.
     0,            // Loop start frame number.
@@ -268,7 +268,7 @@ static const AnimTypeClass SAMS(
     false,       // Ground level animation?
     false,       // Translucent colors in this animation?
     false,       // Is this a flame thrower animation?
-    fixed(0),    // Damage to apply per tick (fixed point).
+    Fixed(0),    // Damage to apply per tick (fixed point).
     1,           // Delay between frames.
     18 * 4,      // Starting frame number.
     0,           // Loop start frame number.
@@ -291,7 +291,7 @@ static const AnimTypeClass SAMSE(
     false,        // Ground level animation?
     false,        // Translucent colors in this animation?
     false,        // Is this a flame thrower animation?
-    fixed(0),     // Damage to apply per tick (fixed point).
+    Fixed(0),     // Damage to apply per tick (fixed point).
     1,            // Delay between frames.
     18 * 5,       // Starting frame number.
     0,            // Loop start frame number.
@@ -314,7 +314,7 @@ static const AnimTypeClass SAME(
     false,       // Ground level animation?
     false,       // Translucent colors in this animation?
     false,       // Is this a flame thrower animation?
-    fixed(0),    // Damage to apply per tick (fixed point).
+    Fixed(0),    // Damage to apply per tick (fixed point).
     1,           // Delay between frames.
     18 * 6,      // Starting frame number.
     0,           // Loop start frame number.
@@ -337,7 +337,7 @@ static const AnimTypeClass SAMNE(
     false,        // Ground level animation?
     false,        // Translucent colors in this animation?
     false,        // Is this a flame thrower animation?
-    fixed(0),     // Damage to apply per tick (fixed point).
+    Fixed(0),     // Damage to apply per tick (fixed point).
     1,            // Delay between frames.
     18 * 7,       // Starting frame number.
     0,            // Loop start frame number.
@@ -361,7 +361,7 @@ static const AnimTypeClass LZSmoke(
     true,           // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(0),       // Damage to apply per tick (fixed point).
+    Fixed(0),       // Damage to apply per tick (fixed point).
     2,              // Delay between frames.
     0,              // Starting frame number.
     72,             // Loop start frame number.
@@ -389,7 +389,7 @@ static const AnimTypeClass BurnSmall(
     true,             // Ground level animation?
     false,            // Translucent colors in this animation?
     false,            // Is this a flame thrower animation?
-    fixed(1, 32),     // Damage to apply per tick (fixed point).
+    Fixed(1, 32),     // Damage to apply per tick (fixed point).
     2,                // Delay between frames.
     0,                // Starting frame number.
     30,               // Loop start frame number.
@@ -412,7 +412,7 @@ static const AnimTypeClass BurnMed(
     true,           // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(1, 16),   // Damage to apply per tick (fixed point).
+    Fixed(1, 16),   // Damage to apply per tick (fixed point).
     2,              // Delay between frames.
     0,              // Starting frame number.
     30,             // Loop start frame number.
@@ -435,7 +435,7 @@ static const AnimTypeClass BurnBig(
     true,           // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(1, 10),   // Damage to apply per tick (fixed point).
+    Fixed(1, 10),   // Damage to apply per tick (fixed point).
     2,              // Delay between frames.
     0,              // Starting frame number.
     30,             // Loop start frame number.
@@ -463,7 +463,7 @@ static const AnimTypeClass OnFireSmall(
     true,                // Ground level animation?
     false,               // Translucent colors in this animation?
     false,               // Is this a flame thrower animation?
-    fixed(1, 32),        // Damage to apply per tick (fixed point).
+    Fixed(1, 32),        // Damage to apply per tick (fixed point).
     2,                   // Delay between frames.
     0,                   // Starting frame number.
     30,                  // Loop start frame number.
@@ -486,7 +486,7 @@ static const AnimTypeClass OnFireMed(
     true,              // Ground level animation?
     false,             // Translucent colors in this animation?
     false,             // Is this a flame thrower animation?
-    fixed(1, 16),      // Damage to apply per tick (fixed point).
+    Fixed(1, 16),      // Damage to apply per tick (fixed point).
     2,                 // Delay between frames.
     0,                 // Starting frame number.
     30,                // Loop start frame number.
@@ -509,7 +509,7 @@ static const AnimTypeClass OnFireBig(
     true,              // Ground level animation?
     false,             // Translucent colors in this animation?
     false,             // Is this a flame thrower animation?
-    fixed(1, 10),      // Damage to apply per tick (fixed point).
+    Fixed(1, 10),      // Damage to apply per tick (fixed point).
     2,                 // Delay between frames.
     0,                 // Starting frame number.
     30,                // Loop start frame number.
@@ -532,7 +532,7 @@ static const AnimTypeClass Parachute(
     false,           // Ground level animation?
     false,           // Translucent colors in this animation?
     false,           // Is this a flame thrower animation?
-    fixed(0),        // Damage to apply per tick (fixed point).
+    Fixed(0),        // Damage to apply per tick (fixed point).
     4,               // Delay between frames.
     0,               // Starting frame number.
     7,               // Loop start frame number.
@@ -555,7 +555,7 @@ static const AnimTypeClass ParaBomb(
     false,           // Ground level animation?
     false,           // Translucent colors in this animation?
     false,           // Is this a flame thrower animation?
-    fixed(0),        // Damage to apply per tick (fixed point).
+    Fixed(0),        // Damage to apply per tick (fixed point).
     4,               // Delay between frames.
     0,               // Starting frame number.
     7,               // Loop start frame number.
@@ -579,7 +579,7 @@ static const AnimTypeClass FBall1(
     false,         // Ground level animation?
     false,         // Translucent colors in this animation?
     false,         // Is this a flame thrower animation?
-    fixed(0),      // Damage to apply per tick (fixed point).
+    Fixed(0),      // Damage to apply per tick (fixed point).
     1,             // Delay between frames.
     0,             // Starting frame number.
     0,             // Loop start frame number.
@@ -603,7 +603,7 @@ static const AnimTypeClass Frag1(
     true,          // Ground level animation?
     false,         // Translucent colors in this animation?
     false,         // Is this a flame thrower animation?
-    fixed(0),      // Damage to apply per tick (fixed point).
+    Fixed(0),      // Damage to apply per tick (fixed point).
     1,             // Delay between frames.
     0,             // Starting frame number.
     0,             // Loop start frame number.
@@ -627,7 +627,7 @@ static const AnimTypeClass VehHit1(
     false,          // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(0),       // Damage to apply per tick (fixed point).
+    Fixed(0),       // Damage to apply per tick (fixed point).
     1,              // Delay between frames.
     0,              // Starting frame number.
     0,              // Loop start frame number.
@@ -651,7 +651,7 @@ static const AnimTypeClass VehHit2(
     false,          // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(0),       // Damage to apply per tick (fixed point).
+    Fixed(0),       // Damage to apply per tick (fixed point).
     1,              // Delay between frames.
     0,              // Starting frame number.
     0,              // Loop start frame number.
@@ -675,7 +675,7 @@ static const AnimTypeClass VehHit3(
     false,          // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(0),       // Damage to apply per tick (fixed point).
+    Fixed(0),       // Damage to apply per tick (fixed point).
     1,              // Delay between frames.
     0,              // Starting frame number.
     0,              // Loop start frame number.
@@ -699,7 +699,7 @@ static const AnimTypeClass ArtExp1(
     false,          // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(0),       // Damage to apply per tick (fixed point).
+    Fixed(0),       // Damage to apply per tick (fixed point).
     1,              // Delay between frames.
     0,              // Starting frame number.
     0,              // Loop start frame number.
@@ -723,7 +723,7 @@ static const AnimTypeClass Napalm1(
     false,             // Ground level animation?
     false,             // Translucent colors in this animation?
     false,             // Is this a flame thrower animation?
-    fixed(0),          // Damage to apply per tick (fixed point).
+    Fixed(0),          // Damage to apply per tick (fixed point).
     1,                 // Delay between frames.
     0,                 // Starting frame number.
     0,                 // Loop start frame number.
@@ -747,7 +747,7 @@ static const AnimTypeClass Napalm2(
     false,             // Ground level animation?
     false,             // Translucent colors in this animation?
     false,             // Is this a flame thrower animation?
-    fixed(0),          // Damage to apply per tick (fixed point).
+    Fixed(0),          // Damage to apply per tick (fixed point).
     1,                 // Delay between frames.
     0,                 // Starting frame number.
     0,                 // Loop start frame number.
@@ -771,7 +771,7 @@ static const AnimTypeClass Napalm3(
     false,            // Ground level animation?
     false,            // Translucent colors in this animation?
     false,            // Is this a flame thrower animation?
-    fixed(0),         // Damage to apply per tick (fixed point).
+    Fixed(0),         // Damage to apply per tick (fixed point).
     1,                // Delay between frames.
     0,                // Starting frame number.
     0,                // Loop start frame number.
@@ -795,7 +795,7 @@ static const AnimTypeClass SmokePuff(
     false,            // Ground level animation?
     true,             // Translucent colors in this animation?
     false,            // Is this a flame thrower animation?
-    fixed(0),         // Damage to apply per tick (fixed point).
+    Fixed(0),         // Damage to apply per tick (fixed point).
     1,                // Delay between frames.
     0,                // Starting frame number.
     0,                // Loop start frame number.
@@ -819,7 +819,7 @@ static const AnimTypeClass FireBallFade(
     false,            // Ground level animation?
     false,            // Translucent colors in this animation?
     false,            // Is this a flame thrower animation?
-    fixed(0),         // Damage to apply per tick (fixed point).
+    Fixed(0),         // Damage to apply per tick (fixed point).
     1,                // Delay between frames.
     0,                // Starting frame number.
     0,                // Loop start frame number.
@@ -843,7 +843,7 @@ static const AnimTypeClass Piff(
     false,      // Ground level animation?
     false,      // Translucent colors in this animation?
     false,      // Is this a flame thrower animation?
-    fixed(0),   // Damage to apply per tick (fixed point).
+    Fixed(0),   // Damage to apply per tick (fixed point).
     1,          // Delay between frames.
     0,          // Starting frame number.
     0,          // Loop start frame number.
@@ -867,7 +867,7 @@ static const AnimTypeClass PiffPiff(
     false,          // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(0),       // Damage to apply per tick (fixed point).
+    Fixed(0),       // Damage to apply per tick (fixed point).
     1,              // Delay between frames.
     0,              // Starting frame number.
     0,              // Loop start frame number.
@@ -891,7 +891,7 @@ static const AnimTypeClass Fire3(
     true,             // Ground level animation?
     false,            // Translucent colors in this animation?
     false,            // Is this a flame thrower animation?
-    fixed(1, 32),     // Damage to apply per tick (fixed point).
+    Fixed(1, 32),     // Damage to apply per tick (fixed point).
     1,                // Delay between frames.
     0,                // Starting frame number.
     0,                // Loop start frame number.
@@ -915,7 +915,7 @@ static const AnimTypeClass Fire1(
     true,            // Ground level animation?
     false,           // Translucent colors in this animation?
     false,           // Is this a flame thrower animation?
-    fixed(1, 16),    // Damage to apply per tick (fixed point).
+    Fixed(1, 16),    // Damage to apply per tick (fixed point).
     1,               // Delay between frames.
     0,               // Starting frame number.
     0,               // Loop start frame number.
@@ -939,7 +939,7 @@ static const AnimTypeClass Fire4(
     true,            // Ground level animation?
     false,           // Translucent colors in this animation?
     false,           // Is this a flame thrower animation?
-    fixed(1, 32),    // Damage to apply per tick (fixed point).
+    Fixed(1, 32),    // Damage to apply per tick (fixed point).
     1,               // Delay between frames.
     0,               // Starting frame number.
     0,               // Loop start frame number.
@@ -963,7 +963,7 @@ static const AnimTypeClass Fire2(
     true,           // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(1, 16),   // Damage to apply per tick (fixed point).
+    Fixed(1, 16),   // Damage to apply per tick (fixed point).
     1,              // Delay between frames.
     0,              // Starting frame number.
     0,              // Loop start frame number.
@@ -987,7 +987,7 @@ static const AnimTypeClass OilFieldBurn(
     true,                // Ground level animation?
     false,               // Translucent colors in this animation?
     false,               // Is this a flame thrower animation?
-    fixed(0),            // Damage to apply per tick (fixed point).
+    Fixed(0),            // Damage to apply per tick (fixed point).
     1,                   // Delay between frames.
     0,                   // Starting frame number.
     33,                  // Loop start frame number.
@@ -1011,7 +1011,7 @@ static const AnimTypeClass Gunfire(
     true,               // Ground level animation?
     true,               // Translucent colors in this animation?
     false,              // Is this a flame thrower animation?
-    fixed(0),           // Damage to apply per tick (fixed point).
+    Fixed(0),           // Damage to apply per tick (fixed point).
     1,                  // Delay between frames.
     0,                  // Starting frame number.
     0,                  // Loop start frame number.
@@ -1035,7 +1035,7 @@ static const AnimTypeClass SmokeM(
     true,          // Ground level animation?
     false,         // Translucent colors in this animation?
     false,         // Is this a flame thrower animation?
-    fixed(0),      // Damage to apply per tick (fixed point).
+    Fixed(0),      // Damage to apply per tick (fixed point).
     1,             // Delay between frames.
     0,             // Starting frame number.
     67,            // Loop start frame number.
@@ -1062,7 +1062,7 @@ static const AnimTypeClass GUNN(
     false,       // Ground level animation?
     false,       // Translucent colors in this animation?
     false,       // Is this a flame thrower animation?
-    fixed(0),    // Damage to apply per tick (fixed point).
+    Fixed(0),    // Damage to apply per tick (fixed point).
     1,           // Delay between frames.
     0,           // Starting frame number.
     0,           // Loop start frame number.
@@ -1085,7 +1085,7 @@ static const AnimTypeClass GUNNW(
     false,        // Ground level animation?
     false,        // Translucent colors in this animation?
     false,        // Is this a flame thrower animation?
-    fixed(0),     // Damage to apply per tick (fixed point).
+    Fixed(0),     // Damage to apply per tick (fixed point).
     1,            // Delay between frames.
     6,            // Starting frame number.
     0,            // Loop start frame number.
@@ -1108,7 +1108,7 @@ static const AnimTypeClass GUNW(
     false,       // Ground level animation?
     false,       // Translucent colors in this animation?
     false,       // Is this a flame thrower animation?
-    fixed(0),    // Damage to apply per tick (fixed point).
+    Fixed(0),    // Damage to apply per tick (fixed point).
     1,           // Delay between frames.
     12,          // Starting frame number.
     0,           // Loop start frame number.
@@ -1131,7 +1131,7 @@ static const AnimTypeClass GUNSW(
     false,        // Ground level animation?
     false,        // Translucent colors in this animation?
     false,        // Is this a flame thrower animation?
-    fixed(0),     // Damage to apply per tick (fixed point).
+    Fixed(0),     // Damage to apply per tick (fixed point).
     1,            // Delay between frames.
     18,           // Starting frame number.
     0,            // Loop start frame number.
@@ -1154,7 +1154,7 @@ static const AnimTypeClass GUNS(
     false,       // Ground level animation?
     false,       // Translucent colors in this animation?
     false,       // Is this a flame thrower animation?
-    fixed(0),    // Damage to apply per tick (fixed point).
+    Fixed(0),    // Damage to apply per tick (fixed point).
     1,           // Delay between frames.
     24,          // Starting frame number.
     0,           // Loop start frame number.
@@ -1177,7 +1177,7 @@ static const AnimTypeClass GUNSE(
     false,        // Ground level animation?
     false,        // Translucent colors in this animation?
     false,        // Is this a flame thrower animation?
-    fixed(0),     // Damage to apply per tick (fixed point).
+    Fixed(0),     // Damage to apply per tick (fixed point).
     1,            // Delay between frames.
     30,           // Starting frame number.
     0,            // Loop start frame number.
@@ -1200,7 +1200,7 @@ static const AnimTypeClass GUNE(
     false,       // Ground level animation?
     false,       // Translucent colors in this animation?
     false,       // Is this a flame thrower animation?
-    fixed(0),    // Damage to apply per tick (fixed point).
+    Fixed(0),    // Damage to apply per tick (fixed point).
     1,           // Delay between frames.
     36,          // Starting frame number.
     0,           // Loop start frame number.
@@ -1223,7 +1223,7 @@ static const AnimTypeClass GUNNE(
     false,        // Ground level animation?
     false,        // Translucent colors in this animation?
     false,        // Is this a flame thrower animation?
-    fixed(0),     // Damage to apply per tick (fixed point).
+    Fixed(0),     // Damage to apply per tick (fixed point).
     1,            // Delay between frames.
     42,           // Starting frame number.
     0,            // Loop start frame number.
@@ -1246,7 +1246,7 @@ static const AnimTypeClass CDeviator(
     false,                // Ground level animation?
     false,                // Translucent colors in this animation?
     false,                // Is this a flame thrower animation?
-    fixed(0),             // Damage to apply per tick (fixed point).
+    Fixed(0),             // Damage to apply per tick (fixed point).
     2,                    // Delay between frames.
     0,                    // Starting frame number.
     0,                    // Loop start frame number.
@@ -1271,7 +1271,7 @@ static const AnimTypeClass CrateArmor(
     false,             // Ground level animation?
     false,             // Translucent colors in this animation?
     false,             // Is this a flame thrower animation?
-    fixed(0),          // Damage to apply per tick (fixed point).
+    Fixed(0),          // Damage to apply per tick (fixed point).
     2,                 // Delay between frames.
     0,                 // Starting frame number.
     0,                 // Loop start frame number.
@@ -1295,7 +1295,7 @@ static const AnimTypeClass CrateSpeed(
     false,             // Ground level animation?
     false,             // Translucent colors in this animation?
     false,             // Is this a flame thrower animation?
-    fixed(0),          // Damage to apply per tick (fixed point).
+    Fixed(0),          // Damage to apply per tick (fixed point).
     2,                 // Delay between frames.
     0,                 // Starting frame number.
     0,                 // Loop start frame number.
@@ -1320,7 +1320,7 @@ static const AnimTypeClass CrateFPower(
     false,              // Ground level animation?
     false,              // Translucent colors in this animation?
     false,              // Is this a flame thrower animation?
-    fixed(0),           // Damage to apply per tick (fixed point).
+    Fixed(0),           // Damage to apply per tick (fixed point).
     2,                  // Delay between frames.
     0,                  // Starting frame number.
     0,                  // Loop start frame number.
@@ -1344,7 +1344,7 @@ static const AnimTypeClass CrateTQuake(
     false,              // Ground level animation?
     false,              // Translucent colors in this animation?
     false,              // Is this a flame thrower animation?
-    fixed(0),           // Damage to apply per tick (fixed point).
+    Fixed(0),           // Damage to apply per tick (fixed point).
     2,                  // Delay between frames.
     0,                  // Starting frame number.
     0,                  // Loop start frame number.
@@ -1369,7 +1369,7 @@ static const AnimTypeClass CDollar(
     false,              // Ground level animation?
     false,              // Translucent colors in this animation?
     false,              // Is this a flame thrower animation?
-    fixed(0),           // Damage to apply per tick (fixed point).
+    Fixed(0),           // Damage to apply per tick (fixed point).
     2,                  // Delay between frames.
     0,                  // Starting frame number.
     0,                  // Loop start frame number.
@@ -1393,7 +1393,7 @@ static const AnimTypeClass CEarth(
     false,             // Ground level animation?
     false,             // Translucent colors in this animation?
     false,             // Is this a flame thrower animation?
-    fixed(0),          // Damage to apply per tick (fixed point).
+    Fixed(0),          // Damage to apply per tick (fixed point).
     2,                 // Delay between frames.
     0,                 // Starting frame number.
     0,                 // Loop start frame number.
@@ -1417,7 +1417,7 @@ static const AnimTypeClass CEmpulse(
     false,               // Ground level animation?
     false,               // Translucent colors in this animation?
     false,               // Is this a flame thrower animation?
-    fixed(0),            // Damage to apply per tick (fixed point).
+    Fixed(0),            // Damage to apply per tick (fixed point).
     2,                   // Delay between frames.
     0,                   // Starting frame number.
     0,                   // Loop start frame number.
@@ -1441,7 +1441,7 @@ static const AnimTypeClass CInvun(
     false,             // Ground level animation?
     false,             // Translucent colors in this animation?
     false,             // Is this a flame thrower animation?
-    fixed(0),          // Damage to apply per tick (fixed point).
+    Fixed(0),          // Damage to apply per tick (fixed point).
     2,                 // Delay between frames.
     0,                 // Starting frame number.
     0,                 // Loop start frame number.
@@ -1465,7 +1465,7 @@ static const AnimTypeClass CMine(
     false,            // Ground level animation?
     false,            // Translucent colors in this animation?
     false,            // Is this a flame thrower animation?
-    fixed(0),         // Damage to apply per tick (fixed point).
+    Fixed(0),         // Damage to apply per tick (fixed point).
     2,                // Delay between frames.
     0,                // Starting frame number.
     0,                // Loop start frame number.
@@ -1489,7 +1489,7 @@ static const AnimTypeClass CRapid(
     false,             // Ground level animation?
     false,             // Translucent colors in this animation?
     false,             // Is this a flame thrower animation?
-    fixed(0),          // Damage to apply per tick (fixed point).
+    Fixed(0),          // Damage to apply per tick (fixed point).
     2,                 // Delay between frames.
     0,                 // Starting frame number.
     0,                 // Loop start frame number.
@@ -1513,7 +1513,7 @@ static const AnimTypeClass CStealth(
     false,               // Ground level animation?
     false,               // Translucent colors in this animation?
     false,               // Is this a flame thrower animation?
-    fixed(0),            // Damage to apply per tick (fixed point).
+    Fixed(0),            // Damage to apply per tick (fixed point).
     2,                   // Delay between frames.
     0,                   // Starting frame number.
     0,                   // Loop start frame number.
@@ -1537,7 +1537,7 @@ static const AnimTypeClass ChronoBox(
     false,            // Ground level animation?
     false,            // Translucent colors in this animation?
     false,            // Is this a flame thrower animation?
-    fixed(0),         // Damage to apply per tick (fixed point).
+    Fixed(0),         // Damage to apply per tick (fixed point).
     2,                // Delay between frames.
     0,                // Starting frame number.
     0,                // Loop start frame number.
@@ -1561,7 +1561,7 @@ static const AnimTypeClass GPSBox(
     false,         // Ground level animation?
     false,         // Translucent colors in this animation?
     false,         // Is this a flame thrower animation?
-    fixed(0),      // Damage to apply per tick (fixed point).
+    Fixed(0),      // Damage to apply per tick (fixed point).
     2,             // Delay between frames.
     0,             // Starting frame number.
     0,             // Loop start frame number.
@@ -1585,7 +1585,7 @@ static const AnimTypeClass InvulBox(
     false,           // Ground level animation?
     false,           // Translucent colors in this animation?
     false,           // Is this a flame thrower animation?
-    fixed(0),        // Damage to apply per tick (fixed point).
+    Fixed(0),        // Damage to apply per tick (fixed point).
     2,               // Delay between frames.
     0,               // Starting frame number.
     0,               // Loop start frame number.
@@ -1609,7 +1609,7 @@ static const AnimTypeClass ParaBox(
     false,          // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(0),       // Damage to apply per tick (fixed point).
+    Fixed(0),       // Damage to apply per tick (fixed point).
     2,              // Delay between frames.
     0,              // Starting frame number.
     0,              // Loop start frame number.
@@ -1633,7 +1633,7 @@ static const AnimTypeClass SonarBox(
     false,           // Ground level animation?
     false,           // Translucent colors in this animation?
     false,           // Is this a flame thrower animation?
-    fixed(0),        // Damage to apply per tick (fixed point).
+    Fixed(0),        // Damage to apply per tick (fixed point).
     2,               // Delay between frames.
     0,               // Starting frame number.
     0,               // Loop start frame number.
@@ -1658,7 +1658,7 @@ static const AnimTypeClass CMissile(
     false,               // Ground level animation?
     false,               // Translucent colors in this animation?
     false,               // Is this a flame thrower animation?
-    fixed(0),            // Damage to apply per tick (fixed point).
+    Fixed(0),            // Damage to apply per tick (fixed point).
     2,                   // Delay between frames.
     0,                   // Starting frame number.
     0,                   // Loop start frame number.
@@ -1683,7 +1683,7 @@ static const AnimTypeClass MoveFlash(
     true,             // Ground level animation?
     false,            // Translucent colors in this animation?
     false,            // Is this a flame thrower animation?
-    fixed(0),         // Damage to apply per tick (fixed point).
+    Fixed(0),         // Damage to apply per tick (fixed point).
     1,                // Delay between frames.
     0,                // Starting frame number.
     0,                // Loop start frame number.
@@ -1708,7 +1708,7 @@ static const AnimTypeClass Corpse1(
     true,          // Ground level animation?
     true,          // Translucent colors in this animation?
     false,         // Is this a flame thrower animation?
-    fixed(0),      // Damage to apply per tick (fixed point).
+    Fixed(0),      // Damage to apply per tick (fixed point).
     15,            // Delay between frames.
     0,             // Starting frame number.
     0,             // Loop start frame number.
@@ -1732,7 +1732,7 @@ static const AnimTypeClass Corpse2(
     true,          // Ground level animation?
     true,          // Translucent colors in this animation?
     false,         // Is this a flame thrower animation?
-    fixed(0),      // Damage to apply per tick (fixed point).
+    Fixed(0),      // Damage to apply per tick (fixed point).
     15,            // Delay between frames.
     0,             // Starting frame number.
     0,             // Loop start frame number.
@@ -1756,7 +1756,7 @@ static const AnimTypeClass Corpse3(
     true,          // Ground level animation?
     true,          // Translucent colors in this animation?
     false,         // Is this a flame thrower animation?
-    fixed(0),      // Damage to apply per tick (fixed point).
+    Fixed(0),      // Damage to apply per tick (fixed point).
     15,            // Delay between frames.
     0,             // Starting frame number.
     0,             // Loop start frame number.
@@ -1780,7 +1780,7 @@ static const AnimTypeClass Twinkle1(
     false,          // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(0),       // Damage to apply per tick (fixed point).
+    Fixed(0),       // Damage to apply per tick (fixed point).
     1,              // Delay between frames.
     0,              // Starting frame number.
     0,              // Loop start frame number.
@@ -1803,7 +1803,7 @@ static const AnimTypeClass Twinkle2(
     false,          // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(0),       // Damage to apply per tick (fixed point).
+    Fixed(0),       // Damage to apply per tick (fixed point).
     1,              // Delay between frames.
     0,              // Starting frame number.
     0,              // Loop start frame number.
@@ -1826,7 +1826,7 @@ static const AnimTypeClass Twinkle3(
     false,          // Ground level animation?
     false,          // Translucent colors in this animation?
     false,          // Is this a flame thrower animation?
-    fixed(0),       // Damage to apply per tick (fixed point).
+    Fixed(0),       // Damage to apply per tick (fixed point).
     1,              // Delay between frames.
     0,              // Starting frame number.
     0,              // Loop start frame number.
@@ -1849,7 +1849,7 @@ static const AnimTypeClass Flak(
     false,      // Ground level animation?
     false,      // Translucent colors in this animation?
     false,      // Is this a flame thrower animation?
-    fixed(0),   // Damage to apply per tick (fixed point).
+    Fixed(0),   // Damage to apply per tick (fixed point).
     1,          // Delay between frames.
     0,          // Starting frame number.
     0,          // Loop start frame number.
@@ -1872,7 +1872,7 @@ static const AnimTypeClass WaterExp1(
     true,             // Ground level animation?
     false,            // Translucent colors in this animation?
     false,            // Is this a flame thrower animation?
-    fixed(0),         // Damage to apply per tick (fixed point).
+    Fixed(0),         // Damage to apply per tick (fixed point).
     1,                // Delay between frames.
     0,                // Starting frame number.
     0,                // Loop start frame number.
@@ -1895,7 +1895,7 @@ static const AnimTypeClass WaterExp2(
     true,             // Ground level animation?
     false,            // Translucent colors in this animation?
     false,            // Is this a flame thrower animation?
-    fixed(0),         // Damage to apply per tick (fixed point).
+    Fixed(0),         // Damage to apply per tick (fixed point).
     1,                // Delay between frames.
     0,                // Starting frame number.
     0,                // Loop start frame number.
@@ -1918,7 +1918,7 @@ static const AnimTypeClass WaterExp3(
     true,             // Ground level animation?
     false,            // Translucent colors in this animation?
     false,            // Is this a flame thrower animation?
-    fixed(0),         // Damage to apply per tick (fixed point).
+    Fixed(0),         // Damage to apply per tick (fixed point).
     1,                // Delay between frames.
     0,                // Starting frame number.
     0,                // Loop start frame number.
@@ -1942,7 +1942,7 @@ static const AnimTypeClass MineExp1(
     false,           // Ground level animation?
     false,           // Translucent colors in this animation?
     false,           // Is this a flame thrower animation?
-    fixed(0),        // Damage to apply per tick (fixed point).
+    Fixed(0),        // Damage to apply per tick (fixed point).
     1,               // Delay between frames.
     0,               // Starting frame number.
     0,               // Loop start frame number.
@@ -1966,7 +1966,7 @@ static const AnimTypeClass AntDeath(
     true,            // Ground level animation?
     true,            // Translucent colors in this animation?
     false,           // Is this a flame thrower animation?
-    fixed(0),        // Damage to apply per tick (fixed point).
+    Fixed(0),        // Damage to apply per tick (fixed point).
     4,               // Delay between frames.
     0,               // Starting frame number.
     0,               // Loop start frame number.
@@ -1995,7 +1995,7 @@ AnimTypeClass::AnimTypeClass(AnimType anim, const char* name, int size,
                              int biggest, bool istheater, bool isnormal,
                              bool iswhitetrans, bool isscorcher, bool iscrater,
                              bool issticky, bool ground, bool istrans,
-                             bool isflame, fixed damage, int delaytime,
+                             bool isflame, Fixed damage, int delaytime,
                              int start, int loopstart, int loopend, int stages,
                              int loops, VocType soundid,
                              AnimType chainto) noexcept

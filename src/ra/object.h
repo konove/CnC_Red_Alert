@@ -243,7 +243,7 @@ class ObjectClass : public AbstractClass {
       bool placement = false) const;
   [[nodiscard]] virtual std::span<const int16_t> Overlap_List(
       bool redraw = false) const;
-  [[nodiscard]] virtual fixed Health_Ratio() const;
+  [[nodiscard]] virtual Fixed Health_Ratio() const;
   virtual void Draw_It(PixelView& view, int x, int y,
                        WindowNumberType) const = 0;
   virtual void Hidden();

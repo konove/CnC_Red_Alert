@@ -1807,7 +1807,7 @@ std::span<const int16_t> ObjectClass::Overlap_List(bool /*unused*/) const {
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
   return Class_Of().Who_Can_Build_Me(intheory, legal, Owner());
 }
-fixed ObjectClass::Health_Ratio() const {
+Fixed ObjectClass::Health_Ratio() const {
   return {Strength, Class_Of().MaxStrength};
 }
 int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); }

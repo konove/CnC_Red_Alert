@@ -320,8 +320,8 @@ static inline int Scale_To_256(int val) {
  *=============================================================================================*/
 LEPTON CCINIClass::Get_Lepton(const char* section, const char* entry,
                               LEPTON defvalue) const {
-  const fixed result =
-      Get_Fixed(section, entry, fixed(defvalue, CELL_LEPTON_W));
+  const Fixed result =
+      Get_Fixed(section, entry, Fixed(defvalue, CELL_LEPTON_W));
   return static_cast<LEPTON>(result * CELL_LEPTON_W);
 }
 
@@ -345,7 +345,7 @@ LEPTON CCINIClass::Get_Lepton(const char* section, const char* entry,
  *=============================================================================================*/
 bool CCINIClass::Put_Lepton(const char* section, const char* entry,
                             LEPTON value) {
-  return Put_Fixed(section, entry, fixed(value, CELL_LEPTON_W));
+  return Put_Fixed(section, entry, Fixed(value, CELL_LEPTON_W));
 }
 
 /***********************************************************************************************

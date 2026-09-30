@@ -184,7 +184,7 @@ class FootClass : public TechnoClass {
   **	This is the override speed adjuster. Normally, this is a fixed point
   **	value of 0x0100, but it can be modified by crate powerups.
   */
-  fixed SpeedBias;
+  Fixed SpeedBias;
 
   /*
   ** For units in a formation, these values represent the distance from

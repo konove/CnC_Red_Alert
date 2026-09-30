@@ -657,9 +657,9 @@ void Show_Who_Was_Responsible() {
   /*
   ** Start any old song.
   */
-  const fixed oldvolume = TheOptions().ScoreVolume;
+  const Fixed oldvolume = TheOptions().ScoreVolume;
   if (oldvolume == 0) {
-    TheOptions().Set_Score_Volume(fixed(4, 10), false);
+    TheOptions().Set_Score_Volume(Fixed(4, 10), false);
   }
   TheTheme().Queue_Song(THEME_CREDITS);
 

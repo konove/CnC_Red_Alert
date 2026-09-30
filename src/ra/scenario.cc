@@ -267,9 +267,9 @@ void ScenarioClass::Do_Fade_AI() {
     if (FadeTimer.IsFinished()) {
       IsFadingColor = false;
     }
-    const fixed newsat =
+    const Fixed newsat =
         TheOptions().Get_Saturation() *
-        fixed(static_cast<int>(kGrayFadeTime - FadeTimer.Remaining()),
+        Fixed(static_cast<int>(kGrayFadeTime - FadeTimer.Remaining()),
               static_cast<int>(kGrayFadeTime));
     GameOptionsClass::Adjust_Palette(
         ThePalettes().original_palette(), ThePalettes().game_palette(),
@@ -281,9 +281,9 @@ void ScenarioClass::Do_Fade_AI() {
     if (FadeTimer.IsFinished()) {
       IsFadingBW = false;
     }
-    const fixed newsat =
+    const Fixed newsat =
         TheOptions().Get_Saturation() *
-        fixed(static_cast<int>(FadeTimer.Remaining()), kGrayFadeTime);
+        Fixed(static_cast<int>(FadeTimer.Remaining()), kGrayFadeTime);
     GameOptionsClass::Adjust_Palette(
         ThePalettes().original_palette(), ThePalettes().game_palette(),
         TheOptions().Get_Brightness(), newsat, TheOptions().Get_Tint(),
@@ -732,7 +732,7 @@ void Clear_Scenario() {
   TheScenario().IsMoneyTiberium = false;
   TheScenario().IsNoMapSel = false;
   TheScenario().CarryOverCap = 0;
-  TheScenario().CarryOverPercent = fixed(0);
+  TheScenario().CarryOverPercent = Fixed(0);
   TheScenario().TransitTheme = THEME_NONE;
   TheScenario().Percent = 0;
 
