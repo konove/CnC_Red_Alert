@@ -4610,11 +4610,11 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
     // this when the shapefile matches the type's own image data, because the
     // cache is shared across all instances of this type.
     const TechnoTypeClass* ttype = Techno_Type_Class();
+    const int frame_count = KeyframeFrameCount(shapefile);
     if (shapenum >= 0 && shapefile.data() == ttype->Get_Image_Data().data() &&
-        shapenum < KeyframeFrameCount(shapefile) - 1) {
+        shapenum < frame_count - 1) {
       if (ttype->DimensionData.empty()) {
-        ttype->DimensionData.resize(
-            base::ToSize(KeyframeFrameCount(shapefile)));
+        ttype->DimensionData.resize(base::ToSize(frame_count));
       }
       if (base::ToSize(shapenum) < ttype->DimensionData.size() &&
           !ttype->DimensionData.at(base::ToSize(shapenum)).Is_Valid()) {

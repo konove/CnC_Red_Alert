@@ -23,7 +23,6 @@
 // Originally KEYFRAME.CPP (Counterstrike's 2KEYFRAM.CPP) by Joe L. Bostic,
 // started June 25, 1995.
 
-#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -35,6 +34,7 @@
 #include "base/unaligned.h"
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/codec/xor_delta.h"
+#include "engine/gfx/palette.h"
 #include "ra/defines.h"
 #include "ra/keyframe.h"
 
@@ -47,22 +47,22 @@ namespace {
 constexpr base::ssize kHeaderSize = 14;
 constexpr base::ssize kEntrySize = 8;
 
-// A header flag: a palette of kPaletteSize bytes sits in the file that the
-// frame offsets do not count, so every offset read from the table has to skip
-// it.
+// A header flag: a palette (engine::gfx::Palette::kFileSize bytes) sits in the
+// file that the frame offsets do not count, so every offset read from the
+// table has to skip it.
 constexpr uint16_t kHasPalette = 0x01;
-constexpr base::ssize kPaletteSize = 768;
 
 // The bits of an offset-table word that hold a file offset; the top byte holds
 // the frame's kKf* flags.
 constexpr uint32_t kOffsetMask = 0x00ffffffU;
 
-// The header fields the decoder uses.
+// What the decoder needs from the header.
 struct KeyframeHeader {
   int frame_count = 0;
   int width = 0;
   int height = 0;
-  uint16_t flags = 0;
+  // How far every offset in the table has to be moved to skip the palette.
+  base::ssize palette_bytes = 0;
 };
 
 // Returns the header of `shape_file`, or all zeroes (so no frames) if
@@ -71,10 +71,12 @@ KeyframeHeader ReadHeader(std::span<const std::byte> shape_file) {
   if (std::ssize(shape_file) < kHeaderSize) {
     return {};
   }
+  const auto flags = base::ReadLittleEndian<uint16_t>(shape_file, 12);
   return {.frame_count = base::ReadLittleEndian<uint16_t>(shape_file, 0),
           .width = base::ReadLittleEndian<uint16_t>(shape_file, 6),
           .height = base::ReadLittleEndian<uint16_t>(shape_file, 8),
-          .flags = base::ReadLittleEndian<uint16_t>(shape_file, 12)};
+          .palette_bytes =
+              (flags & kHasPalette) != 0 ? engine::gfx::Palette::kFileSize : 0};
 }
 
 // One frame's entry in the offset table. `offset_word` packs the frame's kKf*
@@ -102,12 +104,13 @@ std::optional<FrameEntry> ReadFrameEntry(std::span<const std::byte> shape_file,
       .reference_word = base::ReadLittleEndian<uint32_t>(entry, 4)};
 }
 
-// Returns the data from the offset in `word` (plus `palette_bytes`) to the end
-// of `shape_file`, or an empty span if that offset is not inside the file.
+// Returns the data from the offset in `word` to the end of `shape_file`, or an
+// empty span if that offset is not inside the file. The palette is skipped for
+// key frames and deltas alike, as the original did.
 std::span<const std::byte> DataAt(std::span<const std::byte> shape_file,
-                                  uint32_t word, base::ssize palette_bytes) {
-  return base::SliceOrEmpty(shape_file,
-                            base::ssize{word & kOffsetMask} + palette_bytes);
+                                  const KeyframeHeader& header, uint32_t word) {
+  return base::SliceOrEmpty(
+      shape_file, base::ssize{word & kOffsetMask} + header.palette_bytes);
 }
 
 }  // namespace
@@ -126,13 +129,10 @@ std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file, int frame,
   }
   const auto output = destination.first(base::ToSize(pixel_count));
   const auto frame_flags = static_cast<uint8_t>(entry->offset_word >> 24);
-  const base::ssize palette_bytes =
-      (header.flags & kHasPalette) != 0 ? kPaletteSize : 0;
 
   // A key frame stands alone: its data is the whole image, LCW-compressed.
   if ((frame_flags & kKfKeyFrame) != 0) {
-    const auto key_frame =
-        DataAt(shape_file, entry->offset_word, palette_bytes);
+    const auto key_frame = DataAt(shape_file, header, entry->offset_word);
     if (key_frame.empty()) {
       return {};
     }
@@ -144,23 +144,22 @@ std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file, int frame,
 
   // Anything else is rebuilt from the key frame by XORing on the deltas from
   // the start of its chain to `frame`. A key delta starts the chain itself; a
-  // delta names the key delta that starts it, whose entry then gives the key
-  // frame.
-  int chain_start = frame;
-  auto chain_entry = entry;
-  if ((frame_flags & kKfDelta) != 0) {
-    // Frame numbers are 16 bits; the word's high half is not part of one.
-    chain_start = static_cast<int>(entry->reference_word & 0xffffU);
-    if (chain_start > frame) {
-      return {};
-    }
-    chain_entry = ReadFrameEntry(shape_file, chain_start);
-    if (!chain_entry) {
-      return {};
-    }
+  // delta names the key delta that starts it (in the low 16 bits of its
+  // reference word, as frame numbers are 16 bits), whose entry then gives the
+  // key frame.
+  const int chain_start =
+      (frame_flags & kKfDelta) != 0
+          ? static_cast<int>(entry->reference_word & 0xffffU)
+          : frame;
+  if (chain_start > frame) {
+    return {};
+  }
+  const auto chain_entry = ReadFrameEntry(shape_file, chain_start);
+  if (!chain_entry) {
+    return {};
   }
   const auto key_frame =
-      DataAt(shape_file, chain_entry->reference_word, palette_bytes);
+      DataAt(shape_file, header, chain_entry->reference_word);
   if (key_frame.empty()) {
     return {};
   }
@@ -170,21 +169,13 @@ std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file, int frame,
     if (!delta_entry) {
       return {};
     }
-    // The palette is skipped here too, as the original did for delta data.
-    const auto delta =
-        DataAt(shape_file, delta_entry->offset_word, palette_bytes);
+    const auto delta = DataAt(shape_file, header, delta_entry->offset_word);
     if (delta.empty()) {
       return {};
     }
     ApplyXorDelta(output, delta);
   }
   return output.subspan(0);
-}
-
-std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file,
-                              int frame) {
-  static std::array<uint8_t, kShapeBufferSize> staging{};
-  return BuildFrame(shape_file, frame, staging);
 }
 
 int KeyframeFrameCount(std::span<const std::byte> shape_file) {

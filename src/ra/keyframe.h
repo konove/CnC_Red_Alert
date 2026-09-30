@@ -17,9 +17,6 @@
 // whatever `destination` held.
 std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file, int frame,
                               std::span<uint8_t> destination);
-// As above, into kShapeBufferSize bytes of staging storage that every call of
-// this overload reuses: the result is only valid until the next call.
-std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file, int frame);
 
 // The fields of the shape's header: its frame count, and the width and height
 // every frame shares, in pixels. All return 0 if `shape_file` is too short to

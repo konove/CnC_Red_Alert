@@ -21,6 +21,7 @@
 #include "ra/shape_draw.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -115,6 +116,15 @@ std::span<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
   return dst;
 }
 
+// Decompresses `frame` of `shape_file` into staging storage that every call
+// reuses, so the result is only valid until the next call. Returns an empty
+// span as BuildFrame() does.
+std::span<uint8_t> BuildFrameInStaging(std::span<const std::byte> shape_file,
+                                       int frame) {
+  static std::array<uint8_t, kShapeBufferSize> staging{};
+  return BuildFrame(shape_file, frame, staging);
+}
+
 }  // namespace
 
 void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
@@ -141,7 +151,7 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
     int height = KeyframeHeight(shapefile);
 
     // In WIn95, build shape returns a pointer to the shape not its size
-    const auto shape_pointer = BuildFrame(shapefile, shape_num);
+    const auto shape_pointer = BuildFrameInStaging(shapefile, shape_num);
     if (!shape_pointer.empty()) {
       PixelView draw_window(
           view.buffer(),
@@ -197,16 +207,10 @@ Rect Shape_Dimensions(const std::span<const std::byte> shapedata,
                       const int shape_num) {
   Rect rect;
 
-  if (shapedata.empty() || shape_num < 0 ||
-      shape_num >= KeyframeFrameCount(shapedata)) {
+  const auto shape = BuildFrameInStaging(shapedata, shape_num);
+  if (shape.empty()) {
     return rect;
   }
-
-  const auto sh = BuildFrame(shapedata, shape_num);
-  if (sh.empty()) {
-    return rect;
-  }
-  const auto shape = sh;
 
   const int width = KeyframeWidth(shapedata);
   const int height = KeyframeHeight(shapedata);
