@@ -51,6 +51,7 @@
 #include <string>
 #include <string_view>
 
+#include "absl/base/no_destructor.h"
 #include "base/buffer.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/profile_buffer.h"
@@ -137,8 +138,12 @@ extern bool CC95AlreadyRunning;
 void Move_Point(int16_t& x, int16_t& y, DirType dir, uint16_t distance);
 
 // The one Game; main() creates it and ShutDown() destroys it. nullptr before
-// main() and after ShutDown().
-static std::unique_ptr<Game> game;
+// main() and after ShutDown(). The pointer itself is never destroyed: a Game
+// still alive at a bare exit() is left to the OS, because tearing it down from
+// a static destructor reaches SDL after its video driver has unloaded.
+// A null unique_ptr cannot throw.
+// NOLINTNEXTLINE(bugprone-throwing-static-initialization)
+static absl::NoDestructor<std::unique_ptr<Game>> game;
 
 #ifndef TD_NO_ENTRY_POINT
 // Hands what the command line asked for to whatever owns it. The screen
@@ -220,7 +225,7 @@ int main(int argc, char* argv[])
   absl::InitializeLog();
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
 
-  game = std::make_unique<Game>();
+  *game = std::make_unique<Game>();
 
   // Heap_Dump_Check( "first thing in main" );
   //	malloc(1);
@@ -280,7 +285,7 @@ int main(int argc, char* argv[])
   const std::optional<StartupOptions> options = Parse_Command_Line(arguments);
   if (options.has_value()) {
     InitWindowList();
-    game->set_startup_options(*options);
+    (*game)->set_startup_options(*options);
     ApplyStartupOptions(*options);
 
     /*
@@ -474,12 +479,12 @@ void ShutDown() {
   // Everything ShutDownEngine() takes down belongs to the Game, so there is
   // nothing to do before one is built or after one is gone. A test that
   // reaches an error exit without a Game gets here too.
-  if (game == nullptr) {
+  if (*game == nullptr) {
     return;
   }
 
   ShutDownEngine();
-  game.reset();
+  game->reset();
 }
 
 /***********************************************************************************************
