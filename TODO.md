@@ -228,9 +228,6 @@
 - Reject a zero cap in `Fixed::SaturateBelow()` (`base/fixed.h`)
   - A cap of 0 wraps to 255 255/256 (documented there); all nine callers pass 1. A `DCHECK_GT` or a
     no-argument `SaturateBelowOne()` would each do; `Saturate()` is likewise only called with 1
-- Share `Fixed`'s round-to-nearest `(raw + 128) / 256` between `ToInt()` and `operator*(int)`
-  (`base/fixed.h`); raised by `/simplify` in the `base/fixed` `/modernize-file` run
-  (`4e995aa2..8fd12531`), not applied
 - Delete the commented-out `UNIT_BUILD_BIAS` defines at `ra/techno.cc:699-702`
 
 ## Testing

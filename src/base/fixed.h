@@ -83,7 +83,7 @@ class Fixed {
   }
 
   // Returns the value rounded to the nearest whole number, halves up.
-  [[nodiscard]] int ToInt() const { return (raw_ + kRoundingBias) / 256; }
+  [[nodiscard]] int ToInt() const { return static_cast<int>(RoundRaw(raw_)); }
 
   // The whole part, and the fraction in 1/256ths.
   [[nodiscard]] int whole() const { return raw_ >> 8; }
@@ -132,7 +132,7 @@ class Fixed {
   friend Fixed operator-(Fixed lhs, const Fixed& rhs) { return lhs -= rhs; }
   // Rounds the exact product, so 0.5 * 3 is 2.
   int operator*(const int rhs) const {
-    return static_cast<int>(((int64_t{raw_} * rhs) + kRoundingBias) / 256);
+    return static_cast<int>(RoundRaw(int64_t{raw_} * rhs));
   }
 
   // Comparison, including with a whole number on either side. The whole
@@ -214,13 +214,15 @@ class Fixed {
   static const Fixed kThreeQuarters;  // 3/4
 
  private:
-  // Half the fractional range, added before integer division for
-  // round-to-nearest instead of truncation.
-  static constexpr int kRoundingBias = 128;
-
   // Returns the whole number `value` in 8.8, widened so that no int overflows.
   static constexpr int64_t ToRaw(const int value) {
     return int64_t{value} * 256;
+  }
+  // The inverse: returns the 8.8 value `raw` rounded to the nearest whole
+  // number, halves up. Adding half of 256 before dividing is what rounds
+  // instead of truncating.
+  static constexpr int64_t RoundRaw(const int64_t raw) {
+    return (raw + 128) / 256;
   }
 
   // 8.8 fixed-point value: high byte is the whole part (0-255),
