@@ -20,6 +20,7 @@
 
 #include <charconv>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -29,62 +30,54 @@
 
 // Conversion between Fixed and the decimal text INI files hold.
 
-// Parses leading digits from a string_view into an int. Returns 0 on failure.
-static int ParseLeadingInt(const std::string_view digits) {
+namespace {
+
+struct LeadingInt {
   int value = 0;
+  base::ssize length = 0;  // Characters read; zero if there was no number.
+};
+
+// Parses the number at the start of `text`, ignoring whatever follows it.
+LeadingInt ParseLeadingInt(const std::string_view text) {
+  LeadingInt result;
   // from_chars takes a begin/end pair, not a terminated C string.
-  // NOLINTNEXTLINE(bugprone-suspicious-stringview-data-usage)
-  std::from_chars(digits.data(), digits.substr(digits.size()).data(), value);
-  return value;
+  const char* const begin = std::to_address(text.begin());
+  result.length =
+      std::from_chars(begin, std::to_address(text.end()), result.value).ptr -
+      begin;
+  return result;
 }
 
+}  // namespace
+
 Fixed Fixed::FromString(const std::string_view text) {
+  // Empty text, and any part with no digits, reads as zero.
   const auto trimmed = absl::StripLeadingAsciiWhitespace(text);
-  if (trimmed.empty()) {
-    return {};
-  }
 
-  // Percentage: "75%" → 75 * 256 / 100 ≈ 0.75 in 8.8 fixed point.
+  // Percentage: "75%" is 75/100.
   if (trimmed.ends_with('%')) {
-    Fixed result;
-    result.raw_ = static_cast<uint16_t>(
-        int64_t{ParseLeadingInt(trimmed.substr(0, trimmed.size() - 1))} * 256 /
-        100);
-    return result;
+    return {ParseLeadingInt(trimmed.substr(0, trimmed.size() - 1)).value, 100};
   }
 
-  // Parse decimal number (e.g., "1.5", ".016", "3").
-  Fixed result;
+  // Decimal: "1.5", ".016", "3". Only the low byte of the whole part fits, as
+  // with the original's (unsigned char) cast.
   const auto dot = trimmed.find('.');
-  const auto whole_part = trimmed.substr(0, dot);
-  if (!whole_part.empty()) {
-    // Only the low byte fits, as with the original's (unsigned char) cast.
-    result.raw_ = static_cast<uint16_t>(
-        static_cast<uint8_t>(ParseLeadingInt(whole_part)) << 8);
-  }
-
-  if (dot != std::string_view::npos && dot + 1 < trimmed.size()) {
+  Fixed result(
+      static_cast<uint8_t>(ParseLeadingInt(trimmed.substr(0, dot)).value));
+  if (dot != std::string_view::npos) {
     // Every multiple of 1/256 is exact in eight decimal places (1/256 is
     // 0.00390625), so digits past the eighth can never change the truncated
     // result; dropping them keeps the numerator and denominator within int.
     constexpr std::string_view::size_type kMaxFractionDigits = 8;
-    const auto fraction_digits = trimmed.substr(dot + 1, kMaxFractionDigits);
     // The digits are a numerator over 10^digits: ".016" is 16/1000.
-    int numerator = 0;
-    // from_chars takes a begin/end pair, not a terminated C string.
-    // NOLINTBEGIN(bugprone-suspicious-stringview-data-usage)
-    const auto [digits_end, error] = std::from_chars(
-        fraction_digits.data(),
-        fraction_digits.substr(fraction_digits.size()).data(), numerator);
-    // NOLINTEND(bugprone-suspicious-stringview-data-usage)
+    const LeadingInt numerator =
+        ParseLeadingInt(trimmed.substr(dot + 1, kMaxFractionDigits));
     int denominator = 1;
-    for (base::ssize i = 0; i < digits_end - fraction_digits.data(); ++i) {
+    for (base::ssize i = 0; i < numerator.length; ++i) {
       denominator *= 10;
     }
-    result.raw_ |=
-        static_cast<uint16_t>(int64_t{256} * numerator / denominator);
+    result.raw_ |= Fixed(numerator.value, denominator).raw_;
   }
-
   return result;
 }
 
@@ -100,9 +93,7 @@ std::string Fixed::ToString() const {
 
   // Strip trailing zeros from the fractional part.
   std::string result = absl::StrFormat("%d.%08d", whole(), hundred_millionths);
-  const auto last_nonzero = result.find_last_not_of('0');
-  if (last_nonzero != std::string::npos) {
-    result.erase(last_nonzero + 1);
-  }
+  // The '.' stops the search, so there always is a last non-zero.
+  result.erase(result.find_last_not_of('0') + 1);
   return result;
 }
