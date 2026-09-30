@@ -167,9 +167,8 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       return;
     }
 
-    // Fade audio and video to black before launching the VQA player. The
-    // adjust-set-adjust-set sequence below drives the palette to black and
-    // then back, which is what produces the fade rather than a hard cut.
+    // Fade audio and video to black before launching the VQA player, then
+    // flash the black palette to a dark grey and back, as the original did.
     TheMouse().Hide();
     TheTheme().Queue_Song(theme);
     if (!clear_screen) {

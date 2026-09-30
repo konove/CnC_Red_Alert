@@ -212,10 +212,6 @@
 - Run `/fix-ide-issues` on `engine/gfx/shape.cc`
   - Stage 7 of the `/modernize-file` run (`f4f3ea0b..a9332c6d`) was skipped for it: CLion's
     `getDiagnostics` timed out (`shape.h` answered, with nothing to fix)
-- Decide what `PaletteClass::Adjust()` and `Partial_Adjust()` (`ra/palette.cc:88-103`) should do
-  - Both are empty stubs; the `Adjust()` callers (`ra/movie.cc`, `ra/goptions.cc`) only nudge the
-    black palette and back, but `ra/egos.cc:325,345` fades the credits with `Partial_Adjust()`,
-    which prints its name and does nothing
 - Move `Fixed` (`base/fixed.h`) into namespace `base`
   - The other `base/` headers are in `base::` except `clip.h`, `random.h` and the macros in
     `attributes.h`; `/modernize-file` namespaces only `src/engine` files, so the `base/fixed`

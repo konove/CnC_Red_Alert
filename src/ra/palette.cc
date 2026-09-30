@@ -3,12 +3,11 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
-#include <cstdio>
 #include <cstdlib>
-#include <cstring>
+#include <span>
 #include <thread>
 
-#include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 #include "engine/platform/timer.h"
@@ -69,20 +68,33 @@ void PaletteClass::Set(int fade, void (*callback)()) {
   ShowPalette(*this);
 }
 
-// the only code that uses these two (Play_Movie and OptionsClass::Proccess)
-// only use it to adjust the black palette then immediately adjust it back
-// presumably this is to force a palette update
-void PaletteClass::Adjust(int /*unused*/) {}
-
-void PaletteClass::Adjust(int /*unused*/, PaletteClass& /*unused*/) {}
-
-void PaletteClass::Partial_Adjust(int /*unused*/, char* /*unused*/) {
-  absl::PrintF("PaletteClass::%s\n", __func__);
+// Every adjustment is RGBClass::Adjust applied per entry: a blend of
+// `ratio` steps out of 256.
+void PaletteClass::Adjust(const int ratio) {
+  Adjust(ratio, engine::gfx::Palette(engine::gfx::kBlackColor));
 }
 
-void PaletteClass::Partial_Adjust(int /*unused*/, PaletteClass& /*unused*/,
-                                  char* /*unused*/) {
-  absl::PrintF("PaletteClass::%s\n", __func__);
+void PaletteClass::Adjust(const int ratio,
+                          const engine::gfx::Palette& palette) {
+  static_cast<engine::gfx::Palette&>(*this) =
+      engine::gfx::BlendedPalette(*this, palette, ratio, 256);
+}
+
+void PaletteClass::Partial_Adjust(
+    const int ratio, const std::span<const char, kColorCount> lookup) {
+  Partial_Adjust(ratio, engine::gfx::Palette(engine::gfx::kBlackColor), lookup);
+}
+
+void PaletteClass::Partial_Adjust(
+    const int ratio, const engine::gfx::Palette& palette,
+    const std::span<const char, kColorCount> lookup) {
+  const engine::gfx::Palette adjusted =
+      engine::gfx::BlendedPalette(*this, palette, ratio, 256);
+  for (int i = 0; i < kColorCount; ++i) {
+    if (base::At(lookup, i) != 0) {
+      at(i) = adjusted.at(i);
+    }
+  }
 }
 
 int PaletteClass::Closest_Color(const engine::gfx::PaletteColor& col) const {

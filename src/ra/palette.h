@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_RA_PALETTE_H_
 #define CNC_RED_ALERT_RA_PALETTE_H_
 
+#include <span>
+
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 
@@ -28,11 +30,17 @@ class PaletteClass : public engine::gfx::Palette {
   // runs (-NOFADE, -QUITFRAME), which have nobody watching the fade.
   static void DisableFades() { fades_disabled_ = true; }
 
-  void Adjust(int /*unused*/);
-  void Adjust(int /*unused*/, PaletteClass& /*unused*/);
-  static void Partial_Adjust(int /*unused*/, char* /*unused*/);
-  static void Partial_Adjust(int /*unused*/, PaletteClass& /*unused*/,
-                             char* /*unused*/);
+  // Moves every entry `ratio`/256 of the way toward black (ratio 0..255).
+  // Rounds toward the start color, so even ratio 255 can leave a gun at 1.
+  void Adjust(int ratio);
+  // Moves every entry `ratio`/256 of the way toward the same entry of
+  // `palette` (ratio 0..255).
+  void Adjust(int ratio, const engine::gfx::Palette& palette);
+  // As Adjust(), but only for the entries whose `lookup` byte is nonzero; the
+  // rest keep their color.
+  void Partial_Adjust(int ratio, std::span<const char, kColorCount> lookup);
+  void Partial_Adjust(int ratio, const engine::gfx::Palette& palette,
+                      std::span<const char, kColorCount> lookup);
 
   [[nodiscard]] int Closest_Color(
       const engine::gfx::PaletteColor& /*col*/) const;

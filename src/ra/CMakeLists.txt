@@ -175,6 +175,13 @@ add_gtest(
 apply_language_setting(ra_palettes_test)
 
 add_gtest(
+    NAME ra_palette_test
+    SOURCES palette_test.cc startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_palette_test PRIVATE RA_NO_ENTRY_POINT=1)
+
+add_gtest(
     NAME ra_screen_test
     SOURCES screen_test.cc screen.cc
     LIBS base engine_window

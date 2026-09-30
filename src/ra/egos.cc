@@ -302,10 +302,9 @@ static void Slide_Show(int slide, int frame) {
     ** Fade up the picture in the background. The text colors never fade.
     */
     const PaletteClass save_palette = ThePalettes().title_palette();
-    // CCPalette.Partial_Adjust (std::min (6*(frame-5), 255), ComboPalette,
-    // PaletteLUT);
-    PaletteClass::Partial_Adjust(std::min(255 / FADE_DELAY * (frame - 10), 255),
-                                 ComboPalette, PaletteLUT);
+    ThePalettes().title_palette().Partial_Adjust(
+        std::min(255 / FADE_DELAY * (frame - 10), 255), ComboPalette,
+        PaletteLUT);
     Set_Pal(&ThePalettes().title_palette());
     if (frame != 9 + FADE_DELAY) {
       ThePalettes().title_palette() = save_palette;
@@ -320,7 +319,7 @@ static void Slide_Show(int slide, int frame) {
     ** Fade down the picture in the background. The text colors never fade.
     */
     const PaletteClass save_palette = ThePalettes().title_palette();
-    PaletteClass::Partial_Adjust(
+    ThePalettes().title_palette().Partial_Adjust(
         std::min(255 / FADE_DELAY * (frame - FRAME_DELAY), 255), PaletteLUT);
     if (frame != FRAME_DELAY + FADE_DELAY - 1) {
       Set_Pal(&ThePalettes().title_palette());
