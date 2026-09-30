@@ -147,6 +147,29 @@ TEST(FixedFromStringTest, GameValuePointTwelve) {
   EXPECT_EQ(f.fraction(), 30);
 }
 
+// FromString: long inputs.
+
+TEST(FixedFromStringTest, SevenFractionDigits) {
+  // 256 * 9999999 overflows int if computed directly.
+  const fixed f = fixed::FromString(".9999999");
+  EXPECT_EQ(f.whole(), 0);
+  EXPECT_EQ(f.fraction(), 255);
+}
+
+TEST(FixedFromStringTest, DigitsBeyondEightAreIgnored) {
+  // 1/256 is exact in eight decimal places, so later digits cannot change the
+  // truncated result, however many there are.
+  EXPECT_EQ(fixed::FromString("0.00390625"), fixed(1, 256));
+  EXPECT_EQ(fixed::FromString("0.003906249999999"), fixed(0, 1));
+  EXPECT_EQ(fixed::FromString(".99999999999999999999").fraction(), 255);
+}
+
+TEST(FixedFromStringTest, LargeWholePartKeepsLowByte) {
+  // 99999999 is 0x5F5E0FF; like the original's (unsigned char) cast, only the
+  // low byte is kept.
+  EXPECT_EQ(fixed::FromString("99999999").whole(), 0xFF);
+}
+
 // FromString: accepts std::string_view and std::string.
 
 TEST(FixedFromStringTest, StringView) {

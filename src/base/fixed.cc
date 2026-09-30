@@ -48,7 +48,7 @@ fixed fixed::FromString(const std::string_view str_in) {
   if (str.ends_with('%')) {
     fixed result;
     result.raw_ = static_cast<uint16_t>(
-        ParseInt(str.substr(0, str.size() - 1)) * 256 / 100);
+        int64_t{ParseInt(str.substr(0, str.size() - 1))} * 256 / 100);
     return result;
   }
 
@@ -57,15 +57,18 @@ fixed fixed::FromString(const std::string_view str_in) {
   const auto dot = str.find('.');
   const auto whole_part = str.substr(0, dot);
   if (!whole_part.empty()) {
-    result.raw_ = static_cast<uint16_t>(ParseInt(whole_part) * 256);
+    // Only the low byte fits, as with the original's (unsigned char) cast.
+    result.raw_ =
+        static_cast<uint16_t>(static_cast<uint8_t>(ParseInt(whole_part)) << 8);
   }
 
   if (dot != std::string_view::npos && dot + 1 < str.size()) {
-    const auto frac_part = str.substr(dot + 1);
+    // Every multiple of 1/256 is exact in eight decimal places (1/256 is
+    // 0.00390625), so digits past the eighth can never change the truncated
+    // result; dropping them keeps the numerator and base within int.
+    constexpr std::string_view::size_type kMaxFractionDigits = 8;
+    const auto frac_part = str.substr(dot + 1, kMaxFractionDigits);
     // The digits are a numerator over 10^digits: ".016" is 16/1000.
-    // TODO: Seven digits can overflow `256 * frac` (".9999999") and ten
-    // overflow `base`; both are signed int, so such an INI value is undefined
-    // behaviour.
     int frac = 0;
     // from_chars takes a begin/end pair, not a terminated C string.
     // NOLINTBEGIN(bugprone-suspicious-stringview-data-usage)
@@ -76,7 +79,7 @@ fixed fixed::FromString(const std::string_view str_in) {
     for (std::ptrdiff_t i = 0; i < ptr - frac_part.data(); ++i) {
       base *= 10;
     }
-    result.raw_ |= static_cast<uint16_t>(256 * frac / base);
+    result.raw_ |= static_cast<uint16_t>(int64_t{256} * frac / base);
   }
 
   return result;
