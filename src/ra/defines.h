@@ -230,15 +230,6 @@ inline constexpr int kDiffCount = static_cast<int>(DIFF_HARD) + 1;
 inline constexpr int kSpeechBufferSize = 50000;
 
 /**********************************************************************
-**	This is the size of the shape buffer. This buffer is used as a staging
-**	buffer for the shape drawing technology. It MUST be as big as the
-**	largest shape (uncompressed) that will be drawn. If this value is
-**	changed, be sure to update the makefile and rebuild all of the shape
-**	data files.
-*/
-inline constexpr int kShapeBufferSize = 65000;
-
-/**********************************************************************
 **	Filenames of the data files it can create at run time.
 */
 inline constexpr char kFameFileName[] = "HALLFAME.DAT";

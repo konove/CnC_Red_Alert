@@ -20,7 +20,6 @@
 
 #include "ra/shape_draw.h"
 
-#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -28,7 +27,6 @@
 #include <span>
 #include <vector>
 
-#include "absl/log/check.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
@@ -49,23 +47,18 @@ using engine::gfx::ShapeFlags;
 
 namespace {
 
-// Draws the width x height shape `pixels` into `out`, scaled by `scale` (24.8
-// fixed point, 0x100 = 1.0; zero draws nothing) and turned to `rotation`, and
-// returns the part of `out` that holds it: a (2 * width) x (2 * height) image
-// with the shape's centre at its centre, so a quarter turn of a non-square
-// shape still fits. Pixel 0 is transparent, and whatever falls outside the
-// doubled frame is cropped.
-std::span<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
-                                    const int width, const int height,
-                                    const std::span<uint8_t> out,
-                                    const DirType rotation,
-                                    const int32_t scale) {
+// Returns the width x height shape `pixels` scaled by `scale` (24.8 fixed
+// point, 0x100 = 1.0; zero draws nothing) and turned to `rotation`: a
+// (2 * width) x (2 * height) image with the shape's centre at its centre, so a
+// quarter turn of a non-square shape still fits. Pixel 0 is transparent, and
+// whatever falls outside the doubled frame is cropped.
+std::vector<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
+                                      const int width, const int height,
+                                      const DirType rotation,
+                                      const int32_t scale) {
   const int out_width = width * 2;
   const int out_height = height * 2;
-  const auto out_size = base::ToSize(out_width) * base::ToSize(out_height);
-  CHECK_LE(out_size, out.size());
-  const auto dst = out.first(out_size);
-  std::ranges::fill(dst, uint8_t{0});
+  std::vector<uint8_t> dst(base::ToSize(out_width) * base::ToSize(out_height));
   if (scale == 0) {
     return dst;
   }
@@ -106,7 +99,7 @@ std::span<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
       if (bx >= 0 && bx < width && by >= 0 && by < height) {
         const uint8_t pixel = base::At(pixels, (by * width) + bx);
         if (pixel != 0) {
-          base::At(dst, (y * out_width) + x) = pixel;
+          dst.at(base::ToSize((y * out_width) + x)) = pixel;
         }
       }
     }
@@ -133,14 +126,11 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
     fading_data = DisplayClass::FadingShade;
   }
 
-  static std::vector<uint8_t> x_buffer(kShapeBufferSize);
-
   if (!shapefile.empty() && shape_num != -1) {
     int width = engine::gfx::KeyframeWidth(shapefile);
     int height = engine::gfx::KeyframeHeight(shapefile);
 
-    // In WIn95, build shape returns a pointer to the shape not its size
-    const std::vector<uint8_t> frame_pixels =
+    std::vector<uint8_t> frame_pixels =
         engine::gfx::BuildFrame(shapefile, shape_num);
     if (!frame_pixels.empty()) {
       PixelView draw_window(
@@ -153,14 +143,13 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
                    kWindowWidth),
           base::At(base::At(WindowList, static_cast<int>(window)),
                    kWindowHeight));
-      std::span<const uint8_t> buffer = frame_pixels;
 
       // Rotation and scale handler.
       // 0x0100 is 1.0 in the 24.8 fixed point scale, so this is "no rotation
       // and no scaling" -- the common case, which skips the slow path below.
       if (rotation != DIR_N || scale != 0x0100) {
-        buffer = ScaleRotateShape(frame_pixels, width, height, x_buffer,
-                                  rotation, scale);
+        frame_pixels =
+            ScaleRotateShape(frame_pixels, width, height, rotation, scale);
         width *= 2;
         height *= 2;
       }
@@ -184,9 +173,9 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
             .shadow_table = base::Suffix(DisplayClass::SpecialGhost, 256),
             .predator_offset = pred_offset,
         };
-        engine::gfx::DrawShapeFrame(x, y, width, height, std::as_bytes(buffer),
-                                    draw_window,
-                                    flags | ShapeFlags::kTransparent, effects);
+        engine::gfx::DrawShapeFrame(
+            x, y, width, height, std::as_bytes(std::span(frame_pixels)),
+            draw_window, flags | ShapeFlags::kTransparent, effects);
         draw_window.Unlock();
       }
     }

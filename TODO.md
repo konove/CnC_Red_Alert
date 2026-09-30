@@ -217,11 +217,6 @@
     would skip that; the original had one (`UseBigShapeBuffer`), which no game ever enabled. Profile
     first
 
-- Have `ScaleRotateShape()` return its own `std::vector` (`ra/shape_draw.cc:58`, `136`)
-  - `CC_Draw_Shape()` hands it `x_buffer`, a `static std::vector<uint8_t>(kShapeBufferSize)` that
-    the strict build warns about (`-Wexit-time-destructors`), and it `CHECK`s the rotated frame
-    fits. `engine::gfx::BuildFrame()` already returns an owned frame, so the static goes and the
-    `CHECK` with it
 - Share the "clip a destination and shift its source" pattern
   - `base/clip.h:47-50` says a caller carrying a source rectangle must use `OutCodeOf()` directly,
     but `DrawShapeFrame()` and `PixelView::RemapLocked()` show `ClipRect()` works whenever only the
