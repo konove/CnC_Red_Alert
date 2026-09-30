@@ -246,7 +246,7 @@ TEST(FixedAsStringTest, OneThird) {
 
 TEST(FixedAsStringTest, TwoThirds) {
   // 2/3 in 8.8 is 170/256, exactly 0.6640625.
-  EXPECT_EQ(Fixed::_2_3.ToString(), "0.6640625");
+  EXPECT_EQ(Fixed(2, 3).ToString(), "0.6640625");
 }
 
 // ToString: small fractions keep their leading zeros.
