@@ -67,7 +67,7 @@ struct KeyframeHeader {
 
 // Returns the header of `shape_file`, or all zeroes (so no frames) if
 // `shape_file` is too short to hold one.
-KeyframeHeader ReadHeader(std::span<const std::byte> shape_file) {
+KeyframeHeader ReadHeader(const std::span<const std::byte> shape_file) {
   if (std::ssize(shape_file) < kHeaderSize) {
     return {};
   }
@@ -92,8 +92,8 @@ struct FrameEntry {
 
 // Returns `frame`'s entry from the offset table, or nullopt if the entry lies
 // past the end of `shape_file`.
-std::optional<FrameEntry> ReadFrameEntry(std::span<const std::byte> shape_file,
-                                         int frame) {
+std::optional<FrameEntry> ReadFrameEntry(
+    const std::span<const std::byte> shape_file, const int frame) {
   const auto entry = base::SliceOrEmpty(
       shape_file, kHeaderSize + (base::ssize{frame} * kEntrySize), kEntrySize);
   if (entry.empty()) {
@@ -107,16 +107,18 @@ std::optional<FrameEntry> ReadFrameEntry(std::span<const std::byte> shape_file,
 // Returns the data from the offset in `word` to the end of `shape_file`, or an
 // empty span if that offset is not inside the file. The palette is skipped for
 // key frames and deltas alike, as the original did.
-std::span<const std::byte> DataAt(std::span<const std::byte> shape_file,
-                                  const KeyframeHeader& header, uint32_t word) {
+std::span<const std::byte> DataAt(const std::span<const std::byte> shape_file,
+                                  const KeyframeHeader& header,
+                                  const uint32_t word) {
   return base::SliceOrEmpty(
       shape_file, base::ssize{word & kOffsetMask} + header.palette_bytes);
 }
 
 }  // namespace
 
-std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file, int frame,
-                              std::span<uint8_t> destination) {
+std::span<uint8_t> BuildFrame(const std::span<const std::byte> shape_file,
+                              const int frame,
+                              const std::span<uint8_t> destination) {
   const KeyframeHeader header = ReadHeader(shape_file);
   const base::ssize pixel_count = base::ssize{header.width} * header.height;
   if (frame < 0 || frame >= header.frame_count || pixel_count == 0 ||
@@ -178,12 +180,12 @@ std::span<uint8_t> BuildFrame(std::span<const std::byte> shape_file, int frame,
   return output.subspan(0);
 }
 
-int KeyframeFrameCount(std::span<const std::byte> shape_file) {
+int KeyframeFrameCount(const std::span<const std::byte> shape_file) {
   return ReadHeader(shape_file).frame_count;
 }
-int KeyframeWidth(std::span<const std::byte> shape_file) {
+int KeyframeWidth(const std::span<const std::byte> shape_file) {
   return ReadHeader(shape_file).width;
 }
-int KeyframeHeight(std::span<const std::byte> shape_file) {
+int KeyframeHeight(const std::span<const std::byte> shape_file) {
   return ReadHeader(shape_file).height;
 }
