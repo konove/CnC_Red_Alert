@@ -27,6 +27,19 @@ TEST(PaletteColorFadedTowardTest, OutOfRangeRatioIsClamped) {
   ExpectSameColor(kOrange.FadedToward(256, kTeal), kTeal);
 }
 
+TEST(PaletteColorFadedTowardTest, ComponentsRoundDownEitherWay) {
+  // Red falls 252 -> 0: 252 * 155 / 255 = 153.2. Blue rises 0 -> 252:
+  // 252 * 100 / 255 = 98.8. Green stays.
+  ExpectSameColor(kOrange.FadedToward(100, kTeal), PaletteColor(153, 128, 98));
+}
+
+TEST(PaletteColorFadedTowardTest, ExactQuotientIsNotRoundedDown) {
+  // 51 * 190 / 255 is exactly 38; a float lerp landed a hair under and
+  // truncated to 37.
+  constexpr PaletteColor color(51, 51, 51);
+  ExpectSameColor(color.FadedToward(65, kBlackColor), PaletteColor(38, 38, 38));
+}
+
 TEST(PaletteColorFadedTowardTest, LeavesTheSourceUntouched) {
   constexpr PaletteColor source = kOrange;
   static_cast<void>(source.FadedToward(200, kTeal));

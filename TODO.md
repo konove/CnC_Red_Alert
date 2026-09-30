@@ -177,13 +177,6 @@
   and `hsv_color_test.cc`
   - Stage 7 of the `/modernize-file` run (`dc251088..f60d3070`) was skipped: CLion's
     `getDiagnostics` timed out on them (only `hsv_color.h` answered, with nothing to fix)
-- Consider small clean-ups in `engine/gfx/palette_color.cc` and `hsv_color.cc`
-  - `PaletteColor::FadedToward()` does three float `std::lerp()`s per entry; an integer form is
-    cheaper but rounds a falling gun toward its start instead of down, so it changes fades
-  - `Rgb6ToHsv()` computes all three shortfalls where each branch uses one (two wasted divides, TD's
-    options dialog only), and could take a `const Rgb6&` to mirror `HsvToRgb6()`
-  - Names the run was unsure of: `PaletteColor` (alternative `VgaColor`), `FadedToward()`
-    (`Blend()`), and `red()` returning the 8-bit value while `red_` holds the 6-bit gun (`red8()`)
 - Split `engine::gfx::ShapeEffects::predator_offset` into a start and a direction
   - One `int` carries both: its magnitude mod 8 picks the first sample offset and its sign picks the
     right-hand or the down-and-left table (`engine/gfx/shape_blitter.h`); both `CC_Draw_Shape()`s

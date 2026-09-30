@@ -19,7 +19,6 @@
 #include "engine/gfx/palette_color.h"
 
 #include <algorithm>
-#include <cmath>
 #include <cstdint>
 
 #include "base/hsv.h"
@@ -35,13 +34,15 @@ PaletteColor PaletteColor::FadedToward(const int ratio,
 
   // The original stepped by ratio / 256 and so never quite reached the
   // target; dividing by 255 makes 255 land on it exactly.
-  const float t = static_cast<float>(clamped_ratio) / 255.0F;
-
-  // std::lerp() stays between the two components for t in [0, 1], so the
-  // result fits a byte; the cast rounds each one down.
-  const auto fade = [t](const uint8_t from, const uint8_t to) {
+  //
+  // Weighting both ends keeps the sum non-negative, so the division rounds
+  // down whichever way the component moves; from + (to - from) * ratio / 255
+  // would round a falling one toward its start instead. The weights sum to
+  // 255, so the result lies between the two components and fits a byte.
+  const auto fade = [clamped_ratio](const int from, const int to) {
     return static_cast<uint8_t>(
-        std::lerp(static_cast<float>(from), static_cast<float>(to), t));
+        ((from * (kMaxComponent - clamped_ratio)) + (to * clamped_ratio)) /
+        kMaxComponent);
   };
 
   PaletteColor result;
