@@ -180,6 +180,12 @@
 - Remove Tiberian Dawn's `Parse_INI_File()` (`td/init.cc:2566-2651`)
   - It and its call (`td/init.cc:510-515`) sit under `#ifdef ONHOLD`, which nothing defines, and it
     still uses the deleted `GameFile` class; `e2c825c8` edited it without compiling it
+- Give the keyframe staging buffers a trivial destructor
+  - The two-argument `Build_Frame()` keeps `static std::vector<uint8_t> staging(kShapeBufferSize)`
+    (`td/keyframe.cc:150`, from `1818e8af`; `ra/2keyfram.cc:145`, from `c66b4d19`); the strict build
+    reports `-Wexit-time-destructors` for the TD one (RA's was not reported, likely cached). A
+    `static std::array<uint8_t, kShapeBufferSize>` (40,000 bytes) has no destructor to run; fix both
+    games the same way
 - Share the "clip a destination and shift its source" pattern
   - `base/clip.h:47-50` says a caller carrying a source rectangle must use `OutCodeOf()` directly,
     but `DrawShapeFrame()` and `PixelView::RemapLocked()` show `ClipRect()` works whenever only the
