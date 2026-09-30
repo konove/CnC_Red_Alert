@@ -161,13 +161,6 @@ value to support more.
 ---------------------------------------------------------------------------*/
 #define CONNECT_MAX 6
 
-/*---------------------------------------------------------------------------
-These routines report the location & length of the real-mode routine, as
-it's stored in protected-mode memory.
----------------------------------------------------------------------------*/
-void* Get_RM_IPX_Address();
-int32_t Get_RM_IPX_Size();
-
 /*
 ***************************** Class Declaration *****************************
 */
