@@ -59,6 +59,14 @@
     to 8.8 once would read "12.5%" as 12.5% and wrap every oversized value alike. No shipped rules
     value changes; found by the `/simplify` stage of the `base/fixed` `/modernize-file` run
     (`4e995aa2..8fd12531`)
+- Reject a keyframe shape frame whose LCW data ends early in `BuildFrame()` (`ra/keyframe.cc:142`,
+  `169`)
+  - It ignores `LCW_Uncompress()`'s byte count, so a key frame that stops short leaves the rest of
+    the destination as it was, which for `shape_draw.cc`'s shared staging buffer is the previous
+    frame drawn; returning `{}` when fewer than width \* height bytes were written would drop such a
+    frame instead. Only malformed data reaches it (the keyframe.h comment documents it); TD's
+    `Build_Frame()` (`td/keyframe.cc:115`, `132`) does the same. Found by the `ra/2keyfram.cc`
+    `/modernize-file` run (`dfc0fa2b..193f2624`)
 
 ## Refactoring
 
@@ -193,12 +201,41 @@
   - The flags are `DrawShapeFrame()`'s parameter; `engine/gfx/shape.h` would then hold only the
     shape file format (`ShapeHeader`, `ExtractShapeFrame()`) and could become `shape_file.h`. 66
     files include `engine/gfx/shape.h`, most only for the flags, so it is an include rewrite
-- Give the keyframe staging buffers a trivial destructor
-  - The two-argument `Build_Frame()` keeps `static std::vector<uint8_t> staging(kShapeBufferSize)`
-    (`td/keyframe.cc:150`, from `1818e8af`; `ra/keyframe.cc`, from `c66b4d19`); the strict build
-    reports `-Wexit-time-destructors` for the TD one (RA's was not reported, likely cached). A
-    `static std::array<uint8_t, kShapeBufferSize>` (40,000 bytes) has no destructor to run; fix both
-    games the same way
+- Share one keyframe decoder between the games in `engine/gfx/keyframe.{h,cc}` (`engine::gfx`)
+  - `ra/keyframe.cc` and `td/keyframe.cc` decode the same .SHP format with the same logic; the
+    `ra/2keyfram.cc` `/modernize-file` run (`dfc0fa2b..193f2624`) modernized only Red Alert's, so
+    they have drifted: RA has `BuildFrame()`/`KeyframeFrameCount()`/`KeyframeWidth()`/
+    `KeyframeHeight()` with `int` frames, a field-by-field little-endian header read, named format
+    constants and no staging overload; TD keeps `Build_Frame()` and `Get_Build_Frame_*()` with
+    `uint16_t`
+  - The engine file would own the `kKf*` frame flags too (`ra/defines.h:2913-2918`,
+    `td/defines.h:2660ff`; nothing else uses them). Only the staging buffer is per game: RA's is
+    `BuildFrameInStaging()` in `ra/shape_draw.cc` (65,000 bytes), TD's the two-argument
+    `Build_Frame()` at `td/keyframe.cc:148-152` (40,000). About 200 lines move or go, and TD's
+    callers in 12 files are renamed. It also settles "Move `keyframe_test`" under Testing
+  - If it is not shared, TD's copy still wants what RA's got: delete the uncalled
+    `Get_Build_Frame_X()`/`Get_Build_Frame_Y()` and the unused `absl/base/attributes.h` include in
+    `td/keyframe.h`, read the header with `ReadLittleEndian()` instead of copying it in host order,
+    take and return `int`, and make the staging buffer a `static std::array` (the strict build warns
+    `-Wexit-time-destructors` on its `std::vector`, `td/keyframe.cc:150`)
+- Parse a keyframe shape's header once for callers that want its width and height
+  - `KeyframeWidth()` and `KeyframeHeight()` (`ra/keyframe.h`) each re-read the header, and every
+    caller asks for both: `ra/shape_draw.cc:150-151`, `215-216`, `303-304`, `ra/udata.cc:1094-1095`,
+    `ra/shapebtn.cc:119-120`, `ra/drop.cc:66`/`ra/drop.h:196`. A size getter, or a small
+    `KeyframeShape` view over the file with `frame_count()`, `width()`, `height()` and
+    `BuildFrame()` (~15 call-site lines), would parse once. That would also settle the free
+    functions' names, which the run was unsure of: the alternatives were
+    `BuildFrameCount()`/`Width()`/`Height()` (nearer the legacy names) and `CountKeyframeFrames()`
+    (parallel to `engine::gfx::CountShapeFrames()`)
+- Measure whether `BuildFrame()`'s chain replay is worth a decoded-frame cache
+  - Every call LCW-decompresses the key frame and XORs on every delta from the chain's start to the
+    frame (`ra/keyframe.cc:120-182`), and `CC_Draw_Shape()` calls it for each sprite drawn each
+    frame. A per-shape cache of decoded frames would skip that; the original had one
+    (`UseBigShapeBuffer`), which no game ever enabled. Profile first
+- Make `CC_Draw_Shape()`'s `x_buffer` a `static std::array` (`ra/shape_draw.cc:147`)
+  - It is a `static std::vector<uint8_t>(kShapeBufferSize)`, which the strict build warns about
+    (`-Wexit-time-destructors`); the keyframe staging buffer next to it became a `std::array` in
+    `10eaf017`. `ScaleRotateShape()` takes it as a span either way
 - Share the "clip a destination and shift its source" pattern
   - `base/clip.h:47-50` says a caller carrying a source rectangle must use `OutCodeOf()` directly,
     but `DrawShapeFrame()` and `PixelView::RemapLocked()` show `ClipRect()` works whenever only the
@@ -231,6 +268,8 @@
 - Move `keyframe_test` from `engine/gfx/` to `src/ra/`
   - It compiles `ra/keyframe.cc` and includes `ra/keyframe.h`, so it tests game code; it is the only
     test that relies on `tools/check_layers.py` exempting tests from the no-games rule
+  - Sharing the decoder in `engine/gfx/` (see Refactoring) settles it instead: the test would then
+    test engine code where it already is
 - Make `DisplayEventsTest` (`engine/window/display_test.cc`) check `SDL_Init` and pair it with
   `SDL_Quit`
   - A failed init now shows up as a confusing "no events seen" failure
