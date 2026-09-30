@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "engine/stream/archive.h"
-#include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
+#include "engine/stream/vector_sink.h"
 #include "gtest/gtest.h"
 
 namespace {
@@ -124,20 +124,7 @@ TEST(FixedFromStringTest, LeadingWhitespace) {
   EXPECT_EQ(f.fraction(), 192);
 }
 
-// FromString: values used in the actual game code.
-
-TEST(FixedFromStringTest, GameValuePatrolTime) {
-  // ".016" is used for PatrolTime, RepairRate, Rate, AARate, etc.
-  const Fixed f = Fixed::FromString(".016");
-  EXPECT_EQ(f, Fixed::FromString(".016"));
-  EXPECT_GT(f, Fixed(0, 1));
-}
-
-TEST(FixedFromStringTest, GameValuePointFive) {
-  // ".5" is used for DefenseRatio
-  const Fixed f = Fixed::FromString(".5");
-  EXPECT_EQ(f, Fixed(1, 2));
-}
+// FromString: a value from the game rules.
 
 TEST(FixedFromStringTest, GameValuePointTwelve) {
   // ".12" is used for AirstripRatio, HelipadRatio
@@ -170,14 +157,7 @@ TEST(FixedFromStringTest, LargeWholePartKeepsLowByte) {
   EXPECT_EQ(Fixed::FromString("99999999").whole(), 0xFF);
 }
 
-// FromString: accepts std::string_view and std::string.
-
-TEST(FixedFromStringTest, StringView) {
-  constexpr std::string_view view = "1.5";
-  const Fixed f = Fixed::FromString(view);
-  EXPECT_EQ(f.whole(), 1);
-  EXPECT_EQ(f.fraction(), 128);
-}
+// FromString: a view that is not NUL-terminated, and edge cases.
 
 TEST(FixedFromStringTest, StringViewSubstr) {
   // Verify non-null-terminated string_view works correctly.
@@ -186,13 +166,6 @@ TEST(FixedFromStringTest, StringViewSubstr) {
   const Fixed f = Fixed::FromString(view);
   EXPECT_EQ(f.whole(), 1);
   EXPECT_EQ(f.fraction(), 128);
-}
-
-TEST(FixedFromStringTest, StdString) {
-  const std::string s = "75%";
-  const Fixed f = Fixed::FromString(s);
-  EXPECT_EQ(f.whole(), 0);
-  EXPECT_EQ(f.fraction(), 192);
 }
 
 TEST(FixedFromStringTest, WhitespaceOnly) {
@@ -208,50 +181,39 @@ TEST(FixedFromStringTest, TrailingDotNoFraction) {
   EXPECT_EQ(f.fraction(), 0);
 }
 
-TEST(FixedFromStringTest, WholeNumberOnly) {
-  // "7" has no dot at all — exercises the dot==npos branch.
-  const Fixed f = Fixed::FromString("7");
-  EXPECT_EQ(f.whole(), 7);
-  EXPECT_EQ(f.fraction(), 0);
-}
-
 // ToString: whole numbers.
 
-TEST(FixedAsStringTest, Zero) { EXPECT_EQ(Fixed().ToString(), "0"); }
+TEST(FixedToStringTest, Zero) { EXPECT_EQ(Fixed().ToString(), "0"); }
 
-TEST(FixedAsStringTest, WholeNumber) {
+TEST(FixedToStringTest, WholeNumber) {
   EXPECT_EQ(Fixed(uint8_t{3}).ToString(), "3");
-}
-
-TEST(FixedAsStringTest, WholeOne) {
-  EXPECT_EQ(Fixed(uint8_t{1}).ToString(), "1");
 }
 
 // ToString: common constants.
 
-TEST(FixedAsStringTest, OneHalf) { EXPECT_EQ(Fixed::kHalf.ToString(), "0.5"); }
+TEST(FixedToStringTest, OneHalf) { EXPECT_EQ(Fixed::kHalf.ToString(), "0.5"); }
 
-TEST(FixedAsStringTest, OneQuarter) {
+TEST(FixedToStringTest, OneQuarter) {
   EXPECT_EQ(Fixed::kQuarter.ToString(), "0.25");
 }
 
-TEST(FixedAsStringTest, ThreeQuarters) {
+TEST(FixedToStringTest, ThreeQuarters) {
   EXPECT_EQ(Fixed::kThreeQuarters.ToString(), "0.75");
 }
 
-TEST(FixedAsStringTest, OneThird) {
+TEST(FixedToStringTest, OneThird) {
   // 1/3 in 8.8 is 85/256, exactly 0.33203125.
   EXPECT_EQ(Fixed::kThird.ToString(), "0.33203125");
 }
 
-TEST(FixedAsStringTest, TwoThirds) {
+TEST(FixedToStringTest, TwoThirds) {
   // 2/3 in 8.8 is 170/256, exactly 0.6640625.
   EXPECT_EQ(Fixed(2, 3).ToString(), "0.6640625");
 }
 
 // ToString: small fractions keep their leading zeros.
 
-TEST(FixedAsStringTest, SmallFraction) {
+TEST(FixedToStringTest, SmallFraction) {
   EXPECT_EQ(Fixed(12, 256).ToString(), "0.046875");
   EXPECT_EQ(Fixed(1, 256).ToString(), "0.00390625");
 }
@@ -259,26 +221,13 @@ TEST(FixedAsStringTest, SmallFraction) {
 // ToString: FromString reads every value back unchanged, as the options INI
 // needs when it saves and reloads the volumes.
 
-TEST(FixedAsStringTest, RoundTripsThroughFromString) {
+TEST(FixedToStringTest, RoundTripsThroughFromString) {
   for (int whole = 0; whole < 256; ++whole) {
     for (int fraction = 0; fraction < 256; ++fraction) {
       const Fixed value((whole * 256) + fraction, 256);
       ASSERT_EQ(Fixed::FromString(value.ToString()), value) << value.ToString();
     }
   }
-}
-
-// ToString: values with whole and fractional parts.
-
-TEST(FixedAsStringTest, OnePointFive) {
-  EXPECT_EQ(Fixed::FromString("1.5").ToString(), "1.5");
-}
-
-// ToString: trailing zeros are stripped.
-
-TEST(FixedAsStringTest, StripsTrailingZeros) {
-  // Fixed(1, 4) has fraction 64, formatted as "0.25000000" before the zeros go.
-  EXPECT_EQ(Fixed(1, 4).ToString(), "0.25");
 }
 
 // Arithmetic with large ints: the int is scaled by 256, which must not
@@ -307,27 +256,17 @@ TEST(FixedIntArithmeticTest, CompareWithLargeInt) {
 
 // Serialize: the raw 8.8 pattern round-trips through the archive.
 
-class RecordingSink : public ByteSink {
- public:
-  bool Write(std::span<const std::byte> data) override {
-    for (const std::byte byte : data) {
-      bytes.push_back(std::to_integer<uint8_t>(byte));
-    }
-    return true;
-  }
-  std::vector<uint8_t> bytes;
-};
-
 TEST(FixedSerializeTest, RoundTripsRawBits) {
   for (const Fixed value :
        {Fixed(0, 1), Fixed(3, 4), Fixed(255, 1), Fixed(65535, 256)}) {
-    RecordingSink sink;
+    std::vector<std::byte> bytes;
+    VectorSink sink(bytes);
     ArchiveWriter writer(sink);
     Fixed out = value;
     out.Serialize(writer);
-    EXPECT_EQ(sink.bytes.size(), 2U);
+    EXPECT_EQ(bytes.size(), 2U);
 
-    SpanSource source(std::as_bytes(std::span(sink.bytes)));
+    SpanSource source(bytes);
     ArchiveReader reader(source);
     Fixed in;
     in.Serialize(reader);
