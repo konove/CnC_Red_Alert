@@ -27,6 +27,8 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 
+// Conversion between fixed and the decimal text INI files hold.
+
 // Parses leading digits from a string_view into an int. Returns 0 on failure.
 static int ParseInt(const std::string_view s) {
   int value = 0;
@@ -60,7 +62,10 @@ fixed fixed::FromString(const std::string_view str_in) {
 
   if (dot != std::string_view::npos && dot + 1 < str.size()) {
     const auto frac_part = str.substr(dot + 1);
-    // Count digits parsed to determine the decimal base (10^n).
+    // The digits are a numerator over 10^digits: ".016" is 16/1000.
+    // TODO: Seven digits can overflow `256 * frac` (".9999999") and ten
+    // overflow `base`; both are signed int, so such an INI value is undefined
+    // behaviour.
     int frac = 0;
     // from_chars takes a begin/end pair, not a terminated C string.
     // NOLINTBEGIN(bugprone-suspicious-stringview-data-usage)
@@ -83,6 +88,10 @@ std::string fixed::AsString() const {
   }
 
   // Convert 8-bit fraction (0-255) to thousandths for decimal display.
+  // TODO: "%02d" drops a digit below 100 thousandths, so 12/256 (0.046) prints
+  // as "0.46". Truncating to thousandths also loses up to 1/256 on each trip
+  // through FromString(): 102/256 prints "0.398" and reads back as 101/256.
+  // OptionsClass::Save_Settings() writes the volumes this way.
   const int frac = fraction() * 1000 / 256;
 
   // Strip trailing zeros from the fractional part.

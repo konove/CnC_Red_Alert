@@ -1,3 +1,5 @@
+// Tests for fixed: parsing and formatting its INI text, and serialization.
+
 #include "base/fixed.h"
 
 #include <cstddef>
