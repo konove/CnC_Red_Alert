@@ -19,6 +19,7 @@
 #ifndef CNC_RED_ALERT_BASE_FIXED_H_
 #define CNC_RED_ALERT_BASE_FIXED_H_
 
+#include <compare>
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -129,8 +130,7 @@ class Fixed {
   // Fixed one; it returns int, rounded as the class comment describes.
   Fixed operator*(const Fixed& rhs) const {
     Fixed result = *this;
-    // Divide by 256 to remove extra 8.8 scale factor.
-    result.raw_ = static_cast<uint16_t>(int64_t{result.raw_} * rhs.raw_ / 256);
+    result *= rhs;
     return result;
   }
   // Rounds the exact product, so 0.5 * 3 is 2.
@@ -139,9 +139,7 @@ class Fixed {
   }
   Fixed operator/(const Fixed& rhs) const {
     Fixed result = *this;
-    if (rhs.raw_ != 0 && rhs.raw_ != 256) {
-      result.raw_ = static_cast<uint16_t>(result.raw_ * 256 / rhs.raw_);
-    }
+    result /= rhs;
     return result;
   }
   Fixed operator+(const Fixed& rhs) const {
@@ -155,22 +153,16 @@ class Fixed {
     return result;
   }
 
-  // Comparison operators (Fixed vs Fixed).
-  bool operator==(const Fixed& rhs) const { return raw_ == rhs.raw_; }
-  bool operator<(const Fixed& rhs) const { return raw_ < rhs.raw_; }
-  bool operator>(const Fixed& rhs) const { return raw_ > rhs.raw_; }
-  bool operator<=(const Fixed& rhs) const { return raw_ <= rhs.raw_; }
-  bool operator>=(const Fixed& rhs) const { return raw_ >= rhs.raw_; }
-
-  // Comparison with a whole number, which is scaled to 8.8 so the fraction
-  // still counts: Fixed(1, 2) < 1 holds.
-  bool operator<(const int rhs) const { return raw_ < int64_t{rhs} * 256; }
-  bool operator>(const int rhs) const { return raw_ > int64_t{rhs} * 256; }
-  bool operator>=(const int rhs) const { return raw_ >= int64_t{rhs} * 256; }
+  // Comparison, including with a whole number on either side. The whole
+  // number is scaled to 8.8 so the fraction still counts: Fixed(1, 2) < 1.
+  bool operator==(const Fixed& rhs) const = default;
+  auto operator<=>(const Fixed& rhs) const = default;
   bool operator==(const int rhs) const { return raw_ == int64_t{rhs} * 256; }
-  bool operator!=(const int rhs) const { return raw_ != int64_t{rhs} * 256; }
+  std::strong_ordering operator<=>(const int rhs) const {
+    return raw_ <=> int64_t{rhs} * 256;
+  }
 
-  // The same operators with the int on the left (5 * f). The compound one
+  // The same arithmetic with the int on the left (5 * f). The compound one
   // stores the int result back into the int.
   friend int operator*(const int lhs, const Fixed& rhs) { return rhs * lhs; }
   // Dividing by zero or by 1.0 returns lhs.
@@ -183,7 +175,8 @@ class Fixed {
     }
     return static_cast<int>(((int64_t{lhs} * 256) + kRoundingBias) / rhs.raw_);
   }
-  friend int operator*=(int& lhs, const Fixed& rhs) {
+  friend int& operator*=(int& lhs ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                         const Fixed& rhs) {
     lhs = lhs * rhs;
     return lhs;
   }
@@ -203,7 +196,7 @@ class Fixed {
     return *this;
   }
   // Caps the value at `cap`.
-  Fixed& Saturate(const unsigned cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Fixed& Saturate(const int cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (raw_ > cap * 256) {
       raw_ = static_cast<uint16_t>(cap * 256);
     }
@@ -212,7 +205,7 @@ class Fixed {
   // Caps the value just below `cap`, at cap - 1/256. Volumes use a cap of 1 so
   // that `volume * 256` still fits in a byte. `cap` must be positive: zero
   // wraps round to 255 255/256.
-  Fixed& SaturateBelow(const unsigned cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Fixed& SaturateBelow(const int cap) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     if (raw_ >= cap * 256) {
       raw_ = static_cast<uint16_t>((cap * 256) - 1);
     }
