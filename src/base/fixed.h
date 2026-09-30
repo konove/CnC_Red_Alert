@@ -147,15 +147,16 @@ class Fixed {
   // Arithmetic with the int on the left (5 * f, 5 / f); the compound one
   // stores the int result back into the int.
   friend int operator*(const int lhs, const Fixed& rhs) { return rhs * lhs; }
-  // Dividing by zero or by 1.0 returns lhs.
-  // TODO: The rounding bias should be half the divisor (rhs.raw_ / 2), not
-  // half of 256, so 1 / Fixed(3, 4) gives 2 instead of 1. It is the shipped
-  // behaviour of factory production rates and aircraft landing speed.
+  // Dividing by zero or by 1.0 returns lhs. The original added 128, half of
+  // 256, before dividing, which rounds to nearest only when rhs is 0.5:
+  // 1 / Fixed(3, 4) came out 2. Half the divisor rounds every quotient,
+  // at the cost of factory rates and landing speeds differing slightly from
+  // the shipped game.
   friend int operator/(const int lhs, const Fixed& rhs) {
     if (rhs.raw_ == 0 || rhs.raw_ == 256) {
       return lhs;
     }
-    return static_cast<int>((ToRaw(lhs) + kRoundingBias) / rhs.raw_);
+    return static_cast<int>((ToRaw(lhs) + (rhs.raw_ / 2)) / rhs.raw_);
   }
   friend int& operator*=(int& lhs ABSL_ATTRIBUTE_LIFETIME_BOUND,
                          const Fixed& rhs) {

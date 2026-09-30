@@ -246,6 +246,18 @@ TEST(FixedIntArithmeticTest, DivideLargeInt) {
   EXPECT_EQ(50000000 / Fixed(2, 1), 25000000);
 }
 
+TEST(FixedIntArithmeticTest, DivideRoundsToNearest) {
+  EXPECT_EQ(1 / Fixed(3, 4), 1);  // 1.33
+  EXPECT_EQ(2 / Fixed(3, 4), 3);  // 2.67
+  EXPECT_EQ(3 / Fixed(2, 1), 2);  // 1.5 rounds up
+  EXPECT_EQ(100 / Fixed(1, 16), 1600);
+}
+
+TEST(FixedIntArithmeticTest, DivideByZeroOrOneReturnsLhs) {
+  EXPECT_EQ(7 / Fixed(), 7);
+  EXPECT_EQ(7 / Fixed(1), 7);
+}
+
 TEST(FixedIntArithmeticTest, CompareWithLargeInt) {
   EXPECT_TRUE(Fixed(1, 2) < 10000000);
   EXPECT_FALSE(Fixed(1, 2) > 10000000);

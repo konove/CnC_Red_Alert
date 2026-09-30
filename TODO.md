@@ -43,14 +43,6 @@
     `ra/shape_draw.cc:127-133`), TD's (`td/conquer.cc`) does not
   - Options: give TD the same substitution (small; draws what now vanishes), and/or make a missing
     table a `CHECK` in the blitter instead of a no-op (turns a silent miss into a crash)
-- Decide whether `int / Fixed` should round by half the divisor
-  - `operator/(int, const Fixed&)` (`base/fixed.h`, TODO there) adds 128, half of 256, where
-    `rhs.raw_ / 2` rounds to nearest, so `1 / Fixed(3, 4)` is 2 instead of 1; the original did the
-    same
-  - Callers: `ra/factory.cc:432` (build time over the power fraction) and `ra/aircraft.cc:3098`
-    (landing speed over `AirspeedBias`). The fix is one line but changes production rates and
-    landing speed, so replays and multiplayer sync against an unfixed peer. Found in the
-    `base/fixed` `/modernize-file` run (`4e995aa2..8fd12531`)
 - Decide what a warhead with fewer than five `Verses` entries should get
   - `ra/warhead.cc:173-177` reads each missing entry as `Fixed::FromString(nullptr)`, i.e. 0%, so
     that armor takes no damage from the warhead; keeping the previous modifier instead would change
