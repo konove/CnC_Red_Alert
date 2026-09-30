@@ -195,7 +195,7 @@
     files include `engine/gfx/shape.h`, most only for the flags, so it is an include rewrite
 - Give the keyframe staging buffers a trivial destructor
   - The two-argument `Build_Frame()` keeps `static std::vector<uint8_t> staging(kShapeBufferSize)`
-    (`td/keyframe.cc:150`, from `1818e8af`; `ra/2keyfram.cc:145`, from `c66b4d19`); the strict build
+    (`td/keyframe.cc:150`, from `1818e8af`; `ra/keyframe.cc`, from `c66b4d19`); the strict build
     reports `-Wexit-time-destructors` for the TD one (RA's was not reported, likely cached). A
     `static std::array<uint8_t, kShapeBufferSize>` (40,000 bytes) has no destructor to run; fix both
     games the same way
@@ -229,7 +229,7 @@
 ## Testing
 
 - Move `keyframe_test` from `engine/gfx/` to `src/ra/`
-  - It compiles `ra/2keyfram.cc` and includes `ra/keyframe.h`, so it tests game code; it is the only
+  - It compiles `ra/keyframe.cc` and includes `ra/keyframe.h`, so it tests game code; it is the only
     test that relies on `tools/check_layers.py` exempting tests from the no-games rule
 - Make `DisplayEventsTest` (`engine/window/display_test.cc`) check `SDL_Init` and pair it with
   `SDL_Quit`

@@ -23,6 +23,8 @@
 // Originally KEYFRAME.CPP (Counterstrike's 2KEYFRAM.CPP) by Joe L. Bostic,
 // started June 25, 1995.
 
+#include "ra/keyframe.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -36,7 +38,6 @@
 #include "engine/codec/xor_delta.h"
 #include "engine/gfx/palette.h"
 #include "ra/defines.h"
-#include "ra/keyframe.h"
 
 namespace {
 

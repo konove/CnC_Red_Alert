@@ -43,6 +43,6 @@ add_gtest(
 # Exercises the game's key-frame/delta chain using the real bounded LCW decoder.
 add_gtest(
         NAME keyframe_test
-        SOURCES keyframe_test.cc ../../ra/2keyfram.cc
+        SOURCES keyframe_test.cc ../../ra/keyframe.cc
         LIBS engine_gfx
 )
