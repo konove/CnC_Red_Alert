@@ -281,6 +281,30 @@ TEST(FixedAsStringTest, StripsTrailingZeros) {
   EXPECT_EQ(fixed(1, 4).AsString(), "0.25");
 }
 
+// Arithmetic with large ints: the int is scaled by 256, which must not
+// overflow int.
+
+TEST(FixedIntArithmeticTest, LargeFractionComponents) {
+  EXPECT_EQ(fixed(10000000, 20000000), fixed(1, 2));
+}
+
+TEST(FixedIntArithmeticTest, MultiplyLargeInt) {
+  EXPECT_EQ(fixed(1, 1) * 10000000, 10000000);
+  EXPECT_EQ(10000000 * fixed(1, 2), 5000000);
+}
+
+TEST(FixedIntArithmeticTest, DivideLargeInt) {
+  EXPECT_EQ(50000000 / fixed(2, 1), 25000000);
+}
+
+TEST(FixedIntArithmeticTest, CompareWithLargeInt) {
+  EXPECT_TRUE(fixed(1, 2) < 10000000);
+  EXPECT_FALSE(fixed(1, 2) > 10000000);
+  EXPECT_FALSE(fixed(1, 2) >= 10000000);
+  EXPECT_FALSE(fixed(1, 2) == 10000000);
+  EXPECT_TRUE(fixed(1, 2) != 10000000);
+}
+
 // Serialize: the raw 8.8 pattern round-trips through the archive.
 
 class RecordingSink : public ByteSink {

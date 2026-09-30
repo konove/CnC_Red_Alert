@@ -56,9 +56,9 @@ class fixed {
   // Constructs numerator / denominator, truncated to a multiple of 1/256:
   // fixed(3, 4) is 0.75, fixed(1, 3) is 85/256. A zero denominator gives zero.
   constexpr fixed(const int numerator, const int denominator) noexcept
-      : raw_(denominator == 0
-                 ? uint16_t{0}
-                 : static_cast<uint16_t>((numerator * 256) / denominator)) {}
+      : raw_(denominator == 0 ? uint16_t{0}
+                              : static_cast<uint16_t>(int64_t{numerator} * 256 /
+                                                      denominator)) {}
 
   // Constructs the whole number `value`. An int argument keeps only its low
   // 8 bits, as the original's constructor did.
@@ -101,7 +101,7 @@ class fixed {
   // by 1.0 is skipped as a shortcut.
   fixed& operator*=(const fixed& rvalue) {
     // Divide by 256 to remove extra 8.8 scale factor.
-    raw_ = static_cast<uint16_t>((raw_ * rvalue.raw_) / 256);
+    raw_ = static_cast<uint16_t>(int64_t{raw_} * rvalue.raw_ / 256);
     return *this;
   }
   fixed& operator*=(const int rvalue) {
@@ -142,12 +142,12 @@ class fixed {
   fixed operator*(const fixed& rvalue) const {
     fixed temp = *this;
     // Divide by 256 to remove extra 8.8 scale factor.
-    temp.raw_ = static_cast<uint16_t>(temp.raw_ * rvalue.raw_ / 256);
+    temp.raw_ = static_cast<uint16_t>(int64_t{temp.raw_} * rvalue.raw_ / 256);
     return temp;
   }
   // Rounds the exact product, so 0.5 * 3 is 2.
   int operator*(const int rvalue) const {
-    return ((raw_ * rvalue) + kRoundingBias) / 256;
+    return static_cast<int>(((int64_t{raw_} * rvalue) + kRoundingBias) / 256);
   }
   fixed operator/(const fixed& rvalue) const {
     fixed temp = *this;
@@ -210,12 +210,22 @@ class fixed {
 
   // Comparison with a whole number, which is scaled to 8.8 so the fraction
   // still counts: fixed(1, 2) < 1 holds.
-  bool operator<(const int rvalue) const { return raw_ < rvalue * 256; }
-  bool operator>(const int rvalue) const { return raw_ > rvalue * 256; }
+  bool operator<(const int rvalue) const {
+    return raw_ < int64_t{rvalue} * 256;
+  }
+  bool operator>(const int rvalue) const {
+    return raw_ > int64_t{rvalue} * 256;
+  }
   bool operator<=(const int rvalue) const { return raw_ <= rvalue * 256; }
-  bool operator>=(const int rvalue) const { return raw_ >= rvalue * 256; }
-  bool operator==(const int rvalue) const { return raw_ == rvalue * 256; }
-  bool operator!=(const int rvalue) const { return raw_ != rvalue * 256; }
+  bool operator>=(const int rvalue) const {
+    return raw_ >= int64_t{rvalue} * 256;
+  }
+  bool operator==(const int rvalue) const {
+    return raw_ == int64_t{rvalue} * 256;
+  }
+  bool operator!=(const int rvalue) const {
+    return raw_ != int64_t{rvalue} * 256;
+  }
 
   // The same operators with the int on the left (5 * f). The compound ones
   // store the int result back into the int.
@@ -230,7 +240,8 @@ class fixed {
     if (rvalue.raw_ == 0 || rvalue.raw_ == 256) {
       return lvalue;
     }
-    return ((lvalue * 256) + kRoundingBias) / rvalue.raw_;
+    return static_cast<int>(((int64_t{lvalue} * 256) + kRoundingBias) /
+                            rvalue.raw_);
   }
   friend int operator+(const int lvalue, const fixed& rvalue) {
     return rvalue + lvalue;
