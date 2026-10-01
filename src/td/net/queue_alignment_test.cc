@@ -8,6 +8,7 @@
 #include "base/buffer.h"
 #include "base/installed.h"
 #include "base/unaligned.h"
+#include "game/core/queue.h"
 #include "game/core/vector.h"
 #include "gtest/gtest.h"
 #include "td/core/defines.h"
@@ -161,7 +162,7 @@ TEST(TdCheckedContainerTest, VectorAccessPreservesConstnessAndCapacity) {
 }
 
 TEST(TdCheckedContainerTest, QueueAccessFollowsWrappedLogicalOrder) {
-  QueueClass<int, 3> queue;
+  game::QueueClass<int, 3> queue;
   ASSERT_TRUE(queue.Add(10));
   ASSERT_TRUE(queue.Add(20));
   EXPECT_EQ(queue.Next(), 1);
@@ -177,7 +178,7 @@ TEST(TdCheckedContainerTest, QueueAccessFollowsWrappedLogicalOrder) {
 TEST(TdCheckedContainerDeathTest, RejectsInvalidVectorAndQueueIndices) {
   game::VectorClass<int> values(2);
   const game::VectorClass<int>& view = values;
-  QueueClass<int, 3> queue;
+  game::QueueClass<int, 3> queue;
   // GoogleTest's death-test macro formats subprocess diagnostics with libc.
   // NOLINTBEGIN(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH((void)values.at(-1), "Check failed");

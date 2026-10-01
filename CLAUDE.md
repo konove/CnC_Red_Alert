@@ -195,9 +195,9 @@ engine/      → The shared libraries, one folder per domain (docs/ENGINE_FOLDER
                (target `engine_vqa`) [depends: engine_stream, engine_codec, SDL2]
 game/        → The code both games share, in namespace game::, above the engine and below the games
                (docs/GAME_NAMESPACES_PLAN.md)
-  core/      → VectorClass/DynamicVectorClass/OwnedVector, the frame clock, path-overlap bits,
-               the 2x interpolation scaler, cell/pixel sizes (target `game_core`)
-               [depends: base, engine_window]
+  core/      → VectorClass/DynamicVectorClass/OwnedVector, the FixedHeapClass trio, QueueClass,
+               the frame clock, path-overlap bits, the 2x interpolation scaler, cell/pixel sizes
+               (target `game_core`) [depends: base, engine_stream, engine_window]
 rust/        → engine_rs, the engine kernels written in Rust (LCW), linked through the cxx bridge in
                src/lib.rs; CMake target engine_rs_cxx (Corrosion) [depends: nothing]
 ra/          → Red Alert (~420 files) [depends: game_core, engine_net, engine_window, engine_video]

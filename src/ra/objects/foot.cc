@@ -117,7 +117,6 @@
 #include "ra/map/world.h"
 #include "ra/net/event.h"
 #include "ra/net/network.h"
-#include "ra/net/queue.h"
 #include "ra/objects/building.h"
 #include "ra/objects/cell.h"
 #include "ra/objects/infantry.h"

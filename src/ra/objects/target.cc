@@ -66,13 +66,13 @@
 #include <cstdint>
 
 #include "absl/log/check.h"
+#include "game/core/heap.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/map/world.h"

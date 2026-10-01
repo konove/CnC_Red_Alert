@@ -5,7 +5,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
-#include "ra/core/heap.h"
+#include "game/core/heap.h"
 #include "ra/objects/type.h"
 #include "ra/objects/warhead.h"
 #include "ra/objects/weapon.h"
@@ -33,67 +33,76 @@ class TypeHeaps {
   TypeHeaps(TypeHeaps&&) = delete;
   TypeHeaps& operator=(TypeHeaps&&) = delete;
 
-  TFixedIHeapClass<HouseTypeClass>& house() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<HouseTypeClass>& house()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return house_;
   }
-  TFixedIHeapClass<BuildingTypeClass>& building()
+  game::TFixedIHeapClass<BuildingTypeClass>& building()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return building_;
   }
-  TFixedIHeapClass<AircraftTypeClass>& aircraft()
+  game::TFixedIHeapClass<AircraftTypeClass>& aircraft()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return aircraft_;
   }
-  TFixedIHeapClass<InfantryTypeClass>& infantry()
+  game::TFixedIHeapClass<InfantryTypeClass>& infantry()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return infantry_;
   }
-  TFixedIHeapClass<BulletTypeClass>& bullet() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<BulletTypeClass>& bullet()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return bullet_;
   }
-  TFixedIHeapClass<AnimTypeClass>& anim() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<AnimTypeClass>& anim() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return anim_;
   }
-  TFixedIHeapClass<UnitTypeClass>& unit() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<UnitTypeClass>& unit() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return unit_;
   }
-  TFixedIHeapClass<VesselTypeClass>& vessel() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<VesselTypeClass>& vessel()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return vessel_;
   }
-  TFixedIHeapClass<TemplateTypeClass>& tmplate() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<TemplateTypeClass>& tmplate()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return template_;
   }
-  TFixedIHeapClass<TerrainTypeClass>& terrain() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<TerrainTypeClass>& terrain()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return terrain_;
   }
-  TFixedIHeapClass<OverlayTypeClass>& overlay() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<OverlayTypeClass>& overlay()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return overlay_;
   }
-  TFixedIHeapClass<SmudgeTypeClass>& smudge() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<SmudgeTypeClass>& smudge()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return smudge_;
   }
-  TFixedIHeapClass<WeaponTypeClass>& weapon() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<WeaponTypeClass>& weapon()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return weapon_;
   }
-  TFixedIHeapClass<WarheadTypeClass>& warhead() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<WarheadTypeClass>& warhead()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return warhead_;
   }
 
  private:
-  TFixedIHeapClass<HouseTypeClass> house_;
-  TFixedIHeapClass<BuildingTypeClass> building_;
-  TFixedIHeapClass<AircraftTypeClass> aircraft_;
-  TFixedIHeapClass<InfantryTypeClass> infantry_;
-  TFixedIHeapClass<BulletTypeClass> bullet_;
-  TFixedIHeapClass<AnimTypeClass> anim_;
-  TFixedIHeapClass<UnitTypeClass> unit_;
-  TFixedIHeapClass<VesselTypeClass> vessel_;
-  TFixedIHeapClass<TemplateTypeClass> template_;
-  TFixedIHeapClass<TerrainTypeClass> terrain_;
-  TFixedIHeapClass<OverlayTypeClass> overlay_;
-  TFixedIHeapClass<SmudgeTypeClass> smudge_;
-  TFixedIHeapClass<WeaponTypeClass> weapon_;
-  TFixedIHeapClass<WarheadTypeClass> warhead_;
+  game::TFixedIHeapClass<HouseTypeClass> house_;
+  game::TFixedIHeapClass<BuildingTypeClass> building_;
+  game::TFixedIHeapClass<AircraftTypeClass> aircraft_;
+  game::TFixedIHeapClass<InfantryTypeClass> infantry_;
+  game::TFixedIHeapClass<BulletTypeClass> bullet_;
+  game::TFixedIHeapClass<AnimTypeClass> anim_;
+  game::TFixedIHeapClass<UnitTypeClass> unit_;
+  game::TFixedIHeapClass<VesselTypeClass> vessel_;
+  game::TFixedIHeapClass<TemplateTypeClass> template_;
+  game::TFixedIHeapClass<TerrainTypeClass> terrain_;
+  game::TFixedIHeapClass<OverlayTypeClass> overlay_;
+  game::TFixedIHeapClass<SmudgeTypeClass> smudge_;
+  game::TFixedIHeapClass<WeaponTypeClass> weapon_;
+  game::TFixedIHeapClass<WarheadTypeClass> warhead_;
 };
 
 // Returns the TypeHeaps that Game installed. CHECK-fails outside a Game's

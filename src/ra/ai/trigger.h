@@ -44,11 +44,11 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/core/heap.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigtype.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/heap.h"
 #include "ra/objects/object.h"
 
 class ArchiveReader;
@@ -145,7 +145,7 @@ class TriggerClass {
   // Shell for TFixedIHeapClass::Load: a fully initialized object with no
   // trigger type, filled in by Serialize().
   TriggerClass();
-  friend class TFixedIHeapClass<TriggerClass>;
+  friend class game::TFixedIHeapClass<TriggerClass>;
 };
 
 TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype);

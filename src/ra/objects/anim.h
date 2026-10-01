@@ -186,7 +186,7 @@ class AnimClass final : public ObjectClass, public StageClass {
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   AnimClass() = default;
-  friend class TFixedIHeapClass<AnimClass>;
+  friend class game::TFixedIHeapClass<AnimClass>;
 };
 
 void Shorten_Attached_Anims(const ObjectClass* obj);

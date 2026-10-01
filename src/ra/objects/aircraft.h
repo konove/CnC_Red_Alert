@@ -284,7 +284,7 @@ class AircraftClass : public FootClass, public FlyClass {
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   AircraftClass() = default;
-  friend class TFixedIHeapClass<AircraftClass>;
+  friend class game::TFixedIHeapClass<AircraftClass>;
 };
 
 bool Building_Check();

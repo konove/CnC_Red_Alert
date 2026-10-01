@@ -54,7 +54,6 @@
 #include "td/data/text.h"
 #include "td/net/event.h"
 #include "td/net/network.h"
-#include "td/net/queue.h"
 #include "td/net/session.h"
 #include "td/screens/goptions.h"
 #include "td/screens/sounddlg.h"

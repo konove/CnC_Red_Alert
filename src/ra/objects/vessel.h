@@ -186,7 +186,7 @@ class VesselClass : public DriveClass {
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   VesselClass() = default;
-  friend class TFixedIHeapClass<VesselClass>;
+  friend class game::TFixedIHeapClass<VesselClass>;
 };
 
 extern template void VesselClass::Serialize<ArchiveWriter>(ArchiveWriter&);

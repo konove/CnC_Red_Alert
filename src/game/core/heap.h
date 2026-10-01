@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_RA_CORE_HEAP_H_
-#define CNC_RED_ALERT_RA_CORE_HEAP_H_
+#ifndef CNC_RED_ALERT_GAME_CORE_HEAP_H_
+#define CNC_RED_ALERT_GAME_CORE_HEAP_H_
 
 #include <concepts>
 #include <cstddef>
@@ -57,7 +57,7 @@
 #include "game/core/vector.h"
 #include "game/core/vector_dynamic.h"
 
-namespace ra {
+namespace game {
 
 // Fixed-size block memory allocator that manages a pool of uniformly-sized
 // memory blocks.
@@ -96,6 +96,12 @@ class FixedHeapClass {
   [[nodiscard]] int Avail() const { return TotalCount - ActiveCount; }
 
   virtual int ID(const void* pointer) const;
+
+  // Whether slot `index` holds an allocated object; false for a free slot
+  // or an index outside the heap.
+  [[nodiscard]] bool Is_Allocated(int index) const {
+    return index >= 0 && index < TotalCount && FreeFlag.at(base::ToSize(index));
+  }
   virtual bool Set_Heap(int count, std::span<char> buffer = {});
   virtual void* Allocate();
   virtual void Clear();
@@ -385,6 +391,6 @@ bool TFixedIHeapClass<T>::Load(ArchiveReader& reader)
 #define CHECK_HEAP_SLOT(heap, object) \
   CHECK_EQ((heap).ID(object), int{(object)->ID}) << (heap).Describe(object)
 
-}  // namespace ra
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_RA_CORE_HEAP_H_
+#endif  // CNC_RED_ALERT_GAME_CORE_HEAP_H_

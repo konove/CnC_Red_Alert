@@ -124,7 +124,6 @@
 #include "td/map/world.h"
 #include "td/net/event.h"
 #include "td/net/network.h"
-#include "td/net/queue.h"
 #include "td/net/session.h"
 #include "td/objects/building.h"
 #include "td/objects/cell.h"

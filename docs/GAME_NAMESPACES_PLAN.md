@@ -237,7 +237,7 @@ Per step: `cmake --build build --parallel 22 && ctest --test-dir build --output-
 - [x] 2. Layer and header-guard tooling
 - [x] 3. Game folders
 - [x] 4. `ra::`/`td::` namespaces
-- [ ] 5a. `game_core`
+- [x] 5a. `game_core`
 - [ ] 5b. `game_sim`
 - [ ] 5c. `engine::net` core
 - [ ] 5d. `game_ui`
@@ -349,3 +349,23 @@ in the namespace of the code they test.
 `nm -C` of every `ra_engine`/`td_engine`/`rasdl`/`tdsdl` object shows no game symbol outside `ra::`
 and `td::` except `main`; what remains global is the engine's own global types (`PixelBuffer`,
 `ArchiveReader`, the stream transforms) instantiated or inlined into game objects.
+
+### Step 5a
+
+`src/game/core/` (`game_core`, namespace `game`) holds `GameClock`, the cell/pixel size macros, the
+path-overlap helpers, the 2x interpolation scaler, `VectorClass`/`DynamicVectorClass`/`OwnedVector`,
+the `FixedHeapClass` trio and `QueueClass`, each Red Alert's copy; `Cardinal_To_Fixed` and
+`CountUpValue` went to `base/` as `base::CardinalToFixed`/`base::FixedToCardinal`
+(`base/cardinal.h`) and `base/count_up.h`. Callers qualify with `game::`. Explicit instantiations of
+`game::` templates (`ra/core/vector.cc`, `dynavec.cc`, `heap_instances.cc`, TD's `vector.cc`,
+`heap_instances.cc`) moved to global scope with qualified element types, since an explicit
+instantiation must sit in a namespace that encloses the template's.
+
+Tiberian Dawn changed behavior only where its copy was weaker: vectors allocate value-initialized,
+`Delete(index)` refuses a negative index, `Resize(0)` fails instead of clearing (both TD callers
+clear first). The heap kept its save format (`int32` count, then slot index and fields per object),
+which the RA fixture save written before the move confirms; TD's empty-buffer guard in
+`FixedHeapClass::Set_Heap()` was unreachable and is gone, its `Is_Allocated()` joined RA's heap.
+`QueueClass` gained TD's failed-add `DLOG`; the `Queue_*` prototypes stay in each game's
+`net/queue.h`. The heap and queue tests of both games became `game_core_test` (`heap_test.cc`,
+`heap_load_test.cc`); RA's `IndexClass` test became `ra_search_test`.

@@ -68,12 +68,12 @@
 #include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
+#include "game/core/heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
-#include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/core/type_heaps.h"

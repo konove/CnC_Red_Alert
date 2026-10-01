@@ -57,7 +57,6 @@
 #include "ra/map/world.h"
 #include "ra/net/event.h"
 #include "ra/net/network.h"
-#include "ra/net/queue.h"
 #include "ra/net/session.h"
 #include "ra/screens/goptions.h"
 #include "ra/screens/sounddlg.h"

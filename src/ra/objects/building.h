@@ -234,7 +234,7 @@ class BuildingClass : public TechnoClass {
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   BuildingClass() : ActLike(HOUSE_NONE) {}
-  friend class TFixedIHeapClass<BuildingClass>;
+  friend class game::TFixedIHeapClass<BuildingClass>;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

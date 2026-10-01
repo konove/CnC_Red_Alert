@@ -131,7 +131,7 @@ class InfantryClass final : public FootClass {
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   InfantryClass() = default;
-  friend class TFixedIHeapClass<InfantryClass>;
+  friend class game::TFixedIHeapClass<InfantryClass>;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

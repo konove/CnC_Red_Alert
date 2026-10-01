@@ -39,7 +39,7 @@
 #include <cstdint>
 
 #include "absl/log/check.h"
-#include "ra/core/heap.h"
+#include "game/core/heap.h"
 
 namespace ra {
 
@@ -108,10 +108,10 @@ class CCPtr {
   // Points the whole CCPtr<T> family at the heap that holds T. The subsystem
   // that owns the heap calls this when it is installed, and passes nullptr
   // when it goes away.
-  static void BindHeap(FixedIHeapClass* heap) { Heap = heap; }
+  static void BindHeap(game::FixedIHeapClass* heap) { Heap = heap; }
 
  private:
-  static FixedIHeapClass* Heap;
+  static game::FixedIHeapClass* Heap;
 
   /*
   **	This is the ID number of the object it refers to. By using an ID number,
@@ -176,59 +176,59 @@ class OverlayTypeClass;
 class SmudgeTypeClass;
 
 template <>
-FixedIHeapClass* CCPtr<AircraftClass>::Heap;
+game::FixedIHeapClass* CCPtr<AircraftClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<AnimClass>::Heap;
+game::FixedIHeapClass* CCPtr<AnimClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<BuildingClass>::Heap;
+game::FixedIHeapClass* CCPtr<BuildingClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<BulletClass>::Heap;
+game::FixedIHeapClass* CCPtr<BulletClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<FactoryClass>::Heap;
+game::FixedIHeapClass* CCPtr<FactoryClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<HouseClass>::Heap;
+game::FixedIHeapClass* CCPtr<HouseClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<InfantryClass>::Heap;
+game::FixedIHeapClass* CCPtr<InfantryClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<OverlayClass>::Heap;
+game::FixedIHeapClass* CCPtr<OverlayClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<SmudgeClass>::Heap;
+game::FixedIHeapClass* CCPtr<SmudgeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<TeamClass>::Heap;
+game::FixedIHeapClass* CCPtr<TeamClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<TeamTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<TeamTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<TemplateClass>::Heap;
+game::FixedIHeapClass* CCPtr<TemplateClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<TerrainClass>::Heap;
+game::FixedIHeapClass* CCPtr<TerrainClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<TriggerClass>::Heap;
+game::FixedIHeapClass* CCPtr<TriggerClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<TriggerTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<TriggerTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<HouseTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<HouseTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<BuildingTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<BuildingTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<AircraftTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<AircraftTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<InfantryTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<InfantryTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<BulletTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<BulletTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<AnimTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<AnimTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<UnitTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<UnitTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<VesselTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<VesselTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<TemplateTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<TemplateTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<TerrainTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<TerrainTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<OverlayTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<OverlayTypeClass>::Heap;
 template <>
-FixedIHeapClass* CCPtr<SmudgeTypeClass>::Heap;
+game::FixedIHeapClass* CCPtr<SmudgeTypeClass>::Heap;
 
 // ccptr.cc instantiates CCPtr for these types; the declarations stop every
 // other translation unit from instantiating members it has no definition for.

@@ -69,7 +69,7 @@ class TemplateClass : public ObjectClass {
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   TemplateClass() = default;
-  friend class TFixedIHeapClass<TemplateClass>;
+  friend class game::TFixedIHeapClass<TemplateClass>;
 
   /*-------------------------------------------------------------------
   **	Constructors and destructors.

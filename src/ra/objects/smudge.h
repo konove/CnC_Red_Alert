@@ -71,7 +71,7 @@ class SmudgeClass : public ObjectClass {
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   SmudgeClass() = default;
-  friend class TFixedIHeapClass<SmudgeClass>;
+  friend class game::TFixedIHeapClass<SmudgeClass>;
 
   /*-------------------------------------------------------------------
   **	Constructors and destructors.

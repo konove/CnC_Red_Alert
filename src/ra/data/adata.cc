@@ -54,10 +54,10 @@
 #include "base/pooled.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
+#include "game/core/heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/core/heap.h"
 #include "ra/core/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/core/type_heaps.h"
 #include "ra/data/text_ids.h"

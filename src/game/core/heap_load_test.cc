@@ -1,4 +1,4 @@
-#include "td/core/heap.h"
+#include "game/core/heap.h"
 
 #include <array>
 #include <cstddef>
@@ -10,33 +10,11 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
-#include "game/core/vector.h"
-#include "game/core/vector_dynamic.h"
 #include "gtest/gtest.h"
 
-template class game::VectorClass<void*>;
-template class game::DynamicVectorClass<void*>;
-template class game::VectorClass<char>;
-
-namespace td {
+namespace game {
 
 namespace {
-TEST(VectorStorageTest, BorrowedStorageRetainsExtentAndDoesNotGrow) {
-  int first = 1;
-  int second = 2;
-  void* storage[2] = {};
-  game::DynamicVectorClass<void*> values(2, storage);
-  EXPECT_TRUE(values.Add(&first));
-  EXPECT_TRUE(values.Add_Head(&second));
-  EXPECT_EQ(values.at(0), &second);
-  EXPECT_EQ(values.at(1), &first);
-  EXPECT_FALSE(values.Add(nullptr));
-  EXPECT_TRUE(values.Resize(4));
-  EXPECT_EQ(values.at(0), &second);
-  EXPECT_EQ(values.at(1), &first);
-  EXPECT_TRUE(values.Add(nullptr));
-  EXPECT_EQ(values.Count(), 3);
-}
 
 struct FieldObject {
   int32_t value = 0;
@@ -71,7 +49,7 @@ bool LoadHeap(TFixedIHeapClass<T>& heap, const std::array<uint8_t, 256>& bytes,
   return heap.Load(reader) != 0;
 }
 
-TEST(TdHeapTest, FieldObjectsPreserveSparseSlots) {
+TEST(HeapLoadTest, FieldObjectsPreserveSparseSlots) {
   TFixedIHeapClass<FieldObject> source;
   source.Set_Heap(4);
   auto* first = std::construct_at(source.Alloc());
@@ -93,7 +71,7 @@ TEST(TdHeapTest, FieldObjectsPreserveSparseSlots) {
   EXPECT_EQ(loaded.ID(loaded.Alloc()), 1);  // The saved hole remains reusable.
 }
 
-TEST(TdHeapTest, RejectsNegativeCountsAndOutOfRangeSlots) {
+TEST(HeapLoadTest, RejectsNegativeCountsAndOutOfRangeSlots) {
   for (const bool invalid_count : {false, true}) {
     std::array<uint8_t, 256> bytes{};
     SpanSink sink(std::as_writable_bytes(std::span(bytes).first(256)));
@@ -108,7 +86,7 @@ TEST(TdHeapTest, RejectsNegativeCountsAndOutOfRangeSlots) {
   }
 }
 
-TEST(TdHeapTest, RejectsDuplicateSlotsAndTruncatedFields) {
+TEST(HeapLoadTest, RejectsDuplicateSlotsAndTruncatedFields) {
   std::array<uint8_t, 256> bytes{};
   SpanSink sink(std::as_writable_bytes(std::span(bytes).first(256)));
   ArchiveWriter writer(sink);
@@ -124,7 +102,7 @@ TEST(TdHeapTest, RejectsDuplicateSlotsAndTruncatedFields) {
   EXPECT_FALSE(LoadHeap(heap, bytes, 12));  // First object's bool is missing.
 }
 
-TEST(TdHeapTest, RejectsOversizedCountsAndTruncatedHeaders) {
+TEST(HeapLoadTest, RejectsOversizedCountsAndTruncatedHeaders) {
   std::array<uint8_t, 256> bytes{};
   SpanSink sink(std::as_writable_bytes(std::span(bytes).first(256)));
   ArchiveWriter writer(sink);
@@ -137,7 +115,7 @@ TEST(TdHeapTest, RejectsOversizedCountsAndTruncatedHeaders) {
   EXPECT_EQ(heap.Count(), 0);
 }
 
-TEST(TdHeapTest, EmptyHeapRoundTripsWithoutObjects) {
+TEST(HeapLoadTest, EmptyHeapRoundTripsWithoutObjects) {
   TFixedIHeapClass<FieldObject> source;
   source.Set_Heap(2);
   TFixedIHeapClass<FieldObject> loaded;
@@ -153,7 +131,7 @@ TEST(TdHeapTest, EmptyHeapRoundTripsWithoutObjects) {
 // pointer read after Free addresses whatever was allocated next rather than a
 // dead block. That is what makes reading a projectile pointer after a failed
 // unlimbo a live-object read instead of a harmless one.
-TEST(TdHeapTest, FreedSlotIsHandedToTheNextAllocation) {
+TEST(HeapLoadTest, FreedSlotIsHandedToTheNextAllocation) {
   TFixedIHeapClass<FieldObject> heap;
   heap.Set_Heap(2);
   auto* first = std::construct_at(heap.Alloc());
@@ -182,7 +160,7 @@ class DestructorCounter {
   int* destroyed_;
 };
 
-TEST(TdHeapTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
+TEST(HeapLoadTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
   TFixedIHeapClass<DestructorCounter> heap;
   heap.Set_Heap(3);
   int destroyed = 0;
@@ -196,7 +174,7 @@ TEST(TdHeapTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
   EXPECT_EQ(heap.Avail(), 3);
 }
 
-TEST(TdHeapTest, AllocationQueryRejectsHolesAndOutOfRangeSlots) {
+TEST(HeapLoadTest, AllocationQueryRejectsHolesAndOutOfRangeSlots) {
   TFixedIHeapClass<FieldObject> heap;
   heap.Set_Heap(3);
   auto* object = std::construct_at(heap.Alloc());
@@ -208,4 +186,4 @@ TEST(TdHeapTest, AllocationQueryRejectsHolesAndOutOfRangeSlots) {
   EXPECT_FALSE(heap.Is_Allocated(0));
 }
 
-}  // namespace td
+}  // namespace game

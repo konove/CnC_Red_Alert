@@ -51,10 +51,10 @@
 #include "base/fixed.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "game/core/heap.h"
 #include "ra/ai/region.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/heap.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
@@ -936,11 +936,11 @@ class HouseClass {
     BuildChoiceClass(UrgencyType u, StructType s) : Urgency(u), Structure(s) {}
   };
 
-  static TFixedIHeapClass<BuildChoiceClass> BuildChoice;
+  static game::TFixedIHeapClass<BuildChoiceClass> BuildChoice;
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   HouseClass();
-  friend class TFixedIHeapClass<HouseClass>;
+  friend class game::TFixedIHeapClass<HouseClass>;
 
   // Allocates the per-type statistics trackers an Internet game keeps.
   // Called by both constructors; the trackers are not saved.
@@ -950,7 +950,7 @@ class HouseClass {
   ** These values are for multiplay only.
   */
  public:
-  friend class TFixedIHeapClass<BuildChoiceClass>;
+  friend class game::TFixedIHeapClass<BuildChoiceClass>;
   /*
   ** For multiplayer games, each house instance has a remap table; the table
   ** in the HousesTypeClass isn't used.  This variable is set to the remap

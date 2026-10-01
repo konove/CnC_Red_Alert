@@ -48,9 +48,9 @@
 #include <cstring>
 
 #include "base/strings/tokenizer.h"
+#include "game/core/heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/defines.h"
-#include "ra/core/heap.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
 

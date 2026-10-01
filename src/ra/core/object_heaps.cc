@@ -6,12 +6,12 @@
 #include <utility>
 
 #include "absl/strings/str_cat.h"
+#include "game/core/heap.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
 #include "ra/core/ccptr.h"
-#include "ra/core/heap.h"
 #include "ra/objects/aircraft.h"
 #include "ra/objects/anim.h"
 #include "ra/objects/building.h"
@@ -31,39 +31,39 @@ namespace ra {
 // The storage for each heap pointer. ObjectHeaps binds them; they are null
 // outside its lifetime.
 template <>
-FixedIHeapClass* CCPtr<AircraftClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<AircraftClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<AnimClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<AnimClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<BuildingClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<BuildingClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<BulletClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<BulletClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<FactoryClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<FactoryClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<HouseClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<HouseClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<InfantryClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<InfantryClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<OverlayClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<OverlayClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<SmudgeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<SmudgeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<TeamClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<TeamClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<TeamTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<TeamTypeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<TemplateClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<TemplateClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<TerrainClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<TerrainClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<TriggerClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<TriggerClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<UnitClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<UnitClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<VesselClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<VesselClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<TriggerTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<TriggerTypeClass>::Heap = nullptr;
 
 ObjectHeaps::ObjectHeaps() {
   // A CCPtr<T> finds its object by index in the heap this points at, which

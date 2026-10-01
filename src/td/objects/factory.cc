@@ -81,9 +81,9 @@
 #include <cstddef>
 
 #include "base/pooled.h"
+#include "game/core/heap.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
-#include "td/core/heap.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/debug/debug_state.h"

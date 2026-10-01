@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer(tm)
+**	Command & Conquer Red Alert(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\heap.cpv   2.18   16 Oct 1995 16:49:56
- * JOE_BOSTIC  $ */
+/* $Header: /CounterStrike/HEAP.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
  ****
  ***********************************************************************************************
  *                                                                                             *
@@ -31,40 +30,42 @@
  *                                                                                             *
  *                   Start Date : 02/18/95 *
  *                                                                                             *
- *                  Last Update : May 22, 1995 [JLB] *
+ *                  Last Update : May 6, 1996 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * FixedIHeapClass::Free -- Frees an object in the heap. *
+ * Functions: * FixedHeapClass::Allocate -- Allocate a sub-block from the heap.
+ ** FixedHeapClass::Clear -- Clears (and frees) the heap manager memory. *
  *   FixedHeapClass::FixedHeapClass -- Normal constructor for heap management
- *class.           * FixedHeapClass::~FixedHeapClass -- Destructor for the heap
- *manager class.                 * FixedHeapClass::Set_Heap -- Assigns a memory
- *block for this heap manager.                 * FixedHeapClass::Allocate --
- *Allocate a sub-block from the heap.                           *
- *   FixedHeapClass::Free -- Frees a sub-block in the heap. * FixedHeapClass::ID
- *-- Converts a pointer to a sub-block index number.                     *
- *   FixedHeapClass::Clear -- Clears (and frees) the heap manager memory. *
- *   TFixedIHeapClass::Save -- Saves all active objects * TFixedIHeapClass::Load
- *-- Loads all active objects                                        *
- *   TFixedIHeapClass::Code_Pointers -- codes pointers for every object, to
- *prepare for save   * TFixedIHeapClass::Decode_Pointers -- Decodes all object
- *pointers, for after loading       * FixedHeapClass::Free_All -- Frees all
- *objects in the fixed heap.                          *
+ *class.           * FixedHeapClass::Free -- Frees a sub-block in the heap. *
+ *   FixedHeapClass::Free_All -- Frees all objects in the fixed heap. *
+ *   FixedHeapClass::ID -- Converts a pointer to a sub-block index number. *
+ *   FixedHeapClass::Set_Heap -- Assigns a memory block for this heap manager. *
+ *   FixedHeapClass::~FixedHeapClass -- Destructor for the heap manager class. *
+ *   FixedIHeapClass::Allocate -- Allocate an object from the heap. *
+ *   FixedIHeapClass::Clear -- Clears the fixed heap of all entries. *
+ *   FixedIHeapClass::Free -- Frees an object in the heap. *
  *   FixedIHeapClass::Free_All -- Frees all objects out of the indexed heap. *
+ *   FixedIHeapClass::Logical_ID -- Fetches the logical ID number. *
+ *   FixedIHeapClass::Set_Heap -- Set the heap to the buffer provided. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/core/heap.h"
+#include "game/core/heap.h"
 
-#include <algorithm>
 #include <cstdint>
 #include <cstring>
-#include <new>
+#include <functional>
 #include <span>
+#include <string>
 
+#include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
 #include "base/algorithm.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/types.h"
 
-namespace td {
+namespace game {
 
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management
@@ -154,10 +155,6 @@ bool FixedHeapClass::Set_Heap(int count, std::span<char> buffer) {
     // This span covers the allocation made by this owner, using the same
     // extent. NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     buffer = std::span<char>(new char[extent], extent);
-    if (buffer.empty()) {
-      FreeFlag.clear();
-      return false;
-    }
     IsAllocated = true;
   }
   if (buffer.size() < base::ToSize(int64_t{count} * Size)) {
@@ -234,7 +231,7 @@ bool FixedHeapClass::Free(void* pointer) {
  *sub-block          * index number. This index number can be used as a form of
  *identifier for the block.       *
  *                                                                                             *
- * INPUT:   pointer  -- A pointer to the sub-block to conver into an ID number.
+ * INPUT:   pointer  -- A pointer to the sub-block to convert into an ID number.
  **
  *                                                                                             *
  * OUTPUT:  Returns with the index (ID) number for the sub-block specified. This
@@ -245,7 +242,7 @@ bool FixedHeapClass::Free(void* pointer) {
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-int FixedHeapClass::ID(const void* pointer) {
+int FixedHeapClass::ID(const void* pointer) const {
   if (pointer && Size) {
     return static_cast<int>(
         (static_cast<const char*>(pointer) - Buffer.data()) / Size);
@@ -253,12 +250,60 @@ int FixedHeapClass::ID(const void* pointer) {
   return -1;
 }
 
+// Returns how far into the buffer `pointer` lies, or -1 when it lies outside
+// it. Ordering pointers into different objects is only defined through
+// std::less, which is why the comparison does not simply use `<`.
+base::ssize FixedHeapClass::Offset_Of(const void* pointer) const {
+  if (pointer == nullptr || Buffer.empty()) {
+    return -1;
+  }
+  const char* address = static_cast<const char*>(pointer);
+  const std::less<> before;
+  if (before(address, Buffer.data()) ||
+      !before(address, Buffer.subspan(Buffer.size()).data())) {
+    return -1;
+  }
+  return address - Buffer.data();
+}
+
+bool FixedHeapClass::Owns(const void* pointer) const {
+  const base::ssize offset = Offset_Of(pointer);
+  return Size > 0 && offset >= 0 && offset % Size == 0;
+}
+
+std::string FixedHeapClass::Describe(const void* pointer) const {
+  std::string description = absl::StrFormat(
+      "heap=%p slots=%d/%d size=%d buffer=[%p,%p) ptr=%p", this, ActiveCount,
+      TotalCount, Size, static_cast<const void*>(Buffer.data()),
+      static_cast<const void*>(
+          Buffer.empty() ? nullptr : Buffer.subspan(Buffer.size()).data()),
+      pointer);
+
+  const base::ssize offset = Offset_Of(pointer);
+  if (Buffer.empty()) {
+    absl::StrAppend(&description, " (heap has no buffer)");
+  } else if (pointer != nullptr && offset < 0) {
+    absl::StrAppend(&description, " (outside the buffer)");
+  } else if (pointer != nullptr) {
+    const auto slot = static_cast<int>(offset / Size);
+    const auto slack = static_cast<int>(offset % Size);
+    absl::StrAppend(&description, " slot=", slot);
+    if (slack != 0) {
+      absl::StrAppend(&description, " (", slack, " bytes past the boundary)");
+    } else {
+      absl::StrAppend(&description,
+                      FreeFlag.at(base::ToSize(slot)) ? " taken" : " FREE");
+    }
+  }
+  return description;
+}
+
 /***********************************************************************************************
  * FixedHeapClass::Clear -- Clears (and frees) the heap manager memory. *
  *                                                                                             *
  *    This routine is used to bring the heap manager back into a non-functioning
- *state. All    * memory allocated by this manager is freeed. Any previous
- *pointers to allocated blocks    * from this heap are now invalid. *
+ *state. All    * memory allocated by this manager is freed. Any previous
+ *pointers to allocated blocks     * from this heap are now invalid. *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
@@ -323,27 +368,91 @@ bool FixedIHeapClass::Free_All() {
   return FixedHeapClass::Free_All();
 }
 
+/***********************************************************************************************
+ * FixedIHeapClass::Clear -- Clears the fixed heap of all entries. *
+ *                                                                                             *
+ *    This routine will clear the entire heap. All memory that was allocation,
+ *will be freed   * by this routine. After calling this routine, the heap must
+ *either be resized or          * a new heap memory block specifically attached,
+ *before it can be used again.              *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/21/1995 JLB : Created. *
+ *=============================================================================================*/
 void FixedIHeapClass::Clear() {
   FixedHeapClass::Clear();
   ActivePointers.Clear();
 }
 
+/***********************************************************************************************
+ * FixedIHeapClass::Set_Heap -- Set the heap to the buffer provided. *
+ *                                                                                             *
+ *    This routine will set the heap to use the buffer specified. Use this
+ *routine when a      * pre-allocated buffer is to be used for the heap. A heap
+ *that is assigned in this         * manner cannot be resized. *
+ *                                                                                             *
+ * INPUT:   count -- The number of objects that the buffer pointer can be used
+ *to track.       *
+ *                                                                                             *
+ *          buffer   -- Pointer to the buffer to use when keeping track of the
+ *objects.        *
+ *                                                                                             *
+ * OUTPUT:  Was the heap assigned successfully? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/21/1995 JLB : Created. *
+ *=============================================================================================*/
 bool FixedIHeapClass::Set_Heap(int count, std::span<char> buffer) {
+  // avoid reallocating if possible
+  // this is a workaround to prevent use-after-free errors in rule loading
+  bool reuse_buf = false;
+  if (count == TotalCount && buffer.empty() && IsAllocated) {
+    buffer = Buffer;
+    reuse_buf = true;
+    Buffer = {};
+  }
+
   Clear();
+
   if (FixedHeapClass::Set_Heap(count, buffer)) {
     ActivePointers.Resize(count);
+
+    if (reuse_buf) {
+      IsAllocated = true;
+    }
     return true;
   }
   return false;
 }
 
+/***********************************************************************************************
+ * FixedIHeapClass::Allocate -- Allocate an object from the heap. *
+ *                                                                                             *
+ *    This routine will allocate an object located in the heap. If no free
+ *object space        * could be found, then NULL is returned. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the allocated object memory block. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/21/1995 JLB : Created. *
+ *=============================================================================================*/
 void* FixedIHeapClass::Allocate() {
   void* ptr = FixedHeapClass::Allocate();
   if (ptr) {
     ActivePointers.Add(ptr);
-    std::ranges::fill(Buffer.subspan(base::ToSize(ID(ptr)) * base::ToSize(Size),
-                                     base::ToSize(Size)),
-                      char{});
+    base::FillBytes(
+        std::as_writable_bytes(Buffer.subspan(
+            base::ToSize(ID(ptr)) * base::ToSize(Size), base::ToSize(Size))),
+        0, Size);
   }
   return ptr;
 }
@@ -371,4 +480,67 @@ bool FixedIHeapClass::Free(void* pointer) {
   return false;
 }
 
-}  // namespace td
+/***********************************************************************************************
+ * FixedIHeapClass::Logical_ID -- Fetches the logical ID number. *
+ *                                                                                             *
+ *    Ths logical ID number of a memory block is the index number of the block
+ *as if the       * heap consisted only of valid allocated blocks. This
+ *knowledge comes in handy when        * the real index number must be
+ *anticipated before a memory block packing process.         *
+ *                                                                                             *
+ * INPUT:   pointer  -- Pointer to an allocated block in the heap. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the logical index number of this block. The number
+ *returned must not  * be used as a regular index into the heap until such time
+ *as the heap has been      * compacted (by some means or another) without
+ *modifying the block order.            *
+ *                                                                                             *
+ * WARNINGS:   Runs in linear time. *
+ *                                                                                             *
+ * HISTORY: * 05/06/1996 JLB : Created. *
+ *=============================================================================================*/
+int FixedIHeapClass::Logical_ID(const void* pointer) const {
+  if (pointer != nullptr) {
+    for (int index = 0; index < Count(); index++) {
+      if (Active_Ptr(index) == pointer) {
+        return index;
+      }
+    }
+  }
+  return -1;
+}
+
+std::string FixedIHeapClass::Describe(const void* pointer) const {
+  return absl::StrCat(FixedHeapClass::Describe(pointer),
+                      " listed=", Logical_ID(pointer) >= 0 ? "yes" : "no");
+}
+
+std::string FixedIHeapClass::Validate() const {
+  if (ActivePointers.Count() != ActiveCount) {
+    return absl::StrCat("ActivePointers holds ", ActivePointers.Count(), " of ",
+                        ActiveCount, " active objects");
+  }
+
+  for (int index = 0; index < ActiveCount; index++) {
+    const void* pointer = Active_Ptr(index);
+    if (!Owns(pointer)) {
+      return absl::StrCat("active pointer ", index, " is not a slot: ",
+                          FixedHeapClass::Describe(pointer));
+    }
+    if (!FreeFlag.at(base::ToSize(FixedHeapClass::ID(pointer)))) {
+      return absl::StrCat("active pointer ", index,
+                          " was freed: ", FixedHeapClass::Describe(pointer));
+    }
+    // Only now is the pointer known to be a live slot whose ID field can be
+    // read.
+    if (slot_id_ != nullptr) {
+      const int cached = slot_id_(pointer);
+      if (FixedHeapClass::ID(pointer) != cached) {
+        return absl::StrCat("stale ID ", cached, ": ", Describe(pointer));
+      }
+    }
+  }
+  return {};
+}
+
+}  // namespace game

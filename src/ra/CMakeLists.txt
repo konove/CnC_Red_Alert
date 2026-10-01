@@ -190,11 +190,11 @@ add_gtest(
 apply_language_setting(ra_winbits_test)
 
 add_gtest(
-    NAME ra_heap_test
-    SOURCES core/heap_test.cc core/heap.cc
-    LIBS base engine_stream absl::check absl::log absl::strings magic_enum::magic_enum
+    NAME ra_search_test
+    SOURCES core/search_test.cc
+    LIBS base absl::check absl::log magic_enum::magic_enum
 )
-apply_language_setting(ra_heap_test)
+apply_language_setting(ra_search_test)
 
 add_gtest(
     NAME ra_crate_test

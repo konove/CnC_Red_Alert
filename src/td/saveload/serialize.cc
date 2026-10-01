@@ -4,11 +4,11 @@
 #include <concepts>
 #include <cstdint>
 
+#include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
-#include "td/core/heap.h"
 #include "td/core/object_heaps.h"
 #include "td/objects/aircraft.h"
 #include "td/objects/anim.h"
@@ -31,7 +31,8 @@ namespace td {
 namespace {
 
 template <class T>
-ObjectClass* Slot(TFixedIHeapClass<T>& heap, int index, ArchiveReader& ar, bool active_only) {
+ObjectClass* Slot(game::TFixedIHeapClass<T>& heap, int index, ArchiveReader& ar,
+                  bool active_only) {
   if (index < 0 || index >= heap.Length()) {
     ar.Fail("saved object index outside its heap");
     return nullptr;

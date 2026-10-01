@@ -3,11 +3,11 @@
 // Kept apart from heap.cc so the heap itself links without the game classes,
 // which lets heap_test.cc exercise it with a small local element type.
 
+#include "game/core/heap.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
-#include "ra/core/heap.h"
 #include "ra/objects/aircraft.h"
 #include "ra/objects/anim.h"
 #include "ra/objects/building.h"
@@ -25,38 +25,36 @@
 #include "ra/objects/warhead.h"
 #include "ra/objects/weapon.h"
 
-namespace ra {
-
-template class TFixedIHeapClass<AircraftClass>;
-template class TFixedIHeapClass<AnimClass>;
-template class TFixedIHeapClass<BuildingClass>;
-template class TFixedIHeapClass<BulletClass>;
-template class TFixedIHeapClass<FactoryClass>;
-template class TFixedIHeapClass<HouseClass>;
-template class TFixedIHeapClass<InfantryClass>;
-template class TFixedIHeapClass<OverlayClass>;
-template class TFixedIHeapClass<SmudgeClass>;
-template class TFixedIHeapClass<TeamClass>;
-template class TFixedIHeapClass<TemplateClass>;
-template class TFixedIHeapClass<TerrainClass>;
-template class TFixedIHeapClass<TriggerClass>;
-template class TFixedIHeapClass<UnitClass>;
-template class TFixedIHeapClass<VesselClass>;
-template class TFixedIHeapClass<AircraftTypeClass>;
-template class TFixedIHeapClass<AnimTypeClass>;
-template class TFixedIHeapClass<BuildingTypeClass>;
-template class TFixedIHeapClass<BulletTypeClass>;
-template class TFixedIHeapClass<HouseTypeClass>;
-template class TFixedIHeapClass<InfantryTypeClass>;
-template class TFixedIHeapClass<OverlayTypeClass>;
-template class TFixedIHeapClass<SmudgeTypeClass>;
-template class TFixedIHeapClass<TeamTypeClass>;
-template class TFixedIHeapClass<TemplateTypeClass>;
-template class TFixedIHeapClass<TerrainTypeClass>;
-template class TFixedIHeapClass<TriggerTypeClass>;
-template class TFixedIHeapClass<UnitTypeClass>;
-template class TFixedIHeapClass<VesselTypeClass>;
-template class TFixedIHeapClass<WarheadTypeClass>;
-template class TFixedIHeapClass<WeaponTypeClass>;
-
-}  // namespace ra
+// An explicit instantiation of a game:: template must sit in a namespace
+// that encloses game::, so these are at global scope.
+template class game::TFixedIHeapClass<ra::AircraftClass>;
+template class game::TFixedIHeapClass<ra::AnimClass>;
+template class game::TFixedIHeapClass<ra::BuildingClass>;
+template class game::TFixedIHeapClass<ra::BulletClass>;
+template class game::TFixedIHeapClass<ra::FactoryClass>;
+template class game::TFixedIHeapClass<ra::HouseClass>;
+template class game::TFixedIHeapClass<ra::InfantryClass>;
+template class game::TFixedIHeapClass<ra::OverlayClass>;
+template class game::TFixedIHeapClass<ra::SmudgeClass>;
+template class game::TFixedIHeapClass<ra::TeamClass>;
+template class game::TFixedIHeapClass<ra::TemplateClass>;
+template class game::TFixedIHeapClass<ra::TerrainClass>;
+template class game::TFixedIHeapClass<ra::TriggerClass>;
+template class game::TFixedIHeapClass<ra::UnitClass>;
+template class game::TFixedIHeapClass<ra::VesselClass>;
+template class game::TFixedIHeapClass<ra::AircraftTypeClass>;
+template class game::TFixedIHeapClass<ra::AnimTypeClass>;
+template class game::TFixedIHeapClass<ra::BuildingTypeClass>;
+template class game::TFixedIHeapClass<ra::BulletTypeClass>;
+template class game::TFixedIHeapClass<ra::HouseTypeClass>;
+template class game::TFixedIHeapClass<ra::InfantryTypeClass>;
+template class game::TFixedIHeapClass<ra::OverlayTypeClass>;
+template class game::TFixedIHeapClass<ra::SmudgeTypeClass>;
+template class game::TFixedIHeapClass<ra::TeamTypeClass>;
+template class game::TFixedIHeapClass<ra::TemplateTypeClass>;
+template class game::TFixedIHeapClass<ra::TerrainTypeClass>;
+template class game::TFixedIHeapClass<ra::TriggerTypeClass>;
+template class game::TFixedIHeapClass<ra::UnitTypeClass>;
+template class game::TFixedIHeapClass<ra::VesselTypeClass>;
+template class game::TFixedIHeapClass<ra::WarheadTypeClass>;
+template class game::TFixedIHeapClass<ra::WeaponTypeClass>;

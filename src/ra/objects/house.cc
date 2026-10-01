@@ -160,6 +160,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
+#include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
@@ -178,7 +179,6 @@
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
-#include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
@@ -221,7 +221,7 @@
 
 namespace ra {
 
-TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
+game::TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
 
 /***********************************************************************************************
  * HouseClass::operator HousesType -- Conversion to HousesType operator. *

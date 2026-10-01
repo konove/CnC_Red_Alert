@@ -72,7 +72,6 @@
 #include "ra/map/world.h"
 #include "ra/net/event.h"
 #include "ra/net/network.h"
-#include "ra/net/queue.h"
 #include "ra/net/session.h"
 #include "ra/startup/conquer.h"
 #include "ra/ui/checkbox.h"

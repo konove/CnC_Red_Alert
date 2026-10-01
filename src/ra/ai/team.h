@@ -289,7 +289,7 @@ class TeamClass : public AbstractClass {
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   TeamClass() = default;
-  friend class TFixedIHeapClass<TeamClass>;
+  friend class game::TFixedIHeapClass<TeamClass>;
 };
 
 extern template void TeamClass::Serialize<ArchiveWriter>(ArchiveWriter&);

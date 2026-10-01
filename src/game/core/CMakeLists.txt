@@ -22,14 +22,14 @@ target_sources(game_core PUBLIC
 )
 
 target_link_libraries(game_core
-        PUBLIC base absl::check
-        PRIVATE engine_window
+        PUBLIC base engine_stream absl::check absl::core_headers absl::log
+        PRIVATE engine_window absl::str_format absl::strings
 )
 
 # Tests
 include(Testing)
 add_gtest(
         NAME game_core_test
-        SOURCES owned_vector_test.cc path_overlap_test.cc
+        SOURCES heap_load_test.cc heap_test.cc owned_vector_test.cc path_overlap_test.cc
         LIBS game_core
 )

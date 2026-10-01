@@ -56,6 +56,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
+#include "game/core/heap.h"
 #include "game/core/interpal.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
@@ -69,7 +70,6 @@
 #include "ra/core/ccptr.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
-#include "ra/core/heap.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
 #include "ra/data/language.h"
@@ -537,7 +537,7 @@ static bool FinishScenarioIfDecided() {
 // Logs one line per object in `objects`, tagged with `kind`, for the
 // save/load smoke test to diff.
 template <typename T>
-static void LogObjectPositions(const TFixedIHeapClass<T>& objects,
+static void LogObjectPositions(const game::TFixedIHeapClass<T>& objects,
                                const std::string_view kind) {
   for (int index = 0; index < objects.Count(); index++) {
     const T* object = objects.Ptr(index);

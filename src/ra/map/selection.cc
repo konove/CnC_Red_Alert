@@ -26,11 +26,11 @@
 #include <utility>
 
 #include "base/array.h"
+#include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/editor/mapedit.h"

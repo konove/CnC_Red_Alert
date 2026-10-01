@@ -1,4 +1,4 @@
-#include "ra/core/heap.h"
+#include "game/core/heap.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -11,21 +11,20 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
+#include "game/core/queue.h"
 #include "game/core/vector.h"
 #include "game/core/vector_dynamic.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "ra/core/search.h"
-#include "ra/net/queue.h"
 
-namespace ra {
+namespace game {
 
 namespace {
 TEST(VectorStorageTest, BorrowedStorageRetainsExtentAndDoesNotGrow) {
   int first = 1;
   int second = 2;
   void* storage[2] = {};
-  game::DynamicVectorClass<void*> values(2, storage);
+  DynamicVectorClass<void*> values(2, storage);
   EXPECT_TRUE(values.Add(&first));
   EXPECT_TRUE(values.Add_Head(&second));
   EXPECT_EQ(values.at(0), &second);
@@ -36,21 +35,6 @@ TEST(VectorStorageTest, BorrowedStorageRetainsExtentAndDoesNotGrow) {
   EXPECT_EQ(values.at(1), &first);
   EXPECT_TRUE(values.Add(nullptr));
   EXPECT_EQ(values.Count(), 3);
-}
-
-TEST(IndexStorageTest, PreservesEntriesAcrossGrowthSortAndRemoval) {
-  IndexClass<int> index;
-  for (int i = 30; i >= 0; --i) {
-    ASSERT_TRUE(index.Add_Index(i, i * 2));
-  }
-  EXPECT_EQ(index.Fetch_Index(17), 34);
-  EXPECT_TRUE(index.Remove_Index(17));
-  EXPECT_FALSE(index.Is_Present(17));
-  EXPECT_EQ(index.Fetch_Index(30), 60);
-  EXPECT_EQ(index.Fetch_Index(0), 0);
-  index.Clear();
-  EXPECT_EQ(index.Count(), 0);
-  EXPECT_FALSE(index.Is_Present(30));
 }
 
 // A stand-in for a game object: something with a slot ID and a few fields.
@@ -288,15 +272,15 @@ TEST(HeapDestroyTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
   EXPECT_EQ(heap.Avail(), 3);
 }
 
-TEST(RaCheckedContainerTest, VectorAccessPreservesConstnessAndCapacity) {
-  game::VectorClass<int> values(2);
+TEST(CheckedContainerTest, VectorAccessPreservesConstnessAndCapacity) {
+  VectorClass<int> values(2);
   values.at(1) = 42;
-  const game::VectorClass<int>& view = values;
+  const VectorClass<int>& view = values;
   EXPECT_EQ(view.at(1), 42);
   EXPECT_EQ(&view.at(1), &values.at(1));
 }
 
-TEST(RaCheckedContainerTest, QueueAccessFollowsWrappedLogicalOrder) {
+TEST(CheckedContainerTest, QueueAccessFollowsWrappedLogicalOrder) {
   QueueClass<int, 3> queue;
   ASSERT_TRUE(queue.Add(10));
   ASSERT_TRUE(queue.Add(20));
@@ -310,9 +294,9 @@ TEST(RaCheckedContainerTest, QueueAccessFollowsWrappedLogicalOrder) {
   EXPECT_EQ(queue.at(1), 31);
 }
 
-TEST(RaCheckedContainerDeathTest, RejectsInvalidVectorAndQueueIndices) {
-  game::VectorClass<int> values(2);
-  const game::VectorClass<int>& view = values;
+TEST(CheckedContainerDeathTest, RejectsInvalidVectorAndQueueIndices) {
+  VectorClass<int> values(2);
+  const VectorClass<int>& view = values;
   QueueClass<int, 3> queue;
   // GoogleTest's death-test macro formats subprocess diagnostics with libc.
   // NOLINTBEGIN(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
@@ -331,4 +315,4 @@ TEST(RaCheckedContainerDeathTest, RejectsInvalidVectorAndQueueIndices) {
 
 }  // namespace
 
-}  // namespace ra
+}  // namespace game

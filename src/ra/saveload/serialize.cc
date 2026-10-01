@@ -4,9 +4,9 @@
 #include <cstdint>
 
 #include "engine/stream/archive.h"
+#include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "ra/core/defines.h"
-#include "ra/core/heap.h"
 #include "ra/core/object_heaps.h"
 #include "ra/objects/aircraft.h"
 #include "ra/objects/anim.h"
@@ -34,7 +34,8 @@ namespace {
 // when the index is outside it. Deliberately does not consult the slot's
 // IsActive flag: the object there may not have been loaded yet.
 template <class T>
-ObjectClass* Slot(TFixedIHeapClass<T>& heap, int index, ArchiveReader& ar) {
+ObjectClass* Slot(game::TFixedIHeapClass<T>& heap, int index,
+                  ArchiveReader& ar) {
   if (index < 0 || index >= heap.Length()) {
     ar.Fail("saved object index outside its heap");
     return nullptr;

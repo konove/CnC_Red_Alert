@@ -55,11 +55,11 @@
 
 #include "td/objects/target.h"
 
+#include "game/core/heap.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
-#include "td/core/heap.h"
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/objects/aircraft.h"

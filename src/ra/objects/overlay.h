@@ -70,7 +70,7 @@ class OverlayClass : public ObjectClass {
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   OverlayClass() = default;
-  friend class TFixedIHeapClass<OverlayClass>;
+  friend class game::TFixedIHeapClass<OverlayClass>;
 
   /*-------------------------------------------------------------------
   **	Constructors and destructors.

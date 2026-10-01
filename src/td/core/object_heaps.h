@@ -5,10 +5,10 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
+#include "game/core/heap.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
-#include "td/core/heap.h"
 #include "td/objects/aircraft.h"
 #include "td/objects/anim.h"
 #include "td/objects/building.h"
@@ -45,68 +45,77 @@ class ObjectHeaps {
   ObjectHeaps(ObjectHeaps&&) = delete;
   ObjectHeaps& operator=(ObjectHeaps&&) = delete;
 
-  TFixedIHeapClass<UnitClass>& unit() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<UnitClass>& unit() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return unit_;
   }
-  TFixedIHeapClass<FactoryClass>& factory() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<FactoryClass>& factory()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return factory_;
   }
-  TFixedIHeapClass<TerrainClass>& terrain() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<TerrainClass>& terrain()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return terrain_;
   }
-  TFixedIHeapClass<TemplateClass>& tmplate() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<TemplateClass>& tmplate()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return tmplate_;
   }
-  TFixedIHeapClass<SmudgeClass>& smudge() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<SmudgeClass>& smudge() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return smudge_;
   }
-  TFixedIHeapClass<OverlayClass>& overlay() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<OverlayClass>& overlay()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return overlay_;
   }
-  TFixedIHeapClass<InfantryClass>& infantry() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<InfantryClass>& infantry()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return infantry_;
   }
-  TFixedIHeapClass<BulletClass>& bullet() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<BulletClass>& bullet() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return bullet_;
   }
-  TFixedIHeapClass<BuildingClass>& building() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<BuildingClass>& building()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return building_;
   }
-  TFixedIHeapClass<AnimClass>& anim() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<AnimClass>& anim() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return anim_;
   }
-  TFixedIHeapClass<AircraftClass>& aircraft() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<AircraftClass>& aircraft()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return aircraft_;
   }
-  TFixedIHeapClass<TriggerClass>& trigger() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<TriggerClass>& trigger()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return trigger_;
   }
-  TFixedIHeapClass<TeamTypeClass>& team_type() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<TeamTypeClass>& team_type()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return team_type_;
   }
-  TFixedIHeapClass<TeamClass>& team() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<TeamClass>& team() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return team_;
   }
-  TFixedIHeapClass<HouseClass>& house() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::TFixedIHeapClass<HouseClass>& house() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return house_;
   }
 
  private:
-  TFixedIHeapClass<UnitClass> unit_;
-  TFixedIHeapClass<FactoryClass> factory_;
-  TFixedIHeapClass<TerrainClass> terrain_;
-  TFixedIHeapClass<TemplateClass> tmplate_;
-  TFixedIHeapClass<SmudgeClass> smudge_;
-  TFixedIHeapClass<OverlayClass> overlay_;
-  TFixedIHeapClass<InfantryClass> infantry_;
-  TFixedIHeapClass<BulletClass> bullet_;
-  TFixedIHeapClass<BuildingClass> building_;
-  TFixedIHeapClass<AnimClass> anim_;
-  TFixedIHeapClass<AircraftClass> aircraft_;
-  TFixedIHeapClass<TriggerClass> trigger_;
-  TFixedIHeapClass<TeamTypeClass> team_type_;
-  TFixedIHeapClass<TeamClass> team_;
-  TFixedIHeapClass<HouseClass> house_;
+  game::TFixedIHeapClass<UnitClass> unit_;
+  game::TFixedIHeapClass<FactoryClass> factory_;
+  game::TFixedIHeapClass<TerrainClass> terrain_;
+  game::TFixedIHeapClass<TemplateClass> tmplate_;
+  game::TFixedIHeapClass<SmudgeClass> smudge_;
+  game::TFixedIHeapClass<OverlayClass> overlay_;
+  game::TFixedIHeapClass<InfantryClass> infantry_;
+  game::TFixedIHeapClass<BulletClass> bullet_;
+  game::TFixedIHeapClass<BuildingClass> building_;
+  game::TFixedIHeapClass<AnimClass> anim_;
+  game::TFixedIHeapClass<AircraftClass> aircraft_;
+  game::TFixedIHeapClass<TriggerClass> trigger_;
+  game::TFixedIHeapClass<TeamTypeClass> team_type_;
+  game::TFixedIHeapClass<TeamClass> team_;
+  game::TFixedIHeapClass<HouseClass> house_;
 };
 
 // Returns the ObjectHeaps that Game installed. CHECK-fails outside a Game's

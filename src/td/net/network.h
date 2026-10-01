@@ -11,6 +11,7 @@
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "engine/net/serial/modemreg.h"
+#include "game/core/queue.h"
 #include "td/core/defines.h"
 #include "td/net/event.h"
 #include "td/net/ipxaddr.h"
@@ -18,7 +19,6 @@
 #include "td/net/nodename.h"
 #include "td/net/nullmgr.h"
 #include "td/net/phone.h"
-#include "td/net/queue.h"
 #include "td/net/tcpip.h"
 
 namespace td {
@@ -58,12 +58,13 @@ class Network {
   // spell the same thing longer.
 
   // The events the local player has generated but not yet sent.
-  QueueClass<EventClass, MAX_EVENTS>& out_list() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::QueueClass<EventClass, MAX_EVENTS>& out_list()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return out_list_;
   }
 
   // The events from every machine, waiting for the frame they execute on.
-  QueueClass<EventClass, MAX_EVENTS * 8>& do_list()
+  game::QueueClass<EventClass, MAX_EVENTS * 8>& do_list()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return do_list_;
   }
@@ -221,8 +222,8 @@ class Network {
   }
 
  private:
-  QueueClass<EventClass, MAX_EVENTS> out_list_;
-  QueueClass<EventClass, MAX_EVENTS * 8> do_list_;
+  game::QueueClass<EventClass, MAX_EVENTS> out_list_;
+  game::QueueClass<EventClass, MAX_EVENTS * 8> do_list_;
 
   // The magic number must have each digit unique and different from the
   // queue's own.

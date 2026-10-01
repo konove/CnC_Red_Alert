@@ -2,8 +2,8 @@
 
 #include "ra/core/type_heaps.h"
 
+#include "game/core/heap.h"
 #include "ra/core/ccptr.h"
-#include "ra/core/heap.h"
 #include "ra/objects/type.h"
 
 namespace ra {
@@ -11,29 +11,29 @@ namespace ra {
 // The storage for each type's heap pointer. TypeHeaps binds them; they are
 // null outside its lifetime.
 template <>
-FixedIHeapClass* CCPtr<HouseTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<HouseTypeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<BuildingTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<BuildingTypeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<AircraftTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<AircraftTypeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<InfantryTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<InfantryTypeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<BulletTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<BulletTypeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<AnimTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<AnimTypeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<UnitTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<UnitTypeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<VesselTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<VesselTypeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<TemplateTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<TemplateTypeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<TerrainTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<TerrainTypeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<OverlayTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<OverlayTypeClass>::Heap = nullptr;
 template <>
-FixedIHeapClass* CCPtr<SmudgeTypeClass>::Heap = nullptr;
+game::FixedIHeapClass* CCPtr<SmudgeTypeClass>::Heap = nullptr;
 
 TypeHeaps::TypeHeaps() {
   // A CCPtr<T> finds its object by index in the heap this points at. There

@@ -116,12 +116,6 @@ add_gtest(
 )
 
 add_gtest(
-    NAME td_heap_test
-    SOURCES core/heap_test.cc core/heap.cc
-    LIBS base engine_stream
-)
-
-add_gtest(
     NAME td_connect_test
     SOURCES net/connect_test.cc net/connect.cc net/combuf.cc net/noseqcon.cc
     LIBS base absl::check absl::log

@@ -138,7 +138,7 @@ class UnitClass final : public DriveClass {
  protected:
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   UnitClass() = default;
-  friend class TFixedIHeapClass<UnitClass>;
+  friend class game::TFixedIHeapClass<UnitClass>;
 
  public:
   /*---------------------------------------------------------------------
