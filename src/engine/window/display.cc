@@ -24,6 +24,7 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
+#include "engine/gfx/ico_image.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/window/display_client.h"
@@ -128,6 +129,22 @@ bool Display::Init(const char* title, int width, int height) {
   SDL_RenderClear(renderer);
   SDL_RenderPresent(renderer);
   return true;
+}
+
+void Display::SetIcon(engine::gfx::IcoImage icon) {
+  if (window_ == nullptr ||
+      icon.rgba.size() != base::ToSize(icon.width * icon.height * 4)) {
+    return;
+  }
+  // The surface borrows the pixels; SDL_SetWindowIcon copies them.
+  SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormatFrom(
+      icon.rgba.data(), icon.width, icon.height, 32, icon.width * 4,
+      SDL_PIXELFORMAT_RGBA32);
+  if (surface == nullptr) {
+    return;
+  }
+  SDL_SetWindowIcon(static_cast<SDL_Window*>(window_), surface);
+  SDL_FreeSurface(surface);
 }
 
 bool Display::SetVideoMode(const int width, const int height) {

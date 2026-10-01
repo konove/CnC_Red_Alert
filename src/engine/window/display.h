@@ -11,6 +11,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
+#include "engine/gfx/ico_image.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/window/display_client.h"
@@ -65,6 +66,13 @@ class Display : public PixelSurface {
   // and registers the event the redraw timer posts. Returns false if SDL
   // could not create either.
   bool Init(const char* title, int width, int height);
+
+  // Sets the picture the window manager shows for the window, in its title
+  // bar and task switcher. Windows takes it from the executable's icon
+  // resource unless this replaces it; Linux and macOS have no such resource,
+  // so without this the window has none. Taken by value because SDL wants the
+  // pixels writable, though it only copies them. Does nothing before Init().
+  void SetIcon(engine::gfx::IcoImage icon);
 
   // Creates the width x height paletted surface the game draws on and the
   // texture it is presented through, replacing those of an earlier mode.
