@@ -83,6 +83,7 @@
 #include "ra/defines.h"
 #include "ra/ini.h"
 #include "ra/jshell.h"
+#include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/session.h"
 #include "ra/theme.h"
@@ -301,9 +302,7 @@ void OptionsClass::Set_Sound_Volume(Fixed volume, bool feedback) {
  *=============================================================================================*/
 void OptionsClass::Set_Brightness(Fixed brightness) {
   Brightness = Fixed::kQuarter + Fixed::kHalf * brightness;
-  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
-                 Brightness, Saturation, Tint, Contrast);
-  ThePalettes().game_palette().Set();
+  ShowPalette(Saturation);
 }
 
 /***********************************************************************************************
@@ -342,9 +341,7 @@ Fixed OptionsClass::Get_Brightness() const {
  *=============================================================================================*/
 void OptionsClass::Set_Saturation(Fixed color) {
   Saturation = color;
-  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
-                 Brightness, Saturation, Tint, Contrast);
-  ThePalettes().game_palette().Set();
+  ShowPalette(Saturation);
 }
 
 /***********************************************************************************************
@@ -380,9 +377,7 @@ Fixed OptionsClass::Get_Saturation() const { return Saturation; }
  *=============================================================================================*/
 void OptionsClass::Set_Contrast(Fixed contrast) {
   Contrast = Fixed::kQuarter + Fixed::kHalf * contrast;
-  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
-                 Brightness, Saturation, Tint, Contrast);
-  ThePalettes().game_palette().Set();
+  ShowPalette(Saturation);
 }
 
 /***********************************************************************************************
@@ -421,9 +416,7 @@ Fixed OptionsClass::Get_Contrast() const {
  *=============================================================================================*/
 void OptionsClass::Set_Tint(Fixed tint) {
   Tint = tint;
-  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
-                 Brightness, Saturation, Tint, Contrast);
-  ThePalettes().game_palette().Set();
+  ShowPalette(Saturation);
 }
 
 /***********************************************************************************************
@@ -553,14 +546,17 @@ void OptionsClass::Load_Settings() {
   GameSpeed = static_cast<unsigned>(
       ini.Get_Int(OPTIONS, "GameSpeed", static_cast<int>(GameSpeed)));
   ScrollRate = ini.Get_Int(OPTIONS, "ScrollRate", ScrollRate);
-  Set_Brightness(ini.Get_Fixed(OPTIONS, "Brightness", Brightness));
+  // The file holds the stored values, not the slider positions the setters
+  // take.
+  Brightness = ini.Get_Fixed(OPTIONS, "Brightness", Brightness);
   Set_Sound_Volume(ini.Get_Fixed(OPTIONS, "Volume", Volume), false);
   Set_Score_Volume(ini.Get_Fixed(OPTIONS, "ScoreVolume", ScoreVolume), false);
   MultiScoreVolume =
       ini.Get_Fixed(OPTIONS, "MultiplayerScoreVolume", MultiScoreVolume);
-  Set_Contrast(ini.Get_Fixed(OPTIONS, "Contrast", Contrast));
-  Set_Saturation(ini.Get_Fixed(OPTIONS, "Color", Saturation));
-  Set_Tint(ini.Get_Fixed(OPTIONS, "Tint", Tint));
+  Contrast = ini.Get_Fixed(OPTIONS, "Contrast", Contrast);
+  Saturation = ini.Get_Fixed(OPTIONS, "Color", Saturation);
+  Tint = ini.Get_Fixed(OPTIONS, "Tint", Tint);
+  ShowPalette(Saturation);
   AutoScroll = ini.Get_Bool(OPTIONS, "AutoScroll", AutoScroll);
   Set_Repeat(ini.Get_Bool(OPTIONS, "IsScoreRepeat", IsScoreRepeat));
   Set_Shuffle(ini.Get_Bool(OPTIONS, "IsScoreShuffle", IsScoreShuffle));
@@ -659,10 +655,7 @@ void OptionsClass::SaveHotkeys(INIClass& ini) const {
  * HISTORY: * 06/24/1995 BRR : Created. *
  *=============================================================================================*/
 void OptionsClass::Set() {
-  Set_Brightness(Brightness);
-  Set_Contrast(Contrast);
-  Set_Saturation(Saturation);
-  Set_Tint(Tint);
+  ShowPalette(Saturation);
   Set_Sound_Volume(Volume, false);
   Set_Score_Volume(ScoreVolume, false);
   Set_Repeat(IsScoreRepeat);
@@ -722,6 +715,14 @@ int OptionsClass::Normalize_Delay(int delay) const {
  *                                                                                             *
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
+// Not const: sets the display palette.
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void OptionsClass::ShowPalette(Fixed saturation) {
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, saturation, Tint, Contrast);
+  ThePalettes().game_palette().Set();
+}
+
 void OptionsClass::Fixup_Palette() const {
   Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
                  Brightness, Saturation, Tint, Contrast);

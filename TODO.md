@@ -17,12 +17,6 @@
     (and deleted in `09717739`) they are always 0, so `ra/menus.cc`, `td/menus.cc`, `ra/object.cc`
     and `td/object.cc` place menus and text as if every window sat at the screen's top-left
   - Either delete them (no visible change) or set them from `WindowList` where the window changes
-- Pass Red Alert's stored brightness and contrast to `Adjust_Palette()` during grey fades
-  - `ScenarioClass::Do_Fade_AI()` (`ra/scenario.cc`) passes `Get_Brightness()` and `Get_Contrast()`,
-    the slider positions, but `OptionsClass` stores and applies `1/4 + slider / 2`; off centre, the
-    palette's brightness and contrast jump for the length of a Chronosphere/grey fade (slider at 1:
-    value times 2 instead of 1.5)
-  - Found while unifying the HSV conversions (`docs/PALETTE_HSV_PLAN.md`)
 - Make Red Alert's cloak shimmer walk the other way on the right half of the window
   - `CC_Draw_Shape()` (`ra/shape_draw.cc:163`) negates the predator offset when
     `x > WindowList[window][kWindowWidth] * 4`, TD's formula; TD stores window widths in 8-pixel

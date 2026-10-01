@@ -271,11 +271,7 @@ void ScenarioClass::Do_Fade_AI() {
         TheOptions().Get_Saturation() *
         Fixed(static_cast<int>(kGrayFadeTime - FadeTimer.Remaining()),
               static_cast<int>(kGrayFadeTime));
-    GameOptionsClass::Adjust_Palette(
-        ThePalettes().original_palette(), ThePalettes().game_palette(),
-        TheOptions().Get_Brightness(), newsat, TheOptions().Get_Tint(),
-        TheOptions().Get_Contrast());
-    ThePalettes().game_palette().Set();
+    TheOptions().ShowPalette(newsat);
   }
   if (IsFadingBW) {
     if (FadeTimer.IsFinished()) {
@@ -284,11 +280,7 @@ void ScenarioClass::Do_Fade_AI() {
     const Fixed newsat =
         TheOptions().Get_Saturation() *
         Fixed(static_cast<int>(FadeTimer.Remaining()), kGrayFadeTime);
-    GameOptionsClass::Adjust_Palette(
-        ThePalettes().original_palette(), ThePalettes().game_palette(),
-        TheOptions().Get_Brightness(), newsat, TheOptions().Get_Tint(),
-        TheOptions().Get_Contrast());
-    ThePalettes().game_palette().Set();
+    TheOptions().ShowPalette(newsat);
     if (!IsFadingBW) {
       IsFadingColor = true;
       FadeTimer.Set(kGrayFadeTime);

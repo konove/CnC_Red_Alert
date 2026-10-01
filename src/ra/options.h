@@ -72,6 +72,12 @@ class OptionsClass {
   [[nodiscard]] Fixed Get_Contrast() const;
   void Set_Tint(Fixed tint);
   [[nodiscard]] Fixed Get_Tint() const;
+
+  // Rebuilds the game palette from the stored brightness, tint and contrast
+  // with `saturation` in place of the stored one, and shows it. The grey fades
+  // pass a saturation that moves between zero and the stored one.
+  void ShowPalette(Fixed saturation);
+
   [[nodiscard]] int Normalize_Delay(int delay) const;
   [[nodiscard]] int Normalize_Volume(int volume) const;
 
@@ -101,6 +107,7 @@ class OptionsClass {
   Fixed Volume;                  // Volume for sound effects.
   Fixed ScoreVolume;             // Volume for scores.
   Fixed MultiScoreVolume;        // Volume for scores during multiplayer games.
+  // Brightness and Contrast hold 1/4 + slider / 2, not the slider position.
   Fixed Brightness;              // Brightness.
   Fixed Tint;                    // Hue
   Fixed Saturation;              // Saturation
