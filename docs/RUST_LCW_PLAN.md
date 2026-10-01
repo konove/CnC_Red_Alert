@@ -2,8 +2,9 @@
 
 Written 2026-09-30, on the tree at fa329aeb.
 
-**Status: done** (2026-09-30, 20208375..HEAD of branch `rust-lcw`); the real-display check of Task 5
-step 2 is pending.
+**Status: done** (2026-09-30, 20208375..796b3ae6). The real-display check of Task 5 step 2 passed:
+side-by-side frame dumps of `REDINTRO` and `SOVIET1` from the C++ and Rust builds are identical, and
+both games ran clean on the display.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development
 > (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use
