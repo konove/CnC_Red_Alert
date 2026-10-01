@@ -4,7 +4,7 @@
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/palette_fade.h"
-#include "td/ui/input.h"
+#include "game/ui/input.h"
 
 namespace td {
 
@@ -14,7 +14,7 @@ engine::gfx::Palette CurrentPalette;
 // draws in the colors it had when the cursor was made.
 static void ShowPalette(const engine::gfx::Palette& palette) {
   engine::window::TheDisplay().SetPalette(palette);
-  TheMouse().UpdatePalette();
+  game::TheMouse().UpdatePalette();
 }
 
 void Fade_Palette_To(const engine::gfx::Palette& palette, int fade,

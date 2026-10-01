@@ -80,6 +80,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
+#include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
@@ -91,7 +92,6 @@
 #include "ra/startup/init.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
 
@@ -268,7 +268,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   /*------------------------------------------------------------------------
   Draw the dialog
   ------------------------------------------------------------------------*/
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   if (!reconnect) {
     Load_Title_Page(true);
   }
@@ -285,7 +285,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
                      GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
   }
 
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   /*
   ** OK, lets not mess about any more. Just turn on echo, verbose, and result
@@ -514,7 +514,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   /*------------------------------------------------------------------------
   Draw the dialog
   ------------------------------------------------------------------------*/
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   if (!reconnect) {
     Load_Title_Page(true);
   }
@@ -526,7 +526,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
                    y + 50, GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
 
   Commands->Draw_All(view);
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   /*
   ** Start waiting for connection response
@@ -720,7 +720,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     Refresh display if needed
     .....................................................................*/
     if (display != REDRAW_NONE) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         /*...............................................................
         Refresh the backdrop
@@ -745,7 +745,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
         Commands->Draw_All(view);
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 

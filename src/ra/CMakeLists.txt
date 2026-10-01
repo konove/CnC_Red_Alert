@@ -68,7 +68,7 @@ apply_language_setting(rasdl)
 # rather than relying on it arriving transitively through engine_window/
 # engine_video.
 find_package(SDL2 REQUIRED)
-target_link_libraries(ra_engine PUBLIC game_core game_sim absl::strings magic_enum::magic_enum
+target_link_libraries(ra_engine PUBLIC game_core game_sim game_ui absl::strings magic_enum::magic_enum
         engine_net
         engine_window
         engine_video
@@ -206,8 +206,8 @@ apply_language_setting(ra_crate_test)
 # Compiles screens/intro.cc directly; the dialog, movie player and title page are stubs.
 add_gtest(
     NAME ra_intro_test
-    SOURCES screens/intro_test.cc screens/intro.cc ui/input.cc
-    LIBS base engine_window absl::check absl::log magic_enum::magic_enum
+    SOURCES screens/intro_test.cc screens/intro.cc
+    LIBS base engine_window game_ui absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_intro_test)
 

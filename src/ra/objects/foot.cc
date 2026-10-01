@@ -102,6 +102,7 @@
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
@@ -130,7 +131,6 @@
 #include "ra/objects/unit.h"
 #include "ra/objects/vessel.h"
 #include "ra/startup/game_state.h"
-#include "ra/ui/input.h"
 
 namespace ra {
 
@@ -1274,7 +1274,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
     case ACTION_MOVE:
       if (TheGameState().allow_voice()) {
         const COORDINATE coord =
-            TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y());
+            TheMap().Pixel_To_Coord(game::TheMouse().x(), game::TheMouse().y());
         TheNetwork().out_list().Add(
             EventClass(ANIM_MOVE_FLASH, ThePlayer()->Class->House, coord));
       }

@@ -27,11 +27,11 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/defines.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/toggle.h"
 
 namespace ra {
@@ -41,7 +41,7 @@ using engine::gfx::ShapeFlags;
 //***********************************************************************************************
 bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
   if (ToggleClass::Draw_Me(view, forced)) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
 
     if (!IsOn) {
       if (!IsDisabled) {
@@ -75,7 +75,7 @@ bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
                             Y + BIGCHECK_OFFSETY, pScheme, kTBlack, flags,
                             Width, {});
 
-    TheMouse().Show();
+    game::TheMouse().Show();
     return true;
   }
   return false;

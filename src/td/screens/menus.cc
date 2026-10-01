@@ -58,6 +58,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
+#include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
@@ -72,7 +73,6 @@
 #include "td/startup/init.h"
 #include "td/ui/control.h"
 #include "td/ui/dialog.h"
-#include "td/ui/input.h"
 #include "td/ui/textbtn.h"
 
 namespace td {
@@ -155,13 +155,13 @@ static int Select_To_Entry(int select, uint32_t bitfield, int index) {
 static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
                        int nfgc, int hfgc, int bgc) {
   for (int loop = 0; loop < 3; loop++) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     Fancy_Text_Print(view, text, xpix, ypix, hfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
     engine::window::WaitTicks(2);
     Fancy_Text_Print(view, text, xpix, ypix, nfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
-    TheMouse().Show();
+    game::TheMouse().Show();
     engine::window::WaitTicks(2);
   }
 }
@@ -257,7 +257,7 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
                    TPF_8POINT | TPF_DROPSHADOW);
   const int font_height =
       FontMaxHeight(TextFontStyle(TPF_8POINT | TPF_DROPSHADOW));
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   for (int i = 0; i < item_count; i++) {
     const int text_index = Select_To_Entry(i, visible_items, bit_offset);
     const int draw_y = menu_y + (i * font_height) + (i * line_spacing);
@@ -268,8 +268,8 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
         kTBlack, TPF_8POINT | TPF_DROPSHADOW);
   }
   MenuSkip = line_spacing;
-  TheMouse().Show();
-  TheKeyboard().Clear();
+  game::TheMouse().Show();
+  game::TheKeyboard().Clear();
 }
 
 /*=========================================================================*/
@@ -310,8 +310,8 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
   */
   engine::window::InputEvent input_event;
   TheGameState().unknown_input() = {};
-  if (TheKeyboard().Peek()) {
-    input_event = TheKeyboard().Read();
+  if (game::TheKeyboard().Peek()) {
+    input_event = game::TheKeyboard().Read();
   }
   // The key without its modifier bits; a release stays a release. A click is
   // handled below, not as a key.
@@ -333,8 +333,8 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
   const int my2 = my1 + (menu.item_count * menuskip) -
                   1; /*		necessary			*/
 
-  const int tempy = TheMouse().y();
-  if (Coordinates_In_Region(TheMouse().x(), tempy, mx1, my1, mx2, my2) &&
+  const int tempy = game::TheMouse().y();
+  if (Coordinates_In_Region(game::TheMouse().x(), tempy, mx1, my1, mx2, my2) &&
       MenuUpdate) {
     newitem = (tempy - my1) / menuskip;
   }
@@ -407,7 +407,7 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
   }
 
   if (newitem != item) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
     Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
@@ -416,16 +416,16 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     drawy = menuy + (newitem * menuskip);
     Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
                      litcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
-    TheMouse().Show(); /* resurrect the mouse	*/
+    game::TheMouse().Show(); /* resurrect the mouse	*/
   }
 
   if (select != -1) {
     idx = Select_To_Entry(select, field, index);
-    TheMouse().Hide(); /* get rid of the mouse	*/
+    game::TheMouse().Hide(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
     Flash_Line(view, base::At(text, base::ToSize(idx)), menux, drawy, normcol,
                litcol, kTBlack);
-    TheMouse().Show();
+    game::TheMouse().Show();
     select = idx;
   }
 
@@ -462,7 +462,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
     return (-1);
   }
   PixelView& view = TheScreen().visible_view();
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   /*
   **	Determine the number of entries in this string.
@@ -500,11 +500,11 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   /*
   **	Display the menu.
   */
-  TheMouse().Show();
+  game::TheMouse().Show();
   Window_Box(view, WINDOW_MENU, blue ? BOXSTYLE_BLUE_UP : BOXSTYLE_RAISED);
   Setup_Menu(view, menu_config, strings, 0xFFFFL, 0, 0);
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   int selection = -1;  // Selection from user.
   TheGameState().unknown_input() = {};
   while (selection == -1) {
@@ -515,8 +515,8 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
       break;
     }
   }
-  TheKeyboard().Clear();
-  TheMouse().Hide();
+  game::TheKeyboard().Clear();
+  game::TheMouse().Hide();
 
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   TheMap().Flag_To_Redraw(true);
@@ -757,7 +757,7 @@ int Main_Menu(int timeout) {
   **	Initialize
   */
   PixelView& view = TheScreen().visible_view();
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   starttime = engine::platform::SystemTicks();
 
   /*
@@ -812,9 +812,9 @@ int Main_Menu(int timeout) {
 #endif
   base::At(buttons, curbutton)->Turn_On();
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
-  TheMouse().ForceShow();
+  game::TheMouse().ForceShow();
 
   /*
   **	Main Processing Loop.
@@ -888,9 +888,9 @@ int Main_Menu(int timeout) {
       /*
       **	Copy the menu to the visible page.
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-      TheMouse().Show();
+      game::TheMouse().Show();
 
       startbtn.Draw_All(view);
       display = false;

@@ -47,6 +47,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
@@ -61,7 +62,6 @@
 #include "td/startup/conquer.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/slider.h"
 #include "td/ui/textbtn.h"
@@ -233,16 +233,16 @@ void GameControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(view, TXT_GAME_CONTROLS, d_dialog_x, d_dialog_y, d_dialog_w);
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
       refresh = true;
     }
 
     if (refresh) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       /*
       **	Label the game speed slider
@@ -282,7 +282,7 @@ void GameControlsClass::Process() {
 
       commands->Draw_All(view);
 
-      TheMouse().Show();
+      game::TheMouse().Show();
       refresh = false;
     }
 

@@ -83,6 +83,7 @@
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/facing.h"
+#include "game/ui/input.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/assets/screen.h"
@@ -111,7 +112,6 @@
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
 #include "td/ui/gauge.h"
-#include "td/ui/input.h"
 #include "td/ui/list.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
@@ -618,10 +618,10 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
   /*------------------------------------------------------------------------
   Do special mouse processing if the mouse is over the map
   ------------------------------------------------------------------------*/
-  if (TheMouse().x() > TacPixelX &&
-      TheMouse().x() < TacPixelX + Lepton_To_Pixel(TacLeptonWidth) &&
-      TheMouse().y() > TacPixelY &&
-      TheMouse().y() < TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
+  if (game::TheMouse().x() > TacPixelX &&
+      game::TheMouse().x() < TacPixelX + Lepton_To_Pixel(TacLeptonWidth) &&
+      game::TheMouse().y() > TacPixelY &&
+      game::TheMouse().y() < TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
     /*.....................................................................
     When the mouse moves over a scrolling edge, ScrollClass changes its
     shape to the appropriate arrow or NO symbol; it's our job to change it
@@ -639,11 +639,11 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
   Set 'ZoneCell' to track the mouse cursor around over the map.  Do this
   even if the map is scrolling.
   .....................................................................*/
-  if (TheMouse().x() >= TacPixelX &&
-      TheMouse().x() <= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) &&
-      TheMouse().y() >= TacPixelY &&
-      TheMouse().y() <= TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
-    cell = Click_Cell_Calc(TheMouse().x(), TheMouse().y());
+  if (game::TheMouse().x() >= TacPixelX &&
+      game::TheMouse().x() <= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) &&
+      game::TheMouse().y() >= TacPixelY &&
+      game::TheMouse().y() <= TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
+    cell = Click_Cell_Calc(game::TheMouse().x(), game::TheMouse().y());
     if (cell != -1) {
       Set_Cursor_Pos(cell);
       if (PendingObject) {
@@ -1495,7 +1495,7 @@ bool MapEditClass::Mouse_Moved() {
   /*
   -------------------------- Return if no motion ---------------------------
   */
-  if (old_mx == TheMouse().x() && old_my == TheMouse().y()) {
+  if (old_mx == game::TheMouse().x() && old_my == game::TheMouse().y()) {
     return false;
   }
 
@@ -1508,8 +1508,8 @@ bool MapEditClass::Mouse_Moved() {
     if (GrabbedObject) {
       objtype = &GrabbedObject->Class_Of();
     } else {
-      old_mx = TheMouse().x();
-      old_my = TheMouse().y();
+      old_mx = game::TheMouse().x();
+      old_my = game::TheMouse().y();
       old_zonecell = ZoneCell;
       return false;
     }
@@ -1530,8 +1530,8 @@ bool MapEditClass::Mouse_Moved() {
     retcode = old_zonecell != ZoneCell;
   }
 
-  old_mx = TheMouse().x();
-  old_my = TheMouse().y();
+  old_mx = game::TheMouse().x();
+  old_my = game::TheMouse().y();
   old_zonecell = ZoneCell;
   return retcode;
 }
@@ -1582,9 +1582,9 @@ void MapEditClass::Main_Menu() {
     /*
     ............................. Invoke menu .............................
     */
-    TheMouse().Hide();  // Do_Menu assumes the mouse is already hidden
+    game::TheMouse().Hide();  // Do_Menu assumes the mouse is already hidden
     const int selection = Do_Menu(_menus, true);  // option the user picks
-    TheMouse().Show();
+    game::TheMouse().Show();
     // Esc, or a click away from the menu, closes it.
     if (const engine::window::InputEvent& unknown =
             TheGameState().unknown_input();
@@ -1767,9 +1767,9 @@ void MapEditClass::AI_Menu() {
     /*
     ............................. Invoke menu .............................
     */
-    TheMouse().Hide();  // Do_Menu assumes the mouse is already hidden
+    game::TheMouse().Hide();  // Do_Menu assumes the mouse is already hidden
     const int selection = Do_Menu(_menus, true);  // option the user picks
-    TheMouse().Show();
+    game::TheMouse().Show();
     // Esc, or a click away from the menu, closes it.
     if (const engine::window::InputEvent& unknown =
             TheGameState().unknown_input();

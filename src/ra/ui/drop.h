@@ -50,10 +50,10 @@
 #include "base/strings/safe_string.h"
 #include "engine/gfx/keyframe.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/link.h"
 #include "ra/core/defines.h"
 #include "ra/ui/control.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/link.h"
 #include "ra/ui/list.h"
 #include "ra/ui/shapebtn.h"
 
@@ -69,9 +69,12 @@ class DropListClass : public EditClass {
 
   // Link the list and its drop button into the chain `object` is in, and
   // return the head of that chain, which may be any gadget.
-  LinkClass& Add(LinkClass& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  LinkClass& Add_Tail(LinkClass& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  LinkClass& Add_Head(LinkClass& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add(game::LinkClass& object)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add_Tail(game::LinkClass& object)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add_Head(game::LinkClass& object)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   DropListClass* Remove() override;
   void Zap() override;
 
@@ -139,9 +142,12 @@ class TDropListClass : public EditClass {
   T& operator[](int index) { return at(index); }
 
   // As DropListClass's: each returns the head of the chain.
-  LinkClass& Add(LinkClass& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  LinkClass& Add_Tail(LinkClass& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  LinkClass& Add_Head(LinkClass& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add(game::LinkClass& object)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add_Tail(game::LinkClass& object)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add_Head(game::LinkClass& object)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   TDropListClass* Remove() override;
   void Zap() override;
 
@@ -210,19 +216,19 @@ void TDropListClass<T>::Zap() {
 }
 
 template <class T>
-LinkClass& TDropListClass<T>::Add(LinkClass& object) {
+game::LinkClass& TDropListClass<T>::Add(game::LinkClass& object) {
   DropButton.Add(object);
   return EditClass::Add(object);
 }
 
 template <class T>
-LinkClass& TDropListClass<T>::Add_Tail(LinkClass& object) {
+game::LinkClass& TDropListClass<T>::Add_Tail(game::LinkClass& object) {
   DropButton.Add_Tail(object);
   return EditClass::Add_Tail(object);
 }
 
 template <class T>
-LinkClass& TDropListClass<T>::Add_Head(LinkClass& object) {
+game::LinkClass& TDropListClass<T>::Add_Head(game::LinkClass& object) {
   DropButton.Add_Head(object);
   return EditClass::Add_Head(object);
 }

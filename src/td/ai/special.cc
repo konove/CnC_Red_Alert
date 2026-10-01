@@ -49,6 +49,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
@@ -62,7 +63,6 @@
 #include "td/ui/checkbox.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 #include "td/ui/textbtn.h"
 
 namespace td {
@@ -200,7 +200,7 @@ void Special_Dialog() {
     if (display) {
       display = false;
 
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(view, kOptionX, kOptionY, kOptionWidth, kOptionHeight);
       Draw_Caption(view, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
 
@@ -210,7 +210,7 @@ void Special_Dialog() {
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;

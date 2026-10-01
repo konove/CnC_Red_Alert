@@ -50,6 +50,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -76,7 +77,6 @@
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
@@ -280,7 +280,7 @@ void GameOptionsClass::Process() {
       GadgetClass::kLeftPress | GadgetClass::kRightPress);
   outside_click->Add_Tail(*buttons);
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   /*
   **	Main Processing Loop.
@@ -317,7 +317,7 @@ void GameOptionsClass::Process() {
       */
       Set_Window(static_cast<int>(WINDOW_EDITOR), OptionX, OptionY, OptionWidth,
                  OptionHeight);
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       /*
       **	Draw the background.
@@ -341,7 +341,7 @@ void GameOptionsClass::Process() {
 
       buttons->Draw_All(view);
       TabClass::Hilite_Tab(view, 0);
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
       TheGameState().redraw_options_menu() = false;
     }
@@ -429,7 +429,7 @@ void GameOptionsClass::Process() {
         base::At(buttonsel, curbutton - 1)->Draw_Me(view, true);
         selection = curbutton;
         pressed = true;
-        TheKeyboard().Clear();
+        game::TheKeyboard().Clear();
         break;
 
       default:
@@ -586,7 +586,7 @@ void GameOptionsClass::Process() {
   /*
   **	Redraw the map.
   */
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   TheScreen().hidden_view().Clear();
   TheMap().Flag_To_Redraw(true);
   TheMap().Render();

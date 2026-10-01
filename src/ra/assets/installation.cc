@@ -36,6 +36,7 @@
 #include "engine/platform/platform.h"
 #include "engine/platform/win32/win32_registry.h"
 #include "engine/window/hardware_cursor.h"
+#include "game/ui/input.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -46,7 +47,6 @@
 #include "ra/data/text_ids.h"
 #include "ra/net/mplayer.h"
 #include "ra/startup/game_state.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 
 namespace ra {
@@ -261,9 +261,9 @@ bool Force_CD_Available(int cd_desired)  // ajw
         ThePalettes().game_palette().Set();
       }
 
-      TheKeyboard().Clear();
+      game::TheKeyboard().Clear();
 
-      const engine::window::HardwareCursor::ShownScope shown(TheMouse());
+      const engine::window::HardwareCursor::ShownScope shown(game::TheMouse());
       if (WWMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
           1) {
         return false;

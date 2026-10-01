@@ -40,6 +40,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/interpal.h"
+#include "game/ui/input.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -50,7 +51,6 @@
 #include "ra/net/session.h"
 #include "ra/startup/game_state.h"
 #include "ra/startup/winstub.h"
-#include "ra/ui/input.h"
 
 namespace ra {
 
@@ -104,9 +104,9 @@ class MovieScreen final : public VqaClient {
   // false when the player pressed Esc to stop the movie.
   bool Present() {
     int key = 0;
-    if (TheKeyboard().Peek()) {
-      key = TheKeyboard().Read().key;
-      TheKeyboard().Clear();
+    if (game::TheKeyboard().Peek()) {
+      key = game::TheKeyboard().Read().key;
+      game::TheKeyboard().Clear();
     }
     if (TheScreen().is_vq640()) {
       TheScreen().vq640().view().BlitTo(TheScreen().visible_view());
@@ -121,7 +121,7 @@ class MovieScreen final : public VqaClient {
     if ((TheGameState().breakout_allowed() ||
          TheDebugState().developer_mode()) &&
         key == engine::window::KN_ESC) {
-      TheKeyboard().Clear();
+      game::TheKeyboard().Clear();
       broken_out_ = true;
       return false;
     }
@@ -171,7 +171,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
 
     // Fade audio and video to black before launching the VQA player, then
     // flash the black palette to a dark grey and back, as the original did.
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     TheTheme().Queue_Song(theme);
     if (!clear_screen) {
       ThePalettes().black_palette().Set(kFadePaletteMedium);
@@ -181,7 +181,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       ThePalettes().black_palette().Adjust(0xFF);
       ThePalettes().black_palette().Set();
     }
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
 
     // The file, the screen and the sound device must outlive the player.
     GameFileVqaIo movie_io;
@@ -216,7 +216,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       ThePalettes().black_palette().Adjust(0xFF);
       ThePalettes().black_palette().Set();
     }
-    TheMouse().Show();
+    game::TheMouse().Show();
   }
 }
 

@@ -65,10 +65,10 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "td/core/defines.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 #include "td/ui/txtlabel.h"
 
 namespace td {
@@ -626,7 +626,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
   If we're in 'edit mode', handle keys
   ------------------------------------------------------------------------*/
   if (EditLabel) {
-    const auto ascii = TheKeyboard().TypedCharacter(input);
+    const auto ascii = game::TheKeyboard().TypedCharacter(input);
 
     /*
     ** Filter out all special keys except return, escape and backspace
@@ -718,9 +718,9 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
  *=========================================================================*/
 void MessageListClass::Draw(PixelView& view) {
   if (MessageList) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     MessageList->Draw_All(view);
-    TheMouse().Show();
+    game::TheMouse().Show();
   }
 }
 

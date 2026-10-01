@@ -113,6 +113,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
@@ -164,7 +165,6 @@
 #include "ra/startup/startup_options.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/msglist.h"
 #include "ra/wol/wol_main.h"
@@ -217,12 +217,12 @@ static bool Save_Recording_Values(ByteStream& file);
  * HISTORY: * 11/03/1996 JLB : Created. *
  *=============================================================================================*/
 static void Load_Prolog_Page() {
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   Load_Title_Screen("PROLOG.PCX", &TheScreen().hidden_view(),
                     ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   ThePalettes().title_palette().Set();
-  TheMouse().Show();
+  game::TheMouse().Show();
 }
 
 /***********************************************************************************************
@@ -369,11 +369,11 @@ bool Init_Game() {
   if (!TheSpecial().IsFromInstall) {
     Load_Title_Page(true);
 
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     Fancy_Text_Print(view, TXT_STAND_BY, 320, 240,
                      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE),
                      kTBlack, TPF_CENTER | kTpfText | TPF_DROPSHADOW);
-    TheMouse().Show();
+    game::TheMouse().Show();
 
     ThePalettes().title_palette().Set(kFadePaletteSlow);
     ServiceRealTime();
@@ -468,7 +468,7 @@ bool Select_Game(bool /*fade*/) {
 
   const int cdcheck = 0;
 
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   TheRules().NewUnitsEnabled = TheRules().SecretUnitsEnabled =
       false;  // Assume new units disabled, unless specifically .INI enabled or
@@ -554,7 +554,7 @@ bool Select_Game(bool /*fade*/) {
       **	Redraw the title page if needed
       */
       if (display) {
-        TheMouse().Hide();
+        game::TheMouse().Hide();
 
         /*
         **	Display the title page; fade it in if this is the first time
@@ -573,7 +573,7 @@ bool Select_Game(bool /*fade*/) {
         //				}
 
         display = false;
-        TheMouse().Show();
+        game::TheMouse().Show();
       }
 
       /*
@@ -763,7 +763,7 @@ bool Select_Game(bool /*fade*/) {
             TheTheme().Fade_Out();
             PlayFirstLaunchIntro(TheScreen().hidden_view(),
                                  TheScreen().visible_view());
-            TheMouse().Hide();
+            game::TheMouse().Hide();
             if (TheGameState().current_cd() == 0) {
               TheScenario().Set_Scenario_Name("SCG01EA.INI");
             } else {
@@ -988,12 +988,12 @@ bool Select_Game(bool /*fade*/) {
           if (TheDebugState().developer_mode()) {
             Play_Intro(TheDebugState().developer_mode());
           } else {
-            TheMouse().Hide();
+            game::TheMouse().Hide();
             TheScreen().visible_page().view().Clear();
-            TheMouse().Show();
+            game::TheMouse().Show();
             Play_Movie(VQ_INTRO_MOVIE, THEME_NONE,
                        true);  // no transition picture to briefing
-            TheKeyboard().Clear();
+            game::TheKeyboard().Clear();
             Play_Movie(VQ_SIZZLE, THEME_NONE, true);
             Play_Movie(VQ_SIZZLE2, THEME_NONE, true);
             //						Play_Movie(VQ_INTRO_MOVIE,
@@ -1053,7 +1053,7 @@ bool Select_Game(bool /*fade*/) {
   /*
   **	Don't carry stray keystrokes into game.
   */
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   /*
   ** Initialize the random number generator(s)
@@ -1123,19 +1123,19 @@ bool Select_Game(bool /*fade*/) {
     ** Start_Scenario() changes the palette; so, fade out & clear the screen
     ** before calling it.
     */
-    TheMouse().Hide();
+    game::TheMouse().Hide();
 
     if (selection != kSelStartNewGame) {
       ThePalettes().black_palette().Set(kFadePaletteMedium, ServiceRealTime);
       TheScreen().hidden_page().view().Clear();
       TheScreen().visible_page().view().Clear();
     }
-    TheMouse().Show();
+    game::TheMouse().Show();
     if (!Start_Scenario(TheScenario().ScenarioName)) {
       return false;
     }
     if (TheSpecial().IsFromInstall) {
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
     TheSpecial().IsFromInstall = false;
   }
@@ -1178,11 +1178,11 @@ bool Select_Game(bool /*fade*/) {
   * cleared the screen to black already.)
   */
   ServiceRealTime();
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   ThePalettes().black_palette().Set(kFadePaletteMedium, ServiceRealTime);
   TheScreen().hidden_page().view().Clear();
   TheScreen().visible_page().view().Clear();
-  TheMouse().Show();
+  game::TheMouse().Show();
   /*
   ** Sidebar is always active in hi-res.
   */
@@ -1248,7 +1248,7 @@ static void MarkLogoPlayed() {
 static void Play_Intro(bool sequenced) {
   static VQType _counter = magic_enum::enum_values<VQType>().front();
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   if (sequenced) {
     // Play the movies from the last down to the first, then wrap.
     if (_counter <= magic_enum::enum_values<VQType>().front()) {
@@ -1260,16 +1260,16 @@ static void Play_Intro(bool sequenced) {
     if (_counter == VQ_TITLE) {
       _counter--;
     }
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     TheScreen().visible_page().view().Clear();
-    TheMouse().Show();
+    game::TheMouse().Show();
     Play_Movie(static_cast<VQType>(_counter--), THEME_NONE);
 
     //		ShowMouse();
   } else {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     TheScreen().visible_page().view().Clear();
-    TheMouse().Show();
+    game::TheMouse().Show();
     Play_Movie(VQ_REDINTRO, THEME_NONE, false);
   }
 }
@@ -2031,7 +2031,7 @@ static void Init_CDROM_Access() {
         case 1:
           TheScreen().visible_page().view().Clear();
           ThePalettes().game_palette().Set();
-          TheMouse().Show();
+          game::TheMouse().Show();
           WWMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
           // ShutDownEngine();
           EmergencyExit(EXIT_FAILURE);
@@ -2039,23 +2039,23 @@ static void Init_CDROM_Access() {
         case 2:
           TheScreen().visible_page().view().Clear();
           ThePalettes().game_palette().Set();
-          TheMouse().Show();
+          game::TheMouse().Show();
           if (WWMessageBox().Process(TXT_CD_DIALOG_1, TXT_OK, TXT_CANCEL) ==
               1) {
             // ShutDownEngine();
             EmergencyExit(EXIT_FAILURE);
           }
-          TheMouse().Hide();
+          game::TheMouse().Hide();
           break;
 
         default:
           TheScreen().visible_page().view().Clear();
-          TheMouse().Show();
+          game::TheMouse().Show();
           if (!Force_CD_Available(TheGameState().required_cd())) {
             // ShutDownEngine();
             EmergencyExit(EXIT_FAILURE);
           }
-          TheMouse().Hide();
+          game::TheMouse().Hide();
           break;
       }
     } while (error);
@@ -2279,7 +2279,7 @@ static void Bootstrap() {
   ** the screen.
   */
   do {
-    TheKeyboard().Peek();
+    game::TheKeyboard().Peek();
   } while (!TheGameState().in_focus());
 
   /*
@@ -2297,7 +2297,7 @@ static void Bootstrap() {
   /*
   **	Setup the keyboard processor in preparation for the game.
   */
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   TheAssets().LoadStrings();
 
@@ -2357,14 +2357,14 @@ static void Init_Mouse() {
   */
   const auto temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
   if (!temp_mouse_shapes.empty()) {
-    TheMouse().SetShape(0, 0,
-                        engine::gfx::ExtractShapeFrame(temp_mouse_shapes, 0));
+    game::TheMouse().SetShape(
+        0, 0, engine::gfx::ExtractShapeFrame(temp_mouse_shapes, 0));
   }
 
   TheMap().Set_Default_Mouse(MOUSE_NORMAL, false);
-  TheMouse().ForceShow();
+  game::TheMouse().ForceShow();
   ServiceRealTime();
-  TheMouse().Hide();
+  game::TheMouse().Hide();
 }
 
 /***********************************************************************************************

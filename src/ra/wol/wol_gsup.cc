@@ -52,6 +52,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/vector_dynamic.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/special.h"
 #include "ra/assets/audio.h"
@@ -87,7 +88,6 @@
 #include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
 #include "ra/ui/iconlist.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/shapebtn.h"
 #include "ra/ui/statbtn.h"
@@ -977,7 +977,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //		}
 
     if (display != REDRAW_NONE) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       /*
       ** Collapse the country list if we are going to redraw the game list
@@ -1244,13 +1244,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         pStaticAIPlayers->Draw_Me(view);
       }
 
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    TheMouse().ForceShow();
+    game::TheMouse().ForceShow();
     //	Be nice to other apps.
     engine::platform::SleepMs(50);
 
@@ -1315,18 +1315,18 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         (!bWaitingToStart)) {
       //	Check for mouse down on a control when player is not host.
       if ((!bHost) &&
-          ((TheMouse().x() >= d_count_x &&
-            TheMouse().x() <= d_count_x + d_count_w &&
-            TheMouse().y() >= d_count_y &&
-            TheMouse().y() <= d_aiplayers_y + d_aiplayers_h) ||
-           (TheMouse().x() >= d_options_x &&
-            TheMouse().x() <= d_options_x + d_options_w &&
-            TheMouse().y() >= d_options_y &&
-            TheMouse().y() <= d_options_y + d_options_h) ||
-           (TheMouse().x() >= d_scenariolist_x &&
-            TheMouse().x() <= d_scenariolist_x + d_scenariolist_w &&
-            TheMouse().y() >= d_scenariolist_y &&
-            TheMouse().y() <= d_scenariolist_y + d_scenariolist_h))) {
+          ((game::TheMouse().x() >= d_count_x &&
+            game::TheMouse().x() <= d_count_x + d_count_w &&
+            game::TheMouse().y() >= d_count_y &&
+            game::TheMouse().y() <= d_aiplayers_y + d_aiplayers_h) ||
+           (game::TheMouse().x() >= d_options_x &&
+            game::TheMouse().x() <= d_options_x + d_options_w &&
+            game::TheMouse().y() >= d_options_y &&
+            game::TheMouse().y() <= d_options_y + d_options_h) ||
+           (game::TheMouse().x() >= d_scenariolist_x &&
+            game::TheMouse().x() <= d_scenariolist_x + d_scenariolist_w &&
+            game::TheMouse().y() >= d_scenariolist_y &&
+            game::TheMouse().y() <= d_scenariolist_y + d_scenariolist_h))) {
         // Session.Messages.Add_Message(NULL, 0, (char
         // *)Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
         // kTpfText, 1200);

@@ -49,6 +49,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
@@ -60,7 +61,6 @@
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/slider.h"
 #include "ra/ui/textbtn.h"
 
@@ -239,10 +239,10 @@ void VisualControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(option_x, option_y, option_width, option_height);
       Draw_Caption(view, TXT_VISUAL_CONTROLS, option_x, option_y, option_width);
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
       partial = true;
     }
@@ -251,7 +251,7 @@ void VisualControlsClass::Process() {
     **	If just the buttons and captions need to be redrawn, then do so now.
     */
     if (partial) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       /*
       **	Draw the titles.
@@ -264,7 +264,7 @@ void VisualControlsClass::Process() {
                              (curbutton == i ? TPF_BRIGHT_COLOR : kTpfText));
       }
       optionsbtn.Draw_All(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
       partial = false;
     }
 

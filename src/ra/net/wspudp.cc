@@ -67,9 +67,9 @@
 #include "base/unaligned.h"
 #include "engine/net/net_select.h"
 #include "engine/net/socket_bytes.h"
+#include "game/ui/input.h"
 #include "ra/net/network.h"
 #include "ra/net/wsproto.h"
-#include "ra/ui/input.h"
 
 #ifdef _WIN32
 #include <nspapi.h>
@@ -318,7 +318,7 @@ void UDPInterfaceClass::Broadcast(std::span<const std::byte> buffer,
     /*
     ** Make sure the message loop gets called.
     */
-    TheKeyboard().Peek();
+    game::TheKeyboard().Peek();
   }
 }
 

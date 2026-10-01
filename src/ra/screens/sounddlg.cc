@@ -51,6 +51,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -65,7 +66,6 @@
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/list.h"
 #include "ra/ui/shapebtn.h"
 #include "ra/ui/slider.h"
@@ -334,7 +334,7 @@ void SoundControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       /*
       **	Draw the background.
@@ -362,7 +362,7 @@ void SoundControlsClass::Process() {
                        kTpfText | TPF_RIGHT);
 
       optionsbtn->Draw_All(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 

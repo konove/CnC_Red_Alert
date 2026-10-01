@@ -93,6 +93,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
@@ -122,7 +123,6 @@
 #include "ra/ui/drop.h"
 #include "ra/ui/edit.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/list.h"
 #include "ra/ui/textbtn.h"
 
@@ -1049,7 +1049,7 @@ bool TeamTypeClass::Edit() {
       /*
       **	Display the dialog box
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
 
       Draw_Caption(view, TXT_TEAM_EDIT, kDDialogX, kDDialogY, kDDialogW);
@@ -1099,7 +1099,7 @@ bool TeamTypeClass::Edit() {
       **	Redraw the buttons
       */
       commands->Draw_All(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
 
       display = false;
     }

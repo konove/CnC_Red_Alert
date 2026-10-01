@@ -53,6 +53,7 @@
 #include "engine/net/ipxmgr.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -72,7 +73,6 @@
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/list.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
@@ -239,7 +239,7 @@ GameType Select_MPlayer_Game() {
   base::At(buttons, iButton) = &cancelbtn;
   base::At(buttons, curbutton)->Turn_On();
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   //------------------------------------------------------------------------
   //	Main Processing Loop
@@ -257,7 +257,7 @@ GameType Select_MPlayer_Game() {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         //...............................................................
         //	Refresh the backdrop
@@ -279,7 +279,7 @@ GameType Select_MPlayer_Game() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -567,7 +567,7 @@ int Surrender_Dialog(const char* text) {
       //..................................................................
       //	Display the dialog box
       //..................................................................
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
       Draw_Caption(view, TXT_NONE, kDDialogX, kDDialogY, kDDialogW);
 
@@ -583,7 +583,7 @@ int Surrender_Dialog(const char* text) {
       //	Redraw the buttons
       //..................................................................
       commands->Flag_List_To_Redraw();
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
 
     //.....................................................................
@@ -750,7 +750,7 @@ int Abort_Dialog() {
       //..................................................................
       //	Display the dialog box
       //..................................................................
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
       Draw_Caption(view, TXT_NONE, kDDialogX, kDDialogY, kDDialogW);
 
@@ -765,7 +765,7 @@ int Abort_Dialog() {
       //	Redraw the buttons
       //..................................................................
       commands->Flag_List_To_Redraw();
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
 
     //.....................................................................

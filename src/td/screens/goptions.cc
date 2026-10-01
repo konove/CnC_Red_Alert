@@ -61,6 +61,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "td/ai/scenario.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
@@ -86,7 +87,6 @@
 #include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
 
@@ -251,7 +251,7 @@ void GameOptionsClass::Process() {
           GadgetClass::kLeftPress | GadgetClass::kRightPress))
       ->Add_Tail(*buttons);
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   /*
   **	Main Processing Loop.
@@ -288,7 +288,7 @@ void GameOptionsClass::Process() {
       */
       Set_Window(static_cast<int>(WINDOW_EDITOR), OptionX, OptionY, OptionWidth,
                  OptionHeight);
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       /*
       **	Draw the background.
@@ -340,7 +340,7 @@ void GameOptionsClass::Process() {
 
       buttons->Draw_All(view);
       TabClass::Hilite_Tab(view, 0);
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 
@@ -571,7 +571,7 @@ void GameOptionsClass::Process() {
   /*
   **	Redraw the map.
   */
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   Call_Back();
   TheScreen().hidden_page().view().Clear();
   Call_Back();

@@ -163,6 +163,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
 #include "game/core/vector_dynamic.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
@@ -207,7 +208,6 @@
 #include "ra/ui/edit.h"
 #include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
-#include "ra/ui/input.h"
 #include "ra/ui/list.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/msglist.h"
@@ -1761,7 +1761,7 @@ static int Net_Join_Dialog() {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -2028,7 +2028,7 @@ static int Net_Join_Dialog() {
         // kTpfText);
       }
 
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -2051,14 +2051,14 @@ static int Net_Join_Dialog() {
     // player's name and messages.
     if (input_event.IsPress(engine::window::MouseButton::kLeft)) {
       if (joinstate > JOIN_NOTHING) {
-        if ((TheMouse().x() >= d_count_x &&
-             TheMouse().x() <= d_count_x + d_count_w &&
-             TheMouse().y() >= d_count_y &&
-             TheMouse().y() <= d_aiplayers_y + d_aiplayers_h) ||
-            (TheMouse().x() >= d_options_x &&
-             TheMouse().x() <= d_options_x + d_options_w &&
-             TheMouse().y() >= d_options_y &&
-             TheMouse().y() <= d_options_y + d_options_h)) {
+        if ((game::TheMouse().x() >= d_count_x &&
+             game::TheMouse().x() <= d_count_x + d_count_w &&
+             game::TheMouse().y() >= d_count_y &&
+             game::TheMouse().y() <= d_aiplayers_y + d_aiplayers_h) ||
+            (game::TheMouse().x() >= d_options_x &&
+             game::TheMouse().x() <= d_options_x + d_options_w &&
+             game::TheMouse().y() >= d_options_y &&
+             game::TheMouse().y() <= d_options_y + d_options_h)) {
           TheSession().Messages.Add_Message(
               nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
               kTpfText, 1200);
@@ -2372,11 +2372,11 @@ static int Net_Join_Dialog() {
         // also erases the cursor).
         //...............................................................
         if (i == 1 || i == 2) {
-          TheMouse().Hide();
+          game::TheMouse().Hide();
           Draw_Box(view, d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
                    true);
           TheSession().Messages.Draw(view);
-          TheMouse().Show();
+          game::TheMouse().Show();
         } else if (i == 3 || i == 4) {
           //...............................................................
           //	If 'Input' returned 3, it means send the current message.
@@ -3001,9 +3001,9 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   //	Restore screen
   //------------------------------------------------------------------------
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   Load_Title_Page(true);
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   //------------------------------------------------------------------------
   // Load a game if the game owner told us to
@@ -4460,7 +4460,7 @@ static int Net_New_Dialog() {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -4583,7 +4583,7 @@ static int Net_New_Dialog() {
         // kTpfText);
       }
 
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -4865,11 +4865,11 @@ static int Net_New_Dialog() {
         // message display.
         //...............................................................
         if (i == 1 || i == 2) {
-          TheMouse().Hide();
+          game::TheMouse().Hide();
           Draw_Box(view, d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
                    true);  // (erase the cursor)
           TheSession().Messages.Draw(view);
-          TheMouse().Show();
+          game::TheMouse().Show();
         } else if (i == 3 || i == 4) {
           //...............................................................
           //	If 'input' returned 3, it means send the current message.
@@ -5230,9 +5230,9 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Restore screen
   //------------------------------------------------------------------------
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   Load_Title_Page(true);
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   if (load_game) {
     if (!Load_Game(-1)) {
@@ -5711,7 +5711,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     x = 320 - (w / 2);
     y = 200 - (h / 2);
 
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     Dialog_Box(x, y, w, h);
 
     Fancy_Text_Print(view, buf1, 320, y + (d_margin * 2), scheme, kTBlack,
@@ -5724,13 +5724,13 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                      y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), scheme,
                      kTBlack, TPF_CENTER | kTpfText);
 
-    TheMouse().Show();
+    game::TheMouse().Show();
   }
   //------------------------------------------------------------------------
   //	Just update the timeout value on the dialog
   //------------------------------------------------------------------------
   else {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
 
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
@@ -5744,7 +5744,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     Fancy_Text_Print(view, buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
                      scheme, kBlack, TPF_CENTER | kTpfText);
 
-    TheMouse().Show();
+    game::TheMouse().Show();
   }
 } /* end of Net_Reconnect_Dialog */
 

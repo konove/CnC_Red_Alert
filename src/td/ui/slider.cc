@@ -57,12 +57,12 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "td/core/defines.h"
 #include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
 #include "td/ui/gauge.h"
-#include "td/ui/input.h"
 #include "td/ui/shapebtn.h"
 
 namespace td {
@@ -220,10 +220,10 @@ bool SliderClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     int edge = 0;   // Edge of slider.
 
     if (IsHorizontal) {
-      mouse = TheMouse().x();
+      mouse = game::TheMouse().x();
       edge = X;
     } else {
-      mouse = TheMouse().y();
+      mouse = game::TheMouse().y();
       edge = Y;
     }
     edge += 1;

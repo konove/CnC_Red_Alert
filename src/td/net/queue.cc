@@ -101,6 +101,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
+#include "game/ui/input.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
@@ -125,7 +126,6 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 #include "td/startup/winstub.h"
-#include "td/ui/input.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/msglist.h"
 
@@ -2007,8 +2007,8 @@ static int Process_Reconnect_Dialog(
   //........................................................................
   //	If user hits ESC, bail out
   //........................................................................
-  if (TheKeyboard().Peek() &&
-      (TheKeyboard().Read().key == engine::window::KN_ESC)) {
+  if (game::TheKeyboard().Peek() &&
+      (game::TheKeyboard().Read().key == engine::window::KN_ESC)) {
     return 1;
   }
 
@@ -3419,9 +3419,9 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   //	If the user hits ESC, stop the playback
   //------------------------------------------------------------------------
-  if (TheKeyboard().Peek()) {
+  if (game::TheKeyboard().Peek()) {
     const char key =
-        engine::window::KeyBuffer::ToAscii(TheKeyboard().Read().key);
+        engine::window::KeyBuffer::ToAscii(game::TheKeyboard().Read().key);
     //
     // If the user hit ESC, end the recording.  If this is an Attract-mode
     // recording, end it no matter what the user does (any key or mouse).
@@ -3437,12 +3437,12 @@ static void Queue_Playback() {
   // playback.
   //------------------------------------------------------------------------
   if (TheSession().allow_attract() && game::CurrentFrame() > 0 &&
-      (mx != TheMouse().x() || my != TheMouse().y())) {
+      (mx != game::TheMouse().x() || my != game::TheMouse().y())) {
     TheGameState().active() = false;
     return;
   }
-  mx = TheMouse().x();
-  my = TheMouse().y();
+  mx = game::TheMouse().x();
+  my = game::TheMouse().y();
 
   //------------------------------------------------------------------------
   //	Compute the Game's CRC

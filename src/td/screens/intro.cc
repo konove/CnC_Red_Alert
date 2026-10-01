@@ -62,6 +62,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/interpal.h"
+#include "game/ui/input.h"
 #include "td/ai/special.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
@@ -75,7 +76,6 @@
 #include "td/screens/score.h"
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -138,7 +138,7 @@ void Choose_Side() {
   int endframe = 255;
   bool lettersdone = false;
 
-  TheMouse().Hide();
+  game::TheMouse().Hide();
 
   Call_Back();
 
@@ -209,9 +209,9 @@ void Choose_Side() {
                                                  _graypal));
 #endif
 #endif
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
-  TheMouse().ForceShow();
+  game::TheMouse().ForceShow();
 
   while (
       endframe != frame ||
@@ -245,15 +245,15 @@ void Choose_Side() {
         }
       }
       if (lettersdone) {
-        TheMouse().Show();
+        game::TheMouse().Show();
       }
     }
     if (frame >= anim.frame_count()) {
       frame = 0;
     }
     engine::window::InputEvent click;
-    if (TheKeyboard().Peek() && endframe == 255) {
-      click = TheKeyboard().Read();
+    if (game::TheKeyboard().Peek() && endframe == 255) {
+      click = game::TheKeyboard().Read();
     }
     if (click.button == engine::window::MouseButton::kLeft && click.y > 96 &&
         click.y < 300) {
@@ -278,7 +278,7 @@ void Choose_Side() {
     }
   }
 
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   anim.Close();
 
   // erase the "choose side" text
@@ -288,7 +288,7 @@ void Choose_Side() {
                              "SIDES.PAL");
   TheScreen().sys_mem_page().view().Clear();
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   /*
   ** Skip the briefings if we're in special mode.

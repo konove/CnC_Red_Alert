@@ -72,6 +72,7 @@
 #include "engine/stream/readline.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -89,7 +90,6 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/edit.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/list.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
@@ -278,7 +278,7 @@ bool LoadOptionsClass::Process() {
   /*
   **	Main Processing Loop.
   */
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   bool firsttime = true;
   bool display = true;
   bool process = true;
@@ -303,7 +303,7 @@ bool LoadOptionsClass::Process() {
       /*
       **	Display the dialog box.
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(view, caption, d_dialog_x, d_dialog_y, d_dialog_w);
 
@@ -317,7 +317,7 @@ bool LoadOptionsClass::Process() {
       **	Redraw the buttons.
       */
       commands->Flag_List_To_Redraw();
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 
@@ -387,9 +387,9 @@ bool LoadOptionsClass::Process() {
         default:
           break;
       }
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       commands->Draw_All(view, true);
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
 
     /*
@@ -412,7 +412,7 @@ bool LoadOptionsClass::Process() {
           WWMessageBox().Process(TXT_LOADING, TXT_NONE);
           TheTheme().Fade_Out();
           const bool rc = Load_Game(game_num);  // return code
-          TheKeyboard().Clear();
+          game::TheKeyboard().Clear();
 
           if (!rc) {
             WWMessageBox().Process(TXT_ERROR_LOADING_GAME);
@@ -420,11 +420,11 @@ bool LoadOptionsClass::Process() {
             // "Mission loaded" plays over the fade into the mission rather
             // than holding the load screen until it finishes.
             Speak(VOX_LOAD1);
-            TheMouse().Hide();
+            game::TheMouse().Hide();
             TheScreen().visible_view().Clear();
             ThePalettes().game_palette().Set();
             //						Set_Palette(GamePalette);
-            TheMouse().Show();
+            game::TheMouse().Show();
             process = false;
           }
         } else {
@@ -471,7 +471,7 @@ bool LoadOptionsClass::Process() {
           while (timer.HasTimeLeft()) {
             ServiceRealTime();
           }
-          TheKeyboard().Clear();
+          game::TheKeyboard().Clear();
         }
         process = false;
         break;

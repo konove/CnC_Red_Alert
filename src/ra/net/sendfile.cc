@@ -65,6 +65,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -81,7 +82,6 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
-#include "ra/ui/input.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolapiob.h"
 
@@ -368,7 +368,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
     if (display != REDRAW_NONE) {
       if (display >= REDRAW_BACKGROUND) {
-        TheMouse().Hide();
+        game::TheMouse().Hide();
         /*
         ** Redraw backgound & dialog box
         */
@@ -387,7 +387,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
                          kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        TheMouse().Show();
+        game::TheMouse().Show();
       }
 
       if (display >= REDRAW_BUTTONS) {
@@ -668,7 +668,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
     if (display != REDRAW_NONE) {
       if (display >= REDRAW_BACKGROUND) {
-        TheMouse().Hide();
+        game::TheMouse().Hide();
         /*
         ** Redraw backgound & dialog box
         */
@@ -687,7 +687,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        TheMouse().Show();
+        game::TheMouse().Show();
       }
 
       if (display >= REDRAW_BUTTONS) {

@@ -23,6 +23,7 @@
 #include "engine/platform/sleep.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
@@ -33,7 +34,6 @@
 #include "ra/ui/bigcheck.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wol_main.h"
 #include "ra/wol/wolapiob.h"
@@ -138,7 +138,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   /*
   **	Main Processing Loop.
   */
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   bool display = true;
   bool process = true;
   while (process) {
@@ -162,17 +162,17 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
       /*
       **	Display the dialog box.
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(view, TXT_WOL_OPTTITLE, d_dialog_x, d_dialog_y, d_dialog_w);
       commands->Flag_List_To_Redraw();
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    TheMouse().ForceShow();
+    game::TheMouse().ForceShow();
     //	Be nice to other apps.
     engine::platform::SleepMs(50);
 

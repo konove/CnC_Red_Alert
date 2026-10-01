@@ -33,6 +33,7 @@
 #include "engine/platform/win32/win32_types.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
@@ -46,7 +47,6 @@
 #include "ra/ui/edit.h"
 #include "ra/ui/gadget.h"
 #include "ra/ui/iconlist.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/chatdefs.h"
@@ -216,7 +216,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   /*
   **	Main Processing Loop.
   */
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   bool firsttime = true;
   bool display = true;
   bool process = true;
@@ -233,7 +233,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       //------------------------------------------------------------------------
       //	Clear screen
       //------------------------------------------------------------------------
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Load_Title_Page(true);
       //			ShowMouse();
 
@@ -258,13 +258,13 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                          kTBlack, kTpfText | TPF_CENTER);
         commands->Flag_List_To_Redraw();
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    TheMouse().ForceShow();
+    game::TheMouse().ForceShow();
     //	Be nice to other apps.
     engine::platform::SleepMs(50);
 
@@ -340,7 +340,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
           WWMessageBox().Process(TXT_WOL_MISSINGNAME);
           firsttime = true;  //	Bloody hack.
           NameEdit.Set_Focus();
-          TheKeyboard().Clear();
+          game::TheKeyboard().Clear();
           display = true;
           break;
         }
@@ -348,7 +348,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
           WWMessageBox().Process(TXT_WOL_MISSINGPASSWORD);
           firsttime = true;  //	Bloody hack.
           PassEdit.Set_Focus();
-          TheKeyboard().Clear();
+          game::TheKeyboard().Clear();
           display = true;
           break;
         }
@@ -363,7 +363,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
               WWMessageBox().Process(TXT_WOL_CANTCONNECT);
               firsttime = true;  //	Bloody hack.
               NameEdit.Set_Focus();
-              TheKeyboard().Clear();
+              game::TheKeyboard().Clear();
               display = true;
               break;
             case USERCANCELLED:
@@ -371,14 +371,14 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
               WWMessageBox().Process(TXT_WOL_LOGINCANCEL);
               firsttime = true;  //	Bloody hack.
               NameEdit.Set_Focus();
-              TheKeyboard().Clear();
+              game::TheKeyboard().Clear();
               display = true;
               break;
             case PATCHAVOIDED:
               bBreak = true;
               firsttime = true;  //	Bloody hack.
               NameEdit.Set_Focus();
-              TheKeyboard().Clear();
+              game::TheKeyboard().Clear();
               display = true;
               break;
             case PATCHDOWNLOADED:
@@ -428,7 +428,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
           }
           firsttime = true;  //	Bloody hack.
           NameEdit.Set_Focus();
-          TheKeyboard().Clear();
+          game::TheKeyboard().Clear();
           display = true;
         }
         break;

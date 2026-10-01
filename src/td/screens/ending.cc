@@ -57,6 +57,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/interpal.h"
+#include "game/ui/input.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
 #include "td/assets/presentation.h"
@@ -69,7 +70,6 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 #include "td/startup/winstub.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -80,8 +80,8 @@ void GDI_Ending() {
                     ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
-  TheKeyboard().Clear();
-  TheKeyboard().Read();
+  game::TheKeyboard().Clear();
+  game::TheKeyboard().Read();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   TheScreen().visible_page().Clear();
 
@@ -113,7 +113,7 @@ void GDI_Ending() {
                                             0, 320, 199, 640, 398);
     Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                     Call_Back);
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
     count.Set(int64_t{kTimerSecond} * 3);
     while (count.Remaining()) {
       Call_Back();
@@ -133,7 +133,7 @@ void GDI_Ending() {
   TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                           0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   //	Timer<SystemTickSource> count;
   count.Set(int64_t{kTimerSecond} * 3);
   while (count.Remaining()) {
@@ -194,16 +194,16 @@ void Nod_Ending() {
 
   Play_Movie("NODFINAL", THEME_NONE, false);
 
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   engine::window::TheDisplay().EndFrame();
   Set_Palette(localpal);
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   engine::gfx::BrightenPalette(localpal, 30, 30, 30);
   game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
                              "SATSELIN.PAL");
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   engine::audio::TheAudio().Play(kanefinl, 255, 128);
   engine::audio::TheAudio().Play(loopie6m, 255, 128);
 
@@ -217,18 +217,18 @@ void Nod_Ending() {
       Alloc_Object(std::make_unique<ScorePrintClass>(
           show, Text_String(TXT_SEL_TARGET), 0, 180, _tanpal));
       mouseshown = true;
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
     Call_Back_Delay(show, 1);
-    if (!TheKeyboard().Peek()) {
+    if (!game::TheKeyboard().Peek()) {
       if (!engine::audio::TheAudio().IsPlaying(loopie6m.data())) {
         engine::audio::TheAudio().Play(loopie6m, 255, 128);
       }
     } else {
       if (engine::audio::TheAudio().IsPlaying(kanefinl.data())) {
-        TheKeyboard().Clear();
+        game::TheKeyboard().Clear();
       } else {
-        const engine::window::InputEvent event = TheKeyboard().Read();
+        const engine::window::InputEvent event = game::TheKeyboard().Read();
         if (event.IsPress(engine::window::MouseButton::kLeft)) {
           const int mousex = event.x;
           const int mousey = event.y;
@@ -249,7 +249,7 @@ void Nod_Ending() {
     }
   }
   if (mouseshown) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
   }
 
   /* get rid of all the animating objects */
@@ -258,8 +258,8 @@ void Nod_Ending() {
   TheScreen().visible_view().FillRect(0, 360, 638, 398, 0);
   show.text_page().view().FillRect(0, 360, 638, 398, 0);
 
-  TheMouse().Hide();
-  TheKeyboard().Clear();
+  game::TheMouse().Hide();
+  game::TheKeyboard().Clear();
 
   engine::audio::TheAudio().Stop(kanefinl.data());
   engine::audio::TheAudio().Stop(loopie6m.data());
@@ -281,7 +281,7 @@ void Nod_Ending() {
                                             0, 320, 199, 640, 398);
     Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                     Call_Back);
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
     count.Set(int64_t{kTimerSecond} * 3);
     while (count.Remaining()) {
       Call_Back();
@@ -301,7 +301,7 @@ void Nod_Ending() {
   TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                           0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   //	Timer<SystemTickSource> count;
   count.Set(int64_t{kTimerSecond} * 3);
   while (count.Remaining()) {

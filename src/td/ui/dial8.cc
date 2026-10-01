@@ -66,12 +66,12 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
+#include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -188,8 +188,8 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     /*
     **	Get new dial position (0-255)
     */
-    Direction =
-        game::Desired_Facing8(FaceX, FaceY, TheMouse().x(), TheMouse().y());
+    Direction = game::Desired_Facing8(FaceX, FaceY, game::TheMouse().x(),
+                                      game::TheMouse().y());
 
     /*
     **	Convert to Facing value (0-7).
@@ -247,7 +247,7 @@ bool Dial8Class::Draw_Me(PixelView& view, bool forced) {
     */
 
     if (TheScreen().IsVisible(&view)) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
     }
 
     /*
@@ -275,7 +275,7 @@ bool Dial8Class::Draw_Me(PixelView& view, bool forced) {
     **	Restore the mouse.
     */
     if (TheScreen().IsVisible(&view)) {
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
 
     return true;

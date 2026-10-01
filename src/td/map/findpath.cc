@@ -68,6 +68,7 @@
 #include "game/core/path_overlap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
@@ -83,7 +84,6 @@
 #include "td/net/session.h"
 #include "td/objects/foot.h"
 #include "td/ui/dialog.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -958,7 +958,7 @@ end_of_list:
   if (TheDebugState().trace_path_search() && DrawPath) {
     Debug_Draw_Map("Final Generated Path", startcell, dest, false);
     Debug_Draw_Path(&path);
-    TheKeyboard().Read();
+    game::TheKeyboard().Read();
   }
   //	IsFindPath = false;
   return &path;
@@ -1590,7 +1590,7 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
   }
 
   if (pause) {
-    TheKeyboard().Read();
+    game::TheKeyboard().Read();
   }
   PixelView& view = TheScreen().visible_view();
 

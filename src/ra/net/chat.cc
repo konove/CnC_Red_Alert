@@ -31,6 +31,7 @@
 #include "engine/net/ipxaddr.h"
 #include "engine/net/ipxmgr.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/audio.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
@@ -46,7 +47,6 @@
 #include "ra/net/nullmgr.h"
 #include "ra/net/session.h"
 #include "ra/objects/house.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msglist.h"
 #include "ra/wol/rawolapi.h"
 #include "ra/wol/wolapiob.h"
@@ -107,7 +107,7 @@ constexpr engine::window::KeyNumber kPageRespondKey = KN_RETURN;  // KN_COMMA
 
   TheMap().Flag_To_Redraw(false);
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 }
 
 // Fills in Session.GPacket with the message just finished in the edit

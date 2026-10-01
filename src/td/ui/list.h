@@ -50,10 +50,10 @@
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/link.h"
 #include "td/core/defines.h"
 #include "td/ui/control.h"
 #include "td/ui/gadget.h"
-#include "td/ui/link.h"
 #include "td/ui/shapebtn.h"
 #include "td/ui/slider.h"
 
@@ -134,9 +134,12 @@ class ListClass : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  LinkClass& Add(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  LinkClass& Add_Tail(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  LinkClass& Add_Head(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add(game::LinkClass& list)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add_Tail(game::LinkClass& list)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add_Head(game::LinkClass& list)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   GadgetClass* Remove() override;
 
  protected:

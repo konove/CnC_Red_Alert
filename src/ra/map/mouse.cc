@@ -59,10 +59,10 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"  // IWYU pragma: keep - used by an DCHECK() below.
 #include "ra/core/defines.h"
 #include "ra/map/scroll.h"
-#include "ra/ui/input.h"
 
 namespace ra {
 
@@ -163,19 +163,21 @@ void MouseClass::Mouse_Small(bool wsmall) {
 
   if (wsmall) {
     if (control->SmallFrame != -1) {
-      TheMouse().SetShape(control->X, control->Y,
-                          engine::gfx::ExtractShapeFrame(
-                              MouseShapes, control->SmallFrame + (Frame / 4)));
+      game::TheMouse().SetShape(
+          control->X, control->Y,
+          engine::gfx::ExtractShapeFrame(MouseShapes,
+                                         control->SmallFrame + (Frame / 4)));
     } else {
-      TheMouse().SetShape(MouseControl.at(MOUSE_NORMAL).X,
-                          MouseControl.at(MOUSE_NORMAL).Y,
-                          engine::gfx::ExtractShapeFrame(
-                              MouseShapes, static_cast<int>(MOUSE_NORMAL)));
+      game::TheMouse().SetShape(
+          MouseControl.at(MOUSE_NORMAL).X, MouseControl.at(MOUSE_NORMAL).Y,
+          engine::gfx::ExtractShapeFrame(MouseShapes,
+                                         static_cast<int>(MOUSE_NORMAL)));
     }
   } else {
-    TheMouse().SetShape(control->X, control->Y,
-                        engine::gfx::ExtractShapeFrame(
-                            MouseShapes, control->StartFrame + (Frame / 4)));
+    game::TheMouse().SetShape(
+        control->X, control->Y,
+        engine::gfx::ExtractShapeFrame(MouseShapes,
+                                       control->StartFrame + (Frame / 4)));
   }
 }
 
@@ -231,8 +233,9 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
       baseshp = control->StartFrame;
     }
 
-    TheMouse().SetShape(control->X, control->Y,
-                        engine::gfx::ExtractShapeFrame(MouseShapes, baseshp));
+    game::TheMouse().SetShape(
+        control->X, control->Y,
+        engine::gfx::ExtractShapeFrame(MouseShapes, baseshp));
     CurrentMouseShape = mouse;
     IsSmall = wsmall;
     return true;
@@ -276,7 +279,7 @@ void MouseClass::AI(engine::window::InputEvent& event, int x, int y) {
       if (baseframe == -1) {
         baseframe = control->StartFrame;
       }
-      TheMouse().SetShape(
+      game::TheMouse().SetShape(
           control->X, control->Y,
           engine::gfx::ExtractShapeFrame(MouseShapes, baseframe + Frame));
     }

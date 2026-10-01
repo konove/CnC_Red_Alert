@@ -71,6 +71,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "game/core/heap.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/reinf.h"
 #include "ra/ai/scenario.h"
@@ -107,7 +108,6 @@
 #include "ra/screens/movie.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msglist.h"
 
 namespace ra {
@@ -576,12 +576,12 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	suspended while the movie plays.
     */
     case TACTION_PLAY_MOVIE:
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       TheScreen().visible_view().Clear();
       Play_Movie(Data.Movie, THEME_NONE, true);
       ThePalettes().game_palette().Set();
       TheMap().Flag_To_Redraw(true);
-      TheMouse().Show();
+      game::TheMouse().Show();
       break;
 
     /*

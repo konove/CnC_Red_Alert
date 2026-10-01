@@ -127,6 +127,7 @@
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/trigger.h"
 #include "td/assets/audio.h"
@@ -163,7 +164,6 @@
 #include "td/startup/game_state.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -791,7 +791,7 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   **	Follow the mouse position if no cell number is provided.
   */
   if (pos == -1) {
-    pos = Click_Cell_Calc(TheMouse().x(), TheMouse().y());
+    pos = Click_Cell_Calc(game::TheMouse().x(), game::TheMouse().y());
   }
 
   if (CursorSize.empty()) {
@@ -982,10 +982,10 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
  *=============================================================================================*/
 void DisplayClass::AI(engine::window::InputEvent& event, int x, int y) {
   if (IsRubberBand &&
-      (TheMouse().x() < TacPixelX || TheMouse().y() < TacPixelY ||
-       TheMouse().x() >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
-       TheMouse().y() >= TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
-    Mouse_Left_Release(-1, TheMouse().x(), TheMouse().y(), nullptr,
+      (game::TheMouse().x() < TacPixelX || game::TheMouse().y() < TacPixelY ||
+       game::TheMouse().x() >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
+       game::TheMouse().y() >= TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
+    Mouse_Left_Release(-1, game::TheMouse().x(), game::TheMouse().y(), nullptr,
                        ACTION_NONE);
   }
 

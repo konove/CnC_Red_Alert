@@ -105,6 +105,7 @@
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/carry.h"
@@ -169,7 +170,6 @@
 #include "ra/startup/startup.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/msglist.h"
 #include "ra/ui/textbtn.h"
@@ -386,9 +386,9 @@ bool Start_Scenario(char* name, bool briefing) {
   TheTheme().Stop();
 
   if (briefing) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     TheScreen().visible_page().view().Clear();
-    TheMouse().Show();
+    game::TheMouse().Show();
     Play_Movie(TheScenario().IntroMovie);
     Play_Movie(TheScenario().BriefMovie);
   }
@@ -406,14 +406,14 @@ bool Start_Scenario(char* name, bool briefing) {
     /*
     ** Make sure the mouse is visible before showing the restatement.
     */
-    TheMouse().ForceShow();
+    game::TheMouse().ForceShow();
     Restate_Mission();
   }
 
   if (briefing) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     TheScreen().visible_page().view().Clear();
-    TheMouse().Show();
+    game::TheMouse().Show();
     Play_Movie(TheScenario().ActionMovie, TheScenario().TransitTheme);
   }
 
@@ -501,9 +501,9 @@ bool Read_Scenario(char* name) {
   } else {
     ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
     //		Fade_Palette_To(GamePalette, kFadePaletteFast, ServiceRealTime);
-    TheMouse().Show();
+    game::TheMouse().Show();
     WWMessageBox().Process(TXT_UNABLE_READ_SCENARIO);
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     return false;
   }
   TheWorld().scenario_init()--;
@@ -806,7 +806,7 @@ void Clear_Scenario() {
  *=============================================================================================*/
 void Do_Win() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   TheTheme().Queue_Song(THEME_QUIET);
 
   /*
@@ -861,16 +861,16 @@ void Do_Win() {
       }
     }
     TheGameState().active() = false;
-    TheMouse().Show();
+    game::TheMouse().Show();
     return;
   }
 
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   TheScreen().visible_page().view().Clear();
-  TheMouse().Show();
+  game::TheMouse().Show();
   Play_Movie(TheScenario().WinMovie);
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   TheWorld().save_tanya() = TheWorld().is_tanya_dead();
   TheScenario().CarryOverTimer =
@@ -885,14 +885,14 @@ void Do_Win() {
     **	If the score presentation should be performed, then do
     **	so now.
     */
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
     if (!TheScenario().IsSkipScore) {
       TheWorld().score().Presentation();
     }
 
     if (TheScenario().IsOneTimeOnly) {
       TheGameState().active() = false;
-      TheMouse().Show();
+      game::TheMouse().Show();
       TheWorld().ants_enabled() = false;
       return;
     }
@@ -909,7 +909,7 @@ void Do_Win() {
       }
       Show_Who_Was_Responsible();
       TheGameState().active() = false;
-      TheMouse().Show();
+      game::TheMouse().Show();
       TheWorld().ants_enabled() = false;
       return;
     }
@@ -929,7 +929,7 @@ void Do_Win() {
       TheScenario().AdvanceToNextScenario(ChooseMissionVariant());
     }
 
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
   }
 
   TheScenario().CarryOverMoney = static_cast<int>(ThePlayer()->Credits);
@@ -1007,7 +1007,7 @@ void Do_Win() {
   TheMap().Render();
   ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
   //	Fade_Palette_To(GamePalette, kFadePaletteFast, ServiceRealTime);
-  TheMouse().Show();
+  game::TheMouse().Show();
 }
 
 /***********************************************************************************************
@@ -1027,7 +1027,7 @@ void Do_Win() {
  *=============================================================================================*/
 void Do_Lose() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  TheMouse().Hide();
+  game::TheMouse().Hide();
 
   TheTheme().Queue_Song(THEME_QUIET);
 
@@ -1073,13 +1073,13 @@ void Do_Lose() {
       }
     }
     TheGameState().active() = false;
-    TheMouse().Show();
+    game::TheMouse().Show();
     return;
   }
 
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   TheScreen().visible_page().view().Clear();
-  TheMouse().Show();
+  game::TheMouse().Show();
   DLOG(INFO) << "Trying to play lose movie";
   Play_Movie(TheScenario().LoseMovie);
 
@@ -1087,11 +1087,11 @@ void Do_Lose() {
   ** Start same scenario again
   */
   ThePalettes().game_palette().Set();
-  TheMouse().Show();
+  game::TheMouse().Show();
   if (!TheSession().Play &&
       !WWMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
-    TheMouse().Hide();
-    TheKeyboard().Clear();
+    game::TheMouse().Hide();
+    game::TheKeyboard().Clear();
     Start_Scenario(TheScenario().ScenarioName, false);
 
     /*
@@ -1104,12 +1104,12 @@ void Do_Lose() {
 
     TheMap().Render();
   } else {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     TheGameState().active() = false;
   }
 
   ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
-  TheMouse().Show();
+  game::TheMouse().Show();
 }
 
 /***********************************************************************************************
@@ -1118,7 +1118,7 @@ void Do_Lose() {
  *=============================================================================================*/
 void Do_Draw() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  TheMouse().Hide();
+  game::TheMouse().Hide();
 
   TheTheme().Queue_Song(THEME_QUIET);
 
@@ -1163,7 +1163,7 @@ void Do_Draw() {
     }
   }
   TheGameState().active() = false;
-  TheMouse().Show();
+  game::TheMouse().Show();
 }
 
 /***********************************************************************************************
@@ -1193,7 +1193,7 @@ void Do_Restart() {
   WWMessageBox().Process(TXT_RESTARTING, TXT_NONE);
 
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   Start_Scenario(TheScenario().ScenarioName, false);
 
   /*
@@ -1210,7 +1210,7 @@ void Do_Restart() {
   while (timer.HasTimeLeft()) {
     ServiceRealTime();
   }
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   TheMap().Render();
 }
@@ -1433,7 +1433,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   /*
   **	Draw the dialog.
   */
-  TheMouse().Hide();
+  game::TheMouse().Hide();
 
   PaletteClass temp;
   const char* filename = "SOVPAPER.PCX";
@@ -1451,7 +1451,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   int bufindex = 0;
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   // The text types out in the font the button constructors above selected
   // last (each measures itself in kTpfButton), recoloured through _scorepal.
@@ -1483,12 +1483,12 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       cd.Set(5);
       do {
         ServiceRealTime();
-      } while (!TheKeyboard().Peek() && cd.HasTimeLeft());
+      } while (!game::TheKeyboard().Peek() && cd.HasTimeLeft());
     }
   } while (base::At(buffer, ++bufindex));
 
-  TheMouse().Show();
-  TheKeyboard().Clear();
+  game::TheMouse().Show();
+  game::TheKeyboard().Clear();
 
   if (buttonlist) {
     bool process = true;  // loop while true
@@ -1497,10 +1497,10 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       if (display) {
         display = false;
 
-        TheMouse().Hide();
+        game::TheMouse().Hide();
         // Redraw the buttons.
         buttonlist->Draw_All(view);
-        TheMouse().Show();
+        game::TheMouse().Show();
       }
 
       // Invoke game callback.
@@ -1614,7 +1614,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       }
     }
   } else {
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
   }
 
   // Handle MORE button - recurse to show next page (no fade on subsequent
@@ -1627,7 +1627,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   /*
   ** Restore the screen.
   */
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   // Now set the palette, depending on if we're going to show the video or
   // go back to the main menu.
   switch (retval) {
@@ -1639,7 +1639,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     default:
       break;
   }
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   GadgetClass::Set_Color_Scheme(
       &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));

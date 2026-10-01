@@ -53,6 +53,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
@@ -61,7 +62,6 @@
 #include "ra/startup/game_state.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/textbtn.h"
 
 namespace ra {
@@ -226,7 +226,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Draw the dialog.
   */
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   if (preserve) {
     back.resize(base::ToSize(width * height));
     TheScreen().visible_view().CopyToBuffer(x, y, width, height, back);
@@ -246,7 +246,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   if (buttonlist) {
     buttonlist->Draw_All(view);
   }
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   /*
   **	Main Processing Loop.
@@ -259,7 +259,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       if (display) {
         display = false;
 
-        TheMouse().Hide();
+        game::TheMouse().Hide();
         Dialog_Box(x, y, width, height);
         Draw_Caption(view, Caption, x, y, width);
 
@@ -275,7 +275,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         if (buttonlist) {
           buttonlist->Draw_All(view);
         }
-        TheMouse().Show();
+        game::TheMouse().Show();
       }
 
       /*
@@ -396,9 +396,9 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
             button->IsPressed = true;
           }
         }
-        TheMouse().Hide();
+        game::TheMouse().Hide();
         buttonlist->Draw_All(view, true);
-        TheMouse().Show();
+        game::TheMouse().Show();
 
         switch (selection) {
           case BUTTON_1:
@@ -424,19 +424,19 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     }
 
   } else {
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
   }
 
   /*
   **	Restore the screen if necessary.
   */
   if (preserve) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     TheScreen().visible_view().CopyFromBuffer(x, y, width, height, back);
 
     back.clear();
 
-    TheMouse().Show();
+    game::TheMouse().Show();
   }
   return retval;
 }

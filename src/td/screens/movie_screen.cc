@@ -12,12 +12,12 @@
 #include "engine/window/display.h"
 #include "engine/window/keyboard.h"
 #include "game/core/interpal.h"
+#include "game/ui/input.h"
 #include "td/assets/palette.h"
 #include "td/assets/screen.h"
 #include "td/debug/debug_state.h"
 #include "td/startup/game_state.h"
 #include "td/startup/winstub.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -55,9 +55,9 @@ void MovieScreen::OnIdle() { engine::window::TheDisplay().EndFrame(); }
 
 bool MovieScreen::Present() {
   int key = 0;
-  if (TheKeyboard().Peek()) {
-    key = TheKeyboard().Read().key;
-    TheKeyboard().Clear();
+  if (game::TheKeyboard().Peek()) {
+    key = game::TheKeyboard().Read().key;
+    game::TheKeyboard().Clear();
   }
 
   game::Interpolate_2X_Scale(&TheScreen().sys_mem_page(),
@@ -65,7 +65,7 @@ bool MovieScreen::Present() {
 
   if ((TheGameState().breakout_allowed() || TheDebugState().developer_mode()) &&
       key == engine::window::KN_ESC) {
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
     broken_out_ = true;
     return false;
   }
@@ -75,7 +75,7 @@ bool MovieScreen::Present() {
   if (!TheGameState().in_focus()) {
     engine::audio::TheAudio().SetExtraPaused(true);
     while (!TheGameState().in_focus()) {
-      TheKeyboard().Peek();
+      game::TheKeyboard().Peek();
       Check_For_Focus_Loss();
     }
   }

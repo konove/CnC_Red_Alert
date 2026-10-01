@@ -31,6 +31,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
@@ -40,7 +41,6 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/edit.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/woledit.h"
 
@@ -208,7 +208,7 @@ const char* SimpleEditDlgClass::Show() {
   /*
   **	Main Processing Loop.
   */
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   bool firsttime = true;
   bool display = true;
   bool process = true;
@@ -225,7 +225,7 @@ const char* SimpleEditDlgClass::Show() {
       /*
       **	Display the dialog box.
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       if (!szTitle.empty()) {
         Draw_Caption(view, szTitle.c_str(), d_dialog_x, d_dialog_y, d_dialog_w);
@@ -241,7 +241,7 @@ const char* SimpleEditDlgClass::Show() {
                          GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
       }
       commands->Flag_List_To_Redraw();
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 

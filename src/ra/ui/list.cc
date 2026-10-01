@@ -73,6 +73,8 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
+#include "game/ui/link.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
@@ -80,8 +82,6 @@
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
-#include "ra/ui/link.h"
 
 namespace ra {
 
@@ -321,7 +321,7 @@ bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     }
 
   } else {
-    int index = TheMouse().y() - (Y + 1);
+    int index = game::TheMouse().y() - (Y + 1);
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex = std::min(SelectedIndex, Count() - 1);
@@ -718,7 +718,7 @@ void ListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass& ListClass::Add(LinkClass& list) {
+game::LinkClass& ListClass::Add(game::LinkClass& list) {
   /*
   **	Add the scroll bar gadgets if they're active.
   */
@@ -746,7 +746,7 @@ LinkClass& ListClass::Add(LinkClass& list) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass& ListClass::Add_Head(LinkClass& list) {
+game::LinkClass& ListClass::Add_Head(game::LinkClass& list) {
   /*
   **	Add the scroll bar gadgets if they're active.
   */
@@ -780,7 +780,7 @@ LinkClass& ListClass::Add_Head(LinkClass& list) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-LinkClass& ListClass::Add_Tail(LinkClass& list) {
+game::LinkClass& ListClass::Add_Tail(game::LinkClass& list) {
   /*
   **	Add myself to the list.
   */

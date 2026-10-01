@@ -67,6 +67,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
+#include "game/ui/input.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
@@ -74,7 +75,6 @@
 #include "td/map/tab.h"
 #include "td/startup/conquer.h"
 #include "td/ui/dialog.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -242,11 +242,11 @@ void HelpClass::Help_Text(int text, int x, int y, int color, bool quick,
     */
     X = x;
     if (x == -1) {
-      X = TheMouse().x();
+      X = game::TheMouse().x();
     }
     Y = y;
     if (y == -1) {
-      Y = TheMouse().y();
+      Y = game::TheMouse().y();
     }
     IsRight = y != -1 || x != -1;
 

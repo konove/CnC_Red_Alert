@@ -69,6 +69,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
+#include "game/ui/link.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/filepcx.h"
 #include "ra/assets/palettes.h"
@@ -77,8 +79,6 @@
 #include "ra/core/defines.h"
 #include "ra/debug/debug_state.h"
 #include "ra/ui/control.h"
-#include "ra/ui/input.h"
-#include "ra/ui/link.h"
 
 namespace ra {
 
@@ -280,7 +280,7 @@ void GadgetClass::Disable() {
  *=============================================================================================*/
 GadgetClass* GadgetClass::Remove() {
   Clear_Focus();
-  return dynamic_cast<GadgetClass*>(LinkClass::Remove());
+  return dynamic_cast<GadgetClass*>(game::LinkClass::Remove());
 }
 
 /***********************************************************************************************
@@ -298,7 +298,7 @@ GadgetClass* GadgetClass::Remove() {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 GadgetClass* GadgetClass::Get_Next() const {
-  return dynamic_cast<GadgetClass*>(LinkClass::Get_Next());
+  return dynamic_cast<GadgetClass*>(game::LinkClass::Get_Next());
 }
 
 /***********************************************************************************************
@@ -317,7 +317,7 @@ GadgetClass* GadgetClass::Get_Next() const {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 GadgetClass* GadgetClass::Get_Prev() const {
-  return dynamic_cast<GadgetClass*>(LinkClass::Get_Prev());
+  return dynamic_cast<GadgetClass*>(game::LinkClass::Get_Prev());
 }
 
 /***********************************************************************************************
@@ -432,8 +432,8 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
   **	Fetch any pending keyboard input.
   */
   engine::window::InputEvent event;
-  if (TheKeyboard().Peek()) {
-    event = TheKeyboard().Read();
+  if (game::TheKeyboard().Peek()) {
+    event = game::TheKeyboard().Read();
   }
   // A gadget that acts on the event replaces its key with the gadget's ID.
   engine::window::KeyNumber key = event.key;
@@ -480,8 +480,8 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
     mousex = event.x;
     mousey = event.y;
   } else {
-    mousex = TheMouse().x();
-    mousey = TheMouse().y();
+    mousex = game::TheMouse().x();
+    mousey = game::TheMouse().y();
   }
 
   /*

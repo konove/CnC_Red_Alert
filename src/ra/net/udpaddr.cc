@@ -27,6 +27,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -42,7 +43,6 @@
 #include "ra/ui/colrlist.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/textbtn.h"
 
 namespace ra {
@@ -157,7 +157,7 @@ bool Get_Broadcast_Addresses() {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -192,7 +192,7 @@ bool Get_Broadcast_Addresses() {
         commands->Draw_All(view);
       }
 
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -224,10 +224,10 @@ bool Get_Broadcast_Addresses() {
   //------------------------------------------------------------------------
   //	Restore screen
   //------------------------------------------------------------------------
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   Load_Title_Page(true);
   ThePalettes().title_palette().Set();  // GamePalette.Set();
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   for (int i = 0; i < ip_address_list.Count(); i++) {
     std::string addr = ip_address_list.Get_Item(i);

@@ -7,11 +7,11 @@
 #include "engine/net/nullconn.h"
 #include "engine/window/display.h"
 #include "engine/window/window_events.h"
+#include "game/ui/input.h"
 #include "ra/core/config.h"
 #include "ra/startup/game_state.h"
 #include "ra/startup/startup.h"
 #include "ra/startup/winstub.h"
-#include "ra/ui/input.h"
 
 namespace ra {
 
@@ -38,7 +38,7 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
   engine::window::TheDisplay().Init(kWindowName, width, height);
 }
 
-GameWindowEvents::GameWindowEvents(Input& input)
+GameWindowEvents::GameWindowEvents(game::Input& input)
     : WindowEvents(input.keyboard(), input.mouse()) {}
 
 void GameWindowEvents::Pump() { Socket_Select(); }

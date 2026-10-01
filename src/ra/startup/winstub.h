@@ -5,9 +5,11 @@
 
 #include "engine/window/window_events.h"
 
-namespace ra {
-
+namespace game {
 class Input;
+}  // namespace game
+
+namespace ra {
 
 // Pumps the event queue while the window has no focus, so the game does not
 // run on while it is in the background.
@@ -21,7 +23,7 @@ class GameWindowEvents final : public engine::window::WindowEvents {
  public:
   // Feeds the window's keys, clicks and mouse motion to `input`, which must
   // outlive this.
-  explicit GameWindowEvents(Input& input);
+  explicit GameWindowEvents(game::Input& input);
 
   // Pumps the sockets. Replaces WSAAsyncSelect, which would send through the
   // Windows event loop.

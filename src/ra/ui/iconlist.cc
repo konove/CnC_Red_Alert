@@ -56,13 +56,13 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/dib.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/assets/winbits.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/input.h"
 #include "ra/ui/list.h"
 
 namespace ra {
@@ -496,7 +496,7 @@ bool IconListClass::Action(unsigned flags, engine::window::KeyNumber& key,
   //	Overriding of function is for the sake of MultiSelecting only.
   if ((iSelectType == 2) && (!(flags & kLeftRelease)) &&
       (!(flags & kKeyboard))) {
-    int index = TheMouse().y() - (Y + 1);
+    int index = game::TheMouse().y() - (Y + 1);
     index = index / LineHeight;
     base::ssize iSelected = CurrentTopIndex + index;
     iSelected = std::min<base::ssize>(iSelected, Count() - 1);
@@ -698,7 +698,7 @@ int IconListClass::IndexUnderMouse() {
   //	Returns index of line that mouse is currently over, or -1 for mouse not
   // hitting valid index. 	Assumes that x position of mouse is already
   // known to be over the iconlist.
-  int index = TheMouse().y() - (Y + 1);
+  int index = game::TheMouse().y() - (Y + 1);
   index = (index / LineHeight) + CurrentTopIndex;
   if (index > Count() - 1 || index < 0) {
     return -1;

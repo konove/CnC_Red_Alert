@@ -10,12 +10,12 @@
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/window_events.h"
+#include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/rand.h"
 #include "td/startup/game_state.h"
 #include "td/startup/startup.h"
 #include "td/startup/winstub.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -37,7 +37,7 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
   engine::window::TheDisplay().Init(WINDOW_NAME, width, height);
 }
 
-GameWindowEvents::GameWindowEvents(Input& input)
+GameWindowEvents::GameWindowEvents(game::Input& input)
     : WindowEvents(input.keyboard(), input.mouse()) {}
 
 void GameWindowEvents::FocusChanged(const bool in_focus) {
@@ -61,7 +61,7 @@ void GameWindowEvents::Quit() {
 void ShakeScreen(int shakes) {
   shakes += shakes;
 
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   TheScreen().visible_view().BlitTo(TheScreen().hidden_view());
   const int oldyoff = 0;
   int newyoff = 0;
@@ -92,7 +92,7 @@ void ShakeScreen(int shakes) {
   }
 
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-  TheMouse().Show();
+  game::TheMouse().Show();
 }
 
 }  // namespace td

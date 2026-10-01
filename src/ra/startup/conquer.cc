@@ -58,6 +58,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/core/interpal.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
@@ -105,7 +106,6 @@
 #include "ra/startup/startup_options.h"
 #include "ra/startup/version.h"
 #include "ra/startup/winstub.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/msglist.h"
 #include "ra/wol/rawolapi.h"
@@ -238,14 +238,14 @@ static void BeginScenario() {
 
   // This PRESUMES that Select_Game() has told the map to draw itself.
   ThePalettes().game_palette().Set(kFadePaletteMedium);
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   // A recording drives the view on playback, so there is no mouse to show.
   if (TheSession().Play) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     ResetRecordedEvents();
   } else {
-    TheMouse().Show();
+    game::TheMouse().Show();
   }
 
   if (TheSession().Type == GAME_INTERNET) {
@@ -307,7 +307,7 @@ static void EndScenario() {
 
   // Return from playback to the main menu with the mouse visible again.
   if (TheSession().Play) {
-    TheMouse().Show();
+    game::TheMouse().Show();
     TheSession().Type = GAME_NORMAL;
     TheSession().Play = false;
   }

@@ -77,13 +77,13 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/txtlabel.h"
 
 namespace ra {
@@ -996,7 +996,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
   //	If we're in 'edit mode', handle keys
   //------------------------------------------------------------------------
   if (IsEdit) {
-    const auto ascii = TheKeyboard().TypedCharacter(input);
+    const auto ascii = game::TheKeyboard().TypedCharacter(input);
 
     /*
     ** Filter out all special keys except return, escape and backspace
@@ -1130,7 +1130,7 @@ void MessageListClass::Draw(PixelView& view) {
 
   if (IsEdit) {
     if (TheScreen().IsVisible(&view)) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
     }
     EditLabel->Draw_Me(view, true);
 
@@ -1145,16 +1145,16 @@ void MessageListClass::Draw(PixelView& view) {
     }
 
     if (TheScreen().IsVisible(&view)) {
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
   }
   if (MessageList) {
     if (TheScreen().IsVisible(&view)) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
     }
     MessageList->Draw_All(view);
     if (TheScreen().IsVisible(&view)) {
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
   }
 

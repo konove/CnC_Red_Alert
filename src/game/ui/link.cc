@@ -35,7 +35,6 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions:
- *   LinkClass::LinkClass -- Default constructor for linked list object.
  *   LinkClass::~LinkClass -- Default destructor for linked list object.
  *   LinkClass::Zap -- Forces the link pointers to NULL.
  *   LinkClass::Get_Next -- Fetches the next object in list.
@@ -49,25 +48,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/ui/link.h"
+#include "game/ui/link.h"
 
-namespace td {
-
-/***********************************************************************************************
- * LinkClass::LinkClass -- Default constructor for linked list object. *
- *                                                                                             *
- *    This is the default constructor for a linked list object. It merely
- *initializes the      * next and previous pointers to NULL. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 01/15/1995 JLB : Created. *
- *=============================================================================================*/
-LinkClass::LinkClass() noexcept { LinkClass::Zap(); }
+namespace game {
 
 /***********************************************************************************************
  * LinkClass::~LinkClass -- Default destructor for linked list object. *
@@ -92,7 +75,7 @@ LinkClass::~LinkClass() { LinkClass::Remove(); }
  *when the link   * pointers start in an undefined state, but we KNOW that they
  *aren't pointing to anything  * valid. In such a case it becomes necessary to
  *zap them so that when the object is added  * to a list, it will be added
- *corrrectly.                                                  *
+ *correctly.                                                  *
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
@@ -191,7 +174,6 @@ const LinkClass& LinkClass::Tail_Of_List() const { return Tail_Of(*this); }
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 LinkClass& LinkClass::Add(LinkClass& list) {
-
   /*
   **	Save ptr to next gadget.
   */
@@ -227,7 +209,6 @@ LinkClass& LinkClass::Add(LinkClass& list) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 LinkClass& LinkClass::Add_Head(LinkClass& list) {
-
   /*
   **	Get head of given list.
   */
@@ -256,7 +237,6 @@ LinkClass& LinkClass::Add_Head(LinkClass& list) {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 LinkClass& LinkClass::Add_Tail(LinkClass& list) {
-
   /*
   **	Get head of given list.
   */
@@ -310,4 +290,4 @@ LinkClass* LinkClass::Remove() {
   return head;
 }
 
-}  // namespace td
+}  // namespace game

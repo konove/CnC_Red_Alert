@@ -87,14 +87,14 @@
 #include "base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/link.h"
 #include "ra/core/defines.h"
-#include "ra/ui/link.h"
 
 namespace ra {
 
 class ControlClass;
 
-class GadgetClass : public LinkClass {
+class GadgetClass : public game::LinkClass {
  public:
   // Input events a gadget listens for, stored OR'd in Flags.
   static constexpr unsigned kLeftPress = 0x0001;  // Left mouse button press.

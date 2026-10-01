@@ -99,6 +99,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "td/ai/special.h"
 #include "td/assets/audio.h"
 #include "td/assets/screen.h"
@@ -126,7 +127,6 @@
 #include "td/startup/game_state.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 #include "td/ui/shapebtn.h"
 
 namespace td {
@@ -490,10 +490,10 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
         FullRedraw = false;
         IsRadarToRedraw = false;
         if (TheScreen().IsVisible(&view)) {
-          TheMouse().Hide();
+          game::TheMouse().Hide();
           view.BlitTo(TheScreen().visible_view(), RadX, RadY, RadX, RadY,
                       RadWidth, RadHeight);
-          TheMouse().Show();
+          game::TheMouse().Show();
         }
       }
 

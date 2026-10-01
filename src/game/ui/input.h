@@ -1,14 +1,14 @@
 // File: Input, the keyboard and the mouse the player plays with.
 
-#ifndef CNC_RED_ALERT_RA_UI_INPUT_H_
-#define CNC_RED_ALERT_RA_UI_INPUT_H_
+#ifndef CNC_RED_ALERT_GAME_UI_INPUT_H_
+#define CNC_RED_ALERT_GAME_UI_INPUT_H_
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 
-namespace ra {
+namespace game {
 
 // The two devices the player plays with. Both exist for the whole of a Game,
 // because the startup path reads keys before there is a window; the games grab
@@ -22,7 +22,9 @@ namespace ra {
 //   TheMouse().Hide();
 class Input {
  public:
-  Input();
+  // The mouse accepts cursor shapes up to `cursor_width` by `cursor_height`
+  // pixels.
+  Input(int cursor_width, int cursor_height);
   ~Input();
 
   Input(const Input&) = delete;
@@ -53,6 +55,6 @@ inline engine::window::KeyBuffer& TheKeyboard() {
 }
 inline engine::window::HardwareCursor& TheMouse() { return TheInput().mouse(); }
 
-}  // namespace ra
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_RA_UI_INPUT_H_
+#endif  // CNC_RED_ALERT_GAME_UI_INPUT_H_

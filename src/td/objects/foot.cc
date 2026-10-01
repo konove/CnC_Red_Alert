@@ -111,6 +111,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
@@ -140,7 +141,6 @@
 #include "td/objects/unit.h"
 #include "td/screens/goptions.h"
 #include "td/startup/game_state.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -1320,7 +1320,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
     case ACTION_MOVE:
       if (TheGameState().allow_voice()) {
         const COORDINATE coord =
-            TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y());
+            TheMap().Pixel_To_Coord(game::TheMouse().x(), game::TheMouse().y());
         TheNetwork().out_list().Add(
             EventClass(ANIM_MOVE_FLASH, ThePlayer()->Class->House, coord));
       }

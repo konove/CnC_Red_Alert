@@ -70,6 +70,7 @@
 #include "engine/stream/byte_stream.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "td/ai/special.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
@@ -88,7 +89,6 @@
 #include "td/startup/game_state.h"
 #include "td/startup/init.h"
 #include "td/ui/dialog.h"
-#include "td/ui/input.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
 
@@ -517,7 +517,7 @@ bool Do_The_Internet_Menu_Thang() {
   while (process) {
 
     if (display) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       /*
       ** Redraw backgound & dialog box
       */
@@ -544,7 +544,7 @@ bool Do_The_Internet_Menu_Thang() {
       // buttons->Draw_All();
       cancelbtn.Draw_Me(view, true);
 
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 

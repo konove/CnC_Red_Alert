@@ -56,6 +56,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/palette.h"
@@ -72,7 +73,6 @@
 #include "ra/startup/init.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/list.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
@@ -451,7 +451,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     if (display) {
       display = false;
 
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       /*
       **	Load the background picture.
@@ -468,7 +468,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
                      kOptionWidth);
       }
       buttons->Draw_All(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;

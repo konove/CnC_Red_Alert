@@ -31,12 +31,12 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
+#include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 
 namespace ra {
 
@@ -86,8 +86,8 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
   if (flags & kLeftPress || (flags & kLeftHeld && StuckOn == this)) {
     const game::FacingType old_facing = facing_;
     // Get the new dial position, snapped to one of the eight directions.
-    direction_ = game::Desired_Facing8(center_x_, center_y_, TheMouse().x(),
-                                       TheMouse().y());
+    direction_ = game::Desired_Facing8(
+        center_x_, center_y_, game::TheMouse().x(), game::TheMouse().y());
     facing_ = game::Dir_Facing(direction_);
 
     if (facing_ != old_facing) {
@@ -121,7 +121,7 @@ bool DirectionDial::Draw_Me(PixelView& view, const bool forced) {
   // does not save and restore pixels the drawing is changing.
   const bool on_screen = TheScreen().IsVisible(&view);
   if (on_screen) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
   }
 
   // Draw the background and the eight decorations.
@@ -137,7 +137,7 @@ bool DirectionDial::Draw_Me(PixelView& view, const bool forced) {
   view.DrawLine(center_x_, center_y_, tip[0], tip[1], scheme->Highlight);
 
   if (on_screen) {
-    TheMouse().Show();
+    game::TheMouse().Show();
   }
   return true;
 }

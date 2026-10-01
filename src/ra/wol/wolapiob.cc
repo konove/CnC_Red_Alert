@@ -37,6 +37,7 @@
 #include "engine/platform/win32/win32_types.h"
 #include "engine/window/display.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/dib.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/palettes.h"
@@ -47,7 +48,6 @@
 #include "ra/startup/conquer.h"
 #include "ra/startup/game_state.h"
 #include "ra/ui/iconlist.h"
-#include "ra/ui/input.h"
 #include "ra/wol/chatdefs.h"
 #include "ra/wol/wolapi.h"
 
@@ -612,7 +612,7 @@ HRESULT WolapiObject::GetChatServer() {
   //	debugprint( "Called RequestServerList...\n" );
   int64_t dwTimeNextPump =
       engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
-  TheKeyboard().Clear();  //	Set up for escape key checking.
+  game::TheKeyboard().Clear();  //	Set up for escape key checking.
   bool bCancel = false;
   hresPatchResults = 0;
   while (pChatSink->bRequestServerListWait &&
@@ -639,7 +639,7 @@ HRESULT WolapiObject::GetChatServer() {
   }
   //	debugprint( "RequestServerList wait finished\n" );
   if (bCancel) {
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
     return USERCANCELLED;
   }
   if (pChatSink->pServer) {
@@ -702,7 +702,7 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
   const int64_t dwTimeStart = engine::platform::SystemMilliseconds();
   int64_t dwTimeNextPump =
       engine::platform::SystemMilliseconds() + PUMPSLEEPDURATION;
-  TheKeyboard().Clear();  //	Set up for escape key checking.
+  game::TheKeyboard().Clear();  //	Set up for escape key checking.
   bool bCancel = false;
   while (pChatSink->bRequestConnectionWait &&
          engine::platform::SystemMilliseconds() - dwTimeStart <
@@ -723,7 +723,7 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
     //        to ServiceRealTime()
   }
   if (bCancel) {
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
     return USERCANCELLED;
   }
   if (pChatSink->bRequestConnectionWait) {
@@ -2132,7 +2132,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
     absl::SNPrintF(szCommandLine, sizeof(szCommandLine), "\"%s\" %s",
                    szWebBrowser, szURL);
     //		debugprint( "About to CreateProcess: '%s'\n", szCommandLine );
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     ThePalettes().black_palette().Set(kFadePaletteFast, ServiceRealTime);
     //		::ShowWindow( MainWindow, SW_SHOWMINIMIZED );
     TheScreen().visible_view().Clear();
@@ -2173,7 +2173,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
       }
       bPump_In_Call_Back = false;
       ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
   }
 
@@ -2188,13 +2188,13 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
       char szError[300];
       Format_Runtime_Text(szError, sizeof(szError), TXT_WOL_CANTLAUNCHBROWSER,
                           szURL);
-      TheMouse().Show();
+      game::TheMouse().Show();
       WWMessageBox().Process(szError);
       return false;
     }
     //	(We return immediately after launching in this case.)
     ThePalettes().game_palette().Set();
-    TheMouse().Show();
+    game::TheMouse().Show();
   }
   return true;
 }

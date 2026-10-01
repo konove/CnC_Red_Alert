@@ -60,6 +60,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
+#include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
@@ -69,7 +70,6 @@
 #include "ra/map/world.h"
 #include "ra/net/session.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msglist.h"
 
 namespace ra {
@@ -265,8 +265,8 @@ void GScreenClass::Flag_To_Redraw(bool complete) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
-  x = TheMouse().x();
-  y = TheMouse().y();
+  x = game::TheMouse().x();
+  y = game::TheMouse().y();
 
   engine::window::InputEvent event;
   if (Buttons != nullptr) {
@@ -276,8 +276,8 @@ engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
       Flag_To_Redraw(false);
     }
     event = Buttons->Input(TheScreen().hidden_view());
-  } else if (TheKeyboard().Peek()) {
-    event = TheKeyboard().Read();
+  } else if (game::TheKeyboard().Peek()) {
+    event = game::TheKeyboard().Read();
   }
   AI(event, x, y);
   return event;
@@ -428,7 +428,7 @@ void GScreenClass::Blit_Display() {
 void Shake_The_Screen(int shakes) {
   shakes += shakes;
 
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   TheScreen().visible_view().BlitTo(TheScreen().hidden_view());
   int old_y_off = 0;
   while (shakes-- != 0) {
@@ -459,7 +459,7 @@ void Shake_The_Screen(int shakes) {
     }
   }
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-  TheMouse().Show();
+  game::TheMouse().Show();
 }
 
 }  // namespace ra

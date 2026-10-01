@@ -66,6 +66,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/graphics_loader.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -77,7 +78,6 @@
 #include "ra/startup/conquer.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 
 namespace ra {
 
@@ -653,7 +653,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Go away nasty keyboard.
   */
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   /*
   ** Start any old song.
@@ -672,7 +672,7 @@ void Show_Who_Was_Responsible() {
   int picture_frame = 0;
   int slide_number = 0;
 
-  TheMouse().Hide();
+  game::TheMouse().Hide();
 
   /*
   ** Save the priority of this process so we can change it back later
@@ -751,7 +751,7 @@ void Show_Who_Was_Responsible() {
     */
     while (engine::platform::SystemTicks() - time <
                static_cast<int64_t>(frame) * speed &&
-           !TheKeyboard().Peek()) {
+           !game::TheKeyboard().Peek()) {
     }
 
     /*
@@ -767,8 +767,8 @@ void Show_Who_Was_Responsible() {
     ** If user hits escape then break.
     */
     key = KN_NONE;
-    if (TheKeyboard().Peek()) {
-      key = TheKeyboard().Read().key;
+    if (game::TheKeyboard().Peek()) {
+      key = game::TheKeyboard().Read().key;
       if (key == KN_ESC) {
         break;
       }
@@ -798,7 +798,7 @@ void Show_Who_Was_Responsible() {
       */
       while (engine::platform::SystemTicks() - time <
                  static_cast<int64_t>(frame) * speed &&
-             !TheKeyboard().Peek()) {
+             !game::TheKeyboard().Peek()) {
       }
     }
   }
@@ -808,7 +808,7 @@ void Show_Who_Was_Responsible() {
   */
   TheScreen().visible_view().Clear();
 
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   GadgetClass::Set_Color_Scheme(
       &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));

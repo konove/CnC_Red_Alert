@@ -27,6 +27,7 @@
 #include "engine/platform/sleep.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
@@ -38,7 +39,6 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/seditdlg.h"
 #include "ra/ui/statbtn.h"
@@ -204,7 +204,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   /*
   **	Main Processing Loop.
   */
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   bool display = true;
   bool process = true;
   while (process) {
@@ -220,7 +220,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       /*
       **	Display the dialog box.
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(view, TXT_WOL_CG_TITLE, d_dialog_x, d_dialog_y, d_dialog_w);
       //			Fancy_Text_Print( TXT_WOL_CG_PLAYERS,
@@ -228,13 +228,13 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       //								GadgetClass::Get_Color_Scheme(),
       // TBLACK, kTpfText | TPF_RIGHT );
       commands->Flag_List_To_Redraw();
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    TheMouse().ForceShow();
+    game::TheMouse().ForceShow();
     //	Be nice to other apps.
     engine::platform::SleepMs(50);
 

@@ -50,6 +50,7 @@
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/screen.h"
 #include "ra/core/ccptr.h"
@@ -72,7 +73,6 @@
 #include "ra/objects/super.h"
 #include "ra/objects/type.h"
 #include "ra/objects/weapon.h"
-#include "ra/ui/input.h"
 
 namespace ra {
 
@@ -113,8 +113,8 @@ void Debug_Key(unsigned input) {
         if (TheWorld().chronal_vortex().Is_Active()) {
           TheWorld().chronal_vortex().Disappear();
         } else {
-          const int xxxx = TheMouse().x() + TheMap().TacPixelX;
-          const int yyyy = TheMouse().y() + TheMap().TacPixelY;
+          const int xxxx = game::TheMouse().x() + TheMap().TacPixelX;
+          const int yyyy = game::TheMouse().y() + TheMap().TacPixelY;
           const CELL cell = TheMap().DisplayClass::Click_Cell_Calc(xxxx, yyyy);
           TheWorld().chronal_vortex().Appear(Cell_Coord(cell));
         }
@@ -144,7 +144,8 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Height = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
+          air->Unlimbo(TheMap().Pixel_To_Coord(game::TheMouse().x(),
+                                               game::TheMouse().y()),
                        game::DIR_N);
         }
       } break;
@@ -154,7 +155,8 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Height = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
+          air->Unlimbo(TheMap().Pixel_To_Coord(game::TheMouse().x(),
+                                               game::TheMouse().y()),
                        game::DIR_N);
         }
       } break;
@@ -162,7 +164,7 @@ void Debug_Key(unsigned input) {
       case KN_GRAVE: {
         const WarheadType warhead = Random_Pick(WARHEAD_HE, WARHEAD_FIRE);
         const COORDINATE coord =
-            TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y());
+            TheMap().Pixel_To_Coord(game::TheMouse().x(), game::TheMouse().y());
         const int damage = 1000;
         base::NewPooled<AnimClass>(
             Combat_Anim(damage, warhead, TheMap().at(coord).Land_Type()),

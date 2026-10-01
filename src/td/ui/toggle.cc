@@ -45,9 +45,9 @@
 
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "td/ui/control.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -140,9 +140,9 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   *rather only performs any necessary *	graphic updating.
   */
   if (!flags) {
-    if (static_cast<unsigned>(TheMouse().x() - X) <
+    if (static_cast<unsigned>(game::TheMouse().x() - X) <
             static_cast<unsigned>(Width) &&
-        static_cast<unsigned>(TheMouse().y() - Y) <
+        static_cast<unsigned>(game::TheMouse().y() - Y) <
             static_cast<unsigned>(Height)) {
       if (!IsPressed) {
         IsPressed = true;

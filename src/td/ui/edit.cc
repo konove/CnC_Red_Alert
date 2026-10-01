@@ -60,13 +60,13 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "td/assets/assets.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 #include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -261,7 +261,7 @@ bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
       flags = 0;
 
     } else {
-      const auto ascii = TheKeyboard().TypedCharacter(key);
+      const auto ascii = game::TheKeyboard().TypedCharacter(key);
 
       /*
       ** Filter out all special keys except return and backspace

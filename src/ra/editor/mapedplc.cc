@@ -70,6 +70,7 @@
 #include "game/core/display_constants.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/scenario.h"
@@ -96,7 +97,6 @@
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/list.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
@@ -373,7 +373,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Display the dialog box
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(view, TXT_PLACE_OBJECT, kDialogX, kDialogY, kDialogW);
 
@@ -507,7 +507,7 @@ int MapEditClass::Placement_Dialog() {
       **	Redraw buttons
       */
       commands->Draw_All(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 
@@ -950,9 +950,10 @@ int MapEditClass::Place_Object() {
     /*
     **	Find cell sub-position
     */
-    if (Is_Spot_Free(Pixel_To_Coord(TheMouse().x(), TheMouse().y()))) {
-      obj_coord =
-          Closest_Free_Spot(Pixel_To_Coord(TheMouse().x(), TheMouse().y()));
+    if (Is_Spot_Free(
+            Pixel_To_Coord(game::TheMouse().x(), game::TheMouse().y()))) {
+      obj_coord = Closest_Free_Spot(
+          Pixel_To_Coord(game::TheMouse().x(), game::TheMouse().y()));
     } else {
       obj_coord = 0;
     }

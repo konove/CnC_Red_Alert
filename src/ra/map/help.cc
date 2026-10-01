@@ -65,13 +65,13 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
+#include "game/ui/input.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/data/text_ids.h"
 #include "ra/map/tab.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/input.h"
 
 namespace ra {
 
@@ -231,11 +231,11 @@ void HelpClass::Help_Text(int text, int x, int y, int /*color*/, bool quick) {
     */
     X = x;
     if (x == -1) {
-      X = TheMouse().x();
+      X = game::TheMouse().x();
     }
     Y = y;
     if (y == -1) {
-      Y = TheMouse().y();
+      Y = game::TheMouse().y();
     }
     IsRight = y != -1 || x != -1;
 

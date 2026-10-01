@@ -78,7 +78,7 @@
 #include "engine/net/ipxaddr.h"
 #include "engine/net/net_select.h"
 #include "engine/net/socket_bytes.h"
-#include "ra/ui/input.h"
+#include "game/ui/input.h"
 
 #ifdef _WIN32
 #include <winsock.h>
@@ -357,7 +357,7 @@ int WinsockInterfaceClass::Read(std::span<std::byte> buffer, int& buffer_len,
   ** Call the message loop in case there are any outstanding winsock READ
   *messages.
   */
-  TheKeyboard().Peek();
+  game::TheKeyboard().Peek();
 
   /*
   ** If there are no available packets then return 0
@@ -443,7 +443,7 @@ void WinsockInterfaceClass::WriteTo(
   /*
   ** Make sure the message loop gets called.
   */
-  TheKeyboard().Peek();
+  game::TheKeyboard().Peek();
 }
 
 /***********************************************************************************************
@@ -486,7 +486,7 @@ void WinsockInterfaceClass::Broadcast(std::span<const std::byte> buffer,
   /*
   ** Make sure the message loop gets called.
   */
-  TheKeyboard().Peek();
+  game::TheKeyboard().Peek();
 }
 
 /***********************************************************************************************

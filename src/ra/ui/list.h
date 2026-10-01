@@ -55,14 +55,14 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/vector_dynamic.h"
+#include "game/ui/input.h"
+#include "game/ui/link.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
-#include "ra/ui/link.h"
 #include "ra/ui/shapebtn.h"
 #include "ra/ui/slider.h"
 
@@ -135,9 +135,12 @@ class ListClass : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  LinkClass& Add(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  LinkClass& Add_Tail(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  LinkClass& Add_Head(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add(game::LinkClass& list)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add_Tail(game::LinkClass& list)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add_Head(game::LinkClass& list)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   GadgetClass* Remove() override;
 
  protected:
@@ -237,9 +240,12 @@ class TListClass final : public ControlClass {
   ** These overloaded list routines handle adding/removing the scroll bar
   ** automatically when the list box is added or removed.
   */
-  LinkClass& Add(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  LinkClass& Add_Tail(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  LinkClass& Add_Head(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add(game::LinkClass& list)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add_Tail(game::LinkClass& list)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  game::LinkClass& Add_Head(game::LinkClass& list)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   GadgetClass* Remove() override;
 
  protected:
@@ -457,7 +463,7 @@ bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key,
     }
 
   } else {
-    int index = TheMouse().y() - (Y + 1);
+    int index = game::TheMouse().y() - (Y + 1);
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex = std::min<int>(SelectedIndex, static_cast<int>(List.Count()) - 1);
@@ -640,7 +646,7 @@ void TListClass<T>::Set_Tabs(std::span<const int> tabs) {
 }
 
 template <class T>
-LinkClass& TListClass<T>::Add(LinkClass& list) {
+game::LinkClass& TListClass<T>::Add(game::LinkClass& list) {
   /*
   **	Add the scroll bar gadgets if they're active.
   */
@@ -657,7 +663,7 @@ LinkClass& TListClass<T>::Add(LinkClass& list) {
 }
 
 template <class T>
-LinkClass& TListClass<T>::Add_Head(LinkClass& list) {
+game::LinkClass& TListClass<T>::Add_Head(game::LinkClass& list) {
   /*
   **	Add the scroll bar gadgets if they're active.
   */
@@ -674,7 +680,7 @@ LinkClass& TListClass<T>::Add_Head(LinkClass& list) {
 }
 
 template <class T>
-LinkClass& TListClass<T>::Add_Tail(LinkClass& list) {
+game::LinkClass& TListClass<T>::Add_Tail(game::LinkClass& list) {
   /*
   **	Add myself to the list.
   */

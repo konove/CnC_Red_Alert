@@ -29,13 +29,13 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/startup/game_state.h"
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 
 namespace ra {
 
@@ -110,7 +110,7 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
       flags = 0;
 
     } else {
-      const auto ascii = TheKeyboard().TypedCharacter(key);
+      const auto ascii = game::TheKeyboard().TypedCharacter(key);
 
       //
       // Filter out all special keys except return and backspace

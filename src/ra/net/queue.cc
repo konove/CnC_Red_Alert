@@ -107,6 +107,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/assets/audio.h"
@@ -153,7 +154,6 @@
 #include "ra/startup/game_state.h"
 #include "ra/startup/startup.h"
 #include "ra/startup/version.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/msglist.h"
 #include "ra/wol/stats.h"
@@ -1017,7 +1017,7 @@ static RetcodeType Wait_For_Players(
   timeout_timer.Set(timeout);     // time to bail out
 
   while (true) {
-    TheKeyboard().Peek();
+    game::TheKeyboard().Peek();
 
     //---------------------------------------------------------------------
     //	Resend a frame-sync packet if longer than one propagation delay goes
@@ -1143,7 +1143,7 @@ static RetcodeType Wait_For_Players(
 
     while (messages_this_loop++ < message_limit &&
            net->Get_Private_Message(multi_packet_buf, &packetlen, &id)) {
-      TheKeyboard().Peek();
+      game::TheKeyboard().Peek();
 
       //------------------------------------------------------------------
       // Special processing for a modem game: process SERIAL packets
@@ -1669,7 +1669,7 @@ static int Send_Packets(engine::net::ConnManClass* net,
   //	Build our meta-packet & transmit it.
   //------------------------------------------------------------------------
   while (true) {
-    TheKeyboard().Peek();
+    game::TheKeyboard().Peek();
 
     //.....................................................................
     //	If there are no commands this frame, we'll just be sending a FRAMEINFO
@@ -2240,8 +2240,8 @@ static int Process_Reconnect_Dialog(
   //........................................................................
   //	If user hits ESC, bail out
   //........................................................................
-  if (TheKeyboard().Peek() &&
-      (TheKeyboard().Read().key == engine::window::KN_ESC)) {
+  if (game::TheKeyboard().Peek() &&
+      (game::TheKeyboard().Read().key == engine::window::KN_ESC)) {
     return 1;
   }
 
@@ -2528,7 +2528,7 @@ int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
   // events, or the buffer is full.
   //------------------------------------------------------------------------
   while (TheNetwork().out_list().Count() && num < cap) {
-    TheKeyboard().Peek();
+    game::TheKeyboard().Peek();
 
     if (TheNetwork().out_list().First().Type == EventClass::ADDPLAYER) {
       ev_size =
@@ -2640,7 +2640,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
   // events, or the buffer is full.
   //------------------------------------------------------------------------
   while (TheNetwork().out_list().Count() && num < cap) {
-    TheKeyboard().Peek();
+    game::TheKeyboard().Peek();
 
     const EventClass::EventType eventtype =
         TheNetwork().out_list().First().Type;  // type of event being compressed
@@ -3059,7 +3059,7 @@ int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize) {
   // Loop until there are no more events in the packet
   //------------------------------------------------------------------------
   while (std::cmp_greater_equal(leftover, sizeof(EventClass))) {
-    TheKeyboard().Peek();
+    game::TheKeyboard().Peek();
 
     event_storage =
         base::ReadUnaligned<EventClass>(buf.subspan(base::ToSize(pos)));
@@ -3168,7 +3168,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
 
   while (leftover >=
          datasize + static_cast<int>(sizeof(EventClass::EventType))) {
-    TheKeyboard().Peek();
+    game::TheKeyboard().Peek();
 
     //.....................................................................
     // add event to the DoList, only if it's not a FRAMESYNC
@@ -3263,7 +3263,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
             datasize = sizeof(eventdata.Data.MegaMission.Whom);
 
             while (numunits) {
-              TheKeyboard().Peek();
+              game::TheKeyboard().Peek();
 
               if (!TheNetwork().do_list().Add(eventdata)) {
                 return -1;
@@ -3650,7 +3650,7 @@ static int Execute_DoList(
                             TheSession().Type == GAME_INTERNET) &&
                            net) {
                   while (net->Num_Connections()) {
-                    TheKeyboard().Peek();
+                    game::TheKeyboard().Peek();
                     Destroy_Connection(net->Connection_ID(0), -1);
                   }
                 }
@@ -3709,7 +3709,7 @@ static int Execute_DoList(
  *=========================================================================*/
 static void Clean_DoList() {
   while (TheNetwork().do_list().Count()) {
-    TheKeyboard().Peek();
+    game::TheKeyboard().Peek();
 
     //.....................................................................
     //	Discard events that have been executed, OR it's too late to execute.
@@ -3824,8 +3824,8 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   //	If the user hits ESC, stop the playback
   //------------------------------------------------------------------------
-  if (TheKeyboard().Peek()) {
-    if (TheKeyboard().Read().key == engine::window::KN_ESC ||
+  if (game::TheKeyboard().Peek()) {
+    if (game::TheKeyboard().Read().key == engine::window::KN_ESC ||
         TheSession().Attract) {
       TheGameState().active() = false;
       return;
@@ -3837,12 +3837,12 @@ static void Queue_Playback() {
   // playback.
   //------------------------------------------------------------------------
   if (TheSession().Attract && game::CurrentFrame() > 0 &&
-      (mx != TheMouse().x() || my != TheMouse().y())) {
+      (mx != game::TheMouse().x() || my != game::TheMouse().y())) {
     TheGameState().active() = false;
     return;
   }
-  mx = TheMouse().x();
-  my = TheMouse().y();
+  mx = game::TheMouse().x();
+  my = game::TheMouse().y();
 
   //------------------------------------------------------------------------
   //	Compute the Game's CRC

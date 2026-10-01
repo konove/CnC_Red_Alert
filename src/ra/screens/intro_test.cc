@@ -11,6 +11,7 @@
 
 #include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/ui/input.h"
 #include "gtest/gtest.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -19,7 +20,6 @@
 #include "ra/screens/movie.h"
 #include "ra/startup/game_state.h"
 #include "ra/startup/init.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 
 namespace ra {
@@ -61,7 +61,7 @@ class IntroTest : public testing::Test {
     dialogs_shown = 0;
     movies_played = 0;
     // Hidden once, so that a Show() without its Hide() shows up as well.
-    TheMouse().Hide();
+    game::TheMouse().Hide();
   }
 
   static constexpr int kWidth = 8;
@@ -74,8 +74,8 @@ class IntroTest : public testing::Test {
   PixelBuffer seen_{kWidth, kHeight, seen_pixels_};
   Palettes palettes_;
   base::Installed<Palettes>::Scope palettes_scope_{palettes_};
-  Input input_;
-  base::Installed<Input>::Scope input_scope_{input_};
+  game::Input input_{48, 48};
+  base::Installed<game::Input>::Scope input_scope_{input_};
 };
 
 TEST_F(IntroTest, CdInstallPlaysTheIntroWithoutAsking) {
@@ -86,7 +86,7 @@ TEST_F(IntroTest, CdInstallPlaysTheIntroWithoutAsking) {
   EXPECT_EQ(dialogs_shown, 0);
   EXPECT_EQ(movies_played, 1);
   EXPECT_EQ(TheGameState().current_cd(), -1);
-  EXPECT_EQ(TheMouse().hide_count(), 1);
+  EXPECT_EQ(game::TheMouse().hide_count(), 1);
 }
 
 TEST_F(IntroTest, DvdAsksForTheSideBeforeTheIntro) {
@@ -105,7 +105,7 @@ TEST_F(IntroTest, DvdLeavesTheMouseAsItFoundIt) {
 
   PlayFirstLaunchIntro(hidden_.view(), seen_.view());
 
-  EXPECT_EQ(TheMouse().hide_count(), 1);
+  EXPECT_EQ(game::TheMouse().hide_count(), 1);
 }
 
 }  // namespace

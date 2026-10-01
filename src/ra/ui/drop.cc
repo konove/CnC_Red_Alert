@@ -49,11 +49,11 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/keyframe.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/link.h"
 #include "ra/core/defines.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/edit.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/link.h"
 
 namespace ra {
 
@@ -79,17 +79,17 @@ void DropListClass::Zap() {
   EditClass::Zap();
 }
 
-LinkClass& DropListClass::Add(LinkClass& object) {
+game::LinkClass& DropListClass::Add(game::LinkClass& object) {
   DropButton.Add(object);
   return EditClass::Add(object);
 }
 
-LinkClass& DropListClass::Add_Tail(LinkClass& object) {
+game::LinkClass& DropListClass::Add_Tail(game::LinkClass& object) {
   DropButton.Add_Tail(object);
   return EditClass::Add_Tail(object);
 }
 
-LinkClass& DropListClass::Add_Head(LinkClass& object) {
+game::LinkClass& DropListClass::Add_Head(game::LinkClass& object) {
   DropButton.Add_Head(object);
   return EditClass::Add_Head(object);
 }

@@ -13,9 +13,11 @@
 class PixelBuffer;
 class PixelView;
 
-namespace td {
-
+namespace game {
 class Input;
+}  // namespace game
+
+namespace td {
 
 // Writes a line to the platform's debug output.
 void CCDebugString(const char* string);
@@ -31,7 +33,7 @@ class GameWindowEvents final : public engine::window::WindowEvents {
  public:
   // Feeds the window's keys, clicks and mouse motion to `input`, which must
   // outlive this.
-  explicit GameWindowEvents(Input& input);
+  explicit GameWindowEvents(game::Input& input);
 
  private:
   void FocusChanged(bool in_focus) override;

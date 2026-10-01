@@ -62,6 +62,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/interpal.h"
+#include "game/ui/input.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/graphics_loader.h"
@@ -88,7 +89,6 @@
 #include "ra/screens/goptions.h"
 #include "ra/screens/hall_of_fame.h"
 #include "ra/startup/conquer.h"
-#include "ra/ui/input.h"
 
 namespace ra {
 
@@ -389,7 +389,7 @@ void ScoreClass::Presentation() {
 
   // Load this side's background onto the hidden page, brighten its palette,
   // and fade it in from black.
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   Load_Title_Screen(base::At(ScreenNames, house), &TheScreen().hidden_view(),
                     score_palette);
   engine::gfx::BrightenPalette(score_palette, 30, 30, 30);
@@ -424,7 +424,7 @@ void ScoreClass::Presentation() {
   engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
   TickScoreScreen(13);
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   // Determine leadership rating: the share of the player's side that survived.
   // First count what is left on the map...
@@ -503,7 +503,7 @@ void ScoreClass::Presentation() {
   int total = (uspoints * leadership / 100) + (uspoints * economy / 100);
   total = std::clamp(total, -9999, 99999);
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   // Count both ratings up together over 100 ticks each, economy starting 30
   // ticks after leadership. The loop ends as soon as both show their final
   // values, which is only early when a rating is zero.
@@ -603,7 +603,7 @@ void ScoreClass::Presentation() {
     TickScoreScreen(1);
   }
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   if (!house) {
     Show_Credits(house, greenpal);
@@ -661,7 +661,7 @@ void ScoreClass::Presentation() {
   }
   // If the player's on the hall of fame, have him enter his name now and save
   // the table. Otherwise just wait for a click.
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   if (index >= 0) {
     FameEntry& row = hallfame.at(base::ToSize(index));
@@ -679,7 +679,7 @@ void ScoreClass::Presentation() {
     Cycle_Wait_Click();
   }
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   // Get rid of all the animating objects: the three looping shapes and any
   // text that Ctrl-Q cut short.
@@ -688,7 +688,7 @@ void ScoreClass::Presentation() {
   }
   ThePalettes().black_palette().Set(kFadePaletteFast, nullptr);
   TheScreen().visible_page().view().Clear();
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   TheTheme().Queue_Song(THEME_NONE);
 
@@ -710,8 +710,8 @@ void Cycle_Wait_Click(bool cycle) {
       .Command = SERIAL_LAST_COMMAND, .Name = {}, .ID = 0, .ScenarioInfo = {}};
   int packetlen = 0;
 
-  TheKeyboard().Clear();
-  while (minclicks || (!TheKeyboard().Peek() && !ControlQ)) {
+  game::TheKeyboard().Clear();
+  while (minclicks || (!game::TheKeyboard().Peek() && !ControlQ)) {
     if (TheSession().Type == GAME_NULL_MODEM ||
         TheSession().Type == GAME_MODEM) {
       // Send a timing packet if enough time has gone by, so the other machine
@@ -742,7 +742,7 @@ void Cycle_Wait_Click(bool cycle) {
     TickScoreScreen(1);
     if (minclicks) {
       minclicks--;
-      TheKeyboard().Clear();
+      game::TheKeyboard().Clear();
     }
 
     // Every 8th tick, rotate palette entries 233..237 one place down.
@@ -758,7 +758,7 @@ void Cycle_Wait_Click(bool cycle) {
       }
     }
   }
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 }
 
 void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
@@ -957,15 +957,15 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
     ServiceRealTime();
     Animate_Score_Objs();
     Animate_Cursor(index, ypos);
-    if (TheKeyboard().Peek()) {
-      key = engine::window::KeyBuffer::Character(TheKeyboard().Read());
+    if (game::TheKeyboard().Peek()) {
+      key = engine::window::KeyBuffer::Character(game::TheKeyboard().Read());
       ServiceRealTime();
 
       // On the last letter, flush the type-ahead so that key repeat doesn't
       // keep overwriting it.
       if (index == kFameNameSize - 2) {
-        while (TheKeyboard().Peek()) {
-          TheKeyboard().Read();
+        while (game::TheKeyboard().Peek()) {
+          game::TheKeyboard().Read();
         }
       }
 
@@ -1061,7 +1061,7 @@ void TickScoreScreen(const int ticks) {
   if (!ControlQ && engine::window::IsCtrlDown() &&
       engine::window::KeyBuffer::IsDown(engine::window::KN_Q)) {
     ControlQ = true;
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
   }
 
   // ServiceRealTime() presents the frame, so each pass lasts one display
@@ -1104,7 +1104,7 @@ void Multi_Score_Presentation() {
   ThePalettes().black_palette().Set();
   TheScreen().visible_view().Clear();
   TheScreen().hidden_view().Clear();
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   WsaAnimation anim("MLTIPLYR.WSA", &score_palette);
   // Display the background animation. The first frame goes up under a black
   // palette and is faded in; the remaining frames then play at two ticks each.
@@ -1206,7 +1206,7 @@ void Multi_Score_Presentation() {
   TheScreen().visible_view().Clear();
   ThePalettes().game_palette().Set();
   ControlQ = false;
-  TheMouse().Show();
+  game::TheMouse().Show();
 }
 
 void ScoreClass::Init() {

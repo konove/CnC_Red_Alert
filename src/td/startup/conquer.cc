@@ -116,6 +116,7 @@
 #include "game/core/interpal.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
+#include "game/ui/input.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/special.h"
@@ -174,7 +175,6 @@
 #include "td/startup/startup.h"
 #include "td/startup/startup_options.h"
 #include "td/startup/winstub.h"
-#include "td/ui/input.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/msglist.h"
 
@@ -282,15 +282,15 @@ void Main_Game() {
     **	told the map to draw itself.
     */
     Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteMedium, nullptr);
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
 
     /*
     ** Only show the mouse if we're not playing back a recording.
     */
     if (TheSession().playback_game()) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
     } else {
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
 
     TheGameState().special_dialog() = SDLG_NONE;
@@ -471,7 +471,7 @@ void Main_Game() {
     ** Also, set all variables back to normal, to return to the main menu.
     */
     if (TheSession().playback_game()) {
-      TheMouse().Show();
+      game::TheMouse().Show();
       TheSession().type() = GAME_NORMAL;
       TheSession().playback_game() = false;
     }
@@ -505,14 +505,14 @@ void Main_Game() {
   }
 
 #ifdef DEMO
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, NULL);
   Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
                     ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, NULL);
-  TheKeyboard().Clear();
-  TheKeyboard().Read();
+  game::TheKeyboard().Clear();
+  game::TheKeyboard().Read();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, NULL);
 //		ShowMouse();
 #else
@@ -1628,8 +1628,8 @@ bool Main_Loop() {
   /*
   ** I think I'm gonna cry if this makes it work
   */
-  if (TheMouse().hide_count()) {
-    TheMouse().Show();
+  if (game::TheMouse().hide_count()) {
+    game::TheMouse().Show();
   }
 
   /*
@@ -2124,7 +2124,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     *to black as well. *	When the palette has finished fading, wait until
     *the score has finished fading *	before launching the movie.
     */
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     // Theme.Stop();
     // Theme.AI();
     TheTheme().Queue_Song(theme);
@@ -2138,7 +2138,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       ThePalettes().black_palette() = engine::gfx::Palette();
     }
     TheGameState().preserve_movie_screen() = false;
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
 
     // The file, the screen and the sound device must outlive the player.
     GameFileVqaIo movie_io;
@@ -2176,7 +2176,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       ThePalettes().black_palette() = engine::gfx::Palette();
       Set_Palette(ThePalettes().black_palette());
     }
-    TheMouse().Show();
+    game::TheMouse().Show();
   }
 }
 
@@ -3018,10 +3018,11 @@ bool Force_CD_Available(int cd) {
       const bool old_in_main_loop = TheGameState().in_main_loop();
       TheGameState().in_main_loop() = true;
 
-      TheKeyboard().Clear();
+      game::TheKeyboard().Clear();
 
       {
-        const engine::window::HardwareCursor::ShownScope shown(TheMouse());
+        const engine::window::HardwareCursor::ShownScope shown(
+            game::TheMouse());
         if (CCMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE,
                                    true) == 1) {
           TheGameState().in_main_loop() = old_in_main_loop;

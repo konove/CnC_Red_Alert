@@ -45,10 +45,10 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/compat.h"
 #include "ra/core/defines.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/input.h"
 #include "ra/ui/toggle.h"
 
 namespace ra {
@@ -69,13 +69,13 @@ namespace ra {
  *=============================================================================================*/
 bool CheckBoxClass::Draw_Me(PixelView& view, bool forced) {
   if (ToggleClass::Draw_Me(view, forced)) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_DOWN, false);
     view.FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, DKGREY);
     if (IsOn) {
       view.FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, kLtGreen);
     }
-    TheMouse().Show();
+    game::TheMouse().Show();
     return true;
   }
   return false;

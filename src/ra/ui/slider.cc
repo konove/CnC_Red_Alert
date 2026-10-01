@@ -57,12 +57,12 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/core/defines.h"
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
-#include "ra/ui/input.h"
 #include "ra/ui/shapebtn.h"
 
 namespace ra {
@@ -239,10 +239,10 @@ bool SliderClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     int edge = 0;   // Edge of slider.
 
     if (IsHorizontal) {
-      mouse = TheMouse().x();
+      mouse = game::TheMouse().x();
       edge = X;
     } else {
-      mouse = TheMouse().y();
+      mouse = game::TheMouse().y();
       edge = Y;
     }
     edge += 1;

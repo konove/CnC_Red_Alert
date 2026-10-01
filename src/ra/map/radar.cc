@@ -101,6 +101,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
 #include "game/core/vector_dynamic.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/audio.h"
 #include "ra/assets/compat.h"
@@ -128,7 +129,6 @@
 #include "ra/objects/type.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/shapebtn.h"
 
 namespace ra {
@@ -541,10 +541,10 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
         MouseClass::Zoom.Draw_Me(view, true);
 
         if (TheScreen().IsVisible(&view)) {
-          TheMouse().Hide();
+          game::TheMouse().Hide();
           view.BlitTo(TheScreen().visible_view(), RadX, RadY, RadX, RadY,
                       RadWidth, RadHeight);
-          TheMouse().Show();
+          game::TheMouse().Show();
         }
       }
 

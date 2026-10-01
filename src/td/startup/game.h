@@ -9,6 +9,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/window/display.h"
 #include "game/core/game_clock.h"
+#include "game/ui/input.h"
 #include "td/ai/special.h"
 #include "td/assets/assets.h"
 #include "td/assets/palettes.h"
@@ -23,7 +24,6 @@
 #include "td/startup/game_state.h"
 #include "td/startup/startup_options.h"
 #include "td/startup/winstub.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -66,9 +66,10 @@ class Game {
       startup_options_};
   game::GameClock game_clock_;
   base::Installed<game::GameClock>::Scope game_clock_scope_{game_clock_};
-  // Before the window's events, which feed its keyboard and mouse.
-  Input input_;
-  base::Installed<Input>::Scope input_scope_{input_};
+  // Before the window's events, which feed its keyboard and mouse. The cursor
+  // is a square large enough for every mouse shape the game draws.
+  game::Input input_{32, 32};
+  base::Installed<game::Input>::Scope input_scope_{input_};
   // Before the Display, which hands it the window's events.
   GameWindowEvents window_events_{input_};
   // Before Screen, which attaches its visible page to the window.

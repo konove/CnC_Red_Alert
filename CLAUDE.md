@@ -202,10 +202,12 @@ game/        → The code both games share, in namespace game::, above the engin
                simulation enums (ArmorType, MoveType, BStateType, ...),
                UnitTrackerClass, CrewClass, FlasherClass, DoorClass<Stage> (target `game_sim`)
                [depends: game_core]
+  ui/        → LinkClass and Input, the keyboard and mouse a Game owns (target `game_ui`)
+               [depends: game_core]
 rust/        → engine_rs, the engine kernels written in Rust (LCW), linked through the cxx bridge in
                src/lib.rs; CMake target engine_rs_cxx (Corrosion) [depends: nothing]
-ra/          → Red Alert (~420 files) [depends: game_core, game_sim, engine_net, engine_window, engine_video]
-td/          → Tiberian Dawn (~330 files) [depends: game_core, game_sim, engine_net, engine_window, engine_video]
+ra/          → Red Alert (~420 files) [depends: game_core, game_sim, game_ui, engine_net, engine_window, engine_video]
+td/          → Tiberian Dawn (~330 files) [depends: game_core, game_sim, game_ui, engine_net, engine_window, engine_video]
 ```
 
 Each game's code is in one flat namespace, `ra::` or `td::` (only `main`/`WinMain` stay global).

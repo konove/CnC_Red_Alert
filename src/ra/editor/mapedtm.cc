@@ -51,6 +51,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/teamtype.h"
 #include "ra/assets/palettes.h"
@@ -68,7 +69,6 @@
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/list.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
@@ -328,11 +328,11 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     **	Refresh display if needed
     */
     if (display) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(view, TXT_TEAM_EDIT, kDialogX, kDialogY, kDialogW);
       commands->Draw_All(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 
@@ -647,7 +647,7 @@ int MapEditClass::Team_Members(HousesType house) {
       /*
       **	Display the dialog box.
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         /*
         **	Display the constant background of this dialog.
@@ -680,7 +680,7 @@ int MapEditClass::Team_Members(HousesType house) {
       if (display >= REDRAW_BUTTONS) {
         commands->Draw_All(view);
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -729,8 +729,8 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Compute new 'curclass' based on mouse position.
         */
-        i = ((TheMouse().x() - 32 - kDialogX) / kPictureW) +
-            (((TheMouse().y() - (dlg_y + 8 + 11)) / kRowH) * numcols);
+        i = ((game::TheMouse().x() - 32 - kDialogX) / kPictureW) +
+            (((game::TheMouse().y() - (dlg_y + 8 + 11)) / kRowH) * numcols);
 
         /*
         **	If it's changed, update class label.
@@ -741,7 +741,7 @@ int MapEditClass::Team_Members(HousesType house) {
           /*
           **	Clear out the previously printed name of the item.
           */
-          TheMouse().Hide();
+          game::TheMouse().Hide();
           view.FillRect(kDialogX + 32, msg_y, kDialogX + kDialogW - 64,
                         msg_y + kTxt6H, kBlack);
 
@@ -756,7 +756,7 @@ int MapEditClass::Team_Members(HousesType house) {
           */
           lheld = 0;
           rheld = 0;
-          TheMouse().Show();
+          game::TheMouse().Show();
         }
         break;
     }
@@ -906,7 +906,7 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
   base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
       kPictureH;
 
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   Draw_Box(view, x, y, kPictureW, kPictureH, BOXSTYLE_DOWN, true);
   ptr->Display(view, Screen::kWidth / 2, Screen::kHeight / 2, WINDOW_EDITOR,
                house);
@@ -916,7 +916,7 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
     //		Fancy_Text_Print("%d", x+1, y+kPictureH-8, scheme, TBLACK,
     // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_DROPSHADOW, quant);
   }
-  TheMouse().Show();
+  game::TheMouse().Show();
 }
 
 }  // namespace ra

@@ -44,9 +44,9 @@
 
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/ui/control.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 
 namespace ra {
 
@@ -138,10 +138,10 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   *forced call *	must never actually function like a real call, but
   *rather only performs any necessary *	graphic updating.
   */
-  const bool overbutton =
-      static_cast<unsigned>(TheMouse().x() - X) <
-          static_cast<unsigned>(Width) &&
-      static_cast<unsigned>(TheMouse().y() - Y) < static_cast<unsigned>(Height);
+  const bool overbutton = static_cast<unsigned>(game::TheMouse().x() - X) <
+                              static_cast<unsigned>(Width) &&
+                          static_cast<unsigned>(game::TheMouse().y() - Y) <
+                              static_cast<unsigned>(Height);
   if (!flags) {
     if (overbutton) {
       if (!IsPressed) {

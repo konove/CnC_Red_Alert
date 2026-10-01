@@ -55,6 +55,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
+#include "game/ui/input.h"
 #include "ra/assets/compat.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/palette.h"
@@ -76,7 +77,6 @@
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
 
@@ -165,13 +165,13 @@ static int Select_To_Entry(int selection, const uint32_t enabled_mask,
 static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
                        int nfgc, int hfgc, int bgc) {
   for (int loop = 0; loop < 3; loop++) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     Plain_Text_Print(view, text, xpix, ypix, hfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
     engine::window::WaitTicks(2);
     Plain_Text_Print(view, text, xpix, ypix, nfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
-    TheMouse().Show();
+    game::TheMouse().Show();
     engine::window::WaitTicks(2);
   }
 }
@@ -227,7 +227,7 @@ void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
   Plain_Text_Print(view, 0, 0, 0, kTBlack, kTBlack,
                    TPF_8POINT | TPF_DROPSHADOW);
   const int item_height = FontMaxHeight(TextFontStyle(kMenuTextFlags));
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   for (int lp = 0; lp < num; lp++) {
     const int idx = Select_To_Entry(lp, field, index);
     const int drawy = menuy + (lp * item_height) + (lp * skip);
@@ -241,8 +241,8 @@ void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
     // TBLACK);
   }
   MenuSkip = skip;
-  TheMouse().Show();
-  TheKeyboard().Clear();
+  game::TheMouse().Show();
+  game::TheKeyboard().Clear();
 }
 
 int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
@@ -280,8 +280,8 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   */
   engine::window::InputEvent input_event;
   TheGameState().unknown_input() = {};
-  if (TheKeyboard().Peek()) {
-    input_event = TheKeyboard().Read();
+  if (game::TheKeyboard().Peek()) {
+    input_event = game::TheKeyboard().Read();
   }
   // The key without its modifier bits; a release stays a release. A click is
   // handled below, not as a key.
@@ -305,8 +305,8 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   const int my2 = my1 + (base::At(menuptr, kItemshigh) * menuskip) -
                   1; /*		necessary			*/
 
-  const int tempy = TheMouse().y();
-  if (Coordinates_In_Region(TheMouse().x(), tempy, mx1, my1, mx2, my2) &&
+  const int tempy = game::TheMouse().y();
+  if (Coordinates_In_Region(game::TheMouse().x(), tempy, mx1, my1, mx2, my2) &&
       MenuUpdate) {
     newitem = (tempy - my1) / menuskip;
   }
@@ -379,7 +379,7 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   }
 
   if (newitem != item) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
     Plain_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
@@ -388,16 +388,16 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
     drawy = menuy + (newitem * menuskip);
     Plain_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
                      litcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
-    TheMouse().Show(); /* resurrect the mouse	*/
+    game::TheMouse().Show(); /* resurrect the mouse	*/
   }
 
   if (select != -1) {
     idx = Select_To_Entry(select, field, index);
-    TheMouse().Hide(); /* get rid of the mouse	*/
+    game::TheMouse().Hide(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
     Flash_Line(view, base::At(text, base::ToSize(idx)), menux, drawy, normcol,
                litcol, kTBlack);
-    TheMouse().Show();
+    game::TheMouse().Show();
     select = idx;
   }
 
@@ -434,7 +434,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
     return -1;
   }
   PixelView& view = TheScreen().visible_view();
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   /*
   **	Determine the number of entries in this string.
@@ -475,11 +475,11 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   /*
   **	Display the menu.
   */
-  TheMouse().Show();
+  game::TheMouse().Show();
   Window_Box(view, WINDOW_MENU, BOXSTYLE_RAISED);
   Setup_Menu(view, 0, strings, 0xFFFFL, 0, 0);
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   int selection = -1;  // Selection from user.
   TheGameState().unknown_input() = {};
   while (selection == -1) {
@@ -489,8 +489,8 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
       break;
     }
   }
-  TheKeyboard().Clear();
-  TheMouse().Hide();
+  game::TheKeyboard().Clear();
+  game::TheMouse().Hide();
 
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   // WindowList[static_cast<int>(WINDOW_MAIN)][2] =
@@ -626,7 +626,7 @@ int Main_Menu(int32_t /*unused*/) {
     Force_CD_Available(TheGameState().required_cd());
   }
   PixelView& view = TheScreen().visible_view();
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   /*
   **	Create the list
@@ -664,7 +664,7 @@ int Main_Menu(int32_t /*unused*/) {
 
   base::At(buttons, curbutton)->Turn_On();
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   const Fixed oldvolume = TheOptions().ScoreVolume;
   if (oldvolume == 0) {
@@ -718,9 +718,9 @@ int Main_Menu(int32_t /*unused*/) {
       /*
       **	Copy the menu to the visible page.
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       hidden.BlitTo(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
 
       display = false;
     }

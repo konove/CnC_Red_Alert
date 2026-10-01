@@ -96,6 +96,7 @@
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/special.h"
@@ -153,7 +154,6 @@
 #include "td/startup/startup_options.h"
 #include "td/startup/winstub.h"
 #include "td/ui/dialog.h"
-#include "td/ui/input.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/msglist.h"
 
@@ -239,8 +239,8 @@ bool Init_Game() {
                           CTRLSON | CTRLCON | PASSBREAKS | FILTERONLY |
                           TASKSWITCHABLE);
 #endif  // FIX_ME_LATER
-  TheKeyboard().Clear();
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   /*
   **	Bootstrap enough of the system so that the error dialog box can
@@ -300,8 +300,8 @@ bool Init_Game() {
   */
   temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
   if (!temp_mouse_shapes.empty()) {
-    TheMouse().SetShape(0, 0,
-                        engine::gfx::ExtractShapeFrame(temp_mouse_shapes, 0));
+    game::TheMouse().SetShape(
+        0, 0, engine::gfx::ExtractShapeFrame(temp_mouse_shapes, 0));
   }
 
   DLOG(INFO) << "C&C95 - About to enter wait for focus loop";
@@ -310,7 +310,7 @@ bool Init_Game() {
   */
   do {
     DLOG(INFO) << "C&C95 - About to call TheKeyboard().Peek";
-    TheKeyboard().Peek();
+    game::TheKeyboard().Peek();
   } while (!TheGameState().in_focus());
 
   DLOG(INFO) << "C&C95 - About to load the language file";
@@ -346,7 +346,7 @@ bool Init_Game() {
     // so the scan for the disc had nothing to scan and this always ended in
     // the same error.
     Set_Palette(ThePalettes().game_palette());
-    TheMouse().Show();
+    game::TheMouse().Show();
     CCMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
     ShutDown();
     exit(EXIT_FAILURE);
@@ -468,12 +468,12 @@ bool Init_Game() {
     Load_Title_Page(true);
   }
 
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   engine::window::TheDisplay().EndFrame();
   if (!TheSpecial().IsFromInstall) {
     Set_Palette(ThePalettes().title_palette());
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
-    TheMouse().Show();
+    game::TheMouse().Show();
   }
   Call_Back();
   //	Window_Dialog_Box(hCCLibrary, "DIALOG_1", MainWindow,
@@ -533,7 +533,7 @@ bool Init_Game() {
   // The loading above leaves the cursor hidden an unknown number of times;
   // from here on the menus own it, visible.
   TheMap().Set_Default_Mouse(MOUSE_NORMAL, false);
-  TheMouse().ForceShow();
+  game::TheMouse().ForceShow();
   Call_Back();
 
 #ifndef DEMO
@@ -677,7 +677,7 @@ bool Select_Game(bool fade) {
   if (TheSpecial().IsFromInstall) {
     {
       display = false;
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
   }
 
@@ -810,7 +810,7 @@ bool Select_Game(bool fade) {
       **	Redraw the title page if needed
       */
       if (display) {
-        TheMouse().Hide();
+        game::TheMouse().Hide();
 
         /*
         **	Display the title page; fade it in if this is the first time
@@ -849,7 +849,7 @@ bool Select_Game(bool fade) {
 #endif
         }
         display = false;
-        TheMouse().Show();
+        game::TheMouse().Show();
       }
 
       /*
@@ -985,7 +985,7 @@ bool Select_Game(bool fade) {
           TheWorld().carry_over_money() = 0;
 
 #ifdef DEMO
-          TheMouse().Hide();
+          game::TheMouse().Hide();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
           Load_Title_Screen("PREPICK.PCX", &TheScreen().hidden_view(),
@@ -993,14 +993,14 @@ bool Select_Game(bool fade) {
           TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
-          TheKeyboard().Clear();
-          while (!TheKeyboard().Peek()) {
+          game::TheKeyboard().Clear();
+          while (!game::TheKeyboard().Peek()) {
             Call_Back();
           }
-          TheKeyboard().Read();
+          game::TheKeyboard().Read();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
-          TheMouse().Show();
+          game::TheMouse().Show();
 
           TheWorld().scenario() = 1;
           TheWorld().build_level() = 1;
@@ -1054,21 +1054,21 @@ bool Select_Game(bool fade) {
         case kSelMultiplayerGame:
 
 #ifdef DEMO
-          TheMouse().Hide();
+          game::TheMouse().Hide();
           Set_Palette(ThePalettes().black_palette());
           Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
                             ThePalettes().title_palette());
           TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
-          TheKeyboard().Clear();
-          while (!TheKeyboard().Peek()) {
+          game::TheKeyboard().Clear();
+          while (!game::TheKeyboard().Peek()) {
             Call_Back();
           }
-          TheKeyboard().Read();
+          game::TheKeyboard().Read();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
-          TheMouse().Show();
+          game::TheMouse().Show();
           display = true;
           fade = true;
           selection = kSelNone;
@@ -1309,7 +1309,7 @@ bool Select_Game(bool fade) {
 
           Force_CD_Available(-1);
           Play_Intro(false);
-          TheMouse().Hide();
+          game::TheMouse().Hide();
 
           // verify existence of movie file before playing this sequence.
           if (GameFileExists("TRAILER.VQA")) {
@@ -1325,7 +1325,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
-            TheKeyboard().Clear();
+            game::TheKeyboard().Clear();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Remaining()) {
               Call_Back();
@@ -1349,7 +1349,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
-            TheKeyboard().Clear();
+            game::TheKeyboard().Clear();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Remaining()) {
               Call_Back();
@@ -1373,7 +1373,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
-            TheKeyboard().Clear();
+            game::TheKeyboard().Clear();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Remaining()) {
               Call_Back();
@@ -1396,7 +1396,7 @@ bool Select_Game(bool fade) {
             Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                             Call_Back);
           }
-          TheKeyboard().Clear();
+          game::TheKeyboard().Clear();
           count.Set(int64_t{kTimerSecond} * 3);
           while (count.Remaining()) {
             Call_Back();
@@ -1405,7 +1405,7 @@ bool Select_Game(bool fade) {
                           Call_Back);
 
           Play_Movie("CC2TEASE");
-          TheMouse().Show();
+          game::TheMouse().Show();
 
           TheWorld().scenario_init()++;
           TheTheme().Play_Song(THEME_MAP1);
@@ -1420,7 +1420,7 @@ bool Select_Game(bool fade) {
         */
         case kSelExit:
 #ifdef JAPANESE
-          TheMouse().Hide();
+          game::TheMouse().Hide();
 #endif
           TheTheme().Fade_Out();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteSlow,
@@ -1478,7 +1478,7 @@ bool Select_Game(bool fade) {
   /*
   **	Don't carry stray keystrokes into game.
   */
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   /*
   **	Initialize the random number Seed.  For multiplayer, this will have been
@@ -1544,7 +1544,7 @@ bool Select_Game(bool fade) {
     ** Start_Scenario() changes the palette; so, fade out & clear the screen
     ** before calling it.
     */
-    TheMouse().Hide();
+    game::TheMouse().Hide();
 
     if (selection != kSelStartNewGame) {
       Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
@@ -1552,7 +1552,7 @@ bool Select_Game(bool fade) {
       TheScreen().hidden_page().view().Clear();
       TheScreen().visible_page().view().Clear();
     }
-    TheMouse().Show();
+    game::TheMouse().Show();
 
     TheSpecial().IsFromInstall = 0;
     DLOG(INFO) << "C&C95 - Starting scenario.";
@@ -1886,10 +1886,10 @@ bool Select_Game(bool fade) {
   /*
   ** This is desperately sad isnt it?
   */
-  TheMouse().Hide();
-  TheMouse().Hide();
-  TheMouse().Hide();
-  TheMouse().Hide();
+  game::TheMouse().Hide();
+  game::TheMouse().Hide();
+  game::TheMouse().Hide();
+  game::TheMouse().Hide();
 
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   TheScreen().hidden_page().view().Clear();
@@ -1916,8 +1916,8 @@ bool Select_Game(bool fade) {
 #endif  // FORCE_WINSOCK
 
   if (TheDebugState().map_editor_active()) {
-    while (TheMouse().hide_count() > 1) {
-      TheMouse().Show();
+    while (game::TheMouse().hide_count() > 1) {
+      game::TheMouse().Show();
     }
   }
 
@@ -1972,11 +1972,11 @@ static void Play_Intro(bool for_real) {
 #endif
       nullptr};
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   if (for_real) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     Play_Movie("LOGO", THEME_NONE, false);
-    TheMouse().Show();
+    game::TheMouse().Show();
   } else {
     if (!TheDebugState().developer_mode()) {
       _counter = 0;
@@ -1988,9 +1988,9 @@ static void Play_Intro(bool for_real) {
         _counter = 0;
       }
     }
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     Play_Movie(base::At(_names, _counter), THEME_NONE);
-    TheMouse().Show();
+    game::TheMouse().Show();
     if (!base::At(_names, _counter)) {
       _counter = -1;
     }

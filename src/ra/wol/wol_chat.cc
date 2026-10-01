@@ -33,6 +33,8 @@
 #include "engine/platform/win32/win32_com.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
+#include "game/ui/link.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/palettes.h"
@@ -46,8 +48,6 @@
 #include "ra/ui/edit.h"
 #include "ra/ui/gadget.h"
 #include "ra/ui/iconlist.h"
-#include "ra/ui/input.h"
-#include "ra/ui/link.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/seditdlg.h"
 #include "ra/ui/shapebtn.h"
@@ -94,8 +94,8 @@ static bool OnExpandUserList(IconListClass& chanlist, IconListClass& userlist);
 static void ResizeChannelList(IconListClass& chanlist, bool bExpand);
 static void ResizeUserList(IconListClass& userlist, bool bExpand);
 
-static bool bLinkInList(const LinkClass* pListHead,
-                        const LinkClass* pLinkToFind);
+static bool bLinkInList(const game::LinkClass* pListHead,
+                        const game::LinkClass* pLinkToFind);
 
 static int d_chanlist_w;
 static int d_chanlist_h;
@@ -612,7 +612,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //	Refresh display if needed
     //.....................................................................
     if (display != REDRAW_NONE) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       //..................................................................
       //	Redraw backgound & dialog box
@@ -653,13 +653,13 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
       }
 
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
     //	Force mouse visible, as some beta testers report unexplicable
     // disappearing cursors.
-    TheMouse().ForceShow();
+    game::TheMouse().ForceShow();
     //	Be nice to other apps.
     engine::platform::SleepMs(50);
 
@@ -1591,8 +1591,9 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
 }
 
 //***********************************************************************************************
-bool bLinkInList(const LinkClass* pListHead, const LinkClass* pLinkToFind) {
-  const LinkClass* pLink = pListHead;
+bool bLinkInList(const game::LinkClass* pListHead,
+                 const game::LinkClass* pLinkToFind) {
+  const game::LinkClass* pLink = pListHead;
   while (pLink) {
     if (pLink == pLinkToFind) {
       return true;

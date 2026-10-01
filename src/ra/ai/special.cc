@@ -59,6 +59,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -78,7 +79,6 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/edit.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/slider.h"
 #include "ra/ui/textbtn.h"
 
@@ -197,7 +197,7 @@ void Special_Dialog(bool simple) {
     if (display) {
       display = false;
 
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
       Draw_Caption(view, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
 
@@ -208,7 +208,7 @@ void Special_Dialog(bool simple) {
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;
@@ -415,7 +415,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Draw the background of the dialog.
   */
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   Dialog_Box(x, y, width, height);
   Draw_Caption(view, caption, x, y, width);
 
@@ -432,7 +432,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   if (buttonlist) {
     buttonlist->Draw_All(view);
   }
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   /*
   **	Main Processing Loop.
@@ -548,7 +548,7 @@ int Fetch_Difficulty(bool amath) {
       /*
       **	Draw the background of the dialog.
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(x, y, w, h);
 
       /*
@@ -580,7 +580,7 @@ int Fetch_Difficulty(bool amath) {
       if (buttonlist) {
         buttonlist->Draw_All(view);
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
 
     /*

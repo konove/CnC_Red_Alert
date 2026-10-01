@@ -79,6 +79,7 @@
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/teamtype.h"
@@ -108,7 +109,6 @@
 #include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/edit.h"
-#include "td/ui/input.h"
 #include "td/ui/list.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
@@ -724,7 +724,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
       /*
       ...................... Display the dialog box ......................
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -747,7 +747,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
       if (display >= REDRAW_BUTTONS) {
         commands->Draw_All(view);
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -1033,7 +1033,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     ---------------------- Refresh display if needed ----------------------
     */
     if (display != REDRAW_NONE) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       /*------------------------------------------------------------------
       Redraw the background, map border, key, and coord labels
       ------------------------------------------------------------------*/
@@ -1245,7 +1245,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -1314,8 +1314,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         grabbed = 0;
         display = REDRAW_MAP;
       } else {
-        delta1 = TheMouse().x() - mx;
-        delta2 = TheMouse().y() - my;
+        delta1 = game::TheMouse().x() - mx;
+        delta2 = game::TheMouse().y() - my;
         if (delta1 == 0 && delta2 == 0) {
           break;
         }
@@ -1329,8 +1329,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           map_y1 += delta2;
           map_y1 = std::clamp(map_y1, kBordY1 + 2, map_y2 - 2);
           display = REDRAW_MAP;
-          mx = TheMouse().x();
-          my = TheMouse().y();
+          mx = game::TheMouse().x();
+          my = game::TheMouse().y();
         }
 
         /*
@@ -1342,8 +1342,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           map_y1 += delta2;
           map_y1 = std::clamp(map_y1, kBordY1 + 2, map_y2 - 2);
           display = REDRAW_MAP;
-          mx = TheMouse().x();
-          my = TheMouse().y();
+          mx = game::TheMouse().x();
+          my = game::TheMouse().y();
         }
 
         /*
@@ -1355,8 +1355,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           map_y2 += delta2;
           map_y2 = std::clamp(map_y2, map_y1 + 2, kBordY2 - 2);
           display = REDRAW_MAP;
-          mx = TheMouse().x();
-          my = TheMouse().y();
+          mx = game::TheMouse().x();
+          my = game::TheMouse().y();
         }
 
         /*
@@ -1368,8 +1368,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           map_y2 += delta2;
           map_y2 = std::clamp(map_y2, map_y1 + 2, kBordY2 - 2);
           display = REDRAW_MAP;
-          mx = TheMouse().x();
-          my = TheMouse().y();
+          mx = game::TheMouse().x();
+          my = game::TheMouse().y();
         }
 
         /*
@@ -1386,8 +1386,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
             map_y2 += delta2;
           }
           display = REDRAW_MAP;
-          mx = TheMouse().x();
-          my = TheMouse().y();
+          mx = game::TheMouse().x();
+          my = game::TheMouse().y();
         }
       }
     }
@@ -1794,7 +1794,7 @@ int MapEditClass::Scenario_Dialog() {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         /*
         ..................... Draw the background .......................
@@ -1846,7 +1846,7 @@ int MapEditClass::Scenario_Dialog() {
             kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -2394,7 +2394,7 @@ int MapEditClass::Select_Trigger() {
       /*
       ...................... Display the dialog box ......................
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -2413,7 +2413,7 @@ int MapEditClass::Select_Trigger() {
       if (display >= REDRAW_BUTTONS) {
         commands->Draw_All(view);
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -2823,7 +2823,7 @@ int MapEditClass::Edit_Trigger() {
       /*
       ...................... Display the dialog box ......................
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -2922,7 +2922,7 @@ int MapEditClass::Edit_Trigger() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -3291,7 +3291,7 @@ int MapEditClass::Import_Triggers() {
       /*
       ...................... Display the dialog box ......................
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -3309,7 +3309,7 @@ int MapEditClass::Import_Triggers() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -3607,7 +3607,7 @@ int MapEditClass::Import_Teams() {
       /*
       ...................... Display the dialog box ......................
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
         Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
@@ -3625,7 +3625,7 @@ int MapEditClass::Import_Teams() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 

@@ -38,12 +38,12 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_TD_UI_LINK_H_
-#define CNC_RED_ALERT_TD_UI_LINK_H_
+#ifndef CNC_RED_ALERT_GAME_UI_LINK_H_
+#define CNC_RED_ALERT_GAME_UI_LINK_H_
 
 #include "absl/base/attributes.h"
 
-namespace td {
+namespace game {
 
 /*
 **	This implements a simple linked list. It is possible to add, remove, and
@@ -52,7 +52,7 @@ namespace td {
 */
 class LinkClass {
  public:
-  LinkClass() noexcept;
+  LinkClass() noexcept = default;
   virtual ~LinkClass();
   LinkClass(LinkClass&&) = delete;
   LinkClass& operator=(LinkClass&&) = delete;
@@ -114,6 +114,6 @@ class LinkClass {
   LinkClass* Prev = nullptr;
 };
 
-}  // namespace td
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_TD_UI_LINK_H_
+#endif  // CNC_RED_ALERT_GAME_UI_LINK_H_

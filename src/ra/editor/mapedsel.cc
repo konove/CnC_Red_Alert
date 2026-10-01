@@ -54,6 +54,7 @@
 #include "game/core/display_constants.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "ra/ai/base.h"
 #include "ra/assets/screen.h"
 #include "ra/core/ccptr.h"
@@ -71,7 +72,6 @@
 #include "ra/objects/type.h"
 #include "ra/ui/direction_dial.h"
 #include "ra/ui/gauge.h"
-#include "ra/ui/input.h"
 #include "ra/ui/list.h"
 #include "ra/ui/textbtn.h"
 
@@ -492,9 +492,10 @@ int MapEditClass::Move_Grabbed_Object() {
   **	If infantry, use a free spot in this cell
   */
   if (GrabbedObject->Is_Infantry()) {
-    if (Is_Spot_Free(Pixel_To_Coord(TheMouse().x(), TheMouse().y()))) {
-      new_coord =
-          Closest_Free_Spot(Pixel_To_Coord(TheMouse().x(), TheMouse().y()));
+    if (Is_Spot_Free(
+            Pixel_To_Coord(game::TheMouse().x(), game::TheMouse().y()))) {
+      new_coord = Closest_Free_Spot(
+          Pixel_To_Coord(game::TheMouse().x(), game::TheMouse().y()));
 
       /*
       **	Clear the occupied bit in this infantry's cell.

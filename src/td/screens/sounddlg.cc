@@ -54,6 +54,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/assets/theme.h"
 #include "td/core/defines.h"
@@ -64,7 +65,6 @@
 #include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 #include "td/ui/list.h"
 #include "td/ui/shapebtn.h"
 #include "td/ui/slider.h"
@@ -354,7 +354,7 @@ void SoundControlsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       /*
       **	Draw the background.
@@ -385,7 +385,7 @@ void SoundControlsClass::Process() {
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
       optionsbtn->Draw_All(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 

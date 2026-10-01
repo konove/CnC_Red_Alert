@@ -81,6 +81,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "td/ai/special.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
@@ -103,7 +104,6 @@
 #include "td/startup/init.h"
 #include "td/ui/control.h"
 #include "td/ui/dialog.h"
-#include "td/ui/input.h"
 #include "td/ui/msglist.h"
 #include "td/ui/textbtn.h"
 
@@ -248,7 +248,7 @@ GameType Select_MPlayer_Game() {
 
   base::At(buttons, curbutton)->Turn_On();
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   /*
   -------------------------- Main Processing Loop --------------------------
@@ -266,7 +266,7 @@ GameType Select_MPlayer_Game() {
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         /*
         ..................... Refresh the backdrop ......................
@@ -285,7 +285,7 @@ GameType Select_MPlayer_Game() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 
@@ -1239,7 +1239,7 @@ int Surrender_Dialog() {
       /*
       ...................... Display the dialog box ......................
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       if (display >= REDRAW_BACKGROUND) {
         Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
         Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
@@ -1259,7 +1259,7 @@ int Surrender_Dialog() {
       if (display >= REDRAW_BUTTONS) {
         commands->Flag_List_To_Redraw();
       }
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = REDRAW_NONE;
     }
 

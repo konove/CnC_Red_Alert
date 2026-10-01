@@ -64,6 +64,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
+#include "game/ui/input.h"
 #include "td/assets/palette.h"
 #include "td/assets/screen.h"
 #include "td/core/config.h"
@@ -74,7 +75,6 @@
 #include "td/map/world.h"
 #include "td/net/session.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 #include "td/ui/msglist.h"
 
 namespace td {
@@ -272,8 +272,8 @@ void GScreenClass::Flag_To_Redraw(bool complete) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
-  x = TheMouse().x();
-  y = TheMouse().y();
+  x = game::TheMouse().x();
+  y = game::TheMouse().y();
 
   engine::window::InputEvent event;
   if (Buttons != nullptr) {
@@ -283,8 +283,8 @@ engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
       Flag_To_Redraw(false);
     }
     event = Buttons->Input(TheScreen().hidden_view());
-  } else if (TheKeyboard().Peek()) {
-    event = TheKeyboard().Read();
+  } else if (game::TheKeyboard().Peek()) {
+    event = game::TheKeyboard().Read();
   }
   AI(event, x, y);
   return event;

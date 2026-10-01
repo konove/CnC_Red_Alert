@@ -50,6 +50,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
@@ -60,7 +61,6 @@
 #include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 #include "td/ui/textbtn.h"
 
 namespace td {
@@ -165,7 +165,7 @@ bool ConfirmationClass::Process(const char* string) {
     **	Refresh display if needed.
     */
     if (display) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       /*
       **	Draw the background.
@@ -180,7 +180,7 @@ bool ConfirmationClass::Process(const char* string) {
       **	Draw the titles.
       */
       yesbtn.Draw_All(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 

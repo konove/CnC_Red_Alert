@@ -68,6 +68,7 @@
 #include "game/core/heap.h"
 #include "game/core/interpal.h"
 #include "game/core/vector_dynamic.h"
+#include "game/ui/input.h"
 #include "td/ai/base.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
@@ -109,7 +110,6 @@
 #include "td/startup/startup.h"
 #include "td/startup/winstub.h"
 #include "td/ui/dialog.h"
-#include "td/ui/input.h"
 #include "td/ui/msgbox.h"
 
 namespace td {
@@ -239,9 +239,9 @@ bool Read_Scenario(char* root) {
     Fill_In_Data();
   } else {
     Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteFast, Call_Back);
-    TheMouse().Show();
+    game::TheMouse().Show();
     CCMessageBox().Process(TXT_UNABLE_READ_SCENARIO);
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     return false;
   }
   TheWorld().scenario_init()--;
@@ -360,7 +360,7 @@ void Clear_Scenario() {
  *=============================================================================================*/
 void Do_Win() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  TheMouse().Hide();
+  game::TheMouse().Hide();
 
   /*
   ** If this is a multiplayer game, clear the game's name so we won't respond
@@ -408,7 +408,7 @@ void Do_Win() {
       }
     }
     TheGameState().active() = false;
-    TheMouse().Show();
+    game::TheMouse().Show();
     return;
   }
 
@@ -436,7 +436,7 @@ void Do_Win() {
   Play_Movie(TheWorld().win_movie());
 #endif
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   /*
   **	Do the ending screens only if not playing back a recorded game.
@@ -459,7 +459,7 @@ void Do_Win() {
         TheWorld().score().Show();
         GDI_Ending();
         TheGameState().active() = false;
-        TheMouse().Show();
+        game::TheMouse().Show();
         return;
         //				ShutDownEngine();
         //				exit(0);
@@ -470,10 +470,10 @@ void Do_Win() {
 
 #ifdef NEWMENU
     if (TheWorld().scenario() >= 20) {
-      TheKeyboard().Clear();
+      game::TheKeyboard().Clear();
       TheWorld().score().Show();
       TheGameState().active() = false;
-      TheMouse().Show();
+      game::TheMouse().Show();
       return;
     }
 #endif
@@ -483,7 +483,7 @@ void Do_Win() {
       // ShutDownEngine();
       // exit(0);
       TheScreen().visible_view().Clear();
-      TheMouse().Show();
+      game::TheMouse().Show();
       TheGameState().active() = false;
       return;
     }
@@ -493,7 +493,7 @@ void Do_Win() {
       // ShutDownEngine();
       // exit(0);
       TheScreen().visible_view().Clear();
-      TheMouse().Show();
+      game::TheMouse().Show();
       TheGameState().active() = false;
       return;
     }
@@ -505,7 +505,7 @@ void Do_Win() {
     }
 
     if (!TheSpecial().IsJurassic || !TheGameState().thingies_enabled()) {
-      TheKeyboard().Clear();
+      game::TheKeyboard().Clear();
       TheWorld().score().Show();
 
       /*
@@ -521,7 +521,7 @@ void Do_Win() {
     }
     TheWorld().scenario()++;
 #endif
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
   }
 
   TheWorld().carry_over_money() = static_cast<int>(ThePlayer()->Credits);
@@ -571,7 +571,7 @@ void Do_Win() {
 
   TheMap().Render();
   Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteFast, Call_Back);
-  TheMouse().Show();
+  game::TheMouse().Show();
 }
 
 /***********************************************************************************************
@@ -589,7 +589,7 @@ void Do_Win() {
  *=============================================================================================*/
 void Do_Lose() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  TheMouse().Hide();
+  game::TheMouse().Hide();
 
   /*
   ** If this is a multiplayer game, clear the game's name so we won't respond
@@ -625,7 +625,7 @@ void Do_Lose() {
 #ifdef OBSOLETE
   if (Debug_Play_Map) {
     Go_Editor(true);
-    TheMouse().Show();
+    game::TheMouse().Show();
     return;
   }
 #endif
@@ -643,7 +643,7 @@ void Do_Lose() {
       }
     }
     TheGameState().active() = false;
-    TheMouse().Show();
+    game::TheMouse().Show();
     return;
   }
 
@@ -653,20 +653,20 @@ void Do_Lose() {
   ** Start same scenario again
   */
   Set_Palette(ThePalettes().game_palette());
-  TheMouse().Show();
+  game::TheMouse().Show();
   if (!TheSession().playback_game() &&
       !CCMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
-    TheMouse().Hide();
-    TheKeyboard().Clear();
+    game::TheMouse().Hide();
+    game::TheKeyboard().Clear();
     Start_Scenario(TheWorld().scenario_name(), false);
     TheMap().Render();
   } else {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     TheGameState().active() = false;
   }
 
   Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteFast, Call_Back);
-  TheMouse().Show();
+  game::TheMouse().Show();
 }
 
 /***********************************************************************************************
@@ -687,13 +687,13 @@ void Do_Lose() {
  *=============================================================================================*/
 void Do_Restart() {
   {
-    const engine::window::HardwareCursor::ShownScope shown(TheMouse());
+    const engine::window::HardwareCursor::ShownScope shown(game::TheMouse());
     CCMessageBox().Process(TXT_RESTARTING, TXT_NONE);
     TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
     Start_Scenario(TheWorld().scenario_name(), false);
   }
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   TheMap().Render();
 }
 
@@ -754,7 +754,7 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
       base::SafeCopy(_buff, TheWorld().briefing_text());
       // base::SafeCopy(_ShapeBuffer, BriefingText);
 
-      const engine::window::HardwareCursor::ShownScope shown(TheMouse());
+      const engine::window::HardwareCursor::ShownScope shown(game::TheMouse());
       const int button =
           CCMessageBox(TXT_OBJECTIVE).Process(_buff, right_btn, left_btn);
       return button != 0 || !brief;

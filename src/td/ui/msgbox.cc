@@ -57,6 +57,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
@@ -64,7 +65,6 @@
 #include "td/screens/goptions.h"
 #include "td/startup/conquer.h"
 #include "td/ui/dialog.h"
-#include "td/ui/input.h"
 #include "td/ui/textbtn.h"
 
 namespace td {
@@ -232,7 +232,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Draw the dialog.
   */
-  TheMouse().Hide();
+  game::TheMouse().Hide();
   if (preserve) {
     back.resize(base::ToSize(width * height));
     TheScreen().visible_view().CopyToBuffer(x, y, width, height,
@@ -266,7 +266,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   if (buttonlist) {
     buttonlist->Draw_All(view);
   }
-  TheMouse().Show();
+  game::TheMouse().Show();
 
   /*
   **	Main Processing Loop.
@@ -279,7 +279,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       if (display) {
         display = false;
 
-        TheMouse().Hide();
+        game::TheMouse().Hide();
 
 #ifdef JAPANESE
         if (IsPicture) {
@@ -308,7 +308,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         if (buttonlist) {
           buttonlist->Draw_All(view);
         }
-        TheMouse().Show();
+        game::TheMouse().Show();
       }
 
       /*
@@ -434,18 +434,18 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     while (timer.Remaining() > 0) {
       Call_Back();
     }
-    TheKeyboard().Clear();
+    game::TheKeyboard().Clear();
   }
 
   /*
   **	Restore the screen if necessary.
   */
   if (preserve) {
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     TheScreen().visible_view().CopyFromBuffer(x, y, width, height,
                                               std::span(back));
     back.clear();
-    TheMouse().Show();
+    game::TheMouse().Show();
   }
   return retval;
 }

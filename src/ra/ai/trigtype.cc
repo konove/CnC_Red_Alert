@@ -82,6 +82,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
+#include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/taction.h"
 #include "ra/ai/teamtype.h"
@@ -108,7 +109,6 @@
 #include "ra/ui/drop.h"
 #include "ra/ui/edit.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 #include "ra/ui/textbtn.h"
 
 namespace ra {
@@ -1122,7 +1122,7 @@ bool TriggerTypeClass::Edit() {
       /*
       **	Display the dialog box
       */
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(view, TXT_TRIGGER_EDITOR, kDialogX, kDialogY, kDialogW);
 
@@ -1515,7 +1515,7 @@ bool TriggerTypeClass::Edit() {
       speechtype1list.Collapse();
       speechtype2list.Collapse();
       commands->Flag_List_To_Redraw();
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 

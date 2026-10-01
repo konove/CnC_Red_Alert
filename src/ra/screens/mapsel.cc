@@ -44,6 +44,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/interpal.h"
+#include "game/ui/input.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -61,7 +62,6 @@
 #include "ra/startup/conquer.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
-#include "ra/ui/input.h"
 
 namespace ra {
 
@@ -130,8 +130,8 @@ static void PulseHotspots(PaletteClass& palette) {
 // Each hotspot is a 12x10 pixel rectangle whose top-left corner is in
 // kHotspotCorners.
 static int ChoiceUnderMouse(const bool is_soviet, const int scenario) {
-  const int mouse_x = TheMouse().x() / 2;
-  const int mouse_y = TheMouse().y() / 2;
+  const int mouse_x = game::TheMouse().x() / 2;
+  const int mouse_y = game::TheMouse().y() / 2;
   int choice = 0;
   for (const Point& corner :
        base::At(base::At(kHotspotCorners, is_soviet), scenario)) {
@@ -171,7 +171,7 @@ static void PlayMapReveal(const std::string& animation_name,
   page.view().Clear();
   WsaAnimation animation(animation_name, &palette);
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   TheScreen().visible_view().Clear();
   palette.Set(kFadePaletteFast, ServiceRealTime);
 
@@ -213,14 +213,14 @@ static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
     if (cursor_timer.IsFinished()) {
       cursor_frame = (cursor_frame + 1) % cursor.FrameCount;
       cursor_timer.Set(cursor.FrameRate);
-      TheMouse().SetShape(
+      game::TheMouse().SetShape(
           cursor.X, cursor.Y,
           engine::gfx::ExtractShapeFrame(MouseClass::MouseShapes,
                                          cursor.StartFrame + cursor_frame));
     }
 
-    if (TheKeyboard().Peek() &&
-        TheKeyboard().Read().button == engine::window::MouseButton::kLeft) {
+    if (game::TheKeyboard().Peek() && game::TheKeyboard().Read().button ==
+                                          engine::window::MouseButton::kLeft) {
       if (choice != -1) {
         PlayMapSound("TONEY10.AUD");
         return choice;
@@ -242,18 +242,18 @@ ScenarioVarType ChooseMissionVariant() {
 
   TheTheme().Queue_Song(THEME_MAP);
   PlayMapReveal(animation_name, map_palette);
-  TheMouse().Show();
-  TheKeyboard().Clear();
+  game::TheMouse().Show();
+  game::TheKeyboard().Clear();
 
   const int choice = WaitForMissionChoice(map_palette, is_soviet);
 
-  TheMouse().Hide();
+  game::TheMouse().Hide();
 
   // Restore normal cursor before returning.
-  TheMouse().SetShape(
+  game::TheMouse().SetShape(
       0, 0, engine::gfx::ExtractShapeFrame(MouseClass::MouseShapes, 0));
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 
   PixelView& view = TheScreen().visible_view();
   Fancy_Text_Print(view, TXT_STAND_BY, 320, 380,

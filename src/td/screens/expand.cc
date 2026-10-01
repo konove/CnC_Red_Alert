@@ -56,6 +56,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
@@ -69,7 +70,6 @@
 #include "td/startup/init.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
-#include "td/ui/input.h"
 #include "td/ui/list.h"
 #include "td/ui/textbtn.h"
 
@@ -224,7 +224,7 @@ bool Expansion_Dialog() {
     if (display) {
       display = false;
 
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       /*
       **	Load the background picture.
@@ -235,7 +235,7 @@ bool Expansion_Dialog() {
       Draw_Caption(view, TXT_MISSION_DESCRIPTION, option_x, option_y,
                    option_width);
       buttons->Draw_All(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;
@@ -364,7 +364,7 @@ bool Bonus_Dialog() {
     if (display) {
       display = false;
 
-      TheMouse().Hide();
+      game::TheMouse().Hide();
 
       /*
       **	Load the background picture.
@@ -374,7 +374,7 @@ bool Bonus_Dialog() {
       Dialog_Box(view, option_x, option_y, option_width, option_height);
       Draw_Caption(view, TXT_BONUS_MISSIONS, option_x, option_y, option_width);
       buttons->Draw_All(view);
-      TheMouse().Show();
+      game::TheMouse().Show();
     }
 
     const engine::window::KeyNumber input = buttons->Input(view).key;

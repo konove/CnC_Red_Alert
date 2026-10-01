@@ -56,6 +56,7 @@
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
+#include "game/ui/input.h"
 #include "td/ai/team.h"  // IWYU pragma: keep (DeletePooled needs TeamClass complete)
 #include "td/assets/palette.h"
 #include "td/assets/screen.h"
@@ -77,7 +78,6 @@
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/screens/ending.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -150,11 +150,11 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_P:
-        TheKeyboard().Clear();
-        while (!TheKeyboard().Peek()) {
+        game::TheKeyboard().Clear();
+        while (!game::TheKeyboard().Peek()) {
           engine::audio::TheAudio().PumpStreams();
         }
-        TheKeyboard().Clear();
+        game::TheKeyboard().Clear();
         break;
 
       case KN_O: {
@@ -162,7 +162,8 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
+          air->Unlimbo(TheMap().Pixel_To_Coord(game::TheMouse().x(),
+                                               game::TheMouse().y()),
                        game::DIR_N);
         }
       } break;
@@ -175,7 +176,8 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
+          air->Unlimbo(TheMap().Pixel_To_Coord(game::TheMouse().x(),
+                                               game::TheMouse().y()),
                        game::DIR_N);
         }
       } break;
@@ -185,18 +187,19 @@ void Debug_Key(unsigned input) {
                                                    ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
-          air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
+          air->Unlimbo(TheMap().Pixel_To_Coord(game::TheMouse().x(),
+                                               game::TheMouse().y()),
                        game::DIR_N);
         }
       } break;
 
       case KN_GRAVE:
         base::NewPooled<AnimClass>(
-            ANIM_ART_EXP1,
-            TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()));
+            ANIM_ART_EXP1, TheMap().Pixel_To_Coord(game::TheMouse().x(),
+                                                   game::TheMouse().y()));
         Explosion_Damage(
-            TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()), 250,
-            nullptr, WARHEAD_HE);
+            TheMap().Pixel_To_Coord(game::TheMouse().x(), game::TheMouse().y()),
+            250, nullptr, WARHEAD_HE);
         break;
 
       case KN_Z:
@@ -250,13 +253,13 @@ void Debug_Key(unsigned input) {
 #ifdef NEVER
       case KN_G:
         HouseClass::As_Pointer(HOUSE_GOOD)
-            ->Flag_Attach(
-                TheMap().Click_Cell_Calc(TheMouse().x(), TheMouse().y()));
+            ->Flag_Attach(TheMap().Click_Cell_Calc(game::TheMouse().x(),
+                                                   game::TheMouse().y()));
         break;
 
       case KN_N:
-        HouseClass::As_Pointer(HOUSE_BAD)->Flag_Attach(
-            TheMap().Click_Cell_Calc(TheMouse().x(), TheMouse().y()));
+        HouseClass::As_Pointer(HOUSE_BAD)->Flag_Attach(TheMap().Click_Cell_Calc(
+            game::TheMouse().x(), game::TheMouse().y()));
         break;
 #endif
 

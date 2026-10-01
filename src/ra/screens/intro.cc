@@ -23,6 +23,7 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
+#include "game/ui/input.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/core/defines.h"
@@ -31,7 +32,6 @@
 #include "ra/screens/movie.h"
 #include "ra/startup/game_state.h"
 #include "ra/startup/init.h"
-#include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 
 namespace ra {
@@ -44,12 +44,12 @@ void PlayFirstLaunchIntro(PixelView& hidden, PixelView& visible) {
   // holds both campaigns, so the player has to be asked.
   if (Using_DVD()) {
     // Put the title page up as a backdrop for the dialog.
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     Load_Title_Page();
     ThePalettes().game_palette() = ThePalettes().title_palette();
     hidden.BlitTo(visible);
     ThePalettes().title_palette().Set();
-    TheMouse().Show();
+    game::TheMouse().Show();
 
     // Process() returns the index of the button pressed. CurrentCD uses the
     // disc numbering, 0 for the Allied disc and 1 for the Soviet one.
@@ -68,10 +68,10 @@ void PlayFirstLaunchIntro(PixelView& hidden, PixelView& visible) {
     // Fade out and clear so that the movie starts from black. Mouse hides are
     // counted, so this one needs its own show: the caller balances only the
     // hide it makes itself.
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     ThePalettes().black_palette().Set(kFadePaletteSlow);
     visible.Clear();
-    TheMouse().Show();
+    game::TheMouse().Show();
   }
 
   Play_Movie(VQ_INTRO_MOVIE, THEME_NONE, false);

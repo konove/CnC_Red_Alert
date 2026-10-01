@@ -71,6 +71,7 @@
 #include "engine/platform/file_system.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/input.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
 #include "td/assets/screen.h"
@@ -88,7 +89,6 @@
 #include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/edit.h"
-#include "td/ui/input.h"
 #include "td/ui/list.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
@@ -309,7 +309,7 @@ bool LoadOptionsClass::Process() {
     **	Refresh display if needed.
     */
     if (display) {
-      TheMouse().Hide();
+      game::TheMouse().Hide();
       /*
       **	Redraw the map.
       */
@@ -339,7 +339,7 @@ bool LoadOptionsClass::Process() {
       **	Redraw the buttons.
       */
       commands->Flag_List_To_Redraw();
-      TheMouse().Show();
+      game::TheMouse().Show();
       display = false;
     }
 
@@ -400,10 +400,10 @@ bool LoadOptionsClass::Process() {
           if (!Load_Game(game_num)) {
             CCMessageBox().Process(TXT_ERROR_LOADING_GAME);
           } else {
-            TheMouse().Hide();
+            game::TheMouse().Hide();
             TheScreen().visible_page().view().Clear();
             Set_Palette(ThePalettes().game_palette());
-            TheMouse().Show();
+            game::TheMouse().Show();
             process = false;
           }
         } else {

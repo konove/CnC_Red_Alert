@@ -67,6 +67,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/interpal.h"
 #include "game/sim/enums.h"
+#include "game/ui/input.h"
 #include "td/assets/assets.h"
 #include "td/assets/audio.h"
 #include "td/assets/palette.h"
@@ -84,7 +85,6 @@
 #include "td/screens/score.h"
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
-#include "td/ui/input.h"
 
 namespace td {
 
@@ -514,7 +514,7 @@ void Map_Selection() {
   engine::gfx::Palette grey2palette;
   engine::gfx::Palette progresspalette;
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   // The score animations print this screen's captions in the score font; the
   // rectangles that clear them again are measured in it too.
   const FontStyle score_font = ScoreFontStyle();
@@ -784,7 +784,7 @@ void Map_Selection() {
 
   anim.Close();
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   show.ClearTextRects();
 
   /*
@@ -1091,21 +1091,21 @@ void Map_Selection() {
   Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_TO_ATTACK,
                                                  attackxcoord, 170, greenpal));
   Cycle_Call_Back_Delay(show, 24, progresspalette);
-  TheMouse().ForceShow();
+  game::TheMouse().ForceShow();
 
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
   while (!done) {
     Cycle_Call_Back_Delay(show, 1, progresspalette);
 
     // Check for the mouse button
-    if (TheKeyboard().Peek() &&
-        TheKeyboard().Read().button == engine::window::MouseButton::kLeft) {
+    if (game::TheKeyboard().Peek() && game::TheKeyboard().Read().button ==
+                                          engine::window::MouseButton::kLeft) {
       for (selection = 0;
            selection < base::At(base::At(CountryArray, scenario).Choices,
                                 static_cast<int>(TheWorld().scen_dir()));
            selection++) {
-        color = TheScreen().sys_mem_page().view().GetPixel(TheMouse().x() / 2,
-                                                           TheMouse().y() / 2);
+        color = TheScreen().sys_mem_page().view().GetPixel(
+            game::TheMouse().x() / 2, game::TheMouse().y() / 2);
 
         /*
         ** Special hack for Egypt the second time through
@@ -1148,7 +1148,7 @@ void Map_Selection() {
     auto countryshape = MixArchive::RetrieveData(
         house == HOUSE_GOOD ? "COUNTRYE.SHP" : "COUNTRYA.SHP");
 
-    TheMouse().Hide();
+    game::TheMouse().Hide();
     // erase "Select country to attack"
     show.page().view().FillRect(attackxcoord, 160, attackxcoord + (17 * 6), 178,
                                 kBlack);
@@ -1214,7 +1214,7 @@ void Map_Selection() {
     //		Load_Data(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL",
     // localpalette, 768);
 
-    TheMouse().Hide();
+    game::TheMouse().Hide();
 #if (defined(GERMAN) || defined(FRENCH))
     show.page().view().FillRect(attackxcoord, 160, 319, 178,
                                 kBlack);  // erase "Select country to attack"
@@ -1477,14 +1477,14 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
       }
     }
   }
-  TheKeyboard().Clear();
-  while (TheKeyboard().Peek()) {
-    TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
+  while (game::TheKeyboard().Peek()) {
+    game::TheKeyboard().Clear();
   }
-  while (!TheKeyboard().Peek() && !ControlQ) {
+  while (!game::TheKeyboard().Peek() && !ControlQ) {
     Call_Back_Delay(show, 1);
   }
-  TheKeyboard().Clear();
+  game::TheKeyboard().Clear();
 }
 
 #ifdef NEVER
