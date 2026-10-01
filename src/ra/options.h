@@ -170,6 +170,12 @@ class OptionsClass {
   engine::window::KeyNumber KeyTeam9{engine::window::KN_9};
   engine::window::KeyNumber KeyTeam10{engine::window::KN_0};
 
+  // Maps a brightness or contrast slider position, 0 to 1, to the stored
+  // 1/4 + position / 2 and back. A position the slider can reach reads back
+  // within 1/256 of itself, and the ends read back exactly.
+  static Fixed SliderToSetting(Fixed position);
+  static Fixed SettingToSlider(Fixed setting);
+
   static void Adjust_Palette(const PaletteClass& oldpal, PaletteClass& newpal,
                              Fixed brightness, Fixed color, Fixed tint,
                              Fixed contrast);

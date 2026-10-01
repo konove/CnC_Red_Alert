@@ -301,8 +301,19 @@ void OptionsClass::Set_Sound_Volume(Fixed volume, bool feedback) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Brightness(Fixed brightness) {
-  Brightness = Fixed::kQuarter + Fixed::kHalf * brightness;
+  Brightness = SliderToSetting(brightness);
   ShowPalette(Saturation);
+}
+
+// Fixed holds 1/256 steps, so an odd slider position lands on a half step;
+// rounding it up keeps the rightmost position, 255/256, from reading back as
+// 254/256.
+Fixed OptionsClass::SliderToSetting(Fixed position) {
+  return Fixed::kQuarter + Fixed((position * 256) + 1, 512);
+}
+
+Fixed OptionsClass::SettingToSlider(Fixed setting) {
+  return (setting - Fixed::kQuarter) / Fixed::kHalf;
 }
 
 /***********************************************************************************************
@@ -321,7 +332,7 @@ void OptionsClass::Set_Brightness(Fixed brightness) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 Fixed OptionsClass::Get_Brightness() const {
-  return (Brightness - Fixed::kQuarter) / Fixed::kHalf;
+  return SettingToSlider(Brightness);
 }
 
 /***********************************************************************************************
@@ -376,7 +387,7 @@ Fixed OptionsClass::Get_Saturation() const { return Saturation; }
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Contrast(Fixed contrast) {
-  Contrast = Fixed::kQuarter + Fixed::kHalf * contrast;
+  Contrast = SliderToSetting(contrast);
   ShowPalette(Saturation);
 }
 
@@ -395,9 +406,7 @@ void OptionsClass::Set_Contrast(Fixed contrast) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-Fixed OptionsClass::Get_Contrast() const {
-  return (Contrast - Fixed::kQuarter) / Fixed::kHalf;
-}
+Fixed OptionsClass::Get_Contrast() const { return SettingToSlider(Contrast); }
 
 /***********************************************************************************************
  * OptionsClass::Set_Tint -- Sets the tint setting. *

@@ -74,6 +74,27 @@ TEST(OptionsHotkeysTest, RoundTripsEveryDefault) {
   EXPECT_EQ(loaded.KeySidebarDown, defaults.KeySidebarDown);
 }
 
+// The visual-controls sliders run from 0 to 255 in 1/256 steps. Every
+// position reads back within one step, and the ends exactly: the rightmost
+// used to come back one step to the left.
+TEST(OptionsSliderTest, PositionsSurviveTheStoredSetting) {
+  for (int value = 0; value <= 255; ++value) {
+    const Fixed position(value, 256);
+    const int back =
+        OptionsClass::SettingToSlider(OptionsClass::SliderToSetting(position)) *
+        256;
+    EXPECT_GE(back, value) << "slider " << value;
+    EXPECT_LE(back, value + 1) << "slider " << value;
+  }
+  EXPECT_EQ(OptionsClass::SliderToSetting(Fixed(0)), Fixed::kQuarter);
+  EXPECT_EQ(OptionsClass::SliderToSetting(Fixed(255, 256)), Fixed(3, 4));
+}
+
+TEST(OptionsSliderTest, CentreIsNeutral) {
+  EXPECT_EQ(OptionsClass::SliderToSetting(Fixed::kHalf), Fixed::kHalf);
+  EXPECT_EQ(OptionsClass::SettingToSlider(Fixed::kHalf), Fixed::kHalf);
+}
+
 // A palette whose entries spread over the 6-bit color cube.
 PaletteClass SpreadPalette() {
   PaletteClass palette;
