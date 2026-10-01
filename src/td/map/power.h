@@ -47,10 +47,10 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 #include "td/map/radar.h"
-#include "td/ui/gadget.h"
 
 namespace td {
 
@@ -87,10 +87,10 @@ class PowerClass : public RadarClass {
   /*
   **	This gadget is used to capture mouse input on the power bar.
   */
-  class PowerButtonClass : public GadgetClass {
+  class PowerButtonClass : public game::GadgetClass {
    public:
     PowerButtonClass() noexcept
-        : GadgetClass(
+        : game::GadgetClass(
               0, 0, 0, 0,
               kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
               true) {}

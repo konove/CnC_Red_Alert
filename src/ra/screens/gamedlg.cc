@@ -46,6 +46,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
@@ -63,8 +64,8 @@
 #include "ra/screens/sounddlg.h"
 #include "ra/screens/visudlg.h"
 #include "ra/startup/conquer.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/slider.h"
 #include "ra/ui/textbtn.h"
@@ -175,7 +176,7 @@ void GameControlsClass::Process() {
   int curbutton = 0;
   TextButtonClass* buttons[kButtonCount - kButtonFirst] = {};
 
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   /*
   **	Buttons
@@ -204,7 +205,7 @@ void GameControlsClass::Process() {
   /*
   **	Build button list
   */
-  GadgetClass* commands = &okbtn;  // button list
+  game::GadgetClass* commands = &okbtn;  // button list
   gspeed_btn.Add_Tail(*commands);
   scrate_btn.Add_Tail(*commands);
   visual_btn.Add_Tail(*commands);

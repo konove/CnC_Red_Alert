@@ -41,7 +41,7 @@
 #define CNC_RED_ALERT_RA_UI_TOGGLE_H_
 
 #include "engine/window/keyboard.h"
-#include "ra/ui/control.h"
+#include "game/ui/control.h"
 
 namespace ra {
 
@@ -52,7 +52,7 @@ namespace ra {
 *pressed and released states. They only recognize *	a valid selection when
 *the mouse button is release while over the button.
 */
-class ToggleClass : public ControlClass {
+class ToggleClass : public game::ControlClass {
  public:
   ToggleClass(unsigned id, int x, int y, int w, int h) noexcept;
   void Turn_On();

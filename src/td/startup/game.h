@@ -9,6 +9,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/window/display.h"
 #include "game/core/game_clock.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/ai/special.h"
 #include "td/assets/assets.h"
@@ -24,6 +25,7 @@
 #include "td/startup/game_state.h"
 #include "td/startup/startup_options.h"
 #include "td/startup/winstub.h"
+#include "td/ui/screenshot.h"
 
 namespace td {
 
@@ -44,7 +46,7 @@ namespace td {
 //   delete game;  // In ShutDown().
 class Game {
  public:
-  Game() = default;
+  Game() { game::GadgetClass::Set_Key_Hook(&Screenshot_Key); }
   // Stops the IPX manager listening first: that goes through TheNetwork(),
   // which no longer resolves by the time network_ is destroyed.
   ~Game() { network_.ipx().Stop_Listening(); }

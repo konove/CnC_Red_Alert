@@ -45,9 +45,9 @@
 
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
-#include "td/ui/control.h"
-#include "td/ui/gadget.h"
 
 namespace td {
 
@@ -71,7 +71,7 @@ namespace td {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 ToggleClass::ToggleClass(unsigned id, int x, int y, int w, int h) noexcept
-    : ControlClass(id, x, y, w, h, kLeftPress | kLeftRelease, true) {}
+    : game::ControlClass(id, x, y, w, h, kLeftPress | kLeftRelease, true) {}
 
 /***********************************************************************************************
  * ToggleClass::Turn_On -- Turns the toggle button to the "ON" state. *
@@ -171,7 +171,7 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     IsPressed = true;
     Flag_To_Redraw();
     flags &= ~kLeftPress;
-    ControlClass::Action(flags, key, x, y);
+    game::ControlClass::Action(flags, key, x, y);
     key = engine::window::KN_NONE;  // erase the event
     return true;    // stop processing other buttons now
   }
@@ -191,7 +191,7 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   **	Do normal button processing. This ends up causing the button's ID number
   *to *	be returned from the controlling Input() function.
   */
-  return ControlClass::Action(flags, key, x, y);
+  return game::ControlClass::Action(flags, key, x, y);
 }
 
 }  // namespace td

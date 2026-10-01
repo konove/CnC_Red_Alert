@@ -49,6 +49,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
@@ -62,7 +63,6 @@
 #include "td/startup/conquer.h"
 #include "td/ui/checkbox.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/textbtn.h"
 
 namespace td {
@@ -76,7 +76,7 @@ using enum engine::window::KeyNumber;
 
 void Special_Dialog() {
   SpecialClass oldspecial = TheSpecial();
-  GadgetClass* buttons = nullptr;
+  game::GadgetClass* buttons = nullptr;
   static struct {
     int Description;
     bool Setting;

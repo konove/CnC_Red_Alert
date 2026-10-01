@@ -70,6 +70,8 @@
 #include "game/core/display_constants.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
@@ -94,9 +96,8 @@
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/startup/conquer.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/list.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
@@ -148,7 +149,7 @@ using enum engine::window::KeyNumber;
  *=========================================================================*/
 int MapEditClass::Placement_Dialog() {
   HousesType house = HOUSE_NONE;
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   /*
   **	Dialog & button dimensions
@@ -334,7 +335,7 @@ int MapEditClass::Placement_Dialog() {
       base::At(Objects, LastChoice);  // Working object pointer.  // current
                                       // object to choose
 
-  ControlClass* commands = &nextbtn;
+  game::ControlClass* commands = &nextbtn;
   housebtn.Add_Tail(*commands);
   prevbtn.Add_Tail(*commands);
   okbtn.Add_Tail(*commands);
@@ -1550,7 +1551,8 @@ void MapEditClass::Toggle_House() {
  *   11/23/1994 BR : Created.                                              *
  *   01/26/1996 JLB : Uses new house selection list method.                *
  *=========================================================================*/
-void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass* /*unused*/,
+void MapEditClass::Set_House_Buttons(HousesType house,
+                                     game::GadgetClass* /*unused*/,
                                      int /*unused*/)
 // void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass * btnlist,
 // int base_id)

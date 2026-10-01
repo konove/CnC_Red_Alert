@@ -252,7 +252,7 @@ class WOL_GameSetupDialog {
   int d_action_y = 0;
 
  protected:
-  GadgetClass* commands = nullptr;  //	The controls list.
+  game::GadgetClass* commands = nullptr;  //	The controls list.
 
   std::unique_ptr<IconListClass> pILPlayers;
   std::unique_ptr<IconListClass> pILScens;

@@ -60,13 +60,13 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/assets/assets.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 
 namespace td {
 
@@ -111,7 +111,7 @@ using enum engine::window::KeyNumber;
 EditClass::EditClass(int id, std::span<char> text, int max_len,
                      TextPrintType flags, int x, int y, int w, int h,
                      EditStyle style)
-    : ControlClass(static_cast<unsigned>(id), x, y, w, h, kLeftPress),
+    : game::ControlClass(static_cast<unsigned>(id), x, y, w, h, kLeftPress),
       TextFlags(flags),
       EditFlags(style),
       String(text) {
@@ -192,7 +192,7 @@ void EditClass::Set_Text(std::span<char> text, int max_len) {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 bool EditClass::Draw_Me(PixelView& view, bool forced) {
-  if (ControlClass::Draw_Me(view, forced)) {
+  if (game::ControlClass::Draw_Me(view, forced)) {
     /*
     **	Draw the body & set text color.
     */
@@ -284,7 +284,7 @@ bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     }
   }
 
-  return ControlClass::Action(flags, key, x, y);
+  return game::ControlClass::Action(flags, key, x, y);
 }
 
 /***********************************************************************************************

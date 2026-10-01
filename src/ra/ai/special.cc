@@ -59,6 +59,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palettes.h"
@@ -76,9 +77,9 @@
 #include "ra/net/session.h"
 #include "ra/startup/conquer.h"
 #include "ra/ui/checkbox.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/slider.h"
 #include "ra/ui/textbtn.h"
 
@@ -134,7 +135,7 @@ void SpecialClass::Init() {
  *=============================================================================================*/
 void Special_Dialog(bool simple) {
   SpecialClass oldspecial = TheSpecial();
-  GadgetClass* buttons = nullptr;
+  game::GadgetClass* buttons = nullptr;
   struct {
     int Description;
     bool Setting;
@@ -203,8 +204,7 @@ void Special_Dialog(bool simple) {
 
       for (const auto& _option : _options) {
         Fancy_Text_Print(view, _option.Description, _option.Button->X + 20,
-                         _option.Button->Y, GadgetClass::Get_Color_Scheme(),
-                         kTBlack,
+                         _option.Button->Y, Get_Color_Scheme(), kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All(view);
@@ -422,8 +422,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Draw the body of the message box.
   */
-  Fancy_Text_Print(view, buffer, x + 40, y + 50,
-                   GadgetClass::Get_Color_Scheme(), kTBlack,
+  Fancy_Text_Print(view, buffer, x + 40, y + 50, Get_Color_Scheme(), kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
@@ -521,7 +520,7 @@ int Fetch_Difficulty(bool amath) {
   */
   TextButtonClass okbutton(1, TXT_OK, kTpfButton, x + w - (bwidth + 40),
                            y + h - 36, bwidth);
-  GadgetClass* buttonlist = &okbutton;
+  game::GadgetClass* buttonlist = &okbutton;
 
   /*
   **	Create the slider button.
@@ -555,23 +554,22 @@ int Fetch_Difficulty(bool amath) {
       **	Draw the body of the message.
       */
       //			Fancy_Text_Print(buffer, x + 20*2, y +
-      // 15*2, GadgetClass::Get_Color_Scheme(), TBLACK,
+      // 15*2, Get_Color_Scheme(), TBLACK,
       // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_NOSHADOW);
-      Fancy_Text_Print(view, buffer, x + 40, y + 30,
-                       GadgetClass::Get_Color_Scheme(), kTBlack,
-                       TPF_6PT_GRAD | TPF_NOSHADOW);
+      Fancy_Text_Print(view, buffer, x + 40, y + 30, Get_Color_Scheme(),
+                       kTBlack, TPF_6PT_GRAD | TPF_NOSHADOW);
 
       /*
       **	Display the descripton of the slider range.
       */
       Fancy_Text_Print(view, TXT_HARD, slider.X + slider.Width, slider.Y - 18,
-                       GadgetClass::Get_Color_Scheme(), kTBlack,
+                       Get_Color_Scheme(), kTBlack,
                        TPF_RIGHT | TPF_6PT_GRAD | TPF_DROPSHADOW);
       Fancy_Text_Print(view, TXT_EASY, slider.X, slider.Y - 18,
-                       GadgetClass::Get_Color_Scheme(), kTBlack,
+                       Get_Color_Scheme(), kTBlack,
                        TPF_6PT_GRAD | TPF_DROPSHADOW);
       Fancy_Text_Print(view, TXT_NORMAL, slider.X + (slider.Width / 2),
-                       slider.Y - 18, GadgetClass::Get_Color_Scheme(), kTBlack,
+                       slider.Y - 18, Get_Color_Scheme(), kTBlack,
                        TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
 
       /*

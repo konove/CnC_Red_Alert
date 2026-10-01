@@ -82,6 +82,8 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/taction.h"
@@ -104,11 +106,10 @@
 #include "ra/map/world.h"
 #include "ra/objects/type.h"
 #include "ra/startup/conquer.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/drop.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/textbtn.h"
 
 namespace ra {
@@ -344,12 +345,12 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Dialog variables:
   */
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   /*
   **	Buttons
   */
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   /*
   **	List of events allowed.
@@ -2233,7 +2234,7 @@ void TriggerTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                                int width, int height, bool selected,
                                TextPrintType flags) const {
   if (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+    RemapControlType* scheme = Get_Color_Scheme();
     static const int _tabs[] = {13, 40};
     if (Is_Font(flags, TPF_6PT_GRAD) || Is_Font(flags, TPF_EFNT)) {
       if (selected) {

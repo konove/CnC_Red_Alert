@@ -75,8 +75,8 @@
 #include "ra/map/world.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -184,7 +184,7 @@ base::EnumArray<TEventType, EventChoiceClass, static_cast<int>(TEVENT_COUNT)>
 void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                                int width, int height, bool selected,
                                TextPrintType flags) const {
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
   static const int _tabs[] = {13, 40};
   if (Is_Font(flags, TPF_6PT_GRAD) || Is_Font(flags, TPF_EFNT)) {
     if (selected) {

@@ -68,6 +68,8 @@
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
 #include "game/sim/enums.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
@@ -102,11 +104,10 @@
 #include "ra/startup/conquer.h"
 #include "ra/ui/checkbox.h"
 #include "ra/ui/cheklist.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/drop.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/list.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/slider.h"
@@ -620,7 +621,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Buttons
     */
-    ControlClass* commands = nullptr;  // the button list
+    game::ControlClass* commands = nullptr;  // the button list
     EditClass editbtn(kButtonScenario, scen_buf, 5, TPF_EFNT | TPF_NOSHADOW,
                       kDScenX, kDScenY, kDScenW, kDScenH,
                       EditClass::kAlphanumeric);
@@ -805,7 +806,7 @@ int MapEditClass::Load_Scenario() {
         Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
         Draw_Caption(view, caption, kDDialogX, kDDialogY, kDDialogW);
         Fancy_Text_Print(view, "Scenario", kDDialogCx - 5, kDScenY,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
+                         Get_Color_Scheme(), kTBlack,
                          TPF_RIGHT | TPF_EFNT | TPF_NOSHADOW);
         commands->Draw_All(view);
         game::TheMouse().Show();
@@ -1090,12 +1091,12 @@ int MapEditClass::Load_Scenario() {
                                       //// for drawing map symbology
     int color = 0;                    // for drawing map symbology
     ObjectClass* occupier = nullptr;  // cell's occupier
-    const RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+    const RemapControlType* scheme = Get_Color_Scheme();
 
     /*
     **	Buttons
     */
-    ControlClass* commands = nullptr;
+    game::ControlClass* commands = nullptr;
 
     TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfEButton, kDOkX, kDOkY, kDOkW,
                           kDOkH);
@@ -1220,24 +1221,20 @@ int MapEditClass::Load_Scenario() {
             */
             txt_x = kDDialogX + (kDDialogW / 8);
             txt_y = kDDialogY + kDDialogH - kDOkH - 43;
-            Fancy_Text_Print(view, "  X", txt_x, txt_y,
-                             GadgetClass::Get_Color_Scheme(), kTBlack,
-                             TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
+            Fancy_Text_Print(view, "  X", txt_x, txt_y, Get_Color_Scheme(),
+                             kTBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
 
             txt_x += (kDDialogW - 20) / 4;
-            Fancy_Text_Print(view, "  Y", txt_x, txt_y,
-                             GadgetClass::Get_Color_Scheme(), kTBlack,
-                             TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
+            Fancy_Text_Print(view, "  Y", txt_x, txt_y, Get_Color_Scheme(),
+                             kTBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
 
             txt_x += (kDDialogW - 20) / 4;
-            Fancy_Text_Print(view, " Width", txt_x, txt_y,
-                             GadgetClass::Get_Color_Scheme(), kTBlack,
-                             TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
+            Fancy_Text_Print(view, " Width", txt_x, txt_y, Get_Color_Scheme(),
+                             kTBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
 
             txt_x += (kDDialogW - 20) / 4;
-            Fancy_Text_Print(view, " Height", txt_x, txt_y,
-                             GadgetClass::Get_Color_Scheme(), kTBlack,
-                             TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
+            Fancy_Text_Print(view, " Height", txt_x, txt_y, Get_Color_Scheme(),
+                             kTBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
 
             view.Unlock();
           }
@@ -1344,27 +1341,23 @@ int MapEditClass::Load_Scenario() {
           */
           txt_x = kDDialogX + (kDDialogW / 8);
           txt_y = kDDialogY + kDDialogH - kDOkH - 32;
-          Fancy_Text_Print(view, "%5d", txt_x, txt_y,
-                           GadgetClass::Get_Color_Scheme(), kBlack,
-                           TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+          Fancy_Text_Print(view, "%5d", txt_x, txt_y, Get_Color_Scheme(),
+                           kBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
                            map_x1 - kDBordX1 - 1);
 
           txt_x += (kDDialogW - 20) / 4;
-          Fancy_Text_Print(view, "%5d", txt_x, txt_y,
-                           GadgetClass::Get_Color_Scheme(), kBlack,
-                           TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+          Fancy_Text_Print(view, "%5d", txt_x, txt_y, Get_Color_Scheme(),
+                           kBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
                            map_y1 - kDBordY1 - 1);
 
           txt_x += (kDDialogW - 20) / 4;
-          Fancy_Text_Print(view, "%5d", txt_x, txt_y,
-                           GadgetClass::Get_Color_Scheme(), kBlack,
-                           TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+          Fancy_Text_Print(view, "%5d", txt_x, txt_y, Get_Color_Scheme(),
+                           kBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
                            map_x2 - map_x1 + 1);
 
           txt_x += (kDDialogW - 20) / 4;
-          Fancy_Text_Print(view, "%5d", txt_x, txt_y,
-                           GadgetClass::Get_Color_Scheme(), kBlack,
-                           TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+          Fancy_Text_Print(view, "%5d", txt_x, txt_y, Get_Color_Scheme(),
+                           kBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
                            map_y2 - map_y1 + 1);
 
           view.Unlock();
@@ -1702,7 +1695,7 @@ int MapEditClass::Load_Scenario() {
 
     PixelView& view = TheScreen().visible_view();
 
-    ControlClass* commands = nullptr;  // the button list
+    game::ControlClass* commands = nullptr;  // the button list
 
     /*
     **	Theater choice drop down list.
@@ -2144,93 +2137,71 @@ int MapEditClass::Load_Scenario() {
         *entire dialog *	needs to be redrawn.
         */
         Fancy_Text_Print(view, "Tech Level =", techlevel.X, techlevel.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Credits =", creditbtn.X, creditbtn.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Unit Max =", maxunit.X, maxunit.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "IQ =", smarties.X, smarties.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Prebuild Base:", basebtn.X, basebtn.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Theater:", theaterbtn.X, theaterbtn.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Scenario Name:", desc.X, desc.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Country:", housebtn.X, housebtn.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Home Edge:", sourcebtn.X, sourcebtn.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Allies:", allies.X, allies.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Plyr Control:", control.X, control.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Theme:", themebtn.X, themebtn.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Intro:", intro.X, intro.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Briefing:", briefing.X, briefing.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Action:", action.X, action.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print(view, "Win:", win.X, win.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print(view, "Lose:", lose.X, lose.Y - 7,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
+        Fancy_Text_Print(view, "Win:", win.X, win.Y - 7, Get_Color_Scheme(),
+                         kTBlack, TPF_EFNT | TPF_NOSHADOW);
+        Fancy_Text_Print(view, "Lose:", lose.X, lose.Y - 7, Get_Color_Scheme(),
+                         kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Store scenario?", record.X + 10, record.Y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Inherit stored scenario?", inherit.X + 10,
-                         inherit.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
+                         inherit.Y, Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Auto evac. Tanya (civilian)?", tanya.X + 10,
-                         tanya.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
+                         tanya.Y, Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Last mission of game?", endofgame.X + 10,
-                         endofgame.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
+                         endofgame.Y, Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Inherit mission timer from last scenario?",
-                         timercarry.X + 10, timercarry.Y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         timercarry.X + 10, timercarry.Y, Get_Color_Scheme(),
+                         kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Disable spy plane?", nospyplane.X + 10,
-                         nospyplane.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
+                         nospyplane.Y, Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Skip the score screen?", skipscore.X + 10,
-                         skipscore.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
+                         skipscore.Y, Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "No map selection (force var 'B')?",
-                         nomapsel.X + 10, nomapsel.Y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         nomapsel.X + 10, nomapsel.Y, Get_Color_Scheme(),
+                         kTBlack, TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Return to main menu after scenario finishes?",
-                         onetime.X + 10, onetime.Y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
+                         onetime.X + 10, onetime.Y, Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Truck carries wood crate?", truckcrate.X + 10,
-                         truckcrate.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
+                         truckcrate.Y, Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
         Fancy_Text_Print(view, "Initial money is transferred to silos?",
-                         moneytib.X + 10, moneytib.Y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
+                         moneytib.X + 10, moneytib.Y, Get_Color_Scheme(),
+                         kTBlack, TPF_EFNT | TPF_NOSHADOW);
 
         theaterbtn.Collapse();
         themebtn.Collapse();
@@ -2692,7 +2663,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Buttons
     */
-    ControlClass* commands = nullptr;  // the button list
+    game::ControlClass* commands = nullptr;  // the button list
 
     TListClass<CCPtr<TriggerTypeClass> > triggerlist(
         kTriggerList, kDListX, kDListY, kDListW, kDListH,

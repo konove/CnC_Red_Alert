@@ -46,11 +46,11 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/map/display.h"
 #include "ra/objects/house.h"
-#include "ra/ui/gadget.h"
 
 class ArchiveReader;
 class ArchiveWriter;
@@ -181,10 +181,10 @@ class RadarClass : public DisplayClass {
   **	This gadget class is used for capturing input to the tactical map. All
   *mouse input *	will be routed through this gadget.
   */
-  class RTacticalClass : public GadgetClass {
+  class RTacticalClass : public game::GadgetClass {
    public:
     RTacticalClass() noexcept
-        : GadgetClass(
+        : game::GadgetClass(
               0, 0, 0, 0,
               kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
               true) {}

@@ -55,6 +55,8 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/compat.h"
 #include "ra/assets/installation.h"
@@ -74,9 +76,8 @@
 #include "ra/startup/game_state.h"
 #include "ra/startup/init.h"
 #include "ra/startup/version.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
 
@@ -575,7 +576,7 @@ int Main_Menu(int32_t /*unused*/) {
   /*
   **	Buttons
   */
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   int ystep = 28;
   if (bExpansionCS) {
@@ -711,9 +712,9 @@ int Main_Menu(int32_t /*unused*/) {
       // d_dialog_y, d_dialog_w);
       commands->Draw_All(hidden);
       Fancy_Text_Print(hidden, "V%s", d_dialog_x + d_dialog_w - 36,
-                       d_dialog_y + d_dialog_h - 10,
-                       GadgetClass::Get_Color_Scheme(), kTBlack,
-                       TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Version_Name());
+                       d_dialog_y + d_dialog_h - 10, Get_Color_Scheme(),
+                       kTBlack, TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT,
+                       Version_Name());
 
       /*
       **	Copy the menu to the visible page.

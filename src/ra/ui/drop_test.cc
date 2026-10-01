@@ -3,11 +3,11 @@
 #include "ra/ui/drop.h"
 
 #include "base/installed.h"
+#include "game/ui/gadget.h"
 #include "gtest/gtest.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palettes.h"
 #include "ra/core/defines.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -26,7 +26,7 @@ class DropListClassTest : public testing::Test {
   // No arrow shapes: the tests never draw.
   DropListClass drop_{1, text_, sizeof(text_), TPF_6POINT, 0, 0, 100, 40,
                       {}, {}};
-  GadgetClass button_{0, 0, 10, 10, 0};
+  game::GadgetClass button_{0, 0, 10, 10, 0};
 };
 
 // Adding to a list returns the head of the chain, which a dialog's chain

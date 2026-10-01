@@ -58,6 +58,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
@@ -66,7 +67,7 @@
 #include "ra/map/radar.h"
 #include "ra/map/world.h"
 #include "ra/objects/house.h"
-#include "ra/ui/gadget.h"
+#include "ra/ui/color_scheme.h"
 
 namespace ra {
 
@@ -450,7 +451,7 @@ bool PowerClass::PowerButtonClass::Action(unsigned flags,
   } else {
     TheMap().Help_Text(TXT_POWER_OUTPUT, -1, -1, Get_Color_Scheme()->Color);
   }
-  GadgetClass::Action(flags, key, x, y);
+  game::GadgetClass::Action(flags, key, x, y);
   return true;
 }
 

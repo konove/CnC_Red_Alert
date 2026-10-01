@@ -31,6 +31,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
@@ -38,9 +39,9 @@
 #include "ra/data/text_ids.h"
 #include "ra/startup/conquer.h"
 #include "ra/startup/game_state.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/woledit.h"
 
@@ -166,7 +167,7 @@ const char* SimpleEditDlgClass::Show() {
   /*
   **	Buttons
   */
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass OkBtn(kButtonOk, szOkButton, kTpfButton, d_ok_x, d_ok_y,
                         d_ok_w);
@@ -235,10 +236,10 @@ const char* SimpleEditDlgClass::Show() {
       **	Redraw the buttons.
       */
       Fancy_Text_Print(view, szPrompt.c_str(), d_prompt_x, d_prompt_y,
-                       GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
+                       Get_Color_Scheme(), kTBlack, kTpfText);
       if (!szPrompt2.empty()) {
         Fancy_Text_Print(view, szPrompt2.c_str(), d_prompt2_x, d_prompt2_y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
+                         Get_Color_Scheme(), kTBlack, kTpfText);
       }
       commands->Flag_List_To_Redraw();
       game::TheMouse().Show();

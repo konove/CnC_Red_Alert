@@ -46,12 +46,12 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/ui/gadget.h"
 #include "ra/core/defines.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
-class TextLabelClass : public GadgetClass {
+class TextLabelClass : public game::GadgetClass {
  public:
   /*
   ** Constructor/Destructor

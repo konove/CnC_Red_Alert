@@ -53,6 +53,8 @@
 #include "engine/net/ipxmgr.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/palette.h"
@@ -70,9 +72,8 @@
 #include "ra/net/session.h"
 #include "ra/startup/conquer.h"
 #include "ra/startup/init.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/list.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
@@ -174,7 +175,7 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   //------------------------------------------------------------------------
   // If IPX not active then do only the modem serial dialog
@@ -517,7 +518,7 @@ int Surrender_Dialog(const char* text) {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfButton, kDOkX, kDOkY, kDOkW,
                         kDOkH);
@@ -576,8 +577,7 @@ int Surrender_Dialog(const char* text) {
       //...............................................................
       // Stalemate games.
       Fancy_Text_Print(view, text, kDDialogCx, kDDialogY + kDTopmargin,
-                       GadgetClass::Get_Color_Scheme(), kTBlack,
-                       TPF_CENTER | kTpfText);
+                       Get_Color_Scheme(), kTBlack, TPF_CENTER | kTpfText);
 
       //..................................................................
       //	Redraw the buttons
@@ -700,7 +700,7 @@ int Abort_Dialog() {
   //------------------------------------------------------------------------
   //	Buttons
   //------------------------------------------------------------------------
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass yesbtn(kButtonYes, TXT_YES, kTpfButton, kDYesX, kDYesY,
                          kDYesW, kDYesH);
@@ -758,8 +758,8 @@ int Abort_Dialog() {
       //	Draw the captions
       //...............................................................
       Fancy_Text_Print(view, Text_String(TXT_CONFIRM_EXIT), kDDialogCx,
-                       kDDialogY + kDTopmargin, GadgetClass::Get_Color_Scheme(),
-                       kTBlack, TPF_CENTER | kTpfText);
+                       kDDialogY + kDTopmargin, Get_Color_Scheme(), kTBlack,
+                       TPF_CENTER | kTpfText);
 
       //..................................................................
       //	Redraw the buttons

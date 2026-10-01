@@ -57,15 +57,15 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "game/ui/gadget.h"
 #include "td/core/defines.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 
 namespace td {
 
 TextLabelClass::TextLabelClass(char* txt, int x, int y, int color,
                                TextPrintType style)
-    : GadgetClass(x, y, 1, 1, 0, false),
+    : game::GadgetClass(x, y, 1, 1, 0, false),
       Style(style),
       Text(txt),
       Color(color) {}
@@ -83,7 +83,7 @@ TextLabelClass::TextLabelClass(char* txt, int x, int y, int color,
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 bool TextLabelClass::Draw_Me(PixelView& view, bool forced) {
-  if (GadgetClass::Draw_Me(view, forced)) {
+  if (game::GadgetClass::Draw_Me(view, forced)) {
     if (PixWidth == -1) {
       Fancy_Text_Print(view, "%s", X, Y, Color, kTBlack, Style, Text);
     } else {

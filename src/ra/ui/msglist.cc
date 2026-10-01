@@ -77,13 +77,13 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/txtlabel.h"
 
 namespace ra {
@@ -1180,7 +1180,7 @@ int MessageListClass::Num_Messages() {
   int num = 0;
 
   if (MessageList) {
-    GadgetClass* gadg = MessageList;
+    game::GadgetClass* gadg = MessageList;
     while (gadg) {
       num++;
       gadg = gadg->Get_Next();
@@ -1213,7 +1213,7 @@ int MessageListClass::Num_Messages() {
 void MessageListClass::Set_Width(int width) {
 
   if (MessageList) {
-    GadgetClass* gadg = MessageList;
+    game::GadgetClass* gadg = MessageList;
     while (gadg) {
       dynamic_cast<TextLabelClass*>(gadg)->PixWidth = width;
       gadg = gadg->Get_Next();
@@ -1351,7 +1351,7 @@ void MessageListClass::Compute_Y() {
     y = MessageY;
   }
   if (MessageList) {
-    GadgetClass* gadg = MessageList;
+    game::GadgetClass* gadg = MessageList;
     while (gadg) {
       gadg->Y = y;
       gadg = gadg->Get_Next();

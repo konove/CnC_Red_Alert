@@ -31,12 +31,13 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -53,8 +54,8 @@ constexpr int kCompassTenths[8][2] = {{0, -10}, {7, -7}, {10, 0},  {7, 7},
 DirectionDial::DirectionDial(const int id, const int x, const int y,
                              const int width, const int height,
                              const game::DirType initial_direction)
-    : ControlClass(static_cast<unsigned>(id), x, y, width, height,
-                   kLeftPress | kLeftHeld | kLeftRelease, true),
+    : game::ControlClass(static_cast<unsigned>(id), x, y, width, height,
+                         kLeftPress | kLeftHeld | kLeftRelease, true),
       center_x_(X + (Width / 2)),
       center_y_(Y + (Height / 2)),
       direction_(initial_direction),
@@ -93,13 +94,13 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
     if (facing_ != old_facing) {
       // Report the change: ControlClass::Action notifies the peer, replaces
       // `key` with the button ID for the owner and asks for a redraw.
-      ControlClass::Action(flags, key, x, y);
+      game::ControlClass::Action(flags, key, x, y);
     } else {
       // The dial has not moved; kill the event so the owner sees nothing.
       // ControlClass::Action leaves `key` alone when given no flags, so it
       // has to be cleared here.
       key = engine::window::KN_NONE;
-      ControlClass::Action(0, key, x, y);
+      game::ControlClass::Action(0, key, x, y);
     }
     return true;
   }
@@ -107,12 +108,12 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
   if (flags & kLeftRelease) {
     key = engine::window::KN_NONE;
   }
-  return ControlClass::Action(0, key, x, y);
+  return game::ControlClass::Action(0, key, x, y);
 }
 
 bool DirectionDial::Draw_Me(PixelView& view, const bool forced) {
   // Redraw only if the parent says a redraw is needed.
-  if (!ControlClass::Draw_Me(view, forced)) {
+  if (!game::ControlClass::Draw_Me(view, forced)) {
     return false;
   }
   const RemapControlType* scheme = Get_Color_Scheme();

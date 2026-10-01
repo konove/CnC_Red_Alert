@@ -86,6 +86,8 @@
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/facing.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
@@ -118,11 +120,10 @@
 #include "ra/startup/conquer.h"
 #include "ra/startup/game_state.h"
 #include "ra/startup/startup.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/direction_dial.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
 #include "ra/ui/list.h"
 #include "ra/ui/msgbox.h"
@@ -192,9 +193,9 @@ void MapEditClass::One_Time() {
   /*
   **	The map: a single large "button"
   */
-  MapArea = std::make_unique<ControlClass>(
+  MapArea = std::make_unique<game::ControlClass>(
       kMapArea, 0, 8, 640 - 8, 400 - 8,
-      GadgetClass::kLeftPress | GadgetClass::kLeftRelease, false);
+      game::GadgetClass::kLeftPress | game::GadgetClass::kLeftRelease, false);
 
   /*
   **	House buttons
@@ -237,7 +238,7 @@ void MapEditClass::One_Time() {
   HealthBuf[0] = 0;
   HealthText = std::make_unique<TextLabelClass>(
       HealthBuf, kPopupHealthX + (kPopupHealthW / 2),
-      kPopupHealthY + kPopupHealthH + 1, GadgetClass::Get_Color_Scheme(),
+      kPopupHealthY + kPopupHealthH + 1, Get_Color_Scheme(),
       TPF_CENTER | TPF_FULLSHADOW | TPF_EFNT);
 
   /*
@@ -264,8 +265,8 @@ void MapEditClass::One_Time() {
   // caption needs storage that outlives this call and is not a literal.
   static char base_caption[] = "Base:";
   BaseLabel = std::make_unique<TextLabelClass>(
-      base_caption, kPopupBaseX - 3, kPopupBaseY,
-      GadgetClass::Get_Color_Scheme(), TPF_RIGHT | TPF_NOSHADOW | TPF_EFNT);
+      base_caption, kPopupBaseX - 3, kPopupBaseY, Get_Color_Scheme(),
+      TPF_RIGHT | TPF_NOSHADOW | TPF_EFNT);
   BaseGauge->Set_Maximum(100);
   BaseGauge->Set_Value(TheScenario().Percent);
 }
@@ -1417,8 +1418,7 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
   /*
   **	Display the total value of all Tiberium on the map.
   */
-  Fancy_Text_Print(view, "Tiberium=%ld   ", 0, 0,
-                   GadgetClass::Get_Color_Scheme(), kBlack,
+  Fancy_Text_Print(view, "Tiberium=%ld   ", 0, 0, Get_Color_Scheme(), kBlack,
                    TPF_EFNT | TPF_NOSHADOW, TotalValue);
 
   /*
@@ -1963,7 +1963,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
   /*
   **	Buttons
   */
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass button(kButtonOk, TXT_OK, kTpfEButton, kButtonX, kButtonY,
                          kButtonW);

@@ -47,11 +47,11 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "td/core/defines.h"
 #include "td/map/power.h"
 #include "td/objects/stage.h"
-#include "td/ui/control.h"
-#include "td/ui/gadget.h"
 #include "td/ui/shapebtn.h"
 
 class ArchiveReader;
@@ -119,7 +119,7 @@ class SidebarClass : public PowerClass {
   **	actions.
   */
   class StripClass : public StageClass {
-    class SelectClass : public ControlClass {
+    class SelectClass : public game::ControlClass {
      public:
       SelectClass() noexcept;
 
@@ -351,11 +351,11 @@ class SidebarClass : public PowerClass {
   */
   bool IsSidebarToRedraw : 1 {true};
 
-  class SBGadgetClass : public GadgetClass {
+  class SBGadgetClass : public game::GadgetClass {
    public:
     //				SBGadgetClass() : GadgetClass(SIDE_X+8,
     // SIDE_Y, SIDE_WIDTH-1, SIDE_HEIGHT-1, kLeftUp) {};
-    SBGadgetClass() noexcept : GadgetClass(0, 0, 0, 0, kLeftUp) {}
+    SBGadgetClass() noexcept : game::GadgetClass(0, 0, 0, 0, kLeftUp) {}
 
    protected:
     bool Action(unsigned flags, engine::window::KeyNumber& key, int x,

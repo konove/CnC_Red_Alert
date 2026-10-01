@@ -52,6 +52,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 #include "td/map/layer.h"
@@ -60,7 +61,6 @@
 #include "td/objects/object.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
-#include "td/ui/gadget.h"
 
 class ArchiveReader;
 class ArchiveWriter;
@@ -292,10 +292,10 @@ class DisplayClass : public MapClass {
   **	This gadget class is used for capturing input to the tactical map. All
   *mouse input *	will be routed through this gadget.
   */
-  class TacticalClass : public GadgetClass {
+  class TacticalClass : public game::GadgetClass {
    public:
     TacticalClass() noexcept
-        : GadgetClass(
+        : game::GadgetClass(
               0, 0, 0, 0,
               kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
               true) {}

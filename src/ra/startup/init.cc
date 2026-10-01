@@ -163,8 +163,8 @@
 #include "ra/startup/game_state.h"
 #include "ra/startup/startup.h"
 #include "ra/startup/startup_options.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/msglist.h"
 #include "ra/wol/wol_main.h"
@@ -1838,9 +1838,8 @@ static void Init_Color_Remaps() {
   ThePalettes().color_remaps().at(PCOLOR_TYPE).BrightColor = 15;
   ThePalettes().color_remaps().at(PCOLOR_TYPE).Color = 9;
 
-  GadgetClass::Set_Color_Scheme(
-      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));
-  //	GadgetClass::Set_Color_Scheme(&ColorRemaps[PCOLOR_BLUE]);
+  Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));
+  //	Set_Color_Scheme(&ColorRemaps[PCOLOR_BLUE]);
 }
 
 /***********************************************************************************************
@@ -2333,7 +2332,7 @@ static void Bootstrap() {
   SidebarScheme.Bright = kWhite;
   SidebarScheme.BrightColor = kWhite;
   SidebarScheme.Box = kLtGrey;
-  GadgetClass::Set_Color_Scheme(&SidebarScheme);
+  Set_Color_Scheme(&SidebarScheme);
 }
 
 /***********************************************************************************************

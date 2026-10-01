@@ -47,6 +47,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
@@ -61,7 +62,6 @@
 #include "td/screens/visudlg.h"
 #include "td/startup/conquer.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/slider.h"
 #include "td/ui/textbtn.h"
@@ -180,7 +180,7 @@ void GameControlsClass::Process() {
   /*
   **	Build button list
   */
-  GadgetClass* commands = &okbtn;  // button list
+  game::GadgetClass* commands = &okbtn;  // button list
   gspeed_btn.Add_Tail(*commands);
   scrate_btn.Add_Tail(*commands);
   visual_btn.Add_Tail(*commands);

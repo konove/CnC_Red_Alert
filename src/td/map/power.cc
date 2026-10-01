@@ -62,6 +62,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
@@ -70,7 +71,6 @@
 #include "td/map/world.h"
 #include "td/objects/house.h"
 #include "td/startup/conquer.h"
-#include "td/ui/gadget.h"
 
 namespace td {
 
@@ -473,7 +473,7 @@ bool PowerClass::PowerButtonClass::Action(unsigned flags,
   } else {
     TheMap().Help_Text(TXT_POWER_OUTPUT, -1, -1, kCcGreen);
   }
-  GadgetClass::Action(flags, key, x, y);
+  game::GadgetClass::Action(flags, key, x, y);
   return true;
 }
 

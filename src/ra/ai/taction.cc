@@ -106,8 +106,8 @@
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
 #include "ra/screens/movie.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/msglist.h"
 
 namespace ra {
@@ -220,7 +220,7 @@ base::EnumArray<TActionType, ActionChoiceClass, static_cast<int>(TACTION_COUNT)>
 void ActionChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                                 int width, int height, bool selected,
                                 TextPrintType flags) const {
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
   static const int _tabs[] = {13, 40};
   const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
   if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||

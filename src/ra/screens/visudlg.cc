@@ -49,6 +49,8 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
@@ -58,9 +60,8 @@
 #include "ra/net/session.h"
 #include "ra/screens/goptions.h"
 #include "ra/startup/conquer.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/slider.h"
 #include "ra/ui/textbtn.h"
 
@@ -186,18 +187,18 @@ void VisualControlsClass::Process() {
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  GadgetClass dialog(option_x, option_y, option_width, option_height,
-                     GadgetClass::kLeftPress);
+  game::GadgetClass dialog(option_x, option_y, option_width, option_height,
+                           game::GadgetClass::kLeftPress);
   dialog.Add_Tail(optionsbtn);
 
   /*
   **	This causes a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to options dialog.
   */
-  ControlClass background(kButtonOptions, 0, 0,
-                          TheScreen().visible_view().width(),
-                          TheScreen().visible_view().height(),
-                          GadgetClass::kLeftPress | GadgetClass::kRightPress);
+  game::ControlClass background(
+      kButtonOptions, 0, 0, TheScreen().visible_view().width(),
+      TheScreen().visible_view().height(),
+      game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress);
   background.Add_Tail(optionsbtn);
 
   int curbutton = 0;
@@ -258,8 +259,8 @@ void VisualControlsClass::Process() {
       */
       for (int i = 0; i < std::ssize(_titles); i++) {
         Fancy_Text_Print(view, SliderTitle(base::At(_titles, i)), slider_x - 16,
-                         text_y + (i * slider_y_spacing),
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
+                         text_y + (i * slider_y_spacing), Get_Color_Scheme(),
+                         kTBlack,
                          kTpfText | TPF_RIGHT |
                              (curbutton == i ? TPF_BRIGHT_COLOR : kTpfText));
       }

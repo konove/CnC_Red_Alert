@@ -65,17 +65,18 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 
 namespace td {
 
 GaugeClass::GaugeClass(unsigned id, int x, int y, int w, int h)
-    : ControlClass(id, x, y, w, h, kLeftHeld | kLeftPress | kLeftRelease, true),
+    : game::ControlClass(id, x, y, w, h, kLeftHeld | kLeftPress | kLeftRelease,
+                         true),
       IsHorizontal(w > h) {
   // Set the range directly. Set_Maximum and Set_Value are virtual -- SliderClass
   // overrides both to recalculate the thumb -- so a constructor cannot reach the
@@ -213,7 +214,7 @@ int GaugeClass::Value_To_Pixel(int value) {
  * HISTORY:    01/16/1995 JLB : Created. *
  *=============================================================================================*/
 bool GaugeClass::Draw_Me(PixelView& view, bool forced) {
-  if (ControlClass::Draw_Me(view, forced)) {
+  if (game::ControlClass::Draw_Me(view, forced)) {
     /*
     =========== Draw the body & set text color ===============
     */
@@ -326,7 +327,7 @@ bool GaugeClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     if (!Set_Value(Pixel_To_Value(IsHorizontal
                                       ? game::TheMouse().x() - ClickDiff
                                       : game::TheMouse().y() - ClickDiff))) {
-      ControlClass::Action(0, key, x, y);
+      game::ControlClass::Action(0, key, x, y);
       key = engine::window::KN_NONE;
       return true;
     }
@@ -340,7 +341,7 @@ bool GaugeClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     */
     flags &= ~kLeftHeld;
   }
-  return ControlClass::Action(flags, key, x, y);
+  return game::ControlClass::Action(flags, key, x, y);
 }
 
 /***********************************************************************************************
@@ -458,7 +459,7 @@ bool TriColorGaugeClass::Draw_Me(PixelView& view, bool forced) {
   // The tri-colour body below replaces GaugeClass's single-colour one, so this
   // takes only the repaint-flag and peer handling from ControlClass.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-  if (ControlClass::Draw_Me(view, forced)) {
+  if (game::ControlClass::Draw_Me(view, forced)) {
     /*
     =========== Draw the body & set text color ===============
     */

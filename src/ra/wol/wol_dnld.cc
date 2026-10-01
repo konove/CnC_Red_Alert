@@ -26,6 +26,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -37,7 +38,6 @@
 #include "ra/startup/conquer.h"
 #include "ra/startup/init.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/statbtn.h"
@@ -140,7 +140,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   bool process = true;
   RedrawType display = REDRAW_ALL;  // redraw level
 
-  GadgetClass* commands = &cancelbtn;  // button list
+  game::GadgetClass* commands = &cancelbtn;  // button list
   progress_meter.Add_Tail(*commands);
   StatTitle.Add_Tail(*commands);
   StatBytes.Add_Tail(*commands);
@@ -175,7 +175,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
         //				Fancy_Text_Print(info_string,
         // d_dialog_cx-width/2, d_dialog_y + 25*2,
-        //									GadgetClass::Get_Color_Scheme(),
+        //									Get_Color_Scheme(),
         // TBLACK,
         // TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 

@@ -59,15 +59,15 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "ra/ai/teamtype.h"
 #include "ra/core/defines.h"
 #include "ra/data/ccini.h"
 #include "ra/map/mouse.h"
 #include "ra/objects/object.h"
 #include "ra/objects/type.h"
-#include "ra/ui/control.h"
 #include "ra/ui/direction_dial.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
 #include "ra/ui/list.h"
 #include "ra/ui/textbtn.h"
@@ -232,7 +232,8 @@ class MapEditClass : public MouseClass {
   void Place_Prev_Category();
   void Place_Home();
   void Toggle_House();
-  void Set_House_Buttons(HousesType house, GadgetClass* btnlist, int base_id);
+  void Set_House_Buttons(HousesType house, game::GadgetClass* btnlist,
+                         int base_id);
   void Start_Trigger_Placement();
   void Stop_Trigger_Placement();
   // Places the current trigger on what was clicked at `x`, `y`.
@@ -340,7 +341,7 @@ class MapEditClass : public MouseClass {
   std::unique_ptr<ListClass> MissionList;
   std::unique_ptr<TriColorGaugeClass> HealthGauge;
   std::unique_ptr<DirectionDial> FacingDial;
-  std::unique_ptr<ControlClass> MapArea;
+  std::unique_ptr<game::ControlClass> MapArea;
   std::unique_ptr<TextLabelClass> HealthText;
   std::unique_ptr<TextButtonClass> Sellable;
   std::unique_ptr<TextButtonClass> Rebuildable;

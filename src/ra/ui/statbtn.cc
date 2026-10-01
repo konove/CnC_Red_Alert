@@ -49,10 +49,11 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "game/ui/gadget.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -87,7 +88,7 @@ namespace ra {
 StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
                                      TextPrintType style, int x, int y, int w,
                                      int h)
-    : GadgetClass(x, y, w, h, 0), PrintFlags(style) {
+    : game::GadgetClass(x, y, w, h, 0), PrintFlags(style) {
   /*
   **	Make a duplicate of the string to display.
   */
@@ -117,7 +118,7 @@ StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
 StaticButtonClass::StaticButtonClass()
-    : GadgetClass(0, 0, 0, 0, 0), PrintFlags(TPF_8POINT) {}
+    : game::GadgetClass(0, 0, 0, 0, 0), PrintFlags(TPF_8POINT) {}
 
 /***********************************************************************************************
  * StaticButtonClass::Draw_Me -- Draws the text buttons as indicated. *
@@ -134,7 +135,7 @@ StaticButtonClass::StaticButtonClass()
  * HISTORY: * 01/03/1995 MML : Created. * 01/16/1995 JLB : Modified *
  *=============================================================================================*/
 bool StaticButtonClass::Draw_Me(PixelView& view, bool forced) {
-  if (GadgetClass::Draw_Me(view, forced)) {
+  if (game::GadgetClass::Draw_Me(view, forced)) {
     /*
     **	Draw the background and overlaying text. These are virtual function
     **	calls so that they may be overridden.

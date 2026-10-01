@@ -154,6 +154,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/vector_dynamic.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/ai/special.h"
 #include "td/assets/palette.h"
@@ -182,7 +183,6 @@
 #include "td/ui/colrlist.h"
 #include "td/ui/dialog.h"
 #include "td/ui/edit.h"
-#include "td/ui/gadget.h"
 #include "td/ui/gauge.h"
 #include "td/ui/list.h"
 #include "td/ui/msgbox.h"
@@ -961,7 +961,7 @@ static int Net_Join_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands = nullptr;  // button list
+  game::GadgetClass* commands = nullptr;  // button list
 
   EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
@@ -3078,7 +3078,7 @@ static int Net_New_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  GadgetClass* commands = &playerlist;  // button list
+  game::GadgetClass* commands = &playerlist;  // button list
   scenariolist.Add_Tail(*commands);
   credit_edt.Add_Tail(*commands);
   rejectbtn.Add_Tail(*commands);
@@ -4544,7 +4544,7 @@ static int Net_Fake_New_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  GadgetClass* commands = &playerlist;  // button list
+  game::GadgetClass* commands = &playerlist;  // button list
   cancelbtn.Add_Tail(*commands);
 
   playerlist.Set_Tabs(tabs);
@@ -5124,7 +5124,7 @@ static int Net_Fake_Join_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands = nullptr;  // button list
+  game::GadgetClass* commands = nullptr;  // button list
 
   ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
                             d_playerlist_w, d_playerlist_h,

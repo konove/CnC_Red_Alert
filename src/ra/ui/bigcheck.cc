@@ -30,8 +30,8 @@
 #include "game/ui/input.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/defines.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/toggle.h"
 
 namespace ra {
@@ -64,7 +64,7 @@ bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
     const TextPrintType flags = TextFlags;
 
     //		if( !IsDisabled )
-    RemapControlType* pScheme = GadgetClass::Get_Color_Scheme();
+    RemapControlType* pScheme = Get_Color_Scheme();
     //		else
     //		{
     //			pScheme = &GreyScheme;

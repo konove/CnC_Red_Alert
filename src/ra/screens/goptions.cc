@@ -50,6 +50,8 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/palette.h"
@@ -74,9 +76,8 @@
 #include "ra/startup/conquer.h"
 #include "ra/startup/game_state.h"
 #include "ra/startup/version.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
@@ -247,7 +248,7 @@ void GameOptionsClass::Process() {
   **	Force all button lengths to match the maximum length of the widest
   *button.
   */
-  GadgetClass* g = buttons;
+  game::GadgetClass* g = buttons;
   while (g != nullptr) {
     g->Width = std::max(maxwidth, 180);
     g->X = OptionX + ((OptionWidth - g->Width) / 2);
@@ -266,18 +267,19 @@ void GameOptionsClass::Process() {
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  const auto dialog_area = std::make_unique<GadgetClass>(
-      OptionX, OptionY, OptionWidth, OptionHeight, GadgetClass::kLeftPress);
+  const auto dialog_area = std::make_unique<game::GadgetClass>(
+      OptionX, OptionY, OptionWidth, OptionHeight,
+      game::GadgetClass::kLeftPress);
   dialog_area->Add_Tail(*buttons);
 
   /*
   **	This cause a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to game button.
   */
-  const auto outside_click = std::make_unique<ControlClass>(
+  const auto outside_click = std::make_unique<game::ControlClass>(
       kButtonResume, 0, 0, TheScreen().visible_view().width(),
       TheScreen().visible_view().height(),
-      GadgetClass::kLeftPress | GadgetClass::kRightPress);
+      game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress);
   outside_click->Add_Tail(*buttons);
 
   game::TheKeyboard().Clear();
@@ -335,9 +337,8 @@ void GameOptionsClass::Process() {
       Fancy_Text_Print(
           view, "%s\rV%s", OptionX + OptionWidth - 50,
           OptionY + OptionHeight - (TheSession().Type == GAME_NORMAL ? 64 : 48),
-          GadgetClass::Get_Color_Scheme(), kTBlack,
-          TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, TheScenario().ScenarioName,
-          Version_Name());
+          Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT,
+          TheScenario().ScenarioName, Version_Name());
 
       buttons->Draw_All(view);
       TabClass::Hilite_Tab(view, 0);

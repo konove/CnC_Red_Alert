@@ -26,8 +26,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
+#include "game/ui/control.h"
 #include "ra/core/defines.h"
-#include "ra/ui/control.h"
 
 namespace ra {
 
@@ -36,7 +36,7 @@ namespace ra {
 // facings. When it moves, the dial reports its button ID as the key, like any
 // other control; the owner then reads the new direction with direction().
 // The map editor uses it to set a unit's or building's facing.
-class DirectionDial : public ControlClass {
+class DirectionDial : public game::ControlClass {
  public:
   // Creates the dial with button ID `id` in the window-relative rectangle
   // `x`, `y`, `width`, `height` (pixels), pointing in `initial_direction`.

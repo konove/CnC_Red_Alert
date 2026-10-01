@@ -68,6 +68,8 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/ai/teamtype.h"
 #include "td/assets/screen.h"
@@ -79,10 +81,8 @@
 #include "td/objects/type.h"
 #include "td/screens/goptions.h"
 #include "td/startup/conquer.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/edit.h"
-#include "td/ui/gadget.h"
 #include "td/ui/list.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
@@ -287,7 +287,7 @@ int MapEditClass::Select_Team(const char* caption) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands = nullptr;  // the button list
+  game::GadgetClass* commands = nullptr;  // the button list
 
   ListClass teamlist(kTeamList, kListX, kListY, kListW, kListH,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -982,7 +982,7 @@ int MapEditClass::Edit_Team() {
   /*
   ............................ Create the list .............................
   */
-  ControlClass* commands = &okbtn;
+  game::ControlClass* commands = &okbtn;
   cancelbtn.Add_Tail(*commands);
   membersbtn.Add_Tail(*commands);
 
@@ -1671,7 +1671,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Create the list.
   */
-  ControlClass* commands = &okbtn;
+  game::ControlClass* commands = &okbtn;
   cancelbtn.Add_Tail(*commands);
 
   /*

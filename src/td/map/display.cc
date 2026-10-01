@@ -127,6 +127,7 @@
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/trigger.h"
@@ -163,7 +164,6 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 
 namespace td {
 
@@ -2719,7 +2719,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     }
   }
 
-  return GadgetClass::Action(0, key, x, y);
+  return game::GadgetClass::Action(0, key, x, y);
 }
 
 /***********************************************************************************************

@@ -83,6 +83,8 @@
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/facing.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
@@ -107,10 +109,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 #include "td/startup/startup.h"
-#include "td/ui/control.h"
 #include "td/ui/dial8.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/gauge.h"
 #include "td/ui/list.h"
 #include "td/ui/msgbox.h"
@@ -187,9 +187,9 @@ void MapEditClass::One_Time() {
   ........................................................................*/
   // MapArea = new ControlClass(kMapArea,0,8,312,192, GadgetClass::kLeftPress |
   // GadgetClass::kLeftRelease, false);
-  MapArea = std::make_unique<ControlClass>(
+  MapArea = std::make_unique<game::ControlClass>(
       kMapArea, 0, 16, 624, 384,
-      GadgetClass::kLeftPress | GadgetClass::kLeftRelease, false);
+      game::GadgetClass::kLeftPress | game::GadgetClass::kLeftRelease, false);
 
   /*........................................................................
   House buttons

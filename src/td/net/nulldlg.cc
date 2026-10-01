@@ -84,6 +84,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/vector_dynamic.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/ai/special.h"
 #include "td/assets/palette.h"
@@ -111,7 +112,6 @@
 #include "td/startup/winstub.h"
 #include "td/ui/dialog.h"
 #include "td/ui/edit.h"
-#include "td/ui/gadget.h"
 #include "td/ui/gauge.h"
 #include "td/ui/list.h"
 #include "td/ui/msgbox.h"
@@ -333,7 +333,7 @@ int Test_Null_Modem() {
   /*
   ............................ Create the list .............................
   */
-  GadgetClass* commands = &cancelbtn;  // button list
+  game::GadgetClass* commands = &cancelbtn;  // button list
 
   commands->Flag_List_To_Redraw();
 
@@ -686,7 +686,7 @@ static int Reconnect_Null_Modem() {
   /*
   ............................ Create the list .............................
   */
-  GadgetClass* commands = &cancelbtn;  // button list
+  game::GadgetClass* commands = &cancelbtn;  // button list
 
   commands->Flag_List_To_Redraw();
 
@@ -1064,7 +1064,7 @@ GameType Select_Serial_Dialog() {
   /*
   ............................ Create the list .............................
   */
-  GadgetClass* commands = &dialbtn;  // button list
+  game::GadgetClass* commands = &dialbtn;  // button list
   answerbtn.Add_Tail(*commands);
   nullmodembtn.Add_Tail(*commands);
   settingsbtn.Add_Tail(*commands);
@@ -1517,7 +1517,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
 
-  GadgetClass* commands = &okbutton;  // button list
+  game::GadgetClass* commands = &okbutton;  // button list
   defaultbutton.Add_Tail(*commands);
   compressionbutton.Add_Tail(*commands);
   errorcorrectionbutton.Add_Tail(*commands);
@@ -1955,7 +1955,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands = nullptr;  // button list
+  game::GadgetClass* commands = nullptr;  // button list
 
   EditClass port_edt(kButtonPort, portbuf, PORTBUF_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_port_x,
@@ -3366,7 +3366,7 @@ int Com_Scenario_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  GadgetClass* commands = &name_edt;  // button list
+  game::GadgetClass* commands = &name_edt;  // button list
   gdibtn.Add_Tail(*commands);
   nodbtn.Add_Tail(*commands);
   credit_edt.Add_Tail(*commands);
@@ -4771,7 +4771,7 @@ int Com_Show_Scenario_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  GadgetClass* commands = &name_edt;  // button list
+  game::GadgetClass* commands = &name_edt;  // button list
   gdibtn.Add_Tail(*commands);
   nodbtn.Add_Tail(*commands);
   cancelbtn.Add_Tail(*commands);
@@ -5955,7 +5955,7 @@ static int Phone_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  GadgetClass* commands = &phonelist;  // button list
+  game::GadgetClass* commands = &phonelist;  // button list
   addbtn.Add_Tail(*commands);
   editbtn.Add_Tail(*commands);
   deletebtn.Add_Tail(*commands);
@@ -6552,7 +6552,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   /*
   ------------------------- Build the button list --------------------------
   */
-  GadgetClass* commands = &nameedit;  // button list
+  game::GadgetClass* commands = &nameedit;  // button list
   numedit.Add_Tail(*commands);
   defaultbtn.Add_Tail(*commands);
   custombtn.Add_Tail(*commands);

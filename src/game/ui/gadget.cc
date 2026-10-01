@@ -58,29 +58,16 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/ui/gadget.h"
+#include "game/ui/gadget.h"
 
-#include <cstdint>
-#include <cstdio>
-
-#include "absl/strings/str_format.h"
-#include "engine/file/disk_file.h"
-#include "engine/file/file_access.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
 #include "game/ui/input.h"
 #include "game/ui/link.h"
-#include "ra/assets/audio.h"
-#include "ra/assets/filepcx.h"
-#include "ra/assets/palettes.h"
-#include "ra/assets/screen.h"
-#include "ra/core/config.h"
-#include "ra/core/defines.h"
-#include "ra/debug/debug_state.h"
-#include "ra/ui/control.h"
 
-namespace ra {
+namespace game {
 
 using enum engine::window::KeyNumber;
 
@@ -106,9 +93,7 @@ GadgetClass* GadgetClass::Focused = nullptr;
 /*
 ** This points to the current color scheme for drawing all gadgets.
 */
-static RemapControlType DefaultColorScheme = {15, 0, {}, {}, 0, 0,
-                                              0,  0, 0,  0,  0, 0};
-RemapControlType* GadgetClass::ColorScheme = &DefaultColorScheme;
+void (*GadgetClass::KeyHook)(engine::window::KeyNumber key) = nullptr;
 
 /***********************************************************************************************
  * GadgetClass::GadgetClass -- Constructor for gadget object. *
@@ -432,41 +417,14 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
   **	Fetch any pending keyboard input.
   */
   engine::window::InputEvent event;
-  if (game::TheKeyboard().Peek()) {
-    event = game::TheKeyboard().Read();
+  if (TheKeyboard().Peek()) {
+    event = TheKeyboard().Read();
   }
   // A gadget that acts on the event replaces its key with the gadget's ID.
   engine::window::KeyNumber key = event.key;
 
-  if constexpr (config::kCheatKeysEnabled) {
-    /*
-    ** time to create a screen shot using the PCX code (if it works)
-    */
-    if ((key == KN_K && !TheDebugState().map_editor_active() &&
-         (TheDebugState().developer_mode() || TheDebugState().playtest())) &&
-        (!TheDebugState().motion_capture())) {
-      PixelBuffer temp_page(
-          TheScreen().visible_view().width(),
-          TheScreen().visible_view().height(), {},
-          static_cast<int32_t>(TheScreen().visible_view().width()) *
-              TheScreen().visible_view().height());
-      char filename[30];
-
-      //			HideMouse();
-      TheScreen().visible_view().BlitTo(temp_page.view());
-      //			ShowMouse();
-      for (int lp = 0; lp < 99; lp++) {
-        absl::SNPrintF(filename, sizeof(filename), "scrsht%02d.pcx", lp);
-        if (!FindExistingFile(filename).has_value()) {
-          break;
-        }
-      }
-
-      if (const auto file = OpenDiskFile(filename, FileAccess::kWrite)) {
-        Write_PCX_File(*file, temp_page, ThePalettes().game_palette());
-      }
-      PlaySoundEffect(VOC_BEEP);
-    }
+  if (KeyHook != nullptr) {
+    KeyHook(key);
   }
 
   /*
@@ -480,8 +438,8 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
     mousex = event.x;
     mousey = event.y;
   } else {
-    mousex = game::TheMouse().x();
-    mousey = game::TheMouse().y();
+    mousex = TheMouse().x();
+    mousey = TheMouse().y();
   }
 
   /*
@@ -794,4 +752,4 @@ void GadgetClass::Set_Position(int x, int y) {
   Y = y;
 }
 
-}  // namespace ra
+}  // namespace game

@@ -54,8 +54,8 @@
 
 #include "engine/net/nullmgr.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "td/core/defines.h"
-#include "td/ui/gadget.h"
 
 namespace td {
 
@@ -90,7 +90,7 @@ class NullModemClass : public engine::net::NullModemClass {
 
   static void (*OrigAbortModemFunc)(int);
   static engine::window::KeyNumber Input;
-  static GadgetClass* Commands;  // button list
+  static game::GadgetClass* Commands;  // button list
 
   /*
   **	Constructor/destructor.

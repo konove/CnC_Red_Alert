@@ -48,9 +48,9 @@
 #include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
+#include "game/ui/control.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/defines.h"
-#include "ra/ui/control.h"
 #include "ra/ui/toggle.h"
 
 namespace ra {
@@ -140,7 +140,7 @@ void ShapeButtonClass::Set_Shape(std::span<const std::byte> data) {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 bool ShapeButtonClass::Draw_Me(PixelView& view, bool forced) {
-  if (ControlClass::Draw_Me(view, forced) && !ShapeData.empty()) {
+  if (game::ControlClass::Draw_Me(view, forced) && !ShapeData.empty()) {
     /*
     **	Draw the body & set text color.
     */

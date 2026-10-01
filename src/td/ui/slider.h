@@ -45,7 +45,7 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
-#include "td/ui/control.h"
+#include "game/ui/control.h"
 #include "td/ui/gauge.h"
 #include "td/ui/shapebtn.h"
 
@@ -85,7 +85,7 @@ class SliderClass final : public GaugeClass {
   bool Step(bool up);
   bool Draw_Me(PixelView& view, bool forced) override;
   void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
-                    ControlClass& whom) override;
+                    game::ControlClass& whom) override;
 
   int Thumb_Pixels() override { return ThumbSize; }
 

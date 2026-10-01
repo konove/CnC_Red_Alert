@@ -56,6 +56,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/enums.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
@@ -69,7 +70,6 @@
 #include "td/startup/game_state.h"
 #include "td/startup/init.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/list.h"
 #include "td/ui/textbtn.h"
 
@@ -146,7 +146,7 @@ bool Expansion_Dialog() {
   const int option_x = ((320 * factor) - option_width) / 2;
   const int option_y = ((200 * factor) - option_height) / 2;
 
-  GadgetClass* buttons = nullptr;
+  game::GadgetClass* buttons = nullptr;
 
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
@@ -293,7 +293,7 @@ bool Bonus_Dialog() {
   const int option_x = ((320 * factor) - option_width) / 2;
   const int option_y = ((200 * factor) - option_height) / 2;
 
-  GadgetClass* buttons = nullptr;
+  game::GadgetClass* buttons = nullptr;
 
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;

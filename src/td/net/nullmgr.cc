@@ -84,6 +84,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
@@ -97,7 +98,6 @@
 #include "td/startup/init.h"
 #include "td/startup/winstub.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
 
@@ -123,7 +123,7 @@ using enum engine::window::KeyNumber;
 void (*NullModemClass::OrigAbortModemFunc)(int);
 
 engine::window::KeyNumber NullModemClass::Input;
-GadgetClass* NullModemClass::Commands;  // button list
+game::GadgetClass* NullModemClass::Commands;  // button list
 
 namespace {
 

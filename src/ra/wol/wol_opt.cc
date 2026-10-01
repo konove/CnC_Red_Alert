@@ -23,6 +23,7 @@
 #include "engine/platform/sleep.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
@@ -33,7 +34,6 @@
 #include "ra/startup/game_state.h"
 #include "ra/ui/bigcheck.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wol_main.h"
 #include "ra/wol/wolapiob.h"
@@ -97,7 +97,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   /*
   **	Buttons
   */
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass OkBtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w);
 

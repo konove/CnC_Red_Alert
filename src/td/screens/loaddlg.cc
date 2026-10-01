@@ -71,6 +71,7 @@
 #include "engine/platform/file_system.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
 #include "game/ui/input.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
@@ -86,7 +87,6 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 #include "td/startup/init.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/edit.h"
 #include "td/ui/list.h"
@@ -224,7 +224,7 @@ bool LoadOptionsClass::Process() {
   /*
   **	Buttons
   */
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   if (Style == LOAD) {
     btn_txt = TXT_LOAD_BUTTON;

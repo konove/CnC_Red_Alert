@@ -25,7 +25,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "ra/ui/gadget.h"
+#include "game/ui/gadget.h"
 
 class PixelView;
 
@@ -37,7 +37,7 @@ namespace ra {
 
 class ToolTipClass {
  public:
-  ToolTipClass(GadgetClass* pGadget ABSL_ATTRIBUTE_LIFETIME_BOUND,
+  ToolTipClass(game::GadgetClass* pGadget ABSL_ATTRIBUTE_LIFETIME_BOUND,
                const char* szText, int x_show, int y_show,
                bool right_align = false, bool icon_list = false);
   ~ToolTipClass() = default;
@@ -55,7 +55,7 @@ class ToolTipClass {
   ToolTipClass* next{
       nullptr};  //	Next tooltip in list of which *this is a part.
 
-  GadgetClass* pGadget;  //	Gadget to which this tooltip is bound.
+  game::GadgetClass* pGadget;  //	Gadget to which this tooltip is bound.
 
   bool bRightAlign;
 

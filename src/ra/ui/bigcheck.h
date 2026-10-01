@@ -25,6 +25,7 @@
 #include <string>
 
 #include "engine/gfx/pixel_buffer.h"
+#include "ra/core/defines.h"
 #include "ra/ui/toggle.h"
 
 namespace ra {

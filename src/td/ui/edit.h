@@ -48,12 +48,12 @@
 #include "base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
 #include "td/core/defines.h"
-#include "td/ui/control.h"
 
 namespace td {
 
-class EditClass : public ControlClass {
+class EditClass : public game::ControlClass {
  public:
   enum class CNC_FLAG_ENUM EditStyle : uint32_t {
     ALPHA = 0x0001,      // Edit accepts alphabetic characters.

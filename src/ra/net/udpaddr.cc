@@ -27,6 +27,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -40,9 +41,9 @@
 #include "ra/net/wsproto.h"
 #include "ra/net/wspudp.h"
 #include "ra/startup/init.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/colrlist.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/textbtn.h"
 
 namespace ra {
@@ -99,7 +100,7 @@ bool Get_Broadcast_Addresses() {
   int width = 0;
   int height = 0;
 
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   PixelView& view = TheScreen().visible_view();
 
@@ -109,7 +110,7 @@ bool Get_Broadcast_Addresses() {
   Format_Window_String(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW), title,
                        view.height(), width, height);
 
-  GadgetClass* commands = nullptr;  // button list
+  game::GadgetClass* commands = nullptr;  // button list
   ColorListClass ip_address_list(kButtonIplist, d_ip_address_list_x,
                                  d_ip_address_list_y, d_ip_address_list_w,
                                  d_ip_address_list_h, kTpfText,

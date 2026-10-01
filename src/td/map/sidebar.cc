@@ -111,6 +111,8 @@
 #include "engine/gfx/text_window.h"
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "td/assets/assets.h"
 #include "td/assets/audio.h"
 #include "td/assets/screen.h"
@@ -135,9 +137,7 @@
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/shapebtn.h"
 
 namespace td {
@@ -2107,7 +2107,7 @@ bool SidebarClass::StripClass::Recalc() {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 SidebarClass::StripClass::SelectClass::SelectClass() noexcept
-    : ControlClass(0, 0, 0, 0, 0, kLeftPress | kRightPress | kLeftUp) {
+    : game::ControlClass(0, 0, 0, 0, 0, kLeftPress | kRightPress | kLeftUp) {
   const int scale =
       static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
 
@@ -2363,7 +2363,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
         */
         if (fnumber == -1 && genfactory != -1) {
           Speak(VOX_NO_FACTORY);
-          ControlClass::Action(flags, key, x, y);
+          game::ControlClass::Action(flags, key, x, y);
           return true;
         }
 
@@ -2449,7 +2449,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
     }
   }
 
-  ControlClass::Action(flags, key, x, y);
+  game::ControlClass::Action(flags, key, x, y);
   return true;
 }
 

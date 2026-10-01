@@ -81,16 +81,15 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_RA_UI_GADGET_H_
-#define CNC_RED_ALERT_RA_UI_GADGET_H_
+#ifndef CNC_RED_ALERT_GAME_UI_GADGET_H_
+#define CNC_RED_ALERT_GAME_UI_GADGET_H_
 
 #include "base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/link.h"
-#include "ra/core/defines.h"
 
-namespace ra {
+namespace game {
 
 class ControlClass;
 
@@ -162,14 +161,12 @@ class GadgetClass : public game::LinkClass {
   */
   virtual bool Draw_Me(PixelView& view, bool forced = false);
 
-  /*
-  ** Sets the current color scheme
-  */
-  static void Set_Color_Scheme(RemapControlType* scheme) {
-    ColorScheme = scheme;
+  // Sets the function Input() hands every key it reads, before any gadget
+  // sees it (the games save a screenshot on K this way). Null, the default,
+  // does nothing.
+  static void Set_Key_Hook(void (*hook)(engine::window::KeyNumber key)) {
+    KeyHook = hook;
   }
-
-  static RemapControlType* Get_Color_Scheme() { return ColorScheme; }
 
   /*
   **	This is the coordinates and dimensions of the gadget region. These are
@@ -255,16 +252,13 @@ class GadgetClass : public game::LinkClass {
   */
   unsigned Flags = 0;
 
-  /*
-  ** This is the current color scheme; it must be initialized by the app.
-  */
-  static RemapControlType* ColorScheme;
-
  private:
+  static void (*KeyHook)(engine::window::KeyNumber key);
+
   virtual bool Clicked_On(engine::window::KeyNumber& key, unsigned flags, int x,
                           int y);
 };
 
-}  // namespace ra
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_RA_UI_GADGET_H_
+#endif  // CNC_RED_ALERT_GAME_UI_GADGET_H_

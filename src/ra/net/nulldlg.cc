@@ -91,6 +91,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
 #include "game/core/vector_dynamic.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
@@ -130,11 +131,11 @@
 #include "ra/startup/startup.h"
 #include "ra/startup/version.h"
 #include "ra/ui/cheklist.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/colrlist.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/drop.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
 #include "ra/ui/list.h"
 #include "ra/ui/msgbox.h"
@@ -324,7 +325,7 @@ int Test_Null_Modem() {
   int width = 0;
   int height = 0;  // dialog dimensions
   char buffer[80 * 3];
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
   PixelView& view = TheScreen().visible_view();
 
   /*
@@ -358,7 +359,7 @@ int Test_Null_Modem() {
   /*
   ** Create the list
   */
-  GadgetClass* commands = &cancelbtn;  // button list
+  game::GadgetClass* commands = &cancelbtn;  // button list
 
   commands->Flag_List_To_Redraw();
 
@@ -622,7 +623,7 @@ static int Reconnect_Null_Modem() {
   int retval = 0;
   int64_t lastmsgtime = 0;
   int packetlen = 0;
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   int width = 0;
   int height = 0;  // dialog dimensions
@@ -660,7 +661,7 @@ static int Reconnect_Null_Modem() {
   /*
   ** Create the list
   */
-  GadgetClass* commands = &cancelbtn;  // button list
+  game::GadgetClass* commands = &cancelbtn;  // button list
 
   commands->Flag_List_To_Redraw();
 
@@ -998,7 +999,7 @@ GameType Select_Serial_Dialog() {
   /*
   ** Create the list
   */
-  GadgetClass* commands = &dialbtn;  // button list
+  game::GadgetClass* commands = &dialbtn;  // button list
   answerbtn.Add_Tail(*commands);
   nullmodembtn.Add_Tail(*commands);
   settingsbtn.Add_Tail(*commands);
@@ -1378,7 +1379,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   char correction_text[16];
   char flowcontrol_text[16];
 
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   /*
   ** Initialise the button text
@@ -1428,7 +1429,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
 
-  GadgetClass* commands = &okbutton;  // button list
+  game::GadgetClass* commands = &okbutton;  // button list
   defaultbutton.Add_Tail(*commands);
   compressionbutton.Add_Tail(*commands);
   errorcorrectionbutton.Add_Tail(*commands);
@@ -1743,7 +1744,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
   size_t temp = 0;                  // general-purpose string
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   char portbuf[PORTBUF_MAX] = {0};          // buffer for port
   char baudbuf[BAUDBUF_MAX] = {0};          // buffer for baud
@@ -1993,7 +1994,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /*
   ** Build the button list
   */
-  GadgetClass* commands = &cancelbtn;  // button list
+  game::GadgetClass* commands = &cancelbtn;  // button list
   port_edt.Add_Tail(*commands);
   portlist.Add_Tail(*commands);
   baud_edt.Add_Tail(*commands);
@@ -2748,7 +2749,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   bool load_game = false;  // 1 = load a saved game
   NodeNameType* who = nullptr;       // node to add to Players
   char item[MPLAYER_NAME_MAX + 64];  // for filling in lists
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
   bool messages_have_focus = true;  // Gadget focus starts on the message system
 
   PixelView& view = TheScreen().visible_view();
@@ -2761,7 +2762,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands = nullptr;  // button list
+  game::GadgetClass* commands = nullptr;  // button list
 
   EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX, kTpfText, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
@@ -4641,7 +4642,7 @@ int Com_Show_Scenario_Dialog() {
   NodeNameType* who = nullptr;       // node to add to Players
   char item[MPLAYER_NAME_MAX + 64];  // for filling in lists
   const char* p = nullptr;
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
   TheSession().Options.ScenarioDescription[0] =
       0;  // Flag that we dont know the scenario name yet
   bool messages_have_focus = true;
@@ -4650,7 +4651,7 @@ int Com_Show_Scenario_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  GadgetClass* commands = nullptr;  // button list
+  game::GadgetClass* commands = nullptr;  // button list
 
   EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX, kTpfText, d_name_x,
                      d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
@@ -6145,7 +6146,7 @@ static int Phone_Dialog() {
   /*
   ------------------------- Build the button list --------------------------
   */
-  GadgetClass* commands = &phonelist;  // button list
+  game::GadgetClass* commands = &phonelist;  // button list
   addbtn.Add_Tail(*commands);
   editbtn.Add_Tail(*commands);
   deletebtn.Add_Tail(*commands);
@@ -6645,7 +6646,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   SerialSettingsType settings{};
   bool custom = false;
   bool firsttime = true;
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   /*........................................................................
   Buttons
@@ -6670,7 +6671,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   /*
   ------------------------- Build the button list --------------------------
   */
-  GadgetClass* commands = &nameedit;  // button list
+  game::GadgetClass* commands = &nameedit;  // button list
   numedit.Add_Tail(*commands);
   defaultbtn.Add_Tail(*commands);
   custombtn.Add_Tail(*commands);

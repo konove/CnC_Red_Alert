@@ -168,8 +168,8 @@
 #include "ra/startup/conquer.h"
 #include "ra/startup/game_state.h"
 #include "ra/startup/startup.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/msglist.h"
 #include "ra/ui/textbtn.h"
@@ -1283,7 +1283,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   const auto briefsnd = MixArchive::RetrieveData("BRIEFING.AUD");
 
-  GadgetClass::Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_TYPE));
+  Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_TYPE));
 
   // If the message fits on one page, hide the "MORE" button.
   if (msg.size() < kMaxCharsPerPage) {
@@ -1641,8 +1641,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   }
   game::TheMouse().Show();
 
-  GadgetClass::Set_Color_Scheme(
-      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));
+  Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));
 
   // Convert internal button index to the text ID that was clicked.
   return retval == 1 ? left_btn_text_id : right_btn_text_id;

@@ -30,11 +30,12 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/winbits.h"
 #include "ra/core/defines.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/iconlist.h"
 
 namespace ra {
@@ -43,15 +44,16 @@ namespace {
 
 // The gadget this tooltip is bound to, when bIconList says it is a list whose
 // lines each carry their own help text. Null if it turns out not to be one.
-IconListClass* AsIconList(GadgetClass* gadget) {
+IconListClass* AsIconList(game::GadgetClass* gadget) {
   return dynamic_cast<IconListClass*>(gadget);
 }
 
 }  // namespace
 
 //***********************************************************************************************
-ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
-                           int y_show, bool right_align /* = false */,
+ToolTipClass::ToolTipClass(game::GadgetClass* gadget, const char* szText,
+                           int x_show, int y_show,
+                           bool right_align /* = false */,
                            bool icon_list /*= false */)
     : pGadget(gadget),
       bRightAlign(right_align),
@@ -178,10 +180,10 @@ void ToolTipClass::Show(PixelView& view) {
                     WINDOW_MAIN);
     //	Draw text.
     // Simple_Text_Print( szTipUse, xShowUse, yShowUse,
-    // GadgetClass::Get_Color_Scheme(), ColorRemaps[ PCOLOR_BROWN ].Color,
+    // Get_Color_Scheme(), ColorRemaps[ PCOLOR_BROWN ].Color,
     // TPF_TYPE ); //TPF_DROPSHADOW );
-    Simple_Text_Print(view, szTipUse, xShowUse, yShowUse,
-                      GadgetClass::Get_Color_Scheme(), kBlack,
+    Simple_Text_Print(view, szTipUse, xShowUse, yShowUse, Get_Color_Scheme(),
+                      kBlack,
                       TPF_TYPE);  // TPF_DROPSHADOW );
     Draw_Box(view, xShowUse, yShowUse, wShowUse, hShow, BOXSTYLE_BOX, false);
     game::TheMouse().Show();

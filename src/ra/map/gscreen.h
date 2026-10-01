@@ -42,8 +42,8 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "ra/core/defines.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -78,8 +78,8 @@ class GScreenClass {
   // that uses up the event's key sets it to KN_NONE.
   virtual void AI(engine::window::InputEvent& /*unused*/, int /*unused*/,
                   int /*unused*/) {}
-  virtual void Add_A_Button(GadgetClass& gadget);
-  virtual void Remove_A_Button(GadgetClass& gadget);
+  virtual void Add_A_Button(game::GadgetClass& gadget);
+  virtual void Remove_A_Button(game::GadgetClass& gadget);
 
   /*
   **	Called when map needs complete updating.
@@ -120,7 +120,7 @@ class GScreenClass {
   **	This points to the buttons that are used for input. All of the derived
   *classes will *	attached their specific buttons to this list.
   */
-  static GadgetClass* Buttons;
+  static game::GadgetClass* Buttons;
 
  private:
   /*

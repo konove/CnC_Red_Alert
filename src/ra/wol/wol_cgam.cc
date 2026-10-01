@@ -27,6 +27,7 @@
 #include "engine/platform/sleep.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/screen.h"
@@ -37,7 +38,6 @@
 #include "ra/startup/conquer.h"
 #include "ra/ui/bigcheck.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/seditdlg.h"
@@ -129,7 +129,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   /*
   **	Buttons
   */
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass OkBtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w);
   TextButtonClass CancelBtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
@@ -225,7 +225,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       Draw_Caption(view, TXT_WOL_CG_TITLE, d_dialog_x, d_dialog_y, d_dialog_w);
       //			Fancy_Text_Print( TXT_WOL_CG_PLAYERS,
       // d_gaugeplayers_x - 2*2, d_gaugeplayers_y,
-      //								GadgetClass::Get_Color_Scheme(),
+      //								Get_Color_Scheme(),
       // TBLACK, kTpfText | TPF_RIGHT );
       commands->Flag_List_To_Redraw();
       game::TheMouse().Show();

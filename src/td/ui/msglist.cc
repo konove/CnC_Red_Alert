@@ -65,10 +65,10 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/core/defines.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/txtlabel.h"
 
 namespace td {
@@ -213,7 +213,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
                                               uint16_t crc) {
   TextLabelClass* txtlabel = nullptr;
   int y = 0;
-  GadgetClass* gadg = nullptr;
+  game::GadgetClass* gadg = nullptr;
   int position = 0;
 
   /*------------------------------------------------------------------------
@@ -581,7 +581,7 @@ int MessageListClass::Manage() {
   if (changed) {
     int y = MessageY;
     if (MessageList) {
-      GadgetClass* gadg = MessageList;
+      game::GadgetClass* gadg = MessageList;
       while (gadg) {
         gadg->Y = y;
         gadg = gadg->Get_Next();
@@ -743,7 +743,7 @@ int MessageListClass::Num_Messages() {
   int num = 0;
 
   if (MessageList) {
-    GadgetClass* gadg = MessageList;
+    game::GadgetClass* gadg = MessageList;
     while (gadg) {
       num++;
       gadg = gadg->Get_Next();
@@ -771,7 +771,7 @@ int MessageListClass::Num_Messages() {
 void MessageListClass::Set_Width(int width) {
 
   if (MessageList) {
-    GadgetClass* gadg = MessageList;
+    game::GadgetClass* gadg = MessageList;
     while (gadg) {
       dynamic_cast<TextLabelClass*>(gadg)->PixWidth = width;
       gadg = gadg->Get_Next();

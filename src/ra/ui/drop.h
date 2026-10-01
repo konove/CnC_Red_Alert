@@ -50,9 +50,9 @@
 #include "base/strings/safe_string.h"
 #include "engine/gfx/keyframe.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
 #include "game/ui/link.h"
 #include "ra/core/defines.h"
-#include "ra/ui/control.h"
 #include "ra/ui/edit.h"
 #include "ra/ui/list.h"
 #include "ra/ui/shapebtn.h"
@@ -85,7 +85,7 @@ class DropListClass : public EditClass {
   virtual void Set_Selected_Index(const char* text);
   void Peer_To_Peer(unsigned flags,
                     engine::window::KeyNumber& /*key*/ /*unused*/,
-                    ControlClass& whom) override;
+                    game::ControlClass& whom) override;
   void Clear_Focus() override;
   [[nodiscard]] virtual int Count() const { return List.Count(); }
   [[nodiscard]] virtual const char* Get_Item(int index) const
@@ -157,7 +157,7 @@ class TDropListClass : public EditClass {
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(T text);
   void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& /*key*/,
-                    ControlClass& whom) override;
+                    game::ControlClass& whom) override;
   void Clear_Focus() override;
   [[nodiscard]] virtual int Count() const { return List.Count(); }
   [[nodiscard]] virtual T Get_Item(int index) const {
@@ -278,7 +278,7 @@ void TDropListClass<T>::Clear_Focus() {
 template <class T>
 void TDropListClass<T>::Peer_To_Peer(unsigned flags,
                                      engine::window::KeyNumber& key,
-                                     ControlClass& whom) {
+                                     game::ControlClass& whom) {
   if ((&whom == &DropButton) && (flags & kLeftRelease)) {
     if (IsDropped) {
       Collapse();

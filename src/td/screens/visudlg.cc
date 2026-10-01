@@ -48,6 +48,8 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
@@ -55,9 +57,7 @@
 #include "td/net/session.h"
 #include "td/screens/goptions.h"
 #include "td/startup/conquer.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/slider.h"
 #include "td/ui/textbtn.h"
 
@@ -167,18 +167,18 @@ void VisualControlsClass::Process() {
   **	This causes left mouse button clicking within the confines of the dialog
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
-  GadgetClass dialog(option_x, option_y, option_width, option_height,
-                     GadgetClass::kLeftPress);
+  game::GadgetClass dialog(option_x, option_y, option_width, option_height,
+                           game::GadgetClass::kLeftPress);
   dialog.Add_Tail(optionsbtn);
 
   /*
   **	This causes a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to options dialog.
   */
-  ControlClass background(kButtonOptions, 0, 0,
-                          TheScreen().visible_view().width(),
-                          TheScreen().visible_view().height(),
-                          GadgetClass::kLeftPress | GadgetClass::kRightPress);
+  game::ControlClass background(
+      kButtonOptions, 0, 0, TheScreen().visible_view().width(),
+      TheScreen().visible_view().height(),
+      game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress);
   background.Add_Tail(optionsbtn);
 
   int curbutton = 0;

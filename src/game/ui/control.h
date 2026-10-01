@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer(tm)
+**	Command & Conquer Red Alert(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\control.h_v   2.18   16 Oct 1995 16:46:08
- * JOE_BOSTIC  $ */
+/* $Header: /CounterStrike/CONTROL.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
  ****
  ***********************************************************************************************
  *                                                                                             *
@@ -38,15 +37,14 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_TD_UI_CONTROL_H_
-#define CNC_RED_ALERT_TD_UI_CONTROL_H_
+#ifndef CNC_RED_ALERT_GAME_UI_CONTROL_H_
+#define CNC_RED_ALERT_GAME_UI_CONTROL_H_
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
-#include "td/core/jshell.h"
-#include "td/ui/gadget.h"
+#include "game/ui/gadget.h"
 
-namespace td {
+namespace game {
 
 /***************************************************************************
  * ControlClass -- Region tracking class
@@ -70,8 +68,12 @@ class ControlClass : public GadgetClass {
   ControlClass(unsigned id, int x, int y, int w, int h,
                unsigned flags = kLeftPress | kRightPress,
                bool sticky = false) noexcept;
-  //		static ControlClass * Create_One_Of(unsigned id, int x, int y,
-  // int w, int h, unsigned flags=kLeftPress|kRightPress, bool sticky=false);
+
+  ~ControlClass() override = default;
+  ControlClass(const ControlClass&) = delete;
+  ControlClass& operator=(const ControlClass&) = delete;
+  ControlClass(ControlClass&&) = delete;
+  ControlClass& operator=(ControlClass&&) = delete;
 
   virtual void Make_Peer(GadgetClass& gadget);
 
@@ -99,6 +101,6 @@ class ControlClass : public GadgetClass {
   GadgetClass* Peer{nullptr};
 };
 
-}  // namespace td
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_TD_UI_CONTROL_H_
+#endif  // CNC_RED_ALERT_GAME_UI_CONTROL_H_

@@ -34,12 +34,13 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -58,7 +59,7 @@ void PrepareEditBuffer(std::span<char>& buffer, int capacity) {
 EditClass::EditClass(const int id, std::span<char> text, const int max_len,
                      const TextPrintType flags, const int x, const int y,
                      const int w, const int h, const EditStyle style)
-    : ControlClass(static_cast<unsigned>(id), x, y, w, h, kLeftPress),
+    : game::ControlClass(static_cast<unsigned>(id), x, y, w, h, kLeftPress),
       TextFlags(flags & ~TPF_CENTER),
       EditFlags(style),
       String(text),
@@ -66,7 +67,7 @@ EditClass::EditClass(const int id, std::span<char> text, const int max_len,
       Color(Get_Color_Scheme()) {
   PrepareEditBuffer(String, max_len);
   Length = static_cast<int>(std::string_view(String.data()).size());
-  GadgetClass::Flag_To_Redraw();
+  game::GadgetClass::Flag_To_Redraw();
 
   if (w == -1 || h == -1) {
     const FontStyle font = TextFontStyle(TextFlags);
@@ -91,8 +92,8 @@ EditClass::EditClass(const int id, std::span<char> text, const int max_len,
 }
 
 EditClass::~EditClass() {
-  if (GadgetClass::Has_Focus()) {
-    GadgetClass::Clear_Focus();
+  if (game::GadgetClass::Has_Focus()) {
+    game::GadgetClass::Clear_Focus();
   }
 }
 
@@ -105,7 +106,7 @@ void EditClass::Set_Text(std::span<char> text, const int max_len) {
 }
 
 bool EditClass::Draw_Me(PixelView& view, const bool forced) {
-  if (ControlClass::Draw_Me(view, forced)) {
+  if (game::ControlClass::Draw_Me(view, forced)) {
     Draw_Background(view);
     Draw_Text(view, String.data());
 
@@ -152,7 +153,7 @@ bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     }
   }
 
-  return ControlClass::Action(flags, key, x, y);
+  return game::ControlClass::Action(flags, key, x, y);
 }
 
 void EditClass::Draw_Background(PixelView& view) {
@@ -239,7 +240,7 @@ void EditClass::Set_Focus() {
   if (!String.empty()) {
     Length = static_cast<int>(std::string_view(String.data()).size());
   }
-  ControlClass::Set_Focus();
+  game::ControlClass::Set_Focus();
 }
 
 }  // namespace ra

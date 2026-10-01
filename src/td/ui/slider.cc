@@ -57,11 +57,11 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/core/defines.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/gauge.h"
 #include "td/ui/shapebtn.h"
 
@@ -326,7 +326,7 @@ bool SliderClass::Draw_Me(PixelView& view, bool forced) {
   // A list-attached slider draws a thumb instead of a gauge body; the
   // stand-alone case still goes through GaugeClass below.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-  if (BelongToList && ControlClass::Draw_Me(view, forced)) {
+  if (BelongToList && game::ControlClass::Draw_Me(view, forced)) {
     /*
     =========== Draw the body & set text color ===============
     */
@@ -356,7 +356,7 @@ bool SliderClass::Draw_Me(PixelView& view, bool forced) {
  *=============================================================================================*/
 void SliderClass::Peer_To_Peer(unsigned flags,
                                engine::window::KeyNumber& /*unused*/,
-                               ControlClass& whom) {
+                               game::ControlClass& whom) {
   if (flags & kLeftRelease) {
     if (&whom == PlusGadget.get()) {
       Step(false);

@@ -60,8 +60,8 @@
 #include "ra/objects/type.h"
 #include "ra/screens/goptions.h"
 #include "ra/startup/conquer.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -256,8 +256,7 @@ ScenarioVarType ChooseMissionVariant() {
   game::TheKeyboard().Clear();
 
   PixelView& view = TheScreen().visible_view();
-  Fancy_Text_Print(view, TXT_STAND_BY, 320, 380,
-                   GadgetClass::Get_Color_Scheme(), kTBlack,
+  Fancy_Text_Print(view, TXT_STAND_BY, 320, 380, Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
   TheTheme().Fade_Out();
 

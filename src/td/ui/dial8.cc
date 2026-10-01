@@ -66,18 +66,18 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/sim/direction.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 
 namespace td {
 
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, game::DirType dir)
-    : ControlClass(static_cast<unsigned>(id), x, y, w, h,
-                   kLeftPress | kLeftHeld | kLeftRelease, true),
+    : game::ControlClass(static_cast<unsigned>(id), x, y, w, h,
+                         kLeftPress | kLeftHeld | kLeftRelease, true),
       FaceX(X + (Width / 2)),
       FaceY(Y + (Height / 2)),
       Direction(dir),
@@ -201,14 +201,14 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     */
     if (Facing != OldFacing) {
       OldFacing = Facing;
-      ControlClass::Action(flags, key, x, y);
+      game::ControlClass::Action(flags, key, x, y);
       return true;
     }
     /*
      **	Dial hasn't moved; kill the event & return
      */
     key = engine::window::KN_NONE;
-    ControlClass::Action(0, key, x, y);
+    game::ControlClass::Action(0, key, x, y);
     return true;
   }
   /*
@@ -219,7 +219,7 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     key = engine::window::KN_NONE;
     is_sel = 0;
   }
-  return ControlClass::Action(0, key, x, y);
+  return game::ControlClass::Action(0, key, x, y);
 }
 
 /***************************************************************************
@@ -241,7 +241,7 @@ bool Dial8Class::Draw_Me(PixelView& view, bool forced) {
   /*
   **	Redraw if parent indicates a redraw is needed
   */
-  if (ControlClass::Draw_Me(view, forced)) {
+  if (game::ControlClass::Draw_Me(view, forced)) {
     /*
     **	Hide the mouse.
     */

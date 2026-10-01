@@ -31,6 +31,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
 #include "game/sim/direction.h"
+#include "game/ui/gadget.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
@@ -40,7 +41,6 @@
 #include "ra/objects/object.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
-#include "ra/ui/gadget.h"
 
 class ArchiveReader;
 class ArchiveWriter;
@@ -293,10 +293,10 @@ class DisplayClass : public MapClass {
   **	This gadget class is used for capturing input to the tactical map. All
   *mouse input *	will be routed through this gadget.
   */
-  class TacticalClass : public GadgetClass {
+  class TacticalClass : public game::GadgetClass {
    public:
     TacticalClass() noexcept
-        : GadgetClass(
+        : game::GadgetClass(
               0, 0, 0, 0,
               kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
               true) {}

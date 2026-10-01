@@ -69,6 +69,8 @@
 #include "game/core/display_constants.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/ai/base.h"
 #include "td/ai/trigger.h"
@@ -87,9 +89,7 @@
 #include "td/objects/type.h"
 #include "td/screens/goptions.h"
 #include "td/startup/conquer.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
 
@@ -442,7 +442,7 @@ int MapEditClass::Placement_Dialog() {
       base::At(Objects, LastChoice);  // Working object pointer.  // current
                                       // object to choose
 
-  ControlClass* commands = &neutbtn;
+  game::ControlClass* commands = &neutbtn;
   if (TheWorld().scen_player() == SCEN_PLAYER_MPLAYER) {
     multi1btn.Add_Tail(*commands);
     multi2btn.Add_Tail(*commands);
@@ -1754,9 +1754,8 @@ void MapEditClass::Toggle_House() {
  * HISTORY:                                                                *
  *   11/23/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Set_House_Buttons(HousesType house, GadgetClass* btnlist,
-                                     int base_id) {
-
+void MapEditClass::Set_House_Buttons(HousesType house,
+                                     game::GadgetClass* btnlist, int base_id) {
   /*
   **	Loop through all houses, searching the button list for each one.
   */

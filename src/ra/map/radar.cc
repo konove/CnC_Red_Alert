@@ -101,6 +101,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
 #include "game/core/vector_dynamic.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/audio.h"
@@ -128,7 +129,6 @@
 #include "ra/objects/terrain.h"
 #include "ra/objects/type.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/shapebtn.h"
 
 namespace ra {
@@ -1660,7 +1660,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags,
   ** Disable processing if the player names are up
   */
   if (TheMap().Is_Player_Names()) {
-    GadgetClass::Action(0, key, x, y);
+    game::GadgetClass::Action(0, key, x, y);
     return true;
   }
 
@@ -1826,7 +1826,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags,
   if (result == -1) {
     TheMap().Override_Mouse_Shape(MOUSE_NORMAL, true);
   }
-  GadgetClass::Action(0, key, x, y);
+  game::GadgetClass::Action(0, key, x, y);
   return true;
 }
 

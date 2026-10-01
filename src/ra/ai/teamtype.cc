@@ -93,6 +93,8 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
@@ -118,11 +120,10 @@
 #include "ra/objects/type.h"
 #include "ra/startup/conquer.h"
 #include "ra/ui/checkbox.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/drop.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/list.h"
 #include "ra/ui/textbtn.h"
 
@@ -151,7 +152,7 @@ void TeamTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                             int width, int height, bool selected,
                             TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+    RemapControlType* scheme = Get_Color_Scheme();
     static const int _tabs[] = {35, 60, 80, 100};
     const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
     if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
@@ -598,7 +599,7 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
 void TeamMissionClass::Draw_It(PixelView& view, int index, int x, int y,
                                int width, int height, bool selected,
                                TextPrintType flags) const {
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
   static const int _tabs[] = {13, 40};
   const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
   if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
@@ -697,8 +698,8 @@ bool TeamTypeClass::Edit() {
   /*
   **	Dialog variables:
   */
-  ControlClass* commands = nullptr;
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  game::ControlClass* commands = nullptr;
+  RemapControlType* scheme = Get_Color_Scheme();
 
   /*
   **	Team name edit field.

@@ -99,6 +99,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/ai/special.h"
 #include "td/assets/audio.h"
@@ -126,7 +127,6 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/shapebtn.h"
 
 namespace td {
@@ -1427,7 +1427,7 @@ bool RadarClass::TacticalClass::Action(unsigned flags,
   ** Disable processing if the player names are up
   */
   if (TheMap().Is_Player_Names()) {
-    GadgetClass::Action(0, key, x, y);
+    game::GadgetClass::Action(0, key, x, y);
     return true;
   }
 
@@ -1566,7 +1566,7 @@ bool RadarClass::TacticalClass::Action(unsigned flags,
   if (result == -1) {
     TheMap().Override_Mouse_Shape(MOUSE_NORMAL, true);
   }
-  GadgetClass::Action(0, key, x, y);
+  game::GadgetClass::Action(0, key, x, y);
   return true;
 }
 

@@ -72,6 +72,8 @@
 #include "engine/stream/readline.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/palette.h"
@@ -86,10 +88,9 @@
 #include "ra/net/session.h"
 #include "ra/saveload/saveload.h"
 #include "ra/startup/conquer.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/list.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
@@ -209,7 +210,7 @@ bool LoadOptionsClass::Process() {
   /*
   **	Buttons
   */
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   switch (Style) {
     case LOAD:
@@ -309,8 +310,8 @@ bool LoadOptionsClass::Process() {
 
       if (Style == SAVE) {
         Fancy_Text_Print(view, TXT_MISSION_DESCRIPTION, d_dialog_cx,
-                         d_edit_y - d_txt8_h, GadgetClass::Get_Color_Scheme(),
-                         kTBlack, kTpfText | TPF_CENTER);
+                         d_edit_y - d_txt8_h, Get_Color_Scheme(), kTBlack,
+                         kTpfText | TPF_CENTER);
       }
 
       /*

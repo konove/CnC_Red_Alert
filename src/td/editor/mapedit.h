@@ -61,15 +61,15 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
 #include "td/map/mouse.h"
 #include "td/objects/object.h"
 #include "td/objects/type.h"
-#include "td/ui/control.h"
 #include "td/ui/dial8.h"
-#include "td/ui/gadget.h"
 #include "td/ui/gauge.h"
 #include "td/ui/list.h"
 #include "td/ui/textbtn.h"
@@ -245,7 +245,7 @@ class MapEditClass : public MouseClass {
   void Place_Prev_Category();
   void Place_Home();
   void Toggle_House();
-  static void Set_House_Buttons(HousesType house, GadgetClass* btnlist,
+  static void Set_House_Buttons(HousesType house, game::GadgetClass* btnlist,
                                 int base_id);
   void Start_Trigger_Placement();
   void Stop_Trigger_Placement();
@@ -364,7 +364,7 @@ class MapEditClass : public MouseClass {
   std::unique_ptr<ListClass> MissionList;
   std::unique_ptr<TriColorGaugeClass> HealthGauge;
   std::unique_ptr<Dial8Class> FacingDial;
-  std::unique_ptr<ControlClass> MapArea;
+  std::unique_ptr<game::ControlClass> MapArea;
   std::unique_ptr<TextLabelClass> HealthText;
   static char HealthBuf[20];
   std::unique_ptr<GaugeClass> BaseGauge;

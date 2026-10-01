@@ -45,12 +45,12 @@
 #include <vector>
 
 #include "engine/gfx/pixel_buffer.h"
+#include "game/ui/gadget.h"
 #include "ra/core/defines.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
-class StaticButtonClass final : public GadgetClass {
+class StaticButtonClass final : public game::GadgetClass {
  public:
   StaticButtonClass();
   StaticButtonClass(unsigned id, const char* text, TextPrintType style, int x,

@@ -61,6 +61,8 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/ai/scenario.h"
 #include "td/assets/palette.h"
@@ -84,9 +86,7 @@
 #include "td/startup/game_state.h"
 #include "td/startup/init.h"
 #include "td/ui/confdlg.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
 
@@ -150,7 +150,7 @@ void GameOptionsClass::Process() {
   // Own every gadget linked into `buttons`: the dialog's text buttons, then
   // the two catch-all click regions behind them.
   std::vector<std::unique_ptr<TextButtonClass>> text_buttons;
-  std::vector<std::unique_ptr<GadgetClass>> gadgets;
+  std::vector<std::unique_ptr<game::GadgetClass>> gadgets;
   int selection = 0;
   bool pressed = false;
   int curbutton = 6;
@@ -211,7 +211,7 @@ void GameOptionsClass::Process() {
   **	Force all button lengths to match the maximum length of the widest
   *button.
   */
-  GadgetClass* g = buttons;
+  game::GadgetClass* g = buttons;
   while (g) {
     g->Width = std::max(maxwidth, 90 * resfactor);
     g->X = OptionX + ((OptionWidth - g->Width) / 2);
@@ -236,8 +236,9 @@ void GameOptionsClass::Process() {
   *to *	be ignored if it wasn't recognized by any other button or slider.
   */
   gadgets
-      .emplace_back(std::make_unique<GadgetClass>(
-          OptionX, OptionY, OptionWidth, OptionHeight, GadgetClass::kLeftPress))
+      .emplace_back(std::make_unique<game::GadgetClass>(
+          OptionX, OptionY, OptionWidth, OptionHeight,
+          game::GadgetClass::kLeftPress))
       ->Add_Tail(*buttons);
 
   /*
@@ -245,10 +246,10 @@ void GameOptionsClass::Process() {
   *region *	to be equivalent to clicking on the return to game button.
   */
   gadgets
-      .emplace_back(std::make_unique<ControlClass>(
+      .emplace_back(std::make_unique<game::ControlClass>(
           kButtonResume, 0, 0, TheScreen().visible_view().width(),
           TheScreen().visible_view().height(),
-          GadgetClass::kLeftPress | GadgetClass::kRightPress))
+          game::GadgetClass::kLeftPress | game::GadgetClass::kRightPress))
       ->Add_Tail(*buttons);
 
   game::TheKeyboard().Clear();

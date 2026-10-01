@@ -51,6 +51,8 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/teamtype.h"
@@ -66,9 +68,8 @@
 #include "ra/objects/tracker.h"
 #include "ra/objects/type.h"
 #include "ra/startup/conquer.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/list.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
@@ -256,7 +257,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   /*
   **	Buttons
   */
-  GadgetClass* commands = nullptr;  // the button list
+  game::GadgetClass* commands = nullptr;  // the button list
 
   TListClass<CCPtr<TeamTypeClass> > teamlist(
       kTeamList, kListX, kListY, kListW, kListH, TPF_EFNT | TPF_NOSHADOW,
@@ -493,7 +494,7 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Dialog variables
   */
   bool cancel = false;  // true = user cancels
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   /*
   **	Team display variables
@@ -626,7 +627,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Create the list.
   */
-  ControlClass* commands = &okbtn;
+  game::ControlClass* commands = &okbtn;
   cancelbtn.Add_Tail(*commands);
 
   /*
@@ -894,7 +895,7 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
   const int dlg_y = 0;
   const int x = kDialogX + 32 + (col * kPictureW);
   const int y = dlg_y + 8 + 13 + (row * kRowH);
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   /*
   **	Change the window to this box.

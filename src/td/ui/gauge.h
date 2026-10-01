@@ -43,11 +43,11 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
-#include "td/ui/control.h"
+#include "game/ui/control.h"
 
 namespace td {
 
-class GaugeClass : public ControlClass {
+class GaugeClass : public game::ControlClass {
  public:
   GaugeClass(unsigned id, int x, int y, int w, int h);
   //		static GaugeClass * Create_One_Of(unsigned id, int x, int y, int

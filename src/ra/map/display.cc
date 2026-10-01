@@ -143,6 +143,7 @@
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
@@ -190,7 +191,6 @@
 #include "ra/screens/goptions.h"
 #include "ra/startup/game_state.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -2732,7 +2732,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     }
   }
 
-  return GadgetClass::Action(0, key, x, y);
+  return game::GadgetClass::Action(0, key, x, y);
 }
 
 /***********************************************************************************************

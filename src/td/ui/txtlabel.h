@@ -47,12 +47,12 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/ui/gadget.h"
 #include "td/core/defines.h"
-#include "td/ui/gadget.h"
 
 namespace td {
 
-class TextLabelClass : public GadgetClass {
+class TextLabelClass : public game::GadgetClass {
  public:
   /*
   ** Constructor/Destructor

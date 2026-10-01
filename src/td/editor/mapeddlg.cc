@@ -79,6 +79,7 @@
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
+#include "game/ui/control.h"
 #include "game/ui/input.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
@@ -106,7 +107,6 @@
 #include "td/screens/goptions.h"
 #include "td/startup/conquer.h"
 #include "td/ui/cheklist.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/edit.h"
 #include "td/ui/list.h"
@@ -547,7 +547,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   EditClass editbtn(kButtonScenario, scen_buf, 5,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kScenX,
@@ -979,7 +979,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = nullptr;
+  game::ControlClass* commands = nullptr;
 
   TextButtonClass okbtn(
       kButtonOk, TXT_OK,
@@ -1609,7 +1609,7 @@ int MapEditClass::Scenario_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
   ListClass theaterbtn(kListTheater, kTheaterX, kTheaterY, kTheaterW, kTheaterH,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                        Hires_Retrieve("BTN-UP.SHP"),
@@ -2251,7 +2251,7 @@ int MapEditClass::Select_Trigger() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   ListClass triggerlist(kTriggerList, kListX, kListY, kListW, kListH,
                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -2652,7 +2652,7 @@ int MapEditClass::Edit_Trigger() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   ListClass eventlist(kEventList, kEventX, kEventY, kEventW, kEventH,
                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -3163,7 +3163,7 @@ int MapEditClass::Import_Triggers() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   CheckListClass triggerlist(kTriggerList, kListX, kListY, kListW, kListH,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -3478,7 +3478,7 @@ int MapEditClass::Import_Teams() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   CheckListClass teamlist(kTeamList, kListX, kListY, kListW, kListH,
                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,

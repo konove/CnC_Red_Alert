@@ -49,11 +49,11 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/keyframe.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/link.h"
 #include "ra/core/defines.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -125,7 +125,7 @@ void DropListClass::Set_Selected_Index(int index) {
 void DropListClass::Clear_Focus() { Collapse(); }
 
 void DropListClass::Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
-                                 ControlClass& whom) {
+                                 game::ControlClass& whom) {
   if ((&whom == &DropButton) && (flags & kLeftRelease)) {
     if (IsDropped) {
       Collapse();

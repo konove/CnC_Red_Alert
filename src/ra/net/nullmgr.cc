@@ -80,6 +80,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
@@ -90,8 +91,8 @@
 #include "ra/net/session.h"
 #include "ra/startup/conquer.h"
 #include "ra/startup/init.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
 
@@ -117,7 +118,7 @@ using enum engine::window::KeyNumber;
 void (*NullModemClass::OrigAbortModemFunc)(int);
 
 engine::window::KeyNumber NullModemClass::Input;
-GadgetClass* NullModemClass::Commands;  // button list
+game::GadgetClass* NullModemClass::Commands;  // button list
 
 NullModemClass::NullModemClass(int numsend, int numreceive, int maxlen,
                                uint16_t magicnum)
@@ -277,12 +278,11 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   Draw_Caption(view, TXT_NONE, x, y, width);
 
   if (lines == 1) {
-    Fancy_Text_Print(view, buffer, x + (width / 2), y + 25,
-                     GadgetClass::Get_Color_Scheme(), kTBlack,
-                     kTpfText | TPF_CENTER);
+    Fancy_Text_Print(view, buffer, x + (width / 2), y + 25, Get_Color_Scheme(),
+                     kTBlack, kTpfText | TPF_CENTER);
   } else {
-    Fancy_Text_Print(view, buffer, x + 40, y + 25,
-                     GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
+    Fancy_Text_Print(view, buffer, x + 40, y + 25, Get_Color_Scheme(), kTBlack,
+                     kTpfText);
   }
 
   game::TheMouse().Show();
@@ -523,7 +523,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   Draw_Caption(view, TXT_NONE, x, y, width);
 
   Fancy_Text_Print(view, buffer.c_str(), (view.width() / 2) - (text_width / 2),
-                   y + 50, GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
+                   y + 50, Get_Color_Scheme(), kTBlack, kTpfText);
 
   Commands->Draw_All(view);
   game::TheMouse().Show();
@@ -741,7 +741,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
         Fancy_Text_Print(view, text_buffer,
                          (view.width() / 2) - (text_width / 2), y + 50,
-                         GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
+                         Get_Color_Scheme(), kTBlack, kTpfText);
 
         Commands->Draw_All(view);
       }

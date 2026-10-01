@@ -29,13 +29,13 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/startup/game_state.h"
-#include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -145,7 +145,7 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   // This reimplements EditClass::Action with WOL-specific key handling rather
   // than extending it, and finishes the same way EditClass does.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-  return ControlClass::Action(flags, key, x, y);
+  return game::ControlClass::Action(flags, key, x, y);
 }
 
 }  // namespace ra

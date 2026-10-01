@@ -50,10 +50,10 @@
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/link.h"
 #include "td/core/defines.h"
-#include "td/ui/control.h"
-#include "td/ui/gadget.h"
 #include "td/ui/shapebtn.h"
 #include "td/ui/slider.h"
 
@@ -74,7 +74,7 @@ namespace td {
  ** WARNINGS:
  ** HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-class ListClass : public ControlClass {
+class ListClass : public game::ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
             std::span<const std::byte> up, std::span<const std::byte> down);
@@ -113,7 +113,7 @@ class ListClass : public ControlClass {
   virtual int Step_Selected_Index(int step);
 
   void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
-                    ControlClass& whom) override;
+                    game::ControlClass& whom) override;
   // Removes the first item whose text equals `text` (nullptr: nothing).
   virtual void Remove_Item(const char* text);
   // Removes the item at `index`; out-of-range indices are ignored.
@@ -140,7 +140,7 @@ class ListClass : public ControlClass {
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   game::LinkClass& Add_Head(game::LinkClass& list)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  GadgetClass* Remove() override;
+  game::GadgetClass* Remove() override;
 
  protected:
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,

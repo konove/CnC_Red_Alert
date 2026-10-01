@@ -33,6 +33,7 @@
 #include "engine/platform/win32/win32_com.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "game/ui/link.h"
 #include "ra/assets/audio.h"
@@ -46,7 +47,6 @@
 #include "ra/startup/conquer.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/iconlist.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/seditdlg.h"
@@ -292,7 +292,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   RankAMBtn.ReflectButtonState = true;
 
   //	Build the button list.
-  GadgetClass* commands = pWO->pShpBtnDiscon.get();  // button list
+  game::GadgetClass* commands = pWO->pShpBtnDiscon.get();  // button list
   pWO->pShpBtnLeave->Add_Tail(*commands);
   pWO->pShpBtnRefresh->Add_Tail(*commands);
   pWO->pShpBtnSquelch->Add_Tail(*commands);

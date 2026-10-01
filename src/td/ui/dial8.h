@@ -43,12 +43,12 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
 #include "td/core/defines.h"
-#include "td/ui/control.h"
 
 namespace td {
 
-class Dial8Class : public ControlClass {
+class Dial8Class : public game::ControlClass {
  public:
   /*
   ** Constructor/Destructor

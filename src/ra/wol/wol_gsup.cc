@@ -52,6 +52,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/vector_dynamic.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/special.h"
@@ -82,10 +83,10 @@
 #include "ra/startup/version.h"
 #include "ra/ui/bigcheck.h"
 #include "ra/ui/cheklist.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/drop.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
 #include "ra/ui/iconlist.h"
 #include "ra/ui/msgbox.h"
@@ -555,7 +556,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   const int tabs[] = {77 * 2};       // tabs for player list box
   const int optiontabs[] = {8 * 2};  // tabs for option list box
 
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
 
   const int cbox_x[] = {
       d_color_x,

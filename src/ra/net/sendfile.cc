@@ -65,6 +65,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -79,8 +80,8 @@
 #include "ra/net/nullmgr.h"
 #include "ra/net/session.h"
 #include "ra/startup/init.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolapiob.h"
@@ -352,7 +353,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
     return false;
   }
 
-  GadgetClass* commands = &cancelbtn;  // button list
+  game::GadgetClass* commands = &cancelbtn;  // button list
   commands->Add_Tail(progress_meter);
 
   progress_meter.Set_Maximum(100);  // Max is 100%
@@ -383,8 +384,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
         Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
         Fancy_Text_Print(view, info_string.c_str(), d_dialog_cx - (width / 2),
-                         d_dialog_y + 50, GadgetClass::Get_Color_Scheme(),
-                         kTBlack,
+                         d_dialog_y + 50, Get_Color_Scheme(), kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         game::TheMouse().Show();
@@ -654,7 +654,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     return false;
   }
 
-  GadgetClass* commands = &cancelbtn;  // button list
+  game::GadgetClass* commands = &cancelbtn;  // button list
   commands->Add_Tail(progress_meter);
 
   progress_meter.Set_Maximum(100);  // Max is 100%
@@ -683,8 +683,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
         Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
         Fancy_Text_Print(view, info_string.c_str(), d_dialog_cx - (width / 2),
-                         d_dialog_y + (25 * factor),
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
+                         d_dialog_y + (25 * factor), Get_Color_Scheme(),
+                         kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         game::TheMouse().Show();

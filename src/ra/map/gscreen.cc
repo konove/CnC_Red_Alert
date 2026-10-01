@@ -60,6 +60,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
@@ -69,12 +70,11 @@
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
 #include "ra/net/session.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/msglist.h"
 
 namespace ra {
 
-GadgetClass* GScreenClass::Buttons = nullptr;
+game::GadgetClass* GScreenClass::Buttons = nullptr;
 
 PixelBuffer* GScreenClass::ShadowPage = nullptr;
 
@@ -299,7 +299,7 @@ engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Add_A_Button(GadgetClass& gadget) {
+void GScreenClass::Add_A_Button(game::GadgetClass& gadget) {
   /*
   **	If this gadget is already in the list, remove it before adding it in:
   **	- If 1st gadget in list, use Remove_A_Button to remove it, to reset the
@@ -339,7 +339,7 @@ void GScreenClass::Add_A_Button(GadgetClass& gadget) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Remove_A_Button(GadgetClass& gadget) {
+void GScreenClass::Remove_A_Button(game::GadgetClass& gadget) {
   Buttons = gadget.Remove();
 }
 

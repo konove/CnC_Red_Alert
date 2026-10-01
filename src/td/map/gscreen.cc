@@ -64,6 +64,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/assets/palette.h"
 #include "td/assets/screen.h"
@@ -74,12 +75,11 @@
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/net/session.h"
-#include "td/ui/gadget.h"
 #include "td/ui/msglist.h"
 
 namespace td {
 
-GadgetClass* GScreenClass::Buttons = nullptr;
+game::GadgetClass* GScreenClass::Buttons = nullptr;
 
 std::unique_ptr<PixelBuffer> GScreenClass::ShadowPage;
 
@@ -306,7 +306,7 @@ engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Add_A_Button(GadgetClass& gadget) {
+void GScreenClass::Add_A_Button(game::GadgetClass& gadget) {
   /*------------------------------------------------------------------------
   If this gadget is already in the list, remove it before adding it in:
   - If 1st gadget in list, use Remove_A_Button to remove it, to reset the
@@ -346,7 +346,7 @@ void GScreenClass::Add_A_Button(GadgetClass& gadget) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Remove_A_Button(GadgetClass& gadget) {
+void GScreenClass::Remove_A_Button(game::GadgetClass& gadget) {
   Buttons = gadget.Remove();
 }
 

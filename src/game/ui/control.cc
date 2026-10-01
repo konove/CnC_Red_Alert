@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer(tm)
+**	Command & Conquer Red Alert(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\control.cpv   2.18   16 Oct 1995 16:51:38
- * JOE_BOSTIC  $ */
+/* $Header: /CounterStrike/CONTROL.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
  ****
  ***********************************************************************************************
  *                                                                                             *
@@ -31,16 +30,26 @@
  *                                                                                             *
  *                   Start Date : 01/15/95 *
  *                                                                                             *
- *                  Last Update : January 19, 1995 [JLB] *
+ *                  Last Update : December 5, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * ControlClass::Action -- Normal action for control gaget objects.
- ** ControlClass::ControlClass -- Constructor for control class objects. *
+ * Functions: * ControlClass::Action -- Normal action for control gadget
+ *objects.                         * ControlClass::ControlClass -- Constructor
+ *for control class objects.                      * ControlClass::ControlClass
+ *-- Copy constructor for control gadget.                        *
  *   ControlClass::Draw_Me -- Draw logic for the control class object. *
  *   ControlClass::Get_ID -- Gets the ID number for this gadget. *
  *   ControlClass::Make_Peer -- Assigns a peer gadget to this gadget. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
+
+#include "game/ui/control.h"
+
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
+
+namespace game {
 
 /***********************************************************************************************
  * ControlClass::ControlClass -- Constructor for control class objects. *
@@ -69,24 +78,16 @@
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-#include "td/ui/control.h"
-
-#include "engine/gfx/pixel_buffer.h"
-#include "engine/window/keyboard.h"
-#include "td/ui/gadget.h"
-
-namespace td {
-
 ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
                            unsigned flags, bool sticky) noexcept
     : GadgetClass(x, y, w, h, flags, sticky), ID(id) {}
 
 /***********************************************************************************************
- * ControlClass::Action -- Normal action for control gaget objects. *
+ * ControlClass::Action -- Normal action for control gadget objects. *
  *                                                                                             *
  *    This function gets called when the input event that this control gadget is
  *looking for   * occurs. In such a case, the return key code value is changed
- *to the gaget's ID number    * with the special button bit flag attached. *
+ *to the gadget's ID number   * with the special button bit flag attached. *
  *                                                                                             *
  * INPUT:   flags -- The event that triggered this function call. If this value
  *is NULL, then  * this is a forced (probably due to the sticky flag) call and
@@ -95,7 +96,7 @@ ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
  *          key   -- Reference to the key code that will be returned by the
  *controlling        * Input() function. *
  *                                                                                             *
- * OUTPUT:  bool; Should futher list processing be aborted? *
+ * OUTPUT:  bool; Should further list processing be aborted? *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -104,15 +105,7 @@ ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
 bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
                           int y) {
   /*
-  **	If there is a peer link established, inform that gadget of this
-  **	action call.
-  */
-  if (Peer) {
-    Peer->Peer_To_Peer(flags, key, *this);
-  }
-
-  /*
-  **	Only if the flags indicate that a recognized action has occured, do the
+  **	Only if the flags indicate that a recognized action has occurred, do the
   **	normal processing of this gadget and set return value to the gadget ID.
   */
   if (flags) {
@@ -121,6 +114,14 @@ bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     } else {
       key = engine::window::KN_NONE;
     }
+  }
+
+  /*
+  **	If there is a peer link established, inform that gadget of this
+  **	action call.
+  */
+  if (Peer) {
+    Peer->Peer_To_Peer(flags, key, *this);
   }
 
   return GadgetClass::Action(flags, key, x, y);
@@ -169,7 +170,7 @@ unsigned ControlClass::Get_ID() const { return ID; }
  * ControlClass::Draw_Me -- Draw logic for the control class object. *
  *                                                                                             *
  *    This is called when the control object might need to be redrawn or when
- *redrawing is     * necessary. Since at this level of the class heirarchy, no
+ *redrawing is     * necessary. Since at this level of the class hierarchy, no
  *actual drawing occurs, this    * routine doesn't perform any rendering. It
  *does, however, inform any peer attached        * object that a Draw_Me
  *function has been called. Presumably, the attached peer gadget     * might
@@ -196,4 +197,4 @@ bool ControlClass::Draw_Me(PixelView& view, bool forced) {
   return GadgetClass::Draw_Me(view, forced);
 }
 
-}  // namespace td
+}  // namespace game

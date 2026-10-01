@@ -81,7 +81,7 @@
 #include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug_state.h"
-#include "ra/ui/gadget.h"
+#include "ra/ui/color_scheme.h"
 
 namespace ra {
 
@@ -204,7 +204,7 @@ static void Draw_Beveled_Box(PixelView& view, const int left, const int top,
 //          07/31/1992 JLB : Depressed option added.
 void Draw_Box(PixelView& view, const int x, const int y, const int w,
               const int h, const BoxStyleEnum up, const bool filled) {
-  const RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  const RemapControlType* scheme = Get_Color_Scheme();
 
   // The draw calls below take inclusive corner coordinates, so a box "w" pixels
   // wide ends at x + w - 1.
@@ -954,18 +954,17 @@ void Draw_Caption(PixelView& view, const char* text, int x, int y, int w) {
   */
   if (text != nullptr && *text != '\0') {
     if (TheDebugState().map_editor_active()) {
-      Fancy_Text_Print(view, text, (w / 2) + x, 4 + y,
-                       GadgetClass::Get_Color_Scheme(), kTBlack,
+      Fancy_Text_Print(view, text, (w / 2) + x, 4 + y, Get_Color_Scheme(),
+                       kTBlack,
                        TPF_CENTER | TPF_EFNT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     } else {
-      Fancy_Text_Print(view, text, (w / 2) + x, 16 + y,
-                       GadgetClass::Get_Color_Scheme(), kTBlack,
-                       TPF_CENTER | kTpfText);
+      Fancy_Text_Print(view, text, (w / 2) + x, 16 + y, Get_Color_Scheme(),
+                       kTBlack, TPF_CENTER | kTpfText);
       const FontStyle font = TextFontStyle(TPF_CENTER | kTpfText);
       const int length = StringPixelWidth(font, text);
       view.DrawLine(x + (w / 2) - (length / 2), y + FontLineHeight(font) + 16,
                     x + (w / 2) + (length / 2), y + FontLineHeight(font) + 16,
-                    GadgetClass::Get_Color_Scheme()->Box);
+                    Get_Color_Scheme()->Box);
     }
   }
 }

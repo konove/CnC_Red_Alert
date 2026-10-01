@@ -49,12 +49,13 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "game/ui/control.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/toggle.h"
 
@@ -189,7 +190,7 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
  * HISTORY: * 01/03/1995 MML : Created. * 01/16/1995 JLB : Modified *
  *=============================================================================================*/
 bool TextButtonClass::Draw_Me(PixelView& view, bool forced) {
-  if (ControlClass::Draw_Me(view, forced)) {
+  if (game::ControlClass::Draw_Me(view, forced)) {
     /*
     **	Draw the background and overlaying text. These are virtual function
     **	calls so that they may be overridden.

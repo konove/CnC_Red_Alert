@@ -54,6 +54,8 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/assets/theme.h"
@@ -62,9 +64,7 @@
 #include "td/net/session.h"
 #include "td/screens/goptions.h"
 #include "td/startup/conquer.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
-#include "td/ui/gadget.h"
 #include "td/ui/list.h"
 #include "td/ui/shapebtn.h"
 #include "td/ui/slider.h"
@@ -249,16 +249,17 @@ void SoundControlsClass::Process() {
   **	Causes left mouse clicks inside the dialog area, but not on any
   **	particular button, to be ignored.
   */
-  GadgetClass area(Option_X, Option_Y, Option_Width, Option_Height,
-                   GadgetClass::kLeftPress);
+  game::GadgetClass area(Option_X, Option_Y, Option_Width, Option_Height,
+                         game::GadgetClass::kLeftPress);
 
   /*
   **	Causes right clicks anywhere or left clicks outside of the dialog
   **	box area to be the same a clicking the return to game options button.
   */
-  ControlClass ctrl(kButtonOptions, 0, 0, TheScreen().visible_view().width(),
-                    TheScreen().visible_view().height(),
-                    GadgetClass::kRightPress | GadgetClass::kLeftPress);
+  game::ControlClass ctrl(
+      kButtonOptions, 0, 0, TheScreen().visible_view().width(),
+      TheScreen().visible_view().height(),
+      game::GadgetClass::kRightPress | game::GadgetClass::kLeftPress);
 
   /*
   **	The repeat and shuffle buttons are of the toggle type. They toggle
@@ -298,7 +299,7 @@ void SoundControlsClass::Process() {
   /*
   **	Create Buttons.
   */
-  GadgetClass* optionsbtn = &returnto;
+  game::GadgetClass* optionsbtn = &returnto;
   listbox.Add_Tail(*optionsbtn);
   stopbtn.Add_Tail(*optionsbtn);
   playbtn.Add_Tail(*optionsbtn);

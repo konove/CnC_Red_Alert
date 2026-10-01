@@ -112,6 +112,8 @@
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/audio.h"
 #include "ra/assets/palettes.h"
@@ -139,8 +141,7 @@
 #include "ra/objects/super.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
-#include "ra/ui/control.h"
-#include "ra/ui/gadget.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/shapebtn.h"
 
 namespace ra {
@@ -1906,8 +1907,8 @@ bool SidebarClass::StripClass::Recalc() {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 SidebarClass::StripClass::SelectClass::SelectClass() noexcept
-    : ControlClass(0, 0, 0, (kObjectWidth - 1) * 2, kObjectHeight * 2,
-                   kLeftPress | kRightPress | kLeftUp) {}
+    : game::ControlClass(0, 0, 0, (kObjectWidth - 1) * 2, kObjectHeight * 2,
+                         kLeftPress | kRightPress | kLeftUp) {}
 
 /***********************************************************************************************
  * SidebarClass::StripClass::SelectClass:: -- Assigns special values to a
@@ -2083,7 +2084,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
         */
         if (fnumber == -1 && factory != nullptr) {
           Speak(VOX_NO_FACTORY);
-          ControlClass::Action(flags, key, x, y);
+          game::ControlClass::Action(flags, key, x, y);
           return true;
         }
 
@@ -2178,7 +2179,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
     }
   }
 
-  ControlClass::Action(flags, key, x, y);
+  game::ControlClass::Action(flags, key, x, y);
   return true;
 }
 

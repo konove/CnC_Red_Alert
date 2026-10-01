@@ -48,11 +48,11 @@
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
+#include "game/ui/gadget.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/map/display.h"
 #include "ra/map/radar.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -80,10 +80,10 @@ class PowerClass : public RadarClass {
   /*
   **	This gadget is used to capture mouse input on the power bar.
   */
-  class PowerButtonClass : public GadgetClass {
+  class PowerButtonClass : public game::GadgetClass {
    public:
     PowerButtonClass() noexcept
-        : GadgetClass(
+        : game::GadgetClass(
               0, 0, 0, 0,
               kLeftPress | kLeftRelease | kLeftHeld | kLeftUp | kRightPress,
               true) {}

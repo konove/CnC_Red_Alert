@@ -42,9 +42,9 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "game/ui/gadget.h"
 #include "ra/core/defines.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -65,7 +65,7 @@ namespace ra {
  *=============================================================================================*/
 TextLabelClass::TextLabelClass(char* txt, int x, int y, RemapControlType* color,
                                TextPrintType style)
-    : GadgetClass(x, y, 1, 1, 0, false),
+    : game::GadgetClass(x, y, 1, 1, 0, false),
       Style(style),
       Text(txt),
       Color(color) {}
@@ -83,7 +83,7 @@ TextLabelClass::TextLabelClass(char* txt, int x, int y, RemapControlType* color,
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 bool TextLabelClass::Draw_Me(PixelView& view, bool forced) {
-  if (GadgetClass::Draw_Me(view, forced)) {
+  if (game::GadgetClass::Draw_Me(view, forced)) {
     if (PixWidth == -1) {
       Simple_Text_Print(view, Text, X, Y, Color, kTBlack, Style);
       //			Fancy_Text_Print(Text, X, Y, Color, TBLACK,

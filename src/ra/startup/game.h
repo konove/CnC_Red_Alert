@@ -9,6 +9,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/window/display.h"
 #include "game/core/game_clock.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/ai/special.h"
 #include "ra/assets/assets.h"
@@ -27,6 +28,7 @@
 #include "ra/startup/startup_options.h"
 #include "ra/startup/version.h"
 #include "ra/startup/winstub.h"
+#include "ra/ui/screenshot.h"
 
 namespace ra {
 
@@ -47,7 +49,7 @@ namespace ra {
 //   delete game;  // In ShutDown().
 class Game {
  public:
-  Game() = default;
+  Game() { game::GadgetClass::Set_Key_Hook(&Screenshot_Key); }
   // Stops the IPX manager listening first: that goes through TheNetwork(),
   // which no longer resolves by the time network_ is destroyed.
   ~Game() { network_.ipx().Stop_Listening(); }

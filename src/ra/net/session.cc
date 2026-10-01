@@ -105,8 +105,8 @@
 #include "ra/objects/house.h"
 #include "ra/objects/infantry.h"
 #include "ra/objects/unit.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -1278,7 +1278,7 @@ MultiMission::MultiMission(const char* filename, const char* description,
 void MultiMission::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                            int width, int height, bool selected,
                            TextPrintType flags) const {
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
   static const int _tabs[] = {35, 60, 80, 100};
   const TextPrintType point = flags & static_cast<TextPrintType>(0x0F);
   if (point == TPF_6PT_GRAD || point == TPF_EFNT) {

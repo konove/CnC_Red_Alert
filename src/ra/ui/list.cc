@@ -73,15 +73,16 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "game/ui/link.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -109,8 +110,8 @@ using enum engine::window::KeyNumber;
 ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
                      std::span<const std::byte> up,
                      std::span<const std::byte> down)
-    : ControlClass(static_cast<unsigned>(id), x, y, w, h,
-                   kLeftPress | kLeftRelease | kKeyboard, false),
+    : game::ControlClass(static_cast<unsigned>(id), x, y, w, h,
+                         kLeftPress | kLeftRelease | kKeyboard, false),
       TextFlags(flags),
       LineHeight(FontLineHeight(TextFontStyle(flags)) - 1),
       LineCount((h - 1) / LineHeight),
@@ -299,7 +300,7 @@ bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   if (flags & kLeftRelease) {
     key = KN_NONE;
     flags &= ~kLeftRelease;
-    ControlClass::Action(flags, key, x, y);
+    game::ControlClass::Action(flags, key, x, y);
     return true;
   }
   /*
@@ -329,7 +330,7 @@ bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
       SelectedIndex = 0;
     }
   }
-  return ControlClass::Action(flags, key, x, y);
+  return game::ControlClass::Action(flags, key, x, y);
 }
 
 /***********************************************************************************************
@@ -353,7 +354,7 @@ bool ListClass::Draw_Me(PixelView& view, bool forced) {
   // its owner to redraw in the middle of its own draw. Events still reach the
   // peer through ControlClass::Action.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-  if (GadgetClass::Draw_Me(view, forced)) {
+  if (game::GadgetClass::Draw_Me(view, forced)) {
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_BOX, true);
 
     /*
@@ -502,7 +503,7 @@ int ListClass::Current_Index() const { return SelectedIndex; }
  *=============================================================================================*/
 void ListClass::Peer_To_Peer(unsigned flags,
                              engine::window::KeyNumber& /*unused*/,
-                             ControlClass& whom) {
+                             game::ControlClass& whom) {
   if (flags & kLeftRelease) {
     if (&whom == &UpGadget) {
       Step(true);
@@ -731,7 +732,7 @@ game::LinkClass& ListClass::Add(game::LinkClass& list) {
   /*
   **	Add myself to the list, then return.
   */
-  return ControlClass::Add(list);
+  return game::ControlClass::Add(list);
 }
 
 /***********************************************************************************************
@@ -759,7 +760,7 @@ game::LinkClass& ListClass::Add_Head(game::LinkClass& list) {
   /*
   **	Add myself to the list, then return.
   */
-  return ControlClass::Add_Head(list);
+  return game::ControlClass::Add_Head(list);
 }
 
 /***********************************************************************************************
@@ -784,7 +785,7 @@ game::LinkClass& ListClass::Add_Tail(game::LinkClass& list) {
   /*
   **	Add myself to the list.
   */
-  ControlClass::Add_Tail(list);
+  game::ControlClass::Add_Tail(list);
 
   /*
   **	Add the scroll bar gadgets if they're active.
@@ -814,7 +815,7 @@ game::LinkClass& ListClass::Add_Tail(game::LinkClass& list) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-GadgetClass* ListClass::Remove() {
+game::GadgetClass* ListClass::Remove() {
   /*
   **	Remove the scroll bar if it's active
   */
@@ -827,7 +828,7 @@ GadgetClass* ListClass::Remove() {
   /*
   **	Remove myself & return
   */
-  return ControlClass::Remove();
+  return game::ControlClass::Remove();
 }
 
 /***********************************************************************************************
@@ -891,7 +892,7 @@ void ListClass::Flag_To_Redraw() {
     DownGadget.Flag_To_Redraw();
     ScrollGadget.Flag_To_Redraw();
   }
-  ControlClass::Flag_To_Redraw();
+  game::ControlClass::Flag_To_Redraw();
 }
 
 void ListClass::Set_Selected_Index(const char* text) {

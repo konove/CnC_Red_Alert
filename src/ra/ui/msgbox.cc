@@ -60,8 +60,8 @@
 #include "ra/core/jshell.h"
 #include "ra/startup/conquer.h"
 #include "ra/startup/game_state.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/textbtn.h"
 
 namespace ra {
@@ -237,8 +237,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Draw the body of the message.
   */
-  Fancy_Text_Print(view, buffer, printx, y + 40,
-                   GadgetClass::Get_Color_Scheme(), kTBlack, tpf);
+  Fancy_Text_Print(view, buffer, printx, y + 40, Get_Color_Scheme(), kTBlack,
+                   tpf);
 
   /*
   **	Redraw the buttons.
@@ -266,8 +266,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         /*
         **	Draw the body of the message.
         */
-        Fancy_Text_Print(view, buffer, printx, y + 40,
-                         GadgetClass::Get_Color_Scheme(), kTBlack, tpf);
+        Fancy_Text_Print(view, buffer, printx, y + 40, Get_Color_Scheme(),
+                         kTBlack, tpf);
 
         /*
         **	Redraw the buttons.

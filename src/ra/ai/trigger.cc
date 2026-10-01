@@ -77,8 +77,8 @@
 #include "ra/objects/target.h"
 #include "ra/objects/tracker.h"
 #include "ra/startup/game_state.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -119,7 +119,7 @@ void TriggerClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                            int width, int height, bool selected,
                            TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
-    RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+    RemapControlType* scheme = Get_Color_Scheme();
     static const int _tabs[] = {13, 40};
     const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
     if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||

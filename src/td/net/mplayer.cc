@@ -81,6 +81,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
+#include "game/ui/control.h"
 #include "game/ui/input.h"
 #include "td/ai/special.h"
 #include "td/assets/screen.h"
@@ -102,7 +103,6 @@
 #include "td/screens/goptions.h"
 #include "td/startup/conquer.h"
 #include "td/startup/init.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/msglist.h"
 #include "td/ui/textbtn.h"
@@ -196,7 +196,7 @@ GameType Select_MPlayer_Game() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   //
   // If neither IPX or winsock are active then do only the modem serial dialog
@@ -1194,7 +1194,7 @@ int Surrender_Dialog() {
   /*........................................................................
   Buttons
   ........................................................................*/
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass okbtn(
       kButtonOk, TXT_OK,

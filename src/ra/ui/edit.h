@@ -26,8 +26,8 @@
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
 #include "ra/core/defines.h"
-#include "ra/ui/control.h"
 
 namespace ra {
 
@@ -35,7 +35,7 @@ namespace ra {
 // Supports filtering by character type (alpha, numeric, misc) and optional
 // uppercase forcing. The gadget does not own its text buffer; the caller
 // provides a char array that EditClass modifies in place.
-class EditClass : public ControlClass {
+class EditClass : public game::ControlClass {
  public:
   // Character filter flags for the text input field.
   struct EditStyle {

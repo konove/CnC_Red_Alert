@@ -47,11 +47,11 @@
 #include "base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "ra/core/defines.h"
 #include "ra/map/power.h"
 #include "ra/objects/stage.h"
-#include "ra/ui/control.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/shapebtn.h"
 
 class ArchiveReader;
@@ -117,7 +117,7 @@ class SidebarClass : public PowerClass {
   **	actions.
   */
   class StripClass : public StageClass {
-    class SelectClass : public ControlClass {
+    class SelectClass : public game::ControlClass {
      public:
       SelectClass() noexcept;
 
@@ -328,11 +328,12 @@ class SidebarClass : public PowerClass {
   */
   bool IsSidebarToRedraw : 1 {true};
 
-  class SBGadgetClass : public GadgetClass {
+  class SBGadgetClass : public game::GadgetClass {
    public:
     SBGadgetClass() noexcept
-        : GadgetClass((kSideX + 8) * 2, kSideY * 2, ((kSideWidth - 1) * 2) - 1,
-                      (kSideHeight - 1) * 2, kLeftUp) {}
+        : game::GadgetClass((kSideX + 8) * 2, kSideY * 2,
+                            ((kSideWidth - 1) * 2) - 1, (kSideHeight - 1) * 2,
+                            kLeftUp) {}
 
    protected:
     bool Action(unsigned flags, engine::window::KeyNumber& key, int x,

@@ -42,11 +42,11 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
-#include "ra/ui/control.h"
+#include "game/ui/control.h"
 
 namespace ra {
 
-class GaugeClass : public ControlClass {
+class GaugeClass : public game::ControlClass {
  public:
   GaugeClass(unsigned id, int x, int y, int w, int h);
 

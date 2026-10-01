@@ -76,8 +76,8 @@
 #include "ra/core/jshell.h"
 #include "ra/screens/goptions.h"
 #include "ra/startup/conquer.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 
 namespace ra {
 
@@ -202,8 +202,8 @@ bool EgoClass::Scroll(int distance) {
  *=============================================================================================*/
 void EgoClass::Render(PixelView& view) const {
   if (YPos < view.height() && YPos > -16) {
-    Fancy_Text_Print(view, Text.c_str(), XPos, YPos,
-                     GadgetClass::Get_Color_Scheme(), kTBlack, Flags);
+    Fancy_Text_Print(view, Text.c_str(), XPos, YPos, Get_Color_Scheme(),
+                     kTBlack, Flags);
   }
 }
 
@@ -387,7 +387,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Initialise the text printing system.
   */
-  GadgetClass::Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_GREEN));
+  Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_GREEN));
 
   // The credits are drawn to the hidden page and blitted forward a frame at a
   // time, so that the text never appears half-scrolled on screen.
@@ -810,8 +810,7 @@ void Show_Who_Was_Responsible() {
 
   game::TheMouse().Show();
 
-  GadgetClass::Set_Color_Scheme(
-      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));
+  Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));
 
   TheTheme().Stop();
   TheOptions().Set_Score_Volume(oldvolume, false);

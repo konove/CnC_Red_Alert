@@ -51,6 +51,8 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/palettes.h"
@@ -63,9 +65,8 @@
 #include "ra/net/session.h"
 #include "ra/screens/goptions.h"
 #include "ra/startup/conquer.h"
-#include "ra/ui/control.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/list.h"
 #include "ra/ui/shapebtn.h"
 #include "ra/ui/slider.h"
@@ -168,7 +169,7 @@ void SoundControlsClass::Process() {
   const int fxslider_w = kFxsliderW * 2;
   const int fxslider_height = kFxsliderHeight * 2;
 
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  RemapControlType* scheme = Get_Color_Scheme();
   //	ThemeType theme;
 
   /*
@@ -229,16 +230,17 @@ void SoundControlsClass::Process() {
   **	Causes left mouse clicks inside the dialog area, but not on any
   **	particular button, to be ignored.
   */
-  GadgetClass area(option_x, option_y, option_width, option_height,
-                   GadgetClass::kLeftPress);
+  game::GadgetClass area(option_x, option_y, option_width, option_height,
+                         game::GadgetClass::kLeftPress);
 
   /*
   **	Causes right clicks anywhere or left clicks outside of the dialog
   **	box area to be the same a clicking the return to game options button.
   */
-  ControlClass ctrl(kButtonOptions, 0, 0, TheScreen().visible_view().width(),
-                    TheScreen().visible_view().height(),
-                    GadgetClass::kRightPress | GadgetClass::kLeftPress);
+  game::ControlClass ctrl(
+      kButtonOptions, 0, 0, TheScreen().visible_view().width(),
+      TheScreen().visible_view().height(),
+      game::GadgetClass::kRightPress | game::GadgetClass::kLeftPress);
 
   /*
   **	The repeat and shuffle buttons are of the toggle type. They toggle
@@ -278,7 +280,7 @@ void SoundControlsClass::Process() {
   /*
   **	Create Buttons.
   */
-  GadgetClass* optionsbtn = &returnto;
+  game::GadgetClass* optionsbtn = &returnto;
   listbox.Add_Tail(*optionsbtn);
   stopbtn.Add_Tail(*optionsbtn);
   playbtn.Add_Tail(*optionsbtn);

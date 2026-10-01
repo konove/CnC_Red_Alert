@@ -56,6 +56,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/installation.h"
@@ -71,8 +72,8 @@
 #include "ra/map/world.h"
 #include "ra/startup/conquer.h"
 #include "ra/startup/init.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/list.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
@@ -339,7 +340,7 @@ void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
 bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
                                             // was called for Aftermath.
 {
-  GadgetClass* buttons = nullptr;
+  game::GadgetClass* buttons = nullptr;
 
   TextButtonClass ok(200, TXT_OK, kTpfButton, kOptionX + 40,
                      kOptionY + kOptionHeight - 50);

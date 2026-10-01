@@ -33,6 +33,7 @@
 #include "engine/platform/win32/win32_types.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
@@ -43,9 +44,9 @@
 #include "ra/startup/game_state.h"
 #include "ra/startup/init.h"
 #include "ra/ui/bigcheck.h"
+#include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/iconlist.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
@@ -152,7 +153,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   /*
   **	Buttons
   */
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
   TextButtonClass ConnectBtn(kButtonConnect, TXT_WOL_CONNECT, kTpfButton,
                              d_connect_x, d_connect_y, d_connect_w);
@@ -251,11 +252,11 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       */
       {
         Fancy_Text_Print(view, TXT_WOL_NAME, d_name_x + (d_name_w / 2),
-                         d_name_y - 14, GadgetClass::Get_Color_Scheme(),
-                         kTBlack, kTpfText | TPF_CENTER);
+                         d_name_y - 14, Get_Color_Scheme(), kTBlack,
+                         kTpfText | TPF_CENTER);
         Fancy_Text_Print(view, TXT_WOL_PASSWORD, d_pass_x + (d_pass_w / 2),
-                         d_pass_y - 14, GadgetClass::Get_Color_Scheme(),
-                         kTBlack, kTpfText | TPF_CENTER);
+                         d_pass_y - 14, Get_Color_Scheme(), kTBlack,
+                         kTpfText | TPF_CENTER);
         commands->Flag_List_To_Redraw();
       }
       game::TheMouse().Show();

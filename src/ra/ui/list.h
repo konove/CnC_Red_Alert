@@ -55,14 +55,14 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/vector_dynamic.h"
+#include "game/ui/control.h"
+#include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "game/ui/link.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
-#include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/gadget.h"
 #include "ra/ui/shapebtn.h"
 #include "ra/ui/slider.h"
 
@@ -78,7 +78,7 @@ namespace ra {
 // may pass a stack buffer and forget it. Pointers from Get_Item and
 // Current_Item stay valid until the item is removed, replaced with Set_Item,
 // or another item is added.
-class ListClass : public ControlClass {
+class ListClass : public game::ControlClass {
  public:
   ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
             std::span<const std::byte> up, std::span<const std::byte> down);
@@ -112,7 +112,7 @@ class ListClass : public ControlClass {
   void Flag_To_Redraw() final;
 
   void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
-                    ControlClass& whom) override;
+                    game::ControlClass& whom) override;
   // Removes the first item whose text equals `text` (nullptr: nothing).
   virtual void Remove_Item(const char* text);
   // Removes the item at `index`; out-of-range indices are ignored.
@@ -141,7 +141,7 @@ class ListClass : public ControlClass {
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   game::LinkClass& Add_Head(game::LinkClass& list)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  GadgetClass* Remove() override;
+  game::GadgetClass* Remove() override;
 
  protected:
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
@@ -197,7 +197,7 @@ class ListClass : public ControlClass {
 };
 
 template <class T>
-class TListClass final : public ControlClass {
+class TListClass final : public game::ControlClass {
  public:
   TListClass(int id, int x, int y, int w, int h, TextPrintType flags,
              std::span<const std::byte> up, std::span<const std::byte> down);
@@ -225,7 +225,7 @@ class TListClass final : public ControlClass {
   [[nodiscard]] T Get_Item(int index) const { return List.at(index); }
 
   void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
-                    ControlClass& whom) override;
+                    game::ControlClass& whom) override;
   void Remove_Item(T /*text*/);
   void Remove_Index(int /*index*/);
   bool Remove_Scroll_Bar();
@@ -246,7 +246,7 @@ class TListClass final : public ControlClass {
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   game::LinkClass& Add_Head(game::LinkClass& list)
       ABSL_ATTRIBUTE_LIFETIME_BOUND override;
-  GadgetClass* Remove() override;
+  game::GadgetClass* Remove() override;
 
  protected:
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
@@ -305,8 +305,8 @@ template <class T>
 TListClass<T>::TListClass(int id, int x, int y, int w, int h,
                           TextPrintType flags, std::span<const std::byte> up,
                           std::span<const std::byte> down)
-    : ControlClass(static_cast<unsigned>(id), x, y, w, h,
-                   kLeftPress | kLeftRelease | kKeyboard, false),
+    : game::ControlClass(static_cast<unsigned>(id), x, y, w, h,
+                         kLeftPress | kLeftRelease | kKeyboard, false),
       TextFlags(flags),
       LineHeight(FontLineHeight(TextFontStyle(flags)) - 1),
       LineCount((h - 1) / LineHeight),
@@ -441,7 +441,7 @@ bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key,
   if (flags & kLeftRelease) {
     key = engine::window::KN_NONE;
     flags &= (~kLeftRelease);
-    ControlClass::Action(flags, key, x, y);
+    game::ControlClass::Action(flags, key, x, y);
     return true;
   }
   /*
@@ -468,7 +468,7 @@ bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key,
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex = std::min<int>(SelectedIndex, static_cast<int>(List.Count()) - 1);
   }
-  return ControlClass::Action(flags, key, x, y);
+  return game::ControlClass::Action(flags, key, x, y);
 }
 
 template <class T>
@@ -476,7 +476,7 @@ bool TListClass<T>::Draw_Me(PixelView& view, bool forced) {
   // As in ListClass::Draw_Me: skipping ControlClass avoids asking the peer
   // drop list to redraw from inside the list's own draw.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-  if (GadgetClass::Draw_Me(view, forced)) {
+  if (game::GadgetClass::Draw_Me(view, forced)) {
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_BOX, true);
 
     /*
@@ -540,7 +540,7 @@ int TListClass<T>::Current_Index() const {
 template <class T>
 void TListClass<T>::Peer_To_Peer(unsigned flags,
                                  engine::window::KeyNumber& /*unused*/,
-                                 ControlClass& whom) {
+                                 game::ControlClass& whom) {
   if (flags & kLeftRelease) {
     if (&whom == &UpGadget) {
       Step(true);
@@ -659,7 +659,7 @@ game::LinkClass& TListClass<T>::Add(game::LinkClass& list) {
   /*
   **	Add myself to the list, then return.
   */
-  return ControlClass::Add(list);
+  return game::ControlClass::Add(list);
 }
 
 template <class T>
@@ -676,7 +676,7 @@ game::LinkClass& TListClass<T>::Add_Head(game::LinkClass& list) {
   /*
   **	Add myself to the list, then return.
   */
-  return ControlClass::Add_Head(list);
+  return game::ControlClass::Add_Head(list);
 }
 
 template <class T>
@@ -684,7 +684,7 @@ game::LinkClass& TListClass<T>::Add_Tail(game::LinkClass& list) {
   /*
   **	Add myself to the list.
   */
-  ControlClass::Add_Tail(list);
+  game::ControlClass::Add_Tail(list);
 
   /*
   **	Add the scroll bar gadgets if they're active.
@@ -699,7 +699,7 @@ game::LinkClass& TListClass<T>::Add_Tail(game::LinkClass& list) {
 }
 
 template <class T>
-GadgetClass* TListClass<T>::Remove() {
+game::GadgetClass* TListClass<T>::Remove() {
   /*
   **	Remove the scroll bar if it's active
   */
@@ -712,7 +712,7 @@ GadgetClass* TListClass<T>::Remove() {
   /*
   **	Remove myself & return
   */
-  return ControlClass::Remove();
+  return game::ControlClass::Remove();
 }
 
 template <class T>
@@ -744,7 +744,7 @@ void TListClass<T>::Flag_To_Redraw() {
     DownGadget.Flag_To_Redraw();
     ScrollGadget.Flag_To_Redraw();
   }
-  ControlClass::Flag_To_Redraw();
+  game::ControlClass::Flag_To_Redraw();
 }
 
 template <class T>

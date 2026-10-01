@@ -58,6 +58,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
+#include "game/ui/control.h"
 #include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/config.h"
@@ -71,7 +72,6 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 #include "td/startup/init.h"
-#include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/textbtn.h"
 
@@ -623,7 +623,7 @@ int Main_Menu(int timeout) {
 #endif
   int64_t starttime = 0;
 
-  ControlClass* commands = nullptr;  // the button list
+  game::ControlClass* commands = nullptr;  // the button list
 
 #ifdef NEWMENU
 #ifdef BONUS_MISSIONS
