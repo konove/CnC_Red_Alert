@@ -72,14 +72,14 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef CNC_RED_ALERT_RA_NET_CONNMGR_H_
-#define CNC_RED_ALERT_RA_NET_CONNMGR_H_
+#ifndef CNC_RED_ALERT_ENGINE_NET_CONNMGR_H_
+#define CNC_RED_ALERT_ENGINE_NET_CONNMGR_H_
 
 #include <cstddef>
 #include <cstdint>
 #include <span>
 
-namespace ra {
+namespace engine::net {
 
 /*
 ***************************** Class Declaration *****************************
@@ -159,6 +159,6 @@ class ConnManClass {
   .....................................................................*/
 };
 
-}  // namespace ra
+}  // namespace engine::net
 
-#endif  // CNC_RED_ALERT_RA_NET_CONNMGR_H_
+#endif  // CNC_RED_ALERT_ENGINE_NET_CONNMGR_H_

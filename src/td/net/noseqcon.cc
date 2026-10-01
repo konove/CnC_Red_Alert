@@ -85,7 +85,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/unaligned.h"
-#include "td/net/combuf.h"
+#include "engine/net/combuf.h"
 #include "td/net/connect.h"
 
 namespace td {
@@ -96,7 +96,8 @@ NonSequencedConnClass::NonSequencedConnClass(int numsend, int numreceive,
                                              int32_t max_retries,
                                              int32_t timeout)
     : ConnectionClass(maxlen, magicnum, retry_delta, max_retries, timeout),
-      Queue(new CommBufferClass(numsend, numreceive, MaxPacketLen)) {
+      Queue(
+          new engine::net::CommBufferClass(numsend, numreceive, MaxPacketLen)) {
   /*------------------------------------------------------------------------
   Allocate the packet Queue.  This will store incoming packets (which will
   be placed there by the Connection Manager), and outgoing packets (which
@@ -257,7 +258,8 @@ int NonSequencedConnClass::Send_Packet(std::span<const std::byte> buf,
  *=========================================================================*/
 int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
                                           int buflen) {
-  ReceiveQueueType* rec_entry = nullptr;  // ptr to recv entry header
+  engine::net::ReceiveQueueType* rec_entry =
+      nullptr;                            // ptr to recv entry header
   CommHeaderType* entry_data = nullptr;   // ptr to queue entry data
   CommHeaderType ackpacket{};             // ACK packet to send
   int save_packet = 1;  // 0 = this is a resend
@@ -285,7 +287,7 @@ int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
       /*
       ....................... Get queue entry ptr ........................
       */
-      SendQueueType* send_entry =
+      engine::net::SendQueueType* send_entry =
           Queue->Get_Send(i);  // ptr to send entry header
       /*
       ............... If ptr is valid, get ptr to its data ...............
@@ -487,7 +489,7 @@ int NonSequencedConnClass::Get_Packet(std::span<std::byte> buf, int* buflen) {
   last PACKET_DATA_ACK packet we read.
   ------------------------------------------------------------------------*/
   for (int i = 0; i < Queue->Num_Receive(); i++) {
-    ReceiveQueueType* rec_entry =
+    engine::net::ReceiveQueueType* rec_entry =
         Queue->Get_Receive(i);  // ptr to receive entry header
 
     /*.....................................................................
@@ -566,7 +568,7 @@ int NonSequencedConnClass::Get_Packet(std::span<std::byte> buf, int* buflen) {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int NonSequencedConnClass::Service_Send_Queue() {
-  SendQueueType* send_entry = nullptr;   // ptr to send queue entry
+  engine::net::SendQueueType* send_entry = nullptr;  // ptr to send queue entry
   CommHeaderType* packet_hdr = nullptr;  // packet header
   int bad_conn = 0;
 
@@ -696,7 +698,7 @@ int NonSequencedConnClass::Service_Receive_Queue() {
   throw it away.
   ------------------------------------------------------------------------*/
   for (int i = 0; i < Queue->Num_Receive(); i++) {
-    ReceiveQueueType* rec_entry =
+    engine::net::ReceiveQueueType* rec_entry =
         Queue->Get_Receive(i);  // ptr to receive entry header
 
     if (rec_entry->IsRead) {

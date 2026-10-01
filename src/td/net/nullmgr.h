@@ -52,9 +52,9 @@
 */
 #include <cstdint>
 
+#include "engine/net/connmgr.h"
 #include "engine/window/keyboard.h"
 #include "td/core/defines.h"
-#include "td/net/connmgr.h"
 #include "td/net/nullconn.h"
 #include "td/ui/gadget.h"
 
@@ -68,7 +68,7 @@ inline char ModemRXString[80] = {};
 /*
 ***************************** Class Declaration *****************************
 */
-class NullModemClass : public ConnManClass {
+class NullModemClass : public engine::net::ConnManClass {
   /*
   ---------------------------- Public Interface ----------------------------
   */

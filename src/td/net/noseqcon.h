@@ -60,7 +60,7 @@
 /*
 ********************************* Includes **********************************
 */
-#include "td/net/combuf.h"
+#include "engine/net/combuf.h"
 #include "td/net/connect.h"
 
 namespace td {
@@ -102,7 +102,7 @@ class NonSequencedConnClass : public ConnectionClass {
   The packet "queue"; this non-sequenced version isn't really much of
   a queue, but more of a repository.
   .....................................................................*/
-  CommBufferClass* Queue;
+  engine::net::CommBufferClass* Queue;
 
   /*
   -------------------------- Protected Interface ---------------------------

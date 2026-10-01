@@ -98,6 +98,7 @@
 #include "base/random.h"
 #include "base/strings/safe_string.h"
 #include "base/unaligned.h"
+#include "engine/net/connmgr.h"
 #include "engine/platform/timer.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/window/hardware_cursor.h"
@@ -123,7 +124,6 @@
 #include "ra/map/world.h"
 #include "ra/net/chat.h"
 #include "ra/net/connect.h"
-#include "ra/net/connmgr.h"
 #include "ra/net/event.h"
 #include "ra/net/netdlg.h"
 #include "ra/net/network.h"
@@ -220,22 +220,21 @@ DumpFile OpenDumpFile(const char* name) {
 //...........................................................................
 static void Queue_AI_Normal();
 static void Queue_AI_Multiplayer();
-static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
-                                    int resend_delta, int dialog_time,
-                                    int timeout,
-                                    std::span<std::byte> multi_packet_buf,
-                                    int my_sent, std::span<int64_t> their_frame,
-                                    std::span<uint16_t> their_sent,
-                                    std::span<uint16_t> their_recv);
-static void Generate_Timing_Event(ConnManClass* net, int my_sent);
-static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent);
-static void Generate_Process_Time_Event(ConnManClass* net);
-static int Process_Send_Period(ConnManClass* net);  //, int init);
-static int Send_Packets(ConnManClass* net,
+static RetcodeType Wait_For_Players(
+    int first_time, engine::net::ConnManClass* net, int resend_delta,
+    int dialog_time, int timeout, std::span<std::byte> multi_packet_buf,
+    int my_sent, std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
+    std::span<uint16_t> their_recv);
+static void Generate_Timing_Event(engine::net::ConnManClass* net, int my_sent);
+static void Generate_Real_Timing_Event(engine::net::ConnManClass* net,
+                                       int my_sent);
+static void Generate_Process_Time_Event(engine::net::ConnManClass* net);
+static int Process_Send_Period(engine::net::ConnManClass* net);  //, int init);
+static int Send_Packets(engine::net::ConnManClass* net,
                         std::span<std::byte> multi_packet_buf,
                         int multi_packet_max, int max_ahead, int my_sent);
-static void Send_FrameSync(ConnManClass* net, int cmd_count);
-static RetcodeType Process_Receive_Packet(ConnManClass* net,
+static void Send_FrameSync(engine::net::ConnManClass* net, int cmd_count);
+static RetcodeType Process_Receive_Packet(engine::net::ConnManClass* net,
                                           std::span<std::byte> multi_packet_buf,
                                           int id, int packetlen,
                                           std::span<int64_t> their_frame,
@@ -243,7 +242,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
                                           std::span<uint16_t> their_recv);
 static RetcodeType Process_Serial_Packet(
     std::span<const std::byte> multi_packet_buf, int packetlen, int first_time);
-static int Can_Advance(ConnManClass* net, int max_ahead,
+static int Can_Advance(engine::net::ConnManClass* net, int max_ahead,
                        std::span<const int64_t> their_frame,
                        std::span<const uint16_t> their_sent,
                        std::span<const uint16_t> their_recv);
@@ -252,7 +251,8 @@ static int Process_Reconnect_Dialog(
         timeout_timer,
     std::span<const int64_t> their_frame, int num_conn, bool reconn,
     bool fresh);
-static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
+static int Handle_Timeout(engine::net::ConnManClass* net,
+                          std::span<int64_t> their_frame,
                           std::span<uint16_t> their_sent,
                           std::span<uint16_t> their_recv);
 static void Stop_Game();
@@ -272,7 +272,7 @@ static int Breakup_Receive_Packet(std::span<const std::byte> buf, int bufsize);
 // DoList management:
 //...........................................................................
 static int Execute_DoList(
-    int max_houses, HousesType base_house, ConnManClass* net,
+    int max_houses, HousesType base_house, engine::net::ConnManClass* net,
     const engine::platform::Timer<game::FrameTickSource>* skip_crc,
     //	ConnManClass *net, TCountDownTimerClass *skip_crc,
     std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
@@ -290,7 +290,7 @@ static void Print_CRCs(const EventClass* ev);
 constexpr int kEventTypeSize = static_cast<int>(sizeof(EventClass::EventType));
 
 static void Dump_Packet_Too_Late_Stuff(const EventClass* event,
-                                       ConnManClass* net,
+                                       engine::net::ConnManClass* net,
                                        std::span<const int64_t> their_frame,
                                        std::span<const uint16_t> their_sent,
                                        std::span<const uint16_t> their_recv);
@@ -668,7 +668,8 @@ static void Queue_AI_Multiplayer() {
   //........................................................................
   // Variables for sending, receiving & parsing packets:
   //........................................................................
-  ConnManClass* net = nullptr;       // ptr to access all multiplayer functions
+  engine::net::ConnManClass* net =
+      nullptr;                       // ptr to access all multiplayer functions
   const EventClass packet;           // for sending single frame-sync's
   std::span<std::byte> multi_packet_buf = {};  // buffer for sending/receiving
   int multi_packet_max = 0;          // max length of multi_packet_buf
@@ -969,13 +970,11 @@ static void Queue_AI_Multiplayer() {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
-                                    int resend_delta, int dialog_time,
-                                    int timeout,
-                                    std::span<std::byte> multi_packet_buf,
-                                    int my_sent, std::span<int64_t> their_frame,
-                                    std::span<uint16_t> their_sent,
-                                    std::span<uint16_t> their_recv) {
+static RetcodeType Wait_For_Players(
+    int first_time, engine::net::ConnManClass* net, int resend_delta,
+    int dialog_time, int timeout, std::span<std::byte> multi_packet_buf,
+    int my_sent, std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
+    std::span<uint16_t> their_recv) {
   //........................................................................
   // Variables for sending, receiving & parsing packets:
   //........................................................................
@@ -1310,7 +1309,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
+static void Generate_Timing_Event(engine::net::ConnManClass* net, int my_sent) {
   EventClass ev;
 
   //------------------------------------------------------------------------
@@ -1385,7 +1384,8 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
  * HISTORY:                                                                *
  *   07/02/1996 BRR : Created.                                             *
  *=========================================================================*/
-static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
+static void Generate_Real_Timing_Event(engine::net::ConnManClass* net,
+                                       int my_sent) {
   EventClass ev;
   int specified_frame_rate = 0;
 
@@ -1503,7 +1503,7 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
  * HISTORY:                                                                *
  *   07/02/1996 BRR : Created.                                             *
  *=========================================================================*/
-static void Generate_Process_Time_Event(ConnManClass* net) {
+static void Generate_Process_Time_Event(engine::net::ConnManClass* net) {
   EventClass ev;
 
   //
@@ -1558,7 +1558,7 @@ static void Generate_Process_Time_Event(ConnManClass* net) {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Process_Send_Period(ConnManClass* net)  //, int init)
+static int Process_Send_Period(engine::net::ConnManClass* net)  //, int init)
 {
   //------------------------------------------------------------------------
   // If the current frame # is not an even multiple of 'FrameSendRate', then
@@ -1607,7 +1607,7 @@ static int Process_Send_Period(ConnManClass* net)  //, int init)
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Send_Packets(ConnManClass* net,
+static int Send_Packets(engine::net::ConnManClass* net,
                         std::span<std::byte> multi_packet_buf,
                         int multi_packet_max, int max_ahead, int my_sent) {
   int cap = 0;      // max # events to send, NOT including FRAMEINFO event
@@ -1734,7 +1734,7 @@ static int Send_Packets(ConnManClass* net,
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static void Send_FrameSync(ConnManClass* net, int cmd_count) {
+static void Send_FrameSync(engine::net::ConnManClass* net, int cmd_count) {
   EventClass packet;
 
   //------------------------------------------------------------------------
@@ -1808,7 +1808,7 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static RetcodeType Process_Receive_Packet(ConnManClass* net,
+static RetcodeType Process_Receive_Packet(engine::net::ConnManClass* net,
                                           std::span<std::byte> multi_packet_buf,
                                           int id, int packetlen,
                                           std::span<int64_t> their_frame,
@@ -2133,7 +2133,7 @@ static RetcodeType Process_Serial_Packet(
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Can_Advance(ConnManClass* net, int max_ahead,
+static int Can_Advance(engine::net::ConnManClass* net, int max_ahead,
                        std::span<const int64_t> their_frame,
                        std::span<const uint16_t> their_sent,
                        std::span<const uint16_t> their_recv) {
@@ -2285,7 +2285,8 @@ static int Process_Reconnect_Dialog(
  * HISTORY:                                                                *
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
-static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
+static int Handle_Timeout(engine::net::ConnManClass* net,
+                          std::span<int64_t> their_frame,
                           std::span<uint16_t> their_sent,
                           std::span<uint16_t> their_recv) {
   //------------------------------------------------------------------------
@@ -2324,7 +2325,7 @@ static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
                                  // left.
     }
 
-    if (id != ConnManClass::kConnectionNone) {
+    if (id != engine::net::ConnManClass::kConnectionNone) {
       for (int i = oldest_index; i < net->Num_Connections() - 1; i++) {
         base::At(their_frame, base::ToSize(i)) =
             base::At(their_frame, base::ToSize(i + 1));
@@ -3433,7 +3434,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Execute_DoList(
-    int max_houses, HousesType base_house, ConnManClass* net,
+    int max_houses, HousesType base_house, engine::net::ConnManClass* net,
     const engine::platform::Timer<game::FrameTickSource>* skip_crc,
     std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
     std::span<uint16_t> their_recv) {
@@ -4448,7 +4449,8 @@ static void Print_CRCs(const EventClass* ev) {
  * HISTORY:                                                                *
  *   06/28/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
+void Dump_Packet_Too_Late_Stuff(const EventClass* event,
+                                engine::net::ConnManClass* net,
                                 std::span<const int64_t> their_frame,
                                 std::span<const uint16_t> their_sent,
                                 std::span<const uint16_t> their_recv) {

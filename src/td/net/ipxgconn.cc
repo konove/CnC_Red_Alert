@@ -81,7 +81,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/unaligned.h"
-#include "td/net/combuf.h"
+#include "engine/net/combuf.h"
 #include "td/net/connect.h"
 #include "td/net/ipx.h"
 #include "td/net/ipxaddr.h"
@@ -257,7 +257,7 @@ int IPXGlobalConnClass::Receive_Packet(std::span<std::byte> buf, int buflen,
         /*
         ..................... Get queue entry ptr .......................
         */
-        SendQueueType* send_entry =
+        engine::net::SendQueueType* send_entry =
             Queue->Get_Send(i);  // ptr to send entry header
         /*
         ............. If ptr is valid, get ptr to its data ..............
@@ -322,7 +322,7 @@ int IPXGlobalConnClass::Get_Packet(std::span<std::byte> buf, int* buflen,
   /*
   ------------------ Get ptr to the next available entry -------------------
   */
-  ReceiveQueueType* rec_entry =
+  engine::net::ReceiveQueueType* rec_entry =
       Queue->Get_Receive(0);  // ptr to receive entry header
 
   /*
@@ -447,7 +447,7 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
   /*------------------------------------------------------------------------
   Get a pointer to the next received entry
   ------------------------------------------------------------------------*/
-  ReceiveQueueType* rec_entry =
+  engine::net::ReceiveQueueType* rec_entry =
       Queue->Get_Receive(0);  // ptr to receive entry header
   if (rec_entry == nullptr) {
     return 1;

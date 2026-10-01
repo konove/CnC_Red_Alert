@@ -1,10 +1,10 @@
 // File: the ConnManClass destructor, the one member of the interface with a
 // definition.
 
-#include "ra/net/connmgr.h"
+#include "engine/net/connmgr.h"
 
-namespace ra {
+namespace engine::net {
 
 ConnManClass::~ConnManClass() = default;
 
-}  // namespace ra
+}  // namespace engine::net

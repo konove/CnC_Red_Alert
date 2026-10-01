@@ -118,7 +118,7 @@
 #include <cstdint>
 
 #include "base/enum_array.h"
-#include "ra/net/combuf.h"
+#include "engine/net/combuf.h"
 
 namespace ra {
 
@@ -201,8 +201,8 @@ class ConnectionClass {
   // for an ACK, comparing FirstTime across `queues`. Only each queue's first
   // unacknowledged entry is considered. Null queues are skipped. Returns
   // nullptr if no queue holds an unacknowledged packet.
-  static SendQueueType* OldestUnackedSend(
-      std::span<CommBufferClass* const> queues);
+  static engine::net::SendQueueType* OldestUnackedSend(
+      std::span<engine::net::CommBufferClass* const> queues);
 
   /*.....................................................................
   Utility routines.
@@ -221,7 +221,7 @@ class ConnectionClass {
   The packet "queue"; this non-sequenced version isn't really much of
   a queue, but more of a repository.
   .....................................................................*/
-  std::unique_ptr<CommBufferClass> Queue;
+  std::unique_ptr<engine::net::CommBufferClass> Queue;
 
   /*
   -------------------------- Protected Interface ---------------------------

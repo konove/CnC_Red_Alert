@@ -49,7 +49,7 @@
  *   CommBufferClass::Reset_Response_Time -- resets computations
  ** - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/net/combuf.h"
+#include "engine/net/combuf.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -59,7 +59,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 
-namespace ra {
+namespace engine::net {
 
 /***************************************************************************
  * CommBufferClass::CommBufferClass -- class constructor *
@@ -163,7 +163,6 @@ CommBufferClass::~CommBufferClass() = default;
  *   01/20/1995 BR : Created.                                              *
  *=========================================================================*/
 void CommBufferClass::Init() {
-
   //------------------------------------------------------------------------
   //	Init data members
   //------------------------------------------------------------------------
@@ -225,7 +224,6 @@ void CommBufferClass::Init() {
  *   10/23/1995 BRR : Created.                                             *
  *=========================================================================*/
 void CommBufferClass::Init_Send_Queue() {
-
   //------------------------------------------------------------------------
   //	Init data members
   //------------------------------------------------------------------------
@@ -830,4 +828,4 @@ void CommBufferClass::Reset_Response_Time() {
 
 /************************** end of combuf.cpp ******************************/
 
-}  // namespace ra
+}  // namespace engine::net

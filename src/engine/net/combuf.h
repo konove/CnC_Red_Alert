@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer(tm)
+**	Command & Conquer Red Alert(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\combuf.h_v   1.6   16 Oct 1995 16:46:00
- * JOE_BOSTIC  $ */
+/* $Header: /CounterStrike/COMBUF.H 1     3/03/97 10:24a Joe_bostic $ */
 /***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
  ***************************************************************************
@@ -51,8 +50,8 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef CNC_RED_ALERT_TD_NET_COMBUF_H_
-#define CNC_RED_ALERT_TD_NET_COMBUF_H_
+#ifndef CNC_RED_ALERT_ENGINE_NET_COMBUF_H_
+#define CNC_RED_ALERT_ENGINE_NET_COMBUF_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -61,7 +60,7 @@
 
 #include "absl/base/attributes.h"
 
-namespace td {
+namespace engine::net {
 
 /*
 ********************************** Defines **********************************
@@ -77,6 +76,8 @@ struct SendQueueType {
   int SendCount = 0;              // # of times this packet has been sent
   int BufLen = 0;                 // size of the packet stored in this entry
   std::vector<std::byte> Buffer;  // the data packet
+  int ExtraLen = 0;               // size of extra data
+  std::vector<std::byte> ExtraBuffer;  // extra data buffer
 };
 
 /*---------------------------------------------------------------------------
@@ -88,6 +89,8 @@ struct ReceiveQueueType {
   unsigned int IsACK : 1 = 0;     // 1 = ACK sent for this packet
   int BufLen = 0;                 // size of the packet stored in this entry
   std::vector<std::byte> Buffer;  // the data packet
+  int ExtraLen = 0;               // size of extra data
+  std::vector<std::byte> ExtraBuffer;  // extra data buffer
 };
 
 /*
@@ -101,7 +104,7 @@ class CommBufferClass {
   /*
   ....................... Constructor/Destructor ........................
   */
-  CommBufferClass(int numsend, int numreceive, int maxlen);
+  CommBufferClass(int numsend, int numreceive, int maxlen, int extralen = 0);
   virtual ~CommBufferClass();
   CommBufferClass(const CommBufferClass&) = delete;
   CommBufferClass& operator=(const CommBufferClass&) = delete;
@@ -113,10 +116,10 @@ class CommBufferClass {
   /*
   ......................... Send Queue routines .........................
   */
-  int Queue_Send(std::span<const std::byte> buf,
-                 int buflen);  // add to Send queue
-  int UnQueue_Send(std::span<std::byte> buf, int* buflen,
-                   int index);  // remove from Send queue
+  int Queue_Send(std::span<const std::byte> buf, int buflen,
+                 std::span<const std::byte> extrabuf = {}, int extralen = 0);
+  int UnQueue_Send(std::span<std::byte> buf, int* buflen, int index,
+                   std::span<std::byte> extrabuf = {}, int* extralen = nullptr);
   // # entries in queue
   [[nodiscard]] int Num_Send() const { return SendCount; }
   // max # send queue entries
@@ -128,10 +131,11 @@ class CommBufferClass {
   /*
   ....................... Receive Queue routines ........................
   */
-  int Queue_Receive(std::span<const std::byte> buf,
-                    int buflen);  // add to Receive queue
-  int UnQueue_Receive(std::span<std::byte> buf, int* buflen,
-                      int index);  // remove from Receive queue
+  int Queue_Receive(std::span<const std::byte> buf, int buflen,
+                    std::span<const std::byte> extrabuf = {}, int extralen = 0);
+  int UnQueue_Receive(std::span<std::byte> buf, int* buflen, int index,
+                      std::span<std::byte> extrabuf = {},
+                      int* extralen = nullptr);
   // # entries in queue
   [[nodiscard]] int Num_Receive() const { return ReceiveCount; }
   // max # recv queue entries
@@ -158,6 +162,7 @@ class CommBufferClass {
   int MaxSend;        // max # send queue entries
   int MaxReceive;     // max # receive queue entries
   int MaxPacketSize;  // max size of a packet, in bytes
+  int MaxExtraSize;   // max size of extra bytes
 
   /*
   ....................... Response time variables .......................
@@ -171,21 +176,21 @@ class CommBufferClass {
   ........................ Send Queue variables .........................
   */
   std::vector<SendQueueType> SendQueue;  // incoming packets
-  int SendCount = 0;         // # packets in the queue
-  uint32_t SendTotal = 0;    // total # added to send queue
-  std::vector<int> SendIndex;  // array of Send entry indices
+  int SendCount = 0;                     // # packets in the queue
+  uint32_t SendTotal = 0;                // total # added to send queue
+  std::vector<int> SendIndex;            // array of Send entry indices
 
   /*
   ....................... Receive Queue variables .......................
   */
   std::vector<ReceiveQueueType> ReceiveQueue;  // outgoing packets
-  int ReceiveCount = 0;            // # packets in the queue
-  uint32_t ReceiveTotal = 0;       // total # added to receive queue
-  std::vector<int> ReceiveIndex;   // array of Receive entry indices
+  int ReceiveCount = 0;                        // # packets in the queue
+  uint32_t ReceiveTotal = 0;                   // total # added to receive queue
+  std::vector<int> ReceiveIndex;               // array of Receive entry indices
 };
 
-}  // namespace td
+}  // namespace engine::net
 
-#endif  // CNC_RED_ALERT_TD_NET_COMBUF_H_
+#endif  // CNC_RED_ALERT_ENGINE_NET_COMBUF_H_
 
 /**************************** end of combuf.h ******************************/

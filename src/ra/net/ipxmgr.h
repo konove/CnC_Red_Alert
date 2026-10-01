@@ -140,7 +140,7 @@
 ********************************* Includes **********************************
 */
 #include "absl/base/attributes.h"
-#include "ra/net/connmgr.h"
+#include "engine/net/connmgr.h"
 #include "ra/net/ipx.h"
 #include "ra/net/ipxaddr.h"
 #include "ra/net/ipxconn.h"
@@ -165,7 +165,7 @@ value to support more.
 /*
 ***************************** Class Declaration *****************************
 */
-class IPXManagerClass : public ConnManClass {
+class IPXManagerClass : public engine::net::ConnManClass {
   /*
   ---------------------------- Public Interface ----------------------------
   */

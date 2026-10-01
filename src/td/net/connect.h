@@ -230,7 +230,7 @@
 #include <vector>
 
 #include "base/enum_array.h"
-#include "td/net/combuf.h"
+#include "engine/net/combuf.h"
 
 namespace td {
 
@@ -314,8 +314,8 @@ class ConnectionClass {
   // for an ACK, comparing FirstTime across `queues`. Only each queue's first
   // unacknowledged entry is considered. Null queues are skipped. Returns
   // nullptr if no queue holds an unacknowledged packet.
-  static SendQueueType* OldestUnackedSend(
-      std::span<CommBufferClass* const> queues);
+  static engine::net::SendQueueType* OldestUnackedSend(
+      std::span<engine::net::CommBufferClass* const> queues);
 
   /*.....................................................................
   Utility routines.

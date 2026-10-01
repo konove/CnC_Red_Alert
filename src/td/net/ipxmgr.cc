@@ -81,8 +81,8 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/unaligned.h"
+#include "engine/net/combuf.h"
 #include "td/core/defines.h"
-#include "td/net/combuf.h"
 #include "td/net/connect.h"
 #include "td/net/ipx.h"
 #include "td/net/ipxaddr.h"
@@ -1277,11 +1277,12 @@ void IPXManagerClass::Reset_Response_Time() {
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 std::span<const std::byte> IPXManagerClass::Oldest_Send() {
-  std::array<CommBufferClass*, CONNECT_MAX> queues{};
+  std::array<engine::net::CommBufferClass*, CONNECT_MAX> queues{};
   for (int i = 0; i < NumConnections; i++) {
     queues.at(base::ToSize(i)) = base::At(Connection, i)->Queue;
   }
-  const SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
+  const engine::net::SendQueueType* oldest =
+      ConnectionClass::OldestUnackedSend(queues);
   return oldest != nullptr
              ? std::span(oldest->Buffer).first(base::ToSize(oldest->BufLen))
              : std::span<const std::byte>{};

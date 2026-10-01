@@ -49,7 +49,7 @@
 #include "base/aligned_buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "td/net/combuf.h"
+#include "engine/net/combuf.h"
 
 namespace td {
 
@@ -219,17 +219,17 @@ int64_t ConnectionClass::Time() {
   return msec / 100 * 6;
 }
 
-SendQueueType* ConnectionClass::OldestUnackedSend(
-    std::span<CommBufferClass* const> queues) {
+engine::net::SendQueueType* ConnectionClass::OldestUnackedSend(
+    std::span<engine::net::CommBufferClass* const> queues) {
   // "Found" is tracked through the result pointer rather than a latest-time
   // sentinel: ticks count from boot and outgrow any fixed 32-bit bound.
-  SendQueueType* oldest = nullptr;
-  for (CommBufferClass* queue : queues) {
+  engine::net::SendQueueType* oldest = nullptr;
+  for (engine::net::CommBufferClass* queue : queues) {
     if (queue == nullptr) {
       continue;
     }
     for (int i = 0; i < queue->Num_Send(); i++) {
-      SendQueueType* entry = queue->Get_Send(i);
+      engine::net::SendQueueType* entry = queue->Get_Send(i);
       if (entry == nullptr) {
         continue;
       }

@@ -117,8 +117,8 @@ add_gtest(
 
 add_gtest(
     NAME td_connect_test
-    SOURCES net/connect_test.cc net/connect.cc net/combuf.cc net/noseqcon.cc
-    LIBS base absl::check absl::log
+    SOURCES net/connect_test.cc net/connect.cc net/noseqcon.cc
+    LIBS base engine_net absl::check absl::log
 )
 
 add_gtest(

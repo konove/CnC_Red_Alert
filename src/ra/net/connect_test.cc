@@ -9,8 +9,8 @@
 #include "absl/base/attributes.h"
 #include "base/buffer.h"
 #include "base/unaligned.h"
+#include "engine/net/combuf.h"
 #include "gtest/gtest.h"
-#include "ra/net/combuf.h"
 
 namespace ra {
 
@@ -57,9 +57,9 @@ Packet MakePacket(ConnectionClass::ConnectionEnum code, uint32_t id,
 }
 
 // Queues a header-only packet for sending and returns its queue entry.
-SendQueueType* QueueHeader(CommBufferClass& queue ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                           ConnectionClass::ConnectionEnum code,
-                           int64_t first_time) {
+engine::net::SendQueueType* QueueHeader(
+    engine::net::CommBufferClass& queue ABSL_ATTRIBUTE_LIFETIME_BOUND,
+    ConnectionClass::ConnectionEnum code, int64_t first_time) {
   CommHeaderType header{};
   header.MagicNumber = kMagic;
   header.Code = static_cast<unsigned char>(code);
@@ -67,7 +67,7 @@ SendQueueType* QueueHeader(CommBufferClass& queue ABSL_ATTRIBUTE_LIFETIME_BOUND,
                        static_cast<int>(sizeof(header))) == 0) {
     return nullptr;
   }
-  SendQueueType* entry = queue.Get_Send(queue.Num_Send() - 1);
+  engine::net::SendQueueType* entry = queue.Get_Send(queue.Num_Send() - 1);
   entry->FirstTime = first_time;
   return entry;
 }
@@ -93,34 +93,34 @@ TEST(ConnectionTest, DeliversAckRequiredPacketsInIdOrder) {
 }
 
 TEST(ConnectionTest, OldestUnackedSendFindsPacketsAfterLongUptime) {
-  CommBufferClass newer(4, 4, 64);
-  CommBufferClass older(4, 4, 64);
+  engine::net::CommBufferClass newer(4, 4, 64);
+  engine::net::CommBufferClass older(4, 4, 64);
   QueueHeader(newer, ConnectionClass::PACKET_DATA_ACK, kLongUptimeTicks + 50);
-  SendQueueType* expected =
+  engine::net::SendQueueType* expected =
       QueueHeader(older, ConnectionClass::PACKET_DATA_ACK, kLongUptimeTicks);
   ASSERT_NE(expected, nullptr);
 
-  std::array<CommBufferClass*, 2> queues{&newer, &older};
+  std::array<engine::net::CommBufferClass*, 2> queues{&newer, &older};
   EXPECT_EQ(ConnectionClass::OldestUnackedSend(queues), expected);
 }
 
 TEST(ConnectionTest, OldestUnackedSendSkipsAckedAndNoAckPackets) {
-  CommBufferClass queue(4, 4, 64);
+  engine::net::CommBufferClass queue(4, 4, 64);
   QueueHeader(queue, ConnectionClass::PACKET_DATA_NOACK, 1);
-  SendQueueType* acked =
+  engine::net::SendQueueType* acked =
       QueueHeader(queue, ConnectionClass::PACKET_DATA_ACK, 2);
   ASSERT_NE(acked, nullptr);
   acked->IsACK = 1;
-  SendQueueType* expected =
+  engine::net::SendQueueType* expected =
       QueueHeader(queue, ConnectionClass::PACKET_DATA_ACK, kLongUptimeTicks);
 
-  std::array<CommBufferClass*, 2> queues{nullptr, &queue};
+  std::array<engine::net::CommBufferClass*, 2> queues{nullptr, &queue};
   EXPECT_EQ(ConnectionClass::OldestUnackedSend(queues), expected);
 }
 
 TEST(ConnectionTest, OldestUnackedSendReturnsNullWhenNothingPending) {
-  CommBufferClass empty(4, 4, 64);
-  std::array<CommBufferClass*, 2> queues{nullptr, &empty};
+  engine::net::CommBufferClass empty(4, 4, 64);
+  std::array<engine::net::CommBufferClass*, 2> queues{nullptr, &empty};
   EXPECT_EQ(ConnectionClass::OldestUnackedSend(queues), nullptr);
 }
 
@@ -150,7 +150,7 @@ TEST(ConnectionTest, ShortDestinationDoesNotConsumeReceivedPacket) {
 }
 
 TEST(CommBufferTest, RejectsInvalidInputAndQueueIndices) {
-  CommBufferClass queue(2, 2, 8);
+  engine::net::CommBufferClass queue(2, 2, 8);
   const uint32_t value = 0x12345678;
   EXPECT_FALSE(queue.Queue_Send(base::ObjectBytes(value), -1));
   EXPECT_FALSE(queue.Queue_Send(base::ObjectBytes(value), 5));
@@ -161,7 +161,7 @@ TEST(CommBufferTest, RejectsInvalidInputAndQueueIndices) {
 }
 
 TEST(CommBufferTest, ShortDestinationLeavesThePacketQueued) {
-  CommBufferClass queue(2, 2, 8);
+  engine::net::CommBufferClass queue(2, 2, 8);
   const uint32_t value = 0x12345678;
   ASSERT_TRUE(queue.Queue_Send(base::ObjectBytes(value), sizeof(value)));
   uint16_t small = 0;

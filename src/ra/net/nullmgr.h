@@ -47,8 +47,8 @@
 #include <span>
 #include <vector>
 
+#include "engine/net/connmgr.h"
 #include "engine/window/keyboard.h"
-#include "ra/net/connmgr.h"
 #include "ra/net/nullconn.h"
 #include "ra/net/session.h"
 #include "ra/ui/gadget.h"
@@ -62,7 +62,7 @@ namespace ra {
 /*
 ***************************** Class Declaration *****************************
 */
-class NullModemClass : public ConnManClass {
+class NullModemClass : public engine::net::ConnManClass {
   /*
   ---------------------------- Public Interface ----------------------------
   */
