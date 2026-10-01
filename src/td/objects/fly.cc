@@ -62,9 +62,9 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "game/core/display_constants.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
-#include "td/core/display_constants.h"
 #include "td/core/jshell.h"
 
 namespace td {

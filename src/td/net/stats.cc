@@ -59,9 +59,9 @@
 #include "engine/file/profile_buffer.h"
 #include "engine/net/packet.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "td/ai/special.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 #include "td/core/heap.h"
 #include "td/core/object_heaps.h"
 #include "td/data/profile.h"
@@ -381,7 +381,7 @@ void Send_Statistics_Packet() {
     } else {
       stats.Add_Field(
           FIELD_FRAME_RATE,
-          static_cast<int32_t>(CurrentFrame() / (GameEndTime / 60)));
+          static_cast<int32_t>(game::CurrentFrame() / (GameEndTime / 60)));
     }
 
     CCDebugString("C&C95 - Adding game info stats.\n");

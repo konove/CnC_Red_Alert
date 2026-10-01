@@ -68,7 +68,7 @@ apply_language_setting(rasdl)
 # rather than relying on it arriving transitively through engine_window/
 # engine_video.
 find_package(SDL2 REQUIRED)
-target_link_libraries(ra_engine PUBLIC absl::strings magic_enum::magic_enum
+target_link_libraries(ra_engine PUBLIC game_core absl::strings magic_enum::magic_enum
         engine_net
         engine_window
         engine_video
@@ -243,13 +243,6 @@ add_gtest(
     LIBS base absl::check absl::log
 )
 
-
-add_gtest(
-    NAME ra_path_overlap_test
-    SOURCES map/path_overlap_test.cc
-    LIBS base absl::check absl::log magic_enum::magic_enum
-)
-apply_language_setting(ra_path_overlap_test)
 
 if (EMSCRIPTEN)
     set_target_properties(rasdl PROPERTIES

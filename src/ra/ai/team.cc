@@ -86,6 +86,8 @@
 #include "base/array.h"
 #include "base/fixed.h"
 #include "base/pooled.h"
+#include "game/core/display_constants.h"
+#include "game/core/game_clock.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
@@ -93,8 +95,6 @@
 #include "ra/assets/audio.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/display_constants.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
@@ -2975,7 +2975,7 @@ int TeamClass::TMission_Patrol() {
   /*
   **	Every so often, scan for a nearby enemy.
   */
-  if (CurrentFrame() % (TheRules().PatrolTime * kTicksPerMinute) == 0) {
+  if (game::CurrentFrame() % (TheRules().PatrolTime * kTicksPerMinute) == 0) {
     FootClass* leader = Fetch_A_Leader();
     if (leader != nullptr) {
       const TARGET target =

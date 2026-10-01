@@ -146,6 +146,7 @@
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "td/ai/base.h"
 #include "td/ai/region.h"
 #include "td/ai/reinf.h"
@@ -160,7 +161,6 @@
 #include "td/core/coord.h"
 #include "td/core/defines.h"
 #include "td/core/facing.h"
-#include "td/core/game_clock.h"
 #include "td/core/heap.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
@@ -1035,7 +1035,7 @@ void HouseClass::AI() {
     /*
     **	Replace the last harvester if there is a refinery present.
     */
-    if (TheSession().type() == GAME_NORMAL && CurrentFrame() > 5 &&
+    if (TheSession().type() == GAME_NORMAL && game::CurrentFrame() > 5 &&
         (!IsHuman && TheWorld().build_level() <= 6) &&
         (ActiveBScan & kStructFlagRefinery) != 0 &&
         (UScan & kUnitFlagHarvester) == 0 && !IsFreeHarvester) {
@@ -1297,7 +1297,7 @@ void HouseClass::AI() {
   ** through each object's AI before it will be properly set.
   */
   if (TheSession().type() != GAME_NORMAL && !IsDefeated && !ActiveBScan &&
-      !ActiveAScan && !UScan && !ActiveIScan && CurrentFrame() > 0) {
+      !ActiveAScan && !UScan && !ActiveIScan && game::CurrentFrame() > 0) {
     MPlayer_Defeated();
   }
 

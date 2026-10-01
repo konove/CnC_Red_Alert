@@ -134,6 +134,8 @@
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
+#include "game/core/display_constants.h"
+#include "game/core/game_clock.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/trigger.h"
@@ -143,10 +145,8 @@
 #include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/display_constants.h"
 #include "ra/core/face.h"
 #include "ra/core/facing.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
@@ -1428,7 +1428,7 @@ void BuildingClass::AI() {
   ** radar jammer.
   */
   if ((*this == STRUCT_RADAR || *this == STRUCT_SAM) &&
-      CurrentFrame() % kTicksPerSecond == 0) {
+      game::CurrentFrame() % kTicksPerSecond == 0) {
     IsJammed = false;
     for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
       const UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
@@ -1696,7 +1696,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
   if (this != source /*&& !Class->IsInsignificant*/) {
     if (source) {
-      House->LATime = static_cast<int>(CurrentFrame());
+      House->LATime = static_cast<int>(game::CurrentFrame());
       House->LAType = source->What_Am_I();
       House->LAZone = House->Which_Zone(this);
       House->LAEnemy = source->Owner();
@@ -6256,7 +6256,7 @@ void BuildingClass::Repair_AI() {
   **	If it is repairing, then apply any repair effects as necessary.
   */
   if (IsRepairing &&
-      CurrentFrame() % (TheRules().RepairRate * kTicksPerMinute) == 0) {
+      game::CurrentFrame() % (TheRules().RepairRate * kTicksPerMinute) == 0) {
     IsWrenchVisible = !static_cast<bool>(IsWrenchVisible);
     Mark(MARK_CHANGE);
     const int cost = Class->Repair_Cost();

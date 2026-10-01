@@ -45,9 +45,9 @@
 #include <cstdlib>
 
 #include "base/fixed.h"
+#include "game/core/display_constants.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/display_constants.h"
 #include "ra/core/face.h"
 
 namespace ra {

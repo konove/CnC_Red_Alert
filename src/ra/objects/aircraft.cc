@@ -126,6 +126,8 @@
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
+#include "game/core/display_constants.h"
+#include "game/core/game_clock.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
@@ -136,10 +138,8 @@
 #include "ra/core/const.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/display_constants.h"
 #include "ra/core/face.h"
 #include "ra/core/facing.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
@@ -513,7 +513,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   if (Height == kFlightLevel && static_cast<int>(Get_Speed()) < 3) {
     static const int _jitter[] = {0, 0, 0, 0, 1,  1,  1,  0,
                                   0, 0, 0, 0, -1, -1, -1, 0};
-    jitter = base::At(_jitter, CurrentFrame() % 16);
+    jitter = base::At(_jitter, game::CurrentFrame() % 16);
   }
 
   /*

@@ -69,14 +69,14 @@
 #include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
+#include "game/core/display_constants.h"
+#include "game/core/game_clock.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/display_constants.h"
 #include "ra/core/face.h"
 #include "ra/core/facing.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
@@ -408,7 +408,8 @@ void BulletClass::AI() {
   *but *	they only do so every other game frame (improves game speed and
   *makes *	missiles not so deadly).
   */
-  if (CurrentFrame() % 2 != 0 && Class->ROT != 0 && Target_Legal(TarCom)) {
+  if (game::CurrentFrame() % 2 != 0 && Class->ROT != 0 &&
+      Target_Legal(TarCom)) {
     PrimaryFacing.Set_Desired(Direction256(Coord, As_Coord(TarCom)));
   }
 
@@ -533,7 +534,7 @@ int BulletClass::Shape_Number() const {
   **	For tumbling projectiles, fetch offset stage.
   */
   if (Class->Tumble > 0) {
-    shapenum += static_cast<int>(CurrentFrame() % Class->Tumble);
+    shapenum += static_cast<int>(game::CurrentFrame() % Class->Tumble);
   }
 
   return shapenum;

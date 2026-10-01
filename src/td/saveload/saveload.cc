@@ -57,13 +57,13 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/stream_sink.h"
 #include "engine/stream/stream_source.h"
+#include "game/core/game_clock.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 #include "td/core/heap.h"
 #include "td/core/object_heaps.h"
 #include "td/core/randomstate.h"
@@ -163,7 +163,7 @@ bool Save_Game(int id, const char* descr) {
   StreamSink sink(*file);
   ArchiveWriter writer(sink);
   writer.Section(FourCC("FRAM"));
-  int64_t frame = CurrentFrame();
+  int64_t frame = game::CurrentFrame();
   writer(frame);
   const bool saved = [&] {
     Call_Back();
@@ -309,7 +309,7 @@ bool Load_Game(int id) {
   }
   int64_t frame = 0;
   reader(frame);
-  TheGameClock().set_frame(frame);
+  game::TheGameClock().set_frame(frame);
   if (!reader.ok()) {
     return false;
   }

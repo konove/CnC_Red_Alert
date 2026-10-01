@@ -1,13 +1,13 @@
 // File: GameClock, the frame counter the simulation runs on.
 
-#ifndef CNC_RED_ALERT_TD_CORE_GAME_CLOCK_H_
-#define CNC_RED_ALERT_TD_CORE_GAME_CLOCK_H_
+#ifndef CNC_RED_ALERT_GAME_CORE_GAME_CLOCK_H_
+#define CNC_RED_ALERT_GAME_CORE_GAME_CLOCK_H_
 
 #include <cstdint>
 
 #include "base/installed.h"
 
-namespace td {
+namespace game {
 
 // The number of game frames since the scenario started. Every frame-based
 // timer measures against it, the simulation advances it once per logic
@@ -60,6 +60,6 @@ struct FrameTickSource {
   static int64_t Tick() { return CurrentFrame(); }
 };
 
-}  // namespace td
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_TD_CORE_GAME_CLOCK_H_
+#endif  // CNC_RED_ALERT_GAME_CORE_GAME_CLOCK_H_

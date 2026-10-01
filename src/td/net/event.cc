@@ -62,12 +62,12 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/pooled.h"
+#include "game/core/game_clock.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/assets/audio.h"
 #include "td/assets/theme.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 #include "td/core/heap.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
@@ -157,7 +157,7 @@ EventClass::EventClass(SpecialClass data) : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = SPECIAL;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(CurrentFrame());
+  Frame = static_cast<unsigned>(game::CurrentFrame());
   Data.Options.Data = data;
 }
 
@@ -181,7 +181,7 @@ EventClass::EventClass(EventType type, TARGET target) : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(CurrentFrame());
+  Frame = static_cast<unsigned>(game::CurrentFrame());
   Data.Target.Whom = target;
 }
 
@@ -203,7 +203,7 @@ EventClass::EventClass(EventType type) : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(CurrentFrame());
+  Frame = static_cast<unsigned>(game::CurrentFrame());
 }
 
 /***********************************************************************************************
@@ -222,7 +222,7 @@ EventClass::EventClass(EventType type, int val) : EventClass() {
   Type = type;
   Data.General.Value = val;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(CurrentFrame());
+  Frame = static_cast<unsigned>(game::CurrentFrame());
 }
 
 /***********************************************************************************************
@@ -248,7 +248,7 @@ EventClass::EventClass(EventType type, TARGET src, TARGET dest) : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(CurrentFrame());
+  Frame = static_cast<unsigned>(game::CurrentFrame());
   Data.NavCom.Whom = src;
   Data.NavCom.Where = dest;
 }
@@ -273,7 +273,7 @@ EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) : Even
   ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = ANIMATION;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(CurrentFrame());
+  Frame = static_cast<unsigned>(game::CurrentFrame());
   Data.Anim.What = anim;
   Data.Anim.Owner = owner;
   Data.Anim.Where = coord;
@@ -304,7 +304,7 @@ EventClass::EventClass(TARGET src, MissionType mission, TARGET target,
   ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = MEGAMISSION;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(CurrentFrame());
+  Frame = static_cast<unsigned>(game::CurrentFrame());
   Data.MegaMission.Whom = src;
   Data.MegaMission.Mission = mission;
   Data.MegaMission.Target = target;
@@ -333,7 +333,7 @@ EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(CurrentFrame());
+  Frame = static_cast<unsigned>(game::CurrentFrame());
   Data.Specific.Type = object;
   Data.Specific.ID = id;
 }
@@ -363,7 +363,7 @@ EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass(
   ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(CurrentFrame());
+  Frame = static_cast<unsigned>(game::CurrentFrame());
   Data.Place.Type = object;
   Data.Place.Cell = cell;
 }
@@ -390,7 +390,7 @@ EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(CurrentFrame());
+  Frame = static_cast<unsigned>(game::CurrentFrame());
   Data.Special.ID = id;
   Data.Special.Cell = cell;
 }

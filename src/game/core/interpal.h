@@ -39,14 +39,14 @@
  *                                                                                             *
  *=============================================================================================*/
 
-#ifndef CNC_RED_ALERT_RA_ASSETS_INTERPAL_H_
-#define CNC_RED_ALERT_RA_ASSETS_INTERPAL_H_
+#ifndef CNC_RED_ALERT_GAME_CORE_INTERPAL_H_
+#define CNC_RED_ALERT_GAME_CORE_INTERPAL_H_
 
 // Forward declarations
 class PixelBuffer;
 class PixelView;
 
-namespace ra {
+namespace game {
 
 // Constants
 #define SIZE_OF_PALETTE 256
@@ -55,6 +55,6 @@ namespace ra {
 void Interpolate_2X_Scale(PixelBuffer* source, PixelView* dest,
                           const char* palette_file_name);
 
-}  // namespace ra
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_RA_ASSETS_INTERPAL_H_
+#endif  // CNC_RED_ALERT_GAME_CORE_INTERPAL_H_

@@ -47,11 +47,11 @@
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
 #include "ra/core/facing.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/bullet.h"
@@ -89,13 +89,13 @@ class VesselClass : public DriveClass {
   /*
   ** If this is an LST, is it time to shut the door?
   */
-  engine::platform::Timer<FrameTickSource> DoorShutCountDown{0};
+  engine::platform::Timer<game::FrameTickSource> DoorShutCountDown{0};
 
   /*
   ** If this is a sub, has the sonar pulse worn off, such that we can
   ** re-submerge?
   */
-  engine::platform::Timer<FrameTickSource> PulseCountDown{0};
+  engine::platform::Timer<game::FrameTickSource> PulseCountDown{0};
 
   VesselClass(VesselType classid, HousesType house);
   void* operator new(std::size_t size) noexcept;

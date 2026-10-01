@@ -39,7 +39,7 @@
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "ra/assets/interpal.h"
+#include "game/core/interpal.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -111,8 +111,8 @@ class MovieScreen final : public VqaClient {
     if (TheScreen().is_vq640()) {
       TheScreen().vq640().view().BlitTo(TheScreen().visible_view());
     } else {
-      Interpolate_2X_Scale(&TheScreen().sys_mem_page(),
-                           &TheScreen().visible_view(), nullptr);
+      game::Interpolate_2X_Scale(&TheScreen().sys_mem_page(),
+                                 &TheScreen().visible_view(), nullptr);
     }
     // ServiceRealTime() is deliberately not invoked here. The VQA player
     // drives audio itself while a movie runs, and the game logic it would

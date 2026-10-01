@@ -44,10 +44,10 @@
 
 #include "absl/base/attributes.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/ai/teamtype.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 #include "ra/objects/abstract.h"
 #include "ra/objects/house.h"
@@ -197,7 +197,7 @@ class TeamClass : public AbstractClass {
   /*
   ** This is the amount of time the team is suspended for.
   */
-  engine::platform::Timer<FrameTickSource> SuspendTimer;
+  engine::platform::Timer<game::FrameTickSource> SuspendTimer;
 
   /*
   **	If there is a trigger that should be attached to every member of this
@@ -256,7 +256,7 @@ class TeamClass : public AbstractClass {
   **	Some missions will time out. This is the timer that keeps track of the
   **	time to transition between missions.
   */
-  engine::platform::Timer<FrameTickSource> TimeOut;
+  engine::platform::Timer<game::FrameTickSource> TimeOut;
 
   int TMission_Formation();
   int TMission_Attack();

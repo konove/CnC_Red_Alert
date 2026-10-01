@@ -1,7 +1,10 @@
-#ifndef CNC_RED_ALERT_TD_CORE_DISPLAY_CONSTANTS_H_
-#define CNC_RED_ALERT_TD_CORE_DISPLAY_CONSTANTS_H_
+#ifndef CNC_RED_ALERT_GAME_CORE_DISPLAY_CONSTANTS_H_
+#define CNC_RED_ALERT_GAME_CORE_DISPLAY_CONSTANTS_H_
 
-namespace td {
+// File: Cell and pixel sizes in leptons, shared by the map display and the
+// rules defaults that are measured in cells.
+
+namespace game {
 
 #define ICON_PIXEL_W 24
 #define ICON_PIXEL_H 24
@@ -16,6 +19,6 @@ namespace td {
 #define PIXEL_LEPTON_W (ICON_LEPTON_W / ICON_PIXEL_W)
 #define PIXEL_LEPTON_H (ICON_LEPTON_H / ICON_PIXEL_H)
 
-}  // namespace td
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_TD_CORE_DISPLAY_CONSTANTS_H_
+#endif  // CNC_RED_ALERT_GAME_CORE_DISPLAY_CONSTANTS_H_

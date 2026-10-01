@@ -42,8 +42,8 @@
 #define CNC_RED_ALERT_TD_OBJECTS_SUPER_H_
 
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 
 namespace td {
 
@@ -103,7 +103,7 @@ class SuperClass {
   bool IsReady : 1 = false;
   bool IsSuspended : 1 = false;
 
-  engine::platform::Timer<FrameTickSource> Control;
+  engine::platform::Timer<game::FrameTickSource> Control;
   int OldStage = -1;
   int SuspendTime = 0;
 

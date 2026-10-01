@@ -46,8 +46,8 @@
 #include "base/random.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 
 class ArchiveReader;
@@ -104,7 +104,7 @@ class ScenarioClass {
   **	start of the mission. It, effectively, holds the elapsed time of the
   **	mission.
   */
-  engine::platform::Stopwatch<FrameTickSource> ElapsedTime;
+  engine::platform::Stopwatch<game::FrameTickSource> ElapsedTime;
 
   /*
   **	This is an array of waypoints; each waypoint corresponds to a letter of
@@ -129,13 +129,13 @@ class ScenarioClass {
   *examine *	this timer. The current value of this timer will display on the
   *game *	screen.
   */
-  engine::platform::Timer<FrameTickSource> MissionTimer;
+  engine::platform::Timer<game::FrameTickSource> MissionTimer;
 
   /*
   **	The shroud regrowth (if enabled) is regulated by this timer. When the
   **	timer expires, the shroud will regrow one step.
   */
-  engine::platform::Timer<FrameTickSource> ShroudTimer;
+  engine::platform::Timer<game::FrameTickSource> ShroudTimer;
 
   /*
   **	The scenario number.
@@ -344,13 +344,13 @@ class ScenarioClass {
   **	fading to b&w or color will progress.  This timer represents a
   ** percentage of the Options.Get_Saturation() to fade towards.
   */
-  engine::platform::Timer<FrameTickSource> FadeTimer;
+  engine::platform::Timer<game::FrameTickSource> FadeTimer;
 
   //	For endgame auto-sonar pulse.
   //	Timer to set the period for checking if an auto-sonar pulse should be
   // performed. 	This will take place if a player has nothing but subs
   // left in the game.
-  engine::platform::Timer<FrameTickSource> AutoSonarTimer;
+  engine::platform::Timer<game::FrameTickSource> AutoSonarTimer;
 
   bool bLocalProposesDraw = false;  //	True if the local player in a 2-player game has
                             // a draw offer extended.

@@ -82,6 +82,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/core/game_clock.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/scenario.h"
@@ -92,7 +93,6 @@
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
 #include "ra/core/facing.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/vector_dynamic.h"
@@ -557,7 +557,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     return;
   }
 
-  TheGameClock().Advance();
+  game::TheGameClock().Advance();
 
   /*
   **	Do special mouse processing if the mouse is over the map

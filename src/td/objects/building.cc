@@ -156,6 +156,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/platform/timer.h"
 #include "engine/window/wait_ticks.h"
+#include "game/core/game_clock.h"
 #include "td/ai/base.h"
 #include "td/ai/reinf.h"
 #include "td/ai/special.h"
@@ -169,7 +170,6 @@
 #include "td/core/coord.h"
 #include "td/core/defines.h"
 #include "td/core/facing.h"
-#include "td/core/game_clock.h"
 #include "td/core/heap.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
@@ -1343,7 +1343,7 @@ void BuildingClass::AI() {
   /*
   **	Handle any repair process that may be going on.
   */
-  if (IsRepairing && (CurrentFrame() % 15 == 0)) {
+  if (IsRepairing && (game::CurrentFrame() % 15 == 0)) {
     IsWrenchVisible = !static_cast<bool>(IsWrenchVisible);
     Mark(MARK_CHANGE);
     const int cost = Class->Repair_Cost();

@@ -28,6 +28,7 @@
 
 #include "base/array.h"
 #include "engine/window/keyboard.h"
+#include "game/core/display_constants.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
@@ -35,7 +36,6 @@
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/display_constants.h"
 #include "ra/core/face.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"

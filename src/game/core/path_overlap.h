@@ -1,7 +1,7 @@
 // File: One-bit-per-cell bitmaps that record which cells a path has entered.
 
-#ifndef CNC_RED_ALERT_TD_MAP_PATH_OVERLAP_H_
-#define CNC_RED_ALERT_TD_MAP_PATH_OVERLAP_H_
+#ifndef CNC_RED_ALERT_GAME_CORE_PATH_OVERLAP_H_
+#define CNC_RED_ALERT_GAME_CORE_PATH_OVERLAP_H_
 
 #include <cstdint>
 #include <span>
@@ -10,7 +10,7 @@
 #include "base/array.h"
 #include "base/numeric.h"
 
-namespace td {
+namespace game {
 
 // Overlap bitmaps are arrays of 32-bit words: cell N lives in word N / 32, at
 // bit N % 32.
@@ -53,6 +53,6 @@ inline void ClearOverlap(std::span<uint32_t> words, int cell) {
   base::At(words, base::ToSize(OverlapWord(cell))) &= ~OverlapMask(cell);
 }
 
-}  // namespace td
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_TD_MAP_PATH_OVERLAP_H_
+#endif  // CNC_RED_ALERT_GAME_CORE_PATH_OVERLAP_H_

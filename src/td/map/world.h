@@ -10,10 +10,10 @@
 #include "base/installed.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "td/ai/base.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 #include "td/core/vector.h"
 #include "td/editor/mapedit.h"
 #include "td/map/logic.h"
@@ -128,7 +128,7 @@ class World {
   // The crates scattered over the map: how many there are, when the next
   // one appears, and whether the scenario makes more of them.
   int& crate_count() ABSL_ATTRIBUTE_LIFETIME_BOUND { return crate_count_; }
-  engine::platform::Timer<FrameTickSource>& crate_timer()
+  engine::platform::Timer<game::FrameTickSource>& crate_timer()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return crate_timer_;
   }
@@ -201,7 +201,7 @@ class World {
   TheaterType last_theater_ = THEATER_NONE;
 
   int crate_count_ = 0;
-  engine::platform::Timer<FrameTickSource> crate_timer_;
+  engine::platform::Timer<game::FrameTickSource> crate_timer_;
   bool crate_maker_ = false;
 
   int seed_ = 0;

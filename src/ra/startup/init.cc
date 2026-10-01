@@ -110,6 +110,7 @@
 #include "engine/stream/stream_sink.h"
 #include "engine/stream/stream_source.h"
 #include "engine/window/hardware_cursor.h"
+#include "game/core/game_clock.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
@@ -124,7 +125,6 @@
 #include "ra/core/config.h"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
@@ -482,7 +482,7 @@ bool Select_Game(bool /*fade*/) {
   TheGameState().active() = true;
   TheNetwork().do_list().Init();
   TheNetwork().out_list().Init();
-  TheGameClock().set_frame(0);
+  game::TheGameClock().set_frame(0);
   TheScenario().MissionTimer.Set(0);
   TheScenario().MissionTimer.Stop();
   TheScenario().CDifficulty = DIFF_NORMAL;

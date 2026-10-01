@@ -77,12 +77,12 @@
 #include "engine/gfx/keyframe.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
+#include "game/core/game_clock.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
@@ -518,7 +518,7 @@ void TerrainClass::AI() {
   ObjectClass::AI();
 
   if (*this == TERRAIN_MINE &&
-      CurrentFrame() % (TheRules().GrowthRate * kTicksPerMinute) == 0) {
+      game::CurrentFrame() % (TheRules().GrowthRate * kTicksPerMinute) == 0) {
     TheMap().at(As_Cell(As_Target())).Spread_Tiberium(true);
   }
   if (Graphic_Logic()) {

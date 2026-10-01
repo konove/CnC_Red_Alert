@@ -91,6 +91,7 @@
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/core/game_clock.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/special.h"
@@ -104,7 +105,6 @@
 #include "td/assets/theme.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 #include "td/core/heap.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
@@ -687,7 +687,7 @@ bool Select_Game(bool fade) {
   TheGameState().active() = true;
   TheNetwork().do_list().Init();
   TheNetwork().out_list().Init();
-  TheGameClock().set_frame(0);
+  game::TheGameClock().set_frame(0);
   TheGameState().player_wins() = false;
   TheGameState().player_loses() = false;
   TheSession().obi_wan() = false;

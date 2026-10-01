@@ -48,7 +48,7 @@ apply_dotenv_settings(tdsdl)
 # rather than relying on it arriving transitively through engine_window/
 # engine_video.
 find_package(SDL2 REQUIRED)
-target_link_libraries(td_engine PUBLIC engine_net engine_window engine_video SDL2::SDL2 absl::strings absl::algorithm absl::check absl::core_headers absl::log absl::log_initialize absl::no_destructor absl::random_random absl::span)
+target_link_libraries(td_engine PUBLIC game_core engine_net engine_window engine_video SDL2::SDL2 absl::strings absl::algorithm absl::check absl::core_headers absl::log absl::log_initialize absl::no_destructor absl::random_random absl::span)
 target_link_libraries(tdsdl PRIVATE td_engine)
 
 install(TARGETS tdsdl)
@@ -135,12 +135,6 @@ add_gtest(
 add_gtest(
     NAME td_coord_inline_test
     SOURCES core/coord_inline_test.cc
-    LIBS base absl::check absl::log
-)
-
-add_gtest(
-    NAME td_path_overlap_test
-    SOURCES map/path_overlap_test.cc
     LIBS base absl::check absl::log
 )
 

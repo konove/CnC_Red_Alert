@@ -51,10 +51,10 @@
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/ai/teamtype.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 #include "ra/objects/object.h"
 
@@ -124,7 +124,7 @@ struct TDEventClass {
   /*
   **	Timer based events require a special timer control handler.
   */
-  engine::platform::Timer<FrameTickSource> EventTimer;
+  engine::platform::Timer<game::FrameTickSource> EventTimer;
 
   // Saved-game support.
   template <class Archive>

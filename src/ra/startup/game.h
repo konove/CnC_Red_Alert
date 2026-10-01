@@ -8,12 +8,12 @@
 #include "base/installed.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/window/display.h"
+#include "game/core/game_clock.h"
 #include "ra/ai/special.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/assets/theme.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/rules.h"
@@ -67,8 +67,8 @@ class Game {
   StartupOptions startup_options_;
   base::Installed<StartupOptions>::Scope startup_options_scope_{
       startup_options_};
-  GameClock game_clock_;
-  base::Installed<GameClock>::Scope game_clock_scope_{game_clock_};
+  game::GameClock game_clock_;
+  base::Installed<game::GameClock>::Scope game_clock_scope_{game_clock_};
   // Before the window's events, which feed its keyboard and mouse.
   Input input_;
   base::Installed<Input>::Scope input_scope_{input_};

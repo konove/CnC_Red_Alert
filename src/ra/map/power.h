@@ -47,8 +47,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
+#include "game/core/game_clock.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 #include "ra/map/display.h"
 #include "ra/map/radar.h"
@@ -116,7 +116,7 @@ class PowerClass : public RadarClass {
   **	If the power bar should be rendered with some flash effect then
   **	this specifies the duration that the flash will occur.
   */
-  engine::platform::Timer<FrameTickSource> FlashTimer;
+  engine::platform::Timer<game::FrameTickSource> FlashTimer;
 
   int RecordedDrain{-1};
   int RecordedPower{-1};

@@ -166,6 +166,8 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/wait_ticks.h"
+#include "game/core/display_constants.h"
+#include "game/core/game_clock.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
@@ -179,9 +181,7 @@
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/display_constants.h"
 #include "ra/core/face.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
@@ -2565,7 +2565,7 @@ void TechnoClass::AI() {
   *will perform *	the heal logic here.
   */
   if (Techno_Type_Class()->IsSelfHealing &&
-      CurrentFrame() % (TheRules().RepairRate * kTicksPerMinute) == 0 &&
+      game::CurrentFrame() % (TheRules().RepairRate * kTicksPerMinute) == 0 &&
       Health_Ratio() <= TheRules().ConditionYellow) {
     Strength++;
     Mark(MARK_CHANGE);

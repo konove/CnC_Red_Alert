@@ -9,13 +9,13 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
+#include "game/core/game_clock.h"
 #include "gtest/gtest.h"
 #include "td/ai/region.h"
 #include "td/ai/special.h"
 #include "td/ai/teamtype.h"
 #include "td/core/defines.h"
 #include "td/core/facing.h"
-#include "td/core/game_clock.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
 #include "td/objects/abstract.h"
@@ -35,8 +35,8 @@ namespace td {
 // The value tests need a frame source and the command overrides the
 // serializers read, but no game session.
 namespace {
-GameClock game_clock;
-const base::Installed<GameClock>::Scope game_clock_scope(game_clock);
+game::GameClock game_clock;
+const base::Installed<game::GameClock>::Scope game_clock_scope(game_clock);
 SpecialClass special{};
 const base::Installed<SpecialClass>::Scope special_scope(special);
 
@@ -64,26 +64,26 @@ void Restore(T& value, const std::array<uint8_t, 64>& bytes) {
 }
 
 TEST(TdSaveValuesTest, CountdownReanchorsAndKeepsWideRemainingTime) {
-  TheGameClock().set_frame(100);
-  engine::platform::Timer<FrameTickSource> timer(int64_t{1} * 1024 * 1024 *
-                                                 1024 * 1024);
-  TheGameClock().set_frame(CurrentFrame() + 17);
+  game::TheGameClock().set_frame(100);
+  engine::platform::Timer<game::FrameTickSource> timer(int64_t{1} * 1024 *
+                                                       1024 * 1024 * 1024);
+  game::TheGameClock().set_frame(game::CurrentFrame() + 17);
   const int64_t remaining = timer.Remaining();
   const auto bytes = Save(timer);
-  TheGameClock().set_frame(10000);
-  engine::platform::Timer<FrameTickSource> loaded;
+  game::TheGameClock().set_frame(10000);
+  engine::platform::Timer<game::FrameTickSource> loaded;
   Restore(loaded, bytes);
   EXPECT_TRUE(loaded.IsRunning());
   EXPECT_EQ(loaded.Remaining(), remaining);
-  TheGameClock().set_frame(CurrentFrame() + 9);
+  game::TheGameClock().set_frame(game::CurrentFrame() + 9);
   EXPECT_EQ(loaded.Remaining(), remaining - 9);
 }
 
 TEST(TdSaveValuesTest, ClearedAndExpiredCountdownsRemainDistinct) {
-  TheGameClock().set_frame(100);
-  engine::platform::Timer<FrameTickSource> timer(1);
-  TheGameClock().set_frame(102);
-  engine::platform::Timer<FrameTickSource> loaded;
+  game::TheGameClock().set_frame(100);
+  engine::platform::Timer<game::FrameTickSource> timer(1);
+  game::TheGameClock().set_frame(102);
+  engine::platform::Timer<game::FrameTickSource> loaded;
   Restore(loaded, Save(timer));
   EXPECT_TRUE(loaded.IsRunning());
   EXPECT_EQ(loaded.Remaining(), 0);
@@ -96,7 +96,7 @@ TEST(TdSaveValuesTest, ClearedAndExpiredCountdownsRemainDistinct) {
 }
 
 TEST(TdSaveValuesTest, CountdownRejectsTruncationAndNegativeDuration) {
-  engine::platform::Timer<FrameTickSource> timer;
+  engine::platform::Timer<game::FrameTickSource> timer;
   std::array<uint8_t, 9> bytes{};
   SpanSource short_source(std::as_bytes(std::span(bytes).first(8)));
   ArchiveReader short_reader(short_source);
@@ -329,43 +329,43 @@ TEST(TdSaveValuesTest, RegionPreservesWideAndNegativeThreat) {
 }
 
 TEST(TdSaveValuesTest, SuperweaponResumesPartialChargeAtRestoredFrame) {
-  TheGameClock().set_frame(100);
+  game::TheGameClock().set_frame(100);
   SuperClass weapon(100, VOX_ION_READY, VOX_ION_CHARGING);
   ASSERT_TRUE(weapon.Enable());
-  TheGameClock().set_frame(125);
+  game::TheGameClock().set_frame(125);
   const auto bytes = Save(weapon);
-  TheGameClock().set_frame(1000);
+  game::TheGameClock().set_frame(1000);
   SuperClass loaded;
   Restore(loaded, bytes);
   EXPECT_TRUE(loaded.Is_Present());
   EXPECT_FALSE(loaded.Is_Ready());
   EXPECT_EQ(Save(loaded), bytes);
-  TheGameClock().set_frame(CurrentFrame() + 74);
+  game::TheGameClock().set_frame(game::CurrentFrame() + 74);
   loaded.AI();
   EXPECT_FALSE(loaded.Is_Ready());
-  TheGameClock().Advance();
+  game::TheGameClock().Advance();
   loaded.AI();
   EXPECT_TRUE(loaded.Is_Ready());
 }
 
 TEST(TdSaveValuesTest, SuperweaponSuspensionPreservesRemainingCharge) {
-  TheGameClock().set_frame(200);
+  game::TheGameClock().set_frame(200);
   SuperClass weapon(80);
   ASSERT_TRUE(weapon.Enable());
-  TheGameClock().set_frame(CurrentFrame() + 30);
+  game::TheGameClock().set_frame(game::CurrentFrame() + 30);
   ASSERT_TRUE(weapon.Suspend(true));
   const auto bytes = Save(weapon);
-  TheGameClock().set_frame(2000);
+  game::TheGameClock().set_frame(2000);
   SuperClass loaded;
   Restore(loaded, bytes);
-  TheGameClock().set_frame(CurrentFrame() + 500);
+  game::TheGameClock().set_frame(game::CurrentFrame() + 500);
   loaded.AI();
   EXPECT_FALSE(loaded.Is_Ready());
   ASSERT_TRUE(loaded.Suspend(false));
-  TheGameClock().set_frame(CurrentFrame() + 49);
+  game::TheGameClock().set_frame(game::CurrentFrame() + 49);
   loaded.AI();
   EXPECT_FALSE(loaded.Is_Ready());
-  TheGameClock().Advance();
+  game::TheGameClock().Advance();
   loaded.AI();
   EXPECT_TRUE(loaded.Is_Ready());
 }

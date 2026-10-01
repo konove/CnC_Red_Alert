@@ -64,11 +64,11 @@
 #include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
+#include "game/core/game_clock.h"
 #include "td/core/config.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
 #include "td/core/facing.h"
-#include "td/core/game_clock.h"
 #include "td/core/heap.h"
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
@@ -358,7 +358,8 @@ void BulletClass::AI() {
   *but *	they only do so every other game frame (improves game speed and
   *makes *	missiles not so deadly).
   */
-  if (CurrentFrame() % 2 != 0 && Class->IsHoming && Target_Legal(TarCom)) {
+  if (game::CurrentFrame() % 2 != 0 && Class->IsHoming &&
+      Target_Legal(TarCom)) {
     PrimaryFacing.Set_Desired(Direction256(Coord, As_Coord(TarCom)));
   }
 
@@ -545,11 +546,11 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
   **	For tumbling projectiles, fetch offset stage.
   */
   if (*this == BULLET_NAPALM) {
-    shapenum = static_cast<int>(shapenum + (CurrentFrame() % 6));
+    shapenum = static_cast<int>(shapenum + (game::CurrentFrame() % 6));
   }
 
   if (*this == BULLET_GRENADE) {
-    shapenum = static_cast<int>(shapenum + (CurrentFrame() % 8));
+    shapenum = static_cast<int>(shapenum + (game::CurrentFrame() % 8));
     //		Timer++;
   }
 

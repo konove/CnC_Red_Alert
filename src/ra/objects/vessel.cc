@@ -85,6 +85,8 @@
 #include "base/strings/tokenizer.h"
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/core/display_constants.h"
+#include "game/core/game_clock.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
@@ -93,9 +95,7 @@
 #include "ra/assets/audio.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/display_constants.h"
 #include "ra/core/face.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
@@ -2283,7 +2283,7 @@ bool VesselClass::Edge_Of_World_AI() {
  *=============================================================================================*/
 void VesselClass::Repair_AI() {
   if (IsSelfRepairing &&
-      (CurrentFrame() % (kTicksPerMinute * TheRules().RepairRate) == 0)) {
+      (game::CurrentFrame() % (kTicksPerMinute * TheRules().RepairRate) == 0)) {
     Mark(MARK_CHANGE);
     const int cost = Class->Repair_Cost();
     const int step = Class->Repair_Step();

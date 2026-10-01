@@ -47,8 +47,8 @@
 #include "base/enum_array.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
+#include "game/core/game_clock.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 #include "td/map/scroll.h"
 
 class ArchiveReader;

@@ -43,8 +43,8 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/core/interpal.h"
 #include "ra/ai/scenario.h"
-#include "ra/assets/interpal.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -176,14 +176,14 @@ static void PlayMapReveal(const std::string& animation_name,
   palette.Set(kFadePaletteFast, ServiceRealTime);
 
   animation.DrawFrame(page.view(), 1);
-  Interpolate_2X_Scale(&page, &TheScreen().visible_view(), {});
+  game::Interpolate_2X_Scale(&page, &TheScreen().visible_view(), {});
 
   PlayMapSound("MAPWIPE2.AUD");
   // Ctrl-Q, the score screen's skip key, plays the rest without the waits.
   bool skip = false;
   for (int frame = 1; frame < animation.frame_count(); frame++) {
     animation.DrawFrame(page.view(), frame);
-    Interpolate_2X_Scale(&page, &TheScreen().visible_view(), {});
+    game::Interpolate_2X_Scale(&page, &TheScreen().visible_view(), {});
     skip = skip || (engine::window::IsCtrlDown() &&
                     engine::window::KeyBuffer::IsDown(KN_Q));
     ServiceRealTimeFor(skip ? 0 : 2);

@@ -55,12 +55,13 @@
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/core/game_clock.h"
+#include "game/core/interpal.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/filepcx.h"
-#include "ra/assets/interpal.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -68,7 +69,6 @@
 #include "ra/core/ccptr.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
@@ -541,7 +541,7 @@ static void LogObjectPositions(const TFixedIHeapClass<T>& objects,
                                const std::string_view kind) {
   for (int index = 0; index < objects.Count(); index++) {
     const T* object = objects.Ptr(index);
-    LOG(INFO) << "frame " << CurrentFrame() << " " << kind << " "
+    LOG(INFO) << "frame " << game::CurrentFrame() << " " << kind << " "
               << std::string_view(object->Class->Name()) << " coord "
               << absl::StrFormat("%08x", object->Coord) << " mission "
               << magic_enum::enum_name(object->Mission) << " navcom "
@@ -559,7 +559,7 @@ static bool LogFrameAndQuitIfDue() {
   LogObjectPositions(TheObjectHeaps().vessel(), "vessel");
   LogObjectPositions(TheObjectHeaps().aircraft(), "aircraft");
 
-  if (CurrentFrame() < TheStartupOptions().quit_at_frame) {
+  if (game::CurrentFrame() < TheStartupOptions().quit_at_frame) {
     return false;
   }
   if (TheStartupOptions().save_slot >= 0) {
@@ -640,7 +640,7 @@ static void ValidateLogicLayer() {
     if (object == nullptr || !object->IsActive) {
       LOG(ERROR) << "Logic layer entry " << index << " of "
                  << TheWorld().logic().Count() << " was freed, on frame "
-                 << TheGameClock().frame();
+                 << game::TheGameClock().frame();
     }
   }
 }
@@ -658,7 +658,7 @@ bool RunFrame() {
   Check_For_Focus_Loss();
 
   // Sync-bug trapping code
-  if (CurrentFrame() >= TheSession().TrapFrame) {
+  if (game::CurrentFrame() >= TheSession().TrapFrame) {
     TheSession().Trap_Object();
   }
 
@@ -726,7 +726,7 @@ bool RunFrame() {
     return !TheGameState().active();
   }
 
-  TheGameClock().Advance();
+  game::TheGameClock().Advance();
 
   if (TheStartupOptions().quit_at_frame >= 0 && LogFrameAndQuitIfDue()) {
     return true;
@@ -747,8 +747,8 @@ bool RunFrame() {
   if (TheDebugState().check_heaps()) {
     const std::string trouble = TheObjectHeaps().Validate();
     if (!trouble.empty()) {
-      LOG(ERROR) << "Object heap corrupted on frame " << TheGameClock().frame()
-                 << ": " << trouble;
+      LOG(ERROR) << "Object heap corrupted on frame "
+                 << game::TheGameClock().frame() << ": " << trouble;
     }
     ValidateLogicLayer();
   }

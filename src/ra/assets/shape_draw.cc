@@ -37,10 +37,10 @@
 #include "engine/gfx/shape_blitter.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
-#include "ra/assets/interpal.h"
+#include "game/core/game_clock.h"
+#include "game/core/interpal.h"
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
-#include "ra/core/game_clock.h"
 #include "ra/map/display.h"
 
 namespace ra {
@@ -160,7 +160,7 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
       // walks with the frame counter, which is what makes it shimmer. Objects
       // on the right half of the window walk it the other way, so that two
       // cloaked objects side by side do not ripple in lockstep.
-      int pred_offset = static_cast<int>(CurrentFrame());
+      int pred_offset = static_cast<int>(game::CurrentFrame());
 
       if (x > base::At(base::At(WindowList, static_cast<int>(window)),
                        kWindowWidth) *

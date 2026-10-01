@@ -102,12 +102,12 @@
 #include "engine/stream/byte_stream.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/core/game_clock.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/assets/audio.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
@@ -272,7 +272,7 @@ static int Breakup_Receive_Packet(std::span<const std::byte> buf, int bufsize);
 //...........................................................................
 static int Execute_DoList(
     int max_houses, HousesType base_house, ConnManClass* net,
-    const engine::platform::Timer<FrameTickSource>* skip_crc,
+    const engine::platform::Timer<game::FrameTickSource>* skip_crc,
     //	ConnManClass *net, TCountDownTimerClass *skip_crc,
     std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
     std::span<uint16_t> their_recv);
@@ -684,7 +684,7 @@ static void Queue_AI_Multiplayer() {
   //........................................................................
   // Timing variables
   //........................................................................
-  static engine::platform::Timer<FrameTickSource>
+  static engine::platform::Timer<game::FrameTickSource>
       skip_crc;  // to delay the CRC check
   //	static TCountDownTimerClass skip_crc;	// to delay the CRC check
 
@@ -721,13 +721,13 @@ static void Queue_AI_Multiplayer() {
   //	Compute the Game's CRC
   //------------------------------------------------------------------------
   Compute_Game_CRC();
-  base::At(CRC, CurrentFrame() % 32) = GameCRC;
+  base::At(CRC, game::CurrentFrame() % 32) = GameCRC;
 
   //------------------------------------------------------------------------
   //	If we've just started a game, or loaded a multiplayer game, we must
   // wait for all other systems to signal ready.
   //------------------------------------------------------------------------
-  if (CurrentFrame() == 0 || TheSession().LoadGame) {
+  if (game::CurrentFrame() == 0 || TheSession().LoadGame) {
     //.....................................................................
     //	Initialize static locals
     //.....................................................................
@@ -818,7 +818,7 @@ static void Queue_AI_Multiplayer() {
     }
 
     // end of Frame 0 wait
-  } else if (CurrentFrame() % 128 == 0) {
+  } else if (game::CurrentFrame() % 128 == 0) {
     //------------------------------------------------------------------------
     // Adjust connection timing parameters every 128 frames.
     //------------------------------------------------------------------------
@@ -864,7 +864,7 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   //	If this is our first time through, we're done.
   //------------------------------------------------------------------------
-  if (CurrentFrame() == 0) {
+  if (game::CurrentFrame() == 0) {
     return;
   }
 
@@ -1044,7 +1044,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
         const DumpFile file = OpenDumpFile("recon.txt");
         if (FILE* fp = file.get()) {
           absl::FPrintF(fp, "# Connections: %d\n", net->Num_Connections());
-          absl::FPrintF(fp, "   My Frame #: %" PRId64 "\n", CurrentFrame());
+          absl::FPrintF(fp, "   My Frame #: %" PRId64 "\n",
+                        game::CurrentFrame());
           for (int i = 0; i < net->Num_Connections(); i++) {
             HouseClass* housep = HouseClass::As_Pointer(
                 static_cast<HousesType>(net->Connection_ID(i)));
@@ -1561,9 +1562,9 @@ static int Process_Send_Period(ConnManClass* net)  //, int init)
   // If the current frame # is not an even multiple of 'FrameSendRate', then
   // it's not time to send a packet; just return.
   //------------------------------------------------------------------------
-  if (CurrentFrame() != (CurrentFrame() + (TheSession().FrameSendRate - 1)) /
-                            TheSession().FrameSendRate *
-                            TheSession().FrameSendRate) {
+  if (game::CurrentFrame() !=
+      (game::CurrentFrame() + (TheSession().FrameSendRate - 1)) /
+          TheSession().FrameSendRate * TheSession().FrameSendRate) {
     net->Service();
 
     return 0;
@@ -1742,12 +1743,12 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   packet.Type = EventClass::FRAMESYNC;
   if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     packet.Frame = static_cast<unsigned>(
-        (CurrentFrame() + TheSession().MaxAhead +
+        (game::CurrentFrame() + TheSession().MaxAhead +
          (TheSession().FrameSendRate - 1)) /
         (TheSession().FrameSendRate * TheSession().FrameSendRate));
   } else {
     packet.Frame =
-        static_cast<unsigned>(CurrentFrame() + TheSession().MaxAhead);
+        static_cast<unsigned>(game::CurrentFrame() + TheSession().MaxAhead);
   }
   packet.ID = static_cast<unsigned>(ThePlayer()->ID);
   packet.Data.FrameInfo.CRC =
@@ -1884,9 +1885,9 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
 
   if (TheDebugState().print_events()) {
     if (event->Type == EventClass::FRAMESYNC) {
-      absl::PrintF("(%" PRId64 ") Received FRAMESYNC: ", CurrentFrame());
+      absl::PrintF("(%" PRId64 ") Received FRAMESYNC: ", game::CurrentFrame());
     } else {
-      absl::PrintF("(%" PRId64 ") Received FRAMEINFO: ", CurrentFrame());
+      absl::PrintF("(%" PRId64 ") Received FRAMEINFO: ", game::CurrentFrame());
     }
     absl::PrintF("EvFrame:%d ID:%d CRC:%x CmdCount:%d Delay:%d\n", event->Frame,
                  event->ID, event->Data.FrameInfo.CRC,
@@ -2146,7 +2147,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
   //	Find the oldest frame # in 'their_frame'
   //------------------------------------------------------------------------
   int64_t their_oldest_frame =
-      CurrentFrame() + 1000;  // other players' oldest frame #
+      game::CurrentFrame() + 1000;  // other players' oldest frame #
   for (int i = 0; i < net->Num_Connections(); i++) {
     their_oldest_frame =
         std::min(base::At(their_frame, base::ToSize(i)), their_oldest_frame);
@@ -2167,7 +2168,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
       break;
     }
   }
-  if (count_ok && CurrentFrame() < their_oldest_frame + max_ahead) {
+  if (count_ok && game::CurrentFrame() < their_oldest_frame + max_ahead) {
     return 1;
   }
 
@@ -2426,10 +2427,11 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   //........................................................................
   if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     finfo->Frame = static_cast<unsigned>(
-        (CurrentFrame() + frame_delay + (TheSession().FrameSendRate - 1)) /
+        (game::CurrentFrame() + frame_delay +
+         (TheSession().FrameSendRate - 1)) /
         (TheSession().FrameSendRate * TheSession().FrameSendRate));
   } else {
-    finfo->Frame = static_cast<unsigned>(CurrentFrame() + frame_delay);
+    finfo->Frame = static_cast<unsigned>(game::CurrentFrame() + frame_delay);
   }
   //........................................................................
   // Fill in the rest of the event
@@ -2543,7 +2545,7 @@ int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
     // Set the event's frame delay
     //.....................................................................
     TheNetwork().out_list().First().Frame =
-        static_cast<unsigned>(CurrentFrame() + frame_delay);
+        static_cast<unsigned>(game::CurrentFrame() + frame_delay);
 
     //.....................................................................
     // Set the event's ID
@@ -2626,7 +2628,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
   //------------------------------------------------------------------------
 
   if (TheDebugState().print_events()) {
-    absl::PrintF("\n(%" PRId64 ") Building Send Packet\n", CurrentFrame());
+    absl::PrintF("\n(%" PRId64 ") Building Send Packet\n",
+                 game::CurrentFrame());
   }
 
   //------------------------------------------------------------------------
@@ -2797,11 +2800,12 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     //.....................................................................
     if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
       TheNetwork().out_list().First().Frame = static_cast<unsigned>(
-          (CurrentFrame() + frame_delay + (TheSession().FrameSendRate - 1)) /
+          (game::CurrentFrame() + frame_delay +
+           (TheSession().FrameSendRate - 1)) /
           (TheSession().FrameSendRate * TheSession().FrameSendRate));
     } else {
       TheNetwork().out_list().First().Frame =
-          static_cast<unsigned>(CurrentFrame() + frame_delay);
+          static_cast<unsigned>(game::CurrentFrame() + frame_delay);
     }
 
     //.....................................................................
@@ -3428,7 +3432,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
  *=========================================================================*/
 static int Execute_DoList(
     int max_houses, HousesType base_house, ConnManClass* net,
-    const engine::platform::Timer<FrameTickSource>* skip_crc,
+    const engine::platform::Timer<game::FrameTickSource>* skip_crc,
     std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
     std::span<uint16_t> their_recv) {
   int index = 0;
@@ -3494,14 +3498,14 @@ static int Execute_DoList(
       // it's 	time to execute it, execute it.
       //..................................................................
       if (std::cmp_equal(TheNetwork().do_list().at(j).ID, hptr->ID) &&
-          std::cmp_greater_equal(CurrentFrame(),
+          std::cmp_greater_equal(game::CurrentFrame(),
                                  TheNetwork().do_list().at(j).Frame) &&
           !TheNetwork().do_list().at(j).IsExecuted) {
         //...............................................................
         //	Error if it's too late to execute this packet!
         // (Hack: disable this check for solo or skirmish mode.)
         //...............................................................
-        if (std::cmp_greater(CurrentFrame(),
+        if (std::cmp_greater(game::CurrentFrame(),
                              TheNetwork().do_list().at(j).Frame) &&
             TheNetwork().do_list().at(j).Type != EventClass::FRAMEINFO &&
             TheSession().Type != GAME_NORMAL &&
@@ -3553,7 +3557,7 @@ static int Execute_DoList(
               (TheNetwork().do_list().at(j).Type == EventClass::EXIT)) {
             absl::PrintF(
                 "(%" PRId64 ") Executing EXIT, ID:%d (%s), EvFrame:%d\\n",
-                CurrentFrame(), TheNetwork().do_list().at(j).ID,
+                game::CurrentFrame(), TheNetwork().do_list().at(j).ID,
                 HouseClass::As_Pointer(
                     static_cast<HousesType>(TheNetwork().do_list().at(j).ID))
                     ->IniName,
@@ -3621,7 +3625,7 @@ static int Execute_DoList(
           }
           if (check_crc &&
               std::cmp_equal(TheNetwork().do_list().at(j).Frame,
-                             CurrentFrame()) &&
+                             game::CurrentFrame()) &&
               TheNetwork().do_list().at(j).Data.FrameInfo.Delay < 32) {
             // The delay is below 32, so adding a full turn keeps the
             // difference non-negative before wrapping onto the CRC ring.
@@ -3711,7 +3715,7 @@ static void Clean_DoList() {
     //	because his IPX connection was destroyed.)
     //.....................................................................
     if (TheNetwork().do_list().First().IsExecuted ||
-        std::cmp_greater(CurrentFrame(),
+        std::cmp_greater(game::CurrentFrame(),
                          TheNetwork().do_list().First().Frame)) {
       TheNetwork().do_list().Next();
     } else {
@@ -3752,7 +3756,8 @@ static void Queue_Record() {
   //------------------------------------------------------------------------
   int j = 0;
   for (int i = 0; i < TheNetwork().do_list().Count(); i++) {
-    if (std::cmp_equal(CurrentFrame(), TheNetwork().do_list().at(i).Frame) &&
+    if (std::cmp_equal(game::CurrentFrame(),
+                       TheNetwork().do_list().at(i).Frame) &&
         !TheNetwork().do_list().at(i).IsExecuted) {
       j++;
     }
@@ -3767,7 +3772,8 @@ static void Queue_Record() {
   }
   record->WriteObject(j);
   for (int i = 0; i < TheNetwork().do_list().Count(); i++) {
-    if (std::cmp_equal(CurrentFrame(), TheNetwork().do_list().at(i).Frame) &&
+    if (std::cmp_equal(game::CurrentFrame(),
+                       TheNetwork().do_list().at(i).Frame) &&
         !TheNetwork().do_list().at(i).IsExecuted) {
       record->WriteObject(TheNetwork().do_list().at(i));
       j--;
@@ -3827,7 +3833,7 @@ static void Queue_Playback() {
   // If we're in "Attract" mode, and the user moves the mouse, stop the
   // playback.
   //------------------------------------------------------------------------
-  if (TheSession().Attract && CurrentFrame() > 0 &&
+  if (TheSession().Attract && game::CurrentFrame() > 0 &&
       (mx != TheMouse().x() || my != TheMouse().y())) {
     TheGameState().active() = false;
     return;
@@ -3839,12 +3845,12 @@ static void Queue_Playback() {
   //	Compute the Game's CRC
   //------------------------------------------------------------------------
   Compute_Game_CRC();
-  base::At(CRC, CurrentFrame() % 32) = GameCRC;
+  base::At(CRC, game::CurrentFrame() % 32) = GameCRC;
 
   //------------------------------------------------------------------------
   // If we've reached the CRC print frame, do so & exit
   //------------------------------------------------------------------------
-  if (CurrentFrame() >= TheSession().TrapPrintCRC) {
+  if (game::CurrentFrame() >= TheSession().TrapPrintCRC) {
     Print_CRCs(nullptr);
     // ShutDownEngine();
     EmergencyExit(0);
@@ -3855,19 +3861,19 @@ static void Queue_Playback() {
   //	routine didn't write anything the first time through); do this after the
   //	CRC is computed, since we'll still need a CRC for Frame 0.
   //------------------------------------------------------------------------
-  if (CurrentFrame() == 0 && TheSession().Type != GAME_NORMAL) {
+  if (game::CurrentFrame() == 0 && TheSession().Type != GAME_NORMAL) {
     return;
   }
 
   //------------------------------------------------------------------------
   // Only process every 'FrameSendRate' frames
   //------------------------------------------------------------------------
-  const int testframe =
-      static_cast<int>((CurrentFrame() + (TheSession().FrameSendRate - 1)) /
-                       TheSession().FrameSendRate * TheSession().FrameSendRate);
+  const int testframe = static_cast<int>(
+      (game::CurrentFrame() + (TheSession().FrameSendRate - 1)) /
+      TheSession().FrameSendRate * TheSession().FrameSendRate);
   if ((TheSession().Type != GAME_NORMAL && TheSession().Type != GAME_SKIRMISH &&
        TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
-      (CurrentFrame() != testframe)) {
+      (game::CurrentFrame() != testframe)) {
     return;
   }
 
@@ -4406,7 +4412,7 @@ static void Print_CRCs(const EventClass* ev) {
   absl::FPrintF(fp, "\nRandom Number:%x\n", TheScenario().sync_rng_.seed());
 #endif
 
-  absl::FPrintF(fp, "My Frame:%" PRId64 "\n", CurrentFrame());
+  absl::FPrintF(fp, "My Frame:%" PRId64 "\n", game::CurrentFrame());
 
   if (ev) {
     absl::FPrintF(fp, "\n");
@@ -4463,7 +4469,7 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
   absl::FPrintF(fp, "\n");
 
   absl::FPrintF(fp, "--------------------- My data: ---------------------\n");
-  absl::FPrintF(fp, "My Frame:%" PRId64 "\n", CurrentFrame());
+  absl::FPrintF(fp, "My Frame:%" PRId64 "\n", game::CurrentFrame());
   absl::FPrintF(fp, "My MaxAhead:%d\n", TheSession().MaxAhead);
 
   if (net) {

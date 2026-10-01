@@ -50,8 +50,8 @@
 #include "base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 #include "td/objects/bullet.h"
 #include "td/objects/factory.h"
 #include "td/objects/house.h"
@@ -147,7 +147,7 @@ class BuildingClass final : public TechnoClass {
   **	it won't actually be removed from the map until this value reaches
   **	zero. This delay is for cosmetic reasons.
   */
-  engine::platform::Timer<FrameTickSource> CountDown;
+  engine::platform::Timer<game::FrameTickSource> CountDown;
 
   /*
   **	This is the current animation processing state that the building is
@@ -179,7 +179,7 @@ class BuildingClass final : public TechnoClass {
   **	This is the countdown timer that regulates placement retry logic
   **	for factory type buildings.
   */
-  engine::platform::Timer<FrameTickSource> PlacementDelay;
+  engine::platform::Timer<game::FrameTickSource> PlacementDelay;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

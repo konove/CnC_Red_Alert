@@ -42,8 +42,8 @@
 
 #include "base/fixed.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
@@ -146,7 +146,7 @@ class MissionClass : public ObjectClass {
   **	This the thread processing timer. When this value counts down to zero,
   *then *	more script processing may occur.
   */
-  engine::platform::Timer<FrameTickSource> MissionTimer;
+  engine::platform::Timer<game::FrameTickSource> MissionTimer;
 };
 
 /****************************************************************************

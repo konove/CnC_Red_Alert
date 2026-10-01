@@ -50,12 +50,12 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
@@ -209,10 +209,10 @@ void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
 void CreditClass::AI(bool forced) {
   static int _last = 0;
 
-  if (!forced && CurrentFrame() == _last) {
+  if (!forced && game::CurrentFrame() == _last) {
     return;
   }
-  _last = static_cast<int>(CurrentFrame());
+  _last = static_cast<int>(game::CurrentFrame());
 
   Credits = ThePlayer()->Available_Money();
 

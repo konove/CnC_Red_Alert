@@ -41,9 +41,9 @@
 #define CNC_RED_ALERT_RA_OBJECTS_DRIVE_H_
 
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 #include "ra/objects/foot.h"
 
@@ -76,7 +76,7 @@ class DriveClass : public FootClass {
   ** This controls how long a unit can exist in its alternate location
   ** before being pulled back by the chronosphere into its normal location.
   */
-  engine::platform::Timer<FrameTickSource> MoebiusCountDown{0};
+  engine::platform::Timer<game::FrameTickSource> MoebiusCountDown{0};
 
   /*
   ** This is the coord the unit will be taken back to once its moebius

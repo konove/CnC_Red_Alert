@@ -48,11 +48,11 @@
 #include "base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
 #include "ra/core/facing.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/bullet.h"
@@ -127,7 +127,7 @@ class UnitClass final : public DriveClass {
   **	This is the timer that controls the reload rate. The MSAM rocket
   **	launcher is the primary user of this.
   */
-  engine::platform::Timer<FrameTickSource> Reload{0};
+  engine::platform::Timer<game::FrameTickSource> Reload{0};
 
   /*
   **	This is the facing of the turret. It can be, and usually is,

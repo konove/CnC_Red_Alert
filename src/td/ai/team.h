@@ -45,9 +45,9 @@
 
 #include "absl/base/attributes.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "td/ai/teamtype.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 #include "td/objects/abstract.h"
 #include "td/objects/foot.h"
 #include "td/objects/house.h"
@@ -175,7 +175,7 @@ class TeamClass : public AbstractClass {
   /*
   ** This is the amount of time the team is suspended for.
   */
-  engine::platform::Timer<FrameTickSource> SuspendTimer;
+  engine::platform::Timer<game::FrameTickSource> SuspendTimer;
 
   //------------------------------------------------------------
   // Loading constructs an active shell without changing team counts.
@@ -244,7 +244,7 @@ class TeamClass : public AbstractClass {
   **	Some missions will time out. This is the timer that keeps track of the
   **	time to transition between missions.
   */
-  engine::platform::Timer<FrameTickSource> TimeOut;
+  engine::platform::Timer<game::FrameTickSource> TimeOut;
 
   void Coordinate_Unload();
   bool Coordinate_Regroup();

@@ -11,16 +11,16 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
+#include "game/core/game_clock.h"
 #include "gtest/gtest.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 
 namespace ra {
 
 // The game clock Game owns in the real game.
 namespace {
-GameClock game_clock;
-const base::Installed<GameClock>::Scope game_clock_scope(game_clock);
+game::GameClock game_clock;
+const base::Installed<game::GameClock>::Scope game_clock_scope(game_clock);
 }  // namespace
 
 namespace {
@@ -58,9 +58,9 @@ TEST(CrateSerializeTest, DefaultCrateHasNoCellOrExpiry) {
 }
 
 TEST(CrateSerializeTest, CountdownSurvivesSaveAndReanchorsOnLoad) {
-  TheGameClock().set_frame(100);
+  game::TheGameClock().set_frame(100);
   CELL cell = 42;
-  engine::platform::Timer<FrameTickSource> timer(30);
+  engine::platform::Timer<game::FrameTickSource> timer(30);
   CrateSink fixture;
   ArchiveWriter fixture_writer(fixture);
   fixture_writer(cell, timer);
@@ -68,19 +68,19 @@ TEST(CrateSerializeTest, CountdownSurvivesSaveAndReanchorsOnLoad) {
   ASSERT_TRUE(ReadCrate(crate, fixture.bytes));
   EXPECT_TRUE(crate.Is_Here(cell));
 
-  TheGameClock().set_frame(CurrentFrame() + 10);
+  game::TheGameClock().set_frame(game::CurrentFrame() + 10);
   CrateSink saved;
   ArchiveWriter writer(saved);
   writer(crate);
   EXPECT_FALSE(crate.Is_Expired());
 
-  TheGameClock().set_frame(1000);
+  game::TheGameClock().set_frame(1000);
   CrateClass loaded;
   ASSERT_TRUE(ReadCrate(loaded, saved.bytes));
   EXPECT_TRUE(loaded.Is_Here(cell));
-  TheGameClock().set_frame(CurrentFrame() + 19);
+  game::TheGameClock().set_frame(game::CurrentFrame() + 19);
   EXPECT_FALSE(loaded.Is_Expired());
-  TheGameClock().Advance();
+  game::TheGameClock().Advance();
   EXPECT_TRUE(loaded.Is_Expired());
   loaded.Init();
   EXPECT_FALSE(loaded.Is_Valid());
@@ -91,7 +91,7 @@ TEST(CrateSerializeTest, RejectsCellsOutsideTheMap) {
   for (CELL cell : {static_cast<CELL>(-2), static_cast<CELL>(MAP_CELL_TOTAL)}) {
     CrateSink pipe;
     ArchiveWriter writer(pipe);
-    engine::platform::Timer<FrameTickSource> timer(30);
+    engine::platform::Timer<game::FrameTickSource> timer(30);
     writer(cell, timer);
     CrateClass crate;
     EXPECT_FALSE(ReadCrate(crate, pipe.bytes));

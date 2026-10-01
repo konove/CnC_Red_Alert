@@ -141,6 +141,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/platform/timer.h"
+#include "game/core/display_constants.h"
+#include "game/core/game_clock.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
@@ -149,9 +151,7 @@
 #include "td/core/const.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
-#include "td/core/display_constants.h"
 #include "td/core/facing.h"
-#include "td/core/game_clock.h"
 #include "td/core/heap.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
@@ -406,14 +406,14 @@ void UnitClass::AI() {
   **	If this is a vehicle that heals itself (e.g., Mammoth Tank), then it
   *will perform *	the heal logic here.
   */
-  if (*this == UNIT_HTANK && CurrentFrame() % 16 == 0 &&
+  if (*this == UNIT_HTANK && game::CurrentFrame() % 16 == 0 &&
       Health_Ratio() < 0x0080) {
     Strength++;
     Mark(MARK_CHANGE);
   }
   if (*this == UNIT_VICE &&
       TheMap().at(Coord_Cell(Coord)).Land_Type() == LAND_TIBERIUM &&
-      Health_Ratio() < 0x0100 && CurrentFrame() % 16 == 0) {
+      Health_Ratio() < 0x0100 && game::CurrentFrame() % 16 == 0) {
     Strength++;
     Mark(MARK_CHANGE);
   }
@@ -2051,7 +2051,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
     **	If there is a rotating radar dish, draw it now.
     */
     if (Class->IsRadarEquipped) {
-      shapenum = static_cast<int>(32 + (CurrentFrame() % 32));
+      shapenum = static_cast<int>(32 + (game::CurrentFrame() % 32));
       Techno_Draw_Object(view, shapefile, shapenum, x, y - 5, window);
     }
 
@@ -2139,7 +2139,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
   if (Flagged != HOUSE_NONE) {
     CC_Draw_Shape(
         view, MixArchive::RetrieveData("FLAGFLY.SHP"),
-        static_cast<int>(CurrentFrame() % 14), x, y, window,
+        static_cast<int>(game::CurrentFrame() % 14), x, y, window,
         ShapeFlags::kCentered | ShapeFlags::kFading | ShapeFlags::kGhost,
         HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),
         MouseClass::UnitShadow);

@@ -57,11 +57,11 @@
 #include "engine/net/packet.h"
 #include "engine/platform/timer.h"
 #include "engine/platform/win32/win32_com.h"
+#include "game/core/game_clock.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/object_heaps.h"
 #include "ra/map/world.h"
@@ -562,8 +562,9 @@ void Send_Statistics_Packet() {
     */
     const int32_t divisor = GameEndTime / 60;
     if (divisor != 0) {
-      stats.Add_Field(FIELD_FRAME_RATE, static_cast<int32_t>(CurrentFrame()) /
-                                            (GameEndTime / 60));
+      stats.Add_Field(
+          FIELD_FRAME_RATE,
+          static_cast<int32_t>(game::CurrentFrame()) / (GameEndTime / 60));
     } else {
       stats.Add_Field(FIELD_FRAME_RATE, int32_t{0});
     }

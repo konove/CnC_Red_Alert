@@ -83,6 +83,7 @@
 #include "engine/stream/stream_sink.h"
 #include "engine/stream/stream_source.h"
 #include "engine/stream/tee_sink.h"
+#include "game/core/game_clock.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/carry.h"
@@ -99,7 +100,6 @@
 #include "ra/assets/theme.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
@@ -252,7 +252,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
   **	Frame goes first: every frame-based timer re-anchors to it when read.
   */
   writer.Section(FourCC("FRAM"));
-  int64_t frame = CurrentFrame();
+  int64_t frame = game::CurrentFrame();
   writer(frame);
 
   /*
@@ -741,7 +741,7 @@ bool Load_Game(int id) {
   }
   int64_t frame = 0;
   reader(frame);
-  TheGameClock().set_frame(frame);
+  game::TheGameClock().set_frame(frame);
   if (!reader.ok()) {
     return Rejected(reader, "FRAM");
   }

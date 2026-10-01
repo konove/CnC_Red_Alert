@@ -78,12 +78,12 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/core/game_clock.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/facing.h"
-#include "td/core/game_clock.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/vector.h"
@@ -611,7 +611,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     return;
   }
 
-  TheGameClock().Advance();
+  game::TheGameClock().Advance();
 
   /*------------------------------------------------------------------------
   Do special mouse processing if the mouse is over the map

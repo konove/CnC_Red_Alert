@@ -121,6 +121,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/platform/timer.h"
+#include "game/core/display_constants.h"
+#include "game/core/game_clock.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
@@ -132,10 +134,8 @@
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/display_constants.h"
 #include "ra/core/face.h"
 #include "ra/core/facing.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
@@ -475,7 +475,8 @@ void UnitClass::AI() {
   **	Mobile gap generators regenerate their gap every so often (just in
   *case).
   */
-  if (Class->IsGapper && !IsDriving && CurrentFrame() % kTicksPerSecond == 0) {
+  if (Class->IsGapper && !IsDriving &&
+      game::CurrentFrame() % kTicksPerSecond == 0) {
     Shroud_Regen();
   }
 }
@@ -1975,14 +1976,14 @@ int UnitClass::Shape_Number() const {
     */
     if (IsDriving) {
       shapenum = static_cast<int>(8 + (shapenum * 8) +
-                                  ((CurrentFrame() + ID) / 2 % 8));
+                                  ((game::CurrentFrame() + ID) / 2 % 8));
     } else {
       /*
       **	If in combat, then do combat anims.
       */
       if (Arm.HasTimeLeft()) {
         shapenum = static_cast<int>(8 + 64 + (shapenum * 4) +
-                                    ((CurrentFrame() + ID) / 2 % 4));
+                                    ((game::CurrentFrame() + ID) / 2 % 4));
       }
     }
   } else {
@@ -2123,11 +2124,11 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
       if (*this == UNIT_MGG) {
         int x2 = x;
         int y2 = y;
-        shapenum = static_cast<int>(32 + (CurrentFrame() % 8));
+        shapenum = static_cast<int>(32 + (game::CurrentFrame() % 8));
         Class->Turret_Adjust(PrimaryFacing, x2, y2);
         Techno_Draw_Object(view, shapefile, shapenum, x2, y2, window);
       } else {
-        shapenum = static_cast<int>(32 + (CurrentFrame() % 32));
+        shapenum = static_cast<int>(32 + (game::CurrentFrame() % 32));
         if (*this == UNIT_TESLATANK) {
           Techno_Draw_Object(view, shapefile, shapenum, x, y, window);
         } else {
@@ -2176,7 +2177,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
   if (Flagged != HOUSE_NONE) {
     CC_Draw_Shape(
         view, MixArchive::RetrieveData("FLAGFLY.SHP"),
-        static_cast<int>(CurrentFrame() % 14), x, y, window,
+        static_cast<int>(game::CurrentFrame() % 14), x, y, window,
         ShapeFlags::kCentered | ShapeFlags::kFading | ShapeFlags::kGhost,
         HouseClass::As_Pointer(Flagged)->Remap_Table(false, Class->Remap),
         MouseClass::UnitShadow);

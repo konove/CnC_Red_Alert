@@ -14,12 +14,12 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
+#include "game/core/game_clock.h"
 #include "gtest/gtest.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 #include "td/core/heap.h"
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
@@ -41,8 +41,8 @@ namespace td {
 // The frame counter and the object heaps every suite in this binary needs;
 // Game owns them in the real game.
 namespace {
-GameClock game_clock;
-const base::Installed<GameClock>::Scope game_clock_scope(game_clock);
+game::GameClock game_clock;
+const base::Installed<game::GameClock>::Scope game_clock_scope(game_clock);
 ObjectHeaps object_heaps;
 const base::Installed<ObjectHeaps>::Scope object_heaps_scope(object_heaps);
 // NOLINTBEGIN(bugprone-throwing-static-initialization): a test binary
@@ -94,7 +94,7 @@ class TdArchiveRoundTripTest : public testing::Test {
     debug_state_scope_ =
         std::make_unique<base::Installed<DebugState>::Scope>(debug_state_);
     TheGameState().active() = false;
-    TheGameClock().set_frame(100);
+    game::TheGameClock().set_frame(100);
     TheObjectHeaps().house().Set_Heap(8);
     TheObjectHeaps().unit().Set_Heap(8);
     TheObjectHeaps().trigger().Set_Heap(8);
@@ -146,7 +146,7 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
     EventClass expected;
     expected.ID =
         static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
-    expected.Frame = static_cast<unsigned>(CurrentFrame());
+    expected.Frame = static_cast<unsigned>(game::CurrentFrame());
     configure(expected);
     alignas(EventClass) std::array<unsigned char, sizeof(EventClass)> storage{};
     storage.fill(0xff);

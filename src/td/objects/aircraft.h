@@ -27,9 +27,9 @@
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "td/core/defines.h"
 #include "td/core/facing.h"
-#include "td/core/game_clock.h"
 #include "td/objects/bullet.h"
 #include "td/objects/fly.h"
 #include "td/objects/foot.h"
@@ -221,7 +221,7 @@ class AircraftClass : public FootClass, public FlyClass {
   *itself. *	When this timer expires and this aircraft has a sight range,
   *then the *	look around process will occur.
   */
-  engine::platform::Timer<FrameTickSource> SightTimer;
+  engine::platform::Timer<game::FrameTickSource> SightTimer;
 
   /*
   **	Most attack aircraft can make several attack runs. This value contains

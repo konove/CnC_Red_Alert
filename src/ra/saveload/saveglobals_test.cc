@@ -14,10 +14,10 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
+#include "game/core/game_clock.h"
 #include "gtest/gtest.h"
 #include "ra/ai/special.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/net/ipx.h"
 #include "ra/net/ipxaddr.h"
 #include "ra/net/session.h"
@@ -28,8 +28,8 @@ namespace ra {
 // The game clock the scenario serializer reads; Game owns it in the real
 // game.
 namespace {
-GameClock game_clock;
-const base::Installed<GameClock>::Scope game_clock_scope(game_clock);
+game::GameClock game_clock;
+const base::Installed<game::GameClock>::Scope game_clock_scope(game_clock);
 }  // namespace
 
 namespace {

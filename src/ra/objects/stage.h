@@ -41,7 +41,7 @@
 #define CNC_RED_ALERT_RA_OBJECTS_STAGE_H_
 
 #include "engine/platform/timer.h"
-#include "ra/core/game_clock.h"
+#include "game/core/game_clock.h"
 #include "ra/core/jshell.h"
 
 namespace ra {
@@ -58,7 +58,7 @@ class StageClass {
   **	to zero, then the stage increments by one and the time cycle starts
   **	over again.
   */
-  engine::platform::Timer<FrameTickSource> StageTimer;
+  engine::platform::Timer<game::FrameTickSource> StageTimer;
 
   /*
   **	This is the value to assign the StageTimer whenever it needs to be

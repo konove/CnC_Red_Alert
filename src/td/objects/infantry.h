@@ -50,8 +50,8 @@
 #include "base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 #include "td/core/inline.h"
 #include "td/objects/bullet.h"
 #include "td/objects/cell.h"
@@ -101,7 +101,7 @@ class InfantryClass final : public FootClass {
   *an *	amount of time has expired subsiquent to an significant event. This is
   *the *	timer the counts down.
   */
-  engine::platform::Timer<FrameTickSource> Comment;
+  engine::platform::Timer<game::FrameTickSource> Comment;
 
   /*
   **	If this civilian is actually a technician, then this flag will be true.

@@ -60,10 +60,10 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/core/interpal.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/assets.h"
 #include "ra/assets/graphics_loader.h"
-#include "ra/assets/interpal.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
@@ -1110,13 +1110,14 @@ void Multi_Score_Presentation() {
   // palette and is faded in; the remaining frames then play at two ticks each.
   pseudoseenbuff.view().Clear();
   anim.DrawFrame(pseudoseenbuff.view(), 1);
-  Interpolate_2X_Scale(&pseudoseenbuff, &TheScreen().visible_view(), {});
+  game::Interpolate_2X_Scale(&pseudoseenbuff, &TheScreen().visible_view(), {});
   score_palette.Set(kFadePaletteFast, ServiceRealTime);
 
   int frame = 1;
   while (frame < anim.frame_count()) {
     anim.DrawFrame(pseudoseenbuff.view(), frame++);
-    Interpolate_2X_Scale(&pseudoseenbuff, &TheScreen().visible_view(), {});
+    game::Interpolate_2X_Scale(&pseudoseenbuff, &TheScreen().visible_view(),
+                               {});
     TickScoreScreen(2);
   }
   anim.Close();

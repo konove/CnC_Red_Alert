@@ -56,7 +56,7 @@
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "td/assets/interpal.h"
+#include "game/core/interpal.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
 #include "td/assets/presentation.h"
@@ -200,8 +200,8 @@ void Nod_Ending() {
   TheMouse().Show();
 
   engine::gfx::BrightenPalette(localpal, 30, 30, 30);
-  Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
-                       "SATSELIN.PAL");
+  game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
+                             "SATSELIN.PAL");
 
   TheKeyboard().Clear();
   engine::audio::TheAudio().Play(kanefinl, 255, 128);

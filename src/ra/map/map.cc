@@ -87,6 +87,8 @@
 #include "engine/gfx/tile.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
+#include "game/core/display_constants.h"
+#include "game/core/game_clock.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/region.h"
 #include "ra/ai/scenario.h"
@@ -94,8 +96,6 @@
 #include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/display_constants.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/vector_dynamic.h"
@@ -1909,7 +1909,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
   }
 
   if (count > 0) {
-    return base::At(topten, CurrentFrame() % count);
+    return base::At(topten, game::CurrentFrame() % count);
   }
   return 0;
 }

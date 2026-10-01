@@ -43,8 +43,8 @@
 
 #include "base/enum_array.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 #include "td/objects/object.h"
 
 class ArchiveReader;
@@ -136,7 +136,7 @@ class MissionClass : public ObjectClass {
   **	This the thread processing timer. When this value counts down to zero,
   *then *	more script processing may occur.
   */
-  engine::platform::Timer<FrameTickSource> MissionTimer;
+  engine::platform::Timer<game::FrameTickSource> MissionTimer;
 
   /*
   **	These are the order names as ASCII strings.

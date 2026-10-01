@@ -62,17 +62,17 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "game/core/display_constants.h"
+#include "game/core/path_overlap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/display_constants.h"
 #include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/editor/mapedit.h"
-#include "ra/map/path_overlap.h"
 #include "ra/net/session.h"
 #include "ra/objects/foot.h"
 
@@ -164,17 +164,17 @@ static CELL DestLocation;
 */
 static bool Is_Overlapped(const PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  return IsOverlapped(path->Overlap, cell);
+  return game::IsOverlapped(path->Overlap, cell);
 }
 
 static void Set_Overlap(const PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  SetOverlap(path->Overlap, cell);
+  game::SetOverlap(path->Overlap, cell);
 }
 
 static void Clear_Overlap(const PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  ClearOverlap(path->Overlap, cell);
+  game::ClearOverlap(path->Overlap, cell);
 }
 
 /***************************************************************************

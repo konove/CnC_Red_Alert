@@ -11,7 +11,7 @@
 #include "engine/video/vqa/vqa_player.h"
 #include "engine/window/display.h"
 #include "engine/window/keyboard.h"
-#include "td/assets/interpal.h"
+#include "game/core/interpal.h"
 #include "td/assets/palette.h"
 #include "td/assets/screen.h"
 #include "td/debug/debug_state.h"
@@ -60,8 +60,8 @@ bool MovieScreen::Present() {
     TheKeyboard().Clear();
   }
 
-  Interpolate_2X_Scale(&TheScreen().sys_mem_page(), &TheScreen().visible_view(),
-                       nullptr);
+  game::Interpolate_2X_Scale(&TheScreen().sys_mem_page(),
+                             &TheScreen().visible_view(), nullptr);
 
   if ((TheGameState().breakout_allowed() || TheDebugState().developer_mode()) &&
       key == engine::window::KN_ESC) {

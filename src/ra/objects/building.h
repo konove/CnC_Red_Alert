@@ -48,10 +48,10 @@
 #include "base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/factory.h"
@@ -191,7 +191,7 @@ class BuildingClass : public TechnoClass {
   **	it won't actually be removed from the map until this value reaches
   **	zero. This delay is for cosmetic reasons.
   */
-  engine::platform::Timer<FrameTickSource> CountDown{0};
+  engine::platform::Timer<game::FrameTickSource> CountDown{0};
 
   /*
   **	This is the current animation processing state that the building is
@@ -230,7 +230,7 @@ class BuildingClass : public TechnoClass {
   **	This is the countdown timer that regulates placement retry logic
   **	for factory type buildings.
   */
-  engine::platform::Timer<FrameTickSource> PlacementDelay{0};
+  engine::platform::Timer<game::FrameTickSource> PlacementDelay{0};
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   BuildingClass() : ActLike(HOUSE_NONE) {}

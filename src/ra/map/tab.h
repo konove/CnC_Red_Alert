@@ -46,7 +46,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
-#include "ra/core/game_clock.h"
+#include "game/core/game_clock.h"
 #include "ra/core/jshell.h"
 #include "ra/map/credits.h"
 #include "ra/map/sidebar.h"
@@ -74,7 +74,7 @@ class TabClass : public SidebarClass {
 
   CreditClass Credits;
 
-  engine::platform::Timer<FrameTickSource> FlasherTimer;
+  engine::platform::Timer<game::FrameTickSource> FlasherTimer;
 
  protected:
   /*
@@ -85,7 +85,7 @@ class TabClass : public SidebarClass {
  private:
   static void Set_Active(int select);
 
-  engine::platform::Timer<FrameTickSource> MoneyFlashTimer;
+  engine::platform::Timer<game::FrameTickSource> MoneyFlashTimer;
 
   static std::span<const std::byte> TabShape;
 };

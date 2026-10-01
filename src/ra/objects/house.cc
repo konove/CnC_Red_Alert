@@ -158,6 +158,8 @@
 #include "base/strings/safe_string.h"
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/core/display_constants.h"
+#include "game/core/game_clock.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/reinf.h"
@@ -174,9 +176,7 @@
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/display_constants.h"
 #include "ra/core/face.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/heap.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
@@ -891,7 +891,7 @@ void HouseClass::AI() {
   **	someone sitting on it.  If so, make the scatter.  If they refuse,
   **	blow them up.
   */
-  if (FlagHome != 0 && CurrentFrame() % kTicksPerSecond == 0) {
+  if (FlagHome != 0 && game::CurrentFrame() % kTicksPerSecond == 0) {
     TechnoClass* techno = TheMap().at(FlagHome).Cell_Techno();
     if (techno != nullptr) {
       bool moving = false;
@@ -1108,7 +1108,7 @@ void HouseClass::AI() {
   */
   if (TheSession().Type != GAME_NORMAL && !IsDefeated && !ActiveBScan &&
       !ActiveAScan && !UScan && !ActiveIScan && !ActiveVScan &&
-      CurrentFrame() > 0) {
+      game::CurrentFrame() > 0) {
     MPlayer_Defeated();
   }
 
@@ -4543,10 +4543,12 @@ int HouseClass::Expert_AI() {
       State = STATE_BUILDUP;
     }
 
-    if (State == STATE_ATTACKED && LATime + kTicksPerMinute < CurrentFrame()) {
+    if (State == STATE_ATTACKED &&
+        LATime + kTicksPerMinute < game::CurrentFrame()) {
       State = STATE_BUILDUP;
     }
-    if (State != STATE_ATTACKED && LATime + kTicksPerMinute > CurrentFrame()) {
+    if (State != STATE_ATTACKED &&
+        LATime + kTicksPerMinute > game::CurrentFrame()) {
       State = STATE_ATTACKED;
     }
   }
@@ -4723,7 +4725,7 @@ UrgencyType HouseClass::Check_Build_Offense() const {
 UrgencyType HouseClass::Check_Attack() const {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
-  if (CurrentFrame() > kTicksPerMinute && Attack.IsFinished()) {
+  if (game::CurrentFrame() > kTicksPerMinute && Attack.IsFinished()) {
     if (State == STATE_ATTACKED) {
       return URGENCY_LOW;
     }
@@ -4831,7 +4833,7 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   const bool shuffle =
-      (CurrentFrame() <= kTicksPerMinute || CurBuildings != 0) &&
+      (game::CurrentFrame() <= kTicksPerMinute || CurBuildings != 0) &&
       !Percent_Chance(33);
   const bool forced = CurBuildings == 0;
   for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {

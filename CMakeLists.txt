@@ -115,7 +115,7 @@ if (STRICT_CHECKS)
     endif ()
     set(CMAKE_CXX_CLANG_TIDY
             "${CLANG_TIDY_PROGRAM}"
-            "--header-filter=${CMAKE_SOURCE_DIR}/src/(base|engine|ra|td)/.*"
+            "--header-filter=${CMAKE_SOURCE_DIR}/src/(base|engine|game|ra|td)/.*"
     )
     # Ninja decides what is stale from the command line and the declared inputs,
     # and .clang-tidy is neither: editing it leaves every object untouched and
@@ -240,6 +240,7 @@ enable_testing()
 add_subdirectory(src/base)
 add_subdirectory(src/rust)
 add_subdirectory(src/engine)
+add_subdirectory(src/game)
 add_subdirectory(third_party)
 
 add_subdirectory(src/tools)

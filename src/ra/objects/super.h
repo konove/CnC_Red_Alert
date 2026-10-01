@@ -41,8 +41,8 @@
 #define CNC_RED_ALERT_RA_OBJECTS_SUPER_H_
 
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 
 namespace ra {
@@ -90,7 +90,7 @@ class SuperClass {
   bool IsOneTime : 1 = false;
   bool IsReady : 1 = false;
 
-  engine::platform::Timer<FrameTickSource> Control;
+  engine::platform::Timer<game::FrameTickSource> Control;
   int OldStage = -1;
 
   VoxType VoxRecharge = VOX_NONE;

@@ -8,12 +8,12 @@
 #include "base/installed.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/window/display.h"
+#include "game/core/game_clock.h"
 #include "td/ai/special.h"
 #include "td/assets/assets.h"
 #include "td/assets/palettes.h"
 #include "td/assets/screen.h"
 #include "td/assets/theme.h"
-#include "td/core/game_clock.h"
 #include "td/core/object_heaps.h"
 #include "td/debug/debug_state.h"
 #include "td/map/world.h"
@@ -64,8 +64,8 @@ class Game {
   StartupOptions startup_options_;
   base::Installed<StartupOptions>::Scope startup_options_scope_{
       startup_options_};
-  GameClock game_clock_;
-  base::Installed<GameClock>::Scope game_clock_scope_{game_clock_};
+  game::GameClock game_clock_;
+  base::Installed<game::GameClock>::Scope game_clock_scope_{game_clock_};
   // Before the window's events, which feed its keyboard and mouse.
   Input input_;
   base::Installed<Input>::Scope input_scope_{input_};

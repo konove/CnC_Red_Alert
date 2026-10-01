@@ -98,6 +98,8 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
+#include "game/core/display_constants.h"
+#include "game/core/game_clock.h"
 #include "td/ai/special.h"
 #include "td/ai/trigger.h"
 #include "td/assets/window_rect.h"
@@ -105,8 +107,6 @@
 #include "td/core/const.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
-#include "td/core/display_constants.h"
-#include "td/core/game_clock.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/rand.h"
@@ -1200,7 +1200,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
         CC_Draw_Shape(
             view, MixArchive::RetrieveData("FLAGFLY.SHP"),
-            static_cast<int>(CurrentFrame() % 14), x + (ICON_PIXEL_W / 2),
+            static_cast<int>(game::CurrentFrame() % 14), x + (ICON_PIXEL_W / 2),
             y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
             ShapeFlags::kCentered | ShapeFlags::kGhost | ShapeFlags::kFading,
             const_remap, MouseClass::UnitShadow);

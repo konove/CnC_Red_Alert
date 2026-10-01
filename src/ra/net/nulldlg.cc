@@ -89,6 +89,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/core/game_clock.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
@@ -101,7 +102,6 @@
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/vector_dynamic.h"
@@ -4309,7 +4309,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       WWMessageBox().Process(TXT_ERROR_LOADING_GAME);
       rc = 0;
     }
-    TheGameClock().Advance();
+    game::TheGameClock().Advance();
   }
 
   return rc;
@@ -6008,7 +6008,7 @@ int Com_Show_Scenario_Dialog() {
       WWMessageBox().Process(TXT_ERROR_LOADING_GAME);
       rc = 0;
     }
-    TheGameClock().Advance();
+    game::TheGameClock().Advance();
   }
 
   return rc;

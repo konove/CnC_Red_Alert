@@ -109,12 +109,13 @@
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/core/game_clock.h"
+#include "game/core/interpal.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/special.h"
 #include "td/assets/assets.h"
 #include "td/assets/audio.h"
-#include "td/assets/interpal.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
 #include "td/assets/screen.h"
@@ -122,7 +123,6 @@
 #include "td/core/config.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/game_clock.h"
 #include "td/core/heap.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
@@ -1639,7 +1639,7 @@ bool Main_Loop() {
   /*
   ** Sync-bug trapping code
   */
-  if (CurrentFrame() >= TheDebugState().trap_frame()) {
+  if (game::CurrentFrame() >= TheDebugState().trap_frame()) {
     Trap_Object();
   }
 
@@ -1802,20 +1802,20 @@ bool Main_Loop() {
   **	The frame logic has been completed. Increment the frame
   **	counter.
   */
-  TheGameClock().Advance();
+  game::TheGameClock().Advance();
 
   // Record mobile-object state and optionally save before ending a smoke run.
   if (TheStartupOptions().quit_at_frame >= 0) {
     for (int index = 0; index < TheObjectHeaps().unit().Count(); ++index) {
       const UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
-      LOG(INFO) << "frame " << CurrentFrame() << " unit "
+      LOG(INFO) << "frame " << game::CurrentFrame() << " unit "
                 << unit->Class->IniName << " coord " << unit->Coord
                 << " mission " << static_cast<int>(unit->Mission) << " navcom "
                 << unit->NavCom;
     }
     for (int index = 0; index < TheObjectHeaps().infantry().Count(); ++index) {
       const InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
-      LOG(INFO) << "frame " << CurrentFrame() << " infantry "
+      LOG(INFO) << "frame " << game::CurrentFrame() << " infantry "
                 << TheObjectHeaps().infantry().ID(infantry) << " coord "
                 << infantry->Coord << " mission "
                 << static_cast<int>(infantry->Mission) << " navcom "
@@ -1840,7 +1840,7 @@ bool Main_Loop() {
         } sink;
         ArchiveWriter writer(sink);
         heap.Ptr(index)->Serialize(writer);
-        LOG(INFO) << "frame " << CurrentFrame() << " " << kind << " "
+        LOG(INFO) << "frame " << game::CurrentFrame() << " " << kind << " "
                   << heap.ID(heap.Ptr(index)) << " fields " << sink.fields;
       }
     };
@@ -1879,7 +1879,8 @@ bool Main_Loop() {
     } map_sink;
     ArchiveWriter map_writer(map_sink);
     TheMap().Serialize(map_writer);
-    LOG(INFO) << "frame " << CurrentFrame() << " mapstate " << map_sink.hash;
+    LOG(INFO) << "frame " << game::CurrentFrame() << " mapstate "
+              << map_sink.hash;
     MapHashSink globals_sink;
     ArchiveWriter globals_writer(globals_sink);
     TheWorld().score().Serialize(globals_writer);
@@ -1889,13 +1890,14 @@ bool Main_Loop() {
       layer.Serialize(globals_writer);
     }
     Save_Misc_Values(globals_writer);
-    LOG(INFO) << "frame " << CurrentFrame() << " globalstate "
+    LOG(INFO) << "frame " << game::CurrentFrame() << " globalstate "
               << globals_sink.hash;
 
-    if (map_sink.trace && (CurrentFrame() == 60 || CurrentFrame() == 61)) {
+    if (map_sink.trace &&
+        (game::CurrentFrame() == 60 || game::CurrentFrame() == 61)) {
       // Keep each record below the logger's message-size limit.
       for (size_t offset = 0; offset < map_sink.fields.size(); offset += 2048) {
-        LOG(INFO) << "frame " << CurrentFrame() << " mapfields " << offset
+        LOG(INFO) << "frame " << game::CurrentFrame() << " mapfields " << offset
                   << " " << map_sink.fields.substr(offset, 2048);
       }
     }
@@ -1903,10 +1905,10 @@ bool Main_Loop() {
     for (int i = 0; i < TheObjectHeaps().team_type().Count(); ++i) {
       const int id =
           TheObjectHeaps().team_type().ID(TheObjectHeaps().team_type().Ptr(i));
-      LOG(INFO) << "frame " << CurrentFrame() << " teamcount " << id << " "
-                << static_cast<int>(base::At(TeamClass::Number, id));
+      LOG(INFO) << "frame " << game::CurrentFrame() << " teamcount " << id
+                << " " << static_cast<int>(base::At(TeamClass::Number, id));
     }
-    if (CurrentFrame() >= TheStartupOptions().quit_at_frame) {
+    if (game::CurrentFrame() >= TheStartupOptions().quit_at_frame) {
       if (TheStartupOptions().save_slot >= 0) {
         char description[] = "debug";
         if (!Save_Game(TheStartupOptions().save_slot, description)) {
@@ -2382,7 +2384,7 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
 
       const auto shape_pointer = std::as_bytes(std::span(frame_pixels));
 
-      int predoffset = static_cast<int>(CurrentFrame());
+      int predoffset = static_cast<int>(game::CurrentFrame());
 
       if (x > base::At(base::At(WindowList, static_cast<int>(window)),
                        kWindowWidth) *

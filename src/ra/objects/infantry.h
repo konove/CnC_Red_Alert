@@ -48,11 +48,11 @@
 #include "base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/bullet.h"
@@ -85,7 +85,7 @@ class InfantryClass final : public FootClass {
   *an *	amount of time has expired subsequent to an significant event. This is
   *the *	timer the counts down.
   */
-  engine::platform::Timer<FrameTickSource> Comment{0};
+  engine::platform::Timer<game::FrameTickSource> Comment{0};
 
   /*
   **	If this civilian is actually a technician, then this flag will be true.

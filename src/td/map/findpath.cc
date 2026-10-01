@@ -65,6 +65,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
+#include "game/core/path_overlap.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
@@ -75,7 +76,6 @@
 #include "td/core/support.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
-#include "td/map/path_overlap.h"
 #include "td/map/world.h"
 #include "td/net/session.h"
 #include "td/objects/foot.h"
@@ -205,17 +205,17 @@ static CELL DestLocation;
 */
 static bool Is_Overlapped(const PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  return IsOverlapped(path->Overlap, cell);
+  return game::IsOverlapped(path->Overlap, cell);
 }
 
 static void Set_Overlap(const PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  SetOverlap(path->Overlap, cell);
+  game::SetOverlap(path->Overlap, cell);
 }
 
 static void Clear_Overlap(const PathType* path, CELL cell) {
   DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  ClearOverlap(path->Overlap, cell);
+  game::ClearOverlap(path->Overlap, cell);
 }
 
 /***************************************************************************

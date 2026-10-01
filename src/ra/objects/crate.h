@@ -41,8 +41,8 @@
 #define CNC_RED_ALERT_RA_OBJECTS_CRATE_H_
 
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/core/defines.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 
 namespace ra {
@@ -81,7 +81,7 @@ class CrateClass {
     CrateTimer.Stop();
   }
 
-  engine::platform::Timer<FrameTickSource> CrateTimer;
+  engine::platform::Timer<game::FrameTickSource> CrateTimer;
   CELL Cell = -1;
 };
 

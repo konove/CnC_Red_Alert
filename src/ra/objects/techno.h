@@ -48,11 +48,11 @@
 #include "base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
+#include "game/core/game_clock.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
 #include "ra/core/facing.h"
-#include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 #include "ra/objects/bullet.h"
 #include "ra/objects/cargo.h"
@@ -191,13 +191,13 @@ class TechnoClass : public RadioClass,
   *by *	this timer. When the timer expires an idle animation occurs. Then the
   **	timer is reinitialized to some random (bounded) setting.
   */
-  engine::platform::Timer<FrameTickSource> IdleTimer;
+  engine::platform::Timer<game::FrameTickSource> IdleTimer;
 
   /*
   ** This timer keeps track of how long the unit is under the influence
   ** of the iron curtain.
   */
-  engine::platform::Timer<FrameTickSource> IronCurtainCountDown;
+  engine::platform::Timer<game::FrameTickSource> IronCurtainCountDown;
 
   /*
   ** This is a list of bits of which houses are spying on this building,
@@ -225,7 +225,7 @@ class TechnoClass : public RadioClass,
   */
   CloakType Cloak;
   StageClass CloakingDevice;
-  engine::platform::Timer<FrameTickSource> CloakDelay;
+  engine::platform::Timer<game::FrameTickSource> CloakDelay;
 
   /* (Targeting Computer)
   **	This is the target value for the item that this vehicle should ATTACK.
@@ -244,7 +244,7 @@ class TechnoClass : public RadioClass,
   **	This is the arming countdown. It represents the time necessary
   **	to reload the weapon.
   */
-  engine::platform::Timer<FrameTickSource> Arm;
+  engine::platform::Timer<game::FrameTickSource> Arm;
 
   /*
   **	The number of shot this object can fire before running out of ammo. If

@@ -56,8 +56,8 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "game/core/display_constants.h"
 #include "td/core/defines.h"
-#include "td/core/display_constants.h"
 #include "td/core/inline.h"
 
 namespace td {
