@@ -6,6 +6,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "gtest/gtest.h"
 
+namespace ra {
+
 namespace {
 
 TEST(ScreenTest, AsksForA400LineModeByDefault) {
@@ -51,3 +53,5 @@ TEST(ScreenTest, SettersStick) {
 }
 
 }  // namespace
+
+}  // namespace ra

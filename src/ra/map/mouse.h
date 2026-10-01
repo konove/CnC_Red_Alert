@@ -53,6 +53,8 @@
 class ArchiveReader;
 class ArchiveWriter;
 
+namespace ra {
+
 class MouseClass : public ScrollClass {
  public:
   // Resets transient UI state after loading, preserving saved game state.
@@ -149,5 +151,7 @@ class MouseClass : public ScrollClass {
 
 extern template void MouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void MouseClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_MOUSE_H_

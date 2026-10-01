@@ -89,6 +89,8 @@ using socklen_t = int;
 
 #endif
 
+namespace ra {
+
 /***********************************************************************************************
  * UDPInterfaceClass::UDPInterfaceClass -- Class constructor. *
  *                                                                                             *
@@ -424,3 +426,5 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       break;
   }
 }
+
+}  // namespace ra

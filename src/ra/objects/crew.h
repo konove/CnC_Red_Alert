@@ -42,6 +42,8 @@
 
 #include <cstdint>
 
+namespace ra {
+
 /****************************************************************************
 **	This class handles the basic crew logic. This includes hero tracking,
 **	crew bail-out, and attached object logic.
@@ -78,5 +80,7 @@ class CrewClass {
 
  private:
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_CREW_H_

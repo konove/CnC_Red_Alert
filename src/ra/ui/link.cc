@@ -49,6 +49,8 @@
 
 #include "ra/ui/link.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * LinkClass::~LinkClass -- Default destructor for linked list object. *
  *                                                                                             *
@@ -307,3 +309,5 @@ LinkClass* LinkClass::Remove() {
   }
   return head;
 }
+
+}  // namespace ra

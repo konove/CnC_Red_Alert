@@ -22,6 +22,8 @@
 
 #include "ra/core/defines.h"
 
+namespace ra {
+
 // Set by the -NOMOVIES command line switch; suppresses movie playback.
 inline bool bNoMovies = false;
 
@@ -34,5 +36,7 @@ void Play_Movie(const char* name, ThemeType theme = THEME_NONE,
                 bool clear_screen = true);
 void Play_Movie(VQType name, ThemeType theme = THEME_NONE,
                 bool clear_screen = true);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SCREENS_MOVIE_H_

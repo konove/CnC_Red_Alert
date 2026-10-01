@@ -6,6 +6,8 @@
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
 
+namespace ra {
+
 // Red Alert's palette: the shared engine::gfx::Palette plus fading to it on
 // screen and the closest-color search the remap tables use.
 class PaletteClass : public engine::gfx::Palette {
@@ -55,5 +57,7 @@ class PaletteClass : public engine::gfx::Palette {
 
 // Makes `palette` current and shows it at once.
 void Set_Palette(const engine::gfx::Palette& palette);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_PALETTE_H_

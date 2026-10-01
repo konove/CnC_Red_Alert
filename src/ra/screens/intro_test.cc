@@ -22,6 +22,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 
+namespace ra {
+
 namespace {
 
 bool using_dvd = false;
@@ -107,3 +109,5 @@ TEST_F(IntroTest, DvdLeavesTheMouseAsItFoundIt) {
 }
 
 }  // namespace
+
+}  // namespace ra

@@ -47,6 +47,8 @@
 #include "ra/wol/ftpdefs.h"
 #include "ra/wol/wolapi.h"
 
+namespace ra {
+
 // The IDL-generated wolapi structs (User, Channel, Server, Update, Ladder)
 // declare their NUL-terminated text fields as unsigned char arrays, while the
 // C string functions and the chat interfaces take char*. Viewing those bytes
@@ -472,5 +474,7 @@ inline constexpr int kGameVersion = 0x00030003;
 bool WOL_Download_Dialog(IDownload* pDownload,
                          RADownloadEventSink* pDownloadSink,
                          const char* szTitle);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_WOL_RAWOLAPI_H_

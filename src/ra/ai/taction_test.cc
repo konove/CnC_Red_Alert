@@ -6,6 +6,8 @@
 #include "gtest/gtest.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 namespace {
 
 // The shipped scenarios store a special weapon as its value in the low byte
@@ -31,3 +33,5 @@ TEST(TActionDataTest, MovieReadsTheLowByteOfTheIniValue) {
 }
 
 }  // namespace
+
+}  // namespace ra

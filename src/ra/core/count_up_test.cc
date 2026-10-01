@@ -2,6 +2,8 @@
 
 #include "gtest/gtest.h"
 
+namespace ra {
+
 namespace {
 
 TEST(CountUpValueTest, RunsFromZeroToTheFinalValue) {
@@ -45,3 +47,5 @@ TEST(CountUpValueTest, LargeValuesDoNotOverflow) {
 }
 
 }  // namespace
+
+}  // namespace ra

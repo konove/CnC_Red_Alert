@@ -11,6 +11,8 @@
 #include "engine/gfx/wwstd.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 void Draw_Caption(PixelView& view, int text, int x, int y, int w);
 void Draw_Caption(PixelView& view, const char* text, int x, int y, int w);
 // Word wraps "string" in place so that no line exceeds "max_line_len" pixels
@@ -115,5 +117,7 @@ void Plain_Text_Print(PixelView& view, const char* text, int x, int y, int fore,
   Plain_Text_Print(view, text, x, y, fore, back, flag,
                    absl::MakeConstSpan(packed));
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_DIALOG_H_

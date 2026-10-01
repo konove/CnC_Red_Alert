@@ -49,6 +49,8 @@
 #include "ra/objects/abstract.h"
 #include "ra/objects/object.h"
 
+namespace ra {
+
 class AbstractTypeClass;
 class AircraftClass;
 class AnimClass;
@@ -229,5 +231,7 @@ UnitClass* As_Unit(TARGET target);
 VesselClass* As_Vessel(TARGET target);
 inline bool Target_Legal(TARGET target) { return target != kTargetNone; }
 ObjectClass* As_Object(TARGET target);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_TARGET_H_

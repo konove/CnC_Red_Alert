@@ -107,6 +107,8 @@
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 /*
 ** Instance of chronal vortex class. This must be the only instance.
 */
@@ -981,7 +983,6 @@ void ChronalVortexClass::Set_Redraw() {
     const CELL xc = Coord_XCell(Position);
     const CELL yc = Coord_YCell(Position);
 
-
     for (int y = std::max(0, yc - 1); y < yc + 4; y++) {
       for (int x = std::max(0, xc - 1); x < xc + 4; x++) {
         CELL const cell = XY_Cell(x, y);
@@ -1012,7 +1013,6 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
   ** The names of the remap files for each theater
   */
   static char _remaps[3][13] = {"TEMP_VTX.PAL", "SNOW_VTX.PAL", "INTR_VTX.PAL"};
-
 
   /*
   ** If the theater has changed then load the remap tables from disk if they
@@ -1129,3 +1129,5 @@ void ChronalVortexClass::Detach(TARGET target) {
     Set_Target(nullptr);
   }
 }
+
+}  // namespace ra

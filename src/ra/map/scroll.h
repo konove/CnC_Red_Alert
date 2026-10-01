@@ -45,6 +45,8 @@
 #include "ra/core/jshell.h"
 #include "ra/map/help.h"
 
+namespace ra {
+
 class ScrollClass : public HelpClass {
   /*
   **	If map scrolling is automatic, then this flag is true. Automatic
@@ -79,5 +81,7 @@ class ScrollClass : public HelpClass {
     HelpClass::Init_IO();
   }
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_SCROLL_H_

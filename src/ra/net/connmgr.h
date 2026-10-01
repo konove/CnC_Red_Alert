@@ -79,6 +79,8 @@
 #include <cstdint>
 #include <span>
 
+namespace ra {
+
 /*
 ***************************** Class Declaration *****************************
 */
@@ -156,5 +158,7 @@ class ConnManClass {
   - A buffer to store incoming packets
   .....................................................................*/
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_CONNMGR_H_

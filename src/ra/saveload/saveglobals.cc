@@ -14,6 +14,8 @@
 #include "ra/net/session.h"
 #include "ra/screens/score.h"
 
+namespace ra {
+
 template <class Archive>
 void ScenarioClass::Serialize(Archive& ar) {
   uint32_t seed = sync_rng_.seed();
@@ -214,3 +216,5 @@ void NodeNameTag::Serialize(Archive& ar) {
 }
 template void NodeNameTag::Serialize(ArchiveWriter&);
 template void NodeNameTag::Serialize(ArchiveReader&);
+
+}  // namespace ra

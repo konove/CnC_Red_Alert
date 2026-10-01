@@ -54,6 +54,8 @@
 #include "base/strings/safe_string.h"
 #include "engine/file/profile_buffer.h"
 
+namespace ra {
+
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 const char* profile) {
   char buffer[16];
@@ -184,3 +186,5 @@ bool Write_Bin_String(std::string_view string, const char* buffer) {
   write_bin_max = std::max(write_bin_pos, write_bin_max);
   return true;
 }
+
+}  // namespace ra

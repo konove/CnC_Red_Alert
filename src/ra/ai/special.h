@@ -43,6 +43,11 @@
 #include "base/installed.h"
 #include "ra/data/text_ids.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class SpecialClass {
  public:
   // Field-wise saved-game state; read and write share this field list.
@@ -103,8 +108,6 @@ void Special_Dialog(bool simple = false);
 const char* Fetch_Password(int caption, int message, int btext = TXT_OK);
 int Fetch_Difficulty(bool amath = false);
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void SpecialClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void SpecialClass::Serialize<ArchiveReader>(ArchiveReader&);
 
@@ -113,5 +116,7 @@ extern template void SpecialClass::Serialize<ArchiveReader>(ArchiveReader&);
 inline SpecialClass& TheSpecial() {
   return base::Installed<SpecialClass>::Get();
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_AI_SPECIAL_H_

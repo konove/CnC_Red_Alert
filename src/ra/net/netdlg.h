@@ -1,10 +1,13 @@
 #ifndef CNC_RED_ALERT_RA_NET_NETDLG_H_
 #define CNC_RED_ALERT_RA_NET_NETDLG_H_
+
 #include <cstdint>
 #include <span>
 
 #include "ra/net/ipxaddr.h"
 #include "ra/net/session.h"
+
+namespace ra {
 
 bool Init_Network();
 void Shutdown_Network();
@@ -16,5 +19,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                           int timeval);
 
 extern const std::span<const char* const> EngMisStr;
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_NETDLG_H_

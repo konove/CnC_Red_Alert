@@ -142,6 +142,8 @@
 #include "ra/startup/game_state.h"
 #include "ra/startup/startup.h"
 
+namespace ra {
+
 #define SAVE_BLOCK_SIZE 4096
 
 /*
@@ -1500,3 +1502,5 @@ static bool Reconcile_Players() {
   //
   return TheSession().NumPlayers == TheSession().Players.Count();
 }
+
+}  // namespace ra

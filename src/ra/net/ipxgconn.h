@@ -90,6 +90,8 @@
 #include "ra/net/ipxaddr.h"
 #include "ra/net/ipxconn.h"
 
+namespace ra {
+
 /*
 ********************************** Defines **********************************
 */
@@ -213,6 +215,8 @@ class IPXGlobalConnClass : public IPXConnClass {
   uint32_t LastPacketID[4]{};  // array of last 4 packet ID's
   int LastRXIndex = 0;         // index of next avail pos
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_IPXGCONN_H_
 

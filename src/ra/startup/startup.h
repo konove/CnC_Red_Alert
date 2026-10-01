@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_RA_STARTUP_STARTUP_H_
 #define CNC_RED_ALERT_RA_STARTUP_STARTUP_H_
 
+namespace ra {
+
 // Red Alert's startup and exit paths. main() itself lives in startup.cc.
 
 // Leaves the game from anywhere: blanks the screen, runs ShutDown() and exits
@@ -16,5 +18,7 @@ void ShutDownEngine();
 // game goes through it: every return from main(), EmergencyExit() and the SDL
 // quit handler. It does not draw, so it is safe before the video pages exist.
 void ShutDown();
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_STARTUP_STARTUP_H_

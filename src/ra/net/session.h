@@ -64,6 +64,11 @@
 #include "ra/startup/version.h"
 #include "ra/ui/msglist.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 //---------------------------------------------------------------------------
 // Defines
 //---------------------------------------------------------------------------
@@ -743,8 +748,6 @@ class SessionClass {
   std::unique_ptr<ByteStream> record_stream_;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void SessionClass::SerializePlayers<ArchiveWriter>(ArchiveWriter&);
 extern template void SessionClass::SerializePlayers<ArchiveReader>(ArchiveReader&);
 
@@ -760,6 +763,8 @@ bool Is_Mission_126x126(const char* file_name);
 inline SessionClass& TheSession() {
   return base::Installed<SessionClass>::Get();
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_SESSION_H_
 

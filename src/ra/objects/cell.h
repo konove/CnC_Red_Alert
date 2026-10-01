@@ -55,6 +55,11 @@
 #include "ra/objects/techno.h"
 #include "ra/objects/unit.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /****************************************************************************
 **	Each cell on the map is controlled by the following structure.
 */
@@ -257,7 +262,7 @@ class CellClass {
   [[nodiscard]] ObjectClass* Cell_Object(int x = 0, int y = 0) const;
   [[nodiscard]] ObjectClass* Cell_Occupier() const { return OccupierPtr; }
   [[nodiscard]] ObjectClass* Fetch_Occupier() const;
-  [[nodiscard]] TARGET As_Target() const { return ::As_Target(Cell_Number()); }
+  [[nodiscard]] TARGET As_Target() const { return ra::As_Target(Cell_Number()); }
   [[nodiscard]] TechnoClass* Cell_Techno(int x = 0, int y = 0) const;
   [[nodiscard]] TerrainClass* Cell_Terrain() const;
   [[nodiscard]] UnitClass* Cell_Unit() const;
@@ -324,9 +329,9 @@ class CellClass {
   LandType Land{LAND_CLEAR};  // The land type of this cell.
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void CellClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void CellClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_CELL_H_

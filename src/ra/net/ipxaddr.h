@@ -48,6 +48,8 @@
 
 #include "ra/net/ipx.h"  // for NetNumType & NetNodeType
 
+namespace ra {
+
 /*
 ***************************** Class Declaration *****************************
 */
@@ -106,6 +108,8 @@ class IPXAddressClass {
   NetNumType NetworkNumber{};
   NetNodeType NodeAddress{};
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_IPXADDR_H_
 

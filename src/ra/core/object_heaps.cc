@@ -26,6 +26,8 @@
 #include "ra/objects/unit.h"
 #include "ra/objects/vessel.h"
 
+namespace ra {
+
 // The storage for each heap pointer. ObjectHeaps binds them; they are null
 // outside its lifetime.
 template <>
@@ -141,3 +143,5 @@ std::string ObjectHeaps::Validate() const {
   }
   return {};
 }
+
+}  // namespace ra

@@ -45,6 +45,8 @@
 #include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 
+namespace ra {
+
 class CrateClass {
  public:
   CrateClass() = default;
@@ -82,5 +84,7 @@ class CrateClass {
   engine::platform::Timer<FrameTickSource> CrateTimer;
   CELL Cell = -1;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_CRATE_H_

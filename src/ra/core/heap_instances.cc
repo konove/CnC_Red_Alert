@@ -25,6 +25,8 @@
 #include "ra/objects/warhead.h"
 #include "ra/objects/weapon.h"
 
+namespace ra {
+
 template class TFixedIHeapClass<AircraftClass>;
 template class TFixedIHeapClass<AnimClass>;
 template class TFixedIHeapClass<BuildingClass>;
@@ -56,3 +58,5 @@ template class TFixedIHeapClass<UnitTypeClass>;
 template class TFixedIHeapClass<VesselTypeClass>;
 template class TFixedIHeapClass<WarheadTypeClass>;
 template class TFixedIHeapClass<WeaponTypeClass>;
+
+}  // namespace ra

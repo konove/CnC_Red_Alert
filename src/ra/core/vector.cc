@@ -30,6 +30,8 @@
 #include "ra/objects/object.h"
 #include "ra/screens/egos.h"
 
+namespace ra {
+
 /*
 **	The following template function can be located here ONLY if all the
 *instantiations are *	declared in a header file this module includes. By
@@ -58,3 +60,5 @@ template class VectorClass<void*>;
 template class VectorClass<unsigned char>;
 
 template class VectorClass<WinsockInterfaceClass::WinsockBufferType*>;
+
+}  // namespace ra

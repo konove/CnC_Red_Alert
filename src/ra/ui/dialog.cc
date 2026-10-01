@@ -83,6 +83,8 @@
 #include "ra/debug/debug_state.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 /***********************************************************************************************
@@ -967,3 +969,5 @@ void Draw_Caption(PixelView& view, const char* text, int x, int y, int w) {
     }
   }
 }
+
+}  // namespace ra

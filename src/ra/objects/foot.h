@@ -57,6 +57,11 @@
 #include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 // Value of FootClass::Group meaning "not in any of the player's numbered
 // groups". Group is an unsigned char, so this cannot be -1 no matter how
 // natural that looks.
@@ -444,9 +449,9 @@ class FootClass : public TechnoClass {
   COORDINATE HeadToCoord;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void FootClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void FootClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_FOOT_H_

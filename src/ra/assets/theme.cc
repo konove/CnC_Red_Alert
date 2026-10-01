@@ -79,6 +79,8 @@
 #include "ra/screens/goptions.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 /*
 **	These are the actual filename list for the theme sample files.
 */
@@ -635,3 +637,5 @@ void ThemeClass::Set_Theme_Data(ThemeType theme, int scenario,
     _themes.at(theme).Owner = owners;
   }
 }
+
+}  // namespace ra

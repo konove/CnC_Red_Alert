@@ -14,6 +14,8 @@
 #include <string>
 #include <string_view>
 
+namespace ra {
+
 // Returns true if `file_name` names a Counterstrike multiplayer scenario:
 // an uppercase "SCM" followed by a two- or three-digit scenario number greater
 // than 24, e.g. "SCM25EA.INI" or "SCM100.INI". The prefix match is
@@ -37,5 +39,7 @@ std::string MissionWithNumber(std::string_view file_name, int scenario);
 // replaced by `variant`: ("SCG05EA.INI", 'B') gives "SCG05EB.INI". Returns
 // `file_name` unchanged if it is too short to hold a variant.
 std::string MissionWithVariant(std::string_view file_name, char variant);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_DATA_MISSION_ID_H_

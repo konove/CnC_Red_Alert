@@ -80,6 +80,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/link.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 /*
@@ -791,3 +793,5 @@ void GadgetClass::Set_Position(int x, int y) {
   X = x;
   Y = y;
 }
+
+}  // namespace ra

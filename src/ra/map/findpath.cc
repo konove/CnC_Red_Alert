@@ -76,6 +76,8 @@
 #include "ra/net/session.h"
 #include "ra/objects/foot.h"
 
+namespace ra {
+
 /*
 **	When an edge search is started, it can be performed CLOCKwise or
 **	COUNTERCLOCKwise direction.
@@ -106,7 +108,7 @@ constexpr FacingType kCounterclockwise = static_cast<FacingType>(-1);
 **	a value between 0 and 7, with 0 being North and moving
 **	clockwise (just like map degrees).
 */
-#define CELL_FACING(a, b) Dir_Facing(::Direction((a), (b)))
+#define CELL_FACING(a, b) Dir_Facing(ra::Direction((a), (b)))
 
 /*-------------------------------------------------------------------------*/
 /*
@@ -765,7 +767,6 @@ end_of_list:
   Optimize_Moves(&path, threshhold);
 #endif
 
-
   return &path;
 }
 
@@ -1311,7 +1312,7 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
 
   if (TheSession().Type == GAME_NORMAL) {
     if (threat != -1) {
-      if (::Distance(Cell_Coord(cell), Cell_Coord(DestLocation)) >
+      if (ra::Distance(Cell_Coord(cell), Cell_Coord(DestLocation)) >
           THREAT_THRESHOLD * CELL_LEPTON_W) {
         //			if (Map.Cell_Distance(cell, DestLocation) >
         // THREAT_THRESHOLD) {
@@ -1332,3 +1333,5 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
   };
   return _value.at(move);
 }
+
+}  // namespace ra

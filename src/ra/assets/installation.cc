@@ -49,6 +49,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 
+namespace ra {
+
 const char* Game_Registry_Key() {
   if constexpr (config::kIsFrench) {
     return "SOFTWARE\\Westwood\\Alerte Rouge version Windows 95";
@@ -337,3 +339,5 @@ bool Force_Scenario_Available(const char* name) {
   }
   return true;
 }
+
+}  // namespace ra

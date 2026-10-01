@@ -18,6 +18,8 @@
 #include "ra/core/vector_dynamic.h"
 #include "ra/net/queue.h"
 
+namespace ra {
+
 namespace {
 TEST(VectorStorageTest, BorrowedStorageRetainsExtentAndDoesNotGrow) {
   int first = 1;
@@ -328,3 +330,5 @@ TEST(RaCheckedContainerDeathTest, RejectsInvalidVectorAndQueueIndices) {
 }
 
 }  // namespace
+
+}  // namespace ra

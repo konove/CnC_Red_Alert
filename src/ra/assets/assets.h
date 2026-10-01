@@ -17,6 +17,8 @@
 
 class MixArchive;
 
+namespace ra {
+
 // The fonts the game prints with. Fancy_Text_Print() picks one from the
 // TextPrintType it is given; the names say what the font looks like, not
 // what it is used for.
@@ -160,5 +162,7 @@ class Assets {
 // Returns the Assets that Game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.
 inline Assets& TheAssets() { return base::Installed<Assets>::Get(); }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_ASSETS_H_

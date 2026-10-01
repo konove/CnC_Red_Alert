@@ -55,7 +55,10 @@
 #include <cstdint>
 
 #include "ra/net/connect.h"
+
 using HANDLE = void*;
+
+namespace ra {
 
 /*
 ********************************** Defines **********************************
@@ -145,6 +148,8 @@ class NullModemConnClass : public ConnectionClass {
   .....................................................................*/
   std::vector<char> SendBuf;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_NULLCONN_H_
 

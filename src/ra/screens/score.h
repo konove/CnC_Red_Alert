@@ -40,6 +40,11 @@
 #include "engine/platform/timer.h"
 #include "ra/core/jshell.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 // Statistics for the mission in progress plus the score screen that presents
 // them. There is one instance, the global `Score`; it is part of the saved
 // game.
@@ -254,9 +259,9 @@ void Multi_Score_Presentation();
 // therefore hold an animation that ends, or the call never returns.
 int Alloc_Object(std::unique_ptr<ScoreAnimClass> obj);
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void ScoreClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void ScoreClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SCREENS_SCORE_H_

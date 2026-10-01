@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <cstdint>
 
+namespace ra {
+
 // Returns what a counter running from 0 to `final_value` shows at `step` of
 // `steps` evenly spaced steps: 0 at step 0 and exactly `final_value` at the
 // last step, whatever the rounding in between. Steps outside 0..`steps` are
@@ -17,5 +19,7 @@ constexpr int CountUpValue(int final_value, int step, int steps) {
   return static_cast<int>(int64_t{final_value} * std::clamp(step, 0, steps) /
                           steps);
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_COUNT_UP_H_

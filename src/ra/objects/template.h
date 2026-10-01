@@ -50,6 +50,11 @@
 #include "ra/objects/type.h"
 #include "ra/startup/game_state.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /******************************************************************************
 **	This class controls the template object. Template objects function
 *congruously *	to carpet on a floor. They have no depth, but merely control the
@@ -116,9 +121,9 @@ class TemplateClass : public ObjectClass {
   void Serialize(Archive& ar);
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void TemplateClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TemplateClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_TEMPLATE_H_

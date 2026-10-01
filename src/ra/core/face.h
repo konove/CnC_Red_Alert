@@ -45,6 +45,8 @@
 
 #include "ra/core/defines.h"
 
+namespace ra {
+
 // Enumerations of the facing values returned from Desired_Facing().
 enum class DirType : uint8_t {
   DIR_MIN = 0,
@@ -95,5 +97,7 @@ inline DirType Direction(CELL cell1, CELL cell2) {
   const auto to = std::bit_cast<CELL_COMPOSITE>(cell2);
   return Desired_Facing8(from.Sub.X, from.Sub.Y, to.Sub.X, to.Sub.Y);
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_FACE_H_

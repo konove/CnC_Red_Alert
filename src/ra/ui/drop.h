@@ -57,6 +57,8 @@
 #include "ra/ui/list.h"
 #include "ra/ui/shapebtn.h"
 
+namespace ra {
+
 class DropListClass : public EditClass {
  public:
   DropListClass(int id, std::span<char> text, int max_len, TextPrintType flags, int x,
@@ -326,4 +328,7 @@ void TDropListClass<T>::Set_Selected_Index(T text) {
     }
   }
 }
+
+}  // namespace ra
+
 #endif  // CNC_RED_ALERT_RA_UI_DROP_H_

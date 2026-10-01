@@ -44,6 +44,8 @@
 #include "ra/core/config.h"
 #include "ra/data/options.h"
 
+namespace ra {
+
 class GameOptionsClass : public OptionsClass {
   static constexpr int kButtonLoad = 1;
   static constexpr int kButtonSave = kButtonLoad + 1;
@@ -86,11 +88,12 @@ class GameOptionsClass : public OptionsClass {
   int ButtonResumeY = 0;
 };
 
-
 // Returns the game options that Game installed. CHECK-fails outside a
 // Game's lifetime unless a test installed its own.
 inline GameOptionsClass& TheOptions() {
   return base::Installed<GameOptionsClass>::Get();
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SCREENS_GOPTIONS_H_

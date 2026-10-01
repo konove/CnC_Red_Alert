@@ -88,6 +88,8 @@
 #include "ra/data/ini.h"
 #include "ra/net/session.h"
 
+namespace ra {
+
 const char* const OptionsClass::HotkeyName = "WinHotkeys";
 
 namespace {
@@ -754,3 +756,5 @@ void OptionsClass::Fixup_Palette() const {
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
 int OptionsClass::Normalize_Volume(int volume) const { return volume * Volume; }
+
+}  // namespace ra

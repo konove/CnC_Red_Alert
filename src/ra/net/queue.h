@@ -56,6 +56,8 @@
 #include "ra/core/defines.h"
 #include "ra/objects/target.h"
 
+namespace ra {
+
 /*
 **	This class implements a classic FIFO queue (also known as - standing in
 *line). Objects *	are added to the end (tail) of the line. Objects are
@@ -310,5 +312,7 @@ void Queue_AI();
 int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize);
 int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize);
 void Add_CRC(uint32_t* crc, uint32_t val);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_QUEUE_H_

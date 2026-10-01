@@ -58,6 +58,8 @@
 #include "ra/ui/gadget.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 /***************************************************************************
  * GaugeClass::GaugeClass -- class constructor                             *
  *                                                                         *
@@ -494,3 +496,5 @@ bool TriColorGaugeClass::Draw_Me(PixelView& view, bool forced) {
   }
   return false;
 }
+
+}  // namespace ra

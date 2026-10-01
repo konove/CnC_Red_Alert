@@ -42,6 +42,11 @@
 
 #include "ra/objects/house.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /****************************************************************************
 **	This class handles the basic cargo logic.
 */
@@ -89,9 +94,9 @@ class CargoClass {
   FootClass* CargoHold{nullptr};
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void CargoClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void CargoClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_CARGO_H_

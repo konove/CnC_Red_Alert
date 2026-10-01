@@ -54,6 +54,11 @@
 #include "ra/ui/gadget.h"
 #include "ra/ui/shapebtn.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class InitClass {};
 
 class SidebarClass : public PowerClass {
@@ -356,9 +361,9 @@ class SidebarClass : public PowerClass {
   bool IsDemolishActive : 1 {false};
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void SidebarClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void SidebarClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_SIDEBAR_H_

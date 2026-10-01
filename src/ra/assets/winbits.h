@@ -20,6 +20,8 @@
 #include "ra/assets/dib.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 // A window's pixels, locked from construction until destruction.
 //
 // Lock() can fail, so bLocked() must be checked before Row() is called.
@@ -90,5 +92,7 @@ bool RestoreSurfaceRect(PixelView& view, int xRect, int yRect, int wRect,
 // the image draws the whole image, and a negative width draws nothing.
 void DrawDib(PixelView& view, const dib::Image& image, int xDest, int yDest,
              int iWidth, WindowNumberType window);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_WINBITS_H_

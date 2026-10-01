@@ -58,6 +58,8 @@
 #include "ra/map/help.h"
 #include "ra/screens/goptions.h"
 
+namespace ra {
+
 #define SCROLL_DELAY 1
 
 engine::platform::Timer<engine::platform::SystemTickSource>
@@ -269,3 +271,5 @@ bool ScrollClass::Set_Autoscroll(int control) {
   }
   return old;
 }
+
+}  // namespace ra

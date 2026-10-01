@@ -52,6 +52,11 @@
 #include "ra/objects/house.h"
 #include "ra/ui/gadget.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class RadarClass : public DisplayClass {
  public:
   // Resets transient UI state after loading, preserving saved game state.
@@ -260,9 +265,9 @@ class RadarClass : public DisplayClass {
   CELL PixelStack[kPixelstack]{};
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void RadarClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void RadarClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_RADAR_H_

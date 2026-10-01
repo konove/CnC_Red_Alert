@@ -69,6 +69,8 @@
 #include "ra/net/queue.h"
 #include "ra/ui/dialog.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 std::span<const std::byte> TabClass::TabShape = {};
@@ -302,3 +304,5 @@ void TabClass::Flash_Money() {
   Flag_To_Redraw(false);
   MoneyFlashTimer.Set(7);
 }
+
+}  // namespace ra

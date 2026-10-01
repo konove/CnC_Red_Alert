@@ -159,6 +159,8 @@
 #include "ra/startup/game_state.h"
 #include "ra/ui/dialog.h"
 
+namespace ra {
+
 /*
 **	Selected objects have a special marking box around them. This is the
 *shapes that are *	used for this purpose.
@@ -2130,3 +2132,5 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
   }
   return anybuilding;
 }
+
+}  // namespace ra

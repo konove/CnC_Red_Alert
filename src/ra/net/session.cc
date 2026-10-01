@@ -108,6 +108,8 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 // #include "WolDebug.h"
 
 /***************************** Globals *************************************/
@@ -516,7 +518,6 @@ void SessionClass::Read_MultiPlayer_Settings() {
         ini.Get_Int("SerialDefaults", "HardwareFlowControl", 1) != 0;
 
     ini.Get_String("SerialDefaults", "DialMethod", "T", buf, 2);
-
 
     // find dial method
     for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
@@ -1326,3 +1327,5 @@ void MultiMission::Set_Official(bool official) { IsOfficial = official; }
 void MultiMission::Set_Expansion(bool expansion) { IsExpansion = expansion; }
 
 /************************** end of session.cpp *****************************/
+
+}  // namespace ra

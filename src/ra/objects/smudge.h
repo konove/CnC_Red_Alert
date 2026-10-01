@@ -51,6 +51,11 @@
 #include "ra/objects/type.h"
 #include "ra/startup/game_state.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /******************************************************************************
 **	This is the transitory form for smudges. They exist as independent
 *objects *	only in the transition stage from creation to placement upon the
@@ -118,9 +123,9 @@ class SmudgeClass : public ObjectClass {
   static HousesType ToOwn;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void SmudgeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void SmudgeClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_SMUDGE_H_

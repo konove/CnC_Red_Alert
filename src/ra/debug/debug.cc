@@ -74,6 +74,8 @@
 #include "ra/objects/weapon.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 /***********************************************************************************************
@@ -322,3 +324,5 @@ void Debug_Key(unsigned input) {
     }
   }
 }
+
+}  // namespace ra

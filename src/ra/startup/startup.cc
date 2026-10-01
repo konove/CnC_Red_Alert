@@ -94,6 +94,8 @@
 
 #endif  // _WIN32
 
+namespace ra {
+
 // The one Game; main() creates it and ShutDown() destroys it. nullptr before
 // main() and after ShutDown(). The pointer itself is never destroyed: a Game
 // still alive at a bare exit() is left to the OS, because tearing it down from
@@ -216,10 +218,9 @@ static void ReadConfigOptions(const INIClass& ini,
 // window, sound and video, then runs the game until the player quits.
 // Returns the process exit status.
 #ifdef _WIN32
-int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
-                   int command_show)
+static int Run(HINSTANCE instance, char* command_line, int command_show)
 #else   // _WIN32
-int main(const int argc, char* argv[])
+static int Run(const int argc, char* argv[])
 #endif  // _WIN32
 {
   absl::InitializeLog();
@@ -420,3 +421,16 @@ void ShutDownEngine() {
   ShutDown();
   exit(exit_code);
 }
+
+}  // namespace ra
+
+#ifndef RA_NO_ENTRY_POINT
+#ifdef _WIN32
+int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
+                   int command_show) {
+  return ra::Run(instance, command_line, command_show);
+}
+#else   // _WIN32
+int main(const int argc, char* argv[]) { return ra::Run(argc, argv); }
+#endif  // _WIN32
+#endif  // RA_NO_ENTRY_POINT

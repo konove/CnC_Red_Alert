@@ -59,6 +59,8 @@
 #include "ra/net/ipxaddr.h"
 #include "ra/net/ipxconn.h"
 
+namespace ra {
+
 /***************************************************************************
  * IPXGlobalConnClass::IPXGlobalConnClass -- class constructor             *
  *                                                                         *
@@ -556,3 +558,5 @@ void IPXGlobalConnClass::Set_Bridge(NetNumType /*bridge*/) {
 } /* end of Set_Bridge */
 
 /************************** end of ipxgconn.cpp ****************************/
+
+}  // namespace ra

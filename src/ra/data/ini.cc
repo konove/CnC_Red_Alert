@@ -107,6 +107,8 @@
 #include "engine/stream/stream_sink.h"
 #include "engine/stream/stream_source.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * INIClass::~INIClass -- Destructor for INI handler. *
  *                                                                                             *
@@ -1254,3 +1256,5 @@ void INIClass::Strip_Comments(std::span<char> buffer) {
     strtrim(buffer);
   }
 }
+
+}  // namespace ra

@@ -5,6 +5,8 @@
 #include "gtest/gtest.h"
 #include "ra/wol/wolapi.h"
 
+namespace ra {
+
 namespace {
 
 // The canonical text form of a GUID, as the IDL and the registry write it:
@@ -63,3 +65,5 @@ TEST(WolapiIidsTest, DistinctInterfacesHaveDistinctIids) {
 }
 
 }  // namespace
+
+}  // namespace ra

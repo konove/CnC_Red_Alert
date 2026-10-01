@@ -9,6 +9,8 @@
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
 
+namespace ra {
+
 // Returns a list of cell offsets that a dirty rectangle overlaps, relative to
 // the cell containing `coord`. The list is kRefreshEol-terminated. If
 // `no_center` is true, the center cell (offset 0) is excluded.
@@ -89,5 +91,7 @@ constexpr uint32_t Rescale(const uint32_t value, const uint32_t old_base,
 // At most len elements are written, so dest must have room for that many.
 void List_Copy(std::span<const int16_t> source, int len,
                std::span<int16_t> dest);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_COORD_H_

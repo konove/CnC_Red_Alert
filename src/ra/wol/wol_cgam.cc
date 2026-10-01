@@ -47,6 +47,8 @@
 #include "ra/wol/wolapiob.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 // extern char* LoadShpFile( const char* szShpFile );
 
 //***********************************************************************************************
@@ -360,3 +362,4 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   return cgiReturn;
 }
 
+}  // namespace ra

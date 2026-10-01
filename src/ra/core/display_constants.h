@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_RA_CORE_DISPLAY_CONSTANTS_H_
 #define CNC_RED_ALERT_RA_CORE_DISPLAY_CONSTANTS_H_
 
+namespace ra {
+
 // File: Cell and pixel sizes in leptons, shared by the map display and the
 // rules defaults that are measured in cells.
 
@@ -16,5 +18,7 @@
 //	-----------------------------------------------------------
 #define PIXEL_LEPTON_W (ICON_LEPTON_W / ICON_PIXEL_W)
 #define PIXEL_LEPTON_H (ICON_LEPTON_H / ICON_PIXEL_H)
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_DISPLAY_CONSTANTS_H_

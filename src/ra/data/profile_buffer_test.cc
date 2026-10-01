@@ -6,6 +6,8 @@
 #include "gtest/gtest.h"
 #include "ra/data/profile.h"
 
+namespace ra {
+
 namespace {
 
 TEST(ProfileBinaryTest, NumberUsesTheExactBufferAndRejectsInvalidSeeks) {
@@ -62,3 +64,5 @@ TEST(ProfileBinaryTest, InputLengthCannotExceedItsSpan) {
 }
 
 }  // namespace
+
+}  // namespace ra

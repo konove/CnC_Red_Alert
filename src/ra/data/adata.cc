@@ -64,6 +64,8 @@
 #include "ra/map/world.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 static const AnimTypeClass AtomBomb(
     ANIM_ATOM_BLAST,  // Animation number.
     "ATOMSFX",        // Data name of animation.
@@ -2269,3 +2271,5 @@ const char* Anim_Name(AnimType anim) {
 AnimTypeClass& AnimTypeClass::As_Reference(AnimType type) {
   return *TheTypeHeaps().anim().Ptr(static_cast<int>(type));
 }
+
+}  // namespace ra

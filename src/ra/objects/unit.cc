@@ -172,6 +172,8 @@
 #include "ra/screens/goptions.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 /***********************************************************************************************
@@ -823,7 +825,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
           if (cell == 0) {
             Transmit_Message(RADIO_OVER_OUT, from);
           } else {
-            param = static_cast<int32_t>(::As_Target(cell));
+            param = static_cast<int32_t>(ra::As_Target(cell));
             Do_Turn(dir);
 
             /*
@@ -1459,7 +1461,7 @@ bool UnitClass::Goto_Clear_Spot() {
       const CELL check_cell = Adjacent_Cell(cell, FACING_NW);
       if (BuildingTypeClass::As_Reference(STRUCT_CONST)
               .Legal_Placement(check_cell)) {
-        Assign_Destination(::As_Target(cell));
+        Assign_Destination(ra::As_Target(cell));
         break;
       }
     }
@@ -2273,25 +2275,25 @@ bool UnitClass::Goto_Tiberium(int rad) {
       for (int x = -radius; x <= radius; x++) {
         CELL cell = center;
         if (Tiberium_Check(cell, x, -radius)) {
-          Assign_Destination(::As_Target(cell));
+          Assign_Destination(ra::As_Target(cell));
           return false;
         }
 
         cell = center;
         if (Tiberium_Check(cell, x, +radius)) {
-          Assign_Destination(::As_Target(cell));
+          Assign_Destination(ra::As_Target(cell));
           return false;
         }
 
         cell = center;
         if (Tiberium_Check(cell, -radius, x)) {
-          Assign_Destination(::As_Target(cell));
+          Assign_Destination(ra::As_Target(cell));
           return false;
         }
 
         cell = center;
         if (Tiberium_Check(cell, +radius, x)) {
-          Assign_Destination(::As_Target(cell));
+          Assign_Destination(ra::As_Target(cell));
           return false;
         }
       }
@@ -2503,7 +2505,7 @@ int UnitClass::Mission_Unload() {
                                      newface);
                   TheWorld().scenario_init()--;
                   passenger->Assign_Mission(MISSION_MOVE);
-                  passenger->Assign_Destination(::As_Target(newcell));
+                  passenger->Assign_Destination(ra::As_Target(newcell));
                   placed = true;
                   break;
                 }
@@ -2586,7 +2588,7 @@ int UnitClass::Mission_Unload() {
                                      newface);
                   TheWorld().scenario_init()--;
                   passenger->Assign_Mission(MISSION_MOVE);
-                  passenger->Assign_Destination(::As_Target(newcell));
+                  passenger->Assign_Destination(ra::As_Target(newcell));
                   placed = true;
                   break;
                 }
@@ -2764,7 +2766,7 @@ int UnitClass::Mission_Unload() {
               crew->Unlimbo(Coord_Move(Coord, newface, 0x0080), newface);
               TheWorld().scenario_init()--;
               crew->Assign_Mission(MISSION_MOVE);
-              crew->Assign_Destination(::As_Target(newcell));
+              crew->Assign_Destination(ra::As_Target(newcell));
               break;
             }
           }
@@ -2793,7 +2795,7 @@ int UnitClass::Mission_Unload() {
 
       Strength = 1;             // assure destruction
       TheWorld().pending_time_quake() = true;  // trigger a time quake
-      TheWorld().time_quake_center() = ::As_Target(Center_Coord());
+      TheWorld().time_quake_center() = ra::As_Target(Center_Coord());
       break;
 
     case UNIT_CHRONOTANK:
@@ -2947,7 +2949,7 @@ int UnitClass::Mission_Harvest() {
         IsHarvesting = false;
         if (Tiberium_Load() == 1) {
           Status = kFindhome;
-          ArchiveTarget = ::As_Target(Coord_Cell(Coord));
+          ArchiveTarget = ra::As_Target(Coord_Cell(Coord));
         } else {
           if (!Goto_Tiberium(TheRules().TiberiumShortScan / CELL_LEPTON_W) &&
               !Target_Legal(NavCom)) {
@@ -2992,7 +2994,7 @@ int UnitClass::Mission_Harvest() {
           nearest = Find_Docking_Bay(STRUCT_REFINERY, false);
           TheWorld().scenario_init()--;
           if (nearest != nullptr) {
-            Assign_Destination(::As_Target(Nearby_Location(nearest)));
+            Assign_Destination(ra::As_Target(Nearby_Location(nearest)));
           }
         }
       }
@@ -3719,7 +3721,7 @@ void UnitClass::Exit_Repair() {
     //		DirType	dir = Direction(cell);
 
     Assign_Mission(MISSION_MOVE);
-    Assign_Destination(::As_Target(cell));
+    Assign_Destination(ra::As_Target(cell));
   }
 }
 
@@ -4956,7 +4958,7 @@ void UnitClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
 
   if (threat == 0) {
     Assign_Destination(
-        ::As_Target(TheMap().Nearby_Location(Coord_Cell(Coord), Class->Speed)));
+        ra::As_Target(TheMap().Nearby_Location(Coord_Cell(Coord), Class->Speed)));
   } else {
     DriveClass::Scatter(threat, forced, nokidding);
   }
@@ -5086,3 +5088,5 @@ int UnitClass::Mission_Guard_Area() {
   }
   return DriveClass::Mission_Guard_Area();
 }
+
+}  // namespace ra

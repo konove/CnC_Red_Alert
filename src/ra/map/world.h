@@ -22,6 +22,8 @@
 #include "ra/map/vortex.h"
 #include "ra/screens/score.h"
 
+namespace ra {
+
 class HouseClass;
 class ObjectClass;
 
@@ -248,5 +250,7 @@ inline World& TheWorld() { return base::Installed<World>::Get(); }
 inline MapEditClass& TheMap() { return TheWorld().map(); }
 inline ScenarioClass& TheScenario() { return TheWorld().scen(); }
 inline HouseClass*& ThePlayer() { return TheWorld().player(); }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_WORLD_H_

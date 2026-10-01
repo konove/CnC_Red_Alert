@@ -49,6 +49,8 @@
 #include "ra/data/ccini.h"
 #include "ra/objects/mission.h"
 
+namespace ra {
+
 class DifficultyClass {
  public:
   Fixed FirepowerBias;
@@ -1053,5 +1055,7 @@ class RulesClass {
 // Returns the RulesClass that Game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.
 inline RulesClass& TheRules() { return base::Installed<RulesClass>::Get(); }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_DATA_RULES_H_

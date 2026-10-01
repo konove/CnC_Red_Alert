@@ -17,6 +17,9 @@
 #include "ra/net/queue.h"
 
 class ModemRegistryEntryClass;
+
+namespace ra {
+
 class WinsockInterfaceClass;
 class WolapiObject;
 
@@ -188,5 +191,7 @@ class Network {
 // Returns the Network that Game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.
 inline Network& TheNetwork() { return base::Installed<Network>::Get(); }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_NETWORK_H_

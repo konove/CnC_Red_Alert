@@ -44,6 +44,8 @@
 #include "base/installed.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 class ThemeClass {
  private:
   static const char* Theme_File_Name(ThemeType theme);
@@ -94,5 +96,7 @@ class ThemeClass {
 // Returns the music player that Game installed. CHECK-fails outside a
 // Game's lifetime unless a test installed its own.
 inline ThemeClass& TheTheme() { return base::Installed<ThemeClass>::Get(); }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_THEME_H_

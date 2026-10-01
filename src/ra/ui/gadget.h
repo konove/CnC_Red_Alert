@@ -90,6 +90,8 @@
 #include "ra/core/defines.h"
 #include "ra/ui/link.h"
 
+namespace ra {
+
 class ControlClass;
 
 class GadgetClass : public LinkClass {
@@ -262,5 +264,7 @@ class GadgetClass : public LinkClass {
   virtual bool Clicked_On(engine::window::KeyNumber& key, unsigned flags, int x,
                           int y);
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_GADGET_H_

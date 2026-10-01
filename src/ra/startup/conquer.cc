@@ -113,6 +113,8 @@
 #include "ra/wol/wolapiob.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 // Cycles the animated palette entries. Two effects run off independent timers:
 // a white that pulses between bright and half-dark, used by the radar box and
 // other interface glows, and a rotation of the water colours.
@@ -758,3 +760,5 @@ bool RunFrame() {
   WaitForNextFrame();
   return !TheGameState().active();
 }
+
+}  // namespace ra

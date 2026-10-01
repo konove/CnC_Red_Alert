@@ -23,6 +23,8 @@
 #include "ra/net/session.h"
 #include "ra/screens/score.h"
 
+namespace ra {
+
 // The game clock the scenario serializer reads; Game owns it in the real
 // game.
 namespace {
@@ -151,3 +153,5 @@ TEST(SaveGlobalsTest, PlayerRecordPreservesNameAddressAndPlayerFields) {
 }
 
 }  // namespace
+
+}  // namespace ra

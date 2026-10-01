@@ -64,6 +64,8 @@
 #include "ra/ui/slider.h"
 #include "ra/ui/textbtn.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 namespace {
@@ -450,3 +452,5 @@ void VisualControlsClass::Process() {
     }
   }
 }
+
+}  // namespace ra

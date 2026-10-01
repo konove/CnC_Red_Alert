@@ -64,6 +64,8 @@
 #include "ra/objects/type.h"
 #include "ra/objects/warhead.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * Modify_Damage -- Adjusts damage to reflect the nature of the target. *
  *                                                                                             *
@@ -485,3 +487,5 @@ void Wide_Area_Damage(COORDINATE coord, LEPTON radius, int rawdamage,
     }
   }
 }
+
+}  // namespace ra

@@ -54,6 +54,8 @@
 #include "ra/objects/object.h"
 #include "ra/screens/egos.h"
 
+namespace ra {
+
 template class DynamicVectorClass<CCPtr<TeamTypeClass> >;
 template class DynamicVectorClass<CCPtr<TriggerTypeClass> >;
 template class DynamicVectorClass<TeamMissionClass*>;
@@ -76,3 +78,5 @@ template class DynamicVectorClass<void*>;
 template class DynamicVectorClass<WinsockInterfaceClass::WinsockBufferType*>;
 
 /************************** end of dynavec.cpp *****************************/
+
+}  // namespace ra

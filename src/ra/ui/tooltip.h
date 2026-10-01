@@ -29,6 +29,8 @@
 
 class PixelView;
 
+namespace ra {
+
 #define TOOLTIPTEXT_MAX_LEN 100
 
 #define TOOLTIPDELAY 400  //	Milliseconds
@@ -79,5 +81,7 @@ class ToolTipClass {
   int yLastShow = 0;
   int wLastShow = 0;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_TOOLTIP_H_

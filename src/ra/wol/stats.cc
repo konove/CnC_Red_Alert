@@ -112,6 +112,25 @@
 // #define FIELD_HARDWARE_GUID					"GUID"
 #define FIELD_PLAYER1_IP "ADR1"
 #define FIELD_PLAYER2_IP "ADR2"
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#else
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+#include "absl/strings/str_format.h"
+#endif
+
+#include "base/strings/safe_string.h"
+#include "engine/net/inet_text.h"
+#include "ra/core/config.h"
+#include "ra/wol/wolapiob.h"
+
+namespace ra {
 
 //	ajw The following were never used (thank god).
 // #define FIELD_PLAYER1_HANDLE "NAM1"
@@ -181,24 +200,6 @@ constexpr int kCompletionWash = 64;
 static engine::platform::Stopwatch<engine::platform::SystemTickSource>
     GameTimer;
 static int32_t GameEndTime;
-
-#ifdef _WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#else
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-
-#include "absl/strings/str_format.h"
-#endif
-
-#include "base/strings/safe_string.h"
-#include "engine/net/inet_text.h"
-#include "ra/core/config.h"
-#include "ra/wol/wolapiob.h"
 
 /***********************************************************************************************
  * Send_Statistics_To_Server -- sends internet game statistics to the Westeood
@@ -897,3 +898,5 @@ void Register_Game_Start_Time() { GameTimer.Reset(); }
 extern void Register_Game_End_Time() {
   GameEndTime = static_cast<int32_t>(GameTimer.Elapsed());
 }
+
+}  // namespace ra

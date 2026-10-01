@@ -62,6 +62,8 @@
 
 class ByteStream;
 
+namespace ra {
+
 /*
 **	These templates allow enumeration types to have simple bitwise
 **	arithmatic performed. The operators must be instatiated for the
@@ -278,5 +280,7 @@ void Format_Runtime_Text(std::span<char> buffer, const size_t size,
   const auto packed = base::MakeFormatArgs(args...);
   Format_Runtime_Text(buffer, size, format, absl::MakeConstSpan(packed));
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_JSHELL_H_

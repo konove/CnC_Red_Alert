@@ -19,6 +19,8 @@
 #ifndef CNC_RED_ALERT_RA_WOL_WOLSTRNG_H_
 #define CNC_RED_ALERT_RA_WOL_WOLSTRNG_H_
 
+namespace ra {
+
 //	Wolstrng.h - this will presumably go away eventually.
 
 //	New character strings.
@@ -212,5 +214,7 @@ extern const char* const TXT_WOL_CANCELMEANSFORFEIT;
 extern const char* const TXT_WOL_DLLERROR_GETIE3;
 extern const char* const TXT_WOL_DLLERROR_CALLUS;
 extern const char* const TXT_WOL_PRIVATE;
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_WOL_WOLSTRNG_H_

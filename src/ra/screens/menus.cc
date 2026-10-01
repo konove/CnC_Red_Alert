@@ -80,6 +80,8 @@
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 namespace {
@@ -826,3 +828,5 @@ int Main_Menu(int32_t /*unused*/) {
 
   return retval;
 }
+
+}  // namespace ra

@@ -219,6 +219,8 @@
 #include "ra/screens/goptions.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 /***************************************************************************
@@ -1328,7 +1330,7 @@ bool TechnoClass::In_Range(TARGET target, int which) const {
                (ICON_LEPTON_W / 4);
     }
 
-    if (::Distance(Fire_Coord(which), As_Coord(target)) <= range) {
+    if (ra::Distance(Fire_Coord(which), As_Coord(target)) <= range) {
       return true;
     }
   }
@@ -1365,7 +1367,7 @@ bool TechnoClass::In_Range(const ObjectClass* target, int which) const {
                (ICON_LEPTON_W / 4);
     }
 
-    if (::Distance(Fire_Coord(which), target->Center_Coord()) <= range) {
+    if (ra::Distance(Fire_Coord(which), target->Center_Coord()) <= range) {
       return true;
     }
   }
@@ -1395,7 +1397,7 @@ bool TechnoClass::In_Range(COORDINATE coord, int which) const {
   DCHECK(IsActive);
 
   return IsLocked &&
-         ::Distance(Fire_Coord(which), coord) <= Weapon_Range(which);
+         ra::Distance(Fire_Coord(which), coord) <= Weapon_Range(which);
 }
 
 /***********************************************************************************************
@@ -2104,7 +2106,7 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   **	As a convenience to the target scanning logic, don't consider any wall
   *to be *	a target if it isn't in range of the primary weapon.
   */
-  const int primary = What_Weapon_Should_I_Use(::As_Target(cell));
+  const int primary = What_Weapon_Should_I_Use(ra::As_Target(cell));
   if (!In_Range(Cell_Coord(cell), primary)) {
     return 0;
   }
@@ -2418,7 +2420,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
         }
       }
       if (bestcell != -1) {
-        return ::As_Target(bestcell);
+        return ra::As_Target(bestcell);
       }
     }
 
@@ -2470,7 +2472,6 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
       }
     }
   }
-
 
   /*
   **	If a good target object was found, then return with the target value
@@ -3033,7 +3034,7 @@ void TechnoClass::Assign_Target(TARGET target) {
     **	Prevent targeting of self.
     */
     if (target == As_Target()) {
-      target = ::As_Target(Coord_Cell(Coord));
+      target = ra::As_Target(Coord_Cell(Coord));
     } else {
       /*
       **	Make sure that the target is not already dead.
@@ -3163,7 +3164,7 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
       x = savex;
       y = savey;
       int lastfacing = 0;
-      while (::Distance(x, y, x1, y1) > 8) {
+      while (ra::Distance(x, y, x1, y1) > 8) {
         /*
         **	Determine true (0..7) facing from current position to
         **	destination (actually the source coordinate of the zap).
@@ -3176,7 +3177,7 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
         ** we may vary the desired facing to give the
         ** bolt some randomness.
         */
-        if (::Distance(x, y, x1, y1) > 40) {
+        if (ra::Distance(x, y, x1, y1) > 40) {
           switch (Sim_Random_Pick(1, 3 + (shots == 0 ? 3 : 0))) {
             case 1:
               facing++;
@@ -3289,7 +3290,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       fire_coord = Center_Coord();
     }
   } else {
-    dir = ::Direction(fire_coord, target_coord);
+    dir = ra::Direction(fire_coord, target_coord);
   }
 
   /*
@@ -3785,8 +3786,8 @@ ActionType TechnoClass::What_Action(CELL cell) const {
     if (optr == nullptr ||
         (optr->IsWall && (whead->IsWallDestroyer ||
                           (whead->IsWoodDestroyer && optr->IsWooden)))) {
-      const int primary = What_Weapon_Should_I_Use(::As_Target(cell));
-      if (Can_Player_Move() || In_Range(::As_Target(cell), primary)) {
+      const int primary = What_Weapon_Should_I_Use(ra::As_Target(cell));
+      if (Can_Player_Move() || In_Range(ra::As_Target(cell), primary)) {
         return ACTION_ATTACK;
       }
     }
@@ -6729,3 +6730,5 @@ const TechnoTypeClass* Fetch_Techno_Type(const RTTIType type, const int id) {
   }
   return nullptr;
 }
+
+}  // namespace ra

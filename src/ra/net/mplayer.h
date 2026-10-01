@@ -5,6 +5,8 @@
 #include "ra/net/session.h"
 #include "ra/ui/list.h"
 
+namespace ra {
+
 GameType Select_MPlayer_Game();
 void Clear_Listbox(ListClass* list);
 void Computer_Message();
@@ -14,5 +16,7 @@ int Surrender_Dialog(const char* text);
 bool Determine_If_Using_DVD();
 bool Using_DVD();
 int Abort_Dialog();
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_MPLAYER_H_

@@ -51,6 +51,8 @@
 #include "base/buffer.h"
 #include "ra/net/ipx.h"
 
+namespace ra {
+
 /***************************************************************************
  * IPXAddressClass::IPXAddressClass -- class constructor                   *
  *                                                                         *
@@ -446,3 +448,5 @@ bool IPXAddressClass::operator<=(IPXAddressClass& addr) {
 } /* end of operator<= */
 
 /************************** end of ipxaddr.cpp *****************************/
+
+}  // namespace ra

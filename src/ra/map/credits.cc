@@ -64,6 +64,8 @@
 #include "ra/objects/house.h"
 #include "ra/ui/dialog.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * CreditClass::CreditClass -- Default constructor for the credit class object.
  **
@@ -269,3 +271,5 @@ void CreditClass::AI(bool forced) {
   IsToRedraw = true;
   TheMap().Flag_To_Redraw(false);
 }
+
+}  // namespace ra

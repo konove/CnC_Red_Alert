@@ -90,6 +90,8 @@
 #include "ra/startup/conquer.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 // Layout, in 320x200 coordinates.
@@ -1220,3 +1222,5 @@ void ScoreClass::Init() {
   ElapsedTime = 0;
   RealTime.Reset();
 }
+
+}  // namespace ra

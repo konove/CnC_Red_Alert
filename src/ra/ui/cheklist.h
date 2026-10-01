@@ -52,6 +52,8 @@
 #include "ra/core/defines.h"
 #include "ra/ui/list.h"
 
+namespace ra {
+
 // A list box whose items each carry a check mark the user can toggle by
 // clicking. The checked state lives next to the text, not in it: Get_Item
 // returns the item's text alone, and Draw_Entry prepends the glyph.
@@ -101,5 +103,7 @@ class CheckListClass : public ListClass {
   std::vector<bool> Checked;
   bool IsReadOnly{false};
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_CHEKLIST_H_

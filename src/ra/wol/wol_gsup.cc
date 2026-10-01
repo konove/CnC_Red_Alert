@@ -29,6 +29,8 @@
 #include <string_view>
 #include <utility>
 
+#include "absl/log/check.h"
+#include "absl/log/log.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -36,15 +38,21 @@
 #include "base/numeric.h"
 #include "base/strings/format.h"
 #include "base/strings/number_parse.h"
+#include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
+#include "engine/file/search_paths.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/random_seed.h"
+#include "engine/platform/sleep.h"
+#include "engine/platform/timer.h"
+#include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/special.h"
+#include "ra/assets/audio.h"
 #include "ra/assets/dib.h"
 #include "ra/assets/installation.h"
 #include "ra/assets/palettes.h"
@@ -53,12 +61,15 @@
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
+#include "ra/core/inline.h"
+#include "ra/core/jshell.h"
 #include "ra/core/vector_dynamic.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
 #include "ra/map/world.h"
 #include "ra/net/ipx.h"
+#include "ra/net/netdlg.h"
 #include "ra/net/network.h"
 #include "ra/net/nulldlg.h"
 #include "ra/net/sendfile.h"
@@ -69,7 +80,18 @@
 #include "ra/startup/game_state.h"
 #include "ra/startup/version.h"
 #include "ra/ui/bigcheck.h"
+#include "ra/ui/cheklist.h"
+#include "ra/ui/dialog.h"
+#include "ra/ui/drop.h"
+#include "ra/ui/edit.h"
+#include "ra/ui/gadget.h"
+#include "ra/ui/gauge.h"
 #include "ra/ui/iconlist.h"
+#include "ra/ui/input.h"
+#include "ra/ui/msgbox.h"
+#include "ra/ui/shapebtn.h"
+#include "ra/ui/statbtn.h"
+#include "ra/ui/textbtn.h"
 #include "ra/ui/tooltip.h"
 #include "ra/wol/chatdefs.h"
 #include "ra/wol/rawolapi.h"
@@ -78,32 +100,11 @@
 #include "ra/wol/wolapiob.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
-
-#include "absl/log/check.h"
-#include "absl/log/log.h"
-#include "base/strings/safe_string.h"
-#include "engine/file/search_paths.h"
-#include "engine/platform/sleep.h"
-#include "engine/platform/timer.h"
-#include "engine/window/hardware_cursor.h"
-#include "ra/assets/audio.h"
-#include "ra/core/inline.h"
-#include "ra/core/jshell.h"
-#include "ra/net/netdlg.h"
-#include "ra/ui/cheklist.h"
-#include "ra/ui/dialog.h"
-#include "ra/ui/drop.h"
-#include "ra/ui/edit.h"
-#include "ra/ui/gadget.h"
-#include "ra/ui/gauge.h"
-#include "ra/ui/input.h"
-#include "ra/ui/msgbox.h"
-#include "ra/ui/shapebtn.h"
-#include "ra/ui/statbtn.h"
-#include "ra/ui/textbtn.h"
 
 #define PARAMREFRESHWAIT 2000
 
@@ -113,7 +114,6 @@ static bool operator==(const GAMEPARAMS& gp1, const GAMEPARAMS& gp2);
 static bool operator==(const GlobalPacketType& gp1,
                        const GlobalPacketType& gp2);
 static PlayerColorType PlayerColorTypeOf(const RemapControlType* pColorRemap);
-
 
 void Debug_GlobalPacketType(const GlobalPacketType& gp1);
 
@@ -3332,7 +3332,6 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
     //			SetPlayerAccepted( szPlayerName, true );
   }
 
-
   ClearAllAccepts();  //	Most likely a pointless precaution.
 }
 
@@ -3948,3 +3947,5 @@ int ScenarioIndex_From_Filename(const char* szScenarioFilename) {
   }
   return -1;
 }
+
+}  // namespace ra

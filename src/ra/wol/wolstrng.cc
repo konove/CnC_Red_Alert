@@ -27,6 +27,8 @@
 #include "absl/base/attributes.h"
 #include "ra/core/config.h"
 
+namespace ra {
+
 // Picks the string for the build language; English unless the build is German
 // or French.
 static constexpr const char* Localized(
@@ -817,3 +819,5 @@ const char* const TXT_WOL_DLLERROR_CALLUS = Localized(
     "support.");
 const char* const TXT_WOL_PRIVATE =
     Localized("<privat>", "<personnel>", "<private>");
+
+}  // namespace ra

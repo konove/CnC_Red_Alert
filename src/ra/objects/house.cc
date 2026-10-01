@@ -219,8 +219,9 @@
 #include "ra/startup/game_state.h"
 #include "ra/ui/msglist.h"
 
-TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
+namespace ra {
 
+TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
 
 /***********************************************************************************************
  * HouseClass::operator HousesType -- Conversion to HousesType operator. *
@@ -2555,7 +2556,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
         }
 
         //				Create_Air_Reinforcement(this,
-        // AIRCRAFT_BADGER, 1, MISSION_HUNT, ::As_Target(cell), kTargetNone,
+        // AIRCRAFT_BADGER, 1, MISSION_HUNT, ra::As_Target(cell), kTargetNone,
         // INFANTRY_E1);
         if (this == ThePlayer()) {
           TheMap().IsTargettingMode = SPC_NONE;
@@ -7790,3 +7791,5 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
   }
   return cell;
 }
+
+}  // namespace ra

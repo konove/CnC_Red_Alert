@@ -49,6 +49,8 @@
 #include "ra/core/defines.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 class TextLabelClass : public GadgetClass {
  public:
   /*
@@ -78,5 +80,7 @@ class TextLabelClass : public GadgetClass {
   RemapControlType* Color;
   int PixWidth{-1};
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_TXTLABEL_H_

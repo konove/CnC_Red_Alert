@@ -144,6 +144,8 @@
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wol_main.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 // #include "WolDebug.h"
@@ -187,7 +189,6 @@ static absl::NoDestructor<std::string> DialString;
 static SerialSettingsType* DialSettings;
 
 #define PCOLOR_BROWN PCOLOR_GREY
-
 
 /***************************************************************************
  * Init_Null_Modem -- Initializes Null Modem communications                *
@@ -1016,7 +1017,6 @@ GameType Select_Serial_Dialog() {
 
   TheKeyboard().Clear();
 
-
   /*
   ** Main Processing Loop
   */
@@ -1458,8 +1458,6 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
-
-
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
@@ -1732,7 +1730,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   using enum RedrawType;
 
   static char custom_port[10 + MODEM_NAME_MAX] = {"CUSTOM - ????"};
-
 
   static const char* baudname[5] = {
       "14400", "19200", "28800", "38400", "57600",
@@ -2051,8 +2048,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         ThePalettes().title_palette().Set();
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-
-
 
         /*
         ** Dialog & Field labels
@@ -3116,7 +3111,6 @@ int Com_Scenario_Dialog(bool skirmish) {
       */
       ServiceRealTime();
 
-
       /*
       ...................... Refresh display if needed ......................
       */
@@ -3132,8 +3126,6 @@ int Com_Scenario_Dialog(bool skirmish) {
         */
         if (display >= REDRAW_BACKGROUND) {
           Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-
-
 
           /*...............................................................
           Dialog & Field labels
@@ -4813,7 +4805,6 @@ int Com_Show_Scenario_Dialog() {
   aiplayersgauge.Set_Maximum(TheRules().MaxPlayers - 2);
   aiplayersgauge.Set_Value(TheSession().Options.AIPlayers);
 
-
   transmit = true;
   first = true;
 
@@ -4882,7 +4873,6 @@ int Com_Show_Scenario_Dialog() {
     ........................ Invoke game callback .........................
     */
     ServiceRealTime();
-
 
     /*
     ...................... Refresh display if needed ......................
@@ -6200,8 +6190,6 @@ static int Phone_Dialog() {
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
-
-
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
@@ -6945,7 +6933,6 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     return connected;
   }
 
-
   /*
   ** Completely disable audio. This is required for MWave devices like those
   ** found in the IBM Aptiva.
@@ -7204,3 +7191,5 @@ static void Modem_Echo(char c) {
   }
 
 } /* end of Modem_Echo */
+
+}  // namespace ra

@@ -13,6 +13,8 @@
 #include "base/array.h"
 #include "base/types.h"
 
+namespace ra {
+
 // A list of heap objects that it owns and destroys, for the session's player,
 // game, chat, phone book and scenario lists. It keeps the shape of the
 // DynamicVectorClass<T*> it replaces -- Count() and at() hand out plain
@@ -85,5 +87,7 @@ class OwnedVector {
  private:
   std::vector<std::unique_ptr<T>> elements_;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_OWNED_VECTOR_H_

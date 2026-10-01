@@ -62,6 +62,11 @@
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class InfantryClass final : public FootClass {
  public:
   CCPtr<InfantryTypeClass> Class;
@@ -270,9 +275,9 @@ class InfantryClass final : public FootClass {
   static const base::EnumArray<DoType, DoStruct> MasterDoControls;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void InfantryClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void InfantryClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_INFANTRY_H_

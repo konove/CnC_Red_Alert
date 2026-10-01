@@ -18,6 +18,8 @@
 #ifndef CNC_RED_ALERT_RA_MAP_SELECTION_H_
 #define CNC_RED_ALERT_RA_MAP_SELECTION_H_
 
+namespace ra {
+
 // File: The player's selection and numbered unit groups.
 
 // Deselects every currently selected object.
@@ -40,5 +42,7 @@ void Handle_Team(int team, int action = 0);
 // formation" sentinel; finding it on the first member is what decides whether
 // this call sets the formation up or tears it down.
 void Toggle_Formation();
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_SELECTION_H_

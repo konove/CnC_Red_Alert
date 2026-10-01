@@ -49,6 +49,8 @@
 #include "engine/window/keyboard.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * ControlClass::ControlClass -- Constructor for control class objects. *
  *                                                                                             *
@@ -194,3 +196,5 @@ bool ControlClass::Draw_Me(PixelView& view, bool forced) {
   }
   return GadgetClass::Draw_Me(view, forced);
 }
+
+}  // namespace ra

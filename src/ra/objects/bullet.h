@@ -55,6 +55,11 @@
 #include "ra/objects/object.h"
 #include "ra/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
  public:
   /*
@@ -169,9 +174,9 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   friend class TFixedIHeapClass<BulletClass>;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void BulletClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void BulletClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_BULLET_H_

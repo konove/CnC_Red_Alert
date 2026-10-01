@@ -47,6 +47,8 @@
 #include "engine/stream/byte_stream.h"
 #include "ra/assets/filepcx.h"
 
+namespace ra {
+
 static void Write_Pcx_ScanLine(ByteStream& file, int scansize,
                                std::span<const uint8_t> pixels);
 
@@ -209,3 +211,5 @@ static void Write_Pcx_ScanLine(ByteStream& file, int scansize,
     }
   }
 }
+
+}  // namespace ra

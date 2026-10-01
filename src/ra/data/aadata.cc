@@ -80,6 +80,8 @@
 #include "ra/objects/object.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 std::span<const std::byte> AircraftTypeClass::LRotorData = {};
 std::span<const std::byte> AircraftTypeClass::RRotorData = {};
 
@@ -618,3 +620,5 @@ void AircraftTypeClass::Dimensions(int& width, int& height) const {
 AircraftTypeClass& AircraftTypeClass::As_Reference(AircraftType aircraft) {
   return *TheTypeHeaps().aircraft().Ptr(static_cast<int>(aircraft));
 }
+
+}  // namespace ra

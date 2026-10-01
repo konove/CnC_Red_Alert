@@ -27,6 +27,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/ui/toggle.h"
 
+namespace ra {
+
 #define BIGCHECK_OFFSETX 20
 #define BIGCHECK_OFFSETY 0
 
@@ -62,5 +64,7 @@ class BigCheckBoxClass : public ToggleClass {
   TextPrintType TextFlags;
   std::string szCaption;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_BIGCHECK_H_

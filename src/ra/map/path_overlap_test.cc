@@ -10,6 +10,8 @@
 #include "gtest/gtest.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 namespace {
 
 constexpr int kWordCount = OverlapWordCount(MAP_CELL_TOTAL);
@@ -80,3 +82,5 @@ TEST(RaPathOverlapTest, ClearKeepsTheRestOfTheWord) {
 }
 
 }  // namespace
+
+}  // namespace ra

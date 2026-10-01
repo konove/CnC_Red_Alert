@@ -39,9 +39,12 @@
 
 #ifndef CNC_RED_ALERT_RA_UI_GAUGE_H_
 #define CNC_RED_ALERT_RA_UI_GAUGE_H_
+
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "ra/ui/control.h"
+
+namespace ra {
 
 class GaugeClass : public ControlClass {
  public:
@@ -101,5 +104,7 @@ class TriColorGaugeClass : public GaugeClass {
   int RedLimit{0};     // maximum value for red
   int YellowLimit{0};  // maximum value for yellow
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_GAUGE_H_

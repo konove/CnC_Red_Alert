@@ -7,6 +7,8 @@
 
 #include "base/installed.h"
 
+namespace ra {
+
 // The number of game frames since the scenario started. Every frame-based
 // timer measures against it, the simulation advances it once per logic
 // frame, and a saved game stores it, so it is the one piece of state the
@@ -57,5 +59,7 @@ inline int64_t CurrentFrame() {
 struct FrameTickSource {
   static int64_t Tick() { return CurrentFrame(); }
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_GAME_CLOCK_H_

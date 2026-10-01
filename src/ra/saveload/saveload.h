@@ -9,6 +9,8 @@
 #include "engine/stream/archive.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 // Identifies a saved game written by this port. It follows the description
 // in the file header, where the original format kept the scenario number, so
 // a pre-migration save can never pass the check.
@@ -27,5 +29,7 @@ bool Get_Savefile_Info(int id, std::span<char> buf, size_t buf_size,
 bool Load_Game(int id);
 bool Save_Game(int id, std::string_view descr, bool bargraph = false);
 void Dump();
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SAVELOAD_SAVELOAD_H_

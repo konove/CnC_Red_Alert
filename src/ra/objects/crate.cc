@@ -53,6 +53,8 @@
 #include "ra/objects/cell.h"
 #include "ra/objects/overlay.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * CrateClass::Remove_It -- Removes the crate from wherever it is. *
  *                                                                                             *
@@ -187,3 +189,5 @@ bool CrateClass::Get_Crate(CELL cell) {
   }
   return false;
 }
+
+}  // namespace ra

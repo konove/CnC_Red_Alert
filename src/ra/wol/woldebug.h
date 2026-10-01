@@ -19,6 +19,8 @@
 #ifndef CNC_RED_ALERT_RA_WOL_WOLDEBUG_H_
 #define CNC_RED_ALERT_RA_WOL_WOLDEBUG_H_
 
+namespace ra {
+
 // Where the Westwood Online code sends its tracing.
 //
 // This was `#define debugprint OutputDebugString`, which never matched its
@@ -32,5 +34,7 @@
 // still mean something when read.
 template <typename... Args>
 inline void debugprint(const char* /*format*/, Args&&... /*args*/) {}
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_WOL_WOLDEBUG_H_

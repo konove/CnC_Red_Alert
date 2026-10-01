@@ -61,6 +61,8 @@
 #include "ra/wol/wolapiob.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 // #include "ra/wol/woldebug.h"
@@ -1599,3 +1601,5 @@ bool bLinkInList(const LinkClass* pListHead, const LinkClass* pLinkToFind) {
   }
   return false;
 }
+
+}  // namespace ra

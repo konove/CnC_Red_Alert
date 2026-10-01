@@ -41,6 +41,8 @@
 #include "ra/ui/gadget.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 namespace {
@@ -239,3 +241,5 @@ void EditClass::Set_Focus() {
   }
   ControlClass::Set_Focus();
 }
+
+}  // namespace ra

@@ -44,6 +44,8 @@
 #include "ra/ui/iconlist.h"
 #include "ra/wol/rawolapi.h"
 
+namespace ra {
+
 //***********************************************************************************************
 class IconListClass;
 class WOL_GameSetupDialog;
@@ -541,5 +543,7 @@ void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
                       PlayerColorType iColorRemap = PCOLOR_NONE);
 void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
                       RemapControlType* pColorRemap);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_WOL_WOLAPIOB_H_

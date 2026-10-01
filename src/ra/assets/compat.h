@@ -62,6 +62,8 @@
 #include "base/bytes_of.h"
 #include "engine/gfx/tile.h"
 
+namespace ra {
+
 #ifndef SEEK_SET
 #define SEEK_SET 0  // Seek from start of file.
 #define SEEK_CUR 1  // Seek relative from current location.
@@ -147,5 +149,7 @@ inline int16_t Get_IconSet_MapWidth(std::span<const std::byte> data) {
 inline int16_t Get_IconSet_MapHeight(std::span<const std::byte> data) {
   return static_cast<int16_t>(IconsetClass(data).Map_Height());
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_COMPAT_H_

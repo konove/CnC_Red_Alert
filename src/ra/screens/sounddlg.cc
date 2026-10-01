@@ -71,6 +71,8 @@
 #include "ra/ui/slider.h"
 #include "ra/ui/textbtn.h"
 
+namespace ra {
+
 // The score list: each line is a track, with its theme kept alongside the
 // text.
 class MusicListClass : public ListClass {
@@ -497,3 +499,5 @@ void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
         kTBlack, TextFlags, width, Tabs);
   }
 }
+
+}  // namespace ra

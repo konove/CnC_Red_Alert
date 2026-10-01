@@ -113,6 +113,8 @@
 #include "ra/objects/tracker.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 #define MCW MAP_CELL_W
 const int MapClass::RadiusOffset[] = {
     /* 0  */ 0,
@@ -2308,3 +2310,5 @@ void MapClass::Shroud_The_Map() {
   }
   Flag_To_Redraw(true);
 }
+
+}  // namespace ra

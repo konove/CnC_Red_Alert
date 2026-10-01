@@ -57,6 +57,8 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/list.h"
 
+namespace ra {
+
 /***************************************************************************
  * ColorListClass::ColorListClass -- class constructor                     *
  *                                                                         *
@@ -291,3 +293,5 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
       break;
   }
 }
+
+}  // namespace ra

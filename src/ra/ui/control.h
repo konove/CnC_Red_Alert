@@ -44,6 +44,8 @@
 #include "engine/window/keyboard.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 /***************************************************************************
  * ControlClass -- Region tracking class
  **
@@ -98,5 +100,7 @@ class ControlClass : public GadgetClass {
   */
   GadgetClass* Peer{nullptr};
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_CONTROL_H_

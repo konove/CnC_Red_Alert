@@ -53,6 +53,8 @@
 #include "ra/ui/control.h"
 #include "ra/ui/toggle.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * ShapeButtonClass::ShapeButtonClass -- Default Constructor for a shape type
  *button.          *
@@ -162,3 +164,5 @@ bool ShapeButtonClass::Draw_Me(PixelView& view, bool forced) {
   }
   return false;
 }
+
+}  // namespace ra

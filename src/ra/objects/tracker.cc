@@ -62,6 +62,8 @@
 #include "ra/objects/unit.h"
 #include "ra/objects/vessel.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * Detach_This_From_All -- Detaches this object from all others. *
  *                                                                                             *
@@ -147,3 +149,5 @@ void Detach_This_From_All(TARGET target, bool all) {
     }
   }
 }
+
+}  // namespace ra

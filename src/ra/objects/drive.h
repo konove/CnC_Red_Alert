@@ -47,6 +47,11 @@
 #include "ra/core/jshell.h"
 #include "ra/objects/foot.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects
 **	cover everything except buildings.
@@ -220,9 +225,9 @@ class DriveClass : public FootClass {
   static const TrackType Track1[24];
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void DriveClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void DriveClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_DRIVE_H_

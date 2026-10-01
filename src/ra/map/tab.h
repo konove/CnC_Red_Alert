@@ -51,6 +51,8 @@
 #include "ra/map/credits.h"
 #include "ra/map/sidebar.h"
 
+namespace ra {
+
 class TabClass : public SidebarClass {
  public:
   // Resets transient UI state after loading, preserving saved game state.
@@ -87,5 +89,7 @@ class TabClass : public SidebarClass {
 
   static std::span<const std::byte> TabShape;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_TAB_H_

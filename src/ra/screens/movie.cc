@@ -52,6 +52,8 @@
 #include "ra/startup/winstub.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 namespace {
 
 // Where a movie's frames go: the frame is copied, centered, into the page it
@@ -228,3 +230,5 @@ void Play_Movie(const VQType name, const ThemeType theme,
     TheScreen().set_is_vq640(false);
   }
 }
+
+}  // namespace ra

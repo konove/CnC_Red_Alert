@@ -47,6 +47,8 @@
 #include "ra/core/vector_dynamic.h"
 #include "ra/net/wsproto.h"
 
+namespace ra {
+
 /*
 ** Class to allow access to UDP specific portions of the Winsock interface.
 **
@@ -81,5 +83,7 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
 };
 
 bool Get_Broadcast_Addresses();
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_WSPUDP_H_

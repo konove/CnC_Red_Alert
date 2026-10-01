@@ -18,6 +18,8 @@
 #ifndef CNC_RED_ALERT_RA_DATA_TEXT_IDS_H_
 #define CNC_RED_ALERT_RA_DATA_TEXT_IDS_H_
 
+namespace ra {
+
 // File: Indices into the language string table (the TXT_* ids).
 
 // Indices into the language string table; Text_String() turns one of these into
@@ -579,5 +581,7 @@
 #define TXT_THEME_TRACTION 552                     // Traction
 #define TXT_THEME_WASTELND 553                     // Chaos
 #define TXT_CARRIER 554                            // Héliport Mobile
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_DATA_TEXT_IDS_H_

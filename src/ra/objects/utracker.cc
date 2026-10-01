@@ -61,6 +61,8 @@
 #include <arpa/inet.h>
 #endif
 
+namespace ra {
+
 /***********************************************************************************************
  * UTC::UnitTrackerClass -- Class constructor *
  *                                                                                             *
@@ -210,3 +212,5 @@ void UnitTrackerClass::To_PC_Format() {
   }
   InNetworkFormat = 0;  // Flag that data is now in PC format
 }
+
+}  // namespace ra

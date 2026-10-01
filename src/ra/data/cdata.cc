@@ -83,6 +83,8 @@
 #include "ra/objects/template.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 static const TemplateTypeClass Empty(TEMPLATE_CLEAR1,
                                      kTheaterFlagTemperate | kTheaterFlagSnow |
                                          kTheaterFlagInterior,
@@ -2214,3 +2216,5 @@ TemplateTypeClass& TemplateTypeClass::As_Reference(TemplateType type) {
 COORDINATE TemplateTypeClass::Coord_Fixup(COORDINATE coord) const {
   return Coord_Whole(coord);
 }
+
+}  // namespace ra

@@ -45,6 +45,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/textbtn.h"
 
+namespace ra {
+
 bool Get_Broadcast_Addresses() {
   const int d_dialog_w = 640;                             // dialog width
   const int d_dialog_h = 320;                             // dialog height
@@ -238,3 +240,5 @@ bool Get_Broadcast_Addresses() {
 
   return true;
 }
+
+}  // namespace ra

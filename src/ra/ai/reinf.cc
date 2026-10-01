@@ -72,6 +72,8 @@
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * _Pop_Group_Out_Of_Object -- Process popping the group out of the object. *
  *                                                                                             *
@@ -803,3 +805,5 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
   }
   return sub;
 }
+
+}  // namespace ra

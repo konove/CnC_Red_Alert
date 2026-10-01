@@ -40,6 +40,8 @@
 
 #include "ra/objects/flasher.h"
 
+namespace ra {
+
 FlasherClass::~FlasherClass() = default;
 
 /***********************************************************************************************
@@ -70,3 +72,5 @@ bool FlasherClass::Process() {
   }
   return false;
 }
+
+}  // namespace ra

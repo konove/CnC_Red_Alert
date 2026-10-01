@@ -62,6 +62,8 @@
 #include "ra/net/network.h"
 #include "ra/net/wsproto.h"
 
+namespace ra {
+
 /*
 ********************************* Globals ***********************************
 */
@@ -445,3 +447,5 @@ bool IPXConnClass::Broadcast(std::span<const std::byte> buf, int buflen) {
 } /* end of Broadcast */
 
 /************************** end of ipxconn.cpp *****************************/
+
+}  // namespace ra

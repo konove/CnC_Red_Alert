@@ -54,6 +54,8 @@
 #include "ra/map/radar.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 class PowerClass : public RadarClass {
  public:
   // Resets transient UI state after loading, preserving saved game state.
@@ -133,5 +135,7 @@ class PowerClass : public RadarClass {
   static std::span<const std::byte> PowerShape;
   static std::span<const std::byte> PowerBarShape;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_POWER_H_

@@ -45,6 +45,8 @@
 #include "ra/core/defines.h"
 #include "ra/ui/toggle.h"
 
+namespace ra {
+
 class TextButtonClass final : public ToggleClass {
  public:
   TextButtonClass();
@@ -74,5 +76,7 @@ class TextButtonClass final : public ToggleClass {
   */
   TextPrintType PrintFlags;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_TEXTBTN_H_

@@ -62,6 +62,8 @@
 #include "base/unaligned.h"
 #include "ra/net/combuf.h"
 
+namespace ra {
+
 /*
 ********************************* Globals ***********************************
 */
@@ -861,3 +863,5 @@ const char* ConnectionClass::Command_Name(int command) {
 } /* end of Command_Name */
 
 /************************** end of connect.cpp *****************************/
+
+}  // namespace ra

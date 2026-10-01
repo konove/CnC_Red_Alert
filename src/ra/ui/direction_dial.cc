@@ -39,6 +39,8 @@
 #include "ra/ui/gadget.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 namespace {
 
 // Where each facing points on a unit circle, in tenths, north first and going
@@ -148,3 +150,5 @@ void DirectionDial::set_direction(const DirType direction) {
   facing_ = Dir_Facing(direction_);
   Flag_To_Redraw();
 }
+
+}  // namespace ra

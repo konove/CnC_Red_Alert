@@ -72,6 +72,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/msglist.h"
 
+namespace ra {
+
 GadgetClass* GScreenClass::Buttons = nullptr;
 
 PixelBuffer* GScreenClass::ShadowPage = nullptr;
@@ -459,3 +461,5 @@ void Shake_The_Screen(int shakes) {
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   TheMouse().Show();
 }
+
+}  // namespace ra

@@ -45,6 +45,8 @@
 
 #include "absl/log/check.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * Desired_Facing8 -- Determines facing from one coordinate to another. *
  *                                                                                             *
@@ -234,3 +236,5 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   */
   return AsDirection(static_cast<int>(composite));
 }
+
+}  // namespace ra

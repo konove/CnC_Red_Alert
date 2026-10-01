@@ -44,6 +44,8 @@
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
 
+namespace ra {
+
 // Base class for all game objects that exist on the battlefield.
 class AbstractClass {
  public:
@@ -95,24 +97,24 @@ class AbstractClass {
   [[nodiscard]] virtual COORDINATE Target_Coord() const { return Coord; }
 
   DirType Direction(const AbstractClass* object) const {
-    return ::Direction(Center_Coord(), object->Target_Coord());
+    return ra::Direction(Center_Coord(), object->Target_Coord());
   }
   [[nodiscard]] DirType Direction(const COORDINATE coord) const {
-    return ::Direction(Center_Coord(), coord);
+    return ra::Direction(Center_Coord(), coord);
   }
   [[nodiscard]] DirType Direction(TARGET target) const;
   [[nodiscard]] DirType Direction(const CELL cell) const {
-    return ::Direction(Coord_Cell(Center_Coord()), cell);
+    return ra::Direction(Coord_Cell(Center_Coord()), cell);
   }
 
   // Returns distance in leptons to the target. For buildings, subtracts
   // the building's average radius so range checks measure to the edge.
   [[nodiscard]] int Distance(TARGET target) const;
   [[nodiscard]] int Distance(const COORDINATE coord) const {
-    return ::Distance(Center_Coord(), coord);
+    return ra::Distance(Center_Coord(), coord);
   }
   int Distance(const AbstractClass* object) const {
-    return ::Distance(Center_Coord(), object->Target_Coord());
+    return ra::Distance(Center_Coord(), object->Target_Coord());
   }
 
   [[nodiscard]] virtual MoveType Can_Enter_Cell(
@@ -122,5 +124,7 @@ class AbstractClass {
 
   virtual void AI() {}
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_ABSTRACT_H_

@@ -6,6 +6,8 @@
 #include "ra/core/heap.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 // The storage for each type's heap pointer. TypeHeaps binds them; they are
 // null outside its lifetime.
 template <>
@@ -81,3 +83,5 @@ TypeHeaps::~TypeHeaps() {
   CCPtr<OverlayTypeClass>::BindHeap(nullptr);
   CCPtr<SmudgeTypeClass>::BindHeap(nullptr);
 }
+
+}  // namespace ra

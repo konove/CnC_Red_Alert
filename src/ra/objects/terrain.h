@@ -54,6 +54,11 @@
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /****************************************************************************
 **	Each type of terrain has certain pieces of static information associated
 **	with it. This class elaborates this data.
@@ -176,9 +181,9 @@ class TerrainClass final : public ObjectClass, public StageClass {
   friend class TFixedIHeapClass<TerrainClass>;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void TerrainClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TerrainClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_TERRAIN_H_

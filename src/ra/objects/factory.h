@@ -49,6 +49,11 @@
 #include "ra/objects/stage.h"
 #include "ra/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class FactoryClass : private StageClass {
  public:
   RTTIType RTTI{RTTI_FACTORY};
@@ -158,9 +163,9 @@ class FactoryClass : private StageClass {
   CCPtr<HouseClass> House;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void FactoryClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void FactoryClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_FACTORY_H_

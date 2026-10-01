@@ -53,6 +53,11 @@
 #include "ra/objects/target.h"
 #include "ra/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /*
 **	TeamMissionType: the various missions that a team can have.
 */
@@ -306,11 +311,11 @@ class TeamTypeClass : public AbstractTypeClass {
 
 NeedType TeamMission_Needs(TeamMissionType tmtype);
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void TeamMemberClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TeamMemberClass::Serialize<ArchiveReader>(ArchiveReader&);
 extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TeamTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_AI_TEAMTYPE_H_

@@ -8,6 +8,8 @@
 #include "ra/ui/edit.h"
 #include "ra/wol/woledit.h"
 
+namespace ra {
+
 // An edit box that shows asterisks instead of what was typed.
 //
 // The login screen fills this in from the saved password in the registry, and
@@ -36,5 +38,7 @@ class PassEditClass : public WOLEditClass {
  protected:
   void Draw_Text(PixelView& view, const char* text) override;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_WOL_PASSEDIT_H_

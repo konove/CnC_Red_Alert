@@ -48,6 +48,8 @@
 #include "ra/ui/gauge.h"
 #include "ra/ui/shapebtn.h"
 
+namespace ra {
+
 /***************************************************************************
  * SliderClass -- Like a Windows ListBox structure
  **
@@ -118,5 +120,7 @@ class SliderClass final : public GaugeClass {
  private:
   void Recalc_Thumb();
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_SLIDER_H_

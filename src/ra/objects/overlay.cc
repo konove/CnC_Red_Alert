@@ -72,6 +72,8 @@
 #include "ra/objects/cell.h"
 #include "ra/objects/object.h"
 
+namespace ra {
+
 // Scratch space for packing and unpacking the OverlayPack INI block.
 static char overlay_pack_buffer[32000];
 
@@ -317,7 +319,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
               const BuildingClass* building =
                   TheObjectHeaps().building().Ptr(index);
               const int newdist =
-                  ::Distance(building->Center_Coord(), Cell_Coord(cell));
+                  ra::Distance(building->Center_Coord(), Cell_Coord(cell));
               if (newdist < distance) {
                 distance = newdist;
                 owner = building->Owner();
@@ -359,7 +361,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
           for (int j = 0; j < TheObjectHeaps().building().Count(); j++) {
             const BuildingClass* building = TheObjectHeaps().building().Ptr(j);
             const int newdist =
-                ::Distance(building->Center_Coord(), Cell_Coord(cell));
+                ra::Distance(building->Center_Coord(), Cell_Coord(cell));
             if (newdist < distance) {
               distance = newdist;
               owner = building->Owner();
@@ -400,3 +402,5 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   //		}
   //	}
 }
+
+}  // namespace ra

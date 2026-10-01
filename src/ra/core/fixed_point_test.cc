@@ -6,6 +6,8 @@
 #include "gtest/gtest.h"
 #include "ra/core/coord.h"
 
+namespace ra {
+
 namespace {
 
 // The helpers as they were written before they took signed arguments.
@@ -75,3 +77,5 @@ TEST(FixedPointTest, IsUsableInConstantExpressions) {
 }
 
 }  // namespace
+
+}  // namespace ra

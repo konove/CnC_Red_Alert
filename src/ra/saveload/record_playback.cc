@@ -35,6 +35,8 @@
 #include "ra/objects/target.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 // Recording state for the current frame, consumed and cleared by
 // Do_Record_Playback().
 static char TeamEvent = 0;       // 0 = no event, 1,2,3 = team event type
@@ -161,3 +163,5 @@ void Do_Record_Playback() {
     TheMap().Render();
   }
 }
+
+}  // namespace ra

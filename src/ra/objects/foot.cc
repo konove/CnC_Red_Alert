@@ -132,6 +132,8 @@
 #include "ra/startup/game_state.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * FootClass::FootClass -- Default constructor for foot class objects. *
  *                                                                                             *
@@ -314,7 +316,7 @@ bool FootClass::Basic_Path() {
           TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone),
           Techno_Type_Class()->MZone);
       if (cell2 != 0 &&
-          ::Distance(Cell_Coord(cell), Cell_Coord(cell2)) < dist) {
+          ra::Distance(Cell_Coord(cell), Cell_Coord(cell2)) < dist) {
         cell = cell2;
       }
     }
@@ -868,7 +870,7 @@ void FootClass::Approach_Target() {
           trycoord =
               Coord_Move(tcoord, dir + _angle, static_cast<uint16_t>(range));
 
-          if (::Distance(trycoord, tcoord) < range) {
+          if (ra::Distance(trycoord, tcoord) < range) {
             trycell = Coord_Cell(trycoord);
             if (TheMap().In_Radar(trycell) &&
                 TheMap().at(trycell).Is_Clear_To_Move(
@@ -893,13 +895,13 @@ void FootClass::Approach_Target() {
       *it. *	Otherwise, head toward the enemy unit directly.
       */
       if (found) {
-        Assign_Destination(::As_Target(trycell));
+        Assign_Destination(ra::As_Target(trycell));
       } else {
         trycell = TheMap().Nearby_Location(
             trycell, Techno_Type_Class()->Speed,
             TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone),
             Techno_Type_Class()->MZone);
-        Assign_Destination(::As_Target(trycell));
+        Assign_Destination(ra::As_Target(trycell));
         //				Assign_Destination(TarCom);
       }
     }
@@ -937,7 +939,7 @@ int FootClass::Mission_Guard_Area() {
   **	Ensure that the archive target is valid.
   */
   if (!Target_Legal(ArchiveTarget)) {
-    ArchiveTarget = ::As_Target(Coord);
+    ArchiveTarget = ra::As_Target(Coord);
   }
 
   /*
@@ -1202,7 +1204,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
                 TheMap()
                     .at(object->Center_Coord())
                     .Zones.at(Techno_Type_Class()->MZone)) {
-          targ = ::As_Target(TheMap().Nearby_Location(
+          targ = ra::As_Target(TheMap().Nearby_Location(
               Coord_Cell(object->Center_Coord()), Techno_Type_Class()->Speed,
               TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone),
               Techno_Type_Class()->MZone));
@@ -1266,7 +1268,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
   action = What_Action(cell);
   switch (action) {
     case ACTION_HARVEST:
-      Player_Assign_Mission(MISSION_HARVEST, kTargetNone, ::As_Target(cell));
+      Player_Assign_Mission(MISSION_HARVEST, kTargetNone, ra::As_Target(cell));
       break;
 
     case ACTION_MOVE:
@@ -1289,7 +1291,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
         ** off the edge of the map.
         */
         const CellClass* cellptr =
-            &TheMap().at(As_Cell(::As_Target(Center_Coord())));
+            &TheMap().at(As_Cell(ra::As_Target(Center_Coord())));
         if (What_Am_I() != RTTI_AIRCRAFT) {
           if (Can_Enter_Cell(Coord_Cell(Center_Coord())) == MOVE_OK) {
             cell = TheMap().Nearby_Location(
@@ -1301,12 +1303,12 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
           }
         }
 
-        Player_Assign_Mission(MISSION_MOVE, kTargetNone, ::As_Target(cell));
+        Player_Assign_Mission(MISSION_MOVE, kTargetNone, ra::As_Target(cell));
       }
       break;
 
     case ACTION_ATTACK:
-      Player_Assign_Mission(MISSION_ATTACK, ::As_Target(cell));
+      Player_Assign_Mission(MISSION_ATTACK, ra::As_Target(cell));
       break;
 
     /*
@@ -1314,12 +1316,12 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
     */
     case ACTION_CAPTURE:
       if (Can_Player_Move()) {
-        Player_Assign_Mission(MISSION_CAPTURE, kTargetNone, ::As_Target(cell));
+        Player_Assign_Mission(MISSION_CAPTURE, kTargetNone, ra::As_Target(cell));
       }
       break;
 
     case ACTION_SABOTAGE:
-      Player_Assign_Mission(MISSION_SABOTAGE, kTargetNone, ::As_Target(cell));
+      Player_Assign_Mission(MISSION_SABOTAGE, kTargetNone, ra::As_Target(cell));
       break;
     case ActionType::ACTION_NONE:
     case ActionType::ACTION_ENTER:
@@ -1646,7 +1648,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     */
     case RADIO_MOVE_HERE:
       if (NavCom != static_cast<TARGET>(param)) {
-        if (::As_Target(Coord_Cell(Coord)) == static_cast<TARGET>(param)) {
+        if (ra::As_Target(Coord_Cell(Coord)) == static_cast<TARGET>(param)) {
           return RADIO_YEA_NOW_WHAT;
         }
         if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
@@ -2590,7 +2592,7 @@ int FootClass::Mission_Retreat() {
 
         DCHECK(cell == 0);  // An edge cell must be found!
 
-        Assign_Destination(::As_Target(cell));
+        Assign_Destination(ra::As_Target(cell));
         Status = kTravelling;
       }
       break;
@@ -2610,3 +2612,5 @@ int FootClass::Mission_Retreat() {
   return TheRules().mission_control().at(Mission).Normal_Delay() +
          Random_Pick(0, 2);
 }
+
+}  // namespace ra

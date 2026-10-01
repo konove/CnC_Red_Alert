@@ -71,6 +71,8 @@
 #include "base/array.h"
 #include "base/numeric.h"
 
+namespace ra {
+
 /*
 **	This class is used to create and maintain an index. It does this by
 *assigning a unique *	identifier number to the type objects that it is
@@ -652,5 +654,7 @@ const IndexClass<T>::NodeElement* IndexClass<T>::Search_For_Node(int id) const {
   const auto found = std::ranges::lower_bound(nodes, id, {}, &NodeElement::ID);
   return found != nodes.end() && found->ID == id ? &*found : nullptr;
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_SEARCH_H_

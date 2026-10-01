@@ -73,6 +73,8 @@
 #include "ra/ui/textbtn.h"
 #include "ra/ui/txtlabel.h"
 
+namespace ra {
+
 /*
 **	This is the maximum # of ObjectTypeClasses the editor has to deal with.
 */
@@ -354,5 +356,7 @@ class MapEditClass : public MouseClass {
 // Switches between scenario-editor mode and normal game mode. Both modes need
 // a different button layout and a full redraw, so this cannot just set a flag.
 void Go_Editor(bool flag);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_EDITOR_MAPEDIT_H_

@@ -100,6 +100,8 @@
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 /***************************************************************************
@@ -1786,3 +1788,5 @@ void MapEditClass::Build_Base_To(int percent) {
 
   // ScenarioInit--;
 }
+
+}  // namespace ra

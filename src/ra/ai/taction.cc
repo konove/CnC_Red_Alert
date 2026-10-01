@@ -110,6 +110,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/msglist.h"
 
+namespace ra {
+
 /*
 **	These are the text names for the various actions. If the action name
 *ends with "..." then *	this means that additional data is probably required.
@@ -951,3 +953,5 @@ NeedType Action_Needs(TActionType action) {
   }
   return NEED_NONE;
 }
+
+}  // namespace ra

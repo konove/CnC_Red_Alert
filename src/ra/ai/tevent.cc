@@ -78,6 +78,8 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 // The low nibble of the text print flags selects the font.
 static constexpr bool Is_Font(const TextPrintType flags,
                               const TextPrintType font) {
@@ -1051,3 +1053,5 @@ AttachType Attaches_To(TEventType event) {
 
   return attach;
 }
+
+}  // namespace ra

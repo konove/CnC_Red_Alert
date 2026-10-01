@@ -42,6 +42,8 @@
 
 #include <cstdint>
 
+namespace ra {
+
 class FlasherClass {
  public:
   /*
@@ -77,5 +79,7 @@ class FlasherClass {
 
   bool Process();
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_FLASHER_H_

@@ -46,6 +46,11 @@
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /****************************************************************************
 ** This class defines one "node" in the pre-built base list.  Each node
 ** contains a type of building to build, and the COORDINATE to build it at.
@@ -137,9 +142,9 @@ class BaseClass {
   HousesType House = HOUSE_NONE;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void BaseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void BaseClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_AI_BASE_H_

@@ -89,6 +89,8 @@
 #include "ra/objects/object.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 static DoInfoStruct DogDoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},      // DO_STAND_READY
     {0, 1, 1},      // DO_STAND_GUARD
@@ -1357,3 +1359,5 @@ void InfantryTypeClass::Dimensions(int& width, int& height) const {
   width = 14;
   height = 20;
 }
+
+}  // namespace ra

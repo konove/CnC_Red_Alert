@@ -46,6 +46,8 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * TextLableClass::TextLabelClass -- Constructor *
  *                                                                                             *
@@ -94,3 +96,5 @@ bool TextLabelClass::Draw_Me(PixelView& view, bool forced) {
   }
   return false;
 }
+
+}  // namespace ra

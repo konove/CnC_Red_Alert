@@ -26,6 +26,8 @@
 #include "ra/objects/unit.h"
 #include "ra/objects/vessel.h"
 
+namespace ra {
+
 // One heap per kind of object on the map, plus the team and trigger types
 // that belong to the scenario. Unlike TypeHeaps, everything here is part of
 // the scenario and is saved: the save file walks each heap in turn.
@@ -130,5 +132,7 @@ class ObjectHeaps {
 inline ObjectHeaps& TheObjectHeaps() {
   return base::Installed<ObjectHeaps>::Get();
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_OBJECT_HEAPS_H_

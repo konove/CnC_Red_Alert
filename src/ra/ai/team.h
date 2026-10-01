@@ -53,6 +53,11 @@
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /*
 ** Units are only allowed to stray a certain distance away from their
 ** team.  When they exceed this distance, some sort of fixup must be
@@ -287,9 +292,9 @@ class TeamClass : public AbstractClass {
   friend class TFixedIHeapClass<TeamClass>;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void TeamClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TeamClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_AI_TEAM_H_

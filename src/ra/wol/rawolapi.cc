@@ -69,6 +69,8 @@
 #include "ra/wol/wolapiob.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 namespace {
 
 //	The current UTC date, for the Easter eggs below. Was ::GetSystemTime,
@@ -2090,3 +2092,5 @@ void InterpretLobbyNumber(std::span<char> szLobbyNameToSet, int iLobby) {
                    "%ith Division", iLobby);
   }
 }
+
+}  // namespace ra

@@ -22,6 +22,8 @@
 
 #include "engine/window/keyboard.h"
 
+namespace ra {
+
 // Processes inter-player message input. F1 through F8 open an editable message
 // addressed to one player or to everyone, and RETURN sends what has been typed.
 //
@@ -37,5 +39,7 @@ void IPX_Call_Back();
 // Hook for the "SECRET UNITS ON" chat trigger, which every machine recognizes
 // at the same point. Does nothing: see the definition.
 void Enable_Secret_Units();
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_CHAT_H_

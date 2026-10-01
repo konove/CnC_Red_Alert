@@ -55,6 +55,8 @@
 #include "ra/screens/goptions.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 namespace {
 
 // Whether a sound effect comes in per-house, per-unit-kind variants.
@@ -642,3 +644,5 @@ bool IsSpeaking() {
                 return engine::audio::TheAudio().IsPlaying(slot.buffer.data());
               }));
 }
+
+}  // namespace ra

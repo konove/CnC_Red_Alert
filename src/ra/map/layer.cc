@@ -44,6 +44,8 @@
 
 #include "ra/objects/object.h"
 
+namespace ra {
+
 LayerClass::~LayerClass() = default;
 
 /***********************************************************************************************
@@ -155,3 +157,5 @@ bool LayerClass::Sorted_Add(ObjectClass* const object) {
   ActiveCount++;
   return true;
 }
+
+}  // namespace ra

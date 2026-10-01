@@ -26,6 +26,8 @@
 #include "ra/objects/unit.h"
 #include "ra/objects/vessel.h"
 
+namespace ra {
+
 namespace {
 
 // Returns the slot for `index` in `heap`, or nullptr with an error recorded
@@ -213,3 +215,5 @@ void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects)
 }
 template void SerializeObjectList(ArchiveWriter&, DynamicVectorClass<ObjectClass*>&);
 template void SerializeObjectList(ArchiveReader&, DynamicVectorClass<ObjectClass*>&);
+
+}  // namespace ra

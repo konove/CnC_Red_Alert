@@ -26,6 +26,8 @@
 // Every CHAT_E_* and CHAT_S_* value is built out of MAKE_HRESULT.
 #include "engine/platform/win32/win32_com.h"
 
+namespace ra {
+
 //
 // Response errors (Sent as arguments to the OnFoo calls)
 //
@@ -150,5 +152,7 @@
 #define CHAN_MODE_LIMIT 0x0400
 
 // NOLINTEND(bugprone-reserved-identifier,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_WOL_CHATDEFS_H_

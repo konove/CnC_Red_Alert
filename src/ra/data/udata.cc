@@ -86,6 +86,8 @@
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
 
+namespace ra {
+
 /*
 **	This is the list of animation stages to use when the harvester
 **	is to dump its load into the refinery. The offsets are based from the
@@ -569,7 +571,6 @@ Projectile=Invisible
 Speed=100
 Warhead=HollowPoint
 Report=none
-
 
 */
 
@@ -1334,3 +1335,5 @@ bool UnitTypeClass::Read_INI(CCINIClass& ini) {
   }
   return false;
 }
+
+}  // namespace ra

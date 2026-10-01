@@ -44,6 +44,8 @@
 
 #include "engine/gfx/pixel_buffer.h"
 
+namespace ra {
+
 /****************************************************************************
 **	The animating credit counter display is controlled by this class.
 */
@@ -73,5 +75,7 @@ class CreditClass {
  private:
   int Countdown{0};  // Delay between ticks.
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_CREDITS_H_

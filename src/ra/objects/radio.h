@@ -47,6 +47,11 @@
 #include "ra/objects/mission.h"
 #include "ra/objects/object.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /****************************************************************************
 **	Radio contact is controlled by this class. It handles the mundane chore
 **	of keeping the radio contact alive as well as broadcasting messages
@@ -126,9 +131,9 @@ class RadioClass : public MissionClass {
   */
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void RadioClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void RadioClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_RADIO_H_

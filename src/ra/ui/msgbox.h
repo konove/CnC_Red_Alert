@@ -42,6 +42,8 @@
 
 #include "ra/data/text_ids.h"
 
+namespace ra {
+
 // Set from outside the message box loop to make the box close as though the
 // user had picked its cancel button. WOL uses it to take a dialog down when
 // the server answers before the player does. The loop clears it on the way
@@ -61,5 +63,7 @@ class WWMessageBox {
   int Process(const char* msg, int b1txt = TXT_OK, int b2txt = TXT_NONE,
               int b3txt = TXT_NONE, bool preserve = false) const;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_MSGBOX_H_

@@ -124,6 +124,8 @@
 #include "ra/objects/weapon.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * VesselClass::VesselClass -- Constructor for vessel class objects. *
  *                                                                                             *
@@ -1047,7 +1049,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       const ObjectClass* obj = As_Object(target);
       COORDINATE coord = Center_Coord();
       if (obj != nullptr) {
-        int totaldist = ::Distance(coord, obj->Center_Coord());
+        int totaldist = ra::Distance(coord, obj->Center_Coord());
         while (totaldist > CELL_LEPTON_W) {
           coord = Coord_Move(coord, dir, CELL_LEPTON_W);
           if ((TheMap().at(coord).Land_Type() != LAND_WATER) &&
@@ -1438,7 +1440,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
           if (cell == 0) {
             Transmit_Message(RADIO_OVER_OUT, from);
           } else {
-            param = static_cast<int32_t>(::As_Target(cell));
+            param = static_cast<int32_t>(ra::As_Target(cell));
 
             /*
             **	If it is now facing the correct direction, then open the
@@ -1758,7 +1760,7 @@ int VesselClass::Mission_Unload() {
                     Coord_Move(Coord, newface, CELL_LEPTON_W / 2), newface);
                 TheWorld().scenario_init()--;
                 passenger->Assign_Mission(MISSION_MOVE);
-                passenger->Assign_Destination(::As_Target(newcell));
+                passenger->Assign_Destination(ra::As_Target(newcell));
                 passenger->Commence();
                 Transmit_Message(RADIO_HELLO, passenger);
                 Transmit_Message(RADIO_TETHER, passenger);
@@ -1904,7 +1906,7 @@ int VesselClass::Mission_Retreat() {
         if (Team.Is_Valid()) {
           Team->Remove(this);
         }
-        Assign_Destination(::As_Target(cell));
+        Assign_Destination(ra::As_Target(cell));
       }
       Status = kTravel;
       return 1;
@@ -2343,3 +2345,5 @@ BulletClass* VesselClass::Fire_At(TARGET target, int which) {
   }
   return nullptr;
 }
+
+}  // namespace ra

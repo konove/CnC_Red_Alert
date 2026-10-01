@@ -129,6 +129,8 @@
 #include "ra/ui/textbtn.h"
 #include "ra/ui/txtlabel.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 char MapEditClass::HealthBuf[20];
@@ -2165,3 +2167,5 @@ void Go_Editor(const bool flag) {
     TheMap().Render();
   }
 }
+
+}  // namespace ra

@@ -120,6 +120,8 @@
 #include "base/enum_array.h"
 #include "ra/net/combuf.h"
 
+namespace ra {
+
 /*
 ********************************** Defines **********************************
 */
@@ -303,6 +305,8 @@ class ConnectionClass {
                          static_cast<int>(PACKET_COUNT)>
       Commands;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_CONNECT_H_
 

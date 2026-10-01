@@ -15,6 +15,8 @@
 #include "engine/window/hardware_cursor.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 PaletteClass PaletteClass::CurrentPalette;
 
 // Shows `palette` on the display and recolors the mouse cursor, which SDL
@@ -124,3 +126,5 @@ void Set_Palette(const engine::gfx::Palette& palette) {
   PaletteClass::CurrentPalette = palette;
   ShowPalette(palette);
 }
+
+}  // namespace ra

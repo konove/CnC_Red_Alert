@@ -26,6 +26,8 @@
 // Every DOWNLOAD_E_* and DOWNLOAD_S_* value is built out of MAKE_HRESULT.
 #include "engine/platform/win32/win32_com.h"
 
+namespace ra {
+
 // CDownload statuses
 
 #define DOWNLOADSTATUS_NONE 0
@@ -65,5 +67,7 @@
 #define DOWNLOADEVENT_DISCONNECTERROR 7
 
 // NOLINTEND(bugprone-reserved-identifier,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_WOL_DOWNLOADDEFS_H_

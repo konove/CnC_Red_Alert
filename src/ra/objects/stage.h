@@ -44,6 +44,8 @@
 #include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 
+namespace ra {
+
 class StageClass {
   /*
   **	This handles the animation stage of the object. This includes smoke,
@@ -94,5 +96,7 @@ class StageClass {
     return false;
   }
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_STAGE_H_

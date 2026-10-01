@@ -11,6 +11,8 @@
 #include "base/installed.h"
 #include "ra/net/ipxaddr.h"
 
+namespace ra {
+
 // Everything Parse_Command_Line() reads out of the command line, so that the
 // parser writes no game state of its own: it fills a StartupOptions, and
 // main() hands each value to whatever owns it. Some of them seed state the
@@ -85,5 +87,7 @@ struct StartupOptions {
 inline const StartupOptions& TheStartupOptions() {
   return base::Installed<StartupOptions>::Get();
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_STARTUP_STARTUP_OPTIONS_H_

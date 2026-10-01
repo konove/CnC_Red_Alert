@@ -54,6 +54,8 @@
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
 
+namespace ra {
+
 /***************************************************************************
 **	This is the warhead data object array.
 */
@@ -183,3 +185,5 @@ bool WarheadTypeClass::Read_INI(CCINIClass& ini) {
   }
   return false;
 }
+
+}  // namespace ra

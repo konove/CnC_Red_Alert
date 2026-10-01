@@ -65,6 +65,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/list.h"
 
+namespace ra {
+
 namespace {
 
 // DrawDib() clips each row to this many pixels; anything wider than an icon
@@ -822,3 +824,5 @@ int Format_Window_String_New(const FontStyle& font, const char* string,
   base::At(output, dest) = '\0';
   return lines;
 }
+
+}  // namespace ra

@@ -9,6 +9,8 @@
 #include "ra/core/defines.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 namespace {
 
 // Building the list selects and measures the font it prints in, which reads
@@ -39,3 +41,5 @@ TEST_F(DropListClassTest, AddingTailToAChainReturnsItsHead) {
 }
 
 }  // namespace
+
+}  // namespace ra

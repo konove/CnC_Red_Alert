@@ -217,6 +217,8 @@
 #include "ra/wol/wolapiob.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 // #define OLDWAY			1
@@ -5667,7 +5669,6 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   // Every line of the dialog prints in this.
   const FontStyle font = TextFontStyle(TPF_CENTER | kTpfText);
 
-
   //------------------------------------------------------------------------
   //	Draw the dialog from scratch
   //------------------------------------------------------------------------
@@ -7393,3 +7394,4 @@ int Update_WWChat() {
 
 /*************************** end of netdlg.cpp *****************************/
 
+}  // namespace ra

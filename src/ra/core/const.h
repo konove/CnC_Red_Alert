@@ -10,6 +10,8 @@
 #include "ra/core/defines.h"
 #include "ra/data/text_ids.h"
 
+namespace ra {
+
 /***************************************************************************
 **	These are the access passwords used to activate cheat mode, editor mode,
 **	and special game options.
@@ -606,5 +608,7 @@ inline std::string GetKeys() {
   keys += '\n';
   return keys;
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_CONST_H_

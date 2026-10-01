@@ -53,6 +53,11 @@
 #include "ra/objects/stage.h"
 #include "ra/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /**********************************************************************************************
 **	This is the class that controls the shape animation objects. Shape
 *animation objects are *	displayed over the top of the game map.
@@ -187,9 +192,9 @@ class AnimClass final : public ObjectClass, public StageClass {
 void Shorten_Attached_Anims(const ObjectClass* obj);
 AnimType Anim_From_Name(const char* name);
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void AnimClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void AnimClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_ANIM_H_

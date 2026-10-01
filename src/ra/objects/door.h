@@ -39,7 +39,10 @@
 
 #ifndef CNC_RED_ALERT_RA_OBJECTS_DOOR_H_
 #define CNC_RED_ALERT_RA_OBJECTS_DOOR_H_
+
 #include "ra/objects/stage.h"
+
+namespace ra {
 
 class DoorClass {
  private:
@@ -94,5 +97,7 @@ class DoorClass {
   [[nodiscard]] bool Is_Door_Closed() const { return State == kIsClosed; }
   [[nodiscard]] bool Is_Ready_To_Open() const;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_DOOR_H_

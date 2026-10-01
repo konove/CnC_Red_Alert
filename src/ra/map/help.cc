@@ -73,6 +73,8 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 /*
 **	This is the holding buffer for the text overlap list. This buffer must
 *be in the near *	data segment. It will be filled in by the Set_Text()
@@ -410,3 +412,5 @@ void HelpClass::Set_Tactical_Position(COORDINATE coord) {
   }
   TabClass::Set_Tactical_Position(coord);
 }
+
+}  // namespace ra

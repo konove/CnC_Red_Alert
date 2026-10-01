@@ -86,6 +86,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/txtlabel.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 /**************************** Globals **************************************/
@@ -1360,3 +1362,5 @@ void MessageListClass::Compute_Y() {
 }  // end of Compute_Y
 
 /*************************** end of msglist.cpp ****************************/
+
+}  // namespace ra

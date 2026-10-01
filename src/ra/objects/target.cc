@@ -90,6 +90,8 @@
 #include "ra/objects/unit.h"
 #include "ra/objects/vessel.h"
 
+namespace ra {
+
 TargetClass::TargetClass(TARGET target) : xTargetClass() { Target.Target = target; }
 
 TargetClass::TargetClass(const AbstractClass* ptr) : xTargetClass() {
@@ -1056,3 +1058,5 @@ TriggerTypeClass* As_TriggerType(TARGET target) {
   }
   return nullptr;
 }
+
+}  // namespace ra

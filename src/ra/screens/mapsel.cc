@@ -63,6 +63,8 @@
 #include "ra/ui/gadget.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 // The scenario variant behind each hotspot, in the order of kHotspotCorners.
@@ -261,3 +263,5 @@ ScenarioVarType ChooseMissionVariant() {
 
   return base::At(kChoiceVariants, choice);
 }
+
+}  // namespace ra

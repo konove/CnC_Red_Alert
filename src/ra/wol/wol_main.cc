@@ -23,25 +23,26 @@
 
 #include <memory>
 
+#include "base/bytes_of.h"
+#include "engine/platform/platform.h"
+#include "engine/platform/sleep.h"
 #include "engine/platform/win32/win32_com.h"
+#include "engine/platform/win32/win32_registry.h"
+#include "engine/platform/win32/win32_system.h"
 #include "engine/platform/win32/win32_types.h"
 #include "ra/assets/installation.h"
+#include "ra/assets/theme.h"
 #include "ra/core/defines.h"
 #include "ra/net/network.h"
+#include "ra/ui/msgbox.h"
 #include "ra/wol/wol_gsup.h"
 #include "ra/wol/wolapiob.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 static bool ReregisterWolapiDLL();
 static void HandleDLLFail();
-
-#include "base/bytes_of.h"
-#include "engine/platform/platform.h"
-#include "engine/platform/sleep.h"
-#include "engine/platform/win32/win32_registry.h"
-#include "engine/platform/win32/win32_system.h"
-#include "ra/assets/theme.h"
-#include "ra/ui/msgbox.h"
 
 //***********************************************************************************************
 //	The first time through, pWolapi is NULL thus wolapi gets
@@ -268,3 +269,5 @@ void HandleDLLFail() {
 
   TheNetwork().wolapi().reset();
 }
+
+}  // namespace ra

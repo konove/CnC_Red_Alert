@@ -44,6 +44,8 @@
 #include "ra/map/world.h"
 #include "ra/startup/winstub.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * Focus_Loss -- this function is called when a library function detects focus
  *loss            *
@@ -236,3 +238,5 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
   }
   return pic;
 }
+
+}  // namespace ra

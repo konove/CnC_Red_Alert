@@ -19,6 +19,8 @@
 #include "absl/base/attributes.h"
 #include "engine/stream/archive.h"
 
+namespace ra {
+
 template <class T>
 class DynamicVectorClass;
 
@@ -79,5 +81,7 @@ extern template class ObjectPtr<FootClass>;
 
 extern template void SerializeObjectList<ArchiveWriter>(ArchiveWriter&, DynamicVectorClass<ObjectClass*>&);
 extern template void SerializeObjectList<ArchiveReader>(ArchiveReader&, DynamicVectorClass<ObjectClass*>&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SAVELOAD_SERIALIZE_H_

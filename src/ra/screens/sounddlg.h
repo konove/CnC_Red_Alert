@@ -42,6 +42,8 @@
 
 #include "ra/core/config.h"
 
+namespace ra {
+
 class SoundControlsClass {
   static constexpr int kOptionWidth = config::kIsFrench ? 308 : 292;
   static constexpr int kOptionHeight = 146;
@@ -103,5 +105,7 @@ class SoundControlsClass {
   SoundControlsClass() = default;
   static void Process();
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SCREENS_SOUNDDLG_H_

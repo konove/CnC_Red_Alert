@@ -39,6 +39,8 @@
 #include "ra/wol/wolapiob.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 // #include "ra/wol/woldebug.h"
 
@@ -233,3 +235,5 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   }
   return bReturn;
 }
+
+}  // namespace ra

@@ -52,6 +52,8 @@
 #include "ra/core/defines.h"
 #include "ra/objects/target.h"
 
+namespace ra {
+
 /*
 **	This event class is used to contain all external game events (things
 *that the player can *	do at any time) so that these events can be transported
@@ -294,5 +296,7 @@ class EventClass {
   static base::EnumArray<EventType, const char*, static_cast<int>(LAST_EVENT)>
       EventNames;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_EVENT_H_

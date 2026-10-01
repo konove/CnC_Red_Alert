@@ -10,6 +10,8 @@
 #include "ra/assets/palette.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 // The palettes the game switches between and the remap tables it draws text
 // and house colors with. Game owns the one Palettes; everything else reaches
 // it through ThePalettes(). A new Palettes has black and white filled in and
@@ -84,5 +86,7 @@ class Palettes {
 // Returns the Palettes that Game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.
 inline Palettes& ThePalettes() { return base::Installed<Palettes>::Get(); }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_PALETTES_H_

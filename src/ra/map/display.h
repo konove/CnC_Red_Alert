@@ -42,6 +42,11 @@
 #include "ra/objects/type.h"
 #include "ra/ui/gadget.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 #define SIDE_BAR_TAC_WIDTH 10
 #define SIDE_BAR_TAC_HEIGHT 8
 
@@ -349,9 +354,9 @@ class DisplayClass : public MapClass {
                                              MZoneType mzone) const;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void DisplayClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void DisplayClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_DISPLAY_H_

@@ -7,6 +7,8 @@
 
 #include "absl/base/attributes.h"
 
+namespace ra {
+
 int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
                            const char* profile);
 
@@ -35,5 +37,7 @@ bool Write_Bin_Num(std::span<const std::byte> num, int length, const char* buffe
 int Write_Bin_Pos(const char* buffer);
 int Write_Bin_PosSet(int pos, const char* buffer);
 bool Write_Bin_String(std::string_view string, const char* buffer);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_DATA_PROFILE_H_

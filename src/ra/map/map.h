@@ -53,6 +53,11 @@
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class MapClass : public GScreenClass {
  public:
   // Saved-game state; defined in iomap.cc.
@@ -194,9 +199,9 @@ class MapClass : public GScreenClass {
 
 int Coord_Spillage_Number(COORDINATE coord, int maxsize);
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void MapClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void MapClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_MAP_H_

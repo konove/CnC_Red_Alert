@@ -20,6 +20,7 @@
 
 #ifndef CNC_RED_ALERT_RA_UI_EDIT_H_
 #define CNC_RED_ALERT_RA_UI_EDIT_H_
+
 #include <span>
 
 #include "absl/base/attributes.h"
@@ -27,6 +28,8 @@
 #include "engine/window/keyboard.h"
 #include "ra/core/defines.h"
 #include "ra/ui/control.h"
+
+namespace ra {
 
 // A text editing gadget that accepts keyboard input and displays the result.
 // Supports filtering by character type (alpha, numeric, misc) and optional
@@ -116,5 +119,7 @@ class EditClass : public ControlClass {
  private:
   bool IsReadOnly = false;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_EDIT_H_

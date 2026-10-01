@@ -61,6 +61,11 @@
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 #define MAX_DOOR_STAGE 18  // # of frames of door opening on weapons factory
 #define DOOR_OPEN_STAGE 9  // frame on which the door is entirely open
 #define MAX_REPAIR_ANIM_STAGE \
@@ -386,9 +391,9 @@ class BuildingClass : public TechnoClass {
   static const base::EnumArray<BSizeType, COORDINATE> CenterOffset;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void BuildingClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void BuildingClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_BUILDING_H_

@@ -118,6 +118,8 @@
 #include "ra/objects/vessel.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * _Is_It_Breathing -- Checks to see if unit is an active team member. *
  *                                                                                             *
@@ -334,7 +336,7 @@ TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
   }
 
   if (Class->Origin != -1) {
-    Zone = ::As_Target(base::At(TheScenario().Waypoint, Class->Origin));
+    Zone = ra::As_Target(base::At(TheScenario().Waypoint, Class->Origin));
   }
   Class->Number++;
 
@@ -559,7 +561,7 @@ void TeamClass::AI() {
         if (b != nullptr && !b->IsInLimbo && b->House == House &&
             b->Class->PrimaryWeapon == nullptr) {
           CELL cell = Coord_Cell(b->Center_Coord());
-          int dist = ::Distance(b->Center_Coord(), As_Coord(Zone)) *
+          int dist = ra::Distance(b->Center_Coord(), As_Coord(Zone)) *
                      (MapEditClass::Cell_Threat(cell, House->Class->House) + 1);
 
           if (*b == STRUCT_REPAIR) {
@@ -578,7 +580,7 @@ void TeamClass::AI() {
       }
 
       // Should calculate a regroup location.
-      Target = ::As_Target(dest);
+      Target = ra::As_Target(dest);
       Coordinate_Move();
       return;
     }
@@ -686,7 +688,7 @@ void TeamClass::AI() {
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
           Assign_Mission_Target(
-              ::As_Target(static_cast<CELL>(mission->Data.Value)));
+              ra::As_Target(static_cast<CELL>(mission->Data.Value)));
           break;
 
         case TMISSION_MOVE:
@@ -702,8 +704,8 @@ void TeamClass::AI() {
                   movecell, leader->Techno_Type_Class()->Speed);
             }
 
-            Assign_Mission_Target(::As_Target(movecell));
-            Target = ::As_Target(movecell);
+            Assign_Mission_Target(ra::As_Target(movecell));
+            Target = ra::As_Target(movecell);
           }
           break;
 
@@ -712,7 +714,7 @@ void TeamClass::AI() {
         case TMISSION_SPY:
           if (static_cast<unsigned>(mission->Data.Value) <
               ScenarioClass::kWaypointCount) {
-            Assign_Mission_Target(::As_Target(
+            Assign_Mission_Target(ra::As_Target(
                 base::At(TheScenario().Waypoint, mission->Data.Value)));
           }
           break;
@@ -1562,7 +1564,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
       y /= quantity;
       const COORDINATE coord =
           XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
-      center = ::As_Target(coord);
+      center = ra::As_Target(coord);
 
       /*
       **	If the center location is impassable, then just pick the
@@ -1572,9 +1574,9 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
       if (closest->Can_Enter_Cell(As_Cell(center)) != MOVE_OK) {
         //				if (Class->Origin != -1) {
         //					center =
-        //::As_Target(Scen.Waypoint[Class->Origin]);
+        //ra::As_Target(Scen.Waypoint[Class->Origin]);
         //:} else {
-        center = ::As_Target(Coord_Cell(closest->Center_Coord()));
+        center = ra::As_Target(Coord_Cell(closest->Center_Coord()));
         //				}
       }
     }
@@ -1584,7 +1586,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     **	that will be used as the regroup point.
     */
     if (closest != nullptr) {
-      close_member = ::As_Target(Coord_Cell(closest->Center_Coord()));
+      close_member = ra::As_Target(Coord_Cell(closest->Center_Coord()));
     }
   }
 }
@@ -1801,7 +1803,7 @@ bool TeamClass::Coordinate_Regroup() {
         if (!Target_Legal(unit->NavCom)) {
           // TCTCTC
           //				if (!Target_Legal(unit->NavCom) ||
-          //::Distance(unit->NavCom, Zone) > Rule.StrayDistance) {
+          //ra::Distance(unit->NavCom, Zone) > Rule.StrayDistance) {
           unit->Assign_Mission(MISSION_MOVE);
           unit->Assign_Destination(Zone);
 
@@ -1809,7 +1811,7 @@ bool TeamClass::Coordinate_Regroup() {
           if (!unit->IsFormationMove) {
             unit->Assign_Mission(MISSION_MOVE);
             const CELL dest = unit->Adjust_Dest(As_Cell(Zone));
-            unit->Assign_Destination(::As_Target(dest));
+            unit->Assign_Destination(ra::As_Target(dest));
           } else {
             retval = true;  // formations are always considered regrouped.
           }
@@ -1873,7 +1875,7 @@ void TeamClass::Coordinate_Do() {
         unit->Assign_Destination(Zone);
         unit->Assign_Mission(MISSION_MOVE);
         const CELL dest = unit->Adjust_Dest(As_Cell(Zone));
-        unit->Assign_Destination(::As_Target(dest));
+        unit->Assign_Destination(ra::As_Target(dest));
 
       } else {
         /*
@@ -1957,7 +1959,7 @@ void TeamClass::Coordinate_Move() {
 
           int dist = unit->Distance(Target);
           if (unit->IsFormationMove &&
-              (::As_Target(Coord_Cell(unit->Coord)) != unit->NavCom)) {
+              (ra::As_Target(Coord_Cell(unit->Coord)) != unit->NavCom)) {
             dist =
                 TheRules().StrayDistance + 1;  // formation moves must be exact.
           }
@@ -1985,7 +1987,7 @@ void TeamClass::Coordinate_Move() {
               if (Is_Target_Cell(Target) && unit->IsFormationMove) {
                 const CELL newcell = unit->Adjust_Dest(As_Cell(Target));
                 if (Coord_Cell(unit->Coord) != newcell) {
-                  unit->Assign_Destination(::As_Target(newcell));
+                  unit->Assign_Destination(ra::As_Target(newcell));
                 } else {
                   unit->Assign_Mission(MISSION_GUARD);
                   unit->Assign_Destination(kTargetNone);
@@ -2106,7 +2108,7 @@ bool TeamClass::Lagging_Units() {
         // TCTCTC
         if (!Target_Legal(unit->NavCom)) {
           //				if (!Target_Legal(unit->NavCom) ||
-          //::Distance(unit->NavCom, ClosestMember) > Rule.StrayDistance) {
+          //ra::Distance(unit->NavCom, ClosestMember) > Rule.StrayDistance) {
           unit->Assign_Mission(MISSION_MOVE);
           unit->Assign_Destination(ClosestMember);
         }
@@ -2966,7 +2968,7 @@ int TeamClass::TMission_Patrol() {
     if (static_cast<unsigned>(mission->Data.Value) <
         ScenarioClass::kWaypointCount) {
       Assign_Mission_Target(
-          ::As_Target(base::At(TheScenario().Waypoint, mission->Data.Value)));
+          ra::As_Target(base::At(TheScenario().Waypoint, mission->Data.Value)));
     }
   }
 
@@ -3089,3 +3091,5 @@ FootClass* TeamClass::Fetch_A_Leader() const {
 
   return leader;
 }
+
+}  // namespace ra

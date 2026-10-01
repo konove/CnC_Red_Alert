@@ -7,6 +7,8 @@
 #include "engine/gfx/palette_color.h"
 #include "gtest/gtest.h"
 
+namespace ra {
+
 namespace {
 
 using engine::gfx::kBlackColor;
@@ -55,3 +57,5 @@ TEST(PaletteClassTest, PartialAdjustLeavesUnselectedEntries) {
 }
 
 }  // namespace
+
+}  // namespace ra

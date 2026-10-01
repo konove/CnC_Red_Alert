@@ -53,6 +53,8 @@
 #include "ra/net/session.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 /*
 ** Ugly hack: this string stores the string received from the modem
 */
@@ -220,6 +222,8 @@ class NullModemClass : public ConnManClass {
   int32_t MaxRetries{-1};  // -1 means no limit: retry forever
   int32_t Timeout{1200};   // report bad connection after 20 seconds
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_NULLMGR_H_
 

@@ -66,6 +66,8 @@
 #include "ra/ui/shapebtn.h"
 #include "ra/ui/slider.h"
 
+namespace ra {
+
 // Scrollable list box widget similar to a Windows ListBox control.
 // Displays a list of text items with support for selection, scrolling, and tab
 // stops. Automatically manages an optional scroll bar when the list content
@@ -748,4 +750,7 @@ void TListClass<T>::Set_Selected_Index(T text) {
     }
   }
 }
+
+}  // namespace ra
+
 #endif  // CNC_RED_ALERT_RA_UI_LIST_H_

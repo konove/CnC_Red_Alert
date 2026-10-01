@@ -42,6 +42,11 @@
 
 #include "ra/core/vector_dynamic.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class ObjectClass;
 
 class LayerClass : public DynamicVectorClass<ObjectClass*> {
@@ -70,9 +75,9 @@ class LayerClass : public DynamicVectorClass<ObjectClass*> {
   */
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void LayerClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void LayerClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_LAYER_H_

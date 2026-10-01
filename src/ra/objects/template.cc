@@ -64,6 +64,8 @@
 #include "ra/objects/cell.h"
 #include "ra/objects/object.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * TemplateClass::Init -- Resets the template object system. *
  *                                                                                             *
@@ -242,3 +244,5 @@ TemplateClass::TemplateClass(TemplateType type, CELL pos)
     Unlimbo(Cell_Coord(pos));
   }
 }
+
+}  // namespace ra

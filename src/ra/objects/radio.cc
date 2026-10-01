@@ -51,6 +51,8 @@
 #include "ra/objects/mission.h"
 #include "ra/objects/techno.h"  // IWYU pragma: keep
 
+namespace ra {
+
 /*
 **	These are the text representations of the radio messages that can be
 *transmitted.
@@ -276,3 +278,5 @@ RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
 
   return Transmit_Message(message, DiscardedParam(), to);
 }
+
+}  // namespace ra

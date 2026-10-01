@@ -26,6 +26,8 @@
 // Every FTP_* value is built out of MAKE_HRESULT.
 #include "engine/platform/win32/win32_com.h"
 
+namespace ra {
+
 // CFtp return codes.
 
 #define FTP_SUCCEEDED S_OK
@@ -33,5 +35,7 @@
 #define FTP_TRYING MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 2)
 
 // NOLINTEND(bugprone-reserved-identifier,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_WOL_FTPDEFS_H_

@@ -99,6 +99,8 @@
 #include "ra/map/display.h"
 #include "ra/map/world.h"
 
+namespace ra {
+
 // Source of random numbers for events that must NOT affect game logic, such
 // as cosmetic animations and one-machine-only effects. Because it never
 // influences the simulation, it does not need to stay in sync across
@@ -1032,5 +1034,7 @@ inline int Distance(int x1, int y1, int x2, int y2) {
   }
   return diff2 + (diff1 / 2);
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_INLINE_H_

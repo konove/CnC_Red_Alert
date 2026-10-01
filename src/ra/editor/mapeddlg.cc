@@ -112,6 +112,8 @@
 #include "ra/ui/statbtn.h"
 #include "ra/ui/textbtn.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 /***************************************************************************
@@ -2826,3 +2828,5 @@ int MapEditClass::Load_Scenario() {
     }
     return 0;
   }
+
+  }  // namespace ra

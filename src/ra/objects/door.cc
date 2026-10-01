@@ -43,6 +43,8 @@
 
 #include "ra/objects/door.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * DoorClass::DoorClass -- Constructor for the DoorClass object. *
  *                                                                                             *
@@ -194,3 +196,5 @@ int DoorClass::Door_Stage() const {
   }
   return 0;
 }
+
+}  // namespace ra

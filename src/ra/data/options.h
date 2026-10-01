@@ -44,6 +44,11 @@
 #include "engine/window/keyboard.h"
 #include "ra/assets/palette.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class INIClass;
 
 class OptionsClass {
@@ -185,9 +190,9 @@ class OptionsClass {
   static const char* const HotkeyName;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void OptionsClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void OptionsClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_DATA_OPTIONS_H_

@@ -12,6 +12,8 @@
 #include "ra/assets/dib.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 LockedWindow::LockedWindow(PixelView& view, WindowNumberType window)
     : view_(view.buffer(),
             base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) +
@@ -100,3 +102,5 @@ void DrawDib(PixelView& view, const dib::Image& image, int xDest, int yDest,
         copy_width);
   }
 }
+
+}  // namespace ra

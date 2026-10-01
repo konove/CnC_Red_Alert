@@ -44,6 +44,8 @@
 #include "ra/objects/foot.h"
 #include "ra/objects/object.h"
 
+namespace ra {
+
 CargoClass::~CargoClass() { CargoHold = nullptr; }
 
 /***********************************************************************************************
@@ -155,3 +157,5 @@ FootClass* CargoClass::Attached_Object() const {
   }
   return nullptr;
 }
+
+}  // namespace ra

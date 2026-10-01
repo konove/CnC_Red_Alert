@@ -152,6 +152,8 @@
 #include "ra/screens/score.h"
 #include "ra/ui/dialog.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 /***********************************************************************************************
@@ -1306,31 +1308,31 @@ void CellClass::Wall_Update() {
       if (newcell.Overlay == OVERLAY_BRICK_WALL && newcell.OverlayData == 48) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        Detach_This_From_All(::As_Target(newcell.Cell_Number()), true);
+        Detach_This_From_All(ra::As_Target(newcell.Cell_Number()), true);
       }
       if (newcell.Overlay == OVERLAY_SANDBAG_WALL &&
           newcell.OverlayData == 16) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        Detach_This_From_All(::As_Target(newcell.Cell_Number()), true);
+        Detach_This_From_All(ra::As_Target(newcell.Cell_Number()), true);
       }
       if (newcell.Overlay == OVERLAY_CYCLONE_WALL &&
           newcell.OverlayData == 32) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        Detach_This_From_All(::As_Target(newcell.Cell_Number()), true);
+        Detach_This_From_All(ra::As_Target(newcell.Cell_Number()), true);
       }
       if (newcell.Overlay == OVERLAY_FENCE &&
           (newcell.OverlayData == 16 || newcell.OverlayData == 32)) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        Detach_This_From_All(::As_Target(newcell.Cell_Number()), true);
+        Detach_This_From_All(ra::As_Target(newcell.Cell_Number()), true);
       }
       if (newcell.Overlay == OVERLAY_BARBWIRE_WALL &&
           newcell.OverlayData == 16) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        Detach_This_From_All(::As_Target(newcell.Cell_Number()), true);
+        Detach_This_From_All(ra::As_Target(newcell.Cell_Number()), true);
       }
 
       newcell.Recalc_Attributes();
@@ -1356,7 +1358,7 @@ void CellClass::Wall_Update() {
 COORDINATE CellClass::Cell_Coord() const {
   DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  return ::Cell_Coord(Cell_Number());
+  return ra::Cell_Coord(Cell_Number());
 }
 
 /***********************************************************************************************
@@ -2241,7 +2243,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             */
             const CELL cell = TheMap().Nearby_Location(
                 Cell_Number(), goodie_unit->Class->Speed);
-            if (goodie_unit->Unlimbo(::Cell_Coord(cell))) {
+            if (goodie_unit->Unlimbo(ra::Cell_Coord(cell))) {
               return false;
             }
             base::DeletePooled(goodie_unit);
@@ -2890,3 +2892,5 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
   return offset == 0 ? *this
                      : TheMap().at(static_cast<CELL>(Cell_Number() + offset));
 }
+
+}  // namespace ra

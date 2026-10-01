@@ -144,6 +144,8 @@
 #include "ra/ui/gadget.h"
 #include "ra/ui/shapebtn.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 std::span<const std::byte> SidebarClass::SidebarShape = {};
@@ -2361,3 +2363,5 @@ void SidebarClass::Zoom_Mode_Control() {
     }
   }
 }
+
+}  // namespace ra

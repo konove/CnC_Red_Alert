@@ -12,6 +12,8 @@
 #include "gtest/gtest.h"
 #include "ra/net/combuf.h"
 
+namespace ra {
+
 namespace {
 
 constexpr uint16_t kMagic = 0x1234;
@@ -174,3 +176,5 @@ TEST(CommBufferTest, ShortDestinationLeavesThePacketQueued) {
 }
 
 }  // namespace
+
+}  // namespace ra

@@ -95,6 +95,8 @@
 #include "ra/ui/textbtn.h"
 #include "ra/ui/toggle.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * LoadOptionsClass::LoadOptionsClass -- class constructor *
  *                                                                                             *
@@ -293,7 +295,6 @@ bool LoadOptionsClass::Process() {
         cancel = true;
       }
     }
-
 
     /*
     **	Refresh display if needed.
@@ -743,3 +744,5 @@ int LoadOptionsClass::Num_From_Ext(const char* fname) {
   }
   return num;
 }
+
+}  // namespace ra

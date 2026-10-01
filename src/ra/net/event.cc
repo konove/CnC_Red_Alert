@@ -106,6 +106,8 @@
 #include "ra/ui/msglist.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 #ifdef _WIN32
 #endif  // _WIN32
 
@@ -1125,3 +1127,5 @@ void EventClass::Execute() {
     absl::PrintF("\n");
   }
 }
+
+}  // namespace ra

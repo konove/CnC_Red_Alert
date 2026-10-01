@@ -50,6 +50,11 @@
 #include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /*
 **	This class holds the information about the current game being played.
 *This information is *	global to the scenario and is generally of a similar
@@ -391,9 +396,9 @@ BriefingAction Restate_Mission();
 int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
                            bool fade_to_black = true);
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void ScenarioClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void ScenarioClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_AI_SCENARIO_H_

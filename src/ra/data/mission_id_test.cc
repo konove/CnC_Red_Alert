@@ -4,6 +4,8 @@
 
 #include "gtest/gtest.h"
 
+namespace ra {
+
 namespace {
 
 TEST(IsMissionCounterstrikeTest, TwoDigitNumberAbove24) {
@@ -80,3 +82,5 @@ TEST(MissionWithVariantTest, LeavesShortNamesAlone) {
 }
 
 }  // namespace
+
+}  // namespace ra

@@ -62,6 +62,8 @@
 #include "ra/data/rules.h"
 #include "ra/objects/object.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * MissionClass::MissionClass -- Default constructor for the mission object
  *type.              *
@@ -503,3 +505,5 @@ bool MissionControlClass::Read_INI(CCINIClass& ini) {
   }
   return false;
 }
+
+}  // namespace ra

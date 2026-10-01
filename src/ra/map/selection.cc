@@ -48,6 +48,8 @@
 #include "ra/saveload/record_playback.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 // Unselect() removes the object from CurrentObject, so index 0 is always the
 // next one to drop and the count shrinks on every pass.
 void Unselect_All() {
@@ -501,3 +503,5 @@ void Handle_Team(const int team, const int action) {
   }
   TheGameState().allow_voice() = true;
 }
+
+}  // namespace ra

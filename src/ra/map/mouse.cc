@@ -64,6 +64,8 @@
 #include "ra/map/scroll.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 /*
 **	This points to the loaded mouse shapes.
 */
@@ -380,3 +382,5 @@ base::EnumArray<MouseType, MouseClass::MouseStruct> MouseClass::MouseControl = {
         {105, 8, 2, -1, WD / 2, HT / 2},  //	MOUSE_CHRONO_DEST
 
     }};
+
+}  // namespace ra

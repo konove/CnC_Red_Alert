@@ -40,6 +40,8 @@
 
 #include <cstdint>
 
+namespace ra {
+
 /*
 ******************************** Structures *********************************
 */
@@ -88,6 +90,8 @@ struct ECB {
   } Packet[2];
 };
 using ECBType = ECB;
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_IPX_H_
 

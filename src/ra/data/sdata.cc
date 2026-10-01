@@ -81,6 +81,8 @@
 #include "ra/objects/smudge.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 static const SmudgeTypeClass Crater1(
     SMUDGE_CRATER1, "CR1", TXT_CRATER, 1,
     1,      // Width and height of smudge (in icons).
@@ -519,3 +521,5 @@ void SmudgeTypeClass::One_Time() {}
 SmudgeTypeClass& SmudgeTypeClass::As_Reference(SmudgeType type) {
   return *TheTypeHeaps().smudge().Ptr(static_cast<int>(type));
 }
+
+}  // namespace ra

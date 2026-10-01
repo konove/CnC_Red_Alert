@@ -18,6 +18,8 @@
 #ifndef CNC_RED_ALERT_RA_SAVELOAD_RECORD_PLAYBACK_H_
 #define CNC_RED_ALERT_RA_SAVELOAD_RECORD_PLAYBACK_H_
 
+namespace ra {
+
 // File: Recording and attract-mode playback of the view and selection state
 // that the event stream does not carry.
 
@@ -42,5 +44,7 @@ void RecordFormationEvent();
 // Discards any team or formation event not yet written, as when a new game
 // starts.
 void ResetRecordedEvents();
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SAVELOAD_RECORD_PLAYBACK_H_

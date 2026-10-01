@@ -62,6 +62,11 @@
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /*
 **	This aircraft class is used for all flying sentient objects. This
 *includes fixed wing *	aircraft as well as helicopters. It excludes bullets
@@ -284,9 +289,9 @@ class AircraftClass : public FootClass, public FlyClass {
 
 bool Building_Check();
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void AircraftClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void AircraftClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_AIRCRAFT_H_

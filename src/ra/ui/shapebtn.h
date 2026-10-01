@@ -46,6 +46,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/ui/toggle.h"
 
+namespace ra {
+
 class ShapeButtonClass final : public ToggleClass {
  public:
   ShapeButtonClass() noexcept;
@@ -69,4 +71,7 @@ class ShapeButtonClass final : public ToggleClass {
   */
   std::span<const std::byte> ShapeData;
 };
+
+}  // namespace ra
+
 #endif  // CNC_RED_ALERT_RA_UI_SHAPEBTN_H_

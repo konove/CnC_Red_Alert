@@ -32,10 +32,14 @@ namespace engine::gfx {
 class Palette;
 }  // namespace engine::gfx
 
+namespace ra {
+
 // Loads a PCX title screen image into a graphics viewport.
 // Reads the PCX file, extracts the palette, and blits the image to the
 // viewport. `palette` is updated with the image's palette.
 void Load_Title_Screen(std::string_view name, PixelView* video_page,
                        engine::gfx::Palette& palette);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_GRAPHICS_LOADER_H_

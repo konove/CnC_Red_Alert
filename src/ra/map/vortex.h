@@ -41,14 +41,20 @@
 #ifndef CNC_RED_ALERT_RA_MAP_VORTEX_H_
 #define CNC_RED_ALERT_RA_MAP_VORTEX_H_
 
-#define MAX_REMAP_SHADES \
-  16  // Number of lookup tables required for vortex shading.
-#define VORTEX_FRAMES \
-  16  // Number of frames in one complete rotation of the vortex.
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/assets/palette.h"
 #include "ra/core/defines.h"
 #include "ra/objects/object.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
+#define MAX_REMAP_SHADES \
+  16  // Number of lookup tables required for vortex shading.
+#define VORTEX_FRAMES \
+  16  // Number of frames in one complete rotation of the vortex.
 
 class ChronalVortexClass {
  public:
@@ -280,9 +286,9 @@ class ChronalVortexClass {
   PixelBuffer RenderBuffer;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void ChronalVortexClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void ChronalVortexClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_VORTEX_H_

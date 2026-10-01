@@ -27,7 +27,7 @@
 #include "absl/base/attributes.h"
 #include "base/types.h"
 
-namespace dib {
+namespace ra::dib {
 
 // One colour-table entry, in the order a BMP stores it.
 struct Color {
@@ -106,6 +106,6 @@ class Image {
 // palette as the screen shows it (PaletteColor::red() and friends).
 void RemapToPalette(Image& image, std::span<const Color> target);
 
-}  // namespace dib
+}  // namespace ra::dib
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_DIB_H_

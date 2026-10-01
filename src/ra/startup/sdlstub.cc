@@ -13,6 +13,8 @@
 #include "ra/startup/winstub.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 void Check_For_Focus_Loss() {
   if (!TheGameState().in_focus()) {
     engine::window::TheDisplay().PumpEvents();
@@ -54,3 +56,5 @@ void GameWindowEvents::Quit() {
   ShutDown();
   exit(0);
 }
+
+}  // namespace ra

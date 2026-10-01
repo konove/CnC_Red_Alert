@@ -56,6 +56,8 @@
 #include "ra/objects/unit.h"
 #include "ra/objects/vessel.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * CarryoverClass::CarryoverClass -- Constructor for carry over objects. *
  *                                                                                             *
@@ -211,3 +213,5 @@ bool CarryoverClass::Create() const {
 
   return false;
 }
+
+}  // namespace ra

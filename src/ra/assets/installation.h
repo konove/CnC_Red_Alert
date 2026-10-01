@@ -18,6 +18,8 @@
 #ifndef CNC_RED_ALERT_RA_ASSETS_INSTALLATION_H_
 #define CNC_RED_ALERT_RA_ASSETS_INSTALLATION_H_
 
+namespace ra {
+
 // File: Which game content is installed, and which disc holds it.
 
 // Returns the registry subkey, under HKEY_LOCAL_MACHINE, holding this game's
@@ -64,5 +66,7 @@ bool Force_CD_Available(int cd_desired);
 // Ensures the disc holding the given official scenario is available. Expansion
 // scenarios live on their own discs; everything else is always reachable.
 bool Force_Scenario_Available(const char* name);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_INSTALLATION_H_

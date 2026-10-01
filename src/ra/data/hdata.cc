@@ -64,6 +64,8 @@
 #include "ra/data/text_ids.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 static const HouseTypeClass HouseEngland(
     HOUSE_ENGLAND,
     "England",     //	NAME:			House name.
@@ -489,3 +491,5 @@ bool HouseTypeClass::Read_INI(CCINIClass& ini) {
   }
   return false;
 }
+
+}  // namespace ra

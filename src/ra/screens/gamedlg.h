@@ -40,10 +40,14 @@
 #ifndef CNC_RED_ALERT_RA_SCREENS_GAMEDLG_H_
 #define CNC_RED_ALERT_RA_SCREENS_GAMEDLG_H_
 
+namespace ra {
+
 class GameControlsClass {
  public:
   GameControlsClass() = default;
   static void Process();
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SCREENS_GAMEDLG_H_

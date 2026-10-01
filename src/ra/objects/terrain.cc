@@ -101,6 +101,8 @@
 #include "ra/objects/techno.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 /***********************************************************************************************
@@ -775,3 +777,5 @@ void TerrainClass::Write_INI(CCINIClass& ini) {
     }
   }
 }
+
+}  // namespace ra

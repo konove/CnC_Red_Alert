@@ -8,6 +8,8 @@
 #include "engine/window/keyboard.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 // The flags that say what the game is doing right now: whether it is
 // running at all, whether the window has the focus, whether a movie is
 // playing, how the scenario ended, and what the modal dialogs need to tell
@@ -131,5 +133,7 @@ class GameState {
 // Returns the GameState that Game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.
 inline GameState& TheGameState() { return base::Installed<GameState>::Get(); }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_STARTUP_GAME_STATE_H_

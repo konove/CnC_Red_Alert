@@ -39,7 +39,10 @@
 
 #ifndef CNC_RED_ALERT_RA_CORE_FACING_H_
 #define CNC_RED_ALERT_RA_CORE_FACING_H_
+
 #include "ra/core/face.h"
+
+namespace ra {
 
 /*
 **	This is a general facing handler class. It is used in those cases where
@@ -95,5 +98,7 @@ class FacingClass {
   DirType CurrentFacing;
   DirType DesiredFacing;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_FACING_H_

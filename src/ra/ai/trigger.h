@@ -51,6 +51,11 @@
 #include "ra/core/heap.h"
 #include "ra/objects/object.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class TriggerClass {
  public:
   RTTIType RTTI;
@@ -145,9 +150,9 @@ class TriggerClass {
 
 TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype);
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void TriggerClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TriggerClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_AI_TRIGGER_H_

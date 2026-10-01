@@ -53,6 +53,8 @@
 #include "ra/wol/wolapiob.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 // The key that answers a page from a Westwood Online user outside the
@@ -425,3 +427,5 @@ void IPX_Call_Back() {
 // release. The chat trigger is still recognized so the message is relayed the
 // same way on every machine.
 void Enable_Secret_Units() {}
+
+}  // namespace ra

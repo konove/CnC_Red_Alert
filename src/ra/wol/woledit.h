@@ -30,6 +30,8 @@
 
 #include "ra/ui/edit.h"
 
+namespace ra {
+
 // Set by WOLEditClass::Action when Tab is pressed, and cleared by whoever
 // reads it. The login dialog uses it to move focus between its two edit boxes,
 // which EditClass has no way to express on its own.
@@ -46,5 +48,7 @@ class WOLEditClass : public EditClass {
   void Draw_Text(PixelView& view,
                  const char* text) override;  //	Override of base
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_WOL_WOLEDIT_H_

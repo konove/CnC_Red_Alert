@@ -3,4 +3,8 @@
 
 #include "ra/net/connmgr.h"
 
+namespace ra {
+
 ConnManClass::~ConnManClass() = default;
+
+}  // namespace ra

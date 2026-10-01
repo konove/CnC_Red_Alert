@@ -85,6 +85,8 @@
 #include "ra/objects/overlay.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 static const OverlayTypeClass Sandbag(
@@ -937,3 +939,5 @@ OverlayTypeClass& OverlayTypeClass::As_Reference(OverlayType type) {
 COORDINATE OverlayTypeClass::Coord_Fixup(COORDINATE coord) const {
   return Coord_Whole(coord);
 }
+
+}  // namespace ra

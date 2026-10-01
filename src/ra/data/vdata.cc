@@ -83,6 +83,8 @@
 #include "ra/objects/type.h"
 #include "ra/objects/vessel.h"
 
+namespace ra {
+
 // Submarine
 static const VesselTypeClass VesselSubmarine(
     VESSEL_SS,
@@ -656,3 +658,5 @@ VesselType VesselTypeClass::From_Name(const char* name) {
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
 int VesselTypeClass::Max_Pips() const { return Max_Passengers(); }
+
+}  // namespace ra

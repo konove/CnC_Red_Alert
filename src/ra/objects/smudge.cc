@@ -69,6 +69,8 @@
 #include "ra/objects/cell.h"
 #include "ra/objects/object.h"
 
+namespace ra {
+
 HousesType SmudgeClass::ToOwn = HOUSE_NONE;
 
 /***********************************************************************************************
@@ -372,3 +374,5 @@ void SmudgeClass::Write_INI(CCINIClass& ini) {
     }
   }
 }
+
+}  // namespace ra

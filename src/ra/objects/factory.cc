@@ -77,6 +77,8 @@
 #include "ra/objects/type.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * FactoryClass::FactoryClass -- Default constructor for factory objects. *
  *                                                                                             *
@@ -653,3 +655,5 @@ bool FactoryClass::Completed() {
   }
   return false;
 }
+
+}  // namespace ra

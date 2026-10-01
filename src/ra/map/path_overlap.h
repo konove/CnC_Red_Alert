@@ -10,6 +10,8 @@
 #include "base/array.h"
 #include "base/numeric.h"
 
+namespace ra {
+
 // Overlap bitmaps are arrays of 32-bit words: cell N lives in word N / 32, at
 // bit N % 32.
 //
@@ -50,5 +52,7 @@ inline void ClearOverlap(std::span<uint32_t> words, int cell) {
   CHECK_LT(base::ToSize(OverlapWord(cell)), words.size());
   base::At(words, base::ToSize(OverlapWord(cell))) &= ~OverlapMask(cell);
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_PATH_OVERLAP_H_

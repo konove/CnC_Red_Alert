@@ -96,6 +96,8 @@
 #include "ra/wol/wol_main.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 static void HostNameFromGameChannelName(std::span<char> szNameToSet,
                                         const char* szChannelName);
 
@@ -179,7 +181,6 @@ WolapiObject::~WolapiObject() {
 //***********************************************************************************************
 bool WolapiObject::bSetupCOMStuff() {
   //	debugprint( "++++Begin WolapiObject::bSetupCOMStuff\n" );
-
 
   //	Grab IChat, INetUtil, set up "sinks".
   //	debugprint( "CoCreateInstance\n" );
@@ -268,7 +269,6 @@ bool WolapiObject::bSetupCOMStuff() {
 //***********************************************************************************************
 void WolapiObject::UnsetupCOMStuff() {
   //	debugprint( "----Begin WolapiObject::UnsetupCOMStuff\n" );
-
 
   //	If we could use ATL stuff, this would be different. (We'd use
   // AtlUnadvise.)
@@ -3351,3 +3351,5 @@ void HostNameFromGameChannelName(std::span<char> szNameToSet,
   const std::string_view channel(szChannelName);
   base::SafeCopy(szNameToSet, channel.substr(0, channel.find('\'')));
 }
+
+}  // namespace ra

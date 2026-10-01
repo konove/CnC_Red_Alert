@@ -9,6 +9,8 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 
+namespace ra {
+
 bool IsMissionCounterstrike(const std::string_view file_name) {
   // Case-sensitive, unlike IsMissionAftermath(): the original sscanf("SCM%03d")
   // parse only matched an uppercase prefix, and scenario lists are built from
@@ -68,3 +70,5 @@ std::string MissionWithVariant(const std::string_view file_name,
   }
   return result;
 }
+
+}  // namespace ra

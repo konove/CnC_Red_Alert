@@ -71,6 +71,8 @@
 #include "ra/objects/vessel.h"
 #include "ra/saveload/serialize.h"
 
+namespace ra {
+
 template <class Archive>
 void TeamMemberClass::Serialize(Archive& ar) {
   ar(Quantity, TechnoTypePtr(Class));
@@ -574,3 +576,5 @@ void HouseClass::Serialize(Archive& ar) {
 }
 template void HouseClass::Serialize(ArchiveWriter&);
 template void HouseClass::Serialize(ArchiveReader&);
+
+}  // namespace ra

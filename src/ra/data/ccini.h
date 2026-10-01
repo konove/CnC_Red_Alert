@@ -49,6 +49,8 @@
 #include "ra/core/defines.h"
 #include "ra/data/ini.h"
 
+namespace ra {
+
 class TriggerTypeClass;
 
 /*
@@ -167,5 +169,7 @@ TheaterType Theater_From_Name(const char* name);
 // Converts a reinforcement source name from the scenario INI into a
 // SourceType, or SOURCE_NONE if it matches nothing.
 SourceType Source_From_Name(const char* name);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_DATA_CCINI_H_

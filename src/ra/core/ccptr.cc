@@ -59,6 +59,9 @@
 #include "ra/objects/template.h"
 #include "ra/objects/terrain.h"
 #include "ra/objects/type.h"
+
+namespace ra {
+
 /*
 **	These member functions for the CCPtr class cannot be declared inside the
 **	class definition since they could refer to other objects that themselves
@@ -122,3 +125,5 @@ template class CCPtr<TemplateTypeClass>;
 template class CCPtr<TerrainTypeClass>;
 template class CCPtr<OverlayTypeClass>;
 template class CCPtr<SmudgeTypeClass>;
+
+}  // namespace ra

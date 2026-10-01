@@ -79,6 +79,8 @@
 #include "ra/ui/gadget.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 /*
@@ -822,3 +824,5 @@ void Show_Who_Was_Responsible() {
 
   EgoList.clear();
 }
+
+}  // namespace ra

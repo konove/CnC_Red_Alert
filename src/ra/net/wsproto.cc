@@ -96,6 +96,8 @@ using socklen_t = int;
 #define GetLastError() errno
 #endif
 
+namespace ra {
+
 static void Socket_Event_Handler(int socket, SocketEvent event, void* data) {
   static_cast<WinsockInterfaceClass*>(data)->Event_Handler(socket, event);
 }
@@ -578,3 +580,5 @@ int WinsockInterfaceClass::Get_Last_Error() {
   return errno;
 #endif
 }
+
+}  // namespace ra

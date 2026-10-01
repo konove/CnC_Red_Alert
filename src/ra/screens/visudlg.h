@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_SCREENS_VISUDLG_H_
 #define CNC_RED_ALERT_RA_SCREENS_VISUDLG_H_
 
+namespace ra {
+
 class VisualControlsClass {
  private:
   static constexpr int kButtonBrightness = 1;
@@ -70,5 +72,7 @@ class VisualControlsClass {
   VisualControlsClass() = default;
   static void Process();
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SCREENS_VISUDLG_H_

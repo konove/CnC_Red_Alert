@@ -45,6 +45,8 @@
 #include "ra/core/game_clock.h"
 #include "ra/core/jshell.h"
 
+namespace ra {
+
 class SuperClass {
  public:
   SuperClass() = default;
@@ -99,5 +101,7 @@ class SuperClass {
 
   static constexpr int kAnimationStages = 54;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_SUPER_H_

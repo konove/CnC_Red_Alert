@@ -2,6 +2,8 @@
 #include "gtest/gtest.h"
 #include "ra/data/ini.h"
 
+namespace ra {
+
 namespace {
 
 TEST(IniNumberTest, InvalidNumbersKeepTheCallersDefault) {
@@ -29,3 +31,5 @@ TEST(IniNumberTest, PreservesIntegerAndHexadecimalForms) {
 }
 
 }  // namespace
+
+}  // namespace ra

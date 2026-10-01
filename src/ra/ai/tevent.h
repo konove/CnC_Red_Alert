@@ -58,6 +58,8 @@
 #include "ra/core/jshell.h"
 #include "ra/objects/object.h"
 
+namespace ra {
+
 /*
 **	These are the trigger events that are checked for and if qualified, they
 *will signal *	a successful trigger event. This might result in the trigger
@@ -235,5 +237,7 @@ class EventChoiceClass {
 extern base::EnumArray<TEventType, EventChoiceClass,
                        static_cast<int>(TEVENT_COUNT)>
     EventChoices;
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_AI_TEVENT_H_

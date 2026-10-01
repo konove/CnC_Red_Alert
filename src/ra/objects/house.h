@@ -63,6 +63,11 @@
 #include "ra/objects/type.h"
 #include "ra/objects/utracker.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class FootClass;
 class FactoryClass;
 
@@ -990,9 +995,9 @@ class HouseClass {
   }
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void HouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void HouseClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_HOUSE_H_

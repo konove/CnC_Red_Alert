@@ -174,6 +174,8 @@
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 static void Remove_AI_Players();
@@ -3277,3 +3279,5 @@ void Disect_Scenario_Name(const char* name_data, int& scenario,
   var = static_cast<ScenarioVarType>(name.at(6) - 'A' +
                                      static_cast<int>(SCEN_VAR_A));
 }
+
+}  // namespace ra

@@ -34,6 +34,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 
+namespace ra {
+
 // ajw: in RA, all this did was play a movie. Denzil's DVD support uses it in
 // its original sense again, because a DVD cannot tell the side by which disc is
 // in the drive. (5/08/1995 BWG: created.)
@@ -74,3 +76,5 @@ void PlayFirstLaunchIntro(PixelView& hidden, PixelView& visible) {
 
   Play_Movie(VQ_INTRO_MOVIE, THEME_NONE, false);
 }
+
+}  // namespace ra

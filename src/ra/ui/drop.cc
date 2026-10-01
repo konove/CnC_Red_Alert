@@ -55,6 +55,8 @@
 #include "ra/ui/gadget.h"
 #include "ra/ui/link.h"
 
+namespace ra {
+
 DropListClass::DropListClass(int id, std::span<char> text, int max_len,
                              TextPrintType flags, int x, int y, int w, int h,
                              std::span<const std::byte> up,
@@ -184,3 +186,5 @@ void DropListClass::Flag_To_Redraw() {
   }
   EditClass::Flag_To_Redraw();
 }
+
+}  // namespace ra

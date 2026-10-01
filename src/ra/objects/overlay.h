@@ -51,6 +51,11 @@
 #include "ra/objects/type.h"
 #include "ra/startup/game_state.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /******************************************************************************
 **	This class controls the overlay object. Overlay objects function
 *congruously *	to carpet on a floor. They have no depth, but merely control the
@@ -123,9 +128,9 @@ class OverlayClass : public ObjectClass {
   static HousesType ToOwn;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void OverlayClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void OverlayClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_OVERLAY_H_

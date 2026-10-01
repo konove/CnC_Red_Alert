@@ -80,6 +80,8 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * TriggerClass::Description -- Fetch a one line ASCII description of the
  *trigger.             *
@@ -505,3 +507,5 @@ void TriggerClass::Detach(TARGET target, bool /*unused*/) const {
     //		}
   }
 }
+
+}  // namespace ra

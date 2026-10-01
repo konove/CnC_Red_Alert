@@ -56,6 +56,8 @@
 #include "engine/net/serial/wincomm.h"
 #include "ra/net/connect.h"
 
+namespace ra {
+
 /***************************************************************************
  * NullModemConnClass::NullModemConnClass -- class constructor             *
  *                                                                         *
@@ -179,7 +181,6 @@ int NullModemConnClass::Send(std::span<const std::byte> buf, int buflen,
     return 0;
   }
 
-
   /*------------------------------------------------------------------------
   Package the data into the Send Buffer
   ------------------------------------------------------------------------*/
@@ -282,3 +283,5 @@ int NullModemConnClass::Packet_Overhead_Size() {
 } /* end of Packet_Overhead_Size */
 
 /************************** end of nullconn.cpp ****************************/
+
+}  // namespace ra

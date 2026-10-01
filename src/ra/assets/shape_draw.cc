@@ -43,6 +43,8 @@
 #include "ra/core/game_clock.h"
 #include "ra/map/display.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 namespace {
@@ -358,3 +360,5 @@ std::vector<unsigned char> Get_Radar_Icon(
   }
   return result;
 }
+
+}  // namespace ra

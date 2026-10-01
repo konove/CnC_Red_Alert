@@ -14,7 +14,7 @@
 #include "base/types.h"
 #include "base/unaligned.h"
 
-namespace dib {
+namespace ra::dib {
 namespace {
 
 // A BMP begins with a 14-byte file header and a 40-byte info header, both
@@ -145,4 +145,4 @@ void RemapToPalette(Image& image, std::span<const Color> target) {
   }
 }
 
-}  // namespace dib
+}  // namespace ra::dib

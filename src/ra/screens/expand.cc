@@ -77,6 +77,8 @@
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 // #define CS_DEBUG
 
 /***********************************************************************************************
@@ -500,6 +502,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     }
   }
 
-
   return okval;
 }
+
+}  // namespace ra

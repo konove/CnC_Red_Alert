@@ -41,6 +41,8 @@
 #include "absl/log/check.h"
 #include "ra/core/heap.h"
 
+namespace ra {
+
 // The CCPtr class is designed for a specific purpose. It functions like a
 // pointer except that it requires no fixups for saving and loading. If pointer
 // fixups are not an issue, than using regular pointers would be more efficient.
@@ -257,5 +259,7 @@ extern template class CCPtr<TemplateTypeClass>;
 extern template class CCPtr<TerrainTypeClass>;
 extern template class CCPtr<OverlayTypeClass>;
 extern template class CCPtr<SmudgeTypeClass>;
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_CCPTR_H_

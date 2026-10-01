@@ -77,6 +77,8 @@
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 /***********************************************************************************************
@@ -833,3 +835,5 @@ int Abort_Dialog() {
 }
 
 /************************** end of mplayer.cpp *****************************/
+
+}  // namespace ra

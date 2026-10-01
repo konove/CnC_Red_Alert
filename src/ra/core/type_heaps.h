@@ -10,6 +10,8 @@
 #include "ra/objects/warhead.h"
 #include "ra/objects/weapon.h"
 
+namespace ra {
+
 // One heap per kind of object type: the descriptions of what a unit, a
 // building or a warhead is, as opposed to the objects on the map. They are
 // built once, adjusted by the rules files, and never saved -- loading a
@@ -97,5 +99,7 @@ class TypeHeaps {
 // Returns the TypeHeaps that Game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.
 inline TypeHeaps& TheTypeHeaps() { return base::Installed<TypeHeaps>::Get(); }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_TYPE_HEAPS_H_

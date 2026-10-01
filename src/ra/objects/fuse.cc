@@ -49,6 +49,8 @@
 #include "ra/core/defines.h"
 #include "ra/core/display_constants.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * FuseClass::Arm_Fuse -- Sets up fuse for detonation check. *
  *                                                                                             *
@@ -134,3 +136,4 @@ bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
   return false;
 }
 
+}  // namespace ra

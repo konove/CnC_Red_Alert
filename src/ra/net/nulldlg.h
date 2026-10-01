@@ -5,6 +5,8 @@
 
 #include "ra/net/session.h"
 
+namespace ra {
+
 bool Init_Null_Modem(SerialSettingsType* settings);
 void Shutdown_Modem();
 void Modem_Signoff();
@@ -20,5 +22,7 @@ int Com_Show_Scenario_Dialog();
 bool Find_Local_Scenario(const char* description, std::span<char> filename,
                          unsigned int length, const char* digest,
                          bool official);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_NULLDLG_H_

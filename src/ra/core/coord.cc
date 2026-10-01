@@ -41,6 +41,8 @@
 #include "ra/core/inline.h"
 #include "ra/objects/target.h"
 
+namespace ra {
+
 std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
                                              const Rect& rect,
                                              const bool no_center) {
@@ -270,3 +272,5 @@ void List_Copy(const std::span<const int16_t> source, const int len,
     }
   }
 }
+
+}  // namespace ra

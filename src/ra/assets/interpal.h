@@ -46,11 +46,15 @@
 class PixelBuffer;
 class PixelView;
 
+namespace ra {
+
 // Constants
 #define SIZE_OF_PALETTE 256
 
 // Palette interpolation functions
 void Interpolate_2X_Scale(PixelBuffer* source, PixelView* dest,
                           const char* palette_file_name);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_INTERPAL_H_

@@ -7,7 +7,7 @@
 // This file is gradually replacing preprocessor macros from defines.h
 // with type-safe constexpr variables for use with 'if constexpr'
 
-namespace config {
+namespace ra::config {
 
 // Build version type
 enum class BuildVersion {
@@ -67,6 +67,6 @@ inline constexpr bool kIsEnglish = kBuildLanguage == BuildLanguage::English;
 inline constexpr bool kIsGerman = kBuildLanguage == BuildLanguage::German;
 inline constexpr bool kIsFrench = kBuildLanguage == BuildLanguage::French;
 
-}  // namespace config
+}  // namespace ra::config
 
 #endif  // CNC_RED_ALERT_RA_CORE_CONFIG_H_

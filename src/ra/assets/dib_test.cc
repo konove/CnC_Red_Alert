@@ -7,6 +7,8 @@
 #include "base/array.h"
 #include "gtest/gtest.h"
 
+namespace ra {
+
 namespace {
 
 // LLVM 23 mistakes element invalidation for invalidating the vector reference;
@@ -204,3 +206,5 @@ TEST(DibRemapTest, AnEmptyTargetLeavesTheImageAlone) {
 }
 
 }  // namespace
+
+}  // namespace ra

@@ -48,6 +48,8 @@
 #include "ra/core/defines.h"
 #include "ra/data/ccini.h"
 
+namespace ra {
+
 /**********************************************************************
 **	Each of the warhead types has specific characteristics. This structure
 **	holds these characteristics.
@@ -123,5 +125,7 @@ class WarheadTypeClass {
   */
   int InfantryDeath{0};
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_WARHEAD_H_

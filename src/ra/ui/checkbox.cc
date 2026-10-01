@@ -51,6 +51,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/toggle.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * CheckBoxClass::Draw_Me -- Draws the checkbox imagery. *
  *                                                                                             *
@@ -107,3 +109,5 @@ bool CheckBoxClass::Action(unsigned flags, engine::window::KeyNumber& key,
   }
   return ToggleClass::Action(flags, key, x, y);
 }
+
+}  // namespace ra

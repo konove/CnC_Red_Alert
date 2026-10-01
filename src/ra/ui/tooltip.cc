@@ -37,6 +37,8 @@
 #include "ra/ui/iconlist.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 namespace {
 
 // The gadget this tooltip is bound to, when bIconList says it is a list whose
@@ -240,3 +242,5 @@ bool ToolTipClass::bOverDifferentLine() const {
   return pIconList != nullptr &&
          pIconList->IndexUnderMouse() != iLastIconListIndex;
 }
+
+}  // namespace ra

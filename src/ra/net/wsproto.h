@@ -42,8 +42,6 @@
 #include <cstddef>
 #include <span>
 
-class IPXAddressClass;
-
 #include "ra/core/owned_vector.h"
 
 #ifdef _WIN32
@@ -59,6 +57,10 @@ using HANDLE = void*;
 #endif
 
 #include "engine/net/net_select.h"
+
+namespace ra {
+
+class IPXAddressClass;
 
 /*
 ** Misc defines
@@ -195,5 +197,7 @@ class WinsockInterfaceClass {
   */
   ConnectStatusEnum ConnectStatus = NOT_CONNECTING;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_WSPROTO_H_

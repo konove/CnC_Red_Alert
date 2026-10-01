@@ -68,6 +68,8 @@
 #include "ra/objects/house.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 /*
@@ -472,3 +474,5 @@ void PowerClass::Flash_Power() {
   IsPowerToRedraw = true;
   Flag_To_Redraw(false);
 }
+
+}  // namespace ra

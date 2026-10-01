@@ -47,6 +47,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/display.h"
 
+namespace ra {
+
 /***************************************************************************
  * INTERPOLATE_2X_SCALE                                                    *
  *                                                                         *
@@ -71,3 +73,5 @@ void Interpolate_2X_Scale(PixelBuffer* source, PixelView* /*unused*/,
       source->bytes(), source->width(), source->height());
   source->UnlockSurface();
 }
+
+}  // namespace ra

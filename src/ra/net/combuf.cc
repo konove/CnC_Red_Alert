@@ -59,6 +59,8 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 
+namespace ra {
+
 /***************************************************************************
  * CommBufferClass::CommBufferClass -- class constructor *
  *                                                                         *
@@ -827,3 +829,5 @@ void CommBufferClass::Reset_Response_Time() {
 } /* end of Reset_Response_Time */
 
 /************************** end of combuf.cpp ******************************/
+
+}  // namespace ra

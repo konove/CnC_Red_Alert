@@ -24,6 +24,8 @@
 
 #include <string>
 
+namespace ra {
+
 // The same idea as cancel_current_msgbox in ra/ui/msgbox.h, but instead of
 // closing the dialog it greys out every control on it: the dialog stays up
 // with what the player typed still visible while the answer is on its way.
@@ -68,5 +70,7 @@ class SimpleEditDlgClass {
       nullptr};  //	Optional middle button text. Null = no
                  // middle button.
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_SEDITDLG_H_

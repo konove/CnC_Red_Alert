@@ -104,6 +104,8 @@
 #include <windows.h>
 #endif
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 // the following line was taken from Greenleaf's <ibmkeys.h> <asciidef.h>
@@ -153,7 +155,6 @@ NullModemClass::NullModemClass(int numsend, int numreceive, int maxlen,
   /*------------------------------------------------------------------------
   Init Port to NULL; we haven't opened Greenleaf yet.
   ------------------------------------------------------------------------*/
-
 
   /*------------------------------------------------------------------------
   Init timing parameters
@@ -427,7 +428,6 @@ bool NullModemClass::Init_Send_Queue() {
 DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   static char com_ids[9][5] = {"COM1", "COM2", "COM3", "COM4", "COM5",
                                "COM6", "COM7", "COM8", "COM9"};
-
 
   /*
   ** Create a new modem class for our com port
@@ -1971,3 +1971,5 @@ int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
 } /* end of Verify_And_Convert_To_Int */
 
 /*************************** end of nullmgr.cpp ****************************/
+
+}  // namespace ra

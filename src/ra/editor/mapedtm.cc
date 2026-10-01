@@ -73,6 +73,8 @@
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 /***************************************************************************
@@ -916,3 +918,5 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
   }
   TheMouse().Show();
 }
+
+}  // namespace ra

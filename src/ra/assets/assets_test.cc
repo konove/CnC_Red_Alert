@@ -9,6 +9,8 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 namespace {
 
 TEST(AssetsTest, NothingIsLoadedBeforeTheLoadersRun) {
@@ -58,3 +60,5 @@ TEST(AssetsTest, TheAssetsReturnsTheInstalledAssets) {
 }
 
 }  // namespace
+
+}  // namespace ra

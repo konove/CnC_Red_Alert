@@ -52,6 +52,11 @@
 #include "ra/objects/object.h"
 #include "ra/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /*
 **	There can be multiple trigger events and trigger actions. This
 *enumeration is used to *	indicate if there are multiple events/actions
@@ -165,9 +170,9 @@ class TriggerTypeClass : public AbstractTypeClass {
                bool selected, TextPrintType flags) const;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void TriggerTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TriggerTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_AI_TRIGTYPE_H_

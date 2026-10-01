@@ -71,6 +71,8 @@
 #include "ra/objects/target.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 LogicClass::~LogicClass() = default;
 
 /***********************************************************************************************
@@ -330,3 +332,5 @@ void LogicClass::Detach(TARGET target, bool /*unused*/) {
     }
   }
 }
+
+}  // namespace ra

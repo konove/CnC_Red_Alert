@@ -66,6 +66,7 @@
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
 #include "ra/assets/screen.h"
+#include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
@@ -80,16 +81,16 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
 #include "ra/ui/gauge.h"
+#include "ra/ui/input.h"
 #include "ra/ui/textbtn.h"
-
-static bool Receive_Remote_File(const char* file_name, int file_length,
-                                int gametype);
+#include "ra/wol/wolapiob.h"
 
 #define RESPONSE_TIMEOUT (int64_t{60} * 60)
 
-#include "ra/core/config.h"
-#include "ra/ui/input.h"
-#include "ra/wol/wolapiob.h"
+namespace ra {
+
+static bool Receive_Remote_File(const char* file_name, int file_length,
+                                int gametype);
 
 namespace {
 
@@ -801,3 +802,5 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
   return return_code;
 }
+
+}  // namespace ra

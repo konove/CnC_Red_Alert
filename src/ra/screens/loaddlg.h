@@ -49,6 +49,8 @@
 #include "ra/core/defines.h"
 #include "ra/ui/list.h"
 
+namespace ra {
+
 class FileEntryClass {
  public:
   char Descr[80];          // save-game description
@@ -93,5 +95,7 @@ class LoadOptionsClass {
   // before this.
   std::vector<FileEntryClass> Files;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SCREENS_LOADDLG_H_

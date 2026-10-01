@@ -50,6 +50,8 @@
 #include "ra/core/display_constants.h"
 #include "ra/core/face.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * FlyClass::Physics -- Performs vector physics (movement). *
  *                                                                                             *
@@ -138,3 +140,5 @@ void FlyClass::Fly_Speed(int speed, MPHType maximum) {
       static_cast<MPHType>(static_cast<int>(maximum) * Fixed(speed, 256));
   //	SpeedAdd = (MPHType)Fixed_To_Cardinal((int)maximum, speed);
 }
+
+}  // namespace ra

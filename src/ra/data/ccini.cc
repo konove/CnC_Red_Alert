@@ -131,6 +131,9 @@
 #include "ra/objects/type.h"
 #include "ra/objects/warhead.h"
 #include "ra/objects/weapon.h"
+
+namespace ra {
+
 /***********************************************************************************************
  * CCINIClass::Load -- Load the INI database from the file specified. *
  *                                                                                             *
@@ -1595,3 +1598,5 @@ SourceType Source_From_Name(const char* name) {
   }
   return SOURCE_NONE;
 }
+
+}  // namespace ra

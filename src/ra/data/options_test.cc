@@ -13,6 +13,8 @@
 #include "ra/core/defines.h"
 #include "ra/data/ini.h"
 
+namespace ra {
+
 namespace {
 
 // Values from the [WinHotkeys] section of a Steam install's REDALERT.INI.
@@ -146,3 +148,5 @@ TEST(OptionsAdjustPaletteTest, NoColorTurnsEveryEntryGrey) {
 }
 
 }  // namespace
+
+}  // namespace ra

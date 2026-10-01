@@ -47,6 +47,8 @@ size);
 
 class ByteStream;
 
+namespace ra {
+
 struct RGB {
   unsigned char red;
   unsigned char green;
@@ -86,5 +88,7 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
 // the stream is left open. Returns 0.
 int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
                    const engine::gfx::Palette& palette);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_FILEPCX_H_

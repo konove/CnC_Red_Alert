@@ -46,6 +46,8 @@
 #include "engine/platform/win32/win32_com.h"
 #include "ra/wol/wolapi.h"
 
+namespace ra {
+
 const IID IID_IRTPatcher = {0x925CDEDE,
                             0x71B9,
                             0x11D1,
@@ -130,3 +132,4 @@ const CLSID CLSID_Chat2 = {0x8B938191,
                            0x11D1,
                            {0x98, 0x08, 0x00, 0x60, 0x97, 0x06, 0xFA, 0x0C}};
 
+}  // namespace ra

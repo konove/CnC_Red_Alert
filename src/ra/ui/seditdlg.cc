@@ -44,6 +44,8 @@
 #include "ra/ui/textbtn.h"
 #include "ra/wol/woledit.h"
 
+namespace ra {
+
 //***********************************************************************************************
 SimpleEditDlgClass::SimpleEditDlgClass(int dialog_width, const char* title,
                                        const char* prompt, int chars_accept,
@@ -334,3 +336,5 @@ const char* SimpleEditDlgClass::Show() {
 
   return szReturn;
 }
+
+}  // namespace ra

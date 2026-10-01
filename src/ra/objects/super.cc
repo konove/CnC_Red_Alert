@@ -58,6 +58,8 @@
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * SuperClass::SuperClass -- Constructor for special super weapon objects. *
  *                                                                                             *
@@ -366,3 +368,5 @@ void SuperClass::Forced_Charge(bool player) {
     }
   }
 }
+
+}  // namespace ra

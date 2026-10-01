@@ -48,6 +48,8 @@
 #include "ra/core/vector_dynamic.h"
 #include "ra/ui/list.h"
 
+namespace ra {
+
 /***************************************************************************
 ** This class adds the ability for every list item to have a different color.
 */
@@ -100,5 +102,7 @@ class ColorListClass : public ListClass {
   SelectStyleType Style{SELECT_HIGHLIGHT};
   RemapControlType* SelectColor{nullptr};
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_COLRLIST_H_

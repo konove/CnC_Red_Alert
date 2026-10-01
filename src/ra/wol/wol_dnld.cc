@@ -48,6 +48,8 @@
 #include "ra/wol/wolapiob.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 //***********************************************************************************************
 bool WOL_Download_Dialog(IDownload* pDownload,
                          RADownloadEventSink* pDownloadSink,
@@ -276,3 +278,5 @@ bool WOL_Download_Dialog(IDownload* pDownload,
 
   return bReturn;
 }
+
+}  // namespace ra

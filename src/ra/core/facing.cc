@@ -49,6 +49,8 @@
 #include "ra/core/face.h"
 #include "ra/core/inline.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * FacingClass::FacingClass -- Default constructor for the facing class. *
  *                                                                                             *
@@ -177,3 +179,5 @@ bool FacingClass::Rotation_Adjust(int rate) {
   }
   return false;
 }
+
+}  // namespace ra

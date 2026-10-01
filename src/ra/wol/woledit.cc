@@ -37,6 +37,8 @@
 #include "ra/ui/gadget.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 //***********************************************************************************************
@@ -145,3 +147,5 @@ bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
   return ControlClass::Action(flags, key, x, y);
 }
+
+}  // namespace ra

@@ -18,6 +18,8 @@
 #ifndef CNC_RED_ALERT_RA_STARTUP_CONQUER_H_
 #define CNC_RED_ALERT_RA_STARTUP_CONQUER_H_
 
+namespace ra {
+
 // File: The game's outer loop: RunGame() picks and plays games until the
 // player exits, RunFrame() runs one frame, and ServiceRealTime() does the
 // real-time servicing that has to keep running inside blocking loops and
@@ -46,5 +48,7 @@ void ServiceRealTimeFor(int ticks);
 // that runs straight through, such as saving and loading, where nothing on
 // screen changes and each present would only wait out a display refresh.
 void ServiceBackgroundTasks();
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_STARTUP_CONQUER_H_

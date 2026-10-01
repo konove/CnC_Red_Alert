@@ -43,6 +43,8 @@
 #include "ra/core/vector.h"
 #include "ra/ui/list.h"
 
+namespace ra {
+
 enum class ICONKIND {
   ICON_SHAPE = 0,  //	pIcon points to a shape.
   ICON_DIB         //	pIcon points to DIBitmap data.
@@ -256,5 +258,7 @@ class IconListClass : public ListClass {
                     // selection, 2 for n multiple selections
   int iMaxItems;    //	Number of items to limit list to, if bWrapText is true.
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_ICONLIST_H_

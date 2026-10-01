@@ -7,5 +7,9 @@
 #include "ra/net/wsproto.h"              // IWYU pragma: keep
 #include "ra/wol/wolapiob.h"             // IWYU pragma: keep
 
+namespace ra {
+
 Network::Network() = default;
 Network::~Network() = default;
+
+}  // namespace ra

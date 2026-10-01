@@ -42,6 +42,8 @@
 
 #include "absl/base/attributes.h"
 
+namespace ra {
+
 /*
 **	This implements a simple linked list. It is possible to add, remove, and
 *traverse the *	list. Since this is a doubly linked list, it is possible to
@@ -77,5 +79,7 @@ class LinkClass {
   LinkClass* Next{nullptr};
   LinkClass* Prev{nullptr};
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_LINK_H_

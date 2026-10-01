@@ -43,6 +43,8 @@
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
 
+namespace ra {
+
 enum class ImpactType {
   IMPACT_NONE,    // No movement (of significance) occurred.
   IMPACT_NORMAL,  // Some (non eventful) movement occurred.
@@ -86,5 +88,7 @@ class FlyClass {
   int SpeedAccum{0};          // Lepton accumulator.
   MPHType SpeedAdd{MPH_IMMOBILE};  // Lepton add (per frame).
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_FLY_H_

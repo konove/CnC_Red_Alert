@@ -190,6 +190,8 @@
 #include "ra/screens/goptions.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 // SAM site launcher states kept in Status.
@@ -553,12 +555,12 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
 
           case STRUCT_REPAIR:
             Transmit_Message(RADIO_TETHER);
-            param = ::As_Target(Coord_Cell(Center_Coord()));
+            param = ra::As_Target(Coord_Cell(Center_Coord()));
             break;
 
           case STRUCT_REFINERY:
             param =
-                ::As_Target(Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_S)));
+                ra::As_Target(Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_S)));
             break;
           case StructType::STRUCT_NONE:
           case StructType::STRUCT_ADVANCED_TECH:
@@ -1839,7 +1841,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
             VesselClass* obj = TheObjectHeaps().vessel().Ptr(index);
             if ((obj && !obj->IsInLimbo && obj->House == House) &&
                 obj->IsSelfRepairing &&
-                (::Distance(Center_Coord(), obj->Center_Coord()) < 0x0200)) {
+                (ra::Distance(Center_Coord(), obj->Center_Coord()) < 0x0200)) {
               obj->IsSelfRepairing = false;
               obj->IsToSelfRepair = false;
             }
@@ -1856,7 +1858,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           auto* bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              ::As_Target(Adjacent_Cell(cellcenter, FACING_N)), nullptr, 200,
+              ra::As_Target(Adjacent_Cell(cellcenter, FACING_N)), nullptr, 200,
               WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
           if (bullet) {
             bullet->Unlimbo(center, DIR_N);
@@ -1864,7 +1866,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              ::As_Target(Adjacent_Cell(cellcenter, FACING_E)), nullptr, 200,
+              ra::As_Target(Adjacent_Cell(cellcenter, FACING_E)), nullptr, 200,
               WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
           if (bullet) {
             bullet->Unlimbo(center, DIR_E);
@@ -1872,7 +1874,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              ::As_Target(Adjacent_Cell(cellcenter, FACING_S)), nullptr, 200,
+              ra::As_Target(Adjacent_Cell(cellcenter, FACING_S)), nullptr, 200,
               WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
           if (bullet) {
             bullet->Unlimbo(center, DIR_S);
@@ -1880,7 +1882,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              ::As_Target(Adjacent_Cell(cellcenter, FACING_W)), nullptr, 200,
+              ra::As_Target(Adjacent_Cell(cellcenter, FACING_W)), nullptr, 200,
               WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
           if (bullet) {
             bullet->Unlimbo(center, DIR_W);
@@ -2300,7 +2302,7 @@ void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
   DCHECK(IsActive);
 
   if (action == ACTION_ATTACK) {
-    Player_Assign_Mission(MISSION_ATTACK, ::As_Target(cell));
+    Player_Assign_Mission(MISSION_ATTACK, ra::As_Target(cell));
   }
 
   if (action == ACTION_MOVE && *this == STRUCT_CONST) {
@@ -2432,9 +2434,9 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         TheWorld().scenario_init()++;
         if (air->Unlimbo(Cell_Coord(cell), DIR_N)) {
           // BG
-          // air->Assign_Destination(::As_Target(Nearby_Location(air)));
+          // air->Assign_Destination(ra::As_Target(Nearby_Location(air)));
           /*BG*/ air->Assign_Destination(
-              ::As_Target(air->Nearby_Location(this)));
+              ra::As_Target(air->Nearby_Location(this)));
           air->Assign_Mission(MISSION_MOVE);
           TheWorld().scenario_init()--;
           return 2;
@@ -2620,10 +2622,10 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
               **	When disembarking from a transport then guard an area
               *around the *	center of the base.
               */
-              base->Assign_Destination(::As_Target(cell));
+              base->Assign_Destination(ra::As_Target(cell));
               if (House->IQ >= TheRules().IQGuardArea) {
                 base->Assign_Mission(MISSION_GUARD_AREA);
-                base->ArchiveTarget = ::As_Target(
+                base->ArchiveTarget = ra::As_Target(
                     House->Where_To_Go(dynamic_cast<FootClass*>(base)));
               }
 
@@ -2738,10 +2740,10 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
               **	When disembarking from a transport then guard an area
               *around the *	center of the base.
               */
-              base->Assign_Destination(::As_Target(cell));
+              base->Assign_Destination(ra::As_Target(cell));
               if (House->IQ >= TheRules().IQGuardArea) {
                 base->Assign_Mission(MISSION_GUARD_AREA);
-                base->ArchiveTarget = ::As_Target(
+                base->ArchiveTarget = ra::As_Target(
                     House->Where_To_Go(dynamic_cast<FootClass*>(base)));
               }
               TheWorld().scenario_init()--;
@@ -3032,7 +3034,7 @@ bool BuildingClass::Limbo() {
  *=============================================================================================*/
 DirType BuildingClass::Turret_Facing() const {
   if (!Class->IsTurretEquipped && Target_Legal(TarCom)) {
-    return ::Direction(Center_Coord(), As_Coord(TarCom));
+    return ra::Direction(Center_Coord(), As_Coord(TarCom));
   }
   return PrimaryFacing.Current();
 }
@@ -3746,7 +3748,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     tech = Contact_With_Whom();
     if (tech) {
       if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER &&
-          (::Distance(tech->Center_Coord(), Docking_Coord()) < 0x0040 ||
+          (ra::Distance(tech->Center_Coord(), Docking_Coord()) < 0x0040 ||
            (tech->What_Am_I() == RTTI_AIRCRAFT &&
             dynamic_cast<AircraftClass*>(tech)->Class->IsFixedWing &&
             dynamic_cast<AircraftClass*>(tech)->In_Which_Layer() ==
@@ -4165,7 +4167,7 @@ int BuildingClass::Mission_Deconstruction() {
           VesselClass* obj = TheObjectHeaps().vessel().Ptr(index);
           if ((obj && !obj->IsInLimbo && obj->House == House) &&
               obj->IsSelfRepairing &&
-              (::Distance(Center_Coord(), obj->Center_Coord()) < 0x0200)) {
+              (ra::Distance(Center_Coord(), obj->Center_Coord()) < 0x0200)) {
             obj->IsSelfRepairing = false;
             obj->IsToSelfRepair = false;
           }
@@ -4865,7 +4867,7 @@ int BuildingClass::Mission_Missile() {
         if (sput && (sput->Fetch_Stage() >= 19)) {
           const CELL center = Coord_Cell(Center_Coord());
           const CELL cell = XY_Cell(Cell_X(center), 1);
-          const TARGET targ = ::As_Target(cell);
+          const TARGET targ = ra::As_Target(cell);
 
           auto* bullet = base::NewPooled<BulletClass>(
               BULLET_GPS_SATELLITE, targ, this, 200, WARHEAD_FIRE,
@@ -4927,7 +4929,7 @@ int BuildingClass::Mission_Missile() {
       case kLaunchUp: {
         const CELL center = Coord_Cell(Center_Coord());
         const CELL cell = XY_Cell(Cell_X(center), 1);
-        const TARGET targ = ::As_Target(cell);
+        const TARGET targ = ra::As_Target(cell);
         auto* bullet = base::NewPooled<BulletClass>(
             BULLET_NUKE_UP, targ, this, 200, WARHEAD_HE,
             static_cast<int>(MPH_VERY_FAST));
@@ -4956,7 +4958,7 @@ int BuildingClass::Mission_Missile() {
             return 6;
           }
           bullet = base::NewPooled<BulletClass>(
-              BULLET_NUKE_DOWN, ::As_Target(House->NukeDest), this, 200,
+              BULLET_NUKE_DOWN, ra::As_Target(House->NukeDest), this, 200,
               WARHEAD_NUKE, static_cast<int>(MPH_VERY_FAST));
           if (bullet) {
             const int celly = std::max(Cell_Y(House->NukeDest) - 64, 1);
@@ -5240,7 +5242,7 @@ int BuildingClass::Mission_Unload() {
 
             if (House->IQ >= TheRules().IQGuardArea) {
               unit->Assign_Mission(MISSION_GUARD_AREA);
-              unit->ArchiveTarget = ::As_Target(House->Where_To_Go(unit));
+              unit->ArchiveTarget = ra::As_Target(House->Where_To_Go(unit));
             }
             unit->Force_Track(DriveClass::kOutOfWeaponFactory, coord);
             //						unit->Force_Track(DriveClass::kOutOfWeaponFactory,
@@ -6584,3 +6586,5 @@ std::span<const int16_t> BuildingClass::Overlap_List(bool redraw) const {
   }
   return TechnoClass::Overlap_List(redraw);
 }
+
+}  // namespace ra

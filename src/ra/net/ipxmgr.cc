@@ -98,6 +98,8 @@
 #include "ra/net/wsproto.h"
 #include "ra/objects/house.h"  // IWYU pragma: keep - used by an DCHECK() below.
 
+namespace ra {
+
 /***************************************************************************
  * IPXManagerClass::IPXManagerClass -- class constructor                   *
  *                                                                         *
@@ -1448,7 +1450,8 @@ int IPXManagerClass::Free_RealMode_Mem() {
 
   return 1;
 
-
 } /* end of Free_Realmode_Mem */
 
 /*************************** end of ipxmgr.cpp *****************************/
+
+}  // namespace ra

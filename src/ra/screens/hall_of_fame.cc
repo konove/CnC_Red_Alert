@@ -8,6 +8,8 @@
 
 #include "base/buffer.h"
 
+namespace ra {
+
 namespace {
 
 constexpr std::size_t kScoreOffset = 12;
@@ -76,3 +78,5 @@ FameTable DecodeFameTable(std::span<const std::byte, kFameFileSize> in) {
   }
   return table;
 }
+
+}  // namespace ra

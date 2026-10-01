@@ -64,6 +64,8 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/list.h"
 
+namespace ra {
+
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
                                TextPrintType flags,
                                std::span<const std::byte> up,
@@ -147,3 +149,5 @@ void CheckListClass::Draw_Entry(PixelView& view, int index, int x, int y,
   Conquer_Clip_Text_Print(view, buffer, x, y, scheme, kTBlack, flags, width,
                           Tabs);
 }
+
+}  // namespace ra

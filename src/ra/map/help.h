@@ -53,6 +53,8 @@
 #include "ra/data/text_ids.h"
 #include "ra/map/tab.h"
 
+namespace ra {
+
 #define HELP_TEXT_COLOR 80  // 158		//Goldy/orange
 
 class HelpClass : public TabClass {
@@ -149,5 +151,7 @@ class HelpClass : public TabClass {
   static constexpr int kXOffset =
       12;  // The X pixel offset from cursor for help text print.
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_HELP_H_

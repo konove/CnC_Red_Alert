@@ -16,6 +16,8 @@
 #include "ra/assets/dib.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 namespace {
 
 constexpr int kWidth = 8;
@@ -214,3 +216,5 @@ TEST(IconsetViewTest, RejectsTruncatedHeadersAndOutOfRangeSections) {
   const IconsetClass end(base::ObjectBytes(header));
   EXPECT_TRUE(end.Map_Data().empty());
 }
+
+}  // namespace ra

@@ -103,6 +103,8 @@
 #include "ra/startup/conquer.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * Anim_From_Name -- Given a name, this finds the corresponding anim type. *
  *                                                                                             *
@@ -1141,3 +1143,5 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
     ThePalettes().game_palette().Set(kFadePaletteSlow, ServiceRealTime);
   }
 }
+
+}  // namespace ra

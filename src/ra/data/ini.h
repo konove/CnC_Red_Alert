@@ -57,6 +57,8 @@
 #include "ra/core/search.h"
 #include "ra/objects/object.h"
 
+namespace ra {
+
 /*
 **	This is an INI database handler class. It handles a database with a disk
 *format identical *	to the INI files commonly used by Windows.
@@ -201,5 +203,7 @@ void Write_Scenario_INI(const char* fname);
 bool Read_Scenario_INI(const char* fname, bool fresh = true);
 bool Scan_Place_Object(ObjectClass* obj, CELL cell);
 void Assign_Houses();
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_DATA_INI_H_

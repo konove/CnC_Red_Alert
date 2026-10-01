@@ -57,6 +57,8 @@
 #include "ra/wol/woledit.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 static bool ReadSavedNicks(const WolapiObject* pWO, IconListClass& NickList,
                            std::span<char> szNameBuffer,
                            std::span<char> szPassBuffer);
@@ -617,3 +619,5 @@ void DeleteNick(const WolapiObject* pWO, int iOneBasedEntryToDelete) {
     DebugChatDef(hRes);
   }
 }
+
+}  // namespace ra

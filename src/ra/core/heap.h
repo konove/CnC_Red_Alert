@@ -57,6 +57,8 @@
 #include "ra/core/vector.h"
 #include "ra/core/vector_dynamic.h"
 
+namespace ra {
+
 // Fixed-size block memory allocator that manages a pool of uniformly-sized
 // memory blocks.
 //
@@ -382,5 +384,7 @@ bool TFixedIHeapClass<T>::Load(ArchiveReader& reader)
 // whose corruption the game cannot survive.
 #define CHECK_HEAP_SLOT(heap, object) \
   CHECK_EQ((heap).ID(object), int{(object)->ID}) << (heap).Describe(object)
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_HEAP_H_

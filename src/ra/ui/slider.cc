@@ -65,6 +65,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/shapebtn.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 /***********************************************************************************************
@@ -381,3 +383,5 @@ void SliderClass::Peer_To_Peer(unsigned flags,
     }
   }
 }
+
+}  // namespace ra

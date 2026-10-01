@@ -146,6 +146,8 @@
 #include "ra/net/ipxconn.h"
 #include "ra/net/ipxgconn.h"
 
+namespace ra {
+
 /*
 ********************************** Defines **********************************
 */
@@ -383,6 +385,8 @@ class IPXManagerClass : public ConnManClass {
   .....................................................................*/
   int BadConnection = kConnectionNone;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_IPXMGR_H_
 

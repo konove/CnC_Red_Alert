@@ -83,6 +83,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/link.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 /***************************************************************************
@@ -902,3 +904,5 @@ void ListClass::Set_Selected_Index(const char* text) {
     }
   }
 }
+
+}  // namespace ra

@@ -62,6 +62,11 @@
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /****************************************************************************
 **	For each instance of a unit (vehicle) in the game, there is one of
 **	these structures. This structure holds information that is specific
@@ -284,9 +289,9 @@ class UnitClass final : public DriveClass {
   void Serialize(Archive& ar);
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void UnitClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void UnitClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_UNIT_H_

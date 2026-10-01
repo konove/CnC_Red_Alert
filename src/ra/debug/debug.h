@@ -18,6 +18,8 @@
 #ifndef CNC_RED_ALERT_RA_DEBUG_DEBUG_H_
 #define CNC_RED_ALERT_RA_DEBUG_DEBUG_H_
 
+namespace ra {
+
 // TODO(konove): Should be switched to decimal
 #define TXT_CLEAR_MAP 0x3e8            // Clear the map
 #define TXT_INHERIT_MAP 0x3e9          // Inherit previous map
@@ -56,5 +58,7 @@
 
 void Log_Event(const char* text, ...);
 void Debug_Key(unsigned input);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_DEBUG_DEBUG_H_

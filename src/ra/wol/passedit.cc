@@ -9,6 +9,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/wol/woledit.h"
 
+namespace ra {
+
 void PassEditClass::Set_Focus() {
   if (bClearOnNextSetFocus) {
     // The buffer holds the saved, scrambled password. Throw it away rather
@@ -27,3 +29,5 @@ void PassEditClass::Draw_Text(PixelView& view, const char* text) {
                          '*');
   WOLEditClass::Draw_Text(view, mask.c_str());
 }
+
+}  // namespace ra

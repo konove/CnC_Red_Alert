@@ -131,6 +131,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/shapebtn.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 // void const * RadarClass::CoverShape;
@@ -942,7 +944,6 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, CELL cell) {
     cell = 1;
   }
 
-
   /*
   **	Perform any clipping on the cell coordinate.
   */
@@ -1662,7 +1663,6 @@ bool RadarClass::RTacticalClass::Action(unsigned flags,
     GadgetClass::Action(0, key, x, y);
     return true;
   }
-
 
   /*
   **	See if the mouse is over the radar general area, but not yet
@@ -2402,3 +2402,5 @@ void RadarClass::Flag_Cell(CELL cell) {
   //	Radar_Pixel(cell);
   DisplayClass::Flag_Cell(cell);
 }
+
+}  // namespace ra

@@ -11,6 +11,8 @@
 #include "absl/strings/str_format.h"
 #include "ra/core/config.h"
 
+namespace ra {
+
 struct LanguageText {
   const char* insufficient_disk;
   const char* setup_first;
@@ -105,5 +107,7 @@ inline std::string MustHaveDiskSpaceText(int megabytes) {
                            megabytes);
   }
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_DATA_LANGUAGE_H_

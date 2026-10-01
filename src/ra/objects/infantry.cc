@@ -156,6 +156,8 @@
 #include "ra/screens/goptions.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 const int InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
                                            5, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3,
                                            2, 2, 2, 2, 1, 1, 1, 1, 1, 0};
@@ -766,7 +768,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
         Scatter(building->Center_Coord(), true, true);  // RUN AWAY!
         return false;
       }
-      if (::As_Target(Coord_Cell(Center_Coord())) == NavCom) {
+      if (ra::As_Target(Coord_Cell(Center_Coord())) == NavCom) {
         Explosion_Damage(Coord, TheRules().BridgeStrength, this, WARHEAD_HE);
 
         Stop_Driver();
@@ -845,7 +847,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
            index++) {
         InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
         if (obj != nullptr && !obj->IsInLimbo) {
-          const int dist = ::Distance(obj->Coord, blcoord);
+          const int dist = ra::Distance(obj->Coord, blcoord);
           if (dist <= 0xC0) {
             int damage = TheRules().APMineDamage;
             obj->Take_Damage(damage, 0, WARHEAD_HE);
@@ -1624,7 +1626,7 @@ void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
           order = MISSION_GUARD;
         } else {
           order = MISSION_GUARD_AREA;
-          ArchiveTarget = ::As_Target(Coord_Cell(Center_Coord()));
+          ArchiveTarget = ra::As_Target(Coord_Cell(Center_Coord()));
         }
       } else {
         if (House->IsHuman || Team.Is_Valid()) {
@@ -1866,7 +1868,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
 
     if (newcell != 0) {
       Assign_Mission(MISSION_MOVE);
-      Assign_Destination(::As_Target(newcell));
+      Assign_Destination(ra::As_Target(newcell));
     }
   }
 }
@@ -3938,7 +3940,7 @@ void InfantryClass::Movement_AI() {
                 if (TheMap().at(acell).Overlay != OVERLAY_NONE &&
                     OverlayTypeClass::As_Reference(TheMap().at(acell).Overlay)
                         .IsWall) {
-                  Override_Mission(MISSION_ATTACK, ::As_Target(acell),
+                  Override_Mission(MISSION_ATTACK, ra::As_Target(acell),
                                    kTargetNone);
                 }
               }
@@ -4192,3 +4194,5 @@ bool InfantryClass::Paradrop(COORDINATE coord) {
   }
   return false;
 }
+
+}  // namespace ra

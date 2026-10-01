@@ -83,6 +83,8 @@
 #include "ra/ui/slider.h"
 #include "ra/ui/textbtn.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 #define kOptionWidth (236 * 2)
@@ -605,3 +607,5 @@ int Fetch_Difficulty(bool amath) {
 
   return slider.Get_Value() * (TheRules().IsFineDifficulty ? 1 : 2);
 }
+
+}  // namespace ra

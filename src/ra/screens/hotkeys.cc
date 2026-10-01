@@ -61,6 +61,8 @@
 #include "ra/screens/goptions.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 // Records or restores one of the player's tactical-view bookmarks.
@@ -512,3 +514,5 @@ FacingType KN_To_Facing(const engine::window::KeyNumber input) {
   }
   return FACING_NONE;
 }
+
+}  // namespace ra

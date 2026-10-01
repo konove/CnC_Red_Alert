@@ -5,6 +5,8 @@
 
 #include "base/installed.h"
 
+namespace ra {
+
 // The developer and cheat switches, all of which start off. The command line
 // turns some of them on before the game starts (see StartupOptions and
 // Parse_Command_Line()), and the debug keys in debug.cc, the map editor and
@@ -105,5 +107,7 @@ class DebugState {
 // Returns the DebugState that Game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.
 inline DebugState& TheDebugState() { return base::Installed<DebugState>::Get(); }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_DEBUG_DEBUG_STATE_H_

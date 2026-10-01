@@ -11,6 +11,8 @@
 #include "base/buffer.h"
 #include "gtest/gtest.h"
 
+namespace ra {
+
 namespace {
 
 FameEntry Entry(std::string_view name, int score, int level = 1, int side = 0) {
@@ -122,3 +124,5 @@ TEST(FameTableCodecTest, DecodingTerminatesAnUnterminatedName) {
 }
 
 }  // namespace
+
+}  // namespace ra

@@ -61,6 +61,11 @@
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class VesselClass : public DriveClass {
  public:
   /*
@@ -184,9 +189,9 @@ class VesselClass : public DriveClass {
   friend class TFixedIHeapClass<VesselClass>;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void VesselClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void VesselClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_VESSEL_H_

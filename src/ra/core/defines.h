@@ -49,6 +49,8 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/jshell.h"
 
+namespace ra {
+
 /**********************************************************************
 **	Optional parameter control for special options.
 */
@@ -1712,13 +1714,17 @@ enum class TemplateType : uint16_t {
 };
 using enum TemplateType;
 
+}  // namespace ra
+
 // Templates outgrow magic_enum's default window; TEMPLATE_NONE (65535)
 // stays outside it on purpose, it is not an index.
 template <>
-struct magic_enum::customize::enum_range<TemplateType> {
+struct magic_enum::customize::enum_range<ra::TemplateType> {
   static constexpr int min = 0;
   static constexpr int max = 512;
 };
+
+namespace ra {
 
 /**********************************************************************
 **	The three dimensional terrain objects are enumerated here. These
@@ -2705,12 +2711,16 @@ enum class VocType {
 };
 using enum VocType;
 
+}  // namespace ra
+
 // Sound effects outgrow magic_enum's default window of 127.
 template <>
-struct magic_enum::customize::enum_range<VocType> {
+struct magic_enum::customize::enum_range<ra::VocType> {
   static constexpr int min = 0;
   static constexpr int max = 256;
 };
+
+namespace ra {
 
 /*
 **	EVA voices are specified by these identifiers.
@@ -2918,5 +2928,7 @@ inline constexpr int kMouseColor = 16;
 
 // Maximum number of multiplayer players.
 inline constexpr int kMaxPlayers = 8;
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_DEFINES_H_

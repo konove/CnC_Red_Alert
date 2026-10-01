@@ -154,6 +154,7 @@
 #include "ra/objects/house.h"
 #include "ra/objects/type.h"
 #include "ra/saveload/saveload.h"
+#include "ra/screens/expand.h"
 #include "ra/screens/goptions.h"
 #include "ra/screens/intro.h"
 #include "ra/screens/loaddlg.h"
@@ -168,6 +169,11 @@
 #include "ra/ui/input.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/msglist.h"
+#include "ra/wol/wol_main.h"
+
+#define ATTRACT_MODE_TIMEOUT 3600  // timeout for attract mode
+
+namespace ra {
 
 static RemapControlType SidebarScheme;
 
@@ -193,13 +199,8 @@ static void Init_Keys();
 
 static void Init_Random();
 
-#define ATTRACT_MODE_TIMEOUT 3600  // timeout for attract mode
-
 static bool Load_Recording_Values(ByteStream& file);
 static bool Save_Recording_Values(ByteStream& file);
-
-#include "ra/screens/expand.h"
-#include "ra/wol/wol_main.h"
 
 /***********************************************************************************************
  * Load_Prolog_Page -- Loads the special pre-prolog "please wait" page. *
@@ -2585,3 +2586,5 @@ bool Determine_If_Using_DVD() {
 
 //***********************************************************************************************
 bool Using_DVD() { return bUsingDVD; }
+
+}  // namespace ra

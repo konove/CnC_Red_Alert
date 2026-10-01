@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_RA_WOL_WOL_MAIN_H_
 #define CNC_RED_ALERT_RA_WOL_WOL_MAIN_H_
 
+namespace ra {
+
 // File: Entry point of the Westwood Online client.
 
 // Runs the Westwood Online session from login through the chat lobby to game
@@ -21,5 +23,7 @@ int WOL_Login_Dialog(WolapiObject* pWolapi);
 // Returns true if the scenario description names one of the Aftermath
 // scenarios that need the expansion installed.
 bool bSpecialAftermathScenario(const char* szScenarioDescription);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_WOL_WOL_MAIN_H_

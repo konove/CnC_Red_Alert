@@ -43,6 +43,11 @@
 #include "ra/core/defines.h"
 #include "ra/objects/techno.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class CarryoverClass {
  public:
   // Field-wise saved-game state; read and write share this field list.
@@ -89,9 +94,9 @@ class CarryoverClass {
   HousesType House{HOUSE_NONE};
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void CarryoverClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void CarryoverClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_AI_CARRY_H_

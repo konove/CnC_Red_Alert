@@ -81,6 +81,8 @@
 #include "ra/objects/warhead.h"
 #include "ra/objects/weapon.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * _Scale_To_256 -- Scales a 1..100 number into a 1..255 number. *
  *                                                                                             *
@@ -269,7 +271,6 @@ bool RulesClass::Process(CCINIClass& ini) {
   IQ(ini);
   Objects(ini);
   Difficulty(ini);
-
 
   return true;
 }
@@ -945,3 +946,5 @@ bool RulesClass::Difficulty(CCINIClass& ini) {
   Difficulty_Get(ini, Diff[static_cast<int>(DIFF_HARD)], "Difficult");
   return true;
 }
+
+}  // namespace ra

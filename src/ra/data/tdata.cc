@@ -79,6 +79,8 @@
 #include "ra/objects/terrain.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 static const int16_t List000011101000[] = {
     MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2, MAP_CELL_W * 2, kRefreshEol};
 static const int16_t List000110[] = {MAP_CELL_W, MAP_CELL_W + 1, kRefreshEol};
@@ -732,3 +734,5 @@ TerrainTypeClass& TerrainTypeClass::As_Reference(TerrainType type) {
 COORDINATE TerrainTypeClass::Coord_Fixup(COORDINATE coord) const {
   return Coord_Whole(coord);
 }
+
+}  // namespace ra

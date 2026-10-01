@@ -60,6 +60,8 @@
 
 #include "absl/base/attributes.h"
 
+namespace ra {
+
 /*
 ********************************** Defines **********************************
 */
@@ -186,6 +188,8 @@ class CommBufferClass {
   uint32_t ReceiveTotal = 0;       // total # added to receive queue
   std::vector<int> ReceiveIndex;   // array of Receive entry indices
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_COMBUF_H_
 

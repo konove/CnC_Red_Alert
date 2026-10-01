@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <span>
 
+namespace ra {
+
 // Receives a scenario file the host is sending, writing it under
 // 'file_name'. Returns whether the whole file arrived with the right CRC.
 bool Receive_Remote_File(char* file_name, unsigned int file_length,
@@ -20,5 +22,7 @@ bool Send_Remote_File(const char* file_name, int gametype);
 // succeeded.
 bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
                                  int gametype);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_SENDFILE_H_

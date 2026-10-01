@@ -111,6 +111,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/textbtn.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 // The low nibble of the text print flags selects the font.
@@ -338,7 +340,6 @@ constexpr int kButtonEvent = 148;        // Multiple event control button.
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 bool TriggerTypeClass::Edit() {
-
 
   /*
   **	Dialog variables:
@@ -1994,10 +1995,10 @@ const char* TriggerTypeClass::Description() const {
  * HISTORY: * 11/30/1995 JLB : Created. *
  *=============================================================================================*/
 AttachType TriggerTypeClass::Attaches_To() const {
-  AttachType attach = ::Attaches_To(Event1.Event);
+  AttachType attach = ra::Attaches_To(Event1.Event);
 
   if (EventControl != MULTI_ONLY) {
-    attach = attach | ::Attaches_To(Event2.Event);
+    attach = attach | ra::Attaches_To(Event2.Event);
   }
   return attach;
 }
@@ -2304,3 +2305,5 @@ TriggerTypeClass* TriggerTypeClass::From_Name(const char* name) {
   }
   return nullptr;
 }
+
+}  // namespace ra

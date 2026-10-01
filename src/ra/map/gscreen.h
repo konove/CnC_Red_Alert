@@ -45,6 +45,8 @@
 #include "ra/core/defines.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 class GScreenClass {
  public:
   // Resets transient UI state after loading, preserving saved game state.
@@ -148,5 +150,7 @@ class GScreenClass {
 // Jolts the screen up and down the given number of times, for explosions and
 // similar. Blocks until the shaking is done.
 void Shake_The_Screen(int shakes);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_GSCREEN_H_

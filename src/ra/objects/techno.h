@@ -65,6 +65,11 @@
 #include "ra/objects/stage.h"
 #include "ra/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 /****************************************************************************
 **	This is the common data between building and units.
 */
@@ -473,9 +478,9 @@ class TechnoClass : public RadioClass,
   static const int BodyShape[32];
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void TechnoClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TechnoClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_TECHNO_H_

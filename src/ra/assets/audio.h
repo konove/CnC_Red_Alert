@@ -29,6 +29,8 @@
 #include "base/fixed.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 // Returns the sound effect whose root file name matches `name`, ignoring case,
 // or VOC_NONE if none does or `name` is nullptr. Scenario and INI files name
 // sound effects this way.
@@ -77,5 +79,7 @@ void PlaySoundEffectAt(VocType voc, COORDINATE coord, int variation = 1,
 // wait for the voice to finish, say at the end of a game. Runs ServiceSpeech()
 // first, so polling it in a loop keeps the queue moving.
 bool IsSpeaking();
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_AUDIO_H_

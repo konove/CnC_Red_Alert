@@ -48,6 +48,8 @@
 #include "ra/ui/gadget.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * ToggleClass::ToggleClass -- Normal constructor for toggle button gadgets. *
  *                                                                                             *
@@ -192,3 +194,5 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   */
   return ControlClass::Action(flags, key, x, y);
 }
+
+}  // namespace ra

@@ -48,6 +48,8 @@
 #include "ra/objects/type.h"
 #include "ra/objects/warhead.h"
 
+namespace ra {
+
 /**********************************************************************
 **	This is the constant data associated with a weapon. Some objects
 **	can have multiple weapons and this class is used to isolate and
@@ -174,5 +176,7 @@ class WeaponTypeClass {
 
 WeaponType Weapon_From_Name(const char* name);
 ArmorType Armor_From_Name(const char* name);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_WEAPON_H_

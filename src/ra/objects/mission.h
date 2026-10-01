@@ -48,6 +48,8 @@
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 
+namespace ra {
+
 /****************************************************************************
 **	This handles order assignment and tracking. The order is used to guide
 **	overall AI processing.
@@ -219,5 +221,7 @@ class MissionControlClass {
   */
   Fixed AARate;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_MISSION_H_

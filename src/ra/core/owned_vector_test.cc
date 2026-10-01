@@ -6,6 +6,8 @@
 
 #include "gtest/gtest.h"
 
+namespace ra {
+
 namespace {
 
 // Counts live instances so the tests can see the list destroy what it owns.
@@ -106,3 +108,5 @@ TEST(OwnedVectorDeathTest, AtOutOfRangeFails) {
 }
 
 }  // namespace
+
+}  // namespace ra

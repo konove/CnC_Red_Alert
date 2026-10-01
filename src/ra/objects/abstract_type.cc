@@ -9,6 +9,8 @@
 #include "ra/map/world.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 AbstractTypeClass::AbstractTypeClass(const RTTIType rtti, const int id,
                                      const int name, const char* ini) noexcept
     : RTTI(rtti), ID(id), FullName(name) {
@@ -36,3 +38,5 @@ int AbstractTypeClass::Full_Name() const {
 uint32_t AbstractTypeClass::Get_Ownable() const {
   return kHouseFlagAllies | kHouseFlagSoviet | kHouseFlagOthers;
 }
+
+}  // namespace ra

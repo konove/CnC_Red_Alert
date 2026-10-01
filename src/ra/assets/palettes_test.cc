@@ -7,6 +7,8 @@
 #include "gtest/gtest.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 namespace {
 
 // Returns `rgb` as one number, 0xRRGGBB, for comparing in expectations.
@@ -42,3 +44,5 @@ TEST(PalettesTest, ThePalettesReturnsTheInstalledPalettes) {
 }
 
 }  // namespace
+
+}  // namespace ra

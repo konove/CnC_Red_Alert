@@ -43,6 +43,8 @@
 #include "ra/core/defines.h"
 #include "ra/map/layer.h"
 
+namespace ra {
+
 // Game logic processing is controlled by this class. The graphic and AI logic
 // is handled separately so that on slower machines, the graphic display is
 // least affected.
@@ -58,5 +60,7 @@ class LogicClass : public LayerClass {
   void AI();
   static void Detach(TARGET target, bool all = true);
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_MAP_LOGIC_H_

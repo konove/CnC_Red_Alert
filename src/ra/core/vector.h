@@ -32,6 +32,8 @@
 #include "ra/core/defines.h"  // IWYU pragma: keep
 #include "ra/screens/egos.h"  // IWYU pragma: keep
 
+namespace ra {
+
 // Resizable array of arbitrary objects. Not optimized for integral types -
 // consider a specialized version for char/int if performance is critical.
 //
@@ -237,5 +239,7 @@ bool VectorClass<T>::Resize(base::ssize newsize, std::span<T> array) {
   // Resize to 0 is a failure. Use Clear() to explicitly deallocate.
   return false;
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_VECTOR_H_

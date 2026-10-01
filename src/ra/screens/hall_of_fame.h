@@ -9,6 +9,8 @@
 #include <cstdint>
 #include <span>
 
+namespace ra {
+
 inline constexpr int kFameRows = 7;
 // Ten letters and the terminator.
 inline constexpr int kFameNameSize = 11;
@@ -44,5 +46,7 @@ int InsertFameScore(FameTable& table, int total, int level, int side);
 void EncodeFameTable(const FameTable& table,
                      std::span<std::byte, kFameFileSize> out);
 FameTable DecodeFameTable(std::span<const std::byte, kFameFileSize> in);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SCREENS_HALL_OF_FAME_H_

@@ -111,6 +111,8 @@
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 #define FATSHIP
 
 #define MCW MAP_CELL_W
@@ -3811,3 +3813,5 @@ int BuildingTypeClass::Full_Name() const {
   }
   return TXT_CIVILIAN_BUILDING;
 }
+
+}  // namespace ra

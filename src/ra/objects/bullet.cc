@@ -101,6 +101,8 @@
 #include "ra/objects/vessel.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 /***********************************************************************************************
@@ -731,7 +733,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       *the straight line flight.
       */
       if (/*Class->ROT != 0 ||*/ Class->IsArcing) {
-        int scatterdist = (::Distance(coord, tcoord) / 16) - 0x0040;
+        int scatterdist = (ra::Distance(coord, tcoord) / 16) - 0x0040;
         scatterdist =
             std::min(scatterdist, static_cast<int>(TheRules().HomingScatter));
         scatterdist = std::max(scatterdist, 0);
@@ -739,7 +741,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
         dir = AsDirection(static_cast<int>(dir) + (Random_Pick(0, 10) - 5));
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
-        int scatterdist = (::Distance(coord, tcoord) / 16) - 0x0040;
+        int scatterdist = (ra::Distance(coord, tcoord) / 16) - 0x0040;
         scatterdist = std::min(scatterdist,
                                static_cast<int>(TheRules().BallisticScatter));
         scatterdist = std::max(scatterdist, 0);
@@ -763,7 +765,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     */
     int range = 0xFF;
     if (!Class->IsDropping) {
-      range = (::Distance(tcoord, Coord) / MaxSpeed) + 4;
+      range = (ra::Distance(tcoord, Coord) / MaxSpeed) + 4;
     }
 
     /*
@@ -936,7 +938,7 @@ bool BulletClass::Is_Forced_To_Explode(COORDINATE& coord) const {
   **	travel in anything but water.
   */
   if (Class->IsSubSurface) {
-    const int d = ::Distance(Coord_Fraction(coord),
+    const int d = ra::Distance(Coord_Fraction(coord),
                              XY_Coord(CELL_LEPTON_W / 2, CELL_LEPTON_W / 2));
     if (cellptr->Land_Type() != LAND_WATER ||
         (d < CELL_LEPTON_W / 3 && cellptr->Cell_Techno() != nullptr &&
@@ -1096,3 +1098,5 @@ void BulletClass::Bullet_Explodes(bool forced) {
     Payback->House->IsVisionary = true;
   }
 }
+
+}  // namespace ra

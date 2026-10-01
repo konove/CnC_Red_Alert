@@ -65,6 +65,8 @@
 #include "base/numeric.h"
 #include "base/types.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management
  *class.             *
@@ -540,3 +542,5 @@ std::string FixedIHeapClass::Validate() const {
   }
   return {};
 }
+
+}  // namespace ra

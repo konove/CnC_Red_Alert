@@ -52,6 +52,11 @@
 #include "ra/core/jshell.h"
 #include "ra/objects/abstract.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace ra {
+
 class BuildingClass;
 class HouseClass;
 class ObjectTypeClass;
@@ -307,9 +312,9 @@ class ObjectClass : public AbstractClass {
   static constexpr int kFlightLevel = 256;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void ObjectClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void ObjectClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_OBJECT_H_

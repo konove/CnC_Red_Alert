@@ -36,6 +36,11 @@
 #include "absl/base/attributes.h"
 #include "ra/net/session.h"
 #include "ra/wol/wolapiob.h"
+
+class PixelView;
+
+namespace ra {
+
 // class WolapiObject;
 class IconListClass;
 class EditClass;
@@ -46,7 +51,6 @@ class StaticButtonClass;
 class DropListClass;
 class ShapeButtonClass;
 class BigCheckBoxClass;
-class PixelView;
 class ToolTipClass;
 
 //***********************************************************************************************
@@ -381,5 +385,7 @@ class WOL_GameSetupDialog {
 
   RedrawType display = REDRAW_NONE;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_WOL_WOL_GSUP_H_

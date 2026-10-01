@@ -18,6 +18,8 @@
 #include "ra/net/session.h"
 #include "ra/screens/goptions.h"
 
+namespace ra {
+
 namespace {
 
 // Only ShutDown() may end the one Game, so it cannot be copied or moved out.
@@ -64,3 +66,5 @@ TEST(GameTest, TearsDownANetworkThatIsListening) {
 }
 
 }  // namespace
+
+}  // namespace ra

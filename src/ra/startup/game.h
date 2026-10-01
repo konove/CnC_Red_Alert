@@ -28,6 +28,8 @@
 #include "ra/startup/winstub.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 // Owns the game's subsystems and so fixes the order they are built and torn
 // down in. Members are declared in dependency order, which C++ constructs
 // front to back and destroys back to front; each one is installed with
@@ -109,5 +111,7 @@ class Game {
   DebugState debug_state_;
   base::Installed<DebugState>::Scope debug_state_scope_{debug_state_};
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_STARTUP_GAME_H_

@@ -50,6 +50,8 @@
 #include "ra/objects/type.h"
 #include "ra/saveload/serialize.h"
 
+namespace ra {
+
 // ID comes from the sparse map index. Movement zones are rebuilt by
 // Post_Load_Game(), so they do not make an otherwise empty cell worth saving.
 bool CellClass::Should_Save() const {
@@ -405,3 +407,5 @@ bool MouseClass::Save(ArchiveWriter& writer) {
   Serialize(writer);
   return true;
 }
+
+}  // namespace ra

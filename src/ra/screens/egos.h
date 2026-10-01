@@ -43,11 +43,14 @@
  *- - */
 #ifndef CNC_RED_ALERT_RA_SCREENS_EGOS_H_
 #define CNC_RED_ALERT_RA_SCREENS_EGOS_H_
+
 #include <string>
 #include <string_view>
 
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/core/defines.h"
+
+namespace ra {
 
 class EgoClass {
  public:
@@ -69,5 +72,7 @@ class EgoClass {
 };
 
 void Show_Who_Was_Responsible();
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SCREENS_EGOS_H_

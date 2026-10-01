@@ -23,6 +23,8 @@
 #include "engine/window/keyboard.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 // Handles keyboard input while the tactical map is displayed. Consumes each
 // key it acts on by setting input to KN_NONE.
 void Keyboard_Process(engine::window::KeyNumber& input);
@@ -30,5 +32,7 @@ void Keyboard_Process(engine::window::KeyNumber& input);
 // Converts a keyboard code into the compass direction it represents, or
 // FACING_NONE for a key that is not directional. Used for keyboard scrolling.
 FacingType KN_To_Facing(engine::window::KeyNumber input);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SCREENS_HOTKEYS_H_

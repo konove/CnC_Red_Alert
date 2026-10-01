@@ -54,6 +54,8 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * StaticButtonClass::StaticButtonClass -- Normal constructor for a text button.
  **
@@ -238,3 +240,5 @@ void StaticButtonClass::Draw_Text(PixelView& view, const char* text) {
     Fancy_Text_Print(view, text, x, Y, Get_Color_Scheme(), kTBlack, PrintFlags);
   }
 }
+
+}  // namespace ra

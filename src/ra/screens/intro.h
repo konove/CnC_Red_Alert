@@ -23,6 +23,8 @@
 
 #include "engine/gfx/pixel_buffer.h"
 
+namespace ra {
+
 // Plays the introduction movie. Select_Game() calls this when it starts the
 // campaign on the first launch after installing (Special.IsFromInstall).
 //
@@ -35,5 +37,7 @@
 // `hidden` is the back buffer the title page is loaded into, and `visible` the
 // view on screen that the dialog is drawn on.
 void PlayFirstLaunchIntro(PixelView& hidden, PixelView& visible);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_SCREENS_INTRO_H_

@@ -74,6 +74,8 @@
 #include "ra/objects/object.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * BaseNodeClass::operator == -- equality operator *
  *                                                                                             *
@@ -457,3 +459,5 @@ void BaseClass::Serialize(Archive& ar) {
 }
 template void BaseClass::Serialize(ArchiveWriter&);
 template void BaseClass::Serialize(ArchiveReader&);
+
+}  // namespace ra

@@ -81,6 +81,8 @@
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolstrng.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 /***********************************************************************************************
@@ -603,3 +605,5 @@ void GameOptionsClass::Adjust_Variables_For_Resolution() {
   Border2Len = 32;
   ButtonResumeY = OptionHeight - 38;
 }
+
+}  // namespace ra

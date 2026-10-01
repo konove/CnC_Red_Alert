@@ -54,6 +54,8 @@
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 
+namespace ra {
+
 enum class TActionType {
   TACTION_NONE,
 
@@ -198,5 +200,7 @@ class ActionChoiceClass {
 extern base::EnumArray<TActionType, ActionChoiceClass,
                        static_cast<int>(TACTION_COUNT)>
     ActionChoices;
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_AI_TACTION_H_

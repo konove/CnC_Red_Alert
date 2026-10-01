@@ -31,6 +31,8 @@
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
 
+namespace ra {
+
 // Draws a shape into `view`. Every shape draw in the game goes through here.
 //
 // x,y are pixel coordinates, interpreted according to flags, and window is the
@@ -63,5 +65,7 @@ Rect Shape_Dimensions(std::span<const std::byte> shapedata, int shape_num);
 std::vector<unsigned char> Get_Radar_Icon(std::span<const std::byte> shapefile,
                                           int shape_num, int frames,
                                           int zoom_factor);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_ASSETS_SHAPE_DRAW_H_

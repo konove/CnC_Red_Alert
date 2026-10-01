@@ -61,6 +61,8 @@
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
 
+namespace ra {
+
 /***************************************************************************
 **	These are the various weapons and their characteristics.
 */
@@ -321,3 +323,5 @@ ThreatType WeaponTypeClass::Allowed_Threats() const {
 bool WeaponTypeClass::Is_Wall_Destroyer() const {
   return WarheadPtr != nullptr && WarheadPtr->IsWallDestroyer;
 }
+
+}  // namespace ra

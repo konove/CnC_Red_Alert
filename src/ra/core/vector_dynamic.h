@@ -7,6 +7,8 @@
 #include "base/types.h"
 #include "ra/core/vector.h"
 
+namespace ra {
+
 // Dynamic array that supports adding/deleting elements. Elements are packed
 // at the beginning (no holes). Auto-grows when full if GrowthStep > 0.
 // Requires T to have assignment and equality operators.
@@ -33,7 +35,6 @@ class DynamicVectorClass : public VectorClass<T> {
   [[nodiscard]] std::span<const T> ActiveElements() const {
     return this->Elements().first(base::ToSize(ActiveCount));
   }
-
 
   // Add object to vector (growing as necessary).
   bool Add(const T& object);
@@ -167,5 +168,7 @@ base::ssize DynamicVectorClass<T>::ID(const T& ptr) {
   }
   return -1;
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_CORE_VECTOR_DYNAMIC_H_

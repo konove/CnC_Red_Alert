@@ -126,6 +126,8 @@
 #include "ra/ui/list.h"
 #include "ra/ui/textbtn.h"
 
+namespace ra {
+
 using enum engine::window::KeyNumber;
 
 static int atoh(const char* str);
@@ -2020,3 +2022,5 @@ void TeamTypeClass::Build_INI_Entry(std::string& buf) {
                           base::At(MissionList, i).Data.Value);
   }
 }
+
+}  // namespace ra

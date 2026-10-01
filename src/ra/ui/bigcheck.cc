@@ -34,6 +34,8 @@
 #include "ra/ui/input.h"
 #include "ra/ui/toggle.h"
 
+namespace ra {
+
 using engine::gfx::ShapeFlags;
 
 //***********************************************************************************************
@@ -60,7 +62,6 @@ bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
     }
 
     const TextPrintType flags = TextFlags;
-
 
     //		if( !IsDisabled )
     RemapControlType* pScheme = GadgetClass::Get_Color_Scheme();
@@ -94,3 +95,5 @@ bool BigCheckBoxClass::Action(unsigned flags, engine::window::KeyNumber& key,
   */
   return ToggleClass::Action(flags, key, x, y);
 }
+
+}  // namespace ra

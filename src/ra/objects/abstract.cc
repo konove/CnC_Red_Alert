@@ -28,10 +28,12 @@
 #include "ra/objects/target.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 AbstractClass::~AbstractClass() = default;
 
 DirType AbstractClass::Direction(const TARGET target) const {
-  return ::Direction(Center_Coord(), As_Coord(target));
+  return ra::Direction(Center_Coord(), As_Coord(target));
 }
 
 int AbstractClass::Distance(const TARGET target) const {
@@ -47,3 +49,5 @@ int AbstractClass::Distance(const TARGET target) const {
 
   return dist;
 }
+
+}  // namespace ra

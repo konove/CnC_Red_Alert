@@ -48,6 +48,8 @@
 #include "ra/core/defines.h"
 #include "ra/ui/gadget.h"
 
+namespace ra {
+
 class StaticButtonClass final : public GadgetClass {
  public:
   StaticButtonClass();
@@ -74,5 +76,7 @@ class StaticButtonClass final : public GadgetClass {
   */
   TextPrintType PrintFlags;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_STATBTN_H_

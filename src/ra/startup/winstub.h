@@ -5,6 +5,8 @@
 
 #include "engine/window/window_events.h"
 
+namespace ra {
+
 class Input;
 
 // Pumps the event queue while the window has no focus, so the game does not
@@ -37,5 +39,7 @@ void Create_Main_Window(void* instance, int command_show, int width,
 // Called when the window loses and regains the input focus.
 void Focus_Loss();
 void Focus_Restore();
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_STARTUP_WINSTUB_H_

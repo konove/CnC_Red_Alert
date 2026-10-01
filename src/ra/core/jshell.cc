@@ -74,6 +74,8 @@
 #include "ra/assets/palette.h"
 #include "ra/startup/startup.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *
  *                                                                                             *
@@ -448,3 +450,5 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
   }
   return dest;
 }
+
+}  // namespace ra

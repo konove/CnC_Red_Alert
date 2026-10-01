@@ -69,6 +69,14 @@
 #include "engine/platform/win32/win32_com.h"
 #include "engine/platform/win32/win32_types.h"
 
+namespace ra {
+
+class RTPatcher;
+class Chat;
+class Download;
+class NetUtil;
+class Chat2;
+
 /* Forward Declarations */
 
 #ifndef __IRTPatcher_FWD_DEFINED__
@@ -124,35 +132,25 @@ interface IChat2Event;
 #ifndef __RTPatcher_FWD_DEFINED__
 #define __RTPatcher_FWD_DEFINED__
 
-class RTPatcher;
-
 #endif /* __RTPatcher_FWD_DEFINED__ */
 
 #ifndef __Chat_FWD_DEFINED__
 #define __Chat_FWD_DEFINED__
-
-class Chat;
 
 #endif /* __Chat_FWD_DEFINED__ */
 
 #ifndef __Download_FWD_DEFINED__
 #define __Download_FWD_DEFINED__
 
-class Download;
-
 #endif /* __Download_FWD_DEFINED__ */
 
 #ifndef __NetUtil_FWD_DEFINED__
 #define __NetUtil_FWD_DEFINED__
 
-class NetUtil;
-
 #endif /* __NetUtil_FWD_DEFINED__ */
 
 #ifndef __Chat2_FWD_DEFINED__
 #define __Chat2_FWD_DEFINED__
-
-class Chat2;
 
 #endif /* __Chat2_FWD_DEFINED__ */
 
@@ -875,10 +873,11 @@ class DECLSPEC_UUID("8B938191-EF3F-11D1-9808-00609706FA0C") Chat2;
 
 /* end of Additional Prototypes */
 
-
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
 // NOLINTEND(bugprone-reserved-identifier,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier,google-runtime-int)
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_WOL_WOLAPI_H_

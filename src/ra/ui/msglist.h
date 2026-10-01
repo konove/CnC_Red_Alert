@@ -105,6 +105,8 @@
 #include "engine/window/keyboard.h"
 #include "ra/core/defines.h"
 
+namespace ra {
+
 //***************************************************************************
 // Defines
 //***************************************************************************
@@ -243,6 +245,8 @@ class MessageListClass {
   char MessageBuffers[MAX_NUM_MESSAGES][MAX_MESSAGE_LENGTH + 30]{};
   char BufferAvail[MAX_NUM_MESSAGES]{};
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_MSGLIST_H_
 /**************************** end of msglist.h *****************************/

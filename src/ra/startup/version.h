@@ -44,6 +44,8 @@
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 
+namespace ra {
+
 #define VERSION_RED_ALERT_104 0x00010000  // Shipped US version number
 #define VERSION_RED_ALERT_107 0x00011000  // Shipped Counterstrike number
 #define VERSION_RED_ALERT_106 0x00010500  // Patch without CS installed
@@ -211,6 +213,8 @@ const char* Version_Name();
 inline VersionClass& TheVersion() {
   return base::Installed<VersionClass>::Get();
 }
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_STARTUP_VERSION_H_
 /************************** end of version.h *******************************/

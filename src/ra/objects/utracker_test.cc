@@ -2,6 +2,8 @@
 
 #include "gtest/gtest.h"
 
+namespace ra {
+
 namespace {
 
 TEST(UnitTrackerTest, NetworkRoundTripPreservesEveryCounter) {
@@ -25,3 +27,5 @@ TEST(UnitTrackerTest, NetworkRoundTripPreservesEveryCounter) {
 }
 
 }  // namespace
+
+}  // namespace ra

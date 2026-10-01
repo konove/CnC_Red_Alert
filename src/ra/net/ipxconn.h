@@ -57,6 +57,8 @@
 #include "ra/net/ipx.h"
 #include "ra/net/ipxaddr.h"
 
+namespace ra {
+
 /*
 ***************************** Class Declaration *****************************
 */
@@ -207,6 +209,8 @@ class IPXConnClass : public ConnectionClass {
   .....................................................................*/
   static int Listening;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_IPXCONN_H_
 

@@ -43,6 +43,8 @@
 #include "engine/window/keyboard.h"
 #include "ra/ui/control.h"
 
+namespace ra {
+
 /*
 **	This class handles gadgets that behave like the Windows buttons. That
 *is, once the mouse *	button is clicked over them, they capture the focus
@@ -82,5 +84,7 @@ class ToggleClass : public ControlClass {
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
               int y) override;
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_TOGGLE_H_

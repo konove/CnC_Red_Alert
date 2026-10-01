@@ -15,6 +15,8 @@
 #include "ra/core/defines.h"
 #include "ra/core/game_clock.h"
 
+namespace ra {
+
 // The game clock Game owns in the real game.
 namespace {
 GameClock game_clock;
@@ -107,3 +109,5 @@ TEST(CrateSerializeTest, RejectsTruncatedTimer) {
 }
 
 }  // namespace
+
+}  // namespace ra

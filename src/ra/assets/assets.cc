@@ -15,6 +15,8 @@
 #include "ra/core/defines.h"
 #include "ra/data/ini.h"
 
+namespace ra {
+
 namespace {
 
 // The file each font comes from, in FontType order. TYPE.FNT was dropped
@@ -82,3 +84,5 @@ const char* Assets::tutorial_text(const int index) const {
   const std::string& text = base::At(std::span(tutorial_text_), index);
   return text.empty() ? nullptr : text.c_str();
 }
+
+}  // namespace ra

@@ -8,6 +8,8 @@
 #include "ra/net/ipxaddr.h"
 #include "ra/startup/startup_options.h"
 
+namespace ra {
+
 void Load_Title_Page(bool visible = false);
 bool Init_Game();
 bool Select_Game(bool fade = false);
@@ -25,5 +27,7 @@ std::optional<StartupOptions> Parse_Command_Line(
 // node, so packets reach every machine across the bridge. Returns nothing for
 // a malformed address, or one shorter than four bytes.
 std::optional<IPXAddressClass> ParseDestNet(std::string_view address);
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_STARTUP_INIT_H_

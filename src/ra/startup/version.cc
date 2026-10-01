@@ -62,6 +62,8 @@
 #include "ra/core/config.h"
 #include "ra/wol/rawolapi.h"
 
+namespace ra {
+
 /****************************** Globals ************************************/
 //---------------------------------------------------------------------------
 // This is a table of version numbers # the communications protocol used for
@@ -584,3 +586,5 @@ const char* Version_Name() {
   }
   return version.c_str();
 }
+
+}  // namespace ra

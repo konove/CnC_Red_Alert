@@ -58,6 +58,8 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/toggle.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * TextButtonClass::TextButtonClass -- Normal constructor for a text button. *
  *                                                                                             *
@@ -324,3 +326,5 @@ void TextButtonClass::Draw_Text(PixelView& view, const char* text) {
                      PrintFlags | flags | TPF_CENTER);
   }
 }
+
+}  // namespace ra

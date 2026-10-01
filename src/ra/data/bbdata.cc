@@ -60,6 +60,8 @@
 #include "ra/data/text_ids.h"
 #include "ra/objects/type.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * BulletTypeClass::BulletTypeClass -- Constructor for bullet type objects. *
  *                                                                                             *
@@ -259,3 +261,5 @@ bool BulletTypeClass::Read_INI(CCINIClass& ini) {
   }
   return false;
 }
+
+}  // namespace ra

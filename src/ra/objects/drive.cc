@@ -96,6 +96,8 @@
 #include "ra/objects/unit.h"
 #include "ra/startup/game_state.h"
 
+namespace ra {
+
 /***********************************************************************************************
  * DriveClass::Response_Select -- Voice feedback when selecting the unit. *
  *                                                                                             *
@@ -230,7 +232,7 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
       CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
       if (TheMap().In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
-        Assign_Destination(::As_Target(newcell));
+        Assign_Destination(ra::As_Target(newcell));
       }
     }
   }
@@ -1063,7 +1065,7 @@ bool DriveClass::Start_Of_Move() {
         if (TheMap().at(destcell).Overlay != OVERLAY_NONE &&
             OverlayTypeClass::As_Reference(TheMap().at(destcell).Overlay)
                 .IsWall) {
-          Override_Mission(MISSION_ATTACK, ::As_Target(destcell), kTargetNone);
+          Override_Mission(MISSION_ATTACK, ra::As_Target(destcell), kTargetNone);
         }
       }
     } else {
@@ -1183,7 +1185,7 @@ bool DriveClass::Start_Of_Move() {
             if (TheMap().at(destcell).Overlay != OVERLAY_NONE &&
                 OverlayTypeClass::As_Reference(TheMap().at(destcell).Overlay)
                     .IsWall) {
-              Override_Mission(MISSION_ATTACK, ::As_Target(destcell),
+              Override_Mission(MISSION_ATTACK, ra::As_Target(destcell),
                                kTargetNone);
             }
           }
@@ -1968,3 +1970,5 @@ const DriveClass::TurnTrackType DriveClass::TrackControl[67] = {
     {12, 12, DIR_SW_X2, F_},  // Drive back into refinery.
     {13, 13, DIR_SW, F_}     // Drive out of weapons factory.
 };
+
+}  // namespace ra

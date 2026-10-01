@@ -161,6 +161,8 @@
 #include "ra/core/config.h"
 #include "ra/wol/wolapiob.h"
 
+namespace ra {
+
 /********************************** Defines *********************************/
 
 /********************************** Globals *********************************/
@@ -285,7 +287,6 @@ static void Compute_Game_CRC();
 static void Print_CRCs(const EventClass* ev);
 // Bytes a compressed packet spends on each event's type tag.
 constexpr int kEventTypeSize = static_cast<int>(sizeof(EventClass::EventType));
-
 
 static void Dump_Packet_Too_Late_Stuff(const EventClass* event,
                                        ConnManClass* net,
@@ -4481,3 +4482,5 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
 }
 
 /*************************** end of queue.cpp ******************************/
+
+}  // namespace ra

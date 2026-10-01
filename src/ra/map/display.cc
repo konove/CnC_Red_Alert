@@ -192,6 +192,8 @@
 #include "ra/ui/gadget.h"
 #include "ra/ui/input.h"
 
+namespace ra {
+
 // Scratch space for packing and unpacking the MapPack INI block.
 static char map_pack_buffer[32000];
 
@@ -3412,7 +3414,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           } else {
             TheNetwork().out_list().Add(EventClass(EventClass::SELLCELL, cell));
             //						OutList.Add(EventClass(EventClass::SELL,
-            //::As_Target(cell)));
+            //ra::As_Target(cell)));
           }
         }
 
@@ -4314,3 +4316,5 @@ void DisplayClass::Flag_Cell(CELL cell) {
   IsDisplayToRedraw = true;
   CellRedraw.at(base::ToSize(cell)) = true;
 }
+
+}  // namespace ra

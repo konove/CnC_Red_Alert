@@ -29,6 +29,8 @@
 #include "ra/core/face.h"
 #include "ra/ui/control.h"
 
+namespace ra {
+
 // A round dial with eight decorations and a hand that the player turns by
 // clicking or dragging with the left mouse button. The hand snaps to the eight
 // facings. When it moves, the dial reports its button ID as the key, like any
@@ -68,5 +70,7 @@ class DirectionDial : public ControlClass {
   DirType direction_;              // direction the dial points in, 0-255
   FacingType facing_;  // direction_ snapped to one of the eight facings
 };
+
+}  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_UI_DIRECTION_DIAL_H_
