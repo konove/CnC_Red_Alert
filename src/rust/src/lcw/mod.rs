@@ -15,5 +15,7 @@
 //! byte at a time, so a copy overlapping its own output repeats a pattern.
 
 mod decode;
+mod encode;
 
 pub use decode::{uncompress, uncompress_bounded, uncompress_in_place};
+pub use encode::{compress, worst_case_size};
