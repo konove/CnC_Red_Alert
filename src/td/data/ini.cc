@@ -76,6 +76,7 @@
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/special.h"
@@ -150,7 +151,7 @@ static CELL Clip_Move(CELL cell, game::FacingType facing, int dist);
  *use same names as multiplayer                         *
  *=============================================================================================*/
 void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
-                       ScenarioDirType dir, ScenarioVarType var) {
+                       game::ScenarioDirType dir, ScenarioVarType var) {
   // "SC" + player + two-digit number + direction + variation, plus the NUL.
   constexpr size_t kScenarioNameSize = sizeof("SCG01EA");
   char c_player = 0;  // character representing player type
@@ -197,16 +198,16 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
   *'E' or 'W'
   */
   switch (dir) {
-    case SCEN_DIR_EAST:
+    case game::SCEN_DIR_EAST:
       c_dir = 'E';
       break;
 
-    case SCEN_DIR_WEST:
+    case game::SCEN_DIR_WEST:
       c_dir = 'W';
       break;
 
     default:
-    case SCEN_DIR_NONE:
+    case game::SCEN_DIR_NONE:
       c_dir = Random_Pick(0, 1) == 0 ? 'W' : 'E';
       break;
   }

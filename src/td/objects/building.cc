@@ -160,6 +160,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
@@ -228,13 +229,14 @@ constexpr int kSamLowering = 7;  // Launcher is lowering into the ground.
 /***************************************************************************
 **	Center of building offset table.
 */
-const base::EnumArray<BSizeType, COORDINATE> BuildingClass::CenterOffset = {
-    0x00800080L, 0x008000FFL, 0x00FF0080L, 0x00FF00FFL,
-    0x018000FFL, 0x00FF0180L, 0x01800180L,
+const base::EnumArray<game::BSizeType, COORDINATE> BuildingClass::CenterOffset =
+    {
+        0x00800080L, 0x008000FFL, 0x00FF0080L, 0x00FF00FFL,
+        0x018000FFL, 0x00FF0180L, 0x01800180L,
 
-    0x00FF0200L,
+        0x00FF0200L,
 
-    0x02800280L,
+        0x02800280L,
 };
 
 /*
@@ -306,7 +308,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
     */
     case RADIO_CAN_LOAD:
       TechnoClass::Receive_Message(from, message, param);
-      if (BState == BSTATE_CONSTRUCTION ||
+      if (BState == game::BSTATE_CONSTRUCTION ||
           (!TheWorld().scenario_init() && In_Radio_Contact())) {
         return RADIO_NEGATIVE;
       }
@@ -431,7 +433,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
 
         case STRUCT_REFINERY:
           TheWorld().scenario_init()++;
-          Begin_Mode(BSTATE_ACTIVE);
+          Begin_Mode(game::BSTATE_ACTIVE);
           TheWorld().scenario_init()--;
           Mark(MARK_CHANGE);
           Assign_Mission(MISSION_HARVEST);
@@ -516,8 +518,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
       **	When in radio contact for loading, the refinery starts
       **	flashing the lights.
       */
-      if (*this == STRUCT_REFINERY && BState != BSTATE_FULL) {
-        Begin_Mode(BSTATE_FULL);
+      if (*this == STRUCT_REFINERY && BState != game::BSTATE_FULL) {
+        Begin_Mode(game::BSTATE_FULL);
       }
 
       if (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER) {
@@ -595,7 +597,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
     *this case.
     */
     case RADIO_OVER_OUT:
-      Begin_Mode(BSTATE_IDLE);
+      Begin_Mode(game::BSTATE_IDLE);
       TechnoClass::Receive_Message(from, message, param);
       return RADIO_ROGER;
 
@@ -682,7 +684,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
   **	The shape file to use for rendering depends on whether the building
   **	is undergoing construction or not.
   */
-  if (BState == BSTATE_CONSTRUCTION) {
+  if (BState == game::BSTATE_CONSTRUCTION) {
     shapefile = Class->Get_Buildup_Data();
 
     /*
@@ -780,16 +782,16 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
               **	Special damage stage for pump.
               */
               if (!Class->IsSimpleDamage) {
-                const int last1 = Class->Anims.at(BSTATE_IDLE).Start +
-                                  Class->Anims.at(BSTATE_IDLE).Count;
-                int last2 = Class->Anims.at(BSTATE_ACTIVE).Start +
-                            Class->Anims.at(BSTATE_ACTIVE).Count;
+                const int last1 = Class->Anims.at(game::BSTATE_IDLE).Start +
+                                  Class->Anims.at(game::BSTATE_IDLE).Count;
+                int last2 = Class->Anims.at(game::BSTATE_ACTIVE).Start +
+                            Class->Anims.at(game::BSTATE_ACTIVE).Count;
                 int largest = std::max(last1, last2);
-                last2 = Class->Anims.at(BSTATE_AUX1).Start +
-                        Class->Anims.at(BSTATE_AUX1).Count;
+                last2 = Class->Anims.at(game::BSTATE_AUX1).Start +
+                        Class->Anims.at(game::BSTATE_AUX1).Count;
                 largest = std::max(largest, last2);
-                last2 = Class->Anims.at(BSTATE_AUX2).Start +
-                        Class->Anims.at(BSTATE_AUX2).Count;
+                last2 = Class->Anims.at(game::BSTATE_AUX2).Start +
+                        Class->Anims.at(game::BSTATE_AUX2).Count;
                 largest = std::max(largest, last2);
 
                 shapenum += largest;
@@ -817,7 +819,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
   ** contact, he must be unloading a constructed vehicle, so draw that
   ** vehicle before drawing the overlay.
   */
-  if (BState != BSTATE_CONSTRUCTION) {
+  if (BState != game::BSTATE_CONSTRUCTION) {
     /*
     **	A Tethered object is always rendered AFTER the building.
     */
@@ -993,7 +995,7 @@ bool BuildingClass::Mark(MarkType mark) {
           delete this;
 
         } else {
-          if (Can_Enter_Cell(cell) == MOVE_OK) {
+          if (Can_Enter_Cell(cell) == game::MOVE_OK) {
             /*
             **	Determine if a bib is required for this building. If one is,
             *then *	create and place it.
@@ -1180,7 +1182,7 @@ void BuildingClass::AI() {
       }
       Mark(MARK_CHANGE);
     } else {
-      if (BState == BSTATE_NONE || Fetch_Rate() == 0) {
+      if (BState == game::BSTATE_NONE || Fetch_Rate() == 0) {
         IsReadyToCommence = true;
       }
     }
@@ -1203,7 +1205,7 @@ void BuildingClass::AI() {
   */
   if (toloop) {
     const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
-    if (BState == BSTATE_CONSTRUCTION || BState == BSTATE_IDLE) {
+    if (BState == game::BSTATE_CONSTRUCTION || BState == game::BSTATE_IDLE) {
       Set_Rate(
           static_cast<unsigned char>(TheOptions().Normalize_Delay(ctrl->Rate)));
     } else {
@@ -1225,7 +1227,8 @@ void BuildingClass::AI() {
   *it goes *	to "sleep" knowing that it will wake up as soon as a new mission
   *comes *	along.
   */
-  if ((IsReadyToCommence && BState != BSTATE_CONSTRUCTION) && Commence()) {
+  if ((IsReadyToCommence && BState != game::BSTATE_CONSTRUCTION) &&
+      Commence()) {
     IsReadyToCommence = false;
   }
 
@@ -1265,11 +1268,11 @@ void BuildingClass::AI() {
   *change-up *	here, the mission AI system is ensured of immediate visual
   *affect when it *	decides to change the animation state of the building.
   */
-  if (QueueBState != BSTATE_NONE) {
+  if (QueueBState != game::BSTATE_NONE) {
     if (BState != QueueBState) {
       BState = QueueBState;
       const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
-      if (BState == BSTATE_CONSTRUCTION || BState == BSTATE_IDLE) {
+      if (BState == game::BSTATE_CONSTRUCTION || BState == game::BSTATE_IDLE) {
         Set_Rate(static_cast<unsigned char>(
             TheOptions().Normalize_Delay(ctrl->Rate)));
       } else {
@@ -1277,7 +1280,7 @@ void BuildingClass::AI() {
       }
       Set_Stage(ctrl->Start);
     }
-    QueueBState = BSTATE_NONE;
+    QueueBState = game::BSTATE_NONE;
   }
 
   /*
@@ -1309,7 +1312,7 @@ void BuildingClass::AI() {
   /*
   **	Obelisk charging logic.
   */
-  if (*this == STRUCT_OBELISK && BState != BSTATE_CONSTRUCTION) {
+  if (*this == STRUCT_OBELISK && BState != game::BSTATE_CONSTRUCTION) {
     if (Target_Legal(TarCom) && House->Power_Fraction() >= 0x0100) {
       if (!IsCharged) {
         if (IsCharging) {
@@ -1541,7 +1544,7 @@ bool BuildingClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   Validate();
 #ifdef OBSOLETE
   if (*this == STRUCT_ROAD) {
-    if (Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == MOVE_OK) {
+    if (Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == game::MOVE_OK) {
       ObjectClass* o =
           OverlayTypeClass::As_Reference(OVERLAY_ROAD).Create_One_Of(House);
       if (o && o->Unlimbo(coord)) {
@@ -1559,7 +1562,7 @@ bool BuildingClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   *it gets *	converted to an overlay type.
   */
   if (Class->IsWall) {
-    if (Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == MOVE_OK) {
+    if (Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == game::MOVE_OK) {
       OverlayType otype = OVERLAY_NONE;
       switch (Class->Type) {
         case STRUCT_SANDBAG_WALL:
@@ -1768,11 +1771,11 @@ bool BuildingClass::Unlimbo(COORDINATE coord, game::DirType dir) {
  *   11/22/1994 JLB : Shares base damage handler for techno objects. *
  *   07/15/1995 JLB : Power ratio gets adjusted. *
  *=============================================================================================*/
-ResultType BuildingClass::Take_Damage(int& damage, int distance,
-                                      WarheadType warhead,
-                                      TechnoClass* source) {
+game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
+                                            WarheadType warhead,
+                                            TechnoClass* source) {
   Validate();
-  ResultType res = RESULT_NONE;
+  game::ResultType res = game::RESULT_NONE;
   int shakes = 0;
 
   if (this != source) {
@@ -1807,7 +1810,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
     res = TechnoClass::Take_Damage(damage, distance, warhead, source);
 
     switch (res) {
-      case RESULT_DESTROYED:
+      case game::RESULT_DESTROYED:
 
         /*
         **	Destroy all attached objects.
@@ -1869,7 +1872,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
             *this == STRUCT_TEMPLE && warhead == WARHEAD_PB;
         break;
 
-      case RESULT_HALF:
+      case game::RESULT_HALF:
         if (*this == STRUCT_PUMP) {
           auto* anim = base::NewPooled<AnimClass>(
               ANIM_OILFIELD_BURN, Coord_Add(Coord, 0x00400130L), 1);
@@ -1879,7 +1882,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         }
         [[fallthrough]];
 
-      case RESULT_MAJOR:
+      case game::RESULT_MAJOR:
         Sound_Effect(VOC_XPLOBIG4, Coord);
         while (offset.front() != REFRESH_EOL) {
           const CELL cell =
@@ -1942,13 +1945,13 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         }
         break;
 
-      case RESULT_NONE:
-      case ResultType::RESULT_LIGHT:
+      case game::RESULT_NONE:
+      case game::ResultType::RESULT_LIGHT:
       default:
         break;
     }
 
-    if (source && res != RESULT_NONE) {
+    if (source && res != game::RESULT_NONE) {
       /*
       **	If any damage occurred, then inform the house of this fact. If
       *it is the player's *	house, it might announce this fact.
@@ -2573,7 +2576,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
           ptr = Class->ExitList;
           while (ptr.front() != REFRESH_EOL) {
             cell = Coord_Cell(Coord) + base::ConsumeFront(ptr);
-            if (base->Can_Enter_Cell(cell) == MOVE_OK) {
+            if (base->Can_Enter_Cell(cell) == game::MOVE_OK) {
               found = true;
               break;
             }
@@ -3443,17 +3446,17 @@ ActionType BuildingClass::What_Action(CELL cell) const {
  * HISTORY: * 06/25/1995 JLB : Created. * 07/02/1995 JLB : Uses normalize
  *animation rate where applicable.                          *
  *=============================================================================================*/
-void BuildingClass::Begin_Mode(BStateType bstate) {
+void BuildingClass::Begin_Mode(game::BStateType bstate) {
   Validate();
   QueueBState = bstate;
-  if (BState == BSTATE_NONE || bstate == BSTATE_CONSTRUCTION ||
+  if (BState == game::BSTATE_NONE || bstate == game::BSTATE_CONSTRUCTION ||
       TheWorld().scenario_init()) {
     BState = bstate;
-    QueueBState = BSTATE_NONE;
+    QueueBState = game::BSTATE_NONE;
     const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
 
     int rate = ctrl->Rate;
-    if (Class->IsRegulated && bstate != BSTATE_CONSTRUCTION) {
+    if (Class->IsRegulated && bstate != game::BSTATE_CONSTRUCTION) {
       rate = TheOptions().Normalize_Delay(rate);
     }
     Set_Rate(static_cast<unsigned char>(rate));
@@ -3685,11 +3688,11 @@ COORDINATE BuildingClass::Docking_Coord() const {
  *                                                                                             *
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
-FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
   Validate();
-  const FireErrorType canfire = TechnoClass::Can_Fire(target, which);
+  const game::FireErrorType canfire = TechnoClass::Can_Fire(target, which);
 
-  if (canfire == FIRE_OK) {
+  if (canfire == game::FIRE_OK) {
     /*
     **	Double check to make sure that the facing is roughly toward
     **	the target. If the difference is too great, then firing is
@@ -3700,12 +3703,12 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
       **	If the turret is rotating then firing must be delayed.
       */
       if (PrimaryFacing.Is_Rotating()) {
-        return FIRE_ROTATING;
+        return game::FIRE_ROTATING;
       }
 
       const int diff = PrimaryFacing.Difference(Direction(TarCom));
       if (std::abs(diff) > 8) {
-        return FIRE_FACING;
+        return game::FIRE_FACING;
       }
     }
 
@@ -3713,7 +3716,7 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
     **	Advanced guard towers need power to fire.
     */
     if (*this == STRUCT_ATOWER && House->Power_Fraction() < 0x0100) {
-      return FIRE_BUSY;
+      return game::FIRE_BUSY;
     }
 
     /*
@@ -3723,7 +3726,7 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
     ** charging process, clear the stage timer, and return FIRE_OK.
     */
     if (Class->Primary == WEAPON_OBELISK_LASER && !IsCharged) {
-      return FIRE_BUSY;
+      return game::FIRE_BUSY;
     }
   }
   return canfire;
@@ -4034,10 +4037,10 @@ COORDINATE BuildingClass::Sort_Y() const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-MoveType BuildingClass::Can_Enter_Cell(CELL cell,
-                                       game::FacingType /*unused*/) const {
+game::MoveType BuildingClass::Can_Enter_Cell(
+    CELL cell, game::FacingType /*unused*/) const {
   Validate();
-  return Class->Legal_Placement(cell) ? MOVE_OK : MOVE_NO;
+  return Class->Legal_Placement(cell) ? game::MOVE_OK : game::MOVE_NO;
 }
 
 /***********************************************************************************************
@@ -4060,7 +4063,8 @@ MoveType BuildingClass::Can_Enter_Cell(CELL cell,
  *=============================================================================================*/
 bool BuildingClass::Can_Demolish() const {
   Validate();
-  if (!Class->Get_Buildup_Data().empty() && BState != BSTATE_CONSTRUCTION &&
+  if (!Class->Get_Buildup_Data().empty() &&
+      BState != game::BSTATE_CONSTRUCTION &&
       Mission != MISSION_DECONSTRUCTION && Mission != MISSION_CONSTRUCTION) {
     return *this != STRUCT_REFINERY || !Is_Something_Attached();
   }
@@ -4122,7 +4126,7 @@ int BuildingClass::Mission_Guard() {
     constexpr int kIdle = 1;
     switch (Status) {
       case kInitialEntry:
-        Begin_Mode(BSTATE_IDLE);
+        Begin_Mode(game::BSTATE_IDLE);
         Status = kIdle;
         break;
 
@@ -4169,7 +4173,7 @@ int BuildingClass::Mission_Construction() {
   constexpr int kDuring = 1;
   switch (Status) {
     case kInitial:
-      Begin_Mode(BSTATE_CONSTRUCTION);
+      Begin_Mode(game::BSTATE_CONSTRUCTION);
       Transmit_Message(RADIO_BUILDING);
       if (IsOwnedByPlayer) {
         Sound_Effect(VOC_CONSTRUCTION, Coord);
@@ -4186,7 +4190,7 @@ int BuildingClass::Mission_Construction() {
         */
         Transmit_Message(RADIO_COMPLETE);  // "I'm finished."
         Transmit_Message(RADIO_OVER_OUT);  // "You're free."
-        Begin_Mode(BSTATE_IDLE);
+        Begin_Mode(game::BSTATE_IDLE);
         Grand_Opening();
         Assign_Mission(MISSION_GUARD);
         PrimaryFacing = Class->StartFace;
@@ -4312,7 +4316,7 @@ int BuildingClass::Mission_Deconstruction() {
           Sound_Effect(VOC_CASHTURN, Coord);
         }
         Status = kDuring;
-        Begin_Mode(BSTATE_CONSTRUCTION);
+        Begin_Mode(game::BSTATE_CONSTRUCTION);
         Detach_All(true);
         Transmit_Message(RADIO_OVER_OUT);
         IsReadyToCommence = false;
@@ -4467,16 +4471,16 @@ int BuildingClass::Mission_Attack() {
           Assign_Target(kTargetNone);
           Status = kSamLocking;
         } else {
-          const FireErrorType error = Can_Fire(TarCom, 0);
-          if (error == FIRE_ILLEGAL || error == FIRE_CANT ||
-              error == FIRE_RANGE) {
+          const game::FireErrorType error = Can_Fire(TarCom, 0);
+          if (error == game::FIRE_ILLEGAL || error == game::FIRE_CANT ||
+              error == game::FIRE_RANGE) {
             Assign_Target(kTargetNone);
             Status = kSamLocking;
           } else {
-            if (error == FIRE_FACING) {
+            if (error == game::FIRE_FACING) {
               Status = kSamReady;
             } else {
-              if (error == FIRE_OK) {
+              if (error == game::FIRE_OK) {
                 Fire_At(TarCom, 0);
                 Status = kSamReady2;
                 return 1;
@@ -4509,16 +4513,16 @@ int BuildingClass::Mission_Attack() {
           Assign_Target(kTargetNone);
           Status = kSamLocking;
         } else {
-          const FireErrorType error = Can_Fire(TarCom, 0);
-          if (error == FIRE_ILLEGAL || error == FIRE_CANT ||
-              error == FIRE_RANGE) {
+          const game::FireErrorType error = Can_Fire(TarCom, 0);
+          if (error == game::FIRE_ILLEGAL || error == game::FIRE_CANT ||
+              error == game::FIRE_RANGE) {
             Assign_Target(kTargetNone);
             Status = kSamLocking;
           } else {
-            if (error == FIRE_FACING) {
+            if (error == game::FIRE_FACING) {
               Status = kSamReady2;
             } else {
-              if (error == FIRE_OK) {
+              if (error == game::FIRE_OK) {
                 Fire_At(TarCom, 0);
                 Status = kSamLocking;
                 return kTicksPerSecond * 3;
@@ -4565,32 +4569,32 @@ int BuildingClass::Mission_Attack() {
   } else {
     IsReadyToCommence = true;
     switch (Can_Fire(TarCom, 0)) {
-      case FIRE_ILLEGAL:
-      case FIRE_CANT:
-      case FIRE_RANGE:
-      case FIRE_AMMO:
+      case game::FIRE_ILLEGAL:
+      case game::FIRE_CANT:
+      case game::FIRE_RANGE:
+      case game::FIRE_AMMO:
         Assign_Target(kTargetNone);
         Assign_Mission(MISSION_GUARD);
         Commence();
         break;
 
-      case FIRE_FACING:
+      case game::FIRE_FACING:
         PrimaryFacing.Set_Desired(Direction(TarCom));
         return 2;
 
-      case FIRE_REARM:
-      case FIRE_BUSY:
+      case game::FIRE_REARM:
+      case game::FIRE_BUSY:
         return 1;
 
-      case FIRE_CLOAKED:
+      case game::FIRE_CLOAKED:
         Do_Uncloak();
         break;
 
-      case FIRE_OK:
+      case game::FIRE_OK:
         Fire_At(TarCom, 0);
         return 1;
-      case FireErrorType::FIRE_ROTATING:
-      case FireErrorType::FIRE_MOVING:
+      case game::FireErrorType::FIRE_ROTATING:
+      case game::FireErrorType::FIRE_MOVING:
       default:
         break;
     }
@@ -4620,7 +4624,7 @@ int BuildingClass::Mission_Harvest() {
   constexpr int kWaitForUndock = 3;  // Waiting for undocking to complete.
   switch (Status) {
     case kInitial:
-      Begin_Mode(BSTATE_ACTIVE);
+      Begin_Mode(game::BSTATE_ACTIVE);
       Status = kWaitForDock;
       break;
 
@@ -4628,7 +4632,7 @@ int BuildingClass::Mission_Harvest() {
       if (IsReadyToCommence) {
         IsReadyToCommence = false;
         Status = kMiddle;
-        Begin_Mode(BSTATE_AUX1);
+        Begin_Mode(game::BSTATE_AUX1);
       }
       break;
 
@@ -4657,7 +4661,7 @@ int BuildingClass::Mission_Harvest() {
             }
           }
         }
-        Begin_Mode(BSTATE_AUX2);
+        Begin_Mode(game::BSTATE_AUX2);
         Status = kWaitForUndock;
       }
       break;
@@ -4703,7 +4707,7 @@ int BuildingClass::Mission_Repair() {
     constexpr int kDuring = 1;
     switch (Status) {
       case kInitial:
-        Begin_Mode(BSTATE_ACTIVE);
+        Begin_Mode(game::BSTATE_ACTIVE);
         Status = kDuring;
         break;
 
@@ -4725,7 +4729,7 @@ int BuildingClass::Mission_Repair() {
     switch (Status) {
       case kInitial:
         if (!In_Radio_Contact()) {
-          Begin_Mode(BSTATE_IDLE);
+          Begin_Mode(game::BSTATE_IDLE);
           Assign_Mission(MISSION_GUARD);
           return 1;
         }
@@ -4747,7 +4751,7 @@ int BuildingClass::Mission_Repair() {
           if (Contact_With_Whom()->Health_Ratio() < 0x0100 &&
               Transmit_Message(RADIO_REPAIR) == RADIO_ROGER) {
             Status = kDuring;
-            Begin_Mode(BSTATE_ACTIVE);
+            Begin_Mode(game::BSTATE_ACTIVE);
             IsReadyToCommence = false;
           } else {
             if (!House->IsHuman) {
@@ -4762,7 +4766,7 @@ int BuildingClass::Mission_Repair() {
 
       case kDuring:
         if (!In_Radio_Contact()) {
-          Begin_Mode(BSTATE_IDLE);
+          Begin_Mode(game::BSTATE_IDLE);
           Status = kIdle;
           return 1;
         }
@@ -4776,7 +4780,7 @@ int BuildingClass::Mission_Repair() {
               Transmit_Message(RADIO_RUN_AWAY);
             }
 #endif
-            Begin_Mode(BSTATE_IDLE);
+            Begin_Mode(game::BSTATE_IDLE);
             Status = kIdle;
 #ifdef OBSOLETE
           } else {
@@ -4802,7 +4806,7 @@ int BuildingClass::Mission_Repair() {
       case kInitial:
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER &&
             Transmit_Message(RADIO_PREPARED) == RADIO_NEGATIVE) {
-          Begin_Mode(BSTATE_ACTIVE);
+          Begin_Mode(game::BSTATE_ACTIVE);
           Contact_With_Whom()->Assign_Mission(MISSION_SLEEP);
           Status = kDuring;
           return 1;
@@ -4875,7 +4879,7 @@ int BuildingClass::Mission_Missile() {
       */
       case kInitial:
         IsReadyToCommence = false;
-        Begin_Mode(BSTATE_ACTIVE);
+        Begin_Mode(game::BSTATE_ACTIVE);
         Status = kDoorOpening;
         return 1;
 
@@ -4885,7 +4889,7 @@ int BuildingClass::Mission_Missile() {
       */
       case kDoorOpening:
         if (IsReadyToCommence) {
-          Begin_Mode(BSTATE_IDLE);
+          Begin_Mode(game::BSTATE_IDLE);
           base::NewPooled<AnimClass>(ANIM_ATOM_DOOR, Center_Coord());
           Status = kLaunchUp;
           return 14;
@@ -5037,10 +5041,10 @@ void BuildingClass::Enter_Idle_Mode(bool initial) {
   MissionType mission = MISSION_GUARD;
   if (!initial || TheWorld().scenario_init() ||
       TheDebugState().map_editor_active()) {
-    Begin_Mode(BSTATE_IDLE);
+    Begin_Mode(game::BSTATE_IDLE);
     mission = MISSION_GUARD;
   } else {
-    Begin_Mode(BSTATE_CONSTRUCTION);
+    Begin_Mode(game::BSTATE_CONSTRUCTION);
     mission = MISSION_CONSTRUCTION;
   }
   Assign_Mission(mission);
@@ -5585,7 +5589,8 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
   if (!ptr.empty()) {
     while (ptr.front() != REFRESH_EOL) {
       const CELL cell = static_cast<CELL>(origin + base::ConsumeFront(ptr));
-      if (TheMap().In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
+      if (TheMap().In_Radar(cell) &&
+          techno->Can_Enter_Cell(cell) == game::MOVE_OK) {
         return cell;
       }
     }

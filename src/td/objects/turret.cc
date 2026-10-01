@@ -60,6 +60,7 @@
 #include "base/array.h"
 #include "base/cardinal.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "td/core/const.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
@@ -197,7 +198,7 @@ void TurretClass::AI() {
 BulletClass* TurretClass::Fire_At(TARGET target, int which) {
   BulletClass* bullet = nullptr;
 
-  if (Can_Fire(target, which) == FIRE_OK) {
+  if (Can_Fire(target, which) == game::FIRE_OK) {
     bullet = DriveClass::Fire_At(target, which);
 
     if (bullet) {
@@ -232,11 +233,11 @@ BulletClass* TurretClass::Fire_At(TARGET target, int which) {
  * HISTORY: * 04/26/1994 JLB : Created. * 06/01/1994 JLB : Returns reason why it
  *can't fire.                                        *
  *=============================================================================================*/
-FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
   int diff = 0;
-  const FireErrorType fire = DriveClass::Can_Fire(target, which);
+  const game::FireErrorType fire = DriveClass::Can_Fire(target, which);
 
-  if (fire == FIRE_OK) {
+  if (fire == game::FIRE_OK) {
     const WeaponTypeClass* weapon = which == 0 ? &Weapons.at(Class->Primary)
                                                : &Weapons.at(Class->Secondary);
 
@@ -245,7 +246,7 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
     */
     if ((!Class->IsTurretEquipped || Class->IsLockTurret) &&
         Target_Legal(NavCom)) {
-      return FIRE_MOVING;
+      return game::FIRE_MOVING;
     }
 
     /*
@@ -254,7 +255,7 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
     */
     if (!IsFiring && IsRotating &&
         !BulletTypeClass::As_Reference(weapon->Fires).IsHoming) {
-      return FIRE_ROTATING;
+      return game::FIRE_ROTATING;
     }
 
     const game::DirType dir =
@@ -285,7 +286,7 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
     if (diff < 8) {
       return DriveClass::Can_Fire(target, which);
     }
-    return FIRE_FACING;
+    return game::FIRE_FACING;
   }
   return fire;
 }

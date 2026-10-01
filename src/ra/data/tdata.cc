@@ -65,6 +65,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "game/core/heap.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/const.h"
@@ -381,7 +382,7 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, uint32_t theater,
       Occupy(occupy),
       Overlap(overlap) {
   MaxStrength = 800;
-  Armor = ARMOR_WOOD;
+  Armor = game::ARMOR_WOOD;
 }
 
 /***********************************************************************************************

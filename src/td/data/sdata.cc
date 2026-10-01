@@ -63,6 +63,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "game/core/display_constants.h"
+#include "game/sim/enums.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
@@ -210,7 +211,7 @@ SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, const char* ininame,
                                  int fullname, int width, int height,
                                  bool isbib, bool iscrater) noexcept
     : ObjectTypeClass(false, false, false, true, false, false, true, true,
-                      fullname, ininame, ARMOR_NONE, 0),
+                      fullname, ininame, game::ARMOR_NONE, 0),
       Type(smudge),
       Width(width),
       Height(height),

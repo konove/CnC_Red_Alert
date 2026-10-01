@@ -140,7 +140,7 @@ class WeaponTypeClass {
   /*
   **	Speed of the projectile launched.
   */
-  MPHType MaxSpeed{MPH_IMMOBILE};
+  game::MPHType MaxSpeed{game::MPH_IMMOBILE};
 
   /*
   **	Warhead to attach to the projectile.
@@ -175,7 +175,7 @@ class WeaponTypeClass {
 };
 
 WeaponType Weapon_From_Name(const char* name);
-ArmorType Armor_From_Name(const char* name);
+game::ArmorType Armor_From_Name(const char* name);
 
 }  // namespace ra
 

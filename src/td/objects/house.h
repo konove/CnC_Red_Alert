@@ -423,9 +423,9 @@ class HouseClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  ProdFailType Begin_Production(RTTIType type, int id);
-  ProdFailType Suspend_Production(RTTIType type);
-  ProdFailType Abandon_Production(RTTIType type);
+  game::ProdFailType Begin_Production(RTTIType type, int id);
+  game::ProdFailType Suspend_Production(RTTIType type);
+  game::ProdFailType Abandon_Production(RTTIType type);
   bool Place_Object(RTTIType type, CELL cell);
   bool Manual_Place(BuildingClass* builder, BuildingClass* object);
   void Special_Weapon_AI(SpecialWeaponType id);

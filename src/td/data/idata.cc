@@ -68,6 +68,7 @@
 #include "engine/gfx/shape.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "td/ai/special.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
@@ -166,7 +167,7 @@ static const InfantryTypeClass E1(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // Who can own this infantry unit.
     WEAPON_M16, WEAPON_NONE,
-    MPH_SLOW  // Maximum speed of infantry.
+    game::MPH_SLOW  // Maximum speed of infantry.
 );
 
 // Grenadiers
@@ -235,7 +236,7 @@ static const InfantryTypeClass E2(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagGood,  // Who can own this infantry unit.
     WEAPON_GRENADE, WEAPON_NONE,
-    MPH_SLOW_ISH  // Maximum speed of infantry.
+    game::MPH_SLOW_ISH  // Maximum speed of infantry.
 );
 
 // Bazooka
@@ -304,7 +305,7 @@ static const InfantryTypeClass E3(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // Who can own this infantry unit.
     WEAPON_DRAGON, WEAPON_NONE,
-    MPH_KINDA_SLOW  // Maximum speed of infantry.
+    game::MPH_KINDA_SLOW  // Maximum speed of infantry.
 );
 
 // Flamethrower
@@ -372,7 +373,7 @@ static const InfantryTypeClass E4(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // Who can own this infantry unit.
-    WEAPON_FLAMETHROWER, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_FLAMETHROWER, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 // Chemwarrior
 
@@ -440,7 +441,7 @@ static const InfantryTypeClass E5(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         //	kHouseFlagGood|
         kHouseFlagBad,  // Who can own this infantry unit.
-    WEAPON_CHEMSPRAY, WEAPON_NONE, MPH_SLOW);
+    WEAPON_CHEMSPRAY, WEAPON_NONE, game::MPH_SLOW);
 
 // Engineer
 
@@ -508,7 +509,7 @@ static const InfantryTypeClass E7(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // Who can own this infantry unit.
     WEAPON_NONE, WEAPON_NONE,
-    MPH_SLOW  // Maximum speed of infantry.
+    game::MPH_SLOW  // Maximum speed of infantry.
 );
 
 // Commandos
@@ -577,7 +578,7 @@ static const InfantryTypeClass Commando(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // Who can own this infantry unit.
     WEAPON_RIFLE, WEAPON_NONE,
-    MPH_SLOW_ISH  // Maximum speed of infantry.
+    game::MPH_SLOW_ISH  // Maximum speed of infantry.
 );
 
 // Civilians
@@ -645,7 +646,7 @@ static const InfantryTypeClass C1(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_PISTOL, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 static int CivilianDos2[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
@@ -710,7 +711,7 @@ static const InfantryTypeClass C2(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_NONE, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 static int CivilianDos3[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
@@ -776,7 +777,7 @@ static const InfantryTypeClass C3(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_NONE, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 static int CivilianDos4[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
@@ -841,7 +842,7 @@ static const InfantryTypeClass C4(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_NONE, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 static int CivilianDos5[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
@@ -906,7 +907,7 @@ static const InfantryTypeClass C5(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_NONE, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 static int CivilianDos6[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
@@ -971,7 +972,7 @@ static const InfantryTypeClass C6(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_NONE, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 static int CivilianDos7[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
@@ -1036,7 +1037,7 @@ static const InfantryTypeClass C7(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_PISTOL, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 static int CivilianDos8[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
@@ -1101,7 +1102,7 @@ static const InfantryTypeClass C8(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_NONE, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 static int CivilianDos9[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
@@ -1166,7 +1167,7 @@ static const InfantryTypeClass C9(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_NONE, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 static int NikoombaDos[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
@@ -1233,7 +1234,7 @@ static const InfantryTypeClass C10(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_NONE, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 static int MoebiusDos[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
@@ -1298,7 +1299,7 @@ static const InfantryTypeClass Moebius(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad | kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_NONE, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 static int DelphiDos[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
@@ -1363,7 +1364,7 @@ static const InfantryTypeClass Delphi(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_PISTOL, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_PISTOL, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 static int DrChanDos[kDoCount][3] = {
     {0, 1, 1},     // DO_STAND_READY
@@ -1428,7 +1429,7 @@ static const InfantryTypeClass DrChan(
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagNeutral,  // Who can own this infantry unit.
-    WEAPON_NONE, WEAPON_NONE, MPH_SLOW_ISH);
+    WEAPON_NONE, WEAPON_NONE, game::MPH_SLOW_ISH);
 
 /*
 **	This is the array of pointers to the static data associated with each
@@ -1464,12 +1465,12 @@ InfantryTypeClass::InfantryTypeClass(
     bool is_theater, int ammo, const int (&do_table)[kDoCount][3],
     int firelaunch, int pronelaunch, int16_t strength, int sightrange, int cost,
     int scenario, int risk, int reward, int ownable, WeaponType primary,
-    WeaponType secondary, MPHType maxspeed) noexcept
+    WeaponType secondary, game::MPHType maxspeed) noexcept
     : TechnoTypeClass(name, ininame, level, pre, is_leader, true, is_nominal,
                       false, false, true, true, true, true, false, false,
                       is_theater, false, false, false, true, false, ammo,
                       strength, maxspeed, sightrange, cost, scenario, risk,
-                      reward, ownable, primary, secondary, ARMOR_NONE),
+                      reward, ownable, primary, secondary, game::ARMOR_NONE),
       IsFemale(is_female),
       IsCrawling(is_crawling),
       IsCapture(is_capture),

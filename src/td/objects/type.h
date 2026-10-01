@@ -138,7 +138,7 @@ class WarheadTypeClass {
   **	The warhead damage is reduced depending on the the type of armor the
   **	defender has. This table is what gives weapons their "character".
   */
-  base::EnumArray<ArmorType, unsigned char> Modifier{};
+  base::EnumArray<game::ArmorType, unsigned char> Modifier{};
 };
 
 /**********************************************************************
@@ -337,7 +337,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   **	The defense of this object is greatly affected by the type of armor
   **	it possesses. This value specifies the type of armor.
   */
-  ArmorType Armor;
+  game::ArmorType Armor;
 
   /*
   **	This is the maximum strength of this object type.
@@ -363,7 +363,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   ObjectTypeClass(bool is_sentient, bool is_flammable, bool is_crushable,
                   bool is_stealthy, bool is_selectable, bool is_legal_target,
                   bool is_insignificant, bool is_immune, int fullname,
-                  const char* ini, ArmorType armor,
+                  const char* ini, game::ArmorType armor,
                   int16_t strength) noexcept;
 
   static void One_Time();
@@ -520,7 +520,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   /*
   **	This value indicates the maximum speed that this object can achieve.
   */
-  MPHType MaxSpeed;
+  game::MPHType MaxSpeed;
 
   /*
   **	This is the maximum number of ammo shots this object can hold. If
@@ -558,10 +558,10 @@ class TechnoTypeClass : public ObjectTypeClass {
                   bool is_legal_target, bool is_insignificant, bool is_immune,
                   bool is_theater, bool is_twoshooter, bool is_turret_equipped,
                   bool is_repairable, bool is_buildable, bool is_crew, int ammo,
-                  int16_t strength, MPHType maxspeed, int sightrange, int cost,
-                  int scenario, int risk, int reward, int ownable,
+                  int16_t strength, game::MPHType maxspeed, int sightrange,
+                  int cost, int scenario, int risk, int reward, int ownable,
                   WeaponType primary, WeaponType secondary,
-                  ArmorType armor) noexcept;
+                  game::ArmorType armor) noexcept;
 
   [[nodiscard]] virtual int Raw_Cost() const;
   [[nodiscard]] virtual int Max_Passengers() const;
@@ -705,7 +705,7 @@ class BuildingTypeClass : public TechnoTypeClass {
     **	This is the size of the building. This size value is a rough indication
     **	of the building's "footprint".
     */
-    BSizeType Size;
+    game::BSizeType Size;
 
     /**********************************************************************
     **	For each stage that a building may be in, its animation is controlled
@@ -721,7 +721,7 @@ class BuildingTypeClass : public TechnoTypeClass {
       int Rate;   // Number of ticks to delay between each frame.
     };
   // Resolved when the theater loads; the table itself stays const.
-    mutable base::EnumArray<BStateType, AnimControlType> Anims{};
+    mutable base::EnumArray<game::BStateType, AnimControlType> Anims{};
 
     /*
     **	This is a mask flag used to determine if all the necessary prerequisite
@@ -743,8 +743,8 @@ class BuildingTypeClass : public TechnoTypeClass {
         bool is_buildable, bool is_crew, bool is_sturdy, RTTIType tobuild,
         game::DirType sframe, int16_t strength, int sightrange, int cost,
         int scenario, int risk, int reward, int ownable, WeaponType primary,
-        WeaponType secondary, ArmorType armor, uint32_t canenter, int capacity,
-        int power, int drain, BSizeType size,
+        WeaponType secondary, game::ArmorType armor, uint32_t canenter,
+        int capacity, int power, int drain, game::BSizeType size,
         std::span<const int16_t> exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
         std::span<const int16_t> sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
         std::span<const int16_t> overlap
@@ -825,7 +825,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   void Set_Buildup_Data(std::span<const std::byte> data) const {
     BuildupData = data;
   }
-  void Init_Anim(BStateType state, int start, int count, int rate) const;
+  void Init_Anim(game::BStateType state, int start, int count, int rate) const;
 };
 
 /***************************************************************************
@@ -979,9 +979,9 @@ class UnitTypeClass : public TechnoTypeClass {
                 bool is_gigundo, bool is_chunky, bool is_cloakable,
                 bool is_animating, int ammo, int16_t strength, int sightrange,
                 int cost, int scenario, int risk, int reward, int ownable,
-                WeaponType primary, WeaponType secondary, ArmorType armor,
-                SpeedType speed, MPHType maxSpeed, unsigned rot, int toffset,
-                MissionType order) noexcept;
+                WeaponType primary, WeaponType secondary, game::ArmorType armor,
+                SpeedType speed, game::MPHType maxSpeed, unsigned rot,
+                int toffset, MissionType order) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_UNITTYPE; }
 
   static UnitType From_Name(const char* name);
@@ -1094,7 +1094,7 @@ class InfantryTypeClass : public TechnoTypeClass {
                     int pronelaunch, int16_t strength, int sightrange, int cost,
                     int scenario, int risk, int reward, int ownable,
                     WeaponType primary, WeaponType secondary,
-                    MPHType maxSpeed) noexcept;
+                    game::MPHType maxSpeed) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override {
     return RTTI_INFANTRYTYPE;
   }
@@ -1219,7 +1219,7 @@ class BulletTypeClass : public ObjectTypeClass {
   /*
   **	Maximum speed for this bullet type.
   */
-  MPHType MaxSpeed;
+  game::MPHType MaxSpeed;
 
   /*
   **	This projectile has a certain style of warhead. This value specifies
@@ -1259,7 +1259,7 @@ class BulletTypeClass : public ObjectTypeClass {
                   bool is_invisible, bool is_proximity_armed,
                   bool is_flame_equipped, bool is_fueled, bool is_faceless,
                   bool is_inaccurate, bool is_translucent, bool is_antiair,
-                  int arming, int range, MPHType maxspeed, unsigned rot,
+                  int arming, int range, game::MPHType maxspeed, unsigned rot,
                   WarheadType warhead, AnimType explosion) noexcept;
   ~BulletTypeClass() override;
   BulletTypeClass(const BulletTypeClass&) = delete;
@@ -1344,7 +1344,7 @@ class TerrainTypeClass : public ObjectTypeClass {
       bool is_destroyable, bool is_transformable, bool is_flammable,
       bool is_crushable, bool is_selectable, bool is_legal_target,
       bool is_insignificant, bool is_immune, const char* ininame, int fullname,
-      int16_t strength, ArmorType armor,
+      int16_t strength, game::ArmorType armor,
       std::span<const int16_t> occupy ABSL_ATTRIBUTE_LIFETIME_BOUND,
       std::span<const int16_t> overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_TERRAINTYPE; }
@@ -1676,8 +1676,9 @@ class AircraftTypeClass : public TechnoTypeClass {
                     bool is_repairable, bool is_buildable, bool is_crew,
                     int ammo, int16_t strength, int sightrange, int cost,
                     int scenario, int risk, int reward, int ownable,
-                    WeaponType primary, WeaponType secondary, ArmorType armor,
-                    MPHType MaxSpeed, int ROT, MissionType deforder) noexcept;
+                    WeaponType primary, WeaponType secondary,
+                    game::ArmorType armor, game::MPHType MaxSpeed, int ROT,
+                    MissionType deforder) noexcept;
   [[nodiscard]] RTTIType What_Am_I() const override;
 
   // Returns the AircraftType matching the given INI name (case-insensitive),

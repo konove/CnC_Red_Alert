@@ -33,6 +33,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "game/core/heap.h"
+#include "game/sim/enums.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
@@ -53,42 +54,42 @@ std::span<const std::byte> AircraftTypeClass::RRotorData = {};
 
 // A-10 attack plane
 static const AircraftTypeClass AttackPlane(
-    AIRCRAFT_A10,  // What kind of aircraft is this.
-    TXT_A10,       // Translated text number for aircraft.
-    "A10",         // INI name of aircraft.
-    99,            // Build level.
+    AIRCRAFT_A10,     // What kind of aircraft is this.
+    TXT_A10,          // Translated text number for aircraft.
+    "A10",            // INI name of aircraft.
+    99,               // Build level.
     kStructFlagNone,  // Building prerequisite.
-    false,         // Is a leader type?
-    false,         // Does it fire a pair of shots in quick succession?
-    false,         // Is this a typical transport vehicle?
-    true,          // Fixed wing aircraft?
-    false,         // Equipped with a rotor?
-    false,         // Custom rotor sets for each facing?
-    false,         // Can this aircraft land on clear terrain?
-    false,         // Can the aircraft be crushed by a tracked vehicle?
-    true,          // Is it invisible on radar?
-    false,         // Can the player select it to give it orders?
-    true,          // Can it be assigned as a target for attack.
-    false,         // Is it insignificant (won't be announced)?
-    false,         // Is it immune to normal combat damage?
-    false,         // Theater specific graphic image?
-    false,         // Can it be repaired in a repair facility?
-    false,         // Can the player construct or order this unit?
-    true,          // Is there a crew inside?
-    3,             // Number of shots it has (default).
-    60,            // The strength of this unit.
-    0,             // The range that it reveals terrain around itself.
-    800,           // Credit cost to construct.
-    0,             // The scenario this becomes available.
-    10, 1,         // Risk, reward when calculating AI.
+    false,            // Is a leader type?
+    false,            // Does it fire a pair of shots in quick succession?
+    false,            // Is this a typical transport vehicle?
+    true,             // Fixed wing aircraft?
+    false,            // Equipped with a rotor?
+    false,            // Custom rotor sets for each facing?
+    false,            // Can this aircraft land on clear terrain?
+    false,            // Can the aircraft be crushed by a tracked vehicle?
+    true,             // Is it invisible on radar?
+    false,            // Can the player select it to give it orders?
+    true,             // Can it be assigned as a target for attack.
+    false,            // Is it insignificant (won't be announced)?
+    false,            // Is it immune to normal combat damage?
+    false,            // Theater specific graphic image?
+    false,            // Can it be repaired in a repair facility?
+    false,            // Can the player construct or order this unit?
+    true,             // Is there a crew inside?
+    3,                // Number of shots it has (default).
+    60,               // The strength of this unit.
+    0,                // The range that it reveals terrain around itself.
+    800,              // Credit cost to construct.
+    0,                // The scenario this becomes available.
+    10, 1,            // Risk, reward when calculating AI.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // Who can own this aircraft type.
     WEAPON_NAPALM, WEAPON_NONE,
-    ARMOR_ALUMINUM,  // Armor type of this aircraft.
-    MPH_FAST,        // Maximum speed of aircraft.
-    5,               // Rate of turn.
-    MISSION_HUNT     // Default mission for aircraft.
+    game::ARMOR_ALUMINUM,  // Armor type of this aircraft.
+    game::MPH_FAST,        // Maximum speed of aircraft.
+    5,                     // Rate of turn.
+    MISSION_HUNT           // Default mission for aircraft.
 );
 
 // Transport helicopter.
@@ -97,7 +98,7 @@ static const AircraftTypeClass TransportHeli(
     TXT_TRANS,           // Translated text number for aircraft.
     "TRAN",              // INI name of aircraft.
     6,                   // Build level.
-    kStructFlagHelipad,     // Building prerequisite.
+    kStructFlagHelipad,  // Building prerequisite.
     false,               // Is a leader type?
     false,               // Does it fire a pair of shots in quick succession?
     true,                //	Is this a typical transport vehicle?
@@ -125,10 +126,10 @@ static const AircraftTypeClass TransportHeli(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // Who can own this aircraft type.
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_ALUMINUM,   // Armor type of this aircraft.
-    MPH_MEDIUM_FAST,  // Maximum speed of aircraft.
-    5,                // Rate of turn.
-    MISSION_HUNT      // Default mission for aircraft.
+    game::ARMOR_ALUMINUM,   // Armor type of this aircraft.
+    game::MPH_MEDIUM_FAST,  // Maximum speed of aircraft.
+    5,                      // Rate of turn.
+    MISSION_HUNT            // Default mission for aircraft.
 );
 
 // Apache attack helicopter.
@@ -137,7 +138,7 @@ static const AircraftTypeClass AttackHeli(
     TXT_HELI,             // Translated text number for aircraft.
     "HELI",               // INI name of aircraft.
     6,                    // Build level.
-    kStructFlagHelipad,      // Building prerequisite.
+    kStructFlagHelipad,   // Building prerequisite.
     true,                 // Is a leader type?
     true,                 // Does it fire a pair of shots in quick succession?
     false,                //	Is this a typical transport vehicle?
@@ -165,90 +166,90 @@ static const AircraftTypeClass AttackHeli(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // Who can own this aircraft type.
     WEAPON_CHAIN_GUN, WEAPON_NONE,
-    ARMOR_STEEL,  // Armor type of this aircraft.
-    MPH_FAST,     // Maximum speed of aircraft.
-    4,            // Rate of turn.
-    MISSION_HUNT  // Default mission for aircraft.
+    game::ARMOR_STEEL,  // Armor type of this aircraft.
+    game::MPH_FAST,     // Maximum speed of aircraft.
+    4,                  // Rate of turn.
+    MISSION_HUNT        // Default mission for aircraft.
 );
 
 // Orca attack helicopter.
 static const AircraftTypeClass OrcaHeli(
-    AIRCRAFT_ORCA,    // What kind of aircraft is this.
-    TXT_ORCA,         // Translated text number for aircraft.
-    "ORCA",           // INI name of aircraft.
-    6,                // Build level.
+    AIRCRAFT_ORCA,       // What kind of aircraft is this.
+    TXT_ORCA,            // Translated text number for aircraft.
+    "ORCA",              // INI name of aircraft.
+    6,                   // Build level.
     kStructFlagHelipad,  // Building prerequisite.
-    true,             // Is a leader type?
-    true,             // Does it fire a pair of shots in quick succession?
-    false,            //	Is this a typical transport vehicle?
-    false,            // Fixed wing aircraft?
+    true,                // Is a leader type?
+    true,                // Does it fire a pair of shots in quick succession?
+    false,               //	Is this a typical transport vehicle?
+    false,               // Fixed wing aircraft?
+    false,               // Equipped with a rotor?
+    false,               // Custom rotor sets for each facing?
+    false,               // Can this aircraft land on clear terrain?
+    false,               // Can the aircraft be crushed by a tracked vehicle?
+    true,                // Is it invisible on radar?
+    true,                // Can the player select it so as to give it orders?
+    true,                // Can it be assigned as a target for attack.
+    false,               // Is it insignificant (won't be announced)?
+    false,               // Is it immune to normal combat damage?
+    false,               // Theater specific graphic image?
+    false,               // Can it be repaired in a repair facility?
+    true,                // Can the player construct or order this unit?
+    true,                // Is there a crew inside?
+    6,                   // Number of shots it has (default).
+    125,                 // The strength of this unit.
+    0,                   // The range that it reveals terrain around itself.
+    1200,                // Credit cost to construct.
+    10,                  // The scenario this becomes available.
+    10, 80,              // Risk, reward when calculating AI.
+    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
+        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
+        kHouseFlagGood,  // Who can own this aircraft type.
+    WEAPON_DRAGON, WEAPON_NONE,
+    game::ARMOR_STEEL,  // Armor type of this aircraft.
+    game::MPH_FAST,     // Maximum speed of aircraft.
+    4,                  // Rate of turn.
+    MISSION_HUNT        // Default mission for aircraft.
+);
+
+// C-17 transport plane.
+static const AircraftTypeClass CargoPlane(
+    AIRCRAFT_CARGO,   // What kind of aircraft is this.
+    TXT_C17,          // Translated text number for aircraft.
+    "C17",            // INI name of aircraft.
+    99,               // Build level.
+    kStructFlagNone,  // Building prerequisite.
+    false,            // Is a leader type?
+    false,            // Does it fire a pair of shots in quick succession?
+    true,             //	Is this a typical transport vehicle?
+    true,             // Fixed wing aircraft?
     false,            // Equipped with a rotor?
     false,            // Custom rotor sets for each facing?
     false,            // Can this aircraft land on clear terrain?
     false,            // Can the aircraft be crushed by a tracked vehicle?
     true,             // Is it invisible on radar?
-    true,             // Can the player select it so as to give it orders?
-    true,             // Can it be assigned as a target for attack.
+    false,            // Can the player select it so as to give it orders?
+    false,            // Can it be assigned as a target for attack.
     false,            // Is it insignificant (won't be announced)?
     false,            // Is it immune to normal combat damage?
     false,            // Theater specific graphic image?
     false,            // Can it be repaired in a repair facility?
-    true,             // Can the player construct or order this unit?
+    false,            // Can the player construct or order this unit?
     true,             // Is there a crew inside?
-    6,                // Number of shots it has (default).
-    125,              // The strength of this unit.
+    0,                // Number of shots it has (default).
+    25,               // The strength of this unit.
     0,                // The range that it reveals terrain around itself.
-    1200,             // Credit cost to construct.
-    10,               // The scenario this becomes available.
-    10, 80,           // Risk, reward when calculating AI.
-    kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
-        kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
-        kHouseFlagGood,  // Who can own this aircraft type.
-    WEAPON_DRAGON, WEAPON_NONE,
-    ARMOR_STEEL,  // Armor type of this aircraft.
-    MPH_FAST,     // Maximum speed of aircraft.
-    4,            // Rate of turn.
-    MISSION_HUNT  // Default mission for aircraft.
-);
-
-// C-17 transport plane.
-static const AircraftTypeClass CargoPlane(
-    AIRCRAFT_CARGO,  // What kind of aircraft is this.
-    TXT_C17,         // Translated text number for aircraft.
-    "C17",           // INI name of aircraft.
-    99,              // Build level.
-    kStructFlagNone,    // Building prerequisite.
-    false,           // Is a leader type?
-    false,           // Does it fire a pair of shots in quick succession?
-    true,            //	Is this a typical transport vehicle?
-    true,            // Fixed wing aircraft?
-    false,           // Equipped with a rotor?
-    false,           // Custom rotor sets for each facing?
-    false,           // Can this aircraft land on clear terrain?
-    false,           // Can the aircraft be crushed by a tracked vehicle?
-    true,            // Is it invisible on radar?
-    false,           // Can the player select it so as to give it orders?
-    false,           // Can it be assigned as a target for attack.
-    false,           // Is it insignificant (won't be announced)?
-    false,           // Is it immune to normal combat damage?
-    false,           // Theater specific graphic image?
-    false,           // Can it be repaired in a repair facility?
-    false,           // Can the player construct or order this unit?
-    true,            // Is there a crew inside?
-    0,               // Number of shots it has (default).
-    25,              // The strength of this unit.
-    0,               // The range that it reveals terrain around itself.
-    800,             // Credit cost to construct.
-    0,               // The scenario this becomes available.
-    10, 1,           // Risk, reward when calculating AI.
+    800,              // Credit cost to construct.
+    0,                // The scenario this becomes available.
+    10, 1,            // Risk, reward when calculating AI.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // Who can own this aircraft type.
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_ALUMINUM,  // Armor type of this aircraft.
-    MPH_FAST,        // Maximum speed of aircraft.
-    5,               // Rate of turn.
-    MISSION_HUNT     // Default mission for aircraft.
+    game::ARMOR_ALUMINUM,  // Armor type of this aircraft.
+    game::MPH_FAST,        // Maximum speed of aircraft.
+    5,                     // Rate of turn.
+    MISSION_HUNT           // Default mission for aircraft.
 );
 
 const base::EnumArray<AircraftType, const AircraftTypeClass*, kAircraftCount>
@@ -265,7 +266,8 @@ AircraftTypeClass::AircraftTypeClass(
     bool is_theater, bool is_repairable, bool is_buildable, bool is_crew,
     int ammo, int16_t strength, int sightrange, int cost, int scenario,
     int risk, int reward, int ownable, WeaponType primary, WeaponType secondary,
-    ArmorType armor, MPHType maxspeed, int rot, MissionType deforder) noexcept
+    game::ArmorType armor, game::MPHType maxspeed, int rot,
+    MissionType deforder) noexcept
     : TechnoTypeClass(name, ininame, level, pre, is_leader, false, false,
                       is_transporter, false, is_crushable, is_stealthy,
                       is_selectable, is_legal_target, is_insignificant,

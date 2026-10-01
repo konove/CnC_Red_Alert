@@ -51,6 +51,7 @@
 #include "game/sim/crew.h"
 #include "game/sim/direction.h"
 #include "game/sim/door.h"
+#include "game/sim/enums.h"
 #include "game/sim/flasher.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
@@ -522,8 +523,8 @@ void TechnoClass::Serialize(Archive& ar) {
     IsALemon = lemon;
     IsSecondShot = second_shot;
     // Houses precede all Techno heaps, so active membership is available now.
-    if (House == nullptr || !House->IsActive ||
-        Cloak < UNCLOAKED || Cloak > UNCLOAKING) {
+    if (House == nullptr || !House->IsActive || Cloak < game::UNCLOAKED ||
+        Cloak > game::UNCLOAKING) {
       ar.Fail("invalid saved techno state");
     }
   }
@@ -570,10 +571,10 @@ void BuildingClass::Serialize(Archive& ar) {
     }
     if (Class == nullptr || ActLike < HOUSE_NONE || ActLike >= HOUSE_COUNT ||
         WhoLastHurtMe < HOUSE_NONE || WhoLastHurtMe >= HOUSE_COUNT ||
-        BState < BSTATE_NONE ||
-        BState > magic_enum::enum_values<BStateType>().back() ||
-        QueueBState < BSTATE_NONE ||
-        QueueBState > magic_enum::enum_values<BStateType>().back()) {
+        BState < game::BSTATE_NONE ||
+        BState > magic_enum::enum_values<game::BStateType>().back() ||
+        QueueBState < game::BSTATE_NONE ||
+        QueueBState > magic_enum::enum_values<game::BStateType>().back()) {
       ar.Fail("invalid saved building state");
     }
   }

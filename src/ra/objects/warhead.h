@@ -112,7 +112,7 @@ class WarheadTypeClass {
   **	The warhead damage is reduced depending on the the type of armor the
   **	defender has. This table is what gives weapons their "character".
   */
-  base::EnumArray<ArmorType, Fixed> Modifier;
+  base::EnumArray<game::ArmorType, Fixed> Modifier;
 
   /*
   **	Which explosion set to use for warhead impact.

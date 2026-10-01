@@ -67,6 +67,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/scenario.h"
@@ -140,7 +141,7 @@ using enum engine::window::KeyNumber;
 int MapEditClass::New_Scenario() {
   int scen_num = 0;
   ScenarioPlayerType player = SCEN_PLAYER_NONE;
-  ScenarioDirType dir = SCEN_DIR_NONE;
+  game::ScenarioDirType dir = game::SCEN_DIR_NONE;
   ScenarioVarType var = SCEN_VAR_NONE;
   Disect_Scenario_Name(TheScenario().ScenarioName, scen_num, player, dir, var);
 
@@ -298,7 +299,7 @@ int MapEditClass::New_Scenario() {
 int MapEditClass::Load_Scenario() {
   int scen_num = 0;
   ScenarioPlayerType player = SCEN_PLAYER_NONE;
-  ScenarioDirType dir = SCEN_DIR_NONE;
+  game::ScenarioDirType dir = game::SCEN_DIR_NONE;
   ScenarioVarType var = SCEN_VAR_NONE;
   Disect_Scenario_Name(TheScenario().ScenarioName, scen_num, player, dir, var);
 
@@ -395,7 +396,7 @@ int MapEditClass::Load_Scenario() {
   int MapEditClass::Save_Scenario() {
     int scen_num = 0;
     ScenarioPlayerType player = SCEN_PLAYER_NONE;
-    ScenarioDirType dir = SCEN_DIR_NONE;
+    game::ScenarioDirType dir = game::SCEN_DIR_NONE;
     ScenarioVarType var = SCEN_VAR_NONE;
 
     Disect_Scenario_Name(TheScenario().ScenarioName, scen_num, player, dir,
@@ -516,9 +517,10 @@ int MapEditClass::Load_Scenario() {
    *   10/21/1994 BR : Created.                                              *
    *   09/04/1996 JLB : Simplified                                           *
    *=========================================================================*/
-  int MapEditClass::Pick_Scenario(
-      const char* caption, int& scen_nump, ScenarioPlayerType& playerp,
-      ScenarioDirType& dirp, ScenarioVarType& varp) {
+  int MapEditClass::Pick_Scenario(const char* caption, int& scen_nump,
+                                  ScenarioPlayerType& playerp,
+                                  game::ScenarioDirType& dirp,
+                                  ScenarioVarType& varp) {
     /*
     **	Dialog & button dimensions
     */
@@ -778,7 +780,7 @@ int MapEditClass::Load_Scenario() {
 
     eastbtn.Turn_Off();
     westbtn.Turn_Off();
-    if (dirp == SCEN_DIR_EAST) {
+    if (dirp == game::SCEN_DIR_EAST) {
       eastbtn.Turn_On();
     } else {
       westbtn.Turn_On();
@@ -865,12 +867,12 @@ int MapEditClass::Load_Scenario() {
           eastbtn.Turn_Off();
           switch (static_cast<int>(input)) {
             case engine::window::ButtonKey(kButtonEast):
-              dirp = SCEN_DIR_EAST;
+              dirp = game::SCEN_DIR_EAST;
               eastbtn.Turn_On();
               break;
 
             case engine::window::ButtonKey(kButtonWest):
-              dirp = SCEN_DIR_WEST;
+              dirp = game::SCEN_DIR_WEST;
               westbtn.Turn_On();
               break;
             default:

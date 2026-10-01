@@ -54,6 +54,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "game/core/display_constants.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/enums.h"
 #include "td/ai/base.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
@@ -545,7 +546,7 @@ int MapEditClass::Move_Grabbed_Object() {
     /*
     ................ Try to place object at new coordinate ................
     */
-    if (GrabbedObject->Can_Enter_Cell(Coord_Cell(new_coord)) != MOVE_OK) {
+    if (GrabbedObject->Can_Enter_Cell(Coord_Cell(new_coord)) != game::MOVE_OK) {
       new_coord = 0;
     }
   }

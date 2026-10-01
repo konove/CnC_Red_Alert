@@ -80,6 +80,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/coord.h"
@@ -149,13 +150,13 @@ TerrainClass::~TerrainClass() {
  *handler for techno objects.                           * 12/11/1994 JLB :
  *Shortens attached burning animations.                                    *
  *=============================================================================================*/
-ResultType TerrainClass::Take_Damage(int& damage, int distance,
-                                     WarheadType warhead, TechnoClass* source,
-                                     bool forced) {
+game::ResultType TerrainClass::Take_Damage(int& damage, int distance,
+                                           WarheadType warhead,
+                                           TechnoClass* source, bool forced) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().terrain(), this);
   DCHECK(IsActive);
 
-  ResultType res = RESULT_NONE;
+  game::ResultType res = game::RESULT_NONE;
 
   /*
   **	Small arms can never destroy a terrain element.
@@ -172,7 +173,7 @@ ResultType TerrainClass::Take_Damage(int& damage, int distance,
     **	If the terrain object is destroyed by this damage, then only remove it
     *if it *	currently isn't on fire and isn't in the process of crumbling.
     */
-    if (res == RESULT_DESTROYED) {
+    if (res == game::RESULT_DESTROYED) {
       /*
       **	Remove this terrain object from the targeting computers of all
       *other *	game objects. No use beating a dead horse.
@@ -398,13 +399,13 @@ void TerrainClass::Init() { TheObjectHeaps().terrain().Free_All(); }
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. * 01/01/1995 JLB : Actually works now. *
  *=============================================================================================*/
-MoveType TerrainClass::Can_Enter_Cell(CELL cell,
-                                      game::FacingType /*unused*/) const {
+game::MoveType TerrainClass::Can_Enter_Cell(CELL cell,
+                                            game::FacingType /*unused*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().terrain(), this);
   DCHECK(IsActive);
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
   std::span<const int16_t> offset =
@@ -414,17 +415,17 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell,
       if (!TheMap()
                .at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
                .Is_Clear_To_Build(SPEED_FLOAT)) {
-        return MOVE_NO;
+        return game::MOVE_NO;
       }
     } else {
       if (!TheMap()
                .at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
                .Is_Clear_To_Build()) {
-        return MOVE_NO;
+        return game::MOVE_NO;
       }
     }
   }
-  return MOVE_OK;
+  return game::MOVE_OK;
 }
 
 /***********************************************************************************************
@@ -447,7 +448,7 @@ bool TerrainClass::Catch_Fire() {
   DCHECK_HEAP_SLOT(TheObjectHeaps().terrain(), this);
   DCHECK(IsActive);
 
-  if (!IsCrumbling && !IsOnFire && Class->Armor == ARMOR_WOOD) {
+  if (!IsCrumbling && !IsOnFire && Class->Armor == game::ARMOR_WOOD) {
     auto* anim = base::NewPooled<AnimClass>(ANIM_BURN_BIG,
                                             Coord_Add(Sort_Y(), 0xFFB00000L));
     if (anim) {

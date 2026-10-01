@@ -121,7 +121,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   */
   bool Unlimbo(COORDINATE coord, game::DirType dir = game::DIR_N) override;
   bool Limbo() override;
-  [[nodiscard]] MoveType Can_Enter_Cell(
+  [[nodiscard]] game::MoveType Can_Enter_Cell(
       CELL cell, game::FacingType facing = game::FACING_NONE) const override;
 
   /*
@@ -142,8 +142,8 @@ class TerrainClass final : public ObjectClass, public StageClass {
   */
   void Fire_Out() override;
   bool Catch_Fire() override;
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source) override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source) override;
   [[nodiscard]] TARGET As_Target() const override;
 
   /*

@@ -49,6 +49,7 @@
 #include "base/numeric.h"
 #include "game/core/display_constants.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/core/const.h"
@@ -62,7 +63,7 @@
 
 namespace td {
 
-int Modify_Damage(int damage, WarheadType warhead, ArmorType armor);
+int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor);
 
 /***********************************************************************************************
  * Modify_Damage -- Adjusts damage to reflect the nature of the target. *
@@ -89,7 +90,7 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor);
  *of damage.                                         * 01/01/1995 JLB : Takes
  *into account distance from damage source.                          *
  *=============================================================================================*/
-int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
+int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor,
                   int distance) {
   /*
   **	If there is no raw damage value to start with, then

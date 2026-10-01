@@ -49,6 +49,7 @@
 
 #include "base/strings/tokenizer.h"
 #include "game/core/heap.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/defines.h"
 #include "ra/core/type_heaps.h"
@@ -78,7 +79,8 @@ namespace ra {
  *=============================================================================================*/
 WarheadTypeClass::WarheadTypeClass(const char* name)
     : ID(TheTypeHeaps().warhead().ID(this)), IniName(name) {
-  for (const ArmorType armor : magic_enum::enum_values<ArmorType>()) {
+  for (const game::ArmorType armor :
+       magic_enum::enum_values<game::ArmorType>()) {
     Modifier.at(armor) = Fixed(1);
   }
 }
@@ -175,12 +177,13 @@ bool WarheadTypeClass::Read_INI(CCINIClass& ini) {
     if (ini.Get_String(Name(), "Verses", "100%%,100%%,100%%,100%%,100%%",
                        buffer, sizeof(buffer))) {
       base::Tokenizer tokens(buffer, ",");
-      for (const ArmorType armor : magic_enum::enum_values<ArmorType>()) {
+      for (const game::ArmorType armor :
+           magic_enum::enum_values<game::ArmorType>()) {
         Modifier.at(armor) = Fixed::FromString(tokens.Next());
       }
     }
 
-    IsOrganic = Modifier.at(ARMOR_STEEL) == 0;
+    IsOrganic = Modifier.at(game::ARMOR_STEEL) == 0;
     return true;
   }
   return false;

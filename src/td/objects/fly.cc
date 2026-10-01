@@ -65,6 +65,7 @@
 #include "base/cardinal.h"
 #include "game/core/display_constants.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
 
@@ -73,7 +74,7 @@ namespace td {
 FlyClass::~FlyClass() = default;
 
 ImpactType FlyClass::Physics(COORDINATE& coord, game::DirType facing) {
-  if (SpeedAdd != MPH_IMMOBILE) {
+  if (SpeedAdd != game::MPH_IMMOBILE) {
     int actual = static_cast<int>(SpeedAdd) + SpeedAccum;
     const std::div_t result = std::div(actual, PIXEL_LEPTON_W);
     SpeedAccum = result.rem;
@@ -136,8 +137,8 @@ ImpactType FlyClass::Physics(COORDINATE& coord, game::DirType facing) {
  * HISTORY: * 07/26/1994 JLB : Created. * 07/26/1994 JLB : Added maximum speed
  *as guiding value.                                    *
  *=============================================================================================*/
-void FlyClass::Fly_Speed(int speed, MPHType maximum) {
-  SpeedAdd = static_cast<MPHType>(
+void FlyClass::Fly_Speed(int speed, game::MPHType maximum) {
+  SpeedAdd = static_cast<game::MPHType>(
       base::FixedToCardinal(static_cast<int>(maximum), speed));
 }
 

@@ -124,7 +124,7 @@ class AircraftClass : public FootClass, public FlyClass {
     return SecondaryFacing.Current();
   }
   [[nodiscard]] int Shape_Number() const;
-  [[nodiscard]] MoveType Can_Enter_Cell(
+  [[nodiscard]] game::MoveType Can_Enter_Cell(
       CELL cell, game::FacingType facing = game::FACING_NONE) const override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
@@ -139,7 +139,8 @@ class AircraftClass : public FootClass, public FlyClass {
   [[nodiscard]] game::DirType Pose_Dir() const;
   [[nodiscard]] TARGET Good_LZ() const;
   [[nodiscard]] game::DirType Fire_Direction() const override;
-  [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
+  [[nodiscard]] game::FireErrorType Can_Fire(TARGET target,
+                                             int which) const override;
 
   /*
   **	Landing zone support functionality.
@@ -188,8 +189,9 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	Combat related.
   */
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source, bool forced = false) override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source,
+                               bool forced = false) override;
   BulletClass* Fire_At(TARGET target, int which) override;
 
   /*

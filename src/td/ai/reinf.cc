@@ -48,6 +48,7 @@
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
@@ -347,7 +348,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
                magic_enum::enum_values<game::FacingType>()) {
             const CELL trycell = Adjacent_Cell(newcell, adj);
             if (!TheMap().In_Radar(trycell) &&
-                object->Can_Enter_Cell(trycell, adj) == MOVE_OK) {
+                object->Can_Enter_Cell(trycell, adj) == game::MOVE_OK) {
               newcell = trycell;
               found = true;
               break;

@@ -56,6 +56,7 @@
 #include "td/objects/tarcom.h"
 
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "td/assets/audio.h"
 #include "td/core/const.h"
@@ -93,15 +94,15 @@ void TarComClass::AI() {
     */
     const WeaponTypeClass* weapon = &Weapons.at(Class->Primary);
     int primary = 0;
-    FireErrorType ok = Can_Fire(TarCom, 0);
-    if ((ok != FIRE_OK) && (Can_Fire(TarCom, 1) == FIRE_OK)) {
-      ok = FIRE_OK;
+    game::FireErrorType ok = Can_Fire(TarCom, 0);
+    if ((ok != game::FIRE_OK) && (Can_Fire(TarCom, 1) == game::FIRE_OK)) {
+      ok = game::FIRE_OK;
       primary = 1;
       weapon = &Weapons.at(Class->Secondary);
     }
 
     switch (ok) {
-      case FIRE_OK:
+      case game::FIRE_OK:
         if (What_Am_I() != RTTI_UNIT) {
           IsFiring = false;
         } else {
@@ -115,7 +116,7 @@ void TarComClass::AI() {
         }
         break;
 
-      case FIRE_FACING:
+      case game::FIRE_FACING:
         if (Class->IsLockTurret) {
           if (!Target_Legal(NavCom) && !IsDriving) {
             PrimaryFacing.Set_Desired(Direction(TarCom));
@@ -133,18 +134,18 @@ void TarComClass::AI() {
         }
         break;
 
-      case FIRE_CLOAKED:
+      case game::FIRE_CLOAKED:
         IsFiring = false;
         Do_Uncloak();
         break;
-      case FireErrorType::FIRE_AMMO:
-      case FireErrorType::FIRE_REARM:
-      case FireErrorType::FIRE_ROTATING:
-      case FireErrorType::FIRE_ILLEGAL:
-      case FireErrorType::FIRE_CANT:
-      case FireErrorType::FIRE_MOVING:
-      case FireErrorType::FIRE_RANGE:
-      case FireErrorType::FIRE_BUSY:
+      case game::FireErrorType::FIRE_AMMO:
+      case game::FireErrorType::FIRE_REARM:
+      case game::FireErrorType::FIRE_ROTATING:
+      case game::FireErrorType::FIRE_ILLEGAL:
+      case game::FireErrorType::FIRE_CANT:
+      case game::FireErrorType::FIRE_MOVING:
+      case game::FireErrorType::FIRE_RANGE:
+      case game::FireErrorType::FIRE_BUSY:
       default:
         break;
     }

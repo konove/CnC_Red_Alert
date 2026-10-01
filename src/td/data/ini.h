@@ -7,7 +7,7 @@
 namespace td {
 
 void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
-                       ScenarioDirType dir = SCEN_DIR_NONE,
+                       game::ScenarioDirType dir = game::SCEN_DIR_NONE,
                        ScenarioVarType var = SCEN_VAR_NONE);
 void Write_Scenario_Ini(const char* root);
 bool Read_Scenario_Ini(const char* root, bool fresh = true);

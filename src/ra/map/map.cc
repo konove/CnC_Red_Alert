@@ -90,6 +90,7 @@
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/region.h"
 #include "ra/ai/scenario.h"
@@ -1565,7 +1566,7 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
         *player.
         */
         if (!o->Is_Techno() || dynamic_cast<TechnoClass*>(o)->IsOwnedByPlayer ||
-            dynamic_cast<TechnoClass*>(o)->Cloak != CLOAKED) {
+            dynamic_cast<TechnoClass*>(o)->Cloak != game::CLOAKED) {
           int d = -1;
           if (o->What_Am_I() == RTTI_BUILDING) {
             d = Distance(coord, Cell_Coord(newcell));

@@ -94,6 +94,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/special.h"
@@ -1009,7 +1010,7 @@ bool Select_Game(bool fade) {
           TheWorld().build_level() = 1;
 #endif
           TheWorld().scen_player() = SCEN_PLAYER_GDI;
-          TheWorld().scen_dir() = SCEN_DIR_EAST;
+          TheWorld().scen_dir() = game::SCEN_DIR_EAST;
           TheWorld().whom() = HOUSE_GOOD;
 
 #ifndef DEMO
@@ -1025,7 +1026,7 @@ bool Select_Game(bool fade) {
           */
           if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
             TheWorld().scen_player() = SCEN_PLAYER_JP;
-            TheWorld().scen_dir() = SCEN_DIR_EAST;
+            TheWorld().scen_dir() = game::SCEN_DIR_EAST;
           }
 
           TheSession().type() = GAME_NORMAL;
@@ -1268,7 +1269,7 @@ bool Select_Game(bool fade) {
             case GAME_INTERNET:
               TheTheme().Fade_Out();
               TheWorld().scen_player() = SCEN_PLAYER_2PLAYER;
-              TheWorld().scen_dir() = SCEN_DIR_EAST;
+              TheWorld().scen_dir() = game::SCEN_DIR_EAST;
               process = false;
               TheOptions().ScoreVolume = 0;
               break;
@@ -1283,7 +1284,7 @@ bool Select_Game(bool fade) {
               if (Init_Network() && Remote_Connect()) {
                 TheOptions().ScoreVolume = 0;
                 TheWorld().scen_player() = SCEN_PLAYER_MPLAYER;
-                TheWorld().scen_dir() = SCEN_DIR_EAST;
+                TheWorld().scen_dir() = game::SCEN_DIR_EAST;
                 process = false;
                 TheTheme().Fade_Out();
               } else {  // user hit cancel, or init failed
@@ -1463,7 +1464,7 @@ bool Select_Game(bool fade) {
     TheWorld().scenario() = 1;
     if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
       TheWorld().scen_player() = SCEN_PLAYER_JP;
-      TheWorld().scen_dir() = SCEN_DIR_EAST;
+      TheWorld().scen_dir() = game::SCEN_DIR_EAST;
     }
   }
   DLOG(INFO) << "C&C95 - About to start game initialisation.";
@@ -1733,8 +1734,8 @@ bool Select_Game(bool fade) {
       building->LastStrength = building->Strength - 20;
       building->WhomToRepay = peer->As_Target();
       building->WhoLastHurtMe = HOUSE_BAD;
-      building->BState = BSTATE_ACTIVE;
-      building->QueueBState = BSTATE_IDLE;
+      building->BState = game::BSTATE_ACTIVE;
+      building->QueueBState = game::BSTATE_IDLE;
       building->IsCaptured = true;
       building->IsRepairing = true;
       building->IsWrenchVisible = true;
@@ -1753,7 +1754,7 @@ bool Select_Game(bool fade) {
       building->IsDiscoveredByComputer = true;
       building->IsALemon = true;
       building->IsSecondShot = true;
-      building->Cloak = CLOAKING;
+      building->Cloak = game::CLOAKING;
       building->CloakingDevice.Set_Stage(4);
       building->CloakingDevice.Set_Rate(9);
       building->TarCom = peer->As_Target();
@@ -1801,7 +1802,7 @@ bool Select_Game(bool fade) {
       bullet->Payback = owner;
       bullet->PrimaryFacing.Set(game::DIR_NE);
       bullet->PrimaryFacing = game::DIR_SE;
-      bullet->Fly_Speed(127, MPH_FAST);
+      bullet->Fly_Speed(127, game::MPH_FAST);
       bullet->Arm_Fuse(owner->Coord, owner->Coord + 0x200, 95, 5);
       bullet->Assign_Target(owner->As_Target());
       auto* missile = base::NewPooled<BulletClass>(BULLET_SSM);
@@ -1815,7 +1816,7 @@ bool Select_Game(bool fade) {
         LOG(ERROR) << "-WORLDTEST: could not launch missile";
         return false;
       }
-      missile->Fly_Speed(127, MPH_SLOW);
+      missile->Fly_Speed(127, game::MPH_SLOW);
       missile->Arm_Fuse(owner->Coord, destination, 95, 5);
       missile->Strength = 0;
       anim->Attach_To(owner);

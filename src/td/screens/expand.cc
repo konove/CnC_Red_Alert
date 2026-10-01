@@ -55,6 +55,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/sim/enums.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
@@ -182,7 +183,7 @@ bool Expansion_Dialog() {
   for (int index = 20; index < 60; index++) {
     char buffer[128];
 
-    Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST,
+    Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, game::SCEN_DIR_EAST,
                       SCEN_VAR_A);
     base::SafeAppend(buffer, ".INI");
     if (const auto file = OpenGameFile(buffer)) {
@@ -199,7 +200,7 @@ bool Expansion_Dialog() {
   for (int index = 20; index < 60; index++) {
     char buffer[128];
 
-    Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST,
+    Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, game::SCEN_DIR_EAST,
                       SCEN_VAR_A);
     base::SafeAppend(buffer, ".INI");
     if (const auto file = OpenGameFile(buffer)) {
@@ -246,7 +247,7 @@ bool Expansion_Dialog() {
         } else {
           TheWorld().scen_player() = SCEN_PLAYER_NOD;
         }
-        TheWorld().scen_dir() = SCEN_DIR_EAST;
+        TheWorld().scen_dir() = game::SCEN_DIR_EAST;
         TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scenario() = list.Current_Scenario();
         process = false;
@@ -256,7 +257,7 @@ bool Expansion_Dialog() {
       case KN_ESC:
       case engine::window::ButtonKey(201):
         TheWorld().scen_player() = SCEN_PLAYER_GDI;
-        TheWorld().scen_dir() = SCEN_DIR_EAST;
+        TheWorld().scen_dir() = game::SCEN_DIR_EAST;
         TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scenario() = list.Current_Scenario();
         process = false;
@@ -330,7 +331,7 @@ bool Bonus_Dialog() {
   for (int index = 60; index < 63; index++) {
     char buffer[128];
 
-    Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST,
+    Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, game::SCEN_DIR_EAST,
                       SCEN_VAR_A);
     base::SafeAppend(buffer, ".INI");
     if (GameFileExists(buffer)) {
@@ -343,7 +344,7 @@ bool Bonus_Dialog() {
   for (int index = 60; index < 62; index++) {
     char buffer[128];
 
-    Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST,
+    Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, game::SCEN_DIR_EAST,
                       SCEN_VAR_A);
     base::SafeAppend(buffer, ".INI");
     if (GameFileExists(buffer)) {
@@ -385,7 +386,7 @@ bool Bonus_Dialog() {
         } else {
           TheWorld().scen_player() = SCEN_PLAYER_NOD;
         }
-        TheWorld().scen_dir() = SCEN_DIR_EAST;
+        TheWorld().scen_dir() = game::SCEN_DIR_EAST;
         TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scenario() = list.Current_Scenario();
         process = false;
@@ -395,7 +396,7 @@ bool Bonus_Dialog() {
       case KN_ESC:
       case engine::window::ButtonKey(201):
         TheWorld().scen_player() = SCEN_PLAYER_GDI;
-        TheWorld().scen_dir() = SCEN_DIR_EAST;
+        TheWorld().scen_dir() = game::SCEN_DIR_EAST;
         TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scenario() = list.Current_Scenario();
         process = false;

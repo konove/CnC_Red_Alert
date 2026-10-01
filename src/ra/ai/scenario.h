@@ -71,7 +71,7 @@ class ScenarioClass {
   // Constructor.
   ScenarioClass();
   void Set_Scenario_Name(int scenario, ScenarioPlayerType player,
-                         ScenarioDirType dir = SCEN_DIR_NONE,
+                         game::ScenarioDirType dir = game::SCEN_DIR_NONE,
                          ScenarioVarType var = SCEN_VAR_NONE);
   void Set_Scenario_Name(const char* name);
 
@@ -359,8 +359,8 @@ class ScenarioClass {
 };
 
 void Disect_Scenario_Name(const char* name, int& scenario,
-                          ScenarioPlayerType& player, ScenarioDirType& dir,
-                          ScenarioVarType& var);
+                          ScenarioPlayerType& player,
+                          game::ScenarioDirType& dir, ScenarioVarType& var);
 void Post_Load_Game(int load_multi);
 bool End_Game();
 bool Read_Scenario(char* name);

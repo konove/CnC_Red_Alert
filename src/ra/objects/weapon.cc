@@ -54,6 +54,7 @@
 
 #include "absl/strings/match.h"
 #include "game/core/heap.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
@@ -279,18 +280,19 @@ WeaponType Weapon_From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-ArmorType Armor_From_Name(const char* name) {
+game::ArmorType Armor_From_Name(const char* name) {
   if (!name) {
-    return ARMOR_NONE;
+    return game::ARMOR_NONE;
   }
 
-  for (const ArmorType index : magic_enum::enum_values<ArmorType>()) {
+  for (const game::ArmorType index :
+       magic_enum::enum_values<game::ArmorType>()) {
     if (absl::EqualsIgnoreCase(ArmorName.at(index), name)) {
       return index;
     }
   }
 
-  return ARMOR_NONE;
+  return game::ARMOR_NONE;
 }
 
 /***********************************************************************************************

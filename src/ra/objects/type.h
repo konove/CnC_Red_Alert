@@ -272,7 +272,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   **	The defense of this object is greatly affected by the type of armor
   **	it possesses. This value specifies the type of armor.
   */
-  ArmorType Armor{ARMOR_NONE};
+  game::ArmorType Armor{game::ARMOR_NONE};
 
   /*
   **	This is the maximum strength of this object type.
@@ -517,7 +517,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   /*
   **	This value indicates the maximum speed that this object can achieve.
   */
-  MPHType MaxSpeed{MPH_IMMOBILE};
+  game::MPHType MaxSpeed{game::MPH_IMMOBILE};
 
   /*
   **	This indicates the speed (locomotion) type for this unit. Through this
@@ -749,7 +749,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	This is the size of the building. This size value is a rough indication
   **	of the building's "footprint".
   */
-  BSizeType Size;
+  game::BSizeType Size;
 
   /**********************************************************************
   **	For each stage that a building may be in, its animation is controlled
@@ -765,7 +765,7 @@ class BuildingTypeClass : public TechnoTypeClass {
     int Rate;   // Number of ticks to delay between each frame.
   };
   // Resolved when the theater loads; the table itself stays const.
-  mutable base::EnumArray<BStateType, AnimControlType> Anims{};
+  mutable base::EnumArray<game::BStateType, AnimControlType> Anims{};
 
   /*---------------------------------------------------------------------------
   **	This is the building type explicit constructor.
@@ -778,7 +778,7 @@ class BuildingTypeClass : public TechnoTypeClass {
       bool is_stealthy, bool is_selectable, bool is_legal_target,
       bool is_insignificant, bool is_theater, bool is_turret_equipped,
       bool is_remappable, RTTIType tobuild, game::DirType sframe,
-      BSizeType size,
+      game::BSizeType size,
       std::span<const int16_t> exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
       std::span<const int16_t> sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
       std::span<const int16_t> overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
@@ -855,7 +855,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   */
   std::span<const std::byte> BuildupData;
 
-  void Init_Anim(BStateType state, int start, int count, int rate) const;
+  void Init_Anim(game::BStateType state, int start, int count, int rate) const;
 };
 
 /***************************************************************************

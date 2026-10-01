@@ -101,6 +101,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
@@ -170,12 +171,12 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
       Team(nullptr),
       Group(kNoGroup),
       Member(nullptr),
-      PathThreshhold(MOVE_CLOAK),
+      PathThreshhold(game::MOVE_CLOAK),
       PathDelay(0),
       TryTryAgain(kPathRetry),
       BaseAttackTimer(0),
       FormationSpeed(SPEED_FOOT),
-      FormationMaxSpeed(MPH_IMMOBILE),
+      FormationMaxSpeed(game::MPH_IMMOBILE),
       HeadToCoord(0) {
   Path[0] = game::FACING_NONE;
   for (int index = 0; index < std::ssize(NavQueue); index++) {
@@ -309,7 +310,7 @@ bool FootClass::Basic_Path() {
     const int dist = Distance(NavCom);
     const int checkdist = Team.Is_Valid() ? TheRules().StrayDistance
                                           : TheRules().CloseEnoughDistance;
-    if (Can_Enter_Cell(cell) > MOVE_CLOAK && dist > checkdist) {
+    if (Can_Enter_Cell(cell) > game::MOVE_CLOAK && dist > checkdist) {
       const CELL cell2 = TheMap().Nearby_Location(
           cell, Techno_Type_Class()->Speed,
           TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone),
@@ -360,9 +361,9 @@ bool FootClass::Basic_Path() {
       game::FacingType workpath1[200];  // Staging area for path list.
       //			FacingType	workpath2[200];	// Staging area
       // for path list.
-      MoveType maxtype = MOVE_TEMP;
+      game::MoveType maxtype = game::MOVE_TEMP;
       if (!House->IsHuman) {
-        maxtype = MOVE_TEMP;
+        maxtype = game::MOVE_TEMP;
         //				maxtype = MOVE_DESTROYABLE;
       } else {
         /*
@@ -374,7 +375,7 @@ bool FootClass::Basic_Path() {
         */
         if (Mission == MISSION_MOVE &&
             Distance(NavCom) < TheRules().CloseEnoughDistance) {
-          maxtype = MOVE_DESTROYABLE;
+          maxtype = game::MOVE_DESTROYABLE;
         }
       }
 
@@ -1048,19 +1049,19 @@ bool FootClass::Unlimbo(COORDINATE coord, game::DirType dir) {
  *                                                                                             *
  * HISTORY: * 12/30/1994 JLB : Created. *
  *=============================================================================================*/
-ResultType FootClass::Take_Damage(int& damage, int distance,
-                                  WarheadType warhead, TechnoClass* source,
-                                  bool forced) {
+game::ResultType FootClass::Take_Damage(int& damage, int distance,
+                                        WarheadType warhead,
+                                        TechnoClass* source, bool forced) {
   DCHECK(IsActive);
 
-  const ResultType result =
+  const game::ResultType result =
       TechnoClass::Take_Damage(damage, distance, warhead, source, forced);
 
-  if (result != RESULT_NONE && Team) {
+  if (result != game::RESULT_NONE && Team) {
     Team->Took_Damage(this, result, source);
 
   } else {
-    if (result != RESULT_DESTROYED && result != RESULT_NONE) {
+    if (result != game::RESULT_DESTROYED && result != game::RESULT_NONE) {
       /*
       **	Determine if the target that is currently being attacked has a
       *weapon that can *	do harm to a ground based unit. This information
@@ -1292,7 +1293,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
         const CellClass* cellptr =
             &TheMap().at(As_Cell(ra::As_Target(Center_Coord())));
         if (What_Am_I() != RTTI_AIRCRAFT) {
-          if (Can_Enter_Cell(Coord_Cell(Center_Coord())) == MOVE_OK) {
+          if (Can_Enter_Cell(Coord_Cell(Center_Coord())) == game::MOVE_OK) {
             cell = TheMap().Nearby_Location(
                 cell, Techno_Type_Class()->Speed,
                 cellptr->Zones.at(Techno_Type_Class()->MZone),
@@ -1389,7 +1390,7 @@ bool FootClass::Per_Cell_Process(PCPType why) {
     **	If adjacent to an enemy techno that has the ability to reveal a sub,
     **	then shimmer the cloaked object.
     */
-    if (Cloak == CLOAKED) {
+    if (Cloak == game::CLOAKED) {
       for (const game::FacingType face :
            magic_enum::enum_values<game::FacingType>()) {
         const CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
@@ -1432,7 +1433,7 @@ bool FootClass::Per_Cell_Process(PCPType why) {
     /*
     **	Trigger event associated with the player entering the cell.
     */
-    if (Cloak != CLOAKED) {
+    if (Cloak != game::CLOAKED) {
       TriggerClass* trigger = TheMap().at(Coord).Trigger;
       if (trigger != nullptr) {
         trigger->Spring(TEVENT_PLAYER_ENTERED, this, Coord_Cell(Coord));
@@ -1502,7 +1503,6 @@ bool FootClass::Per_Cell_Process(PCPType why) {
         return true;
       }
     }
-
   }
 
   return TechnoClass::Per_Cell_Process(why);
@@ -1786,7 +1786,7 @@ void FootClass::Assign_Destination(TARGET target) {
   *when *	a failure occurs, this threshhold will be increased until path
   *failure *	cannot be prevent. At this point, all movement should cease.
   */
-  PathThreshhold = MOVE_CLOAK;
+  PathThreshhold = game::MOVE_CLOAK;
 }
 
 /***********************************************************************************************
@@ -2106,11 +2106,11 @@ int FootClass::Offload_Tiberium_Bail() {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-MoveType FootClass::Can_Enter_Cell(CELL /*unused*/,
-                                   game::FacingType /*unused*/) const {
+game::MoveType FootClass::Can_Enter_Cell(CELL /*unused*/,
+                                         game::FacingType /*unused*/) const {
   DCHECK(IsActive);
 
-  return MOVE_OK;
+  return game::MOVE_OK;
 }
 
 /***********************************************************************************************

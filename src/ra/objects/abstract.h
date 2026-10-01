@@ -117,9 +117,9 @@ class AbstractClass {
     return ra::Distance(Center_Coord(), object->Target_Coord());
   }
 
-  [[nodiscard]] virtual MoveType Can_Enter_Cell(
+  [[nodiscard]] virtual game::MoveType Can_Enter_Cell(
       CELL /*unused*/, game::FacingType /*unused*/ = game::FACING_NONE) const {
-    return MOVE_OK;
+    return game::MOVE_OK;
   }
 
   virtual void AI() {}

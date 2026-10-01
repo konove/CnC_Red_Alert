@@ -63,6 +63,7 @@
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/tile.h"
 #include "game/core/display_constants.h"
+#include "game/sim/enums.h"
 #include "td/assets/screen.h"
 #include "td/assets/window_rect.h"
 #include "td/core/const.h"
@@ -1287,7 +1288,7 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
                                      LandType altland,
                                      std::span<const char> alticons) noexcept
     : ObjectTypeClass(false, false, false, true, false, false, true, true,
-                      fullname, ininame, ARMOR_NONE, 0),
+                      fullname, ininame, game::ARMOR_NONE, 0),
       Type(iconset),
       Theater(static_cast<unsigned char>(theater)),
       Land(land),

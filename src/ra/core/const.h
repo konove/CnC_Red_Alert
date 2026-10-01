@@ -96,7 +96,7 @@ constexpr base::EnumArray<SourceType, const char*> SourceName = {
 /***************************************************************************
 **	These are the text names for the various armor types a unit may possess.
 */
-constexpr base::EnumArray<ArmorType, const char*> ArmorName = {
+constexpr base::EnumArray<game::ArmorType, const char*> ArmorName = {
     "none", "wood", "light", "heavy", "concrete"};
 
 /***************************************************************************

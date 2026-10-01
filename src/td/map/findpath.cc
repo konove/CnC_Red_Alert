@@ -67,6 +67,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/path_overlap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
@@ -278,7 +279,7 @@ static int Point_Relative_To_Line(int x, int z, int x1, int z1, int x2,
  *=========================================================================*/
 bool FootClass::Unravel_Loop(PathType* path, CELL& cell, game::FacingType& dir,
                              int sx, int sy, int dx, int dy,
-                             MoveType threshhold) {
+                             game::MoveType threshhold) {
   /*
   ** Walk back to the actual cell before we advanced our position
   */
@@ -366,7 +367,7 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, game::FacingType& dir,
  *   05/23/1995 PWG : Created.                                             *
  *=========================================================================*/
 bool FootClass::Register_Cell(PathType* path, CELL cell, game::FacingType dir,
-                              int cost, MoveType threshhold) {
+                              int cost, game::MoveType threshhold) {
   /*
   ** See if this point has already been registered as on the list.  If so
   ** we need to truncate the list back to this point and register the
@@ -459,7 +460,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, game::FacingType dir,
 }
 #ifdef OBSOLETE
 bool FootClass::Register_Cell(PathType* path, CELL cell, game::FacingType dir,
-                              int cost, MoveType threshhold) {
+                              int cost, game::MoveType threshhold) {
   game::FacingType* list;
   int pos = cell >> 5;
   int bit = (cell & 31) - 1;
@@ -563,7 +564,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, game::FacingType dir,
  *=============================================================================================*/
 PathType* FootClass::Find_Path(CELL dest,
                                std::span<game::FacingType> final_moves,
-                               int maxlen, MoveType threshhold) {
+                               int maxlen, game::MoveType threshhold) {
   const CELL source = Coord_Cell(Coord);  // Source expressed as cell
   static PathType path;             // Main path control.
   game::FacingType newdir = game::FACING_NONE;  // Tentative facing value.
@@ -989,7 +990,7 @@ end_of_list:
 bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
                             game::FacingType search, game::FacingType olddir,
                             int threat, int threat_stage, int max_cells,
-                            MoveType threshhold) {
+                            game::MoveType threshhold) {
   game::FacingType newdir =
       game::FACING_NONE;  // Direction of facing before surrounding cell check.
   CELL oldcell = 0;
@@ -1263,7 +1264,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
  *commented.                                                *
  *=============================================================================================*/
 constexpr game::FacingType kEmptyCommand = static_cast<game::FacingType>(-2);
-int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
+int FootClass::Optimize_Moves(PathType* path, game::MoveType threshhold)
 // int Optimize_Moves(PathType *path, int (*callback)(CELL, FacingType), int
 // threshold)
 {
@@ -1478,7 +1479,7 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
       */
       for (int lp = 0; lp < dist * 2; lp++) {
         next = Adjacent_Cell(next, dir + 3);
-        if (Can_Enter_Cell(next) == MOVE_OK) {
+        if (Can_Enter_Cell(next) == game::MOVE_OK) {
           return next;
         }
       }
@@ -1489,14 +1490,14 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
       */
       for (int lp = 0; lp < dist; lp++) {
         next = Adjacent_Cell(next, dir + 2);
-        if (Can_Enter_Cell(next) == MOVE_OK) {
+        if (Can_Enter_Cell(next) == game::MOVE_OK) {
           return next;
         }
       }
 
       for (int lp = 0; lp < dist; lp++) {
         next = Adjacent_Cell(next, dir + 4);
-        if (Can_Enter_Cell(next) == MOVE_OK) {
+        if (Can_Enter_Cell(next) == game::MOVE_OK) {
           return next;
         }
       }
@@ -1506,11 +1507,11 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
 }
 
 int FootClass::Passable_Cell(CELL cell, game::FacingType face, int threat,
-                             MoveType threshhold) {
-  const MoveType move = Can_Enter_Cell(cell, face);
+                             game::MoveType threshhold) {
+  const game::MoveType move = Can_Enter_Cell(cell, face);
 
-  if (move < MOVE_MOVING_BLOCK && Distance(cell) > 1) {
-    threshhold = MOVE_MOVING_BLOCK;
+  if (move < game::MOVE_MOVING_BLOCK && Distance(cell) > 1) {
+    threshhold = game::MOVE_MOVING_BLOCK;
   }
 
   if (move > threshhold) {
@@ -1527,7 +1528,7 @@ int FootClass::Passable_Cell(CELL cell, game::FacingType face, int threat,
     }
   }
 
-  static const base::EnumArray<MoveType, int> _value = {
+  static const base::EnumArray<game::MoveType, int> _value = {
       1,   //	MOVE_OK
       1,   //	MOVE_CLOAK
       3,   //	MOVE_MOVING_BLOCK
@@ -1600,21 +1601,21 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
       int color = 0;
 
       switch (Can_Enter_Cell(XY_Cell(x, y))) {
-        case MOVE_OK:
+        case game::MOVE_OK:
           color = kGreen;
           break;
-        case MOVE_MOVING_BLOCK:
+        case game::MOVE_MOVING_BLOCK:
           color = kLtGreen;
           break;
 
-        case MOVE_DESTROYABLE:
+        case game::MOVE_DESTROYABLE:
           color = kYellow;
           break;
-        case MOVE_TEMP:
+        case game::MOVE_TEMP:
           color = kBrown;
           break;
-        case MoveType::MOVE_CLOAK:
-        case MoveType::MOVE_NO:
+        case game::MoveType::MOVE_CLOAK:
+        case game::MoveType::MOVE_NO:
         default:
           color = kRed;
           break;

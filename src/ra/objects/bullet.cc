@@ -73,6 +73,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/ccptr.h"
@@ -176,7 +177,7 @@ BulletClass::~BulletClass() {
         // This asks the bullet, which inherits AbstractClass's
         // always-MOVE_OK Can_Enter_Cell, so the fallback never runs. The loop
         // below does the real legality check through Unlimbo.
-        if (Can_Enter_Cell(Coord_Cell(newcoord)) != MOVE_OK) {
+        if (Can_Enter_Cell(Coord_Cell(newcoord)) != game::MOVE_OK) {
           newcoord = Cell_Coord(TheMap().Nearby_Location(Coord_Cell(newcoord),
                                                          dog->Class->Speed));
         }
@@ -756,7 +757,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
     **	For very fast and invisible projectiles, just make the projectile exist
     *at the target *	location and dispense with the actual flight.
     */
-    if (MaxSpeed == static_cast<int>(MPH_LIGHT_SPEED) && Class->IsInvisible) {
+    if (MaxSpeed == static_cast<int>(game::MPH_LIGHT_SPEED) &&
+        Class->IsInvisible) {
       Coord = tcoord;
     }
 
@@ -776,8 +778,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
     **	target.
     */
     int speed = MaxSpeed;
-    if (speed == static_cast<int>(MPH_LIGHT_SPEED)) {
-      speed = static_cast<int>(MPH_IMMOBILE);
+    if (speed == static_cast<int>(game::MPH_LIGHT_SPEED)) {
+      speed = static_cast<int>(game::MPH_IMMOBILE);
     }
     if (Class->IsArcing) {
       speed = MaxSpeed + (Distance(tcoord) / 32);
@@ -788,7 +790,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
       speed = std::max(speed, 25);
     }
     if (!Class->IsDropping) {
-      Fly_Speed(255, static_cast<MPHType>(speed));
+      Fly_Speed(255, static_cast<game::MPHType>(speed));
     }
 
     /*

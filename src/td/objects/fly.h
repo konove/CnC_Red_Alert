@@ -76,9 +76,9 @@ class FlyClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  void Fly_Speed(int speed, MPHType maximum);
+  void Fly_Speed(int speed, game::MPHType maximum);
   ImpactType Physics(COORDINATE& coord, game::DirType facing);
-  [[nodiscard]] MPHType Get_Speed() const { return SpeedAdd; }
+  [[nodiscard]] game::MPHType Get_Speed() const { return SpeedAdd; }
 
   /*
   **	File I/O.
@@ -90,7 +90,7 @@ class FlyClass {
   *"distance" *	has accumulated so that moving the object becomes reasonable.
   */
   int SpeedAccum{0};          // Lepton accumulator.
-  MPHType SpeedAdd{MPH_IMMOBILE};  // Lepton add (per frame).
+  game::MPHType SpeedAdd{game::MPH_IMMOBILE};  // Lepton add (per frame).
 };
 
 }  // namespace td

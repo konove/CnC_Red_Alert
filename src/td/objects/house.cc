@@ -151,6 +151,7 @@
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "td/ai/base.h"
@@ -2123,7 +2124,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
+game::ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   Validate();
   int* factory = nullptr;
   bool result = true;
@@ -2178,7 +2179,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   **	Check for legality of the production object type suggested.
   */
   if (!factory) {
-    return PROD_ILLEGAL;
+    return game::PROD_ILLEGAL;
   }
 
   /*
@@ -2188,12 +2189,12 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   if (*factory != -1) {
     fptr = TheObjectHeaps().factory().Raw_Ptr(*factory);
     if (fptr->Is_Building()) {
-      return PROD_CANT;
+      return game::PROD_CANT;
     }
   } else {
     fptr = base::NewPooled<FactoryClass>();
     if (!fptr) {
-      return PROD_CANT;
+      return game::PROD_CANT;
     }
     *factory = TheObjectHeaps().factory().ID(fptr);
     result = tech ? fptr->Set(*tech, *this) : fptr->Set(id, *this);
@@ -2210,9 +2211,9 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
       TheMap().Factory_Link(*factory, type, id);
     }
 
-    return PROD_OK;
+    return game::PROD_OK;
   }
-  return PROD_CANT;
+  return game::PROD_CANT;
 }
 
 /***********************************************************************************************
@@ -2231,7 +2232,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-ProdFailType HouseClass::Suspend_Production(RTTIType type) {
+game::ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   Validate();
   const int* factory = nullptr;
 
@@ -2283,7 +2284,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   **	Check for legality of the production object type suggested.
   */
   if (!factory) {
-    return PROD_ILLEGAL;
+    return game::PROD_ILLEGAL;
   }
 
   /*
@@ -2291,7 +2292,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   **	return with this failure code.
   */
   if (*factory == -1) {
-    return PROD_CANT;
+    return game::PROD_CANT;
   }
 
   /*
@@ -2300,7 +2301,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   */
   FactoryClass* fptr = TheObjectHeaps().factory().Raw_Ptr(*factory);
   if (!fptr) {
-    return PROD_CANT;
+    return game::PROD_CANT;
   }
 
   /*
@@ -2318,7 +2319,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
     TheMap().Flag_To_Redraw(false);
   }
 
-  return PROD_OK;
+  return game::PROD_OK;
 }
 
 /***********************************************************************************************
@@ -2337,7 +2338,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-ProdFailType HouseClass::Abandon_Production(RTTIType type) {
+game::ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   Validate();
   int* factory = nullptr;
 
@@ -2389,14 +2390,14 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   **	Check for legality of the production object type suggested.
   */
   if (!factory) {
-    return PROD_ILLEGAL;
+    return game::PROD_ILLEGAL;
   }
 
   /*
   **	If there is no factory to abandon, then return with a failure code.
   */
   if (*factory == -1) {
-    return PROD_CANT;
+    return game::PROD_CANT;
   }
 
   /*
@@ -2404,7 +2405,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   */
   FactoryClass* fptr = TheObjectHeaps().factory().Raw_Ptr(*factory);
   if (!fptr) {
-    return PROD_CANT;
+    return game::PROD_CANT;
   }
 
   /*
@@ -2428,7 +2429,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   base::DeletePooled(fptr);
   *factory = -1;
 
-  return PROD_OK;
+  return game::PROD_OK;
 }
 
 /***********************************************************************************************

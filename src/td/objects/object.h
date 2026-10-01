@@ -232,8 +232,9 @@ class ObjectClass : public AbstractClass {
   [[nodiscard]] virtual bool In_Range(COORDINATE /*unused*/,
                                       int /*unused*/ = 0) const;
   [[nodiscard]] virtual int Weapon_Range(int /*unused*/ = 0) const;
-  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                                 TechnoClass* source = nullptr);
+  virtual game::ResultType Take_Damage(int& damage, int distance,
+                                       WarheadType warhead,
+                                       TechnoClass* source = nullptr);
   [[nodiscard]] virtual TARGET As_Target() const;
   virtual void Scatter(COORDINATE /*unused*/, bool /*unused*/ = false);
   virtual bool Catch_Fire();

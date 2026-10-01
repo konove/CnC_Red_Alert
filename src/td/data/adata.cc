@@ -47,6 +47,7 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/keyframe.h"
+#include "game/sim/enums.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 #include "td/objects/type.h"
@@ -2232,7 +2233,7 @@ AnimTypeClass::AnimTypeClass(AnimType anim, const char* name, int size,
                              int loopstart, int loopend, int stages, int loops,
                              VocType sound, AnimType chainto) noexcept
     : ObjectTypeClass(true, false, false, true, false, false, true, true,
-                      TXT_NONE, name, ARMOR_NONE, 0),
+                      TXT_NONE, name, game::ARMOR_NONE, 0),
       IsNormalized(isnormal),
       IsGroundLayer(ground),
       IsTranslucent(istrans),

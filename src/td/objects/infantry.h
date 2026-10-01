@@ -207,10 +207,10 @@ class InfantryClass final : public FootClass {
   ActionType What_Action(CELL cell) const override;
   void Assign_Mission(MissionType order) override;
   BulletClass* Fire_At(TARGET target, int which) override;
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source = nullptr) override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source = nullptr) override;
   TARGET As_Target() const override;
-  FireErrorType Can_Fire(TARGET target, int which) const override;
+  game::FireErrorType Can_Fire(TARGET target, int which) const override;
   void Assign_Target(TARGET /*target*/) override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
@@ -250,7 +250,7 @@ class InfantryClass final : public FootClass {
   */
   bool Do_Action(DoType todo, bool force = false);
   void Random_Animate() override;
-  MoveType Can_Enter_Cell(
+  game::MoveType Can_Enter_Cell(
       CELL /*cell*/ /*unused*/,
       game::FacingType /*unused*/ = game::FACING_NONE) const override;
   void Per_Cell_Process(bool center) override;

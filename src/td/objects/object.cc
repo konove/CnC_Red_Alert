@@ -122,6 +122,7 @@
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
@@ -182,7 +183,8 @@ ObjectTypeClass::ObjectTypeClass(bool is_sentient, bool is_flammable,
                                  bool is_crushable, bool is_stealthy,
                                  bool is_selectable, bool is_legal_target,
                                  bool is_insignificant, bool is_immune,
-                                 int name, const char* ini, ArmorType armor,
+                                 int name, const char* ini,
+                                 game::ArmorType armor,
                                  int16_t strength) noexcept
     : AbstractTypeClass(name, ini),
       IsCrushable(is_crushable),
@@ -686,7 +688,7 @@ void ObjectClass::Sell_Back(int /*unused*/) {}
 void ObjectClass::Move(game::FacingType facing) {
   Mark(MARK_UP);
   COORDINATE const coord = Adjacent_Cell(Coord, facing);
-  if (Can_Enter_Cell(Coord_Cell(coord)) == MOVE_OK) {
+  if (Can_Enter_Cell(Coord_Cell(coord)) == game::MOVE_OK) {
     Coord = coord;
   }
   Mark(MARK_DOWN);
@@ -1068,7 +1070,7 @@ bool ObjectClass::Limbo() {
 bool ObjectClass::Unlimbo(COORDINATE coord, game::DirType /*unused*/) {
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
-       Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == MOVE_OK)) {
+       Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == game::MOVE_OK)) {
     IsInLimbo = false;
     IsToDisplay = false;
     Coord = Class_Of().Coord_Fixup(coord);
@@ -1229,9 +1231,10 @@ RadioMessageType ObjectClass::Receive_Message(RadioClass* /*unused*/,
  *processing for attacked or destroyed.                      * 01/01/1995 JLB :
  *Reduces damage greatly depending on range.                               *
  *=============================================================================================*/
-ResultType ObjectClass::Take_Damage(int& damage, int distance,
-                                    WarheadType warhead, TechnoClass* source) {
-  ResultType result = RESULT_NONE;
+game::ResultType ObjectClass::Take_Damage(int& damage, int distance,
+                                          WarheadType warhead,
+                                          TechnoClass* source) {
+  game::ResultType result = game::RESULT_NONE;
   const int oldstrength = Strength;
 
   if (oldstrength && damage && !Class_Of().IsImmune) {
@@ -1244,13 +1247,13 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     */
     damage = Modify_Damage(damage, warhead, Class_Of().Armor, distance);
     if (!damage) {
-      return RESULT_NONE;
+      return game::RESULT_NONE;
     }
 
     /*
     **	At this point, we KNOW that at least light damage has occurred.
     */
-    result = RESULT_LIGHT;
+    result = game::RESULT_LIGHT;
 
     /*
     **	A non-fatal blow has occurred. Check to see if the object transitioned
@@ -1259,7 +1262,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     if (oldstrength > damage) {
       if (oldstrength >= maxstrength / 2 &&
           oldstrength - damage < maxstrength / 2) {
-        result = RESULT_HALF;
+        result = game::RESULT_HALF;
       }
     } else {
       /*
@@ -1281,12 +1284,12 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     switch (Strength) {
       case 0:
         Record_The_Kill(source);
-        result = RESULT_DESTROYED;
+        result = game::RESULT_DESTROYED;
         Detach_All();
         break;
 
       case 1:
-        result = RESULT_MAJOR;
+        result = game::RESULT_MAJOR;
         break;
 
       default:
@@ -1296,7 +1299,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     /*
     **	Handle any trigger event associated with this object.
     */
-    if (source && Trigger && result != RESULT_DESTROYED) {
+    if (source && Trigger && result != game::RESULT_DESTROYED) {
       Trigger->Spring(EVENT_ATTACKED, this);
     }
 
@@ -1304,7 +1307,7 @@ ResultType ObjectClass::Take_Damage(int& damage, int distance,
     **	If any damage was assessed and this object is selected, then flag
     **	the object to be redrawn so that the health bar will be updated.
     */
-    if (result != RESULT_NONE && IsSelected) {
+    if (result != game::RESULT_NONE && IsSelected) {
       Mark(MARK_CHANGE);
     }
   }

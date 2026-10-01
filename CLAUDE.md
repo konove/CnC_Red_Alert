@@ -198,7 +198,8 @@ game/        → The code both games share, in namespace game::, above the engin
   core/      → VectorClass/DynamicVectorClass/OwnedVector, the FixedHeapClass trio, QueueClass,
                the frame clock, path-overlap bits, the 2x interpolation scaler, cell/pixel sizes
                (target `game_core`) [depends: base, engine_stream, engine_window]
-  sim/       → Simulation helpers: the direction types (FacingType, DirType) and FacingClass,
+  sim/       → Simulation helpers: the direction types (FacingType, DirType), FacingClass, the shared
+               simulation enums (ArmorType, MoveType, BStateType, ...),
                UnitTrackerClass, CrewClass, FlasherClass, DoorClass<Stage> (target `game_sim`)
                [depends: game_core]
 rust/        → engine_rs, the engine kernels written in Rust (LCW), linked through the cxx bridge in

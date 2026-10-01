@@ -79,6 +79,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/enums.h"
 #include "td/ai/special.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
@@ -915,7 +916,7 @@ void Read_Scenario_Descriptions() {
   ------------------------------------------------------------------------*/
   for (int i = 0; i < 100; i++) {
     Set_Scenario_Name(TheWorld().scenario_name(), i, SCEN_PLAYER_MPLAYER,
-                      SCEN_DIR_EAST, SCEN_VAR_A);
+                      game::SCEN_DIR_EAST, SCEN_VAR_A);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
 
     if (GameFileExists(fname)) {
@@ -933,7 +934,7 @@ void Read_Scenario_Descriptions() {
     .....................................................................*/
     Set_Scenario_Name(TheWorld().scenario_name(),
                       TheSession().scenario_files().at(i), SCEN_PLAYER_MPLAYER,
-                      SCEN_DIR_EAST, SCEN_VAR_A);
+                      game::SCEN_DIR_EAST, SCEN_VAR_A);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
     const std::string ini = engine::file::ReadProfileFile(fname).value_or("");
 

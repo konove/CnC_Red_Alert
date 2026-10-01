@@ -70,6 +70,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
+#include "game/sim/enums.h"
 #include "td/ai/teamtype.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
@@ -1081,10 +1082,10 @@ void TeamClass::Calc_Center(CELL& center, CELL& obj_center) const {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Took_Damage(FootClass* /*unused*/, ResultType result,
+void TeamClass::Took_Damage(FootClass* /*unused*/, game::ResultType result,
                             TechnoClass* source) {
   Validate();
-  if (result != RESULT_NONE && !Class->IsSuicide) {
+  if (result != game::RESULT_NONE && !Class->IsSuicide) {
     if (!IsMoving) {
       // Should run to a better hiding place or disband into a group of hunting
       // units.

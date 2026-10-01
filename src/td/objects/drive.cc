@@ -83,6 +83,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/display_constants.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
@@ -692,7 +693,7 @@ bool DriveClass::While_Moving() {
             c = Adjacent_Cell(c, nextface);
 
             switch (Can_Enter_Cell(Coord_Cell(c), nextface)) {
-              case MOVE_OK:
+              case game::MOVE_OK:
                 IsOnShortTrack = false;  // Shouldn't be necessary, but...
                 TrackNumber = tnum;
                 track = newtrack;
@@ -718,11 +719,11 @@ bool DriveClass::While_Moving() {
                 }
                 break;
 
-              case MOVE_CLOAK:
+              case game::MOVE_CLOAK:
                 TheMap().at(Coord_Cell(c)).Shimmer();
                 break;
 
-              case MOVE_TEMP:
+              case game::MOVE_TEMP:
                 if (*this == UNIT_HARVESTER || !House->IsHuman) {
                   const bool old = TheSpecial().IsScatter;
                   TheSpecial().IsScatter = true;
@@ -730,9 +731,9 @@ bool DriveClass::While_Moving() {
                   TheSpecial().IsScatter = old;
                 }
                 break;
-              case MoveType::MOVE_MOVING_BLOCK:
-              case MoveType::MOVE_DESTROYABLE:
-              case MoveType::MOVE_NO:
+              case game::MoveType::MOVE_MOVING_BLOCK:
+              case game::MoveType::MOVE_DESTROYABLE:
+              case game::MoveType::MOVE_NO:
               default:
                 break;
             }
@@ -916,7 +917,8 @@ bool DriveClass::Start_Of_Move() {
         */
         const CELL cell =
             Adjacent_Cell(Coord_Cell(Center_Coord()), PrimaryFacing.Current());
-        if (TheMap().In_Radar(cell) && (Can_Enter_Cell(cell) == MOVE_TEMP)) {
+        if (TheMap().In_Radar(cell) &&
+            (Can_Enter_Cell(cell) == game::MOVE_TEMP)) {
           CellClass* cellptr = &TheMap().at(cell);
           const TechnoClass* blockage = cellptr->Cell_Techno();
           if (blockage && House->Is_Ally(blockage)) {
@@ -950,7 +952,7 @@ bool DriveClass::Start_Of_Move() {
     */
     const CELL cell =
         Adjacent_Cell(Coord_Cell(Center_Coord()), base::At(Path, 0));
-    if (TheMap().In_Radar(cell) && (Can_Enter_Cell(cell) == MOVE_TEMP)) {
+    if (TheMap().In_Radar(cell) && (Can_Enter_Cell(cell) == game::MOVE_TEMP)) {
       CellClass* cellptr = &TheMap().at(cell);
       const TechnoClass* blockage = cellptr->Cell_Techno();
       if (blockage && House->Is_Ally(blockage)) {
@@ -1007,10 +1009,10 @@ bool DriveClass::Start_Of_Move() {
    */
   destcell = Coord_Cell(dest);
   Mark(MARK_UP);
-  MoveType cando = Can_Enter_Cell(destcell, facing);
+  game::MoveType cando = Can_Enter_Cell(destcell, facing);
   Mark(MARK_DOWN);
 
-  if (cando != MOVE_OK) {
+  if (cando != game::MOVE_OK) {
     if (Mission == MISSION_MOVE && House->IsHuman &&
         Distance(NavCom) < 0x0200) {
       Assign_Destination(kTargetNone);
@@ -1020,7 +1022,7 @@ bool DriveClass::Start_Of_Move() {
     **	If a temporary friendly object is blocking the path, then cause
     *it to *	get out of the way.
     */
-    if (cando == MOVE_TEMP) {
+    if (cando == game::MOVE_TEMP) {
       const bool old = TheSpecial().IsScatter;
       TheSpecial().IsScatter = true;
       TheMap().at(destcell).Incoming(0, true);
@@ -1030,12 +1032,12 @@ bool DriveClass::Start_Of_Move() {
     /*
     **	If a cloaked object is blocking, then shimmer the cell.
     */
-    if (cando == MOVE_CLOAK) {
+    if (cando == game::MOVE_CLOAK) {
       TheMap().at(destcell).Shimmer();
     }
 
     Stop_Driver();
-    if (cando != MOVE_MOVING_BLOCK) {
+    if (cando != game::MOVE_MOVING_BLOCK) {
       base::At(Path, 0) = game::FACING_NONE;  // Path is blocked!
     }
 
@@ -1043,7 +1045,7 @@ bool DriveClass::Start_Of_Move() {
     ** If blocked by a moving block then just exit start of move and
     ** try again next tick.
     */
-    if (cando == MOVE_DESTROYABLE) {
+    if (cando == game::MOVE_DESTROYABLE) {
       if (TheMap().at(destcell).Cell_Object()) {
         if (!House->Is_Ally(TheMap().at(destcell).Cell_Object())) {
           Override_Mission(MISSION_ATTACK,
@@ -1102,7 +1104,7 @@ bool DriveClass::Start_Of_Move() {
   **	Reserve the destination cell so that it won't become
   **	occupied AS this unit is moving into it.
   */
-  if (cando != MOVE_OK) {
+  if (cando != game::MOVE_OK) {
     base::At(Path, 0) = game::FACING_NONE;  // Path is blocked!
     TrackNumber = -1;
     dest = 0;
@@ -1133,19 +1135,19 @@ bool DriveClass::Start_Of_Move() {
       **	the check for goodies before movement starts.
       */
       if (!TheMap().at(destcell).Goodie_Check(this)) {
-        cando = MOVE_NO;
+        cando = game::MOVE_NO;
       } else {
         dest = Adjacent_Cell(dest, nextface);
         destcell = Coord_Cell(dest);
         cando = Can_Enter_Cell(destcell);
       }
 
-      if (cando != MOVE_OK) {
+      if (cando != game::MOVE_OK) {
         /*
         **	If a temporary friendly object is blocking the path, then cause
         *it to *	get out of the way.
         */
-        if (cando == MOVE_TEMP) {
+        if (cando == game::MOVE_TEMP) {
           const bool old = TheSpecial().IsScatter;
           TheSpecial().IsScatter = true;
           TheMap().at(destcell).Incoming(0, true);
@@ -1155,14 +1157,14 @@ bool DriveClass::Start_Of_Move() {
         /*
         **	If a cloaked object is blocking, then shimmer the cell.
         */
-        if (cando == MOVE_CLOAK) {
+        if (cando == game::MOVE_CLOAK) {
           TheMap().at(destcell).Shimmer();
         }
 
         base::At(Path, 0) = game::FACING_NONE;  // Path is blocked!
         TrackNumber = -1;
         dest = 0;
-        if (cando == MOVE_DESTROYABLE) {
+        if (cando == game::MOVE_DESTROYABLE) {
           if (TheMap().at(destcell).Cell_Object()) {
             if (!House->Is_Ally(TheMap().at(destcell).Cell_Object())) {
               Override_Mission(MISSION_ATTACK,
@@ -1414,7 +1416,7 @@ void DriveClass::Fixup_Path(PathType* path) {
     **	building operation without adjusting the unit's
     **	path.
     */
-    if (Can_Enter_Cell(cell, nextpath) != MOVE_OK) {
+    if (Can_Enter_Cell(cell, nextpath) != game::MOVE_OK) {
       ok = false;
       break;
     }
@@ -1449,7 +1451,7 @@ void DriveClass::Fixup_Path(PathType* path) {
       **	building operation without adjusting the unit's
       **	path.
       */
-      if (Can_Enter_Cell(cell, nextpath) != MOVE_OK) {
+      if (Can_Enter_Cell(cell, nextpath) != game::MOVE_OK) {
         ok = false;
         break;
       }
@@ -1476,7 +1478,7 @@ void DriveClass::Fixup_Path(PathType* path) {
       if (counter) {
         counter--;
         base::At(path->Command, 0) = base::At(stage, counter);
-        Optimize_Moves(path, MOVE_OK);
+        Optimize_Moves(path, game::MOVE_OK);
       }
 
       /*

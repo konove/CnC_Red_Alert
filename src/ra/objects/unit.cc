@@ -126,6 +126,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
@@ -468,7 +469,7 @@ void UnitClass::AI() {
   /*
   **	A cloaked object that is carrying the flag will always shimmer.
   */
-  if (Cloak == CLOAKED && Flagged != HOUSE_NONE) {
+  if (Cloak == game::CLOAKED && Flagged != HOUSE_NONE) {
     Do_Shimmer();
   }
 
@@ -637,9 +638,9 @@ void UnitClass::Firing_AI() {
     *primary weapon.
     */
     const int primary = What_Weapon_Should_I_Use(TarCom);
-    const FireErrorType ok = Can_Fire(TarCom, primary);
+    const game::FireErrorType ok = Can_Fire(TarCom, primary);
     switch (ok) {
-      case FIRE_OK:
+      case game::FIRE_OK:
         if (!this->Class->IsFireAnim) {
           Mark(MARK_OVERLAP_UP);
           IsFiring = false;
@@ -649,7 +650,7 @@ void UnitClass::Firing_AI() {
         Fire_At(TarCom, primary);
         break;
 
-      case FIRE_FACING:
+      case game::FIRE_FACING:
         if (Class->IsLockTurret || Class->Type == UNIT_DEMOTRUCK) {
           if (!Target_Legal(NavCom) && !IsDriving) {
             PrimaryFacing.Set_Desired(Direction(TarCom));
@@ -660,20 +661,20 @@ void UnitClass::Firing_AI() {
         }
         break;
 
-      case FIRE_CLOAKED:
+      case game::FIRE_CLOAKED:
         Mark(MARK_OVERLAP_UP);
         IsFiring = false;
         Mark(MARK_OVERLAP_DOWN);
         Do_Uncloak();
         break;
-      case FireErrorType::FIRE_AMMO:
-      case FireErrorType::FIRE_REARM:
-      case FireErrorType::FIRE_ROTATING:
-      case FireErrorType::FIRE_ILLEGAL:
-      case FireErrorType::FIRE_CANT:
-      case FireErrorType::FIRE_MOVING:
-      case FireErrorType::FIRE_RANGE:
-      case FireErrorType::FIRE_BUSY:
+      case game::FireErrorType::FIRE_AMMO:
+      case game::FireErrorType::FIRE_REARM:
+      case game::FireErrorType::FIRE_ROTATING:
+      case game::FireErrorType::FIRE_ILLEGAL:
+      case game::FireErrorType::FIRE_CANT:
+      case game::FireErrorType::FIRE_MOVING:
+      case game::FireErrorType::FIRE_RANGE:
+      case game::FireErrorType::FIRE_BUSY:
       default:
         break;
     }
@@ -956,7 +957,7 @@ bool UnitClass::Unlimbo(COORDINATE coord, game::DirType dir) {
     **	If it starts off the edge of the map, then it already starts cloaked.
     */
     if (IsCloakable && !IsLocked) {
-      Cloak = CLOAKED;
+      Cloak = game::CLOAKED;
     }
 
     /*
@@ -1003,13 +1004,13 @@ bool UnitClass::Unlimbo(COORDINATE coord, game::DirType dir) {
  *do maximum damage against gunboat.                                * 08/16/1995
  *JLB : Harvester crushing doesn't occur on early missions. *
  *=============================================================================================*/
-ResultType UnitClass::Take_Damage(int& damage, int distance,
-                                  WarheadType warhead, TechnoClass* source,
-                                  bool forced) {
+game::ResultType UnitClass::Take_Damage(int& damage, int distance,
+                                        WarheadType warhead,
+                                        TechnoClass* source, bool forced) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
-  ResultType res = RESULT_NONE;
+  game::ResultType res = game::RESULT_NONE;
 
   /*
   **	Remember if this object was selected. If it was and it gets destroyed
@@ -1024,7 +1025,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
   */
   res = DriveClass::Take_Damage(damage, distance, warhead, source, forced);
 
-  if (res == RESULT_DESTROYED) {
+  if (res == game::RESULT_DESTROYED) {
     Death_Announcement(source);
     Shroud_Regen();  // remove the shroud if it's a gap generator
     if (Class->Explosion != ANIM_NONE) {
@@ -2102,7 +2103,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
   **	If drawing of this unit is not explicitly prohibited, then proceed
   **	with the render process.
   */
-  if (Visual_Character() != VISUAL_HIDDEN) {
+  if (Visual_Character() != game::VISUAL_HIDDEN) {
     int shapenum = Shape_Number();  // Working shape number.
 
     /*
@@ -2502,7 +2503,7 @@ int UnitClass::Mission_Unload() {
                 const game::DirType newface = toface + game::Facing_Dir(face);
                 const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
-                if (passenger->Can_Enter_Cell(newcell) == MOVE_OK) {
+                if (passenger->Can_Enter_Cell(newcell) == game::MOVE_OK) {
                   TheWorld().scenario_init()++;
                   passenger->Unlimbo(Coord_Move(Coord, newface, 0x0080),
                                      newface);
@@ -2585,7 +2586,7 @@ int UnitClass::Mission_Unload() {
                 const game::DirType newface = toface + game::Facing_Dir(face);
                 const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
-                if (passenger->Can_Enter_Cell(newcell) == MOVE_OK) {
+                if (passenger->Can_Enter_Cell(newcell) == game::MOVE_OK) {
                   TheWorld().scenario_init()++;
                   passenger->Unlimbo(Coord_Move(Coord, newface, 0x0080),
                                      newface);
@@ -2765,7 +2766,7 @@ int UnitClass::Mission_Unload() {
                magic_enum::enum_values<game::FacingType>()) {
             const game::DirType newface = toface + game::Facing_Dir(face);
             const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
-            if (crew->Can_Enter_Cell(newcell) == MOVE_OK) {
+            if (crew->Can_Enter_Cell(newcell) == game::MOVE_OK) {
               TheWorld().scenario_init()++;
               crew->Unlimbo(Coord_Move(Coord, newface, 0x0080), newface);
               TheWorld().scenario_init()--;
@@ -3145,7 +3146,8 @@ std::span<const int16_t> UnitClass::Overlap_List(bool redraw) const {
  *function.                                            * 07/04/1995 JLB :
  *Allowed to drive on building trying to enter it.                         *
  *=============================================================================================*/
-MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
+game::MoveType UnitClass::Can_Enter_Cell(CELL cell,
+                                         game::FacingType /*from*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -3154,7 +3156,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
   const CellClass* cellptr = &TheMap().at(cell);
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
   /*
@@ -3163,10 +3165,10 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
   */
   if (!TheWorld().scenario_init() && !TheMap().In_Radar(cell) &&
       !Is_Allowed_To_Leave_Map() && IsLocked) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
-  MoveType retval = MOVE_OK;
+  game::MoveType retval = game::MOVE_OK;
 
   /*
   **	Certain vehicles can drive over walls. Check for this case and
@@ -3180,7 +3182,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
         !(TheSession().Type == GAME_NORMAL ? House->IsPlayerControl
                                            : House->IsHuman) &&
         TheSession().Type == GAME_NORMAL) {
-      return MOVE_NO;
+      return game::MOVE_NO;
     }
 
     if (optr->IsWall) {
@@ -3199,9 +3201,9 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
 
         if (whead->IsWallDestroyer ||
             (whead->IsWoodDestroyer && optr->IsWooden)) {
-          retval = std::max(retval, MOVE_DESTROYABLE);
+          retval = std::max(retval, game::MOVE_DESTROYABLE);
         } else {
-          return MOVE_NO;
+          return game::MOVE_NO;
         }
       }
     }
@@ -3222,10 +3224,10 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
           (!TheRules().IsMineAware ||
            !dynamic_cast<BuildingClass*>(obj)->House->Is_Ally(House))) {
         if (*dynamic_cast<BuildingClass*>(obj) == STRUCT_APMINE) {
-          return MOVE_OK;
+          return game::MOVE_OK;
         }
         if (*dynamic_cast<BuildingClass*>(obj) == STRUCT_AVMINE) {
-          return MOVE_OK;
+          return game::MOVE_OK;
         }
       }
 
@@ -3237,7 +3239,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
           (IsTethered ||
            (obj->What_Am_I() == RTTI_BUILDING &&
             *dynamic_cast<BuildingClass*>(obj) == STRUCT_REPAIR))) {
-        return MOVE_OK;
+        return game::MOVE_OK;
       }
 
       /*
@@ -3246,7 +3248,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
       */
       if (Mission == MISSION_ENTER && obj->As_Target() == NavCom &&
           IsTethered) {
-        return MOVE_OK;
+        return game::MOVE_OK;
       }
 
       /*
@@ -3254,7 +3256,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
       *with the *	guarded unit.
       */
       if (Mission == MISSION_GUARD_AREA && ArchiveTarget == obj->As_Target()) {
-        return MOVE_NO;
+        return game::MOVE_NO;
       }
 
       const bool is_moving =
@@ -3278,12 +3280,12 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
                4) %
               8;
           if (face == techface && Distance(obj) <= 0x1FF) {
-            return MOVE_NO;
+            return game::MOVE_NO;
           }
-          retval = std::max(retval, MOVE_MOVING_BLOCK);
+          retval = std::max(retval, game::MOVE_MOVING_BLOCK);
         } else {
           if (obj->What_Am_I() == RTTI_BUILDING) {
-            return MOVE_NO;
+            return game::MOVE_NO;
           }
 
           /*
@@ -3292,10 +3294,10 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
           */
           if (TheMap().at(Coord).Zones.at(Class->MZone) !=
               cellptr->Zones.at(Class->MZone)) {
-            return MOVE_NO;
+            return game::MOVE_NO;
           }
 
-          retval = std::max(retval, MOVE_TEMP);
+          retval = std::max(retval, game::MOVE_TEMP);
         }
       } else {
         /*
@@ -3303,7 +3305,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
         *Find_Path() *	call.
         */
         if (!obj->Is_Techno() ||
-            dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED) {
+            dynamic_cast<TechnoClass*>(obj)->Cloak != game::CLOAKED) {
           /*
           **	If this unit can crush infantry, and there is an enemy infantry
           *in the *	cell, don't consider the cell impassible. This is true
@@ -3316,7 +3318,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
             **	is not equipped with a weapon.
             */
             if (Class->PrimaryWeapon == nullptr) {
-              return MOVE_NO;
+              return game::MOVE_NO;
             }
 
             /*
@@ -3326,14 +3328,14 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
             **	destroyable blockers.
             */
             if (obj->What_Am_I() == RTTI_TERRAIN) {
-              return MOVE_NO;
+              return game::MOVE_NO;
             }
-            retval = std::max(retval, MOVE_DESTROYABLE);
+            retval = std::max(retval, game::MOVE_DESTROYABLE);
           } else {
             crushable = true;
           }
         } else {
-          retval = std::max(retval, MOVE_CLOAK);
+          retval = std::max(retval, game::MOVE_CLOAK);
         }
       }
     }
@@ -3348,25 +3350,25 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
   **	If the cell is out and out impassable because of underlying terrain,
   *then *	return this immutable fact.
   */
-  if (!cancrush && retval != MOVE_DESTROYABLE &&
+  if (!cancrush && retval != game::MOVE_DESTROYABLE &&
       TheRules().ground().at(cellptr->Land_Type()).Cost.at(Class->Speed) == 0) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
   /*
   **	If some allied object has reserved the cell, then consider the cell
   **	as blocked by a moving object.
   */
-  if (retval == MOVE_OK && !crushable &&
+  if (retval == game::MOVE_OK && !crushable &&
       (cellptr->Flag.Composite & 0x3F) != 0) {
     /*
     **	If reserved by a vehicle, then consider this blocked terrain.
     */
     if (cellptr->Flag.Occupy.Vehicle) {
-      retval = MOVE_MOVING_BLOCK;
+      retval = game::MOVE_MOVING_BLOCK;
     } else {
       if (cellptr->InfType != HOUSE_NONE && House->Is_Ally(cellptr->InfType)) {
-        retval = MOVE_MOVING_BLOCK;
+        retval = game::MOVE_MOVING_BLOCK;
       } else {
         /*
         **	Enemy infantry have reserved the cell. If this unit can crush
@@ -3377,9 +3379,9 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
         if (!Class->IsCrusher) {
           if (Class->PrimaryWeapon != nullptr &&
               Class->PrimaryWeapon->Bullet->IsAntiGround) {
-            retval = MOVE_DESTROYABLE;
+            retval = game::MOVE_DESTROYABLE;
           } else {
-            return MOVE_NO;
+            return game::MOVE_NO;
           }
         }
       }
@@ -3397,9 +3399,9 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
   **	the cell at the same time. In the case of a crushable vehicle in the
   **	cell, then allow entry.
   */
-  if ((retval == MOVE_OK && crushable && cellptr->Flag.Occupy.Vehicle) &&
+  if ((retval == game::MOVE_OK && crushable && cellptr->Flag.Occupy.Vehicle) &&
       (!cellptr->Cell_Unit() || !cellptr->Cell_Unit()->Class->IsCrushable)) {
-    return MOVE_MOVING_BLOCK;
+    return game::MOVE_MOVING_BLOCK;
   }
 
   /*
@@ -3709,14 +3711,14 @@ void UnitClass::Exit_Repair() {
       Coord_Cell(Coord) +
       base::At(ExitRepair,
                static_cast<int>(game::Dir_Facing(PrimaryFacing.Current()))));
-  if (Can_Enter_Cell(cell) == MOVE_OK) {
+  if (Can_Enter_Cell(cell) == game::MOVE_OK) {
     found = true;
   }
 
   if (!found) {
     for (const int16_t i : ExitRepair) {
       cell = static_cast<CELL>(Coord_Cell(Coord) + i);
-      if (Can_Enter_Cell(cell) == MOVE_OK) {
+      if (Can_Enter_Cell(cell) == game::MOVE_OK) {
         found = true;
         break;
       }
@@ -3851,7 +3853,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     *that cell for load/unload.
     */
     if (passenger != nullptr) {
-      value = passenger->Can_Enter_Cell(cellnum) == MOVE_OK ||
+      value = passenger->Can_Enter_Cell(cellnum) == game::MOVE_OK ||
                       Coord_Cell(passenger->Coord) == cellnum
                   ? 128
                   : -128;
@@ -4232,14 +4234,14 @@ bool UnitClass::Ok_To_Move(game::DirType dir) {
  * HISTORY: * 04/26/1994 JLB : Created. * 06/01/1994 JLB : Returns reason why it
  *can't fire.                                        *
  *=============================================================================================*/
-FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
   int diff = 0;
-  const FireErrorType fire = DriveClass::Can_Fire(target, which);
+  const game::FireErrorType fire = DriveClass::Can_Fire(target, which);
 
-  if (fire == FIRE_OK) {
+  if (fire == game::FIRE_OK) {
     // Bind the type once: CCPtr's operator-> has an unset branch that the
     // static analyzer otherwise follows into a null dereference here.
     const UnitTypeClass& type = *Class;
@@ -4250,7 +4252,7 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
     **	If this unit cannot fire while moving, then bail.
     */
     if (Class->IsNoFireWhileMoving && Target_Legal(NavCom)) {
-      return FIRE_MOVING;
+      return game::FIRE_MOVING;
     }
 
     /*
@@ -4258,7 +4260,7 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
     **	firing must be delayed until the rotation stops.
     */
     if (!IsFiring && IsRotating && weapon->Bullet->ROT == 0) {
-      return FIRE_ROTATING;
+      return game::FIRE_ROTATING;
     }
 
     const game::DirType dir =
@@ -4280,7 +4282,7 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
     if (diff < 8) {
       return DriveClass::Can_Fire(target, which);
     }
-    return FIRE_FACING;
+    return game::FIRE_FACING;
   }
   return fire;
 }
@@ -4318,7 +4320,7 @@ BulletClass* UnitClass::Fire_At(TARGET target, int which) {
     return nullptr;
   }
 
-  if (Can_Fire(target, which) == FIRE_OK) {
+  if (Can_Fire(target, which) == game::FIRE_OK) {
     bullet = DriveClass::Fire_At(target, which);
 
     if (bullet != nullptr) {

@@ -119,6 +119,7 @@
 #include "engine/stream/stream_sink.h"
 #include "engine/stream/stream_source.h"
 #include "game/core/display_constants.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/trigtype.h"
 #include "ra/assets/audio.h"
@@ -373,11 +374,11 @@ bool CCINIClass::Put_Lepton(const char* section, const char* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-MPHType CCINIClass::Get_MPHType(const char* section, const char* entry,
-                                MPHType defvalue) const {
+game::MPHType CCINIClass::Get_MPHType(const char* section, const char* entry,
+                                      game::MPHType defvalue) const {
   const int val =
       Get_Int(section, entry, static_cast<int>(defvalue) * 100 / 256);
-  return static_cast<MPHType>(Scale_To_256(val));
+  return static_cast<game::MPHType>(Scale_To_256(val));
 }
 
 /***********************************************************************************************
@@ -401,7 +402,7 @@ MPHType CCINIClass::Get_MPHType(const char* section, const char* entry,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool CCINIClass::Put_MPHType(const char* section, const char* entry,
-                             MPHType value) {
+                             game::MPHType value) {
   return Put_Int(section, entry, static_cast<int>(value) * 100 / 256);
 }
 
@@ -523,8 +524,9 @@ bool CCINIClass::Put_Owners(const char* section, const char* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-ArmorType CCINIClass::Get_ArmorType(const char* section, const char* entry,
-                                    ArmorType defvalue) const {
+game::ArmorType CCINIClass::Get_ArmorType(const char* section,
+                                          const char* entry,
+                                          game::ArmorType defvalue) const {
   char buffer[128];
 
   Get_String(section, entry, ArmorName.at(defvalue), buffer, sizeof(buffer));
@@ -549,7 +551,7 @@ ArmorType CCINIClass::Get_ArmorType(const char* section, const char* entry,
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 bool CCINIClass::Put_ArmorType(const char* section, const char* entry,
-                               ArmorType value) {
+                               game::ArmorType value) {
   return Put_String(section, entry, ArmorName.at(value));
 }
 

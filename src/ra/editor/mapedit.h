@@ -212,7 +212,7 @@ class MapEditClass : public MouseClass {
   int Load_Scenario();
   int Save_Scenario();
   int Pick_Scenario(const char* caption, int& scen_nump,
-                    ScenarioPlayerType& playerp, ScenarioDirType& dirp,
+                    ScenarioPlayerType& playerp, game::ScenarioDirType& dirp,
                     ScenarioVarType& varp);
   int Size_Map(int x, int y, int w, int h);
   int Scenario_Dialog();

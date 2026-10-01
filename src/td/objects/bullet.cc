@@ -67,6 +67,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "td/core/config.h"
 #include "td/core/coord.h"
@@ -711,7 +712,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
     **	For very fast and invisible projectiles, just make the projectile exist
     *at the target *	location and dispense with the actual flight.
     */
-    if (Class->MaxSpeed == MPH_LIGHT_SPEED && Class->IsInvisible) {
+    if (Class->MaxSpeed == game::MPH_LIGHT_SPEED && Class->IsInvisible) {
       Coord = tcoord;
     }
 
@@ -736,8 +737,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
     **	target.
     */
     int speed = static_cast<int>(Class->MaxSpeed);
-    if (speed == static_cast<int>(MPH_LIGHT_SPEED)) {
-      speed = static_cast<int>(MPH_IMMOBILE);
+    if (speed == static_cast<int>(game::MPH_LIGHT_SPEED)) {
+      speed = static_cast<int>(game::MPH_IMMOBILE);
     }
     if (Class->IsArcing) {
       speed = static_cast<int>(Class->MaxSpeed) + (Distance(tcoord) / 32);
@@ -748,7 +749,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
       speed = std::max(speed, 25);
     }
     if (!Class->IsDropping) {
-      Fly_Speed(255, static_cast<MPHType>(speed));
+      Fly_Speed(255, static_cast<game::MPHType>(speed));
     }
 
     /*

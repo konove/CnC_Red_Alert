@@ -100,7 +100,7 @@ class World {
   ScenarioPlayerType& scen_player() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return scen_player_;
   }
-  ScenarioDirType& scen_dir() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ScenarioDirType& scen_dir() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return scen_dir_;
   }
   auto& scenario_name() ABSL_ATTRIBUTE_LIFETIME_BOUND { return scenario_name_; }
@@ -192,7 +192,7 @@ class World {
 
   int scenario_ = 0;
   ScenarioPlayerType scen_player_{};
-  ScenarioDirType scen_dir_{};
+  game::ScenarioDirType scen_dir_{};
   char
       scenario_name_[engine::platform::kMaxFname + engine::platform::kMaxExt]{};
 

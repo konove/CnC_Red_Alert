@@ -217,7 +217,8 @@ class TeamClass : public AbstractClass {
   bool Remove(FootClass* /*obj*/, int typeindex = -1);
   void Detach(TARGET target, bool all);
   void AI() override;
-  void Took_Damage(FootClass* obj, ResultType result, TechnoClass* source);
+  void Took_Damage(FootClass* obj, game::ResultType result,
+                   TechnoClass* source);
   bool Add(FootClass* /*obj*/, int typeindex = -1);
   void Assign_Mission_Target(TARGET new_target);
 

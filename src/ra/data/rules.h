@@ -333,7 +333,7 @@ class RulesClass {
   **	Controls the Chronal vortex characteristics.
   */
   LEPTON VortexRange{10 * CELL_LEPTON_W};
-  MPHType VortexSpeed{static_cast<MPHType>(10)};
+  game::MPHType VortexSpeed{static_cast<game::MPHType>(10)};
   int VortexDamage{200};
   Fixed VortexChance;
 
@@ -758,7 +758,7 @@ class RulesClass {
   **	of targets to run for cover if the projectile gives them enough time
   **	to react.
   */
-  MPHType Incoming{MPH_IMMOBILE};
+  game::MPHType Incoming{game::MPH_IMMOBILE};
 
   /*
   **	Minimum and maximum damage allowed per shot.

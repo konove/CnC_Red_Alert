@@ -172,7 +172,7 @@ class TechnoClass : public RadioClass,
   /*
   **	This records the current cloak state for this vehicle.
   */
-  CloakType Cloak;
+  game::CloakType Cloak;
   StageClass CloakingDevice;
 
   /* (Targeting Computer)
@@ -276,8 +276,8 @@ class TechnoClass : public RadioClass,
   virtual bool In_Range(const ObjectClass* target, int which = 0) const;
   virtual void Death_Announcement(
       const TechnoClass* source = nullptr) const = 0;
-  [[nodiscard]] virtual FireErrorType Can_Fire(TARGET target,
-                                               int which = 0) const;
+  [[nodiscard]] virtual game::FireErrorType Can_Fire(TARGET target,
+                                                     int which = 0) const;
   [[nodiscard]] virtual TARGET Greatest_Threat(ThreatType method) const;
   virtual void Assign_Target(TARGET target);
   void Override_Mission(MissionType mission, TARGET tarcom,
@@ -286,8 +286,8 @@ class TechnoClass : public RadioClass,
   virtual BulletClass* Fire_At(TARGET target, int which = 0);
   [[nodiscard]] int Weapon_Range(int which) const override;
   virtual bool Captured(HouseClass* newowner);
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source) override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source) override;
   bool Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell, int range,
                      const TechnoClass** object, int& value) const;
   bool Evaluate_Object(ThreatType method, uint32_t mask, int range,
@@ -313,7 +313,7 @@ class TechnoClass : public RadioClass,
   **	object interacts with the map and thus indirectly controls rendering.
   */
   virtual std::span<const unsigned char> Remap_Table();
-  [[nodiscard]] VisualType Visual_Character(bool raw = false) const;
+  [[nodiscard]] game::VisualType Visual_Character(bool raw = false) const;
   void Techno_Draw_Object(PixelView& view, std::span<const std::byte> shapefile,
                           int shapenum, int x, int y, WindowNumberType window);
   void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;

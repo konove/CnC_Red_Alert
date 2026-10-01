@@ -142,6 +142,7 @@
 #include "game/core/vector.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/trigger.h"
@@ -2559,7 +2560,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
       */
       if (object != nullptr && object->Is_Techno() &&
           !dynamic_cast<TechnoClass*>(object)->IsOwnedByPlayer &&
-          (dynamic_cast<TechnoClass*>(object)->Cloak == CLOAKED ||
+          (dynamic_cast<TechnoClass*>(object)->Cloak == game::CLOAKED ||
            dynamic_cast<TechnoClass*>(object)
                ->Techno_Type_Class()
                ->IsInvisible)) {
@@ -3228,7 +3229,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         TheGameState().allow_voice() = true;
         TheWorld().form_move() = false;
         TheWorld().form_speed() = SPEED_WHEEL;
-        TheWorld().form_max_speed() = MPH_LIGHT_SPEED;
+        TheWorld().form_max_speed() = game::MPH_LIGHT_SPEED;
 
         if ((action == ACTION_MOVE || action == ACTION_NOMOVE) &&
             TheWorld().current_object().Count()) {

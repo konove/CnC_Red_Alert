@@ -57,6 +57,7 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
+#include "game/sim/enums.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
@@ -130,7 +131,7 @@ static const TerrainTypeClass Tree1Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T01", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
+    "T01", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree2Class(
     TERRAIN_TREE2, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -144,7 +145,7 @@ static const TerrainTypeClass Tree2Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T02", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
+    "T02", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree3Class(
     TERRAIN_TREE3, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -158,7 +159,7 @@ static const TerrainTypeClass Tree3Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T03", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
+    "T03", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree4Class(
     TERRAIN_TREE4, kTheaterFlagDesert,
@@ -172,7 +173,7 @@ static const TerrainTypeClass Tree4Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List1, {});
+    "T04", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List1, {});
 
 static const TerrainTypeClass Tree5Class(
     TERRAIN_TREE5, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -186,7 +187,7 @@ static const TerrainTypeClass Tree5Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T05", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
+    "T05", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree6Class(
     TERRAIN_TREE6, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -200,7 +201,7 @@ static const TerrainTypeClass Tree6Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T06", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
+    "T06", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree7Class(
     TERRAIN_TREE7, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -214,7 +215,7 @@ static const TerrainTypeClass Tree7Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T07", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
+    "T07", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree8Class(
     TERRAIN_TREE8,
@@ -229,7 +230,7 @@ static const TerrainTypeClass Tree8Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T08", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List10, List01);
+    "T08", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List10, List01);
 
 static const TerrainTypeClass Tree9Class(
     TERRAIN_TREE9, kTheaterFlagDesert,
@@ -243,7 +244,7 @@ static const TerrainTypeClass Tree9Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T09", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List10, List01);
+    "T09", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List10, List01);
 
 static const TerrainTypeClass Tree10Class(
     TERRAIN_TREE10, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -257,7 +258,7 @@ static const TerrainTypeClass Tree10Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T10", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
+    "T10", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree11Class(
     TERRAIN_TREE11, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -271,7 +272,7 @@ static const TerrainTypeClass Tree11Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T11", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
+    "T11", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree12Class(
     TERRAIN_TREE12, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -285,7 +286,7 @@ static const TerrainTypeClass Tree12Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T12", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
+    "T12", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree13Class(
     TERRAIN_TREE13, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -299,7 +300,7 @@ static const TerrainTypeClass Tree13Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T13", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1101);
+    "T13", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0010, List1101);
 
 static const TerrainTypeClass Tree14Class(
     TERRAIN_TREE14, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -313,7 +314,7 @@ static const TerrainTypeClass Tree14Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T14", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
+    "T14", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree15Class(
     TERRAIN_TREE15, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -327,7 +328,7 @@ static const TerrainTypeClass Tree15Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T15", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0011, List1100);
+    "T15", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0011, List1100);
 
 static const TerrainTypeClass Tree16Class(
     TERRAIN_TREE16, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -341,7 +342,7 @@ static const TerrainTypeClass Tree16Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T16", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
+    "T16", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree17Class(
     TERRAIN_TREE17, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -355,7 +356,7 @@ static const TerrainTypeClass Tree17Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T17", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1001);
+    "T17", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0010, List1001);
 
 static const TerrainTypeClass Tree18Class(
     TERRAIN_TREE18, kTheaterFlagDesert,
@@ -369,7 +370,7 @@ static const TerrainTypeClass Tree18Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     false,  // Is it immune to normal combat damage?
-    "T18", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List000010, List111101);
+    "T18", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List000010, List111101);
 
 static const TerrainTypeClass Split1Class(
     TERRAIN_BLOSSOMTREE1, kTheaterFlagTemperate | kTheaterFlagWinter,
@@ -383,7 +384,8 @@ static const TerrainTypeClass Split1Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "SPLIT2", TXT_BLOSSOM_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1101);
+    "SPLIT2", TXT_BLOSSOM_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0010,
+    List1101);
 
 static const TerrainTypeClass Split2Class(
     TERRAIN_BLOSSOMTREE2,
@@ -398,7 +400,8 @@ static const TerrainTypeClass Split2Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "SPLIT3", TXT_BLOSSOM_TREE, TREE_NORMAL, ARMOR_WOOD, List0010, List1101);
+    "SPLIT3", TXT_BLOSSOM_TREE, TREE_NORMAL, game::ARMOR_WOOD, List0010,
+    List1101);
 
 static const TerrainTypeClass Clump1Class(
     TERRAIN_CLUMP1, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -412,7 +415,7 @@ static const TerrainTypeClass Clump1Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "TC01", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List000110, List110001);
+    "TC01", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List000110, List110001);
 
 static const TerrainTypeClass Clump2Class(
     TERRAIN_CLUMP2, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -426,7 +429,7 @@ static const TerrainTypeClass Clump2Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "TC02", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List010110, List101001);
+    "TC02", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List010110, List101001);
 
 static const TerrainTypeClass Clump3Class(
     TERRAIN_CLUMP3, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -440,7 +443,7 @@ static const TerrainTypeClass Clump3Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "TC03", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List110110, List001);
+    "TC03", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List110110, List001);
 
 static const TerrainTypeClass Clump4Class(
     TERRAIN_CLUMP4, kTheaterFlagWinter | kTheaterFlagTemperate,
@@ -454,7 +457,7 @@ static const TerrainTypeClass Clump4Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "TC04", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List000011101000,
+    "TC04", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List000011101000,
     List111000010110);
 
 static const TerrainTypeClass Clump5Class(
@@ -469,7 +472,7 @@ static const TerrainTypeClass Clump5Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "TC05", TXT_TREE, TREE_NORMAL, ARMOR_WOOD, List001011100110,
+    "TC05", TXT_TREE, TREE_NORMAL, game::ARMOR_WOOD, List001011100110,
     List110000011001);
 
 static const TerrainTypeClass Rock1Class(
@@ -484,7 +487,7 @@ static const TerrainTypeClass Rock1Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "ROCK1", TXT_ROCK, 1000, ARMOR_STEEL, List0011, List111001);
+    "ROCK1", TXT_ROCK, 1000, game::ARMOR_STEEL, List0011, List111001);
 
 static const TerrainTypeClass Rock2Class(
     TERRAIN_ROCK2, kTheaterFlagDesert,
@@ -498,7 +501,7 @@ static const TerrainTypeClass Rock2Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "ROCK2", TXT_ROCK, 1000, ARMOR_STEEL, List1100, List001);
+    "ROCK2", TXT_ROCK, 1000, game::ARMOR_STEEL, List1100, List001);
 
 static const TerrainTypeClass Rock3Class(
     TERRAIN_ROCK3, kTheaterFlagDesert,
@@ -512,7 +515,7 @@ static const TerrainTypeClass Rock3Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "ROCK3", TXT_ROCK, 1000, ARMOR_STEEL, List000110, List110001);
+    "ROCK3", TXT_ROCK, 1000, game::ARMOR_STEEL, List000110, List110001);
 
 static const TerrainTypeClass Rock4Class(
     TERRAIN_ROCK4, kTheaterFlagDesert,
@@ -526,7 +529,7 @@ static const TerrainTypeClass Rock4Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "ROCK4", TXT_ROCK, 1000, ARMOR_STEEL, List10, List01);
+    "ROCK4", TXT_ROCK, 1000, game::ARMOR_STEEL, List10, List01);
 
 static const TerrainTypeClass Rock5Class(
     TERRAIN_ROCK5, kTheaterFlagDesert,
@@ -540,7 +543,7 @@ static const TerrainTypeClass Rock5Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "ROCK5", TXT_ROCK, 1000, ARMOR_STEEL, List10, List01);
+    "ROCK5", TXT_ROCK, 1000, game::ARMOR_STEEL, List10, List01);
 
 static const TerrainTypeClass Rock6Class(
     TERRAIN_ROCK6, kTheaterFlagDesert,
@@ -554,7 +557,7 @@ static const TerrainTypeClass Rock6Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "ROCK6", TXT_ROCK, 1000, ARMOR_STEEL, List000111, List110000);
+    "ROCK6", TXT_ROCK, 1000, game::ARMOR_STEEL, List000111, List110000);
 
 static const TerrainTypeClass Rock7Class(
     TERRAIN_ROCK7, kTheaterFlagDesert,
@@ -568,7 +571,7 @@ static const TerrainTypeClass Rock7Class(
     false,  // Can it be the target of a move or attack order?
     true,   // Don't make a big deal about it if it gets destroyed?
     true,   // Is it immune to normal combat damage?
-    "ROCK7", TXT_ROCK, 1000, ARMOR_STEEL, List11110, List00001);
+    "ROCK7", TXT_ROCK, 1000, game::ARMOR_STEEL, List11110, List00001);
 
 const base::EnumArray<TerrainType, const TerrainTypeClass*, kTerrainCount>
     TerrainTypeClass::Pointers = {
@@ -626,7 +629,7 @@ TerrainTypeClass::TerrainTypeClass(
     bool is_destroyable, bool is_transformable, bool is_flammable,
     bool is_crushable, bool is_selectable, bool is_legal_target,
     bool is_insignificant, bool is_immune, const char* ininame, int fullname,
-    int16_t strength, ArmorType armor, std::span<const int16_t> occupy,
+    int16_t strength, game::ArmorType armor, std::span<const int16_t> occupy,
     std::span<const int16_t> overlap) noexcept
     : ObjectTypeClass(true, is_flammable, is_crushable, true, is_selectable,
                       is_legal_target, is_insignificant, is_immune, fullname,

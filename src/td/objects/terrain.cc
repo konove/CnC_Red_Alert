@@ -93,6 +93,7 @@
 #include "engine/gfx/shape.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "td/ai/trigger.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
@@ -192,10 +193,11 @@ TerrainClass::~TerrainClass() {
  *handler for techno objects.                           * 12/11/1994 JLB :
  *Shortens attached burning animations.                                    *
  *=============================================================================================*/
-ResultType TerrainClass::Take_Damage(int& damage, int distance,
-                                     WarheadType warhead, TechnoClass* source) {
+game::ResultType TerrainClass::Take_Damage(int& damage, int distance,
+                                           WarheadType warhead,
+                                           TechnoClass* source) {
   Validate();
-  ResultType res = RESULT_NONE;
+  game::ResultType res = game::RESULT_NONE;
 
   /*
   **	Small arms can never destroy a terrain element.
@@ -212,7 +214,7 @@ ResultType TerrainClass::Take_Damage(int& damage, int distance,
     **	If the terrain object is destroyed by this damage, then only remove it
     *if it *	currently isn't on fire and isn't in the process of crumbling.
     */
-    if (res == RESULT_DESTROYED) {
+    if (res == game::RESULT_DESTROYED) {
       /*
       **	Remove this terrain object from the targeting computers of all
       *other *	game objects. No use beating a dead horse.
@@ -452,12 +454,12 @@ void TerrainClass::Init() { TheObjectHeaps().terrain().Free_All(); }
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. * 01/01/1995 JLB : Actually works now. *
  *=============================================================================================*/
-MoveType TerrainClass::Can_Enter_Cell(CELL cell,
-                                      game::FacingType /*unused*/) const {
+game::MoveType TerrainClass::Can_Enter_Cell(CELL cell,
+                                            game::FacingType /*unused*/) const {
   Validate();
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
   std::span<const int16_t> offset =
@@ -466,10 +468,10 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell,
     if (!TheMap()
              .at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
              .Is_Generally_Clear()) {
-      return MOVE_NO;
+      return game::MOVE_NO;
     }
   }
-  return MOVE_OK;
+  return game::MOVE_OK;
 }
 
 /***********************************************************************************************

@@ -104,6 +104,7 @@
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/carry.h"
@@ -1667,7 +1668,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
  *use same names as multiplayer                         *
  *=============================================================================================*/
 void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
-                                      ScenarioDirType dir,
+                                      game::ScenarioDirType dir,
                                       ScenarioVarType var) {
   Scenario = scenario;
   //	ScenPlayer = player;
@@ -1716,16 +1717,16 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   *'E' or 'W'
   */
   switch (dir) {
-    case SCEN_DIR_EAST:
+    case game::SCEN_DIR_EAST:
       c_dir = 'E';
       break;
 
-    case SCEN_DIR_WEST:
+    case game::SCEN_DIR_WEST:
       c_dir = 'W';
       break;
 
     default:
-    case SCEN_DIR_NONE:
+    case game::SCEN_DIR_NONE:
       c_dir = Percent_Chance(50) ? 'W' : 'E';
       break;
   }
@@ -3206,8 +3207,8 @@ static CELL Clip_Move(CELL cell, game::FacingType facing, int dist) {
 }
 
 void Disect_Scenario_Name(const char* name_data, int& scenario,
-                          ScenarioPlayerType& player, ScenarioDirType& dir,
-                          ScenarioVarType& var) {
+                          ScenarioPlayerType& player,
+                          game::ScenarioDirType& dir, ScenarioVarType& var) {
   if (name_data == nullptr) {
     return;
   }
@@ -3266,11 +3267,11 @@ void Disect_Scenario_Name(const char* name_data, int& scenario,
   /*
   **	Fetch the direction.
   */
-  dir = SCEN_DIR_EAST;
+  dir = game::SCEN_DIR_EAST;
   if (name.at(5) == 'E') {
-    dir = SCEN_DIR_EAST;
+    dir = game::SCEN_DIR_EAST;
   } else {
-    dir = SCEN_DIR_WEST;
+    dir = game::SCEN_DIR_WEST;
   }
 
   /*

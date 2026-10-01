@@ -89,6 +89,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
@@ -301,13 +302,13 @@ const ObjectTypeClass& VesselClass::Class_Of() const {
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-MoveType VesselClass::Can_Enter_Cell(CELL cell,
-                                     game::FacingType /*from*/) const {
+game::MoveType VesselClass::Can_Enter_Cell(CELL cell,
+                                           game::FacingType /*from*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
   const CellClass* cellptr = &TheMap().at(cell);
@@ -318,17 +319,17 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell,
   */
   if (!TheWorld().scenario_init() && !TheMap().In_Radar(cell) &&
       !Is_Allowed_To_Leave_Map()) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
-  MoveType retval = MOVE_OK;
+  game::MoveType retval = game::MOVE_OK;
 
   /*
   **	If there is blocking terrain (such as ice), then the vessel
   **	can't move there.
   */
   if (cellptr->Cell_Terrain() != nullptr) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
   /*
@@ -336,7 +337,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell,
   *then *	return this immutable fact.
   */
   if (TheRules().ground().at(cellptr->Land_Type()).Cost.at(Class->Speed) == 0) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
   /*
@@ -345,20 +346,20 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell,
   */
   if (cellptr->Flag.Composite) {
     if (cellptr->Flag.Occupy.Building) {
-      return MOVE_NO;
+      return game::MOVE_NO;
     }
 
     const TechnoClass* techno = cellptr->Cell_Techno();
-    if (techno != nullptr && techno->Cloak == CLOAKED &&
+    if (techno != nullptr && techno->Cloak == game::CLOAKED &&
         !House->Is_Ally(techno)) {
-      return MOVE_CLOAK;
+      return game::MOVE_CLOAK;
     }
 
     /*
     **	If reserved by a vehicle, then consider this blocked terrain.
     */
     if (cellptr->Flag.Occupy.Vehicle) {
-      retval = MOVE_MOVING_BLOCK;
+      retval = game::MOVE_MOVING_BLOCK;
     }
   }
 
@@ -446,7 +447,7 @@ void VesselClass::Draw_It(PixelView& view, int x, int y,
   **	If drawing of this unit is not explicitly prohibited, then proceed
   **	with the render process.
   */
-  if (Visual_Character() != VISUAL_HIDDEN) {
+  if (Visual_Character() != game::VISUAL_HIDDEN) {
     const game::DirType rotation = game::DIR_N;
     const int scale = 0x0100;
 
@@ -594,8 +595,8 @@ void VesselClass::AI() {
 
 #ifndef CLIPDRAW
   if (TheMap().In_View(Coord_Cell(Center_Coord())) &&
-      Visual_Character() != VISUAL_HIDDEN &&
-      Visual_Character() != VISUAL_NORMAL) {
+      Visual_Character() != game::VISUAL_HIDDEN &&
+      Visual_Character() != game::VISUAL_NORMAL) {
     Mark(MARK_CHANGE);
   }
 #endif
@@ -916,13 +917,13 @@ void VesselClass::Active_Click_With(ActionType action, CELL cell) {
  *                                                                                             *
  * HISTORY: * 05/13/1996 JLB : Created. *
  *=============================================================================================*/
-ResultType VesselClass::Take_Damage(int& damage, int distance,
-                                    WarheadType warhead, TechnoClass* source,
-                                    bool forced) {
+game::ResultType VesselClass::Take_Damage(int& damage, int distance,
+                                          WarheadType warhead,
+                                          TechnoClass* source, bool forced) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
-  ResultType res = RESULT_NONE;
+  game::ResultType res = game::RESULT_NONE;
 
   /*
   **	In order for a this to be damaged, it must either be a unit
@@ -930,7 +931,7 @@ ResultType VesselClass::Take_Damage(int& damage, int distance,
   */
   res = FootClass::Take_Damage(damage, distance, warhead, source, forced);
 
-  if (res == RESULT_DESTROYED) {
+  if (res == game::RESULT_DESTROYED) {
     Death_Announcement(source);
     if (Class->Explosion != ANIM_NONE) {
       const AnimType anim = Class->Explosion;
@@ -1002,7 +1003,7 @@ ResultType VesselClass::Take_Damage(int& damage, int distance,
  *                                                                                             *
  * HISTORY: * 05/13/1996 JLB : Created. *
  *=============================================================================================*/
-FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
@@ -1010,12 +1011,12 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
 
   if (*this == VESSEL_CARRIER) {
     if (!How_Many() || Arm.HasTimeLeft()) {
-      return FIRE_REARM;
+      return game::FIRE_REARM;
     }
-    return FIRE_OK;
+    return game::FIRE_OK;
   }
-  const FireErrorType fire = DriveClass::Can_Fire(target, which);
-  if (fire == FIRE_OK || fire == FIRE_CLOAKED) {
+  const game::FireErrorType fire = DriveClass::Can_Fire(target, which);
+  if (fire == game::FIRE_OK || fire == game::FIRE_CLOAKED) {
     // An active vessel always has its type, and TechnoClass::Can_Fire returns
     // FIRE_CANT when the selected weapon is absent, so reaching FIRE_OK or
     // FIRE_CLOAKED guarantees both exist.
@@ -1044,7 +1045,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
 
     if (weapon->Bullet->IsSubSurface) {
       if (!isseatarget && Is_Target_Object(target)) {
-        return FIRE_CANT;
+        return game::FIRE_CANT;
       }
 
       /*
@@ -1059,7 +1060,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
           coord = Coord_Move(coord, dir, CELL_LEPTON_W);
           if ((TheMap().at(coord).Land_Type() != LAND_WATER) &&
               (!isbridgetarget)) {
-            return FIRE_RANGE;
+            return game::FIRE_RANGE;
           }
 
           /*
@@ -1067,7 +1068,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
           */
           const TechnoClass* tech = TheMap().at(coord).Cell_Techno();
           if (tech != nullptr && tech != this && House->Is_Ally(tech)) {
-            return FIRE_RANGE;
+            return game::FIRE_RANGE;
           }
           totaldist -= CELL_LEPTON_W;
         }
@@ -1079,19 +1080,19 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     */
     if (weapon->Bullet->IsAntiSub) {
       if (!isseatarget) {
-        return FIRE_CANT;
+        return game::FIRE_CANT;
       }
       if (Is_Target_Vessel(target) && *As_Vessel(target) != VESSEL_SS &&
           *As_Vessel(target) != VESSEL_MISSILESUB) {
         if (!Is_Target_Vessel(target) || !weapon->Bullet->IsSubSurface) {
-          return FIRE_CANT;
+          return game::FIRE_CANT;
         }
       }
     } else {
       if (Is_Target_Vessel(target) &&
           (*As_Vessel(target) == VESSEL_SS ||
            *As_Vessel(target) == VESSEL_MISSILESUB)) {
-        return FIRE_CANT;
+        return game::FIRE_CANT;
       }
     }
 
@@ -1099,7 +1100,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     **	If this unit cannot fire while moving, then bail.
     */
     if (!Class->IsTurretEquipped && Target_Legal(NavCom)) {
-      return FIRE_MOVING;
+      return game::FIRE_MOVING;
     }
 
     /*
@@ -1107,7 +1108,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     **	firing must be delayed until the rotation stops.
     */
     if (!IsFiring && IsRotating && weapon->Bullet->ROT == 0) {
-      return FIRE_ROTATING;
+      return game::FIRE_ROTATING;
     }
 
     /*
@@ -1124,7 +1125,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       diff /= 4;
     }
     if (diff > 8) {
-      return FIRE_FACING;
+      return game::FIRE_FACING;
     }
   }
   return fire;
@@ -1590,7 +1591,7 @@ game::DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
     *that cell for load/unload.
     */
     if (passenger != nullptr) {
-      value = passenger->Can_Enter_Cell(cellnum) == MOVE_OK ||
+      value = passenger->Can_Enter_Cell(cellnum) == game::MOVE_OK ||
                       Coord_Cell(passenger->Coord) == cellnum
                   ? 128
                   : -128;
@@ -1762,7 +1763,7 @@ int VesselClass::Mission_Unload() {
               const game::DirType newface = toface + game::Facing_Dir(face);
               const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
-              if (passenger->Can_Enter_Cell(newcell) == MOVE_OK) {
+              if (passenger->Can_Enter_Cell(newcell) == game::MOVE_OK) {
                 TheWorld().scenario_init()++;
                 passenger->Unlimbo(
                     Coord_Move(Coord, newface, CELL_LEPTON_W / 2), newface);
@@ -2208,14 +2209,14 @@ void VesselClass::Combat_AI() {
     *primary weapon.
     */
     const int primary = What_Weapon_Should_I_Use(TarCom);
-    const FireErrorType ok = Can_Fire(TarCom, primary);
+    const game::FireErrorType ok = Can_Fire(TarCom, primary);
 
     switch (ok) {
-      case FIRE_OK:
+      case game::FIRE_OK:
         Fire_At(TarCom, primary);
         break;
 
-      case FIRE_FACING:
+      case game::FIRE_FACING:
         if (Class->IsTurretEquipped) {
           SecondaryFacing.Set_Desired(Direction(TarCom));
         } else {
@@ -2225,20 +2226,20 @@ void VesselClass::Combat_AI() {
         }
         break;
 
-      case FIRE_CLOAKED:
+      case game::FIRE_CLOAKED:
         Mark(MARK_OVERLAP_UP);
         IsFiring = false;
         Mark(MARK_OVERLAP_DOWN);
         Do_Uncloak();
         break;
-      case FireErrorType::FIRE_AMMO:
-      case FireErrorType::FIRE_REARM:
-      case FireErrorType::FIRE_ROTATING:
-      case FireErrorType::FIRE_ILLEGAL:
-      case FireErrorType::FIRE_CANT:
-      case FireErrorType::FIRE_MOVING:
-      case FireErrorType::FIRE_RANGE:
-      case FireErrorType::FIRE_BUSY:
+      case game::FireErrorType::FIRE_AMMO:
+      case game::FireErrorType::FIRE_REARM:
+      case game::FireErrorType::FIRE_ROTATING:
+      case game::FireErrorType::FIRE_ILLEGAL:
+      case game::FireErrorType::FIRE_CANT:
+      case game::FireErrorType::FIRE_MOVING:
+      case game::FireErrorType::FIRE_RANGE:
+      case game::FireErrorType::FIRE_BUSY:
       default:
         break;
     }

@@ -258,7 +258,7 @@ class FootClass : public TechnoClass {
   *the *	unit will realize that it cannot get to its specified
   *destination and will *	try to perform some other action instead.
   */
-  MoveType PathThreshhold;
+  game::MoveType PathThreshhold;
 
   /*
   **	When there is a complete findpath failure, this timer is initialized so
@@ -283,7 +283,7 @@ class FootClass : public TechnoClass {
   /*
   ** For formation moves, this will be the override maximum speed.
   */
-  MPHType FormationMaxSpeed;
+  game::MPHType FormationMaxSpeed;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -319,12 +319,12 @@ class FootClass : public TechnoClass {
         Group(kNoGroup),
         Member(nullptr),
 
-        PathThreshhold(MOVE_CLOAK),
+        PathThreshhold(game::MOVE_CLOAK),
         PathDelay(0),
         TryTryAgain(kPathRetry),
         BaseAttackTimer(0),
         FormationSpeed(SPEED_FOOT),
-        FormationMaxSpeed(MPH_IMMOBILE),
+        FormationMaxSpeed(game::MPH_IMMOBILE),
         HeadToCoord(0) {
     base::At(Path, 0) = game::FACING_NONE;
   }
@@ -378,9 +378,9 @@ class FootClass : public TechnoClass {
   **	Combat related.
   */
   void Stun() override;
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source = nullptr,
-                         bool forced = false) override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source = nullptr,
+                               bool forced = false) override;
   void Death_Announcement(const TechnoClass* source = nullptr) const override;
 
   /*
@@ -414,9 +414,9 @@ class FootClass : public TechnoClass {
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   virtual void Approach_Target();
   virtual void Set_Speed(int speed);
-  [[nodiscard]] MoveType Can_Enter_Cell(
+  [[nodiscard]] game::MoveType Can_Enter_Cell(
       CELL cell, game::FacingType from = game::FACING_NONE) const override;
-  int Optimize_Moves(PathType* path, MoveType threshhold);
+  int Optimize_Moves(PathType* path, game::MoveType threshhold);
   void Override_Mission(MissionType mission, TARGET tarcom,
                         TARGET navcom) override;
   bool Restore_Mission() override;
@@ -427,18 +427,18 @@ class FootClass : public TechnoClass {
 
  private:
   int Passable_Cell(CELL cell, game::FacingType face, int threat,
-                    MoveType threshhold);
+                    game::MoveType threshhold);
   PathType* Find_Path(CELL dest, std::span<game::FacingType> final_moves,
-                      int maxlen, MoveType threshhold);
+                      int maxlen, game::MoveType threshhold);
   void Debug_Draw_Map(const char* txt, CELL start, CELL dest, bool pause);
   void Debug_Draw_Path(PathType* path);
   bool Follow_Edge(CELL start, CELL target, PathType* path,
                    game::FacingType search, game::FacingType olddir, int threat,
-                   int threat_stage, int max_cells, MoveType threshhold);
+                   int threat_stage, int max_cells, game::MoveType threshhold);
   bool Register_Cell(PathType* path, CELL cell, game::FacingType dir, int cost,
-                     MoveType threshhold);
+                     game::MoveType threshhold);
   bool Unravel_Loop(PathType* path, CELL& cell, game::FacingType& dir, int sx,
-                    int sy, int dx, int dy, MoveType threshhold);
+                    int sy, int dx, int dy, game::MoveType threshhold);
 
   /*
   **	This is the coordinate that the unit is heading to

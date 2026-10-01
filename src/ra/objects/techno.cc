@@ -172,6 +172,7 @@
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/door.h"
+#include "game/sim/enums.h"
 #include "game/sim/utracker.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
@@ -457,7 +458,7 @@ int TechnoClass::What_Weapon_Should_I_Use(TARGET target) const {
   *target *	is not an object, then its armor is equivalent to wood. Who
   *knows why?
   */
-  ArmorType armor = ARMOR_WOOD;
+  game::ArmorType armor = game::ARMOR_WOOD;
   if (Is_Target_Object(target)) {
     armor = As_Object(target)->Class_Of().Armor;
   }
@@ -476,8 +477,8 @@ int TechnoClass::What_Weapon_Should_I_Use(TARGET target) const {
   if (In_Range(target, 0)) {
     w1 *= 2;
   }
-  FireErrorType ok = Can_Fire(target, 0);
-  if (ok == FIRE_CANT || ok == FIRE_ILLEGAL) {
+  game::FireErrorType ok = Can_Fire(target, 0);
+  if (ok == game::FIRE_CANT || ok == game::FIRE_ILLEGAL) {
     w1 = 0;
   }
 
@@ -493,7 +494,7 @@ int TechnoClass::What_Weapon_Should_I_Use(TARGET target) const {
     w2 *= 2;
   }
   ok = Can_Fire(target, 1);
-  if (ok == FIRE_CANT || ok == FIRE_ILLEGAL) {
+  if (ok == game::FIRE_CANT || ok == game::FIRE_ILLEGAL) {
     w2 = 0;
   }
 
@@ -671,7 +672,7 @@ TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
       SpiedBy(0),
       ArchiveTarget(kTargetNone),
       House(HouseClass::As_Pointer(house)),
-      Cloak(UNCLOAKED),
+      Cloak(game::UNCLOAKED),
       TarCom(kTargetNone),
       SuspendedTarCom(kTargetNone),
       PrimaryFacing(game::DIR_N),
@@ -780,7 +781,7 @@ bool TechnoClass::Is_Visible_On_Radar() const {
     }
   }
   if (!Techno_Type_Class()->IsInvisible &&
-      (Cloak != CLOAKED || House->Is_Ally(ThePlayer()))) {
+      (Cloak != game::CLOAKED || House->Is_Ally(ThePlayer()))) {
     return true;
   }
   return false;
@@ -1556,7 +1557,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   /*
   **	If the object is cloaked, then it isn't a legal target.
   */
-  if (object->Cloak == CLOAKED) {
+  if (object->Cloak == game::CLOAKED) {
     return false;
   }
 
@@ -2650,7 +2651,7 @@ void TechnoClass::Cloaking_AI() {
     **	If this object is uncloaked, but it can be cloaked and it thinks
     *that it *	is a good time do so, then begin cloaking.
     */
-    if (Cloak == UNCLOAKED) {
+    if (Cloak == game::UNCLOAKED) {
 #ifdef PREDATOR
       if (IsOwnedByPlayer) {
         Mark(MARK_CHANGE);
@@ -2674,12 +2675,12 @@ void TechnoClass::Cloaking_AI() {
         **	the object and when cloaking is complete, stabilize into
         **	the normal uncloaked state.
         */
-        case UNCLOAKING:
+        case game::UNCLOAKING:
           Mark(MARK_CHANGE);
-          if (Visual_Character(true) == VISUAL_NORMAL) {
+          if (Visual_Character(true) == game::VISUAL_NORMAL) {
             CloakingDevice.Set_Rate(0);
             CloakingDevice.Set_Stage(0);  // re-start the stage counter
-            Cloak = UNCLOAKED;
+            Cloak = game::UNCLOAKED;
             CloakDelay.Set(TheRules().CloakDelay * kTicksPerMinute);
             Mark(MARK_CHANGE);
           }
@@ -2690,7 +2691,7 @@ void TechnoClass::Cloaking_AI() {
         **	and when the cloaking process is complete, stabilize into the
         **	normal cloaked state.
         */
-        case CLOAKING:
+        case game::CLOAKING:
           Mark(MARK_CHANGE);
           if (!CloakingDevice.Fetch_Rate()) {
             CloakingDevice.Set_Rate(1);
@@ -2699,15 +2700,15 @@ void TechnoClass::Cloaking_AI() {
             /*
             **	If badly damaged, then it can never fully cloak.
             */
-            case VISUAL_DARKEN:
+            case game::VISUAL_DARKEN:
               if (Health_Ratio() <= TheRules().ConditionRed &&
                   Percent_Chance(25)) {
-                Cloak = UNCLOAKING;
+                Cloak = game::UNCLOAKING;
               }
               break;
 
-            case VISUAL_HIDDEN:
-              Cloak = CLOAKED;
+            case game::VISUAL_HIDDEN:
+              Cloak = game::CLOAKED;
               CloakingDevice.Set_Rate(0);
               CloakingDevice.Set_Stage(0);
               Mark(MARK_CHANGE);
@@ -2734,10 +2735,10 @@ void TechnoClass::Cloaking_AI() {
                 Scatter(0, true);
               }
               break;
-            case VisualType::VISUAL_NORMAL:
-            case VisualType::VISUAL_INDISTINCT:
-            case VisualType::VISUAL_SHADOWY:
-            case VisualType::VISUAL_RIPPLE:
+            case game::VisualType::VISUAL_NORMAL:
+            case game::VisualType::VISUAL_INDISTINCT:
+            case game::VisualType::VISUAL_SHADOWY:
+            case game::VisualType::VISUAL_RIPPLE:
             default:
               break;
           }
@@ -2749,14 +2750,14 @@ void TechnoClass::Cloaking_AI() {
         */
         // CLOAKED marks for redraw in PREDATOR builds.
         // NOLINTNEXTLINE(bugprone-branch-clone)
-        case CLOAKED:
+        case game::CLOAKED:
 #ifdef PREDATOR
           if (IsOwnedByPlayer) {
             Mark(MARK_CHANGE);
           }
 #endif
           break;
-        case CloakType::UNCLOAKED:
+        case game::CloakType::UNCLOAKED:
         default:
           break;
       }
@@ -2785,7 +2786,8 @@ bool TechnoClass::Is_Ready_To_Cloak() const {
   **	If it is already cloaked or in the process of cloaking, then it can't
   *start cloaking.
   */
-  if (Cloak == CLOAKED || (Cloak == CLOAKING && CloakingDevice.Fetch_Rate())) {
+  if (Cloak == game::CLOAKED ||
+      (Cloak == game::CLOAKING && CloakingDevice.Fetch_Rate())) {
     return false;
   }
 
@@ -2883,14 +2885,14 @@ bool TechnoClass::Select() {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
-FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
   DCHECK(IsActive);
 
   /*
   **	Don't allow firing if the target is illegal.
   */
   if (!Target_Legal(target)) {
-    return FIRE_ILLEGAL;
+    return game::FIRE_ILLEGAL;
   }
 
   ObjectClass* object = As_Object(target);
@@ -2899,15 +2901,15 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
   **	If the object is completely cloaked, then you can't fire on it.
   */
   if (object != nullptr && object->Is_Techno() &&
-      dynamic_cast<TechnoClass*>(object)->Cloak == CLOAKED) {
-    return FIRE_CANT;
+      dynamic_cast<TechnoClass*>(object)->Cloak == game::CLOAKED) {
+    return game::FIRE_CANT;
   }
 
   /*
   **	A falling object is too busy falling to fire.
   */
   if (IsFalling) {
-    return FIRE_CANT;
+    return game::FIRE_CANT;
   }
 
   /*
@@ -2917,7 +2919,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
                                       ? Techno_Type_Class()->PrimaryWeapon
                                       : Techno_Type_Class()->SecondaryWeapon;
   if (weapon == nullptr) {
-    return FIRE_CANT;
+    return game::FIRE_CANT;
   }
 
   /*
@@ -2926,7 +2928,7 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
   */
   if (object != nullptr && object->What_Am_I() == RTTI_AIRCRAFT &&
       !weapon->Bullet->IsAntiAircraft && object->Height > 0) {
-    return FIRE_CANT;
+    return game::FIRE_CANT;
   }
 
   /*
@@ -2938,48 +2940,48 @@ FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
        (*dynamic_cast<VesselClass*>(object) != VESSEL_SS &&
         *dynamic_cast<VesselClass*>(object) != VESSEL_MISSILESUB)) &&
       !weapon->Bullet->IsAntiGround) {
-    return FIRE_CANT;
+    return game::FIRE_CANT;
   }
   if (Is_Target_Cell(target) && !weapon->Bullet->IsAntiGround) {
-    return FIRE_CANT;
+    return game::FIRE_CANT;
   }
 
   /*
   **	Don't allow firing if still rearming.
   */
   if (Arm.HasTimeLeft()) {
-    return FIRE_REARM;
+    return game::FIRE_REARM;
   }
 
   /*
   **	The target must be within range in order to allow firing.
   */
   if (!In_Range(target, which)) {
-    return FIRE_RANGE;
+    return game::FIRE_RANGE;
   }
 
   /*
   **	If there is no ammo left, then it can't fire.
   */
   if (!Ammo) {
-    return FIRE_AMMO;
+    return game::FIRE_AMMO;
   }
 
   /*
   **	If cloaked, then firing is disabled.
   */
-  if (Cloak != UNCLOAKED) {
+  if (Cloak != game::UNCLOAKED) {
     // Special hack for John Archer's Hunt-The-Wumpus multiplayer mission...
     // if the object firing is a cloaked civilian, don't require uncloaking
     // before allowing firing.
     if (What_Am_I() == RTTI_INFANTRY &&
         dynamic_cast<const InfantryClass*>(this)->Class->IsCivilian) {
-      return FIRE_OK;
+      return game::FIRE_OK;
     }
-    return FIRE_CLOAKED;
+    return game::FIRE_CLOAKED;
   }
 
-  return FIRE_OK;
+  return game::FIRE_OK;
 }
 
 /***********************************************************************************************
@@ -3808,7 +3810,7 @@ ActionType TechnoClass::What_Action(CELL cell) const {
     **	If the object can enter the cell specified, then allow
     **	movement to it.
     */
-    if (Can_Enter_Cell(cell) <= MOVE_CLOAK) {
+    if (Can_Enter_Cell(cell) <= game::MOVE_CLOAK) {
       return ACTION_MOVE;
     }
     return ACTION_NOMOVE;
@@ -4141,12 +4143,12 @@ bool TechnoClass::Captured(HouseClass* newowner) {
  *                                                                                             *
  * HISTORY: * 06/20/1995 JLB : Created. *
  *=============================================================================================*/
-ResultType TechnoClass::Take_Damage(int& damage, int distance,
-                                    WarheadType warhead, TechnoClass* source,
-                                    bool forced) {
+game::ResultType TechnoClass::Take_Damage(int& damage, int distance,
+                                          WarheadType warhead,
+                                          TechnoClass* source, bool forced) {
   DCHECK(IsActive);
 
-  ResultType result = RESULT_NONE;
+  game::ResultType result = game::RESULT_NONE;
 
   /*
   **	If not a forced damage condition, adjust damage according to house
@@ -4162,7 +4164,7 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
   }
 
   switch (result) {
-    case RESULT_DESTROYED:
+    case game::RESULT_DESTROYED:
       Transmit_Message(RADIO_OVER_OUT);
       Stun();
 
@@ -4216,9 +4218,9 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
     **	If some damage was received and this object is cloaked, shimmer
     **	the cloak a bit.
     */
-    case ResultType::RESULT_LIGHT:
-    case ResultType::RESULT_HALF:
-    case ResultType::RESULT_MAJOR:
+    case game::ResultType::RESULT_LIGHT:
+    case game::ResultType::RESULT_HALF:
+    case game::ResultType::RESULT_MAJOR:
     default:
       if (source != nullptr && !House->Is_Ally(source)) {
         IsTickedOff = true;
@@ -4226,7 +4228,7 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
       Do_Shimmer();
       break;
 
-    case RESULT_NONE:
+    case game::RESULT_NONE:
       break;
   }
   return result;
@@ -4450,11 +4452,11 @@ CELL TechnoClass::Nearby_Location(const TechnoClass* techno) const {
 void TechnoClass::Do_Uncloak() {
   DCHECK(IsActive);
 
-  if (IsCloakable && (Cloak == CLOAKED || Cloak == CLOAKING)) {
-    if (Cloak == CLOAKED) {
+  if (IsCloakable && (Cloak == game::CLOAKED || Cloak == game::CLOAKING)) {
+    if (Cloak == game::CLOAKED) {
       TheMap().RadarClass::Flag_To_Redraw(true);
     }
-    Cloak = UNCLOAKING;
+    Cloak = game::UNCLOAKING;
     CloakingDevice.Set_Stage(0);
     CloakingDevice.Set_Rate(1);
     if (What_Am_I() == RTTI_VESSEL) {
@@ -4481,14 +4483,14 @@ void TechnoClass::Do_Uncloak() {
 void TechnoClass::Do_Cloak() {
   DCHECK(IsActive);
 
-  if (IsCloakable && (Cloak == UNCLOAKED || Cloak == UNCLOAKING)) {
+  if (IsCloakable && (Cloak == game::UNCLOAKED || Cloak == game::UNCLOAKING)) {
     Detach_All(false);
 
-    if (Cloak == UNCLOAKED) {
+    if (Cloak == game::UNCLOAKED) {
       TheMap().RadarClass::Flag_To_Redraw(true);
     }
 
-    Cloak = CLOAKING;
+    Cloak = game::CLOAKING;
     CloakingDevice.Set_Stage(0);
     CloakingDevice.Set_Rate(1);
     if (What_Am_I() == RTTI_VESSEL) {
@@ -4540,61 +4542,61 @@ void TechnoClass::Do_Shimmer() {
  * HISTORY: * 07/07/1995 JLB : Created. * 05/27/1996 JLB : Knows about
  *invisible objects.                                           *
  *=============================================================================================*/
-VisualType TechnoClass::Visual_Character(bool raw) const {
+game::VisualType TechnoClass::Visual_Character(bool raw) const {
   DCHECK(IsActive);
 
   if (Techno_Type_Class()->IsInvisible && IsOwnedByPlayer) {
-    return VISUAL_NORMAL;
+    return game::VISUAL_NORMAL;
   }
   if (Techno_Type_Class()->IsInvisible && !IsOwnedByPlayer &&
       !TheDebugState().map_editor_active()) {
-    return VISUAL_HIDDEN;
+    return game::VISUAL_HIDDEN;
   }
 
   /*
   **	When uncloaked or in map editor mode, always draw the object normally.
   */
-  if (Cloak == UNCLOAKED || TheDebugState().map_editor_active()) {
-    return VISUAL_NORMAL;
+  if (Cloak == game::UNCLOAKED || TheDebugState().map_editor_active()) {
+    return game::VISUAL_NORMAL;
   }
 
   /*
   **	A cloaked unit will not be visible at all unless it is owned
   **	by the player.
   */
-  if (Cloak == CLOAKED) {
+  if (Cloak == game::CLOAKED) {
     if (!raw && IsOwnedByPlayer) {
-      return VISUAL_SHADOWY;
+      return game::VISUAL_SHADOWY;
     }
-    return VISUAL_HIDDEN;
+    return game::VISUAL_HIDDEN;
   }
 
   int stage = CloakingDevice.Fetch_Stage();
-  if (Cloak == UNCLOAKING) {
+  if (Cloak == game::UNCLOAKING) {
     stage = MAX_UNCLOAK_STAGE - stage;
   }
   if (stage <= 0) {
-    return VISUAL_NORMAL;
+    return game::VISUAL_NORMAL;
   }
 
   stage = Fixed(stage, MAX_UNCLOAK_STAGE) * 256;
 
   if (stage < 0x0040) {
-    return VISUAL_INDISTINCT;
+    return game::VISUAL_INDISTINCT;
   }
   if (stage < 0x0080) {
-    return VISUAL_DARKEN;
+    return game::VISUAL_DARKEN;
   }
   if (stage < 0x00C0) {
-    return VISUAL_SHADOWY;
+    return game::VISUAL_SHADOWY;
   }
   if (!raw && IsOwnedByPlayer) {
-    return VISUAL_SHADOWY;
+    return game::VISUAL_SHADOWY;
   }
   if (stage < 0x00FF) {
-    return VISUAL_RIPPLE;
+    return game::VISUAL_RIPPLE;
   }
-  return VISUAL_HIDDEN;
+  return game::VISUAL_HIDDEN;
 }
 
 void TechnoClass::Techno_Draw_Object(PixelView& view,
@@ -4605,7 +4607,7 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
   DCHECK(IsActive);
 
   if (!shapefile.empty()) {
-    const VisualType visual = Visual_Character();
+    const game::VisualType visual = Visual_Character();
     auto remap = Remap_Table();
     std::span<const unsigned char> shadow = MouseClass::UnitShadow;
 
@@ -4651,8 +4653,8 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
     }
 
 #ifdef PREDATOR
-    if (visual != VISUAL_HIDDEN && visual != VISUAL_RIPPLE) {
-      if (visual == VISUAL_SHADOWY) {
+    if (visual != game::VISUAL_HIDDEN && visual != game::VISUAL_RIPPLE) {
+      if (visual == game::VISUAL_SHADOWY) {
         CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
                       ShapeFlags::kCentered | ShapeFlags::kShadow, {}, {},
                       rotation, scale);
@@ -4662,41 +4664,41 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
             ShapeFlags::kCentered | ShapeFlags::kFading | ShapeFlags::kGhost,
             remap, shadow, rotation, scale);
       }
-      if (visual == VISUAL_DARKEN) {
+      if (visual == game::VISUAL_DARKEN) {
         CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
                       ShapeFlags::kShadow | ShapeFlags::kCentered, {}, {},
                       rotation, scale);
       }
     }
-    if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {
+    if (visual != game::VISUAL_NORMAL && visual != game::VISUAL_HIDDEN) {
       CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
                     ShapeFlags::kPredator | ShapeFlags::kCentered, {}, {},
                     rotation, scale);
     }
 #else
     switch (visual) {
-      case VISUAL_NORMAL:
+      case game::VISUAL_NORMAL:
         CC_Draw_Shape(
             view, shapefile, shapenum, x, y, window,
             ShapeFlags::kCentered | ShapeFlags::kFading | ShapeFlags::kGhost,
             remap, shadow, rotation, scale);
         break;
 
-      case VISUAL_INDISTINCT:
-      case VISUAL_DARKEN:
+      case game::VISUAL_INDISTINCT:
+      case game::VISUAL_DARKEN:
         CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
                       ShapeFlags::kFading | ShapeFlags::kCentered, remap,
                       MouseClass::FadingShade, rotation, scale);
         break;
 
-      case VISUAL_SHADOWY:
-      case VISUAL_RIPPLE:
+      case game::VISUAL_SHADOWY:
+      case game::VISUAL_RIPPLE:
         CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
                       ShapeFlags::kShadow | ShapeFlags::kCentered, {}, {},
                       rotation, scale);
         break;
 
-      case VISUAL_HIDDEN:
+      case game::VISUAL_HIDDEN:
       default:
         break;
     }
@@ -6179,7 +6181,7 @@ int TechnoClass::Anti_Air() const {
     const WarheadTypeClass* warhead = weapon->WarheadPtr;
 
     if (bullet->IsAntiAircraft) {
-      int value = weapon->Attack * warhead->Modifier.at(ARMOR_ALUMINUM) *
+      int value = weapon->Attack * warhead->Modifier.at(game::ARMOR_ALUMINUM) *
                   weapon->Range / weapon->ROF;
 
       if (Techno_Type_Class()->Is_Two_Shooter()) {
@@ -6222,8 +6224,8 @@ int TechnoClass::Anti_Armor() const {
     const WarheadTypeClass* warhead = weapon->WarheadPtr;
     const int mrange = std::min(static_cast<int>(weapon->Range), 0x0400);
 
-    int value = weapon->Attack * warhead->Modifier.at(ARMOR_STEEL) * mrange *
-                warhead->SpreadFactor / weapon->ROF;
+    int value = weapon->Attack * warhead->Modifier.at(game::ARMOR_STEEL) *
+                mrange * warhead->SpreadFactor / weapon->ROF;
     if (Techno_Type_Class()->Is_Two_Shooter()) {
       value *= 2;
     }
@@ -6266,8 +6268,8 @@ int TechnoClass::Anti_Infantry() const {
     const WarheadTypeClass* warhead = weapon->WarheadPtr;
     const int mrange = std::min(static_cast<int>(weapon->Range), 0x0400);
 
-    int value = weapon->Attack * warhead->Modifier.at(ARMOR_NONE) * mrange *
-                warhead->SpreadFactor / weapon->ROF;
+    int value = weapon->Attack * warhead->Modifier.at(game::ARMOR_NONE) *
+                mrange * warhead->SpreadFactor / weapon->ROF;
     if (Techno_Type_Class()->Is_Two_Shooter()) {
       value *= 2;
     }
@@ -6614,7 +6616,7 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
         ini.Get_Int(Name(), "Strength", MaxStrength));
     SightRange = ini.Get_Int(Name(), "Sight", SightRange);
     Level = ini.Get_Int(Name(), "TechLevel", Level);
-    MaxSpeed = static_cast<MPHType>(Scale_To_256(ini.Get_Int(
+    MaxSpeed = static_cast<game::MPHType>(Scale_To_256(ini.Get_Int(
         Name(), "Speed", Fixed(static_cast<int>(MaxSpeed), 256) * 100)));
     Cost = ini.Get_Int(Name(), "Cost", Cost);
     MaxAmmo = ini.Get_Int(Name(), "Ammo", MaxAmmo);

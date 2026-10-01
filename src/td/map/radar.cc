@@ -98,6 +98,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/enums.h"
 #include "td/ai/special.h"
 #include "td/assets/audio.h"
 #include "td/assets/screen.h"
@@ -626,7 +627,7 @@ void RadarClass::Render_Infantry(PixelView& view, CELL cell, int x, int y,
   ObjectClass* obj = TheMap().at(cell).Cell_Occupier();
   while (obj) {
     if (obj->Is_Techno() &&
-        (dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED ||
+        (dynamic_cast<TechnoClass*>(obj)->Cloak != game::CLOAKED ||
          dynamic_cast<TechnoClass*>(obj)->House->Is_Ally(ThePlayer()))) {
       switch (obj->What_Am_I()) {
         case RTTI_INFANTRY: {

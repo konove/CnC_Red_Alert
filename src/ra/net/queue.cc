@@ -104,6 +104,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/assets/audio.h"
@@ -353,7 +354,8 @@ bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
-                   TARGET destination, SpeedType speed, MPHType maxspeed) {
+                   TARGET destination, SpeedType speed,
+                   game::MPHType maxspeed) {
   return TheNetwork().out_list().Add(
       EventClass(whom, mission, TargetClass(target), TargetClass(destination),
                  speed, maxspeed));

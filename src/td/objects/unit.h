@@ -156,8 +156,8 @@ class UnitClass final : public TarComClass {
   **	Combat related.
   */
   COORDINATE Target_Coord() const override;
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source = nullptr) override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source = nullptr) override;
   TARGET As_Target() const override;
   void Stun() override;
 
@@ -182,7 +182,7 @@ class UnitClass final : public TarComClass {
   int Mission_Harvest() override;
   int Mission_Hunt() override;
   int Mission_Move() override;
-  FireErrorType Can_Fire(TARGET /*target*/, int which) const override;
+  game::FireErrorType Can_Fire(TARGET /*target*/, int which) const override;
 
   /*
   **	Scenario and debug support.
@@ -192,7 +192,7 @@ class UnitClass final : public TarComClass {
   **	Movement and animation.
   */
   void Enter_Idle_Mode(bool initial = false) override;
-  MoveType Can_Enter_Cell(
+  game::MoveType Can_Enter_Cell(
       CELL cell, game::FacingType facing = game::FACING_NONE) const override;
   void Per_Cell_Process(bool center) override;
   void Scatter(COORDINATE threat, bool forced = false) override;

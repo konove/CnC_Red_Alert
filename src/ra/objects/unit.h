@@ -195,7 +195,8 @@ class UnitClass final : public DriveClass {
   [[nodiscard]] InfantryType Crew_Type() const override;
   [[nodiscard]] game::DirType Fire_Direction() const override;
   bool Ok_To_Move(game::DirType dir) override;
-  [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
+  [[nodiscard]] game::FireErrorType Can_Fire(TARGET target,
+                                             int which) const override;
   [[nodiscard]] Fixed Tiberium_Load() const override;
 
   /*
@@ -231,9 +232,9 @@ class UnitClass final : public DriveClass {
   /*
   **	Combat related.
   */
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source = nullptr,
-                         bool forced = false) override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source = nullptr,
+                               bool forced = false) override;
   BulletClass* Fire_At(TARGET target, int which = 0) override;
 
   /*
@@ -274,7 +275,7 @@ class UnitClass final : public DriveClass {
   void Overrun_Square(CELL cell, bool threaten = true) override;
   void Approach_Target() override;
   void Enter_Idle_Mode(bool initial = false) override;
-  [[nodiscard]] MoveType Can_Enter_Cell(
+  [[nodiscard]] game::MoveType Can_Enter_Cell(
       CELL cell, game::FacingType facing = game::FACING_NONE) const override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   void Exit_Repair();

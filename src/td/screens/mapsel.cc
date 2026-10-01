@@ -66,6 +66,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/interpal.h"
+#include "game/sim/enums.h"
 #include "td/assets/assets.h"
 #include "td/assets/audio.h"
 #include "td/assets/palette.h"
@@ -123,9 +124,9 @@ const unsigned char High16Remap[256] = {
     0xFC, 0xFD, 0xFE, 0xFF};
 #endif
 
-#define SDE SCEN_DIR_EAST
-#define SDW SCEN_DIR_WEST
-#define SDN SCEN_DIR_NONE
+#define SDE game::SCEN_DIR_EAST
+#define SDW game::SCEN_DIR_WEST
+#define SDN game::SCEN_DIR_NONE
 #define SVA SCEN_VAR_A
 #define SVB SCEN_VAR_B
 #define SVC SCEN_VAR_C
@@ -136,7 +137,7 @@ struct countrylist {
   int ContAnim[2];
   int CountryColor[2][3];
   int CountryShape[2][3];  // shape in COUNTRYE.SHP
-  ScenarioDirType CountryDir[2][3];
+  game::ScenarioDirType CountryDir[2][3];
   ScenarioVarType CountryVariant[2][3];
 } const CountryArray[27] = {
     // GDI SCENARIO CHOICES

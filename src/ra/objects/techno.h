@@ -223,7 +223,7 @@ class TechnoClass : public RadioClass,
   /*
   **	This records the current cloak state for this vehicle.
   */
-  CloakType Cloak;
+  game::CloakType Cloak;
   StageClass CloakingDevice;
   engine::platform::Timer<game::FrameTickSource> CloakDelay;
 
@@ -297,7 +297,7 @@ class TechnoClass : public RadioClass,
         SpiedBy(0),
         ArchiveTarget(kTargetNone),
         House(nullptr),
-        Cloak(UNCLOAKED),
+        Cloak(game::UNCLOAKED),
         CloakDelay(0),
         TarCom(kTargetNone),
         SuspendedTarCom(kTargetNone),
@@ -389,8 +389,8 @@ class TechnoClass : public RadioClass,
   virtual bool In_Range(const ObjectClass* target, int which = 0) const;
   virtual void Death_Announcement(
       const TechnoClass* source = nullptr) const = 0;
-  [[nodiscard]] virtual FireErrorType Can_Fire(TARGET target,
-                                               int which = 0) const;
+  [[nodiscard]] virtual game::FireErrorType Can_Fire(TARGET target,
+                                                     int which = 0) const;
   virtual TARGET Greatest_Threat(ThreatType method);  // const;
   virtual void Assign_Target(TARGET target);
   void Override_Mission(MissionType mission, TARGET tarcom,
@@ -399,9 +399,9 @@ class TechnoClass : public RadioClass,
   virtual BulletClass* Fire_At(TARGET target, int which = 0);
   [[nodiscard]] int Weapon_Range(int which) const override;
   virtual bool Captured(HouseClass* newowner);
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source = nullptr,
-                         bool forced = false) override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source = nullptr,
+                               bool forced = false) override;
   bool Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell, int range,
                      const TechnoClass** object, int& value,
                      int zone = 0) const;
@@ -434,7 +434,7 @@ class TechnoClass : public RadioClass,
   // Returns the color remap table for rendering this object. Remappable
   // objects use their house color; non-remappable objects use gold.
   [[nodiscard]] virtual std::span<const unsigned char> Remap_Table() const;
-  [[nodiscard]] VisualType Visual_Character(bool raw = false) const;
+  [[nodiscard]] game::VisualType Visual_Character(bool raw = false) const;
 
   // Draws the object with appropriate remapping, cloaking, and shadow effects.
   // Handles spy disguise (enemy spies render with the player's house colors),

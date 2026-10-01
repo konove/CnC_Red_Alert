@@ -86,7 +86,7 @@ class TurretClass : public DriveClass {
 
   BulletClass* Fire_At(TARGET target, int which) override;
   game::DirType Fire_Direction() const override;
-  FireErrorType Can_Fire(TARGET target, int which) const override;
+  game::FireErrorType Can_Fire(TARGET target, int which) const override;
   bool Ok_To_Move(game::DirType dir) override;
   void AI() override;
   COORDINATE Fire_Coord(int which) const override;

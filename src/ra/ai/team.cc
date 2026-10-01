@@ -90,6 +90,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/enums.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
@@ -699,7 +700,7 @@ void TeamClass::AI() {
             CELL movecell =
                 base::At(TheScenario().Waypoint, mission->Data.Value);
             if ((!Is_Leaving_Map()) &&
-                (leader->Can_Enter_Cell(movecell) != MOVE_OK)) {
+                (leader->Can_Enter_Cell(movecell) != game::MOVE_OK)) {
               movecell = TheMap().Nearby_Location(
                   movecell, leader->Techno_Type_Class()->Speed);
             }
@@ -1571,7 +1572,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
       *location of
       ** one of the team members.
       */
-      if (closest->Can_Enter_Cell(As_Cell(center)) != MOVE_OK) {
+      if (closest->Can_Enter_Cell(As_Cell(center)) != game::MOVE_OK) {
         //				if (Class->Origin != -1) {
         //					center =
         //ra::As_Target(Scen.Waypoint[Class->Origin]);
@@ -1611,12 +1612,12 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Took_Damage(FootClass* /*unused*/, ResultType result,
+void TeamClass::Took_Damage(FootClass* /*unused*/, game::ResultType result,
                             TechnoClass* source) {
   DCHECK(IsActive);
   DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);
 
-  if (result != RESULT_NONE && !Class->IsSuicide) {
+  if (result != game::RESULT_NONE && !Class->IsSuicide) {
     if (!IsMoving) {
       // TCTCTC
       // Should run to a better hiding place or disband into a group of hunting
@@ -2641,12 +2642,13 @@ int TeamClass::TMission_Formation() {
   */
   if (Formation != FORMATION_NONE) {
     base::At(std::span(TheWorld().team_speed()), group) = SPEED_WHEEL;
-    base::At(std::span(TheWorld().team_max_speed()), group) = MPH_LIGHT_SPEED;
+    base::At(std::span(TheWorld().team_max_speed()), group) =
+        game::MPH_LIGHT_SPEED;
     member = Member;
     while (member != nullptr) {
       const RTTIType mytype = member->What_Am_I();
       SpeedType memspeed = SPEED_NONE;
-      MPHType memmax = MPH_IMMOBILE;
+      game::MPHType memmax = game::MPH_IMMOBILE;
       bool speedcheck = false;
 
       if (mytype == RTTI_INFANTRY) {
@@ -2687,7 +2689,7 @@ int TeamClass::TMission_Formation() {
           base::At(std::span(TheWorld().team_max_speed()), group);
       if (member->What_Am_I() == RTTI_INFANTRY) {
         member->FormationSpeed = SPEED_FOOT;
-        member->FormationMaxSpeed = MPH_SLOW_ISH;
+        member->FormationMaxSpeed = game::MPH_SLOW_ISH;
       }
       member = member->Member;
     }

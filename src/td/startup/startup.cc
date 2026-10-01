@@ -57,6 +57,7 @@
 #include "engine/file/profile_buffer.h"
 #include "engine/stream/byte_stream.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"  // IWYU pragma: keep (used only with an entry point)
 #include "td/assets/palettes.h"  // IWYU pragma: keep (used only with an entry point)
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
@@ -280,7 +281,7 @@ static int Run(int argc, char* argv[])
   TheWorld().scenario() = 1;
 #endif
   TheWorld().scen_player() = SCEN_PLAYER_GDI;
-  TheWorld().scen_dir() = SCEN_DIR_EAST;
+  TheWorld().scen_dir() = game::SCEN_DIR_EAST;
   TheWorld().whom() = HOUSE_GOOD;
   TheSpecial().Init();
 

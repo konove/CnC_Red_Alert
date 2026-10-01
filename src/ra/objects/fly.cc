@@ -47,6 +47,7 @@
 #include "base/fixed.h"
 #include "game/core/display_constants.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 
@@ -71,7 +72,7 @@ namespace ra {
  *movement.                                          *
  *=============================================================================================*/
 ImpactType FlyClass::Physics(COORDINATE& coord, game::DirType facing) {
-  if (SpeedAdd != MPH_IMMOBILE) {
+  if (SpeedAdd != game::MPH_IMMOBILE) {
     int actual = static_cast<int>(SpeedAdd) + SpeedAccum;
     const std::div_t result = std::div(actual, PIXEL_LEPTON_W);
     SpeedAccum = result.rem;
@@ -135,9 +136,9 @@ ImpactType FlyClass::Physics(COORDINATE& coord, game::DirType facing) {
  * HISTORY: * 07/26/1994 JLB : Created. * 07/26/1994 JLB : Added maximum speed
  *as guiding value.                                    *
  *=============================================================================================*/
-void FlyClass::Fly_Speed(int speed, MPHType maximum) {
+void FlyClass::Fly_Speed(int speed, game::MPHType maximum) {
   SpeedAdd =
-      static_cast<MPHType>(static_cast<int>(maximum) * Fixed(speed, 256));
+      static_cast<game::MPHType>(static_cast<int>(maximum) * Fixed(speed, 256));
   //	SpeedAdd = (MPHType)Fixed_To_Cardinal((int)maximum, speed);
 }
 

@@ -163,6 +163,7 @@
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
@@ -2250,7 +2251,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
  * HISTORY: * 05/08/1995 JLB : Created. * 10/21/1996 JLB : Handles max object
  *case.                                                 *
  *=============================================================================================*/
-ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
+game::ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
   bool result = true;
   const TechnoTypeClass* tech = Fetch_Techno_Type(type, id);
@@ -2263,12 +2264,12 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
   */
   if (fptr != nullptr) {
     if (fptr->Is_Building()) {
-      return PROD_CANT;
+      return game::PROD_CANT;
     }
   } else {
     fptr = base::NewPooled<FactoryClass>();
     if (!fptr) {
-      return PROD_CANT;
+      return game::PROD_CANT;
     }
     Set_Factory(type, fptr);
     result = fptr->Set(*tech, *this);
@@ -2284,11 +2285,11 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
     if (ThePlayer() == this) {
       TheMap().Factory_Link(fptr->ID, type, id);
     }
-    return PROD_OK;
+    return game::PROD_OK;
   }
 
   base::DeletePooled(fptr);
-  return PROD_CANT;
+  return game::PROD_CANT;
 }
 
 /***********************************************************************************************
@@ -2307,7 +2308,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-ProdFailType HouseClass::Suspend_Production(RTTIType type) {
+game::ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   FactoryClass* fptr = Fetch_Factory(type);
@@ -2317,7 +2318,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   **	return with this failure code.
   */
   if (fptr == nullptr) {
-    return PROD_CANT;
+    return game::PROD_CANT;
   }
 
   /*
@@ -2333,7 +2334,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
     TheMap().Flag_To_Redraw(false);
   }
 
-  return PROD_OK;
+  return game::PROD_OK;
 }
 
 /***********************************************************************************************
@@ -2352,7 +2353,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-ProdFailType HouseClass::Abandon_Production(RTTIType type) {
+game::ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   FactoryClass* fptr = Fetch_Factory(type);
@@ -2361,7 +2362,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   **	If there is no factory to abandon, then return with a failure code.
   */
   if (fptr == nullptr) {
-    return PROD_CANT;
+    return game::PROD_CANT;
   }
 
   /*
@@ -2385,7 +2386,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   Set_Factory(type, nullptr);
   base::DeletePooled(fptr);
 
-  return PROD_OK;
+  return game::PROD_OK;
 }
 
 /***********************************************************************************************
@@ -2484,7 +2485,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
         if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_One_Time()) {
           auto* bullet = base::NewPooled<BulletClass>(
               BULLET_NUKE_DOWN, As_Target(cell), nullptr, 200, WARHEAD_NUKE,
-              static_cast<int>(MPH_VERY_FAST));
+              static_cast<int>(game::MPH_VERY_FAST));
           if (bullet) {
             const int celly = std::max(Cell_Y(cell) - 15, 1);
             const COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), celly));

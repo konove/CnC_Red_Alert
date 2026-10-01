@@ -130,6 +130,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
@@ -521,7 +522,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   /*
   **	Special manual shadow draw code.
   */
-  if (Visual_Character() <= VISUAL_DARKEN) {
+  if (Visual_Character() <= game::VISUAL_DARKEN) {
     CC_Draw_Shape(view, shapefile, shapenum, x + 1, y + 2, window,
                   ShapeFlags::kShadow | ShapeFlags::kCentered);
   }
@@ -776,7 +777,7 @@ int AircraftClass::Mission_Hunt() {
       */
       case kFlyToTarget:
         switch (Can_Fire(TarCom, 0)) {
-          case FIRE_FACING:
+          case game::FIRE_FACING:
             /*
             **	Catch the case where it is tightly circling the target. In that
             **	case, increase the delay so that it has a chance to fly away and
@@ -790,12 +791,12 @@ int AircraftClass::Mission_Hunt() {
             }
             break;
 
-          case FIRE_AMMO:
+          case game::FIRE_AMMO:
             Status = kRegroup;
             break;
 
-          case FIRE_CANT:
-          case FIRE_ILLEGAL:
+          case game::FIRE_CANT:
+          case game::FIRE_ILLEGAL:
             if (Mission == MISSION_ATTACK) {
               Status = kRegroup;
             } else {
@@ -803,16 +804,16 @@ int AircraftClass::Mission_Hunt() {
             }
             break;
 
-          case FIRE_OK:
+          case game::FIRE_OK:
             Status = kDropBombs;
             return 1;
 
-          case FireErrorType::FIRE_REARM:
-          case FireErrorType::FIRE_ROTATING:
-          case FireErrorType::FIRE_MOVING:
-          case FireErrorType::FIRE_RANGE:
-          case FireErrorType::FIRE_CLOAKED:
-          case FireErrorType::FIRE_BUSY:
+          case game::FireErrorType::FIRE_REARM:
+          case game::FireErrorType::FIRE_ROTATING:
+          case game::FireErrorType::FIRE_MOVING:
+          case game::FireErrorType::FIRE_RANGE:
+          case game::FireErrorType::FIRE_CLOAKED:
+          case game::FireErrorType::FIRE_BUSY:
           default:
             if (!PrimaryFacing.Is_Rotating() && Target_Legal(TarCom)) {
               PrimaryFacing.Set_Desired(Direction(TarCom));
@@ -827,7 +828,7 @@ int AircraftClass::Mission_Hunt() {
       case kDropBombs: {
         TARGET targ = kTargetNone;
         switch (Can_Fire(TarCom, 0)) {
-          case FIRE_OK:
+          case game::FIRE_OK:
             targ = ra::As_Target(
                 Coord_Move(Center_Coord(), SecondaryFacing,
                            static_cast<uint16_t>(Weapon_Range(0) - 0x0200)));
@@ -853,12 +854,12 @@ int AircraftClass::Mission_Hunt() {
             }
             return static_cast<int>(Arm.Remaining());
 
-          case FIRE_RANGE:
-          case FIRE_FACING:
+          case game::FIRE_RANGE:
+          case game::FIRE_FACING:
             Status = kFlyToTarget;
             return kTicksPerSecond * 4;
 
-          case FIRE_ILLEGAL:
+          case game::FIRE_ILLEGAL:
             if (Mission == MISSION_ATTACK) {
               Status = kRegroup;
             } else {
@@ -866,20 +867,20 @@ int AircraftClass::Mission_Hunt() {
             }
             break;
 
-          case FIRE_CANT:
+          case game::FIRE_CANT:
             Status = kRegroup;
             break;
 
-          case FIRE_AMMO:
+          case game::FIRE_AMMO:
             AttacksRemaining--;
             Status = kRegroup;
             break;
 
-          case FireErrorType::FIRE_REARM:
-          case FireErrorType::FIRE_ROTATING:
-          case FireErrorType::FIRE_MOVING:
-          case FireErrorType::FIRE_CLOAKED:
-          case FireErrorType::FIRE_BUSY:
+          case game::FireErrorType::FIRE_REARM:
+          case game::FireErrorType::FIRE_ROTATING:
+          case game::FireErrorType::FIRE_MOVING:
+          case game::FireErrorType::FIRE_CLOAKED:
+          case game::FireErrorType::FIRE_BUSY:
           default:
             break;
         }
@@ -1500,7 +1501,7 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
     // the destination cell and establish radio contact with the transport.
     // This is used to make sure that the transport waits until the passenger
     // is clear before unloading the next passenger or taking off.
-    if ((unit->Can_Enter_Cell(adjacent) == MOVE_OK) &&
+    if ((unit->Can_Enter_Cell(adjacent) == game::MOVE_OK) &&
         unit->Unlimbo(Coord, game::Facing_Dir(direction))) {
       unit->Assign_Mission(MISSION_MOVE);
       unit->Assign_Destination(ra::As_Target(adjacent));
@@ -1607,7 +1608,7 @@ BulletClass* AircraftClass::Fire_At(TARGET target, int which) {
   **	Falling bullets move at a speed proportionate to the delivery craft.
   */
   if (bullet && bullet->Class->IsDropping) {
-    bullet->Fly_Speed(40, MPH_MEDIUM_SLOW);  // TCTC To fix.
+    bullet->Fly_Speed(40, game::MPH_MEDIUM_SLOW);  // TCTC To fix.
   }
 
   return bullet;
@@ -1637,13 +1638,13 @@ BulletClass* AircraftClass::Fire_At(TARGET target, int which) {
  *                                                                                             *
  * HISTORY: * 05/26/1995 JLB : Created. *
  *=============================================================================================*/
-ResultType AircraftClass::Take_Damage(int& damage, int distance,
-                                      WarheadType warhead, TechnoClass* source,
-                                      bool forced) {
+game::ResultType AircraftClass::Take_Damage(int& damage, int distance,
+                                            WarheadType warhead,
+                                            TechnoClass* source, bool forced) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().aircraft(), this);
   DCHECK(IsActive);
 
-  ResultType res = RESULT_NONE;
+  game::ResultType res = game::RESULT_NONE;
 
   /*
   **	Flying aircraft take half damage.
@@ -1662,7 +1663,7 @@ ResultType AircraftClass::Take_Damage(int& damage, int distance,
   *destroyed *	as well.
   */
   switch (res) {
-    case RESULT_DESTROYED:
+    case game::RESULT_DESTROYED:
       Kill_Cargo(source);
       Death_Announcement();
       base::NewPooled<AnimClass>(ANIM_FBALL1, Target_Coord());
@@ -1684,11 +1685,11 @@ ResultType AircraftClass::Take_Damage(int& damage, int distance,
       delete this;
       break;
 
-    case ResultType::RESULT_NONE:
-    case ResultType::RESULT_LIGHT:
-    case ResultType::RESULT_MAJOR:
+    case game::ResultType::RESULT_NONE:
+    case game::ResultType::RESULT_LIGHT:
+    case game::ResultType::RESULT_MAJOR:
     default:
-    case RESULT_HALF:
+    case game::RESULT_HALF:
       break;
   }
 
@@ -2578,27 +2579,27 @@ int AircraftClass::Mission_Attack() {
       PrimaryFacing.Set_Desired(Direction(TarCom));
       SecondaryFacing.Set_Desired(Direction(TarCom));
       switch (Can_Fire(TarCom, 0)) {
-        case FIRE_CLOAKED:
+        case game::FIRE_CLOAKED:
           Do_Uncloak();
           break;
 
-        case FIRE_OK:
+        case game::FIRE_OK:
           Fire_At(TarCom, 0);
           TheMap().at(As_Cell(TarCom)).Incoming(Coord, true);
           Status = kFireAtTarget2;
           break;
 
-        case FIRE_REARM:
-        case FIRE_FACING:
+        case game::FIRE_REARM:
+        case game::FIRE_FACING:
           break;
 
-        case FireErrorType::FIRE_AMMO:
-        case FireErrorType::FIRE_ROTATING:
-        case FireErrorType::FIRE_ILLEGAL:
-        case FireErrorType::FIRE_CANT:
-        case FireErrorType::FIRE_MOVING:
-        case FireErrorType::FIRE_RANGE:
-        case FireErrorType::FIRE_BUSY:
+        case game::FireErrorType::FIRE_AMMO:
+        case game::FireErrorType::FIRE_ROTATING:
+        case game::FireErrorType::FIRE_ILLEGAL:
+        case game::FireErrorType::FIRE_CANT:
+        case game::FireErrorType::FIRE_MOVING:
+        case game::FireErrorType::FIRE_RANGE:
+        case game::FireErrorType::FIRE_BUSY:
         default:
           if (!Ammo) {
             Status = kReturnToBase;
@@ -2621,14 +2622,14 @@ int AircraftClass::Mission_Attack() {
       PrimaryFacing.Set_Desired(Direction(TarCom));
       SecondaryFacing.Set_Desired(Direction(TarCom));
       switch (Can_Fire(TarCom, 0)) {
-        case FIRE_CLOAKED:
+        case game::FIRE_CLOAKED:
           Do_Uncloak();
           break;
 
-        case FIRE_REARM:
+        case game::FIRE_REARM:
           break;
 
-        case FIRE_OK:
+        case game::FIRE_OK:
           Fire_At(TarCom, 0);
           TheMap().at(As_Cell(TarCom)).Incoming(Coord, true);
 
@@ -2640,14 +2641,14 @@ int AircraftClass::Mission_Attack() {
           }
           break;
 
-        case FireErrorType::FIRE_AMMO:
-        case FireErrorType::FIRE_FACING:
-        case FireErrorType::FIRE_ROTATING:
-        case FireErrorType::FIRE_ILLEGAL:
-        case FireErrorType::FIRE_CANT:
-        case FireErrorType::FIRE_MOVING:
-        case FireErrorType::FIRE_RANGE:
-        case FireErrorType::FIRE_BUSY:
+        case game::FireErrorType::FIRE_AMMO:
+        case game::FireErrorType::FIRE_FACING:
+        case game::FireErrorType::FIRE_ROTATING:
+        case game::FireErrorType::FIRE_ILLEGAL:
+        case game::FireErrorType::FIRE_CANT:
+        case game::FireErrorType::FIRE_MOVING:
+        case game::FireErrorType::FIRE_RANGE:
+        case game::FireErrorType::FIRE_BUSY:
         default:
           if (!Ammo) {
             Status = kReturnToBase;
@@ -3139,13 +3140,13 @@ bool AircraftClass::Process_Landing() {
  *                                                                                             *
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
-MoveType AircraftClass::Can_Enter_Cell(CELL cell,
-                                       game::FacingType /*from*/) const {
+game::MoveType AircraftClass::Can_Enter_Cell(CELL cell,
+                                             game::FacingType /*from*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().aircraft(), this);
   DCHECK(IsActive);
 
   if (!TheMap().In_Radar(cell)) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
   const CellClass* cellptr = &TheMap().at(cell);
@@ -3154,21 +3155,21 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell,
 
   if (occupier == nullptr || !occupier->Is_Techno() ||
       dynamic_cast<const TechnoClass*>(occupier)->House->Is_Ally(House) ||
-      (dynamic_cast<const TechnoClass*>(occupier)->Cloak != CLOAKED &&
+      (dynamic_cast<const TechnoClass*>(occupier)->Cloak != game::CLOAKED &&
        TheWorld().scenario_init() == 0 &&
        (occupier->What_Am_I() != RTTI_BUILDING ||
         !dynamic_cast<const BuildingClass*>(occupier)->Class->IsInvisible))) {
     if (!cellptr->Is_Clear_To_Move(SPEED_TRACK, false, false)) {
-      return MOVE_NO;
+      return game::MOVE_NO;
     }
   }
 
   if (TheSession().Type == GAME_NORMAL && IsOwnedByPlayer &&
       !cellptr->IsMapped) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
-  return MOVE_OK;
+  return game::MOVE_OK;
 }
 
 /***********************************************************************************************
@@ -3674,9 +3675,9 @@ void AircraftClass::Set_Speed(int speed) {
 
   FootClass::Set_Speed(speed);
 
-  const MPHType sp = static_cast<MPHType>(std::min(
+  const game::MPHType sp = static_cast<game::MPHType>(std::min(
       static_cast<int>(Class->MaxSpeed) * SpeedBias * House->AirspeedBias,
-      static_cast<int>(MPH_LIGHT_SPEED)));
+      static_cast<int>(game::MPH_LIGHT_SPEED)));
   Fly_Speed(speed, sp);
 }
 
@@ -4063,12 +4064,12 @@ void AircraftClass::Response_Select() {
  * HISTORY: * 03/05/1996 JLB : Created. * 07/11/1996 JLB : Fixed for camera
  *carrying aircraft.                                      *
  *=============================================================================================*/
-FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().aircraft(), this);
   DCHECK(IsActive);
 
   if (Passenger && !Is_Something_Attached()) {
-    return FIRE_AMMO;
+    return game::FIRE_AMMO;
   }
 
   const bool camera =
@@ -4078,7 +4079,7 @@ FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
                                    Class->PrimaryWeapon->Bullet->IsParachuted);
 
   if (fudge && !camera && !Ammo && !Passenger) {
-    return FIRE_AMMO;
+    return game::FIRE_AMMO;
   }
 
   /*
@@ -4088,29 +4089,29 @@ FireErrorType AircraftClass::Can_Fire(TARGET target, int which) const {
   */
   if (camera || (fudge && Passenger && Is_Something_Attached())) {
     if (Arm.HasTimeLeft()) {
-      return FIRE_REARM;
+      return game::FIRE_REARM;
     }
 
     if (Distance(target) < (camera ? 0x0380 : 0x0200) &&
         TheMap().In_Radar(Coord_Cell(Center_Coord()))) {
       //		if (Distance(target) < (camera ? 0x0380 : 0x0280) &&
       // Map.In_Radar(Coord_Cell(Center_Coord()))) {
-      return FIRE_OK;
+      return game::FIRE_OK;
     }
-    return FIRE_RANGE;
+    return game::FIRE_RANGE;
   }
 
-  const FireErrorType canfire = FootClass::Can_Fire(target, which);
+  const game::FireErrorType canfire = FootClass::Can_Fire(target, which);
 
   /*
   **	Double check to make sure that the facing is roughly toward
   **	the target. If the difference is too great, then firing is
   **	temporarily postponed.
   */
-  if ((canfire == FIRE_OK) && Class->IsFixedWing) {
+  if ((canfire == game::FIRE_OK) && Class->IsFixedWing) {
     const int diff = PrimaryFacing.Difference(Direction(TarCom));
     if (std::abs(diff) > (fudge ? 16 : 8)) {
-      return FIRE_FACING;
+      return game::FIRE_FACING;
     }
   }
 

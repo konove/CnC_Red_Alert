@@ -266,8 +266,8 @@ class FootClass : public TechnoClass {
   **	Combat related.
   */
   void Stun() override;
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source = nullptr) override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source = nullptr) override;
   void Death_Announcement(const TechnoClass* source = nullptr) const override;
 
   /*
@@ -295,10 +295,10 @@ class FootClass : public TechnoClass {
   virtual void Approach_Target();
   virtual void Fixup_Path(PathType* /*unused*/) {}
   virtual void Set_Speed(int speed);
-  MoveType Can_Enter_Cell(
+  game::MoveType Can_Enter_Cell(
       CELL /*unused*/,
       game::FacingType /*unused*/ = game::FACING_NONE) const override;
-  int Optimize_Moves(PathType* path, MoveType threshhold);
+  int Optimize_Moves(PathType* path, game::MoveType threshhold);
   void Override_Mission(MissionType mission, TARGET tarcom,
                         TARGET navcom) override;
   bool Restore_Mission() override;
@@ -312,18 +312,18 @@ class FootClass : public TechnoClass {
 
  private:
   int Passable_Cell(CELL cell, game::FacingType face, int threat,
-                    MoveType threshhold);
+                    game::MoveType threshhold);
   PathType* Find_Path(CELL dest, std::span<game::FacingType> final_moves,
-                      int maxlen, MoveType threshhold);
+                      int maxlen, game::MoveType threshhold);
   void Debug_Draw_Map(const char* txt, CELL start, CELL dest, bool pause) const;
   static void Debug_Draw_Path(PathType* path);
   bool Follow_Edge(CELL start, CELL target, PathType* path,
                    game::FacingType search, game::FacingType olddir, int threat,
-                   int threat_stage, int max_cells, MoveType threshhold);
+                   int threat_stage, int max_cells, game::MoveType threshhold);
   bool Register_Cell(PathType* path, CELL cell, game::FacingType dir, int cost,
-                     MoveType threshhold);
+                     game::MoveType threshhold);
   bool Unravel_Loop(PathType* path, CELL& cell, game::FacingType& dir, int sx,
-                    int sy, int dx, int dy, MoveType threshhold);
+                    int sy, int dx, int dy, game::MoveType threshhold);
 
   /*
   **	This is the coordinate that the unit is heading to

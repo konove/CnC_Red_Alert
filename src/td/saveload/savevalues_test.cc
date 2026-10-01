@@ -12,6 +12,7 @@
 #include "game/core/game_clock.h"
 #include "game/sim/crew.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "game/sim/flasher.h"
 #include "gtest/gtest.h"
@@ -136,7 +137,7 @@ TEST(TdSaveValuesTest, FlightPreservesFractionalDistanceAndSpeed) {
   SpanSink sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
   uint32_t accumulator = 511;
-  MPHType speed = MPH_FAST;
+  game::MPHType speed = game::MPH_FAST;
   writer(accumulator, speed);
   FlyClass flight;
   Restore(flight, bytes);

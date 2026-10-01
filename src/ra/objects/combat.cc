@@ -50,6 +50,7 @@
 #include "base/pooled.h"
 #include "game/core/display_constants.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/special.h"
 #include "ra/core/coord.h"
@@ -94,7 +95,7 @@ namespace ra {
  *   04/11/1996 JLB : Changed damage fall-off formula for less damage fall-off.
  **
  *=============================================================================================*/
-int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
+int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor,
                   int distance) {
   if (!damage) {
     return damage;
@@ -114,10 +115,10 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   */
   if (damage < 0) {
     if (distance < 0x008) {
-      if (warhead != WARHEAD_MECHANICAL && armor == ARMOR_NONE) {
+      if (warhead != WARHEAD_MECHANICAL && armor == game::ARMOR_NONE) {
         return damage;
       }
-      if (warhead == WARHEAD_MECHANICAL && armor != ARMOR_NONE) {
+      if (warhead == WARHEAD_MECHANICAL && armor != game::ARMOR_NONE) {
         return damage;
       }
     }

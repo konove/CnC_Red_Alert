@@ -75,16 +75,16 @@ class CCINIClass : public INIClass {
                         UnitType defvalue) const;
   AnimType Get_AnimType(const char* section, const char* entry,
                         AnimType defvalue) const;
-  ArmorType Get_ArmorType(const char* section, const char* entry,
-                          ArmorType defvalue) const;
+  game::ArmorType Get_ArmorType(const char* section, const char* entry,
+                                game::ArmorType defvalue) const;
   BulletType Get_BulletType(const char* section, const char* entry,
                             BulletType defvalue) const;
   HousesType Get_HousesType(const char* section, const char* entry,
                             HousesType defvalue) const;
   LEPTON Get_Lepton(const char* section, const char* entry,
                     LEPTON defvalue) const;
-  MPHType Get_MPHType(const char* section, const char* entry,
-                      MPHType defvalue) const;
+  game::MPHType Get_MPHType(const char* section, const char* entry,
+                            game::MPHType defvalue) const;
   OverlayType Get_OverlayType(const char* section, const char* entry,
                               OverlayType defvalue) const;
   SourceType Get_SourceType(const char* section, const char* entry,
@@ -113,11 +113,12 @@ class CCINIClass : public INIClass {
   bool Put_Buildings(const char* section, const char* entry, uint64_t value);
   bool Put_AnimType(const char* section, const char* entry, AnimType value);
   bool Put_UnitType(const char* section, const char* entry, UnitType value);
-  bool Put_ArmorType(const char* section, const char* entry, ArmorType value);
+  bool Put_ArmorType(const char* section, const char* entry,
+                     game::ArmorType value);
   bool Put_BulletType(const char* section, const char* entry, BulletType value);
   bool Put_HousesType(const char* section, const char* entry, HousesType value);
   bool Put_Lepton(const char* section, const char* entry, LEPTON value);
-  bool Put_MPHType(const char* section, const char* entry, MPHType value);
+  bool Put_MPHType(const char* section, const char* entry, game::MPHType value);
   bool Put_VQType(const char* section, const char* entry, VQType value);
   bool Put_OverlayType(const char* section, const char* entry,
                        OverlayType value);

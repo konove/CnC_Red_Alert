@@ -72,6 +72,7 @@
 #include "engine/gfx/shape.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "td/assets/audio.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
@@ -927,7 +928,7 @@ void AnimClass::AI() {
           */
           int damage = accum >> 8;
           if (Object->Take_Damage(damage, 0, WARHEAD_FIRE) ==
-              RESULT_DESTROYED) {
+              game::RESULT_DESTROYED) {
             // Object = 0;
             delete this;
             return;

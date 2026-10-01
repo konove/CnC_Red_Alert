@@ -137,7 +137,7 @@ class VesselClass : public DriveClass {
   void LST_Open_Door();
   void LST_Close_Door();
   [[nodiscard]] COORDINATE Fire_Coord(int which) const override;
-  [[nodiscard]] MoveType Can_Enter_Cell(
+  [[nodiscard]] game::MoveType Can_Enter_Cell(
       CELL cell, game::FacingType from = game::FACING_NONE) const override;
   void Draw_It(PixelView& view, int x, int y,
                WindowNumberType window) const override;
@@ -151,10 +151,11 @@ class VesselClass : public DriveClass {
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   void Assign_Destination(TARGET target) override;
 
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source = nullptr,
-                         bool forced = false) override;
-  [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source = nullptr,
+                               bool forced = false) override;
+  [[nodiscard]] game::FireErrorType Can_Fire(TARGET target,
+                                             int which) const override;
 
   void Enter_Idle_Mode(bool initial = false) override;
   ActionType What_Action(ObjectClass* object) override;

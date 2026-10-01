@@ -47,6 +47,7 @@
 #include "base/enum_array.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/mix_archive.h"
+#include "game/sim/enums.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 #include "td/objects/type.h"
@@ -75,10 +76,10 @@ static const BulletTypeClass ClassSniper(
     false,    // Good against aircraft?
     0,        // ARMING:		Time to arm projectile after launch.
     0,        // RANGE:		Inherent override range factor.
-    MPH_LIGHT_SPEED,       // SPEED:		Miles per hour.
-    0,                     // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HOLLOW_POINT,  // WARHEAD:		If fires weapon, warhead type
-    ANIM_PIFF              // Explosion to use upon impact.
+    game::MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
+    0,                      // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HOLLOW_POINT,   // WARHEAD:		If fires weapon, warhead type
+    ANIM_PIFF               // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassBullet(
@@ -98,10 +99,10 @@ static const BulletTypeClass ClassBullet(
     false,    // Good against aircraft?
     0,        // ARMING:		Time to arm projectile after launch.
     0,        // RANGE:		Inherent override range factor.
-    MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
-    0,                // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_SA,       // WARHEAD:		If fires weapon, warhead type
-    ANIM_PIFF         // Explosion to use upon impact.
+    game::MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
+    0,                      // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_SA,             // WARHEAD:		If fires weapon, warhead type
+    ANIM_PIFF               // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassSpreadfire(
@@ -121,33 +122,33 @@ static const BulletTypeClass ClassSpreadfire(
     false,    // Good against aircraft?
     0,        // ARMING:		Time to arm projectile after launch.
     0,        // RANGE:		Inherent override range factor.
-    MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
-    0,                // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,       // WARHEAD:		If fires weapon, warhead type
-    ANIM_PIFFPIFF     // Explosion to use upon impact.
+    game::MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
+    0,                      // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,             // WARHEAD:		If fires weapon, warhead type
+    ANIM_PIFFPIFF           // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassAPDS(
     BULLET_APDS,
-    "120mm",        // NAME:			Text name of this unit type.
-    false,          // Flies over tall walls?
-    false,          // Homes in on target?
-    false,          // Projectile arcs to the target?
-    false,          // Is this a dropping bomb-like object?
-    false,          // Is this projectile invisible?
-    false,          // Will it blow up even if it gets just NEAR to target?
-    false,          // Does it have flickering flame animation?
-    false,          // Can it run out of fuel?
-    true,           // Is there no visual difference between projectile facings?
-    false,          // Is projectile inherently inaccurate?
-    false,          // Translucent colors are used?
-    false,          // Good against aircraft?
-    0,              // ARMING:		Time to arm projectile after launch.
-    0,              // RANGE:		Inherent override range factor.
-    MPH_VERY_FAST,  // SPEED:		Miles per hour.
-    0,              // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_AP,     // WARHEAD:		If fires weapon, warhead type
-    ANIM_VEH_HIT3   // Explosion to use upon impact.
+    "120mm",  // NAME:			Text name of this unit type.
+    false,    // Flies over tall walls?
+    false,    // Homes in on target?
+    false,    // Projectile arcs to the target?
+    false,    // Is this a dropping bomb-like object?
+    false,    // Is this projectile invisible?
+    false,    // Will it blow up even if it gets just NEAR to target?
+    false,    // Does it have flickering flame animation?
+    false,    // Can it run out of fuel?
+    true,     // Is there no visual difference between projectile facings?
+    false,    // Is projectile inherently inaccurate?
+    false,    // Translucent colors are used?
+    false,    // Good against aircraft?
+    0,        // ARMING:		Time to arm projectile after launch.
+    0,        // RANGE:		Inherent override range factor.
+    game::MPH_VERY_FAST,  // SPEED:		Miles per hour.
+    0,                    // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_AP,           // WARHEAD:		If fires weapon, warhead type
+    ANIM_VEH_HIT3         // Explosion to use upon impact.
 );
 
 static const BulletTypeClass Class120mm(
@@ -167,148 +168,148 @@ static const BulletTypeClass Class120mm(
     false,    // Good against aircraft?
     0,        // ARMING:		Time to arm projectile after launch.
     0,        // RANGE:		Inherent override range factor.
-    MPH_MEDIUM_FAST,  // SPEED:		Miles per hour.
-    0,                // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,       // WARHEAD:		If fires weapon, warhead type
-    ANIM_ART_EXP1     // Explosion to use upon impact.
+    game::MPH_MEDIUM_FAST,  // SPEED:		Miles per hour.
+    0,                      // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,             // WARHEAD:		If fires weapon, warhead type
+    ANIM_ART_EXP1           // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassMissile(
     BULLET_SSM,
-    "DRAGON",    // NAME:			Text name of this unit type.
-    true,        // Flies over tall walls?
-    true,        // Homes in on target?
-    false,       // Projectile arcs to the target?
-    false,       // Is this a dropping bomb-like object?
-    false,       // Is this projectile invisible?
-    true,        // Will it blow up even if it gets just NEAR to target?
-    true,        // Does it have flickering flame animation?
-    true,        // Can it run out of fuel?
-    false,       // Is there no visual difference between projectile facings?
-    true,        // Is projectile inherently inaccurate?
-    true,        // Translucent colors are used?
-    true,        // Good against aircraft?
-    7,           // ARMING:		Time to arm projectile after launch.
-    0,           // RANGE:		Inherent override range factor.
-    MPH_ROCKET,  // SPEED:		Miles per hour.
-    5,           // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,  // WARHEAD:		If fires weapon, warhead type
-    ANIM_FRAG1   // Explosion to use upon impact.
+    "DRAGON",  // NAME:			Text name of this unit type.
+    true,      // Flies over tall walls?
+    true,      // Homes in on target?
+    false,     // Projectile arcs to the target?
+    false,     // Is this a dropping bomb-like object?
+    false,     // Is this projectile invisible?
+    true,      // Will it blow up even if it gets just NEAR to target?
+    true,      // Does it have flickering flame animation?
+    true,      // Can it run out of fuel?
+    false,     // Is there no visual difference between projectile facings?
+    true,      // Is projectile inherently inaccurate?
+    true,      // Translucent colors are used?
+    true,      // Good against aircraft?
+    7,         // ARMING:		Time to arm projectile after launch.
+    0,         // RANGE:		Inherent override range factor.
+    game::MPH_ROCKET,  // SPEED:		Miles per hour.
+    5,                 // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,        // WARHEAD:		If fires weapon, warhead type
+    ANIM_FRAG1         // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassMissile2(
     BULLET_SSM2,
-    "DRAGON",    // NAME:			Text name of this unit type.
-    true,        // Flies over tall walls?
-    true,        // Homes in on target?
-    false,       // Projectile arcs to the target?
-    false,       // Is this a dropping bomb-like object?
-    false,       // Is this projectile invisible?
-    true,        // Will it blow up even if it gets just NEAR to target?
-    true,        // Does it have flickering flame animation?
-    true,        // Can it run out of fuel?
-    false,       // Is there no visual difference between projectile facings?
-    true,        // Is projectile inherently inaccurate?
-    true,        // Translucent colors are used?
-    true,        // Good against aircraft?
-    9,           // ARMING:		Time to arm projectile after launch.
-    0,           // RANGE:		Inherent override range factor.
-    MPH_ROCKET,  // SPEED:		Miles per hour.
-    7,           // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,  // WARHEAD:		If fires weapon, warhead type
-    ANIM_FRAG1   // Explosion to use upon impact.
+    "DRAGON",  // NAME:			Text name of this unit type.
+    true,      // Flies over tall walls?
+    true,      // Homes in on target?
+    false,     // Projectile arcs to the target?
+    false,     // Is this a dropping bomb-like object?
+    false,     // Is this projectile invisible?
+    true,      // Will it blow up even if it gets just NEAR to target?
+    true,      // Does it have flickering flame animation?
+    true,      // Can it run out of fuel?
+    false,     // Is there no visual difference between projectile facings?
+    true,      // Is projectile inherently inaccurate?
+    true,      // Translucent colors are used?
+    true,      // Good against aircraft?
+    9,         // ARMING:		Time to arm projectile after launch.
+    0,         // RANGE:		Inherent override range factor.
+    game::MPH_ROCKET,  // SPEED:		Miles per hour.
+    7,                 // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,        // WARHEAD:		If fires weapon, warhead type
+    ANIM_FRAG1         // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassPatriot(
     BULLET_SAM,
-    "MISSILE",      // NAME:			Text name of this unit type.
-    true,           // Flies over tall walls?
-    true,           // Homes in on target?
-    false,          // Projectile arcs to the target?
-    false,          // Is this a dropping bomb-like object?
-    false,          // Is this projectile invisible?
-    true,           // Will it blow up even if it gets just NEAR to target?
-    true,           // Does it have flickering flame animation?
-    true,           // Can it run out of fuel?
-    false,          // Is there no visual difference between projectile facings?
-    false,          // Is projectile inherently inaccurate?
-    false,          // Translucent colors are used?
-    true,           // Good against aircraft?
-    0,              // ARMING:		Time to arm projectile after launch.
-    0,              // RANGE:		Inherent override range factor.
-    MPH_VERY_FAST,  // SPEED:		Miles per hour.
-    10,             // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_AP,     // WARHEAD:		If fires weapon, warhead type
-    ANIM_VEH_HIT1   // Explosion to use upon impact.
+    "MISSILE",  // NAME:			Text name of this unit type.
+    true,       // Flies over tall walls?
+    true,       // Homes in on target?
+    false,      // Projectile arcs to the target?
+    false,      // Is this a dropping bomb-like object?
+    false,      // Is this projectile invisible?
+    true,       // Will it blow up even if it gets just NEAR to target?
+    true,       // Does it have flickering flame animation?
+    true,       // Can it run out of fuel?
+    false,      // Is there no visual difference between projectile facings?
+    false,      // Is projectile inherently inaccurate?
+    false,      // Translucent colors are used?
+    true,       // Good against aircraft?
+    0,          // ARMING:		Time to arm projectile after launch.
+    0,          // RANGE:		Inherent override range factor.
+    game::MPH_VERY_FAST,  // SPEED:		Miles per hour.
+    10,                   // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_AP,           // WARHEAD:		If fires weapon, warhead type
+    ANIM_VEH_HIT1         // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassDragon(
     BULLET_TOW,
-    "DRAGON",      // NAME:			Text name of this unit type.
-    true,          // Flies over tall walls?
-    true,          // Homes in on target?
-    false,         // Projectile arcs to the target?
-    false,         // Is this a dropping bomb-like object?
-    false,         // Is this projectile invisible?
-    true,          // Will it blow up even if it gets just NEAR to target?
-    true,          // Does it have flickering flame animation?
-    true,          // Can it run out of fuel?
-    false,         // Is there no visual difference between projectile facings?
-    false,         // Is projectile inherently inaccurate?
-    true,          // Translucent colors are used?
-    true,          // Good against aircraft?
-    3,             // ARMING:		Time to arm projectile after launch.
-    0,             // RANGE:		Inherent override range factor.
-    MPH_ROCKET,    // SPEED:		Miles per hour.
-    5,             // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_AP,    // WARHEAD:		If fires weapon, warhead type
-    ANIM_VEH_HIT2  // Explosion to use upon impact.
+    "DRAGON",  // NAME:			Text name of this unit type.
+    true,      // Flies over tall walls?
+    true,      // Homes in on target?
+    false,     // Projectile arcs to the target?
+    false,     // Is this a dropping bomb-like object?
+    false,     // Is this projectile invisible?
+    true,      // Will it blow up even if it gets just NEAR to target?
+    true,      // Does it have flickering flame animation?
+    true,      // Can it run out of fuel?
+    false,     // Is there no visual difference between projectile facings?
+    false,     // Is projectile inherently inaccurate?
+    true,      // Translucent colors are used?
+    true,      // Good against aircraft?
+    3,         // ARMING:		Time to arm projectile after launch.
+    0,         // RANGE:		Inherent override range factor.
+    game::MPH_ROCKET,  // SPEED:		Miles per hour.
+    5,                 // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_AP,        // WARHEAD:		If fires weapon, warhead type
+    ANIM_VEH_HIT2      // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassFlame(
     BULLET_FLAME,
-    "FLAME",       // NAME:			Text name of this unit type.
-    false,         // Flies over tall walls?
-    false,         // Homes in on target?
-    false,         // Projectile arcs to the target?
-    false,         // Is this a dropping bomb-like object?
-    true,          // Is this projectile invisible?
-    false,         // Will it blow up even if it gets just NEAR to target?
-    false,         // Does it have flickering flame animation?
-    true,          // Can it run out of fuel?
-    false,         // Is there no visual difference between projectile facings?
-    false,         // Is projectile inherently inaccurate?
-    false,         // Translucent colors are used?
-    false,         // Good against aircraft?
-    12,            // ARMING:		Time to arm projectile after launch.
-    12,            // RANGE:		Inherent override range factor.
-    MPH_FAST,      // SPEED:		Miles per hour.
-    0,             // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_FIRE,  // WARHEAD:		If fires weapon, warhead type
-    ANIM_NONE      // Explosion to use upon impact.
+    "FLAME",  // NAME:			Text name of this unit type.
+    false,    // Flies over tall walls?
+    false,    // Homes in on target?
+    false,    // Projectile arcs to the target?
+    false,    // Is this a dropping bomb-like object?
+    true,     // Is this projectile invisible?
+    false,    // Will it blow up even if it gets just NEAR to target?
+    false,    // Does it have flickering flame animation?
+    true,     // Can it run out of fuel?
+    false,    // Is there no visual difference between projectile facings?
+    false,    // Is projectile inherently inaccurate?
+    false,    // Translucent colors are used?
+    false,    // Good against aircraft?
+    12,       // ARMING:		Time to arm projectile after launch.
+    12,       // RANGE:		Inherent override range factor.
+    game::MPH_FAST,  // SPEED:		Miles per hour.
+    0,               // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_FIRE,    // WARHEAD:		If fires weapon, warhead type
+    ANIM_NONE        // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassChem(
     BULLET_CHEMSPRAY,
-    "FLAME",     // NAME:			Text name of this unit type.
-    false,       // Flies over tall walls?
-    false,       // Homes in on target?
-    false,       // Projectile arcs to the target?
-    false,       // Is this a dropping bomb-like object?
-    true,        // Is this projectile invisible?
-    false,       // Will it blow up even if it gets just NEAR to target?
-    false,       // Does it have flickering flame animation?
-    true,        // Can it run out of fuel?
-    false,       // Is there no visual difference between projectile facings?
-    false,       // Is projectile inherently inaccurate?
-    false,       // Translucent colors are used?
-    false,       // Good against aircraft?
-    12,          // ARMING:		Time to arm projectile after launch.
-    12,          // RANGE:		Inherent override range factor.
-    MPH_FAST,    // SPEED:		Miles per hour.
-    0,           // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,  // WARHEAD:		If fires weapon, warhead type
-    ANIM_NONE    // Explosion to use upon impact.
+    "FLAME",  // NAME:			Text name of this unit type.
+    false,    // Flies over tall walls?
+    false,    // Homes in on target?
+    false,    // Projectile arcs to the target?
+    false,    // Is this a dropping bomb-like object?
+    true,     // Is this projectile invisible?
+    false,    // Will it blow up even if it gets just NEAR to target?
+    false,    // Does it have flickering flame animation?
+    true,     // Can it run out of fuel?
+    false,    // Is there no visual difference between projectile facings?
+    false,    // Is projectile inherently inaccurate?
+    false,    // Translucent colors are used?
+    false,    // Good against aircraft?
+    12,       // ARMING:		Time to arm projectile after launch.
+    12,       // RANGE:		Inherent override range factor.
+    game::MPH_FAST,  // SPEED:		Miles per hour.
+    0,               // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,      // WARHEAD:		If fires weapon, warhead type
+    ANIM_NONE        // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassNapalm(
@@ -328,10 +329,10 @@ static const BulletTypeClass ClassNapalm(
     false,      // Good against aircraft?
     24,         // ARMING:		Time to arm projectile after launch.
     24,         // RANGE:		Inherent override range factor.
-    MPH_MEDIUM_SLOW,  // SPEED:		Miles per hour.
-    0,                // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_FIRE,     // WARHEAD:		If fires weapon, warhead type
-    ANIM_NAPALM2      // Explosion to use upon impact.
+    game::MPH_MEDIUM_SLOW,  // SPEED:		Miles per hour.
+    0,                      // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_FIRE,           // WARHEAD:		If fires weapon, warhead type
+    ANIM_NAPALM2            // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassGrenade(
@@ -351,10 +352,10 @@ static const BulletTypeClass ClassGrenade(
     false,   // Good against aircraft?
     0,       // ARMING:		Time to arm projectile after launch.
     0,       // RANGE:		Inherent override range factor.
-    MPH_MEDIUM_SLOW,  // SPEED:		Miles per hour.
-    0,                // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,       // WARHEAD:		If fires weapon, warhead type
-    ANIM_VEH_HIT2     // Explosion to use upon impact.
+    game::MPH_MEDIUM_SLOW,  // SPEED:		Miles per hour.
+    0,                      // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,             // WARHEAD:		If fires weapon, warhead type
+    ANIM_VEH_HIT2           // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassLaser(
@@ -374,79 +375,79 @@ static const BulletTypeClass ClassLaser(
     false,    // Good against aircraft?
     0,        // ARMING:		Time to arm projectile after launch.
     0,        // RANGE:		Inherent override range factor.
-    MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
-    0,                // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_LASER,    // WARHEAD:		If fires weapon, warhead type
-    ANIM_NONE         // Explosion to use upon impact.
+    game::MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
+    0,                      // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_LASER,          // WARHEAD:		If fires weapon, warhead type
+    ANIM_NONE               // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassNukeUp(
     BULLET_NUKE_UP,
-    "ATOMICUP",     // NAME:			Text name of this unit type.
-    true,           // Flies over tall walls?
-    false,          // Homes in on target?
-    false,          // Projectile arcs to the target?
-    false,          // Is this a dropping bomb-like object?
-    false,          // Is this projectile invisible?
-    true,           // Will it blow up even if it gets just NEAR to target?
-    false,          // Does it have flickering flame animation?
-    false,          // Can it run out of fuel?
-    true,           // Is there no visual difference between projectile facings?
-    false,          // Is projectile inherently inaccurate?
-    false,          // Translucent colors are used?
-    false,          // Good against aircraft?
-    0,              // ARMING:		Time to arm projectile after launch.
-    0,              // RANGE:		Inherent override range factor.
-    MPH_VERY_FAST,  // SPEED:		Miles per hour.
-    0,              // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,     // WARHEAD:		If fires weapon, warhead type
-    ANIM_FRAG1      // Explosion to use upon impact.
+    "ATOMICUP",  // NAME:			Text name of this unit type.
+    true,        // Flies over tall walls?
+    false,       // Homes in on target?
+    false,       // Projectile arcs to the target?
+    false,       // Is this a dropping bomb-like object?
+    false,       // Is this projectile invisible?
+    true,        // Will it blow up even if it gets just NEAR to target?
+    false,       // Does it have flickering flame animation?
+    false,       // Can it run out of fuel?
+    true,        // Is there no visual difference between projectile facings?
+    false,       // Is projectile inherently inaccurate?
+    false,       // Translucent colors are used?
+    false,       // Good against aircraft?
+    0,           // ARMING:		Time to arm projectile after launch.
+    0,           // RANGE:		Inherent override range factor.
+    game::MPH_VERY_FAST,  // SPEED:		Miles per hour.
+    0,                    // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,           // WARHEAD:		If fires weapon, warhead type
+    ANIM_FRAG1            // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassNukeDown(
     BULLET_NUKE_DOWN,
-    "ATOMICDN",     // NAME:			Text name of this unit type.
-    true,           // Flies over tall walls?
-    false,          // Homes in on target?
-    false,          // Projectile arcs to the target?
-    false,          // Is this a dropping bomb-like object?
-    false,          // Is this projectile invisible?
-    true,           // Will it blow up even if it gets just NEAR to target?
-    false,          // Does it have flickering flame animation?
-    false,          // Can it run out of fuel?
-    true,           // Is there no visual difference between projectile facings?
-    false,          // Is projectile inherently inaccurate?
-    false,          // Translucent colors are used?
-    false,          // Good against aircraft?
-    0,              // ARMING:		Time to arm projectile after launch.
-    0,              // RANGE:		Inherent override range factor.
-    MPH_VERY_FAST,  // SPEED:		Miles per hour.
-    0,              // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HE,     // WARHEAD:		If fires weapon, warhead type
-    ANIM_ATOM_BLAST  // Explosion to use upon impact.
+    "ATOMICDN",  // NAME:			Text name of this unit type.
+    true,        // Flies over tall walls?
+    false,       // Homes in on target?
+    false,       // Projectile arcs to the target?
+    false,       // Is this a dropping bomb-like object?
+    false,       // Is this projectile invisible?
+    true,        // Will it blow up even if it gets just NEAR to target?
+    false,       // Does it have flickering flame animation?
+    false,       // Can it run out of fuel?
+    true,        // Is there no visual difference between projectile facings?
+    false,       // Is projectile inherently inaccurate?
+    false,       // Translucent colors are used?
+    false,       // Good against aircraft?
+    0,           // ARMING:		Time to arm projectile after launch.
+    0,           // RANGE:		Inherent override range factor.
+    game::MPH_VERY_FAST,  // SPEED:		Miles per hour.
+    0,                    // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HE,           // WARHEAD:		If fires weapon, warhead type
+    ANIM_ATOM_BLAST       // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassHonestJohn(
     BULLET_HONEST_JOHN,
-    "MISSILE",     // NAME:			Text name of this unit type.
-    true,          // Flies over tall walls?
-    false,         // Homes in on target?
-    false,         // Projectile arcs to the target?
-    false,         // Is this a dropping bomb-like object?
-    false,         // Is this projectile invisible?
-    true,          // Will it blow up even if it gets just NEAR to target?
-    true,          // Does it have flickering flame animation?
-    true,          // Can it run out of fuel?
-    false,         // Is there no visual difference between projectile facings?
-    false,         // Is projectile inherently inaccurate?
-    false,         // Translucent colors are used?
-    false,         // Good against aircraft?
-    10,            // ARMING:		Time to arm projectile after launch.
-    0,             // RANGE:		Inherent override range factor.
-    MPH_FAST,      // SPEED:		Miles per hour.
-    10,            // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_FIRE,  // WARHEAD:		If fires weapon, warhead type
-    ANIM_NAPALM3   // Explosion to use upon impact.
+    "MISSILE",  // NAME:			Text name of this unit type.
+    true,       // Flies over tall walls?
+    false,      // Homes in on target?
+    false,      // Projectile arcs to the target?
+    false,      // Is this a dropping bomb-like object?
+    false,      // Is this projectile invisible?
+    true,       // Will it blow up even if it gets just NEAR to target?
+    true,       // Does it have flickering flame animation?
+    true,       // Can it run out of fuel?
+    false,      // Is there no visual difference between projectile facings?
+    false,      // Is projectile inherently inaccurate?
+    false,      // Translucent colors are used?
+    false,      // Good against aircraft?
+    10,         // ARMING:		Time to arm projectile after launch.
+    0,          // RANGE:		Inherent override range factor.
+    game::MPH_FAST,  // SPEED:		Miles per hour.
+    10,              // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_FIRE,    // WARHEAD:		If fires weapon, warhead type
+    ANIM_NAPALM3     // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassHeadButt(
@@ -466,10 +467,10 @@ static const BulletTypeClass ClassHeadButt(
     false,   // Good against aircraft?
     0,       // ARMING:		Time to arm projectile after launch.
     0,       // RANGE:		Inherent override range factor.
-    MPH_LIGHT_SPEED,   // SPEED:		Miles per hour.
-    0,                 // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_HEADBUTT,  // WARHEAD:		If fires weapon, warhead type
-    ANIM_NONE          // Explosion to use upon impact.
+    game::MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
+    0,                      // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_HEADBUTT,       // WARHEAD:		If fires weapon, warhead type
+    ANIM_NONE               // Explosion to use upon impact.
 );
 
 static const BulletTypeClass ClassTRexBite(
@@ -489,10 +490,10 @@ static const BulletTypeClass ClassTRexBite(
     false,   // Good against aircraft?
     0,       // ARMING:		Time to arm projectile after launch.
     0,       // RANGE:		Inherent override range factor.
-    MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
-    0,                // ROT:			Rate of turn (degrees per tick).
-    WARHEAD_FEEDME,   // WARHEAD:		If fires weapon, warhead type
-    ANIM_NONE         // Explosion to use upon impact.
+    game::MPH_LIGHT_SPEED,  // SPEED:		Miles per hour.
+    0,                      // ROT:			Rate of turn (degrees per tick).
+    WARHEAD_FEEDME,         // WARHEAD:		If fires weapon, warhead type
+    ANIM_NONE               // Explosion to use upon impact.
 );
 
 /*
@@ -542,10 +543,10 @@ BulletTypeClass::BulletTypeClass(
     bool is_arcing, bool is_dropping, bool is_invisible,
     bool is_proximity_armed, bool is_flame_equipped, bool is_fueled,
     bool is_faceless, bool is_inaccurate, bool is_translucent,
-    bool is_antiaircraft, int arming, int range, MPHType maxspeed, unsigned rot,
-    WarheadType warhead, AnimType explosion) noexcept
+    bool is_antiaircraft, int arming, int range, game::MPHType maxspeed,
+    unsigned rot, WarheadType warhead, AnimType explosion) noexcept
     : ObjectTypeClass(true, false, false, true, false, false, true, true,
-                      TXT_NONE, ininame, ARMOR_NONE, 0),
+                      TXT_NONE, ininame, game::ARMOR_NONE, 0),
       IsHigh(is_high),
       IsArcing(is_arcing),
       IsHoming(is_homing),

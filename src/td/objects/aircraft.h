@@ -87,7 +87,7 @@ class AircraftClass : public FootClass, public FlyClass {
   // Query functions.
   int Threat_Range(int control) const override;
   int Rearm_Delay(bool second) const override;
-  MoveType Can_Enter_Cell(
+  game::MoveType Can_Enter_Cell(
       CELL cell, game::FacingType facing = game::FACING_NONE) const override;
   LayerType In_Which_Layer() const override;
   const ObjectTypeClass& Class_Of() const override { return *Class; }
@@ -137,8 +137,8 @@ class AircraftClass : public FootClass, public FlyClass {
   void Response_Attack() override;
 
   // Combat related.
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source) override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source) override;
   BulletClass* Fire_At(TARGET target, int which) override;
   TARGET As_Target() const override;
 

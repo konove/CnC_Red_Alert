@@ -117,6 +117,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "game/sim/facing.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/special.h"
@@ -332,13 +333,13 @@ void InfantryClass::operator delete(void* ptr) {
  *handler for techno objects.                           * 03/31/1995 JLB :
  *Revenge factor.                                                          *
  *=============================================================================================*/
-ResultType InfantryClass::Take_Damage(int& damage, int distance,
-                                      WarheadType warhead, TechnoClass* source,
-                                      bool forced) {
+game::ResultType InfantryClass::Take_Damage(int& damage, int distance,
+                                            WarheadType warhead,
+                                            TechnoClass* source, bool forced) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
-  ResultType res = RESULT_NONE;
+  game::ResultType res = game::RESULT_NONE;
 
   /*
   **	Prone infantry take only half damage, but never below one damage point.
@@ -368,11 +369,11 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
   ** damage gets upped to max.
   */
 
-  if (res == RESULT_NONE) {
+  if (res == game::RESULT_NONE) {
     return res;
   }
 
-  if (res == RESULT_DESTROYED) {
+  if (res == game::RESULT_DESTROYED) {
     if (*this == INFANTRY_TANYA) {
       TheWorld().is_tanya_dead() = true;
     }
@@ -443,7 +444,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
   /*
   **	When infantry gets hit, it gets scared.
   */
-  if (res != RESULT_DESTROYED) {
+  if (res != game::RESULT_DESTROYED) {
     const COORDINATE source_coord = source ? source->Coord : 0;
 
     /*
@@ -1176,8 +1177,8 @@ void InfantryClass::AI() {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-MoveType InfantryClass::Can_Enter_Cell(CELL cell,
-                                       game::FacingType /*from*/) const {
+game::MoveType InfantryClass::Can_Enter_Cell(CELL cell,
+                                             game::FacingType /*from*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
@@ -1185,7 +1186,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
   ** If we are moving into an illegal cell, then we can't do that.
   */
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
   /*
@@ -1193,7 +1194,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
   */
   if (!TheWorld().scenario_init() && !TheMap().In_Radar(cell) &&
       !Is_Allowed_To_Leave_Map()) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
   const CellClass* cellptr = &TheMap().at(cell);
@@ -1210,7 +1211,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
         !(TheSession().Type == GAME_NORMAL ? House->IsPlayerControl
                                            : House->IsHuman) &&
         TheSession().Type == GAME_NORMAL) {
-      return MOVE_NO;
+      return game::MOVE_NO;
     }
 
     if (otype.IsWall && (cellptr->OverlayData / 16 != otype.DamageLevels)) {
@@ -1219,9 +1220,9 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
       **	a complete failure to enter.
       */
       if (Is_Weapon_Equipped() && Class->PrimaryWeapon->Is_Wall_Destroyer()) {
-        return MOVE_DESTROYABLE;
+        return game::MOVE_DESTROYABLE;
       }
-      return MOVE_NO;
+      return game::MOVE_NO;
     }
   }
 
@@ -1229,7 +1230,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
   ** Loop through all of the objects in the square setting a bit
   ** for how they affect movement.
   */
-  MoveType retval = MOVE_OK;
+  game::MoveType retval = game::MOVE_OK;
   ObjectClass* obj = cellptr->Cell_Occupier();
   while (obj != nullptr) {
     if (obj != this) {
@@ -1240,7 +1241,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
       if (((Mission == MISSION_ENTER && In_Radio_Contact()) ||
            Mission == MISSION_CAPTURE || Mission == MISSION_SABOTAGE) &&
           (obj->As_Target() == NavCom || obj->As_Target() == TarCom)) {
-        return MOVE_OK;
+        return game::MOVE_OK;
       }
 
       /*
@@ -1249,7 +1250,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
       */
       if (Mission == MISSION_GUARD_AREA && ArchiveTarget == obj->As_Target() &&
           Is_Target_Unit(ArchiveTarget)) {
-        return MOVE_NO;
+        return game::MOVE_NO;
       }
 
       /*
@@ -1297,7 +1298,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
       */
       if (Mission == MISSION_ENTER && obj->As_Target() == NavCom &&
           IsTethered) {
-        return MOVE_OK;
+        return game::MOVE_OK;
       }
 
       /*
@@ -1314,9 +1315,9 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
           case RTTI_UNIT:
             if (dynamic_cast<UnitClass*>(obj)->IsDriving ||
                 Target_Legal(dynamic_cast<UnitClass*>(obj)->NavCom)) {
-              retval = std::max(retval, MOVE_MOVING_BLOCK);
+              retval = std::max(retval, game::MOVE_MOVING_BLOCK);
             } else {
-              retval = std::max(retval, MOVE_TEMP);
+              retval = std::max(retval, game::MOVE_TEMP);
             }
             break;
 
@@ -1328,7 +1329,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
           case RTTI_TERRAIN:
           case RTTI_AIRCRAFT:
           case RTTI_BUILDING:
-            return MOVE_NO;
+            return game::MOVE_NO;
 
           case RTTIType::RTTI_NONE:
           case RTTIType::RTTI_AIRCRAFTTYPE:
@@ -1368,13 +1369,13 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
         *Find_Path() *	call.
         */
         if (!obj->Is_Techno() ||
-            dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED) {
+            dynamic_cast<TechnoClass*>(obj)->Cloak != game::CLOAKED) {
           /*
           **	Any non-allied blockage is considered impassible if the infantry
           **	is not equipped with a weapon.
           */
           if (Combat_Damage() <= 0) {
-            return MOVE_NO;
+            return game::MOVE_NO;
           }
 
           /*
@@ -1384,11 +1385,11 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
           */
           switch (obj->What_Am_I()) {
             case RTTI_TERRAIN:
-              return MOVE_NO;
+              return game::MOVE_NO;
             case RTTI_INFANTRY:
               if (*dynamic_cast<InfantryClass*>(obj) == INFANTRY_SPY &&
                   !Class->IsDog) {
-                retval = MOVE_TEMP;
+                retval = game::MOVE_TEMP;
                 break;
               }
               [[fallthrough]];
@@ -1423,11 +1424,11 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
             case RTTIType::RTTI_VESSEL:
             case RTTIType::RTTI_VESSELTYPE:
             default:
-              retval = std::max(retval, MOVE_DESTROYABLE);
+              retval = std::max(retval, game::MOVE_DESTROYABLE);
               break;
           }
         } else {
-          retval = std::max(retval, MOVE_CLOAK);
+          retval = std::max(retval, game::MOVE_CLOAK);
         }
       }
       //			}
@@ -1442,16 +1443,16 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
   /*
   **	If foot soldiers cannot travel on the cell -- consider it impassable.
   */
-  if (retval == MOVE_OK && !IsTethered &&
+  if (retval == game::MOVE_OK && !IsTethered &&
       TheRules().ground().at(cellptr->Land_Type()).Cost.at(SPEED_FOOT) == 0) {
-    return MOVE_NO;
+    return game::MOVE_NO;
   }
 
   /*
   ** if a unit has the cell reserved then we just can't go in there.
   */
-  if (retval == MOVE_OK && cellptr->Flag.Occupy.Vehicle) {
-    return MOVE_NO;
+  if (retval == game::MOVE_OK && cellptr->Flag.Occupy.Vehicle) {
+    return game::MOVE_NO;
   }
 
   /*
@@ -1461,13 +1462,13 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
   if (cellptr->InfType != HOUSE_NONE) {
     if (House->Is_Ally(cellptr->InfType)) {
       if ((cellptr->Flag.Composite & 0x1F) == 0x1f) {
-        retval = std::max(retval, MOVE_MOVING_BLOCK);
+        retval = std::max(retval, game::MOVE_MOVING_BLOCK);
       }
     } else {
       if (Combat_Damage() > 0) {
-        retval = std::max(retval, MOVE_DESTROYABLE);
+        retval = std::max(retval, game::MOVE_DESTROYABLE);
       } else {
-        return MOVE_NO;
+        return game::MOVE_NO;
       }
     }
   }
@@ -1476,8 +1477,8 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell,
   **	If it is still ok to move the infantry, then perform the last check
   **	to see if the cell is already full of infantry.
   */
-  if (retval == MOVE_OK && (cellptr->Flag.Composite & 0x1F) == 0x1F) {
-    return MOVE_NO;
+  if (retval == game::MOVE_OK && (cellptr->Flag.Composite & 0x1F) == 0x1F) {
+    return game::MOVE_NO;
   }
 
   /*
@@ -1541,7 +1542,7 @@ std::span<const int16_t> InfantryClass::Overlap_List(bool /*redraw*/) const {
  * HISTORY: * 09/01/1994 JLB : Created. * 06/27/1995 JLB : Flame thrower can
  *fire while prone now.                                  *
  *=============================================================================================*/
-FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
@@ -1557,7 +1558,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   if (Combat_Damage() < 0) {
     const TechnoClass* targ = As_Techno(target);
     if (targ == nullptr || targ->Health_Ratio() >= TheRules().ConditionGreen) {
-      return FIRE_ILLEGAL;
+      return game::FIRE_ILLEGAL;
     }
   }
 
@@ -1566,7 +1567,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   */
   if (IsDriving || (Target_Legal(NavCom) && Doing != DO_NOTHING &&
                     !MasterDoControls.at(Doing).Interrupt)) {
-    return FIRE_MOVING;
+    return game::FIRE_MOVING;
   }
 
   return FootClass::Can_Fire(target, which);
@@ -1854,7 +1855,8 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
       const game::FacingType newface = toface + face;
       newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
-      if (TheMap().In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
+      if (TheMap().In_Radar(newcell) &&
+          Can_Enter_Cell(newcell) == game::MOVE_OK) {
         if (altcell == 0) {
           altcell = newcell;
         }
@@ -2018,7 +2020,7 @@ bool InfantryClass::Stop_Driver() {
     }
   }
 
-  IsZoneCheat = Can_Enter_Cell(Coord_Cell(Coord)) != MOVE_OK;
+  IsZoneCheat = Can_Enter_Cell(Coord_Cell(Coord)) != game::MOVE_OK;
 
   return FootClass::Stop_Driver();
 }
@@ -2056,7 +2058,7 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
   */
   headto = TheMap().at(headto).Closest_Free_Spot(
       Coord_Move(headto, Direction(headto) + game::DIR_S, 0x007C));
-  if (!headto && Can_Enter_Cell(Coord_Cell(old)) == MOVE_OK) {
+  if (!headto && Can_Enter_Cell(Coord_Cell(old)) == game::MOVE_OK) {
     headto = TheMap().at(old).Closest_Free_Spot(
         Coord_Move(old, Direction(headto) + game::DIR_S, 0x0080), true);
   }
@@ -3557,7 +3559,7 @@ void InfantryClass::Firing_AI() {
 
     if (!IsFiring) {
       switch (Can_Fire(TarCom, primary)) {
-        case FIRE_ILLEGAL:
+        case game::FIRE_ILLEGAL:
           if (Combat_Damage(primary) < 0) {
             const ObjectClass* targ = As_Object(TarCom);
             if (targ) {
@@ -3576,11 +3578,11 @@ void InfantryClass::Firing_AI() {
           }
           break;
 
-        case FIRE_CLOAKED:
+        case game::FIRE_CLOAKED:
           Do_Uncloak();
           break;
 
-        case FIRE_OK:
+        case game::FIRE_OK:
           /*
           **	Start firing animation.
           */
@@ -3605,14 +3607,14 @@ void InfantryClass::Firing_AI() {
             base::At(Path, 0) = game::FACING_NONE;
           }
           break;
-        case FireErrorType::FIRE_AMMO:
-        case FireErrorType::FIRE_FACING:
-        case FireErrorType::FIRE_REARM:
-        case FireErrorType::FIRE_ROTATING:
-        case FireErrorType::FIRE_CANT:
-        case FireErrorType::FIRE_MOVING:
-        case FireErrorType::FIRE_RANGE:
-        case FireErrorType::FIRE_BUSY:
+        case game::FireErrorType::FIRE_AMMO:
+        case game::FireErrorType::FIRE_FACING:
+        case game::FireErrorType::FIRE_REARM:
+        case game::FireErrorType::FIRE_ROTATING:
+        case game::FireErrorType::FIRE_CANT:
+        case game::FireErrorType::FIRE_MOVING:
+        case game::FireErrorType::FIRE_RANGE:
+        case game::FireErrorType::FIRE_BUSY:
         default:
           break;
       }
@@ -3806,7 +3808,8 @@ void InfantryClass::Movement_AI() {
       *into a zone *	that it can't travel to. In such a case, abort the
       *movement process by clearing *	the navigation computer.
       */
-      if (((!IsZoneCheat || Can_Enter_Cell(Coord_Cell(Coord)) != MOVE_NO) &&
+      if (((!IsZoneCheat ||
+            Can_Enter_Cell(Coord_Cell(Coord)) != game::MOVE_NO) &&
            !IsDriving && !IsTethered && Target_Legal(NavCom) && IsLocked &&
            TheMap().at(Coord).Zones.at(Class->MZone) !=
                TheMap().at(As_Cell(NavCom)).Zones.at(Class->MZone)) &&
@@ -3830,7 +3833,7 @@ void InfantryClass::Movement_AI() {
         */
         if (base::At(Path, 0) != game::FACING_NONE &&
             Can_Enter_Cell(Adjacent_Cell(Coord_Cell(Center_Coord()),
-                                         base::At(Path, 0))) != MOVE_OK) {
+                                         base::At(Path, 0))) != game::MOVE_OK) {
           base::At(Path, 0) = game::FACING_NONE;
         }
 
@@ -3898,7 +3901,7 @@ void InfantryClass::Movement_AI() {
                   *in a different zone.
                   */
                   if ((!IsZoneCheat ||
-                       Can_Enter_Cell(Coord_Cell(Coord)) != MOVE_NO) &&
+                       Can_Enter_Cell(Coord_Cell(Coord)) != game::MOVE_NO) &&
                       IsLocked && Target_Legal(NavCom) &&
                       TheMap().at(As_Cell(NavCom)).Zones.at(Class->MZone) !=
                           TheMap().at(Coord).Zones.at(Class->MZone)) {
@@ -3925,7 +3928,7 @@ void InfantryClass::Movement_AI() {
         COORDINATE acoord = Adjacent_Cell(Coord, base::At(Path, 0));
         const CELL acell = Coord_Cell(acoord);
 
-        if (Can_Enter_Cell(acell) != MOVE_OK) {
+        if (Can_Enter_Cell(acell) != game::MOVE_OK) {
           if ((Mission == MISSION_MOVE || Mission == MISSION_ENTER) &&
               !IsTethered /*&& House->IsHuman*/ &&
               Distance(NavCom) < TheRules().CloseEnoughDistance) {
@@ -3935,7 +3938,7 @@ void InfantryClass::Movement_AI() {
             ** If blocked by a moving block then just exit start of move and
             ** try again next tick.
             */
-            if (Can_Enter_Cell(acell) == MOVE_DESTROYABLE) {
+            if (Can_Enter_Cell(acell) == game::MOVE_DESTROYABLE) {
               if (TheMap().at(acell).Cell_Object()) {
                 if (!House->Is_Ally(TheMap().at(acell).Cell_Object())) {
                   Override_Mission(
@@ -4061,10 +4064,10 @@ void InfantryClass::Movement_AI() {
         /*
         **	Advance the infantry as far as it should go.
         */
-        MPHType maxspeed = static_cast<MPHType>(
+        game::MPHType maxspeed = static_cast<game::MPHType>(
             std::min(static_cast<int>(Class->MaxSpeed) * SpeedBias *
                          House->GroundspeedBias,
-                     static_cast<int>(MPH_LIGHT_SPEED)));
+                     static_cast<int>(game::MPH_LIGHT_SPEED)));
 
         if (IsFormationMove) {
           maxspeed = FormationMaxSpeed;

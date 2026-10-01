@@ -197,8 +197,8 @@ class BuildingClass : public TechnoClass {
   **	This is the current animation processing state that the building is
   **	in.
   */
-  BStateType BState = BSTATE_NONE;
-  BStateType QueueBState = BSTATE_NONE;
+  game::BStateType BState = game::BSTATE_NONE;
+  game::BStateType QueueBState = game::BSTATE_NONE;
 
   /*
   ** For multiplayer games, this keeps track of the last house to damage
@@ -307,7 +307,7 @@ class BuildingClass : public TechnoClass {
   void Detach_All(bool all = true) override;
   virtual void Grand_Opening(bool captured = false);
   virtual void Update_Buildables();
-  [[nodiscard]] MoveType Can_Enter_Cell(
+  [[nodiscard]] game::MoveType Can_Enter_Cell(
       CELL cell,
       game::FacingType /*unused*/ = game::FACING_NONE) const override;
   bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
@@ -323,7 +323,7 @@ class BuildingClass : public TechnoClass {
                WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void Fire_Out() override;
-  void Begin_Mode(BStateType bstate);
+  void Begin_Mode(game::BStateType bstate);
 
   /*
   **	User I/O.
@@ -335,12 +335,12 @@ class BuildingClass : public TechnoClass {
   **	Combat related.
   */
   void Death_Announcement(const TechnoClass* source = nullptr) const override;
-  [[nodiscard]] FireErrorType Can_Fire(TARGET /*target*/,
-                                       int which) const override;
+  [[nodiscard]] game::FireErrorType Can_Fire(TARGET /*target*/,
+                                             int which) const override;
   TARGET Greatest_Threat(ThreatType threat) override;  // const;
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source = nullptr,
-                         bool forced = false) override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source = nullptr,
+                               bool forced = false) override;
   bool Captured(HouseClass* newowner) override;
   void Update_Radar_Spied();
 
@@ -390,7 +390,7 @@ class BuildingClass : public TechnoClass {
  private:
   void Drop_Debris(TARGET source = kTargetNone);
 
-  static const base::EnumArray<BSizeType, COORDINATE> CenterOffset;
+  static const base::EnumArray<game::BSizeType, COORDINATE> CenterOffset;
 };
 
 extern template void BuildingClass::Serialize<ArchiveWriter>(ArchiveWriter&);

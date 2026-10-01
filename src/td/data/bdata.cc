@@ -82,6 +82,7 @@
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "td/ai/special.h"
 #include "td/assets/assets.h"
 #include "td/core/const.h"
@@ -215,15 +216,15 @@ static const BuildingTypeClass ClassTemple(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_ALUMINUM,  // ARMOR:		Armor type
-    0,               // CANENTER:	Units that can enter building.
-    0,               // CAPACITY:	Spice storage capacity.
-    0,               // POWER:		Power points generated.
-    150,             // DRAIN:		Power points required.
-    BSIZE_33,        // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    ListTmpl,        // OCCUPYLIST:	List of active foundation squares.
-    OListTmpl        // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    0,                     // CANENTER:	Units that can enter building.
+    0,                     // CAPACITY:	Spice storage capacity.
+    0,                     // POWER:		Power points generated.
+    150,                   // DRAIN:		Power points required.
+    game::BSIZE_33,        // SIZE:			Building size.
+    {},                    // Preferred exit cell list.
+    ListTmpl,              // OCCUPYLIST:	List of active foundation squares.
+    OListTmpl              // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassEye(
@@ -266,15 +267,15 @@ static const BuildingTypeClass ClassEye(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    200,         // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    ComList,     // OCCUPYLIST:	List of active foundation squares.
-    OComList     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    200,               // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    ComList,           // OCCUPYLIST:	List of active foundation squares.
+    OComList           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassWeapon(
@@ -323,15 +324,15 @@ static const BuildingTypeClass ClassWeapon(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_ALUMINUM,  // ARMOR:		Armor type
-    0,               // CANENTER:	Units that can enter building.
-    0,               // CAPACITY:	Spice storage capacity.
-    0,               // POWER:		Power points required.
-    30,              // DRAIN:		Power points required.
-    BSIZE_33,        // SIZE:			Building size.
-    ExitWeap,        // Preferred exit cell list.
-    ListWeap,        // OCCUPYLIST:	List of active foundation squares.
-    OListWeap        // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    0,                     // CANENTER:	Units that can enter building.
+    0,                     // CAPACITY:	Spice storage capacity.
+    0,                     // POWER:		Power points required.
+    30,                    // DRAIN:		Power points required.
+    game::BSIZE_33,        // SIZE:			Building size.
+    ExitWeap,              // Preferred exit cell list.
+    ListWeap,              // OCCUPYLIST:	List of active foundation squares.
+    OListWeap              // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassGTower(
@@ -374,15 +375,15 @@ static const BuildingTypeClass ClassGTower(
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_CHAIN_GUN, WEAPON_NONE,
     //	WEAPON_M60MG,WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    00,          // POWER:		Power points required.
-    10,          // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    00,                // POWER:		Power points required.
+    10,                // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassATower(
@@ -425,15 +426,15 @@ static const BuildingTypeClass ClassATower(
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_TOW_TWO, WEAPON_NONE,
     //	WEAPON_TOMAHAWK,WEAPON_NONE,
-    ARMOR_ALUMINUM,  // ARMOR:		Armor type
-    0,               // CANENTER:	Units that can enter building.
-    0,               // CAPACITY:	Spice storage capacity.
-    0,               // POWER:		Power points required.
-    20,              // DRAIN:		Power points required.
-    BSIZE_12,        // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List12,          // OCCUPYLIST:	List of active foundation squares.
-    OList12          // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    0,                     // CANENTER:	Units that can enter building.
+    0,                     // CAPACITY:	Spice storage capacity.
+    0,                     // POWER:		Power points required.
+    20,                    // DRAIN:		Power points required.
+    game::BSIZE_12,        // SIZE:			Building size.
+    {},                    // Preferred exit cell list.
+    List12,                // OCCUPYLIST:	List of active foundation squares.
+    OList12                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassObelisk(
@@ -475,15 +476,15 @@ static const BuildingTypeClass ClassObelisk(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_OBELISK_LASER, WEAPON_NONE,
-    ARMOR_ALUMINUM,  // ARMOR:		Armor type
-    0,               // CANENTER:	Units that can enter building.
-    0,               // CAPACITY:	Spice storage capacity.
-    0,               // POWER:		Power points required.
-    150,             // DRAIN:		Power points required.
-    BSIZE_12,        // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List12,          // OCCUPYLIST:	List of active foundation squares.
-    OList12          // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    0,                     // CANENTER:	Units that can enter building.
+    0,                     // CAPACITY:	Spice storage capacity.
+    0,                     // POWER:		Power points required.
+    150,                   // DRAIN:		Power points required.
+    game::BSIZE_12,        // SIZE:			Building size.
+    {},                    // Preferred exit cell list.
+    List12,                // OCCUPYLIST:	List of active foundation squares.
+    OList12                // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassTurret(
@@ -534,15 +535,15 @@ static const BuildingTypeClass ClassTurret(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_TURRET_GUN, WEAPON_NONE,
-    ARMOR_STEEL,  // ARMOR:		Armor type
-    0,            // CANENTER:	Units that can enter building.
-    0,            // CAPACITY:	Spice storage capacity.
-    0,            // POWER:		Power points required.
-    20,           // DRAIN:		Power points required.
-    BSIZE_11,     // SIZE:			Building size.
-    {},           // Preferred exit cell list.
-    List1,        // OCCUPYLIST:	List of active foundation squares.
-    {}            // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_STEEL,  // ARMOR:		Armor type
+    0,                  // CANENTER:	Units that can enter building.
+    0,                  // CAPACITY:	Spice storage capacity.
+    0,                  // POWER:		Power points required.
+    20,                 // DRAIN:		Power points required.
+    game::BSIZE_11,     // SIZE:			Building size.
+    {},                 // Preferred exit cell list.
+    List1,              // OCCUPYLIST:	List of active foundation squares.
+    {}                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassConst(
@@ -584,15 +585,15 @@ static const BuildingTypeClass ClassConst(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    30,          // POWER:		Power points required.
-    15,          // DRAIN:		Power points required.
-    BSIZE_32,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List32,      // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    30,                // POWER:		Power points required.
+    15,                // DRAIN:		Power points required.
+    game::BSIZE_32,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List32,            // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassRefinery(
@@ -634,15 +635,15 @@ static const BuildingTypeClass ClassRefinery(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,     // ARMOR:		Armor type
-    0,              // CANENTER:	Units that can enter building.
-    1000,           // CAPACITY:	Spice storage capacity.
-    10,             // POWER:		Power points required.
-    40,             // DRAIN:		Power points required.
-    BSIZE_33,       // SIZE:			Building size.
-    {},             // Preferred exit cell list.
-    List010111000,  // OCCUPYLIST:	List of active foundation squares.
-    List101000111   // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    1000,              // CAPACITY:	Spice storage capacity.
+    10,                // POWER:		Power points required.
+    40,                // DRAIN:		Power points required.
+    game::BSIZE_33,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List010111000,     // OCCUPYLIST:	List of active foundation squares.
+    List101000111      // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassStorage(
@@ -686,15 +687,15 @@ static const BuildingTypeClass ClassStorage(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    1500,        // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    10,          // DRAIN:		Power points required.
-    BSIZE_21,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    StoreList,   // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    1500,              // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    10,                // DRAIN:		Power points required.
+    game::BSIZE_21,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    StoreList,         // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassHelipad(
@@ -736,15 +737,15 @@ static const BuildingTypeClass ClassHelipad(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    10,          // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List2,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    10,                // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List2,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassCommand(
@@ -787,15 +788,15 @@ static const BuildingTypeClass ClassCommand(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    40,          // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    ComList,     // OCCUPYLIST:	List of active foundation squares.
-    OComList     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    40,                // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    ComList,           // OCCUPYLIST:	List of active foundation squares.
+    OComList           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassSAM(
@@ -837,15 +838,15 @@ static const BuildingTypeClass ClassSAM(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NIKE, WEAPON_NONE,
-    ARMOR_STEEL,  // ARMOR:		Armor type
-    0,            // CANENTER:	Units that can enter building.
-    0,            // CAPACITY:	Spice storage capacity.
-    0,            // POWER:		Power points required.
-    20,           // DRAIN:		Power points required.
-    BSIZE_21,     // SIZE:			Building size.
-    {},           // Preferred exit cell list.
-    List21,       // OCCUPYLIST:	List of active foundation squares.
-    OListSAM      // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_STEEL,  // ARMOR:		Armor type
+    0,                  // CANENTER:	Units that can enter building.
+    0,                  // CAPACITY:	Spice storage capacity.
+    0,                  // POWER:		Power points required.
+    20,                 // DRAIN:		Power points required.
+    game::BSIZE_21,     // SIZE:			Building size.
+    {},                 // Preferred exit cell list.
+    List21,             // OCCUPYLIST:	List of active foundation squares.
+    OListSAM            // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAirStrip(
@@ -887,15 +888,15 @@ static const BuildingTypeClass ClassAirStrip(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_STEEL,   // ARMOR:		Armor type
-    0,             // CANENTER:	Units that can enter building.
-    0,             // CAPACITY:	Spice storage capacity.
-    0,             // POWER:		Power points required.
-    30,            // DRAIN:		Power points required.
-    BSIZE_42,      // SIZE:			Building size.
-    ExitAirstrip,  // Preferred exit cell list.
-    List42,        // OCCUPYLIST:	List of active foundation squares.
-    {}             // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_STEEL,  // ARMOR:		Armor type
+    0,                  // CANENTER:	Units that can enter building.
+    0,                  // CAPACITY:	Spice storage capacity.
+    0,                  // POWER:		Power points required.
+    30,                 // DRAIN:		Power points required.
+    game::BSIZE_42,     // SIZE:			Building size.
+    ExitAirstrip,       // Preferred exit cell list.
+    List42,             // OCCUPYLIST:	List of active foundation squares.
+    {}                  // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassPower(
@@ -937,15 +938,15 @@ static const BuildingTypeClass ClassPower(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    100,         // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1011,    // OCCUPYLIST:	List of active foundation squares.
-    List0100     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    100,               // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1011,          // OCCUPYLIST:	List of active foundation squares.
+    List0100           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassAdvancedPower(
@@ -988,15 +989,15 @@ static const BuildingTypeClass ClassAdvancedPower(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    200,         // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1011,    // OCCUPYLIST:	List of active foundation squares.
-    List0100     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    200,               // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1011,          // OCCUPYLIST:	List of active foundation squares.
+    List0100           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassHospital(
@@ -1038,15 +1039,15 @@ static const BuildingTypeClass ClassHospital(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    100,         // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    20,          // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List2,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    100,               // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    20,                // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List2,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassBioLab(
@@ -1088,15 +1089,15 @@ static const BuildingTypeClass ClassBioLab(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    100,         // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    40,          // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List2,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    100,               // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    40,                // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List2,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassBarracks(
@@ -1138,15 +1139,15 @@ static const BuildingTypeClass ClassBarracks(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,   // ARMOR:		Armor type
-    0,            // CANENTER:	Units that can enter building.
-    0,            // CAPACITY:	Spice storage capacity.
-    0,            // POWER:		Power points required.
-    20,           // DRAIN:		Power points required.
-    BSIZE_22,     // SIZE:			Building size.
-    ExitPyle,     // Preferred exit cell list.
-    List22_1100,  // OCCUPYLIST:	List of active foundation squares.
-    List22_0011   // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    20,                // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    ExitPyle,          // Preferred exit cell list.
+    List22_1100,       // OCCUPYLIST:	List of active foundation squares.
+    List22_0011        // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassHand(
@@ -1188,15 +1189,15 @@ static const BuildingTypeClass ClassHand(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    20,          // DRAIN:		Power points required.
-    BSIZE_23,    // SIZE:			Building size.
-    ExitHand,    // Preferred exit cell list.
-    ListHand,    // OCCUPYLIST:	List of active foundation squares.
-    OListHand    // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    20,                // DRAIN:		Power points required.
+    game::BSIZE_23,    // SIZE:			Building size.
+    ExitHand,          // Preferred exit cell list.
+    ListHand,          // OCCUPYLIST:	List of active foundation squares.
+    OListHand          // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassTanker(
@@ -1238,15 +1239,15 @@ static const BuildingTypeClass ClassTanker(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_21,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List21,      // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_21,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List21,            // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassRepair(
@@ -1288,15 +1289,15 @@ static const BuildingTypeClass ClassRepair(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    30,          // DRAIN:		Power points required.
-    BSIZE_33,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    ListFix,     // OCCUPYLIST:	List of active foundation squares.
-    OListFix     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    30,                // DRAIN:		Power points required.
+    game::BSIZE_33,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    ListFix,           // OCCUPYLIST:	List of active foundation squares.
+    OListFix           // OVERLAPLIST:List of overlap cell offset.
 );
 
 #ifdef OBSOLETE
@@ -1340,15 +1341,15 @@ static const BuildingTypeClass ClassRoad(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_NONE,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    NULL,        // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_NONE,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    NULL,              // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 #endif
 
@@ -1391,15 +1392,15 @@ static const BuildingTypeClass ClassV01(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List0011,    // OCCUPYLIST:	List of active foundation squares.
-    List1100     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List0011,          // OCCUPYLIST:	List of active foundation squares.
+    List1100           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV02(
@@ -1441,15 +1442,15 @@ static const BuildingTypeClass ClassV02(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List0011,    // OCCUPYLIST:	List of active foundation squares.
-    List1100     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List0011,          // OCCUPYLIST:	List of active foundation squares.
+    List1100           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV03(
@@ -1491,15 +1492,15 @@ static const BuildingTypeClass ClassV03(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List0111,    // OCCUPYLIST:	List of active foundation squares.
-    List1000     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List0111,          // OCCUPYLIST:	List of active foundation squares.
+    List1000           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV04(
@@ -1541,15 +1542,15 @@ static const BuildingTypeClass ClassV04(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List0011,    // OCCUPYLIST:	List of active foundation squares.
-    List1100     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List0011,          // OCCUPYLIST:	List of active foundation squares.
+    List1100           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV05(
@@ -1591,15 +1592,15 @@ static const BuildingTypeClass ClassV05(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_21,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List11,      // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_21,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV06(
@@ -1641,15 +1642,15 @@ static const BuildingTypeClass ClassV06(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_21,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List11,      // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_21,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV07(
@@ -1691,15 +1692,15 @@ static const BuildingTypeClass ClassV07(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_21,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List11,      // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_21,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV08(
@@ -1741,15 +1742,15 @@ static const BuildingTypeClass ClassV08(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV09(
@@ -1791,15 +1792,15 @@ static const BuildingTypeClass ClassV09(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV10(
@@ -1841,15 +1842,15 @@ static const BuildingTypeClass ClassV10(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV11(
@@ -1891,15 +1892,15 @@ static const BuildingTypeClass ClassV11(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV12(
@@ -1941,15 +1942,15 @@ static const BuildingTypeClass ClassV12(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV13(
@@ -1991,15 +1992,15 @@ static const BuildingTypeClass ClassV13(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV14(
@@ -2041,15 +2042,15 @@ static const BuildingTypeClass ClassV14(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV15(
@@ -2091,15 +2092,15 @@ static const BuildingTypeClass ClassV15(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV16(
@@ -2141,15 +2142,15 @@ static const BuildingTypeClass ClassV16(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV17(
@@ -2191,15 +2192,15 @@ static const BuildingTypeClass ClassV17(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV18(
@@ -2241,15 +2242,15 @@ static const BuildingTypeClass ClassV18(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV19(
@@ -2291,15 +2292,15 @@ static const BuildingTypeClass ClassV19(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV20(
@@ -2341,15 +2342,15 @@ static const BuildingTypeClass ClassV20(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List0011,    // OCCUPYLIST:	List of active foundation squares.
-    List1100     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List0011,          // OCCUPYLIST:	List of active foundation squares.
+    List1100           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV21(
@@ -2391,15 +2392,15 @@ static const BuildingTypeClass ClassV21(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1101,    // OCCUPYLIST:	List of active foundation squares.
-    List0010     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1101,          // OCCUPYLIST:	List of active foundation squares.
+    List0010           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV22(
@@ -2441,15 +2442,15 @@ static const BuildingTypeClass ClassV22(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_21,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List11,      // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_21,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV23(
@@ -2491,15 +2492,15 @@ static const BuildingTypeClass ClassV23(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV24(
@@ -2541,15 +2542,15 @@ static const BuildingTypeClass ClassV24(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List0011,    // OCCUPYLIST:	List of active foundation squares.
-    List1100     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List0011,          // OCCUPYLIST:	List of active foundation squares.
+    List1100           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV25(
@@ -2591,15 +2592,15 @@ static const BuildingTypeClass ClassV25(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_22,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List0111,    // OCCUPYLIST:	List of active foundation squares.
-    List1000     // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_22,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List0111,          // OCCUPYLIST:	List of active foundation squares.
+    List1000           // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV26(
@@ -2641,15 +2642,15 @@ static const BuildingTypeClass ClassV26(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_21,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List11,      // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_21,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV27(
@@ -2691,15 +2692,15 @@ static const BuildingTypeClass ClassV27(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV28(
@@ -2741,15 +2742,15 @@ static const BuildingTypeClass ClassV28(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV29(
@@ -2791,15 +2792,15 @@ static const BuildingTypeClass ClassV29(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV30(
@@ -2841,15 +2842,15 @@ static const BuildingTypeClass ClassV30(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_21,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List11,      // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_21,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV31(
@@ -2891,15 +2892,15 @@ static const BuildingTypeClass ClassV31(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_21,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List11,      // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_21,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV32(
@@ -2941,15 +2942,15 @@ static const BuildingTypeClass ClassV32(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_21,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List11,      // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_21,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV33(
@@ -2991,15 +2992,15 @@ static const BuildingTypeClass ClassV33(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_21,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List11,      // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_21,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List11,            // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV34(
@@ -3041,15 +3042,15 @@ static const BuildingTypeClass ClassV34(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV35(
@@ -3091,15 +3092,15 @@ static const BuildingTypeClass ClassV35(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 static const BuildingTypeClass ClassV36(
@@ -3141,15 +3142,15 @@ static const BuildingTypeClass ClassV36(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_11,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List1,       // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_11,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List1,             // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 static const BuildingTypeClass ClassV37(
     STRUCT_V37,
@@ -3190,15 +3191,15 @@ static const BuildingTypeClass ClassV37(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,    // ARMOR:		Armor type
-    0,             // CANENTER:	Units that can enter building.
-    0,             // CAPACITY:	Spice storage capacity.
-    0,             // POWER:		Power points required.
-    0,             // DRAIN:		Power points required.
-    BSIZE_42,      // SIZE:			Building size.
-    {},            // Preferred exit cell list.
-    ListWestwood,  // OCCUPYLIST:	List of active foundation squares.
-    OListWestwood  // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_42,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    ListWestwood,      // OCCUPYLIST:	List of active foundation squares.
+    OListWestwood      // OVERLAPLIST:List of overlap cell offset.
 );
 static const BuildingTypeClass ClassMission(
     STRUCT_MISSION,
@@ -3240,15 +3241,15 @@ static const BuildingTypeClass ClassMission(
         kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_WOOD,  // ARMOR:		Armor type
-    0,           // CANENTER:	Units that can enter building.
-    0,           // CAPACITY:	Spice storage capacity.
-    0,           // POWER:		Power points required.
-    0,           // DRAIN:		Power points required.
-    BSIZE_32,    // SIZE:			Building size.
-    {},          // Preferred exit cell list.
-    List32,      // OCCUPYLIST:	List of active foundation squares.
-    {}           // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_WOOD,  // ARMOR:		Armor type
+    0,                 // CANENTER:	Units that can enter building.
+    0,                 // CAPACITY:	Spice storage capacity.
+    0,                 // POWER:		Power points required.
+    0,                 // DRAIN:		Power points required.
+    game::BSIZE_32,    // SIZE:			Building size.
+    {},                // Preferred exit cell list.
+    List32,            // OCCUPYLIST:	List of active foundation squares.
+    {}                 // OVERLAPLIST:List of overlap cell offset.
 );
 
 // Sandbag wall
@@ -3291,15 +3292,15 @@ static const BuildingTypeClass Sandbag(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_ALUMINUM,  // ARMOR:		Armor type
-    0,               // CANENTER:	Units that can enter building.
-    0,               // CAPACITY:	Spice storage capacity.
-    0,               // POWER:		Power points required.
-    0,               // DRAIN:		Power points required.
-    BSIZE_11,        // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    0,                     // CANENTER:	Units that can enter building.
+    0,                     // CAPACITY:	Spice storage capacity.
+    0,                     // POWER:		Power points required.
+    0,                     // DRAIN:		Power points required.
+    game::BSIZE_11,        // SIZE:			Building size.
+    {},                    // Preferred exit cell list.
+    List1,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                     // OVERLAPLIST:List of overlap cell offset.
 );
 // Cyclone fence
 static const BuildingTypeClass Cyclone(
@@ -3341,15 +3342,15 @@ static const BuildingTypeClass Cyclone(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_ALUMINUM,  // ARMOR:		Armor type
-    0,               // CANENTER:	Units that can enter building.
-    0,               // CAPACITY:	Spice storage capacity.
-    0,               // POWER:		Power points required.
-    0,               // DRAIN:		Power points required.
-    BSIZE_11,        // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    0,                     // CANENTER:	Units that can enter building.
+    0,                     // CAPACITY:	Spice storage capacity.
+    0,                     // POWER:		Power points required.
+    0,                     // DRAIN:		Power points required.
+    game::BSIZE_11,        // SIZE:			Building size.
+    {},                    // Preferred exit cell list.
+    List1,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                     // OVERLAPLIST:List of overlap cell offset.
 );
 // Brick wall
 static const BuildingTypeClass Brick(
@@ -3391,15 +3392,15 @@ static const BuildingTypeClass Brick(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_ALUMINUM,  // ARMOR:		Armor type
-    0,               // CANENTER:	Units that can enter building.
-    0,               // CAPACITY:	Spice storage capacity.
-    0,               // POWER:		Power points required.
-    0,               // DRAIN:		Power points required.
-    BSIZE_11,        // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    0,                     // CANENTER:	Units that can enter building.
+    0,                     // CAPACITY:	Spice storage capacity.
+    0,                     // POWER:		Power points required.
+    0,                     // DRAIN:		Power points required.
+    game::BSIZE_11,        // SIZE:			Building size.
+    {},                    // Preferred exit cell list.
+    List1,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                     // OVERLAPLIST:List of overlap cell offset.
 );
 // Barbwire wall
 static const BuildingTypeClass Barbwire(
@@ -3443,15 +3444,15 @@ static const BuildingTypeClass Barbwire(
         kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_ALUMINUM,  // ARMOR:		Armor type
-    0,               // CANENTER:	Units that can enter building.
-    0,               // CAPACITY:	Spice storage capacity.
-    0,               // POWER:		Power points required.
-    0,               // DRAIN:		Power points required.
-    BSIZE_11,        // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    0,                     // CANENTER:	Units that can enter building.
+    0,                     // CAPACITY:	Spice storage capacity.
+    0,                     // POWER:		Power points required.
+    0,                     // DRAIN:		Power points required.
+    game::BSIZE_11,        // SIZE:			Building size.
+    {},                    // Preferred exit cell list.
+    List1,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                     // OVERLAPLIST:List of overlap cell offset.
 );
 // Wood wall
 static const BuildingTypeClass Wood(
@@ -3493,15 +3494,15 @@ static const BuildingTypeClass Wood(
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
     WEAPON_NONE, WEAPON_NONE,
-    ARMOR_ALUMINUM,  // ARMOR:		Armor type
-    0,               // CANENTER:	Units that can enter building.
-    0,               // CAPACITY:	Spice storage capacity.
-    0,               // POWER:		Power points required.
-    0,               // DRAIN:		Power points required.
-    BSIZE_11,        // SIZE:			Building size.
-    {},              // Preferred exit cell list.
-    List1,           // OCCUPYLIST:	List of active foundation squares.
-    {}               // OVERLAPLIST:List of overlap cell offset.
+    game::ARMOR_ALUMINUM,  // ARMOR:		Armor type
+    0,                     // CANENTER:	Units that can enter building.
+    0,                     // CAPACITY:	Spice storage capacity.
+    0,                     // POWER:		Power points required.
+    0,                     // DRAIN:		Power points required.
+    game::BSIZE_11,        // SIZE:			Building size.
+    {},                    // Preferred exit cell list.
+    List1,                 // OCCUPYLIST:	List of active foundation squares.
+    {}                     // OVERLAPLIST:List of overlap cell offset.
 );
 
 const base::EnumArray<StructType, const BuildingTypeClass*, kStructCount>
@@ -3602,17 +3603,17 @@ BuildingTypeClass::BuildingTypeClass(
     bool is_buildable, bool is_crew, bool is_sturdy, RTTIType tobuild,
     game::DirType sframe, int16_t strength, int sightrange, int cost,
     int scenario, int risk, int reward, int ownable, WeaponType primary,
-    WeaponType secondary, ArmorType armor, uint32_t canenter, int capacity,
-    int power, int drain, BSizeType size, std::span<const int16_t> exitlist,
-    std::span<const int16_t> sizelist,
+    WeaponType secondary, game::ArmorType armor, uint32_t canenter,
+    int capacity, int power, int drain, game::BSizeType size,
+    std::span<const int16_t> exitlist, std::span<const int16_t> sizelist,
     std::span<const int16_t> overlap) noexcept
     : TechnoTypeClass(
           name, ininame, level, pre, false, is_scanner, is_nominal, false,
           is_flammable, false, is_stealthy, is_selectable, is_legal_target,
           is_insignificant, is_immune, is_theater, is_twoshooter,
           is_turret_equipped, is_repairable, is_buildable, is_crew, -1,
-          static_cast<int16_t>(strength * 2), MPH_IMMOBILE, sightrange, cost,
-          scenario, risk, reward, ownable, primary, secondary, armor),
+          static_cast<int16_t>(strength * 2), game::MPH_IMMOBILE, sightrange,
+          cost, scenario, risk, reward, ownable, primary, secondary, armor),
       IsBibbed(is_bibbed),
       IsWall(is_wall),
       IsFactory(is_factory),
@@ -3632,25 +3633,25 @@ BuildingTypeClass::BuildingTypeClass(
       Size(size),
       OccupyList(sizelist),
       OverlapList(overlap) {
-  Anims.at(BSTATE_CONSTRUCTION).Start = 0;
-  Anims.at(BSTATE_CONSTRUCTION).Count = 1;
-  Anims.at(BSTATE_CONSTRUCTION).Rate = 0;
+  Anims.at(game::BSTATE_CONSTRUCTION).Start = 0;
+  Anims.at(game::BSTATE_CONSTRUCTION).Count = 1;
+  Anims.at(game::BSTATE_CONSTRUCTION).Rate = 0;
 
-  Anims.at(BSTATE_IDLE).Start = 0;
-  Anims.at(BSTATE_IDLE).Count = 1;
-  Anims.at(BSTATE_IDLE).Rate = 0;
+  Anims.at(game::BSTATE_IDLE).Start = 0;
+  Anims.at(game::BSTATE_IDLE).Count = 1;
+  Anims.at(game::BSTATE_IDLE).Rate = 0;
 
-  Anims.at(BSTATE_ACTIVE).Start = 0;
-  Anims.at(BSTATE_ACTIVE).Count = 1;
-  Anims.at(BSTATE_ACTIVE).Rate = 0;
+  Anims.at(game::BSTATE_ACTIVE).Start = 0;
+  Anims.at(game::BSTATE_ACTIVE).Count = 1;
+  Anims.at(game::BSTATE_ACTIVE).Rate = 0;
 
-  Anims.at(BSTATE_AUX1).Start = 0;
-  Anims.at(BSTATE_AUX1).Count = 1;
-  Anims.at(BSTATE_AUX1).Rate = 0;
+  Anims.at(game::BSTATE_AUX1).Start = 0;
+  Anims.at(game::BSTATE_AUX1).Count = 1;
+  Anims.at(game::BSTATE_AUX1).Rate = 0;
 
-  Anims.at(BSTATE_AUX2).Start = 0;
-  Anims.at(BSTATE_AUX2).Count = 1;
-  Anims.at(BSTATE_AUX2).Rate = 0;
+  Anims.at(game::BSTATE_AUX2).Start = 0;
+  Anims.at(game::BSTATE_AUX2).Count = 1;
+  Anims.at(game::BSTATE_AUX2).Rate = 0;
 }
 
 /***********************************************************************************************
@@ -3673,40 +3674,40 @@ BuildingTypeClass::BuildingTypeClass(
 void BuildingTypeClass::One_Time() {
   static const struct {
     StructType Class;  // Building class number.
-    BStateType Stage;  // Animation sequence to assign animation range to.
+    game::BStateType Stage;  // Animation sequence to assign animation range to.
     int Start;         // Starting frame number.
     int Length;        // Number of frames (-1 means use all frames).
     int Rate;          // Rate of animation.
   } _anims[] = {
-      {STRUCT_OBELISK, BSTATE_ACTIVE, 0, 4, OBELISK_ANIMATION_RATE},
-      {STRUCT_ADVANCED_POWER, BSTATE_IDLE, 0, 4, 15},
-      {STRUCT_AIRSTRIP, BSTATE_IDLE, 0, 16, 3},
-      {STRUCT_BARRACKS, BSTATE_ACTIVE, 0, 10, 3},
-      {STRUCT_BARRACKS, BSTATE_IDLE, 0, 10, 3},
-      {STRUCT_CONST, BSTATE_ACTIVE, 4, 20, 3},
-      {STRUCT_CONST, BSTATE_IDLE, 0, 4, 3},
-      {STRUCT_EYE, BSTATE_IDLE, 0, 16, 4},
-      {STRUCT_HELIPAD, BSTATE_ACTIVE, 0, 7, 4},
-      {STRUCT_HELIPAD, BSTATE_IDLE, 0, 0, 0},
-      {STRUCT_HOSPITAL, BSTATE_IDLE, 0, 4, 3},
-      {STRUCT_POWER, BSTATE_IDLE, 0, 4, 15},
-      {STRUCT_PUMP, BSTATE_IDLE, 0, 14, 4},
-      {STRUCT_RADAR, BSTATE_IDLE, 0, 16, 4},
-      {STRUCT_REFINERY, BSTATE_ACTIVE, 12, 7, 4},  // Docking phase.
-      {STRUCT_REFINERY, BSTATE_AUX1, 19, 5, 4},    // Siphoning phase.
-      {STRUCT_REFINERY, BSTATE_AUX2, 24, 6, 4},    // Undocking phase.
-      {STRUCT_REFINERY, BSTATE_IDLE, 0, 6, 4},     // Idle phase.
-      {STRUCT_REFINERY, BSTATE_FULL, 6, 6, 4},     // Flashing lights
-      {STRUCT_REPAIR, BSTATE_ACTIVE, 0, 7, 2},
-      {STRUCT_REPAIR, BSTATE_IDLE, 0, 1, 0},
-      {STRUCT_TEMPLE, BSTATE_IDLE, 0, 1, 0},
-      {STRUCT_V20, BSTATE_IDLE, 0, 3, 3},
-      {STRUCT_V21, BSTATE_IDLE, 0, 3, 3},
-      {STRUCT_V22, BSTATE_IDLE, 0, 3, 3},
-      {STRUCT_V23, BSTATE_IDLE, 0, 3, 3},
-      {STRUCT_WEAP, BSTATE_ACTIVE, 0, 1, 0},
-      {STRUCT_WEAP, BSTATE_IDLE, 0, 1, 0},
-      {STRUCT_TEMPLE, BSTATE_ACTIVE, 0, 5, 1},
+      {STRUCT_OBELISK, game::BSTATE_ACTIVE, 0, 4, OBELISK_ANIMATION_RATE},
+      {STRUCT_ADVANCED_POWER, game::BSTATE_IDLE, 0, 4, 15},
+      {STRUCT_AIRSTRIP, game::BSTATE_IDLE, 0, 16, 3},
+      {STRUCT_BARRACKS, game::BSTATE_ACTIVE, 0, 10, 3},
+      {STRUCT_BARRACKS, game::BSTATE_IDLE, 0, 10, 3},
+      {STRUCT_CONST, game::BSTATE_ACTIVE, 4, 20, 3},
+      {STRUCT_CONST, game::BSTATE_IDLE, 0, 4, 3},
+      {STRUCT_EYE, game::BSTATE_IDLE, 0, 16, 4},
+      {STRUCT_HELIPAD, game::BSTATE_ACTIVE, 0, 7, 4},
+      {STRUCT_HELIPAD, game::BSTATE_IDLE, 0, 0, 0},
+      {STRUCT_HOSPITAL, game::BSTATE_IDLE, 0, 4, 3},
+      {STRUCT_POWER, game::BSTATE_IDLE, 0, 4, 15},
+      {STRUCT_PUMP, game::BSTATE_IDLE, 0, 14, 4},
+      {STRUCT_RADAR, game::BSTATE_IDLE, 0, 16, 4},
+      {STRUCT_REFINERY, game::BSTATE_ACTIVE, 12, 7, 4},  // Docking phase.
+      {STRUCT_REFINERY, game::BSTATE_AUX1, 19, 5, 4},    // Siphoning phase.
+      {STRUCT_REFINERY, game::BSTATE_AUX2, 24, 6, 4},    // Undocking phase.
+      {STRUCT_REFINERY, game::BSTATE_IDLE, 0, 6, 4},     // Idle phase.
+      {STRUCT_REFINERY, game::BSTATE_FULL, 6, 6, 4},     // Flashing lights
+      {STRUCT_REPAIR, game::BSTATE_ACTIVE, 0, 7, 2},
+      {STRUCT_REPAIR, game::BSTATE_IDLE, 0, 1, 0},
+      {STRUCT_TEMPLE, game::BSTATE_IDLE, 0, 1, 0},
+      {STRUCT_V20, game::BSTATE_IDLE, 0, 3, 3},
+      {STRUCT_V21, game::BSTATE_IDLE, 0, 3, 3},
+      {STRUCT_V22, game::BSTATE_IDLE, 0, 3, 3},
+      {STRUCT_V23, game::BSTATE_IDLE, 0, 3, 3},
+      {STRUCT_WEAP, game::BSTATE_ACTIVE, 0, 1, 0},
+      {STRUCT_WEAP, game::BSTATE_IDLE, 0, 1, 0},
+      {STRUCT_TEMPLE, game::BSTATE_ACTIVE, 0, 5, 1},
   };
 
   for (StructType sindex = STRUCT_WEAP; sindex < STRUCT_COUNT; sindex++) {
@@ -3741,7 +3742,7 @@ void BuildingTypeClass::One_Time() {
       if (count) {
         timedelay = 5 * kTicksPerSecond / count;
       }
-      building.Init_Anim(BSTATE_CONSTRUCTION, 0, count, timedelay);
+      building.Init_Anim(game::BSTATE_CONSTRUCTION, 0, count, timedelay);
     }
 
     /*
@@ -3924,7 +3925,7 @@ ObjectClass* BuildingTypeClass::Create_One_Of(HouseClass* house) const {
  *                                                                                             *
  * HISTORY: * 04/18/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
+void BuildingTypeClass::Init_Anim(game::BStateType state, int start, int count,
                                   int rate) const {
   Anims.at(state).Start = start;
   Anims.at(state).Count = count;
@@ -4118,7 +4119,7 @@ void BuildingTypeClass::Dimensions(int& width, int& height) const {
     int Width;
     int Height;
   };
-  static const base::EnumArray<BSizeType, Dimension> _dimensions = {
+  static const base::EnumArray<game::BSizeType, Dimension> _dimensions = {
       {{1, 1}, {2, 1}, {1, 2}, {2, 2}, {2, 3}, {3, 2}, {3, 3}, {4, 2}, {5, 5}}};
 
   width = _dimensions.at(Size).Width * ICON_PIXEL_W;
@@ -4263,8 +4264,8 @@ std::span<const int16_t> BuildingTypeClass::Overlap_List() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Width() const {
-  static const base::EnumArray<BSizeType, int> width = {1, 2, 1, 2, 2,
-                                                        3, 3, 4, 5};
+  static const base::EnumArray<game::BSizeType, int> width = {1, 2, 1, 2, 2,
+                                                              3, 3, 4, 5};
   return width.at(Size);
 }
 
@@ -4282,8 +4283,8 @@ int BuildingTypeClass::Width() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Height() const {
-  static const base::EnumArray<BSizeType, int> height = {1, 1, 2, 2, 3,
-                                                         2, 3, 2, 5};
+  static const base::EnumArray<game::BSizeType, int> height = {1, 1, 2, 2, 3,
+                                                               2, 3, 2, 5};
   return height.at(Size);
 }
 

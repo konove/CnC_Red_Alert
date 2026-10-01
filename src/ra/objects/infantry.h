@@ -202,10 +202,11 @@ class InfantryClass final : public FootClass {
   ActionType What_Action(ObjectClass* object) override;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
   BulletClass* Fire_At(TARGET target, int which) override;
-  ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
-                         TechnoClass* source = nullptr,
-                         bool forced = false) override;
-  [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
+  game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                               TechnoClass* source = nullptr,
+                               bool forced = false) override;
+  [[nodiscard]] game::FireErrorType Can_Fire(TARGET target,
+                                             int which) const override;
   void Assign_Target(TARGET /*target*/) override;
   void Set_Occupy_Bit(COORDINATE coord) {
     Set_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
@@ -257,7 +258,7 @@ class InfantryClass final : public FootClass {
   */
   bool Do_Action(DoType todo, bool force = false);
   bool Random_Animate() override;
-  [[nodiscard]] MoveType Can_Enter_Cell(
+  [[nodiscard]] game::MoveType Can_Enter_Cell(
       CELL /*cell*/,
       game::FacingType /*from*/ = game::FACING_NONE) const override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;

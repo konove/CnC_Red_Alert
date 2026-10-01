@@ -70,6 +70,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
+#include "game/sim/enums.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
 #include "ra/ai/team.h"
@@ -375,7 +376,8 @@ EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
  *=============================================================================================*/
 EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
                        TargetClass destination, SpeedType speed,
-                       MPHType maxspeed) : EventClass() {
+                       game::MPHType maxspeed)
+    : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = MEGAMISSION_F;
   // Frame is a 26-bit field in the packet; the global counter is long.

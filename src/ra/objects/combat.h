@@ -6,7 +6,7 @@
 
 namespace ra {
 
-int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
+int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor,
                   int distance);
 void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
                       WarheadType warhead);

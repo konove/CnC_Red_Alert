@@ -65,6 +65,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "game/core/display_constants.h"
+#include "game/sim/enums.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
@@ -648,7 +649,7 @@ OverlayTypeClass::OverlayTypeClass(OverlayType iconset, const char* ininame,
                                    bool istiberium, bool high, bool theater,
                                    bool walltype, bool iscrate) noexcept
     : ObjectTypeClass(false, false, iscrushable, true, false, istarget, true,
-                      false, fullname, ininame, ARMOR_NONE, 0),
+                      false, fullname, ininame, game::ARMOR_NONE, 0),
       Type(iconset),
       Land(ground),
       DamageLevels(damagelevels),

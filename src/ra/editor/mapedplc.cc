@@ -69,6 +69,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/scenario.h"
@@ -861,7 +862,7 @@ int MapEditClass::Place_Object() {
         /*
         **	Try to put the object back down
         */
-        if (occupier->Can_Enter_Cell(Coord_Cell(obj_coord)) != MOVE_OK) {
+        if (occupier->Can_Enter_Cell(Coord_Cell(obj_coord)) != game::MOVE_OK) {
           okflag = false;
         }
 

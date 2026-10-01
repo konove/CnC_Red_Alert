@@ -110,6 +110,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "game/sim/direction.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
@@ -356,7 +357,7 @@ bool FootClass::Basic_Path() {
     *that instead. *	EXCEPT when that cell is very close -- then just bail.
     */
     //		IsFindPath = true;
-    if (Can_Enter_Cell(cell) == MOVE_NO && Distance(NavCom) > 0x0300) {
+    if (Can_Enter_Cell(cell) == game::MOVE_NO && Distance(NavCom) > 0x0300) {
       static const int _faceadjust[8] = {0, 1, -1, 2, -2, 3, -3, 4};
       const auto f2 = static_cast<game::FacingType>(
           static_cast<unsigned>(td::Direction(cell, Coord_Cell(Coord))) >> 5);
@@ -364,7 +365,7 @@ bool FootClass::Basic_Path() {
       for (const int index : _faceadjust) {
         CELL const cell2 =
             Adjacent_Cell(cell, game::AsFacing(static_cast<int>(f2) + index));
-        if (Can_Enter_Cell(cell2, game::FACING_NONE) <= MOVE_CLOAK) {
+        if (Can_Enter_Cell(cell2, game::FACING_NONE) <= game::MOVE_CLOAK) {
           cell = cell2;
           break;
         }
@@ -415,9 +416,9 @@ bool FootClass::Basic_Path() {
       PathType path1;
       game::FacingType workpath1[200];  // Staging area for path list.
       game::FacingType workpath2[200];  // Staging area for path list.
-      MoveType maxtype = MOVE_TEMP;
+      game::MoveType maxtype = game::MOVE_TEMP;
       if (!House->IsHuman) {
-        maxtype = MOVE_DESTROYABLE;
+        maxtype = game::MOVE_DESTROYABLE;
       } else {
         /*
         **	For simple movement missions by the human player, then don't
@@ -427,7 +428,7 @@ bool FootClass::Basic_Path() {
         **	occupying the destination location.
         */
         if (Mission == MISSION_MOVE && Distance(NavCom) < 0x0280) {
-          maxtype = MOVE_DESTROYABLE;
+          maxtype = game::MOVE_DESTROYABLE;
         }
       }
 
@@ -446,7 +447,7 @@ bool FootClass::Basic_Path() {
         *simple *	comparison with the most aggressive path. If they are
         *very close, then *	go with the best (easiest) path method.
         */
-        path = Find_Path(cell, workpath2, sizeof(workpath2), MOVE_CLOAK);
+        path = Find_Path(cell, workpath2, sizeof(workpath2), game::MOVE_CLOAK);
         if (path && path->Cost &&
             path->Cost < std::max(path1.Cost + (path1.Cost / 2), 3)) {
           path1 = *path;
@@ -458,7 +459,8 @@ bool FootClass::Basic_Path() {
           *Scan through *	the rest of the path options, looking for the
           *best one.
           */
-          for (MoveType move = MOVE_MOVING_BLOCK; move < maxtype; move++) {
+          for (game::MoveType move = game::MOVE_MOVING_BLOCK; move < maxtype;
+               move++) {
             path = Find_Path(cell, workpath2, sizeof(workpath2), move);
             if (path && path->Cost &&
                 path->Cost < std::max(path1.Cost + (path1.Cost / 2), 3)) {
@@ -471,7 +473,7 @@ bool FootClass::Basic_Path() {
       }
 
 #ifdef OBSOLETE
-      for (MoveType move = MOVE_CLOAK; move <= maxtype; move++) {
+      for (game::MoveType move = game::MOVE_CLOAK; move <= maxtype; move++) {
         if (!found1) {
           path = Find_Path(cell, workpath1, sizeof(workpath1), move);
           if (path && path->Cost) {
@@ -926,7 +928,7 @@ void FootClass::Approach_Target() {
 
           if (td::Distance(trycoord, tcoord) < range) {
             trycell = Coord_Cell(trycoord);
-            if (Can_Enter_Cell(trycell) <= MOVE_CLOAK &&
+            if (Can_Enter_Cell(trycell) <= game::MOVE_CLOAK &&
                 TheMap().In_Radar(trycell)) {
               found = true;
               break;
@@ -1116,19 +1118,20 @@ bool FootClass::Limbo() {
  *                                                                                             *
  * HISTORY: * 12/30/1994 JLB : Created. *
  *=============================================================================================*/
-ResultType FootClass::Take_Damage(int& damage, int distance,
-                                  WarheadType warhead, TechnoClass* source) {
-  const ResultType result =
+game::ResultType FootClass::Take_Damage(int& damage, int distance,
+                                        WarheadType warhead,
+                                        TechnoClass* source) {
+  const game::ResultType result =
       TechnoClass::Take_Damage(damage, distance, warhead, source);
 
-  if (result != RESULT_NONE && Team) {
+  if (result != game::RESULT_NONE && Team) {
     if (TheSession().type() != GAME_NORMAL ||
         (source && !House->Is_Ally(source))) {
       Team->Took_Damage(this, result, source);
     }
 
   } else {
-    if (result != RESULT_DESTROYED) {
+    if (result != game::RESULT_DESTROYED) {
       /*
       **	Determine if the target that is current being attacked has a
       *weapon that can *	do harm to a ground based unit. This information
@@ -1386,7 +1389,7 @@ void FootClass::Per_Cell_Process(bool center) {
   **	If adjacent to an enemy building that has the ability to reveal a
   *stealth tank, *	then shimmer the cloaked object.
   */
-  if (Cloak == CLOAKED) {
+  if (Cloak == game::CLOAKED) {
     for (const game::FacingType face :
          magic_enum::enum_values<game::FacingType>()) {
       const CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
@@ -1429,7 +1432,7 @@ void FootClass::Per_Cell_Process(bool center) {
   **	Trigger event associated with the player entering the cell.
   */
   TriggerClass* trigger = TheMap().at(Coord_Cell(Coord)).Get_Trigger();
-  if (Cloak != CLOAKED && trigger && trigger->House == Owner()) {
+  if (Cloak != game::CLOAKED && trigger && trigger->House == Owner()) {
     trigger->Spring(EVENT_PLAYER_ENTERED, Coord_Cell(Coord));
   }
   //	}
@@ -1979,9 +1982,9 @@ int FootClass::Offload_Tiberium_Bail() { return 0; }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-MoveType FootClass::Can_Enter_Cell(CELL /*unused*/,
-                                   game::FacingType /*unused*/) const {
-  return MOVE_OK;
+game::MoveType FootClass::Can_Enter_Cell(CELL /*unused*/,
+                                         game::FacingType /*unused*/) const {
+  return game::MOVE_OK;
 }
 
 /***********************************************************************************************

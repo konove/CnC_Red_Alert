@@ -72,6 +72,7 @@
 #include "engine/gfx/shape.h"
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
+#include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/audio.h"
 #include "ra/assets/palette.h"
@@ -701,7 +702,7 @@ void AnimClass::AI() {
           int damage = Accum.ToInt();
           Accum.Clear();
           if (As_Object(xObject)->Take_Damage(damage, 0, WARHEAD_FIRE) ==
-              RESULT_DESTROYED) {
+              game::RESULT_DESTROYED) {
             delete this;
             return;
           }
