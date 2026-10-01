@@ -46,13 +46,13 @@
 #include <span>
 
 #include "engine/gfx/pixel_buffer.h"
+#include "game/sim/crew.h"
+#include "game/sim/flasher.h"
 #include "td/core/defines.h"
 #include "td/core/facing.h"
 #include "td/objects/bullet.h"
 #include "td/objects/cargo.h"
-#include "td/objects/crew.h"
 #include "td/objects/door.h"
-#include "td/objects/flasher.h"
 #include "td/objects/house.h"
 #include "td/objects/object.h"
 #include "td/objects/radio.h"
@@ -68,11 +68,11 @@ namespace td {
 **	This is the common data between building and units.
 */
 class TechnoClass : public RadioClass,
-                    public FlasherClass,
+                    public game::FlasherClass,
                     public StageClass,
                     public CargoClass,
                     public DoorClass,
-                    public CrewClass {
+                    public game::CrewClass {
  public:
   /*
   **	This flag will be true if the object has been damaged with malace.
@@ -264,7 +264,7 @@ class TechnoClass : public RadioClass,
   /*
   **	Combat related.
   */
-  virtual int Made_A_Kill() { return CrewClass::Add_Kill(); }
+  virtual int Made_A_Kill() { return game::CrewClass::Add_Kill(); }
   void Base_Is_Attacked(TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);
   void Record_The_Kill(TechnoClass* source) override;

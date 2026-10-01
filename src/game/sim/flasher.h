@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/FLASHER.CPP 1     3/03/97 10:24a Joe_bostic $ */
+/* $Header: /CounterStrike/FLASHER.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
  ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
  ****
@@ -24,53 +24,69 @@
  *                                                                                             *
  *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : FLASHER.CPP *
+ *                    File Name : FLASHER.H *
  *                                                                                             *
  *                   Programmer : Joe L. Bostic *
  *                                                                                             *
  *                   Start Date : May 28, 1994 *
  *                                                                                             *
- *                  Last Update : October 17, 1994   [JLB] *
+ *                  Last Update : May 28, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * FlasherClass::Process -- Performs the logic processing for the
- *   flashing ability. *
+ * Functions: *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/objects/flasher.h"
+#ifndef CNC_RED_ALERT_GAME_SIM_FLASHER_H_
+#define CNC_RED_ALERT_GAME_SIM_FLASHER_H_
 
-namespace ra {
+#include <cstdint>
 
-FlasherClass::~FlasherClass() = default;
+namespace game {
 
-/***********************************************************************************************
- * FlasherClass::Process -- Performs the logic processing for the flashing
- *ability.            *
- *                                                                                             *
- *    The ability for an object to flash is controlled by this logic processing
- *routine. It    * should be called once per game tick per unit. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  bool; Should the associated object be redrawn? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 05/28/1994 JLB : Created. * 06/20/1994 JLB : Is now independent of
- *object it represents.                              *
- *=============================================================================================*/
-bool FlasherClass::Process() {
-  if (FlashCount) {
-    FlashCount--;
-    IsBlushing = false;
+class FlasherClass {
+ public:
+  /*
+  **	When this object is targeted, it will flash a number of times. This is
+  *the *	flash control number. It counts down to zero and then stops. Odd
+  *values *	cause the object to be rendered in a lighter color.
+  */
+  uint8_t FlashCount : 7 {0};
 
-    if (FlashCount & 0x01) {
-      IsBlushing = true;
+  /*
+  **	When an object is targeted, it flashes several times to give visual
+  *feedback *	to the player. Every other game "frame", this flag is true until
+  *the flashing *	is determined to be completed.
+  */
+  bool IsBlushing : 1 {false};
+
+  FlasherClass() = default;
+
+  // Saved-game support.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    uint8_t flash_count = FlashCount;
+    bool is_blushing = IsBlushing;
+    ar(flash_count, is_blushing);
+    if constexpr (Archive::kIsReading) {
+      // FlashCount is a 7-bit field; a larger count is a damaged save.
+      if (flash_count > 127) {
+        ar.Fail("invalid flash count");
+        return;
+      }
+      FlashCount = flash_count;
+      IsBlushing = is_blushing;
     }
-    return true;
   }
-  return false;
-}
+  virtual ~FlasherClass();
+  FlasherClass(const FlasherClass&) = delete;
+  FlasherClass& operator=(const FlasherClass&) = delete;
+  FlasherClass(FlasherClass&&) = delete;
+  FlasherClass& operator=(FlasherClass&&) = delete;
 
-}  // namespace ra
+  bool Process();
+};
+
+}  // namespace game
+
+#endif  // CNC_RED_ALERT_GAME_SIM_FLASHER_H_

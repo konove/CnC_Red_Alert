@@ -162,6 +162,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/reinf.h"
@@ -213,7 +214,6 @@
 #include "ra/objects/tracker.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
-#include "ra/objects/utracker.h"
 #include "ra/objects/vessel.h"
 #include "ra/screens/goptions.h"
 #include "ra/startup/game_state.h"
@@ -520,31 +520,31 @@ HouseClass::HouseClass(HousesType house)
  *=============================================================================================*/
 void HouseClass::Init_Trackers() {
   if (TheSession().Type == GAME_INTERNET) {
-    AircraftTotals = std::make_unique<UnitTrackerClass>(
+    AircraftTotals = std::make_unique<game::UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<AircraftType>()));
-    InfantryTotals = std::make_unique<UnitTrackerClass>(
+    InfantryTotals = std::make_unique<game::UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<InfantryType>()));
-    UnitTotals = std::make_unique<UnitTrackerClass>(
+    UnitTotals = std::make_unique<game::UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<UnitType>()));
-    BuildingTotals = std::make_unique<UnitTrackerClass>(
+    BuildingTotals = std::make_unique<game::UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<StructType>()));
-    VesselTotals = std::make_unique<UnitTrackerClass>(
+    VesselTotals = std::make_unique<game::UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<VesselType>()));
 
-    DestroyedAircraft = std::make_unique<UnitTrackerClass>(
+    DestroyedAircraft = std::make_unique<game::UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<AircraftType>()));
-    DestroyedInfantry = std::make_unique<UnitTrackerClass>(
+    DestroyedInfantry = std::make_unique<game::UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<InfantryType>()));
-    DestroyedUnits = std::make_unique<UnitTrackerClass>(
+    DestroyedUnits = std::make_unique<game::UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<UnitType>()));
-    DestroyedBuildings = std::make_unique<UnitTrackerClass>(
+    DestroyedBuildings = std::make_unique<game::UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<StructType>()));
-    DestroyedVessels = std::make_unique<UnitTrackerClass>(
+    DestroyedVessels = std::make_unique<game::UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<VesselType>()));
 
-    CapturedBuildings = std::make_unique<UnitTrackerClass>(
+    CapturedBuildings = std::make_unique<game::UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<StructType>()));
-    TotalCrates = std::make_unique<UnitTrackerClass>(
+    TotalCrates = std::make_unique<game::UnitTrackerClass>(
         static_cast<int>(magic_enum::enum_count<CrateType>()));
   }
 }

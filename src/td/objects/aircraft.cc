@@ -128,6 +128,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
+#include "game/sim/utracker.h"
 #include "td/ai/team.h"
 #include "td/assets/audio.h"
 #include "td/core/config.h"
@@ -158,7 +159,6 @@
 #include "td/objects/target.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
-#include "td/objects/utracker.h"
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 

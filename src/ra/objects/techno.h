@@ -49,6 +49,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "game/sim/crew.h"
+#include "game/sim/flasher.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/face.h"
@@ -56,9 +58,7 @@
 #include "ra/core/jshell.h"
 #include "ra/objects/bullet.h"
 #include "ra/objects/cargo.h"
-#include "ra/objects/crew.h"
 #include "ra/objects/door.h"
-#include "ra/objects/flasher.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
 #include "ra/objects/radio.h"
@@ -74,12 +74,12 @@ namespace ra {
 **	This is the common data between building and units.
 */
 class TechnoClass : public RadioClass,
-                    public FlasherClass,
+                    public game::FlasherClass,
                     public StageClass,
                     public CargoClass,
                     public DoorClass {
  public:
-  CrewClass Crew;
+  game::CrewClass Crew;
 
   /*
   **	If this techno object has detected that it has outlived its

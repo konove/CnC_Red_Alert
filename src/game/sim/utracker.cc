@@ -44,7 +44,7 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/objects/utracker.h"
+#include "game/sim/utracker.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -61,7 +61,7 @@
 #include <arpa/inet.h>
 #endif
 
-namespace ra {
+namespace game {
 
 /***********************************************************************************************
  * UTC::UnitTrackerClass -- Class constructor *
@@ -213,4 +213,4 @@ void UnitTrackerClass::To_PC_Format() {
   InNetworkFormat = 0;  // Flag that data is now in PC format
 }
 
-}  // namespace ra
+}  // namespace game

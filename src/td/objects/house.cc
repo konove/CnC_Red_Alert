@@ -150,6 +150,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/utracker.h"
 #include "td/ai/base.h"
 #include "td/ai/region.h"
 #include "td/ai/reinf.h"
@@ -197,7 +198,6 @@
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
-#include "td/objects/utracker.h"
 #include "td/screens/goptions.h"
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
@@ -473,27 +473,28 @@ HouseClass::HouseClass(HousesType house)
 }
 
 void HouseClass::Init_Trackers() {
-  AircraftTotals =
-      std::make_unique<UnitTrackerClass>(static_cast<int>(AIRCRAFT_COUNT));
-  InfantryTotals =
-      std::make_unique<UnitTrackerClass>(static_cast<int>(INFANTRY_COUNT));
-  UnitTotals = std::make_unique<UnitTrackerClass>(static_cast<int>(UNIT_COUNT));
+  AircraftTotals = std::make_unique<game::UnitTrackerClass>(
+      static_cast<int>(AIRCRAFT_COUNT));
+  InfantryTotals = std::make_unique<game::UnitTrackerClass>(
+      static_cast<int>(INFANTRY_COUNT));
+  UnitTotals =
+      std::make_unique<game::UnitTrackerClass>(static_cast<int>(UNIT_COUNT));
   BuildingTotals =
-      std::make_unique<UnitTrackerClass>(static_cast<int>(STRUCT_COUNT));
+      std::make_unique<game::UnitTrackerClass>(static_cast<int>(STRUCT_COUNT));
 
-  DestroyedAircraft =
-      std::make_unique<UnitTrackerClass>(static_cast<int>(AIRCRAFT_COUNT));
-  DestroyedInfantry =
-      std::make_unique<UnitTrackerClass>(static_cast<int>(INFANTRY_COUNT));
+  DestroyedAircraft = std::make_unique<game::UnitTrackerClass>(
+      static_cast<int>(AIRCRAFT_COUNT));
+  DestroyedInfantry = std::make_unique<game::UnitTrackerClass>(
+      static_cast<int>(INFANTRY_COUNT));
   DestroyedUnits =
-      std::make_unique<UnitTrackerClass>(static_cast<int>(UNIT_COUNT));
+      std::make_unique<game::UnitTrackerClass>(static_cast<int>(UNIT_COUNT));
   DestroyedBuildings =
-      std::make_unique<UnitTrackerClass>(static_cast<int>(STRUCT_COUNT));
+      std::make_unique<game::UnitTrackerClass>(static_cast<int>(STRUCT_COUNT));
 
   CapturedBuildings =
-      std::make_unique<UnitTrackerClass>(static_cast<int>(STRUCT_COUNT));
-  TotalCrates =
-      std::make_unique<UnitTrackerClass>(TOTAL_CRATE_TYPES);  // 15 crate types
+      std::make_unique<game::UnitTrackerClass>(static_cast<int>(STRUCT_COUNT));
+  TotalCrates = std::make_unique<game::UnitTrackerClass>(
+      TOTAL_CRATE_TYPES);  // 15 crate types
 }
 
 HouseClass::~HouseClass() = default;

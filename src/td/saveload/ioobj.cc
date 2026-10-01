@@ -48,6 +48,8 @@
 #include "engine/stream/archive.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/crew.h"
+#include "game/sim/flasher.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
@@ -61,11 +63,9 @@
 #include "td/objects/building.h"
 #include "td/objects/bullet.h"
 #include "td/objects/cargo.h"
-#include "td/objects/crew.h"
 #include "td/objects/door.h"
 #include "td/objects/drive.h"
 #include "td/objects/factory.h"
-#include "td/objects/flasher.h"
 #include "td/objects/fly.h"
 #include "td/objects/foot.h"
 #include "td/objects/fuse.h"
@@ -485,11 +485,11 @@ template void RadioClass::Serialize(ArchiveReader&);
 template <class Archive>
 void TechnoClass::Serialize(Archive& ar) {
   RadioClass::Serialize(ar);
-  FlasherClass::Serialize(ar);
+  game::FlasherClass::Serialize(ar);
   StageClass::Serialize(ar);
   CargoClass::Serialize(ar);
   DoorClass::Serialize(ar);
-  CrewClass::Serialize(ar);
+  game::CrewClass::Serialize(ar);
   bool ticked = IsTickedOff;
   bool cloakable = IsCloakable;
   bool leader = IsLeader;

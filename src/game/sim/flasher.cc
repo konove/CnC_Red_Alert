@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer(tm)
+**	Command & Conquer Red Alert(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\flasher.cpv   2.18   16 Oct 1995 16:49:24
- * JOE_BOSTIC  $ */
+/* $Header: /CounterStrike/FLASHER.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
  ****
  ***********************************************************************************************
  *                                                                                             *
@@ -34,15 +33,14 @@
  *                  Last Update : October 17, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions:
- *   FlasherClass::Process -- Performs the logic processing for the flashing
- *     ability.
+ * Functions: * FlasherClass::Process -- Performs the logic processing for the
+ *   flashing ability. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/objects/flasher.h"
+#include "game/sim/flasher.h"
 
-namespace td {
+namespace game {
 
 FlasherClass::~FlasherClass() = default;
 
@@ -75,4 +73,4 @@ bool FlasherClass::Process() {
   return false;
 }
 
-}  // namespace td
+}  // namespace game

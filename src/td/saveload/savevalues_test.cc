@@ -10,6 +10,8 @@
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
 #include "game/core/game_clock.h"
+#include "game/sim/crew.h"
+#include "game/sim/flasher.h"
 #include "gtest/gtest.h"
 #include "td/ai/region.h"
 #include "td/ai/special.h"
@@ -20,9 +22,7 @@
 #include "td/core/randomstate.h"
 #include "td/objects/abstract.h"
 #include "td/objects/cell.h"
-#include "td/objects/crew.h"
 #include "td/objects/door.h"
-#include "td/objects/flasher.h"
 #include "td/objects/fly.h"
 #include "td/objects/fuse.h"
 #include "td/objects/stage.h"
@@ -175,19 +175,19 @@ TEST(TdSaveValuesTest, DoorResumesOpeningAndPreservesRedraw) {
 }
 
 TEST(TdSaveValuesTest, FlashStateAndCrewKillsSurviveRoundTrip) {
-  FlasherClass flash;
+  game::FlasherClass flash;
   flash.FlashCount = 127;
   flash.IsBlushing = true;
-  FlasherClass loaded;
+  game::FlasherClass loaded;
   Restore(loaded, Save(flash));
   EXPECT_EQ(loaded.FlashCount, 127);
   EXPECT_TRUE(loaded.IsBlushing);
   EXPECT_TRUE(loaded.Process());
   EXPECT_EQ(loaded.FlashCount, 126);
   EXPECT_FALSE(loaded.IsBlushing);
-  CrewClass crew;
+  game::CrewClass crew;
   crew.Kills = 50000;
-  CrewClass loaded_crew;
+  game::CrewClass loaded_crew;
   Restore(loaded_crew, Save(crew));
   EXPECT_EQ(loaded_crew.Add_Kill(), 50001);
 }
@@ -196,7 +196,7 @@ TEST(TdSaveValuesTest, FlashCountCannotOverflowItsBitfield) {
   std::array<uint8_t, 2> bytes{128, 0};
   SpanSource source(std::as_bytes(std::span(bytes).first(2)));
   ArchiveReader reader(source);
-  FlasherClass flash;
+  game::FlasherClass flash;
   reader(flash);
   EXPECT_FALSE(reader.ok());
 }

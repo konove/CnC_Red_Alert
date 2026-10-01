@@ -68,7 +68,7 @@ apply_language_setting(rasdl)
 # rather than relying on it arriving transitively through engine_window/
 # engine_video.
 find_package(SDL2 REQUIRED)
-target_link_libraries(ra_engine PUBLIC game_core absl::strings magic_enum::magic_enum
+target_link_libraries(ra_engine PUBLIC game_core game_sim absl::strings magic_enum::magic_enum
         engine_net
         engine_window
         engine_video
@@ -237,8 +237,3 @@ if (EMSCRIPTEN)
     # and adding files.js to the shell html
 endif ()
 
-add_gtest(
-    NAME ra_utracker_test
-    SOURCES objects/utracker_test.cc objects/utracker.cc
-    LIBS base
-)

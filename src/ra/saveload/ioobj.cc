@@ -37,6 +37,7 @@
  */
 #include <cstdint>
 
+#include "game/sim/flasher.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"
@@ -51,7 +52,6 @@
 #include "ra/objects/door.h"
 #include "ra/objects/drive.h"
 #include "ra/objects/factory.h"
-#include "ra/objects/flasher.h"
 #include "ra/objects/fly.h"
 #include "ra/objects/foot.h"
 #include "ra/objects/fuse.h"
@@ -272,7 +272,7 @@ template void CargoClass::Serialize(ArchiveReader&);
 template <class Archive>
 void TechnoClass::Serialize(Archive& ar) {
   RadioClass::Serialize(ar);
-  FlasherClass::Serialize(ar);
+  game::FlasherClass::Serialize(ar);
   StageClass::Serialize(ar);
   CargoClass::Serialize(ar);
   DoorClass::Serialize(ar);

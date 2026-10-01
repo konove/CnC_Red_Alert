@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/FLASHER.H 1     3/03/97 10:24a Joe_bostic $ */
+/* $Header: /CounterStrike/CREW.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
  ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
  ****
@@ -24,62 +24,63 @@
  *                                                                                             *
  *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : FLASHER.H *
+ *                    File Name : CREW.H *
  *                                                                                             *
  *                   Programmer : Joe L. Bostic *
  *                                                                                             *
- *                   Start Date : May 28, 1994 *
+ *                   Start Date : April 23, 1994 *
  *                                                                                             *
- *                  Last Update : May 28, 1994   [JLB] *
+ *                  Last Update : April 23, 1994   [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_RA_OBJECTS_FLASHER_H_
-#define CNC_RED_ALERT_RA_OBJECTS_FLASHER_H_
+#ifndef CNC_RED_ALERT_GAME_SIM_CREW_H_
+#define CNC_RED_ALERT_GAME_SIM_CREW_H_
 
 #include <cstdint>
 
-namespace ra {
+namespace game {
 
-class FlasherClass {
+/****************************************************************************
+**	This class handles the basic crew logic. This includes hero tracking,
+**	crew bail-out, and attached object logic.
+*/
+class CrewClass {
  public:
   /*
-  **	When this object is targeted, it will flash a number of times. This is
-  *the *	flash control number. It counts down to zero and then stops. Odd
-  *values *	cause the object to be rendered in a lighter color.
+  **	This keeps track of the number of "kills" the unit as accumulated.
+  **	When it reaches a certain point, the unit improves.
   */
-  uint8_t FlashCount : 7 {0};
+  uint16_t Kills{0};
 
   /*
-  **	When an object is targeted, it flashes several times to give visual
-  *feedback *	to the player. Every other game "frame", this flag is true until
-  *the flashing *	is determined to be completed.
+  **	Constructors, Destructors, and overloaded operators.
   */
-  bool IsBlushing : 1 {false};
-
-  FlasherClass() = default;
+  CrewClass() = default;
 
   // Saved-game support.
   template <class Archive>
   void Serialize(Archive& ar) {
-    uint8_t flash_count = FlashCount;
-    bool is_blushing = IsBlushing;
-    ar(flash_count, is_blushing);
-    FlashCount = flash_count;
-    IsBlushing = is_blushing;
+    ar(Kills);
   }
-  virtual ~FlasherClass();
-  FlasherClass(const FlasherClass&) = delete;
-  FlasherClass& operator=(const FlasherClass&) = delete;
-  FlasherClass(FlasherClass&&) = delete;
-  FlasherClass& operator=(FlasherClass&&) = delete;
+  ~CrewClass() = default;
+  CrewClass(const CrewClass&) = delete;
+  CrewClass& operator=(const CrewClass&) = delete;
+  CrewClass(CrewClass&&) = delete;
+  CrewClass& operator=(CrewClass&&) = delete;
 
-  bool Process();
+  // Increments the crew's kill tally and returns the new total.
+  int Add_Kill() {
+    Kills++;
+    return Kills;
+  }
+
+ private:
 };
 
-}  // namespace ra
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_RA_OBJECTS_FLASHER_H_
+#endif  // CNC_RED_ALERT_GAME_SIM_CREW_H_

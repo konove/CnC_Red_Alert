@@ -185,6 +185,7 @@
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/utracker.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
@@ -219,7 +220,6 @@
 #include "td/objects/target.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
-#include "td/objects/utracker.h"
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 

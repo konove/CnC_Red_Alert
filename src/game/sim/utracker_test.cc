@@ -1,8 +1,8 @@
-#include "ra/objects/utracker.h"
+#include "game/sim/utracker.h"
 
 #include "gtest/gtest.h"
 
-namespace ra {
+namespace game {
 
 namespace {
 
@@ -28,4 +28,4 @@ TEST(UnitTrackerTest, NetworkRoundTripPreservesEveryCounter) {
 
 }  // namespace
 
-}  // namespace ra
+}  // namespace game

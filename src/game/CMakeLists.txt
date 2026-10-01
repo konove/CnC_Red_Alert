@@ -2,3 +2,4 @@
 # (docs/GAME_NAMESPACES_PLAN.md, tools/engine_layout.py).
 
 add_subdirectory(core)
+add_subdirectory(sim)

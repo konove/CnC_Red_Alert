@@ -52,6 +52,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
+#include "game/sim/utracker.h"
 #include "ra/ai/region.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
@@ -61,7 +62,6 @@
 #include "ra/objects/super.h"
 #include "ra/objects/target.h"
 #include "ra/objects/type.h"
-#include "ra/objects/utracker.h"
 
 class ArchiveReader;
 class ArchiveWriter;
@@ -471,30 +471,30 @@ class HouseClass {
   /*
   ** Stuff to keep track of the total number of units built by this house.
   */
-  std::unique_ptr<UnitTrackerClass> AircraftTotals;
-  std::unique_ptr<UnitTrackerClass> InfantryTotals;
-  std::unique_ptr<UnitTrackerClass> UnitTotals;
-  std::unique_ptr<UnitTrackerClass> BuildingTotals;
-  std::unique_ptr<UnitTrackerClass> VesselTotals;
+  std::unique_ptr<game::UnitTrackerClass> AircraftTotals;
+  std::unique_ptr<game::UnitTrackerClass> InfantryTotals;
+  std::unique_ptr<game::UnitTrackerClass> UnitTotals;
+  std::unique_ptr<game::UnitTrackerClass> BuildingTotals;
+  std::unique_ptr<game::UnitTrackerClass> VesselTotals;
 
   /*
   ** Total number of units destroyed by this house
   */
-  std::unique_ptr<UnitTrackerClass> DestroyedAircraft;
-  std::unique_ptr<UnitTrackerClass> DestroyedInfantry;
-  std::unique_ptr<UnitTrackerClass> DestroyedUnits;
-  std::unique_ptr<UnitTrackerClass> DestroyedBuildings;
-  std::unique_ptr<UnitTrackerClass> DestroyedVessels;
+  std::unique_ptr<game::UnitTrackerClass> DestroyedAircraft;
+  std::unique_ptr<game::UnitTrackerClass> DestroyedInfantry;
+  std::unique_ptr<game::UnitTrackerClass> DestroyedUnits;
+  std::unique_ptr<game::UnitTrackerClass> DestroyedBuildings;
+  std::unique_ptr<game::UnitTrackerClass> DestroyedVessels;
 
   /*
   ** Total number of enemy buildings captured by this house
   */
-  std::unique_ptr<UnitTrackerClass> CapturedBuildings;
+  std::unique_ptr<game::UnitTrackerClass> CapturedBuildings;
 
   /*
   ** Total number of crates found by this house
   */
-  std::unique_ptr<UnitTrackerClass> TotalCrates;
+  std::unique_ptr<game::UnitTrackerClass> TotalCrates;
 
   /*
   **	Records the number of infantry and vehicle factories active. This value

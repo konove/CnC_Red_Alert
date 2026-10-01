@@ -101,6 +101,7 @@
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/utracker.h"
 #include "td/ai/special.h"
 #include "td/ai/trigger.h"
 #include "td/assets/window_rect.h"
@@ -132,7 +133,6 @@
 #include "td/objects/terrain.h"
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
-#include "td/objects/utracker.h"
 #include "td/startup/conquer.h"
 #include "td/ui/dialog.h"
 

@@ -36,8 +36,8 @@
  *                                                                         *
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef CNC_RED_ALERT_RA_OBJECTS_UTRACKER_H_
-#define CNC_RED_ALERT_RA_OBJECTS_UTRACKER_H_
+#ifndef CNC_RED_ALERT_GAME_SIM_UTRACKER_H_
+#define CNC_RED_ALERT_GAME_SIM_UTRACKER_H_
 
 #include <cstdint>
 #include <span>
@@ -45,7 +45,7 @@
 
 #include "absl/base/attributes.h"
 
-namespace ra {
+namespace game {
 
 /*
 ** UnitTracker Class
@@ -77,6 +77,6 @@ class UnitTrackerClass {
   int InNetworkFormat{0};  // The unit entries are in host format
 };
 
-}  // namespace ra
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_RA_OBJECTS_UTRACKER_H_
+#endif  // CNC_RED_ALERT_GAME_SIM_UTRACKER_H_
