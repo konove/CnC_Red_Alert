@@ -138,7 +138,7 @@ class WarheadTypeClass {
   **	The warhead damage is reduced depending on the the type of armor the
   **	defender has. This table is what gives weapons their "character".
   */
-  base::EnumArray<ArmorType, unsigned char, kArmorCount> Modifier{};
+  base::EnumArray<ArmorType, unsigned char> Modifier{};
 };
 
 /**********************************************************************
@@ -721,7 +721,7 @@ class BuildingTypeClass : public TechnoTypeClass {
       int Rate;   // Number of ticks to delay between each frame.
     };
   // Resolved when the theater loads; the table itself stays const.
-    mutable base::EnumArray<BStateType, AnimControlType, kBstateCount> Anims{};
+    mutable base::EnumArray<BStateType, AnimControlType> Anims{};
 
     /*
     **	This is a mask flag used to determine if all the necessary prerequisite

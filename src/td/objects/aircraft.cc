@@ -129,6 +129,7 @@
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
 #include "game/sim/utracker.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
 #include "td/assets/audio.h"
 #include "td/core/config.h"
@@ -462,8 +463,8 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
     }
 
     if (*this == AIRCRAFT_TRANSPORT) {
-      const base::EnumArray<FacingType, int, kFacingCount> _stretch = {
-          8, 9, 10, 9, 8, 9, 10, 9};
+      const base::EnumArray<FacingType, int> _stretch = {8, 9, 10, 9,
+                                                         8, 9, 10, 9};
 
       /*
       **	Dual rotors offset along flight axis.
@@ -1484,7 +1485,7 @@ int AircraftClass::Mission_Retreat() {
  *=============================================================================================*/
 int AircraftClass::Exit_Object(TechnoClass* unit) {
   Validate();
-  static const base::EnumArray<FacingType, FacingType, kFacingCount> _toface = {
+  static const base::EnumArray<FacingType, FacingType> _toface = {
       FACING_S,  FACING_SW, FACING_SE, FACING_NW,
       FACING_NE, FACING_N,  FACING_W,  FACING_E};
   CELL cell = 0;
@@ -1492,8 +1493,9 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   /*
   **	Find a free cell to drop the unit off at.
   */
-  FacingType face = FACING_NONE;
-  for (face = FACING_N; face < FACING_COUNT; face++) {
+  FacingType face = FACING_N;
+  for (const FacingType candidate : magic_enum::enum_values<FacingType>()) {
+    face = candidate;
     cell = Adjacent_Cell(Coord_Cell(Coord), _toface.at(face));
     if (unit->Can_Enter_Cell(cell) == MOVE_OK) {
       break;
@@ -2417,7 +2419,7 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
       **	Perform a radius scan out from the original center location. Try
       *to *	find a cell that is allowed to be a legal LZ.
       */
-      for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++) {
+      for (const FacingType facing : magic_enum::enum_values<FacingType>()) {
         const CELL newcell = Coord_Cell(
             Coord_Move(coord, Facing_Dir(facing + modifier),
                        static_cast<uint16_t>(radius * ICON_LEPTON_W)));

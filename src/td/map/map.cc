@@ -77,6 +77,7 @@
 #include "engine/gfx/tile.h"
 #include "engine/platform/platform.h"
 #include "game/core/vector_dynamic.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/region.h"
 #include "td/ai/special.h"
 #include "td/core/defines.h"
@@ -1149,7 +1150,7 @@ void MapClass::Logic() {
         */
         if (TheMap().In_Radar(cell)) {
           const FacingType offset = Random_Pick(FACING_N, FACING_NW);
-          for (FacingType j = FACING_N; j < FACING_COUNT; j++) {
+          for (const FacingType j : magic_enum::enum_values<FacingType>()) {
             CellClass* newcell = &(*this).at(cell).Adjacent_Cell(j + offset);
 
             if (newcell && newcell->Cell_Object() == nullptr &&

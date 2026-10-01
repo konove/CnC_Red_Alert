@@ -82,6 +82,7 @@
 #include "base/pooled.h"
 #include "engine/platform/timer.h"
 #include "game/core/display_constants.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/assets/audio.h"
 #include "td/core/const.h"
@@ -142,7 +143,8 @@ void DriveClass::Do_Turn(DirType dir) {
             Dir_Facing(PrimaryFacing);  // Current facing (ordinal value).
 
         IsOnShortTrack = true;
-        Force_Track((static_cast<int>(face) * kFacingCount) +
+        Force_Track((static_cast<int>(face) *
+                     static_cast<int>(magic_enum::enum_count<FacingType>())) +
                         (static_cast<int>(face) + facediff),
                     Coord);
 
@@ -671,7 +673,8 @@ bool DriveClass::While_Moving() {
             base::At(RawTracks, tracknum - 1).Jump == TrackIndex &&
             TrackIndex) {
           const int tnum =
-              (static_cast<int>(Dir_Facing(track->Facing)) * kFacingCount) +
+              (static_cast<int>(Dir_Facing(track->Facing)) *
+               static_cast<int>(magic_enum::enum_count<FacingType>())) +
               static_cast<int>(nextface);
           const TurnTrackType* newtrack =
               base::Suffix(TrackControl, tnum)
@@ -725,7 +728,6 @@ bool DriveClass::While_Moving() {
               case MoveType::MOVE_MOVING_BLOCK:
               case MoveType::MOVE_DESTROYABLE:
               case MoveType::MOVE_NO:
-              case MoveType::MOVE_COUNT:
               default:
                 break;
             }
@@ -1110,8 +1112,9 @@ bool DriveClass::Start_Of_Move() {
     }
 
     IsOnShortTrack = false;
-    TrackNumber =
-        (static_cast<int>(facing) * kFacingCount) + static_cast<int>(nextface);
+    TrackNumber = (static_cast<int>(facing) *
+                   static_cast<int>(magic_enum::enum_count<FacingType>())) +
+                  static_cast<int>(nextface);
     if (base::At(TrackControl, TrackNumber).Track == 0) {
       base::At(Path, 0) = FACING_NONE;
       TrackNumber = -1;

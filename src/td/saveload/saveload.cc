@@ -60,6 +60,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/team.h"
@@ -520,7 +521,8 @@ static void Serialize_Misc_Values(Archive& ar) {
     base::At(TheWorld().briefing_text(),
              sizeof(TheWorld().briefing_text()) - 1) = '\0';
     if (TheWorld().scen_dir() < SCEN_DIR_EAST ||
-        TheWorld().scen_dir() >= SCEN_DIR_COUNT ||
+        TheWorld().scen_dir() >
+            magic_enum::enum_values<ScenarioDirType>().back() ||
         TheWorld().scen_var() < SCEN_VAR_A ||
         (TheWorld().scen_var() >= SCEN_VAR_COUNT &&
          TheWorld().scen_var() != SCEN_VAR_LOSE)) {

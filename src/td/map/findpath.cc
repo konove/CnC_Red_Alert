@@ -66,6 +66,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
 #include "game/core/path_overlap.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
@@ -1284,13 +1285,13 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   *first command facing.
   */
 #ifdef DIAGONAL
-  static const base::EnumArray<FacingType, FacingType, kFacingCount> _trans = {
+  static const base::EnumArray<FacingType, FacingType> _trans = {
       static_cast<FacingType>(0),  static_cast<FacingType>(0),
       static_cast<FacingType>(1),  static_cast<FacingType>(2),
       static_cast<FacingType>(3),  kEmptyCommand,
       static_cast<FacingType>(-1), static_cast<FacingType>(0)};  // Smoothing.
 #else
-  static base::EnumArray<FacingType, FacingType, kFacingCount> _trans = {
+  static base::EnumArray<FacingType, FacingType> _trans = {
       (FacingType)0, (FacingType)0, (FacingType)0, (FacingType)2,
       (FacingType)3, kEmptyCommand, (FacingType)0, (FacingType)0};
 #endif
@@ -1345,7 +1346,8 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
           base::At(path->Command, cmd2) -
           base::At(path->Command, cmd1);  // Calculated new optimized command.
       if (newcmd < FACING_N) {
-        newcmd = newcmd + FACING_COUNT;
+        newcmd =
+            newcmd + static_cast<int>(magic_enum::enum_count<FacingType>());
       }
       newcmd = _trans.at(newcmd);
 
@@ -1529,7 +1531,7 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
     }
   }
 
-  static const base::EnumArray<MoveType, int, kMoveCount> _value = {
+  static const base::EnumArray<MoveType, int> _value = {
       1,   //	MOVE_OK
       1,   //	MOVE_CLOAK
       3,   //	MOVE_MOVING_BLOCK
@@ -1617,7 +1619,6 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
           break;
         case MoveType::MOVE_CLOAK:
         case MoveType::MOVE_NO:
-        case MoveType::MOVE_COUNT:
         default:
           color = kRed;
           break;

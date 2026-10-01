@@ -287,10 +287,8 @@ enum class MoveType {
   MOVE_TEMP,          // Blocked by friendly unit.
   MOVE_NO,            // Strictly prohibited terrain.
 
-  MOVE_COUNT
 };
 using enum MoveType;
-inline constexpr int kMoveCount = static_cast<int>(MOVE_COUNT);
 
 /**********************************************************************
 **	These are the themes that the game can play. They must be in exact
@@ -463,10 +461,8 @@ enum class BStateType {
   BSTATE_AUX1,          // Auxiliary animation.
   BSTATE_AUX2,          // Auxiliary animation.
 
-  BSTATE_COUNT
 };
 using enum BStateType;
-inline constexpr int kBstateCount = static_cast<int>(BSTATE_COUNT);
 
 /**********************************************************************
 **	Whenever a unit is selected and a click occurs over another object
@@ -656,7 +652,6 @@ enum class ScenarioDirType {
   SCEN_DIR_NONE = -1,
   SCEN_DIR_EAST,
   SCEN_DIR_WEST,
-  SCEN_DIR_COUNT,
 };
 using enum ScenarioDirType;
 
@@ -1752,10 +1747,8 @@ enum class ArmorType {
   ARMOR_STEEL,     // Vulnerable to AP.
   ARMOR_CONCRETE,  // Vulnerable to HE and AP.
 
-  ARMOR_COUNT
 };
 using enum ArmorType;
-inline constexpr int kArmorCount = static_cast<int>(ARMOR_COUNT);
 
 /**********************************************************************
 **	Working MCGA colors that give a pleasing effect for beveled edges and
@@ -1917,10 +1910,8 @@ enum class BSizeType {
   BSIZE_42 = 7,
   BSIZE_55 = 8,
 
-  BSIZE_COUNT = 9
 };
 using enum BSizeType;
-inline constexpr int kBsizeCount = static_cast<int>(BSIZE_COUNT);
 
 /**********************************************************************
 ** When objects are manipulated on the map that are marked as being
@@ -1969,10 +1960,8 @@ enum class FacingType : int8_t {
   FACING_W,   // West
   FACING_NW,  // North-West
 
-  FACING_COUNT,  // Total of 8 directions (0..7).
 };
 using enum FacingType;
-inline constexpr int kFacingCount = static_cast<int>(FACING_COUNT);
 
 // Wraps any facing arithmetic result onto the eight compass points. Negative
 // values wrap the same way the two's complement mask always did.

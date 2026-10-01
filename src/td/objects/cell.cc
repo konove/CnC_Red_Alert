@@ -102,6 +102,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/utracker.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/ai/trigger.h"
 #include "td/assets/window_rect.h"
@@ -1841,7 +1842,7 @@ void CellClass::Incoming(COORDINATE threat, bool forced) {
  *=============================================================================================*/
 int CellClass::Adjacent_Offset(FacingType face) const {
   Validate();
-  if (static_cast<unsigned>(face) >= static_cast<unsigned>(kFacingCount)) {
+  if (static_cast<unsigned>(face) >= magic_enum::enum_count<FacingType>()) {
     return 0;
   }
 
@@ -1926,7 +1927,7 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
     **	Add up all adjacent cells that contain tiberium.
     ** (Skip those cells which aren't on the map)
     */
-    for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+    for (const FacingType face : magic_enum::enum_values<FacingType>()) {
       const CellClass& adj = Adjacent_Cell(face);
 
       if (adj.Overlay != OVERLAY_NONE &&

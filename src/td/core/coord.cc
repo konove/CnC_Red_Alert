@@ -58,6 +58,7 @@
 #include "base/cardinal.h"
 #include "base/trig.h"
 #include "game/core/display_constants.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
@@ -90,18 +91,19 @@ namespace td {
  *   01/07/1995 JLB : Manually calculates spillage list for large objects. *
  *=============================================================================================*/
 std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize) {
-  static const int16_t MoveSpillage[static_cast<int>(FACING_COUNT) + 1][5] = {
-      {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
-      {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
-      {0, 1, REFRESH_EOL, 0, 0},                             // E
-      {0, 1, MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL},       // SE
-      {0, MAP_CELL_W, REFRESH_EOL, 0, 0},                    // S
-      {0, -1, MAP_CELL_W, MAP_CELL_W - 1, REFRESH_EOL},      // SW
-      {0, -1, REFRESH_EOL, 0, 0},                            // W
-      {0, -1, -MAP_CELL_W, -(MAP_CELL_W + 1), REFRESH_EOL},  // NW
-      {0, REFRESH_EOL, 0, 0, 0}                              // non-moving.
-      //		{0, -MAP_CELL_W, -(MAP_CELL_W-1), 1, MAP_CELL_W+1,
-      // MAP_CELL_W, MAP_CELL_W-1, -1, -(MAP_CELL_W+1), REFRESH_EOL}
+  static const int16_t
+      MoveSpillage[magic_enum::enum_count<FacingType>() + 1][5] = {
+          {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
+          {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
+          {0, 1, REFRESH_EOL, 0, 0},                             // E
+          {0, 1, MAP_CELL_W, MAP_CELL_W + 1, REFRESH_EOL},       // SE
+          {0, MAP_CELL_W, REFRESH_EOL, 0, 0},                    // S
+          {0, -1, MAP_CELL_W, MAP_CELL_W - 1, REFRESH_EOL},      // SW
+          {0, -1, REFRESH_EOL, 0, 0},                            // W
+          {0, -1, -MAP_CELL_W, -(MAP_CELL_W + 1), REFRESH_EOL},  // NW
+          {0, REFRESH_EOL, 0, 0, 0}                              // non-moving.
+          //		{0, -MAP_CELL_W, -(MAP_CELL_W-1), 1, MAP_CELL_W+1,
+          // MAP_CELL_W, MAP_CELL_W-1, -1, -(MAP_CELL_W+1), REFRESH_EOL}
   };
   static int16_t _manual[10];
   //;	00 = on axis

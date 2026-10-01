@@ -126,6 +126,7 @@
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/trigger.h"
 #include "td/assets/audio.h"
 #include "td/assets/palettes.h"
@@ -733,7 +734,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
     const CELL cell =
         static_cast<CELL>(ZoneCell + ZoneOffset + base::ConsumeFront(ptr));
 
-    for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++) {
+    for (const FacingType facing : magic_enum::enum_values<FacingType>()) {
       const CELL newcell = Adjacent_Cell(cell, facing);
 
       if (!In_Radar(cell)) {
@@ -1564,7 +1565,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
   **	are not allowed, and to fix this, just map the cells until
   **	all is ok.
   */
-  for (FacingType dir = FACING_N; dir < FACING_COUNT; dir++) {
+  for (const FacingType dir : magic_enum::enum_values<FacingType>()) {
     CELL const c = Adjacent_Cell(cell, dir);
 
     // don't crash

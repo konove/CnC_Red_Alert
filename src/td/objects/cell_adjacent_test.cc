@@ -70,7 +70,10 @@ TEST_F(TdAdjacentCellTest, FirstCellStepWestReturnsSelf) {
 TEST_F(TdAdjacentCellTest, InvalidFacingReturnsSelf) {
   const CellClass& center = Cell(10, 10);
   EXPECT_EQ(&center.Adjacent_Cell(FACING_NONE), &center);
-  EXPECT_EQ(&center.Adjacent_Cell(FACING_COUNT), &center);
+  // One past FACING_NW, the value the old FACING_COUNT sentinel held.
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+  const auto past_last = static_cast<FacingType>(8);
+  EXPECT_EQ(&center.Adjacent_Cell(past_last), &center);
 }
 
 }  // namespace

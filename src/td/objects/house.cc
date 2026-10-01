@@ -2520,8 +2520,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         **	Scatter the nuclear bomb impact point into an adjacent cell.
         */
         for (;;) {
-          CELL newcell =
-              Adjacent_Cell(cell, Random_Pick(FACING_N, FACING_COUNT));
+          CELL newcell = Adjacent_Cell(cell, Random_Pick(FACING_N, FACING_NW));
           if (TheMap().In_Radar(newcell)) {
             cell = newcell;
             break;

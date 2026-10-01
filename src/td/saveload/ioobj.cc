@@ -51,6 +51,7 @@
 #include "game/sim/crew.h"
 #include "game/sim/door.h"
 #include "game/sim/flasher.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
@@ -568,8 +569,10 @@ void BuildingClass::Serialize(Archive& ar) {
     }
     if (Class == nullptr || ActLike < HOUSE_NONE || ActLike >= HOUSE_COUNT ||
         WhoLastHurtMe < HOUSE_NONE || WhoLastHurtMe >= HOUSE_COUNT ||
-        BState < BSTATE_NONE || BState >= BSTATE_COUNT ||
-        QueueBState < BSTATE_NONE || QueueBState >= BSTATE_COUNT) {
+        BState < BSTATE_NONE ||
+        BState > magic_enum::enum_values<BStateType>().back() ||
+        QueueBState < BSTATE_NONE ||
+        QueueBState > magic_enum::enum_values<BStateType>().back()) {
       ar.Fail("invalid saved building state");
     }
   }
@@ -611,7 +614,7 @@ void FootClass::Serialize(Archive& ar) {
     ar(base::At(Path, i));
     if constexpr (Archive::kIsReading) {
       if (base::At(Path, i) < FACING_NONE ||
-          base::At(Path, i) >= FACING_COUNT) {
+          base::At(Path, i) > magic_enum::enum_values<FacingType>().back()) {
         ar.Fail("invalid saved path facing");
       }
     }

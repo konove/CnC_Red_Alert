@@ -4114,16 +4114,8 @@ void BuildingTypeClass::Dimensions(int& width, int& height) const {
     int Width;
     int Height;
   };
-  static const base::EnumArray<BSizeType, Dimension, kBsizeCount> _dimensions =
-      {{{1, 1},
-        {2, 1},
-        {1, 2},
-        {2, 2},
-        {2, 3},
-        {3, 2},
-        {3, 3},
-        {4, 2},
-        {5, 5}}};
+  static const base::EnumArray<BSizeType, Dimension> _dimensions = {
+      {{1, 1}, {2, 1}, {1, 2}, {2, 2}, {2, 3}, {3, 2}, {3, 3}, {4, 2}, {5, 5}}};
 
   width = _dimensions.at(Size).Width * ICON_PIXEL_W;
   width -= width / 5;
@@ -4267,8 +4259,8 @@ std::span<const int16_t> BuildingTypeClass::Overlap_List() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Width() const {
-  static const base::EnumArray<BSizeType, int, kBsizeCount> width = {
-      1, 2, 1, 2, 2, 3, 3, 4, 5};
+  static const base::EnumArray<BSizeType, int> width = {1, 2, 1, 2, 2,
+                                                        3, 3, 4, 5};
   return width.at(Size);
 }
 
@@ -4286,8 +4278,8 @@ int BuildingTypeClass::Width() const {
  * HISTORY: * 02/23/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Height() const {
-  static const base::EnumArray<BSizeType, int, kBsizeCount> height = {
-      1, 1, 2, 2, 3, 2, 3, 2, 5};
+  static const base::EnumArray<BSizeType, int> height = {1, 1, 2, 2, 3,
+                                                         2, 3, 2, 5};
   return height.at(Size);
 }
 

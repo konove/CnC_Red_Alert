@@ -211,7 +211,7 @@ const unsigned char Pixel2Lepton[24] = {
 **	offset that, when added to another cell, will achieve the adjacent cell
 **	in the indexed direction.
 */
-const base::EnumArray<FacingType, CELL, kFacingCount> AdjacentCell = {
+const base::EnumArray<FacingType, CELL> AdjacentCell = {
     -MAP_CELL_W,        // North
     -(MAP_CELL_W - 1),  // North East
     1,                  // East
@@ -222,7 +222,7 @@ const base::EnumArray<FacingType, CELL, kFacingCount> AdjacentCell = {
     -(MAP_CELL_W + 1)   // North West
 };
 
-const base::EnumArray<FacingType, COORDINATE, kFacingCount> AdjacentCoord = {
+const base::EnumArray<FacingType, COORDINATE> AdjacentCoord = {
     0xFF000000L, 0xFF000100L, 0x00000100L, 0x01000100L,
     0x01000000L, 0x0100FF00L, 0x0000FF00L, 0xFF00FF00L};
 

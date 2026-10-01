@@ -47,12 +47,12 @@
 #include "base/array.h"
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/assets/audio.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
-#include "td/core/jshell.h"
 #include "td/core/rand.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
@@ -341,16 +341,17 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
           *location that it can *	be unlimboed at. If this fails, then
           *abort the whole placement process.
           */
-          FacingType adj = FACING_NONE;
-          for (adj = FACING_N; adj < FACING_COUNT; adj++) {
+          bool found = false;
+          for (const FacingType adj : magic_enum::enum_values<FacingType>()) {
             const CELL trycell = Adjacent_Cell(newcell, adj);
             if (!TheMap().In_Radar(trycell) &&
                 object->Can_Enter_Cell(trycell, adj) == MOVE_OK) {
               newcell = trycell;
+              found = true;
               break;
             }
           }
-          if (adj < FACING_COUNT) {
+          if (found) {
             continue;
           }
           newcell = -1;

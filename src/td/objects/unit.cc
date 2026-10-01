@@ -146,6 +146,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/sim/utracker.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
@@ -1958,7 +1959,6 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
           case FacingType::FACING_S:
           case FacingType::FACING_SW:
           case FacingType::FACING_NW:
-          case FacingType::FACING_COUNT:
           default:
             shapenum = base::At(BodyShape, tfacing);
             shapestart = 6;
@@ -2354,7 +2354,8 @@ int UnitClass::Mission_Unload() {
               const DirType toface = DIR_S + PrimaryFacing;
               bool placed = false;
 
-              for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+              for (const FacingType face :
+                   magic_enum::enum_values<FacingType>()) {
                 const DirType newface = toface + static_cast<int>(face);
                 const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
@@ -3162,7 +3163,7 @@ void UnitClass::Scatter(COORDINATE threat, bool forced) {
         toface = Dir_Facing(PrimaryFacing.Current());
       }
 
-      for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+      for (const FacingType face : magic_enum::enum_values<FacingType>()) {
         const FacingType newface = toface + face;
         CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
@@ -3650,7 +3651,7 @@ void UnitClass::Write_INI(std::string& buffer) {
 void UnitClass::Exit_Repair() {
   Validate();
   bool found = false;
-  static const base::EnumArray<FacingType, int16_t, kFacingCount> ExitRepair = {
+  static const base::EnumArray<FacingType, int16_t> ExitRepair = {
       XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
@@ -3791,7 +3792,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   FacingType bestdir = FACING_N;
   int bestval = -1;
-  for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+  for (const FacingType face : magic_enum::enum_values<FacingType>()) {
     int value = 0;
     const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
 
@@ -3849,9 +3850,8 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   moveto = 0;
   if (bestval > 0) {
-    static const base::EnumArray<FacingType, DirType, kFacingCount>
-        _desired_to_actual = {DIR_S,  DIR_SW, DIR_NW, DIR_NW,
-                              DIR_NE, DIR_NE, DIR_NE, DIR_SE};
+    static const base::EnumArray<FacingType, DirType> _desired_to_actual = {
+        DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
     return _desired_to_actual.at(bestdir);

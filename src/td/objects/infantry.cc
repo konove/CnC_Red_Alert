@@ -134,6 +134,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/heap.h"
 #include "game/sim/utracker.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
@@ -2136,7 +2137,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
       toface = toface + (Random_Pick(0, 4) - 2);
     }
 
-    for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+    for (const FacingType face : magic_enum::enum_values<FacingType>()) {
       const FacingType newface = toface + face;
       CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 

@@ -29,9 +29,8 @@ extern const unsigned char Facing32[256];
 extern const unsigned char Facing8[256];
 extern const unsigned char Pixel2Lepton[24];
 extern const COORDINATE StoppingCoordAbs[5];
-extern const base::EnumArray<FacingType, CELL, kFacingCount> AdjacentCell;
-extern const base::EnumArray<FacingType, COORDINATE, kFacingCount>
-    AdjacentCoord;
+extern const base::EnumArray<FacingType, CELL> AdjacentCell;
+extern const base::EnumArray<FacingType, COORDINATE> AdjacentCoord;
 
 }  // namespace td
 

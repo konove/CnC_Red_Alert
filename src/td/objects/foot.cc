@@ -109,6 +109,7 @@
 #include "base/numeric.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
@@ -1385,7 +1386,7 @@ void FootClass::Per_Cell_Process(bool center) {
   *stealth tank, *	then shimmer the cloaked object.
   */
   if (Cloak == CLOAKED) {
-    for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+    for (const FacingType face : magic_enum::enum_values<FacingType>()) {
       const CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
 
       if (TheMap().In_Radar(cell)) {

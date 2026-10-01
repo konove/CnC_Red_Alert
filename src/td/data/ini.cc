@@ -204,7 +204,6 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
       c_dir = 'W';
       break;
 
-    case ScenarioDirType::SCEN_DIR_COUNT:
     default:
     case SCEN_DIR_NONE:
       c_dir = Random_Pick(0, 1) == 0 ? 'W' : 'E';
@@ -1650,7 +1649,6 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
       y -= dist;
       break;
     case FacingType::FACING_NONE:
-    case FacingType::FACING_COUNT:
     default:
       break;
   }

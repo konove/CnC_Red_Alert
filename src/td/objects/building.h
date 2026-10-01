@@ -328,7 +328,7 @@ class BuildingClass final : public TechnoClass {
  private:
   void Drop_Debris(TARGET source = kTargetNone);
 
-  static const base::EnumArray<BSizeType, COORDINATE, kBsizeCount> CenterOffset;
+  static const base::EnumArray<BSizeType, COORDINATE> CenterOffset;
 };
 
 extern template void BuildingClass::Serialize<ArchiveWriter>(ArchiveWriter&);

@@ -160,6 +160,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/sim/utracker.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/base.h"
 #include "td/ai/reinf.h"
 #include "td/ai/special.h"
@@ -226,14 +227,13 @@ constexpr int kSamLowering = 7;  // Launcher is lowering into the ground.
 /***************************************************************************
 **	Center of building offset table.
 */
-const base::EnumArray<BSizeType, COORDINATE, kBsizeCount>
-    BuildingClass::CenterOffset = {
-        0x00800080L, 0x008000FFL, 0x00FF0080L, 0x00FF00FFL,
-        0x018000FFL, 0x00FF0180L, 0x01800180L,
+const base::EnumArray<BSizeType, COORDINATE> BuildingClass::CenterOffset = {
+    0x00800080L, 0x008000FFL, 0x00FF0080L, 0x00FF00FFL,
+    0x018000FFL, 0x00FF0180L, 0x01800180L,
 
-        0x00FF0200L,
+    0x00FF0200L,
 
-        0x02800280L,
+    0x02800280L,
 };
 
 /*
@@ -5633,7 +5633,7 @@ bool BuildingClass::Passes_Proximity_Check(CELL homecell) {
       return false;
     }
 
-    for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++) {
+    for (const FacingType facing : magic_enum::enum_values<FacingType>()) {
       const CELL newcell = Adjacent_Cell(cell, facing);
 
       const TechnoClass* base = TheMap().at(newcell).Cell_Techno();

@@ -48,6 +48,7 @@
 #include "base/cardinal.h"
 #include "base/numeric.h"
 #include "game/core/display_constants.h"
+#include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
@@ -176,7 +177,8 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   **	the cell data directly.
   */
   int count = 0;  // Number of vehicle IDs in list.
-  for (FacingType i = FACING_NONE; i < FACING_COUNT; i++) {
+  for (FacingType i = FACING_NONE;
+       i <= magic_enum::enum_values<FacingType>().back(); i++) {
     /*
     **	Fetch a pointer to the cell to examine. This is either
     **	an adjacent cell or the center cell. Damage never spills
