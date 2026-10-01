@@ -1,0 +1,4234 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\techno.cpv   2.13   02 Aug 1995 17:01:08
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : BASE.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : May 8, 1994 *
+ *                                                                                             *
+ *                  Last Update : August 23, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions:
+ *   TechnoClass::AI -- Handles AI processing for techno object.
+ *   TechnoClass::Assign_Destination -- Assigns movement destination to the
+ *     object.
+ *   TechnoClass::Assign_Target -- Assigns the targeting computer with
+ *     specified target.
+ *   TechnoClass::Base_Is_Attacked -- Handle panic response to base being
+ *     attacked.
+ *   TechnoClass::Can_Fire -- Determines if this techno object can fire.
+ *   TechnoClass::Can_Player_Fire -- Determines if the player can give this
+ *     object a fire order
+ *   TechnoClass::Can_Player_Move -- Determines if the object can move be
+ *     moved by player.
+ *   TechnoClass::Can_Repair -- Determines if the object can and should be
+ *     repaired.
+ *   TechnoClass::Captured -- Handles capturing this object.
+ *   TechnoClass::Clicked_As_Target -- Sets the flash count for this techno
+ *     object.
+ *   TechnoClass::Crew_Type -- Fetches the kind of crew this object
+ *     contains.
+ *   TechnoClass::Desired_Load_Dir -- Fetches loading parameters for this
+ *     object.
+ *   TechnoClass::Detach -- Handles removal of target from tracking system.
+ *   TechnoClass::Do_Cloak -- Start the object into cloaking stage.
+ *   TechnoClass::Do_Shimmer -- Causes this object to shimmer if it is
+ *     cloaked.
+ *   TechnoClass::Do_Uncloak -- Cause the stealth tank to uncloak.
+ *   TechnoClass::Draw_It -- Draws the health bar (if necessary).
+ *   TechnoClass::Draw_Pips -- Draws the transport pips and other techno
+ *     graphics.
+ *   TechnoClass::Enter_Idle_Mode -- Object enters its default idle
+ *     condition.
+ *   TechnoClass::Evaluate_Cell -- Determine the value and object of
+ *     specified cell.
+ *   TechnoClass::Evaluate_Object -- Determines score value of specified
+ *     object.
+ *   TechnoClass::Exit_Object -- Causes specified object to leave this
+ *     object.
+ *   TechnoClass::Find_Docking_Bay -- Searches for a close docking bay.
+ *   TechnoClass::Find_Exit_Cell -- Finds an appropriate exit cell for this
+ *     object.
+ *   TechnoClass::Fire_At -- Fires projectile at target specified.
+ *   TechnoClass::Fire_Direction -- Fetches the direction projectile fire
+ *     will take.
+ *   TechnoClass::Get_Ownable -- Fetches the ownable bits for this object.
+ *   TechnoClass::Greatest_Threat -- Determines best target given search
+ *     criteria.
+ *   TechnoClass::Hidden -- Returns the object back into the hidden state.
+ *   TechnoClass::In_Range -- Determines if specified target is within
+ *     weapon range.
+ *   TechnoClass::In_Range -- Determines if specified target is within
+ *     weapon range.
+ *   TechnoClass::In_Range -- Determines if the specified coordinate is
+ *     within range.
+ *   TechnoClass::Is_Techno -- Confirms that this is a TechnoClass object.
+ *   TechnoClass::Is_Weapon_Equipped -- Determines if this object has a
+ *     combat weapon.
+ *   TechnoClass::Kill_Cargo -- Destroys any cargo attached to this object.
+ *   TechnoClass::Mark -- Handles marking of techno objects.
+ *   TechnoClass::Nearby_Location -- Radiates outward looking for clear cell
+ *     nearby.
+ *   TechnoClass::Owner -- Who is the owner of this object?
+ *   TechnoClass::Per_Cell_Process -- Handles once-per-cell operations for
+ *     techno type objects.
+ *   TechnoClass::Pip_Count -- Fetches the number of pips to display on this
+ *     object.
+ *   TechnoClass::Player_Assign_Mission -- Assigns a mission as result of
+ *     player input.
+ *   TechnoClass::Random_Animate -- Performs some idle animation for the
+ *     object.
+ *   TechnoClass::Rearm_Delay -- Calculates the delay before firing can
+ *     occur.
+ *   TechnoClass::Receive_Message -- Handles inbound message as appropriate.
+ *   TechnoClass::Record_The_Kill -- Records the death of this object.
+ *   TechnoClass::Remap_Table -- Fetches the appropriate remap table to use.
+ *   TechnoClass::Response_Attack -- Handles the voice response when given
+ *     attack order.
+ *   TechnoClass::Response_Move -- Handles the voice repsonse to a movement
+ *     request.
+ *   TechnoClass::Response_Select -- Handles the voice response when
+ *     selected.
+ *   TechnoClass::Revealed -- Handles revealing an object to the house
+ *     specified.
+ *   TechnoClass::Risk -- Fetches the risk associated with this object.
+ *   TechnoClass::Scatter -- Causes the object to scatter to an adjacent
+ *     cell.
+ *   TechnoClass::Select -- Selects object and checks to see if can be
+ *     selected.
+ *   TechnoClass::Set_Mission -- Forced mission set (used by editor).
+ *   TechnoClass::Stun -- Prepares the object for removal from the game.
+ *   TechnoClass::Take_Damage -- Records damage assessed to this object.
+ *   TechnoClass::Target_Something_Nearby -- Handles finding and assigning a
+ *     nearby target.
+ *   TechnoClass::TechnoClass -- Constructor for techno type objects.
+ *   TechnoClass::TechnoClass -- Default constructor for techno objects.
+ *   TechnoClass::Techno_Draw_Object -- General purpose draw object routine.
+ *   TechnoClass::Threat_Range -- Returns the range to scan based on threat
+ *     control.
+ *   TechnoClass::Tiberium_Load -- Fetches the current tiberium load
+ *     percentage.
+ *   TechnoClass::Unlimbo -- Performs unlimbo process for all techno type
+ *     objects.
+ *   TechnoClass::Value -- Fetches the target value for this object.
+ *   TechnoClass::Visual_Character -- Determine the visual character of the
+ *     object.
+ *   TechnoClass::Weapon_Range -- Determines the maximum range for the
+ *     weapon.
+ *   TechnoClass::What_Action -- Determines action to perform if cell is
+ *     clicked on.
+ *   TechnoClass::What_Action -- Determines what action to perform if object
+ *     is selected.
+ *   TechnoTypeClass::Cost_Of -- Fetches the cost of this object type.
+ *   TechnoTypeClass::Get_Cameo_Data -- Fetches the cameo image for this
+ *     object type.
+ *   TechnoTypeClass::Get_Ownable -- Fetches the ownable bits for this
+ *     object type.
+ *   TechnoTypeClass::Max_Passengers -- Fetches the maximum passengers
+ *     allowed.
+ *   TechnoTypeClass::Repair_Cost -- Fetches the cost to repair one step.
+ *   TechnoTypeClass::Repair_Step -- Fetches the health to repair one step.
+ *   TechnoTypeClass::TechnoTypeClass -- Constructor for techno type
+ *     objects.
+ *   TechnoTypeClass::Time_To_Build -- Fetches the time to build this
+ *     object.
+ *   TechnoTypeClass::Raw_Cost -- Fetches the raw (base) cost of the object.
+ *   TechnoClass::Refund_Amount -- Returns with the money to refund if this
+ *     object is sold.
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "td/objects/techno.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <span>
+#include <utility>
+
+#include "base/array.h"
+#include "base/numeric.h"
+#include "base/pooled.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
+#include "engine/platform/timer.h"
+#include "engine/window/keyboard.h"
+#include "td/ai/special.h"
+#include "td/ai/team.h"
+#include "td/ai/trigger.h"
+#include "td/assets/audio.h"
+#include "td/core/const.h"
+#include "td/core/defines.h"
+#include "td/core/display_constants.h"
+#include "td/core/facing.h"
+#include "td/core/heap.h"
+#include "td/core/inline.h"
+#include "td/core/jshell.h"
+#include "td/core/object_heaps.h"
+#include "td/core/rand.h"
+#include "td/core/vector.h"
+#include "td/debug/debug_state.h"
+#include "td/editor/mapedit.h"
+#include "td/map/layer.h"
+#include "td/map/mouse.h"
+#include "td/map/world.h"
+#include "td/net/queue.h"
+#include "td/net/session.h"
+#include "td/objects/aircraft.h"
+#include "td/objects/anim.h"
+#include "td/objects/building.h"
+#include "td/objects/bullet.h"
+#include "td/objects/cargo.h"
+#include "td/objects/cell.h"
+#include "td/objects/door.h"
+#include "td/objects/foot.h"
+#include "td/objects/house.h"
+#include "td/objects/infantry.h"
+#include "td/objects/object.h"
+#include "td/objects/radio.h"
+#include "td/objects/stage.h"
+#include "td/objects/target.h"
+#include "td/objects/type.h"
+#include "td/objects/unit.h"
+#include "td/objects/utracker.h"
+#include "td/startup/conquer.h"
+#include "td/startup/game_state.h"
+
+using engine::gfx::ShapeFlags;
+
+using enum engine::window::KeyNumber;
+
+/***************************************************************************
+**	Cloaking control values.
+*/
+#define MAX_UNCLOAK_STAGE 38
+#define UNCLOAK_VIS_TIME (1 * kTicksPerSecond)
+
+/***************************************************************************
+**	Which shape to use depending on which facing is controlled by these
+*arrays.
+*/
+const int TechnoClass::BodyShape[32] = {
+    0,  31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17,
+    16, 15, 14, 13, 12, 11, 10, 9,  8,  7,  6,  5,  4,  3,  2,  1};
+
+/***********************************************************************************************
+ * TechnoTypeClass::TechnoTypeClass -- Constructor for techno type objects. *
+ *                                                                                             *
+ *    This is the normal constructor for techno type objects. It is called in
+ *the process of   * constructing all the object type (constant) data for the
+ *various techno type objects.    *
+ *                                                                                             *
+ * INPUT:   see below... *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/19/1995 JLB : Created. *
+ *=============================================================================================*/
+TechnoTypeClass::TechnoTypeClass(
+    int name, const char* ininame, unsigned char level, uint64_t pre,
+    bool is_leader, bool is_scanner, bool is_nominal, bool is_transporter,
+    bool is_flammable, bool is_crushable, bool is_stealthy, bool is_selectable,
+    bool is_legal_target, bool is_insignificant, bool is_immune,
+    bool is_theater, bool is_twoshooter, bool is_turret_equipped,
+    bool is_repairable, bool is_buildable, bool is_crew, int ammo,
+    int16_t strength, MPHType maxspeed, int sightrange, int cost, int scenario,
+    int /*risk*/, int reward, int ownable, WeaponType primary,
+    WeaponType secondary, ArmorType armor) noexcept
+    : ObjectTypeClass(true, is_flammable, is_crushable, is_stealthy,
+                      is_selectable, is_legal_target, is_insignificant,
+                      is_immune, name, ininame, armor, strength),
+      IsLeader(is_leader),
+      IsScanner(is_scanner),
+      IsNominal(is_nominal),
+      IsTheater(is_theater),
+      IsTurretEquipped(is_turret_equipped),
+      IsTwoShooter(is_twoshooter),
+      IsRepairable(is_repairable),
+      IsBuildable(is_buildable),
+      IsCrew(is_crew),
+      IsTransporter(is_transporter),
+      SightRange(sightrange),
+      Cost(cost),
+      Scenario(static_cast<unsigned char>(scenario)),
+      Level(level),
+      Pre(pre),
+      Reward(reward),
+      MaxSpeed(maxspeed),
+      MaxAmmo(ammo),
+      Ownable(static_cast<uint16_t>(ownable)),
+      Primary(primary),
+      Secondary(secondary) {
+  /*
+  ** Units risk value is based on the type of weapon he has and the
+  ** rate of fire it shoots at.
+  */
+
+  if (primary != WEAPON_NONE) {
+    Risk = Weapons.at(primary).Attack * (Weapons.at(primary).Range / 16) /
+           Weapons.at(primary).ROF;
+  }
+}
+
+/***********************************************************************************************
+ * TechnoTypeClass::Raw_Cost -- Fetches the raw (base) cost of the object. *
+ *                                                                                             *
+ *    This routine is used to find the underlying cost for this object. The
+ *underlying cost    * does not include any free items that normally come with
+ *the object when purchased        * directly. Example: The raw cost of a
+ *refinery is the normal cost minus the cost of a     * harvester. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the credit cost of the base object type. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoTypeClass::Raw_Cost() const { return Cost; }
+
+/***********************************************************************************************
+ * TechnoTypeClass::Get_Ownable -- Fetches the ownable bits for this object
+ *type.              *
+ *                                                                                             *
+ *    This routine will return the ownable bits for this object type. The
+ *ownable bits are     * a bitflag composite of the houses that can own (build)
+ *this object type.                 *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the ownable bits for this object type. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+uint16_t TechnoTypeClass::Get_Ownable() const { return Ownable; }
+
+/***********************************************************************************************
+ * TechnoTypeClass::Time_To_Build -- Fetches the time to build this object. *
+ *                                                                                             *
+ *    This routine will return the time it takes to construct this object.
+ *Usually the time    * to produce is directly related to cost. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the time to produce this object type. The time is
+ *expressed in the    * form of game ticks. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoTypeClass::Time_To_Build(HousesType house) const {
+  int cost = Raw_Cost();
+
+  /*
+  **	For computer controlled buildings, slow down production on
+  **	cheaper buildings.
+  */
+  if (!TheSpecial().IsDifficult && TheSession().type() == GAME_NORMAL &&
+      What_Am_I() == RTTI_BUILDINGTYPE && ThePlayer()->Class->House != house) {
+    cost = (cost + (TheSpecial().IsEasy ? 4000 : 2000)) / 2;
+  }
+
+  /*
+  **	Fudge factor, so that Nod builds a bit faster if the object must be
+  *delivered to *	an airfield.
+  */
+  if (What_Am_I() == RTTI_UNITTYPE && !(Ownable & kHouseFlagGood)) {
+    return cost - (cost / 4);
+  }
+
+  return cost;
+}
+
+/***********************************************************************************************
+ * TechnoTypeClass::Cost_Of -- Fetches the cost of this object type. *
+ *                                                                                             *
+ *    This routine will return the cost to produce an object of this type. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the cost to produce one object of this type. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoTypeClass::Cost_Of() const { return Cost; }
+
+/***********************************************************************************************
+ * TechnoTypeClass::Get_Cameo_Data -- Fetches the cameo image for this object
+ *type.            *
+ *                                                                                             *
+ *    This routine will fetch the cameo (sidebar small image) shape of this
+ *object type.       * If there is no cameo data available (typical for
+ *non-producable units), then NULL will   * be returned. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the cameo data for this object type if
+ *present.          *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+std::span<const std::byte> TechnoTypeClass::Get_Cameo_Data() const {
+  return CameoData;
+}
+
+/***********************************************************************************************
+ * TechnoTypeClass::Repair_Cost -- Fetches the cost to repair one step. *
+ *                                                                                             *
+ *    This routine will return the cost to repair one step. At the
+ *TechnoTypeClass level,      * this merely serves as a placeholder function.
+ *The derived classes will provide a         * functional version of this
+ *routine.                                                      *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the cost to repair one step. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoTypeClass::Repair_Cost() const { return 0; }
+
+/***********************************************************************************************
+ * TechnoTypeClass::Repair_Step -- Fetches the health to repair one step. *
+ *                                                                                             *
+ *    This routine merely serves as placeholder virtual function. The various
+ *type classes     * will override this routine to return the number of health
+ *points to repair in one        * "step". *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of health points to repair in one step. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoTypeClass::Repair_Step() const { return 0; }
+
+/***********************************************************************************************
+ * TechnoClass::TechnoClass -- Default constructor for techno objects. *
+ *                                                                                             *
+ *    This default constructor for techno objects is used to reset all internal
+ *variables to   * their default state. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/09/1994 JLB : Created. *
+ *=============================================================================================*/
+TechnoClass::TechnoClass()
+    : IsTickedOff(false),
+      IsCloakable(false),
+      IsLeader(false),
+      IsALoaner(false),
+      IsLocked(false),
+      IsInRecoilState(false),
+      IsTethered(false),
+      IsOwnedByPlayer(false),
+      IsDiscoveredByPlayer(false),
+      IsDiscoveredByComputer(false),
+      IsALemon(false),
+      IsSecondShot(true),
+      House(nullptr),
+      Cloak(UNCLOAKED),
+      TarCom(kTargetNone),
+      SuspendedTarCom(kTargetNone),
+      Arm(0),
+      Ammo(-1),
+      PurchasePrice(0) {
+  CloakingDevice.Set_Stage(1);
+  CloakingDevice.Set_Rate(0);
+
+  PrimaryFacing.Set(DIR_N);
+}
+
+/***********************************************************************************************
+ * TechnoClass::Revealed -- Handles revealing an object to the house specified.
+ **
+ *                                                                                             *
+ *    When a unit moves out from under the shroud or when it gets delivered into
+ *already       * explored terrain, then it must be "revealed". Objects that are
+ *revealed may be           * announced to the player. The discovered bit
+ *updated accordingly.                         *
+ *                                                                                             *
+ * INPUT:   house -- The house that this object is revealed to. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/02/1994 JLB : Created. * 12/27/1994 JLB : Discovered trigger
+ *event processing.                                     *
+ *=============================================================================================*/
+bool TechnoClass::Revealed(HouseClass* house) {
+  if (house == ThePlayer() && IsDiscoveredByPlayer) {
+    return false;
+  }
+  if (house != ThePlayer() && IsDiscoveredByComputer) {
+    return false;
+  }
+
+  if (RadioClass::Revealed(house)) {
+    /*
+    **	An enemy object that is discovered will go into hunt mode if
+    **	its current mission is to ambush.
+    */
+    if (!house->IsHuman && Mission == MISSION_AMBUSH) {
+      Assign_Mission(MISSION_HUNT);
+    }
+
+    if (house == ThePlayer()) {
+      if (!IsOwnedByPlayer) {
+        /*
+        **	If there is a trigger event associated with this object, then
+        *process *	it for discovery purposes.
+        */
+        if (Trigger) {
+          Trigger->Spring(EVENT_DISCOVERED, this);
+        }
+
+        /*
+        **	Alert the enemy house to presence of the friendly side.
+        */
+        House->IsDiscovered = true;
+
+      } else {
+        /*
+        **	A newly revealed object will always perform a look operation.
+        */
+        if (house == ThePlayer()) {
+          IsDiscoveredByPlayer = true;
+        }
+        if (house != ThePlayer()) {
+          IsDiscoveredByComputer = true;
+        }
+        Look();
+      }
+    }
+
+    if (house == ThePlayer()) {
+      IsDiscoveredByPlayer = true;
+    }
+    if (house != ThePlayer()) {
+      IsDiscoveredByComputer = true;
+    }
+
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Hidden -- Returns the object back into the hidden state. *
+ *                                                                                             *
+ *    This routine is called for every object that returns to the darkness
+ *shroud or when      * it gets destroyed. This also occurs when an object
+ *enters another (such as infantry      * entering a transport helicopter). *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/02/1994 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Hidden() {
+  if (!IsDiscoveredByPlayer) {
+    return;
+  }
+  if (!House->IsHuman) {
+    IsDiscoveredByPlayer = false;
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Mark -- Handles marking of techno objects. *
+ *                                                                                             *
+ *    On the Techno-level, marking handles transmission of the redraw command to
+ *any object    * that it is 'connected' with. This only occurs during loading
+ *and unloading.              *
+ *                                                                                             *
+ * INPUT:   mark  -- The marking method. This routine just passes this on to
+ *base classes.     *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/17/1994 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::Mark(MarkType mark) {
+  if (RadioClass::Mark(mark)) {
+    /*
+    **	When redrawing an object, if there is another object teathered to this
+    *one, *	redraw it as well.
+    */
+    if (IsTethered) {
+      Transmit_Message(RADIO_REDRAW);
+    }
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Receive_Message -- Handles inbound message as appropriate. *
+ *                                                                                             *
+ *    This routine is used to handle inbound radio messages. It only handles
+ *those messages    * that deal with techno objects. Typically, these include
+ *loading and unloading.           *
+ *                                                                                             *
+ * INPUT:   from     -- Pointer to the originator of the radio message. *
+ *                                                                                             *
+ *          message  -- The inbound radio message. *
+ *                                                                                             *
+ *          param    -- Reference to optional parameter that might be used to
+ *transfer         * more information than is possible with the simple radio
+ *message        * type. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the radio response. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/17/1994 JLB : Created. * 06/17/1995 JLB : Handles tether
+ *contact messages.                                         *
+ *=============================================================================================*/
+RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
+                                              RadioMessageType message,
+                                              int32_t& param) {
+  switch (message) {
+    /*
+    **	Just received instructions to attack the specified target.
+    */
+    case RADIO_ATTACK_THIS:
+      if (Techno_Type_Class()->Primary != WEAPON_NONE) {
+        Assign_Target(static_cast<TARGET>(param));
+        Assign_Mission(MISSION_ATTACK);
+        return RADIO_ROGER;
+      }
+      break;
+
+    /*
+    **	Establish a tethered connection to the object in radio contact.
+    */
+    case RADIO_TETHER:
+      if (!IsTethered) {
+        IsTethered = true;
+        Transmit_Message(RADIO_TETHER, from);
+        return RADIO_ROGER;
+      }
+      break;
+
+    /*
+    **	Break the tethered connection to the object in radio contact.
+    */
+    case RADIO_UNTETHER:
+      if (IsTethered) {
+        IsTethered = false;
+        Transmit_Message(RADIO_UNTETHER, from);
+        return RADIO_ROGER;
+      }
+      break;
+
+    /*
+    **	A teathered unit has reached it's destination. All is
+    **	clear, so radio contact can be broken.
+    */
+    case RADIO_UNLOADED:
+      Transmit_Message(RADIO_UNTETHER, from);
+      return Transmit_Message(RADIO_OVER_OUT, from);
+
+    /*
+    **	When this message is received, it means that the other object
+    **	has already turned its radio off. Turn this radio off as well.
+    */
+    case RADIO_OVER_OUT:
+      Transmit_Message(RADIO_UNTETHER, from);
+      RadioClass::Receive_Message(from, message, param);
+      return RADIO_ROGER;
+
+    /*
+    **	Request to be informed when unloaded. This message is transmitted
+    **	by the transport unit to the transported unit as it is about to be
+    **	unloaded. It is saying, "All is clear. Drive off now."
+    */
+    case RADIO_UNLOAD:
+    case RADIO_BACKUP_NOW:
+    case RADIO_HOLD_STILL:
+      Transmit_Message(RADIO_TETHER, from);
+      RadioClass::Receive_Message(from, message, param);
+      return RADIO_ROGER;
+
+    /*
+    **	Handle reloading one ammo point for this unit.
+    */
+    case RADIO_RELOAD:
+      if (Ammo == Techno_Type_Class()->MaxAmmo) {
+        return RADIO_NEGATIVE;
+      }
+      Ammo++;
+      return RADIO_ROGER;
+
+    /*
+    **	Handle repair of this unit.
+    */
+    case RADIO_REPAIR:
+      if (/*param > 0 &&*/ Health_Ratio() < 0x0100) {
+        int cost = Techno_Type_Class()->Repair_Cost();
+        //				int cost =
+        // Fixed_To_Cardinal(Techno_Type_Class()->Repair_Cost(), param);
+        cost = std::max(cost, 1);
+        int step = Techno_Type_Class()->Repair_Step();
+        //				int step =
+        // Fixed_To_Cardinal(Techno_Type_Class()->Repair_Step(), param);
+        step = std::max(step, 1);
+        if (House->Available_Money() >= cost) {
+#ifdef OBSOLETE
+          if (Health_Ratio() >= 0x0100) {
+            Strength = Class_Of().MaxStrength;
+            from->Scatter(true);
+            return (RADIO_NEGATIVE);
+          }
+#endif
+          House->Spend_Money(cost);
+          Strength = static_cast<int16_t>(Strength + step);
+          return RADIO_ROGER;
+        }
+      }
+      break;
+
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_BUILDING:
+    case RadioMessageType::RADIO_COMPLETE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_DOCKING:
+    case RadioMessageType::RADIO_CAN_LOAD:
+    case RadioMessageType::RADIO_ARE_REFINERY:
+    case RadioMessageType::RADIO_TRYING_TO_LOAD:
+    case RadioMessageType::RADIO_MOVE_HERE:
+    case RadioMessageType::RADIO_NEED_TO_MOVE:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_IM_IN:
+    case RadioMessageType::RADIO_RUN_AWAY:
+    case RadioMessageType::RADIO_PREPARED:
+    case RadioMessageType::RADIO_KICK:
+    case RadioMessageType::RADIO_PUNCH:
+    case RadioMessageType::RADIO_PREPARE_TO_BOX:
+    case RadioMessageType::RADIO_COUNT:
+    default:
+      break;
+  }
+  return RadioClass::Receive_Message(from, message, param);
+}
+
+/***********************************************************************************************
+ * TechnoClass::TechnoClass -- Constructor for techno type objects. *
+ *                                                                                             *
+ *    This constructor sets the owner of this object and its strength. Any
+ *object not owned    * by the player is marked as a loaner. This is a special
+ *flag that indicates off-map       * movement is allowed. The flag is cleared
+ *when the object finally enters the map.         *
+ *                                                                                             *
+ * INPUT:   house    -- The house (owner) of this object. *
+ *                                                                                             *
+ *          strength -- The strength to assign to this object. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/17/1994 JLB : Created. *
+ *=============================================================================================*/
+TechnoClass::TechnoClass(HousesType house)
+    : IsTickedOff(false),
+      IsCloakable(false),
+      IsLeader(false),
+      IsALoaner(false),
+      IsLocked(false),
+      IsInRecoilState(false),
+      IsTethered(false),
+      IsOwnedByPlayer(house == ThePlayer()->Class->House),
+      IsDiscoveredByPlayer(false),
+      IsDiscoveredByComputer(false),
+      IsALemon(false),
+      IsSecondShot(false),
+      House(HouseClass::As_Pointer(house)),
+      Cloak(UNCLOAKED),
+      TarCom(kTargetNone),
+      SuspendedTarCom(kTargetNone),
+      Arm(0),
+      Ammo(-1),
+      PurchasePrice(0) {
+  CloakingDevice.Set_Stage(1);
+  CloakingDevice.Set_Rate(0);
+
+  PrimaryFacing.Set(DIR_N);
+
+  /*
+  **	There is a chance that a vehicle will be a "lemon".
+  */
+  if (Random_Pick(0, 255) < House->Class->Lemon) {
+    IsALemon = true;
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Per_Cell_Process -- Handles once-per-cell operations for techno
+ *type objects.  *
+ *                                                                                             *
+ *    This routine handles marking a game object as not a loaner. It is set only
+ *if the unit   * is not player owned and is on the regular map. This is
+ *necessary so that enemy objects   * can exist off-map but as soon as they move
+ *onto the map, are flagged so that can never   * leave it again. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/17/1994 JLB : Created. * 10/26/94   JLB : Handles scanner
+ *units.                                                   * 12/27/1994 JLB :
+ *Checks for an processes any trigger in cell.                             *
+ *=============================================================================================*/
+void TechnoClass::Per_Cell_Process(bool /*unused*/) {
+  const CELL cell = Coord_Cell(Center_Coord());
+
+  /*
+  **	When enemy units enter the proper map area from off map, they are
+  **	flagged so that they won't travel back off the map again.
+  */
+  if (TheMap().In_Radar(cell)) {
+    if (What_Am_I() == RTTI_UNIT) {
+      const auto* u = dynamic_cast<UnitClass*>(this);
+
+      if (*u != UNIT_HOVER && *u != UNIT_GUNBOAT) {
+        IsLocked = true;
+      }
+    } else {
+      IsLocked = true;
+    }
+  }
+
+  /*
+  **	If this object somehow moves into mapped terrain, but is not yet
+  **	discovered, then flag it to be discovered.
+  */
+  if (!IsDiscoveredByPlayer && TheMap().at(cell).IsVisible) {
+    Revealed(ThePlayer());
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Draw_It -- Draws the health bar (if necessary). *
+ *                                                                                             *
+ *    This routine will draw the common elements for techno type objects. This
+ *element is      * the health bar. The main game object has already been
+ *rendered by the time this          * routine is called. *
+ *                                                                                             *
+ * INPUT:   x,y   -- The coordinate of the center of the unit. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/17/1994 JLB : Created. * 10/26/94   JLB : Knows about radar
+ *scanned cells.                                         * 12/13/1994 JLB :
+ *Clips health bar against map edge.                                       *
+ *   01/23/1995 JLB : Dynamic selected object rectangle. *
+ *=============================================================================================*/
+void TechnoClass::Draw_It(PixelView& view, int x, int y,
+                          WindowNumberType window) {
+  Clear_Redraw_Flag();
+  if (IsSelected || TheSpecial().IsBarOn) {
+    PixelView draw_window(
+        view.buffer(),
+        (base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) *
+         8) +
+            view.x_pos(),
+        base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
+            view.y_pos(),
+        base::At(base::At(WindowList, static_cast<int>(window)), kWindowWidth) *
+            8,
+        base::At(base::At(WindowList, static_cast<int>(window)),
+                 kWindowHeight));
+
+    /*
+    **	The infantry select box should be a bit higher than normal.
+    */
+    if (What_Am_I() == RTTI_INFANTRY) {
+      y -= 6;
+    }
+
+    if (What_Am_I() == RTTI_BUILDING &&
+        dynamic_cast<const BuildingTypeClass&>(Class_Of()).Type ==
+            STRUCT_BARRACKS) {
+      y -= 5;
+    }
+
+    /*
+    **	Fetch the dimensions of the object. These dimensions will be used to
+    *draw *	the selection box and the health bar.
+    */
+    int width = 0;
+    int height = 0;
+    Class_Of().Dimensions(width, height);
+
+    if (Strength && (House->Is_Ally(ThePlayer()) || TheSpecial().IsHealthBar)) {
+      const int ratio = Health_Ratio();
+
+      const int xx = x - (width / 2);
+      const int yy = y - (height / 2);
+
+      /*
+      **	Draw the outline of the bargraph.
+      */
+      draw_window.Remap(xx + 1, yy + 1, width - 1, 3 - 1,
+                        MouseClass::FadingShade);
+      draw_window.DrawRect(xx, yy, xx + width - 1, yy + 3, kBlack);
+
+      /*
+      **	Determine the width of the interior strength
+      **	graph.
+      */
+      int pwidth =
+          Fixed_To_Cardinal(width - 2, ratio);  // Pixel width of bar interior.
+
+      pwidth = Bound(pwidth, 1, width - 2);
+
+      int color = kLtGreen;  // The color to give the interior of the bargraph.
+      if (ratio < 0x7F) {
+        color = kYellow;
+      }
+      if (ratio < 0x3F) {
+        color = kRed;
+      }
+      draw_window.FillRect(xx + 1, yy + 1, xx + pwidth, yy + (3 - 1),
+                           static_cast<unsigned char>(color));
+    }
+
+    /*
+    **	Draw the selected object graphic.
+    */
+    if (IsSelected) {
+      const int lx = width / 2;
+      const int ly = height / 2;
+      const int dx = width / 5;
+      const int dy = height / 5;
+      const int fudge =
+          House->Is_Ally(ThePlayer()) || TheSpecial().IsHealthBar ? 4 : 0;
+
+      // Upper left corner.
+      draw_window.DrawLine(x - lx, fudge + y - ly, x - lx + dx, fudge + y - ly,
+                           kWhite);
+      draw_window.DrawLine(x - lx, fudge + y - ly, x - lx, fudge + y - ly + dy,
+                           kWhite);
+
+      // Upper right corner.
+      draw_window.DrawLine(x + lx, fudge + y - ly, x + lx - dx, fudge + y - ly,
+                           kWhite);
+      draw_window.DrawLine(x + lx, fudge + y - ly, x + lx, fudge + y - ly + dy,
+                           kWhite);
+
+      // Lower right corner.
+      draw_window.DrawLine(x + lx, y + ly, x + lx - dx, y + ly, kWhite);
+      draw_window.DrawLine(x + lx, y + ly, x + lx, y + ly - dy, kWhite);
+
+      // Lower left corner.
+      draw_window.DrawLine(x - lx, y + ly, x - lx + dx, y + ly, kWhite);
+      draw_window.DrawLine(x - lx, y + ly, x - lx, y + ly - dy, kWhite);
+
+      if (House->Is_Ally(ThePlayer())) {
+        Draw_Pips(view, x - lx + 5, y + ly - 3, window);
+      }
+    }
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Unlimbo -- Performs unlimbo process for all techno type objects.
+ **
+ *                                                                                             *
+ *    This routine handles the common operation between techno objects when they
+ *are           * unlimboed. This includes revealing the map. *
+ *                                                                                             *
+ * INPUT:   coord    -- The coordinate to unlimbo object at. *
+ *                                                                                             *
+ *          dir (optional) -- initial facing direction for this object *
+ *                                                                                             *
+ * OUTPUT:  bool; Was the unlimbo successful? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/14/1994 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::Unlimbo(COORDINATE coord, DirType dir) {
+  if (RadioClass::Unlimbo(coord, dir)) {
+    PrimaryFacing = dir;
+    Enter_Idle_Mode(true);
+    Commence();
+
+    IsLocked = TheMap().In_Radar(Coord_Cell(coord));
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * TechnoClass::In_Range -- Determines if specified target is within weapon
+ *range.             *
+ *                                                                                             *
+ *    This routine is used to compare the distance to the specified target with
+ *the range      * of the weapon. If the target is outside of weapon range, then
+ *false is returned.         *
+ *                                                                                             *
+ * INPUT:   target   -- The target to check if it is within weapon range. *
+ *                                                                                             *
+ *          which    -- Which weapon to use in determining range. 0=primary,
+ *1=secondary.      *
+ *                                                                                             *
+ * OUTPUT:  bool; Is the specified target within weapon range? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/14/1994 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::In_Range(TARGET target, int which) const {
+  if (IsLocked && Target_Legal(target)) {
+    int range = Weapon_Range(which);
+    const BuildingClass* building = As_Building(target);
+    if (building) {
+      range += (building->Class->Width() + building->Class->Height()) *
+               (ICON_LEPTON_W / 4);
+    }
+    if (::Distance(Fire_Coord(which), As_Coord(target)) <= range) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * TechnoClass::In_Range -- Determines if specified target is within weapon
+ *range.             *
+ *                                                                                             *
+ *    This routine will determine if the pointer to the target object passed
+ *into this         * routine is within weapon range. *
+ *                                                                                             *
+ * INPUT:   target   -- Pointer to the target object to check if within weapon
+ *range.          *
+ *                                                                                             *
+ *          which    -- Which weapon to use in determining range. 0=primary,
+ *1=secondary.      *
+ *                                                                                             *
+ * OUTPUT:  bool; Is the target within weapon range? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/14/1994 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::In_Range(const ObjectClass* target, int which) const {
+  if (IsLocked && target) {
+    int range = Weapon_Range(which);
+    if (target->What_Am_I() == RTTI_BUILDING) {
+      const auto* building = dynamic_cast<const BuildingClass*>(target);
+      range += (building->Class->Width() + building->Class->Height()) *
+               (ICON_LEPTON_W / 4);
+    }
+
+    if (::Distance(Fire_Coord(which), target->Center_Coord()) <= range) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * TechnoClass::In_Range -- Determines if the specified coordinate is within
+ *range.            *
+ *                                                                                             *
+ *    Use this routine to determine if the specified coordinate is within weapon
+ *range.        *
+ *                                                                                             *
+ * INPUT:   coord    -- The coordinate to examine against the object to
+ *determine range.       *
+ *                                                                                             *
+ *          which    -- The weapon to consider when determining range.
+ *0=primary, 1=secondary. *
+ *                                                                                             *
+ * OUTPUT:  bool; Is the weapon within range? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/16/1995 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::In_Range(COORDINATE coord, int which) const {
+  return IsLocked &&
+         ::Distance(Fire_Coord(which), coord) <= Weapon_Range(which);
+}
+
+/***********************************************************************************************
+ * TechnoClass::Evaluate_Object -- Determines score value of specified object. *
+ *                                                                                             *
+ *    This routine is used to determing the score value (value as a potential
+ *target) of the   * object specified. This routine will check the specified
+ *object for all the various       * legality checks that threat scanning
+ *requires. This is the main workhorse routine for    * target searching. *
+ *                                                                                             *
+ * INPUT:   method   -- The threat method requested. This is a combined bitflag
+ *value that     * not only specified the kind of targets to consider, but how
+ *far away   * they are allowed to be. *
+ *                                                                                             *
+ *          mask     -- This is an RTTI mask to use for quickly eliminating
+ *object types.      * The mask is created outside of this routine because this
+ *routine is    * usually called from within a loop and this value is constant
+ *in that   * context. *
+ *                                                                                             *
+ *          range    -- The range at which potential target objects are
+ *rejected.              * 0  = must be within weapon range. * >0 = must be
+ *within this lepton distance.                              * <0 = range doesn't
+ *matter.                                             *
+ *                                                                                             *
+ *          object   -- Pointer to the object itself. *
+ *                                                                                             *
+ *          value    -- Reference to the value variable that this routine will
+ *fill in. The    * higher the value the more likely this object will be
+ *selected as best. *
+ *                                                                                             *
+ * OUTPUT:  Did the target pass all legality checks? If this value is returned
+ *true, then the  * value parameter will be filled in correctly. *
+ *                                                                                             *
+ * WARNINGS:   This routine is time consuming. Don't call unless necessary. *
+ *                                                                                             *
+ * HISTORY: * 06/30/1995 JLB : Created. * 07/14/1995 JLB : Forces SAM site to
+ *not fire on landed aircraft.                          *
+ *=============================================================================================*/
+bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
+                                  const TechnoClass* object, int& value) const {
+  /*
+  **	An object in limbo can never be a valid target.
+  */
+  if (object->IsInLimbo) {
+    return false;
+  }
+
+  /*
+  **	Friendly units are never considered a good target. Bail if this
+  **	object is a friend.
+  */
+  if (House->Is_Ally(object)) {
+    return false;
+  }
+
+  /*
+  **	If the object is farther away than allowed, bail.
+  */
+  const int dist = Distance(object);
+  if (range > 0 && dist > range) {
+    return false;
+  }
+  if (range == 0 && !In_Range(object, 0) && !In_Range(object, 1)) {
+    return false;
+  }
+
+  /*
+  **	If the object is not visible, then bail. Human controled units
+  **	are always considered to be visible.
+  */
+  if (!object->IsOwnedByPlayer && !object->IsDiscoveredByPlayer &&
+      TheSession().type() == GAME_NORMAL &&
+      object->What_Am_I() != RTTI_AIRCRAFT) {
+    return false;
+  }
+
+  /*
+  **	Quickly eliminate all unit types that are not allowed according to the
+  *mask *	value.
+  */
+  const RTTIType otype = object->What_Am_I();
+  if ((base::Bit<uint32_t>(otype) & mask) == 0) {
+    return false;  // Mask failure.
+  }
+
+  /*
+  **	If the object is cloaked, then it isn't a legal target.
+  */
+  if (object->Cloak == CLOAKED) {
+    return false;
+  }
+
+  /*
+  **	Determine if the target is theoretically allowed to be a target. If
+  **	not, then bail.
+  */
+  const TechnoTypeClass* tclass = object->Techno_Type_Class();
+  if (!tclass->IsLegalTarget) {
+    return false;  // Legality failure.
+  }
+
+  /*
+  **	Never consider agent Delphi a valid target.
+  */
+  if (otype == RTTI_INFANTRY &&
+      dynamic_cast<const InfantryTypeClass&>(*tclass).Type == INFANTRY_DELPHI) {
+    return false;
+  }
+
+  /*
+  **	Special case so that SAM site doesn't fire on aircraft that are landed.
+  */
+  if (otype == RTTI_AIRCRAFT && What_Am_I() == RTTI_BUILDING &&
+      *dynamic_cast<const BuildingClass*>(this) == STRUCT_SAM) {
+    if (dynamic_cast<const AircraftClass&>(*object).Altitude == 0) {
+      return false;
+    }
+  }
+
+  /*
+  **	If only allowed to attack civilians, then eliminate all other types.
+  */
+  if (base::Any(method & THREAT_CIVILIANS) &&
+      object->Owner() != HOUSE_NEUTRAL) {
+    return false;
+  }
+
+  /*
+  **	If the scan is limited to capturable buildings only, then bail if the
+  *examined *	object isn't a capturable building.
+  */
+  if (base::Any(method & THREAT_CAPTURE) &&
+      (otype != RTTI_BUILDING ||
+       !dynamic_cast<const BuildingTypeClass&>(*tclass).IsCaptureable)) {
+    return false;
+  }
+
+  /*
+  **	If not allowed to attack boats, then eliminate them from consideration.
+  */
+  if (!base::Any(method & THREAT_BOATS) && otype == RTTI_UNIT) {
+    const SpeedType speed = dynamic_cast<const UnitTypeClass&>(*tclass).Speed;
+    if (speed == SPEED_HOVER || speed == SPEED_FLOAT) {
+      return false;
+    }
+  }
+
+  /*
+  **	SPECIAL CASE: Friendly units won't automatically fire on buildings
+  **	if the building is not aggressive.
+  */
+  if (House->IsHuman && otype == RTTI_BUILDING &&
+      tclass->Primary == WEAPON_NONE) {
+    return false;
+  }
+
+  /*
+  **	If the search is restricted to Tiberium processing objects, then
+  **	perform the special qualification check now.
+  */
+  if (base::Any(method & THREAT_TIBERIUM)) {
+    switch (otype) {
+      case RTTI_UNIT:
+        if (!dynamic_cast<const UnitTypeClass&>(*tclass).IsToHarvest) {
+          return false;
+        }
+        break;
+
+      case RTTI_BUILDING:
+        if (!dynamic_cast<const BuildingTypeClass&>(*tclass).Capacity) {
+          return false;
+        }
+        break;
+
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_INFANTRYTYPE:
+      case RTTIType::RTTI_UNITTYPE:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_AIRCRAFTTYPE:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
+      case RTTIType::RTTI_SPECIAL:
+      default:
+        return false;
+    }
+  }
+
+  /*
+  **	If this target value is better than the previously recorded best
+  **	target value then record this target for possible return as the
+  **	best target available.
+  */
+  const int rawval = object->Value();
+  value = rawval + object->Kills;
+
+#ifdef ADVANCED
+  /*
+  **	Lessen threat as a factor of distance.
+  */
+  if (rawval) {
+    value = (value * 32000) /
+            (((dist / ICON_LEPTON_W) * (dist / ICON_LEPTON_W)) + 1);
+
+    // value = Fixed_To_Cardinal(value, Cardinal_To_Fixed(MAP_CELL_W*2,
+    // (MAP_CELL_W*2) - (dist/ICON_LEPTON_W))); value = std::max(value, 2);
+
+    if (value < MAP_CELL_W * 2) {
+      value = dist / ICON_LEPTON_W;
+    }
+    value = std::max(value, 1);
+    return (true);
+  }
+  value = 0;
+  return (false);
+
+#else
+
+  /*
+  **	Lessen threat as a factor of distance.
+  */
+  int modifier = dist;
+  const int crange = range / ICON_LEPTON_W;
+  if (crange) {
+    modifier /= crange;
+  }
+  if (modifier) {
+    value /= modifier;
+  }
+  if (rawval) {
+    value = std::max(value, 2);
+  }
+  return true;
+#endif
+}
+
+/***********************************************************************************************
+ * TechnoClass::Evaluate_Cell -- Determine the value and object of specified
+ *cell.             *
+ *                                                                                             *
+ *    This routine will examine the specified cell and return with the potential
+ *target        * object it contains and the value of it. Use this routine when
+ *searching for threats.     *
+ *                                                                                             *
+ * INPUT:   method   -- The scan method to use for target searching. *
+ *                                                                                             *
+ *          mask     -- Prebuilt mask of object RTTI types acceptable for
+ *scanning.            *
+ *                                                                                             *
+ *          range    -- Scan range limit to use for elimination purposes. This
+ *ensures that    * objects in the "corner" of a square scan get properly
+ *discarded.       *
+ *                                                                                             *
+ *          object   -- Pointer to object pointer to be filled in with the
+ *object at this      * cell as a valid target. *
+ *                                                                                             *
+ *          value    -- Reference to the value of the object in this cell. It
+ *will be set      * according to the object's value. *
+ *                                                                                             *
+ * OUTPUT:  Was a valid potential target found in this cell? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/19/1995 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
+                                int range, const TechnoClass** object,
+                                int& value) const {
+  *object = nullptr;
+  value = 0;
+
+  /*
+  **	If the cell is not on the legal map, then always ignore it.
+  */
+  if (cell < 0 || cell >= MAP_CELL_TOTAL) {
+    return false;
+  }
+  if (!TheMap().In_Radar(cell)) {
+    return false;
+  }
+
+  /*
+  **	Fetch the techno object from the cell. If there is no
+  **	techno object there, then bail.
+  */
+  const CellClass* cellptr = &TheMap().at(cell);
+  const auto* tentative =
+      dynamic_cast<const TechnoClass*>(cellptr->Cell_Occupier());
+  while (tentative) {
+    if (tentative->Is_Techno() && !House->Is_Ally(tentative)) {
+      break;
+    }
+    tentative = dynamic_cast<const TechnoClass*>(tentative->Next);
+  }
+
+  if (!tentative) {
+    return false;
+  }
+  //	if (!tentative->Is_Techno()) return(false);
+  *object = tentative;
+
+  return Evaluate_Object(method, mask, range, tentative, value);
+}
+
+/***********************************************************************************************
+ * TechnoClass::Greatest_Threat -- Determines best target given search criteria.
+ **
+ *                                                                                             *
+ *    This routine will scan game objects looking for the best target. It is
+ *used by the       * general target searching processes. The type of target
+ *scan to perform is controlled     * by the method control parameter. *
+ *                                                                                             *
+ * INPUT:   method   -- The method control parameter is used to control the type
+ *of target     * scan performed. It consists of a series of bit flags (see
+ *ThreatType)  * that are combined to form the target scan desired. *
+ *                                                                                             *
+ * OUTPUT:  Returns the target value of a suitable target. If no target was
+ *found then the     * value TARGET_NONE is returned. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/14/1994 JLB : Created. * 06/20/1995 JLB : Greatly optimized
+ *scan method.                                           *
+ *=============================================================================================*/
+TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
+  const ObjectClass* bestobject = nullptr;
+  int bestval = -1;
+
+  /*
+  **	Build a quick elimination mask. If the RTTI of the object doesn't
+  **	qualify with this mask, then we KNOW that it shouldn't be considered.
+  */
+  uint32_t allowed = 0;
+  if (base::Any(method & THREAT_CIVILIANS)) {
+    allowed |= base::Bit<uint32_t>(RTTI_BUILDING) |
+               base::Bit<uint32_t>(RTTI_INFANTRY) |
+               base::Bit<uint32_t>(RTTI_UNIT);
+  }
+  if (base::Any(method & THREAT_AIR)) {
+    allowed |= base::Bit<uint32_t>(RTTI_AIRCRAFT);
+  }
+  if (base::Any(method & THREAT_CAPTURE)) {
+    allowed |= base::Bit<uint32_t>(RTTI_BUILDING);
+  }
+  if (base::Any(method & THREAT_BUILDINGS)) {
+    allowed |= base::Bit<uint32_t>(RTTI_BUILDING);
+  }
+  if (base::Any(method & THREAT_INFANTRY)) {
+    allowed |= base::Bit<uint32_t>(RTTI_INFANTRY);
+  }
+  if (base::Any(method & THREAT_VEHICLES)) {
+    allowed |= base::Bit<uint32_t>(RTTI_UNIT);
+  }
+  uint32_t mask = allowed;
+
+  /*
+  **	Limit area target scans use a method where the actual map cells are
+  **	examined for occupants. The occupant is then examined in turn. The
+  **	best target within the area is returned as a target.
+  */
+  if (base::Any(method & (THREAT_AREA | THREAT_RANGE))) {
+    const int range = Threat_Range(base::Any(method & THREAT_RANGE) ? 0 : 1);
+
+    //		int range = std::max(Weapon_Range(0), Weapon_Range(1));
+    //		if (!(method & THREAT_RANGE)) range *= 2;
+    //		range = Bound(range, 0x0100, 0x1400);			// Limit
+    // maximum scan distance.
+    int crange = range / ICON_LEPTON_W;
+    if (range == 0) {
+      crange = std::max(Weapon_Range(0), Weapon_Range(1)) / ICON_LEPTON_W;
+      crange++;
+    }
+    const CELL cell = Coord_Cell(Fire_Coord(0));
+    //		CELL cell = Coord_Cell(Center_Coord());
+
+    /*
+    **	If aircraft are a legal target, then scan through all of them at this
+    *time. *	Scanning by cell is not possible for aircraft since they are not
+    *recorded *	at the cell level.
+    */
+    if (base::Any(method & THREAT_AIR)) {
+      for (int index = 0; index < TheObjectHeaps().aircraft().Count();
+           index++) {
+        const TechnoClass* object = TheObjectHeaps().aircraft().Ptr(index);
+
+        int value = 0;
+        if (Evaluate_Object(method, mask, range, object, value) &&
+            (value > bestval)) {
+          bestobject = object;
+          bestval = value;
+        }
+      }
+    }
+
+    /*
+    **	When scanning the ground, always consider landed aircraft as a valid
+    **	potential target. This is only true if vehicles are considered a
+    **	valid target. A landed aircraft is considered a vehicle.
+    */
+    if (base::Any(method & THREAT_VEHICLES)) {
+      allowed |= base::Bit<uint32_t>(RTTI_AIRCRAFT);
+    }
+    mask = allowed;
+
+    /*
+    **	Radiate outward from the object's location, looking for the best
+    **	target.
+    */
+    const TechnoClass* object = nullptr;
+    int value = 0;
+    for (int radius = 1; radius < crange; radius++) {
+      /*
+      **	Scan the top and bottom rows of the "box".
+      */
+      for (int x = -radius; x <= radius; x++) {
+        CELL newcell = 0;
+
+        if (Cell_X(cell) + x < TheMap().MapCellX) {
+          continue;
+        }
+        if (Cell_X(cell) + x >= TheMap().MapCellX + TheMap().MapCellWidth) {
+          continue;
+        }
+
+        if (Cell_Y(cell) - radius >= TheMap().MapCellY) {
+          newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) - radius);
+          if (Evaluate_Cell(method, mask, newcell, range, &object, value) &&
+              (bestval < value)) {
+            bestobject = object;
+          }
+        }
+
+        if (Cell_Y(cell) + radius <
+            TheMap().MapCellY + TheMap().MapCellHeight) {
+          newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) + radius);
+          if (Evaluate_Cell(method, mask, newcell, range, &object, value) &&
+              (bestval < value)) {
+            bestobject = object;
+          }
+        }
+      }
+
+      /*
+      **	Scan the left and right columns of the "box".
+      */
+      for (int y = -(radius - 1); y < radius; y++) {
+        CELL newcell = 0;
+
+        if (Cell_Y(cell) + y < TheMap().MapCellY) {
+          continue;
+        }
+        if (Cell_Y(cell) + y >= TheMap().MapCellY + TheMap().MapCellHeight) {
+          continue;
+        }
+
+        if (Cell_X(cell) - radius >= TheMap().MapCellX) {
+          newcell = XY_Cell(Cell_X(cell) - radius, Cell_Y(cell) + y);
+          if (Evaluate_Cell(method, mask, newcell, range, &object, value) &&
+              (bestval < value)) {
+            bestobject = object;
+          }
+        }
+
+        if (Cell_X(cell) + radius < TheMap().MapCellX + TheMap().MapCellWidth) {
+          newcell = XY_Cell(Cell_X(cell) + radius, Cell_Y(cell) + y);
+          if (Evaluate_Cell(method, mask, newcell, range, &object, value) &&
+              (bestval < value)) {
+            bestobject = object;
+          }
+        }
+      }
+
+      /*
+      **	Bail early if a target has already been found and the range is
+      *at *	one of the breaking points (i.e., normal range or range * 2).
+      */
+      if (bestobject) {
+        if (radius == crange / 4) {
+          return bestobject->As_Target();
+        }
+        if (radius == crange / 2) {
+          return bestobject->As_Target();
+        }
+      }
+    }
+
+  } else {
+    /*
+    **	A full map scan was requested. First scan through aircraft. The top map
+    *layer *	is NOT scanned since that layer will probably contain more
+    *bullets and animations *	than aircraft.
+    */
+    for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+      const TechnoClass* object = TheObjectHeaps().aircraft().Ptr(index);
+
+      int value = 0;
+      if (Evaluate_Object(method, mask, -1, object, value) &&
+          (value > bestval)) {
+        bestobject = object;
+        bestval = value;
+      }
+    }
+
+    /*
+    **	Now scan through the entire ground layer. This is painful, but what
+    *other *	choice is there?
+    */
+    for (int index = 0; index < MouseClass::Layer.at(LAYER_GROUND).Count();
+         index++) {
+      const ObjectClass* object = MouseClass::Layer.at(LAYER_GROUND).at(index);
+
+      int value = 0;
+      if ((object->Is_Techno() &&
+           Evaluate_Object(method, mask, -1,
+                           dynamic_cast<const TechnoClass*>(object), value)) &&
+          (value > bestval)) {
+        bestobject = object;
+        bestval = value;
+      }
+    }
+  }
+
+  /*
+  **	If a good target object was found, then return with the target value
+  **	of it.
+  */
+  if (bestobject) {
+    return bestobject->As_Target();
+  }
+  return kTargetNone;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Owner -- Who is the owner of this object? *
+ *                                                                                             *
+ *    Use this routine to examine this object and return who the owner is. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the house number of the owner of this object. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/09/1994 JLB : Created. *
+ *=============================================================================================*/
+HousesType TechnoClass::Owner() const { return House->Class->House; }
+
+/***********************************************************************************************
+ * TechnoClass::Clicked_As_Target -- Sets the flash count for this techno
+ *object.              *
+ *                                                                                             *
+ *    Use this routine to set the flash count for the object. This flash count
+ *is the number   * of times the object will "flash". Typically it is called as
+ *a result of the player       * clicking on this object in order to make it the
+ *target of a move or attack.              *
+ *                                                                                             *
+ * INPUT:   count -- The number of times the object should flash. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/09/1994 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Clicked_As_Target(int count) {
+  FlashCount = static_cast<uint8_t>(count);
+}
+
+/***********************************************************************************************
+ * TechnoClass::AI -- Handles AI processing for techno object. *
+ *                                                                                             *
+ *    This routine handles AI processing for techno objects. Typically, this
+ *merely dispatches * to the appropriate AI routines for the base classes. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   Make sure that this routine is only called ONCE per game tick. *
+ *                                                                                             *
+ * HISTORY: * 12/09/1994 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::AI() {
+  CargoClass::AI();
+  RadioClass::AI();
+  DoorClass::AI();
+
+  if (!IsActive) {
+    return;
+  }
+
+  /*
+  ** Handle decision to re-cloak here. Process the cloaking/decloaking
+  *operation.
+  */
+  if (IsCloakable) {
+    /*
+    **	If this object is uncloaked, but it can be cloaked and it thinks that it
+    **	is a good time do so, then begin cloaking.
+    */
+    if (Cloak == UNCLOAKED) {
+      if (IsOwnedByPlayer) {
+        Mark(MARK_CHANGE);
+      }
+      CloakingDevice.Graphic_Logic();
+      if (!Arm && CloakingDevice.Fetch_Stage()) {
+        if (Health_Ratio() > 0x0040) {
+          Do_Cloak();
+        } else {
+          if (Random_Pick(0, 25) == 1) {
+            Do_Cloak();
+          }
+        }
+      }
+    } else {
+      CloakingDevice.Graphic_Logic();
+      switch (Cloak) {
+        /*
+        **	Handle the uncloaking process. Always mark to redraw
+        **	the object and when cloaking is complete, stabilize into
+        **	the normal uncloaked state.
+        */
+        case UNCLOAKING:
+          Mark(MARK_CHANGE);
+          if (Visual_Character(true) == VISUAL_NORMAL) {
+            CloakingDevice.Set_Rate(UNCLOAK_VIS_TIME);
+            CloakingDevice.Set_Stage(0);  // re-start the stage counter
+            Cloak = UNCLOAKED;
+          }
+          break;
+
+        /*
+        **	Handle the cloaking process. Always mark to redraw the object
+        **	and when the cloaking process is complete, stabilize into the
+        **	normal cloaked state.
+        */
+        case CLOAKING:
+          Mark(MARK_CHANGE);
+          switch (Visual_Character(true)) {
+            /*
+            **	If badly damaged, then it can never fully cloak.
+            */
+            case VISUAL_DARKEN:
+              if (Health_Ratio() < 0x0040 && Random_Pick(1, 3) == 1) {
+                Cloak = UNCLOAKING;
+              }
+              break;
+
+#ifdef NEVER
+            case VISUAL_SHADOWY:
+              if (pre != Visual_Character(true)) {
+                Detach_All(false);
+              }
+              break;
+#endif
+
+            case VISUAL_HIDDEN:
+              Cloak = CLOAKED;
+              CloakingDevice.Set_Rate(0);
+
+              /*
+              **	Special check to ensure that if the unit is carring a
+              *captured *	flag, it will never fully cloak.
+              */
+              if (What_Am_I() == RTTI_UNIT &&
+                  dynamic_cast<UnitClass*>(this)->Flagged != HOUSE_NONE) {
+                Do_Shimmer();
+              } else {
+                Detach_All(false);
+              }
+
+              /*
+              **	A computer controlled unit will try to scatter if
+              *possible so *	that it will be much harder to locate.
+              */
+              if (What_Am_I() == RTTI_UNIT && !House->IsHuman) {
+                Scatter(0, true);
+              }
+              break;
+            case VisualType::VISUAL_NORMAL:
+            case VisualType::VISUAL_INDISTINCT:
+            case VisualType::VISUAL_SHADOWY:
+            case VisualType::VISUAL_RIPPLE:
+            default:
+              break;
+          }
+          break;
+
+        /*
+        **	A cloaked object will always be redrawn if it is owned by the
+        **	player. This ensures that the shimmering effect will animate.
+        */
+        case CLOAKED:
+          if (IsOwnedByPlayer) {
+            Mark(MARK_CHANGE);
+          }
+          break;
+        case CloakType::UNCLOAKED:
+        default:
+          break;
+      }
+    }
+  }
+
+  /*
+  **	Arming delay always counts down to zero.
+  */
+  if (Arm) {
+    Arm--;
+  }
+
+  /*
+  **	Update the animation timer system. If the animation stage
+  **	changes, then flag the object to be redrawn as well as  determine
+  **	if the current animation process needs to change.
+  */
+  if ((What_Am_I() != RTTI_BUILDING) && (Graphic_Logic() || Time_To_Redraw())) {
+    Mark(MARK_CHANGE);
+  }
+
+  /*
+  **	If the object is flashing and a change of flash state has occured, then
+  *mark the *	object to be redrawn.
+  */
+  if (Process()) {
+    Mark(MARK_CHANGE);
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Select -- Selects object and checks to see if can be selected. *
+ *                                                                                             *
+ *    This function checks to see if this techno object can be selected. If it
+ *can, then it    * is selected. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/11/1994 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::Select() {
+  if (!IsDiscoveredByPlayer && !IsOwnedByPlayer &&
+      !TheDebugState().unshroud()) {
+    return false;
+  }
+
+  if (RadioClass::Select()) {
+    /*
+    **	Speak a confirmation of selection.
+    */
+    if (IsOwnedByPlayer && TheGameState().allow_voice()) {
+      Response_Select();
+    }
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Can_Fire -- Determines if this techno object can fire. *
+ *                                                                                             *
+ *    This performs a simple check to make sure that this techno object can
+ *fire. At this      * level, the only thing checked for is the rearming delay.
+ **
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the fire legality control code. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/23/1994 JLB : Created. *
+ *=============================================================================================*/
+FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
+  /*
+  **	Don't allow firing if the target is illegal.
+  */
+  if (!Target_Legal(target)) {
+    return FIRE_ILLEGAL;
+  }
+
+  ObjectClass* object = As_Object(target);
+
+  /*
+  **	If the object is completely cloaked, then you can't fire on it.
+  */
+  if (object && /*(object->IsActive || GameToPlay != GAME_NORMAL) &&*/
+      object->Is_Techno() &&
+      dynamic_cast<TechnoClass*>(object)->Cloak == CLOAKED) {
+    return FIRE_CANT;
+  }
+
+  /*
+  **	If there is no weapon, then firing is not allowed.
+  */
+  const WeaponType weap = which == 0 ? Techno_Type_Class()->Primary
+                                     : Techno_Type_Class()->Secondary;
+  if (weap == WEAPON_NONE) {
+    return FIRE_CANT;
+  }
+
+  /*
+  **	Can only fire anti-aircraft weapons against aircraft unless the aircraft
+  *is *	sitting on the ground.
+  */
+  if (object && object->What_Am_I() == RTTI_AIRCRAFT &&
+      !BulletTypeClass::As_Reference(Weapons.at(weap).Fires).IsAntiAircraft &&
+      dynamic_cast<AircraftClass*>(object)->Altitude > 0) {
+    return FIRE_CANT;
+  }
+
+  /*
+  **	Don't allow firing if still rearming.
+  */
+  if (Arm) {
+    return FIRE_REARM;
+  }
+
+  /*
+  **	The target must be within range in order to allow firing.
+  */
+  if (!In_Range(target, which)) {
+    return FIRE_RANGE;
+  }
+
+  /*
+  **	If there is no ammo left, then it can't fire.
+  */
+  if (!Ammo) {
+    return FIRE_AMMO;
+  }
+
+  /*
+  **	If cloaked, then firing is disabled.
+  */
+  if (Cloak != UNCLOAKED) {
+    return FIRE_CLOAKED;
+  }
+
+  return FIRE_OK;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Stun -- Prepares the object for removal from the game. *
+ *                                                                                             *
+ *    This routine handles cleaning up this techno object from the game system
+ *so that when    * it is subsequently removed, it doesn't leave any loose ends.
+ **
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/23/1994 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Stun() {
+  Assign_Target(kTargetNone);
+  Assign_Destination(kTargetNone);
+  Transmit_Message(RADIO_OVER_OUT);
+  Detach_All();
+  Unselect();
+}
+
+/***********************************************************************************************
+ * TechnoClass::Assign_Target -- Assigns the targeting computer with specified
+ *target.         *
+ *                                                                                             *
+ *    Use this routine to set the targeting computer for this object. It checks
+ *to make sure   * that targeting of itself is prohibited. *
+ *                                                                                             *
+ * INPUT:   target   -- The target for this object to attack. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/23/1994 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Assign_Target(TARGET target) {
+  if (target == TarCom) {
+    return;
+  }
+
+  if (!Target_Legal(target)) {
+    target = kTargetNone;
+  } else {
+    /*
+    **	Prevent targeting of self.
+    */
+    if (target == As_Target()) {
+      target = ::As_Target(Coord_Cell(Coord));
+    } else {
+      /*
+      **	Make sure that the target is not already dead.
+      */
+      const ObjectClass* object = As_Object(target);
+      if (object &&
+          (!static_cast<bool>(object->IsActive) || object->Strength == 0)) {
+        target = kTargetNone;
+      }
+    }
+  }
+
+  /*
+  **	Set the unit's targeting computer.
+  */
+  TarCom = target;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Rearm_Delay -- Calculates the delay before firing can occur. *
+ *                                                                                             *
+ *    This function calculates the delay between shots. It determines this from
+ *the standard   * rate of fire (ROF) of the base class and modifies it
+ *according to game speed and         * whether this is the first or second
+ *shot. All single shot attackers consider their       * shots to be "second"
+ *since the second shot is the one handled normally. The first shot   * usually
+ *gets assigned a much shorter delay time before the next shot can fire. *
+ *                                                                                             *
+ * INPUT:   second   -- bool; Is this the second of a two shot salvo? *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of game frames to delay before the next shot
+ *may fire.     *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/26/1994 JLB : Created. *
+ *=============================================================================================*/
+int TechnoClass::Rearm_Delay(bool second) const {
+  if (second) {
+    return Weapons.at(Techno_Type_Class()->Primary).ROF + 3;
+  }
+  return 9;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Fire_At -- Fires projectile at target specified. *
+ *                                                                                             *
+ *    This is the main projectile firing code. Buildings, units, and infantry
+ *route fire       * requests through this function. *
+ *                                                                                             *
+ * INPUT:   target   -- The target that the projectile is to be fired at. *
+ *                                                                                             *
+ *          which    -- Which weapon to fire. *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the projectile object that was fired. If
+ *no projectile   * could be created or there was some other illegality
+ *detected, the return value     * will be NULL. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/26/1994 JLB : Created. * 07/03/1995 JLB : Moving platforms fire
+ *inaccurate projectiles.                            *
+ *=============================================================================================*/
+BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
+  DirType dir = DIR_N;          // The facing to impart upon the projectile.
+  COORDINATE target_coord = 0;  // Coordinate of the target.
+  const TechnoTypeClass& tclass = *Techno_Type_Class();
+  const WeaponTypeClass* weapon =
+      which == 0 ? &Weapons.at(tclass.Primary) : &Weapons.at(tclass.Secondary);
+  const BulletTypeClass& btype = BulletTypeClass::As_Reference(weapon->Fires);
+
+  /*
+  **	Perform a quick legality check to see if firing can occur.
+  */
+  if (TheDebugState().map_editor_active() || weapon->Fires == BULLET_NONE ||
+      !Target_Legal(target)) {
+    return nullptr;
+  }
+
+  /*
+  **	Fetch the target coordinate for the target specified.
+  */
+  ObjectClass* object = As_Object(target);
+  if (object) {
+    target_coord = object->Target_Coord();
+  } else {
+    target_coord = As_Coord(target);
+  }
+
+  /*
+  **	Get the location where the projectile should appear.
+  */
+  COORDINATE fire_coord = Fire_Coord(which);  // Coordinate of firing position.
+
+  /*
+  **	If the projectile is a homing type (such as a missile), then it will
+  **	launch in the direction the turret is facing, NOT necessarily the same
+  **	direction as the target.
+  */
+  if (btype.IsHoming || btype.IsDropping) {
+    dir = Fire_Direction();
+    if (btype.IsDropping) {
+      fire_coord = Center_Coord();
+    }
+  } else {
+    dir = ::Direction(fire_coord, target_coord);
+  }
+
+  /*
+  **	Create the projectile. Then process any special operations that
+  **	need to be performed according to the style of projectile
+  **	created.
+  */
+  auto* bullet = base::NewPooled<BulletClass>(weapon->Fires);  // Projectile.
+  if (bullet) {
+    bullet->Assign_Target(target);
+    bullet->Payback = this;
+    bullet->Strength = weapon->Attack;
+
+    /*
+    **	If this is firing from a moving platform, then the projectile is
+    *inaccurate.
+    */
+    if (TheSpecial().IsDefenderAdvantage && What_Am_I() != RTTI_BUILDING &&
+        dynamic_cast<const FootClass*>(this)->IsDriving) {
+      bullet->IsInaccurate = true;
+    }
+
+    // Recoil depends only on the projectile type, so read it while the bullet
+    // is still alive: a failed unlimbo returns the block to the heap below.
+    const bool is_fueled = bullet->Class->IsFueled;
+
+    if (bullet->Unlimbo(fire_coord, dir)) {
+      bullet->Payback = this;
+      bullet->Strength = weapon->Attack;
+    } else {
+      // The projectile never reached the map, so report no shot rather than
+      // hand callers a pointer into the recycled heap block.
+      base::DeletePooled(bullet);
+      bullet = nullptr;
+    }
+    if (!is_fueled) {
+      IsInRecoilState = true;
+    }
+    Arm = static_cast<unsigned char>(Rearm_Delay(IsSecondShot));
+    if (tclass.IsTwoShooter) {
+      IsSecondShot = !static_cast<bool>(IsSecondShot);
+    }
+
+    /*
+    **	Perform any animation effect for this weapon.
+    */
+    AnimType a = weapon->Anim;
+    switch (a) {
+      case ANIM_GUN_N:
+      case ANIM_CHEM_N:
+      case ANIM_FLAME_N:
+        a = static_cast<AnimType>(
+            static_cast<int>(a) +
+            static_cast<int>(Dir_Facing(Fire_Direction())));
+        break;
+      case AnimType::ANIM_NONE:
+      case AnimType::ANIM_FBALL1:
+      case AnimType::ANIM_GRENADE:
+      case AnimType::ANIM_FRAG1:
+      case AnimType::ANIM_FRAG2:
+      case AnimType::ANIM_VEH_HIT1:
+      case AnimType::ANIM_VEH_HIT2:
+      case AnimType::ANIM_VEH_HIT3:
+      case AnimType::ANIM_ART_EXP1:
+      case AnimType::ANIM_NAPALM1:
+      case AnimType::ANIM_NAPALM2:
+      case AnimType::ANIM_NAPALM3:
+      case AnimType::ANIM_SMOKE_PUFF:
+      case AnimType::ANIM_PIFF:
+      case AnimType::ANIM_PIFFPIFF:
+      case AnimType::ANIM_FLAME_NE:
+      case AnimType::ANIM_FLAME_E:
+      case AnimType::ANIM_FLAME_SE:
+      case AnimType::ANIM_FLAME_S:
+      case AnimType::ANIM_FLAME_SW:
+      case AnimType::ANIM_FLAME_W:
+      case AnimType::ANIM_FLAME_NW:
+      case AnimType::ANIM_CHEM_NE:
+      case AnimType::ANIM_CHEM_E:
+      case AnimType::ANIM_CHEM_SE:
+      case AnimType::ANIM_CHEM_S:
+      case AnimType::ANIM_CHEM_SW:
+      case AnimType::ANIM_CHEM_W:
+      case AnimType::ANIM_CHEM_NW:
+      case AnimType::ANIM_FIRE_SMALL:
+      case AnimType::ANIM_FIRE_MED:
+      case AnimType::ANIM_FIRE_MED2:
+      case AnimType::ANIM_FIRE_TINY:
+      case AnimType::ANIM_MUZZLE_FLASH:
+      case AnimType::ANIM_SMOKE_M:
+      case AnimType::ANIM_BURN_SMALL:
+      case AnimType::ANIM_BURN_MED:
+      case AnimType::ANIM_BURN_BIG:
+      case AnimType::ANIM_ON_FIRE_SMALL:
+      case AnimType::ANIM_ON_FIRE_MED:
+      case AnimType::ANIM_ON_FIRE_BIG:
+      case AnimType::ANIM_SAM_N:
+      case AnimType::ANIM_SAM_NE:
+      case AnimType::ANIM_SAM_E:
+      case AnimType::ANIM_SAM_SE:
+      case AnimType::ANIM_SAM_S:
+      case AnimType::ANIM_SAM_SW:
+      case AnimType::ANIM_SAM_W:
+      case AnimType::ANIM_SAM_NW:
+      case AnimType::ANIM_GUN_NE:
+      case AnimType::ANIM_GUN_E:
+      case AnimType::ANIM_GUN_SE:
+      case AnimType::ANIM_GUN_S:
+      case AnimType::ANIM_GUN_SW:
+      case AnimType::ANIM_GUN_W:
+      case AnimType::ANIM_GUN_NW:
+      case AnimType::ANIM_LZ_SMOKE:
+      case AnimType::ANIM_ION_CANNON:
+      case AnimType::ANIM_ATOM_BLAST:
+      case AnimType::ANIM_CRATE_DEVIATOR:
+      case AnimType::ANIM_CRATE_DOLLAR:
+      case AnimType::ANIM_CRATE_EARTH:
+      case AnimType::ANIM_CRATE_EMPULSE:
+      case AnimType::ANIM_CRATE_INVUN:
+      case AnimType::ANIM_CRATE_MINE:
+      case AnimType::ANIM_CRATE_RAPID:
+      case AnimType::ANIM_CRATE_STEALTH:
+      case AnimType::ANIM_CRATE_MISSILE:
+      case AnimType::ANIM_ATOM_DOOR:
+      case AnimType::ANIM_MOVE_FLASH:
+      case AnimType::ANIM_OILFIELD_BURN:
+      case AnimType::ANIM_TRIC_DIE:
+      case AnimType::ANIM_TREX_DIE:
+      case AnimType::ANIM_STEG_DIE:
+      case AnimType::ANIM_RAPT_DIE:
+      case AnimType::ANIM_CHEM_BALL:
+      case AnimType::ANIM_COUNT:
+      default:
+        break;
+    }
+
+    /*
+    **	If there is a special firing animation, then create and attach it
+    **	now.
+    */
+    if (a != ANIM_NONE) {
+      auto* anim = base::NewPooled<AnimClass>(a, Fire_Coord(which));
+      if (anim) {
+        anim->Attach_To(this);
+      }
+    }
+
+    /*
+    **	Reduce ammunition for this object.
+    */
+    if (Ammo > 0) {
+      Ammo--;
+    }
+
+    /*
+    **	Firing will in all likelihood, require the unit to be redraw. Flag it to
+    *be *	redrawn here.
+    */
+    Mark(MARK_CHANGE);
+
+    /*
+    **	If a projectile was fired from a unit that is hidden in the darkness,
+    **	reveal that unit and a little area around it.
+    ** For multiplayer games, only reveal the unit if the target is the
+    ** local player.
+    */
+    if ((!IsOwnedByPlayer && !IsDiscoveredByPlayer) ||
+        !TheMap().at(Coord_Cell(Center_Coord())).IsMapped) {
+      if (TheSession().type() == GAME_NORMAL) {
+        TheMap().Sight_From(Coord_Cell(Center_Coord()), 1, false);
+      } else {
+        const ObjectClass* obj = As_Object(target);
+        if (obj) {
+          const HousesType tgt_owner = obj->Owner();
+
+          if (ThePlayer()->Class->House == tgt_owner) {
+            TheMap().Sight_From(Coord_Cell(Center_Coord()), 1, false);
+          }
+        }
+      }
+    }
+  }
+
+  return bullet;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Player_Assign_Mission -- Assigns a mission as result of player
+ *input.          *
+ *                                                                                             *
+ *    This routine is called when the mission for an object needs to change as a
+ *result of     * player input. The basic operation would be to queue the event
+ *and let the action         * occur at the frame dictated by the queing system.
+ *However, if a voice response is        * indicated, then perform it at this
+ *time. This will give a greater illusion of            * immediate response. *
+ *                                                                                             *
+ * INPUT:   order       -- The mission order to assign to this object. *
+ *                                                                                             *
+ *          target      -- The target of this object. This will be used for
+ *combat and attack. *
+ *                                                                                             *
+ *          destination -- The movement destination for this object. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/22/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
+                                        TARGET destination) {
+  if (TheGameState().allow_voice()) {
+    if (mission == MISSION_ATTACK) {
+      Response_Attack();
+    } else {
+      Response_Move();
+    }
+  }
+  Queue_Mission(As_Target(), mission, target, destination);
+}
+
+/***********************************************************************************************
+ * TechnoClass::What_Action -- Determines what action to perform if object is
+ *selected.        *
+ *                                                                                             *
+ *    This routine will examine the object specified and return with the action
+ *that will      * be performed if the mouse button were clicked over the
+ *object.                           *
+ *                                                                                             *
+ * INPUT:   object   -- The object that the mouse button might be clicked on. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the action that will be performed if the object was
+ *clicked on.       *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. * 03/21/1995 JLB : Special target
+ *control for trees.                                        *
+ *=============================================================================================*/
+ActionType TechnoClass::What_Action(ObjectClass* object) {
+  if (object) {
+    /*
+    **	Return the ACTION_SELF flag if clicking on itself. However, if this
+    **	object cannot do anything special with itself, then just return with
+    **	the no action flag.
+    */
+    if (object == this && TheWorld().current_object().Count() == 1 &&
+        House == ThePlayer()) {
+      return ACTION_SELF;
+    }
+
+    const bool altdown = engine::window::IsAltDown();
+    const bool ctrldown = engine::window::IsCtrlDown();
+    const bool shiftdown = engine::window::IsShiftDown();
+
+    /*
+    **	Special guard area mission is possible if both the control and the
+    **	alt keys are held down.
+    */
+    if (IsOwnedByPlayer && ctrldown && altdown && Can_Player_Move() &&
+        Can_Player_Fire()) {
+      return ACTION_GUARD_AREA;
+    }
+
+    /*
+    **	Special override to force a move regardless of what is occupying the
+    *location.
+    */
+    if (altdown && (IsOwnedByPlayer && Can_Player_Move())) {
+      return ACTION_MOVE;
+    }
+
+    /*
+    **	Override so that toggled select state can be performed while the <SHIFT>
+    *key *	is held down.
+    */
+    if (shiftdown && (IsOwnedByPlayer && !IsALoaner)) {
+      return ACTION_TOGGLE_SELECT;
+    }
+
+    /*
+    **	If firing is possible and legal, then return this action potential.
+    */
+    if ((IsOwnedByPlayer && (ctrldown || !House->Is_Ally(object)) &&
+         (ctrldown || object->Class_Of().IsLegalTarget ||
+          (TheSpecial().IsTreeTarget &&
+           object->What_Am_I() == RTTI_TERRAIN))) &&
+        (Can_Player_Move() || In_Range(object, 0))) {
+      return ACTION_ATTACK;
+    }
+
+    /*
+    **	Possibly try to select the specified object, if that is warranted.
+    */
+    if (!Is_Weapon_Equipped() || !IsOwnedByPlayer ||
+        object->Owner() == Owner()) {
+      if ((!IsALoaner || !IsOwnedByPlayer) && object->Class_Of().IsSelectable &&
+          !object->IsSelected) {
+        return ACTION_SELECT;
+      }
+      return ACTION_NONE;
+    }
+  }
+  return ACTION_NONE;
+}
+
+/***********************************************************************************************
+ * TechnoClass::What_Action -- Determines action to perform if cell is clicked
+ *on.             *
+ *                                                                                             *
+ *    Use this routine to determine what action will be performed if the
+ *specified cell        * is clicked on. Usually this action is either a
+ *ACTION_MOVE or ACTION_NOMOVE. The action  * nomove is used to perform special
+ *case checking for nearby cells if in fact the mouse    * is clicked over the
+ *cell.                                                                *
+ *                                                                                             *
+ * INPUT:   cell  -- The cell to check for being clicked over. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the action that will occur if the cell is clicked on. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. * 07/10/1995 JLB : Force fire for
+ *buildings is explicitely disabled.                        *
+ *=============================================================================================*/
+ActionType TechnoClass::What_Action(CELL cell) const {
+  const CellClass* cellptr = &TheMap().at(cell);
+  const OverlayTypeClass* optr = nullptr;
+
+  bool ctrldown = engine::window::IsCtrlDown();
+  const bool shiftdown = engine::window::IsShiftDown();
+  const bool altdown = engine::window::IsAltDown();
+
+  /*
+  **	Disable recognizing the <CTRL> key forced fire option when dealing with
+  *buildings.
+  */
+  if (What_Am_I() == RTTI_BUILDING) {
+    ctrldown = false;
+  }
+
+  if (cellptr->Overlay != OVERLAY_NONE) {
+    optr = &OverlayTypeClass::As_Reference(cellptr->Overlay);
+  }
+
+  /*
+  **	Special guard area mission is possible if both the control and the
+  **	alt keys are held down.
+  */
+  if (IsOwnedByPlayer && ctrldown && altdown && Can_Player_Move() &&
+      Can_Player_Fire()) {
+    return ACTION_GUARD_AREA;
+  }
+
+  if (IsOwnedByPlayer && Techno_Type_Class()->Primary != WEAPON_NONE &&
+      (ctrldown || (optr && optr->IsLegalTarget))) {
+    const WarheadTypeClass* whead =
+        &Warheads.at(BulletTypeClass::As_Reference(
+                         Weapons.at(Techno_Type_Class()->Primary).Fires)
+                         .Warhead);
+    if ((!optr ||
+         (optr->IsWall && (whead->IsWallDestroyer ||
+                           (whead->IsWoodDestroyer && optr->IsWooden)))) &&
+        (Can_Player_Move() || In_Range(::As_Target(cell), 0))) {
+      return ACTION_ATTACK;
+    }
+  }
+
+  if (IsOwnedByPlayer && Can_Player_Move()) {
+    /*
+    **	Special override to force a move regardless of what is occupying the
+    *location.
+    */
+    if (shiftdown) {
+      return ACTION_MOVE;
+    }
+
+    /*
+    **	If the object can enter the cell specified, then allow
+    **	movement to it.
+    */
+    if (Can_Enter_Cell(cell) <= MOVE_CLOAK) {
+      return ACTION_MOVE;
+    }
+    return ACTION_NOMOVE;
+  }
+  return ACTION_NONE;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Can_Player_Move -- Determines if the object can move be moved by
+ *player.       *
+ *                                                                                             *
+ *    Use this routine to determine whether a movement order can be given to
+ *this object.      *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Can this object be given a movement order by the player? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::Can_Player_Move() const { return ThePlayer() == House; }
+
+/***********************************************************************************************
+ * TechnoClass::Can_Player_Fire -- Determines if the player can give this object
+ *a fire order. *
+ *                                                                                             *
+ *    Call this routine to determine if this object can be given a fire order by
+ *the player.   * Such objects will affect the mouse cursor accordingly --
+ *usually causes the targeting    * cursor to appear. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Can this object be given firing orders by the player? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/23/1995 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::Can_Player_Fire() const {
+  return House->IsHuman && Is_Techno() &&
+         Techno_Type_Class()->Primary != WEAPON_NONE;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Is_Weapon_Equipped -- Determines if this object has a combat
+ *weapon.          *
+ *                                                                                             *
+ *    Use this routine to determine if this object is equipped with a combat
+ *weapon. Such      * determination is used by the AI system to gauge the threat
+ *potential of the object.      *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Is this object equipped with a combat weapon? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/23/1995 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::Is_Weapon_Equipped() const {
+  return Techno_Type_Class()->Primary != WEAPON_NONE;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Can_Repair -- Determines if the object can and should be
+ *repaired.             *
+ *                                                                                             *
+ *    Use this routine to determine if the specified object is a candidate for
+ *repair. In      * order to qualify, the object must be allowed to be repaired
+ *(in theory) and it must      * be below full strength. If these conditions are
+ *met, then it can be repaired.            *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; May this unit be repaired? A return value of false may mean
+ *that the object  * is not allowed to be repaired, or it might be full strength
+ *already.         *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/23/1995 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::Can_Repair() const {
+  /*
+  **	Temporary hack to disable repair cursor over non-buildings.
+  */
+  if (What_Am_I() == RTTI_UNIT || What_Am_I() == RTTI_INFANTRY ||
+      What_Am_I() == RTTI_AIRCRAFT) {
+    return false;
+  }
+  return Techno_Type_Class()->IsRepairable &&
+         std::cmp_not_equal(Strength, Class_Of().MaxStrength);
+}
+
+/***********************************************************************************************
+ * TechnoClass::Weapon_Range -- Determines the maximum range for the weapon. *
+ *                                                                                             *
+ *    Use this routine to determine the maximum range for the weapon indicated.
+ **
+ *                                                                                             *
+ * INPUT:   which -- Which weapon to use when determining the range. 0=primary,
+ *1=secondary.   *
+ *                                                                                             *
+ * OUTPUT:  Returns with the range of the weapon (in leptons). *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/19/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoClass::Weapon_Range(int which) const {
+  WeaponType weapon = WEAPON_NONE;
+  const TechnoTypeClass& ttype = *Techno_Type_Class();
+
+  switch (which) {
+    case 0:
+      weapon = ttype.Primary;
+      break;
+
+    case 1:
+      weapon = ttype.Secondary;
+      break;
+    default:
+      break;
+  }
+  if (weapon != WEAPON_NONE) {
+    if (weapon == WEAPON_NIKE && TheSession().type() == GAME_NORMAL) {
+      return Weapons.at(weapon).Range * 2;
+    }
+    return Weapons.at(weapon).Range;
+  }
+  return 0;
+}
+
+/***************************************************************************
+ * TechnoClass::Override_Mission -- temporarily overides a units mission   *
+ *                                                                         *
+ *                                                                         *
+ *                                                                         *
+ * INPUT:      MissionType mission - the mission we want to overide        *
+ *               TARGET      tarcom  - the new target we want to overide   *
+ *               TARGET      navcom  - the new navigation point to overide *
+ *                                                                         *
+ * OUTPUT:      none                                                       *
+ *                                                                         *
+ * WARNINGS:   If a mission is already overidden, the current mission is   *
+ *               just re-assigned.                                         *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/28/1995 PWG : Created.                                             *
+ *=========================================================================*/
+void TechnoClass::Override_Mission(MissionType mission, TARGET tarcom,
+                                   TARGET navcom) {
+  SuspendedTarCom = TarCom;
+  RadioClass::Override_Mission(mission, tarcom, navcom);
+  Assign_Target(tarcom);
+}
+
+/***************************************************************************
+ * TechnoClass::Restore_Mission -- Restores an overidden mission           *
+ *                                                                         *
+ * INPUT:		none *
+ *                                                                         *
+ * OUTPUT:     none                                                        *
+ *                                                                         *
+ * WARNINGS:   none                                                        *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/28/1995 PWG : Created.                                             *
+ *=========================================================================*/
+bool TechnoClass::Restore_Mission() {
+  if (RadioClass::Restore_Mission()) {
+    Assign_Target(SuspendedTarCom);
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Captured -- Handles capturing this object. *
+ *                                                                                             *
+ *    This routine is called when this object gets captured by the house
+ *specified. It handles * removing this object from any targeting computers and
+ *then changes the ownership of      * the object to the new house. *
+ *                                                                                             *
+ * INPUT:   newowner -- Pointer to the house that is now the new owner. *
+ *                                                                                             *
+ * OUTPUT:  Was the object captured? Failure would mean that it is already under
+ *control of    * the house specified. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::Captured(HouseClass* newowner) {
+  if (newowner != House) {
+    /*
+    **	Capture attempt springs any "entered" trigger. The entered trigger
+    **	occurs first since there may be a special trigger attached to this
+    **	object that flags a capture as a win and a destroy as a loss. This
+    **	order is necessary because the object is recorded as a kill as well.
+    */
+    if (Trigger /*&& Trigger->House == newowner->Class->House*/) {
+      Trigger->Spring(EVENT_PLAYER_ENTERED, this);
+    }
+
+    /*
+    **	Record this as a kill.
+    */
+    Record_The_Kill(nullptr);
+
+    /*
+    **	Special kill record logic for capture process.
+    */
+    switch (What_Am_I()) {
+      case RTTI_BUILDING:
+        if (newowner) {
+          newowner->BuildingsKilled.at(Owner())++;
+        }
+        break;
+
+      case RTTI_AIRCRAFT:
+      case RTTI_INFANTRY:
+      case RTTI_UNIT:
+        if (newowner) {
+          newowner->UnitsKilled.at(Owner())++;
+        }
+        break;
+
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRYTYPE:
+      case RTTIType::RTTI_UNITTYPE:
+      case RTTIType::RTTI_AIRCRAFTTYPE:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
+      case RTTIType::RTTI_SPECIAL:
+      default:
+        break;
+    }
+    if (newowner != nullptr) {
+      House->WhoLastHurtMe = newowner->Class->House;
+    }
+
+    /*
+    **	Remove from targeting computers.
+    */
+    Detach_All(false);
+
+#ifdef NEVER
+    /*
+    **	Break off any radio contact.
+    */
+    Transmit_Message(RADIO_OVER_OUT);
+#endif
+
+    /*
+    **	Change ownership now.
+    */
+    House = newowner;
+    IsOwnedByPlayer = House == ThePlayer();
+
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Take_Damage -- Records damage assessed to this object. *
+ *                                                                                             *
+ *    This routine is called when this object has taken damage. It handles
+ *recording whether   * this object has been destroyed. If it has, then mark the
+ *appropriate kill records as     * necessary. *
+ *                                                                                             *
+ * INPUT: *
+ *                                                                                             *
+ * OUTPUT: *
+ *                                                                                             *
+ * WARNINGS: *
+ *                                                                                             *
+ * HISTORY: * 06/20/1995 JLB : Created. *
+ *=============================================================================================*/
+ResultType TechnoClass::Take_Damage(int& damage, int distance,
+                                    WarheadType warhead, TechnoClass* source) {
+  const ResultType result =
+      ObjectClass::Take_Damage(damage, distance, warhead, source);
+
+  switch (result) {
+    case RESULT_DESTROYED:
+      Transmit_Message(RADIO_OVER_OUT);
+      Stun();
+      break;
+
+    /*
+    **	If some damage was received and this object is cloaked, shimmer
+    **	the cloak a bit.
+    */
+    case ResultType::RESULT_LIGHT:
+    case ResultType::RESULT_HALF:
+    case ResultType::RESULT_MAJOR:
+    default:
+      if (source && !House->Is_Ally(source)) {
+        IsTickedOff = true;
+      }
+      Do_Shimmer();
+      break;
+
+    case RESULT_NONE:
+      break;
+  }
+  return result;
+}
+
+/***********************************************************************************************
+ * TechnoTypeClass::Max_Passengers -- Fetches the maximum passengers allowed. *
+ *                                                                                             *
+ *    This routine will return with the maximum number of passengers allowed in
+ *this           * transport. This typically applies to APCs and possibley
+ *transport helicopters.           *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of passengers this transport can carry. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/20/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoTypeClass::Max_Passengers() const {
+  if (IsTransporter) {
+    return 5;
+  }
+  return 0;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Record_The_Kill -- Records the death of this object. *
+ *                                                                                             *
+ *    This routine is used to record the death of this object. It will handle
+ *updating the     * owner house with the kill record as well as springing any
+ *trigger events associated with * this object's death. *
+ *                                                                                             *
+ * INPUT:   source   -- Pointer to the source of this object's death (if there
+ *is a source).   *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/08/1995 JLB : Created. * 08/23/1995 JLB : Building loss is only
+ *counted if it received damage.                     *
+ *=============================================================================================*/
+void TechnoClass::Record_The_Kill(TechnoClass* source) {
+  /*
+  **	Handle any trigger event associated with this object.
+  */
+  if (Trigger && source) {
+    Trigger->Spring(EVENT_ATTACKED, this);
+  }
+
+  if (Trigger && source) {
+    Trigger->Spring(EVENT_DISCOVERED, this);
+  }
+
+  if (Trigger) {
+    Trigger->Spring(EVENT_DESTROYED, this);
+  }
+
+  if (source) {
+    /*
+    **	Only the combat object types score kills; terrain and other objects
+    **	that can destroy something do not keep a tally.
+    */
+    switch (source->What_Am_I()) {
+      case RTTI_INFANTRY:
+      case RTTI_UNIT:
+      case RTTI_BUILDING:
+      case RTTI_AIRCRAFT:
+        source->Made_A_Kill();
+        break;
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_INFANTRYTYPE:
+      case RTTIType::RTTI_UNITTYPE:
+      case RTTIType::RTTI_AIRCRAFTTYPE:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_ABSTRACTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_OBJECT:
+      case RTTIType::RTTI_SPECIAL:
+      default:
+        break;
+    }
+
+    House->WhoLastHurtMe = source->Owner();
+  }
+
+  switch (What_Am_I()) {
+    case RTTI_BUILDING:
+      if (dynamic_cast<BuildingClass*>(this)->WhoLastHurtMe != HOUSE_NONE) {
+        House->BuildingsLost++;
+      }
+      if (source) {
+        if (TheSession().type() == GAME_INTERNET) {
+          source->House->DestroyedBuildings->Increment_Unit_Total(
+              static_cast<int>(
+                  dynamic_cast<BuildingClass*>(this)->Class->Type));
+        }
+        source->House->BuildingsKilled.at(Owner())++;
+      }
+
+      /*
+      ** If the map is displaying the multiplayer player names & their
+      ** # of kills, tell it to redraw.
+      */
+      if (TheMap().Is_Player_Names()) {
+        TheMap().Player_Names(true);
+      }
+      break;
+
+    case RTTI_AIRCRAFT:
+      House->UnitsLost++;
+      if (source) {
+        if (TheSession().type() == GAME_INTERNET) {
+          source->House->DestroyedAircraft->Increment_Unit_Total(
+              static_cast<int>(
+                  dynamic_cast<AircraftClass*>(this)->Class->Type));
+        }
+        source->House->UnitsKilled.at(Owner())++;
+      }
+      /*
+      ** If the map is displaying the multiplayer player names & their
+      ** # of kills, tell it to redraw.
+      */
+      if (TheMap().Is_Player_Names()) {
+        TheMap().Player_Names(true);
+      }
+      break;
+
+    case RTTI_INFANTRY:
+      House->UnitsLost++;
+      if (source) {
+        if (TheSession().type() == GAME_INTERNET) {
+          source->House->DestroyedInfantry->Increment_Unit_Total(
+              static_cast<int>(
+                  dynamic_cast<InfantryClass*>(this)->Class->Type));
+        }
+        source->House->UnitsKilled.at(Owner())++;
+      }
+      /*
+      ** If the map is displaying the multiplayer player names & their
+      ** # of kills, tell it to redraw.
+      */
+      if (TheMap().Is_Player_Names()) {
+        TheMap().Player_Names(true);
+      }
+      break;
+
+    case RTTI_UNIT:
+      House->UnitsLost++;
+      if (source) {
+        if (TheSession().type() == GAME_INTERNET) {
+          source->House->DestroyedUnits->Increment_Unit_Total(
+              static_cast<int>(dynamic_cast<UnitClass*>(this)->Class->Type));
+        }
+        source->House->UnitsKilled.at(Owner())++;
+      }
+
+      /*
+      ** If the map is displaying the multiplayer player names & their
+      ** # of kills, tell it to redraw.
+      */
+      if (TheMap().Is_Player_Names()) {
+        TheMap().Player_Names(true);
+      }
+      break;
+
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_ABSTRACTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_OBJECT:
+    case RTTIType::RTTI_SPECIAL:
+    default:
+      break;
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Nearby_Location -- Radiates outward looking for clear cell
+ *nearby.             *
+ *                                                                                             *
+ *    This routine is used to find a nearby location from center of this object.
+ *It can lean   * toward finding a location closest to an optional object. *
+ *                                                                                             *
+ * INPUT:   object   -- Optional object that the finding algorithm will try to
+ *find a close    * spot to. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the cell that is closest to this object. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/06/1995 JLB : Created. *
+ *=============================================================================================*/
+CELL TechnoClass::Nearby_Location(const TechnoClass* /*unused*/) const {
+  /*
+  **	Radiate outward from the object's location, looking for the best
+  **	target.
+  */
+  CELL best = 0;
+  const CELL cell = Coord_Cell(Center_Coord());
+  for (int radius = 0; radius < MAP_CELL_W / 2; radius++) {
+    /*
+    **	Scan the top and bottom rows of the "box".
+    */
+    for (int x = -radius; x <= radius; x++) {
+      CELL newcell = static_cast<CELL>(cell + XY_Cell(x, -radius));
+      if (TheMap().In_Radar(newcell) &&
+          TheMap().at(newcell).Is_Generally_Clear()) {
+        best = newcell;
+      }
+
+      newcell = static_cast<CELL>(cell + XY_Cell(x, radius));
+      if (TheMap().In_Radar(newcell) &&
+          TheMap().at(newcell).Is_Generally_Clear()) {
+        best = newcell;
+      }
+    }
+
+    /*
+    **	Scan the left and right columns of the "box".
+    */
+    for (int y = -(radius - 1); y < radius; y++) {
+      CELL newcell = static_cast<CELL>(cell + XY_Cell(-radius, y));
+      if (TheMap().In_Radar(newcell) &&
+          TheMap().at(newcell).Is_Generally_Clear()) {
+        best = newcell;
+      }
+
+      newcell = static_cast<CELL>(cell + XY_Cell(radius, y));
+      if (TheMap().In_Radar(newcell) &&
+          TheMap().at(newcell).Is_Generally_Clear()) {
+        best = newcell;
+      }
+    }
+
+    if (best) {
+      break;
+    }
+  }
+
+  return best;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Do_Uncloak -- Cause the stealth tank to uncloak. *
+ *                                                                                             *
+ *    This routine will start the stealth tank to uncloak. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Do_Uncloak() {
+  if (IsCloakable && (Cloak == CLOAKED || Cloak == CLOAKING)) {
+    Sound_Effect(VOC_CLOAK, Coord);
+    Cloak = UNCLOAKING;
+    CloakingDevice.Set_Stage(0);
+    CloakingDevice.Set_Rate(1);
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Do_Cloak -- Start the object into cloaking stage. *
+ *                                                                                             *
+ *    This routine will start the object into its cloaking state. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/08/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Do_Cloak() {
+  if (IsCloakable && (Cloak == UNCLOAKED || Cloak == UNCLOAKING)) {
+    Sound_Effect(VOC_CLOAK, Coord);
+    Detach_All(false);
+    Cloak = CLOAKING;
+    CloakingDevice.Set_Stage(0);
+    CloakingDevice.Set_Rate(1);
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Do_Shimmer -- Causes this object to shimmer if it is cloaked. *
+ *                                                                                             *
+ *    This routine is called when this object should shimmer. If the object is
+ *cloaked, then   * a shimmering effect (partial decloak) occurs. For objects
+ *that are not cloaked, no       * affect occurs. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Do_Shimmer() {
+  if (IsCloakable && Cloak == CLOAKED) {
+    Cloak = CLOAKING;
+    CloakingDevice.Set_Stage(MAX_UNCLOAK_STAGE / 2);
+    CloakingDevice.Set_Rate(1);
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Visual_Character -- Determine the visual character of the
+ *object.              *
+ *                                                                                             *
+ *    This routine will determine how this object should be drawn. Typically,
+ *this is the      * unmodified visible state, but cloaked objects have a
+ *different character.                *
+ *                                                                                             *
+ * INPUT:   raw   -- Should the check be based on the unmodified cloak condition
+ *of the        * object? If false, then an object owned by the player will
+ *never become    * completely invisible. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the visual character to use when displaying this
+ *object.              *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/07/1995 JLB : Created. *
+ *=============================================================================================*/
+VisualType TechnoClass::Visual_Character(bool raw) const {
+  /*
+  **	When uncloaked or in map editor mode, always draw the object normally.
+  */
+  if (Cloak == UNCLOAKED || TheDebugState().map_editor_active()) {
+    return VISUAL_NORMAL;
+  }
+
+  /*
+  **	A cloaked unit will not be visible at all unless it is owned
+  **	by the player.
+  */
+  if (Cloak == CLOAKED) {
+    if (!raw && IsOwnedByPlayer) {
+      return VISUAL_SHADOWY;
+    }
+    return VISUAL_HIDDEN;
+  }
+
+  int stage = CloakingDevice.Fetch_Stage();
+  if (Cloak == UNCLOAKING) {
+    stage = MAX_UNCLOAK_STAGE - stage;
+  }
+  if (stage <= 0) {
+    return VISUAL_NORMAL;
+  }
+
+  stage = Cardinal_To_Fixed(MAX_UNCLOAK_STAGE, stage);
+
+  if (stage < 0x0040) {
+    return VISUAL_INDISTINCT;
+  }
+  if (stage < 0x0080) {
+    return VISUAL_DARKEN;
+  }
+  if (stage < 0x00C0) {
+    return VISUAL_SHADOWY;
+  }
+  if (!raw && IsOwnedByPlayer) {
+    return VISUAL_SHADOWY;
+  }
+  if (stage < 0x00FF) {
+    return VISUAL_RIPPLE;
+  }
+  return VISUAL_HIDDEN;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Techno_Draw_Object -- General purpose draw object routine. *
+ *                                                                                             *
+ *    This routine is used to draw the object. It will handle any remapping or
+ *cloaking        * effects required. This logic is isolated here since all
+ *techno object share the same     * render logic when it comes to remapping and
+ *cloaking.                                    *
+ *                                                                                             *
+ * INPUT:   shapefile   -- Pointer to the shape file that the shape will be
+ *drawn from.        *
+ *                                                                                             *
+ *          shapenum    -- The shape number of the object in the file to use. *
+ *                                                                                             *
+ *          x,y         -- Center pixel coordinate to use for rendering this
+ *object.           *
+ *                                                                                             *
+ *          window      -- The clipping window to use when rendering. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/08/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Techno_Draw_Object(PixelView& view,
+                                     std::span<const std::byte> shapefile,
+                                     int shapenum, int x, int y,
+                                     WindowNumberType window) {
+  if (!shapefile.empty()) {
+    const VisualType visual = Visual_Character();
+    const auto remap = Remap_Table();
+
+    if (visual != VISUAL_HIDDEN && visual != VISUAL_RIPPLE) {
+      if (visual == VISUAL_SHADOWY) {
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                      ShapeFlags::kCentered | ShapeFlags::kShadow);
+      } else {
+        CC_Draw_Shape(
+            view, shapefile, shapenum, x, y, window,
+            ShapeFlags::kCentered | ShapeFlags::kFading | ShapeFlags::kGhost,
+            remap, MouseClass::UnitShadow);
+      }
+      if (visual == VISUAL_DARKEN) {
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                      ShapeFlags::kShadow | ShapeFlags::kCentered);
+      }
+    }
+    if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {
+      CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
+                    ShapeFlags::kPredator | ShapeFlags::kCentered);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Remap_Table -- Fetches the appropriate remap table to use. *
+ *                                                                                             *
+ *    This routine is used to fetch the appropriate remap table to use for this
+ *object.        *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the remap table to use for this object. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/08/1995 JLB : Created. *
+ *=============================================================================================*/
+std::span<const unsigned char> TechnoClass::Remap_Table() {
+  return House->Remap_Table(IsBlushing, true);
+}
+
+/***********************************************************************************************
+ * TechnoClass::Detach -- Handles removal of target from tracking system. *
+ *                                                                                             *
+ *    This routine is called when the specified object is about to be removed
+ *from the game    * system. The target object is removed from any tracking
+ *computers that this object may    * have. *
+ *                                                                                             *
+ * INPUT:   target   -- The target object (as a target value) that is being
+ *removed from the   * game. *
+ *                                                                                             *
+ *          all      -- Is the target about to die? A false value might indicate
+ *that the      * object is merely cloaking. In such a case, radio contact will
+ *not      * be affected. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Detach(TARGET target, bool all) {
+  RadioClass::Detach(target, all);
+
+  if (SuspendedMission != MISSION_NONE && SuspendedTarCom == target) {
+    SuspendedMission = MISSION_NONE;
+    SuspendedTarCom = kTargetNone;
+  }
+
+  /*
+  **	If the targeting computer is assigned to the target, then the targeting
+  **	computer must be cleared.
+  */
+  if (TarCom == target) {
+    Assign_Target(kTargetNone);
+    Restore_Mission();
+  }
+
+  /*
+  **	If it is in radio contact with another object, then that radio contact
+  **	must be broken.
+  */
+  if (all && In_Radio_Contact() && Contact_With_Whom()->As_Target() == target) {
+    Transmit_Message(RADIO_OVER_OUT);
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Kill_Cargo -- Destroys any cargo attached to this object. *
+ *                                                                                             *
+ *    This routine handles the destruction of any cargo this object may contain.
+ *Typical of    * this would be when a transport helicopter gets destroyed. *
+ *                                                                                             *
+ * INPUT:   source   -- The source of the destruction of the cargo. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Kill_Cargo(TechnoClass* source) {
+  while (Is_Something_Attached()) {
+    FootClass* foot = Detach_Object();
+    if (foot) {
+      foot->Record_The_Kill(source);
+      base::DeletePooled(foot);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Crew_Type -- Fetches the kind of crew this object contains. *
+ *                                                                                             *
+ *    This routine is called when generating survivors to this object. This
+ *routine returns    * the type of survivor to generate. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns the infantry type of a survivor. *
+ *                                                                                             *
+ * WARNINGS:   This routine is designed to be called repeatedly. Once for each
+ *survivor to     * generate. *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+InfantryType TechnoClass::Crew_Type() const {
+  InfantryType infantry = INFANTRY_E1;
+  if (House->ActLike == HOUSE_NEUTRAL) {
+    infantry = Random_Pick(INFANTRY_C1, INFANTRY_C9);
+  } else {
+    if (Techno_Type_Class()->Primary == WEAPON_NONE && Random_Pick(0, 6) == 1) {
+      if (Random_Pick(0, 1) == 0) {
+        infantry = INFANTRY_C1;
+      } else {
+        infantry = INFANTRY_C7;
+      }
+    }
+  }
+  return infantry;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Value -- Fetches the target value for this object. *
+ *                                                                                             *
+ *    This routine is used to fetch the target value for this object. The
+ *greater the value    * returned, the better this object is as a target. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the target value for this object. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. * 08/16/1995 JLB : Adjusted for early
+ *mission lame-out.                                     *
+ *=============================================================================================*/
+int TechnoClass::Value() const {
+  int value = 0;
+
+  /*
+  **	In early missions, contents of transports are not figured
+  **	into the total value. - 8/16/95
+  */
+  if ((TheWorld().build_level() > 8 || TheSession().type() != GAME_NORMAL) &&
+      Is_Something_Attached()) {
+    const FootClass* object = Attached_Object();
+
+    while (object) {
+      value += object->Value();
+      object = dynamic_cast<FootClass*>(object->Next);
+    }
+  }
+
+  return Risk() + Techno_Type_Class()->Reward + value;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Threat_Range -- Returns the range to scan based on threat
+ *control.             *
+ *                                                                                             *
+ *    This routine will return the range to scan based on the control value
+ *specified. The     * value returned by this routine is typically used when
+ *scanning for enemies.              *
+ *                                                                                             *
+ * INPUT:   control  -- The range control parameter. * 0  = Use weapon range
+ *(zero is returned in this special case).         * -1 = Scan without range
+ *restrictions (-1 is returned in this case).    * 1  = Scan up to twice weapon
+ *range.                                    *
+ *                                                                                             *
+ * OUTPUT:  Returns with a range (or special value) that can be used in the
+ *threat scan        * process. If zero is returned, then always check threat
+ *against In_Range(). If      * -1 is returned, then no range limitation
+ *restriction exists.                       *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoClass::Threat_Range(int control) const {
+  if (control == -1) {
+    return -1;
+  }
+  if (control == 0) {
+    return 0;
+  }
+
+  int range = std::max(Weapon_Range(0), Weapon_Range(1));
+  range *= 2;
+  range = Bound(range, 0x0000, 0x0A00);
+  return range;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Base_Is_Attacked -- Handle panic response to base being
+ *attacked.              *
+ *                                                                                             *
+ *    This routine is called when the base is being attacked. It will pull units
+ *off of the    * field and send them back to defend the base. This routine will
+ *make taking an enemy      * base much more difficult. *
+ *                                                                                             *
+ * INPUT:   enemy -- Pointer to the enemy object that did the damage on the
+ *base.              *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   This routine can drastically affect the game play. The computer
+ *will probably   * call off its attacks as a result. *
+ *                                                                                             *
+ * HISTORY: * 06/25/1995 JLB : Commented. *
+ *=============================================================================================*/
+// Not const: sends defenders to the attacked base.
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
+  FootClass* defender[6];
+  int value[6];
+  int count = 0;
+  int weakest = 0;
+  int risktotal = 0;
+
+  /*
+  ** Humans have to deal with their own base is attacked problems.
+  */
+  if (!enemy || House->Is_Ally(enemy) || House->IsHuman) {
+    return;
+  }
+
+  int desired = enemy->Risk() * 2;
+
+  /*
+  **	Don't overreact if this building can defend itself.
+  */
+  if (Techno_Type_Class()->Primary != WEAPON_NONE) {
+    return;
+  }
+
+  /*
+  ** If the enemy is not an infantry or a unit there is not much we can
+  ** do about it.
+  */
+  if (enemy->What_Am_I() != RTTI_INFANTRY && enemy->What_Am_I() != RTTI_UNIT) {
+    return;
+  }
+
+  /*
+  **	If the enemy is a gunboat, then don't do anything.
+  */
+  // This should allow helicopters to retaliate however. Hmmm.
+  if (enemy->What_Am_I() == RTTI_UNIT &&
+      (*dynamic_cast<const UnitClass*>(enemy) == UNIT_GUNBOAT ||
+       *dynamic_cast<const UnitClass*>(enemy) == UNIT_HOVER)) {
+    return;
+  }
+
+  /*
+  ** If the threat has already been dealt with then we don't need to do
+  ** any work.  Check for that here.
+  */
+  if (!dynamic_cast<const FootClass*>(enemy)->BaseAttackTimer.IsFinished()) {
+    return;
+  }
+
+  /*
+  ** We will need units to defend our base.  We need to suspend teams until
+  ** the situation has been dealt with.
+  */
+  TeamClass::Suspend_Teams(20);
+
+  /*
+  ** Loop through the infantry looking for those who are capable of going
+  ** on a rescue mission.
+  */
+  for (int index = 0;
+       index < TheObjectHeaps().infantry().Count() && desired > 0; index++) {
+    InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+    if (infantry && infantry->Owner() == Owner()) {
+      /*
+      **	Never recruite sticky guard units to defend a base.
+      */
+      if (infantry->Mission == MISSION_STICKY ||
+          infantry->Mission == MISSION_SLEEP) {
+        continue;
+      }
+
+      /*
+      ** Find the amount of threat that this unit can apply to the
+      ** enemy.
+      */
+      const int threat = infantry->Rescue_Mission(enemy->As_Target());
+
+      /*
+      ** If it can't apply any threat then do just skip it and do not
+      ** add it to the list.
+      */
+      if (!threat) {
+        continue;
+      }
+
+      /*
+      ** If the value returned is negative then this unit is already
+      ** assigned to fighting the enemy, so subtract its value from
+      ** the enemys desired value.
+      */
+      if (threat < 0) {
+        desired += threat;
+        continue;
+      }
+
+      if (count < 6) {
+        base::At(defender, count) = static_cast<FootClass*>(infantry);
+        base::At(value, count) = threat;
+        count++;
+        continue;
+      }
+
+      if (threat > weakest) {
+        int newweakest = threat;
+
+        for (int lp = 0; lp < count; lp++) {
+          if (base::At(value, lp) == weakest) {
+            base::At(value, lp) = threat;
+            base::At(defender, lp) = static_cast<FootClass*>(infantry);
+            continue;
+          }
+          newweakest = std::min(base::At(value, lp), newweakest);
+        }
+        weakest = newweakest;
+      }
+    }
+  }
+
+  /*
+  ** Loop through the units looking for those who are capable of going
+  ** on a rescue mission.
+  */
+  for (int index = 0; index < TheObjectHeaps().unit().Count() && desired > 0;
+       index++) {
+    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+    if (unit && unit->Owner() == Owner()) {
+      /*
+      **	Never recruite sticky guard units to defend a base.
+      */
+      if (unit->Mission == MISSION_STICKY || unit->Mission == MISSION_SLEEP) {
+        continue;
+      }
+
+      /*
+      ** Find the amount of threat that this unit can apply to the
+      ** enemy.
+      */
+      const int threat = unit->Rescue_Mission(enemy->As_Target());
+
+      /*
+      ** If it can't apply any threat then do just skip it and do not
+      ** add it to the list.
+      */
+      if (!threat) {
+        continue;
+      }
+
+      /*
+      ** If the value returned is negative then this unit is already
+      ** assigned to fighting the enemy, so subtract its value from
+      ** the enemys desired value.
+      */
+      if (threat < 0) {
+        desired += threat;
+        continue;
+      }
+
+      if (count < 6) {
+        base::At(defender, count) = static_cast<FootClass*>(unit);
+        base::At(value, count) = threat;
+        count++;
+        continue;
+      }
+      if (threat > weakest) {
+        int newweakest = threat;
+
+        for (int lp = 0; lp < count; lp++) {
+          if (base::At(value, lp) == weakest) {
+            base::At(value, lp) = threat;
+            base::At(defender, lp) = static_cast<FootClass*>(unit);
+            continue;
+          }
+          newweakest = std::min(base::At(value, lp), newweakest);
+        }
+        weakest = newweakest;
+      }
+    }
+  }
+
+  if (desired > 0) {
+    /*
+    ** Sort the defenders by value, this doesn't take very long and will
+    ** help the closest defenders to respond.
+    */
+    for (int lp = 0; lp < count - 1; lp++) {
+      for (int lp2 = lp + 1; lp2 < count; lp2++) {
+        if (base::At(value, lp) < base::At(value, lp2)) {
+          std::swap(base::At(value, lp), base::At(value, lp2));
+
+          FootClass* temp = base::At(defender, lp);
+          base::At(defender, lp) = base::At(defender, lp2);
+          base::At(defender, lp2) = temp;
+        }
+      }
+    }
+
+    for (int lp = 0; lp < count; lp++) {
+      base::At(defender, lp)->Assign_Mission(MISSION_RESCUE);
+      base::At(defender, lp)->Assign_Target(enemy->As_Target());
+      risktotal += base::At(defender, lp)->Risk();
+      if (risktotal > desired) {
+        break;
+      }
+    }
+  }
+
+  if (risktotal > desired) {
+    dynamic_cast<FootClass*>(enemy)->BaseAttackTimer.Set(int64_t{15} * 15);
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Get_Ownable -- Fetches the ownable bits for this object. *
+ *                                                                                             *
+ *    This routine will return the ownable bits for this object. The ownable
+ *bits represent    * the houses that are allowed to own this object. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns the ownable bits for this object. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoClass::Get_Ownable() const {
+  return dynamic_cast<const TechnoTypeClass&>(Class_Of()).Ownable;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Is_Techno -- Confirms that this is a TechnoClass object. *
+ *                                                                                             *
+ *    This routine is called to confirm if this object is derived from the
+ *TechnoClass         * object. At this level, the return value will always be
+ *true.                             *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Is this object a TechnoClass or derived from it? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::Is_Techno() const { return true; }
+
+/***********************************************************************************************
+ * TechnoClass::Risk -- Fetches the risk associated with this object. *
+ *                                                                                             *
+ *    This routine is called when the risk value for this object needs to be
+ *determined.       *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the risk value for this object. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoClass::Risk() const { return Techno_Type_Class()->Risk; }
+
+/***********************************************************************************************
+ * TechnoClass::Tiberium_Load -- Fetches the current tiberium load percentage. *
+ *                                                                                             *
+ *    This routine will return the current Tiberium load (expressed as a fixed
+ *point fraction) * that this object currently contains. Typical implementor of
+ *this function would be       * the harvester. Any object that can return a
+ *non-zero value should derive from this       * function in order to return the
+ *appropriate value.                                       *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the current Tiberium load expressed as a fixed point
+ *number.          * 0x0000   = empty * 0x0080   = half full * 0x0100   = full *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoClass::Tiberium_Load() const { return 0x0000; }
+
+/***********************************************************************************************
+ * TechnoClass::Desired_Load_Dir -- Fetches loading parameters for this object.
+ **
+ *                                                                                             *
+ *    This routine is called when an object desires to load up on this object.
+ *The object      * desiring to load is specified. The cell that the loading
+ *object should move to is        * determined. The direction that this object
+ *should face is also calculated. This routine  * will be overridden by those
+ *objects that can actually load up passengers.                *
+ *                                                                                             *
+ * INPUT:   object   -- The object that is desiring to load up. *
+ *                                                                                             *
+ *          moveto   -- Reference to the cell that the loading object should
+ *move to before    * the final load process occurs (this value will be filled
+ *in).          *
+ *                                                                                             *
+ * OUTPUT:  Returns with the direction that the transport object should face. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
+                                      CELL& moveto) const {
+  moveto = 0;
+  return DIR_N;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Pip_Count -- Fetches the number of pips to display on this
+ *object.             *
+ *                                                                                             *
+ *    This routine will return the number of pips to display on this object when
+ *the object    * is selected. The default condition is to return no pips at
+ *all. This routine is          * derived for those objects that can have pips.
+ **
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of pips to display on this object when
+ *selected.           *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoClass::Pip_Count() const { return 0; }
+
+/***********************************************************************************************
+ * TechnoClass::Fire_Direction -- Fetches the direction projectile fire will
+ *take.             *
+ *                                                                                             *
+ *    This routine will fetch the direction that a fired projectile will take.
+ *This is         * usually the facing of the object's weapon. This routine will
+ *be derived for the objects  * that have their weapon barrel facing a different
+ *direction than the body.                *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the direction a fired projectile will take. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+DirType TechnoClass::Fire_Direction() const { return PrimaryFacing.Current(); }
+
+/***********************************************************************************************
+ * TechnoClass::Response_Select -- Handles the voice response when selected. *
+ *                                                                                             *
+ *    This routine is called when a voice reponse to a select action is desired.
+ *This routine  * should be overridden for any object that actually has a voice
+ *response.                  *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   This routine can generate an audio response. *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Response_Select() {}
+
+/***********************************************************************************************
+ * TechnoClass::Response_Move -- Handles the voice repsonse to a movement
+ *request.             *
+ *                                                                                             *
+ *    This routine is called when a voice response to a movement order is
+ *desired. This        * routine should be overridden for any object that
+ *actually has a voice response.          *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   This can generate an audio repsonse. *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Response_Move() {}
+
+/***********************************************************************************************
+ * TechnoClass::Response_Attack -- Handles the voice response when given attack
+ *order.         *
+ *                                                                                             *
+ *    This routine is called when a voice response to an attack order is
+ *desired. This routine * should be overridden for any object that actually have
+ *a voice response.                 *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   This can generate an audio response. *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Response_Attack() {}
+
+/***********************************************************************************************
+ * TechnoClass::Target_Something_Nearby -- Handles finding and assigning a
+ *nearby target.      *
+ *                                                                                             *
+ *    This routine will search for a nearby target and assign it to this
+ *object's TarCom.      * The method to use when scanning for a target is
+ *controlled by the parameter passed.      *
+ *                                                                                             *
+ * INPUT:   threat   -- The threat control parameter used to control the range
+ *searched. The   * only values recognized are THREAT_RANGE and THREAT_AREA. *
+ *                                                                                             *
+ * OUTPUT:  Was a suitable target aquired and assigned to the TarCom? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
+  threat = threat & (THREAT_RANGE | THREAT_AREA);
+
+  /*
+  **	Determine that if there is an existing target it is still legal
+  **	and within range.
+  */
+  if (Target_Legal(TarCom) &&
+      (base::Any(threat & THREAT_RANGE) && !In_Range(TarCom))) {
+    Assign_Target(kTargetNone);
+  }
+
+  /*
+  **	If there is no target, then try to find one and assign it as
+  **	the target for this unit.
+  */
+  if (!Target_Legal(TarCom)) {
+    Assign_Target(Greatest_Threat(threat));
+  }
+
+  /*
+  **	Return with answer to question: Does this unit have a target?
+  */
+  return Target_Legal(TarCom);
+}
+
+/***********************************************************************************************
+ * TechnoClass::Exit_Object -- Causes specified object to leave this object. *
+ *                                                                                             *
+ *    This routine is called when there is an attached object that should detach
+ *and leave     * this object. Typical of this would be the refinery and APC. *
+ *                                                                                             *
+ * INPUT:   object   -- The object that is trying to leave this object. *
+ *                                                                                             *
+ * OUTPUT:  Was the object successfully launched from this object? Failure might
+ *indicate that * there is insufficient room to detach the specified object. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/24/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoClass::Exit_Object(TechnoClass* /*unused*/) { return 0; }
+
+/***********************************************************************************************
+ * TechnoClass::Random_Animate -- Performs some idle animation for the object. *
+ *                                                                                             *
+ *    This is a maintenance routine that is called when the object might want to
+ *check to see  * if it should go into some idle animation. Infantry are a good
+ *example of objects that    * perform idle animations. This routine must be
+ *overridden by the derived object types     * in order to give it some
+ *functionality.                                                  *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/24/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Random_Animate() {}
+
+/***********************************************************************************************
+ * TechnoClass::Assign_Destination -- Assigns movement destination to the
+ *object.              *
+ *                                                                                             *
+ *    This routine is called when the object needs to have a new movement
+ *destination          * assigned. This routine must be overridden since at this
+ *level, movement is not allowed.  *
+ *                                                                                             *
+ * INPUT:   destination -- The destination to assign to this object. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/24/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Assign_Destination(TARGET /*unused*/) {}
+
+/***********************************************************************************************
+ * TechnoClass::Scatter -- Causes the object to scatter to an adjacent cell. *
+ *                                                                                             *
+ *    This routine is called when the object needs to get out of the way. This
+ *might be as a   * result of combat or findpath reasons. *
+ *                                                                                             *
+ * INPUT:   coord    -- The source of the reason to scatter. The object should
+ *try to run      * away from this coordinate. *
+ *                                                                                             *
+ *          forced   -- Is the scatter a forced scatter? If false, then this is
+ *merely a       * request that scattering might be a good idea. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/24/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Scatter(COORDINATE /*unused*/, bool /*unused*/) {}
+
+/***********************************************************************************************
+ * TechnoClass::Enter_Idle_Mode -- Object enters its default idle condition. *
+ *                                                                                             *
+ *    This routine is called when the object should intelligently revert to an
+ *idle state.     * Typically this routine is called after some mission has
+ *completed. This routine must     * be overridden by the various object types.
+ *It is located at this level merely to provide * a virtual function entry
+ *point.                                                          *
+ *                                                                                             *
+ * INPUT:   initial  -- Is this called when the unit just leaves a factory or is
+ *initially     * or is initially placed on the map? *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/24/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Enter_Idle_Mode(bool /*unused*/) {}
+
+/***********************************************************************************************
+ * TechnoClass::Draw_Pips -- Draws the transport pips and other techno graphics.
+ **
+ *                                                                                             *
+ *    This routine is used to render the small transportation pip (occupant
+ *feedback graphic)  * used for transporter object. It will also display if the
+ *techno object is "primary"      * if necessary. *
+ *                                                                                             *
+ * INPUT:   x,y   -- The pixel coordinate for the center of the first pip.
+ *Subsiquent pips     * are drawn rightward. *
+ *                                                                                             *
+ *          window-- The window that pip clipping is relative to. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/08/1995 JLB : Created. *
+ *=============================================================================================*/
+void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
+                            WindowNumberType window) {
+  /*
+  **	Transporter type objects have a different graphic representation for the
+  *pips. The *	pip color represents the type of occupant.
+  */
+  if (Techno_Type_Class()->IsTransporter) {
+    const ObjectClass* object = Attached_Object();
+
+    for (int index = 0; index < Class_Of().Max_Pips(); index++) {
+      PipEnum pip = PIP_EMPTY;
+
+      if (object) {
+        pip = PIP_FULL;
+        if (object->What_Am_I() == RTTI_INFANTRY) {
+          if (*dynamic_cast<const InfantryClass*>(object) == INFANTRY_RAMBO) {
+            pip = PIP_COMMANDO;
+          }
+          if (*dynamic_cast<const InfantryClass*>(object) == INFANTRY_E7) {
+            pip = PIP_ENGINEER;
+          }
+          if (dynamic_cast<const InfantryClass*>(object)->Class->IsCivilian) {
+            pip = PIP_CIVILIAN;
+          }
+        }
+        object = object->Next;
+      }
+      CC_Draw_Shape(view, ObjectTypeClass::PipShapes, static_cast<int>(pip),
+                    x + (index * 3), y, window, ShapeFlags::kCentered);
+    }
+
+  } else {
+    /*
+    **	Display number of how many attached objects there are. This is also used
+    **	to display the fullness rating for a harvester.
+    */
+    const int pips = Pip_Count();
+    for (int index = 0; index < Class_Of().Max_Pips(); index++) {
+      CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
+                    static_cast<int>(index < pips ? PIP_FULL : PIP_EMPTY),
+                    x + (index * 3), y, window, ShapeFlags::kCentered);
+    }
+  }
+
+  /*
+  **	Display whether this unit is a leader unit or not.
+  */
+  if (IsLeader) {
+    CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
+                  static_cast<int>(PIP_PRIMARY), x - 2, y - 3, window,
+                  /*ShapeFlags::kCentered|*/ ShapeFlags::kNone);
+  }
+}
+
+/***********************************************************************************************
+ * TechnoClass::Find_Docking_Bay -- Searches for a close docking bay. *
+ *                                                                                             *
+ *    This routine will be used to find a building that can serve as a docking
+ *bay. The        * closest building that qualifies will be returned. If no
+ *building could be found then     * return with NULL. *
+ *                                                                                             *
+ * INPUT:   b  -- The structure type to look for. *
+ *                                                                                             *
+ *          friendly -- Allow searching for allied buildings as well. *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the building that can serve as the best
+ *docking bay.     *
+ *                                                                                             *
+ * WARNINGS:   This routine might return NULL even if there are buildings of the
+ *specified     * type available. This is the case when the building(s) are
+ *currently busy and    * cannot serve as a docking bay at the moment. *
+ *                                                                                             *
+ * HISTORY: * 07/18/1995 JLB : Created. * 08/13/1995 JLB : Recognizes the
+ *"IsLeader" method of building preference.                 *
+ *=============================================================================================*/
+BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
+  BuildingClass* best = nullptr;
+
+  /*
+  **	First check to see if there are ANY buildings of the specified
+  **	type in thi house's inventory. If not, then don't bother to scan
+  **	for one.
+  */
+  if ((House->BScan & ScanBit(static_cast<int>(b))) != 0) {
+    int bestval = -1;
+
+    /*
+    **	Loop through all the buildings and find the one that matches the
+    *specification *	and is willing to dock with this object.
+    */
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+
+      /*
+      **	Check to see if the building qualifies (preliminary scan).
+      */
+      if (building &&
+          (friendly ? building->House->Is_Ally(this)
+                    : building->House == House) &&
+          !building->IsInLimbo && *building == b &&
+          Transmit_Message(RADIO_CAN_LOAD, building) == RADIO_ROGER) {
+        /*
+        **	If the building qualifies and this building is better than the
+        **	last qualifying building (as rated by distance), then record
+        **	this building and keep scanning.
+        */
+        if (bestval == -1 || Distance(building) < bestval ||
+            building->IsLeader) {
+          best = building;
+          bestval = Distance(building);
+        }
+      }
+    }
+  }
+  return best;
+}
+
+/***********************************************************************************************
+ * TechnoClass::Find_Exit_Cell -- Finds an appropriate exit cell for this
+ *object.              *
+ *                                                                                             *
+ *    This routine is called when an object would like to exit from this
+ *(presumed) transport. * A suitable cell should be returned by this routine.
+ *The specified object will probably   * be unloaded at that cell. *
+ *                                                                                             *
+ * INPUT:   techno   -- Pointer to the object that would like to unload. This is
+ *used to       * determine suitability for placement. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the cell that is recommended for object exit. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/12/1995 JLB : Created. *
+ *=============================================================================================*/
+CELL TechnoClass::Find_Exit_Cell(const TechnoClass* /*unused*/) const {
+  return Coord_Cell(Docking_Coord());
+}
+
+/***********************************************************************************************
+ * TechnoClass::Refund_Amount -- Returns with the money to refund if this object
+ *is sold.      *
+ *                                                                                             *
+ *    This routine is used by the selling back mechanism in order to credit the
+ *owning house   * with some refund credits. The value returned is the credits
+ *to refund to the owner.      *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the credits to refund to the owner. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+int TechnoClass::Refund_Amount() const {
+  int cost = Techno_Type_Class()->Raw_Cost();
+
+  /*
+  **	If the object is carrying Tiberium directly (i.e., the harvester), then
+  **	account for the credits of the load.
+  */
+  cost +=
+      Fixed_To_Cardinal(UnitTypeClass::kFullLoadCredits, Tiberium_Load()) / 2;
+
+  if (House->IsHuman) {
+    cost /= 2;
+  }
+  return cost;
+}

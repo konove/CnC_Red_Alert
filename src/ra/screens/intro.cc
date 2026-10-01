@@ -1,0 +1,76 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+// The first-launch introduction movie and, on the DVD, the side prompt in front
+// of it.
+
+#include "ra/screens/intro.h"
+
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/window/hardware_cursor.h"
+#include "ra/assets/palette.h"
+#include "ra/assets/palettes.h"
+#include "ra/core/defines.h"
+#include "ra/data/text_ids.h"
+#include "ra/net/mplayer.h"
+#include "ra/screens/movie.h"
+#include "ra/startup/game_state.h"
+#include "ra/startup/init.h"
+#include "ra/ui/input.h"
+#include "ra/ui/msgbox.h"
+
+// ajw: in RA, all this did was play a movie. Denzil's DVD support uses it in
+// its original sense again, because a DVD cannot tell the side by which disc is
+// in the drive. (5/08/1995 BWG: created.)
+void PlayFirstLaunchIntro(PixelView& hidden, PixelView& visible) {
+  // A CD install knows the side from the disc that is in the drive. The DVD
+  // holds both campaigns, so the player has to be asked.
+  if (Using_DVD()) {
+    // Put the title page up as a backdrop for the dialog.
+    TheMouse().Hide();
+    Load_Title_Page();
+    ThePalettes().game_palette() = ThePalettes().title_palette();
+    hidden.BlitTo(visible);
+    ThePalettes().title_palette().Set();
+    TheMouse().Show();
+
+    // Process() returns the index of the button pressed. CurrentCD uses the
+    // disc numbering, 0 for the Allied disc and 1 for the Soviet one.
+    switch (WWMessageBox().Process(TXT_CHOOSE, TXT_ALLIES, TXT_SOVIET)) {
+      case 0:
+        TheGameState().current_cd() = 0;
+        break;
+
+      case 1:
+        TheGameState().current_cd() = 1;
+        break;
+      default:
+        break;
+    }
+
+    // Fade out and clear so that the movie starts from black. Mouse hides are
+    // counted, so this one needs its own show: the caller balances only the
+    // hide it makes itself.
+    TheMouse().Hide();
+    ThePalettes().black_palette().Set(kFadePaletteSlow);
+    visible.Clear();
+    TheMouse().Show();
+  }
+
+  Play_Movie(VQ_INTRO_MOVIE, THEME_NONE, false);
+}

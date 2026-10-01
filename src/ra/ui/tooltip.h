@@ -1,0 +1,83 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+//	ToolTip.h
+
+#ifndef CNC_RED_ALERT_RA_UI_TOOLTIP_H_
+#define CNC_RED_ALERT_RA_UI_TOOLTIP_H_
+
+#include <cstdint>
+#include <vector>
+
+#include "absl/base/attributes.h"
+#include "ra/ui/gadget.h"
+
+class PixelView;
+
+#define TOOLTIPTEXT_MAX_LEN 100
+
+#define TOOLTIPDELAY 400  //	Milliseconds
+
+class ToolTipClass {
+ public:
+  ToolTipClass(GadgetClass* pGadget ABSL_ATTRIBUTE_LIFETIME_BOUND,
+               const char* szText, int x_show, int y_show,
+               bool right_align = false, bool icon_list = false);
+  ~ToolTipClass() = default;
+  ToolTipClass(const ToolTipClass&) = delete;
+  ToolTipClass& operator=(const ToolTipClass&) = delete;
+  ToolTipClass(ToolTipClass&&) = delete;
+  ToolTipClass& operator=(ToolTipClass&&) = delete;
+
+  ToolTipClass* GetToolTipHit() ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  void Show(PixelView& view);
+  void Unshow(PixelView& view);
+  void Move(PixelView& view, int x_show, int y_show);
+  [[nodiscard]] bool bOverDifferentLine() const;
+
+  ToolTipClass* next{
+      nullptr};  //	Next tooltip in list of which *this is a part.
+
+  GadgetClass* pGadget;  //	Gadget to which this tooltip is bound.
+
+  bool bRightAlign;
+
+  bool bShowing{false};
+  bool bIconList;  //	True if gadget is iconlist and line-specific tooltips
+                   // are to be used.
+
+ protected:
+  [[nodiscard]] bool bGadgetHit() const;
+
+  int xShow;
+  int yShow;
+  int wShow;
+  int hShow;
+  char szTip[TOOLTIPTEXT_MAX_LEN + 1]{};  //	Text to show as tip.
+
+  std::vector<std::uint8_t> pSaveRect;
+
+  //	Used only if bIconList.
+  int iLastIconListIndex = -1;
+  bool bLastShowNoText = false;
+  int xLastShow = 0;
+  int yLastShow = 0;
+  int wLastShow = 0;
+};
+
+#endif  // CNC_RED_ALERT_RA_UI_TOOLTIP_H_

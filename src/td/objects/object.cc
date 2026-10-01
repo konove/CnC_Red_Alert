@@ -1,0 +1,1458 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\object.cpv   2.17   16 Oct 1995 16:49:22
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : OBJECT.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : April 29, 1994 *
+ *                                                                                             *
+ *                  Last Update : August 13, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions:
+ *   ObjectClass::Detach_All -- Removes the object from all tracking
+ *     systems.
+ *   ObjectClass::Detach_This_From_All -- Detatches this object from all
+ *     others.
+ *   ObjectClass::Fire_Out -- Informs object that attached animation has
+ *     finished.
+ *   ObjectClass::Get_Mission -- Fetches the current mission of this object.
+ *   ObjectClass::Init -- Initializes the basic object system.
+ *   ObjectClass::Limbo -- Brings the object into a state of limbo.
+ *   ObjectClass::Mark -- Handles basic marking logic.
+ *   ObjectClass::Mark_For_Redraw -- Marks object and system for redraw.
+ *   ObjectClass::Move -- Moves (by force) the object in the desired
+ *     direction.
+ *   ObjectClass::ObjectClass -- Default constructor for objects.
+ *   ObjectClass::Passive_Click_With -- Right mouse button click process.
+ *   ObjectClass::Receive_Message -- Processes an incoming radio message.
+ *   ObjectClass::Render -- Displays the object onto the map.
+ *   ObjectClass::Repair -- Handles object repair control.
+ *   ObjectClass::Revealed -- Reveals this object to the house specified.
+ *   ObjectClass::Select -- Try to make this object the "selected" object.
+ *   ObjectClass::Sell_Back -- Sells the object -- if possible.
+ *   ObjectClass::Take_Damage -- Applies damage to the object.
+ *   ObjectClass::Unlimbo -- Brings the object into the game system.
+ *   ObjectClass::Unselect -- This will un-select the object if it was
+ *     selected.
+ *   ObjectClass::Value -- Fetches the target value of this object.
+ *   ObjectClass::What_Action -- Deteremines what action to perform on
+ *     specified object.
+ *   ObjectClass::What_Am_I -- RTTI query of this object type.
+ *   ObjectTypeClass::Cost_Of -- Returns the cost to buy this unit.
+ *   ObjectTypeClass::Dimensions -- Gets the dimensions of the object in
+ *     pixels.
+ *   ObjectTypeClass::Get_Cameo_Data -- Fetches pointer to cameo data for
+ *     this object type.
+ *   ObjectTypeClass::Max_Pips -- Fetches the maximum pips allowed for this
+ *     object.
+ *   ObjectTypeClass::ObjectTypeClass -- Normal constructor for object type
+ *     class objects.
+ *   ObjectTypeClass::Occupy_List -- Returns with simple occupation list for
+ *     object.
+ *   ObjectTypeClass::One_Time -- Handles one time processing for object
+ *     types.
+ *   ObjectTypeClass::Overlap_List -- Returns a pointer to a simple overlap
+ *     list.
+ *   ObjectTypeClass::Time_To_Build -- Fetches the time to construct this
+ *     object.
+ *   ObjectTypeClass::Who_Can_Build_Me -- Finds the factory building that
+ *     can build this object
+ *   ObjectClass::What_Action -- Returns with the action to perform for this
+ *     object.
+ *   ObjectClass::In_Which_Layer -- Fetches what layer this object is
+ *     located in.
+ *   ObjectClass::Is_Techno -- Checks to see if this object is a techno
+ *     type.
+ *   ObjectClass::Get_Ownable -- Fetches the house owner legality options
+ *     for this object.
+ *   ObjectClass::Can_Repair -- Queries whether this object can be repaired.
+ *   ObjectClass::Can_Demolish -- Queries whether this object can be sold
+ *     back.
+ *   ObjectClass::Can_Player_Fire -- Can the player give this object an
+ *     attack mission?
+ *   ObjectClass::Can_Player_Move -- Can the player give this object a
+ *     movement mission?
+ *   ObjectClass::Target_Coord -- Fetches the coordinate if this object is a
+ *     target.
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+/*
+**	Selected objects have a special marking box around them. This is the
+*shapes that are *	used for this purpose.
+*/
+#include "td/objects/object.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
+#include "base/array.h"
+#include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
+#include "td/ai/special.h"
+#include "td/ai/team.h"
+#include "td/ai/trigger.h"
+#include "td/core/config.h"
+#include "td/core/defines.h"
+#include "td/core/heap.h"
+#include "td/core/inline.h"
+#include "td/core/jshell.h"
+#include "td/core/object_heaps.h"
+#include "td/core/vector.h"
+#include "td/debug/debug_state.h"
+#include "td/editor/mapedit.h"
+#include "td/map/logic.h"
+#include "td/map/world.h"
+#include "td/net/session.h"
+#include "td/objects/aircraft.h"
+#include "td/objects/anim.h"
+#include "td/objects/building.h"
+#include "td/objects/bullet.h"
+#include "td/objects/cell.h"
+#include "td/objects/combat.h"
+#include "td/objects/foot.h"
+#include "td/objects/house.h"
+#include "td/objects/infantry.h"
+#include "td/objects/radio.h"
+#include "td/objects/target.h"
+#include "td/objects/techno.h"
+#include "td/objects/type.h"
+#include "td/objects/unit.h"
+#include "td/startup/conquer.h"
+#include "td/startup/game_state.h"
+#include "td/ui/dialog.h"
+
+std::span<const std::byte> ObjectTypeClass::SelectShapes = {};
+
+std::span<const std::byte> ObjectTypeClass::PipShapes = {};
+
+bool ObjectClass::Is_Infantry() const { return false; }
+
+/***********************************************************************************************
+ * ObjectTypeClass::ObjectTypeClass -- Normal constructor for object type class
+ *objects.       *
+ *                                                                                             *
+ *    This is the base constructor that is used when constructing the object
+ *type classes.     * Every tangible game piece type calls this constructor for
+ *the ObjectTypeClass. This      * class holds static information that is common
+ *to objects in general.                     *
+ *                                                                                             *
+ * INPUT:   see below... *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/23/1995 JLB : Created. *
+ *=============================================================================================*/
+ObjectTypeClass::ObjectTypeClass(bool is_sentient, bool is_flammable,
+                                 bool is_crushable, bool is_stealthy,
+                                 bool is_selectable, bool is_legal_target,
+                                 bool is_insignificant, bool is_immune,
+                                 int name, const char* ini, ArmorType armor,
+                                 int16_t strength) noexcept
+    : AbstractTypeClass(name, ini),
+      IsCrushable(is_crushable),
+      IsStealthy(is_stealthy),
+      IsSelectable(is_selectable),
+      IsLegalTarget(is_legal_target),
+      IsInsignificant(is_insignificant),
+      IsImmune(is_immune),
+      IsFlammable(is_flammable),
+      IsSentient(is_sentient),
+      Armor(armor),
+      MaxStrength(strength) {
+  // RadarIcon = NULL;
+}
+
+/***********************************************************************************************
+ * ObjectTypeClass::Max_Pips -- Fetches the maximum pips allowed for this
+ *object.              *
+ *                                                                                             *
+ *    This routine will return the maximum number of pips that can be displayed
+ *for this       * object. When dealing with generic objects, this value is
+ *always zero.                    *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of pip boxes (empty or otherwise) to
+ *display.              *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/19/1995 JLB : Created. *
+ *=============================================================================================*/
+int ObjectTypeClass::Max_Pips() const { return 0; }
+
+/***********************************************************************************************
+ * ObjectTypeClass::Dimensions -- Gets the dimensions of the object in pixels. *
+ *                                                                                             *
+ *    This routine will fetch the dimensions of this object expressed as pixels
+ *width and      * pixels height. This information can be used to intelligently
+ *update the clipping         * rectangles. *
+ *                                                                                             *
+ * INPUT:   width    -- Reference to the width variable that will be filled in.
+ **
+ *                                                                                             *
+ *          height   -- Reference to the height variable that will be filled in.
+ **
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/19/1995 JLB : Created. *
+ *=============================================================================================*/
+void ObjectTypeClass::Dimensions(int& width, int& height) const {
+  width = 10;
+  height = 10;
+}
+
+/***********************************************************************************************
+ * ObjectTypeClass::Cost_Of -- Returns the cost to buy this unit. *
+ *                                                                                             *
+ *    This routine will return the cost to purchase this unit. This routine is
+ *expected to be  * overridden by the objects that can actually be purchased.
+ *All other object types can     * simply return zero since this value won't be
+ *used.                                       *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns the cost of the object. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/19/1995 JLB : Created. *
+ *=============================================================================================*/
+int ObjectTypeClass::Cost_Of() const { return 0; }
+
+/***********************************************************************************************
+ * ObjectTypeClass::Time_To_Build -- Fetches the time to construct this object.
+ **
+ *                                                                                             *
+ *    This routine will fetch the time in takes to construct this object.
+ *Objects that can     * be constructed will override this routine in order to
+ *return a useful value.             *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the time units (arbitrary) that it takes to construct
+ *this object.    *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/19/1995 JLB : Created. *
+ *=============================================================================================*/
+int ObjectTypeClass::Time_To_Build(HousesType /*unused*/) const { return 0; }
+
+/***********************************************************************************************
+ * ObjectTypeClass::Who_Can_Build_Me -- Finds the factory building that can
+ *build this object. *
+ *                                                                                             *
+ *    This routine will search for a factory building that can build this object
+ *type.         *
+ *                                                                                             *
+ * INPUT:   <NA> this routine is just here to be overridden by other classes. *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the building that can construct the object
+ *specified.    *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/19/1995 JLB : Created. *
+ *=============================================================================================*/
+BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool /*unused*/,
+                                                 bool /*unused*/,
+                                                 HousesType /*unused*/) const {
+  return nullptr;
+}
+
+/***********************************************************************************************
+ * ObjectTypeClass::Get_Cameo_Data -- Fetches pointer to cameo data for this
+ *object type.      *
+ *                                                                                             *
+ *    This routine will return with the cameo data pointer for this object type.
+ *It is         * expected that objects that can appear on the sidebar will
+ *override this routine in order * to provide proper cameo data pointer. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the cameo shape data. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/19/1995 JLB : Created. *
+ *=============================================================================================*/
+std::span<const std::byte> ObjectTypeClass::Get_Cameo_Data() const {
+  return {};
+}
+
+/***********************************************************************************************
+ * ObjectClass::ObjectClass -- Default constructor for objects. *
+ *                                                                                             *
+ *    This is the default constructor for objects. It is called as an inherent
+ *part of the     * construction process for all the normal game objects
+ *instantiated. It serves merely to   * initialize the object values to a common
+ *(default) state.                                *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   Objects always start in a state of limbo. They must be
+ *Unlimbo()ed before they  * can be used. *
+ *                                                                                             *
+ * HISTORY: * 09/24/1994 JLB : Created. *
+ *=============================================================================================*/
+ObjectClass::ObjectClass() {
+  Coord = 0xFFFFFFFFL;  // Some bogus illegal value.
+}
+
+/***********************************************************************************************
+ * ObjectClass::What_Am_I -- RTTI query of this object type. *
+ *                                                                                             *
+ *    This routine will never be called, but is here for completeness. Every
+ *object that       * is derived from object class must overload this function
+ *and return their own proper     * object RTTI value. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the RTTI value that corresponds to the object's type. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/19/1995 JLB : Created. *
+ *=============================================================================================*/
+RTTIType ObjectClass::What_Am_I() const { return RTTI_OBJECT; }
+
+/***********************************************************************************************
+ * ObjectClass::What_Action -- Determines what action to perform on specified
+ *object.         *
+ *                                                                                             *
+ *    This routine will return that action that this object could perform if the
+ *mouse were    * clicked over the object specified. *
+ *                                                                                             *
+ * INPUT:   object   -- Pointer to the object to check this object against when
+ *determining    * the action to perform. *
+ *                                                                                             *
+ * OUTPUT:  It returns that action that will be performed if the mouse were
+ *clicked over the   * object. Since non-derived objects cannot do anything, and
+ *cannot even be           * instantiated, this routine will always return
+ *ACTION_NONE.                         *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/19/1995 JLB : Created. *
+ *=============================================================================================*/
+ActionType ObjectClass::What_Action(ObjectClass* /*unused*/) {
+  return ACTION_NONE;
+}
+
+/***********************************************************************************************
+ * ObjectClass::What_Action -- Returns with the action to perform for this
+ *object.             *
+ *                                                                                             *
+ *    This routine is called when information on a potential action if the mouse
+ *were clicked  * on the cell specified. This routine merely serves as a virtual
+ *placeholder so that       * object types that can actually perform some action
+ *will override this routine to provide * true functionality. *
+ *                                                                                             *
+ * INPUT:   cell  -- The cell that the mouse is over and might be clicked on. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the action that this object would try to perform if the
+ *mouse were    * clicked. Since objects at this level have no ability to do
+ *anything, this routine  * will always returns ACTION_NONE unless it is
+ *overridden.                           *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+ActionType ObjectClass::What_Action(CELL /*unused*/) const {
+  return ACTION_NONE;
+}
+
+/***********************************************************************************************
+ * ObjectClass::In_Which_Layer -- Fetches what layer this object is located in.
+ **
+ *                                                                                             *
+ *    The default layer for object location is the LAYER_GROUND. Aircraft will
+ *override this   * routine and make adjustments as necessary according to the
+ *aircraft's altitude.          *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the layer that this object is located in. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+LayerType ObjectClass::In_Which_Layer() const { return LAYER_GROUND; }
+
+/***********************************************************************************************
+ * ObjectClass::Is_Techno -- Checks to see if this object is a techno type. *
+ *                                                                                             *
+ *    Most active objects in the game are of the techno type. This routine will
+ *return true    * if called on an object that is derived from TechnoClass. The
+ *RTTI interface is           * insufficient for this purpose -- hence the
+ *existence of this routine.                    *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Is this object derived from the TechnoClass object? This is true for
+ *units,        * infantry, aircraft, and buildings. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+bool ObjectClass::Is_Techno() const { return false; }
+
+/***********************************************************************************************
+ * ObjectClass::Get_Ownable -- Fetches the house owner legality options for this
+ *object.       *
+ *                                                                                             *
+ *    This routine will return the ownable bits for this object. Objects at this
+ *level can't   * really be owned by anyone, but return the full spectrum of
+ *legality just to be safe.     *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the ownable flags (as a combined bitfield) for this
+ *object.           *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+int ObjectClass::Get_Ownable() const { return 0xffff; }
+
+/***********************************************************************************************
+ * ObjectClass::Can_Repair -- Queries whether this object can be repaired. *
+ *                                                                                             *
+ *    Most objects cannot be repaired. This routine defaults to returning
+ *"false", but is      * overridden by derived functions defined by object types
+ *that can support repair.         *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Can this object be repaired? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+bool ObjectClass::Can_Repair() const { return false; }
+
+/***********************************************************************************************
+ * ObjectClass::Can_Demolish -- Queries whether this object can be sold back. *
+ *                                                                                             *
+ *    This routine is used to determine if this object can be sold. Most objects
+ *cannot be     * but for those objects that can, this routine will be
+ *overridden as necessary.            *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Can this object be sold back? Typically, the answer is no. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+bool ObjectClass::Can_Demolish() const { return false; }
+
+/***********************************************************************************************
+ * ObjectClass::Can_Player_Fire -- Can the player give this object an attack
+ *mission?          *
+ *                                                                                             *
+ *    This routine is used to determine if attacking is an option under player
+ *control with    * respect to this unit. This routine will be overridden as
+ *necessary for those objects     * that have the ability to attack. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Can this object be given an attack order by the player? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+bool ObjectClass::Can_Player_Fire() const { return false; }
+
+/***********************************************************************************************
+ * ObjectClass::Can_Player_Move -- Can the player give this object a movement
+ *mission?         *
+ *                                                                                             *
+ *    This routine is used to determine if the player has the ability to command
+ *this object   * with a movement mission. This routine will be overridden as
+ *necessary to support this    * ability. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Can this object be given a movement mission by the player? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+bool ObjectClass::Can_Player_Move() const { return false; }
+
+/***********************************************************************************************
+ * ObjectClass::Target_Coord -- Fetches the coordinate if this object is a
+ *target.             *
+ *                                                                                             *
+ *    When the coordinate to use when firing at this object is needed, this
+ *routine will       * provide it. Normal objects just use the center of the
+ *object for this, but there are     * some more sophisticated objects that are
+ *not fired upon the center.                      *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the coordinate to fire at if this object is a target. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+COORDINATE ObjectClass::Target_Coord() const { return Center_Coord(); }
+
+COORDINATE ObjectClass::Center_Coord() const { return Coord; }
+COORDINATE ObjectClass::Render_Coord() const { return Center_Coord(); }
+COORDINATE ObjectClass::Docking_Coord() const { return Center_Coord(); }
+COORDINATE ObjectClass::Sort_Y() const { return Coord; }
+COORDINATE ObjectClass::Fire_Coord(int /*unused*/) const { return Coord; }
+void ObjectClass::Record_The_Kill(TechnoClass* /*unused*/) {}
+void ObjectClass::Do_Shimmer() {}
+int ObjectClass::Exit_Object(TechnoClass* /*unused*/) { return 0; }
+void ObjectClass::Hidden() {}
+void ObjectClass::Look(bool /*unused*/) {}
+void ObjectClass::Active_Click_With(ActionType /*unused*/,
+                                    ObjectClass* /*unused*/) {}
+void ObjectClass::Active_Click_With(ActionType /*unused*/, CELL /*unused*/) {}
+void ObjectClass::Clicked_As_Target(int /*unused*/) {}
+bool ObjectClass::In_Range(COORDINATE /*unused*/, int /*unused*/) const {
+  return false;
+}
+int ObjectClass::Weapon_Range(int /*unused*/) const { return 0x0000; }
+TARGET ObjectClass::As_Target() const { return kTargetNone; }
+void ObjectClass::Scatter(COORDINATE /*unused*/, bool /*unused*/) {}
+bool ObjectClass::Catch_Fire() { return false; }
+
+/***********************************************************************************************
+ * ObjectClass::Fire_Out -- Informs object that attached animation has finished.
+ **
+ *                                                                                             *
+ *    This routine is called if there is an attached animation on this object
+ *and that         * animation has finished. Typically, this is necessary for
+ *when trees are on fire.         *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/24/1995 JLB : Created. *
+ *=============================================================================================*/
+void ObjectClass::Fire_Out() {}
+
+/***********************************************************************************************
+ * ObjectClass::Value -- Fetches the target value of this object. *
+ *                                                                                             *
+ *    This routine will return the target value of this object. The higher the
+ *number, the     * better the object will be as a target. This routine is
+ *called when searching for         * targets. Generic objects have no target
+ *potential, and this routine returns zero to      * reflect that. Other object
+ *types will override this routine to return the appropriate    * target value.
+ **
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the value of this object as a target. Higher values
+ *mean better       * target. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/24/1995 JLB : Created. *
+ *=============================================================================================*/
+int ObjectClass::Value() const { return 0; }
+
+/***********************************************************************************************
+ * ObjectClass::Get_Mission -- Fetches the current mission of this object. *
+ *                                                                                             *
+ *    Generic objects don't have a mission, so this routine will just return
+ *MISSION_NONE.     * However, techno objects do have a mission and this routine
+ *is overloaded to handle       * those objects in order to return the correct
+ *mission value.                              *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the current mission being followed by this object. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/24/1995 JLB : Created. *
+ *=============================================================================================*/
+MissionType ObjectClass::Get_Mission() const { return MISSION_NONE; }
+
+/***********************************************************************************************
+ * ObjectClass::Repair -- Handles object repair control. *
+ *                                                                                             *
+ *    This routine will control object repair mode. At the object level, no
+ *repair is          * possible, so it is expected that any object that can
+ *repair will override this function  * as necessary. *
+ *                                                                                             *
+ * INPUT:   control  -- The repair control parameter. * 0  = turn repair off *
+ *                      1  = turn repair on * -1 = toggle repair state *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/24/1995 JLB : Created. *
+ *=============================================================================================*/
+void ObjectClass::Repair(int /*unused*/) {}
+
+/***********************************************************************************************
+ * ObjectClass::Sell_Back -- Sells the object -- if possible. *
+ *                                                                                             *
+ *    This routine is called to sell back the object. Override this routine for
+ *the more       * sophisticated objects that can actually be sold back. Normal
+ *objects can't be sold and   * this routine does nothing as a consequence. *
+ *                                                                                             *
+ * INPUT:   control  -- How to control the sell state of this object. * 0  =
+ *stop selling.                                                     * 1  = start
+ *selling.                                                    * -1 = toggle
+ *selling state.                                             *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/19/1995 JLB : Created. *
+ *=============================================================================================*/
+void ObjectClass::Sell_Back(int /*unused*/) {}
+
+/***********************************************************************************************
+ * ObjectClass::Move -- Moves (by force) the object in the desired direction. *
+ *                                                                                             *
+ *    This routine will instantly move the object one cell in the specified
+ *direction. It      * moves the object by force. This is typically ONLY used by
+ *the scenario editor            * process. *
+ *                                                                                             *
+ * INPUT:   facing   -- The direction to move the object. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   Naturally, this can cause illegal placement situations -- use
+ *with caution.     *
+ *                                                                                             *
+ * HISTORY: * 06/19/1994 JLB : Created. *
+ *=============================================================================================*/
+void ObjectClass::Move(FacingType facing) {
+
+  Mark(MARK_UP);
+  COORDINATE const coord = Adjacent_Cell(Coord, facing);
+  if (Can_Enter_Cell(Coord_Cell(coord)) == MOVE_OK) {
+    Coord = coord;
+  }
+  Mark(MARK_DOWN);
+}
+
+/***********************************************************************************************
+ * ObjectClass::Unselect -- This will un-select the object if it was selected. *
+ *                                                                                             *
+ *    This routine brings a currently selected object into an unselected state.
+ *This is        * needed when another object becomes selected as well as if the
+ *object is destroyed.       *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/19/1994 JLB : Created. *
+ *=============================================================================================*/
+void ObjectClass::Unselect() {
+  if (IsSelected) {
+    TheWorld().current_object().Delete(this);
+
+    if (In_Which_Layer() == LAYER_GROUND) {
+      Mark(MARK_OVERLAP_UP);
+    }
+
+    IsSelected = false;
+
+    if (In_Which_Layer() == LAYER_GROUND) {
+      Mark(MARK_OVERLAP_DOWN);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * ObjectClass::Select -- Try to make this object the "selected" object. *
+ *                                                                                             *
+ *    This routine is used to make this object into the one that is "selected".
+ *A selected     * object usually displays a floating bar graph and is available
+ *to be given orders from    * the player's I/O. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/19/1994 JLB : Created. * 06/12/1995 JLB : Cannot select a
+ *loaner object.                                           * 07/23/1995 JLB :
+ *Adds to head or tail depending on leader type flag.                      *
+ *=============================================================================================*/
+bool ObjectClass::Select() {
+  if (!TheDebugState().map_editor_active() &&
+      (IsSelected || !Class_Of().IsSelectable)) {
+    return false;
+  }
+
+  if (Can_Player_Move() && Is_Techno() &&
+      dynamic_cast<TechnoClass*>(this)->IsALoaner) {
+    return false;
+  }
+
+  /*
+  **	Don't allow selection of object when in building placement mode.
+  */
+  if (TheMap().PendingObject) {
+    return false;
+  }
+
+  /*
+  **	If selecting an object of a different house than the player's, make sure
+  *that *	the entire selection list is cleared.
+  */
+  if ((TheWorld().current_object().Count() > 0) &&
+      (Owner() != TheWorld().current_object().at(0)->Owner() ||
+       TheWorld().current_object().at(0)->Owner() !=
+           ThePlayer()->Class->House)) {
+    Unselect_All();
+  }
+
+  // A group's leader goes first. Only technos have one; the map editor also
+  // selects terrain, whose type is not a TechnoTypeClass.
+  if (Is_Techno() &&
+      dynamic_cast<const TechnoTypeClass&>(Class_Of()).IsLeader) {
+    TheWorld().current_object().Add_Head(this);
+  } else {
+    TheWorld().current_object().Add(this);
+  }
+
+  if (In_Which_Layer() == LAYER_GROUND) {
+    Mark(MARK_OVERLAP_UP);
+  }
+
+  IsSelected = true;
+
+  if (In_Which_Layer() == LAYER_GROUND) {
+    Mark(MARK_OVERLAP_DOWN);
+  }
+  return true;
+}
+
+/***********************************************************************************************
+ * ObjectClass::Render -- Displays the object onto the map. *
+ *                                                                                             *
+ *    This routine will determine the location of the object and if it is
+ *roughly on the       * visible screen, it will display it. Not displaying
+ *objects that are not on the screen    * will save valuable time. *
+ *                                                                                             *
+ * INPUT:   bool; Should the render be forced regardless of whether the object
+ *is flagged to   * be redrawn? *
+ *                                                                                             *
+ * OUTPUT:  bool; Was the draw code called for this object? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/19/1994 JLB : Created. *
+ *=============================================================================================*/
+bool ObjectClass::Render(PixelView& view, bool forced) {
+  int x = 0;
+  int y = 0;
+  const COORDINATE coord = Render_Coord();
+
+  if (TheDebugState().map_editor_active() || TheDebugState().unshroud() ||
+      ((forced || IsToDisplay) && IsDown && !IsInLimbo)) {
+    IsToDisplay = false;
+
+    /*
+    **	Draw the path as lines on the map if so directed and the object is one
+    *that *	contains a path.
+    */
+    if (TheSpecial().IsShowPath && IsSelected) {
+      switch (What_Am_I()) {
+        case RTTIType::RTTI_NONE:
+        case RTTIType::RTTI_INFANTRYTYPE:
+        case RTTIType::RTTI_UNITTYPE:
+        case RTTIType::RTTI_AIRCRAFT:
+        case RTTIType::RTTI_AIRCRAFTTYPE:
+        case RTTIType::RTTI_BUILDING:
+        case RTTIType::RTTI_BUILDINGTYPE:
+        case RTTIType::RTTI_TERRAIN:
+        case RTTIType::RTTI_ABSTRACTTYPE:
+        case RTTIType::RTTI_ANIM:
+        case RTTIType::RTTI_ANIMTYPE:
+        case RTTIType::RTTI_BULLET:
+        case RTTIType::RTTI_BULLETTYPE:
+        case RTTIType::RTTI_OVERLAY:
+        case RTTIType::RTTI_OVERLAYTYPE:
+        case RTTIType::RTTI_SMUDGE:
+        case RTTIType::RTTI_SMUDGETYPE:
+        case RTTIType::RTTI_TEAM:
+        case RTTIType::RTTI_TEMPLATE:
+        case RTTIType::RTTI_TEMPLATETYPE:
+        case RTTIType::RTTI_TERRAINTYPE:
+        case RTTIType::RTTI_OBJECT:
+        case RTTIType::RTTI_SPECIAL:
+        default:
+          break;
+
+        case RTTI_INFANTRY:
+        case RTTI_UNIT:
+          auto* foot = dynamic_cast<FootClass*>(this);
+          int oldx = 0;
+          int oldy = 0;
+
+          if (foot->Head_To_Coord() && base::At(foot->Path, 0) != FACING_NONE) {
+            CELL cell =
+                Adjacent_Cell(Coord_Cell(foot->Head_To_Coord()),
+                              base::At(foot->Path, 0) + FACING_S & FACING_NW);
+            TheMap().Coord_To_Pixel(Cell_Coord(cell), oldx, oldy);
+            for (const auto& index : foot->Path) {
+              if (index == FACING_NONE) {
+                break;
+              }
+              cell = Adjacent_Cell(cell, index);
+              if (TheMap().Coord_To_Pixel(Cell_Coord(cell), x, y)) {
+                view.DrawLine(oldx, 8 + oldy, x, 8 + y, kBlack);
+              }
+              oldx = x;
+              oldy = y;
+            }
+          }
+          break;
+      }
+    }
+
+    if (TheMap().Coord_To_Pixel(coord, x, y)) {
+      /*
+      **	Draw the object itself
+      */
+      Draw_It(view, x, y, WINDOW_TACTICAL);
+
+      if constexpr (config::kScenarioEditorEnabled) {
+        /*
+        **	Draw the trigger attached to the object. Draw_It is window-
+        **	relative, so add the window's x-coord to 'x'.
+        */
+        if (TheDebugState().map_editor_active() && Trigger) {
+          Fancy_Text_Print(view, Trigger->Get_Name(),
+                           x + (static_cast<int>(WinX) * 8), y, kPink, kTBlack,
+                           TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
+        }
+      }
+
+      return true;
+    }
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * ObjectTypeClass::Occupy_List -- Returns with simple occupation list for
+ *object.             *
+ *                                                                                             *
+ *    This routine returns a pointer to a simple occupation list for this
+ *object. Since at     * this tier of the object class chain, the exact shape of
+ *the object is indeterminate,     * this function merely returns a single cell
+ *occupation list. This actually works for      * most vehicles. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns a pointer to a simple occupation list. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/28/1994 JLB : Created. *
+ *=============================================================================================*/
+std::span<const int16_t> ObjectTypeClass::Occupy_List(bool /*unused*/) const {
+  static const int16_t _list[] = {0, REFRESH_EOL};
+  return _list;
+}
+
+/***********************************************************************************************
+ * ObjectTypeClass::Overlap_List -- Returns a pointer to a simple overlap list.
+ **
+ *                                                                                             *
+ *    This function returns a pointer to an overlap list for the object. An
+ *overlap list is    * the offsets from the object's cell to get the cells the
+ *imagery overlaps, but is object  * is not considered to occupy. Since at this
+ *stage, the overlap information is not         * available, this function
+ *merely returns a pointer to an empty list.                      *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns a pointer to the generic overlap list. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/28/1994 JLB : Created. *
+ *=============================================================================================*/
+std::span<const int16_t> ObjectTypeClass::Overlap_List() const {
+  static const int16_t _list[] = {REFRESH_EOL};
+  return _list;
+}
+
+/***********************************************************************************************
+ * ObjectTypeClass::One_Time -- Handles one time processing for object types. *
+ *                                                                                             *
+ *    This routine is used to handle the once per game processing required for
+ *object types.   * This consists of loading any data and initializing any data
+ *tables the game requires.    *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   This routine goes to disk. *
+ *                                                                                             *
+ * HISTORY: * 11/01/1994 JLB : Created. *
+ *=============================================================================================*/
+void ObjectTypeClass::One_Time() {
+  SelectShapes = MixArchive::RetrieveData("SELECT.SHP");
+#ifdef FRENCH
+  PipShapes = Hires_Retrieve("PIPS_F.SHP");
+#else
+#ifdef GERMAN
+  PipShapes = Hires_Retrieve("PIPS_G.SHP");
+#else
+  PipShapes = Hires_Retrieve("PIPS.SHP");
+#endif
+#endif
+}
+
+/***********************************************************************************************
+ * ObjectClass::Mark_For_Redraw -- Marks object and system for redraw. *
+ *                                                                                             *
+ *    This routine will mark the object and inform the display system * that
+ *appropriate rendering is needed. Whenever it is determined * that an object
+ *needs to be redrawn, call this routine.                                   *
+ *                                                                                             *
+ * INPUT:      none *
+ *                                                                                             *
+ * OUTPUT:     none *
+ *                                                                                             *
+ * WARNINGS:   This is a subordinate function to the function Mark(). If an
+ *object needs to    * be redrawn it is probably better to call the function
+ *Mark(MARK_CHANGE) rather  * than this function. This function does not inform
+ *the map system that           * overlapping objects are to be redrawn and thus
+ *unless you are really sure that  * this routine should be called, don't. *
+ *                                                                                             *
+ * HISTORY: * 05/08/1994 JLB : Created. * 12/23/1994 JLB : Flags map and flags
+ *unit only.                                           *
+ *=============================================================================================*/
+void ObjectClass::Mark_For_Redraw() {
+  if (!IsToDisplay) {
+    IsToDisplay = true;
+
+    /*
+    **	This tells the map rendering logic to "go through the motions" and call
+    *the *	rendering function. In the rendering function, it will sort out
+    *what gets *	rendered and what doesn't.
+    */
+    TheMap().Flag_To_Redraw(false);
+  }
+}
+
+/***********************************************************************************************
+ * ObjectClass::Limbo -- Brings the object into a state of limbo. *
+ *                                                                                             *
+ *    An object brought into a state of limbo by this routine can be safely
+ *deleted. This      * routine will remove the object from all game lists and
+ *tracking systems. It is called    * prior to deleting the object or placing
+ *the object "on ice".                             *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Was the object successfully placed in limbo? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/24/1994 JLB : Created. *
+ *=============================================================================================*/
+bool ObjectClass::Limbo() {
+  if (TheGameState().active() && !IsInLimbo) {
+    Unselect();
+    Detach_All();
+    Mark(MARK_UP);
+
+    /*
+    **	Remove the object from the appropriate display list.
+    */
+    MapEditClass::Remove(this, In_Which_Layer());
+
+    /*
+    **	Remove the object from the logic processing list.
+    */
+    if (Class_Of().IsSentient) {
+      TheWorld().logic().Delete(this);
+    }
+
+    Hidden();
+    IsInLimbo = true;
+    IsToDisplay = false;
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * ObjectClass::Unlimbo -- Brings the object into the game system. *
+ *                                                                                             *
+ *    This routine will place the object into the game tracking and display
+ *systems. It is     * called as a consequence of creating the object. Every
+ *game object must be unlimboed at   * some point. *
+ *                                                                                             *
+ * INPUT:   coord -- The coordinate to place the object into the game system. *
+ *                                                                                             *
+ *          dir (optional) -- initial facing direction for this object *
+ *                                                                                             *
+ * OUTPUT:  bool; Was the game object successfully unlimboed? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/24/1994 JLB : Created. * 12/23/1994 JLB : Sets object strength.
+ **
+ *=============================================================================================*/
+bool ObjectClass::Unlimbo(COORDINATE coord, DirType /*unused*/) {
+  if ((TheGameState().active() && IsInLimbo && !IsDown) &&
+      (TheWorld().scenario_init() ||
+       Can_Enter_Cell(Coord_Cell(coord), FACING_NONE) == MOVE_OK)) {
+    IsInLimbo = false;
+    IsToDisplay = false;
+    Coord = Class_Of().Coord_Fixup(coord);
+
+    if (Mark(MARK_DOWN)) {
+      if (IsActive) {
+        /*
+        **	Add the object to the appropriate map layer. This layer is used
+        **	for rendering purposes.
+        */
+        if (In_Which_Layer() != LAYER_NONE) {
+          MapEditClass::Submit(this, In_Which_Layer());
+        }
+
+        if (Class_Of().IsSentient) {
+          TheWorld().logic().Submit(this);
+        }
+      }
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/***********************************************************************************************
+ * ObjectClass::Detach_All -- Removes the object from all tracking systems. *
+ *                                                                                             *
+ *    This routine will take the object and see that it is removed from all
+ *miscellaneous      * tracking systems in the game. This operation is vital
+ *when deleting an object. It is     * necessary so that when the object is
+ *removed from the game, existing game objects won't  * be referencing a now
+ *invalid game object. This typically affects the targeting           * and
+ *navigation computers of other game objects. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/24/1994 JLB : Created. *
+ *=============================================================================================*/
+void ObjectClass::Detach_All(bool all) {
+  /*
+  **	Unselect this object if it was selected.
+  */
+  if (all || Owner() != ThePlayer()->Class->House) {
+    Unselect();
+  }
+
+  TheMap().Detach(this);
+
+  /*
+  **	Remove from targeting computers.
+  */
+  Detach_This_From_All(As_Target(), all);
+}
+
+/***********************************************************************************************
+ * ObjectClass::Detach_This_From_All -- Detatches this object from all others. *
+ *                                                                                             *
+ *    This routine sweeps through all game objects and makes sure that it is no
+ *longer         * referenced by them. Typically, this is called in preparation
+ *for the object's death      * or limbo state. *
+ *                                                                                             *
+ * INPUT:   target   -- This object expressed as a target number. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+void ObjectClass::Detach_This_From_All(TARGET target, bool all) {
+  if (Target_Legal(target)) {
+    for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+      TheObjectHeaps().team().Ptr(index)->Detach(target, all);
+    }
+    for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+      TheObjectHeaps().unit().Ptr(index)->Detach(target, all);
+    }
+    for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
+      TheObjectHeaps().infantry().Ptr(index)->Detach(target, all);
+    }
+    for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+      TheObjectHeaps().aircraft().Ptr(index)->Detach(target, all);
+    }
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      TheObjectHeaps().building().Ptr(index)->Detach(target, all);
+    }
+    for (int index = 0; index < TheObjectHeaps().bullet().Count(); index++) {
+      TheObjectHeaps().bullet().Ptr(index)->Detach(target, all);
+    }
+    for (int index = 0; index < TheObjectHeaps().anim().Count(); index++) {
+      TheObjectHeaps().anim().Ptr(index)->Detach(target, all);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * ObjectClass::Receive_Message -- Processes an incoming radio message. *
+ *                                                                                             *
+ *    Any radio message received that applies to objects in general are handled
+ *by this        * routine. Typically, this is the "redraw" message, which
+ *occurs when another object is    * loading or unloading and thus overlapping.
+ **
+ *                                                                                             *
+ * INPUT:   message  -- The message received. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the appropriate radio response. If the message was
+ *recognized, then   * RADIO_ROGER is returned, otherwise, just RADIO_STATIC is
+ *returned.                 *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/24/1994 JLB : Created. *
+ *=============================================================================================*/
+RadioMessageType ObjectClass::Receive_Message(RadioClass* /*unused*/,
+                                              RadioMessageType message,
+                                              int32_t& /*unused*/) {
+  /*
+  **	This message serves as a rendering convenience. It lets the system
+  **	know that there might be a visual conflict and the unit in radio
+  **	contact should be redrawn. This typically occurs when a vehicle
+  **	is being unloaded from a hover lander.
+  */
+  if (message == RADIO_REDRAW) {
+    Mark(MARK_CHANGE);
+    return RADIO_ROGER;
+  }
+  return RADIO_STATIC;
+}
+
+/***********************************************************************************************
+ * ObjectClass::Take_Damage -- Applies damage to the object. *
+ *                                                                                             *
+ *    This routine applies damage to the object according to the damage
+ *parameters. It handles * reducing the strength of the object and also returns
+ *the result of that damage. The      * result value can be examined to
+ *determine if the object was destroyed, greatly damaged,  * or other results. *
+ *                                                                                             *
+ * INPUT:   damage   -- Reference to the damage number to apply. This number
+ *will be adjusted  * according to defensive armor and distance. Examine this
+ *value after    * the call to determine the actual amount of damage applied. *
+ *                                                                                             *
+ *          distance -- The distance (in leptons) from the center of the damage
+ *causing        * explosion to the object itself. *
+ *                                                                                             *
+ *          warhead  -- The warhead type that is causing the damage. *
+ *                                                                                             *
+ * OUTPUT:  Returns the ResultType that indicates what the affect of the damage
+ *was.           *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/29/1994 JLB : Created. * 12/27/1994 JLB : Trigger event
+ *processing for attacked or destroyed.                      * 01/01/1995 JLB :
+ *Reduces damage greatly depending on range.                               *
+ *=============================================================================================*/
+ResultType ObjectClass::Take_Damage(int& damage, int distance,
+                                    WarheadType warhead, TechnoClass* source) {
+  ResultType result = RESULT_NONE;
+  const int oldstrength = Strength;
+
+  if (oldstrength && damage && !Class_Of().IsImmune) {
+    const int maxstrength = Class_Of().MaxStrength;
+
+    /*
+    **	Modify damage based on the warhead type and the armor of the object.
+    *This results *	in a reduced damage value, but never below 1 damage
+    *point.
+    */
+    damage = Modify_Damage(damage, warhead, Class_Of().Armor, distance);
+    if (!damage) {
+      return RESULT_NONE;
+    }
+
+    /*
+    **	At this point, we KNOW that at least light damage has occurred.
+    */
+    result = RESULT_LIGHT;
+
+    /*
+    **	A non-fatal blow has occurred. Check to see if the object transitioned
+    *to below *	half strength or if it is now down to one hit point.
+    */
+    if (oldstrength > damage) {
+      if (oldstrength >= maxstrength / 2 &&
+          oldstrength - damage < maxstrength / 2) {
+        result = RESULT_HALF;
+      }
+    } else {
+      /*
+      **	When an object is damaged to destruction, it will instead stop
+      *at one *	damage point. This will prolong the damage state as well as
+      **	give greater satisfaction when it is finally destroyed.
+      */
+      damage = oldstrength;
+    }
+
+    /*
+    **	Apply the damage to the object.
+    */
+    Strength = static_cast<int16_t>(oldstrength - damage);
+
+    /*
+    **	Check to see if the object is majorly damaged or destroyed.
+    */
+    switch (Strength) {
+      case 0:
+        Record_The_Kill(source);
+        result = RESULT_DESTROYED;
+        Detach_All();
+        break;
+
+      case 1:
+        result = RESULT_MAJOR;
+        break;
+
+      default:
+        break;
+    }
+
+    /*
+    **	Handle any trigger event associated with this object.
+    */
+    if (source && Trigger && result != RESULT_DESTROYED) {
+      Trigger->Spring(EVENT_ATTACKED, this);
+    }
+
+    /*
+    **	If any damage was assessed and this object is selected, then flag
+    **	the object to be redrawn so that the health bar will be updated.
+    */
+    if (result != RESULT_NONE && IsSelected) {
+      Mark(MARK_CHANGE);
+    }
+  }
+
+  /*
+  **	Return with the result of the damage taken.
+  */
+  return result;
+}
+
+/***********************************************************************************************
+ * ObjectClass::Mark -- Handles basic marking logic. *
+ *                                                                                             *
+ *    This routine handles the base logic for marking an object up or down on
+ *the map. It      * manages the IsDown flag as well as flagging the object to
+ *be redrawn if necessary.       * Whenever an object is to be marked, it should
+ *call this base class function first. If    * this function returns true, then
+ *the higher level function should proceed with its own   * logic. *
+ *                                                                                             *
+ * INPUT:   mark  -- The marking method to use for this object. It can be either
+ *MARK_DOWN,    * MARK_UP, or MARK_CHANGE. *
+ *                                                                                             *
+ * OUTPUT:  bool; Was the object marked successfully? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/23/1995 JLB : Created. *
+ *=============================================================================================*/
+bool ObjectClass::Mark(MarkType mark) {
+  TechnoClass* tech = nullptr;
+  CELL cell = 0;
+  int threat = 0;
+  HousesType house = HOUSE_NONE;
+
+  if (!IsInLimbo && IsActive) {
+    /*
+    **	A mark for change is always successful UNLESS the object
+    **	is not placed down or has already been flagged as changed
+    **	this game frame.
+    */
+    if (mark == MARK_CHANGE) {
+      if (IsToDisplay) {
+        return false;
+      }
+      if (static_cast<bool>(IsDown)) {
+        Mark_For_Redraw();
+        return true;
+      }
+      return false;
+    }
+
+    /*
+    ** Handle adding or removing the object in the cells' overlap lists
+    */
+    if ((mark == MARK_OVERLAP_UP) && (static_cast<bool>(IsDown))) {
+      TheMap().Overlap_Up(Coord_Cell(Coord), this);
+      Mark_For_Redraw();
+      return true;
+    }
+
+    if ((mark == MARK_OVERLAP_DOWN) && (static_cast<bool>(IsDown))) {
+      TheMap().Overlap_Down(Coord_Cell(Coord), this);
+      Mark_For_Redraw();
+      return true;
+    }
+
+    /*
+    ** It is important to know whether the object is a techno class
+    ** or not to see if we have to adjust the regional threat ratings
+    */
+    if (Is_Techno()) {
+      tech = dynamic_cast<TechnoClass*>(this);
+      threat = tech->Risk();
+      house = tech->Owner();
+      cell = Coord_Cell(Coord);
+    } else {
+      tech = nullptr;
+    }
+
+    /*
+    **	Marking down is only successful if the object isn't already
+    **	placed down.
+    */
+    if (mark == MARK_DOWN && !IsDown) {
+      if (tech && TheSession().type() == GAME_NORMAL) {
+        TheMap().at(cell).Adjust_Threat(house, threat);
+      }
+      IsDown = true;
+      Mark_For_Redraw();
+      return true;
+    }
+
+    /*
+    **	Lifting up is only successful if the object isn't already
+    **	lifted up from the map.
+    */
+    if (mark == MARK_UP && IsDown) {
+      if (tech && TheSession().type() == GAME_NORMAL) {
+        TheMap().at(cell).Adjust_Threat(house, -threat);
+      }
+      IsDown = false;
+      return true;
+    }
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * ObjectClass::Init -- Initializes the basic object system. *
+ *                                                                                             *
+ *    This routine should be called when the basic object system needs to be
+ *initialized. This * occurs when the scenario is about to be loaded. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/23/1995 JLB : Created. *
+ *=============================================================================================*/
+void ObjectClass::Init() { TheWorld().current_object().Clear(); }
+
+/***********************************************************************************************
+ * ObjectClass::Revealed -- Reveals this object to the house specified. *
+ *                                                                                             *
+ *    This routine is called when this object gets revealed to the house
+ *specified.            *
+ *                                                                                             *
+ * INPUT:   house -- Pointer to the house that this object is being revealed to.
+ **
+ *                                                                                             *
+ * OUTPUT:  Was this object revealed for the first time to this house? Generic
+ *objects always  * return true unless an invalid house pointer was specified. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/19/1995 JLB : Created. *
+ *=============================================================================================*/
+bool ObjectClass::Revealed(HouseClass* house) { return house != nullptr; }
+
+// These can't be made inline (for various reasons).
+std::span<const int16_t> ObjectClass::Occupy_List(bool placement) const {
+  return Class_Of().Occupy_List(placement);
+}
+std::span<const int16_t> ObjectClass::Overlap_List() const {
+  return Class_Of().Overlap_List();
+}
+BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
+  return Class_Of().Who_Can_Build_Me(intheory, legal, Owner());
+}
+int ObjectClass::Health_Ratio() const {
+  return Cardinal_To_Fixed(Class_Of().MaxStrength, Strength);
+}
+int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); }

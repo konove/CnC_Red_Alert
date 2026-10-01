@@ -1,0 +1,953 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/TACTION.CPP 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : ACTION.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 11/28/95 *
+ *                                                                                             *
+ *                  Last Update : July 17, 1996 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * Action_From_Name -- retrieves ActionType for given name *
+ *   Action_Needs -- Figures out what data an action object needs. *
+ *   Name_From_Action -- retrieves name for ActionType *
+ *   TActionClass::Build_INI_Entry -- Builds an INI entry for this trigger
+ *action.
+ *   TActionClass::Detach -- Removes any attachment from associated action.
+ *   TActionClass::Read_INI -- Converts INI text into appropriate action data. *
+ *   TActionClass::operator -- Performs the action that this object does. *
+ *   ActionChoiceClass::Draw_It -- Display the action choice as part of a list
+ *box.            *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "ra/ai/taction.h"
+
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <format>
+#include <span>
+#include <string>
+#include <utility>
+
+#include "absl/log/check.h"
+#include "absl/log/log.h"
+#include "absl/strings/match.h"
+#include "base/array.h"
+#include "base/enum_array.h"
+#include "base/fixed.h"
+#include "base/numeric.h"
+#include "base/pooled.h"
+#include "base/strings/number_parse.h"
+#include "base/strings/tokenizer.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
+#include "engine/platform/timer.h"
+#include "engine/window/hardware_cursor.h"
+#include "magic_enum/magic_enum.hpp"
+#include "ra/ai/reinf.h"
+#include "ra/ai/scenario.h"
+#include "ra/ai/teamtype.h"
+#include "ra/ai/tevent.h"
+#include "ra/ai/trigger.h"
+#include "ra/assets/assets.h"
+#include "ra/assets/audio.h"
+#include "ra/assets/palette.h"
+#include "ra/assets/palettes.h"
+#include "ra/assets/screen.h"
+#include "ra/assets/theme.h"
+#include "ra/core/ccptr.h"
+#include "ra/core/defines.h"
+#include "ra/core/heap.h"
+#include "ra/core/inline.h"
+#include "ra/core/jshell.h"
+#include "ra/core/object_heaps.h"
+#include "ra/data/rules.h"
+#include "ra/editor/mapedit.h"
+#include "ra/map/world.h"
+#include "ra/net/session.h"
+#include "ra/objects/aircraft.h"
+#include "ra/objects/anim.h"
+#include "ra/objects/building.h"
+#include "ra/objects/cell.h"
+#include "ra/objects/house.h"
+#include "ra/objects/infantry.h"
+#include "ra/objects/object.h"
+#include "ra/objects/super.h"
+#include "ra/objects/target.h"
+#include "ra/objects/tracker.h"
+#include "ra/objects/type.h"
+#include "ra/objects/unit.h"
+#include "ra/screens/movie.h"
+#include "ra/ui/dialog.h"
+#include "ra/ui/gadget.h"
+#include "ra/ui/input.h"
+#include "ra/ui/msglist.h"
+
+/*
+**	These are the text names for the various actions. If the action name
+*ends with "..." then *	this means that additional data is probably required.
+*/
+static base::EnumArray<TActionType, const char*,
+                       static_cast<int>(TACTION_COUNT)>
+    ActionText = {"-No Action-",
+                  "Winner is...",
+                  "Loser is...",
+                  "Production Begins",
+                  "Create Team...",
+                  "Destroy All Teams",
+                  "All to Hunt...",
+                  "Reinforcement (team)...",
+                  "Drop Zone Flare (waypoint)...",
+                  "Fire Sale...",
+                  "Play Movie...",
+                  "Text Trigger (ID num)...",
+                  "Destroy Trigger...",
+                  "Autocreate Begins...",
+                  "~don't use~",
+                  "Allow Win",
+                  "Reveal all map",
+                  "Reveal around waypoint...",
+                  "Reveal zone of waypoint...",
+                  "Play sound effect...",
+                  "Play music theme...",
+                  "Play speech...",
+                  "Force Trigger...",
+                  "Timer Start",
+                  "Timer Stop",
+                  "Timer Extend (1/10th min)...",
+                  "Timer Shorten (1/10th min)...",
+                  "Timer Set (1/10th min)...",
+                  "Global Set...",
+                  "Global Clear...",
+                  "Auto Base Building...",
+                  "Grow shroud one 'step'",
+                  "Destroy attached building",
+                  "Add 1-time special weapon...",
+                  "Add repeating special weapon...",
+                  "Preferred target...",
+                  "Launch Nukes"};
+
+base::EnumArray<TActionType, ActionChoiceClass, static_cast<int>(TACTION_COUNT)>
+    ActionChoices = {{{TACTION_NONE},
+                      {TACTION_WIN},
+                      {TACTION_LOSE},
+                      {TACTION_BEGIN_PRODUCTION},
+                      {TACTION_CREATE_TEAM},
+                      {TACTION_DESTROY_TEAM},
+                      {TACTION_ALL_HUNT},
+                      {TACTION_REINFORCEMENTS},
+                      {TACTION_DZ},
+                      {TACTION_FIRE_SALE},
+                      {TACTION_PLAY_MOVIE},
+                      {TACTION_TEXT_TRIGGER},
+                      {TACTION_DESTROY_TRIGGER},
+                      {TACTION_AUTOCREATE},
+                      {TACTION_WINLOSE},
+                      {TACTION_ALLOWWIN},
+                      {TACTION_REVEAL_ALL},
+                      {TACTION_REVEAL_SOME},
+                      {TACTION_REVEAL_ZONE},
+                      {TACTION_PLAY_SOUND},
+                      {TACTION_PLAY_MUSIC},
+                      {TACTION_PLAY_SPEECH},
+                      {TACTION_FORCE_TRIGGER},
+                      {TACTION_START_TIMER},
+                      {TACTION_STOP_TIMER},
+                      {TACTION_ADD_TIMER},
+                      {TACTION_SUB_TIMER},
+                      {TACTION_SET_TIMER},
+                      {TACTION_SET_GLOBAL},
+                      {TACTION_CLEAR_GLOBAL},
+                      {TACTION_BASE_BUILDING},
+                      {TACTION_CREEP_SHADOW},
+                      {TACTION_DESTROY_OBJECT},
+                      {TACTION_1_SPECIAL},
+                      {TACTION_FULL_SPECIAL},
+                      {TACTION_PREFERRED_TARGET},
+                      {TACTION_LAUNCH_NUKES}}};
+
+/***********************************************************************************************
+ * ActionChoiceClass::Draw_It -- Display the action choice as part of a list
+ *box.              *
+ *                                                                                             *
+ *    This is a support routine only used to display this object when it is part
+ *of a list     * box. *
+ *                                                                                             *
+ * INPUT:   x,y   -- The coordinate (upper left) to display the description. *
+ *                                                                                             *
+ *          width,height   -- Dimensions of the area to display the description.
+ **
+ *                                                                                             *
+ *          selected -- Is this item highlighted? *
+ *                                                                                             *
+ *          flags -- The text print flags to use. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/17/1996 JLB : Created. *
+ *=============================================================================================*/
+void ActionChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
+                                int width, int height, bool selected,
+                                TextPrintType flags) const {
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  static const int _tabs[] = {13, 40};
+  const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
+  if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
+      font == static_cast<uint32_t>(TPF_EFNT)) {
+    if (selected) {
+      flags = flags | TPF_BRIGHT_COLOR;
+      view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
+    } else {
+      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
+        flags = flags | TPF_MEDIUM_COLOR;
+      }
+    }
+
+    Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, flags,
+                            width, _tabs);
+  } else {
+    Conquer_Clip_Text_Print(
+        view, Description(), x, y,
+        selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                 : &ThePalettes().color_remaps().at(PCOLOR_GREY),
+        kTBlack, flags, width, _tabs);
+  }
+}
+
+/***********************************************************************************************
+ * TActionClass::Detach -- Removes any attachment from associated action. *
+ *                                                                                             *
+ *    This routine will remove any action reference to the team type specified.
+ *This routine   * is called when the team type is being destroyed. All
+ *references to that team type must   * also be severed. This routine does that
+ *with respect to trigger actions.                 *
+ *                                                                                             *
+ * INPUT:   target-- The target object or type to remove from this taction
+ *object.             *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 02/22/1996 JLB : Created. *
+ *=============================================================================================*/
+void TActionClass::Detach(TARGET target) {
+  if (Is_Target_TeamType(target) && Team == As_TeamType(target)) {
+    Team = nullptr;
+  }
+  if (Is_Target_TriggerType(target) && Trigger == As_TriggerType(target)) {
+    Trigger = nullptr;
+  }
+}
+
+/***********************************************************************************************
+ * TActionClass::Build_INI_Entry -- Builds an INI entry for this trigger action.
+ **
+ *                                                                                             *
+ *    This routine will build the text (INI entry) format for the data of this
+ *trigger         * action object. Typical use of this is when the INI file is
+ *being written.                *
+ *                                                                                             *
+ * INPUT:   ptr   -- Pointer to the location to build the INI text to. The
+ *buffer is presumed  * to be big enough. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   The buffer passed to this routine must be big enough to hold the
+ *largest        * text that will be created into it. *
+ *                                                                                             *
+ * HISTORY: * 02/22/1996 JLB : Created. *
+ *=============================================================================================*/
+void TActionClass::Build_INI_Entry(std::string& buffer) const {
+  buffer += std::format("{},{},{},{}", std::to_underlying(Action),
+                        TheObjectHeaps().team_type().Logical_ID(Team),
+                        TheObjectHeaps().trigger_type().Logical_ID(Trigger),
+                        Data.Value);
+}
+
+/***********************************************************************************************
+ * TActionClass::Read_INI -- Converts INI text into appropriate action data. *
+ *                                                                                             *
+ *    This routine will convert INI data into the right values within this
+ *trigger action      * object. Typical use of this routine is when the INI file
+ *is being read. It is the        * counterpart to the Build_INI_Entry function.
+ **
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 02/22/1996 JLB : Created. *
+ *=============================================================================================*/
+void TActionClass::Read_INI(base::Tokenizer& tokens) {
+  switch (TheWorld().new_ini_format()) {
+    default: {
+      Action =
+          static_cast<TActionType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Team.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Trigger.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
+      break;
+    }
+
+    case 1:
+    case 0:
+      Action =
+          static_cast<TActionType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+
+      const char* ptr = tokens.Next();
+      Team = TeamTypeClass::From_Name(ptr);
+      DCHECK(Action_Needs(Action) != NEED_TEAM || Team.Is_Valid());
+
+      /*
+      **	Since triggers refer to other triggers, only record a copy of
+      *the trigger text *	name. This will be fixed up later.
+      */
+      const char* trig_name = tokens.Next();
+      PendingTriggerName = trig_name != nullptr ? trig_name : "";
+
+      Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
+      break;
+  }
+
+  /*
+  ** Fix corrupted sound values from original game scenario files.
+  ** Some INI files contain values like -65399 (0xFFFF0089) where only
+  ** the low byte (137) is the valid VocType index.
+  */
+  if (Action == TACTION_PLAY_SOUND &&
+      (Data.Value < 0 ||
+       std::cmp_greater_equal(Data.Value, magic_enum::enum_count<VocType>()))) {
+    const int fixed =
+        static_cast<int>(static_cast<uint32_t>(Data.Value) & 0xFFU);
+    if (fixed >= 0 && std::cmp_less(fixed, magic_enum::enum_count<VocType>())) {
+      DLOG(WARNING) << "Read_INI: Fixed corrupted sound value " << Data.Value
+                    << " -> " << fixed;
+      Data.Value = fixed;
+    }
+  }
+}
+
+/***********************************************************************************************
+ * TActionClass::operator -- Performs the action that this object does. *
+ *                                                                                             *
+ *    This routine is called when the action associated with this action object
+ *must be        * performed. Typically, this occurs when a trigger has "sprung"
+ *and now it must take       * effect. The action object is what carries out
+ *this effect.                               *
+ *                                                                                             *
+ * INPUT:   house -- The owner of this action. This information is necessary
+ *since some        * actions depend on who the trigger was owned by. *
+ *                                                                                             *
+ *          object-- Pointer to the object that the springing trigger was
+ *attached to. If      * this parameter is null, then the trigger wasn't
+ *attached to any object.   *
+ *                                                                                             *
+ *          id    -- Trigger ID (only if forced) otherwise -1. *
+ *                                                                                             *
+ *          cell  -- The cell this trigger is attached to (if any). *
+ *                                                                                             *
+ * OUTPUT:  bool; Was this action able to perform what it needed to do? Failure
+ *could be       * because a reinforcement couldn't be generated, for example. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 02/22/1996 JLB : Created. * 04/10/1996 JLB : Added the ID
+ *parameter.                                                  *
+ *=============================================================================================*/
+// Not const: carries out the action.
+// NOLINTNEXTLINE(readability-make-member-function-const)
+bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
+                              CELL cell) {
+  /*
+  **	Otherwise, take an appropriate action.
+  */
+  HouseClass* hptr = HouseClass::As_Pointer(house);
+  TriggerClass* trig = nullptr;
+  if (id != -1) {
+    trig = TheObjectHeaps().trigger().Raw_Ptr(id);
+  }
+  bool success = true;
+  //	TeamTypeClass * ttype = Team;
+
+  /*
+  **	Ensure that the specified object is not actually dead. A dead object
+  *could *	be passed to this routine in the case of a multiple event
+  *trigger that *	had the first event kill the object.
+  */
+  if (object && !object->IsActive) {
+    object = nullptr;
+  }
+
+  switch (Action) {
+    /*
+    **	Display a text message overlayed onto the tactical map.
+    */
+    case TACTION_TEXT_TRIGGER: {
+      const char* message = TheAssets().tutorial_text(Data.Value);
+      TheSession().Messages.Add_Message(
+          nullptr, 0, message, PCOLOR_GREEN,
+          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+          TheRules().MessageDelay * kTicksPerMinute);
+      break;
+    }
+
+    /*
+    ** Launch nuclear missiles (duds) from all mslo's
+    */
+    case TACTION_LAUNCH_NUKES: {
+      for (int index = 0; index < TheObjectHeaps().building().Count();
+           index++) {
+        BuildingClass* bldg = TheObjectHeaps().building().Ptr(index);
+        if (*bldg == STRUCT_MSLO) {
+          bldg->Assign_Mission(MISSION_MISSILE);
+        }
+      }
+      break;
+    }
+
+    /*
+    **	Set the preferred target for the house.
+    */
+    case TACTION_PREFERRED_TARGET:
+      if (hptr) {
+        hptr->PreferredTarget = Data.Quarry;
+      }
+      break;
+
+    /*
+    **	Initiate (or disable) the computer AI. When active, the computer will
+    **	build bases and units.
+    */
+    case TACTION_BASE_BUILDING:
+      hptr->IsBaseBuilding = Data.Bool;
+      break;
+
+    /*
+    **	Cause the shadow to creep back one step.
+    */
+    case TACTION_CREEP_SHADOW:
+      TheMap().Encroach_Shadow();
+      break;
+
+    /*
+    **	Set a scenario global.
+    */
+    case TACTION_SET_GLOBAL:
+      TheScenario().Set_Global_To(Data.Value, true);
+      break;
+
+    /*
+    **	Clear a scenario global.
+    */
+    case TACTION_CLEAR_GLOBAL:
+      TheScenario().Set_Global_To(Data.Value, false);
+      break;
+
+    /*
+    **	Reveal the map around the area specified.
+    */
+    case TACTION_REVEAL_SOME:
+      if (!ThePlayer()->IsVisionary) {
+        TheMap().Sight_From(base::At(TheScenario().Waypoint, Data.Value),
+                            TheRules().GapShroudRadius, ThePlayer(), false);
+      }
+      break;
+
+    /*
+    **	Reveal all cells of the zone that the specified waypoint is located
+    **	in. This can be used to reveal whole islands or bodies of water
+    */
+    case TACTION_REVEAL_ZONE:
+      if (!ThePlayer()->IsVisionary) {
+        const int zone = TheMap()
+                             .at(base::At(TheScenario().Waypoint, Data.Value))
+                             .Zones.at(MZONE_CRUSHER);
+
+        for (CELL map_cell = 0; map_cell < MAP_CELL_TOTAL; map_cell++) {
+          if (std::cmp_equal(TheMap().at(map_cell).Zones.at(MZONE_CRUSHER),
+                             zone)) {
+            TheMap().Map_Cell(map_cell, ThePlayer());
+          }
+        }
+      }
+      break;
+
+    /*
+    **	Reveal the entire map.
+    */
+    case TACTION_REVEAL_ALL:
+      if (!ThePlayer()->IsVisionary) {
+        ThePlayer()->IsVisionary = true;
+        for (CELL map_cell = 0; map_cell < MAP_CELL_TOTAL; map_cell++) {
+          TheMap().Map_Cell(map_cell, ThePlayer());
+        }
+      }
+      break;
+
+    /*
+    **	Star the mission timer.
+    */
+    case TACTION_START_TIMER:
+      if (!TheScenario().MissionTimer.IsRunning()) {
+        TheScenario().MissionTimer.Start();
+        TheMap().Redraw_Tab();
+      }
+      break;
+
+    /*
+    **	Stop the mission timer. This will really just
+    **	suspend the timer.
+    */
+    case TACTION_STOP_TIMER:
+      if (TheScenario().MissionTimer.IsRunning()) {
+        TheScenario().MissionTimer.Stop();
+        TheMap().Redraw_Tab();
+      }
+      break;
+
+    /*
+    **	Add time to the mission timer.
+    */
+    case TACTION_ADD_TIMER:
+      TheScenario().MissionTimer.Set(TheScenario().MissionTimer.Remaining() +
+                                     (Data.Value * (kTicksPerMinute / 10)));
+      TheMap().Redraw_Tab();
+      break;
+
+    /*
+    **	Remove time from the mission timer.
+    */
+    case TACTION_SUB_TIMER:
+      if (TheScenario().MissionTimer.Remaining() <=
+          Data.Value * (kTicksPerMinute / 10)) {
+        TheScenario().MissionTimer.Set(0);
+      } else {
+        TheScenario().MissionTimer.Set(TheScenario().MissionTimer.Remaining() -
+                                       (Data.Value * (kTicksPerMinute / 10)));
+      }
+      TheMap().Redraw_Tab();
+      break;
+
+    /*
+    **	Set the mission timer to the value specified.
+    */
+    case TACTION_SET_TIMER:
+      TheScenario().MissionTimer.Set(Data.Value * (kTicksPerMinute / 10));
+      TheScenario().MissionTimer.Start();
+      TheMap().Redraw_Tab();
+      break;
+
+    /*
+    **	Play a movie immediately. The game is temporarily
+    **	suspended while the movie plays.
+    */
+    case TACTION_PLAY_MOVIE:
+      TheMouse().Hide();
+      TheScreen().visible_view().Clear();
+      Play_Movie(Data.Movie, THEME_NONE, true);
+      ThePalettes().game_palette().Set();
+      TheMap().Flag_To_Redraw(true);
+      TheMouse().Show();
+      break;
+
+    /*
+    **	Play a sound effect.
+    */
+    case TACTION_PLAY_SOUND:
+      PlaySoundEffect(Data.Sound);
+      break;
+
+    /*
+    **	Play a musical theme.
+    */
+    case TACTION_PLAY_MUSIC:
+      TheTheme().Queue_Song(Data.Theme);
+      break;
+
+    /*
+    **	Play the speech data specified.
+    */
+    case TACTION_PLAY_SPEECH:
+      Speak(Data.Speech);
+      break;
+
+    /*
+    **	Give the special weapon to the house.
+    */
+    case TACTION_1_SPECIAL:
+    case TACTION_FULL_SPECIAL:
+      hptr->SuperWeapon.at(Data.Special)
+          .Enable(Action == TACTION_1_SPECIAL, false);
+      //			hptr->SuperWeapon[Data.Special].Forced_Charge(PlayerPtr
+      //== hptr);
+
+      if (ThePlayer() == hptr) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(Data.Special));
+        TheMap().Column[1].Flag_To_Redraw();
+      }
+      break;
+
+    /*
+    **	Destroying a trigger means that all triggers of that type will be
+    *destroyed.
+    */
+    case TACTION_DESTROY_TRIGGER:
+      if (Trigger.Is_Valid()) {
+        for (int index = 0; index < TheObjectHeaps().trigger().Count();
+             index++) {
+          if (TheObjectHeaps().trigger().Ptr(index)->Class == Trigger) {
+            Detach_This_From_All(
+                TheObjectHeaps().trigger().Ptr(index)->As_Target());
+            base::DeletePooled(TheObjectHeaps().trigger().Ptr(index));
+            index--;
+          }
+        }
+      }
+      break;
+
+    /*
+    **	A forced trigger will force an existing trigger of that type or
+    **	will create a trigger of that type and then force it to be sprung.
+    */
+    case TACTION_FORCE_TRIGGER:
+      if (Trigger.Is_Valid()) {
+        Find_Or_Make(Trigger)->Spring(TEVENT_ANY, nullptr, 0, true);
+      }
+      break;
+
+    /*
+    **	Place a smoke marker at the waypoint specified.
+    */
+    case TACTION_DZ:
+      base::NewPooled<AnimClass>(
+          ANIM_LZ_SMOKE,
+          Cell_Coord(base::At(TheScenario().Waypoint, Data.Value)));
+      break;
+
+    /*
+    **	Flag the house specified as the winner. Really the house value
+    **	is only used to determine if it is the player or the computer.
+    */
+    case TACTION_WIN:
+      if (Data.House == ThePlayer()->Class->House) {
+        ThePlayer()->Flag_To_Win();
+      } else {
+        ThePlayer()->Flag_To_Lose();
+      }
+      break;
+
+    /*
+    **	Flag the house specified as the loser. The house parameter is only
+    **	used to determine if it refers to the player or the computer.
+    */
+    case TACTION_LOSE:
+      if (Data.House != ThePlayer()->Class->House) {
+        ThePlayer()->Flag_To_Win();
+      } else {
+        ThePlayer()->Flag_To_Lose();
+      }
+      break;
+
+    /*
+    **	This will enable production to begin for the house specified.
+    */
+    case TACTION_BEGIN_PRODUCTION:
+      if (Data.House != HOUSE_NONE) {
+        HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+        specified_house->Begin_Production();
+      }
+      break;
+
+    /*
+    **	Cause all buildings to be sold and all units to go into
+    **	hunt mode.
+    */
+    case TACTION_FIRE_SALE:
+      if (Data.House != HOUSE_NONE) {
+        HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+        specified_house->State = STATE_ENDGAME;
+      }
+      break;
+
+    /*
+    **	Begin the team autocreate logic for the house specified.
+    */
+    case TACTION_AUTOCREATE:
+      if (Data.House != HOUSE_NONE) {
+        HouseClass* specified_house = HouseClass::As_Pointer(Data.House);
+        specified_house->IsAlerted = true;
+      }
+      break;
+
+    /*
+    **	Manually create the team specified.
+    */
+    case TACTION_CREATE_TEAM:
+      TheWorld().scenario_init()++;
+      Team->Create_One_Of();
+      TheWorld().scenario_init()--;
+      break;
+
+    /*
+    **	Destroy all teams of the type specified.
+    */
+    case TACTION_DESTROY_TEAM:
+      Team->Destroy_All_Of();
+      break;
+
+    /*
+    **	Create a reinforcement of the team specified.
+    */
+    case TACTION_REINFORCEMENTS:
+      success = Do_Reinforcements(&*Team);
+      break;
+
+    /*
+    **	Force all units of the house specified to go into
+    **	hunt mode.
+    */
+    case TACTION_ALL_HUNT:
+      HouseClass::As_Pointer(Data.House)->Do_All_To_Hunt();
+      break;
+
+    /*
+    **	This will destroy all objects that this trigger is
+    **	attached to.
+    */
+    case TACTION_DESTROY_OBJECT:
+      if (object) {
+        int damage = object->Strength;
+        object->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+      } else {
+        success = false;
+      }
+
+      /*
+      **	If the trigger is attached to a bridge, then the bridge
+      **	gets destroyed regardless of whether the trigger was a
+      **	forced or natural spring event.
+      */
+      if (cell != 0) {
+        TheMap().Destroy_Bridge_At(cell);
+      }
+
+      /*
+      **	Loop through and destroy all objects that have this trigger
+      **	attached to them.
+      */
+      if (trig) {
+        for (int u_index = 0; u_index < TheObjectHeaps().unit().Count();
+             u_index++) {
+          UnitClass* unit = TheObjectHeaps().unit().Ptr(u_index);
+
+          if (unit && unit->Trigger == trig) {
+            unit->Trigger = nullptr;
+            int damage = unit->Strength;
+            unit->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+          }
+        }
+
+        for (int i_index = 0; i_index < TheObjectHeaps().infantry().Count();
+             i_index++) {
+          InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(i_index);
+
+          if (infantry && infantry->Trigger == trig) {
+            infantry->Trigger = nullptr;
+            int damage = infantry->Strength;
+            infantry->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+          }
+        }
+
+        for (int a_index = 0; a_index < TheObjectHeaps().aircraft().Count();
+             a_index++) {
+          AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(a_index);
+
+          if (aircraft && aircraft->Trigger == trig) {
+            aircraft->Trigger = nullptr;
+            int damage = aircraft->Strength;
+            aircraft->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+          }
+        }
+
+        for (int b_index = 0; b_index < TheObjectHeaps().building().Count();
+             b_index++) {
+          BuildingClass* building = TheObjectHeaps().building().Ptr(b_index);
+
+          if (building && building->Trigger == trig) {
+            building->Trigger = nullptr;
+            int damage = building->Strength;
+            building->Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
+          }
+        }
+      }
+      break;
+
+    /*
+    **	Do no action at all.
+    */
+    case TACTION_NONE:
+    case TActionType::TACTION_WINLOSE:
+    case TActionType::TACTION_ALLOWWIN:
+    case TActionType::TACTION_COUNT:
+    default:
+      break;
+  }
+  return success;
+}
+
+/***********************************************************************************************
+ * Action_From_Name -- retrieves ActionType for given name *
+ *                                                                                             *
+ * INPUT: * name         name to get ActionType for *
+ *                                                                                             *
+ * OUTPUT: * ActionType for given name *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 11/29/1994 BR : Created. *
+ *=============================================================================================*/
+TActionType Action_From_Name(const char* name) {
+  if (name == nullptr) {
+    return TACTION_NONE;
+  }
+
+  for (TActionType i = TACTION_NONE; i < TACTION_COUNT; i++) {
+    if (absl::EqualsIgnoreCase(name, ActionText.at(i))) {
+      return i;
+    }
+  }
+
+  return TACTION_NONE;
+}
+
+/***********************************************************************************************
+ * Name_From_Action -- retrieves name for ActionType *
+ *                                                                                             *
+ * INPUT: * action      ActionType to get name for *
+ *                                                                                             *
+ * OUTPUT: * name of ActionType *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 11/29/1994 BR : Created. *
+ *=============================================================================================*/
+const char* Name_From_Action(TActionType action) {
+  return ActionText.at(action);
+}
+
+/***********************************************************************************************
+ * Action_Needs -- Figures out what data an action object needs. *
+ *                                                                                             *
+ *    Use this routine to determine what extra data is needed for the specified
+ *action. This   * data will be prompted for in the scenario editor. *
+ *                                                                                             *
+ * INPUT:   action   -- The action that is to be queried. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the data type (enumeration) needed for this action
+ *type.              *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 02/22/1996 JLB : Created. *
+ *=============================================================================================*/
+NeedType Action_Needs(TActionType action) {
+  switch (action) {
+    case TACTION_1_SPECIAL:
+    case TACTION_FULL_SPECIAL:
+      return NEED_SPECIAL;
+
+    case TACTION_FIRE_SALE:
+    case TACTION_WIN:
+    case TACTION_LOSE:
+    case TACTION_ALL_HUNT:
+    case TACTION_BEGIN_PRODUCTION:
+    case TACTION_AUTOCREATE:
+      return NEED_HOUSE;
+
+    case TACTION_BASE_BUILDING:
+      return NEED_BOOL;
+
+    case TACTION_CREATE_TEAM:
+    case TACTION_DESTROY_TEAM:
+    case TACTION_REINFORCEMENTS:
+      return NEED_TEAM;
+
+    case TACTION_FORCE_TRIGGER:
+    case TACTION_DESTROY_TRIGGER:
+      return NEED_TRIGGER;
+
+    case TACTION_DZ:
+    case TACTION_REVEAL_SOME:
+    case TACTION_REVEAL_ZONE:
+      return NEED_WAYPOINT;
+
+    case TACTION_PLAY_MUSIC:
+      return NEED_THEME;
+
+    case TACTION_PLAY_MOVIE:
+      return NEED_MOVIE;
+
+    case TACTION_PLAY_SOUND:
+      return NEED_SOUND;
+
+    case TACTION_PLAY_SPEECH:
+      return NEED_SPEECH;
+
+    case TACTION_TEXT_TRIGGER:
+    case TACTION_ADD_TIMER:
+    case TACTION_SUB_TIMER:
+    case TACTION_SET_TIMER:
+    case TACTION_SET_GLOBAL:
+    case TACTION_CLEAR_GLOBAL:
+      return NEED_NUMBER;
+
+    case TACTION_PREFERRED_TARGET:
+      return NEED_QUARRY;
+
+    case TActionType::TACTION_NONE:
+    case TActionType::TACTION_WINLOSE:
+    case TActionType::TACTION_ALLOWWIN:
+    case TActionType::TACTION_REVEAL_ALL:
+    case TActionType::TACTION_START_TIMER:
+    case TActionType::TACTION_STOP_TIMER:
+    case TActionType::TACTION_CREEP_SHADOW:
+    case TActionType::TACTION_DESTROY_OBJECT:
+    case TActionType::TACTION_LAUNCH_NUKES:
+    case TActionType::TACTION_COUNT:
+    default:
+      break;
+  }
+  return NEED_NONE;
+}

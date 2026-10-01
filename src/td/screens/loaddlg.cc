@@ -1,0 +1,669 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\loaddlg.cpv   2.18   16 Oct 1995 16:51:18
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : LOADDLG.CPP *
+ *                                                                                             *
+ *                   Programmer : Maria Legg, Joe Bostic, Bill Randolph *
+ *                                                                                             *
+ *                   Start Date : March 19, 1995 *
+ *                                                                                             *
+ *                  Last Update : June 25, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * LoadOptionsClass::Clear_List -- clears the list box & Files
+ *arrays                                                                       *
+ *   LoadOptionsClass::Fill_List -- fills the list box & GameNum arrays *
+ *   LoadOptionsClass::LoadOptionsClass -- class constructor *
+ *   LoadOptionsClass::Num_From_Ext -- clears the list box & GameNum arrays *
+ *   LoadOptionsClass::Process -- main processing routine *
+ *   LoadOptionsClass::~LoadOptionsClass -- class destructor *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+#include "td/screens/loaddlg.h"
+
+#include <algorithm>
+#include <charconv>
+#include <cstddef>
+#include <cstdio>
+#include <cstring>
+#include <filesystem>
+#include <iterator>
+#include <memory>
+#include <optional>
+#include <span>
+#include <string>
+#include <string_view>
+#include <system_error>
+#include <utility>
+#include <vector>
+
+#include "absl/strings/str_format.h"
+#include "base/array.h"
+#include "base/numeric.h"
+#include "base/strings/safe_string.h"
+#include "engine/file/disk_file.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
+#include "engine/platform/file_system.h"
+#include "engine/window/hardware_cursor.h"
+#include "engine/window/keyboard.h"
+#include "td/assets/palette.h"
+#include "td/assets/palettes.h"
+#include "td/assets/screen.h"
+#include "td/core/defines.h"
+#include "td/core/jshell.h"
+#include "td/core/vector.h"
+#include "td/data/text.h"
+#include "td/editor/mapedit.h"
+#include "td/map/world.h"
+#include "td/net/session.h"
+#include "td/saveload/saveload.h"
+#include "td/screens/goptions.h"
+#include "td/startup/conquer.h"
+#include "td/startup/game_state.h"
+#include "td/startup/init.h"
+#include "td/ui/control.h"
+#include "td/ui/dialog.h"
+#include "td/ui/edit.h"
+#include "td/ui/input.h"
+#include "td/ui/list.h"
+#include "td/ui/msgbox.h"
+#include "td/ui/textbtn.h"
+
+/***********************************************************************************************
+ * LoadOptionsClass::LoadOptionsClass -- class constructor *
+ *                                                                                             *
+ * INPUT: * style      style for this load/save dialog (LOAD/SAVE/DELETE) *
+ *                                                                                             *
+ * OUTPUT: * none. *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 02/14/1995 BR : Created. *
+ *=============================================================================================*/
+LoadOptionsClass::LoadOptionsClass(LoadStyleType style) : Style(style) {}
+
+/***********************************************************************************************
+ * LoadOptionsClass::~LoadOptionsClass -- class destructor *
+ *                                                                                             *
+ * INPUT: * none. *
+ *                                                                                             *
+ * OUTPUT: * none. *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 02/14/1995 BR : Created. *
+ *=============================================================================================*/
+LoadOptionsClass::~LoadOptionsClass() = default;
+
+/***********************************************************************************************
+ * LoadOptionsClass::Process -- main processing routine *
+ *                                                                                             *
+ * INPUT: * none. *
+ *                                                                                             *
+ * OUTPUT: * false = User cancelled, true = operation completed *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 02/14/1995 BR : Created. *
+ *=============================================================================================*/
+bool LoadOptionsClass::Process() {
+  /*
+  **	Dialog & button dimensions
+  */
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
+  const int d_dialog_w = 250 * factor;
+  const int d_dialog_h = 156 * factor;
+  const int d_dialog_x = (TheScreen().visible_view().width() - d_dialog_w) / 2;
+  const int d_dialog_y = (TheScreen().visible_view().height() - d_dialog_h) / 2;
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
+  const int d_txt8_h = 11 * factor;
+  const int d_margin = 7 * factor;
+
+  const int d_list_w = d_dialog_w - (d_margin * 2);
+  const int d_list_h = 104 * factor;
+  const int d_list_x = d_dialog_x + d_margin;
+  const int d_list_y = d_dialog_y + d_margin + d_txt8_h + d_margin;
+
+  const int d_edit_w = d_dialog_w - (d_margin * 2);
+  const int d_edit_x = d_dialog_x + d_margin;
+  const int d_edit_y =
+      d_list_y + d_list_h - (30 * factor) + d_margin + d_txt8_h;
+
+#ifdef german
+  int d_button_w = 50 * factor;
+#else
+  const int d_button_w = 40 * factor;
+#endif
+  const int d_button_h = 13 * factor;
+  const int d_button_x = d_dialog_cx - d_button_w - d_margin;
+  const int d_button_y = d_dialog_y + d_dialog_h - d_button_h - d_margin;
+
+#ifdef german
+  int d_cancel_w = 50 * factor;
+#else
+  const int d_cancel_w = 40 * factor;
+#endif
+  const int d_cancel_h = 13 * factor;
+  const int d_cancel_x = d_dialog_cx + d_margin;
+  const int d_cancel_y = d_dialog_y + d_dialog_h - d_cancel_h - d_margin;
+  /*
+  **	Button enumerations
+  */
+  constexpr int kButtonLoad = 100;
+  constexpr int kButtonSave = 101;
+  constexpr int kButtonDelete = 102;
+  constexpr int kButtonCancel = 103;
+  constexpr int kButtonList = 104;
+  constexpr int kButtonEdit = 105;
+
+  /*
+  **	Redraw values: in order from "top" to "bottom" layer of the dialog
+  */
+  enum class RedrawType {
+    REDRAW_NONE = 0,
+    REDRAW_BUTTONS = 1,
+    REDRAW_BACKGROUND = 2,
+    REDRAW_ALL = REDRAW_BACKGROUND
+  };
+  using enum RedrawType;
+
+  /*
+  **	Dialog variables
+  */
+  bool cancel = false;     // true = user cancels
+  int list_ht = d_list_h;  // adjusted list box height
+
+  /*
+  **	Other Variables
+  */
+  int btn_txt = 0;            // text on the 'OK' button
+  unsigned btn_id = 0;        // ID of 'OK' button
+  int caption = 0;            // dialog caption
+  int game_idx = 0;           // index of game to save/load/etc
+  int game_num = 0;           // file number of game to load/save/etc
+  char game_descr[40] = {0};  // save-game description
+  char fname[13];             // for generating filename to delete
+
+  std::span<const std::byte> up_button;
+  std::span<const std::byte> down_button;
+
+  if (TheGameState().in_main_loop() || factor == 1) {
+    up_button = Hires_Retrieve("BTN-UP.SHP");
+    down_button = Hires_Retrieve("BTN-DN.SHP");
+  } else {
+    up_button = Hires_Retrieve("BTN-UP2.SHP");
+    down_button = Hires_Retrieve("BTN-DN2.SHP");
+  }
+
+  /*
+  **	Buttons
+  */
+  ControlClass* commands = nullptr;  // the button list
+
+  if (Style == LOAD) {
+    btn_txt = TXT_LOAD_BUTTON;
+    btn_id = kButtonLoad;
+    caption = TXT_LOAD_MISSION;
+  } else {
+    if (Style == SAVE) {
+      btn_txt = TXT_SAVE_BUTTON;
+      btn_id = kButtonSave;
+      caption = TXT_SAVE_MISSION;
+      list_ht -= 30;
+    } else {
+      btn_txt = TXT_DELETE_BUTTON;
+      btn_id = kButtonDelete;
+      caption = TXT_DELETE_MISSION;
+    }
+  }
+
+  TextButtonClass button(btn_id, btn_txt,
+                         TPF_6PT_GRAD | TPF_CENTER | TPF_NOSHADOW, d_button_x,
+                         d_button_y, d_button_w);
+
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            TPF_6PT_GRAD | TPF_CENTER | TPF_NOSHADOW,
+                            d_cancel_x, d_cancel_y, d_cancel_w);
+
+  ListClass listbtn(kButtonList, d_list_x, d_list_y, d_list_w, list_ht,
+                    TPF_6PT_GRAD | TPF_NOSHADOW, up_button, down_button);
+
+  EditClass editbtn(kButtonEdit, game_descr, 40,
+                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_edit_x,
+                    d_edit_y, d_edit_w, -1, EditClass::ALPHANUMERIC);
+
+  PixelView& view = TheScreen().visible_view();
+
+  /*
+  **	Initialize.
+  */
+
+  Fill_List(&listbtn);
+
+  /*
+  **	Do nothing if list is empty.
+  */
+  if ((Style == LOAD || Style == WWDELETE) && listbtn.Count() == 0) {
+    Clear_List(&listbtn);
+    CCMessageBox().Process(TXT_NO_SAVES);
+    return false;
+  }
+
+  /*
+  **	Create the button list.
+  */
+  commands = &button;
+  cancelbtn.Add_Tail(*commands);
+  listbtn.Add_Tail(*commands);
+  if (Style == SAVE) {
+    editbtn.Add_Tail(*commands);
+    editbtn.Set_Focus();
+  }
+
+  /*
+  **	Main Processing Loop.
+  */
+  bool firsttime = true;
+  bool display = true;
+  bool process = true;
+  while (process) {
+    /*
+    **	Invoke game callback.
+    */
+    if (TheSession().type() == GAME_NORMAL) {
+      Call_Back();
+    } else {
+      if (Main_Loop()) {
+        process = false;
+        cancel = true;
+      }
+    }
+
+
+    /*
+    **	Refresh display if needed.
+    */
+    if (display) {
+      TheMouse().Hide();
+      /*
+      **	Redraw the map.
+      */
+      if (TheGameState().in_main_loop()) {
+        TheScreen().hidden_page().view().Clear();
+        TheMap().Flag_To_Redraw(true);
+        TheMap().Render();
+      } else {
+        TheScreen().hidden_page().view().Clear();
+        Load_Title_Page(true);
+      }
+
+      /*
+      **	Display the dialog box.
+      */
+      Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+      Draw_Caption(view, caption, d_dialog_x, d_dialog_y, d_dialog_w);
+
+      if (Style == SAVE) {
+        Fancy_Text_Print(
+            view, TXT_MISSION_DESCRIPTION, d_dialog_cx, d_edit_y - d_txt8_h,
+            kCcGreen, kTBlack,
+            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER | TPF_NOSHADOW);
+      }
+
+      /*
+      **	Redraw the buttons.
+      */
+      commands->Flag_List_To_Redraw();
+      TheMouse().Show();
+      display = false;
+    }
+
+    /*
+    **	Get user input.
+    */
+    engine::window::KeyNumber input = commands->Input(view).key;
+
+    /*
+    **	The first time through the processing loop, set the edit
+    **	gadget to have the focus if this is the save dialog. The
+    **	focus must be set here since the gadget list has changed
+    **	and this change will cause any previous focus setting to be
+    **	cleared by the input processing routine.
+    */
+    if (firsttime && Style == SAVE) {
+      firsttime = false;
+      editbtn.Set_Focus();
+      editbtn.Flag_To_Redraw();
+    }
+
+    /*
+    **	If the <RETURN> key was pressed, then default to the appropriate
+    **	action button according to the style of this dialog box.
+    */
+    if (input == engine::window::KN_RETURN) {
+      switch (Style) {
+        case SAVE:
+          input = engine::window::ButtonKey(kButtonSave);
+          break;
+
+        case LOAD:
+          input = engine::window::ButtonKey(kButtonLoad);
+          break;
+
+        case WWDELETE:
+          input = engine::window::ButtonKey(kButtonDelete);
+          break;
+        case LoadStyleType::NONE:
+        default:
+          break;
+      }
+    }
+
+    /*
+    **	Process input.
+    */
+    switch (static_cast<int>(input)) {
+      /*
+      ** Load: if load fails, present a message, and stay in the dialog
+      ** to allow the user to try another game
+      */
+      case engine::window::ButtonKey(kButtonLoad):
+        game_idx = listbtn.Current_Index();
+        game_num = Files.at(base::ToSize(game_idx))->Num;
+        if (Files.at(base::ToSize(game_idx))->Valid) {
+          CCMessageBox().Process(TXT_LOADING, TXT_NONE);
+          if (!Load_Game(game_num)) {
+            CCMessageBox().Process(TXT_ERROR_LOADING_GAME);
+          } else {
+            TheMouse().Hide();
+            TheScreen().visible_page().view().Clear();
+            Set_Palette(ThePalettes().game_palette());
+            TheMouse().Show();
+            process = false;
+          }
+        } else {
+          CCMessageBox().Process(TXT_OBSOLETE_SAVEGAME);
+        }
+        break;
+
+      /*
+      ** Save: Save the game & exit the dialog
+      */
+      case engine::window::ButtonKey(kButtonSave):
+        if (std::string_view(game_descr).empty()) {
+          CCMessageBox().Process(TXT_MUSTENTER_DESCRIPTION);
+          firsttime = true;
+          display = true;
+          break;
+        }
+        game_idx = listbtn.Current_Index();
+        if (FreeDiskSpace() < SAVE_GAME_DISK_SPACE && game_idx == 0) {
+          //					CCMessageBox().Process("Insuficent
+          // disk space to save a game.  Please delete a previous save to free
+          // up some disk space and try again.");
+          CCMessageBox().Process(TXT_SPACE_CANT_SAVE);
+          firsttime = true;
+          display = true;
+          break;
+        }
+
+        game_num = Files.at(base::ToSize(game_idx))->Num;
+        if (!Save_Game(game_num, game_descr)) {
+          CCMessageBox().Process(TXT_ERROR_SAVING_GAME);
+        } else {
+          CCMessageBox().Process(TXT_GAME_WAS_SAVED, TXT_NONE, TXT_NONE);
+        }
+        process = false;
+        break;
+
+      /*
+      ** Delete: delete the file & stay in the dialog, to allow the user
+      ** to delete multiple files.
+      */
+      case engine::window::ButtonKey(kButtonDelete):
+        game_idx = listbtn.Current_Index();
+        game_num = Files.at(base::ToSize(game_idx))->Num;
+        if (CCMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
+            0) {
+          absl::SNPrintF(fname, sizeof(fname), "SAVEGAME.%03d", game_num);
+          // The list can show a lowercase save (savegame.001) that a
+          // case-sensitive remove(fname) would miss; find the file the way
+          // it was opened for loading before deleting it.
+          if (const std::optional<std::string> path = FindExistingFile(fname)) {
+            std::error_code error;
+            std::filesystem::remove(*path, error);
+          }
+          Clear_List(&listbtn);
+          Fill_List(&listbtn);
+          if (listbtn.Count() == 0) {
+            process = false;
+          }
+        }
+        display = true;
+        break;
+
+      /*
+      ** If the user clicks on the list, see if the there is a new current
+      ** item; if so, and if we're in SAVE mode, copy the list item into
+      ** the save-game description field.
+      */
+      case engine::window::ButtonKey(kButtonList):
+        if (Style != SAVE) {
+          break;
+        }
+
+        if (listbtn.Count() && listbtn.Current_Index() != game_idx) {
+          game_idx = listbtn.Current_Index();
+          /*
+          ** Copy the game's description, UNLESS it's the empty slot; if
+          ** it is, set the edit buffer to empty.
+          */
+          if (game_idx != 0) {
+            base::SafeCopy(game_descr, listbtn.Get_Item(game_idx));
+          } else {
+            base::At(game_descr, 0) = 0;
+          }
+          editbtn.Set_Text(game_descr, 40);
+        }
+        break;
+
+      /*
+      ** ESC/Cancel: break
+      */
+      case engine::window::KN_ESC:
+      case engine::window::ButtonKey(kButtonCancel):
+        cancel = true;
+        process = false;
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  Clear_List(&listbtn);
+
+  return !cancel;
+}
+
+/***********************************************************************************************
+ * LoadOptionsClass::Clear_List -- clears the list box & Files arrays *
+ *                                                                                             *
+ * This step is essential, because it frees all the strings allocated for list
+ *items.          *
+ *                                                                                             *
+ * INPUT: * none. *
+ *                                                                                             *
+ * OUTPUT: * none. *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 02/14/1995 BR : Created. *
+ *=============================================================================================*/
+void LoadOptionsClass::Clear_List(ListClass* list) {
+  /*
+  ** For every item in the list, free its buffer & remove it from the list.
+  */
+  const int j = list->Count();
+  for (int i = 0; i < j; i++) {
+    list->Remove_Item(list->Get_Item(0));
+  }
+
+  /*
+  ** Clear the array of game numbers
+  */
+  Files.clear();
+}
+
+/***********************************************************************************************
+ * LoadOptionsClass::Fill_List -- fills the list box & GameNum arrays *
+ *                                                                                             *
+ * INPUT: * none. *
+ *                                                                                             *
+ * OUTPUT: * none. *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 02/14/1995 BR : Created. * 06/25/1995 JLB : Shows which saved
+ *games are "(old)".                                     *
+ *=============================================================================================*/
+void LoadOptionsClass::Fill_List(ListClass* list) {
+  char descr[kDescripMax];
+  unsigned scenario = 0;  // scenario #
+  HousesType house = HOUSE_NONE;
+  int id = 0;
+
+  /*
+  ** Make sure the list is empty
+  */
+  Clear_List(list);
+
+  /*
+  ** Add the Empty Slot entry
+  */
+  if (Style == SAVE) {
+    auto fdata = std::make_unique<FileEntryClass>();
+    base::SafeCopy(fdata->Descr, Text_String(TXT_EMPTY_SLOT));
+    fdata->DateTime = 0xffffffff;  // will always be first
+    Files.push_back(std::move(fdata));
+  }
+
+  /*
+  ** Find all savegame files
+  */
+  for (const FoundFile& found : FindFiles("SAVEGAME.*")) {
+    /*
+    ** Extract the game ID from the filename
+    */
+    id = Num_From_Ext(found.name.c_str());
+
+    /*
+    ** get the game's info; if success, add it to the list
+    */
+    const bool ok = Get_Savefile_Info(id, descr, &scenario, &house);
+
+    auto fdata = std::make_unique<FileEntryClass>();
+
+    base::At(fdata->Descr, 0) = '\0';
+    if (!ok) {
+      base::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
+    }
+    base::SafeAppend(fdata->Descr, descr);
+    fdata->Valid = ok;
+    fdata->Scenario = scenario;
+    fdata->House = house;
+    fdata->Num = id;
+    fdata->DateTime = found.modified;
+    Files.push_back(std::move(fdata));
+  }
+
+  /*
+  ** If saving a game, determine a unique file ID for the empty slot
+  */
+  if (Style == SAVE) {
+    /*
+    ** Find an un-used number to associate with the Empty Slot by looking in
+    ** GameNum for each number from 0 to 'N', where 'N' is the # of entries
+    ** in the list; if any number isn't found, use that number; otherwise,
+    ** use 'N + 1'.
+    */
+    int i = 0;
+    for (i = 0; i < std::ssize(Files); i++) {  // i = the # we're searching for
+      id = -1;                                 // mark as 'not found'
+      for (int j = 0; j < std::ssize(Files); j++) {  // loop through all IDs
+        if (Files.at(base::ToSize(j))->Num == i) {   // if found, mark as found
+          id = j;
+          break;
+        }
+      }
+      if (id == -1) {
+        break;  // if ID not found, use this one
+      }
+    }
+
+    Files.at(0)->Num = i;  // set the empty slot's ID
+  }
+
+  /*
+  ** Now sort the list in order of Date/Time (newest first, oldest last)
+  */
+  std::ranges::sort(Files, [](const std::unique_ptr<FileEntryClass>& left,
+                              const std::unique_ptr<FileEntryClass>& right) {
+    return left->DateTime > right->DateTime;
+  });
+
+  /*
+  ** Now add every file's name to the list box
+  */
+  for (const auto& file : Files) {
+    list->Add_Item(file->Descr);
+  }
+}
+
+/***********************************************************************************************
+ * LoadOptionsClass::Num_From_Ext -- clears the list box & GameNum arrays *
+ *                                                                                             *
+ * INPUT: * fname      filename to parse *
+ *                                                                                             *
+ * OUTPUT: * File number for this name. *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 02/14/1995 BR : Created. *
+ *=============================================================================================*/
+int LoadOptionsClass::Num_From_Ext(const char* fname) {
+  auto ext = std::filesystem::path(fname).extension().string();
+
+  int num = 0;
+  if (ext.size() > 1) {  // Has more than just '.'
+    ext.erase(0, 1);
+    std::from_chars(ext.data(), std::to_address(ext.end()), num);
+  }
+  return num;
+}
+

@@ -1,0 +1,160 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\gscreen.h_v   2.17   16 Oct 1995 16:45:20
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : GSCREEN.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 12/15/94 *
+ *                                                                                             *
+ *                  Last Update : December 15, 1994 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_TD_MAP_GSCREEN_H_
+#define CNC_RED_ALERT_TD_MAP_GSCREEN_H_
+
+#include <memory>
+
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
+#include "td/core/defines.h"
+#include "td/core/vector.h"
+#include "td/objects/cell.h"
+#include "td/ui/gadget.h"
+
+class GScreenClass : public VectorClass<CellClass> {
+ public:
+  virtual void ResetTransientUiState();
+  GScreenClass();
+  virtual ~GScreenClass() = default;
+  GScreenClass(const GScreenClass&) = delete;
+  GScreenClass& operator=(const GScreenClass&) = delete;
+  GScreenClass(GScreenClass&&) = delete;
+  GScreenClass& operator=(GScreenClass&&) = delete;
+
+  /*
+  ** Initialization
+  */
+  virtual void One_Time();                         // One-time initializations
+  virtual void Init(
+      TheaterType /*theater*/ = THEATER_NONE);     // Inits everything
+  virtual void Init_Clear();                       // Clears all to known state
+  virtual void Init_IO();                          // Inits button list
+  virtual void Init_Theater(TheaterType theater);  // Theater-specific inits
+
+  // Reads one input event, if any, runs it through the map's gadgets and
+  // AI(), and returns what is left of it. Called every game tick. Sets `x`
+  // and `y` to the mouse's position.
+  virtual engine::window::InputEvent Input(int& x, int& y);
+
+  // Lets each map layer act on `event`, with the mouse at `x`, `y`. A layer
+  // that uses up the event's key sets it to KN_NONE.
+  virtual void AI(engine::window::InputEvent& /*unused*/, int /*unused*/,
+                  int /*unused*/) {}
+  virtual void Add_A_Button(GadgetClass& gadget);
+  virtual void Remove_A_Button(GadgetClass& gadget);
+
+  /*
+  **	Called when map needs complete updating.
+  */
+  virtual void Flag_To_Redraw(bool complete = false);
+
+  /*
+  **	Render maintenance routine (call every game tick). Probably no need
+  **	to override this in derived classes.
+  */
+  virtual void Render();
+
+  /*
+  **	Is called when actual drawing is required. This is the function to
+  **	override in derived classes.
+  */
+  virtual void Draw_It(PixelView& /*view*/, bool /*unused*/ = false) {}
+
+  /*
+  **	This moves the hidpage up to the seenpage.
+  */
+  static void Blit_Display();
+
+  /*
+  **	Changes the mouse shape as indicated.
+  */
+  virtual void Set_Default_Mouse(MouseType mouse, bool wwsmall) = 0;
+  virtual bool Override_Mouse_Shape(MouseType mouse, bool wwsmall) = 0;
+  virtual void Revert_Mouse_Shape() = 0;
+  virtual void Mouse_Small(bool wwsmall) = 0;
+
+  /*
+  **	File I/O.
+  */
+
+  /*
+  **	Misc routines.
+  */
+  virtual void* Shadow_Address() { return ShadowPage.get(); }
+
+  /*
+  **	This points to the buttons that are used for input. All of the derived
+  *classes will *	attached their specific buttons to this list.
+  */
+  static GadgetClass* Buttons;
+
+ private:
+  /*
+  **	If the entire map is required to redraw, then this flag is true. This
+  *flag *	is set by the Flag_To_Redraw function. Typically, this occurs
+  *when the screen *	has been trashed or is first created.
+  */
+  bool IsScreenToRedraw : 1 {true};
+
+  /*
+  **	If only a sub-system of the map must be redrawn, then this flag will be
+  *set. *	An example of something that would set this flag would be an
+  *animating icon *	in the sidebar. In such a case, complete redrawing of
+  *the entire display is not *	necessary, but the Draw_It function should still
+  *be called so that the appropriate *	class can perform it's rendering.
+  */
+  bool IsToUpdate : 1 {true};
+
+  /*
+  **	Pointer to an exact copy of the visible graphic page. This copy is used
+  *to speed *	display rendering by using an only-update-changed-pixels
+  *algorithm.
+  */
+ public:
+  static std::unique_ptr<PixelBuffer> ShadowPage;
+
+ private:
+};
+
+extern bool ScreenRecording;
+
+#endif  // CNC_RED_ALERT_TD_MAP_GSCREEN_H_

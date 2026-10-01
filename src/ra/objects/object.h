@@ -1,0 +1,315 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/OBJECT.H 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : OBJECT.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : April 29, 1994 *
+ *                                                                                             *
+ *                  Last Update : April 29, 1994   [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_RA_OBJECTS_OBJECT_H_
+#define CNC_RED_ALERT_RA_OBJECTS_OBJECT_H_
+
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
+#include "base/fixed.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "ra/core/ccptr.h"
+#include "ra/core/defines.h"
+#include "ra/core/face.h"
+#include "ra/core/jshell.h"
+#include "ra/objects/abstract.h"
+
+class BuildingClass;
+class HouseClass;
+class ObjectTypeClass;
+class RadioClass;
+class TechnoClass;
+class TriggerClass;
+
+/**********************************************************************
+**	Every game object (that can exist on the map) is ultimately derived from
+*this object *	class. It holds the common information between all objects. This
+*is primarily the *	object unique ID number and its location in the world.
+*All common operations between *	game objects are represented by virtual
+*functions in this class.
+*/
+class ObjectClass : public AbstractClass {
+ public:
+  /*
+  **	The object can be in one of two states -- placed down on the map, or
+  *not. If the *	object is placed down on the map, then this flag will be
+  *true.
+  */
+  bool IsDown : 1;
+
+  /*
+  **	This is a support flag that is only used while building a list of
+  *objects to *	be damaged by a proximity affect (explosion). When this flag is
+  *set, this object *	will not be added to the list of units to damage. When
+  *damage is applied to the *	object, this flag is cleared again. This process
+  *ensures that an object is never *	subject to "double jeopardy".
+  */
+  bool IsToDamage : 1;
+
+  /*
+  **	Is this object flagged to be displayed during the next rendering
+  *process?  This *	flag could be set by many different circumstances. It is
+  *automatically cleared *	when the object is rerendered.
+  */
+  bool IsToDisplay : 1;
+
+  /*
+  **	An object in the game may be valid yet held in a state of "limbo". Units
+  *are in such *	a state if they are being transported or are otherwise
+  *"inside" another unit. They can *	also be in limbo if they have been
+  *created but are being held until the proper time *	for delivery.
+  */
+  bool IsInLimbo : 1;
+
+  /*
+  **	When an object is "selected" it is given a floating bar graph or other
+  *graphic imagery *	to display this fact. When the player performs I/O, the
+  *actions may have a direct *	bearing on the actions of the currently selected
+  *object. For quick checking purposes, *	if this object is the one that
+  *is "selected", this flag will be true.
+  */
+  bool IsSelected : 1;
+
+  /*
+  **	If an animation is attached to this object, then this flag will be true.
+  */
+  bool IsAnimAttached : 1;
+
+  /*
+  **	If this object should process falling logic, then this flag will be
+  *true. Such *	objects might be ballistic projectiles, grenades, or
+  *parachuters.
+  */
+  bool IsFalling : 1;
+  int Riser;
+
+  /*
+  **	Several objects could exist in the same cell list. This is a pointer to
+  *the *	next object in the cell list. The objects in this list are not
+  *in any *	significant order.
+  */
+  ObjectClass* Next;
+
+  /*
+  ** Every object can be assigned a trigger; the same trigger can be assigned
+  ** to multiple objects.
+  */
+  CCPtr<TriggerClass> Trigger;
+
+  /*
+  **	This is the current strength of this object.
+  */
+  int16_t Strength;
+
+  /*-----------------------------------------------------------------------------------
+  **	Constructor & destructors.
+  */
+  ObjectClass(RTTIType rtti, int id);
+
+  // Saved-game support for the base part; derived classes call it first.
+  // Defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+ protected:
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  ObjectClass()
+      : IsDown(false),
+        IsToDamage(false),
+        IsToDisplay(false),
+        IsInLimbo(true),
+        IsSelected(false),
+        IsAnimAttached(false),
+        IsFalling(false),
+        Riser(0),
+        Next(nullptr),
+        Trigger(nullptr),
+        Strength(255) {}
+
+ public:
+  ~ObjectClass() override;
+  ObjectClass(const ObjectClass&) = delete;
+  ObjectClass& operator=(const ObjectClass&) = delete;
+  ObjectClass(ObjectClass&&) = delete;
+  ObjectClass& operator=(ObjectClass&&) = delete;
+  bool operator<(const ObjectClass& object) const {
+    return Sort_Y() < object.Sort_Y();
+  }
+  bool operator>(const ObjectClass& object) const {
+    return Sort_Y() > object.Sort_Y();
+  }
+
+  /*
+  **	Object selection control.
+  */
+  static void Init();
+
+  /*
+  **	Query functions.
+  */
+  [[nodiscard]] virtual bool Is_Players_Army() const { return false; }
+  [[nodiscard]] virtual std::span<const std::byte> Get_Image_Data() const;
+  virtual ActionType What_Action(ObjectClass* /*unused*/);
+  [[nodiscard]] virtual ActionType What_Action(CELL /*unused*/) const;
+  [[nodiscard]] virtual LayerType In_Which_Layer() const;
+  [[nodiscard]] bool Is_Infantry() const { return RTTI == RTTI_INFANTRY; }
+  [[nodiscard]] bool Is_Foot() const {
+    return RTTI == RTTI_INFANTRY || RTTI == RTTI_UNIT || RTTI == RTTI_VESSEL ||
+           RTTI == RTTI_AIRCRAFT;
+  }
+  [[nodiscard]] bool Is_Techno() const {
+    return RTTI == RTTI_BUILDING || RTTI == RTTI_UNIT ||
+           RTTI == RTTI_INFANTRY || RTTI == RTTI_VESSEL ||
+           RTTI == RTTI_AIRCRAFT;
+  }
+  [[nodiscard]] virtual uint32_t Get_Ownable() const;
+  [[nodiscard]] virtual const ObjectTypeClass& Class_Of() const = 0;
+  [[nodiscard]] const char* Name() const override;
+  [[nodiscard]] virtual int Full_Name() const;
+  [[nodiscard]] virtual bool Can_Repair() const;
+  [[nodiscard]] virtual bool Can_Demolish() const;
+  [[nodiscard]] virtual bool Can_Player_Fire() const;
+  [[nodiscard]] virtual bool Can_Player_Move() const;
+
+  /*
+  **	Coordinate inquiry functions. These are used for both display and
+  **	combat purposes.
+  */
+  [[nodiscard]] virtual COORDINATE Docking_Coord() const;
+  [[nodiscard]] COORDINATE Target_Coord() const override;
+  [[nodiscard]] COORDINATE Center_Coord() const override;
+  [[nodiscard]] virtual COORDINATE Render_Coord() const;
+  [[nodiscard]] virtual COORDINATE Sort_Y() const;
+  [[nodiscard]] virtual COORDINATE Fire_Coord(int which) const;
+  [[nodiscard]] virtual COORDINATE Exit_Coord() const;
+
+  /*
+  **	Object entry and exit from the game system.
+  */
+  virtual bool Limbo();
+  virtual bool Unlimbo(COORDINATE /*coord*/, DirType facing = DIR_N);
+  virtual void Detach(TARGET target, bool all = true);
+  virtual void Detach_All(bool all = true);
+  virtual void Record_The_Kill(TechnoClass* /*unused*/);
+  virtual bool Paradrop(COORDINATE coord);
+  bool Attach_Trigger(TriggerClass* trigger);
+
+  /*
+  **	Display and rendering support functionality. Supports imagery and how
+  **	object interacts with the map and thus indirectly controls rendering.
+  */
+  virtual void Do_Shimmer();
+  virtual int Exit_Object(TechnoClass* /*unused*/);
+  virtual bool Render(PixelView& view, bool forced);  // const;
+  [[nodiscard]] virtual std::span<const int16_t> Occupy_List(
+      bool placement = false) const;
+  [[nodiscard]] virtual std::span<const int16_t> Overlap_List(
+      bool redraw = false) const;
+  [[nodiscard]] virtual Fixed Health_Ratio() const;
+  virtual void Draw_It(PixelView& view, int x, int y,
+                       WindowNumberType) const = 0;
+  virtual void Hidden();
+  virtual void Look(bool incremental = false);
+  virtual bool Mark(MarkType /*mark*/ = MARK_CHANGE);
+
+ private:
+  virtual void Mark_For_Redraw();
+
+ public:
+  /*
+  **	User I/O.
+  */
+  virtual void Active_Click_With(ActionType /*unused*/,
+                                 ObjectClass* /*unused*/);
+  virtual void Active_Click_With(ActionType /*unused*/, CELL /*unused*/);
+  virtual void Clicked_As_Target(int /*unused*/ = 7);
+  virtual bool Select();
+  virtual void Unselect();
+
+  /*
+  **	Combat related.
+  */
+  [[nodiscard]] virtual bool In_Range(COORDINATE /*unused*/,
+                                      int /*unused*/ = 0) const;
+  [[nodiscard]] virtual int Weapon_Range(int /*unused*/ = 0) const;
+  virtual ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
+                                 TechnoClass* source = nullptr,
+                                 bool forced = false);
+  virtual void Scatter(COORDINATE /*unused*/, bool forced = false,
+                       bool nokidding = false);
+  virtual bool Catch_Fire();
+  virtual void Fire_Out();
+  [[nodiscard]] virtual int Value() const;
+  [[nodiscard]] virtual MissionType Get_Mission() const;
+
+  /*
+  **	AI.
+  */
+  // Acts on the object having reached, crossed or turned in a cell.
+  // Returns true when the object deleted itself doing so, in which case
+  // the caller must not touch it again.
+  [[nodiscard]] virtual bool Per_Cell_Process(PCPType /*unused*/) {
+    return false;
+  }
+  [[nodiscard]] virtual BuildingClass* Who_Can_Build_Me(bool intheory,
+                                                        bool legal) const;
+  virtual RadioMessageType Receive_Message(RadioClass* from,
+                                           RadioMessageType message,
+                                           int32_t& param);
+  virtual bool Revealed(HouseClass* house);
+  virtual void Repair(int /*unused*/);
+  virtual void Sell_Back(int /*unused*/);
+  void AI() override;
+
+  /*
+  **	Scenario and debug support.
+  */
+  virtual void Move(FacingType /*facing*/);
+
+  static constexpr int kFlightLevel = 256;
+};
+
+class ArchiveReader;
+class ArchiveWriter;
+extern template void ObjectClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void ObjectClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+#endif  // CNC_RED_ALERT_RA_OBJECTS_OBJECT_H_

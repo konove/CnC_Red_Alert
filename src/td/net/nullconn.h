@@ -1,0 +1,154 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\nullconn.h_v   1.12   16 Oct 1995
+ * 16:45:54   JOE_BOSTIC  $ */
+/***************************************************************************
+ **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
+ ***************************************************************************
+ *                                                                         *
+ *                 Project Name : Command & Conquer                        *
+ *                                                                         *
+ *                    File Name : NULLCONN.H                               *
+ *                                                                         *
+ *                   Programmer : Bill Randolph                            *
+ *                                                                         *
+ *                   Start Date : December 19, 1994                        *
+ *                                                                         *
+ *                  Last Update : April 3, 1995   [BR] *
+ *                                                                         *
+ *-------------------------------------------------------------------------*
+ *                                                                         *
+ * This is the Connection Class for a NULL-Modem connection.  It inherits
+ ** a Queue, PacketBuf, timeout variables from ConnectionClass.  It
+ ** inherits its Send_/Receive_/Get_Packet functions, and the non-sequenced
+ ** ACK/Retry logic in Service_Send_Queue & Service_Recieve_Queue from *
+ * NonSequencedConnClass.
+ **
+ *                                                                         *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+#ifndef CNC_RED_ALERT_TD_NET_NULLCONN_H_
+#define CNC_RED_ALERT_TD_NET_NULLCONN_H_
+
+#include <cstddef>
+#include <span>
+#include <vector>
+
+/*
+********************************* Includes **********************************
+*/
+#include <cstdint>
+
+#include "td/net/noseqcon.h"
+
+using HANDLE = void*;
+
+/*
+********************************** Defines **********************************
+*/
+#define PACKET_SERIAL_START 0xDABD
+#define PACKET_SERIAL_VERIFY 0xDEAF
+
+#define PACKET_SERIAL_OVERHEAD_SIZE \
+  (sizeof(SerialHeaderType) + sizeof(SerialCRCType))
+
+struct SerialHeaderType {
+  uint16_t MagicNumber;
+  uint16_t Length;
+  uint16_t MagicNumber2;
+};
+
+struct SerialCRCType {
+  int SerialCRC;
+};
+
+/*
+***************************** Class Declaration *****************************
+*/
+class NullModemConnClass : public NonSequencedConnClass {
+  /*
+  ---------------------------- Public Interface ----------------------------
+  */
+ public:
+  /*.....................................................................
+  Constructor/destructor.
+  .....................................................................*/
+  NullModemConnClass(int numsend, int numreceive, int maxlen,
+                     uint16_t magicnum);
+  ~NullModemConnClass() override;
+  NullModemConnClass(const NullModemConnClass&) = delete;
+  NullModemConnClass& operator=(const NullModemConnClass&) = delete;
+  NullModemConnClass(NullModemConnClass&&) = delete;
+  NullModemConnClass& operator=(NullModemConnClass&&) = delete;
+
+  /*.....................................................................
+  Initialization.
+  .....................................................................*/
+  using ConnectionClass::Init;
+  void Init(HANDLE port_handle);
+
+  /*.....................................................................
+  Utility routines.
+  .....................................................................*/
+  int Actual_Max_Packet() {
+    return MaxPacketLen + static_cast<int>(sizeof(SerialHeaderType) +
+                                           sizeof(int) + sizeof(char));
+  }
+
+  /*.....................................................................
+  This routine computes a CRC value for the given buffer.
+  .....................................................................*/
+  static int Compute_CRC(std::span<const std::byte> buf, int buflen);
+
+  /*.....................................................................
+  This routine returns the number of bytes extra added the packet
+  for communication.
+  .....................................................................*/
+  static int Packet_Overhead_Size();
+
+  /*
+  --------------------------- Private Interface ----------------------------
+  */
+ protected:
+  /*.....................................................................
+  This routine actually performs a hardware-dependent data send.
+  .....................................................................*/
+  int Send(std::span<const std::byte> buf, int buflen) override;
+
+  /*.....................................................................
+  This is the PORT value used by the GreenLeaf calls.
+  .....................................................................*/
+  HANDLE PortHandle{nullptr};
+  // PORT *Port;
+
+  /*.....................................................................
+  This buffer is a staging area for data sent out; it includes the
+  packet sent by the parent class (which includes the application's
+  packet, plus the CommHeaderType header), plus:
+  - 2-byte buffer start ID
+  - 2-byte length
+  - 4-byte CRC value (at the end of the buffer)
+  This is the actual packet that gets sent across the serial line.
+  .....................................................................*/
+  std::vector<char> SendBuf;
+};
+
+#endif  // CNC_RED_ALERT_TD_NET_NULLCONN_H_
+
+/************************** end of nullconn.h ******************************/

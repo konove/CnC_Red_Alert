@@ -1,0 +1,612 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/***************************************************************************
+ **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
+ ***************************************************************************
+ *                                                                         *
+ *                 Project Name : Command & Conquer                        *
+ *                                                                         *
+ *                    File Name : TCPIP.CPP                                *
+ *                                                                         *
+ *                   Programmer : Steve Tall                               *
+ *                                                                         *
+ *                   Start Date : March 11th, 1996                         *
+ *                                                                         *
+ *                  Last Update : March 20th, 1996 [ST]                    *
+ *                                                                         *
+ *-------------------------------------------------------------------------*
+ * Overview:                                                               *
+ *                                                                         *
+ *  Member functions of the TcpipManagerClass which provides the Winsock   *
+ * interface for C&C                                                       *
+ *                                                                         *
+ *                                                                         *
+ *-------------------------------------------------------------------------*
+ * Functions:                                                              *
+ *                                                                         *
+ * TMC::TcpipManagerClass -- constructor for the TcpipManagerClass         *
+ * TMC::~TcpipManagerClass -- destructor for the TcpipManagerClass         *
+ * TMC::Close -- restores any currently in use Winsock resources           *
+ * TMC::Init -- Initialised Winsock for use.                               *
+ * TMC::Start_Server -- Initialise connection and start listening.         *
+ * TMC::Read -- read any pending input from the stream socket              *
+ * TMC::Write -- Send data via the Winsock streaming socket                *
+ * TMC::Add_Client -- A client has requested to connect.                   *
+ * TMC::Message_Handler -- Message handler for Winsock.                    *
+ * TMC::Set_Host_Address -- Set the address of the host                    *
+ * TMC::Start_Client -- Start trying to connect to a game host             *
+ * TMC::Close_Socket -- Close an opened Winsock socket.                    *
+ * TMC::Copy_To_In_Buffer -- copy data from our winsock buffer             *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+#include "td/net/tcpip.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <span>
+
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/strings/safe_string.h"
+#include "engine/net/socket_bytes.h"
+#include "td/net/network.h"
+#include "td/ui/input.h"
+
+#ifdef _WIN32
+#include <winsock.h>
+
+using socklen_t = int;
+#else
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+#define closesocket close
+#define INVALID_SOCKET (-1)
+#define SOCKET_ERROR (-1)
+#endif
+
+#ifdef FORCE_WINSOCK
+
+/*
+** Nasty globals
+*/
+
+/***********************************************************************************************
+ * TMC::TcpipManagerClass -- constructor for the TcpipManagerClass *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 2:51PM ST : Created *
+ *=============================================================================================*/
+TcpipManagerClass::TcpipManagerClass() = default;
+
+/***********************************************************************************************
+ * TMC::~TcpipManagerClass -- destructor for the TcpipManagerClass *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 2:52PM ST : Created *
+ *=============================================================================================*/
+
+TcpipManagerClass::~TcpipManagerClass() { Close(); }
+
+/***********************************************************************************************
+ * TMC::Close -- restores any currently in use Winsock resources *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 2:52PM ST : Created *
+ *=============================================================================================*/
+
+void TcpipManagerClass::Close() {
+  /*
+  ** If we never initialised the class in the first place then just return
+  */
+  if (!WinsockInitialised) {
+    return;
+  }
+
+  /*
+  ** Close any open sockets
+  */
+  if (ConnectSocket != INVALID_SOCKET) {
+    Close_Socket(ConnectSocket);
+    ConnectSocket = INVALID_SOCKET;
+  }
+
+  if (ListenSocket != INVALID_SOCKET) {
+    Close_Socket(ListenSocket);
+    ListenSocket = INVALID_SOCKET;
+  }
+
+  if (UDPSocket != INVALID_SOCKET) {
+    Close_Socket(ListenSocket);
+    UDPSocket = INVALID_SOCKET;
+  }
+
+#ifdef _WIN32
+  /*
+  ** Call the Winsock cleanup function to say we are finished using Winsock
+  */
+  WSACleanup();
+#endif
+
+  WinsockInitialised = false;
+  Connected = false;
+}
+
+/***********************************************************************************************
+ * TMC::Init -- Initialised Winsock for use. *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   true if Winsock is available and was initialised *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 2:54PM ST : Created *
+ *=============================================================================================*/
+
+bool TcpipManagerClass::Init() {
+  /*
+  ** Just return true if we are already set up
+  */
+  if (WinsockInitialised) {
+    return true;
+  }
+
+#ifdef _WIN32
+  /*
+  ** Initialise sockets to null
+  */
+  ListenSocket = INVALID_SOCKET;
+  ConnectSocket = INVALID_SOCKET;
+  UDPSocket = INVALID_SOCKET;
+
+  /*
+  ** Start WinSock, and fill in our WinSockData
+  */
+  const WORD version = MAKEWORD(WINSOCK_MAJOR_VER, WINSOCK_MINOR_VER);
+  int rc = WSAStartup(version, &WinsockInfo);
+  if (rc != 0) {
+    return (false);
+  }
+
+  /*
+  ** Check the Winsock version number
+  */
+  if ((WinsockInfo.wVersion & 0x00ff) != (version & 0x00ff) ||
+      (WinsockInfo.wVersion >> 8) != (version >> 8)) {
+    return (false);
+  }
+#endif
+
+  /*
+  ** Everything is OK so return success
+  */
+  WinsockInitialised = true;
+  return true;
+}
+
+/***********************************************************************************************
+ * TMC::Start_Server -- initialise out connection as the server. Start listening
+ *for clients.  *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 2:56PM ST : Created *
+ *=============================================================================================*/
+
+void TcpipManagerClass::Start_Server() {
+  // struct sockaddr_in addr;
+
+  Start_Client();
+
+  /*
+  ** Set up the incoming and outgoing data buffers head and tail pointers
+  */
+  // InBufferHead = 0;
+  // InBufferTail = 0;
+  // OutBufferHead= 0;
+  // OutBufferTail= 0;
+
+  TXBufferHead = 0;
+  TXBufferTail = 0;
+  RXBufferHead = 0;
+  RXBufferTail = 0;
+
+  for (auto& buffer : TransmitBuffers) {
+    buffer.InUse = false;
+  }
+
+  for (auto& buffer : ReceiveBuffers) {
+    buffer.InUse = false;
+  }
+
+  /*
+  ** Flag that we are the server side not the client
+  */
+  IsServer = true;
+  UseUDP = true;
+  ConnectStatus = CONNECTING;
+}
+
+/***********************************************************************************************
+ * TMC::Read -- read any pending input from the stream socket *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    ptr to buffer to receive input * length of buffer *
+ *                                                                                             *
+ * OUTPUT:   number of bytes transfered to buffer *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 2:58PM ST : Created *
+ *=============================================================================================*/
+
+int TcpipManagerClass::Read(std::span<std::byte> buffer, int buffer_len) {
+  int bytes_copied = 0;
+
+  /*
+  ** Make sure the message loop gets called because all the Winsock
+  *notifications
+  ** are done via messages.
+  */
+  TheKeyboard().Peek();
+
+  /*
+  ** Copy any outstanding incoming data to the buffer provided
+  */
+  if (base::At(ReceiveBuffers, RXBufferTail).InUse) {
+    base::CopyBytes(
+        buffer,
+        base::ObjectBytes(base::At(ReceiveBuffers, RXBufferTail).Buffer),
+        base::ToSize(std::min(base::At(ReceiveBuffers, RXBufferTail).DataLength,
+                              buffer_len)));
+    base::At(ReceiveBuffers, RXBufferTail).InUse = false;
+
+    bytes_copied = std::min(base::At(ReceiveBuffers, RXBufferTail++).DataLength,
+                            buffer_len);
+
+    RXBufferTail %= WS_NUM_RX_BUFFERS;
+  }
+
+  return bytes_copied;
+}
+
+/***********************************************************************************************
+ * TMC::Write -- Send data via the Winsock UDP socket *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    ptr to buffer containing data to send * length of data to send *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 3:00PM ST : Created *
+ *=============================================================================================*/
+
+void TcpipManagerClass::Write(std::span<const std::byte> buffer,
+                              int buffer_len) {
+  /*
+  ** Copy the data to one of the classes internal buffers
+  */
+  if (!base::At(TransmitBuffers, TXBufferHead).InUse) {
+    base::CopyBytes(
+        base::ObjectBytes(base::At(TransmitBuffers, TXBufferHead).Buffer),
+        buffer, base::ToSize(std::min(buffer_len, WS_INTERNET_BUFFER_LEN)));
+    base::At(TransmitBuffers, TXBufferHead).InUse = true;
+    base::At(TransmitBuffers, TXBufferHead++).DataLength =
+        std::min(buffer_len, WS_INTERNET_BUFFER_LEN);
+    TXBufferHead %= WS_NUM_TX_BUFFERS;
+  }
+
+  TheKeyboard().Peek();
+}
+
+/***********************************************************************************************
+ * TMC::Add_Client -- a client has requested to connect. Make the connection *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   true if client was successfully connected *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 3:02PM ST : Created *
+ *=============================================================================================*/
+
+bool TcpipManagerClass::Add_Client() {
+  struct sockaddr_in addr{};
+  // Socket boolean options use an int, not the one-byte C++ bool type.
+  const int no_delay = 1;
+
+  /*
+  ** Accept the connection. If there is an error then dont do anything else
+  */
+  socklen_t addrsize = sizeof(addr);
+  ConnectSocket = accept(ListenSocket, SocketAddress(addr), &addrsize);
+  if (ConnectSocket == INVALID_SOCKET) {
+    // Show_Error("accept", WSAGetLastError());
+    return false;
+  }
+
+  /*
+  ** Set options for this socket
+  */
+  setsockopt(ConnectSocket, IPPROTO_TCP, TCP_NODELAY, SocketBytes(no_delay),
+             sizeof(no_delay));
+  setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF,
+             SocketBytes(SocketReceiveBuffer), 4);
+  setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDBUF,
+             SocketBytes(SocketSendBuffer), 4);
+
+  /*
+  ** Save the clients address
+  */
+  base::CopyBytes(base::ObjectBytes(ClientIPAddress),
+                  base::ObjectBytes(addr.sin_addr.s_addr), 4);
+  base::CopyBytes(base::ObjectBytes(UDPIPAddress),
+                  base::ObjectBytes(addr.sin_addr.s_addr), 4);
+
+  /*
+  ** Create our UDP socket
+  */
+  UDPSocket = socket(AF_INET, SOCK_DGRAM, 0);
+  if (UDPSocket == INVALID_SOCKET) {
+    return false;
+  }
+
+  /*
+  ** Bind our UDP socket to our UDP port number
+  */
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(static_cast<uint16_t>(TheNetwork().westwood_port()));
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+  if (bind(UDPSocket, SocketAddress(addr), sizeof(addr)) == SOCKET_ERROR) {
+    Close_Socket(UDPSocket);
+    ConnectStatus = NOT_CONNECTING;
+    return false;
+  }
+
+  /*
+  ** Set options for the UDP socket
+  */
+  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, SocketBytes(SocketReceiveBuffer),
+             4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, SocketBytes(SocketSendBuffer),
+             4);
+
+  return true;
+}
+
+/***********************************************************************************************
+ * TMC::Message_Handler -- Message handler function for Winsock related messages
+ **
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Windows message handler stuff *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 3:05PM ST : Created *
+ *=============================================================================================*/
+
+/***********************************************************************************************
+ * TMC::Copy_To_In_Buffer -- copy data from our winsock buffer to our internal
+ *buffer          *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    bytes to copy *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 3:17PM ST : Created *
+ *=============================================================================================*/
+void TcpipManagerClass::Copy_To_In_Buffer(int bytes) {
+  if (!base::At(ReceiveBuffers, RXBufferHead).InUse) {
+    base::CopyBytes(
+        base::ObjectBytes(base::At(ReceiveBuffers, RXBufferHead).Buffer),
+        base::ObjectBytes(ReceiveBuffer),
+        base::ToSize(std::min(bytes, WS_INTERNET_BUFFER_LEN)));
+    base::At(ReceiveBuffers, RXBufferHead).InUse = true;
+    base::At(ReceiveBuffers, RXBufferHead++).DataLength =
+        std::min(bytes, WS_INTERNET_BUFFER_LEN);
+    RXBufferHead %= WS_NUM_RX_BUFFERS;
+  }
+}
+
+/***********************************************************************************************
+ * TMC::Set_Host_Address -- Set the address of the host game we want to connect
+ *to             *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    ptr to address string *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 3:19PM ST : Created *
+ *=============================================================================================*/
+void TcpipManagerClass::Set_Host_Address(char* address) {
+  base::SafeCopy(HostAddress, address);
+}
+
+/***********************************************************************************************
+ * TMC::Start_Client -- Start trying to connect to a game host *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 3:19PM ST : Created *
+ *=============================================================================================*/
+
+void TcpipManagerClass::Start_Client() {
+  struct sockaddr_in addr{};
+
+  addr.sin_family = AF_INET;
+  addr.sin_port = 0;
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+  /*
+  ** Set up the incoming and outgoing data buffers head and tail pointers
+  */
+  //	InBufferHead = 0;
+  //	InBufferTail = 0;
+  //	OutBufferHead= 0;
+  //	OutBufferTail= 0;
+
+  TXBufferHead = 0;
+  TXBufferTail = 0;
+  RXBufferHead = 0;
+  RXBufferTail = 0;
+
+  for (auto& buffer : TransmitBuffers) {
+    buffer.InUse = false;
+  }
+
+  for (auto& buffer : ReceiveBuffers) {
+    buffer.InUse = false;
+  }
+
+  Connected = false;
+  /*
+  ** Flag that we are the client side not the server
+  */
+  IsServer = false;
+  UseUDP = true;
+
+  /*
+  ** Create our UDP socket
+  */
+  UDPSocket = socket(AF_INET, SOCK_DGRAM, 0);
+  if (UDPSocket == INVALID_SOCKET) {
+    Close_Socket(ConnectSocket);
+    ConnectStatus = NOT_CONNECTING;
+    return;
+  }
+  /*
+  ** Bind our UDP socket to our UDP port number
+  */
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(static_cast<uint16_t>(TheNetwork().westwood_port()));
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+  if (bind(UDPSocket, SocketAddress(addr), sizeof(addr)) == SOCKET_ERROR) {
+    Close_Socket(UDPSocket);
+    Close_Socket(ConnectSocket);
+    ConnectStatus = NOT_CONNECTING;
+    return;
+  }
+
+  /*
+  ** Set options for the UDP socket
+  */
+  setsockopt(UDPSocket, SOL_SOCKET, SO_RCVBUF, SocketBytes(SocketReceiveBuffer),
+             4);
+  setsockopt(UDPSocket, SOL_SOCKET, SO_SNDBUF, SocketBytes(SocketSendBuffer),
+             4);
+}
+
+/***********************************************************************************************
+ * TMC::Close_Socket -- Close an opened Winsock socket. *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Socket to close *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 3:24PM ST : Created *
+ *=============================================================================================*/
+
+void TcpipManagerClass::Close_Socket(SOCKET s) {
+  linger ling{};
+
+  ling.l_onoff = 0;   // linger off
+  ling.l_linger = 0;  // timeout in seconds (ie close now)
+  setsockopt(s, SOL_SOCKET, SO_LINGER, SocketBytes(ling), sizeof(ling));
+  closesocket(s);
+}
+
+void TcpipManagerClass::Set_Protocol_UDP(bool state) { UseUDP = state; }
+
+void TcpipManagerClass::Clear_Socket_Error(SOCKET socket) {
+  uint32_t error_code = 0;
+  socklen_t length = 4;
+
+  getsockopt(socket, SOL_SOCKET, SO_ERROR, SocketBytes(error_code), &length);
+  error_code = 0;
+  setsockopt(socket, SOL_SOCKET, SO_ERROR, SocketBytes(error_code), length);
+}
+
+#endif  // FORCE_WINSOCK

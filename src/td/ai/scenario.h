@@ -1,0 +1,18 @@
+#ifndef CNC_RED_ALERT_TD_AI_SCENARIO_H_
+#define CNC_RED_ALERT_TD_AI_SCENARIO_H_
+
+#include "td/core/defines.h"
+
+bool End_Game();
+bool Read_Scenario(char* root);
+bool Start_Scenario(char* root, bool briefing = true);
+HousesType Select_House();
+void Clear_Scenario();
+void Do_Briefing(const char* text);
+void Do_Lose();
+void Do_Win();
+void Do_Restart();
+void Fill_In_Data();
+bool Restate_Mission(const char* name, int right_btn, int left_btn);
+
+#endif  // CNC_RED_ALERT_TD_AI_SCENARIO_H_

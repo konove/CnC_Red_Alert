@@ -1,0 +1,1601 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+//	wol_chat.cpp
+//	ajw 7/8/98
+
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <string_view>
+
+#include "absl/strings/str_format.h"
+#include "base/strings/safe_string.h"
+#include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/platform/sleep.h"
+#include "engine/platform/timer.h"
+#include "engine/platform/win32/win32_com.h"
+#include "engine/window/hardware_cursor.h"
+#include "engine/window/keyboard.h"
+#include "ra/assets/audio.h"
+#include "ra/assets/installation.h"
+#include "ra/assets/palettes.h"
+#include "ra/assets/screen.h"
+#include "ra/core/config.h"
+#include "ra/core/defines.h"
+#include "ra/core/inline.h"
+#include "ra/data/text_ids.h"
+#include "ra/startup/conquer.h"
+#include "ra/ui/dialog.h"
+#include "ra/ui/edit.h"
+#include "ra/ui/gadget.h"
+#include "ra/ui/iconlist.h"
+#include "ra/ui/input.h"
+#include "ra/ui/link.h"
+#include "ra/ui/msgbox.h"
+#include "ra/ui/seditdlg.h"
+#include "ra/ui/shapebtn.h"
+#include "ra/ui/statbtn.h"
+#include "ra/ui/textbtn.h"
+#include "ra/ui/tooltip.h"
+#include "ra/wol/chatdefs.h"
+#include "ra/wol/rawolapi.h"
+#include "ra/wol/wol_main.h"
+#include "ra/wol/wolapi.h"
+#include "ra/wol/wolapiob.h"
+#include "ra/wol/wolstrng.h"
+
+using enum engine::window::KeyNumber;
+
+// #include "ra/wol/woldebug.h"
+
+static bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
+                         Channel* pChannel, const char* szChannelName,
+                         bool bGame);
+static bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
+                         const IconListClass& chanlist, int iIndex, bool bGame);
+static bool ExitChatChannel(WolapiObject* pWO);
+static void CreateChatChannel(WolapiObject* pWO);
+static bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi);
+static bool ProcessChannelListSelection(WolapiObject* pWO,
+                                        IconListClass& chatlist,
+                                        const IconListClass& chanlist,
+                                        int iIndex);
+
+enum class LIST_EXPAND_STATE {
+  LES_NORMAL,
+  LES_CHANNELS_EXPANDED,
+  LES_USERS_EXPANDED,
+};
+using enum LIST_EXPAND_STATE;
+static LIST_EXPAND_STATE lesCurrent = LES_NORMAL;
+
+static bool OnExpandChannelList(IconListClass& chanlist,
+                                IconListClass& userlist);
+static bool OnExpandUserList(IconListClass& chanlist, IconListClass& userlist);
+static void ResizeChannelList(IconListClass& chanlist, bool bExpand);
+static void ResizeUserList(IconListClass& userlist, bool bExpand);
+
+static bool bLinkInList(const LinkClass* pListHead,
+                        const LinkClass* pLinkToFind);
+
+static int d_chanlist_w;
+static int d_chanlist_h;
+static int d_chanlist_x;
+static int d_chanlist_y;
+
+static int d_userlist_w;
+static int d_userlist_h;
+static int d_userlist_x;
+static int d_userlist_y;
+
+#define DRAWTOGDOWN Turn_Off()
+#define DRAWTOGUP Turn_On()
+
+//***********************************************************************************************
+int WOL_Chat_Dialog(WolapiObject* pWO) {
+  PixelView& view = TheScreen().visible_view();
+  int rc = 0;  //	What Run() returns: 0 is "back to the main menu".
+  bool bFirsttime = true;
+  bool bHackFocus = true;
+
+  //------------------------------------------------------------------------
+  //	Dialog & button dimensions
+  //------------------------------------------------------------------------
+  const int d_dialog_w = 640;                       // dialog width
+  const int d_dialog_h = 400;                       // dialog height
+  const int d_dialog_x = ((640 - d_dialog_w) / 2);  // dialog x-coord
+  const int d_dialog_y = ((400 - d_dialog_h) / 2);  // centered y-coord
+
+  const int d_margin1 = 34;  // large margin
+  const int d_margin2 = 14;  // small margin
+
+  const int d_chatlist_w = 340;
+  const int d_chatlist_x = d_dialog_x + d_margin1;
+  const int d_chatlist_y = d_dialog_y + d_margin2 + d_margin1 + 27;
+  const int d_chatlist_h = 337 - d_chatlist_y;
+
+  d_chanlist_w = 227;
+  d_chanlist_h = 100;
+  d_chanlist_x = d_dialog_x + d_dialog_w - (d_margin1 + d_chanlist_w);
+  d_chanlist_y = d_chatlist_y;
+
+  d_userlist_w = d_chanlist_w;
+  //		int d_userlist_h = ((10 * 6) + 3) *2;
+  d_userlist_x = d_chanlist_x;
+  d_userlist_y = d_chanlist_y + d_chanlist_h + 14 + 5;
+
+  d_userlist_h = d_chatlist_y + d_chatlist_h - d_userlist_y;
+
+  const int d_action_w = 100;
+  const int d_action_x = d_dialog_x + 500;
+  const int d_action_y = 365;
+
+  //	int d_chanpriv_w = 60;
+  //	int d_chanpriv_h = 9 *2;
+  //	int d_chanpriv_x = d_dialog_x + 150;
+  //	int d_chanpriv_y = d_action_y;
+
+  //	int d_cgame_w = 60;
+  //	int d_cgame_h = 9 *2;
+  //	int d_cgame_x = d_dialog_x + 390; //d_dialog_cx - d_cgame_w / 2;
+  //	int d_cgame_y = d_action_y;
+
+  const int d_back_w = 100;
+  const int d_back_x = d_dialog_x + 100;
+  const int d_back_y = d_action_y;
+
+  const int d_join_w = 100;
+  const int d_join_x = d_dialog_x + 210;
+  const int d_join_y = d_action_y;
+
+  const int d_create_w = 100;
+  const int d_create_x =
+      d_dialog_x + 320;  //((d_dialog_w * 5) / 6) - (d_create_w / 2);
+  const int d_create_y = d_action_y;
+
+  const int d_send_w = d_chanlist_x + d_chanlist_w - d_chatlist_x;
+  const int d_send_h = 18;
+  const int d_send_x = d_chatlist_x;
+  const int d_send_y = d_chatlist_y + d_chatlist_h + 5;
+
+  //------------------------------------------------------------------------
+  //	Button Enumerations
+  //------------------------------------------------------------------------
+  // Note: standard WOL button IDs must match values in
+  // WolapiObject::PrepareButtonsAndIcons().
+  constexpr int kButtonDisconnect = 100;
+  constexpr int kButtonLeave = 101;
+  constexpr int kButtonRefresh = 102;
+  constexpr int kButtonSquelch = 103;
+  constexpr int kButtonBan = 104;
+  constexpr int kButtonKick = 105;
+  constexpr int kButtonFindpage = 106;
+  constexpr int kButtonOptions = 107;
+  constexpr int kButtonLadder = 108;
+  constexpr int kButtonHelp = 109;
+  constexpr int kButtonChatlist = 110;
+  constexpr int kButtonChanlist = 111;
+  constexpr int kButtonUserlist = 112;
+  constexpr int kButtonSendedit = 113;
+  constexpr int kButtonAction = 114;
+  constexpr int kButtonCreate = 115;
+  constexpr int kButtonJoin = 116;
+  constexpr int kButtonBack = 117;
+  constexpr int kButtonExpandchannels = 118;
+  constexpr int kButtonExpandusers = 119;
+  constexpr int kButtonRankra = 120;
+  constexpr int kButtonRankam = 121;
+
+  //------------------------------------------------------------------------
+  //	Redraw values: in order from "top" to "bottom" layer of the dialog
+  //------------------------------------------------------------------------
+  enum class RedrawType {
+    REDRAW_NONE = 0,
+    REDRAW_BACKGROUND = 1,
+    REDRAW_ALL = REDRAW_BACKGROUND
+  };
+  using enum RedrawType;
+
+  //------------------------------------------------------------------------
+  //	Dialog variables
+  //------------------------------------------------------------------------
+  RedrawType display = REDRAW_ALL;  // redraw level
+  bool process = true;              // process while true
+  engine::window::KeyNumber input = KN_NONE;
+
+  engine::platform::Stopwatch<engine::platform::SystemTickSource>
+      lastclick_timer;
+  int lastclick_idx = 0;  // index of item last clicked on
+
+  //------------------------------------------------------------------------
+  //	Buttons
+  //------------------------------------------------------------------------
+
+  const auto pShpExpand = MixArchive::RetrieveData("exp.shp");
+  const auto pShpUnexpand = MixArchive::RetrieveData("unexp.shp");
+
+  IconListClass chatlist(kButtonChatlist, d_chatlist_x, d_chatlist_y,
+                         d_chatlist_w, d_chatlist_h, TPF_TYPE,
+                         MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"), true, 0, 500);
+  ShapeButtonClass ExpandChanBtn(kButtonExpandchannels, pShpExpand,
+                                 d_chanlist_x + d_chanlist_w - 17,
+                                 d_chanlist_y - 14);
+  IconListClass chanlist(kButtonChanlist, d_chanlist_x, d_chanlist_y,
+                         d_chanlist_w, d_chanlist_h, TPF_TYPE,
+                         MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"), true, 1);
+  ShapeButtonClass ExpandUserBtn(kButtonExpandusers, pShpExpand,
+                                 d_userlist_x + d_userlist_w - 17,
+                                 d_userlist_y - 14);
+  IconListClass userlist(kButtonUserlist, d_userlist_x, d_userlist_y,
+                         d_userlist_w, d_userlist_h, TPF_TYPE,
+                         MixArchive::RetrieveData("BTN-UP.SHP"),
+                         MixArchive::RetrieveData("BTN-DN.SHP"), true, 2);
+  TextButtonClass ActionBtn(kButtonAction, TXT_WOL_ACTION, kTpfButton,
+                            d_action_x, d_action_y, d_action_w);
+  TextButtonClass CreateBtn(kButtonCreate, TXT_WOL_NEWSOMETHING, kTpfButton,
+                            d_create_x, d_create_y, d_create_w);
+  TextButtonClass JoinBtn(kButtonJoin, TXT_WOL_JOIN, kTpfButton, d_join_x,
+                          d_join_y, d_join_w);
+  TextButtonClass BackBtn(kButtonBack, TXT_WOL_BACK, kTpfButton, d_back_x,
+                          d_back_y, d_back_w);
+  char* szRecordToStartWith = nullptr;
+  if (pWO->bShowRankRA) {
+    szRecordToStartWith = pWO->szMyRecord;
+  } else {
+    szRecordToStartWith = pWO->szMyRecordAM;
+  }
+  StaticButtonClass chatlistTitle(0, szRecordToStartWith, TPF_TYPE,
+                                  d_chatlist_x + 2, d_chatlist_y - 13,
+                                  d_chatlist_w - 4, 12);
+  StaticButtonClass chanlistTitle(0, "", TPF_TYPE, d_chanlist_x + 2,
+                                  d_chanlist_y - 16 + 4, d_chanlist_w - 4 - 16,
+                                  12);
+  StaticButtonClass userlistTitle(0, TXT_WOL_NOUSERLIST, TPF_TYPE,
+                                  d_userlist_x + 2, d_userlist_y - 16 + 4,
+                                  d_userlist_w - 4 - (16 * 4), 12);
+
+  char szSendBuffer[MAXCHATSENDLENGTH] = "";
+  EditClass sendedit(kButtonSendedit, szSendBuffer, MAXCHATSENDLENGTH, kTpfText,
+                     d_send_x, d_send_y, d_send_w, d_send_h);
+
+  const auto pShpRankRA = MixArchive::RetrieveData("rank_ra.shp");
+  const auto pShpRankAM = MixArchive::RetrieveData("rank_am.shp");
+  ShapeButtonClass RankRABtn(kButtonRankra, pShpRankRA,
+                             d_userlist_x + d_userlist_w - ((16 * 4) + 1),
+                             d_userlist_y - 14);
+  ShapeButtonClass RankAMBtn(kButtonRankam, pShpRankAM,
+                             d_userlist_x + d_userlist_w - ((16 * 3) + 1),
+                             d_userlist_y - 14);
+  //	Change draw behavior of toggle buttons.
+  RankRABtn.ReflectButtonState = true;
+  RankAMBtn.ReflectButtonState = true;
+
+  //	Build the button list.
+  GadgetClass* commands = pWO->pShpBtnDiscon.get();  // button list
+  pWO->pShpBtnLeave->Add_Tail(*commands);
+  pWO->pShpBtnRefresh->Add_Tail(*commands);
+  pWO->pShpBtnSquelch->Add_Tail(*commands);
+  pWO->pShpBtnBan->Add_Tail(*commands);
+  pWO->pShpBtnKick->Add_Tail(*commands);
+  pWO->pShpBtnFindpage->Add_Tail(*commands);
+  pWO->pShpBtnOptions->Add_Tail(*commands);
+  pWO->pShpBtnLadder->Add_Tail(*commands);
+  pWO->pShpBtnHelp->Add_Tail(*commands);
+  chatlist.Add_Tail(*commands);
+  ExpandChanBtn.Add_Tail(*commands);
+  chanlist.Add_Tail(*commands);
+  ExpandUserBtn.Add_Tail(*commands);
+  userlist.Add_Tail(*commands);
+  ActionBtn.Add_Tail(*commands);
+  CreateBtn.Add_Tail(*commands);
+  //	CreatePrivBtn.Add_Tail(*commands);
+  JoinBtn.Add_Tail(*commands);
+  BackBtn.Add_Tail(*commands);
+  //	CGameBtn.Add_Tail(*commands);
+  chatlistTitle.Add_Tail(*commands);
+  chanlistTitle.Add_Tail(*commands);
+  userlistTitle.Add_Tail(*commands);
+  sendedit.Add_Tail(*commands);
+
+  //	Tooltips...
+  int64_t timeToolTipAppear = 0;  //	When the pending tooltip is due.
+  ToolTipClass* pToolTipHead =
+      nullptr;  //	Head of list of ToolTips that parallels gadget list.
+  ToolTipClass* pToolTipHitLast =
+      nullptr;  //	ToolTip the mouse was last over, or null.
+
+  ToolTipClass* pToolTip = pToolTipHead = pWO->pTTipDiscon.get();
+  pToolTip->next = pWO->pTTipLeave.get();
+  pToolTip = pToolTip->next;
+  pToolTip->next = pWO->pTTipRefresh.get();
+  pToolTip = pToolTip->next;
+  pToolTip->next = pWO->pTTipSquelch.get();
+  pToolTip = pToolTip->next;
+  pToolTip->next = pWO->pTTipBan.get();
+  pToolTip = pToolTip->next;
+  pToolTip->next = pWO->pTTipKick.get();
+  pToolTip = pToolTip->next;
+  pToolTip->next = pWO->pTTipFindpage.get();
+  pToolTip = pToolTip->next;
+  pToolTip->next = pWO->pTTipOptions.get();
+  pToolTip = pToolTip->next;
+  pToolTip->next = pWO->pTTipLadder.get();
+  pToolTip = pToolTip->next;
+  pToolTip->next = pWO->pTTipHelp.get();
+  pToolTip = pToolTip->next;
+  ToolTipClass TTipChanExpand(&ExpandChanBtn, TXT_WOL_TTIP_EXPANDLIST,
+                              ExpandChanBtn.X + 8, ExpandChanBtn.Y - 9, true);
+  pToolTip->next = &TTipChanExpand;
+  pToolTip = pToolTip->next;
+  ToolTipClass TTipUserExpand(&ExpandUserBtn, TXT_WOL_TTIP_EXPANDLIST,
+                              ExpandUserBtn.X + 8, ExpandUserBtn.Y - 9, true);
+  pToolTip->next = &TTipUserExpand;
+  pToolTip = pToolTip->next;
+  ToolTipClass TTipChanList(&chanlist, nullptr, chanlist.X + 1, chanlist.Y + 1,
+                            true, true);
+  pToolTip->next = &TTipChanList;
+  pToolTip = pToolTip->next;
+  ToolTipClass TTipJoin(&JoinBtn, TXT_WOL_TTIP_JOIN, d_join_x + (d_join_w / 2),
+                        d_join_y - 6);
+  pToolTip->next = &TTipJoin;
+  pToolTip = pToolTip->next;
+  ToolTipClass TTipBack(&BackBtn, TXT_WOL_TTIP_BACK, d_back_x + (d_back_w / 2),
+                        d_back_y - 6);
+  pToolTip->next = &TTipBack;
+  pToolTip = pToolTip->next;
+  ToolTipClass TTipCreate(&CreateBtn, TXT_WOL_TTIP_CREATE,
+                          d_create_x + (d_create_w / 2), d_create_y - 6);
+  pToolTip->next = &TTipCreate;
+  pToolTip = pToolTip->next;
+  ToolTipClass TTipAction(&ActionBtn, TXT_WOL_TTIP_ACTION,
+                          d_action_x + (d_action_w / 2), d_action_y - 6, true);
+  pToolTip->next = &TTipAction;
+  pToolTip = pToolTip->next;
+  ToolTipClass TTipRankRA(&RankRABtn, TXT_WOL_TTIP_RANKRA, RankRABtn.X + 8,
+                          RankRABtn.Y - 9, true);
+  pToolTip->next = &TTipRankRA;
+  pToolTip = pToolTip->next;
+  ToolTipClass TTipRankAM(&RankAMBtn, TXT_WOL_TTIP_RANKAM, RankAMBtn.X + 8,
+                          RankAMBtn.Y - 9, true);
+  pToolTip->next = &TTipRankAM;
+  pToolTip = pToolTip->next;
+  pToolTip->next = nullptr;
+
+  //........................................................................
+  // List boxes
+  //........................................................................
+  const int tabs[] = {150};  //	tabs for channel list
+  chanlist.Set_Tabs(tabs);
+
+  lastclick_timer.Reset();
+
+  //	Tell WolapiObject about lists to use for output.
+  //	(Sure wish I'd gone against the grain and made this dialog a class...)
+  pWO->LinkToChatDlg(&chatlist, &chanlist, &userlist, &userlistTitle);
+
+  if (!pWO->bChatShownBefore) {
+    //	Print message of the day.
+    chatlist.Add_Item(pWO->pChatSink->szMotd.c_str(), nullptr, nullptr,
+                      ICON_SHAPE);
+  } else {
+    //	We have returned to the chat dialog after being in either game setup or
+    // an actual game.
+    pWO->RestoreChat();
+    pWO->DeleteSavedChat();
+
+    if (pWO->bReturningAfterGame) {
+      pWO->RejoinLobbyAfterGame();
+    } else {
+      if (pWO->pChatSink->bGotKickedTrigger) {
+        //	We got kicked out of a game setup.
+        WOL_PrintMessage(chatlist, TXT_WOL_YOUWEREKICKEDFROMGAME,
+                         WOLCOLORREMAP_KICKORBAN);
+        pWO->pChatSink->bGotKickedTrigger = false;
+      }
+    }
+
+    if (pWO->iLobbyReturnAfterGame != -1) {
+      char szChannelToJoin[WOL_CHANNAME_LEN_MAX];
+      // absl::SNPrintF(szChannelToJoin, sizeof(szChannelToJoin), "Lob_%i_%i",
+      // GAME_TYPE, pWO->iLobbyReturnAfterGame );
+      absl::SNPrintF(szChannelToJoin, sizeof(szChannelToJoin), "%s%i",
+                     LOB_PREFIX, pWO->iLobbyReturnAfterGame);
+      pWO->OnEnteringChatChannel(szChannelToJoin, false,
+                                 iChannelLobbyNumber(szChannelToJoin));
+    } else {
+      //	Will never happen presumably, if games are always entered via a
+      // lobby chat channel.
+      pWO->EnterLevel_Top();
+    }
+
+    pWO->iLobbyReturnAfterGame = -1;
+
+    if (pWO->bReturningAfterGame) {
+      PlaySoundEffect(WOLSOUND_LOGIN);
+      pWO->bReturningAfterGame = false;
+    } else {
+      PlaySoundEffect(WOLSOUND_EXITGAME);
+    }
+  }
+
+  //	Cause a refresh of szMyRecord, the string showing my win/loss record.
+  pWO->RequestLadders(pWO->szMyName);
+
+  //------------------------------------------------------------------------
+  //	Processing loop
+  //------------------------------------------------------------------------
+  while (process) {
+
+    //	Regularly check for incoming messages from wolapi.
+    if (engine::platform::SystemMilliseconds() > pWO->dwTimeNextWolapiPump) {
+      /*
+                              //	Lame hack. Problem is draws that occur
+         in callbacks. if( pToolTipHitLast && pToolTipHitLast->bShowing ) {
+                                      pToolTipHitLast->Unshow(view);
+                                      pWO->pChat->PumpMessages();
+                                      pWO->pNetUtil->PumpMessages();
+                                      pToolTipHitLast->Show(view);
+                              }
+                              else
+                              {
+                                      pWO->pChat->PumpMessages();
+                                      pWO->pNetUtil->PumpMessages();
+                              }
+      */
+      pWO->pChat->PumpMessages();
+      pWO->pNetUtil->PumpMessages();
+
+      //	Special post-callback processing...
+      if (pWO->bSelfDestruct) {
+        if (pWO->pChatSink->bConnected) {
+          pWO->Logout();
+        }
+        rc = -1;  //	As if the user logged himself out.
+        break;
+      }
+      if (pWO->pChatSink->bGotKickedTrigger) {
+        if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
+          pWO->OnExitingChatChannel();
+          pWO->EnterLevel_UserChat();
+        } else if (pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
+          pWO->OnExitingChatChannel();
+          pWO->EnterLevel_Lobbies();
+        } else {  //	Must be WOL_LEVEL_INOFFICIALCHATCHANNEL.
+          pWO->OnExitingChatChannel();
+          pWO->EnterLevel_OfficialChat();
+        }
+        pWO->pChatSink->bGotKickedTrigger = false;
+        display = REDRAW_ALL;
+      }
+      if (pWO->bMyRecordUpdated) {
+        if (pWO->bShowRankRA) {
+          chatlistTitle.Set_Text(pWO->szMyRecord);
+        } else {
+          chatlistTitle.Set_Text(pWO->szMyRecordAM);
+        }
+        pWO->bMyRecordUpdated = false;
+      }
+      if (pWO->bChannelListTitleUpdated) {
+        chanlistTitle.Set_Text(pWO->szChannelListTitle);
+        pWO->bChannelListTitleUpdated = false;
+      }
+      pWO->dwTimeNextWolapiPump =
+          engine::platform::SystemMilliseconds() + WOLAPIPUMPWAIT;
+    }
+
+    //	Synch rank toggle buttons state.
+    if (BackBtn.Get_Prev() == &RankAMBtn) {
+      if (pWO->CurrentLevel != WOL_LEVEL_INLOBBY) {
+        //	Rank buttons are there and shouldn't be.
+        RankRABtn.Remove();
+        RankAMBtn.Remove();
+        display = REDRAW_ALL;
+      } else {
+        if (pWO->bShowRankUpdated) {
+          if (pWO->bShowRankRA) {
+            RankRABtn.DRAWTOGDOWN;
+            RankAMBtn.DRAWTOGUP;
+          } else {
+            RankRABtn.DRAWTOGUP;
+            RankAMBtn.DRAWTOGDOWN;
+          }
+          //	Buttons have been refreshed.
+          pWO->bShowRankUpdated = false;
+          //	Cause my own record to get refreshed.
+          pWO->bMyRecordUpdated = true;
+          //	Refresh list to show different rankings type.
+          pWO->ListChannelUsers();
+        }
+      }
+    } else {
+      if (pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
+        //	Rank buttons aren't there and should be.
+        RankRABtn.Add(JoinBtn);
+        RankAMBtn.Add(RankRABtn);
+        RankRABtn.Flag_To_Redraw();
+        RankAMBtn.Flag_To_Redraw();
+        if (pWO->bShowRankRA) {
+          RankRABtn.DRAWTOGDOWN;
+          RankAMBtn.DRAWTOGUP;
+        } else {
+          RankRABtn.DRAWTOGUP;
+          RankAMBtn.DRAWTOGDOWN;
+        }
+        //	Buttons have been refreshed.
+        pWO->bShowRankUpdated = false;
+      }
+    }
+
+    //	Regularly update the channels list in certain cases.
+    if ((pWO->CurrentLevel == WOL_LEVEL_OFFICIALCHAT ||
+         pWO->CurrentLevel == WOL_LEVEL_USERCHAT ||
+         pWO->CurrentLevel == WOL_LEVEL_LOBBIES ||
+         pWO->CurrentLevel == WOL_LEVEL_INLOBBY) &&
+        engine::platform::SystemMilliseconds() > pWO->dwTimeNextChannelUpdate) {
+      switch (pWO->CurrentLevel) {
+        case WOL_LEVEL_OFFICIALCHAT:
+          pWO->UpdateChannels(0, CHANNELFILTER_OFFICIAL, false);
+          break;
+        case WOL_LEVEL_USERCHAT:
+          pWO->UpdateChannels(0, CHANNELFILTER_UNOFFICIAL, false);
+          break;
+        case WOL_LEVEL_LOBBIES:  //	Overkill in this case to update so
+                                 // often...
+          pWO->UpdateChannels(0, CHANNELFILTER_LOBBIES, false);
+          break;
+        case WOL_LEVEL_INLOBBY:
+          pWO->UpdateChannels(GAME_TYPE, CHANNELFILTER_LOCALLOBBYGAMES, true);
+          break;
+        case WOL_LEVEL::WOL_LEVEL_TOP:
+        case WOL_LEVEL::WOL_LEVEL_INCHATCHANNEL:
+        case WOL_LEVEL::WOL_LEVEL_GAMES:
+        case WOL_LEVEL::WOL_LEVEL_GAMESOFTYPE:
+        case WOL_LEVEL::WOL_LEVEL_INGAMECHANNEL:
+        case WOL_LEVEL::WOL_LEVEL_INVALID:
+        default:
+          break;
+      }
+      pWO->dwTimeNextChannelUpdate =
+          engine::platform::SystemMilliseconds() + CHANNELUPDATEWAIT;
+    }
+
+    /*
+    ** If we have just received input focus again after running in the
+    *background then
+    ** we need to redraw.
+    */
+
+    if (bFirsttime && !pWO->bChatShownBefore) {
+      WWMessageBox().Process(TXT_WOL_FINDINGLOBBY, TXT_NONE);
+      char szLobbyName[WOL_CHANNAME_LEN_MAX];
+      if (pWO->GetNameOfBeginningLobby(szLobbyName)) {
+        //				debugprint( "Found lobby to go into:
+        //'%s'\n", szLobbyName );
+        if (!EnterChannel(pWO, chatlist, nullptr, szLobbyName, false)) {
+          //	Could not enter channel for some reason. Go to top instead.
+          pWO->EnterLevel_Top();
+        }
+      } else {
+        //	Could not find name of a lobby for some reason. Go to top
+        // instead.
+        pWO->EnterLevel_Top();
+      }
+      pWO->bChatShownBefore = true;
+      display = REDRAW_ALL;
+      //	Play login sound.
+      PlaySoundEffect(WOLSOUND_LOGIN);
+    }
+    bFirsttime = false;
+
+    //.....................................................................
+    //	Refresh display if needed
+    //.....................................................................
+    if (display != REDRAW_NONE) {
+      TheMouse().Hide();
+
+      //..................................................................
+      //	Redraw backgound & dialog box
+      //..................................................................
+      if (display >= REDRAW_BACKGROUND) {
+        if (pToolTipHitLast && pToolTipHitLast->bShowing) {
+          pToolTipHitLast->Unshow(view);
+        }
+
+        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+
+        //...............................................................
+        //	Dialog & Field labels
+        //...............................................................
+
+        commands->Draw_All(view);
+
+        //	Draw title bar above channel list.
+        Draw_Box(view, d_chanlist_x, d_chanlist_y - 15, d_chanlist_w, 16,
+                 BOXSTYLE_BOX, false);
+        switch (lesCurrent) {
+          case LES_CHANNELS_EXPANDED:
+            //	Draw users title bar at bottom.
+            Draw_Box(view, d_userlist_x, d_userlist_y + d_userlist_h - 16,
+                     d_userlist_w, 16, BOXSTYLE_BOX, false);
+            break;
+          case LES_USERS_EXPANDED:
+            //	Draw users title bar at top.
+            Draw_Box(view, d_chanlist_x, d_chanlist_y, d_chanlist_w, 16,
+                     BOXSTYLE_BOX, false);
+            break;
+          case LIST_EXPAND_STATE::LES_NORMAL:
+          default:
+            //	Draw users title bar in middle.
+            Draw_Box(view, d_userlist_x, d_userlist_y - 15, d_userlist_w, 16,
+                     BOXSTYLE_BOX, false);
+            break;
+        }
+      }
+
+      TheMouse().Show();
+      display = REDRAW_NONE;
+    }
+
+    //	Force mouse visible, as some beta testers report unexplicable
+    // disappearing cursors.
+    TheMouse().ForceShow();
+    //	Be nice to other apps.
+    engine::platform::SleepMs(50);
+
+    //.....................................................................
+    //	Get user input
+    //.....................................................................
+    if (engine::window::IsLeftButtonDown() ||
+        engine::window::IsRightButtonDown()) {
+      //	Mouse button is down.
+      timeToolTipAppear = engine::platform::SystemMilliseconds() + TOOLTIPDELAY;
+      if (pToolTipHitLast && pToolTipHitLast->bShowing) {
+        pToolTipHitLast->Unshow(view);
+      }
+    }
+
+    //	If anything currently on the controls list is set to redraw, hide
+    // tooltip.
+    if (pToolTipHitLast && pToolTipHitLast->bShowing &&
+        commands->Is_List_To_Redraw()) {
+      pToolTipHitLast->Unshow(view);
+    }
+
+    input = commands->Input(view).key;
+
+    //	This hack, used elsewhere in this form, appears to be the standard dodge
+    // around GadgetClass::Input's 	tendency to remove any focus the first
+    // time it runs for a 'commands' list.
+
+    //	ajw - Perhaps I could try doing this every cycle regardless - would
+    // avoid stupid non-focused editbox key reactions bug.
+    if (bHackFocus) {
+      sendedit.Set_Focus();
+      sendedit.Flag_To_Redraw();
+      input = commands->Input(view).key;
+      bHackFocus = false;
+    }
+
+    //	Tooltips...
+    if (pToolTipHead) {
+      ToolTipClass* pToolTipHit = pToolTipHead->GetToolTipHit();
+      if (pToolTipHit == pToolTipHitLast) {
+        if (pToolTipHit && bLinkInList(commands, pToolTipHit->pGadget)) {
+          //	(Gadget must be
+          // in controls list.)
+          if (!pToolTipHit->bShowing &&
+              engine::platform::SystemMilliseconds() > timeToolTipAppear &&
+              !(engine::window::IsLeftButtonDown() ||
+                engine::window::IsRightButtonDown())) {
+            pToolTipHit->Show(view);
+          } else if (pToolTipHit->bIconList &&
+                     pToolTipHit->bOverDifferentLine()) {
+            pToolTipHit->Unshow(view);
+            pToolTipHit->Show(view);
+          }
+        }
+      } else {
+        if (pToolTipHitLast && pToolTipHitLast->bShowing) {
+          pToolTipHitLast->Unshow(view);
+        }
+        pToolTipHitLast = pToolTipHit;
+        timeToolTipAppear =
+            engine::platform::SystemMilliseconds() + TOOLTIPDELAY;
+      }
+    }
+
+    //.....................................................................
+    //	Process input
+    //.....................................................................
+    switch (static_cast<int>(input)) {
+      case engine::window::ButtonKey(kButtonSendedit):
+        //	Enter has been pressed - was caught by sendedit control.
+        if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
+            pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
+          pWO->SendMessage(sendedit.Get_Text(), userlist, false);
+          //	Clear sendedit, reset focus.
+          szSendBuffer[0] = 0;
+          sendedit.Set_Focus();
+          //	Mark for redraw.
+          sendedit.Flag_To_Redraw();
+        } else {
+          WOL_PrintMessage(chatlist, TXT_WOL_YOURENOTINCHANNEL,
+                           WOLCOLORREMAP_LOCALMACHINEMESS);
+          PlaySoundEffect(WOLSOUND_ERROR);
+          sendedit.Set_Focus();
+          //	Mark for redraw.
+          sendedit.Flag_To_Redraw();
+        }
+        break;
+
+      case engine::window::ButtonKey(kButtonExpandchannels):
+        if (OnExpandChannelList(chanlist, userlist)) {
+          //	Hide userlist.
+          if (ExpandUserBtn.Get_Next() == &userlist) {
+            userlist.Remove();
+          }
+          //	Ensure chanlist is visible.
+          if (ExpandChanBtn.Get_Next() != &chanlist) {
+            chanlist.Add(ExpandChanBtn);
+          }
+          //	Move userlist expand button.
+          ExpandUserBtn.Set_Position(ExpandUserBtn.X,
+                                     chanlist.Y + chanlist.Height);
+          TTipUserExpand.Move(view, ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
+          userlistTitle.Set_Position(userlistTitle.X,
+                                     chanlist.Y + chanlist.Height + 2);
+          //	Set buttons.
+          ExpandChanBtn.Set_Shape(pShpUnexpand);
+          ExpandUserBtn.Set_Shape(pShpExpand);
+        } else {
+          //	Show userlist.
+          if (ExpandUserBtn.Get_Next() != &userlist) {
+            userlist.Add(ExpandUserBtn);
+          }
+          //	Move userlist expand button.
+          ExpandUserBtn.Set_Position(ExpandUserBtn.X, userlist.Y - 14);
+          TTipUserExpand.Move(view, ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
+          userlistTitle.Set_Position(userlistTitle.X, userlist.Y - 16 + 4);
+          //	Set buttons.
+          ExpandChanBtn.Set_Shape(pShpExpand);
+          ExpandUserBtn.Set_Shape(pShpExpand);
+        }
+        //	Move rank buttons.
+        RankRABtn.Set_Position(RankRABtn.X, ExpandUserBtn.Y);
+        RankAMBtn.Set_Position(RankAMBtn.X, ExpandUserBtn.Y);
+        TTipRankRA.Move(view, RankRABtn.X + 8, RankRABtn.Y - 16);
+        TTipRankAM.Move(view, RankAMBtn.X + 8, RankAMBtn.Y - 16);
+        display = REDRAW_ALL;
+        break;
+
+      case engine::window::ButtonKey(kButtonExpandusers):
+        if (OnExpandUserList(chanlist, userlist)) {
+          //	Hide chanlist controls.
+          if (ExpandChanBtn.Get_Next() == &chanlist) {
+            chanlist.Remove();
+          }
+          //	Ensure userlist is visible.
+          if (ExpandUserBtn.Get_Next() != &userlist) {
+            userlist.Add(ExpandUserBtn);
+          }
+          //	Set buttons.
+          ExpandChanBtn.Set_Shape(pShpExpand);
+          ExpandUserBtn.Set_Shape(pShpUnexpand);
+        } else {
+          //	Show chanlist.
+          if (ExpandChanBtn.Get_Next() != &chanlist) {
+            chanlist.Add(ExpandChanBtn);
+          }
+          //	Set buttons.
+          ExpandChanBtn.Set_Shape(pShpExpand);
+          ExpandUserBtn.Set_Shape(pShpExpand);
+        }
+        //	Move userlist expand button.
+        ExpandUserBtn.Set_Position(ExpandUserBtn.X, userlist.Y - 14);
+        TTipUserExpand.Move(view, ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
+        userlistTitle.Set_Position(userlistTitle.X, userlist.Y - 16 + 4);
+        //	Move rank buttons.
+        RankRABtn.Set_Position(RankRABtn.X, ExpandUserBtn.Y);
+        RankAMBtn.Set_Position(RankAMBtn.X, ExpandUserBtn.Y);
+        TTipRankRA.Move(view, RankRABtn.X + 8, RankRABtn.Y - 16);
+        TTipRankAM.Move(view, RankAMBtn.X + 8, RankAMBtn.Y - 16);
+        display = REDRAW_ALL;
+        break;
+
+      case engine::window::ButtonKey(kButtonChanlist):
+        //	User clicks on the game list.
+        //...............................................................
+        // Handle a double-click
+        //...............................................................
+        if (lastclick_timer.Elapsed() < 30 &&
+            chanlist.Current_Index() == lastclick_idx) {
+          //	Doubleclick on channel list.
+          if (ProcessChannelListSelection(pWO, chatlist, chanlist,
+                                          lastclick_idx)) {
+            //	Exit the chat dialog, go to game dialog.
+            rc = 2;
+            process = false;
+          }
+          display = REDRAW_ALL;
+          bHackFocus = true;
+        } else {
+          //...............................................................
+          // Handle a single-click
+          //...............................................................
+          //............................................................
+          // If no double-click occurred, set the last-clicked index
+          // & double-click timer.
+          //............................................................
+          lastclick_timer.Reset();
+          lastclick_idx = chanlist.Current_Index();
+        }
+        break;
+
+      case engine::window::ButtonKey(kButtonJoin):
+        //	Pressing the join button is exactly like doubleclicking on the
+        // selected index in chanlist, except: 		if the first item is
+        // selected, ignore, unless we are at the top level
+        if (pWO->CurrentLevel == WOL_LEVEL_TOP ||
+            chanlist.Current_Index() != 0) {
+          if (ProcessChannelListSelection(pWO, chatlist, chanlist,
+                                          chanlist.Current_Index())) {
+            //	Exit the chat dialog, go to game dialog.
+            rc = 2;
+            process = false;
+          }
+          display = REDRAW_ALL;
+          bHackFocus = true;
+        }
+        break;
+
+      case engine::window::ButtonKey(kButtonUserlist):
+        //	User clicks on user list.
+        break;
+
+      case engine::window::ButtonKey(kButtonCreate):
+        switch (pWO->CurrentLevel) {
+          case WOL_LEVEL_INCHATCHANNEL:
+            //					debugprint( "%s\n",
+            // TXT_WOL_CANTCREATEINCHANNEL );
+            WOL_PrintMessage(chatlist, TXT_WOL_CANTCREATEINCHANNEL,
+                             WOLCOLORREMAP_LOCALMACHINEMESS);
+            PlaySoundEffect(WOLSOUND_ERROR);
+            break;
+          case WOL_LEVEL_INLOBBY: {
+            pWO->bPump_In_Call_Back = true;
+            const CREATEGAMEINFO CreateGameInfo = WOL_CreateGame_Dialog(pWO);
+            pWO->bPump_In_Call_Back = false;
+            if (CreateGameInfo.bCreateGame &&
+                CreateGameChannel(pWO, CreateGameInfo)) {
+              rc = 1;
+              process = false;
+            }
+
+            break;
+          }
+          case WOL_LEVEL_GAMES:
+          case WOL_LEVEL_GAMESOFTYPE:
+          case WOL_LEVEL_LOBBIES:
+            WOL_PrintMessage(chatlist, TXT_WOL_CANTCREATEHERE,
+                             WOLCOLORREMAP_LOCALMACHINEMESS);
+            PlaySoundEffect(WOLSOUND_ERROR);
+            break;
+          case WOL_LEVEL::WOL_LEVEL_TOP:
+          case WOL_LEVEL::WOL_LEVEL_OFFICIALCHAT:
+          case WOL_LEVEL::WOL_LEVEL_USERCHAT:
+          case WOL_LEVEL::WOL_LEVEL_INGAMECHANNEL:
+          case WOL_LEVEL::WOL_LEVEL_INVALID:
+          default:
+            CreateChatChannel(pWO);
+        }
+
+        display = REDRAW_ALL;
+        bHackFocus = true;
+        break;
+
+      case engine::window::ButtonKey(kButtonLeave):
+        //	Because of the way things are set up, this is exactly like
+        // selecting the first item in chanlist. 	(Button is disabled when
+        // this is not appropriate.)
+        ProcessChannelListSelection(pWO, chatlist, chanlist, 0);
+        display = REDRAW_ALL;
+        break;
+
+      case engine::window::ButtonKey(kButtonRefresh):
+        pWO->dwTimeNextChannelUpdate = engine::platform::SystemMilliseconds();
+        break;
+
+      case engine::window::ButtonKey(kButtonSquelch):
+        pWO->DoSquelch(&userlist);
+        break;
+
+      case engine::window::ButtonKey(kButtonBan):
+        pWO->DoKick(&userlist, true);
+        //				display = REDRAW_ALL;
+        break;
+
+      case engine::window::ButtonKey(kButtonKick):
+        pWO->DoKick(&userlist, false);
+        //				display = REDRAW_ALL;
+        break;
+
+      case engine::window::ButtonKey(kButtonFindpage):
+        pWO->DoFindPage();
+        display = REDRAW_ALL;
+        bHackFocus = true;
+        break;
+
+      case engine::window::ButtonKey(kButtonOptions):
+        pWO->DoOptions();
+        display = REDRAW_ALL;
+        bHackFocus = true;
+        break;
+
+      case KN_ESC:
+        //				break;			ajw
+        // Put back in?
+
+      case engine::window::ButtonKey(kButtonBack):
+        //	Pressing the back button is exactly like doubleclicking on the
+        // top item in chanlist, except 	when we're at the top level.
+        if (pWO->CurrentLevel != WOL_LEVEL_TOP) {
+          ProcessChannelListSelection(pWO, chatlist, chanlist, 0);
+          display = REDRAW_ALL;
+          break;
+        }
+        //	Note no break; here. Fall through if at top level.
+        [[fallthrough]];
+      case engine::window::ButtonKey(kButtonDisconnect):
+        if (WWMessageBox().Process(TXT_WOL_CONFIRMLOGOUT, TXT_YES, TXT_NO) ==
+            0) {
+          if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
+              pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
+            ExitChatChannel(pWO);
+          }
+          pWO->Logout();
+          rc = -1;
+          process = false;
+        }
+        display = REDRAW_ALL;
+        bHackFocus = true;
+        break;
+
+      case engine::window::ButtonKey(kButtonAction):
+        if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
+            pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
+          pWO->SendMessage(sendedit.Get_Text(), userlist, true);
+          //	Clear sendedit, reset focus.
+          szSendBuffer[0] = 0;
+          sendedit.Set_Focus();
+          //	Mark for redraw.
+          // chatlist.Flag_To_Redraw();
+          sendedit.Flag_To_Redraw();
+        } else {
+          WOL_PrintMessage(chatlist, TXT_WOL_YOURENOTINCHANNEL,
+                           WOLCOLORREMAP_LOCALMACHINEMESS);
+          PlaySoundEffect(WOLSOUND_ERROR);
+          sendedit.Set_Focus();
+          //	Mark for redraw.
+          sendedit.Flag_To_Redraw();
+        }
+        break;
+
+      case engine::window::ButtonKey(kButtonLadder):
+        pWO->DoLadder();
+        display = REDRAW_ALL;
+        bHackFocus = true;
+        break;
+
+      case engine::window::ButtonKey(kButtonHelp):
+        pWO->DoHelp();
+        display = REDRAW_ALL;
+        bHackFocus = true;
+        break;
+
+      case engine::window::ButtonKey(kButtonRankra):
+        pWO->bShowRankRA = true;
+        pWO->bShowRankUpdated = true;
+        break;
+
+      case engine::window::ButtonKey(kButtonRankam):
+        pWO->bShowRankRA = false;
+        pWO->bShowRankUpdated = true;
+        break;
+
+      default:
+
+        break;
+    }
+
+    //.....................................................................
+    //	Service the sounds & score; GameActive must be false at this point,
+    //	so ServiceRealTime() doesn't intercept global messages from me!
+    //.....................................................................
+    ServiceRealTime();
+
+  }  // end of while
+
+  if (pToolTipHitLast && pToolTipHitLast->bShowing) {
+    pToolTipHitLast->Unshow(view);
+  }
+
+  /*
+          //------------------------------------------------------------------------
+          //	Restore screen
+          //------------------------------------------------------------------------
+          HideMouse();
+          Load_Title_Page(true);
+          ShowMouse();
+  */
+
+  pWO->SaveChat();
+
+  pWO->ClearListPtrs();
+
+  return rc;
+}
+
+//***********************************************************************************************
+void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
+                      PlayerColorType iColorRemap /* = PCOLOR_NONE */) {
+  RemapControlType* pColorRemap =
+      (iColorRemap == PCOLOR_NONE
+           ? nullptr
+           : &ThePalettes().color_remaps().at(iColorRemap));
+  WOL_PrintMessage(ILTarget, szText, pColorRemap);
+}
+
+//***********************************************************************************************
+void WOL_PrintMessage(IconListClass& ILTarget, const char* szText,
+                      RemapControlType* pColorRemap) {
+  ILTarget.Add_Item(szText, nullptr, nullptr, ICON_SHAPE, nullptr, nullptr,
+                    pColorRemap);
+  if (!ILTarget.bScrollBeingDragged()) {
+    ILTarget.Show_Last_Item();
+  }
+}
+
+//***********************************************************************************************
+bool OnExpandChannelList(IconListClass& chanlist, IconListClass& userlist) {
+  //	Expand channel list button was pressed.
+  //	Returns true if userlist controls are to be hidden, false if they are to
+  // be shown.
+  switch (lesCurrent) {
+    case LES_NORMAL:
+      ResizeChannelList(chanlist, true);
+      lesCurrent = LES_CHANNELS_EXPANDED;
+      break;
+    case LES_USERS_EXPANDED:
+      ResizeUserList(userlist, false);
+      ResizeChannelList(chanlist, true);
+      lesCurrent = LES_CHANNELS_EXPANDED;
+      break;
+    case LES_CHANNELS_EXPANDED:
+      ResizeChannelList(chanlist, false);
+      lesCurrent = LES_NORMAL;
+      return false;
+    default:
+      break;
+  }
+  return true;
+}
+
+//***********************************************************************************************
+bool OnExpandUserList(IconListClass& chanlist, IconListClass& userlist) {
+  //	Expand user list button was pressed.
+  //	Returns true if chanlist controls are to be hidden, false if they are to
+  // be shown.
+  switch (lesCurrent) {
+    case LES_NORMAL:
+      ResizeUserList(userlist, true);
+      lesCurrent = LES_USERS_EXPANDED;
+      break;
+    case LES_CHANNELS_EXPANDED:
+      ResizeChannelList(chanlist, false);
+      ResizeUserList(userlist, true);
+      lesCurrent = LES_USERS_EXPANDED;
+      break;
+    case LES_USERS_EXPANDED:
+      ResizeUserList(userlist, false);
+      lesCurrent = LES_NORMAL;
+      return false;
+    default:
+      break;
+  }
+  return true;
+}
+
+//***********************************************************************************************
+void ResizeChannelList(IconListClass& chanlist, bool bExpand) {
+  //	If bExpand, makes list big, else normal size.
+  if (bExpand) {
+    chanlist.Resize(d_chanlist_x, d_chanlist_y, d_chanlist_w,
+                    d_userlist_y + d_userlist_h - 15 - d_chanlist_y);
+  } else {
+    chanlist.Resize(d_chanlist_x, d_chanlist_y, d_chanlist_w, d_chanlist_h);
+  }
+}
+
+//***********************************************************************************************
+void ResizeUserList(IconListClass& userlist, bool bExpand) {
+  //	If bExpand, makes list big, else normal size.
+  if (bExpand) {
+    userlist.Resize(d_userlist_x, d_chanlist_y + 15, d_userlist_w,
+                    d_userlist_y + d_userlist_h - (d_chanlist_y + 15));
+  } else {
+    userlist.Resize(d_userlist_x, d_userlist_y, d_userlist_w, d_userlist_h);
+  }
+}
+
+//***********************************************************************************************
+bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
+                  const IconListClass& chanlist, int iIndex, bool bGame) {
+  //	Enter the channel specified in chanlist at iIndex.
+  //	Called to enter chat channels, "lobbies", and game channels.
+
+  //	We've stored the channel pointer in the hidden extra data field.
+  //	( Be careful about calling RAChatEventSink::DeleteChannelList()! )
+  auto* pChannel =
+      static_cast<Channel*>(chanlist.Get_Item_ExtraDataPtr(iIndex));
+  return EnterChannel(pWO, chatlist, pChannel, nullptr, bGame);
+}
+
+//***********************************************************************************************
+bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
+                  const char* szChannelName, bool bGame) {
+  //	Called to cause the user to enter a channel (chat, lobby, or game).
+  //	If pChannel is NULL, szChannelName will be used.
+
+  Channel ChannelWhenNameOnly;
+  if (!pChannel) {
+    if (!szChannelName) {
+      //			debugprint( "pChannel and szChannelName null in
+      // EnterChannel" );
+      pWO->bSelfDestruct = true;
+      return false;
+    }
+    pChannel = &ChannelWhenNameOnly;
+    base::SafeCopy(WolTextBuffer(pChannel->name), szChannelName);
+  }
+
+  if (bGame && pChannel->currentUsers >=
+                   pChannel->maxUsers)  //	Pre-emptive fullness check.
+  {
+    WOL_PrintMessage(chatlist, TXT_WOL_CHANNELFULL,
+                     WOLCOLORREMAP_LOCALMACHINEMESS);
+    PlaySoundEffect(WOLSOUND_ERROR);
+    return false;
+  }
+
+  if (bGame &&
+      (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
+       pWO->CurrentLevel == WOL_LEVEL_INLOBBY) &&
+      (!pWO->ExitChatChannelForGameChannel()))
+  //	It is possible to enter a game channel while currently in a chat
+  // channel. (A lobby, presumably.)
+
+  {
+    *pWO->szChannelReturnOnGameEnterFail = 0;
+    //				debugprint(
+    //"ExitChatChannelForGameChannel on join failed" );
+    pWO->bSelfDestruct = true;
+    return false;
+  }
+
+  /*	The following doesn't work because the needpw field is not currently
+     being set in wolapi for chat channels. Instead, we wait for a fail on join,
+     then present this dialog and try again. if( pChannel->needpw )
+          {
+                  SimpleEditDlgClass* pEditDlg = new SimpleEditDlgClass( 300,
+     TXT_WOL_JOINPRIVATETITLE, TXT_WOL_JOINPRIVATEPROMPT, WOL_CHANKEY_LEN_MAX );
+                  if( !pEditDlg->Show() || !*pEditDlg->szEdit )
+                          return false;
+
+                  base::SafeCopy( (char*)pChannel->key, pEditDlg->szEdit );
+          }
+  */
+  bool bKeepTrying = true;
+
+  //	Set password automatically for our lobbies, if trying to join one.
+  const int iLobby = iChannelLobbyNumber(WolText(pChannel->name));
+  if (iLobby != -1) {
+    base::SafeCopy(WolTextBuffer(pChannel->key), LOBBYPASSWORD);
+  }
+
+  char szSuccessfulPassword[WOL_PASSWORD_LEN + 5];
+  *szSuccessfulPassword = 0;
+
+  HRESULT hRes = E_FAIL;  //	Set by the join attempt below, if it runs.
+  while (bKeepTrying) {
+    hRes = pWO->ChannelJoin(pChannel);
+    switch (hRes) {
+      case CHAT_E_BADCHANNELPASSWORD: {
+                                    // call, for god's sake.
+                                    SimpleEditDlgClass EditDlg(
+                                        [] {
+                                          if (config::kIsEnglish) {
+                                            return 300;
+                                          }
+                                          if (config::kIsGerman) {
+                                            return 400;
+                                          }
+                                          return 500;
+                                        }(),
+                                        TXT_WOL_JOINPRIVATETITLE,
+                                        TXT_WOL_JOINPRIVATEPROMPT,
+                                        WOL_CHANKEY_LEN_MAX);
+                                    pWO->bPump_In_Call_Back = true;
+                                    if (std::string_view(EditDlg.Show()) !=
+                                            Text_String(TXT_OK) ||
+                                        !*EditDlg.szEdit) {
+                                      pWO->bPump_In_Call_Back = false;
+                                      bKeepTrying = false;
+                                      break;
+                                    }
+        pWO->bPump_In_Call_Back = false;
+        base::SafeCopy(WolTextBuffer(pChannel->key), EditDlg.szEdit);
+        base::SafeCopy(szSuccessfulPassword, EditDlg.szEdit);
+        break;
+      }
+      case CHAT_E_TIMEOUT:
+        pWO->bPump_In_Call_Back = true;
+        WWMessageBox().Process(TXT_WOL_TIMEOUT);
+        pWO->bPump_In_Call_Back = false;
+        bKeepTrying = false;
+        break;
+      case CHAT_E_CHANNELDOESNOTEXIST:
+        pWO->bPump_In_Call_Back = true;
+        WWMessageBox().Process(TXT_WOL_CHANNELGONE);
+        pWO->bPump_In_Call_Back = false;
+        bKeepTrying = false;
+        break;
+      case CHAT_E_BANNED:
+        WOL_PrintMessage(chatlist, TXT_WOL_YOUREBANNED,
+                         WOLCOLORREMAP_LOCALMACHINEMESS);
+        PlaySoundEffect(WOLSOUND_ERROR);
+        bKeepTrying = false;
+        break;
+      case CHAT_E_CHANNELFULL:
+        WOL_PrintMessage(chatlist, TXT_WOL_CHANNELFULL,
+                         WOLCOLORREMAP_LOCALMACHINEMESS);
+        PlaySoundEffect(WOLSOUND_ERROR);
+        bKeepTrying = false;
+        break;
+      case E_FAIL:
+        pWO->GenericErrorMessage();
+        bKeepTrying = false;
+        break;
+      case S_OK:
+        bKeepTrying = false;
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (!bGame) {
+    if (hRes == S_OK) {
+      return pWO->OnEnteringChatChannel(WolText(pChannel->name), false, iLobby);
+    }
+    return false;
+  }
+  if (hRes == S_OK) {
+    *pWO->szChannelReturnOnGameEnterFail = 0;
+    //	Return later to the lobby of the channel creator - which was
+    // saved in the channel itself.
+    pWO->iLobbyReturnAfterGame =
+        static_cast<int>(pChannel->reserved & 0x00FFFFFFU);
+    if (pWO->iLobbyReturnAfterGame == 0x00FFFFFF) {
+      pWO->iLobbyReturnAfterGame = -1;
+    }
+    CREATEGAMEINFO CreateGameInfo{};
+    //	Not all of these values are currently used during setup.
+    CreateGameInfo.bCreateGame = false;
+    CreateGameInfo.iPlayerMax = static_cast<int>(pChannel->maxUsers);
+    CreateGameInfo.bTournament = pChannel->tournament != 0;
+    if (*szSuccessfulPassword) {
+      CreateGameInfo.bPrivate = true;
+      base::SafeCopy(CreateGameInfo.szPassword, szSuccessfulPassword);
+    } else {
+      CreateGameInfo.bPrivate = false;
+      *CreateGameInfo.szPassword = 0;
+    }
+    CreateGameInfo.GameKind =
+        static_cast<CREATEGAMEINFO::GAMEKIND>(pChannel->reserved & 0xFF000000);
+    return pWO->OnEnteringGameChannel(WolText(pChannel->name), false,
+                                      CreateGameInfo);
+  }
+  pWO->OnFailedToEnterGameChannel();
+  *pWO->szChannelReturnOnGameEnterFail = 0;
+  return false;
+}
+
+//***********************************************************************************************
+bool ExitChatChannel(WolapiObject* pWO) {
+  //	Called to cause user to leave current chat or lobby channel.
+
+  //	debugprint( "ExitChatChannel\n" );
+  if (!pWO->ChannelLeave()) {
+    pWO->GenericErrorMessage();
+    return false;
+  }
+
+  pWO->OnExitingChatChannel();
+
+  return true;
+}
+
+//***********************************************************************************************
+// void CreateChatChannel( WolapiObject* pWO, bool bPrivate )
+void CreateChatChannel(WolapiObject* pWO) {
+  /*	if( !bPrivate )
+          {
+                  pEditDlg = new SimpleEditDlgClass( 300,
+     TXT_WOL_CREATECHANNELTITLE, TXT_WOL_CREATECHANNELPROMPT,
+                                                                                          WOL_CHANNAME_LEN_MAX );
+                  if( strcmp( pEditDlg->Show(), Text_String( TXT_OK ) ) == 0 &&
+     *pEditDlg->szEdit )
+                  {
+                          if( pWO->ChannelCreate( pEditDlg->szEdit, NULL ) )
+                                  pWO->OnEnteringChatChannel( pEditDlg->szEdit,
+     true, -1 );
+                  }
+          }
+          else
+  */
+  {
+                                // call, for god's sake.
+                                SimpleEditDlgClass EditDlg(
+                                    350, TXT_WOL_CREATECHANNELTITLE,
+                                    TXT_WOL_CREATECHANNELPROMPT,
+                                    WOL_CHANNAME_LEN_MAX,
+                                    TXT_WOL_OPTIONALPASSPROMPT,
+                                    WOL_CHANKEY_LEN_MAX);
+                                pWO->bPump_In_Call_Back = true;
+                                if (std::string_view(EditDlg.Show()) ==
+                                        Text_String(TXT_OK) &&
+                                    *EditDlg.szEdit) {
+                                  pWO->bPump_In_Call_Back = false;
+                                  if (*EditDlg.szEdit2) {
+                                    if (pWO->ChannelCreate(EditDlg.szEdit,
+                                                           EditDlg.szEdit2)) {
+                                      pWO->OnEnteringChatChannel(EditDlg.szEdit,
+                                                                 true, -1);
+                                    }
+                                  } else {
+                                    //	Create public channel.
+                                    if (pWO->ChannelCreate(EditDlg.szEdit,
+                                                           nullptr)) {
+                                      pWO->OnEnteringChatChannel(EditDlg.szEdit,
+                                                                 true, -1);
+                                    }
+                                  }
+                                }
+    pWO->bPump_In_Call_Back = false;
+  }
+}
+
+//***********************************************************************************************
+bool CreateGameChannel(WolapiObject* pWO, const CREATEGAMEINFO& cgi) {
+  char szNewChannelName[WOL_CHANNAME_LEN_MAX];
+  absl::SNPrintF(szNewChannelName, sizeof(szNewChannelName), "%s's_game",
+                 pWO->szMyName);
+
+  if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
+       pWO->CurrentLevel == WOL_LEVEL_INLOBBY) &&
+      (!pWO->ExitChatChannelForGameChannel())) {
+    *pWO->szChannelReturnOnGameEnterFail = 0;
+    //			debugprint( "ExitChatChannelForGameChannel in
+    // CreateGameChannel() error" );
+    pWO->bSelfDestruct = true;
+    return false;
+  }
+
+  const char* szKey = nullptr;
+  if (*cgi.szPassword) {
+    szKey = cgi.szPassword;
+  } else {
+    szKey = nullptr;
+  }
+
+  if (pWO->ChannelCreate(szNewChannelName, szKey, true, cgi.iPlayerMax,
+                         cgi.bTournament, pWO->iLobbyLast, cgi.GameKind)) {
+    pWO->OnEnteringGameChannel(szNewChannelName, true, cgi);
+  } else {
+    pWO->OnFailedToEnterGameChannel();
+    //		debugprint( "CreateGameChannel fail" );
+    return false;
+  }
+  *pWO->szChannelReturnOnGameEnterFail = 0;
+
+  return true;
+}
+
+//***********************************************************************************************
+bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
+                                 const IconListClass& chanlist, int iIndex) {
+  //	Takes whatever action necessary due to user selecting iIndex from
+  // chanlist. 	Returns true if user selected to enter a game channel, else
+  // false.
+  if (iIndex < 0) {
+    return false;
+  }
+
+  //	debugprint( "iIndex %i\n", iIndex );
+
+  const char* szChannelType = chanlist.Get_Item_ExtraDataString(iIndex);
+  if (szChannelType) {
+    // debugprint( "szChannelType %s\n", szChannelType );
+    if (std::string_view(szChannelType) == CHANNELTYPE_OFFICIALCHAT) {
+      if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
+          (!ExitChatChannel(pWO))) {
+        pWO->bSelfDestruct = true;
+        return false;
+      }
+
+      pWO->EnterLevel_OfficialChat();
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_USERCHAT) {
+      if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
+          (!ExitChatChannel(pWO))) {
+        pWO->bSelfDestruct = true;
+        return false;
+      }
+
+      pWO->EnterLevel_UserChat();
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_TOP) {
+      //	Now not possible.
+      if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
+          (!ExitChatChannel(pWO))) {
+        pWO->bSelfDestruct = true;
+        return false;
+      }
+
+      pWO->EnterLevel_Top();
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_GAMES) {
+      //	Now not possible.
+      if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
+          (!ExitChatChannel(pWO))) {
+        pWO->bSelfDestruct = true;
+        return false;
+      }
+
+      pWO->EnterLevel_Games();
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_GAMESOFTYPE) {
+      //	Now not possible.
+      if ((pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) &&
+          (!ExitChatChannel(pWO))) {
+        pWO->bSelfDestruct = true;
+        return false;
+      }
+
+      void* pExtraData = chanlist.Get_Item_ExtraDataPtr(iIndex);
+      pWO->EnterLevel_GamesOfType(static_cast<WOL_GAMETYPEINFO*>(pExtraData));
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_CHATCHANNEL) {
+      if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
+        //	Not currently possible.
+        //				debugprint( "Trying to jump from channel
+        // to channel?!\n" );
+        pWO->bSelfDestruct = true;
+        return false;
+      }
+      //	Join the chat channel.
+      EnterChannel(pWO, chatlist, chanlist, iIndex, false);  //	Can fail.
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_GAMECHANNEL) {
+      //	User attempting to join game channel.
+      if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
+        //	Not currently possible.
+        //				debugprint( "Trying to jump from channel
+        // to channel?!\n" );
+        pWO->bSelfDestruct = true;
+        return false;
+      }
+      //	Check if local user is allowed to join GameKind.
+      const auto* pChannel =
+          static_cast<const Channel*>(chanlist.Get_Item_ExtraDataPtr(iIndex));
+      if (pChannel->type == GAME_TYPE) {
+        //	It is a game of our type, at least.
+        const auto GameKind = static_cast<CREATEGAMEINFO::GAMEKIND>(
+            pChannel->reserved & 0xFF000000);
+        switch (GameKind) {
+          case CREATEGAMEINFO::RAGAME:
+            break;
+          case CREATEGAMEINFO::CSGAME:
+            if (!Is_Counterstrike_Installed()) {
+              WOL_PrintMessage(chatlist, TXT_WOL_NEEDCOUNTERSTRIKE,
+                               WOLCOLORREMAP_LOCALMACHINEMESS);
+              PlaySoundEffect(WOLSOUND_ERROR);
+              return false;
+            }
+            break;
+          case CREATEGAMEINFO::AMGAME:
+            if (!Is_Aftermath_Installed()) {
+              WOL_PrintMessage(chatlist, TXT_WOL_NEEDAFTERMATH,
+                               WOLCOLORREMAP_LOCALMACHINEMESS);
+              PlaySoundEffect(WOLSOUND_ERROR);
+              return false;
+            }
+            break;
+          default:
+            //					debugprint( "Illegal value for
+            // GameKind channel reserved field: %s\n", (char*)pChannel->name );
+            PlaySoundEffect(WOLSOUND_ERROR);
+            return false;
+        }
+        //	Join the game channel.
+        if (EnterChannel(pWO, chatlist, chanlist, iIndex, true)) {
+          //	Exit the chat dialog, go to game dialog.
+          return true;
+        }
+      } else {
+        //	User doubleclicked on a game that is of a different type.
+        //	Offer to take them to a web page regarding the game type.
+        pWO->DoGameAdvertising(pChannel);
+      }
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_LOBBIES) {
+      if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL) {
+        //	Not currently possible.
+        //				debugprint( "Chat channel to lobbies
+        // level?!\n" );
+        pWO->bSelfDestruct = true;
+        return false;
+      }
+      if ((pWO->CurrentLevel == WOL_LEVEL_INLOBBY) && (!ExitChatChannel(pWO))) {
+        pWO->bSelfDestruct = true;
+        return false;
+      }
+
+      pWO->EnterLevel_Lobbies();
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_LOBBYCHANNEL) {
+      if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
+          pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
+        //	Not currently possible.
+        //				debugprint( "Chat or lobby channel to
+        // lobby channel?!\n" );
+        pWO->bSelfDestruct = true;
+        return false;
+      }
+      //	Join the lobby chat channel.
+      EnterChannel(pWO, chatlist, chanlist, iIndex, false);  //	Can fail.
+    } else if (std::string_view(szChannelType) == CHANNELTYPE_LOADING) {
+      //	User clicked on the channel list loading notification - do
+      // nothing.
+    } else {
+      //			debugprint( "Item selected in channel list
+      // unidentifiable from extradata field\n" );
+      pWO->bSelfDestruct = true;
+      return false;
+    }
+  }
+  return false;
+}
+
+//***********************************************************************************************
+bool bLinkInList(const LinkClass* pListHead, const LinkClass* pLinkToFind) {
+  const LinkClass* pLink = pListHead;
+  while (pLink) {
+    if (pLink == pLinkToFind) {
+      return true;
+    }
+    pLink = pLink->Get_Next();
+  }
+  return false;
+}

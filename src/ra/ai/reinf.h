@@ -1,0 +1,18 @@
+#ifndef CNC_RED_ALERT_RA_AI_REINF_H_
+#define CNC_RED_ALERT_RA_AI_REINF_H_
+#include "ra/ai/teamtype.h"
+#include "ra/core/defines.h"
+#include "ra/objects/house.h"
+#include "ra/objects/type.h"
+
+bool Do_Reinforcements(TeamTypeClass* team);
+bool Create_Special_Reinforcement(const HouseClass* house,
+                                  const TechnoTypeClass* type,
+                                  const TechnoTypeClass* another,
+                                  TeamMissionType mission = TMISSION_NONE,
+                                  int argument = 0);
+int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
+                             MissionType mission, TARGET tarcom, TARGET navcom,
+                             InfantryType passenger = INFANTRY_NONE);
+
+#endif  // CNC_RED_ALERT_RA_AI_REINF_H_

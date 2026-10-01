@@ -13,8 +13,8 @@ The IDE is CLion. Its inspections are not clang-tidy: they overlap with it, disa
 few places, and the project's profile (`.idea/inspectionProfiles/Project_Default.xml`) switches on
 several that the strict build never checks. The user wants the file clean _in the IDE_, which is why
 this is a separate job from making the strict build pass. The precedent is `b4f52b60` ("Clear the
-compiler and IDE warnings in ra/conquer.cc"); read its message once if a category below leaves you
-unsure.
+compiler and IDE warnings in ra/startup/conquer.cc"); read its message once if a category below
+leaves you unsure.
 
 ## 1. Collect the findings
 
@@ -25,10 +25,10 @@ the scratchpad: you will diff against it at the end.
   is not open. Ask the user to open it (one sentence, name the file), and meanwhile do the rest.
   Don't guess the findings from reading the code: the point is to match what the IDE shows.
 - **Ignore the diagnostics the harness pushes after an edit** ("new-diagnostics" with
-  `'ra/defines.h' file not found`, `Unknown type name 'VocType'`, `C++20 extension`). They come from
-  a clang instance that has no compile database; every other line in them follows from the missing
-  include. They are not the IDE's inspections, and the strict build is the authority on real compile
-  errors.
+  `'ra/core/defines.h' file not found`, `Unknown type name 'VocType'`, `C++20 extension`). They come
+  from a clang instance that has no compile database; every other line in them follows from the
+  missing include. They are not the IDE's inspections, and the strict build is the authority on real
+  compile errors.
 - Line numbers from `getDiagnostics` are 0-based; add one before reading the file.
 
 Group the findings by message, then work category by category rather than line by line: one decision

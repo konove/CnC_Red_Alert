@@ -1,0 +1,186 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/DROP.CPP 1     3/03/97 10:24a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : DROP.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 01/24/96 *
+ *                                                                                             *
+ *                  Last Update : January 24, 1996 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "ra/ui/drop.h"
+
+#include <cstddef>
+#include <span>
+
+#include "absl/strings/match.h"
+#include "base/array.h"
+#include "base/numeric.h"
+#include "base/strings/safe_string.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/keyframe.h"
+#include "engine/window/keyboard.h"
+#include "ra/core/defines.h"
+#include "ra/ui/dialog.h"
+#include "ra/ui/edit.h"
+#include "ra/ui/gadget.h"
+#include "ra/ui/link.h"
+
+DropListClass::DropListClass(int id, std::span<char> text, int max_len,
+                             TextPrintType flags, int x, int y, int w, int h,
+                             std::span<const std::byte> up,
+                             std::span<const std::byte> down)
+    : EditClass(id, text, max_len, flags, x, y, w, 18, kAlphanumeric),
+
+      ListHeight(h),
+      DropButton(0, down, x + w, y),
+      List(0, x, y + engine::gfx::KeyframeHeight(down),
+           w + engine::gfx::KeyframeWidth(down), h, flags, up, down) {
+  Height = FontMaxHeight(TextFontStyle(flags)) + 1;
+  List.Make_Peer(*this);
+  DropButton.Make_Peer(*this);
+}
+
+void DropListClass::Zap() {
+  Collapse();
+  List.Zap();
+  DropButton.Zap();
+  EditClass::Zap();
+}
+
+LinkClass& DropListClass::Add(LinkClass& object) {
+  DropButton.Add(object);
+  return EditClass::Add(object);
+}
+
+LinkClass& DropListClass::Add_Tail(LinkClass& object) {
+  DropButton.Add_Tail(object);
+  return EditClass::Add_Tail(object);
+}
+
+LinkClass& DropListClass::Add_Head(LinkClass& object) {
+  DropButton.Add_Head(object);
+  return EditClass::Add_Head(object);
+}
+
+DropListClass* DropListClass::Remove() {
+  if (IsDropped) {
+    Collapse();
+  }
+  DropButton.Remove();
+  return dynamic_cast<DropListClass*>(EditClass::Remove());
+}
+
+int DropListClass::Add_Item(const char* text) {
+  base::SafeCopy(std::span(String).first(base::ToSize(MaxLength)), text);
+  Flag_To_Redraw();
+  return List.Add_Item(text);
+}
+
+const char* DropListClass::Current_Item() { return List.Current_Item(); }
+
+int DropListClass::Current_Index() { return List.Current_Index(); }
+
+void DropListClass::Set_Selected_Index(int index) {
+  if (static_cast<unsigned>(index) < static_cast<unsigned>(List.Count())) {
+    List.Set_Selected_Index(index);
+    base::SafeCopy(std::span(String).first(base::ToSize(MaxLength)),
+                   List.Get_Item(Current_Index()));
+  } else {
+    base::At(String, 0) = '\0';
+  }
+}
+
+void DropListClass::Clear_Focus() { Collapse(); }
+
+void DropListClass::Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
+                                 ControlClass& whom) {
+  if ((&whom == &DropButton) && (flags & kLeftRelease)) {
+    if (IsDropped) {
+      Collapse();
+      key = engine::window::ButtonKey(static_cast<int>(ID));
+    } else {
+      Expand();
+    }
+  }
+
+  if (&whom == &List) {
+    base::SafeCopy(std::span(String).first(base::ToSize(MaxLength)),
+                   List.Current_Item());
+    Flag_To_Redraw();
+    key = engine::window::ButtonKey(static_cast<int>(ID));
+  }
+}
+
+void DropListClass::Expand() {
+  if (!IsDropped) {
+    List.X = X;
+    List.Y = Y + 18;
+    List.Width = Width;
+    List.Height = ListHeight;
+    List.Add(Head_Of_List());
+    List.Flag_To_Redraw();
+    IsDropped = true;
+  }
+}
+
+void DropListClass::Collapse() {
+  if (IsDropped) {
+    List.Remove();
+    IsDropped = false;
+  }
+}
+
+void DropListClass::Set_Position(int x, int y) {
+  EditClass::Set_Position(x, y);
+  List.Set_Position(
+      x, y + engine::gfx::KeyframeHeight(DropButton.Get_Shape_Data()));
+  DropButton.Set_Position(x + Width, y);
+}
+
+void DropListClass::Set_Selected_Index(const char* text) {
+  if (text) {
+    for (int index = 0; index < Count(); index++) {
+      if (absl::EqualsIgnoreCase(text, List.Get_Item(index))) {
+        Set_Selected_Index(index);
+        break;
+      }
+    }
+  }
+}
+
+void DropListClass::Flag_To_Redraw() {
+  if (IsDropped) {
+    List.Flag_To_Redraw();
+  }
+  EditClass::Flag_To_Redraw();
+}

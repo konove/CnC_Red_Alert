@@ -3,7 +3,7 @@
 set(RA_LANGUAGE "english" CACHE STRING "Red Alert build language: english, german or french")
 set_property(CACHE RA_LANGUAGE PROPERTY STRINGS english german french)
 
-# Only ra/config.h reads these definitions; the code selects on
+# Only ra/core/config.h reads these definitions; the code selects on
 # config::kBuildLanguage. English is the default and needs no definition.
 function(apply_language_setting TARGET_NAME)
     string(TOLOWER "${RA_LANGUAGE}" LANGUAGE_LOWER)
@@ -16,7 +16,7 @@ function(apply_language_setting TARGET_NAME)
     endif ()
 endfunction()
 
-add_executable(rasdl WIN32 startup.cc)
+add_executable(rasdl WIN32 startup/startup.cc)
 add_library(ra_engine OBJECT)
 
 file(GLOB_RECURSE RA_SOURCES
@@ -24,17 +24,17 @@ file(GLOB_RECURSE RA_SOURCES
 )
 list(FILTER RA_SOURCES EXCLUDE REGEX "_test\\.cc$")
 list(REMOVE_ITEM RA_SOURCES
-        "${CMAKE_CURRENT_SOURCE_DIR}/startup.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/startup/startup.cc"
 )
 
 file(GLOB_RECURSE RA_HEADERS
         CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 )
 list(REMOVE_ITEM RA_HEADERS
-        "${CMAKE_CURRENT_SOURCE_DIR}/crew.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/nullconn.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/nullmgr.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/wspudp.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/objects/crew.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/net/nullconn.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/net/nullmgr.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/net/wspudp.h"
 )
 
 target_sources(ra_engine PRIVATE
@@ -62,9 +62,9 @@ apply_dotenv_settings(ra_engine)
 apply_dotenv_settings(rasdl)
 apply_language_setting(ra_engine)
 apply_language_setting(rasdl)
-# magic_enum is PUBLIC because the public header defines.h includes it; the
+# magic_enum is PUBLIC because the public header core/defines.h includes it; the
 # interface-header-set verification compiles that header standalone.
-# sdlstub.cc includes SDL headers directly, so ra_engine links SDL2 itself
+# startup/sdlstub.cc includes SDL headers directly, so ra_engine links SDL2 itself
 # rather than relying on it arriving transitively through engine_window/
 # engine_video.
 find_package(SDL2 REQUIRED)
@@ -87,26 +87,26 @@ install(TARGETS rasdl)
 include(Testing)
 add_gtest(
     NAME ra_ini_number_test
-    SOURCES ini_number_test.cc ini.cc profile_buffer_test.cc profile.cc
+    SOURCES data/ini_number_test.cc data/ini.cc data/profile_buffer_test.cc data/profile.cc
     LIBS engine_file absl::strings absl::check absl::log magic_enum::magic_enum
 )
 
 add_gtest(
     NAME ra_owned_vector_test
-    SOURCES owned_vector_test.cc
+    SOURCES core/owned_vector_test.cc
     LIBS base
 )
 
 add_gtest(
     NAME ra_taction_test
-    SOURCES taction_test.cc
+    SOURCES ai/taction_test.cc
     LIBS base absl::check absl::log magic_enum::magic_enum
 )
 
 # The real engine, with the startup helpers but no game entry point.
 add_gtest(
     NAME ra_game_test
-    SOURCES game_test.cc startup.cc
+    SOURCES startup/game_test.cc startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_game_test PRIVATE RA_NO_ENTRY_POINT=1)
@@ -115,7 +115,7 @@ apply_language_setting(ra_game_test)
 
 add_gtest(
     NAME ra_drop_test
-    SOURCES drop_test.cc startup.cc
+    SOURCES ui/drop_test.cc startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_drop_test PRIVATE RA_NO_ENTRY_POINT=1)
@@ -124,7 +124,7 @@ apply_language_setting(ra_drop_test)
 
 add_gtest(
     NAME ra_options_test
-    SOURCES options_test.cc startup.cc
+    SOURCES data/options_test.cc startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_options_test PRIVATE RA_NO_ENTRY_POINT=1)
@@ -133,98 +133,98 @@ apply_language_setting(ra_options_test)
 
 add_gtest(
     NAME ra_assets_test
-    SOURCES assets_test.cc assets.cc ini.cc
+    SOURCES assets/assets_test.cc assets/assets.cc data/ini.cc
     LIBS base engine_file magic_enum::magic_enum absl::strings absl::check absl::log
 )
 apply_language_setting(ra_assets_test)
 
 add_gtest(
     NAME ra_debug_state_test
-    SOURCES debug_state_test.cc
+    SOURCES debug/debug_state_test.cc
     LIBS base
 )
 
 add_gtest(
     NAME ra_palettes_test
-    SOURCES palettes_test.cc
+    SOURCES assets/palettes_test.cc
     LIBS base engine_gfx magic_enum::magic_enum
 )
 apply_language_setting(ra_palettes_test)
 
 add_gtest(
     NAME ra_palette_test
-    SOURCES palette_test.cc startup.cc
+    SOURCES assets/palette_test.cc startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_palette_test PRIVATE RA_NO_ENTRY_POINT=1)
 
 add_gtest(
     NAME ra_screen_test
-    SOURCES screen_test.cc screen.cc
+    SOURCES assets/screen_test.cc assets/screen.cc
     LIBS base engine_window
 )
 
 add_gtest(
     NAME ra_mission_id_test
-    SOURCES mission_id_test.cc mission_id.cc
+    SOURCES data/mission_id_test.cc data/mission_id.cc
     LIBS absl::strings
 )
 
 add_gtest(
     NAME ra_count_up_test
-    SOURCES count_up_test.cc
+    SOURCES core/count_up_test.cc
 )
 
 add_gtest(
     NAME ra_hall_of_fame_test
-    SOURCES hall_of_fame_test.cc hall_of_fame.cc
+    SOURCES screens/hall_of_fame_test.cc screens/hall_of_fame.cc
     LIBS base
 )
 
 add_gtest(
     NAME ra_dib_test
-    SOURCES dib_test.cc dib.cc
+    SOURCES assets/dib_test.cc assets/dib.cc
     LIBS base absl::core_headers
 )
 
 add_gtest(
     NAME ra_wolapi_iids_test
-    SOURCES wolapi/wolapi_iids_test.cc wolapi/wolapi_iids.cc
+    SOURCES wol/wolapi_iids_test.cc wol/wolapi_iids.cc
     LIBS engine_platform
 )
 
 add_gtest(
     NAME ra_winbits_test
-    SOURCES winbits_test.cc winbits.cc dib.cc
+    SOURCES assets/winbits_test.cc assets/winbits.cc assets/dib.cc
     LIBS base engine_gfx absl::strings absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_winbits_test)
 
 add_gtest(
     NAME ra_heap_test
-    SOURCES heap_test.cc heap.cc
+    SOURCES core/heap_test.cc core/heap.cc
     LIBS base engine_stream absl::check absl::log absl::strings magic_enum::magic_enum
 )
 apply_language_setting(ra_heap_test)
 
 add_gtest(
     NAME ra_crate_test
-    SOURCES crate_test.cc
+    SOURCES objects/crate_test.cc
     LIBS base engine_stream absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_crate_test)
 
-# Compiles intro.cc directly; the dialog, movie player and title page are stubs.
+# Compiles screens/intro.cc directly; the dialog, movie player and title page are stubs.
 add_gtest(
     NAME ra_intro_test
-    SOURCES intro_test.cc intro.cc input.cc
+    SOURCES screens/intro_test.cc screens/intro.cc ui/input.cc
     LIBS base engine_window absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_intro_test)
 
 add_gtest(
     NAME ra_saveglobals_test
-    SOURCES saveglobals_test.cc saveglobals.cc ipxaddr.cc
+    SOURCES saveload/saveglobals_test.cc saveload/saveglobals.cc net/ipxaddr.cc
     # SDL for the scancodes engine/window/keyboard.h names its keys by.
     LIBS base engine_stream SDL2::SDL2 absl::check absl::log magic_enum::magic_enum
 )
@@ -232,21 +232,21 @@ apply_language_setting(ra_saveglobals_test)
 
 add_gtest(
     NAME ra_fixed_point_test
-    SOURCES fixed_point_test.cc
+    SOURCES core/fixed_point_test.cc
     LIBS base engine_gfx absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_fixed_point_test)
 
 add_gtest(
     NAME ra_connect_test
-    SOURCES connect_test.cc connect.cc combuf.cc
+    SOURCES net/connect_test.cc net/connect.cc net/combuf.cc
     LIBS base absl::check absl::log
 )
 
 
 add_gtest(
     NAME ra_path_overlap_test
-    SOURCES path_overlap_test.cc
+    SOURCES map/path_overlap_test.cc
     LIBS base absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_path_overlap_test)
@@ -264,6 +264,6 @@ endif ()
 
 add_gtest(
     NAME ra_utracker_test
-    SOURCES utracker_test.cc utracker.cc
+    SOURCES objects/utracker_test.cc objects/utracker.cc
     LIBS base
 )

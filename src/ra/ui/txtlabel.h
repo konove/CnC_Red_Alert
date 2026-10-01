@@ -1,0 +1,82 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/TXTLABEL.H 1     3/03/97 10:26a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : TXTLABEL.H *
+ *                                                                                             *
+ *                   Programmer : Bill Randolph
+ **
+ *                                                                                             *
+ *                   Start Date : 02/06/95 *
+ *                                                                                             *
+ *                  Last Update : February 6, 1995 [BR]
+ **
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_RA_UI_TXTLABEL_H_
+#define CNC_RED_ALERT_RA_UI_TXTLABEL_H_
+
+#include <cstdint>
+
+#include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "ra/core/defines.h"
+#include "ra/ui/gadget.h"
+
+class TextLabelClass : public GadgetClass {
+ public:
+  /*
+  ** Constructor/Destructor
+  */
+  TextLabelClass(char* txt ABSL_ATTRIBUTE_LIFETIME_BOUND, int x, int y,
+                 RemapControlType* color ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                 TextPrintType style);
+
+  /*
+  ** Overloaded draw routine
+  */
+  bool Draw_Me(PixelView& view, bool forced = false) override;
+
+  /*
+  ** Sets the displayed text of the label
+  */
+  virtual void Set_Text(char* txt) { Text = txt; }
+
+  /*
+  ** General-purpose data fields
+  */
+  int64_t UserData1{0};
+  int32_t UserData2{0};
+  TextPrintType Style;
+  char* Text;
+  RemapControlType* Color;
+  int PixWidth{-1};
+};
+
+#endif  // CNC_RED_ALERT_RA_UI_TXTLABEL_H_

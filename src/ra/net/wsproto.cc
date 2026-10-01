@@ -1,0 +1,580 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                     $Archive:: /Sun/WSProto.cpp $*
+ *                                                                                             *
+ *                      $Author:: Joe_b $*
+ *                                                                                             *
+ *                     $Modtime:: 8/20/97 10:54a $*
+ *                                                                                             *
+ *                    $Revision:: 5 $*
+ *                                                                                             *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ *                                                                                             *
+ *  WSProto.CPP WinsockInterfaceClass to provide an interface to Winsock
+ *protocols             *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ *                                                                                             *
+ * Functions: *
+ *                                                                                             *
+ * WIC::WinsockInterfaceClass -- constructor for the WinsockInterfaceClass *
+ * WIC::~WinsockInterfaceClass -- destructor for the WinsockInterfaceClass *
+ * WIC::Close -- Releases any currently in use Winsock resources. *
+ * WIC::Close_Socket -- Close the communication socket if its open *
+ * WIC::Start_Listening -- Enable callbacks for read/write events on our socket
+ ** WIC::Stop_Listening -- Disable the winsock event callback *
+ * WIC::Discard_In_Buffers -- Discard any packets in our incoming packet holding
+ *buffers       * WIC::Discard_In_Buffers -- Discard any packets in our outgoing
+ *packet holding buffers       * WIC::Init -- Initialised Winsock and this class
+ *for use.                                    * WIC::Read -- read any pending
+ *input from the communications socket                          * WIC::WriteTo
+ *-- Send data via the Winsock socket * WIC::Broadcast -- Send data via the
+ *Winsock socket                                          *
+ * WIC::Clear_Socket_Error -- Clear any outstanding erros on the socket *
+ * WIC::Set_Socket_Options -- Sets default socket options for Winsock buffer
+ *sizes             *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "ra/net/wsproto.h"
+
+#include <cerrno>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <memory>
+#include <span>
+#include <utility>
+
+#include "absl/log/check.h"
+#include "absl/strings/str_format.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "engine/net/net_select.h"
+#include "engine/net/socket_bytes.h"
+#include "ra/net/ipxaddr.h"
+#include "ra/ui/input.h"
+
+#ifdef _WIN32
+#include <winsock.h>
+
+using socklen_t = int;
+#else
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+// #define INVALID_HANDLE_VALUE NULL
+
+#define closesocket close
+
+#define GetLastError() errno
+#endif
+
+static void Socket_Event_Handler(int socket, SocketEvent event, void* data) {
+  static_cast<WinsockInterfaceClass*>(data)->Event_Handler(socket, event);
+}
+
+/***********************************************************************************************
+ * WIC::WinsockInterfaceClass -- constructor for the WinsockInterfaceClass *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 2:51PM ST : Created *
+ *=============================================================================================*/
+WinsockInterfaceClass::WinsockInterfaceClass() = default;
+
+/***********************************************************************************************
+ * WIC::~WinsockInterfaceClass -- destructor for the WinsockInterfaceClass *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 2:52PM ST : Created *
+ *=============================================================================================*/
+WinsockInterfaceClass::~WinsockInterfaceClass() { Close(); }
+
+/***********************************************************************************************
+ * WIC::Close -- Releases any currently in use Winsock resources. *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 2:52PM ST : Created *
+ *=============================================================================================*/
+void WinsockInterfaceClass::Close() {
+  /*
+  ** If we never initialised the class in the first place then just return
+  */
+  if (!WinsockInitialised) {
+    return;
+  }
+
+  /*
+  ** Cancel any outstaning asyncronous events
+  */
+  Stop_Listening();
+
+  /*
+  ** Close any open sockets
+  */
+  Close_Socket();
+
+#ifdef _WIN32
+  /*
+  ** Call the Winsock cleanup function to say we are finished using Winsock
+  */
+  WSACleanup();
+#endif
+
+  WinsockInitialised = false;
+}
+
+/***********************************************************************************************
+ * WIC::Close_Socket -- Close the communication socket if its open *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 8/5/97 11:53AM ST : Created *
+ *=============================================================================================*/
+void WinsockInterfaceClass::Close_Socket() {
+  if (Socket != INVALID_SOCKET) {
+    closesocket(Socket);
+    Socket = INVALID_SOCKET;
+  }
+}
+
+/***********************************************************************************************
+ * WIC::Start_Listening -- Enable callbacks for read/write events on our socket
+ **
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 8/5/97 11:54AM ST : Created *
+ *=============================================================================================*/
+bool WinsockInterfaceClass::Start_Listening() {
+  return Socket_Register_Select(Socket, Socket_Event_Handler, this);
+}
+
+/***********************************************************************************************
+ * WIC::Stop_Listening -- Disable the winsock event callback *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 8/5/97 12:06PM ST : Created *
+ *=============================================================================================*/
+// Unregisters the socket's event callback, network state outside this object.
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void WinsockInterfaceClass::Stop_Listening() {
+  Socket_Unregister_Select(Socket);
+}
+
+/***********************************************************************************************
+ * WIC::Discard_In_Buffers -- Discard any packets in our incoming packet holding
+ *buffers       *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 8/5/97 11:55AM ST : Created *
+ *=============================================================================================*/
+void WinsockInterfaceClass::Discard_In_Buffers() { InBuffers.Clear(); }
+
+/***********************************************************************************************
+ * WIC::Discard_In_Buffers -- Discard any packets in our outgoing packet holding
+ *buffers       *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 8/5/97 11:55AM ST : Created *
+ *=============================================================================================*/
+void WinsockInterfaceClass::Discard_Out_Buffers() { OutBuffers.Clear(); }
+
+/***********************************************************************************************
+ * WIC::Init -- Initialised Winsock and this class for use. *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   true if Winsock is available and was initialised *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 2:54PM ST : Created *
+ *=============================================================================================*/
+bool WinsockInterfaceClass::Init() {
+  /*
+  ** Just return true if we are already set up
+  */
+  if (WinsockInitialised) {
+    return true;
+  }
+
+#ifdef _WIN32
+  // Leave 1 KB of slack after the WSADATA: Bounds Checker reported
+  // WSAStartup writing past a buffer of exactly its size.
+  struct {
+    WSADATA data;
+    char slack[1024];
+  } winsock_storage{};
+  WSADATA* const winsock_info = &winsock_storage.data;
+#endif
+
+  /*
+  ** Initialise socket and event handle to null
+  */
+  Socket = INVALID_SOCKET;
+  ASync = nullptr;
+  Discard_In_Buffers();
+  Discard_Out_Buffers();
+
+#ifdef _WIN32
+  /*
+  ** Start WinSock, and fill in our Winsock info structure
+  */
+  const WORD version = MAKEWORD(WINSOCK_MAJOR_VER, WINSOCK_MINOR_VER);
+  int rc = WSAStartup(version, winsock_info);
+  if (rc != 0) {
+    char out[128];
+    absl::SNPrintF(out, sizeof(out),
+                   "TS: Winsock failed to initialise - error code %d.\n",
+                   GetLastError());
+    absl::PrintF("%s", out);
+    return (false);
+  }
+
+  /*
+  ** Check the Winsock version number
+  */
+  if ((winsock_info->wVersion & 0x00ff) != (version & 0x00ff) ||
+      (winsock_info->wVersion >> 8) != (version >> 8)) {
+    absl::PrintF("%s", "TS: Winsock version is less than 1.1\n");
+    return (false);
+  }
+#endif
+
+  /*
+  ** Everything is OK so return success
+  */
+  WinsockInitialised = true;
+
+  return true;
+}
+
+/***********************************************************************************************
+ * WIC::Read -- read any pending input from the communications socket *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    ptr to buffer to receive input * length of buffer * ptr to address
+ *to fill with address that packet was sent from                     * length of
+ *address buffer                                                          *
+ *                                                                                             *
+ * OUTPUT:   number of bytes transfered to buffer *
+ *                                                                                             *
+ * WARNINGS: The format of the address is dependent on the protocol in use. *
+ *                                                                                             *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 2:58PM ST : Created *
+ *=============================================================================================*/
+int WinsockInterfaceClass::Read(std::span<std::byte> buffer, int& buffer_len,
+                                std::span<std::byte> address,
+                                [[maybe_unused]] int& address_len) {
+  /*
+  ** Call the message loop in case there are any outstanding winsock READ
+  *messages.
+  */
+  TheKeyboard().Peek();
+
+  /*
+  ** If there are no available packets then return 0
+  */
+  if (InBuffers.Count() == 0) {
+    return 0;
+  }
+
+  /*
+  ** Get the oldest packet for reading
+  */
+  const int packetnum = 0;
+  WinsockBufferType* packet = InBuffers.at(packetnum);
+
+  DCHECK(buffer_len >= packet->BufferLen);
+  DCHECK(std::cmp_greater_equal(address_len, sizeof(packet->Address)));
+
+  /*
+  ** Copy the data and the address it came from into the supplied buffers.
+  */
+  base::CopyBytes(buffer, base::ObjectBytes(packet->Buffer),
+                  base::ToSize(packet->BufferLen));
+  base::CopyBytes(address, base::ObjectBytes(packet->Address),
+                  sizeof(packet->Address));
+
+  /*
+  ** Return the length of the packet in buffer_len.
+  */
+  buffer_len = packet->BufferLen;
+
+  /*
+  ** Delete the temporary storage for the packet now that it is being passed to
+  *the game.
+  */
+  InBuffers.Delete(packetnum);
+
+  return buffer_len;
+}
+
+/***********************************************************************************************
+ * WIC::WriteTo -- Send data via the Winsock socket *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    ptr to buffer containing data to send * length of data to send *
+ *           address to send data to. *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: The format of the address is dependent on the protocol in use. *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 3:00PM ST : Created *
+ *=============================================================================================*/
+void WinsockInterfaceClass::WriteTo(std::span<const std::byte> buffer,
+                                    int buffer_len,
+                                    const IPXAddressClass& address) {
+  /*
+  ** Create a temporary holding area for the packet.
+  */
+  auto packet = std::make_unique<WinsockBufferType>();
+
+  /*
+  ** Copy the packet into the holding buffer.
+  */
+  base::CopyBytes(base::ObjectBytes(packet->Buffer), buffer,
+                  base::ToSize(buffer_len));
+  packet->BufferLen = buffer_len;
+  packet->IsBroadcast = false;
+  //	memcpy ( packet->Address, address, sizeof (packet->Address) );
+  base::CopyBytes(
+      base::ObjectBytes(packet->Address), base::ObjectBytes(address),
+      sizeof(
+          IPXAddressClass));  // Steve Tall has revised WriteTo due to this bug.
+
+  /*
+  ** Add it to our out list.
+  */
+  OutBuffers.Add(std::move(packet));
+
+  // enable write events
+  Socket_Check_Write(Socket, true);
+
+  /*
+  ** Make sure the message loop gets called.
+  */
+  TheKeyboard().Peek();
+}
+
+/***********************************************************************************************
+ * WIC::Broadcast -- Send data via the Winsock socket *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    ptr to buffer containing data to send * length of data to send *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 3/20/96 3:00PM ST : Created *
+ *=============================================================================================*/
+void WinsockInterfaceClass::Broadcast(std::span<const std::byte> buffer,
+                                      int buffer_len) {
+  /*
+  ** Create a temporary holding area for the packet.
+  */
+  auto packet = std::make_unique<WinsockBufferType>();
+
+  /*
+  ** Copy the packet into the holding buffer.
+  */
+  base::CopyBytes(base::ObjectBytes(packet->Buffer), buffer,
+                  base::ToSize(buffer_len));
+  packet->BufferLen = buffer_len;
+
+  /*
+  ** Indicate that this packet should be broadcast.
+  */
+  packet->IsBroadcast = true;
+
+  /*
+  ** Add it to our out list.
+  */
+  OutBuffers.Add(std::move(packet));
+
+  /*
+  ** Make sure the message loop gets called.
+  */
+  TheKeyboard().Peek();
+}
+
+/***********************************************************************************************
+ * WIC::Clear_Socket_Error -- Clear any outstanding erros on the socket *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Socket *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 8/5/97 12:05PM ST : Created *
+ *=============================================================================================*/
+void WinsockInterfaceClass::Clear_Socket_Error(SOCKET socket) {
+  uint32_t error_code = 0;
+  socklen_t length = 4;
+
+  getsockopt(socket, SOL_SOCKET, SO_ERROR, SocketBytes(error_code), &length);
+  error_code = 0;
+  setsockopt(socket, SOL_SOCKET, SO_ERROR, SocketBytes(error_code), length);
+}
+
+/***********************************************************************************************
+ * WIC::Set_Socket_Options -- Sets default socket options for Winsock buffer
+ *sizes             *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 8/5/97 12:07PM ST : Created *
+ *=============================================================================================*/
+bool WinsockInterfaceClass::Set_Socket_Options() {
+  static int socket_transmit_buffer_size = SOCKET_BUFFER_SIZE;
+  static int socket_receive_buffer_size = SOCKET_BUFFER_SIZE;
+
+  /*
+  ** Specify the size of the receive buffer.
+  */
+  int err = setsockopt(Socket, SOL_SOCKET, SO_RCVBUF,
+                       SocketBytes(socket_receive_buffer_size), 4);
+  if (err == INVALID_SOCKET) {
+    char out[128];
+    absl::SNPrintF(
+        out, sizeof(out),
+        "TS: Failed to set IPX socket option SO_RCVBUF - error code %d.\n",
+        GetLastError());
+    absl::PrintF("%s", out);
+    DCHECK(err != INVALID_SOCKET);
+  }
+
+  /*
+  ** Specify the size of the send buffer.
+  */
+  err = setsockopt(Socket, SOL_SOCKET, SO_SNDBUF,
+                   SocketBytes(socket_transmit_buffer_size), 4);
+  if (err == INVALID_SOCKET) {
+    char out[128];
+    absl::SNPrintF(
+        out, sizeof(out),
+        "TS: Failed to set IPX socket option SO_SNDBUF - error code %d.\n",
+        GetLastError());
+    absl::PrintF("%s", out);
+    DCHECK(err != INVALID_SOCKET);
+  }
+
+  // setup for non-blocking io
+#ifdef _WIN32
+  u_long mode = 1;
+  ioctlsocket(Socket, FIONBIO, &mode);
+#else
+  const auto flags = static_cast<uint32_t>(fcntl(Socket, F_GETFL, 0));
+  // POSIX declares fcntl with a trailing "..." for its optional argument.
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
+  fcntl(Socket, F_SETFL, static_cast<int>(flags | O_NONBLOCK));
+#endif
+
+  return true;
+}
+
+int WinsockInterfaceClass::Get_Last_Error() {
+#ifdef _WIN32
+  return WSAGetLastError();
+#else
+  return errno;
+#endif
+}

@@ -1,0 +1,100 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\control.h_v   2.18   16 Oct 1995 16:46:08
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : CONTROL.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 01/15/95 *
+ *                                                                                             *
+ *                  Last Update : January 15, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_TD_UI_CONTROL_H_
+#define CNC_RED_ALERT_TD_UI_CONTROL_H_
+
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
+#include "td/core/jshell.h"
+#include "td/ui/gadget.h"
+
+/***************************************************************************
+ * ControlClass -- Region tracking class
+ **
+ *                                                                         *
+ * INPUT:      int x -- x position of gadget
+ ** int y -- y position of gadget
+ ** int w -- width of gadget
+ ** int h -- height of gadget
+ ** UWORD flags -- see enumeration choices
+ **
+ *                                                                         *
+ * OUTPUT:     0 = new scenario created, -1 = not
+ ** WARNINGS:	This class is Abstract (cannot make an instance of it)      *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   01/03/1995 MML : Created.                                             *
+ *=========================================================================*/
+class ControlClass : public GadgetClass {
+ public:
+  ControlClass(unsigned id, int x, int y, int w, int h,
+               unsigned flags = kLeftPress | kRightPress,
+               bool sticky = false) noexcept;
+  //		static ControlClass * Create_One_Of(unsigned id, int x, int y,
+  // int w, int h, unsigned flags=kLeftPress|kRightPress, bool sticky=false);
+
+  virtual void Make_Peer(GadgetClass& gadget);
+
+  /*
+  **	Render support function.
+  */
+  bool Draw_Me(PixelView& view, bool forced = false) override;
+
+  /*
+  **	This is the ID number for this control gadget. This number is used to
+  *generate *	a special pseudo-key when the gadget detects valid input.
+  */
+  unsigned ID;
+
+  [[nodiscard]] unsigned Get_ID() const override;
+
+ protected:
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override;
+
+  /*
+  **	This points to the peer button to inform when something happens to this
+  **	gadget.
+  */
+  GadgetClass* Peer{nullptr};
+};
+
+#endif  // CNC_RED_ALERT_TD_UI_CONTROL_H_

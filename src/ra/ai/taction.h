@@ -1,0 +1,202 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/TACTION.H 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : ACTION.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 11/28/95 *
+ *                                                                                             *
+ *                  Last Update : November 28, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_RA_AI_TACTION_H_
+#define CNC_RED_ALERT_RA_AI_TACTION_H_
+
+#include <algorithm>
+#include <string>
+#include <string_view>
+
+#include "absl/strings/ascii.h"
+#include "base/enum_array.h"
+#include "base/strings/tokenizer.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "ra/ai/teamtype.h"
+#include "ra/core/ccptr.h"
+#include "ra/core/defines.h"
+#include "ra/data/ccini.h"
+#include "ra/objects/object.h"
+
+enum class TActionType {
+  TACTION_NONE,
+
+  TACTION_WIN,               // player wins!
+  TACTION_LOSE,              // player loses.
+  TACTION_BEGIN_PRODUCTION,  // computer begins factory production.
+  TACTION_CREATE_TEAM,       // computer creates a certain type of team
+  TACTION_DESTROY_TEAM,
+  TACTION_ALL_HUNT,  // all enemy units go into hunt mode (teams destroyed).
+  TACTION_REINFORCEMENTS,   // player gets reinforcements
+                            // (house that gets them is determined by
+                            // the Reinforcement instance)
+  TACTION_DZ,               // Deploy drop zone smoke.
+  TACTION_FIRE_SALE,        // Sell all buildings and go on rampage.
+  TACTION_PLAY_MOVIE,       //	Play movie (temporarily suspend game).
+  TACTION_TEXT_TRIGGER,     // Triggers a text message display.
+  TACTION_DESTROY_TRIGGER,  // Destroy specified trigger.
+  TACTION_AUTOCREATE,       // Computer to autocreate teams.
+  TACTION_WINLOSE,          // Win if captured, lose if destroyed.
+  TACTION_ALLOWWIN,         // Allows winning if triggered.
+
+  TACTION_REVEAL_ALL,     // Reveal the entire map.
+  TACTION_REVEAL_SOME,    // Reveal map around cell #.
+  TACTION_REVEAL_ZONE,    // Reveal all of specified zone.
+  TACTION_PLAY_SOUND,     // Play sound effect.
+  TACTION_PLAY_MUSIC,     // Play musical score.
+  TACTION_PLAY_SPEECH,    // Play EVA speech.
+  TACTION_FORCE_TRIGGER,  // Force trigger to activate.
+  TACTION_START_TIMER,    // Start mission timer.
+  TACTION_STOP_TIMER,     // Stop mission timer.
+  TACTION_ADD_TIMER,      // Increase mission timer time.
+  TACTION_SUB_TIMER,      // Decrease mission timer time.
+  TACTION_SET_TIMER,      // Set and start the mission timer.
+  TACTION_SET_GLOBAL,     // Set global variable.
+  TACTION_CLEAR_GLOBAL,   // Clear global variable.
+  TACTION_BASE_BUILDING,  // Automated base building.
+  TACTION_CREEP_SHADOW,   // Shadow grows back one 'step'.
+
+  TACTION_DESTROY_OBJECT,  // Destroys the building this trigger is attached to.
+  TACTION_1_SPECIAL,       // Add a one-time special weapon ability to house.
+  TACTION_FULL_SPECIAL,    // Add a repeating special weapon ability to house.
+
+  TACTION_PREFERRED_TARGET,  // Designates preferred target for house.
+  TACTION_LAUNCH_NUKES,      // Launch fake nuclear missiles from all silos
+
+  TACTION_COUNT,
+};
+using enum TActionType;
+
+TActionType Action_From_Name(const char* name);
+const char* Name_From_Action(TActionType action);
+NeedType Action_Needs(TActionType action);
+
+/*
+**	This elaborates the information necessary to carry out
+**	a trigger's action.
+*/
+struct TActionClass {
+  TActionType Action{TACTION_NONE};  // Action to perform.
+
+  CCPtr<TeamTypeClass> Team;  // Team type pointer for this action (if needed).
+
+  CCPtr<TriggerTypeClass>
+      Trigger;  // Trigger type pointer for this action (if needed).
+
+  union {
+    ThemeType Theme;            // Musical theme.
+    VocType Sound;              // Sound effect.
+    VoxType Speech;             // Speech identifier.
+    HousesType House;           // House to be affected.
+    SpecialWeaponType Special;  // Special weapon ability.
+    QuarryType Quarry;          // Preferred target for attack.
+    VQType Movie;               // The movie to play.
+    bool Bool;                  // Boolean value.
+    int Value;
+  } Data{};
+
+  // Trigger name read from a pre-version-2 INI, where triggers may name ones
+  // that load later. TriggerTypeClass::Read_INI resolves it into Trigger once
+  // every trigger exists; empty otherwise. Not saved.
+  std::string PendingTriggerName;
+
+  TActionClass() {
+    Data.Theme = THEME_NONE;
+    Data.Value = -1;
+  }
+
+  void Detach(TARGET target);
+
+  // Saved-game support. The union travels through its widest member.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Action, Team, Trigger, Data.Value);
+  }
+  // Reads the action fields from the trigger entry `tokens` is parsing.
+  void Read_INI(base::Tokenizer& tokens);
+  void Build_INI_Entry(std::string& buffer) const;
+
+  bool operator()(HousesType house, ObjectClass* object, int id, CELL cell);
+};
+
+class ActionChoiceClass {
+ public:
+  // choice tables are brace lists of action types.
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  ActionChoiceClass(TActionType event = TACTION_NONE) noexcept
+      : Action(event) {}
+
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  operator TActionType() const { return Action; }
+  bool operator==(const ActionChoiceClass& rvalue) const {
+    return Action == rvalue.Action;
+  }
+  bool operator!=(const ActionChoiceClass& rvalue) const {
+    return Action != rvalue.Action;
+  }
+  bool operator>(const ActionChoiceClass& rvalue) const {
+    return rvalue < *this;
+  }
+  // Orders by description, ignoring case.
+  bool operator<(const ActionChoiceClass& rvalue) const {
+    return std::ranges::lexicographical_compare(
+        std::string_view(Description()), std::string_view(rvalue.Description()),
+        {}, absl::ascii_tolower, absl::ascii_tolower);
+  }
+  bool operator<=(const ActionChoiceClass& rvalue) const {
+    return Action == rvalue.Action || *this < rvalue;
+  }
+  bool operator>=(const ActionChoiceClass& rvalue) const {
+    return Action == rvalue.Action || rvalue < *this;
+  }
+  [[nodiscard]] const char* Description() const {
+    return Name_From_Action(Action);
+  }
+  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
+               bool selected, TextPrintType flags) const;
+
+  TActionType Action;
+};
+
+extern base::EnumArray<TActionType, ActionChoiceClass,
+                       static_cast<int>(TACTION_COUNT)>
+    ActionChoices;
+
+#endif  // CNC_RED_ALERT_RA_AI_TACTION_H_

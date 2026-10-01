@@ -107,9 +107,9 @@ header includes by hand.
 
 **The static analyzer runs shallow locally and deep in CI.** `CLANG_ANALYZER_MODE` (`shallow` by
 default, or `deep`) sets clang-tidy's `-analyzer-config mode=`. Shallow halves the analyzer's cost
-and takes `ra/ioobj.cc` from 62 s to 4 s; the CI lint job configures `deep`, so a path only deep
-mode explores still fails there. To reproduce a CI-only analyzer finding, reconfigure a strict dir
-with `-DCLANG_ANALYZER_MODE=deep` or run clang-tidy on the one TU with
+and takes `ra/saveload/ioobj.cc` from 62 s to 4 s; the CI lint job configures `deep`, so a path only
+deep mode explores still fails there. To reproduce a CI-only analyzer finding, reconfigure a strict
+dir with `-DCLANG_ANALYZER_MODE=deep` or run clang-tidy on the one TU with
 `--extra-arg=-Xclang --extra-arg=-analyzer-config --extra-arg=-Xclang --extra-arg=mode=deep`.
 
 **`clang-tidy-cache` only caches a translation unit whose preprocess is silent.** It derives its
@@ -118,11 +118,11 @@ hash by re-running the compiler to preprocess the TU and gives up on any compile
 included header is enough to disable it tree-wide. The `_MAX_PATH`-style defines in the former
 `src/port/ex_string.h` used to do exactly that: 14/40 RA TUs were cacheable. With them renamed
 (`kMaxPath` and friends) and the reserved MIDL macros in `src/engine/platform/win32/win32_com.h` and
-`src/ra/wolapi/wolapi.h` wrapped in
-`#pragma clang diagnostic ignored "-Wreserved-macro-identifier"`, all 908 project TUs preprocess
-silently. Measured 2026-09-12 over the first 40 RA objects, deleted before each run with a fresh
-`CTCACHE_DIR`: 33.3 s cold, 8.7 s warm (compile from ccache and IWYU still run). Keep new headers
-preprocessor-quiet, or the cache silently stops working for everything that includes them.
+`src/ra/wol/wolapi.h` wrapped in `#pragma clang diagnostic ignored "-Wreserved-macro-identifier"`,
+all 908 project TUs preprocess silently. Measured 2026-09-12 over the first 40 RA objects, deleted
+before each run with a fresh `CTCACHE_DIR`: 33.3 s cold, 8.7 s warm (compile from ccache and IWYU
+still run). Keep new headers preprocessor-quiet, or the cache silently stops working for everything
+that includes them.
 
 That bail-out is also what prints `ERROR:clang-tidy-cache:Error executing compile command: #[...]`
 during a strict build — one line per translation unit whose preprocess warns. It is noise, not a
@@ -195,9 +195,17 @@ engine/      → The shared libraries, one folder per domain (docs/ENGINE_FOLDER
                (target `engine_vqa`) [depends: engine_stream, engine_codec, SDL2]
 rust/        → engine_rs, the engine kernels written in Rust (LCW), linked through the cxx bridge in
                src/lib.rs; CMake target engine_rs_cxx (Corrosion) [depends: nothing]
-ra/          → Red Alert (~200 files) [depends: engine_net, engine_window, engine_video]
-td/          → Tiberian Dawn (~288 files) [depends: engine_net, engine_window, engine_video]
+ra/          → Red Alert (~420 files) [depends: engine_net, engine_window, engine_video]
+td/          → Tiberian Dawn (~330 files) [depends: engine_net, engine_window, engine_video]
 ```
+
+Both games use the same subfolders, for navigation only: `objects/` (the object hierarchy, types,
+houses), `data/` (the `*data.cc` tables, rules, INI), `map/` (the display chain, layers,
+pathfinding, the world), `ai/` (teams, triggers, scenario), `ui/` (widgets and dialog helpers),
+`screens/` (menus and full-screen dialogs), `net/` (multiplayer), `editor/` (scenario editor),
+`saveload/`, `assets/` (palettes, audio, screen pages, image files), `startup/` (main, init, the
+main loop, platform stubs), `core/` (defines, inline helpers, heaps, vectors) and `debug/`; Red
+Alert also has `wol/` (Westwood Online).
 
 The `[depends: ...]` list on each folder above is enforced, not just documented: an engine file may
 only include a folder its own library links, per `tools/check_layers.py` (see Key Files). The same
@@ -242,17 +250,17 @@ Chromium-style paths relative to the `src/` include root (configured via
 `include_directories(${CMAKE_SOURCE_DIR}/src)`), so omit the `src/` prefix:
 
 ```cpp
-#include "ra/object.h"           // Correct
+#include "ra/objects/object.h"      // Correct
 #include "engine/gfx/pixel_buffer.h"
-#include "object.h"              // WRONG - no relative paths
-#include "src/ra/object.h"       // WRONG - src/ is the include root, don't repeat it
+#include "object.h"                 // WRONG - no relative paths
+#include "src/ra/objects/object.h"  // WRONG - src/ is the include root, don't repeat it
 ```
 
 clang-tidy's `misc-include-cleaner` requires every `.cc` file to include the headers it uses
 directly and nothing more. It misses three kinds of use: a complete type needed only for an implicit
 derived-to-base conversion, a header that supplies template definitions for an explicit
-instantiation, and a comparison C++20 rewrites to a header's `operator<=>` (`ra/power.cc`'s
-`Power_Fraction() < 1`). Keep those with `#include "td/vector_impl.h"  // IWYU pragma: keep`.
+instantiation, and a comparison C++20 rewrites to a header's `operator<=>` (`ra/map/power.cc`'s
+`Power_Fraction() < 1`). Keep those with `#include "td/core/vector_impl.h"  // IWYU pragma: keep`.
 
 ### New Files
 
@@ -348,8 +356,8 @@ no `X_FIRST`/`X_COUNT` sentinels and no aliases. A negative `X_NONE` is fine; th
   `enum_values<E>().front()` / `.back()`.
 - Names in debug output: `magic_enum::enum_name(value)` in `DLOG`.
 - Enums with values above 127 need an `enum_range` specialization next to the enum (see VocType and
-  TemplateType in `ra/defines.h`). Enums whose values are not 0..N-1 (bit flags, shape indices) are
-  not index enums; give them constants instead.
+  TemplateType in `ra/core/defines.h`). Enums whose values are not 0..N-1 (bit flags, shape indices)
+  are not index enums; give them constants instead.
 - Each reflected enum costs ~40 ms of compile time per translation unit; `defines.h` includes the
   header, `.cc` files that reflect include `magic_enum/magic_enum.hpp` themselves.
 

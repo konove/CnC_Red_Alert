@@ -1,0 +1,756 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/OPTIONS.CPP 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : OPTIONS.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : June 8, 1994 *
+ *                                                                                             *
+ *                  Last Update : July 30, 1996 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * OptionsClass::Adjust_Palette -- Adjusts the palette according to
+ *the settings specified.  * OptionsClass::Fixup_Palette -- Adjusts the real
+ *palette to match the palette sliders.     * OptionsClass::Get_Brightness --
+ *Fetches the current brightness setting.                   *
+ *   OptionsClass::Get_Contrast -- Gets the current contrast setting. *
+ *   OptionsClass::Get_Game_Speed -- Fetches the current game speed setting. *
+ *   OptionsClass::Get_Saturation -- Fetches the current color setting. *
+ *   OptionsClass::Get_Scroll_Rate -- Fetches the current scroll rate setting. *
+ *   OptionsClass::Get_Tint -- Fetches the current tint setting. *
+ *   OptionsClass::Load_Settings -- reads options settings from the INI file *
+ *   OptionsClass::Normalize_Delay -- Normalizes delay factor to keep rate
+ *constant.           * OptionsClass::Normalize_Volume -- Convert to a real
+ *volume value.                         * OptionsClass::One_Time -- This
+ *performs any one time initialization for the options class.*
+ *   OptionsClass::OptionsClass -- The default constructor for the options
+ *class.              * OptionsClass::Process -- Handles all the options graphic
+ *interface.                       * OptionsClass::Save_Settings -- writes
+ *options settings to the INI file                    * OptionsClass::Set --
+ *Sets options based on current settings                               *
+ *   OptionsClass::Set_Brightness -- Sets the brightness level to that
+ *specified.              * OptionsClass::Set_Contrast -- Sets the contrast to
+ *the value specified.                   * OptionsClass::Set_Game_Speed -- Sets
+ *the game speed as specified.                         *
+ *   OptionsClass::Set_Repeat -- Controls the score repeat option. *
+ *   OptionsClass::Set_Saturation -- Sets the color to the value specified. *
+ *   OptionsClass::Set_Score_Volume -- Sets the global score volume to that
+ *specified.         * OptionsClass::Set_Scroll_Rate -- Sets the scroll rate as
+ *specified.                       * OptionsClass::Set_Shuffle -- Controls the
+ *play shuffle setting.                           *
+ *   OptionsClass::Set_Sound_Volume -- Sets the sound effects volume level. *
+ *   OptionsClass::Set_Tint -- Sets the tint setting. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "ra/data/options.h"
+
+#include <cstdint>
+
+#include "base/array.h"
+#include "base/fixed.h"
+#include "engine/audio/audio_mixer.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
+#include "engine/gfx/hsv_color.h"
+#include "engine/gfx/palette_color.h"
+#include "engine/window/keyboard.h"
+#include "ra/assets/audio.h"
+#include "ra/assets/palette.h"
+#include "ra/assets/palettes.h"
+#include "ra/assets/theme.h"
+#include "ra/core/defines.h"
+#include "ra/core/jshell.h"
+#include "ra/data/ini.h"
+#include "ra/net/session.h"
+
+const char* const OptionsClass::HotkeyName = "WinHotkeys";
+
+namespace {
+
+// A [WinHotkeys] entry and the option it sets.
+struct Hotkey {
+  const char* name;
+  engine::window::KeyNumber OptionsClass::* key;
+};
+
+// The [WinHotkeys] entries. They hold Windows virtual-key codes, as the
+// original Windows game wrote them, so one REDALERT.INI serves both games:
+// KeyFromWindowsKey() and WindowsKeyFromKey() translate on the way in and out.
+constexpr Hotkey kHotkeys[] = {
+    {"KeyForceMove1", &OptionsClass::KeyForceMove1},
+    {"KeyForceMove2", &OptionsClass::KeyForceMove2},
+    {"KeyForceAttack1", &OptionsClass::KeyForceAttack1},
+    {"KeyForceAttack2", &OptionsClass::KeyForceAttack2},
+    {"KeySelect1", &OptionsClass::KeySelect1},
+    {"KeySelect2", &OptionsClass::KeySelect2},
+    {"KeyScatter", &OptionsClass::KeyScatter},
+    {"KeyStop", &OptionsClass::KeyStop},
+    {"KeyGuard", &OptionsClass::KeyGuard},
+    {"KeyNext", &OptionsClass::KeyNext},
+    {"KeyPrevious", &OptionsClass::KeyPrevious},
+    {"KeyFormation", &OptionsClass::KeyFormation},
+    {"KeyHome1", &OptionsClass::KeyHome1},
+    {"KeyHome2", &OptionsClass::KeyHome2},
+    {"KeyBase", &OptionsClass::KeyBase},
+    {"KeyResign", &OptionsClass::KeyResign},
+    {"KeyAlliance", &OptionsClass::KeyAlliance},
+    {"KeyBookmark1", &OptionsClass::KeyBookmark1},
+    {"KeyBookmark2", &OptionsClass::KeyBookmark2},
+    {"KeyBookmark3", &OptionsClass::KeyBookmark3},
+    {"KeyBookmark4", &OptionsClass::KeyBookmark4},
+    {"KeySelectView", &OptionsClass::KeySelectView},
+    {"KeyRepairToggle", &OptionsClass::KeyRepair},
+    {"KeyRepairOn", &OptionsClass::KeyRepairOn},
+    {"KeyRepairOff", &OptionsClass::KeyRepairOff},
+    {"KeySellToggle", &OptionsClass::KeySell},
+    {"KeySellOn", &OptionsClass::KeySellOn},
+    {"KeySellOff", &OptionsClass::KeySellOff},
+    {"KeyMapToggle", &OptionsClass::KeyMap},
+    {"KeySidebarUp", &OptionsClass::KeySidebarUp},
+    {"KeySidebarDown", &OptionsClass::KeySidebarDown},
+    {"KeyOption1", &OptionsClass::KeyOption1},
+    {"KeyOption2", &OptionsClass::KeyOption2},
+    {"KeyScrollLeft", &OptionsClass::KeyScrollLeft},
+    {"KeyScrollRight", &OptionsClass::KeyScrollRight},
+    {"KeyScrollUp", &OptionsClass::KeyScrollUp},
+    {"KeyScrollDown", &OptionsClass::KeyScrollDown},
+    {"KeyQueueMove1", &OptionsClass::KeyQueueMove1},
+    {"KeyQueueMove2", &OptionsClass::KeyQueueMove2},
+    {"KeyTeam1", &OptionsClass::KeyTeam1},
+    {"KeyTeam2", &OptionsClass::KeyTeam2},
+    {"KeyTeam3", &OptionsClass::KeyTeam3},
+    {"KeyTeam4", &OptionsClass::KeyTeam4},
+    {"KeyTeam5", &OptionsClass::KeyTeam5},
+    {"KeyTeam6", &OptionsClass::KeyTeam6},
+    {"KeyTeam7", &OptionsClass::KeyTeam7},
+    {"KeyTeam8", &OptionsClass::KeyTeam8},
+    {"KeyTeam9", &OptionsClass::KeyTeam9},
+    {"KeyTeam10", &OptionsClass::KeyTeam10},
+};
+
+}  // namespace
+
+/***********************************************************************************************
+ * OptionsClass::OptionsClass -- The default constructor for the options class.
+ **
+ *                                                                                             *
+ *    This is the constructor for the options class. It handles setting up all
+ *the globals     * necessary for the options. This includes setting them to
+ *their default state.            *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/21/1994 JLB : Created. *
+ *=============================================================================================*/
+OptionsClass::OptionsClass()
+    : Volume(Fixed::FromString(".40")),  // was .295
+      ScoreVolume(Fixed::FromString(".25")),
+      MultiScoreVolume(Fixed::FromString("0")),
+      Brightness(Fixed(1, 2)),
+      Tint(Fixed(1, 2)),
+      Saturation(Fixed(1, 2)),
+      Contrast(Fixed(1, 2)) {}
+
+/***********************************************************************************************
+ * OptionsClass::One_Time -- This performs any one time initialization for the
+ *options class.  *
+ *                                                                                             *
+ *    This routine should be called only once and it will perform any
+ *initializations for the  * options class that is needed. This may include
+ *things like file loading and memory       * allocation. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   Only call this routine once. *
+ *                                                                                             *
+ * HISTORY: * 07/21/1994 JLB : Created. *
+ *=============================================================================================*/
+// Not const: applies the score volume to the audio system.
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void OptionsClass::One_Time() {
+  engine::audio::TheAudio().SetScoreVolume(ScoreVolume * 256);
+}
+
+/***********************************************************************************************
+ * OptionsClass::Set_Shuffle -- Controls the play shuffle setting. *
+ *                                                                                             *
+ *    This routine will control the score shuffle flag. The setting to use is
+ *provided as      * a parameter. When shuffling is on, the score play order is
+ *scrambled.                    *
+ *                                                                                             *
+ * INPUT:   on -- Should the shuffle option be activated? *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+void OptionsClass::Set_Shuffle(bool on) { IsScoreShuffle = on; }
+
+/***********************************************************************************************
+ * OptionsClass::Set_Repeat -- Controls the score repeat option. *
+ *                                                                                             *
+ *    This routine is used to control whether scores repeat or not. The setting
+ *to use for     * the repeat flag is provided as a parameter. *
+ *                                                                                             *
+ * INPUT:   on -- Should the scores repeat? *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+void OptionsClass::Set_Repeat(bool on) { IsScoreRepeat = on; }
+
+/***********************************************************************************************
+ * OptionsClass::Set_Score_Volume -- Sets the global score volume to that
+ *specified.           *
+ *                                                                                             *
+ *    This routine will set the global score volume to the value specified. The
+ *value ranges   * from zero to 255. *
+ *                                                                                             *
+ * INPUT:   volume   -- The new volume setting to use for scores. *
+ *                                                                                             *
+ *          feedback -- Should a feedback sound effect be generated? *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+void OptionsClass::Set_Score_Volume(Fixed volume, bool feedback) {
+  ScoreVolume = Fixed(volume).SaturateBelow(1);
+  engine::audio::TheAudio().SetScoreVolume(ScoreVolume * 256);
+  if (feedback && !TheTheme().Still_Playing()) {
+    PlaySoundEffect(VOC_BEEP, ScoreVolume);
+  }
+}
+
+/***********************************************************************************************
+ * OptionsClass::Set_Sound_Volume -- Sets the sound effects volume level. *
+ *                                                                                             *
+ *    This routine will set the sound effect volume level as indicated. It can
+ *generate a      * sound effect for feedback purposes if desired. The volume
+ *setting can range from zero    * to 255. The value of 255 is the loudest. *
+ *                                                                                             *
+ * INPUT:   volume   -- The volume setting to use for the new value. 0 to 255. *
+ *                                                                                             *
+ *          feedback -- Should a feedback sound effect be generated? *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+void OptionsClass::Set_Sound_Volume(Fixed volume, bool feedback) {
+  Volume = Fixed(volume).SaturateBelow(1);
+  if (feedback) {
+    PlaySoundEffect(VOC_BEEP);
+  }
+}
+
+/***********************************************************************************************
+ * OptionsClass::Set_Brightness -- Sets the brightness level to that specified.
+ **
+ *                                                                                             *
+ *    This routine will set the current brightness level to the value specified.
+ *This value    * can range from zero to 255, with 128 being the normal
+ *(default) brightness level.        *
+ *                                                                                             *
+ * INPUT:   brightness  -- The brightness level to set as current. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+void OptionsClass::Set_Brightness(Fixed brightness) {
+  Brightness = SliderToSetting(brightness);
+  ShowPalette(Saturation);
+}
+
+// Fixed holds 1/256 steps, so an odd slider position lands on a half step;
+// rounding it up keeps the rightmost position, 255/256, from reading back as
+// 254/256.
+Fixed OptionsClass::SliderToSetting(Fixed position) {
+  return Fixed::kQuarter + Fixed((position * 256) + 1, 512);
+}
+
+Fixed OptionsClass::SettingToSlider(Fixed setting) {
+  return (setting - Fixed::kQuarter) / Fixed::kHalf;
+}
+
+/***********************************************************************************************
+ * OptionsClass::Get_Brightness -- Fetches the current brightness setting. *
+ *                                                                                             *
+ *    This routine will fetch the current setting for the brightness level. The
+ *value ranges   * from zero to 255, with 128 being the normal (default) value.
+ **
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the current brightness setting. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+Fixed OptionsClass::Get_Brightness() const {
+  return SettingToSlider(Brightness);
+}
+
+/***********************************************************************************************
+ * OptionsClass::Set_Saturation -- Sets the color to the value specified. *
+ *                                                                                             *
+ *    This routine will set the color value to that specified. The value
+ *specified can range   * from zero to 255. The value of 128 is the normal
+ *default color setting.                  *
+ *                                                                                             *
+ * INPUT:   color -- The new color value to set as current. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+void OptionsClass::Set_Saturation(Fixed color) {
+  Saturation = color;
+  ShowPalette(Saturation);
+}
+
+/***********************************************************************************************
+ * OptionsClass::Get_Saturation -- Fetches the current color setting. *
+ *                                                                                             *
+ *    This routine will fetch the current color setting. This value ranges from
+ *zero to        * 255. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the current color setting. The value of 128 is the
+ *normal (default)   * color setting. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+Fixed OptionsClass::Get_Saturation() const { return Saturation; }
+
+/***********************************************************************************************
+ * OptionsClass::Set_Contrast -- Sets the contrast to the value specified. *
+ *                                                                                             *
+ *    This routine will set the contrast to the setting specified. This setting
+ *ranges from    * zero to 255. The value o 128 is the normal default value. *
+ *                                                                                             *
+ * INPUT:   contrast -- The contrast setting to make as the current setting. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+void OptionsClass::Set_Contrast(Fixed contrast) {
+  Contrast = SliderToSetting(contrast);
+  ShowPalette(Saturation);
+}
+
+/***********************************************************************************************
+ * OptionsClass::Get_Contrast -- Gets the current contrast setting. *
+ *                                                                                             *
+ *    This routine will get the current contrast setting. The value returned is
+ *in the range   * of zero to 255. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns the current contrast setting. A setting of 128 is the normal
+ *default value.*
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+Fixed OptionsClass::Get_Contrast() const { return SettingToSlider(Contrast); }
+
+/***********************************************************************************************
+ * OptionsClass::Set_Tint -- Sets the tint setting. *
+ *                                                                                             *
+ *    This routine will change the current tint setting according to the value
+ *specified.      *
+ *                                                                                             *
+ * INPUT:   tint  -- The desired tint setting. This value ranges from zero to
+ *255.             *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   The value of 128 is the default (normal) tint setting. *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+void OptionsClass::Set_Tint(Fixed tint) {
+  Tint = tint;
+  ShowPalette(Saturation);
+}
+
+/***********************************************************************************************
+ * OptionsClass::Get_Tint -- Fetches the current tint setting. *
+ *                                                                                             *
+ *    This fetches the current tint setting. The value is returned as a number
+ *between         * zero and 255. This has been adjusted for the valid range
+ *allowed.                        *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the current tint setting. Normal tint setting is 128. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+Fixed OptionsClass::Get_Tint() const { return Tint; }
+
+/***********************************************************************************************
+ * OptionsClass::Adjust_Palette -- Adjusts the palette according to the settings
+ *specified.    *
+ *                                                                                             *
+ *    This routine is used to adjust the palette according to the settings
+ *provided. It is     * used by the options class to monkey with the palette. *
+ *                                                                                             *
+ * INPUT:   oldpal      -- Pointer to the original (unmodified) palette. *
+ *                                                                                             *
+ *          newpal      -- The new palette to create according to the settings
+ *provided.       *
+ *                                                                                             *
+ *          brightness  -- The brightness level (0..255). *
+ *                                                                                             *
+ *          color       -- The color level (0..255). *
+ *                                                                                             *
+ *          tint        -- The tint (hue) level (0..255). *
+ *                                                                                             *
+ *          contrast    -- The contrast level (0..255). *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/21/1994 JLB : Created. * 12/02/1995 JLB : Uses palette class
+ *objects.                                              *
+ *=============================================================================================*/
+void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
+                                  PaletteClass& newpal, Fixed brightness,
+                                  Fixed color, Fixed tint, Fixed contrast) {
+  // At the neutral settings every slider leaves its component unchanged, but
+  // the HSV round trip would still move most colors by up to 4 of 255 in some
+  // components; copy the art instead.
+  if (brightness == Fixed::kHalf && color == Fixed::kHalf &&
+      tint == Fixed::kHalf && contrast == Fixed::kHalf) {
+    newpal = oldpal;
+    return;
+  }
+
+  /*
+  **	Adjust for palette.
+  */
+  for (int index = 0; index < PaletteClass::COLOR_COUNT; index++) {
+    if (index == kMouseColor) {
+      newpal.at(index) = oldpal.at(index);
+    } else {
+      /*
+      **	Convert the working palette entry into an HSV format for
+      **	manipulation.
+      */
+      const engine::gfx::HsvColor hsv = oldpal.at(index).ToHsv();
+
+      /*
+      **	Adjust contrast by moving the value toward the center according
+      *to the *	percentage indicated.
+      */
+      int temp = hsv.value() * (brightness * 256) / 0x80;  // Brightness
+      temp = Bound(temp, 0, 0xFF);
+      int v = temp;
+      temp = ((v - 0x80) * (contrast * 256) / 0x80) + 0x80;  // Contrast
+      temp = Bound(temp, 0, 0xFF);
+      v = temp;
+      temp = hsv.saturation() * (color * 256) / 0x80;  // Color
+      temp = Bound(temp, 0, 0xFF);
+      const int s = temp;
+      temp = hsv.hue() * (tint * 256) / 0x80;  // Tint
+      temp = Bound(temp, 0, 0xFF);
+      const int h = temp;
+
+      /*
+      **	Replace the working palette entry according to the newly
+      *calculated *	hue, saturation, and value.
+      */
+      newpal.at(index) = engine::gfx::HsvColor(static_cast<uint8_t>(h),
+                                               static_cast<uint8_t>(s),
+                                               static_cast<uint8_t>(v))
+                             .ToPaletteColor();
+    }
+  }
+}
+
+/***********************************************************************************************
+ * OptionsClass::Load_Settings -- reads options settings from the INI file *
+ *                                                                                             *
+ * INPUT: * none. *
+ *                                                                                             *
+ * OUTPUT: * none. *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 02/14/1995 BR : Created. * 07/03/1996 JLB : Reworked to use new
+ *INI handler.                                         * 07/30/1996 JLB :
+ *Handles hotkeys.                                                         *
+ *=============================================================================================*/
+void OptionsClass::Load_Settings() {
+  /*
+  **	Create filename and read the file.
+  */
+  INIClass ini;
+  if (const auto file = OpenGameFile(kConfigFileName)) {
+    ini.Load(*file);
+  }
+
+  /*
+  **	Read in the Options values
+  */
+  static const char* const OPTIONS = "Options";
+  GameSpeed = static_cast<unsigned>(
+      ini.Get_Int(OPTIONS, "GameSpeed", static_cast<int>(GameSpeed)));
+  ScrollRate = ini.Get_Int(OPTIONS, "ScrollRate", ScrollRate);
+  // The file holds the stored values, not the slider positions the setters
+  // take.
+  Brightness = ini.Get_Fixed(OPTIONS, "Brightness", Brightness);
+  Set_Sound_Volume(ini.Get_Fixed(OPTIONS, "Volume", Volume), false);
+  Set_Score_Volume(ini.Get_Fixed(OPTIONS, "ScoreVolume", ScoreVolume), false);
+  MultiScoreVolume =
+      ini.Get_Fixed(OPTIONS, "MultiplayerScoreVolume", MultiScoreVolume);
+  Contrast = ini.Get_Fixed(OPTIONS, "Contrast", Contrast);
+  Saturation = ini.Get_Fixed(OPTIONS, "Color", Saturation);
+  Tint = ini.Get_Fixed(OPTIONS, "Tint", Tint);
+  ShowPalette(Saturation);
+  AutoScroll = ini.Get_Bool(OPTIONS, "AutoScroll", AutoScroll);
+  Set_Repeat(ini.Get_Bool(OPTIONS, "IsScoreRepeat", IsScoreRepeat));
+  Set_Shuffle(ini.Get_Bool(OPTIONS, "IsScoreShuffle", IsScoreShuffle));
+  ThePalettes().set_slow_palette(
+      ini.Get_Bool(OPTIONS, "SlowPalette", ThePalettes().slow_palette()));
+  IsPaletteScroll = ini.Get_Bool(OPTIONS, "PaletteScroll", IsPaletteScroll);
+
+  LoadHotkeys(ini);
+}
+
+/***********************************************************************************************
+ * OptionsClass::Save_Settings -- writes options settings to the INI file *
+ *                                                                                             *
+ * INPUT: * none. *
+ *                                                                                             *
+ * OUTPUT: * none. *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 02/14/1995 BR : Created. * 07/03/1996 JLB : Revamped and tightened
+ *up.                                               * 07/30/1996 JLB : Handles
+ *hotkeys.                                                         *
+ *=============================================================================================*/
+void OptionsClass::Save_Settings() const {
+  INIClass ini;
+
+  /*
+  **	Load any existing options file because it may contain entries that won't
+  *be *	explicitly written out by this routine. By preloading the database,
+  *these entries *	will be carried over.
+  */
+  if (const auto file = OpenGameFile(kConfigFileName)) {
+    ini.Load(*file);
+  }
+
+  /*
+  **	Save Options settings
+  */
+  static const char* const OPTIONS = "Options";
+  ini.Put_Int(OPTIONS, "GameSpeed", static_cast<int>(GameSpeed));
+  ini.Put_Int(OPTIONS, "ScrollRate", ScrollRate);
+  ini.Put_Fixed(OPTIONS, "Brightness", Brightness);
+  ini.Put_Fixed(OPTIONS, "Volume", Volume);
+  if (TheSession().Type == GAME_NORMAL) {  // Save only when non-multiplayer.
+    ini.Put_Fixed(OPTIONS, "ScoreVolume", ScoreVolume);
+  }
+  ini.Put_Fixed(OPTIONS, "MultiplayerScoreVolume", MultiScoreVolume);
+  ini.Put_Fixed(OPTIONS, "Contrast", Contrast);
+  ini.Put_Fixed(OPTIONS, "Color", Saturation);
+  ini.Put_Fixed(OPTIONS, "Tint", Tint);
+  ini.Put_Bool(OPTIONS, "AutoScroll", AutoScroll);
+  ini.Put_Bool(OPTIONS, "IsScoreRepeat", IsScoreRepeat);
+  ini.Put_Bool(OPTIONS, "IsScoreShuffle", IsScoreShuffle);
+  ini.Put_Bool(OPTIONS, "PaletteScroll", IsPaletteScroll);
+
+  SaveHotkeys(ini);
+
+  /*
+  **	Write the INI data out to a file.
+  */
+  if (const auto file = OpenGameFile(kConfigFileName, FileAccess::kWrite)) {
+    ini.Save(*file);
+  }
+}
+
+void OptionsClass::LoadHotkeys(const INIClass& ini) {
+  for (const auto& [name, key] : kHotkeys) {
+    // No Windows code is negative, so -1 marks a missing entry.
+    if (const int windows_key = ini.Get_Int(HotkeyName, name, -1);
+        windows_key >= 0) {
+      this->*key = engine::window::KeyFromWindowsKey(windows_key);
+    }
+  }
+}
+
+void OptionsClass::SaveHotkeys(INIClass& ini) const {
+  for (const auto& [name, key] : kHotkeys) {
+    ini.Put_Int(HotkeyName, name,
+                engine::window::WindowsKeyFromKey(this->*key));
+  }
+}
+
+/***********************************************************************************************
+ * OptionsClass::Set -- Sets options based on current settings *
+ *                                                                                             *
+ * Use this routine to adjust the palette or sound settings after a fresh
+ *scenario load.       * It assumes the values needed are already loaded into
+ *OptionsClass.                          *
+ *                                                                                             *
+ * INPUT: *
+ *                                                                                             *
+ * OUTPUT: *
+ *                                                                                             *
+ * WARNINGS: *
+ *                                                                                             *
+ * HISTORY: * 06/24/1995 BRR : Created. *
+ *=============================================================================================*/
+void OptionsClass::Set() {
+  ShowPalette(Saturation);
+  Set_Sound_Volume(Volume, false);
+  Set_Score_Volume(ScoreVolume, false);
+  Set_Repeat(IsScoreRepeat);
+  Set_Shuffle(IsScoreShuffle);
+}
+
+/***********************************************************************************************
+ * OptionsClass::Normalize_Delay -- Normalizes delay factor to keep rate
+ *constant.             *
+ *                                                                                             *
+ *    This routine is used to adjust delay factors that MUST be synchronized on
+ *all machines   * but should maintain a speed as close to constant as possible.
+ *Building animations are    * a good example of this. *
+ *                                                                                             *
+ * INPUT:   delay -- The normal delay factor. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the delay to use that has been modified so that a
+ *reasonably constant * rate will result. *
+ *                                                                                             *
+ * WARNINGS:   This calculation is crude due to the coarse resolution that a
+ *1/15 second timer * allows. *
+ *                                                                                             *
+ *             Use of this routine ASSUMES that the GameSpeed is synchronized on
+ *all machines. *
+ *                                                                                             *
+ * HISTORY: * 06/18/1995 JLB : Created. * 06/30/1995 JLB : Handles low values in
+ *a more consistent manner.                          *
+ *=============================================================================================*/
+int OptionsClass::Normalize_Delay(int delay) const {
+  static const int _adjust[][8] = {{2, 2, 1, 1, 1, 1, 1, 1},
+                                   {3, 3, 3, 2, 2, 2, 1, 1},
+                                   {5, 4, 4, 3, 3, 2, 2, 1},
+                                   {7, 6, 5, 4, 4, 4, 3, 2}};
+  if (delay) {
+    if (delay < 5) {
+      delay = base::At(base::At(_adjust, delay - 1), GameSpeed);
+    } else {
+      delay = delay * 8 / static_cast<int>(GameSpeed + 1);
+    }
+  }
+  return delay;
+}
+
+/***********************************************************************************************
+ * OptionsClass::Fixup_Palette -- Adjusts the real palette to match the palette
+ *sliders.       *
+ *                                                                                             *
+ *    This routine is used to adjust the real palette to match the values for
+ *the palette      * control. The adjusted palette is placed into the palette
+ *buffer specified.               *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   The palette is not actually set by this routine. *
+ *                                                                                             *
+ * HISTORY: * 09/22/1995 JLB : Created. *
+ *=============================================================================================*/
+// Not const: sets the display palette.
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void OptionsClass::ShowPalette(Fixed saturation) {
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, saturation, Tint, Contrast);
+  ThePalettes().game_palette().Set();
+}
+
+void OptionsClass::Fixup_Palette() const {
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, Saturation, Tint, Contrast);
+  ThePalettes().title_palette() = ThePalettes().game_palette();
+}
+
+/***********************************************************************************************
+ * OptionsClass::Normalize_Volume -- Convert to a real volume value. *
+ *                                                                                             *
+ *    This routine will take a relative volume value and convert it to the real
+ *volume value   * to use. This allows all the game volumes to be corrected to
+ *the correct global volume.   *
+ *                                                                                             *
+ * INPUT:   volume   -- Requested volume level. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the actual volume level to use. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/22/1995 JLB : Created. *
+ *=============================================================================================*/
+int OptionsClass::Normalize_Volume(int volume) const { return volume * Volume; }

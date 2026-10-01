@@ -1,0 +1,79 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\textbtn.h_v   2.18   16 Oct 1995 16:46:54
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : TEXTBTN.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 01/15/95 *
+ *                                                                                             *
+ *                  Last Update : January 15, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_TD_UI_TEXTBTN_H_
+#define CNC_RED_ALERT_TD_UI_TEXTBTN_H_
+
+#include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "td/core/defines.h"
+#include "td/ui/toggle.h"
+
+class TextButtonClass final : public ToggleClass {
+ public:
+  TextButtonClass();
+  TextButtonClass(unsigned id, const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                  TextPrintType style, int x, int y, int w = -1, int h = -1,
+                  bool blackborder = false);
+  TextButtonClass(unsigned id, int text, TextPrintType style, int x, int y,
+                  int w = -1, int h = -1, bool blackborder = false);
+  bool Draw_Me(PixelView& view, bool forced = false) override;
+  void Set_Text(const char* text, bool resize = false);
+  void Set_Text(int text, bool resize = false);
+  void Set_Style(TextPrintType style) { PrintFlags = style; }
+
+ protected:
+  void Draw_Background(PixelView& view);
+  void Draw_Text(PixelView& view, const char* text);
+
+  bool IsBlackBorder : 1;
+
+  /*
+  **	This points to a constant string that is used for the button's text.
+  */
+  const char* String;
+
+  /*
+  **	This is the print flags to use when rendering this button's text.
+  */
+  TextPrintType PrintFlags;
+};
+
+#endif  // CNC_RED_ALERT_TD_UI_TEXTBTN_H_

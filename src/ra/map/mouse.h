@@ -1,0 +1,153 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/MOUSE.H 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : MOUSE.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 12/15/94 *
+ *                                                                                             *
+ *                  Last Update : December 15, 1994 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_RA_MAP_MOUSE_H_
+#define CNC_RED_ALERT_RA_MAP_MOUSE_H_
+
+#include <cstddef>
+#include <span>
+
+#include "base/enum_array.h"
+#include "engine/platform/timer.h"
+#include "engine/window/keyboard.h"
+#include "ra/core/defines.h"
+#include "ra/core/jshell.h"
+#include "ra/map/scroll.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+class MouseClass : public ScrollClass {
+ public:
+  // Resets transient UI state after loading, preserving saved game state.
+  void ResetTransientUiState() override;
+
+  // Saved-game state; defined in iomap.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+  MouseClass();
+
+  /*
+  ** Initialization
+  */
+  void One_Time() override;    // One-time inits
+  void Init_Clear() override;  // Clears all to known state
+
+  void AI(engine::window::InputEvent& event, int x, int y) override;
+  bool Override_Mouse_Shape(MouseType mouse, bool wsmall = false) override;
+  void Revert_Mouse_Shape() override;
+  [[nodiscard]] MouseType Get_Mouse_Shape() const override {
+    return NormalMouseShape;
+  }
+  void Mouse_Small(bool wsmall) override;
+
+  /*
+  **	File I/O.
+  */
+  virtual bool Load(ArchiveReader& reader);
+  virtual bool Save(ArchiveWriter& writer);
+
+  void Set_Default_Mouse(MouseType mouse, bool size = false) override;
+
+  /*
+  **	This allows the tactical map input gadget access to change the
+  **	mouse shapes.
+  */
+  friend class TacticalClass;
+
+  /*
+  ** This points to the loaded mouse shapes.
+  */
+  static std::span<const std::byte> MouseShapes;
+
+  /*
+  **	This type is used to control the frames and rates of the mouse
+  **	pointer. Some mouse pointers are actually looping animations.
+  */
+  struct MouseStruct {
+    int StartFrame;  // Starting frame number.
+    int FrameCount;  // Number of animation frames.
+    int FrameRate;   // Frame delay between changing frames.
+    int SmallFrame;  // Start frame number for small version (if any).
+    int X, Y;        // Hotspot X and Y offset.
+  };
+
+  // Returns the frames, rate and hotspot of `mouse`. AI() animates the pointer
+  // only while the game map runs; a modal screen that wants an animated
+  // pointer steps through these itself.
+  static const MouseStruct& Control(MouseType mouse) {
+    return MouseControl.at(mouse);
+  }
+
+ private:
+  /*
+  **	The control frames and rates for the various mouse pointers are stored
+  **	in this static array.
+  */
+  static base::EnumArray<MouseType, MouseStruct> MouseControl;
+
+ public:
+  /*
+  **	If the small representation of the mouse is active, then this flag is
+  *true.
+  */
+  bool IsSmall : 1 {false};
+
+ private:
+  /*
+  **	The mouse shape is controlled by these variables. These
+  **	hold the current mouse shape (so resetting won't be needlessly
+  *performed) and *	the normal default mouse shape (when arrow shapes are
+  *needed).
+  */
+  MouseType CurrentMouseShape{MOUSE_NORMAL};
+  MouseType NormalMouseShape{MOUSE_NORMAL};
+
+  /*
+  **	For animating mouse shapes, this controls the frame and animation rate.
+  */
+  static engine::platform::Timer<engine::platform::SystemTickSource> AnimTimer;
+  int Frame{0};
+};
+
+extern template void MouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void MouseClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+#endif  // CNC_RED_ALERT_RA_MAP_MOUSE_H_

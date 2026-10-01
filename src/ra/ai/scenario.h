@@ -1,0 +1,399 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/SCENARIO.H 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : SCENARIO.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 02/26/96 *
+ *                                                                                             *
+ *                  Last Update : February 26, 1996 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_RA_AI_SCENARIO_H_
+#define CNC_RED_ALERT_RA_AI_SCENARIO_H_
+
+#include <string_view>
+
+#include "base/fixed.h"
+#include "base/random.h"
+#include "engine/platform/platform.h"
+#include "engine/platform/timer.h"
+#include "ra/core/defines.h"
+#include "ra/core/game_clock.h"
+#include "ra/core/jshell.h"
+
+/*
+**	This class holds the information about the current game being played.
+*This information is *	global to the scenario and is generally of a similar
+*nature to the information that was held *	in the controlling scenario INI
+*file. It is safe to write this structure out as a whole since *	it
+*doesn't contain any embedded pointers.
+*/
+class ScenarioClass {
+ public:
+  // Field-wise saved-game state; read and write share this field list.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+  // Constructor.
+  ScenarioClass();
+  void Set_Scenario_Name(int scenario, ScenarioPlayerType player,
+                         ScenarioDirType dir = SCEN_DIR_NONE,
+                         ScenarioVarType var = SCEN_VAR_NONE);
+  void Set_Scenario_Name(const char* name);
+
+  // Moves on to the next scenario number of the current campaign, keeping the
+  // rest of the name. `variant` picks which of that scenario's maps to play;
+  // SCEN_VAR_NONE keeps the current variant letter.
+  void AdvanceToNextScenario(ScenarioVarType variant = SCEN_VAR_NONE);
+
+  // Switches to another map of the current scenario.
+  void SetScenarioVariant(ScenarioVarType variant);
+
+  bool Set_Global_To(int global, bool value);
+  void Do_BW_Fade();
+  void Do_Fade_AI();
+
+  /*
+  **	This is the source of the random numbers used in the game. This controls
+  **	the game logic and thus must be in sync with any networked machines.
+  */
+  RandomClass sync_rng_;
+
+  /*
+  **	This is the difficulty setting of the game.
+  */
+  DiffType Difficulty{DIFF_NORMAL};   // For human player.
+  DiffType CDifficulty{DIFF_NORMAL};  // For computer players.
+
+  /*
+  **	This is the main mission timer. This is the timer that is reset at the
+  **	start of the mission. It, effectively, holds the elapsed time of the
+  **	mission.
+  */
+  engine::platform::Stopwatch<FrameTickSource> ElapsedTime;
+
+  /*
+  **	This is an array of waypoints; each waypoint corresponds to a letter of
+  ** the alphabet, and points to a cell number.  -1 means unassigned.
+  ** The CellClass has a bit that tells if that cell has a waypoint attached to
+  ** it; the only way to find which waypoint it is, is to scan this array.  This
+  ** shouldn't be needed often; usually, you know the waypoint & you want the
+  *CELL.
+  */
+  // Waypoints 0..97 are the scenario's lettered waypoints; the last three
+  // slots are reserved for the home cell, reinforcement arrivals and special
+  // airdrop reinforcements.
+  static constexpr int kWaypointCount = 101;
+  static constexpr int kSpecialWaypoint = kWaypointCount - 1;
+  static constexpr int kReinforcementWaypoint = kWaypointCount - 2;
+  static constexpr int kHomeWaypoint = kWaypointCount - 3;
+  CELL Waypoint[kWaypointCount]{};
+
+  /*
+  **	This holds the system wide mission countdown timer. Time based missions
+  **	are governed by this timer. Various trigger events can modify and
+  *examine *	this timer. The current value of this timer will display on the
+  *game *	screen.
+  */
+  engine::platform::Timer<FrameTickSource> MissionTimer;
+
+  /*
+  **	The shroud regrowth (if enabled) is regulated by this timer. When the
+  **	timer expires, the shroud will regrow one step.
+  */
+  engine::platform::Timer<FrameTickSource> ShroudTimer;
+
+  /*
+  **	The scenario number.
+  */
+  int Scenario{1};
+
+  /*
+  **	The theater of the current scenario.
+  */
+  TheaterType Theater{THEATER_TEMPERATE};
+
+  /*
+  **	The full name of the scenario (as it exists on disk).
+  */
+  char ScenarioName[engine::platform::kMaxFname + engine::platform::kMaxExt]{};
+
+  /*
+  **	Description of the scenario.
+  */
+  char Description[kDescripMax]{};
+
+  /*
+  **	The filename of the introduction movie.
+  */
+  VQType IntroMovie{VQ_NONE};
+
+  /*
+  **	The filename of the briefing movie.
+  */
+  VQType BriefMovie{VQ_NONE};
+
+  /*
+  **	The filename of the movie to play if the scenario is won.
+  */
+  VQType WinMovie{VQ_NONE};
+
+  /*
+  **	The filename of the movie to play if the scenario is lost.
+  */
+  VQType LoseMovie{VQ_NONE};
+
+  /*
+  **	The filename of the movie to play right after the briefing and
+  **	just before the game.
+  */
+  VQType ActionMovie{VQ_NONE};
+
+  /*
+  **	This is the full text of the briefing. This text will be
+  **	displayed when the player commands the "restate mission
+  **	objectives" operation.
+  */
+  char BriefingText[1024]{};
+
+  /*
+  **	This is the theme to start playing at the beginning of the action
+  **	movie. A score started in this fashion will continue to play as
+  **	the game progresses.
+  */
+  ThemeType TransitTheme{THEME_NONE};
+
+  /*
+  **	The house that the player is to be (obsolete).
+  */
+  HousesType PlayerHouse{HOUSE_GREECE};
+
+  /*
+  **	The percentage of money that is allowed to be carried over into the
+  **	following scenario.
+  */
+  Fixed CarryOverPercent;
+
+  /*
+  **	This is the amount of money that was left over in the previous
+  **	scenario.
+  */
+  int CarryOverMoney{0};
+
+  /*
+  **	This specifies the maximum amount of money that is allowed to be
+  **	carried over from the previous scenario. This limits the amount
+  **	regardless of what the carry over percentage is set to.
+  */
+  int CarryOverCap{0};
+
+  /*
+  **	This is the percent that the computer controlled base is to be
+  **	built up to at the scenario start.
+  */
+  int Percent{0};
+
+  /*
+  **	Global flags that are used in the trigger system and are persistent
+  **	over the course of the game.
+  */
+  bool GlobalFlags[30]{};
+
+  /*
+  **	This records the bookmark view locations the player has recorded.
+  */
+  CELL Views[4]{};
+
+  /*
+  **	This is the number of active passable bridges in the current game.
+  */
+  int BridgeCount{0};
+
+  /*
+  **	This records the carry over timer value that is used when the mission
+  **	starts (presuming the appropriate flag is set) and also used when the
+  **	scenario restarts.
+  */
+  int CarryOverTimer{0};
+
+  /*
+  **	If a bridge has been destroyed, then this flag will be set to true.
+  **	If there is a trigger that depends on this, it might be triggered.
+  */
+  bool IsBridgeChanged : 1 {false};
+
+  /*
+  **	If a global has changed and global change trigger events must be
+  **	processed, then this flag will be set to true.
+  */
+  bool IsGlobalChanged : 1 {false};
+
+  /*
+  **	Are the buildings and units in this scenario to carry over into
+  **	some (unspecified) later scenario and thus have to be recorded
+  **	at the end?
+  */
+  bool IsToCarryOver : 1 {false};
+
+  /*
+  **	Is this scenario to begin by taking the previously recorded
+  **	carryover objects and creating them onto the map?
+  */
+  bool IsToInherit : 1 {false};
+
+  /*
+  **	If Tanya or a civilian is to be automatically evacuated when they enter
+  **	a transport vehicle, then this flag will be true.
+  */
+  bool IsTanyaEvac : 1 {false};
+
+  /*
+  ** These variables are assigned to the chronosphere effect, and control
+  ** whether the palette should be fading towards b&w or towards color.
+  */
+  bool IsFadingBW : 1 {false};
+  bool IsFadingColor : 1 {false};
+
+  /*
+  **	If this scenario is to be the last mission of the game (for this side),
+  *then *	this flag will be true.
+  */
+  bool IsEndOfGame : 1 {false};
+
+  /*
+  **	If the mission countdown timer is to be inherited from the previous
+  **	scenario, then this flag will be set to true.
+  */
+  bool IsInheritTimer : 1 {false};
+
+  /*
+  **	If the spy plane is to be disabled in this scenario even though
+  *circumstances *	might otherwise indicate that it should appear, then
+  *this flag will be true.
+  */
+  bool IsNoSpyPlane : 1 {false};
+
+  /*
+  **	If the score screen (and "mission accomplished" voice) is to be skipped
+  *when *	this scenario is finished, then this flag will be true.
+  */
+  bool IsSkipScore : 1 {false};
+
+  /*
+  **	If this is to be a one time only mission such that when it is completed,
+  *the game *	will return to the main menu, then this flag will be set to
+  *true.
+  */
+  bool IsOneTimeOnly : 1 {false};
+
+  /*
+  **	If the map selection is to be skipped then this flag will be true. If
+  *this *	ins't a one time only scenario, then the next scenario will have
+  *the same *	name as the current one but will be for variation "B".
+  */
+  bool IsNoMapSel : 1 {false};
+
+  /*
+  **	If trucks are supposed to drop wood crates when they explode, then this
+  *flag *	will be set to true.
+  */
+  bool IsTruckCrate : 1 {false};
+
+  /*
+  **	If the initial money is to be assigned as ore in available silos, then
+  **	this flag will be set to true.
+  */
+  bool IsMoneyTiberium : 1 {false};
+
+  /*
+  **	This is the fading countdown timer.  As this timer counts down, the
+  **	fading to b&w or color will progress.  This timer represents a
+  ** percentage of the Options.Get_Saturation() to fade towards.
+  */
+  engine::platform::Timer<FrameTickSource> FadeTimer;
+
+  //	For endgame auto-sonar pulse.
+  //	Timer to set the period for checking if an auto-sonar pulse should be
+  // performed. 	This will take place if a player has nothing but subs
+  // left in the game.
+  engine::platform::Timer<FrameTickSource> AutoSonarTimer;
+
+  bool bLocalProposesDraw = false;  //	True if the local player in a 2-player game has
+                            // a draw offer extended.
+  bool bOtherProposesDraw = false;  //	True if the other player in a 2-player game has
+                            // a draw offer extended.
+};
+
+void Disect_Scenario_Name(const char* name, int& scenario,
+                          ScenarioPlayerType& player, ScenarioDirType& dir,
+                          ScenarioVarType& var);
+void Post_Load_Game(int load_multi);
+bool End_Game();
+bool Read_Scenario(char* name);
+bool Start_Scenario(char* name, bool briefing = true);
+HousesType Select_House();
+void Clear_Scenario();
+void Do_Briefing(const char* text);
+void Do_Lose();
+void Do_Win();
+
+// Ends a multiplayer game in a draw: stops the game, shows the "battle
+// control terminated" screen and scores it as neither a win nor a loss.
+void Do_Draw();
+void Do_Restart();
+void Fill_In_Data();
+
+// Result of displaying the mission briefing dialog.
+enum class BriefingAction {
+  kPlayVideo,  // User requested to watch the briefing video.
+  kResume,     // User chose to resume/continue without video.
+};
+
+// Displays the mission briefing text and optionally offers to replay the
+// briefing video.
+//
+// If a briefing video is available, shows "Video" and "Resume" buttons.
+// If no video exists, shows only an "OK" button.
+BriefingAction Restate_Mission();
+
+// Shows a briefing message box with up to two buttons. Long text is
+// automatically paginated with a "MORE" button. Fades to black on first page.
+// Returns the text ID of the button that was clicked (left_btn or right_btn).
+int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
+                           bool fade_to_black = true);
+
+class ArchiveReader;
+class ArchiveWriter;
+extern template void ScenarioClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void ScenarioClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+#endif  // CNC_RED_ALERT_RA_AI_SCENARIO_H_

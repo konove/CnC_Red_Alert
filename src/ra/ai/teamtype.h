@@ -1,0 +1,316 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/TEAMTYPE.H 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : TEAMTYPE.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 07/02/96 *
+ *                                                                                             *
+ *                  Last Update : July 2, 1996 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_RA_AI_TEAMTYPE_H_
+#define CNC_RED_ALERT_RA_AI_TEAMTYPE_H_
+
+#include <cstddef>
+#include <string>
+
+#include "absl/base/attributes.h"
+#include "base/enum_array.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "ra/core/ccptr.h"
+#include "ra/core/defines.h"
+#include "ra/data/ccini.h"
+#include "ra/objects/house.h"
+#include "ra/objects/target.h"
+#include "ra/objects/type.h"
+
+/*
+**	TeamMissionType: the various missions that a team can have.
+*/
+enum class TeamMissionType {
+  TMISSION_NONE = -1,
+  TMISSION_ATTACK,        // Attack specified quarry type.
+  TMISSION_ATT_WAYPT,     // Attack specified waypoint
+  TMISSION_FORMATION,     // Change formation of team.
+  TMISSION_MOVE,          // moves to waypoint specified.
+  TMISSION_MOVECELL,      // moves to cell # specified.
+  TMISSION_GUARD,         // works like an infantry's guard mission
+  TMISSION_LOOP,          // loop back to start of mission list
+  TMISSION_ATTACKTARCOM,  // attack tarcom
+  TMISSION_UNLOAD,        // Unload at current location.
+  TMISSION_DEPLOY,        // Deploy mobile building type.
+  TMISSION_HOUND_DOG,     // Follow nearest friendly unit.
+  TMISSION_DO,  // Do guard, sticky, area guard (mission sticks on this).
+  TMISSION_SET_GLOBAL,    // Set global variable.
+  TMISSION_INVULNERABLE,  // Magical invulnerability.
+  TMISSION_LOAD,          // Load onto transport member of team.
+  TMISSION_SPY,           // Spy enter the building at specified waypoint
+  TMISSION_PATROL,        // Move but look for enemies as well.
+
+  TMISSION_COUNT,
+};
+using enum TeamMissionType;
+
+/*
+**	This structure contains one team mission value & its argument.
+*/
+class TeamMissionClass {
+ public:
+  // Saved-game support. The union travels through its widest member.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(Mission, Data.Value);
+  }
+
+  [[nodiscard]] const char* Description(int index) const;
+  // legacy C interfaces take the object where a pointer or name is expected.
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  operator const char*() const { return Description(0); }
+  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
+               bool selected, TextPrintType flags) const;
+
+  TeamMissionType Mission;  // Mission type.
+  union {
+    FormationType Formation;  // Formation to use.
+    QuarryType Quarry;        // Combat quarry type.
+    MissionType Mission;      // General mission orders.
+    int Value;                // Usually a waypoint number.
+  } Data;
+};
+
+/*
+**	This class specifies the quantity and type of members desired for the
+**	team.
+*/
+class TeamMemberClass {
+ public:
+  int Quantity = 0;  // Number of objects desired for this type.
+  const TechnoTypeClass* Class = nullptr;  // The type of object desired.
+
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+};
+
+/*
+**	TeamTypeClass declaration
+*/
+class TeamTypeClass : public AbstractTypeClass {
+ public:
+  static constexpr int kMaxTeamClasscount = 5;
+  static constexpr int kMaxTeamMissions = 20;
+
+  /*
+  **	Constructor/Destructor
+  */
+  TeamTypeClass();
+  ~TeamTypeClass() override;
+  TeamTypeClass(const TeamTypeClass&) = delete;
+  TeamTypeClass& operator=(const TeamTypeClass&) = delete;
+  TeamTypeClass(TeamTypeClass&&) = delete;
+  TeamTypeClass& operator=(TeamTypeClass&&) = delete;
+
+  void* operator new(std::size_t /*unused*/);
+  void* operator new(std::size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
+  void operator delete(void* ptr);
+
+  /*
+  **	Initialization: clears all team types in preparation for new scenario
+  */
+  static void Init();
+
+  /*
+  **	File I/O routines
+  */
+  void Build_INI_Entry(std::string& buf);
+  static void Read_INI(CCINIClass& ini);
+  void Fill_In(const char* name, char* entry);
+  static void Write_INI(CCINIClass& ini);
+  static const char* INI_Name() { return "TeamTypes"; }
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+  /*
+  **	As_Pointer gets a pointer to the trigger object give its name
+  */
+  static TeamTypeClass* As_Pointer(const char* name);
+
+  /*
+  **	Processing routines
+  */
+  // the heap owns the new object; many callers create without keeping it.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
+  TeamClass* Create_One_Of();
+  void Destroy_All_Of() const;
+  void Detach(TARGET target, bool all = true);
+
+  /*
+  **	Utility routines
+  */
+  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
+               bool selected, TextPrintType flags) const;
+  static const char* Name_From_Mission(TeamMissionType order);
+  static TeamMissionType Mission_From_Name(const char* name);
+  static TeamTypeClass* Suggested_New_Team(HouseClass* house,
+                                                 uint64_t atypes,
+                                                 uint64_t utypes,
+                                                 uint64_t itypes,
+                                                 uint64_t vtypes, bool alerted);
+  static TeamTypeClass* From_Name(const char* name);
+  bool Edit();
+  [[nodiscard]] const char* Member_Description() const;
+  [[nodiscard]] const char* Description() const;
+  // legacy C interfaces take the object where a pointer or name is expected.
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  operator const char*() const { return Description(); }
+
+  /*
+  **	If this teamtype object is active, then this flag will be true.
+  **	TeamType objects that are not active are either not yet created or have
+  **	been deleted after fulfilling their action.
+  */
+  // operator new sets this before the constructor runs; the initializer
+  // must agree with it.
+  bool IsActive : 1 = true;
+
+  /*
+  **	If RoundAbout, the team avoids high-threat areas
+  */
+  bool IsRoundAbout : 1 = false;
+
+  /*
+  **	If Suicide, the team won't stop until it achieves its mission or it's
+  **	dead
+  */
+  bool IsSuicide : 1 = false;
+
+  /*
+  **	Is this team type allowed to be created automatically by the computer
+  **	when the appropriate trigger indicates?
+  */
+  bool IsAutocreate : 1 = false;
+
+  /*
+  **	This flag tells the computer that it should build members to fill
+  **	a team of this type regardless of whether there actually is a team
+  **	of this type active.
+  */
+  bool IsPrebuilt : 1 = true;
+
+  /*
+  **	If this team should allow recruitment of new members, then this flag
+  **	will be true. A false value results in a team that fights until it
+  **	is dead. This is similar to IsSuicide, but they will defend themselves.
+  */
+  bool IsReinforcable : 1 = true;
+
+  /*
+  **	A transient team type was created exclusively to bring on reinforcements
+  **	as a result of some special event. As soon as there are no teams
+  **	existing of this type, then this team type should be deleted.
+  */
+  bool IsTransient : 1 = false;
+
+  /*
+  **	Priority given the team for recruiting purposes; higher priority means
+  **	it can steal members from other teams (scale: 0 - 15)
+  */
+  int RecruitPriority = 7;
+
+  /*
+  **	Initial # of this type of team
+  */
+  unsigned char InitNum = 0;
+
+  /*
+  **	Max # of this type of team allowed at one time
+  */
+  unsigned char MaxAllowed = 0;
+
+  /*
+  **	Fear level of this team
+  */
+  unsigned char Fear = 0;
+
+  /*
+  **	House the team belongs to
+  */
+  HousesType House = HOUSE_NONE;
+
+  /*
+  **	Trigger to assign to each object as it joins this team.
+  */
+  CCPtr<TriggerTypeClass> Trigger;
+
+  /*
+  **	This is the waypoint origin to use when creating this team or
+  **	when bringing the team on as a reinforcement.
+  */
+  WAYPOINT Origin = -1;
+
+  /*
+  **	This records the number of teams of this type that are currently
+  **	active.
+  */
+  int Number = 0;
+
+  /*
+  **	Number and list of missions that this team will follow.
+  */
+  int MissionCount = 0;
+  TeamMissionClass MissionList[kMaxTeamMissions]{};
+
+  /*
+  **	Number and type of members desired for this team.
+  */
+  int ClassCount = 0;
+  TeamMemberClass Members[kMaxTeamClasscount];
+
+  static base::EnumArray<TeamMissionType, const char*,
+                         static_cast<int>(TMISSION_COUNT)>
+      TMissions;
+};
+
+NeedType TeamMission_Needs(TeamMissionType tmtype);
+
+class ArchiveReader;
+class ArchiveWriter;
+extern template void TeamMemberClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TeamMemberClass::Serialize<ArchiveReader>(ArchiveReader&);
+extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TeamTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+#endif  // CNC_RED_ALERT_RA_AI_TEAMTYPE_H_

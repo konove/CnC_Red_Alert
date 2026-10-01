@@ -1,0 +1,95 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\cheklist.h_v   2.19   16 Oct 1995
+ * 16:46:20   JOE_BOSTIC  $ */
+/***************************************************************************
+ **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
+ ***************************************************************************
+ *                                                                         *
+ *                 Project Name : Command & Conquer                        *
+ *                                                                         *
+ *                    File Name : CHEKLIST.H                               *
+ *                                                                         *
+ *                   Programmer : Bill Randolph                            *
+ *                                                                         *
+ *                   Start Date : February 16, 1995                        *
+ *                                                                         *
+ *                  Last Update : February 16, 1995   [BR]                 *
+ *                                                                         *
+ *-------------------------------------------------------------------------*
+ *	This class behaves just like the standard list box, except that if the
+ ** first character of a list entry is a space, clicking on it toggles the
+ ** space with a check-mark ('\3').  This makes each entry in the list box
+ ** "toggle-able".
+ **
+ *-------------------------------------------------------------------------*
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+#ifndef CNC_RED_ALERT_TD_UI_CHEKLIST_H_
+#define CNC_RED_ALERT_TD_UI_CHEKLIST_H_
+
+#include <cstddef>
+#include <span>
+
+#include "engine/window/keyboard.h"
+#include "td/core/defines.h"
+#include "td/ui/list.h"
+
+// A list box whose items each carry a check mark the user can toggle by
+// clicking. The mark is the item's first character: add items with a leading
+// space (kUncheckChar) and Check_Item swaps it for kCheckChar.
+class CheckListClass : public ListClass {
+ public:
+  /*---------------------------------------------------------------------
+  Constructor/Destructor
+  ---------------------------------------------------------------------*/
+  CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
+                 std::span<const std::byte> up,
+                 std::span<const std::byte> down);
+  ~CheckListClass() override = default;
+  CheckListClass(const CheckListClass&) = delete;
+  CheckListClass& operator=(const CheckListClass&) = delete;
+  CheckListClass(CheckListClass&&) = delete;
+  CheckListClass& operator=(CheckListClass&&) = delete;
+
+  /*---------------------------------------------------------------------
+  Checkmark utility functions
+  ---------------------------------------------------------------------*/
+  void Check_Item(int index, int checked);  // sets checked state of item
+  [[nodiscard]] bool Is_Checked(int index) const;  // gets checked state of item
+
+  /*---------------------------------------------------------------------
+  This defines the ASCII value of the checkmark character & non-checkmark
+  character.
+  ---------------------------------------------------------------------*/
+  static constexpr char kCheckChar = '\3';
+  static constexpr char kUncheckChar = ' ';
+
+  void Set_Read_Only(bool rdonly) { IsReadOnly = rdonly; }
+
+ protected:
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override;
+
+ private:
+  bool IsReadOnly{false};
+};
+
+#endif  // CNC_RED_ALERT_TD_UI_CHEKLIST_H_
+/************************** end of cheklist.h ******************************/

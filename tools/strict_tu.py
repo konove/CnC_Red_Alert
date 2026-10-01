@@ -14,8 +14,8 @@ includers of a header you changed, so run the full strict build before the
 last commit.
 
 Usage:
-  tools/strict_tu.py src/ra/techno.cc src/ra/techno.h
-  tools/strict_tu.py --build-dir cmake-build-strict-ra-clang src/td/init.cc
+  tools/strict_tu.py src/ra/objects/techno.cc src/ra/objects/techno.h
+  tools/strict_tu.py --build-dir cmake-build-strict-ra-clang src/td/startup/init.cc
 
 A header is checked through its sibling .cc, so passing the pair is the same
 as passing the source alone. Name the other sources to check by hand when a

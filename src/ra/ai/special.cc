@@ -1,0 +1,607 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/SPECIAL.CPP 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : SPECIAL.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 05/27/95 *
+ *                                                                                             *
+ *                  Last Update : August 20, 1996 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * Fetch_Difficulty -- Fetches the difficulty setting desired. *
+ *   Fetch_Password -- Prompts for a password entry from client. *
+ *   PWEditClass::Draw_Text -- Draws password style obscured text. *
+ *   Special_Dialog -- Handles the special options dialog. * SpecialClass::Init
+ *-- Initialize the special class of options.                            *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "ra/ai/special.h"
+
+#include <algorithm>
+#include <cstring>
+#include <iterator>
+#include <memory>
+#include <span>
+#include <string_view>
+#include <utility>
+
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/strings/safe_string.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
+#include "engine/window/hardware_cursor.h"
+#include "engine/window/keyboard.h"
+#include "ra/assets/assets.h"
+#include "ra/assets/palettes.h"
+#include "ra/assets/screen.h"
+#include "ra/core/defines.h"
+#include "ra/core/inline.h"
+#include "ra/core/jshell.h"
+#include "ra/data/rules.h"
+#include "ra/data/text_ids.h"
+#include "ra/debug/debug.h"
+#include "ra/editor/mapedit.h"
+#include "ra/map/world.h"
+#include "ra/net/event.h"
+#include "ra/net/network.h"
+#include "ra/net/queue.h"
+#include "ra/net/session.h"
+#include "ra/startup/conquer.h"
+#include "ra/ui/checkbox.h"
+#include "ra/ui/dialog.h"
+#include "ra/ui/edit.h"
+#include "ra/ui/gadget.h"
+#include "ra/ui/input.h"
+#include "ra/ui/slider.h"
+#include "ra/ui/textbtn.h"
+
+using enum engine::window::KeyNumber;
+
+#define kOptionWidth (236 * 2)
+#define kOptionHeight (162 * 2)
+#define kOptionX ((640 - kOptionWidth) / 2)
+#define kOptionY ((400 - kOptionHeight) / 2)
+
+/***********************************************************************************************
+ * SpecialClass::Init -- Initialize the special class of options. *
+ *                                                                                             *
+ *    This initialization function is required (as opposed to using a
+ *constructor) because     * the SpecialClass is declared as part of a union. A
+ *union cannot have a member with a     * constructor. Other than this anomoly,
+ *the function serves the same purpose as a          * normal constructor. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/20/1996 JLB : Created. *
+ *=============================================================================================*/
+void SpecialClass::Init() {
+  IsShadowGrow = false;
+  IsSpeedBuild = false;
+  IsFromInstall = false;
+  IsCaptureTheFlag = false;
+  IsInert = false;
+  IsThreePoint = false;
+  IsTGrowth = true;
+  IsTSpread = true;
+}
+
+/***********************************************************************************************
+ * Special_Dialog -- Handles the special options dialog. *
+ *                                                                                             *
+ *    This dialog is used when setting the special game options. It does not
+ *appear in the     * final version of the game. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/21/1995 JLB : Created. *
+ *=============================================================================================*/
+void Special_Dialog(bool simple) {
+  SpecialClass oldspecial = TheSpecial();
+  GadgetClass* buttons = nullptr;
+  struct {
+    int Description;
+    bool Setting;
+    std::unique_ptr<CheckBoxClass> Button;
+  } _options[] = {
+      {TXT_THREE_POINT, false, nullptr},
+      {TXT_SPEED_BUILD, false, nullptr},
+  };
+
+  TextButtonClass ok(200, TXT_OK, kTpfButton, kOptionX + 30,
+                     kOptionY + kOptionHeight - 30);
+  TextButtonClass cancel(201, TXT_CANCEL, kTpfButton,
+                         kOptionX + kOptionWidth - 120,
+                         kOptionY + kOptionHeight - 30);
+  buttons = &ok;
+  cancel.Add(*buttons);
+
+  for (int index = 0; index < std::ssize(_options); index++) {
+    base::At(_options, index).Button = std::make_unique<CheckBoxClass>(
+        static_cast<unsigned>(100 + index), kOptionX + 34,
+        kOptionY + 40 + (index * 20));
+    if (base::At(_options, index).Button) {
+      base::At(_options, index).Button->Add(*buttons);
+
+      bool value = false;
+      switch (base::At(_options, index).Description) {
+        case TXT_THREE_POINT:
+          value = TheSpecial().IsThreePoint;
+          break;
+
+        case TXT_SPEED_BUILD:
+          value = TheSpecial().IsSpeedBuild;
+          break;
+        default:
+          break;
+      }
+
+      base::At(_options, index).Setting = value;
+      if (value) {
+        base::At(_options, index).Button->Turn_On();
+      } else {
+        base::At(_options, index).Button->Turn_Off();
+      }
+    }
+  }
+
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
+  PixelView& view = TheScreen().visible_view();
+  bool display = true;
+  bool process = true;
+  while (process) {
+    if (TheSession().Type == GAME_NORMAL) {
+      ServiceRealTime();
+    } else {
+      if (RunFrame()) {
+        process = false;
+      }
+    }
+
+    if (display) {
+      display = false;
+
+      TheMouse().Hide();
+      Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
+      Draw_Caption(view, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
+
+      for (const auto& _option : _options) {
+        Fancy_Text_Print(view, _option.Description, _option.Button->X + 20,
+                         _option.Button->Y, GadgetClass::Get_Color_Scheme(),
+                         kTBlack,
+                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+      }
+      buttons->Draw_All(view);
+      TheMouse().Show();
+    }
+
+    const engine::window::KeyNumber input = buttons->Input(view).key;
+    switch (static_cast<int>(input)) {
+      case KN_ESC:
+      case engine::window::ButtonKey(200):
+        process = false;
+        for (const auto& _option : _options) {
+          const bool setting = _option.Setting;
+          switch (_option.Description) {
+            case TXT_THREE_POINT:
+              oldspecial.IsThreePoint = setting;
+              break;
+
+            case TXT_SPEED_BUILD:
+              oldspecial.IsSpeedBuild = setting;
+              break;
+            default:
+              break;
+          }
+        }
+        if (!simple) {
+          TheNetwork().out_list().Add(EventClass(oldspecial));
+        } else {
+          TheSpecial() = oldspecial;
+        }
+        break;
+
+      case engine::window::ButtonKey(201):
+        process = false;
+        break;
+
+      case KN_NONE:
+        break;
+
+      default:
+        const int index = ButtonId(input) - 100;
+        if (static_cast<unsigned>(index) <
+            sizeof(_options) / sizeof(_options[0])) {
+          base::At(_options, index).Setting =
+              base::At(_options, index).Button->IsOn;
+        }
+        break;
+    }
+  }
+
+  if (!simple) {
+    TheMap().Revert_Mouse_Shape();
+    TheScreen().hidden_view().Clear();
+    TheMap().Flag_To_Redraw(true);
+    TheMap().Render();
+  }
+}
+
+/*
+**	Derived from the edit class, this class allows entry of passwords style
+*text *	as an edit box. This style is characterized by "*" being displayed for
+*every *	real character entered.
+*/
+class PWEditClass : public EditClass {
+ public:
+  PWEditClass(int id, std::span<char> text, int max_len, TextPrintType flags,
+              int x, int y, int w = -1, int h = -1)
+      : EditClass(id, text, max_len, flags, x, y, w, h, kAlphanumeric) {}
+
+ protected:
+  void Draw_Text(PixelView& view, const char* text) override;
+};
+
+/***********************************************************************************************
+ * PWEditClass::Draw_Text -- Draws password style obscured text. *
+ *                                                                                             *
+ *    This routine is used by the password style edit box in order to display
+ *the entered      * text. The text will be displayed as asterisks instead of
+ *the actual characters the       * edit box may contain. This is necessary to
+ *obscure the password entry from glancing      * eyes. *
+ *                                                                                             *
+ * INPUT:   text  -- Pointer to the text that is to be rendered. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/27/1995 JLB : Created. *
+ *=============================================================================================*/
+void PWEditClass::Draw_Text(PixelView& view, const char* text) {
+  char buffer[80];
+
+  base::FillBytes(base::ObjectBytes(buffer), '\0', sizeof(buffer));
+  base::FillBytes(base::ObjectBytes(buffer), '*',
+                  std::min(std::string_view(text).size(), sizeof(buffer) - 1));
+
+  const FontStyle font = TextFontStyle(TextFlags);
+  if (font.font.data().data() ==
+      TheAssets().font(FontType::k6PointGradient).data()) {
+    const TextPrintType flags =
+        Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
+
+    Conquer_Clip_Text_Print(view, buffer, X + 1, Y + 1, Color, kTBlack,
+                            TextFlags | flags, Width - 2);
+
+    if (Has_Focus() &&
+        std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
+      Conquer_Clip_Text_Print(view, "_", X + 1 + StringPixelWidth(font, buffer),
+                              Y + 1, Color, kTBlack, TextFlags | flags);
+    }
+  } else {
+    Conquer_Clip_Text_Print(
+        view, buffer, X + 1, Y + 1,
+        Has_Focus() ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                    : &ThePalettes().color_remaps().at(PCOLOR_GREY),
+        kTBlack, TextFlags, Width - 2);
+
+    if (Has_Focus() &&
+        std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
+      Conquer_Clip_Text_Print(
+          view, "_", X + 1 + StringPixelWidth(font, buffer), Y + 1,
+          &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE), kTBlack,
+          TextFlags);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * Fetch_Password -- Prompts for a password entry from client. *
+ *                                                                                             *
+ *    This routine will prompt for and return a password entry from the player.
+ **
+ *                                                                                             *
+ * INPUT:   caption  -- The  caption to use for the top of the prompt dialog. *
+ *                                                                                             *
+ *          message  -- The body of the message to display in the dialog. *
+ *                                                                                             *
+ *          btext    -- The button text to use to finish the dialog box entry. *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the password text entered. This pointer is
+ *valid         * only until the next time that this routine is called. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/27/1995 JLB : Created. *
+ *=============================================================================================*/
+#define BUFFSIZE (511)
+const char* Fetch_Password(int caption, int message, int btext) {
+  char buffer[BUFFSIZE];
+  const TextButtonClass ok;
+
+  if (btext == TXT_NONE) {
+    btext = TXT_OK;
+  }
+
+  PixelView& view = TheScreen().visible_view();
+
+  /*
+  **	Examine the optional button parameters. Fetch the width and starting
+  **	characters for each.
+  */
+
+  /*
+  **	Build the button list.
+  */
+  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  const int bheight = FontLineHeight(font) + 4;  // button width and height
+  const int bwidth =
+      std::max(StringPixelWidth(font, Text_String(btext)) + 16, 30 * 2);
+
+  /*
+  **	Determine the dimensions of the text to be used for the dialog box.
+  **	These dimensions will control how the dialog box looks.
+  */
+  base::SafeCopy(buffer, Text_String(message));
+  int width = 0;
+  int height = 0;
+  Format_Window_String(font, buffer, 255, width, height);
+
+  width = std::max(width, 100);
+  width += 80;
+  height += (60 + 25) * 2;
+
+  const int x = (TheScreen().visible_view().width() - width) / 2;
+  const int y = (TheScreen().visible_view().height() - height) / 2;
+
+  /*
+  **	Create the "ok" and password edit buttons.
+  */
+  TextButtonClass button1(1, btext, kTpfButton, x + ((width - bwidth) / 2),
+                          y + height - (bheight + 10), bwidth);
+
+  static char pbuffer[45];
+  base::FillBytes(base::ObjectBytes(pbuffer), '\0', sizeof(pbuffer));
+  const int editx = x + 52;
+  const int editwidth = ((TheScreen().visible_view().width() / 2) - editx) * 2;
+  PWEditClass button2(2, pbuffer, sizeof(pbuffer), TPF_6PT_GRAD | TPF_NOSHADOW,
+                      editx, y + height - 70, editwidth, 20);
+
+  TextButtonClass* buttonlist = nullptr;
+
+  /*
+  **	Add and initialize the buttons to the button list.
+  */
+  buttonlist = &button1;
+  button2.Add(*buttonlist);
+
+  /*
+  **	Draw the background of the dialog.
+  */
+  TheMouse().Hide();
+  Dialog_Box(x, y, width, height);
+  Draw_Caption(view, caption, x, y, width);
+
+  /*
+  **	Draw the body of the message box.
+  */
+  Fancy_Text_Print(view, buffer, x + 40, y + 50,
+                   GadgetClass::Get_Color_Scheme(), kTBlack,
+                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+
+  /*
+  **	Redraw the buttons.
+  */
+  if (buttonlist) {
+    buttonlist->Draw_All(view);
+  }
+  TheMouse().Show();
+
+  /*
+  **	Main Processing Loop.
+  */
+  bool process = true;  // loop while true
+  bool first = true;
+  while (process) {
+    /*
+    **	Invoke game callback.
+    */
+    ServiceRealTime();
+
+    /*
+    **	Fetch and process input.
+    */
+    const engine::window::KeyNumber input =
+        buttonlist->Input(view).key;  // user input
+    if (first) {
+      button2.Set_Focus();
+      button2.Flag_To_Redraw();
+      first = false;
+    }
+    switch (static_cast<int>(input)) {
+      case 1U | kButtonFlag:
+      case KN_ESC:
+      case 2U | kButtonFlag:
+      case KN_RETURN:
+        process = false;
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  return pbuffer;
+}
+
+/***********************************************************************************************
+ * Fetch_Difficulty -- Fetches the difficulty setting desired. *
+ *                                                                                             *
+ *    This will display a dialog box that requests the player to specify a
+ *difficulty          * setting. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with a difficulty setting of 0 for easiest and 4 for
+ *hardest.              *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1996 JLB : Created. *
+ *=============================================================================================*/
+int Fetch_Difficulty(bool amath) {
+  const int w = 500;
+  const int h = 160;
+  const int x = (640 / 2) - (w / 2);
+  const int y = (400 / 2) - (h / 2);
+  const int bwidth = 60;
+
+  /*
+  **	Fill the description buffer with the description text. Break
+  **	the text into appropriate spacing.
+  */
+  char buffer[512];
+  base::SafeCopy(buffer, Text_String(TXT_DIFFICULTY));
+  // If it's an aftermath mission, trim the sentence to get rid of the campaign
+  // stuff.
+  if (amath) {
+    int index = 0;
+    while (base::At(buffer, index) && base::At(buffer, index) != '.') {
+      index++;
+    }
+    if (base::At(buffer, index) == '.') {
+      base::At(buffer, index + 1) = 0;
+    }
+  }
+  PixelView& view = TheScreen().visible_view();
+  int width = 0;
+  int height = 0;
+  Format_Window_String(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW), buffer,
+                       w - 120, width, height);
+
+  /*
+  **	Create the OK button.
+  */
+  TextButtonClass okbutton(1, TXT_OK, kTpfButton, x + w - (bwidth + 40),
+                           y + h - 36, bwidth);
+  GadgetClass* buttonlist = &okbutton;
+
+  /*
+  **	Create the slider button.
+  */
+  SliderClass slider(2, x + 40, y + h - 58, w - 80, 16, true);
+  if (TheRules().IsFineDifficulty) {
+    slider.Set_Maximum(5);
+    slider.Set_Value(2);
+  } else {
+    slider.Set_Maximum(3);
+    slider.Set_Value(1);
+  }
+  slider.Add(*buttonlist);
+
+  /*
+  **	Main Processing Loop.
+  */
+  bool redraw = true;
+  bool process = true;
+  while (process) {
+    if (redraw) {
+      redraw = false;
+
+      /*
+      **	Draw the background of the dialog.
+      */
+      TheMouse().Hide();
+      Dialog_Box(x, y, w, h);
+
+      /*
+      **	Draw the body of the message.
+      */
+      //			Fancy_Text_Print(buffer, x + 20*2, y +
+      // 15*2, GadgetClass::Get_Color_Scheme(), TBLACK,
+      // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_NOSHADOW);
+      Fancy_Text_Print(view, buffer, x + 40, y + 30,
+                       GadgetClass::Get_Color_Scheme(), kTBlack,
+                       TPF_6PT_GRAD | TPF_NOSHADOW);
+
+      /*
+      **	Display the descripton of the slider range.
+      */
+      Fancy_Text_Print(view, TXT_HARD, slider.X + slider.Width, slider.Y - 18,
+                       GadgetClass::Get_Color_Scheme(), kTBlack,
+                       TPF_RIGHT | TPF_6PT_GRAD | TPF_DROPSHADOW);
+      Fancy_Text_Print(view, TXT_EASY, slider.X, slider.Y - 18,
+                       GadgetClass::Get_Color_Scheme(), kTBlack,
+                       TPF_6PT_GRAD | TPF_DROPSHADOW);
+      Fancy_Text_Print(view, TXT_NORMAL, slider.X + (slider.Width / 2),
+                       slider.Y - 18, GadgetClass::Get_Color_Scheme(), kTBlack,
+                       TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
+
+      /*
+      **	Redraw the buttons.
+      */
+      if (buttonlist) {
+        buttonlist->Draw_All(view);
+      }
+      TheMouse().Show();
+    }
+
+    /*
+    **	Invoke game callback.
+    */
+    ServiceRealTime();
+
+    /*
+    **	Fetch and process input.
+    */
+    const engine::window::KeyNumber input = buttonlist->Input(view).key;
+
+    switch (static_cast<int>(input)) {
+      case KN_RETURN:
+      case 1U | kButtonFlag:
+        process = false;
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  return slider.Get_Value() * (TheRules().IsFineDifficulty ? 1 : 2);
+}

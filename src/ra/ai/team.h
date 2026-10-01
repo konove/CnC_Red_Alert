@@ -1,0 +1,295 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/TEAM.H 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : TEAM.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 12/11/94 *
+ *                                                                                             *
+ *                  Last Update : December 11, 1994 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_RA_AI_TEAM_H_
+#define CNC_RED_ALERT_RA_AI_TEAM_H_
+
+#include <cstddef>
+
+#include "absl/base/attributes.h"
+#include "engine/platform/timer.h"
+#include "ra/ai/teamtype.h"
+#include "ra/core/ccptr.h"
+#include "ra/core/defines.h"
+#include "ra/core/game_clock.h"
+#include "ra/core/jshell.h"
+#include "ra/objects/abstract.h"
+#include "ra/objects/house.h"
+#include "ra/objects/object.h"
+
+/*
+** Units are only allowed to stray a certain distance away from their
+** team.  When they exceed this distance, some sort of fixup must be
+** done.
+*/
+#define STRAY_DISTANCE 2
+
+class TeamClass : public AbstractClass {
+ public:
+  /*
+  **	This specifies the type of team this is.
+  */
+  CCPtr<TeamTypeClass> Class;
+
+  /*
+  **	This specifies the owner of this team.
+  */
+  CCPtr<HouseClass> House;
+
+  /*
+  **	This flag forces the team into active state regardless of whether it
+  **	is understrength or not.
+  */
+  bool IsForcedActive : 1 = false;
+
+  /*
+  **	This flag is set to true when the team initiates into active mode. The
+  **	flag is never cleared. By examining this flag, it is possible to
+  *determine *	if the team has ever launched into active mode.
+  */
+  bool IsHasBeen : 1 = false;
+
+  /*
+  **	If the team is full strength, then this flag is true. A full strength
+  **	team will not try to recruit members.
+  */
+  bool IsFullStrength : 1 = false;
+
+  /*
+  **	A team that is below half strength has this flag true. It means that the
+  **	the team should hide back at the owner's base and try to recruit
+  **	members.
+  */
+  bool IsUnderStrength : 1 = true;
+
+  /*
+  **	If a team is not understrength but is not yet full strength, then
+  **	the team is regrouping.  If this flag is set and the team becomes
+  **	full strength, the all members of the team will become initiated
+  ** and this flag will be reset.
+  */
+  bool IsReforming : 1 = false;
+
+  /*
+  ** This bit should be set if a team is determined to have lagging
+  ** units in its formation.
+  */
+  bool IsLagging : 1 = false;
+
+  /*
+  **	If a team member was removed or added, then this flag will be set to
+  *true. The *	team system uses this flag to tell whether it should recalculate
+  *the team *	under strength or full strength flags. This process does not
+  *need to occur *	EVERY time a unit added or deleted from a team, just
+  *every so often if the *	team has been changed.
+  */
+  bool IsAltered : 1 = true;
+  bool JustAltered : 1 = false;
+
+  /*
+  **	If the team is working on it's primary mission (it is past the build up
+  *stage) *	then this flag will be true. The transition between "moving" and
+  *"stationary" *	stages usually requires some action on the team's part.
+  */
+  bool IsMoving : 1 = false;
+
+  /*
+  **	When the team determines that the next mission should be advanced to, it
+  *will *	set this flag to true. Mission advance will either change the
+  *behavior of the *	team or cause it to disband.
+  */
+  bool IsNextMission : 1 = true;
+
+  /*
+  **	If at least one member of this team successfully left the map, then this
+  **	flag will be set. At the time the team is terminated, if this flag is
+  *true, then *	if there are any triggers that depend upon this team leaving,
+  *they will be *	sprung.
+  */
+  bool IsLeaveMap : 1 = false;
+
+  /*
+  ** Records whether the team is suspended from production.
+  */
+  bool Suspended : 1 = false;
+
+  /*
+  **	A team will have a center point. This is the point used to determine if
+  **	any member of the team is "too far" from the team and must return. This
+  **	center point is usually calculated as the average position of all the
+  **	team members.
+  */
+  TARGET Zone = kTargetNone;
+
+  /*
+  **	This is the target value of the team member that is closest to the
+  **	destination of the team. The implied location serves as the
+  **	regroup point for the unit as it is moving.
+  */
+  TARGET ClosestMember = kTargetNone;
+
+  /*
+  **	This is the target of the team. Typically, it is a unit or structure,
+  *but *	for the case of teams with a movement mission, it might
+  *represent a *	destination cell.
+  */
+  TARGET MissionTarget = kTargetNone;
+  TARGET Target = kTargetNone;
+
+  /*
+  **	This is the total number of members in this team.
+  */
+  int Total = 0;
+
+  /*
+  **	This is the teams combined risk value
+  */
+  int Risk = 0;
+
+  /*
+  **	If this team is assigned a formation, then the formation type
+  **	will be stored here. If the formation type is FORMATION_NONE, then
+  **	the team is a loose grouping -- just like C&C.
+  */
+  FormationType Formation = FORMATION_NONE;
+
+  /*
+  ** This is the amount of time the team is suspended for.
+  */
+  engine::platform::Timer<FrameTickSource> SuspendTimer;
+
+  /*
+  **	If there is a trigger that should be attached to every member of this
+  *team, then *	it is pointed to by this.
+  */
+  CCPtr<TriggerClass> Trigger;
+
+  //------------------------------------------------------------
+  explicit TeamClass(TeamTypeClass* type, HouseClass* owner = nullptr);
+  ~TeamClass() override;
+  TeamClass(const TeamClass&) = delete;
+  TeamClass& operator=(const TeamClass&) = delete;
+  TeamClass(TeamClass&&) = delete;
+  TeamClass& operator=(TeamClass&&) = delete;
+  void operator delete(void* ptr);
+  void* operator new(std::size_t size) noexcept;
+  void* operator new(std::size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
+  static void Init();
+  static void Suspend_Teams(int priority, const HouseClass* house);
+
+  /*
+  **	File I/O.
+  */
+  // Saved-game support; defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+  [[nodiscard]] bool Is_Empty() const {
+    return Member == static_cast<void*>(nullptr);
+  }
+  [[nodiscard]] bool Has_Entered_Map() const;
+  void Force_Active() {
+    IsForcedActive = true;
+    IsUnderStrength = false;
+  }
+  bool Remove(FootClass* /*obj*/, int typeindex = -1);
+  void Detach(TARGET target, bool all);
+  void AI() override;
+  void Took_Damage(FootClass* obj, ResultType result, TechnoClass* source);
+  bool Add(FootClass* /*obj*/);
+  bool Can_Add(FootClass* obj, int& typeindex) const;
+  void Assign_Mission_Target(TARGET new_target);
+  [[nodiscard]] bool Is_Leaving_Map() const;
+  void Scan_Limit();
+
+ private:
+  /*
+  **	The current mission index into the mission list is recorded here.
+  */
+  int CurrentMission = -1;
+
+  /*
+  **	Some missions will time out. This is the timer that keeps track of the
+  **	time to transition between missions.
+  */
+  engine::platform::Timer<FrameTickSource> TimeOut;
+
+  int TMission_Formation();
+  int TMission_Attack();
+  int TMission_Spy();
+  int TMission_Follow();
+  int TMission_Loop();
+  int TMission_Load();
+  int TMission_Unload();
+  int TMission_Invulnerable();
+  int TMission_Set_Global();
+  int TMission_Patrol();
+  int TMission_Deploy();
+  bool Coordinate_Regroup();
+  void Coordinate_Attack();
+  void Coordinate_Move();
+  bool Coordinate_Conscript(FootClass* unit);
+  void Coordinate_Do();
+  void Calc_Center(TARGET& center, TARGET& close_member) const;
+  int Recruit(int typeindex);
+  bool Is_A_Member(const void* who) const;
+  bool Lagging_Units();
+  [[nodiscard]] FootClass* Fetch_A_Leader() const;
+
+  /*
+  **	Points to the first member in the list of members for this team.
+  */
+  FootClass* Member = nullptr;
+
+  unsigned char Quantity[TeamTypeClass::kMaxTeamClasscount] = {};
+
+  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  TeamClass() = default;
+  friend class TFixedIHeapClass<TeamClass>;
+};
+
+class ArchiveReader;
+class ArchiveWriter;
+extern template void TeamClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void TeamClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+#endif  // CNC_RED_ALERT_RA_AI_TEAM_H_

@@ -1,0 +1,271 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/SCROLL.CPP 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : SCROLL.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 01/08/95 *
+ *                                                                                             *
+ *                  Last Update : August 25, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * ScrollClass::AI -- Handles scroll AI processing. *
+ *   ScrollClass::ScrollClass -- Constructor for the scroll class object. *
+ *   ScrollClass::Set_Autoscroll -- Turns autoscrolling on or off. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "ra/map/scroll.h"
+
+#include <algorithm>
+#include <iterator>
+
+#include "base/array.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/platform/timer.h"
+#include "engine/window/hardware_cursor.h"
+#include "engine/window/keyboard.h"
+#include "ra/assets/screen.h"
+#include "ra/core/defines.h"
+#include "ra/core/face.h"
+#include "ra/core/inline.h"
+#include "ra/core/jshell.h"
+#include "ra/debug/debug_state.h"
+#include "ra/map/help.h"
+#include "ra/screens/goptions.h"
+
+#define SCROLL_DELAY 1
+
+engine::platform::Timer<engine::platform::SystemTickSource>
+    ScrollClass::Counter;
+
+/***********************************************************************************************
+ * ScrollClass::ScrollClass -- Constructor for the scroll class object. *
+ *                                                                                             *
+ *    This is the constructor for the scroll class object. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/10/1995 JLB : Created. *
+ *=============================================================================================*/
+ScrollClass::ScrollClass() { Counter.Set(SCROLL_DELAY); }
+
+/***********************************************************************************************
+ * ScrollClass::AI -- Handles scroll AI processing. *
+ *                                                                                             *
+ *    This routine is called every game frame for purposes of input processing.
+ **
+ *                                                                                             *
+ * INPUT:   input    -- Reference to the keyboard/mouse event that just
+ *occurred.              *
+ *                                                                                             *
+ *          x,y      -- The mouse coordinates. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/10/1995 JLB : Created. * 08/10/1995 JLB : Revamped for free
+ *smooth scrolling.                                      * 08/25/1995 JLB :
+ *Handles new scrolling option.                                            *
+ *=============================================================================================*/
+void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
+  bool player_scrolled = false;
+  static DirType direction;
+  int rate = 0;
+
+  /*
+  **	If rubber band mode is in progress, then don't allow scrolling of the
+  *tactical map.
+  */
+  if (!IsRubberBand /*&& !IsTentative*/) {
+    /*
+    **	Special check to not scroll within the special no-scroll regions.
+    */
+    const bool noscroll = false;
+
+    if (!noscroll) {
+      const bool at_screen_edge = y <= 0 || x <= 0 ||
+                                  x >= TheScreen().visible_view().width() - 1 ||
+                                  y >= TheScreen().visible_view().height() - 1;
+
+      /*
+      **	Verify that the mouse is over a scroll region.
+      */
+      if (Inertia || at_screen_edge) {
+        if (at_screen_edge) {
+          player_scrolled = true;
+
+          /*
+          **	Adjust the mouse coordinates to emphasize the
+          **	cardinal directions over the diagonals.
+          */
+          int altx = x;
+          if (altx < 100) {
+            altx -= 100 - altx;
+          }
+          altx = std::max(altx, 0);
+          if (altx > (320 - 50) * 2) {
+            altx += altx - ((320 - 50) * 2);
+          }
+          altx = std::min(altx, 640);
+          if (altx > 100 && altx < (320 - 50) * 2) {
+            altx += (320 - altx) / 2;
+          }
+
+          int alty = y;
+          if (alty < 100) {
+            alty -= 100 - alty;
+          }
+          alty = std::max(alty, 0);
+          if (alty > 300) {
+            alty += alty - 300;
+          }
+          alty = std::min(alty, 400);
+
+          direction = Desired_Facing256(320,
+                                        200, altx, alty);
+        }
+
+        const int control = static_cast<int>(Dir_Facing(direction));
+
+        /*
+        **	The mouse is over a scroll region so set the mouse shape
+        *accordingly if the map *	can be scrolled in the direction
+        *indicated.
+        */
+        static const int _rate[9] = {0x01C0, 0x0180, 0x0140, 0x0100, 0x00C0,
+                                     0x0080, 0x0040, 0x0020, 0x0010};
+        if (TheDebugState().map_editor_active()) {
+          rate = TheOptions().ScrollRate + 1;
+        } else {
+          rate = 8 - Inertia;
+        }
+
+        if (rate < TheOptions().ScrollRate + 1) {
+          rate = TheOptions().ScrollRate + 1;
+          Inertia = 8 - rate;
+        }
+
+        /*
+        **	Increase the scroll rate if the mouse button is held down.
+        */
+        if (engine::window::IsRightButtonDown()) {
+          rate = Bound(rate + 1, 4,
+                       static_cast<int>(sizeof(_rate) / sizeof(_rate[0])) - 1);
+        }
+
+        /*
+        **	If options indicate that scrolling should be forced to
+        **	one of the 8 facings, then adjust the direction value
+        **	accordingly.
+        */
+        direction = Facing_Dir(Dir_Facing(direction));
+
+        // Inertia and the scroll rate option both feed into rate without any
+        // guarantee they land inside _rate, so clamp before indexing.
+        rate = Bound(rate, 0, static_cast<int>(std::ssize(_rate)) - 1);
+
+        int distance = base::At(_rate, rate) / 2;
+
+        if (!Scroll_Map(direction, distance, false)) {
+          Override_Mouse_Shape(
+              static_cast<MouseType>(static_cast<int>(MOUSE_NO_N) + control),
+              false);
+        } else {
+          Override_Mouse_Shape(
+              static_cast<MouseType>(static_cast<int>(MOUSE_N) + control),
+              false);
+
+          /*
+          **	If the mouse button is pressed or auto scrolling is active, then
+          *scroll *	the map if the delay counter indicates.
+          */
+          if (engine::window::IsLeftButtonDown() || IsAutoScroll) {
+            distance = base::At(_rate, rate);
+
+            if (TheDebugState().map_editor_active()) {
+              Scroll_Map(direction, distance, true);
+              Counter.Set(SCROLL_DELAY);
+            } else {
+              distance = base::At(_rate, rate);
+              Scroll_Map(direction, distance, true);
+
+              if (Counter.IsFinished() && player_scrolled) {
+                Counter.Set(SCROLL_DELAY);
+                Inertia++;
+              }
+            }
+          }
+        }
+      }
+
+      if ((!TheDebugState().map_editor_active() && !player_scrolled) &&
+          Counter.IsFinished()) {
+        Inertia--;
+        if (Inertia < 0) {
+          Inertia++;
+        }
+        Counter.Set(SCROLL_DELAY);
+      }
+    }
+  }
+
+  HelpClass::AI(event, x, y);
+}
+
+/***********************************************************************************************
+ * ScrollClass::Set_Autoscroll -- Turns autoscrolling on or off. *
+ *                                                                                             *
+ *    This routine controls the autoscrolling setting. Autoscroll, when active,
+ *will cause the * map to scroll if the mouse is held over the scroll region.
+ *This is regardless of whether * any mouse button is held down or not. *
+ *                                                                                             *
+ * INPUT:   control  -- Should the autoscroll be turned on? * 0  = turn off * 1
+ *= turn on                                                           * -1 =
+ *toggle current setting                                            *
+ *                                                                                             *
+ * OUTPUT:  Returns with the old setting of the autoscroll flag. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/10/1995 JLB : Created. *
+ *=============================================================================================*/
+bool ScrollClass::Set_Autoscroll(int control) {
+  const bool old = IsAutoScroll;
+
+  if (control == -1) {
+    IsAutoScroll = !IsAutoScroll;
+  } else {
+    IsAutoScroll = control != 0;
+  }
+  return old;
+}

@@ -1,0 +1,1053 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/TEVENT.CPP 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : TEVENT.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 11/28/95 *
+ *                                                                                             *
+ *                  Last Update : July 29, 1996 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * Attaches_To -- Determines what event can be attached to. *
+ *   EventChoiceClass::Draw_It -- Displays the event choice class as a text
+ *string.            * Event_From_Name -- retrieves EventType for given name *
+ *   Event_Needs -- Returns with what this event type needs for data. *
+ *   Name_From_Event -- retrieves name for EventType *
+ *   TEventClass::Build_INI_Entry -- Builds the ini text for this event. *
+ *   TEventClass::Read_INI -- Parses the INI text for this event's data. *
+ *   TEventClass::Reset -- Reset the trigger for a subsequent "spring". *
+ *   TEventClass::operator () -- Action operator to see if event is satisfied. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "ra/ai/tevent.h"
+
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <format>
+#include <string>
+#include <utility>
+
+#include "absl/strings/match.h"
+#include "base/array.h"
+#include "base/enum_array.h"
+#include "base/fixed.h"  // IWYU pragma: keep (Fixed < int via operator<=>)
+#include "base/numeric.h"
+#include "base/strings/number_parse.h"
+#include "base/strings/tokenizer.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
+#include "ra/ai/scenario.h"
+#include "ra/ai/team.h"
+#include "ra/ai/teamtype.h"
+#include "ra/assets/palettes.h"
+#include "ra/core/ccptr.h"
+#include "ra/core/defines.h"
+#include "ra/core/heap.h"
+#include "ra/core/jshell.h"
+#include "ra/core/object_heaps.h"
+#include "ra/map/world.h"
+#include "ra/objects/house.h"
+#include "ra/objects/object.h"
+#include "ra/ui/dialog.h"
+#include "ra/ui/gadget.h"
+
+// The low nibble of the text print flags selects the font.
+static constexpr bool Is_Font(const TextPrintType flags,
+                              const TextPrintType font) {
+  return (static_cast<uint32_t>(flags) & 0x0FU) == static_cast<uint32_t>(font);
+}
+
+/*
+**	This is the text name for all of the trigger events. These are used by
+*the scenario editor
+*/
+static base::EnumArray<TEventType, const char*, static_cast<int>(TEVENT_COUNT)>
+    EventText = {"-No Event-",
+                 "Entered by...",
+                 "Spied by...",
+                 "Thieved by...",
+                 "Discovered by player",
+                 "House Discovered...",
+                 "Attacked by anybody",
+                 "Destroyed by anybody",
+                 "Any Event",
+                 "Destroyed, Units, All...",
+                 "Destroyed, Buildings, All...",
+                 "Destroyed, All...",
+                 "Credits exceed (x100)...",
+                 "Elapsed Time (1/10th min)...",
+                 "Mission Timer Expired",
+                 "Destroyed, Buildings, #...",
+                 "Destroyed, Units, #...",
+                 "No Factories left",
+                 "Civilians Evacuated",
+                 "Build Building Type...",
+                 "Build Unit Type...",
+                 "Build Infantry Type...",
+                 "Build Aircraft Type...",
+                 "Leaves map (team)...",
+                 "Zone Entry by...",
+                 "Crosses Horizontal Line...",
+                 "Crosses Vertical Line...",
+                 "Global is set...",
+                 "Global is clear...",
+                 "Destroyed, Fakes, All...",
+                 "Low Power...",
+                 "All bridges destroyed",
+                 "Building exists..."};
+
+/*
+**	This is an ordinal list of trigger events. This list
+**	is used when generating the trigger dialog box.
+*/
+base::EnumArray<TEventType, EventChoiceClass, static_cast<int>(TEVENT_COUNT)>
+    EventChoices = {{
+        {TEVENT_NONE},
+        {TEVENT_PLAYER_ENTERED},
+        {TEVENT_SPIED},
+        {TEVENT_THIEVED},
+        {TEVENT_DISCOVERED},
+        {TEVENT_HOUSE_DISCOVERED},
+        {TEVENT_ATTACKED},
+        {TEVENT_DESTROYED},
+        {TEVENT_ANY},
+        {TEVENT_UNITS_DESTROYED},
+        {TEVENT_BUILDINGS_DESTROYED},
+        {TEVENT_ALL_DESTROYED},
+        {TEVENT_CREDITS},
+        {TEVENT_TIME},
+        {TEVENT_MISSION_TIMER_EXPIRED},
+        {TEVENT_NBUILDINGS_DESTROYED},
+        {TEVENT_NUNITS_DESTROYED},
+        {TEVENT_NOFACTORIES},
+        {TEVENT_EVAC_CIVILIAN},
+        {TEVENT_BUILD},
+        {TEVENT_BUILD_UNIT},
+        {TEVENT_BUILD_INFANTRY},
+        {TEVENT_BUILD_AIRCRAFT},
+        {TEVENT_LEAVES_MAP},
+        {TEVENT_ENTERS_ZONE},
+        {TEVENT_CROSS_HORIZONTAL},
+        {TEVENT_CROSS_VERTICAL},
+        {TEVENT_GLOBAL_SET},
+        {TEVENT_GLOBAL_CLEAR},
+        {TEVENT_FAKES_DESTROYED},
+        {TEVENT_LOW_POWER},
+        {TEVENT_ALL_BRIDGES_DESTROYED},
+        {TEVENT_BUILDING_EXISTS},
+    }};
+
+/***********************************************************************************************
+ * EventChoiceClass::Draw_It -- Displays the event choice class as a text
+ *string.              *
+ *                                                                                             *
+ *    This utility routine is used by the list box display code to print the
+ *text line that    * describes the event choice action. *
+ *                                                                                             *
+ * INPUT:   see below... *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1996 JLB : Created. *
+ *=============================================================================================*/
+void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
+                               int width, int height, bool selected,
+                               TextPrintType flags) const {
+  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  static const int _tabs[] = {13, 40};
+  if (Is_Font(flags, TPF_6PT_GRAD) || Is_Font(flags, TPF_EFNT)) {
+    if (selected) {
+      flags = flags | TPF_BRIGHT_COLOR;
+      view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
+    } else {
+      if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
+        flags = flags | TPF_MEDIUM_COLOR;
+      }
+    }
+
+    Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, flags,
+                            width, _tabs);
+  } else {
+    Conquer_Clip_Text_Print(
+        view, Description(), x, y,
+        selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
+                 : &ThePalettes().color_remaps().at(PCOLOR_GREY),
+        kTBlack, flags, width, _tabs);
+  }
+}
+
+/***********************************************************************************************
+ * TEventClass::Reset -- Reset the trigger for a subsequent "spring". *
+ *                                                                                             *
+ *    This will reset the trigger event so that it may be "sprung" again.
+ *Typically, this      * occurs for persistent triggers. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/28/1995 JLB : Created. *
+ *=============================================================================================*/
+void TEventClass::Reset(TDEventClass& td) const {
+  td.IsTripped = false;
+  if (Event == TEVENT_TIME) {
+    td.EventTimer.Set(Data.Value * (kTicksPerMinute / 10));
+  }
+}
+
+/***********************************************************************************************
+ * TEventClass::operator () -- Action operator to see if event is satisfied. *
+ *                                                                                             *
+ *    This routine is called to see if the event has been satisfied. Typically,
+ *when the       * necessary trigger events have been satisfied, then the
+ *trigger is sprung. For some       * events, the act of calling this routine is
+ *tacit proof enough that the event has         * occurred. For most other
+ *events, the success condition must be explicitly checked.       *
+ *                                                                                             *
+ * INPUT:   event -- The event that has occurred according to the context from
+ *which this      * routine was called. In the case of no specific event having
+ *occurred,     * then TEVENT_ANY will be passed in. *
+ *                                                                                             *
+ *          house -- The house that this event is tied to. *
+ *                                                                                             *
+ *          object-- The object that this event might apply to. For object
+ *triggering          * events, this will point to the perpetrator object. *
+ *                                                                                             *
+ *          forced-- If this event is forced by some outside action, this flag
+ *will be true.   * Forcing only occurs as an explicit action from another
+ *trigger.           *
+ *                                                                                             *
+ * OUTPUT:  Was this event satisfied? A satisfied event will probably spring the
+ *trigger       * it is attached to. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/28/1995 JLB : Created. *
+ *=============================================================================================*/
+bool TEventClass::operator()(TDEventClass& td, TEventType event,
+                             HousesType house, const ObjectClass* object,
+                             bool forced) const {
+  /*
+  **	If this trigger event has been forced, then no further checks are
+  *required. *	Force the trigger to be tripped.
+  */
+  if (forced) {
+    td.IsTripped = true;
+  }
+
+  if (td.IsTripped) {
+    return true;
+  }
+
+  /*
+  **	Triggers based on the game's global environment such as time or
+  **	global flags are triggered only when the appropriate condition
+  **	is true.
+  */
+  switch (Event) {
+    case TEVENT_GLOBAL_SET:
+      return base::At(TheScenario().GlobalFlags, Data.Value);
+
+    case TEVENT_GLOBAL_CLEAR:
+      return !base::At(TheScenario().GlobalFlags, Data.Value);
+
+    case TEVENT_MISSION_TIMER_EXPIRED:
+      return TheScenario().MissionTimer.IsRunning() &&
+             TheScenario().MissionTimer.IsFinished();
+
+    case TEVENT_TIME:
+      return td.EventTimer.IsFinished();
+    case TEventType::TEVENT_NONE:
+    case TEventType::TEVENT_PLAYER_ENTERED:
+    case TEventType::TEVENT_SPIED:
+    case TEventType::TEVENT_THIEVED:
+    case TEventType::TEVENT_DISCOVERED:
+    case TEventType::TEVENT_HOUSE_DISCOVERED:
+    case TEventType::TEVENT_ATTACKED:
+    case TEventType::TEVENT_DESTROYED:
+    case TEventType::TEVENT_ANY:
+    case TEventType::TEVENT_UNITS_DESTROYED:
+    case TEventType::TEVENT_BUILDINGS_DESTROYED:
+    case TEventType::TEVENT_ALL_DESTROYED:
+    case TEventType::TEVENT_CREDITS:
+    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
+    case TEventType::TEVENT_NUNITS_DESTROYED:
+    case TEventType::TEVENT_NOFACTORIES:
+    case TEventType::TEVENT_EVAC_CIVILIAN:
+    case TEventType::TEVENT_BUILD:
+    case TEventType::TEVENT_BUILD_UNIT:
+    case TEventType::TEVENT_BUILD_INFANTRY:
+    case TEventType::TEVENT_BUILD_AIRCRAFT:
+    case TEventType::TEVENT_LEAVES_MAP:
+    case TEventType::TEVENT_ENTERS_ZONE:
+    case TEventType::TEVENT_CROSS_HORIZONTAL:
+    case TEventType::TEVENT_CROSS_VERTICAL:
+    case TEventType::TEVENT_FAKES_DESTROYED:
+    case TEventType::TEVENT_LOW_POWER:
+    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TEventType::TEVENT_COUNT:
+    default:
+      break;
+  }
+
+  /*
+  **	Don't trigger this event if the parameters mean nothing. Typical of
+  **	this would be for events related to time or other outside influences.
+  */
+  if (Event == TEVENT_NONE) {
+    return false;
+  }
+
+  /*
+  **	If this is not the event for this trigger, just return. This is only
+  **	necessary to check for those trigger events that are presumed to be
+  **	true just by the fact that this routine is called with the appropriate
+  **	event identifier.
+  */
+  if ((Event == TEVENT_ATTACKED || Event == TEVENT_DESTROYED ||
+       Event == TEVENT_DISCOVERED || Event == TEVENT_SPIED ||
+       Event == TEVENT_NONE || Event == TEVENT_CROSS_HORIZONTAL ||
+       Event == TEVENT_CROSS_VERTICAL || Event == TEVENT_ENTERS_ZONE ||
+       Event == TEVENT_PLAYER_ENTERED) &&
+      (event != Event && event != TEVENT_ANY)) {
+    return false;
+  }
+
+  /*
+  **	The cell entry trigger event is only tripped when an object of the
+  **	matching ownership has entered the cell in question. All other
+  **	conditions will not trigger the event.
+  */
+  if (Event == TEVENT_PLAYER_ENTERED || Event == TEVENT_CROSS_HORIZONTAL ||
+      Event == TEVENT_CROSS_VERTICAL || Event == TEVENT_ENTERS_ZONE) {
+    if (!object || object->Owner() != Data.House) {
+      return false;
+    }
+    td.IsTripped = true;
+    return true;
+  }
+
+  /*
+  **	Check for all bridges destroyed condition.
+  */
+  if (Event == TEVENT_ALL_BRIDGES_DESTROYED) {
+    if (TheScenario().BridgeCount) {
+      return false;
+    }
+    td.IsTripped = true;
+    return true;
+  }
+
+  /*
+  **	The following trigger events are not considered to have sprung
+  **	merely by fact that this routine has been called. These trigger
+  **	events must be verified manually by examining the house that
+  **	they are assigned to.
+  */
+  const HouseClass* hptr = HouseClass::As_Pointer(house);
+  int index = 0;
+  if (hptr != nullptr) {
+    switch (Event) {
+      /*
+      **	Check to see if a team of the appropriate type has left the map.
+      */
+      case TEVENT_LEAVES_MAP:
+        for (index = 0; index < TheObjectHeaps().team().Count(); index++) {
+          const TeamClass* ptr = TheObjectHeaps().team().Ptr(index);
+          if (ptr->Class == Team && ptr->Is_Empty() && ptr->IsLeaveMap) {
+            //					if (ptr->Class == Team &&
+            // ptr->House == hptr && ptr->Is_Empty() && ptr->IsLeaveMap) {
+            td.IsTripped = true;
+            break;
+          }
+        }
+        if (index == TheObjectHeaps().team().Count()) {
+          return false;
+        }
+        break;
+
+      /*
+      **	Credits must be equal or greater to the value specified.
+      */
+      case TEVENT_CREDITS:
+        if (hptr->Available_Money() < Data.Value) {
+          return false;
+        }
+        break;
+
+      /*
+      **	Ensure that there are no more factories left.
+      */
+      case TEVENT_NOFACTORIES:
+        if (hptr->BScan &
+            (kStructFlagAirstrip | kStructFlagTent | kStructFlagWeap |
+             kStructFlagBarracks | kStructFlagConst)) {
+          return false;
+        }
+        break;
+
+      /*
+      **	Ensure that there are no fake structures left.
+      */
+      case TEVENT_FAKES_DESTROYED:
+        if (hptr->BScan & (kStructFlagFakeConst | kStructFlagFakeWeap)) {
+          return false;
+        }
+        break;
+
+      /*
+      **	A civilian must have been evacuated.
+      */
+      case TEVENT_EVAC_CIVILIAN:
+        if (!hptr->IsCivEvacuated) {
+          return false;
+        }
+        break;
+
+      /*
+      **	Verify that the structure has been built.
+      */
+      case TEVENT_BUILDING_EXISTS:
+        if ((hptr->ActiveBScan & ScanBit(static_cast<int>(Data.Structure))) ==
+            0) {
+          return false;
+        }
+        //				if (hptr->Get_Quantity(Data.Structure)
+        //== 0) return(false);
+        break;
+
+      /*
+      **	Verify that the structure has been built.
+      */
+      case TEVENT_BUILD:
+        if (hptr->JustBuiltStructure != Data.Structure) {
+          return false;
+        }
+        td.IsTripped = true;
+        break;
+
+      /*
+      **	Verify that the unit has been built.
+      */
+      case TEVENT_BUILD_UNIT:
+        if (hptr->JustBuiltUnit != Data.Unit) {
+          return false;
+        }
+        td.IsTripped = true;
+        break;
+
+      /*
+      **	Verify that the infantry has been built.
+      */
+      case TEVENT_BUILD_INFANTRY:
+        if (hptr->JustBuiltInfantry != Data.Infantry) {
+          return false;
+        }
+        td.IsTripped = true;
+        break;
+
+      /*
+      **	Verify that the aircraft has been built.
+      */
+      case TEVENT_BUILD_AIRCRAFT:
+        if (hptr->JustBuiltAircraft != Data.Aircraft) {
+          return false;
+        }
+        td.IsTripped = true;
+        break;
+
+      /*
+      **	Verify that the specified number of buildings have been
+      *destroyed.
+      */
+      case TEVENT_NBUILDINGS_DESTROYED:
+        if (std::cmp_less(hptr->BuildingsLost, Data.Value)) {
+          return false;
+        }
+        break;
+
+      /*
+      **	Verify that the specified number of units have been destroyed.
+      */
+      case TEVENT_NUNITS_DESTROYED:
+        if (std::cmp_less(hptr->UnitsLost, Data.Value)) {
+          return false;
+        }
+        break;
+
+      case TEventType::TEVENT_NONE:
+      case TEventType::TEVENT_PLAYER_ENTERED:
+      case TEventType::TEVENT_SPIED:
+      case TEventType::TEVENT_THIEVED:
+      case TEventType::TEVENT_DISCOVERED:
+      case TEventType::TEVENT_HOUSE_DISCOVERED:
+      case TEventType::TEVENT_ATTACKED:
+      case TEventType::TEVENT_DESTROYED:
+      case TEventType::TEVENT_ANY:
+      case TEventType::TEVENT_UNITS_DESTROYED:
+      case TEventType::TEVENT_BUILDINGS_DESTROYED:
+      case TEventType::TEVENT_ALL_DESTROYED:
+      case TEventType::TEVENT_TIME:
+      case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+      case TEventType::TEVENT_ENTERS_ZONE:
+      case TEventType::TEVENT_CROSS_HORIZONTAL:
+      case TEventType::TEVENT_CROSS_VERTICAL:
+      case TEventType::TEVENT_GLOBAL_SET:
+      case TEventType::TEVENT_GLOBAL_CLEAR:
+      case TEventType::TEVENT_LOW_POWER:
+      case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+      case TEventType::TEVENT_COUNT:
+      default:
+        break;
+    }
+  }
+
+  hptr = HouseClass::As_Pointer(Data.House);
+  if (hptr) {
+    switch (Event) {
+      case TEVENT_LOW_POWER:
+        if (hptr->Power_Fraction() >= 1) {
+          return false;
+        }
+        break;
+
+        //			case TEVENT_SPIED:
+        //				if (!hptr->IsSpied) return(false);
+        //				break;
+
+      case TEVENT_THIEVED:
+        if (!hptr->IsThieved) {
+          return false;
+        }
+        break;
+
+      /*
+      **	Verify that the house has been discovered.
+      */
+      case TEVENT_HOUSE_DISCOVERED:
+        if (!hptr->IsDiscovered) {
+          return false;
+        }
+        break;
+
+      /*
+      **	Verify that all buildings have been destroyed.
+      */
+      case TEVENT_BUILDINGS_DESTROYED:
+        if (hptr->ActiveBScan) {
+          return false;
+        }
+        break;
+
+      /*
+      **	Verify that all units have been destroyed -- with some
+      **	exceptions.
+      */
+      case TEVENT_UNITS_DESTROYED:
+        if (hptr->ActiveUScan | hptr->ActiveIScan) {
+          return false;
+        }
+        break;
+
+      /*
+      **	Verify that all buildings and units have been destroyed.
+      */
+      case TEVENT_ALL_DESTROYED:
+        if (hptr->ActiveBScan | hptr->ActiveUScan | hptr->ActiveIScan |
+            hptr->ActiveVScan) {
+          return false;
+        }
+        break;
+
+      case TEventType::TEVENT_NONE:
+      case TEventType::TEVENT_PLAYER_ENTERED:
+      case TEventType::TEVENT_SPIED:
+      case TEventType::TEVENT_DISCOVERED:
+      case TEventType::TEVENT_ATTACKED:
+      case TEventType::TEVENT_DESTROYED:
+      case TEventType::TEVENT_ANY:
+      case TEventType::TEVENT_CREDITS:
+      case TEventType::TEVENT_TIME:
+      case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+      case TEventType::TEVENT_NBUILDINGS_DESTROYED:
+      case TEventType::TEVENT_NUNITS_DESTROYED:
+      case TEventType::TEVENT_NOFACTORIES:
+      case TEventType::TEVENT_EVAC_CIVILIAN:
+      case TEventType::TEVENT_BUILD:
+      case TEventType::TEVENT_BUILD_UNIT:
+      case TEventType::TEVENT_BUILD_INFANTRY:
+      case TEventType::TEVENT_BUILD_AIRCRAFT:
+      case TEventType::TEVENT_LEAVES_MAP:
+      case TEventType::TEVENT_ENTERS_ZONE:
+      case TEventType::TEVENT_CROSS_HORIZONTAL:
+      case TEventType::TEVENT_CROSS_VERTICAL:
+      case TEventType::TEVENT_GLOBAL_SET:
+      case TEventType::TEVENT_GLOBAL_CLEAR:
+      case TEventType::TEVENT_FAKES_DESTROYED:
+      case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+      case TEventType::TEVENT_BUILDING_EXISTS:
+      case TEventType::TEVENT_COUNT:
+      default:
+        break;
+    }
+  }
+
+  return true;
+}
+
+/***********************************************************************************************
+ * TEventClass::Build_INI_Entry -- Builds the ini text for this event. *
+ *                                                                                             *
+ *    This routine will build the ini text for this trigger event. The ini text
+ *is appended    * to the string buffer specified. This routine is used to build
+ *the complete trigger       * ini text for writing out to the INI scenario
+ *file.                                       *
+ *                                                                                             *
+ * INPUT:   ptr   -- Pointer to the string buffer that will hold the event INI
+ *data.           *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/28/1995 JLB : Created. *
+ *=============================================================================================*/
+void TEventClass::Build_INI_Entry(std::string& buffer) const {
+  buffer +=
+      std::format("{},{},{}", std::to_underlying(Event),
+                  TheObjectHeaps().team_type().Logical_ID(Team), Data.Value);
+}
+
+/***********************************************************************************************
+ * TEventClass::Read_INI -- Parses the INI text for this event's data. *
+ *                                                                                             *
+ *    This routine is used to parse the INI data line to fetch the event's data
+ *from it.       *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/28/1995 JLB : Created. *
+ *=============================================================================================*/
+void TEventClass::Read_INI(base::Tokenizer& tokens) {
+  const char* token = nullptr;
+  switch (TheWorld().new_ini_format()) {
+    default:
+      Event =
+          static_cast<TEventType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Team.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
+      break;
+
+    case 1:
+      token = tokens.Next();
+      Event = TEVENT_NONE;
+      if (token) {
+        Event = static_cast<TEventType>(base::ParseIntegerOr<int>(token, 0));
+      }
+
+      token = tokens.Next();
+      Team = nullptr;
+      Data.Value = -1;
+      if (token) {
+        if (Event_Needs(Event) == NEED_TEAM) {
+          Team = TheObjectHeaps().team_type().Raw_Ptr(
+              base::ParseIntegerOr<int>(token, 0));
+        } else {
+          Data.Value = base::ParseIntegerOr<int>(token, 0);
+        }
+      }
+      break;
+
+    case 0:
+      Event =
+          static_cast<TEventType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+
+      tokens.Next();  // Old-format field, unused.
+      tokens.Next();  // Old-format field, unused.
+
+      Team = TeamTypeClass::From_Name(tokens.Next());
+      Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
+      tokens.Next();  // Old-format field, unused.
+      break;
+  }
+}
+
+/***********************************************************************************************
+ * Event_Needs -- Returns with what this event type needs for data. *
+ *                                                                                             *
+ *    This routine will examine the specified event type and return a code that
+ *indicates      * the type of data that must be supplied to this event. Some
+ *events require no data and    * these will return NEED_NONE. *
+ *                                                                                             *
+ * INPUT:   event -- The event type to examine. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the type of additional data that is needed by this
+ *event.             *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/28/1995 JLB : Created. *
+ *=============================================================================================*/
+NeedType Event_Needs(TEventType event) {
+  switch (event) {
+    case TEVENT_THIEVED:
+    case TEVENT_PLAYER_ENTERED:
+    case TEVENT_CROSS_HORIZONTAL:
+    case TEVENT_CROSS_VERTICAL:
+    case TEVENT_ENTERS_ZONE:
+    case TEVENT_HOUSE_DISCOVERED:
+    case TEVENT_BUILDINGS_DESTROYED:
+    case TEVENT_UNITS_DESTROYED:
+    case TEVENT_ALL_DESTROYED:
+    case TEVENT_LOW_POWER:
+      return NEED_HOUSE;
+
+    case TEVENT_NUNITS_DESTROYED:
+    case TEVENT_NBUILDINGS_DESTROYED:
+    case TEVENT_CREDITS:
+    case TEVENT_TIME:
+    case TEVENT_GLOBAL_SET:
+    case TEVENT_GLOBAL_CLEAR:
+      return NEED_NUMBER;
+
+    case TEVENT_BUILDING_EXISTS:
+    case TEVENT_BUILD:
+      return NEED_STRUCTURE;
+
+    case TEVENT_BUILD_UNIT:
+      return NEED_UNIT;
+
+    case TEVENT_BUILD_INFANTRY:
+      return NEED_INFANTRY;
+
+    case TEVENT_BUILD_AIRCRAFT:
+      return NEED_AIRCRAFT;
+
+    case TEVENT_LEAVES_MAP:
+      return NEED_TEAM;
+
+    case TEventType::TEVENT_NONE:
+    case TEventType::TEVENT_SPIED:
+    case TEventType::TEVENT_DISCOVERED:
+    case TEventType::TEVENT_ATTACKED:
+    case TEventType::TEVENT_DESTROYED:
+    case TEventType::TEVENT_ANY:
+    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+    case TEventType::TEVENT_NOFACTORIES:
+    case TEventType::TEVENT_EVAC_CIVILIAN:
+    case TEventType::TEVENT_FAKES_DESTROYED:
+    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEventType::TEVENT_COUNT:
+    default:
+      break;
+  }
+  return NEED_NONE;
+}
+
+/***********************************************************************************************
+ * Event_From_Name -- retrieves EventType for given name *
+ *                                                                                             *
+ * INPUT: * name      name to get event for *
+ *                                                                                             *
+ * OUTPUT: * EventType for given name *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 11/29/1994 BR : Created. *
+ *=============================================================================================*/
+TEventType Event_From_Name(const char* name) {
+  if (name) {
+    for (TEventType i = TEVENT_NONE; i < TEVENT_COUNT; i++) {
+      if (absl::EqualsIgnoreCase(name, EventText.at(i))) {
+        return i;
+      }
+    }
+  }
+
+  return TEVENT_NONE;
+}
+
+/***********************************************************************************************
+ * Name_From_Event -- retrieves name for EventType *
+ *                                                                                             *
+ * INPUT: * event      EventType to get name for *
+ *                                                                                             *
+ * OUTPUT: * name for EventType *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 11/29/1994 BR : Created. *
+ *=============================================================================================*/
+const char* Name_From_Event(TEventType event) { return EventText.at(event); }
+
+/***********************************************************************************************
+ * Attaches_To -- Determines what event can be attached to. *
+ *                                                                                             *
+ *    This routine is used to determine what this event type can be attached to
+ *in the game.   * Some events are specifically tied to cells or game object.
+ *This routine will indicate    * this requirement. *
+ *                                                                                             *
+ * INPUT:   event -- The event type to examine. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the attachable characteristics for this event type.
+ *These             * characteristics are represented by a composite bit field.
+ *Some events can be       * attached to multiple objects. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/28/1995 JLB : Created. *
+ *=============================================================================================*/
+AttachType Attaches_To(TEventType event) {
+  AttachType attach = ATTACH_NONE;
+
+  switch (event) {
+    case TEVENT_CROSS_HORIZONTAL:
+    case TEVENT_CROSS_VERTICAL:
+    case TEVENT_ENTERS_ZONE:
+    case TEVENT_PLAYER_ENTERED:
+    case TEVENT_ANY:
+    case TEVENT_DISCOVERED:
+    case TEVENT_NONE:
+      attach = attach | ATTACH_CELL;
+      break;
+
+    case TEventType::TEVENT_SPIED:
+    case TEventType::TEVENT_THIEVED:
+    case TEventType::TEVENT_HOUSE_DISCOVERED:
+    case TEventType::TEVENT_ATTACKED:
+    case TEventType::TEVENT_DESTROYED:
+    case TEventType::TEVENT_UNITS_DESTROYED:
+    case TEventType::TEVENT_BUILDINGS_DESTROYED:
+    case TEventType::TEVENT_ALL_DESTROYED:
+    case TEventType::TEVENT_CREDITS:
+    case TEventType::TEVENT_TIME:
+    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
+    case TEventType::TEVENT_NUNITS_DESTROYED:
+    case TEventType::TEVENT_NOFACTORIES:
+    case TEventType::TEVENT_EVAC_CIVILIAN:
+    case TEventType::TEVENT_BUILD:
+    case TEventType::TEVENT_BUILD_UNIT:
+    case TEventType::TEVENT_BUILD_INFANTRY:
+    case TEventType::TEVENT_BUILD_AIRCRAFT:
+    case TEventType::TEVENT_LEAVES_MAP:
+    case TEventType::TEVENT_GLOBAL_SET:
+    case TEventType::TEVENT_GLOBAL_CLEAR:
+    case TEventType::TEVENT_FAKES_DESTROYED:
+    case TEventType::TEVENT_LOW_POWER:
+    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TEventType::TEVENT_COUNT:
+    default:
+      break;
+  }
+
+  switch (event) {
+    case TEVENT_SPIED:
+    case TEVENT_PLAYER_ENTERED:
+    case TEVENT_DISCOVERED:
+    case TEVENT_DESTROYED:
+    case TEVENT_ATTACKED:
+    case TEVENT_ANY:
+    case TEVENT_NONE:
+      attach = attach | ATTACH_OBJECT;
+      break;
+
+    case TEventType::TEVENT_THIEVED:
+    case TEventType::TEVENT_HOUSE_DISCOVERED:
+    case TEventType::TEVENT_UNITS_DESTROYED:
+    case TEventType::TEVENT_BUILDINGS_DESTROYED:
+    case TEventType::TEVENT_ALL_DESTROYED:
+    case TEventType::TEVENT_CREDITS:
+    case TEventType::TEVENT_TIME:
+    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
+    case TEventType::TEVENT_NUNITS_DESTROYED:
+    case TEventType::TEVENT_NOFACTORIES:
+    case TEventType::TEVENT_EVAC_CIVILIAN:
+    case TEventType::TEVENT_BUILD:
+    case TEventType::TEVENT_BUILD_UNIT:
+    case TEventType::TEVENT_BUILD_INFANTRY:
+    case TEventType::TEVENT_BUILD_AIRCRAFT:
+    case TEventType::TEVENT_LEAVES_MAP:
+    case TEventType::TEVENT_ENTERS_ZONE:
+    case TEventType::TEVENT_CROSS_HORIZONTAL:
+    case TEventType::TEVENT_CROSS_VERTICAL:
+    case TEventType::TEVENT_GLOBAL_SET:
+    case TEventType::TEVENT_GLOBAL_CLEAR:
+    case TEventType::TEVENT_FAKES_DESTROYED:
+    case TEventType::TEVENT_LOW_POWER:
+    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TEventType::TEVENT_COUNT:
+    default:
+      break;
+  }
+
+  switch (event) {
+      //		case TEVENT_CROSS_HORIZONTAL:
+      //		case TEVENT_CROSS_VERTICAL:
+    case TEVENT_ENTERS_ZONE:
+    case TEVENT_ANY:
+      attach = attach | ATTACH_MAP;
+      break;
+
+    case TEventType::TEVENT_NONE:
+    case TEventType::TEVENT_PLAYER_ENTERED:
+    case TEventType::TEVENT_SPIED:
+    case TEventType::TEVENT_THIEVED:
+    case TEventType::TEVENT_DISCOVERED:
+    case TEventType::TEVENT_HOUSE_DISCOVERED:
+    case TEventType::TEVENT_ATTACKED:
+    case TEventType::TEVENT_DESTROYED:
+    case TEventType::TEVENT_UNITS_DESTROYED:
+    case TEventType::TEVENT_BUILDINGS_DESTROYED:
+    case TEventType::TEVENT_ALL_DESTROYED:
+    case TEventType::TEVENT_CREDITS:
+    case TEventType::TEVENT_TIME:
+    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
+    case TEventType::TEVENT_NUNITS_DESTROYED:
+    case TEventType::TEVENT_NOFACTORIES:
+    case TEventType::TEVENT_EVAC_CIVILIAN:
+    case TEventType::TEVENT_BUILD:
+    case TEventType::TEVENT_BUILD_UNIT:
+    case TEventType::TEVENT_BUILD_INFANTRY:
+    case TEventType::TEVENT_BUILD_AIRCRAFT:
+    case TEventType::TEVENT_LEAVES_MAP:
+    case TEventType::TEVENT_CROSS_HORIZONTAL:
+    case TEventType::TEVENT_CROSS_VERTICAL:
+    case TEventType::TEVENT_GLOBAL_SET:
+    case TEventType::TEVENT_GLOBAL_CLEAR:
+    case TEventType::TEVENT_FAKES_DESTROYED:
+    case TEventType::TEVENT_LOW_POWER:
+    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TEventType::TEVENT_COUNT:
+    default:
+      break;
+  }
+
+  switch (event) {
+    case TEVENT_LOW_POWER:
+    case TEVENT_EVAC_CIVILIAN:
+    case TEVENT_BUILDING_EXISTS:
+    case TEVENT_BUILD:
+    case TEVENT_BUILD_UNIT:
+    case TEVENT_BUILD_INFANTRY:
+    case TEVENT_BUILD_AIRCRAFT:
+    case TEVENT_NOFACTORIES:
+    case TEVENT_BUILDINGS_DESTROYED:
+    case TEVENT_NBUILDINGS_DESTROYED:
+    case TEVENT_UNITS_DESTROYED:
+    case TEVENT_NUNITS_DESTROYED:
+    case TEVENT_ALL_DESTROYED:
+    case TEVENT_HOUSE_DISCOVERED:
+    case TEVENT_CREDITS:
+      //		case TEVENT_ATTACKED:
+    case TEVENT_THIEVED:
+    case TEVENT_ANY:
+    case TEVENT_FAKES_DESTROYED:
+      attach = attach | ATTACH_HOUSE;
+      break;
+
+    case TEventType::TEVENT_NONE:
+    case TEventType::TEVENT_PLAYER_ENTERED:
+    case TEventType::TEVENT_SPIED:
+    case TEventType::TEVENT_DISCOVERED:
+    case TEventType::TEVENT_ATTACKED:
+    case TEventType::TEVENT_DESTROYED:
+    case TEventType::TEVENT_TIME:
+    case TEventType::TEVENT_MISSION_TIMER_EXPIRED:
+    case TEventType::TEVENT_LEAVES_MAP:
+    case TEventType::TEVENT_ENTERS_ZONE:
+    case TEventType::TEVENT_CROSS_HORIZONTAL:
+    case TEventType::TEVENT_CROSS_VERTICAL:
+    case TEventType::TEVENT_GLOBAL_SET:
+    case TEventType::TEVENT_GLOBAL_CLEAR:
+    case TEventType::TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEventType::TEVENT_COUNT:
+    default:
+      break;
+  }
+
+  switch (event) {
+    case TEVENT_TIME:
+    case TEVENT_GLOBAL_SET:
+    case TEVENT_GLOBAL_CLEAR:
+    case TEVENT_MISSION_TIMER_EXPIRED:
+    case TEVENT_ANY:
+    case TEVENT_ALL_BRIDGES_DESTROYED:
+    case TEVENT_LEAVES_MAP:
+      attach = attach | ATTACH_GENERAL;
+      break;
+
+    case TEventType::TEVENT_NONE:
+    case TEventType::TEVENT_PLAYER_ENTERED:
+    case TEventType::TEVENT_SPIED:
+    case TEventType::TEVENT_THIEVED:
+    case TEventType::TEVENT_DISCOVERED:
+    case TEventType::TEVENT_HOUSE_DISCOVERED:
+    case TEventType::TEVENT_ATTACKED:
+    case TEventType::TEVENT_DESTROYED:
+    case TEventType::TEVENT_UNITS_DESTROYED:
+    case TEventType::TEVENT_BUILDINGS_DESTROYED:
+    case TEventType::TEVENT_ALL_DESTROYED:
+    case TEventType::TEVENT_CREDITS:
+    case TEventType::TEVENT_NBUILDINGS_DESTROYED:
+    case TEventType::TEVENT_NUNITS_DESTROYED:
+    case TEventType::TEVENT_NOFACTORIES:
+    case TEventType::TEVENT_EVAC_CIVILIAN:
+    case TEventType::TEVENT_BUILD:
+    case TEventType::TEVENT_BUILD_UNIT:
+    case TEventType::TEVENT_BUILD_INFANTRY:
+    case TEventType::TEVENT_BUILD_AIRCRAFT:
+    case TEventType::TEVENT_ENTERS_ZONE:
+    case TEventType::TEVENT_CROSS_HORIZONTAL:
+    case TEventType::TEVENT_CROSS_VERTICAL:
+    case TEventType::TEVENT_FAKES_DESTROYED:
+    case TEventType::TEVENT_LOW_POWER:
+    case TEventType::TEVENT_BUILDING_EXISTS:
+    case TEventType::TEVENT_COUNT:
+    default:
+      break;
+  }
+
+  return attach;
+}

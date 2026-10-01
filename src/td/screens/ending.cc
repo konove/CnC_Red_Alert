@@ -1,0 +1,312 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\ending.cpv   1.5   16 Oct 1995 16:50:30
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : ENDING.H *
+ *                                                                                             *
+ *                   Programmer : Barry W. Green *
+ *                                                                                             *
+ *                   Start Date : July 10, 1995 *
+ *                                                                                             *
+ *                  Last Update : July 10, 1995 [BWG] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "td/screens/ending.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <memory>
+#include <span>
+#include <vector>
+
+#include "absl/strings/str_format.h"
+#include "engine/audio/audio_mixer.h"
+#include "engine/file/game_file.h"
+#include "engine/gfx/palette.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/platform/timer.h"
+#include "engine/window/display.h"
+#include "engine/window/hardware_cursor.h"
+#include "engine/window/keyboard.h"
+#include "td/assets/interpal.h"
+#include "td/assets/palette.h"
+#include "td/assets/palettes.h"
+#include "td/assets/presentation.h"
+#include "td/assets/screen.h"
+#include "td/core/defines.h"
+#include "td/core/jshell.h"
+#include "td/data/text.h"
+#include "td/map/world.h"
+#include "td/screens/score.h"
+#include "td/startup/conquer.h"
+#include "td/startup/game_state.h"
+#include "td/startup/winstub.h"
+#include "td/ui/input.h"
+
+void GDI_Ending() {
+#ifdef DEMO
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
+  Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
+                    ThePalettes().title_palette());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
+  Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
+  TheKeyboard().Clear();
+  TheKeyboard().Read();
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
+  TheScreen().visible_page().Clear();
+
+#else
+  if (TheWorld().temple_ioned()) {
+    Play_Movie("GDIFINB");
+  } else {
+    Play_Movie("GDIFINA");
+  }
+
+  TheWorld().score().Show();
+
+  if (TheWorld().temple_ioned()) {
+    Play_Movie("GDIEND2");
+  } else {
+    Play_Movie("GDIEND1");
+  }
+
+  engine::platform::Timer<engine::platform::SystemTickSource> count;
+  if (GameFileExists("TRAILER.VQA")) {
+    Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                    Call_Back);
+    if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
+      Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                      TheScreen().sys_mem_page().bytes(),
+                      &ThePalettes().title_palette());
+    }
+    TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
+                                            0, 320, 199, 640, 398);
+    Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
+                    Call_Back);
+    TheKeyboard().Clear();
+    count.Set(int64_t{kTimerSecond} * 3);
+    while (count.Remaining()) {
+      Call_Back();
+    }
+    Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                    Call_Back);
+
+    Play_Movie("TRAILER");  // Red Alert teaser.
+  }
+
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
+  if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
+    Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                    TheScreen().sys_mem_page().bytes(),
+                    &ThePalettes().title_palette());
+  }
+  TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
+                                          0, 320, 199, 640, 398);
+  Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
+  TheKeyboard().Clear();
+  //	Timer<SystemTickSource> count;
+  count.Set(int64_t{kTimerSecond} * 3);
+  while (count.Remaining()) {
+    Call_Back();
+  }
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
+
+  Play_Movie("CC2TEASE");
+#endif
+}
+
+#ifndef DEMO
+/***********************************************************************************************
+ * Nod_Ending -- play ending movies for Nod players *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS: *
+ *                                                                                             *
+ * HISTORY: * 7/10/1995 BWG : Created. *
+ *=============================================================================================*/
+void Nod_Ending() {
+  static const unsigned char _tanpal[] = {0x0,  0xED, 0xED, 0x2C, 0x2C, 0xFB,
+                                          0xFB, 0xFD, 0xFD, 0x0,  0x0,  0x0,
+                                          0x0,  0x0,  0x52, 0x0};
+
+  char fname[12];
+
+  TheWorld().score().Show();
+
+  Presentation show;
+  TheScreen().visible_view().Clear();
+  TheScreen().hidden_view().Clear();
+  show.page().view().Clear();
+
+  engine::gfx::Palette localpal;
+  if (const auto file = OpenGameFile("SATSEL.PAL")) {
+    if (const auto palette = engine::gfx::ReadVgaPalette(*file)) {
+      localpal = *palette;
+    }
+  }
+  if (const auto file = OpenGameFile("SATSEL.CPS")) {
+    Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                    TheScreen().sys_mem_page().bytes(), nullptr);
+  }
+  TheScreen().sys_mem_page().view().BlitTo(show.page().view());
+  // Read from the file: MixArchive::RetrieveData() only serves cached archives.
+  const auto kanefinl_file = OpenGameFile("KANEFINL.AUD");
+  const std::vector<std::byte> kanefinl =
+      kanefinl_file ? kanefinl_file->ReadBytes(kanefinl_file->Size())
+                    : std::vector<std::byte>{};
+  const auto loopie6m_file = OpenGameFile("LOOPIE6M.AUD");
+  const std::vector<std::byte> loopie6m =
+      loopie6m_file ? loopie6m_file->ReadBytes(loopie6m_file->Size())
+                    : std::vector<std::byte>{};
+
+  Play_Movie("NODFINAL", THEME_NONE, false);
+
+  TheMouse().Hide();
+  engine::window::TheDisplay().EndFrame();
+  Set_Palette(localpal);
+  TheMouse().Show();
+
+  engine::gfx::BrightenPalette(localpal, 30, 30, 30);
+  Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
+                       "SATSELIN.PAL");
+
+  TheKeyboard().Clear();
+  engine::audio::TheAudio().Play(kanefinl, 255, 128);
+  engine::audio::TheAudio().Play(loopie6m, 255, 128);
+
+  bool mouseshown = false;
+  bool done = false;
+  int selection = 1;
+  bool printedtext = false;
+  while (!done) {
+    if (!printedtext && !engine::audio::TheAudio().IsPlaying(kanefinl.data())) {
+      printedtext = true;
+      Alloc_Object(std::make_unique<ScorePrintClass>(
+          show, Text_String(TXT_SEL_TARGET), 0, 180, _tanpal));
+      mouseshown = true;
+      TheMouse().Show();
+    }
+    Call_Back_Delay(show, 1);
+    if (!TheKeyboard().Peek()) {
+      if (!engine::audio::TheAudio().IsPlaying(loopie6m.data())) {
+        engine::audio::TheAudio().Play(loopie6m, 255, 128);
+      }
+    } else {
+      if (engine::audio::TheAudio().IsPlaying(kanefinl.data())) {
+        TheKeyboard().Clear();
+      } else {
+        const engine::window::InputEvent event = TheKeyboard().Read();
+        if (event.IsPress(engine::window::MouseButton::kLeft)) {
+          const int mousex = event.x;
+          const int mousey = event.y;
+          if (mousey >= 44 && mousey <= 354) {
+            done = true;
+            if (mousex < 320 && mousey < 200) {
+              selection = 2;
+            }
+            if (mousex < 320 && mousey >= 200) {
+              selection = 3;
+            }
+            if (mousex >= 320 && mousey >= 200) {
+              selection = 4;
+            }
+          }
+        }
+      }
+    }
+  }
+  if (mouseshown) {
+    TheMouse().Hide();
+  }
+
+  /* get rid of all the animating objects */
+  Clear_Score_Objects();
+  // erase the "choose a target" text
+  TheScreen().visible_view().FillRect(0, 360, 638, 398, 0);
+  show.text_page().view().FillRect(0, 360, 638, 398, 0);
+
+  TheMouse().Hide();
+  TheKeyboard().Clear();
+
+  engine::audio::TheAudio().Stop(kanefinl.data());
+  engine::audio::TheAudio().Stop(loopie6m.data());
+
+  absl::SNPrintF(fname, sizeof(fname), "NODEND%d", selection);
+  TheGameState().preserve_movie_screen() = true;
+  Play_Movie(fname);
+
+  engine::platform::Timer<engine::platform::SystemTickSource> count;
+  if (GameFileExists("TRAILER.VQA")) {
+    Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                    Call_Back);
+    if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
+      Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                      TheScreen().sys_mem_page().bytes(),
+                      &ThePalettes().title_palette());
+    }
+    TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
+                                            0, 320, 199, 640, 398);
+    Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
+                    Call_Back);
+    TheKeyboard().Clear();
+    count.Set(int64_t{kTimerSecond} * 3);
+    while (count.Remaining()) {
+      Call_Back();
+    }
+    Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
+                    Call_Back);
+
+    Play_Movie("TRAILER");  // Red Alert teaser.
+  }
+
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
+  if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
+    Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                    TheScreen().sys_mem_page().bytes(),
+                    &ThePalettes().title_palette());
+  }
+  TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
+                                          0, 320, 199, 640, 398);
+  Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
+  TheKeyboard().Clear();
+  //	Timer<SystemTickSource> count;
+  count.Set(int64_t{kTimerSecond} * 3);
+  while (count.Remaining()) {
+    Call_Back();
+  }
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
+
+  Play_Movie("CC2TEASE");
+}
+#endif

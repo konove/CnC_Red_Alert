@@ -1,0 +1,111 @@
+// File: Reading Windows device-independent bitmaps out of memory.
+//
+// The Westwood Online lobby downloads .bmp files -- the icons beside each game
+// type and the latency indicators -- and hands the bytes to Windows' DIB
+// sample code (dibapi.h, dibfile.cc, dibutil.cc: about 2,000 lines of 1991
+// Microsoft example that needs windows.h, GDI and the global heap). Only a
+// handful of those entry points is ever called, and all of them are arithmetic
+// over a block of memory.
+//
+// This is that handful, owning its pixels instead of returning a handle that
+// has to be locked, unlocked and freed by hand.
+//
+// Example:
+//   auto icon = dib::Image::FromBmp(file_bytes);
+//   if (icon.has_value()) {
+//     Draw(icon->Bits(), icon->Width(), icon->Height());
+//   }
+
+#ifndef CNC_RED_ALERT_RA_ASSETS_DIB_H_
+#define CNC_RED_ALERT_RA_ASSETS_DIB_H_
+
+#include <cstdint>
+#include <optional>
+#include <span>
+#include <vector>
+
+#include "absl/base/attributes.h"
+#include "base/types.h"
+
+namespace dib {
+
+// One colour-table entry, in the order a BMP stores it.
+struct Color {
+  std::uint8_t blue;
+  std::uint8_t green;
+  std::uint8_t red;
+  std::uint8_t reserved;
+
+  friend bool operator==(const Color&, const Color&) = default;
+};
+
+// The number of entries in a full 8-bit colour table, and so in the game's
+// own palette.
+inline constexpr base::ssize kPaletteSize = 256;
+
+// A palettised bitmap: a colour table plus one byte of index per pixel.
+//
+// Rows are stored bottom-up and padded to a multiple of four bytes, the way a
+// BMP stores them; Stride() gives the padded row length. Only 8-bit
+// uncompressed bitmaps are accepted, which is all the game's own art and all
+// the artwork the lobby ever served.
+class Image {
+ public:
+  // Parses a whole .bmp file. Returns nullopt if the bytes are truncated, are
+  // not a BMP, or are not an 8-bit uncompressed one.
+  static std::optional<Image> FromBmp(std::span<const std::uint8_t> bmp);
+
+  [[nodiscard]] int Width() const { return width_; }
+  [[nodiscard]] int Height() const { return height_; }
+
+  // Bytes per row including the padding to a four-byte boundary.
+  [[nodiscard]] base::ssize Stride() const {
+    return (static_cast<base::ssize>(width_) + 3) / 4 * 4;
+  }
+
+  // The pixels, bottom row first, Stride() bytes per row.
+  [[nodiscard]] std::span<const std::uint8_t> Bits() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return bits_;
+  }
+
+  // The colour table. Mutable because the lobby remaps downloaded artwork onto
+  // the game's own palette in place.
+  [[nodiscard]] std::span<const Color> Colors() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return colors_;
+  }
+  std::span<Color> MutableColors() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return colors_;
+  }
+
+  // The pixels, for RemapToPalette to rewrite in place.
+  std::span<std::uint8_t> MutableBits() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return bits_;
+  }
+
+ private:
+  Image() = default;
+
+  int width_ = 0;
+  int height_ = 0;
+  std::vector<Color> colors_;
+  std::vector<std::uint8_t> bits_;
+};
+
+// Rewrites every pixel of `image` so it indexes `target` instead of the
+// image's own colour table, choosing the nearest colour in `target` for each.
+// The image's colour table is left alone; only the pixel indices change, so
+// the result is only meaningful once `target` is the palette in use.
+//
+// Entry 0 is a BMP's transparent colour by convention. The game has no
+// transparency here, so it is mapped to the nearest thing to black rather
+// than to whatever colour the file happens to name.
+//
+// Matching happens at 8 bits per channel, so `target` carries the game's
+// palette as the screen shows it (PaletteColor::red() and friends).
+void RemapToPalette(Image& image, std::span<const Color> target);
+
+}  // namespace dib
+
+#endif  // CNC_RED_ALERT_RA_ASSETS_DIB_H_

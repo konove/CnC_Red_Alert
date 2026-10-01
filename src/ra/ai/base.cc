@@ -1,0 +1,459 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/BASE.CPP 1     3/03/97 10:24a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : BASE.CPP *
+ *                                                                                             *
+ *                   Programmer : Bill Randolph *
+ *                                                                                             *
+ *                   Start Date : 03/27/95 *
+ *                                                                                             *
+ *                  Last Update : July 30, 1996 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * BaseClass::Get_Building -- Returns ptr to the built building for
+ *the given node           * BaseClass::Get_Node -- Finds the node that matches
+ *the cell specified.                    * BaseClass::Get_Node -- Returns ptr to
+ *the node corresponding to given object              * BaseClass::Is_Built --
+ *Tells if given item in the list has been built yet                 *
+ *   BaseClass::Is_Node -- Tells if the given building is part of our base list
+ ** BaseClass::Load -- loads from a saved game file * BaseClass::Next_Buildable
+ *-- returns ptr to the next node that needs to be built          *
+ *   BaseClass::Read_INI -- INI reading routine * BaseClass::Save -- saves to a
+ *saved game file                                             *
+ *   BaseClass::Write_INI -- Writes all the base information to the INI
+ *database.              * BaseNodeClass::operator != -- inequality operator *
+ *   BaseNodeClass::operator == -- equality operator * BaseNodeClass::operator >
+ *-- greater-than operator                                        *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+#include "ra/ai/base.h"
+
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include "absl/strings/str_format.h"
+#include "base/strings/number_parse.h"
+#include "base/strings/tokenizer.h"
+#include "base/types.h"
+#include "engine/stream/archive.h"
+#include "magic_enum/magic_enum.hpp"
+#include "ra/core/ccptr.h"
+#include "ra/core/coord.h"
+#include "ra/core/defines.h"
+#include "ra/data/ccini.h"
+#include "ra/map/map.h"
+#include "ra/map/world.h"
+#include "ra/objects/building.h"
+#include "ra/objects/cell.h"
+#include "ra/objects/house.h"
+#include "ra/objects/object.h"
+#include "ra/objects/type.h"
+
+/***********************************************************************************************
+ * BaseNodeClass::operator == -- equality operator *
+ *                                                                                             *
+ * INPUT: * node      node to test against *
+ *                                                                                             *
+ * OUTPUT: * true = equal, false = not equal *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 03/24/1995 BRR : Created. *
+ *=============================================================================================*/
+bool BaseNodeClass::operator==(const BaseNodeClass& node) const {
+  return Type == node.Type && Cell == node.Cell;
+}
+
+/***********************************************************************************************
+ * BaseNodeClass::operator != -- inequality operator *
+ *                                                                                             *
+ * INPUT: * node      node to test against *
+ *                                                                                             *
+ * OUTPUT: * comparison result *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 03/24/1995 BRR : Created. *
+ *=============================================================================================*/
+bool BaseNodeClass::operator!=(const BaseNodeClass& node) const {
+  return !(*this == node);
+}
+
+/***********************************************************************************************
+ * BaseNodeClass::operator > -- greater-than operator *
+ *                                                                                             *
+ * INPUT: * node      node to test against *
+ *                                                                                             *
+ * OUTPUT: * comparison result *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 03/24/1995 BRR : Created. *
+ *=============================================================================================*/
+bool BaseNodeClass::operator>(const BaseNodeClass& /*unused*/) { return true; }
+
+BaseClass::~BaseClass() { Nodes.Clear(); }
+
+/***********************************************************************************************
+ * BaseClass::Is_Built -- Tells if given item in the list has been built yet *
+ *                                                                                             *
+ * INPUT: * index      index into base list *
+ *                                                                                             *
+ * OUTPUT: * true = yes, false = no *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 03/24/1995 BRR : Created. *
+ *=============================================================================================*/
+bool BaseClass::Is_Built(int index) const {
+  return Get_Building(index) != nullptr;
+}
+
+/***********************************************************************************************
+ * BaseClass::Get_Building -- Returns ptr to the built building for the given
+ *node             *
+ *                                                                                             *
+ * INPUT: * obj      pointer to building to test *
+ *                                                                                             *
+ * OUTPUT: * ptr to already-built building, nullptr if none *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 03/24/1995 BRR : Created. * 07/30/1996 JLB : Handle arbitrary
+ *overlapper list length.                                 *
+ *=============================================================================================*/
+BuildingClass* BaseClass::Get_Building(int index) const {
+  /*
+  ** Check the location on the map where this building should be; if it's
+  ** there, return a pointer to it.
+  */
+  const auto& node = Nodes.at(index);
+  const CELL target_cell = node.Cell;
+
+  // Create a reference to the map cell to avoid repeated lookups.
+  const auto& map_cell = TheMap().at(target_cell);
+
+  // Helper lambda to check if a candidate object matches our criteria.
+  // Returns the cast pointer if successful, nullptr otherwise.
+  const auto check_candidate = [&](ObjectClass* candidate) -> BuildingClass* {
+    if (!candidate) {
+      return nullptr;
+    }
+
+    // 1. Fast RTTI Check: Is it actually a building?
+    if (candidate->What_Am_I() != RTTI_BUILDING) {
+      return nullptr;
+    }
+
+    // 2. Safe Cast: We verified the type above, so static_cast is safe and
+    // fast.
+    auto* building = dynamic_cast<BuildingClass*>(candidate);
+
+    // 3. Logic Check: Does the Type matches?
+    if (building->Class->Type != node.Type) {
+      return nullptr;
+    }
+
+    // 4. Location Check: Ensure the building is actually AT this cell
+    // coordinate.
+    if (Coord_Cell(building->Coord) != target_cell) {
+      return nullptr;
+    }
+
+    return building;
+  };
+
+  // Check the primary occupant.
+  if (auto* match = check_candidate(map_cell.Cell_Building())) {
+    return match;
+  }
+
+  // Check the overlappers.
+  for (auto* overlapper : map_cell.Overlappers) {
+    if (auto* match = check_candidate(overlapper)) {
+      return match;
+    }
+  }
+
+  return nullptr;
+}
+
+/***********************************************************************************************
+ * BaseClass::Is_Node -- Tells if the given building is part of our base list *
+ *                                                                                             *
+ * INPUT: * obj      pointer to building to test *
+ *                                                                                             *
+ * OUTPUT: * true = building is a node in the list, false = isn't *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 03/24/1995 BRR : Created. *
+ *=============================================================================================*/
+bool BaseClass::Is_Node(const BuildingClass* obj) {
+  return Get_Node(obj) != nullptr;
+}
+
+/***********************************************************************************************
+ * BaseClass::Get_Node -- Returns ptr to the node corresponding to given object
+ **
+ *                                                                                             *
+ * INPUT: * obj      pointer to building to test *
+ *                                                                                             *
+ * OUTPUT: * ptr to node *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 03/24/1995 BRR : Created. *
+ *=============================================================================================*/
+BaseNodeClass* BaseClass::Get_Node(const BuildingClass* obj) {
+  for (int i = 0; i < Nodes.Count(); i++) {
+    if (obj->Class->Type == Nodes.at(i).Type &&
+        Coord_Cell(obj->Coord) == Nodes.at(i).Cell) {
+      return &Nodes.at(i);
+    }
+  }
+  return nullptr;
+}
+
+/***********************************************************************************************
+ * BaseClass::Get_Node -- Finds the node that matches the cell specified. *
+ *                                                                                             *
+ *    This routine is used to find a matching node the corresponds to the cell
+ *specified.      *
+ *                                                                                             *
+ * INPUT:   cell  -- The cell to use in finding a match. *
+ *                                                                                             *
+ * OUTPUT:  Returns a pointer to the matching node if found. If not found, then
+ *nullptr is        * returned. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/12/1996 JLB : Created. *
+ *=============================================================================================*/
+BaseNodeClass* BaseClass::Get_Node(CELL cell) {
+  for (int index = 0; index < Nodes.Count(); index++) {
+    if (cell == Nodes.at(index).Cell) {
+      return &Nodes.at(index);
+    }
+  }
+  return nullptr;
+}
+
+/***********************************************************************************************
+ * BaseClass::Next_Buildable -- returns ptr to the next node that needs to be
+ *built            *
+ *                                                                                             *
+ * If 'type' is not NONE, returns ptr to the next "hole" in the list of the
+ *given type.        * Otherwise, returns ptr to the next hole in the list of
+ *any type.                            *
+ *                                                                                             *
+ * INPUT: * type      type of building to check for *
+ *                                                                                             *
+ * OUTPUT: * ptr to a BaseNodeClass, nullptr if none *
+ *                                                                                             *
+ * WARNINGS: * none. *
+ *                                                                                             *
+ * HISTORY: * 03/24/1995 BRR : Created. *
+ *=============================================================================================*/
+BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
+  /*
+  ** Loop through all node entries, returning a pointer to the first
+  ** un-built one that matches the requested type.
+  */
+  for (int i = 0; i < Nodes.Count(); i++) {
+    /*
+    ** For STRUCT_NONE, return the first hole found
+    */
+    if (type == STRUCT_NONE) {
+      if (!Is_Built(i)) {
+        return &Nodes.at(i);
+      }
+
+    } else {
+      /*
+      ** For a "real" building type, return the first hold for that type
+      */
+      if (Nodes.at(i).Type == type && !Is_Built(i)) {
+        return &Nodes.at(i);
+      }
+    }
+  }
+
+  // If no entry could be found, then create a fake one that will allow
+  // placement of the building. Make it static and reuse the next time this
+  // routine is called.
+
+  return nullptr;
+}
+
+/***********************************************************************************************
+ * BaseClass::Read_INI -- INI reading routine *
+ *                                                                                             *
+ * INI entry format: * BLDG=COORDINATE * BLDG=COORDINATE *
+ *        ... *
+ *                                                                                             *
+ * INPUT: * buffer      pointer to loaded INI file *
+ *                                                                                             *
+ * OUTPUT: * none. *
+ *                                                                                             *
+ * WARNINGS: * This routines assumes there is only one base defined for the
+ *scenario.                 *
+ *                                                                                             *
+ * HISTORY: * 03/24/1995 BRR : Created. * 02/20/1996 JLB : Fixed to know what
+ *house to build base from.                             *
+ *=============================================================================================*/
+void BaseClass::Read_INI(CCINIClass& ini) {
+  char buf[128];
+  char uname[10];
+  BaseNodeClass node;  // node to add to list
+
+  /*
+  **	First, determine the house of the human player, and set the Base's house
+  **	accordingly.
+  */
+  House = ini.Get_HousesType(INI_Name(), "Player", ThePlayer()->Class->House);
+
+  /*
+  **	Read the number of buildings that will go into the base node list
+  */
+  const int count = ini.Get_Int(INI_Name(), "Count", 0);
+
+  /*
+  **	Read each entry in turn, in the same order they were written out.
+  */
+  for (int i = 0; i < count; i++) {
+    /*
+    ** Get an INI entry
+    */
+    absl::SNPrintF(uname, sizeof(uname), "%03d", i);
+    ini.Get_String(INI_Name(), uname, nullptr, buf, sizeof(buf));
+
+    /*
+    ** Set the node's building type
+    */
+    base::Tokenizer tokens(buf, ",");
+    node.Type = BuildingTypeClass::From_Name(tokens.Next());
+
+    /*
+    ** Read & set the node's coordinate
+    */
+    node.Cell = base::ParseIntegerOr<CELL>(tokens.Next(), 0);
+
+    /*
+    ** Add this node to the Base's list
+    */
+    Nodes.Add(node);
+  }
+}
+
+/***********************************************************************************************
+ * BaseClass::Write_INI -- Writes all the base information to the INI database.
+ **
+ *                                                                                             *
+ *    Use this routine to write all prebuild base information to the INI
+ *database specified.   *
+ *                                                                                             *
+ * INPUT:   ini   -- Reference to the INI database to store the data to. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   If there was any preexisting prebuild base data in the database,
+ *it will be     * be erased by this routine. *
+ *                                                                                             *
+ * HISTORY: * 07/30/1996 JLB : Created. *
+ *=============================================================================================*/
+void BaseClass::Write_INI(CCINIClass& ini) {
+  /*
+  **	Clear out all existing base data from the ini file.
+  */
+  ini.Clear(INI_Name());
+
+  if (House != HOUSE_NONE) {
+    /*
+    **	Write out the owner of this buildable list.
+    */
+    ini.Put_HousesType(INI_Name(), "Player", House);
+
+    /*
+    **	Save the # of buildings in the Nodes list.  This is essential because
+    **	they must be read in the same order they were created, so "000" must be
+    **	read first, etc.
+    */
+    ini.Put_Int(INI_Name(), "Count", static_cast<int>(Nodes.Count()));
+
+    // Write each entry into the INI
+    for (base::ssize i = 0; i < Nodes.Count(); i++) {
+      char buf[128];
+      char uname[10];
+
+      absl::SNPrintF(uname, sizeof(uname), "%03td", i);
+
+      absl::SNPrintF(buf, sizeof(buf), "%s,%d",
+                     BuildingTypeClass::As_Reference(Nodes.at(i).Type).IniName,
+                     Nodes.at(i).Cell);
+
+      ini.Put_String(INI_Name(), uname, buf);
+    }
+  }
+}
+
+template <class Archive>
+void BaseClass::Serialize(Archive& ar) {
+  ar(House);
+  auto count = static_cast<int32_t>(Nodes.Count());
+  ar(count);
+  if constexpr (Archive::kIsReading) {
+    if (!ar.ok() || count < 0 || count > MAP_CELL_TOTAL) {
+      ar.Fail("invalid base node count");
+      return;
+    }
+    Nodes.Clear();
+    // Clear() releases the storage and Add() grows it back ten slots at a
+    // time, copying every element already there each time. The count is known
+    // here, so take the storage in one step.
+    if (count > 0) {
+      Nodes.Resize(count);
+    }
+    for (int i = 0; i < count; ++i) {
+      BaseNodeClass node;
+      ar(node.Type, node.Cell);
+      if (!ar.ok() || !magic_enum::enum_contains(node.Type) ||
+          node.Cell < 0 || node.Cell >= MAP_CELL_TOTAL) {
+        ar.Fail("invalid base node");
+        return;
+      }
+      Nodes.Add(node);
+    }
+  } else {
+    for (int i = 0; i < count; ++i) {
+      ar(Nodes.at(i).Type, Nodes.at(i).Cell);
+    }
+  }
+}
+template void BaseClass::Serialize(ArchiveWriter&);
+template void BaseClass::Serialize(ArchiveReader&);

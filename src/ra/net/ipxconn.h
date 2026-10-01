@@ -1,0 +1,213 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/IPXCONN.H 1     3/03/97 10:24a Joe_bostic $ */
+/***************************************************************************
+ **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
+ ***************************************************************************
+ *                                                                         *
+ *                 Project Name : Command & Conquer                        *
+ *                                                                         *
+ *                    File Name : IPXCONN.H                                *
+ *                                                                         *
+ *                   Programmer : Bill Randolph                            *
+ *                                                                         *
+ *                   Start Date : December 19, 1994                        *
+ *                                                                         *
+ *                  Last Update : April 9, 1995   [BR] *
+ *                                                                         *
+ *-------------------------------------------------------------------------*
+ *                                                                         *
+ * This is the Connection Class for IPX communications.  It inherits
+ ** a Queue, PacketBuf, timeout variables from ConnectionClass.  It
+ ** inherits its Send_/Receive_/Get_Packet functions, and the sequenced *
+ * ACK/Retry logic in Service_Send_Queue & Service_Receive_Queue from *
+ * SequencedConnClass.  It guarantees order of delivery of packets.
+ **
+ *																									*
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+#ifndef CNC_RED_ALERT_RA_NET_IPXCONN_H_
+#define CNC_RED_ALERT_RA_NET_IPXCONN_H_
+
+#include <cstddef>
+#include <span>
+
+/*
+********************************* Includes **********************************
+*/
+#include <cstdint>
+
+#include "ra/net/connect.h"
+#include "ra/net/ipx.h"
+#include "ra/net/ipxaddr.h"
+
+/*
+***************************** Class Declaration *****************************
+*/
+class IPXConnClass : public ConnectionClass {
+  /*
+  ---------------------------- Public Interface ----------------------------
+  */
+ public:
+  /*.....................................................................
+  Various useful enums:
+  .....................................................................*/
+  static constexpr int kConnNameMax =
+      40;  // max # chars allowed for connection name
+
+  /*.....................................................................
+  Constructor/destructor.
+  .....................................................................*/
+  IPXConnClass(int numsend, int numreceive, int maxlen, uint16_t magicnum,
+               IPXAddressClass* address, int id, const char* name,
+               int extralen = 0);
+  ~IPXConnClass() override = default;
+  IPXConnClass(const IPXConnClass&) = delete;
+  IPXConnClass& operator=(const IPXConnClass&) = delete;
+  IPXConnClass(IPXConnClass&&) = delete;
+  IPXConnClass& operator=(IPXConnClass&&) = delete;
+
+  /*.....................................................................
+  Initialization.
+  .....................................................................*/
+  void Init() override;
+
+  /*.....................................................................
+  The Configure function is for configuring all connections at once.
+  It's static because it doesn't apply to any specific connection, but
+  all of them.
+  .....................................................................*/
+  static void Configure(uint16_t socket, int conn_num, ECBType* listen_ecb,
+                        ECBType* send_ecb, IPXHeaderType* listen_header,
+                        IPXHeaderType* send_header, char* listen_buf,
+                        char* send_buf, int32_t handler_rm_ptr,
+                        int maxpacketlen);
+
+  /*.....................................................................
+  These routines tell IPX to start listening for packets, and to stop
+  listening for packets.  They're static because they affect all
+  connections at once (there's no way to turn listening on for only one
+  connection; it's all or nothing).
+  .....................................................................*/
+  static bool Start_Listening();
+  static int Stop_Listening();
+
+  /*.....................................................................
+  The Destination IPX Address for this connection
+  .....................................................................*/
+  IPXAddressClass Address;
+
+  /*.....................................................................
+  The "Immediate" (Bridge) address for this connection, and a flag
+  telling if the address has been precomputed.
+  .....................................................................*/
+  NetNodeType ImmediateAddress{};
+  int Immed_Set;
+
+  /*.....................................................................
+  Each IPX Connection can have a Name & Unique numerical ID
+  .....................................................................*/
+  int ID;
+  char Name[kConnNameMax]{};
+
+  /*
+  -------------------------- Protected Interface ---------------------------
+  */
+ protected:
+  /*.....................................................................
+  This is the overloaded Send routine declared in ConnectionClass, and
+  used in SequencedConnClass.
+  .....................................................................*/
+  int Send(std::span<const std::byte> buf, int buflen,
+           std::span<const std::byte> extrabuf, int extralen) override;
+
+  /*.....................................................................
+  These are the routines that access IPX.  Open_Socket & Close_Socket are
+  static because they're called by Start_Listening & Stop_Listening.
+  Send_To & Broadcast are static since they're direct interfaces to IPX,
+  and there's only one IPX instance running.
+  .....................................................................*/
+  static int Open_Socket(uint16_t socket);
+  static void Close_Socket(uint16_t socket);
+  static int Send_To(std::span<const std::byte> buf, int buflen,
+                     IPXAddressClass* address, const NetNodeType immed);
+  static bool Broadcast(std::span<const std::byte> buf, int buflen);
+
+  /*.....................................................................
+  The socket ID for this connection
+  .....................................................................*/
+  static uint16_t Socket;
+
+  /*.....................................................................
+  User's local Connection # (0 = not logged in)
+  .....................................................................*/
+  static int ConnectionNum;
+
+  /*.....................................................................
+  This is a static version of MaxPacketLen, which is the size of the
+  app's packets, plus our internal CommHeaderType.  It's used in the
+  Start_Listening routine.
+  .....................................................................*/
+  static int PacketLen;
+
+  /*.....................................................................
+  Variables for Listening (created by the IPXManagerClass, and passed
+  in via Init).  All IPX connections share these buffers.
+  .....................................................................*/
+  static ECBType* ListenECB;
+  static IPXHeaderType* ListenHeader;
+  static char* ListenBuf;
+
+  /*.....................................................................
+  Variables for Sending (created by the IPXManagerClass, and passed
+  in via Init).  All IPX connections share these buffers.
+  .....................................................................*/
+  static ECBType* SendECB;
+  static IPXHeaderType* SendHeader;
+  static char* SendBuf;
+
+  /*.....................................................................
+  This is a REAL-MODE pointer to the event-service-routine for IPX.
+  If it's 0, IPX will operate in polled mode.  Otherwise, the high word
+  must contain the segment, and the low word must contain the offset.
+  CS will be the high word value when the routine is called.  (Requiring
+  the segment/offset to be computed by the caller gives the caller
+  control over CS.)
+  .....................................................................*/
+  static int32_t Handler;
+
+  /*.....................................................................
+  This status flag tells us if Configure() has been called or not.
+  .....................................................................*/
+  static int Configured;
+
+  /*.....................................................................
+  This status flag tells us if the socket has been opened or not.
+  .....................................................................*/
+  static bool SocketOpen;
+
+  /*.....................................................................
+  This status flag tells us if Start_Listening() has been called or not.
+  .....................................................................*/
+  static int Listening;
+};
+
+#endif  // CNC_RED_ALERT_RA_NET_IPXCONN_H_
+
+/*************************** end of ipxconn.h ******************************/

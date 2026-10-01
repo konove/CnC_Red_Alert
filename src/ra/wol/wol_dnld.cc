@@ -1,0 +1,278 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+//	Wol_Dnld.cpp - WW online patch download dialog.
+//	ajw 10/12/98
+
+#include <algorithm>
+#include <cstdint>
+
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/platform/timer.h"
+#include "engine/window/hardware_cursor.h"
+#include "engine/window/keyboard.h"
+#include "ra/assets/palette.h"
+#include "ra/assets/palettes.h"
+#include "ra/assets/screen.h"
+#include "ra/core/config.h"
+#include "ra/core/defines.h"
+#include "ra/core/jshell.h"
+#include "ra/data/text_ids.h"
+#include "ra/startup/conquer.h"
+#include "ra/startup/init.h"
+#include "ra/ui/dialog.h"
+#include "ra/ui/gadget.h"
+#include "ra/ui/gauge.h"
+#include "ra/ui/input.h"
+#include "ra/ui/msgbox.h"
+#include "ra/ui/statbtn.h"
+#include "ra/ui/textbtn.h"
+#include "ra/wol/downloaddefs.h"
+#include "ra/wol/rawolapi.h"
+#include "ra/wol/wolapi.h"
+#include "ra/wol/wolapiob.h"
+#include "ra/wol/wolstrng.h"
+
+//***********************************************************************************************
+bool WOL_Download_Dialog(IDownload* pDownload,
+                         RADownloadEventSink* pDownloadSink,
+                         const char* szTitle) {
+  //	This dialog is presented for each file that is to be downloaded during a
+  // WOLAPI patch.
+
+  bool bReturn = true;
+  int64_t dwTimeNextPump =
+      engine::platform::SystemMilliseconds() + WOLAPIPUMPWAIT;
+
+  /*
+  ** Dialog & button dimensions
+  */
+  const int d_dialog_w = 400;                             // dialog width
+  const int d_dialog_h = 180;                             // dialog height
+  const int d_dialog_x = ((640 - d_dialog_w) / 2);        // dialog x-coord
+  const int d_dialog_y = ((400 - d_dialog_h) / 2);        // centered y-coord
+  const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
+
+  const int d_margin = 34;
+  const int d_txt6_h = 15;
+
+  const int d_cancel_w = config::kIsEnglish ? 80 : 100;
+  const int d_cancel_h = 18;
+  const int d_cancel_x = d_dialog_cx - (d_cancel_w / 2);
+  const int d_cancel_y = d_dialog_y + d_dialog_h - 40;
+
+  const int d_progress_w = 200;
+  const int d_progress_h = 20;
+  const int d_progress_x =
+      (TheScreen().visible_view().width() / 2) - (d_progress_w / 2);
+  const int d_progress_y = d_dialog_y + 90;
+
+  //	int	width;
+  //	int	height;
+  //	char* info_string = (char*)szTitle;
+
+  PixelView& view = TheScreen().visible_view();
+
+  //	Format_Window_String( info_string, visible_view.height(), width,
+  // height
+  //);
+
+  /*
+  ** Button Enumerations
+  */
+  constexpr int kButtonCancel = 100;
+  constexpr int kButtonProgress = 101;
+
+  /*
+  ** Buttons
+  */
+  TextButtonClass cancelbtn(
+      kButtonCancel, TXT_CANCEL,
+      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+      // The German and French captions outgrow the button, so those builds
+      // let it size itself to the text.
+      d_cancel_x, d_cancel_y, config::kIsEnglish ? d_cancel_w : -1,
+      config::kIsEnglish ? d_cancel_h : -1);
+
+  GaugeClass progress_meter(kButtonProgress, d_progress_x, d_progress_y,
+                            d_progress_w, d_progress_h);
+  progress_meter.Use_Thumb(false);
+
+  StaticButtonClass StatTitle(0, szTitle, TPF_CENTER | kTpfText,
+                              d_dialog_x + d_margin, d_dialog_y + 28,
+                              d_dialog_w - (2 * d_margin), d_txt6_h);
+  StaticButtonClass StatStatus(0, "", TPF_CENTER | kTpfText,
+                               d_dialog_x + d_margin, d_dialog_y + 49,
+                               d_dialog_w - (2 * d_margin), d_txt6_h);
+  StaticButtonClass StatBytes(0, "", TPF_CENTER | kTpfText,
+                              d_dialog_x + d_margin, d_dialog_y + 71,
+                              d_dialog_w - (2 * d_margin), d_txt6_h);
+  StaticButtonClass StatTime(0, "", TPF_CENTER | kTpfText,
+                             d_dialog_x + d_margin, d_dialog_y + 117,
+                             d_dialog_w - (2 * d_margin), d_txt6_h);
+
+  enum class RedrawType {
+    REDRAW_NONE = 0,
+    REDRAW_PROGRESS = 1,
+    REDRAW_BUTTONS = 2,
+    REDRAW_BACKGROUND = 3,
+    REDRAW_ALL = REDRAW_BACKGROUND
+  };
+  using enum RedrawType;
+
+  bool process = true;
+  RedrawType display = REDRAW_ALL;  // redraw level
+
+  GadgetClass* commands = &cancelbtn;  // button list
+  progress_meter.Add_Tail(*commands);
+  StatTitle.Add_Tail(*commands);
+  StatBytes.Add_Tail(*commands);
+  StatTime.Add_Tail(*commands);
+  StatStatus.Add_Tail(*commands);
+
+  progress_meter.Set_Maximum(100);  // Max is 100%
+  progress_meter.Set_Value(0);      // Current is 0%
+
+  do {
+    /*
+    ** If we have just received input focus again after running in the
+    *background then
+    ** we need to redraw.
+    */
+
+    if (display != REDRAW_NONE) {
+      if (display >= REDRAW_BACKGROUND) {
+        TheMouse().Hide();
+        /*
+        ** Redraw backgound & dialog box
+        */
+        Load_Title_Page(true);
+        Set_Palette(ThePalettes().title_palette());
+
+        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+
+        /*
+        ** Dialog & Field labels
+        */
+        Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+
+        //				Fancy_Text_Print(info_string,
+        // d_dialog_cx-width/2, d_dialog_y + 25*2,
+        //									GadgetClass::Get_Color_Scheme(),
+        // TBLACK,
+        // TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+
+        TheMouse().Show();
+      }
+
+      if (display >= REDRAW_BUTTONS) {
+        commands->Draw_All(view);
+      }
+
+      if (display >= REDRAW_PROGRESS) {
+        progress_meter.Draw_Me(view, true);
+      }
+
+      display = REDRAW_NONE;
+    }
+
+    if (process) {
+      const engine::window::KeyNumber input = cancelbtn.Input(view).key;
+      switch (static_cast<int>(input)) {
+        /*
+        ** Cancel. Just return to the main menu
+        */
+        case engine::window::KN_ESC:
+        case engine::window::ButtonKey(kButtonCancel):
+          pDownload->Abort();
+          process = false;
+          bReturn = false;
+          break;
+        default:
+          break;
+      }
+    }
+
+    if (engine::platform::SystemMilliseconds() > dwTimeNextPump) {
+      pDownload->PumpMessages();
+      if (pDownloadSink->bFlagEnd) {
+        pDownloadSink->bFlagEnd = false;
+        break;
+      }
+      if (pDownloadSink->bFlagError) {
+        WWMessageBox().Process(TXT_WOL_DOWNLOADERROR);
+        pDownloadSink->bFlagError = false;
+        bReturn = false;
+        break;
+      }
+      if (pDownloadSink->bFlagProgressUpdate) {
+        pDownloadSink->bFlagProgressUpdate = false;
+        progress_meter.Set_Value((pDownloadSink->iBytesRead * 100) /
+                                 pDownloadSink->iTotalSize);
+        char szText[200];
+        Format_Runtime_Text(
+            szText, sizeof(szText), TXT_WOL_DOWNLOADBYTES,
+            pDownloadSink->iBytesRead, pDownloadSink->iTotalSize,
+            (pDownloadSink->iBytesRead * 100) / pDownloadSink->iTotalSize);
+        StatBytes.Set_Text(szText);
+        Format_Runtime_Text(szText, sizeof(szText), TXT_WOL_DOWNLOADTIME,
+                            pDownloadSink->iTimeLeft / 60,
+                            pDownloadSink->iTimeLeft % 60);
+        StatTime.Set_Text(szText);
+        display = std::max(display, REDRAW_BUTTONS);
+      }
+      if (pDownloadSink->bFlagStatusUpdate) {
+        pDownloadSink->bFlagStatusUpdate = false;
+        switch (pDownloadSink->iStatus) {
+          case DOWNLOADSTATUS_CONNECTING:
+            StatStatus.Set_Text(TXT_WOL_DOWNLOADCONNECTING);
+            break;
+
+          case DOWNLOADSTATUS_FINDINGFILE:
+            StatStatus.Set_Text(TXT_WOL_DOWNLOADLOCATING);
+            break;
+
+          case DOWNLOADSTATUS_DOWNLOADING:
+            StatStatus.Set_Text(TXT_WOL_DOWNLOADDOWNLOADING);
+            break;
+
+          default:
+            //					debugprint( "Unknown status
+            // update!\n" );
+            break;
+        }
+        display = std::max(display, REDRAW_BUTTONS);
+      }
+      if (pDownloadSink->bFlagQueryResume && pDownloadSink->bResumed) {
+        char szTitleNew[200];
+        Format_Runtime_Text(szTitleNew, sizeof(szTitleNew),
+                            TXT_WOL_DOWNLOADRESUMED, szTitle);
+        StatTitle.Set_Text(szTitleNew);
+        display = std::max(display, REDRAW_BUTTONS);
+      }
+
+      dwTimeNextPump = engine::platform::SystemMilliseconds() + WOLAPIPUMPWAIT;
+    }
+
+    //	Invoke game callback
+    ServiceRealTime();
+
+  } while (process);
+
+  return bReturn;
+}

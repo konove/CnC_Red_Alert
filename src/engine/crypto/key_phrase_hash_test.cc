@@ -34,7 +34,7 @@ TEST(HashKeyPhraseTest, ReproducesRedAlertCodes) {
 }
 
 TEST(HashKeyPhraseTest, ReproducesTiberianDawnCodes) {
-  // The phrases documented next to the PARM_ codes in td/defines.h.
+  // The phrases documented next to the PARM_ codes in td/core/defines.h.
   const struct {
     std::string_view phrase;
     uint32_t code;

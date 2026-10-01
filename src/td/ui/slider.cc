@@ -1,0 +1,366 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\slider.cpv   2.17   16 Oct 1995 16:51:54
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : SLIDER.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 01/15/95 *
+ *                                                                                             *
+ *                  Last Update : January 16, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * SliderClass::Action -- Handles input processing for the slider.
+ ** SliderClass::Bump -- Bumps the slider one "thumb size" up or down. *
+ *   SliderClass::Recalc_Thumb -- Recalculates the thumb pixel size and starting
+ *offset.       * SliderClass::Set_Maximum -- Sets the maximum value for this
+ *slider.                       * SliderClass::Set_Thumb_Size -- Sets the size
+ *fo the thumb in "slider units".              * SliderClass::Set_Value -- Sets
+ *the current thumb position for the slider.                 *
+ *   SliderClass::SliderClass -- Normal constructor for a slider (with thumb)
+ *gadget.          * SliderClass::Step -- Steps the slider one value up or down.
+ ** SliderClass::Draw_Thumb -- Draws the "thumb" for this slider. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "td/ui/slider.h"
+
+#include <algorithm>
+#include <memory>
+
+#include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/window/hardware_cursor.h"
+#include "engine/window/keyboard.h"
+#include "td/core/defines.h"
+#include "td/core/jshell.h"
+#include "td/ui/control.h"
+#include "td/ui/dialog.h"
+#include "td/ui/gadget.h"
+#include "td/ui/gauge.h"
+#include "td/ui/input.h"
+#include "td/ui/shapebtn.h"
+
+using enum engine::window::KeyNumber;
+
+/***********************************************************************************************
+ * SliderClass::SliderClass -- Normal constructor for a slider (with thumb)
+ *gadget.            *
+ *                                                                                             *
+ *    This is the normal constructor for the slider gadget. *
+ *                                                                                             *
+ * INPUT:   id    -- The ID number to assign to this gadget. * x,y   -- The
+ *pixel coordinate of the upper left corner for this gadget.            * w,h --
+ *The width and height of the slider gadget. The slider automatically       *
+ *                   adapts for horizontal or vertical operation depending on
+ *which of these   * dimensions is greater. * OUTPUT:     none * WARNINGS: none
+ ** HISTORY:    01/15/1995 JLB : Created. *
+ *=============================================================================================*/
+SliderClass::SliderClass(unsigned id, int x, int y, int w, int h,
+                         bool belong_to_list)
+    : GaugeClass(id, x, y, w, h), BelongToList(belong_to_list) {
+  if (!BelongToList) {
+    PlusGadget = std::make_unique<ShapeButtonClass>(
+        id, MixArchive::RetrieveData("BTN-PLUS.SHP"), X + Width + 2, Y);
+    MinusGadget = std::make_unique<ShapeButtonClass>(
+        id, MixArchive::RetrieveData("BTN-MINS.SHP"), X - 6, Y);
+
+    PlusGadget->Make_Peer(*this);
+    PlusGadget->Add(*this);
+    PlusGadget->Flag_To_Redraw();
+    MinusGadget->Make_Peer(*this);
+    MinusGadget->Add(*this);
+    MinusGadget->Flag_To_Redraw();
+  }
+  Set_Thumb_Size(1);
+  Recalc_Thumb();
+
+  /*
+  ** Gauges have at least 2 colors, but sliders should only have one.
+  */
+  IsColorized = false;
+}
+
+SliderClass::~SliderClass() {
+  // Unlink the buttons in the order the original deleted them.
+  PlusGadget.reset();
+  MinusGadget.reset();
+}
+
+/***********************************************************************************************
+ * SliderClass::Set_Maximum -- Sets the maximum value for this slider. *
+ *                                                                                             *
+ *    This sets the maximum value that the slider can be set at. The maximum
+ *value controls    * the size of the thumb and the resolution of the thumb's
+ *movement.                        *
+ *                                                                                             *
+ * INPUT:   value -- The value to set for the slider's maximum. * OUTPUT:  bool;
+ *Was the maximum value changed? A false indicates a set to the value it       *
+ *                is currently set to already. * WARNINGS:   none * HISTORY:
+ *01/15/1995 JLB : Created. *
+ *=============================================================================================*/
+bool SliderClass::Set_Maximum(int value) {
+  if (GaugeClass::Set_Maximum(value)) {
+    Recalc_Thumb();
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * SliderClass::Set_Thumb_Size -- Sets the size fo the thumb in "slider units".
+ **
+ *                                                                                             *
+ *    This routine will set the size of the thumb as it relates to the maximum
+ *value the       * slider can achieve. This serves to display a proportionally
+ *sized thumb as well as       * control how the slider "bumps" up or down. *
+ *                                                                                             *
+ * INPUT:   value -- The new value of the thumb. It should never be larger than
+ *the slider     * maximum. * OUTPUT:     none * WARNINGS:   none * HISTORY:
+ *01/15/1995 JLB : Created. *
+ *=============================================================================================*/
+void SliderClass::Set_Thumb_Size(int value) {
+  Thumb = std::min(value, MaxValue);
+  Thumb = std::max(Thumb, 1);
+  Flag_To_Redraw();
+  Recalc_Thumb();
+}
+
+/***********************************************************************************************
+ * SliderClass::Set_Value -- Sets the current thumb position for the slider. *
+ *                                                                                             *
+ *    This routine will set the thumb position for the slider. *
+ *                                                                                             *
+ * INPUT:   value -- The position to set the slider. This position is relative
+ *to the maximum  * value for the slider. *
+ *                                                                                             *
+ * OUTPUT:  bool; Was the slider thumb position changed at all? * WARNINGS: none
+ ** HISTORY:   01/15/1995 JLB : Created. *
+ *=============================================================================================*/
+bool SliderClass::Set_Value(int value) {
+  value = std::min(value, MaxValue - Thumb);
+
+  if (GaugeClass::Set_Value(value)) {
+    Recalc_Thumb();
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * SliderClass::Recalc_Thumb -- Recalculates the thumb pixel size and starting
+ *offset.         *
+ *                                                                                             *
+ *    This takes the current thumb logical size and starting value and
+ *calculates the pixel    * size and starting offset accordingly. This function
+ *should be called whenever one of     * these elements has changed. *
+ *                                                                                             *
+ * INPUT:      none * OUTPUT:     none * WARNINGS:   none * HISTORY: 01/15/1995
+ *JLB : Created.                                                       *
+ *=============================================================================================*/
+void SliderClass::Recalc_Thumb() {
+  const int length = IsHorizontal ? Width : Height;
+  const int size =
+      Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue, Thumb));
+  ThumbSize = std::max(size, 4);
+  const int start =
+      Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue, CurValue));
+  ThumbStart = std::min(start, length - ThumbSize);
+}
+
+/***********************************************************************************************
+ * SliderClass::Action -- Handles input processing for the slider. *
+ *                                                                                             *
+ *    This routine is called when a qualifying input event has occured. This
+ *routine will      * process that event and make any adjustments to the slider
+ *as necessary.                  *
+ *                                                                                             *
+ * INPUT:   flags -- Flag bits that tell the input event that caused this
+ *function to          * be called. * key   -- Reference to the key that caused
+ *the input event.                         * OUTPUT:  bool; Was the event
+ *consumed and further processing of the gadget list should be   * aborted? *
+ * WARNINGS:   none * HISTORY:    01/15/1995 JLB : Created. *
+ *=============================================================================================*/
+bool SliderClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                         int y) {
+  /*
+  **	Handle the mouse click in a special way. If the click was not on the
+  *thumb, then *	jump the thumb position one "step" in the appropriate
+  *direction. Otherwise, let normal *	processing take place -- the slider then
+  *"sticks" and the thumb moves according to *	mouse position.
+  */
+  if (flags & kLeftPress) {
+    int mouse = 0;  // Mouse pixel position.
+    int edge = 0;   // Edge of slider.
+
+    if (IsHorizontal) {
+      mouse = TheMouse().x();
+      edge = X;
+    } else {
+      mouse = TheMouse().y();
+      edge = Y;
+    }
+    edge += 1;
+
+    /*
+    ** Clicking outside the thumb: invoke parent's Action to process flags etc,
+    ** but turn off the event & return true so processing stops at this button.
+    */
+    if (mouse < edge + ThumbStart) {
+      Bump(true);
+      GaugeClass::Action(0, key, x, y);
+      key = KN_NONE;
+      return true;
+    }
+    if (mouse > edge + ThumbStart + ThumbSize) {
+      Bump(false);
+      GaugeClass::Action(0, key, x, y);
+      key = KN_NONE;
+      return true;
+    }
+    GaugeClass::Action(flags, key, x, y);
+    key = KN_NONE;
+    return true;
+  }
+
+  /*
+  **  CHANGE GAUGECLASS::ACTION -- REMOVE (kLeftRelease) FROM IF STMT
+  */
+  return GaugeClass::Action(flags, key, x, y);
+}
+
+/***********************************************************************************************
+ * SliderClass::Bump -- Bumps the slider one "thumb size" up or down. *
+ *                                                                                             *
+ *    This support function will bump the slider one "step" or the size of the
+ *thumb up or     * down as specified. It is typically called when the slider is
+ *clicked outside of the      * thumb region but still inside of the slider. *
+ *                                                                                             *
+ * INPUT:   up -- Should the bump be to increase the current position? * OUTPUT:
+ *bool; Was the slider changed at all? A false indicates that the slider is
+ *already  * at one end or the other. * WARNINGS:   none * HISTORY: 01/15/1995
+ *JLB : Created.                                                       *
+ *=============================================================================================*/
+bool SliderClass::Bump(bool up) {
+  if (up) {
+    return Set_Value(CurValue - Thumb);
+  }
+  return Set_Value(CurValue + Thumb);
+}
+
+/***********************************************************************************************
+ * SliderClass::Step -- Steps the slider one value up or down. *
+ *                                                                                             *
+ *    This routine will move the slider thumb one step in the direction
+ *specified.             *
+ *                                                                                             *
+ * INPUT:   up -- Should the step be up (i.e., forward)? * OUTPUT:  bool; Was
+ *the slider changed at all? A false indicates that the slider is already  * at
+ *one end or the other.                                                     *
+ * WARNINGS:   none * HISTORY:    01/15/1995 JLB : Created. *
+ *=============================================================================================*/
+bool SliderClass::Step(bool up) {
+  if (up) {
+    return Set_Value(CurValue - 1);
+  }
+  return Set_Value(CurValue + 1);
+}
+
+/***********************************************************************************************
+ * SliderClass::Draw_Thumb -- Draws the "thumb" for this slider. *
+ *                                                                                             *
+ *    This will draw the thumb graphic for this slider. Sometimes the thumb
+ *requires special   * drawing, thus the need for this function separate from
+ *the normal Draw_Me function.      *
+ *                                                                                             *
+ * INPUT:   none * OUTPUT:  none * WARNINGS:   The mouse is guaranteed to be
+ *hidden when this routine is called.               * HISTORY:    01/16/1995 JLB
+ *: Created.                                                       *
+ *=============================================================================================*/
+void SliderClass::Draw_Thumb(PixelView& view) {
+  if (IsHorizontal) {
+    Draw_Box(view, X + ThumbStart, Y, ThumbSize, Height, BOXSTYLE_GREEN_RAISED,
+             true);
+  } else {
+    Draw_Box(view, X, Y + ThumbStart, Width, ThumbSize, BOXSTYLE_GREEN_RAISED,
+             true);
+  }
+}
+
+/***********************************************************************************************
+ * SliderClass::Draw_Me -- Draws the body of the gauge. *
+ *                                                                                             *
+ *    This routine will draw the body of the gauge if necessary. *
+ *                                                                                             *
+ * INPUT:   forced   -- Should the gauge be redrawn regardless of the current
+ *redraw flag?     * OUTPUT:  bool; Was the gauge redrawn? * WARNINGS:   none *
+ * HISTORY:    01/16/1995 JLB : Created. *
+ *=============================================================================================*/
+bool SliderClass::Draw_Me(PixelView& view, bool forced) {
+  // A list-attached slider draws a thumb instead of a gauge body; the
+  // stand-alone case still goes through GaugeClass below.
+  // NOLINTNEXTLINE(bugprone-parent-virtual-call)
+  if (BelongToList && ControlClass::Draw_Me(view, forced)) {
+    /*
+    =========== Draw the body & set text color ===============
+    */
+    Draw_Box(view, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
+    Draw_Thumb(view);
+
+    return true;
+  }
+
+  /*
+  **	If it does not belong to a listbox...
+  */
+  return GaugeClass::Draw_Me(view, forced);
+}
+
+/***********************************************************************************************
+ * SliderClass::Peer_To_Peer -- A peer gadget was touched -- make adjustments. *
+ *                                                                                             *
+ *    This routine is called when one of the peer gadgets (the scroll arrows or
+ *the slider)    * was touched in some fashion. This routine will sort out whom
+ *and why and then make       * any necessary adjustments to the list box. *
+ *                                                                                             *
+ * INPUT:   flags    -- The event flags that affected the peer gadget. * key --
+ *The key value at the time of the event.                                * whom
+ *-- Which gadget is being touched.                                         *
+ * OUTPUT:  none * WARNINGS:   none * HISTORY:    01/16/1995 JLB : Created. *
+ *=============================================================================================*/
+void SliderClass::Peer_To_Peer(unsigned flags,
+                               engine::window::KeyNumber& /*unused*/,
+                               ControlClass& whom) {
+  if (flags & kLeftRelease) {
+    if (&whom == PlusGadget.get()) {
+      Step(false);
+    }
+    if (&whom == MinusGadget.get()) {
+      Step(true);
+    }
+  }
+}

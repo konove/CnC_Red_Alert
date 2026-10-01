@@ -16,7 +16,7 @@ Usage: tools/rename_globals.py spec.json, where spec.json is
     "root": "src/ra",
     "mapping": {"OutList": "TheNetwork().out_list()"},
     "skip": ["src/ra/externs.h"],
-    "exclude": {"LastMessage": ["src/ra/radio.cc"]}
+    "exclude": {"LastMessage": ["src/ra/objects/radio.cc"]}
   }
 """
 import json

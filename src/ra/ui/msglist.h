@@ -1,0 +1,248 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/MSGLIST.H 2     3/04/97 2:53p Joe_bostic $ */
+/***************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ *                                                                         *
+ *                 Project Name : Command & Conquer                        *
+ *                                                                         *
+ *                    File Name : MSGLIST.H                                *
+ *                                                                         *
+ *                   Programmer : Bill R. Randolph                         *
+ *                                                                         *
+ *                   Start Date : 05/22/95                                 *
+ *                                                                         *
+ *                  Last Update : May 22, 1995 [BRR]                       *
+ *                                                                         *
+ * Initializing:
+ ** Call Init(), giving it the coords of the upper-left corner to display
+ ** the messages, the coordinates to display the editable message, max # *
+ *   messages allowed, max # chars per message, and the pixel height of * the
+ *font.  MaxChars should be less than or equal to the define *
+ *   MAX_MESSAGE_LENGTH.
+ **
+ * 																								*
+ *	Displaying a message:
+ ** Call Add_Message(); the buffer you pass in is copied into a static * buffer
+ *in this class.  Each message is given a timeout; after this		* time,
+ * the message is removed from the displayed list.
+ *		* Each message also has a 2-byte ID, which can be used to
+ * identify the sender.
+ *																									*
+ * Editing a message:
+ ** Call Add_Edit(), giving it the color & style to print in.  An
+ ** optional "To xxx" prefix is allowed.  The edit message can appear in * the
+ *message list itself (it's placed first), or at a separate screen 	*
+ *   location, depending on the values passed to Init().
+ **
+ *																									*
+ *	Updating messages:
+ ** The Input() routine passes new keys to the editable message; this *
+ *   routine's return code tells the app whether to redraw the messages,
+ ** and whether to send it the edit message.  As the user types
+ ** characters into the edit field, if he overflows the max storage
+ ** for the edit field, the field is parsed & the first few words
+ ** removed; these words are put into the Overflow buffer, and the app * is told
+ *so; the app should send this buffer across to the destination.*
+ *																									*
+ * - MessageList is a gadget list of all current messages
+ **
+ * - MessageX & Y are the upper left corner of the 1st message
+ **
+ * - MaxMessages is the max # of messages allowed, including the editable *
+ *   message; 0 = no limit.
+ **
+ * - MaxChars is the max # of chars allowed per message
+ **
+ * - Height is the pixel height of a single line
+ **
+ * - EditLabel points to the textmessage gadget for the current editable
+ ** field.  EditBuf points to the char buffer being edited.  EditInitPos
+ ** & EditCurPos define buffer index positions.
+ **
+ * - EditSendAddress is the IPX Address to send the message to when RETURN
+ ** is pressed.
+ **
+ *																									*
+ * The low word in the UserData field in the TextLabelClass tells what the *
+ * timeout for each message is (0 = none); the high byte of the UserData
+ ** field is used for the text message ID.
+ ** When a message's timeout expires, it's deleted.  When a new message * is
+ *added, the top message is deleted if MPlayerMaxMessages is exceeded.	*
+ *                                                                         *
+ * The Edit-able message is never deleted until ESC or RETURN is pressed.
+ **
+ *                                                                         *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+#ifndef CNC_RED_ALERT_RA_UI_MSGLIST_H_
+#define CNC_RED_ALERT_RA_UI_MSGLIST_H_
+
+#include <memory>
+#include <span>
+#include <vector>
+
+#include "absl/base/attributes.h"
+#include "base/array.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
+#include "ra/core/defines.h"
+
+//***************************************************************************
+// Defines
+//***************************************************************************
+//---------------------------------------------------------------------------
+//	Max length of inter-player message buffers.  Messages.Init() should
+// specify
+// a value <= this.  For editing messages, the "to" field length is added to
+// this length to generate the entire editable message length.  For displayed
+// messages, a "From" prefix length should be added to this value to generate
+// the entire max displayable message length.
+//---------------------------------------------------------------------------
+#define MAX_MESSAGE_LENGTH 120
+
+//---------------------------------------------------------------------------
+// Max # of allowed messages at one time
+//---------------------------------------------------------------------------
+#define MAX_NUM_MESSAGES 14
+
+//***************************************************************************
+// Forward declarations
+//***************************************************************************
+class TextLabelClass;
+
+//***************************************************************************
+// Class declaration
+//***************************************************************************
+class MessageListClass {
+ public:
+  //.....................................................................
+  // Constructor/Destructor
+  //.....................................................................
+  MessageListClass();
+  ~MessageListClass();
+  MessageListClass(const MessageListClass&) = delete;
+  MessageListClass& operator=(const MessageListClass&) = delete;
+  MessageListClass(MessageListClass&&) = delete;
+  MessageListClass& operator=(MessageListClass&&) = delete;
+
+  //.....................................................................
+  // Initialization
+  //.....................................................................
+  void Reset();
+  void Init(int x, int y, int max_msg, int maxchars, int height, int edit_x,
+            int edit_y, int overflow_on, int over_start, int over_end,
+            int width = 640);
+  // The label belongs to Labels; the lifetime analysis cannot follow it
+  // through the vector's unique_ptr.
+  TextLabelClass* Add_Message(
+      const char* name, int id, const char* txt, PlayerColorType color,
+      TextPrintType style,
+      // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+      int timeout) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  int Concat_Message(const char* name, int id, const char* txt, int timeout);
+
+  //.....................................................................
+  // Message access utility routines
+  //.....................................................................
+  char* Get_Message(int id);
+  TextLabelClass* Get_Label(int id);
+
+  //.....................................................................
+  // Message-editing support routines
+  //.....................................................................
+  TextLabelClass* Add_Edit(PlayerColorType color, TextPrintType style,
+                           const char* to, char cursor = 0,
+                           int width = 640) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  void Remove_Edit();
+  char* Get_Edit_Buf();
+  char* Get_Overflow_Buf() ABSL_ATTRIBUTE_LIFETIME_BOUND { return OverflowBuf; }
+  void Clear_Overflow_Buf() { base::At(OverflowBuf, 0) = 0; }
+  [[nodiscard]] int Is_Edit() const { return IsEdit; }
+  void Set_Edit_Color(PlayerColorType color);
+
+  //.....................................................................
+  // Maintenance routines
+  //.....................................................................
+  int Manage();
+  int Input(engine::window::KeyNumber& input);
+  void Draw(PixelView& view);
+  int Num_Messages();
+  void Set_Width(int width);
+  void Set_Edit_Focus();
+  bool Has_Edit_Focus();
+
+ private:
+  //.....................................................................
+  // Message parsing
+  //.....................................................................
+  static int Trim_Message(std::span<char> dest, std::span<char> src,
+                          int min_chars, int max_chars, int scandir);
+
+  //.....................................................................
+  // Compute the y-coord of the message list
+  //.....................................................................
+  void Compute_Y();
+  // Destroys a label already unlinked from MessageList.
+  void Delete_Label(const TextLabelClass* label);
+
+  //.....................................................................
+  // Private Data
+  //.....................................................................
+  TextLabelClass* MessageList{nullptr};  // list of messages
+  // Owns every label in MessageList, in no particular order.
+  std::vector<std::unique_ptr<TextLabelClass>> Labels;
+  int MessageX{0};                       // x-coord of upper-left
+  int MessageY{0};                       // y-coord of upper-left
+  int MaxMessages{0};                    // max messages allowed
+  int MaxChars{0};                       // max allowed chars per message
+  int Height{0};                         // height in pixels
+
+  //.....................................................................
+  // Data for the edit field: the edit field will either appear at
+  // exact coordinates specified by the application, or it will appear
+  // vertically above the other messages.
+  //.....................................................................
+  bool EnableOverflow : 1 {false};          // 1 = enable overflow feature
+  bool IsEdit : 1 {false};                  // 1 = there's an edit field
+  bool AdjustEdit : 1 {false};              // 1 = edit field appears over msgs
+  int EditX{0};                             // x-coord of edit field
+  int EditY{0};                             // y-coord of edit field
+  std::unique_ptr<TextLabelClass> EditLabel;  // current edit label
+  char EditBuf[MAX_MESSAGE_LENGTH + 30]{};  // buffer for editable message
+  char OverflowBuf[MAX_MESSAGE_LENGTH + 30]{};  // overflow area
+  int EditCurPos{0};                            // current edit position
+  int EditInitPos{0};                           // initial edit position
+  char CursorChar{0};                           // character to use a cursor
+  int OverflowStart{0};  // 1st index for overflow trimming
+  int OverflowEnd{0};    // last index for overflow trimming
+  int Width = 0;    // Maximum width in pixels of editable string
+
+  //.....................................................................
+  // Buffers provided for messages.  They must be long enough for
+  // both the message, and for the "To" prefix on edited messages, or
+  // the "Name:" prefix on received messages.
+  //.....................................................................
+  char MessageBuffers[MAX_NUM_MESSAGES][MAX_MESSAGE_LENGTH + 30]{};
+  char BufferAvail[MAX_NUM_MESSAGES]{};
+};
+
+#endif  // CNC_RED_ALERT_RA_UI_MSGLIST_H_
+/**************************** end of msglist.h *****************************/

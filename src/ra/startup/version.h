@@ -1,0 +1,216 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /counterstrike/VERSION.H 2     3/10/97 6:22p Steve_tall $ */
+/***************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ *                                                                         *
+ *                 Project Name : Command & Conquer                        *
+ *                                                                         *
+ *                    File Name : VERSION.H                                *
+ *                                                                         *
+ *                   Programmer : Bill R. Randolph                         *
+ *                                                                         *
+ *                   Start Date : 10/26/95                                 *
+ *                                                                         *
+ *                  Last Update : October 26, 1995 [BRR]                   *
+ *                                                                         *
+ * This class maintains version information, and communications protocol
+ ** information.
+ **
+ *                                                                         *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+#ifndef CNC_RED_ALERT_RA_STARTUP_VERSION_H_
+#define CNC_RED_ALERT_RA_STARTUP_VERSION_H_
+
+#include <cstdint>
+
+#include "absl/base/attributes.h"
+#include "base/installed.h"
+
+#define VERSION_RED_ALERT_104 0x00010000  // Shipped US version number
+#define VERSION_RED_ALERT_107 0x00011000  // Shipped Counterstrike number
+#define VERSION_RED_ALERT_106 0x00010500  // Patch without CS installed
+#define VERSION_RED_ALERT_108 0x00011500  // Patch with CS installed
+#define VERSION_AFTERMATH_CS 0x00011FFF   // Aftermath with CS installed
+#define VERSION_AFTERMATH 0x00012000      // Aftermath
+
+//	Aftermath has, in a sense, used version 2.00. (Because of the text on
+// title screen.) Call ourselves version 3.
+#define VERSION_RA_300 \
+  0x00030000  //	RA, CS, AM executables unified into one. All are now the
+              // same version. -ajw
+//	It seems that extra information, that didn't belong there, was being
+// stuffed into version number. Namely, whether or not 	Counterstrike is
+// installed. I'm going to change things back to the way they should be, as I
+// see it. Version will describe 	the version of the executable only. When
+// it comes to communicating whether or not a player has expansions present,
+// separate 	data will be transmitted.
+
+//	However, having said that, a caveat. I'm going to have to use the same
+// communication method that was used previously, because 	I need to have
+// prior versions of the game recognize that they can't play against this
+// version. What I'll do is encode 	"does player have aftermath" (which is
+// actually the only fact that matters, in multiplayer) in the communicated
+// version 	number, as a high bit set/unset. This version of the game will
+// receive this communicated value and pull out the Aftermath 	bit. Older
+// version will reject us as a possible opponent, because, whether or not AM is
+// installed, our version number will 	be too high for them.
+
+//	These horrible things are no longer used. ajw
+#define CS_MAJOR_VERSION_MODIFIER 0x0000
+#define CS_MINOR_VERSION_MODIFIER 0x1000
+
+//---------------------------------------------------------------------------
+//
+//---------------------------------------------------------------------------
+enum class CommProtocolType {
+  COMM_PROTOCOL_SINGLE_NO_COMP = 0,  // single frame with no compression
+  COMM_PROTOCOL_SINGLE_E_COMP = 1,   // single frame with event compression
+  COMM_PROTOCOL_MULTI_E_COMP = 2,    // multiple frame with event compression
+  COMM_PROTOCOL_COUNT = 3,
+  DEFAULT_COMM_PROTOCOL = COMM_PROTOCOL_MULTI_E_COMP
+};
+using enum CommProtocolType;
+
+struct VersionProtocolType {
+  uint32_t Version;
+  CommProtocolType Protocol;
+};
+
+class VersionClass {
+ public:
+  //.....................................................................
+  // Constructor/Destructor
+  //.....................................................................
+  VersionClass();
+  virtual ~VersionClass();
+  VersionClass(const VersionClass&) = delete;
+  VersionClass& operator=(const VersionClass&) = delete;
+  VersionClass(VersionClass&&) = delete;
+  VersionClass& operator=(VersionClass&&) = delete;
+
+  //.....................................................................
+  // These routines return the current version number.  The long version
+  // number contains the major version in the high word, and the minor
+  // version in the low word.  They should be interpreted in hex.
+  //.....................................................................
+  uint32_t Version_Number();
+  uint16_t Major_Version();
+  uint16_t Minor_Version();
+
+  //.....................................................................
+  // Retrieves a pointer to the version # as a text string (#.#), with
+  // the trailing 0's trimmed off.
+  //.....................................................................
+  char* Version_Name() ABSL_ATTRIBUTE_LIFETIME_BOUND;
+
+  //.....................................................................
+  // Retrieves a pointer to the current version text.
+  //.....................................................................
+  char* Version_Text() ABSL_ATTRIBUTE_LIFETIME_BOUND { return VersionText; }
+
+  //.....................................................................
+  // Returns the default comm protocol for a given version number.
+  //.....................................................................
+  static CommProtocolType Version_Protocol(uint32_t version);
+
+  //.....................................................................
+  // These routines support "version clipping".
+  //.....................................................................
+  void Init_Clipping();
+  uint32_t Clip_Version(uint32_t minver, uint32_t maxver);
+  [[nodiscard]] uint32_t Get_Clipped_Version() const { return MaxClipVer; }
+
+  //.....................................................................
+  // These routines return the theoretical lowest & highest version #'s
+  // that this program will connect to; this does not take any previous
+  // version clipping into account.
+  //.....................................................................
+  static uint32_t Min_Version();
+  static uint32_t Max_Version();
+
+ private:
+  //.....................................................................
+  // Fills in a 'VersionText' with a descriptive version name.
+  //.....................................................................
+  void Read_Text_String();
+
+  //.....................................................................
+  // These values define the major & minor version #'s for the current
+  // version.  Change these values to change the game's version #!
+  //.....................................................................
+  static constexpr int kMajorVersion = 0x0003;
+  static constexpr int kMinorVersion = 0x0000;
+
+  //.....................................................................
+  // These values control which other versions this program will connect
+  // to.  Keep them current!
+  // If CHEAT is defined, the program will only connect to itself; these
+  // values aren't used.
+  //.....................................................................
+  //	ajw - We can only play against same version.
+  static constexpr int kMinVersion = VERSION_RA_300;
+  static constexpr int kMaxVersion = VERSION_RA_300;
+
+  //.....................................................................
+  // This is the program's version number, stored internally.
+  //.....................................................................
+  uint32_t Version{0};
+  uint16_t MajorVer{0};
+  uint16_t MinorVer{0};
+
+  //.....................................................................
+  // This array is used for formatting the version # as a string
+  //.....................................................................
+  char VersionName[30]{};
+
+  //.....................................................................
+  // This array contains special version labels (such as "Beta"), stored
+  // in the file VERSION.TXT.  If the file isn't present, no label is
+  // shown.
+  //.....................................................................
+  char VersionText[16]{};
+
+  //.....................................................................
+  // Values used for "Version Clipping"
+  //.....................................................................
+  uint32_t MinClipVer{0};
+  uint32_t MaxClipVer{0};
+
+  //.....................................................................
+  // Bitfield Flags
+  // IsInitialized: is set if the VERSION.TXT file has been read
+  //.....................................................................
+  bool VersionInit : 1 {false};
+  bool MajorInit : 1 {false};
+  bool MinorInit : 1 {false};
+  bool TextInit : 1 {false};
+};
+
+const char* Version_Name();
+
+// Returns the version record that Game installed. CHECK-fails outside a
+// Game's lifetime unless a test installed its own.
+inline VersionClass& TheVersion() {
+  return base::Installed<VersionClass>::Get();
+}
+
+#endif  // CNC_RED_ALERT_RA_STARTUP_VERSION_H_
+/************************** end of version.h *******************************/

@@ -1,0 +1,7792 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /counterstrike/HOUSE.CPP 4     3/13/97 7:11p Steve_tall $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : HOUSE.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : May 21, 1994 *
+ *                                                                                             *
+ *                  Last Update : November 4, 1996 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * HouseClass::AI -- Process house logic. *
+ *   HouseClass::AI_Aircraft -- Determines what aircraft to build next. *
+ *   HouseClass::AI_Attack -- Handles offensive attack logic. *
+ *   HouseClass::AI_Base_Defense -- Handles maintaining a strong base defense. *
+ *   HouseClass::AI_Building -- Determines what building to build. *
+ *   HouseClass::AI_Fire_Sale -- Check for and perform a fire sale. *
+ *   HouseClass::AI_Infantry -- Determines the infantry unit to build. *
+ *   HouseClass::AI_Money_Check -- Handles money production logic. *
+ *   HouseClass::AI_Power_Check -- Handle the power situation. *
+ *   HouseClass::AI_Unit -- Determines what unit to build next. *
+ *   HouseClass::Abandon_Production -- Abandons production of item type
+ *   specified. * HouseClass::Active_Add -- Add an object to active duty for
+ * this house. * HouseClass::Active_Remove -- Remove this object from active
+ * duty for this house. * HouseClass::Adjust_Capacity -- Adjusts the house
+ * Tiberium storage capacity. * HouseClass::Adjust_Drain -- Adjust the power
+ * drain value of the house. * HouseClass::Adjust_Power -- Adjust the power
+ * value of the house. * HouseClass::Adjust_Threat -- Adjust threat for the
+ * region specified. * HouseClass::As_Pointer -- Converts a house number into a
+ * house object pointer. * HouseClass::Assign_Handicap -- Assigns the specified
+ *   handicap rating to the house. * HouseClass::Attacked -- Lets player know if
+ *   base is under attack. * HouseClass::Available_Money -- Fetches the total
+ *   credit worth of the house. * HouseClass::Begin_Production -- Starts
+ *   production of the specified object type. * HouseClass::Blowup_All -- blows
+ *   up everything * HouseClass::Can_Build -- General purpose build legality
+ *   checker. * HouseClass::Clobber_All -- removes all objects for this house *
+ *   HouseClass::Computer_Paranoid -- Cause the computer players to becom
+ *   paranoid. * HouseClass::Detach -- Removes specified object from house
+ *   tracking systems. * HouseClass::Do_All_To_Hunt -- Send all units to hunt. *
+ *   HouseClass::Does_Enemy_Building_Exist -- Checks for enemy building of
+ *   specified type. * HouseClass::Expert_AI -- Handles expert AI processing. *
+ *   HouseClass::Factory_Count -- Fetches the number of factories for specified
+ *   type. * HouseClass::Factory_Counter -- Fetches a pointer to the factory
+ *   counter value. * HouseClass::Fetch_Factory -- Finds the factory associated
+ *   with the object type specified. * HouseClass::Find_Build_Location -- Finds
+ * a suitable building location. * HouseClass::Find_Building -- Finds a building
+ *   of specified type. * HouseClass::Find_Cell_In_Zone -- Finds a legal
+ *   placement cell within the zone. * HouseClass::Find_Juicy_Target -- Finds a
+ *   suitable field target. * HouseClass::Fire_Sale -- Cause all buildings to be
+ *   sold. * HouseClass::Flag_Attach -- Attach flag to specified cell (or
+ *   thereabouts). * HouseClass::Flag_Attach -- Attaches the house flag the
+ *   specified unit. * HouseClass::Flag_Remove -- Removes the flag from the
+ *   specified target. * HouseClass::Flag_To_Die -- Flags the house to blow up
+ *   soon. * HouseClass::Flag_To_Lose -- Flags the house to die soon. *
+ *   HouseClass::Flag_To_Win -- Flags the house to win soon. *
+ *   HouseClass::Get_Quantity -- Fetches the total number of aircraft of the
+ *   specified type. * HouseClass::Get_Quantity -- Gets the quantity of the
+ *   building type specified. * HouseClass::Harvested -- Adds Tiberium to the
+ *   harvest storage. * HouseClass::HouseClass -- Constructor for a house
+ * object.
+ *   * HouseClass::Init -- init's in preparation for new scenario *
+ *   HouseClass::Init_Data -- Initializes the multiplayer color data. *
+ *   HouseClass::Is_Allowed_To_Ally -- Determines if this house is allied to
+ * make allies. * HouseClass::Is_Ally -- Checks to see if the object is an ally.
+ * * HouseClass::Is_Ally -- Determines if the specified house is an ally. *
+ *   HouseClass::Is_Hack_Prevented -- Is production of the specified type and id
+ *   prohibted? * HouseClass::Is_No_YakMig -- Determines if no more yaks or migs
+ *   should be allowed. * HouseClass::MPlayer_Defeated -- multiplayer; house is
+ *   defeated * HouseClass::Make_Ally -- Make the specified house an ally. *
+ *   HouseClass::Make_Enemy -- Make an enemy of the house specified. *
+ *   HouseClass::Manual_Place -- Inform display system of building placement
+ *   mode. * HouseClass::One_Time -- Handles one time initialization of the
+ * house array. * HouseClass::Place_Object -- Places the object (building) at
+ *   location specified. * HouseClass::Place_Special_Blast -- Place a special
+ *   blast effect at location specified. * HouseClass::Power_Fraction -- Fetches
+ *   the current power output rating. * HouseClass::Production_Begun -- Records
+ *   that production has begun. * HouseClass::Read_INI -- Reads house specific
+ *   data from INI. * HouseClass::Recalc_Attributes -- Recalcs all houses
+ *   existence bits. * HouseClass::Recalc_Center -- Recalculates the center
+ * point of the base. * HouseClass::Refund_Money -- Refunds money to back to the
+ *   house. * HouseClass::Remap_Table -- Fetches the remap table for this house
+ *   object. * HouseClass::Sell_Wall -- Tries to sell the wall at the specified
+ *   location. * HouseClass::Set_Factory -- Assign specified factory to house
+ *   tracking. * HouseClass::Silo_Redraw_Check -- Flags silos to be redrawn if
+ *   necessary. * HouseClass::Special_Weapon_AI -- Fires special weapon. *
+ *   HouseClass::Spend_Money -- Removes money from the house. *
+ *   HouseClass::Suggest_New_Building -- Examines the situation and suggests a
+ *   building. * HouseClass::Suggest_New_Object -- Determine what would the next
+ *   buildable object be. * HouseClass::Suggested_New_Team -- Determine what
+ * team should be created. * HouseClass::Super_Weapon_Handler -- Handles the
+ * super weapon charge and discharge logic. * HouseClass::Suspend_Production --
+ *   Temporarily puts production on hold. * HouseClass::Tally_Score -- Fills in
+ *   the score system for this round * HouseClass::Tiberium_Fraction --
+ *   Calculates the tiberium fraction of capacity. * HouseClass::Tracking_Add --
+ *   Informs house of new inventory item. * HouseClass::Tracking_Remove --
+ * Remove object from house tracking system. * HouseClass::Where_To_Go --
+ * Determines where the object should go and wait. * HouseClass::Which_Zone --
+ * Determines what zone a coordinate lies in. * HouseClass::Which_Zone --
+ * Determines which base zone the specified cell lies in. *
+ * HouseClass::Which_Zone -- Determines which base zone the specified object
+ * lies in. * HouseClass::Write_INI -- Writes the house data to the INI
+ * database. * HouseClass::Zone_Cell -- Finds the cell closest to the center of
+ * the zone. * HouseClass::delete -- Deallocator function for a house object. *
+ * HouseClass::new -- Allocator for a house class. * HouseClass::operator
+ * HousesType -- Conversion to HousesType operator. * HouseClass::~HouseClass --
+ * Default destructor for a house object. * HouseStaticClass::HouseStaticClass
+ * -- Default constructor for house static class. * HouseClass::AI_Raise_Power
+ * -- Try to raise power levels by selling off buildings. *
+ * HouseClass::AI_Raise_Money -- Raise emergency cash by selling buildings. *
+ * HouseClass::Random_Cell_In_Zone -- Find a (technically) legal cell in the
+ * zone specified. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "ra/objects/house.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <iterator>
+#include <memory>
+#include <new>
+#include <span>
+
+#include "absl/base/attributes.h"
+#include "absl/log/check.h"
+#include "absl/strings/match.h"
+#include "base/array.h"
+#include "base/enum_array.h"
+#include "base/fixed.h"
+#include "base/numeric.h"
+#include "base/pooled.h"
+#include "base/strings/safe_string.h"
+#include "base/types.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "magic_enum/magic_enum.hpp"
+#include "ra/ai/base.h"
+#include "ra/ai/reinf.h"
+#include "ra/ai/scenario.h"
+#include "ra/ai/special.h"
+#include "ra/ai/team.h"
+#include "ra/ai/teamtype.h"
+#include "ra/ai/tevent.h"
+#include "ra/ai/trigger.h"
+#include "ra/ai/trigtype.h"
+#include "ra/assets/audio.h"
+#include "ra/assets/palettes.h"
+#include "ra/assets/screen.h"
+#include "ra/core/config.h"
+#include "ra/core/coord.h"
+#include "ra/core/defines.h"
+#include "ra/core/display_constants.h"
+#include "ra/core/face.h"
+#include "ra/core/game_clock.h"
+#include "ra/core/heap.h"
+#include "ra/core/inline.h"
+#include "ra/core/jshell.h"
+#include "ra/core/object_heaps.h"
+#include "ra/core/type_heaps.h"
+#include "ra/core/vector_dynamic.h"
+#include "ra/data/ccini.h"
+#include "ra/data/rules.h"
+#include "ra/data/text_ids.h"
+#include "ra/debug/debug_state.h"
+#include "ra/editor/mapedit.h"
+#include "ra/map/logic.h"
+#include "ra/map/mouse.h"
+#include "ra/map/radar.h"
+#include "ra/map/selection.h"
+#include "ra/map/sidebar.h"
+#include "ra/map/vortex.h"
+#include "ra/map/world.h"
+#include "ra/net/ipxmgr.h"
+#include "ra/net/network.h"
+#include "ra/net/session.h"
+#include "ra/objects/aircraft.h"
+#include "ra/objects/building.h"
+#include "ra/objects/bullet.h"
+#include "ra/objects/cell.h"
+#include "ra/objects/drive.h"
+#include "ra/objects/factory.h"
+#include "ra/objects/foot.h"
+#include "ra/objects/infantry.h"
+#include "ra/objects/object.h"
+#include "ra/objects/super.h"
+#include "ra/objects/target.h"
+#include "ra/objects/techno.h"
+#include "ra/objects/tracker.h"
+#include "ra/objects/type.h"
+#include "ra/objects/unit.h"
+#include "ra/objects/utracker.h"
+#include "ra/objects/vessel.h"
+#include "ra/screens/goptions.h"
+#include "ra/startup/game_state.h"
+#include "ra/ui/msglist.h"
+
+TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
+
+
+/***********************************************************************************************
+ * HouseClass::operator HousesType -- Conversion to HousesType operator. *
+ *                                                                                             *
+ *    This operator will automatically convert from a houses class object into
+ *the HousesType  * enumerated value. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the object's HousesType value. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/23/1995 JLB : Created. *
+ *=============================================================================================*/
+HouseClass::operator HousesType() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  return Class->House;
+}
+
+/***********************************************************************************************
+ * HouseClass::Tiberium_Fraction -- Calculates the tiberium fraction of
+ *capacity.              *
+ *                                                                                             *
+ *    This will calculate the current tiberium (gold) load as a ratio of the
+ *maximum storage   * capacity. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns the current tiberium storage situation as a ratio of load
+ *over capacity.   *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/31/1996 JLB : Created. *
+ *=============================================================================================*/
+Fixed HouseClass::Tiberium_Fraction() const {
+  if (Tiberium == 0) {
+    return Fixed(0);
+  }
+  return {static_cast<int>(Tiberium), static_cast<int>(Capacity)};
+}
+
+/***********************************************************************************************
+ * HouseClass::As_Pointer -- Converts a house number into a house object
+ *pointer.              *
+ *                                                                                             *
+ *    Use this routine to convert a house number into the house pointer that it
+ *represents.    * A simple index into the Houses template array is not
+ *sufficient, since the array order   * is arbitrary. An actual scan through the
+ *house object is required in order to find the   * house object desired. *
+ *                                                                                             *
+ * INPUT:   house -- The house type number to look up. *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the house object that the house number
+ *represents.       *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/23/1995 JLB : Created. *
+ *=============================================================================================*/
+HouseClass* HouseClass::As_Pointer(HousesType house) {
+  if (house != HOUSE_NONE) {
+    for (int index = 0; index < TheObjectHeaps().house().Count(); index++) {
+      if (TheObjectHeaps().house().Ptr(index)->Class->House == house) {
+        return TheObjectHeaps().house().Ptr(index);
+      }
+    }
+  }
+  return nullptr;
+}
+
+/***********************************************************************************************
+ * HouseClass::One_Time -- Handles one time initialization of the house array. *
+ *                                                                                             *
+ *    This basically calls the constructor for each of the houses in the game.
+ *All other       * data specific to the house is initialized when the scenario
+ *is loaded.                   *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   Only call this ONCE at the beginning of the game. *
+ *                                                                                             *
+ * HISTORY: * 12/09/1994 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::One_Time() {
+  BuildChoice.Set_Heap(magic_enum::enum_count<StructType>());
+}
+
+/***********************************************************************************************
+ * HouseClass::Assign_Handicap -- Assigns the specified handicap rating to the
+ *house.          *
+ *                                                                                             *
+ *    The handicap rating will affect combat, movement, and production for the
+ *house. It can   * either make it more or less difficult for the house
+ *(controlled by the handicap value).  *
+ *                                                                                             *
+ * INPUT:   handicap -- The handicap value to assign to this house. The default
+ *value for      * a house is DIFF_NORMAL. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the old handicap value. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/09/1996 JLB : Created. * 10/22/1996 JLB : Uses act like value
+ *for multiplay only.                                  *
+ *=============================================================================================*/
+DiffType HouseClass::Assign_Handicap(DiffType handicap) {
+  const DiffType old = Difficulty;
+  Difficulty = handicap;
+
+  if (TheSession().Type != GAME_NORMAL) {
+    const HouseTypeClass* hptr = &HouseTypeClass::As_Reference(ActLike);
+    FirepowerBias =
+        hptr->FirepowerBias *
+        base::At(TheRules().Diff, static_cast<int>(handicap)).FirepowerBias;
+    GroundspeedBias =
+        hptr->GroundspeedBias *
+        base::At(TheRules().Diff, static_cast<int>(handicap)).GroundspeedBias *
+        TheRules().GameSpeedBias;
+    AirspeedBias =
+        hptr->AirspeedBias *
+        base::At(TheRules().Diff, static_cast<int>(handicap)).AirspeedBias *
+        TheRules().GameSpeedBias;
+    ArmorBias = hptr->ArmorBias *
+                base::At(TheRules().Diff, static_cast<int>(handicap)).ArmorBias;
+    ROFBias = hptr->ROFBias *
+              base::At(TheRules().Diff, static_cast<int>(handicap)).ROFBias;
+    CostBias = hptr->CostBias *
+               base::At(TheRules().Diff, static_cast<int>(handicap)).CostBias;
+    RepairDelay =
+        base::At(TheRules().Diff, static_cast<int>(handicap)).RepairDelay;
+    BuildDelay =
+        base::At(TheRules().Diff, static_cast<int>(handicap)).BuildDelay;
+    BuildSpeedBias =
+        hptr->BuildSpeedBias *
+        base::At(TheRules().Diff, static_cast<int>(handicap)).BuildSpeedBias *
+        TheRules().GameSpeedBias;
+  } else {
+    FirepowerBias =
+        base::At(TheRules().Diff, static_cast<int>(handicap)).FirepowerBias;
+    GroundspeedBias =
+        base::At(TheRules().Diff, static_cast<int>(handicap)).GroundspeedBias *
+        TheRules().GameSpeedBias;
+    AirspeedBias =
+        base::At(TheRules().Diff, static_cast<int>(handicap)).AirspeedBias *
+        TheRules().GameSpeedBias;
+    ArmorBias = base::At(TheRules().Diff, static_cast<int>(handicap)).ArmorBias;
+    ROFBias = base::At(TheRules().Diff, static_cast<int>(handicap)).ROFBias;
+    CostBias = base::At(TheRules().Diff, static_cast<int>(handicap)).CostBias;
+    RepairDelay =
+        base::At(TheRules().Diff, static_cast<int>(handicap)).RepairDelay;
+    BuildDelay =
+        base::At(TheRules().Diff, static_cast<int>(handicap)).BuildDelay;
+    BuildSpeedBias =
+        base::At(TheRules().Diff, static_cast<int>(handicap)).BuildSpeedBias *
+        TheRules().GameSpeedBias;
+  }
+
+  return old;
+}
+
+/***********************************************************************************************
+ * HouseClass::new -- Allocator for a house class. *
+ *                                                                                             *
+ *    This is the allocator for a house class. Since there can be only * one of
+ *each type of house, this is allocator has restricted * functionality. Any
+ *attempt to allocate a house structure for a                           * house
+ *that already exists, just returns a pointer to the previously * allocated
+ *house. *
+ *                                                                                             *
+ * INPUT:   house -- The house to allocate a class object for. *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the allocated class object. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/22/1994 JLB : Created. *
+ *=============================================================================================*/
+void* HouseClass::operator new(std::size_t /*unused*/) noexcept {
+  void* ptr = TheObjectHeaps().house().Allocate();
+  if (ptr) {
+    static_cast<HouseClass*>(ptr)->IsActive = true;
+  }
+  return ptr;
+}
+
+/***********************************************************************************************
+ * HouseClass::delete -- Deallocator function for a house object. *
+ *                                                                                             *
+ *    This function marks the house object as "deallocated". Such a * house
+ *object is available for reallocation later. *
+ *                                                                                             *
+ * INPUT:   ptr   -- Pointer to the house object to deallocate. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/22/1994 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::operator delete(void* ptr) {
+  if (ptr) {
+    static_cast<HouseClass*>(ptr)->IsActive = false;
+  }
+  TheObjectHeaps().house().Free(static_cast<HouseClass*>(ptr));
+}
+
+/***********************************************************************************************
+ * HouseClass::HouseClass -- Constructor for a house object. *
+ *                                                                                             *
+ *    This function is the constructor and it marks the house object * as being
+ *allocated. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/22/1994 JLB : Created. *
+ *=============================================================================================*/
+#define VOX_NOT_READY VOX_NONE
+HouseClass::HouseClass(HousesType house)
+    : RTTI(RTTI_HOUSE),
+      ID(TheObjectHeaps().house().ID(this)),
+      Class(TheTypeHeaps().house().Ptr(static_cast<int>(house))),
+      Difficulty(TheScenario().CDifficulty),
+      ActLike(Class->House),
+      IQ(Control.IQ),
+      WhoLastHurtMe(house),
+      DamageTime(kTicksPerMinute * TheRules().DamageDelay),
+      TeamTime(kTicksPerMinute * TheRules().TeamDelay),
+      RemapColor(Class->RemapColor) {
+  /*
+  **	Explicit in-place construction of the super weapons is
+  **	required here because the default constructor for super
+  **	weapons must serve as a no-initialization constructor (save/load
+  *reasons).
+  */
+  new (&SuperWeapon.at(SPC_NUCLEAR_BOMB)) SuperClass(
+      kTicksPerMinute * TheRules().NukeTime, true, VOX_ABOMB_PREPPING,
+      VOX_ABOMB_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
+  new (&SuperWeapon.at(SPC_SONAR_PULSE))
+      SuperClass(kTicksPerMinute * TheRules().SonarTime, false, VOX_NONE,
+                 VOX_SONAR_AVAILABLE, VOX_NOT_READY, VOX_NOT_READY);
+  new (&SuperWeapon.at(SPC_CHRONOSPHERE)) SuperClass(
+      kTicksPerMinute * TheRules().ChronoTime, true, VOX_CHRONO_CHARGING,
+      VOX_CHRONO_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
+  new (&SuperWeapon.at(SPC_PARA_BOMB))
+      SuperClass(kTicksPerMinute * TheRules().ParaBombTime, false, VOX_NONE,
+                 VOX_NONE, VOX_NOT_READY, VOX_NOT_READY);
+  new (&SuperWeapon.at(SPC_PARA_INFANTRY))
+      SuperClass(kTicksPerMinute * TheRules().ParaInfantryTime, false, VOX_NONE,
+                 VOX_NONE, VOX_NOT_READY, VOX_NOT_READY);
+  new (&SuperWeapon.at(SPC_SPY_MISSION))
+      SuperClass(kTicksPerMinute * TheRules().SpyTime, false, VOX_NONE,
+                 VOX_SPY_PLANE, VOX_NOT_READY, VOX_NOT_READY);
+  new (&SuperWeapon.at(SPC_IRON_CURTAIN)) SuperClass(
+      kTicksPerMinute * TheRules().IronCurtainTime, true, VOX_IRON_CHARGING,
+      VOX_IRON_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
+  new (&SuperWeapon.at(SPC_GPS))
+      SuperClass(kTicksPerMinute * TheRules().GPSTime, true, VOX_NONE, VOX_NONE,
+                 VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
+
+  base::SafeCopy(IniName, Text_String(TXT_COMPUTER));  // Default computer name.
+  TheWorld().house_triggers().at(house).Clear();
+  Make_Ally(house);
+  Assign_Handicap(TheScenario().CDifficulty);
+
+  /*
+  **	Set the time of the first AI attack.
+  */
+  Attack.Set(
+      TheRules().AttackDelay *
+      static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
+
+  Init_Trackers();
+}
+
+/***********************************************************************************************
+ * HouseClass::~HouseClass -- House class destructor *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Nothing *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 8/6/96 4:48PM ST : Created *
+ *=============================================================================================*/
+void HouseClass::Init_Trackers() {
+  if (TheSession().Type == GAME_INTERNET) {
+    AircraftTotals = std::make_unique<UnitTrackerClass>(
+        static_cast<int>(magic_enum::enum_count<AircraftType>()));
+    InfantryTotals = std::make_unique<UnitTrackerClass>(
+        static_cast<int>(magic_enum::enum_count<InfantryType>()));
+    UnitTotals = std::make_unique<UnitTrackerClass>(
+        static_cast<int>(magic_enum::enum_count<UnitType>()));
+    BuildingTotals = std::make_unique<UnitTrackerClass>(
+        static_cast<int>(magic_enum::enum_count<StructType>()));
+    VesselTotals = std::make_unique<UnitTrackerClass>(
+        static_cast<int>(magic_enum::enum_count<VesselType>()));
+
+    DestroyedAircraft = std::make_unique<UnitTrackerClass>(
+        static_cast<int>(magic_enum::enum_count<AircraftType>()));
+    DestroyedInfantry = std::make_unique<UnitTrackerClass>(
+        static_cast<int>(magic_enum::enum_count<InfantryType>()));
+    DestroyedUnits = std::make_unique<UnitTrackerClass>(
+        static_cast<int>(magic_enum::enum_count<UnitType>()));
+    DestroyedBuildings = std::make_unique<UnitTrackerClass>(
+        static_cast<int>(magic_enum::enum_count<StructType>()));
+    DestroyedVessels = std::make_unique<UnitTrackerClass>(
+        static_cast<int>(magic_enum::enum_count<VesselType>()));
+
+    CapturedBuildings = std::make_unique<UnitTrackerClass>(
+        static_cast<int>(magic_enum::enum_count<StructType>()));
+    TotalCrates = std::make_unique<UnitTrackerClass>(
+        static_cast<int>(magic_enum::enum_count<CrateType>()));
+  }
+}
+
+HouseClass::HouseClass()
+    : RTTI(RTTI_HOUSE),
+      ID(TheObjectHeaps().house().ID(this)),
+      Difficulty(DIFF_NORMAL),
+      ActLike(HOUSE_NONE),
+
+      IQ(0),
+      WhoLastHurtMe(HOUSE_NONE),
+
+      RemapColor(PCOLOR_NONE) {
+  Init_Trackers();
+}
+
+HouseClass::~HouseClass() { Class = nullptr; }
+
+/***********************************************************************************************
+ * HouseStaticClass::HouseStaticClass -- Default constructor for house static
+ *class.           *
+ *                                                                                             *
+ *    This is the default constructor that initializes all the values to their
+ *default         * settings. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/31/1996 JLB : Created. *
+ *=============================================================================================*/
+HouseStaticClass::HouseStaticClass()
+    : MaxUnit(TheRules().UnitMax / 6),
+      MaxBuilding(TheRules().BuildingMax / 6),
+      MaxInfantry(TheRules().InfantryMax / 6),
+      MaxVessel(TheRules().VesselMax / 6),
+      MaxAircraft(TheRules().UnitMax / 6) {}
+
+/***********************************************************************************************
+ * HouseClass::Can_Build -- General purpose build legality checker. *
+ *                                                                                             *
+ *    This routine is called when it needs to be determined if the specified
+ *object type can   * be built by this house. Production and sidebar maintenance
+ *use this routine heavily.     *
+ *                                                                                             *
+ * INPUT:   type  -- Pointer to the type of object that legality is to be
+ *checked for.         *
+ *                                                                                             *
+ *          house -- This is the house to check for legality against. Note that
+ *this might     * not be 'this' house since the check could be from a captured
+ *factory.     * Captured factories build what the original owner of them could
+ *build.     *
+ *                                                                                             *
+ * OUTPUT:  Can the specified object be built? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/04/1995 JLB : Created. * 08/12/1995 JLB : Updated for GDI
+ *building sandbag walls in #9.                            * 10/23/1996 JLB :
+ *Hack to allow Tanya to both sides in multiplay.                          *
+ *   11/04/1996 JLB : Computer uses prerequisite record. *
+ *=============================================================================================*/
+bool HouseClass::Can_Build(const ObjectTypeClass* type,
+                           HousesType house) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+  CHECK_NE(type, nullptr);
+
+  /*
+  **	An object with a prohibited tech level availability will never be
+  *allowed, regardless *	of who requests it.
+  */
+  if (dynamic_cast<const TechnoTypeClass*>(type)->Level == -1) {
+    return false;
+  }
+
+  /*
+  ** If this is a CounterStrike II-only unit, and we're playing a multiplayer
+  ** game in 'downshifted' mode against CounterStrike or Red Alert, then
+  ** don't allow building this unit.
+  */
+  if (!TheRules().NewUnitsEnabled) {
+    // The saved quantity arrays assume the Aftermath types are exactly those
+    // past the kOriginal*Count boundaries; the data flags must agree.
+    switch (type->What_Am_I()) {
+      case RTTI_INFANTRYTYPE: {
+        const auto* infantry = dynamic_cast<const InfantryTypeClass*>(type);
+        DCHECK_EQ(infantry->IsAftermath != 0,
+                  static_cast<int>(infantry->Type) >= kOriginalInfantryCount);
+        if (infantry->IsAftermath) {
+          return false;
+        }
+        break;
+      }
+      case RTTI_UNITTYPE: {
+        const auto* unit = dynamic_cast<const UnitTypeClass*>(type);
+        DCHECK_EQ(unit->IsAftermath != 0,
+                  static_cast<int>(unit->Type) >= kOriginalUnitCount);
+        if (unit->IsAftermath) {
+          return false;
+        }
+        break;
+      }
+      case RTTI_VESSELTYPE: {
+        const auto* vessel = dynamic_cast<const VesselTypeClass*>(type);
+        DCHECK_EQ(vessel->IsAftermath != 0,
+                  static_cast<int>(vessel->Type) >= kOriginalVesselCount);
+        if (vessel->IsAftermath) {
+          return false;
+        }
+        break;
+      }
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_AIRCRAFT:
+      case RTTIType::RTTI_AIRCRAFTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BUILDING:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_CELL:
+      case RTTIType::RTTI_FACTORY:
+      case RTTIType::RTTI_HOUSE:
+      case RTTIType::RTTI_HOUSETYPE:
+      case RTTIType::RTTI_INFANTRY:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_SPECIAL:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEAMTYPE:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_TRIGGER:
+      case RTTIType::RTTI_TRIGGERTYPE:
+      case RTTIType::RTTI_UNIT:
+      case RTTIType::RTTI_VESSEL:
+      default:
+        break;
+    }
+  }
+
+  /*
+  **	The computer can always build everything.
+  */
+  if (!IsHuman && TheSession().Type == GAME_NORMAL) {
+    return true;
+  }
+
+  /*
+  **	Special hack to get certain objects to exist for both sides in the game.
+  */
+  const uint32_t own = type->Get_Ownable();
+
+  /*
+  **	Check to see if this owner can build the object type specified.
+  */
+  if ((base::Bit<uint32_t>(house) & own) == 0) {
+    return false;
+  }
+
+  /*
+  **	Perform some equivalency fixups for the building existence flags.
+  */
+  uint64_t flags = ActiveBScan;
+
+  /*
+  **	The computer records prerequisite buildings because it can't relay on
+  *the *	sidebar to keep track of this information.
+  */
+  if (!IsHuman) {
+    flags = OldBScan;
+  }
+
+  // The mask used to live in an int, so only its low 32 bits, sign-extended,
+  // take part in the check below.
+  auto pre = static_cast<uint64_t>(static_cast<int32_t>(
+      dynamic_cast<const TechnoTypeClass*>(type)->Prerequisite));
+
+  /*
+  **	Advanced power also serves as a prerequisite for normal power.
+  */
+  if (flags & kStructFlagAdvancedPower) {
+    flags |= kStructFlagPower;
+  }
+
+  /*
+  **	Either tech center counts as a prerequisite.
+  */
+  if ((TheSession().Type != GAME_NORMAL) &&
+      ((flags & (kStructFlagSovietTech | kStructFlagAdvancedTech)) != 0)) {
+    flags |= kStructFlagSovietTech | kStructFlagAdvancedTech;
+  }
+
+  int level = Control.TechLevel;
+  if constexpr (config::kCheatKeysEnabled) {
+    if (TheDebugState().build_anything()) {
+      level = 98;
+      pre = 0;
+    }
+  }
+
+  /*
+  **	See if the prerequisite requirements have been met.
+  */
+  return (pre & flags) == pre &&
+         dynamic_cast<const TechnoTypeClass*>(type)->Level <= level;
+}
+
+/***************************************************************************
+ * HouseClass::Init -- init's in preparation for new scenario              *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *      none.                                                              *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *      none.                                                              *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *      none.                                                              *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/07/1994 BR : Created.                                              *
+ *   12/17/1994 JLB : Resets tracker bits.                                 *
+ *=========================================================================*/
+void HouseClass::Init() {
+  // Destroyed rather than just freed: an Internet game's houses own their
+  // unit trackers.
+  TheObjectHeaps().house().Destroy_All();
+
+  for (const HousesType index : magic_enum::enum_values<HousesType>()) {
+    TheWorld().house_triggers().at(index).Clear();
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::AI -- Process house logic. *
+ *                                                                                             *
+ *    This handles the AI for the house object. It should be called once per
+ *house per game    * tick. It processes all house global tasks such as low
+ *power damage accumulation and      * house specific trigger events. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/27/1994 JLB : Created. * 07/17/1995 JLB : Limits EVA speaking
+ *unless the player can do something.                  *
+ *=============================================================================================*/
+void HouseClass::AI() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  **	If base building has been turned on by a trigger, then force the house
+  *to begin *	production and team creation as well. This is also true if the
+  *IQ is high enough to *	being base building.
+  */
+  if (IsBaseBuilding || IQ >= TheRules().IQProduction) {
+    IsBaseBuilding = true;
+    IsStarted = true;
+    IsAlerted = true;
+  }
+
+  /*
+  **	Check to see if the house wins.
+  */
+  if (TheSession().Type == GAME_NORMAL && IsToWin &&
+      BorrowedTime.IsFinished() && Blockage <= 0) {
+    IsToWin = false;
+    if (this == ThePlayer()) {
+      TheGameState().player_wins() = true;
+    } else {
+      TheGameState().player_loses() = true;
+    }
+  }
+
+  /*
+  **	Check to see if the house loses.
+  */
+  if (TheSession().Type == GAME_NORMAL && IsToLose &&
+      BorrowedTime.IsFinished()) {
+    IsToLose = false;
+    if (this == ThePlayer()) {
+      TheGameState().player_loses() = true;
+    } else {
+      TheGameState().player_wins() = true;
+    }
+  }
+
+  /*
+  **	Check to see if all objects of this house should be blown up.
+  */
+  if (IsToDie && BorrowedTime.IsFinished()) {
+    IsToDie = false;
+    Blowup_All();
+  }
+
+  /*
+  **	Double check power values to correct illegal conditions. It is possible
+  *to *	get a power output of negative (one usually) as a result of damage
+  *sustained *	and the fixed point fractional math involved with power
+  *adjustments. If the *	power rating drops below zero, then make it
+  *zero.
+  */
+  Power = std::max(Power, 0);
+  Drain = std::max(Drain, 0);
+
+  /*
+  **	If the base has been alerted to the enemy and should be attacking, then
+  **	see if the attack timer has expired. If it has, then create the attack
+  **	teams.
+  */
+  if (IsAlerted && AlertTime.IsFinished()) {
+    /*
+    **	Adjusted to reduce maximum number of teams created.
+    */
+    const int maxteams = Random_Pick(2, ((Control.TechLevel - 1) / 3) + 1);
+    for (int index = 0; index < maxteams; index++) {
+      TeamTypeClass* ttype = Suggested_New_Team(true);
+      if (ttype != nullptr) {
+        TheWorld().scenario_init()++;
+        ttype->Create_One_Of();
+        TheWorld().scenario_init()--;
+      }
+    }
+    AlertTime.Set(TheRules().AutocreateTime *
+                  static_cast<int>(
+                      Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
+    //		int mintime = Rule.AutocreateTime * (kTicksPerMinute/2);
+    //		int maxtime = Rule.AutocreateTime * (kTicksPerMinute*2);
+    //		AlertTime = Random_Pick(mintime, maxtime);
+  }
+
+  /*
+  **	If this house's flag waypoint is a valid cell, see if there's
+  **	someone sitting on it.  If so, make the scatter.  If they refuse,
+  **	blow them up.
+  */
+  if (FlagHome != 0 && CurrentFrame() % kTicksPerSecond == 0) {
+    TechnoClass* techno = TheMap().at(FlagHome).Cell_Techno();
+    if (techno != nullptr) {
+      bool moving = false;
+      if (techno->Is_Foot() &&
+          Target_Legal(dynamic_cast<FootClass*>(techno)->NavCom)) {
+        moving = true;
+      }
+
+      if (!moving) {
+        techno->Scatter(0, true, true);
+      }
+
+      /*
+      **	If the techno doesn't have a valid NavCom, he's not moving,
+      **	so blow him up.
+      */
+      if (techno->Is_Foot() &&
+          Target_Legal(dynamic_cast<FootClass*>(techno)->NavCom)) {
+        moving = true;
+      }
+
+      /*
+      **	If the techno wasn't an infantry or unit (ie he's a building),
+      **	or he refuses to move, blow him up
+      */
+      if (!moving) {
+        int count = 0;
+        while (!techno->IsInLimbo && count++ < 5) {
+          int damage = techno->Strength;
+          techno->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
+        }
+      }
+    }
+  }
+
+  /*
+  **	Create teams for this house if necessary.
+  ** (Use the same timer for some extra capture-the-flag logic.)
+  */
+  if (!IsAlerted && TeamTime.IsFinished()) {
+    TeamTypeClass* ttype = Suggested_New_Team(false);
+    if (ttype) {
+      ttype->Create_One_Of();
+    }
+
+    TeamTime.Set(TheRules().TeamDelay * kTicksPerMinute);
+  }
+
+  /*
+  **	If there is insufficient power, then all buildings that are above
+  **	half strength take a little bit of damage.
+  */
+  if (DamageTime.IsFinished()) {
+    /*
+    **	When the power is below required, then the buildings will take damage
+    *over *	time.
+    */
+    if (Power_Fraction() < 1) {
+      for (int index = 0; index < TheObjectHeaps().building().Count();
+           index++) {
+        BuildingClass& b = *TheObjectHeaps().building().Ptr(index);
+
+        // BG: Only damage buildings that require power, to keep the
+        //     land mines from blowing up under low-power conditions
+        if ((b.House == this &&
+             b.Health_Ratio() > TheRules().ConditionYellow) &&
+            b.Class->Drain) {
+          int damage = 1;
+          b.Take_Damage(damage, 0, WARHEAD_AP, nullptr);
+        }
+      }
+    }
+    DamageTime.Set(kTicksPerMinute * TheRules().DamageDelay);
+  }
+
+  /*
+  **	If there are no more buildings to sell, then automatically cancel the
+  **	sell mode.
+  */
+  if (ThePlayer() == this && !ActiveBScan && TheMap().IsSellMode) {
+    TheMap().Sell_Mode_Control(0);
+  }
+
+  /*
+  **	Various base conditions may be announced to the player. Typically, this
+  *would be *	low tiberium capacity or low power.
+  */
+  if (ThePlayer() == this) {
+    if (SpeakMaxedDelay.IsFinished() && Available_Money() < 100 &&
+        UnitFactories + BuildingFactories + InfantryFactories > 0) {
+      Speak(VOX_NEED_MO_MONEY);
+      TheMap().Flash_Money();
+      SpeakMaxedDelay.Set(TheOptions().Normalize_Delay(kTicksPerMinute *
+                                                       TheRules().SpeakDelay));
+    }
+
+    if (SpeakMaxedDelay.IsFinished() && IsMaxedOut) {
+      IsMaxedOut = false;
+      if (Capacity - Tiberium < 300 && Capacity > 500 &&
+          ActiveBScan & (kStructFlagRefinery | kStructFlagConst)) {
+        Speak(VOX_NEED_MO_CAPACITY);
+        SpeakMaxedDelay.Set(TheOptions().Normalize_Delay(
+            kTicksPerMinute * TheRules().SpeakDelay));
+      }
+    }
+    if ((SpeakPowerDelay.IsFinished() && Power_Fraction() < 1) &&
+        (ActiveBScan & kStructFlagConst)) {
+      Speak(VOX_LOW_POWER);
+      SpeakPowerDelay.Set(TheOptions().Normalize_Delay(kTicksPerMinute *
+                                                       TheRules().SpeakDelay));
+      TheMap().Flash_Power();
+
+      const char* text = nullptr;
+      if (BQuantity.at(STRUCT_AAGUN) > 0) {
+        text = Text_String(TXT_POWER_AAGUN);
+      }
+      if (BQuantity.at(STRUCT_TESLA) > 0) {
+        text = Text_String(TXT_POWER_TESLA);
+      }
+      if (text == nullptr) {
+        text = Text_String(TXT_LOW_POWER);
+      }
+      if (text != nullptr) {
+        TheSession().Messages.Add_Message(
+            nullptr, 0, text, PCOLOR_GREEN,
+            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            TheRules().MessageDelay * kTicksPerMinute);
+      }
+    }
+  }
+
+  /*
+  **	If there is a flag associated with this house, then mark it to be
+  **	redrawn.
+  */
+  if (Target_Legal(FlagLocation)) {
+    UnitClass* unit = As_Unit(FlagLocation);
+    if (unit) {
+      unit->Mark(MARK_CHANGE);
+    } else {
+      const CELL cell = As_Cell(FlagLocation);
+      TheMap().at(cell).Redraw_Objects();
+    }
+  }
+
+  /*
+  **	Triggers are only checked every so often. If the trigger timer has
+  *expired, *	then set the trigger processing flag.
+  */
+  if (TriggerTime.IsFinished() || IsBuiltSomething) {
+    TriggerTime.Set(kTicksPerMinute / 10);
+    IsBuiltSomething = false;
+  }
+
+  /*
+  **	Process any super weapon logic required.
+  */
+  Super_Weapon_Handler();
+
+  // For endgame auto-sonar pulse.
+  //	If house has nothing but subs left, do an automatic sonar pulse to
+  // reveal them.
+  //	Includes count of VESSEL_MISSILESUBs. ajw
+  if (TheScenario().AutoSonarTimer.IsFinished() &&
+      VQuantity[static_cast<int>(VESSEL_SS)] > 0) {
+    int iCount = 0;
+    for (const int i : BQuantity) {
+      iCount += i;
+    }
+    if (!iCount) {
+      for (const int i : UQuantity) {
+        iCount += i;
+      }
+      if (!iCount) {
+        //	ajw - Found bug - house's civilians are not removed from
+        // IQuantity when they die. 	Workaround...
+        for (int i = 0; i <= static_cast<int>(INFANTRY_DOG); ++i) {
+          iCount += base::At(IQuantity, i);
+        }
+        if (!iCount) {
+          for (const AircraftType i : magic_enum::enum_values<AircraftType>()) {
+            iCount += AQuantity.at(i);
+          }
+          if (!iCount) {
+            for (int i = 0; i != kOriginalVesselCount; ++i) {
+              if (i != static_cast<int>(VESSEL_SS)) {
+                iCount += base::At(VQuantity, i);
+              }
+            }
+            if (!iCount) {
+              //	Do the ping.
+              for (int index = 0; index < TheObjectHeaps().vessel().Count();
+                   index++) {
+                VesselClass* sub = TheObjectHeaps().vessel().Ptr(index);
+                if (*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) {
+                  sub->PulseCountDown.Set(static_cast<int64_t>(15) *
+                                          kTicksPerSecond);
+                  sub->Do_Uncloak();
+                }
+              }
+              TheWorld().auto_sonar_pulse() = true;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /*
+  ** Special win/lose check for multiplayer games; by-passes the
+  ** trigger system.  We must wait for non-zero frame, because init
+  ** may not properly set IScan etc for each house; you have to go
+  ** through each object's AI before it will be properly set.
+  */
+  if (TheSession().Type != GAME_NORMAL && !IsDefeated && !ActiveBScan &&
+      !ActiveAScan && !UScan && !ActiveIScan && !ActiveVScan &&
+      CurrentFrame() > 0) {
+    MPlayer_Defeated();
+  }
+
+  /*
+  **	Try to spring all events attached to this house. The triggers will check
+  **	for themselves if they actually need to be sprung or not.
+  */
+  for (int index = 0;
+       index < TheWorld().house_triggers().at(Class->House).Count(); index++) {
+    if (TheWorld().house_triggers().at(Class->House).at(index)->Spring() &&
+        index > 0) {
+      index--;
+      continue;
+    }
+  }
+
+  /*
+  **	If a radar facility is not present, but the radar is active, then turn
+  *the radar off. *	The radar also is turned off when the power gets below
+  *100% capacity.
+  */
+  if (ThePlayer() == this) {
+    bool jammed = TheMap().Is_Radar_Active();
+
+    /*
+    ** Find if there are any radar facilities, and if they're jammed or not
+    */
+
+    if (IsGPSActive) {
+      jammed = false;
+    } else {
+      for (int index = 0; index < TheObjectHeaps().building().Count();
+           index++) {
+        const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+        if (building != nullptr && !building->IsInLimbo &&
+            building->House == ThePlayer()) {
+          if (*building == STRUCT_RADAR /* || *building == STRUCT_EYE */) {
+            if (!building->IsJammed) {
+              jammed = false;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    if (TheMap().Get_Jammed() != jammed) {
+      TheMap().RadarClass::Flag_To_Redraw(true);
+    }
+    TheMap().Set_Jammed(jammed);
+    // Need to add in here where we activate it when only GPS is active.
+    if (TheMap().Is_Radar_Active()) {
+      if (ActiveBScan & kStructFlagRadar) {
+        if (Power_Fraction() < 1 && !IsGPSActive) {
+          TheMap().Radar_Activate(0);
+        }
+      } else {
+        if (!IsGPSActive) {
+          TheMap().Radar_Activate(0);
+        }
+      }
+
+    } else {
+      if (IsGPSActive || ActiveBScan & kStructFlagRadar) {
+        if (Power_Fraction() >= 1 || IsGPSActive) {
+          TheMap().Radar_Activate(1);
+        }
+      } else {
+        if (TheMap().Is_Radar_Existing()) {
+          TheMap().Radar_Activate(4);
+        }
+      }
+    }
+  }
+
+  /*
+  **	Perform any expert system AI processing.
+  */
+  if (IsBaseBuilding && AITimer.IsFinished()) {
+    AITimer.Set(Expert_AI());
+  }
+
+  if (!IsBaseBuilding && State == STATE_ENDGAME) {
+    Fire_Sale();
+    Do_All_To_Hunt();
+  }
+
+  AI_Building();
+  AI_Unit();
+  AI_Vessel();
+  AI_Infantry();
+  AI_Aircraft();
+
+  /*
+  **	If the production possibilities need to be recalculated, then do so now.
+  *This must *	occur after the scan bits have been properly updated.
+  */
+  if (ThePlayer() == this && IsRecalcNeeded) {
+    IsRecalcNeeded = false;
+    TheMap().Recalc();
+
+    /*
+    **	This placement might affect any prerequisite requirements for
+    *construction *	lists. Update the buildable options accordingly.
+    */
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+      if ((building && building->Strength > 0 &&
+           building->Owner() == Class->House &&
+           building->Mission != MISSION_DECONSTRUCTION &&
+           building->MissionQueue != MISSION_DECONSTRUCTION) &&
+          (ThePlayer() == building->House)) {
+        building->Update_Buildables();
+      }
+    }
+  }
+
+  /*
+  ** See if it's time to re-set the can-repair flag
+  */
+  if (DidRepair && RepairTimer.IsFinished()) {
+    DidRepair = false;
+  }
+
+  if (this == ThePlayer() && IsToLook) {
+    IsToLook = false;
+    MapEditClass::All_To_Look();
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Super_Weapon_Handler -- Handles the super weapon charge and
+ *discharge logic.    *
+ *                                                                                             *
+ *    This handles any super weapons assigned to this house. It also performs
+ *any necessary    * maintenance that the super weapons require. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/17/1996 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Super_Weapon_Handler() {
+  /*
+  **	Perform all super weapon AI processing. This just checks to see if
+  **	the graphic needs changing for the special weapon and updates the
+  **	sidebar as necessary.
+  */
+  for (const SpecialWeaponType special :
+       magic_enum::enum_values<SpecialWeaponType>()) {
+    SuperClass* super = &SuperWeapon.at(special);
+
+    if (super->Is_Present()) {
+      /*
+      **	Perform any charge-up logic for the super weapon. If the super
+      **	weapon is owned by the player and a graphic change is detected,
+      *then *	flag the sidebar to be redrawn so the player will see the
+      *change.
+      */
+      if (super->AI(this == ThePlayer()) && (this == ThePlayer())) {
+        TheMap().Column[1].Flag_To_Redraw();
+      }
+
+      /*
+      **	Repeating super weapons that require power will be suspended if
+      *there *	is insufficient power available.
+      */
+      if (!super->Is_Ready() && super->Is_Powered() && !super->Is_One_Time()) {
+        super->Suspend(Power_Fraction() < 1);
+      }
+    }
+  }
+
+  /*
+  ** Check to see if they have launched the GPS, but subsequently lost their
+  ** tech center.  If so, remove the GPS, and shroud the map.
+  */
+  if (IsGPSActive && !(ActiveBScan & kStructFlagAdvancedTech)) {
+    IsGPSActive = false;
+    if (IsPlayerControl) {
+      TheMap().Shroud_The_Map();
+    }
+  }
+
+  /*
+  **	Check to see if the GPS Satellite should be removed from the sidebar
+  **	because of outside circumstances. The advanced technology facility
+  **	being destroyed is a good example of this.  Having fired the satellite
+  ** is another good example, because it's a one-shot item.
+  */
+  if (SuperWeapon.at(SPC_GPS).Is_Present()) {
+    if (!(ActiveBScan & kStructFlagAdvancedTech) || IsGPSActive || IsDefeated) {
+      /*
+      **	Remove the missile capability when there is no advanced tech
+      *facility.
+      */
+      if (SuperWeapon.at(SPC_GPS).Remove()) {
+        if (this == ThePlayer()) {
+          TheMap().Column[1].Flag_To_Redraw();
+        }
+        IsRecalcNeeded = true;
+      }
+    } else {
+      /*
+      ** Auto-fire the GPS satellite if it's charged up.
+      */
+      if (SuperWeapon.at(SPC_GPS).Is_Ready()) {
+        SuperWeapon.at(SPC_GPS).Discharged(this == ThePlayer());
+        if (SuperWeapon.at(SPC_GPS).Remove() && (this == ThePlayer())) {
+          TheMap().Column[1].Flag_To_Redraw();
+        }
+
+        IsRecalcNeeded = true;
+        for (int index = 0; index < TheObjectHeaps().building().Count();
+             index++) {
+          BuildingClass* bldg = TheObjectHeaps().building().Ptr(index);
+          if (*bldg == STRUCT_ADVANCED_TECH && bldg->House == this) {
+            bldg->HasFired = true;
+            bldg->Assign_Mission(MISSION_MISSILE);
+            break;
+          }
+        }
+      }
+    }
+  } else {
+    /*
+    **	If there is no GPS satellite present, but there is a GPS satellite
+    **	facility available, then make the GPS satellite available as well.
+    */
+    if ((ActiveBScan & kStructFlagAdvancedTech) != 0 && !IsGPSActive &&
+        Control.TechLevel >= TheRules().GPSTechLevel &&
+        (IsHuman || IQ >= TheRules().IQSuperWeapons)) {
+      bool canfire = false;
+      for (int index = 0; index < TheObjectHeaps().building().Count();
+           index++) {
+        const BuildingClass* bldg = TheObjectHeaps().building().Ptr(index);
+        if (*bldg == STRUCT_ADVANCED_TECH && bldg->House == this &&
+            !bldg->IsInLimbo) {
+          if (!bldg->HasFired) {
+            canfire = true;
+            break;
+          }
+        }
+      }
+
+      if (canfire) {
+        SuperWeapon.at(SPC_GPS).Enable(false, this == ThePlayer(),
+                                       Power_Fraction() < 1);
+
+        /*
+        **	Flag the sidebar to be redrawn if necessary.
+        */
+        if (this == ThePlayer()) {
+          TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_GPS));
+          TheMap().Column[1].Flag_To_Redraw();
+        }
+      }
+    }
+  }
+
+  /*
+  **	Check to see if the chronosphere should be removed from the sidebar
+  **	because of outside circumstances. The chronosphere facility
+  **	being destroyed is a good example of this.
+  */
+  if (SuperWeapon.at(SPC_CHRONOSPHERE).Is_Present()) {
+    if (((!(ActiveBScan & kStructFlagChronosphere) &&
+          !SuperWeapon.at(SPC_CHRONOSPHERE).Is_One_Time()) ||
+         IsDefeated) &&
+        SuperWeapon.at(SPC_CHRONOSPHERE).Remove()) {
+      /*
+      **	Remove the chronosphere when there is no chronosphere facility.
+      **	Note that this will not remove the one time created
+      *chronosphere.
+      */
+      if (this == ThePlayer()) {
+        if (TheMap().IsTargettingMode == SPC_CHRONOSPHERE ||
+            TheMap().IsTargettingMode == kSpcChrono2) {
+          if (TheMap().IsTargettingMode == kSpcChrono2) {
+            // Only a live chrono tank keeps its own targeting mode alive.
+            const auto* unit =
+                dynamic_cast<UnitClass*>(As_Object(UnitToTeleport));
+            if (unit == nullptr || !unit->IsActive ||
+                *unit != UNIT_CHRONOTANK) {
+              TheMap().IsTargettingMode = SPC_NONE;
+            }
+          } else {
+            TheMap().IsTargettingMode = SPC_NONE;
+          }
+        }
+        TheMap().Column[1].Flag_To_Redraw();
+      }
+      IsRecalcNeeded = true;
+    }
+
+  } else {
+    /*
+    **	If there is no chronosphere present, but there is a chronosphere
+    **	facility available, then make the chronosphere available as well.
+    */
+    if (ActiveBScan & kStructFlagChronosphere &&
+        //			(ActLike == HOUSE_GOOD || Session.Type !=
+        // GAME_NORMAL) &&
+        Control.TechLevel >=
+            BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE).Level &&
+        //			Control.TechLevel >= Rule.ChronoTechLevel &&
+        (IsHuman || IQ >= TheRules().IQSuperWeapons)) {
+      SuperWeapon.at(SPC_CHRONOSPHERE)
+          .Enable(false, this == ThePlayer(), Power_Fraction() < 1);
+
+      /*
+      **	Flag the sidebar to be redrawn if necessary.
+      */
+      if (this == ThePlayer()) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_CHRONOSPHERE));
+        TheMap().Column[1].Flag_To_Redraw();
+      }
+    }
+  }
+
+  /*
+  **	Check to see if the iron curtain should be removed from the sidebar
+  **	because of outside circumstances. The iron curtain facility
+  **	being destroyed is a good example of this.
+  */
+  if (SuperWeapon.at(SPC_IRON_CURTAIN).Is_Present()) {
+    if (((!(ActiveBScan & kStructFlagIronCurtain) &&
+          !SuperWeapon.at(SPC_IRON_CURTAIN).Is_One_Time()) ||
+         IsDefeated) &&
+        SuperWeapon.at(SPC_IRON_CURTAIN).Remove()) {
+      /*
+      **	Remove the iron curtain when there is no iron curtain facility.
+      **	Note that this will not remove the one time created iron
+      *curtain.
+      */
+      if (this == ThePlayer()) {
+        if (TheMap().IsTargettingMode == SPC_IRON_CURTAIN) {
+          TheMap().IsTargettingMode = SPC_NONE;
+        }
+        TheMap().Column[1].Flag_To_Redraw();
+      }
+      IsRecalcNeeded = true;
+    }
+
+  } else {
+    /*
+    **	If there is no iron curtain present, but there is an iron curtain
+    **	facility available, then make the iron curtain available as well.
+    */
+    if (ActiveBScan & kStructFlagIronCurtain &&
+        (IsSovietHouse(ActLike) || TheSession().Type != GAME_NORMAL) &&
+        (IsHuman || IQ >= TheRules().IQSuperWeapons)) {
+      SuperWeapon.at(SPC_IRON_CURTAIN)
+          .Enable(false, this == ThePlayer(), Power_Fraction() < 1);
+
+      /*
+      **	Flag the sidebar to be redrawn if necessary.
+      */
+      if (this == ThePlayer()) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_IRON_CURTAIN));
+        TheMap().Column[1].Flag_To_Redraw();
+      }
+    }
+  }
+
+  /*
+  **	Check to see if the sonar pulse should be removed from the sidebar
+  **	because of outside circumstances. The spied-upon enemy sub pen
+  **	being destroyed is a good example of this.
+  */
+  if (SuperWeapon.at(SPC_SONAR_PULSE).Is_Present()) {
+    const auto usspy = base::Bit<uint32_t>(Class->House);
+    bool present = false;
+    bool powered = false;
+    for (int q = 0; q < TheObjectHeaps().building().Count() && !powered; q++) {
+      const BuildingClass* bldg = TheObjectHeaps().building().Ptr(q);
+      if (*bldg == STRUCT_SUB_PEN &&
+          bldg->House->Class->House != Class->House && bldg->SpiedBy & usspy) {
+        present = true;
+        powered = !(bldg->House->Power_Fraction() < 1);
+      }
+    }
+    if (((!present && !SuperWeapon.at(SPC_SONAR_PULSE).Is_One_Time()) ||
+         IsDefeated) &&
+        SuperWeapon.at(SPC_SONAR_PULSE).Remove()) {
+      /*
+      **	Remove the sonar pulse when there is no spied-upon enemy sub
+      *pen. *	Note that this will not remove the one time created sonar pulse.
+      */
+      if (this == ThePlayer()) {
+        TheMap().Column[1].Flag_To_Redraw();
+      }
+      IsRecalcNeeded = true;
+    }
+  }
+
+  /*
+  **	Check to see if the nuclear weapon should be removed from the sidebar
+  **	because of outside circumstances. The missile silos
+  **	being destroyed is a good example of this.
+  */
+  if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_Present()) {
+    if ((!(ActiveBScan & kStructFlagMslo) &&
+         !SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_One_Time()) ||
+        IsDefeated) {
+      /*
+      **	Remove the nuke when there is no missile silo.
+      **	Note that this will not remove the one time created nuke.
+      */
+      if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Remove()) {
+        if (this == ThePlayer()) {
+          if (TheMap().IsTargettingMode == SPC_NUCLEAR_BOMB) {
+            TheMap().IsTargettingMode = SPC_NONE;
+          }
+          TheMap().Column[1].Flag_To_Redraw();
+        }
+        IsRecalcNeeded = true;
+      }
+    } else {
+      /*
+      **	Allow the computer to fire the nuclear weapon when the weapon is
+      **	ready and the owner is the computer.
+      */
+      if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_Ready() && !IsHuman) {
+        Special_Weapon_AI(SPC_NUCLEAR_BOMB);
+      }
+    }
+
+  } else {
+    /*
+    **	If there is no nuclear missile present, but there is a missile
+    **	silo available, then make the missile available as well.
+    */
+    if (ActiveBScan & kStructFlagMslo &&
+        (!IsSovietHouse(ActLike) || TheSession().Type != GAME_NORMAL) &&
+        (IsHuman || IQ >= TheRules().IQSuperWeapons)) {
+      SuperWeapon.at(SPC_NUCLEAR_BOMB)
+          .Enable(false, this == ThePlayer(), Power_Fraction() < 1);
+
+      /*
+      **	Flag the sidebar to be redrawn if necessary.
+      */
+      if (this == ThePlayer()) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
+        TheMap().Column[1].Flag_To_Redraw();
+      }
+    }
+  }
+
+  if (SuperWeapon.at(SPC_SPY_MISSION).Is_Present()) {
+    if ((ActiveBScan & kStructFlagAirstrip) == 0) {
+      if (SuperWeapon.at(SPC_SPY_MISSION).Remove()) {
+        if (this == ThePlayer()) {
+          TheMap().Column[1].Flag_To_Redraw();
+        }
+        IsRecalcNeeded = true;
+      }
+    } else {
+      if (this == ThePlayer() && !SuperWeapon.at(SPC_SPY_MISSION).Is_Ready()) {
+        TheMap().Column[1].Flag_To_Redraw();
+      }
+      if (SuperWeapon.at(SPC_SPY_MISSION).Is_Ready() && !IsHuman) {
+        Special_Weapon_AI(SPC_SPY_MISSION);
+      }
+    }
+  } else {
+    if ((ActiveBScan & kStructFlagAirstrip) != 0 &&
+        !TheScenario().IsNoSpyPlane &&
+        Control.TechLevel >= TheRules().SpyPlaneTechLevel) {
+      SuperWeapon.at(SPC_SPY_MISSION).Enable(false, this == ThePlayer(), false);
+      if (this == ThePlayer()) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_SPY_MISSION));
+        TheMap().Column[1].Flag_To_Redraw();
+      }
+    }
+  }
+
+  if (SuperWeapon.at(SPC_PARA_BOMB).Is_Present()) {
+    if ((ActiveBScan & kStructFlagAirstrip) == 0) {
+      if (SuperWeapon.at(SPC_PARA_BOMB).Remove()) {
+        if (this == ThePlayer()) {
+          TheMap().Column[1].Flag_To_Redraw();
+        }
+        IsRecalcNeeded = true;
+      }
+    } else {
+      if (SuperWeapon.at(SPC_PARA_BOMB).Is_Ready() && !IsHuman) {
+        Special_Weapon_AI(SPC_PARA_BOMB);
+      }
+    }
+  } else {
+    if ((ActiveBScan & kStructFlagAirstrip) != 0 &&
+        Control.TechLevel >= TheRules().ParaBombTechLevel &&
+        TheSession().Type == GAME_NORMAL) {
+      SuperWeapon.at(SPC_PARA_BOMB).Enable(false, this == ThePlayer(), false);
+      if (this == ThePlayer()) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_PARA_BOMB));
+        TheMap().Column[1].Flag_To_Redraw();
+      }
+    }
+  }
+
+  if (SuperWeapon.at(SPC_PARA_INFANTRY).Is_Present()) {
+    if ((ActiveBScan & kStructFlagAirstrip) == 0) {
+      if (SuperWeapon.at(SPC_PARA_INFANTRY).Remove()) {
+        if (this == ThePlayer()) {
+          TheMap().Column[1].Flag_To_Redraw();
+        }
+        IsRecalcNeeded = true;
+      }
+    } else {
+      if (SuperWeapon.at(SPC_PARA_INFANTRY).Is_Ready() && !IsHuman) {
+        Special_Weapon_AI(SPC_PARA_INFANTRY);
+      }
+    }
+  } else {
+    if ((ActiveBScan & kStructFlagAirstrip) != 0 &&
+        Control.TechLevel >= TheRules().ParaInfantryTechLevel) {
+      SuperWeapon.at(SPC_PARA_INFANTRY)
+          .Enable(false, this == ThePlayer(), false);
+      if (this == ThePlayer()) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_PARA_INFANTRY));
+        TheMap().Column[1].Flag_To_Redraw();
+      }
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Attacked -- Lets player know if base is under attack. *
+ *                                                                                             *
+ *    Call this function whenever a building is attacked (with malice). This
+ *function will     * then announce to the player that his base is under attack.
+ *It checks to make sure that   * this is referring to the player's house rather
+ *than the enemy's.                         *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/27/1994 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Attacked() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (SpeakAttackDelay.IsFinished() &&
+      ((TheSession().Type == GAME_NORMAL && IsPlayerControl) ||
+       ThePlayer()->Class->House == Class->House)) {
+    Speak(VOX_BASE_UNDER_ATTACK);
+    SpeakAttackDelay.Set(
+        TheOptions().Normalize_Delay(kTicksPerMinute * TheRules().SpeakDelay));
+
+    /*
+    **	If there is a trigger event associated with being attacked, process it
+    **	now.
+    */
+    for (int index = 0;
+         index < TheWorld().house_triggers().at(Class->House).Count();
+         index++) {
+      TheWorld()
+          .house_triggers()
+          .at(Class->House)
+          .at(index)
+          ->Spring(TEVENT_ATTACKED);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Harvested -- Adds Tiberium to the harvest storage. *
+ *                                                                                             *
+ *    Use this routine whenever Tiberium is harvested. The Tiberium is stored
+ *equally between  * all storage capable buildings for the house. Harvested
+ *Tiberium adds to the credit       * value of the house, but only up to the
+ *maximum storage capacity that the house can       * currently maintain. *
+ *                                                                                             *
+ * INPUT:   tiberium -- The number of Tiberium credits to add to the House's
+ *total.            *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/25/1995 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Harvested(int tiberium) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+  DCHECK(tiberium >= 0);
+
+  const int64_t oldtib = Tiberium;
+
+  Tiberium += tiberium;
+  if (Tiberium > Capacity) {
+    Tiberium = Capacity;
+    IsMaxedOut = true;
+  }
+  HarvestedCredits += tiberium;
+  Silo_Redraw_Check(oldtib, Capacity);
+}
+
+/***********************************************************************************************
+ * HouseClass::Stole -- Accounts for the value of a captured building.
+ **
+ *                                                                                             *
+ *    Use this routine whenever a building is captured.  It keeps track of the
+ *cost of the     * building for use in the scoring routine, because you get an
+ *'economy' boost for the      * value of the stolen building (but you don't get
+ *the credit value for it.)                *
+ *                                                                                             *
+ * INPUT:   worth -- The worth of the building we captured (stole).
+ **
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/05/1996 BWG : Created. *
+ *=============================================================================================*/
+void HouseClass::Stole(int worth) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  StolenBuildingsCredits += worth;
+}
+
+/***********************************************************************************************
+ * HouseClass::Available_Money -- Fetches the total credit worth of the house. *
+ *                                                                                             *
+ *    Use this routine to determine the total credit value of the house. This is
+ *the sum of    * the harvested Tiberium in storage and the initial unspent cash
+ *reserves.                 *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the total credit value of the house. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/25/1995 JLB : Created. *
+ *=============================================================================================*/
+int64_t HouseClass::Available_Money() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  return Tiberium + Credits;
+}
+
+/***********************************************************************************************
+ * HouseClass::Spend_Money -- Removes money from the house. *
+ *                                                                                             *
+ *    Use this routine to extract money from the house. Typically, this is a
+ *result of         * production spending. The money is extracted from available
+ *cash reserves first. When     * cash reserves are exhausted, then Tiberium is
+ *consumed.                                  *
+ *                                                                                             *
+ * INPUT:   money -- The amount of money to spend. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/25/1995 JLB : Created. * 06/20/1995 JLB : Spends Tiberium
+ *before spending cash.                                    *
+ *=============================================================================================*/
+void HouseClass::Spend_Money(int money) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+  DCHECK(money >= 0);
+
+  const int64_t oldtib = Tiberium;
+  if (money > Tiberium) {
+    money -= static_cast<int>(Tiberium);
+    Tiberium = 0;
+    Credits -= money;
+  } else {
+    Tiberium -= money;
+  }
+  Silo_Redraw_Check(oldtib, Capacity);
+  CreditsSpent += money;
+}
+
+/***********************************************************************************************
+ * HouseClass::Refund_Money -- Refunds money to back to the house. *
+ *                                                                                             *
+ *    Use this routine when money needs to be refunded back to the house. This
+ *can occur when  * construction is aborted. At this point, the exact breakdown
+ *of Tiberium or initial       * credits used for the orignal purchase is lost.
+ *Presume as much of the money is in the    * form of Tiberium as storage
+ *capacity will allow.                                         *
+ *                                                                                             *
+ * INPUT:   money -- The number of credits to refund back to the house. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/25/1995 JLB : Created. * 06/01/1995 JLB : Refunded money is
+ *never lost                                             *
+ *=============================================================================================*/
+void HouseClass::Refund_Money(int money) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+  DCHECK(money >= 0);
+
+  Credits += money;
+}
+
+/***********************************************************************************************
+ * HouseClass::Adjust_Capacity -- Adjusts the house Tiberium storage capacity. *
+ *                                                                                             *
+ *    Use this routine to adjust the maximum storage capacity for the house.
+ *This storage      * capacity will limit the number of Tiberium credits that
+ *can be stored at any one time.   *
+ *                                                                                             *
+ * INPUT:   adjust   -- The adjustment to the Tiberium storage capacity. *
+ *                                                                                             *
+ *          inanger  -- Is this a forced adjustment to capacity due to some
+ *hostile event?     *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of Tiberium credits lost. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/25/1995 JLB : Created. *
+ *=============================================================================================*/
+int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  const int64_t oldcap = Capacity;
+  int retval = 0;
+
+  Capacity += adjust;
+  Capacity = std::max(Capacity, int64_t{0});
+  if (Tiberium > Capacity) {
+    retval = static_cast<int>(Tiberium) - static_cast<int>(Capacity);
+    Tiberium = Capacity;
+    if (!inanger) {
+      Refund_Money(retval);
+      retval = 0;
+    } else {
+      IsMaxedOut = true;
+    }
+  }
+  Silo_Redraw_Check(Tiberium, oldcap);
+  return retval;
+}
+
+/***********************************************************************************************
+ * HouseClass::Silo_Redraw_Check -- Flags silos to be redrawn if necessary. *
+ *                                                                                             *
+ *    Call this routine when either the capacity or tiberium levels change for a
+ *house. This   * routine will determine if the aggregate tiberium storage level
+ *will result in the        * silos changing their imagery. If this is detected,
+ *then all the silos for this house     * are flagged to be redrawn. *
+ *                                                                                             *
+ * INPUT:   oldtib   -- Pre-change tiberium level. *
+ *                                                                                             *
+ *          oldcap   -- Pre-change tiberium storage capacity. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 02/02/1995 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Silo_Redraw_Check(int64_t oldtib, int64_t oldcap) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  int oldratio = 0;
+  if (oldcap) {
+    oldratio = static_cast<int>(oldtib) * 5 / static_cast<int>(oldcap);
+  }
+  int newratio = 0;
+  if (Capacity) {
+    newratio = static_cast<int>(Tiberium) * 5 / static_cast<int>(Capacity);
+  }
+
+  if (oldratio != newratio) {
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+      if (b && !b->IsInLimbo && b->House == this && *b == STRUCT_STORAGE) {
+        b->Mark(MARK_CHANGE);
+      }
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Is_Ally -- Determines if the specified house is an ally. *
+ *                                                                                             *
+ *    This routine will determine if the house number specified is a ally to
+ *this house.       *
+ *                                                                                             *
+ * INPUT:   house -- The house number to check to see if it is an ally. *
+ *                                                                                             *
+ * OUTPUT:  Is the house an ally? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Is_Ally(HousesType house) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (house != HOUSE_NONE) {
+    return (base::Bit<uint32_t>(house) & Allies) != 0;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * HouseClass::Is_Ally -- Determines if the specified house is an ally. *
+ *                                                                                             *
+ *    This routine will examine the specified house and determine if it is an
+ *ally.            *
+ *                                                                                             *
+ * INPUT:   house -- Pointer to the house object to check for ally relationship.
+ **
+ *                                                                                             *
+ * OUTPUT:  Is the specified house an ally? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Is_Ally(const HouseClass* house) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (house) {
+    return Is_Ally(house->Class->House);
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * HouseClass::Is_Ally -- Checks to see if the object is an ally. *
+ *                                                                                             *
+ *    This routine will examine the specified object and return whether it is an
+ *ally or not.  *
+ *                                                                                             *
+ * INPUT:   object   -- The object to examine to see if it is an ally. *
+ *                                                                                             *
+ * OUTPUT:  Is the specified object an ally? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Is_Ally(const ObjectClass* object) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (object) {
+    return Is_Ally(object->Owner());
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * HouseClass::Make_Ally -- Make the specified house an ally. *
+ *                                                                                             *
+ *    This routine will make the specified house an ally to this house. An
+ *allied house will   * not be considered a threat or potential target. *
+ *                                                                                             *
+ * INPUT:   house -- The house to make an ally of this house. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. * 08/08/1995 JLB : Breaks off combat
+ *when ally commences.                                   * 10/17/1995 JLB :
+ *Added reveal base when allied.                                           *
+ *=============================================================================================*/
+void HouseClass::Make_Ally(HousesType house) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (Is_Allowed_To_Ally(house)) {
+    Allies |= base::Bit<uint32_t>(house);
+
+    /*
+    **	Don't consider the newfound ally to be an enemy -- of course.
+    */
+    if (Enemy == house) {
+      Enemy = HOUSE_NONE;
+    }
+
+    if (TheWorld().scenario_init()) {
+      Control.Allies |= base::Bit<uint32_t>(house);
+    }
+
+    if (TheSession().Type != GAME_NORMAL && !TheWorld().scenario_init()) {
+      const HouseClass* hptr = As_Pointer(house);
+
+      /*
+      **	An alliance with another human player will cause the computer
+      **	players (if present) to become paranoid.
+      */
+      if (hptr != nullptr && IsHuman && TheRules().IsComputerParanoid) {
+        //			if (hptr != nullptr && hptr->IsHuman) {
+        //				if (!hptr->IsHuman) {
+        //					hptr->Make_Ally(Class->House);
+        //				}
+        Computer_Paranoid();
+      }
+
+      char buffer[80];
+
+      /*
+      **	Sweep through all techno objects and perform a cheeseball tarcom
+      *clear to ensure *	that fighting will most likely stop when the
+      *cease fire begins.
+      */
+      for (int index = 0; index < TheWorld().logic().Count(); index++) {
+        ObjectClass* object = TheWorld().logic().at(index);
+
+        if (object != nullptr && object->Is_Techno() && !object->IsInLimbo &&
+            object->Owner() == Class->House) {
+          const TARGET target = dynamic_cast<TechnoClass*>(object)->TarCom;
+          if ((Target_Legal(target) && As_Techno(target) != nullptr) &&
+              Is_Ally(As_Techno(target))) {
+            dynamic_cast<TechnoClass*>(object)->Assign_Target(kTargetNone);
+          }
+        }
+      }
+
+      /*
+      **	Cause all structures to be revealed to the house that has been
+      **	allied with.
+      */
+      if (TheRules().IsAllyReveal && house == ThePlayer()->Class->House) {
+        for (int index = 0; index < TheObjectHeaps().building().Count();
+             index++) {
+          const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+
+          if (b && !b->IsInLimbo &&
+              static_cast<HouseClass*>(b->House) == this) {
+            TheMap().Sight_From(Coord_Cell(b->Center_Coord()),
+                                b->Class->SightRange, ThePlayer(), false);
+          }
+        }
+      }
+
+      if (IsHuman) {
+        Format_Runtime_Text(buffer, sizeof(buffer),
+                            Text_String(TXT_HAS_ALLIED), IniName,
+                            As_Pointer(house)->IniName);
+        //				sprintf(buffer,
+        // Text_String(TXT_HAS_ALLIED), Session.Players[Class->House -
+        // HOUSE_MULTI1]->Name,
+        // Session.Players[((HouseClass::As_Pointer(house))->Class->House)
+        // - HOUSE_MULTI1]->Name);
+        TheSession().Messages.Add_Message(
+            nullptr, 0, buffer, RemapColor,
+            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            kTicksPerMinute * TheRules().MessageDelay);
+      }
+
+      TheMap().Flag_To_Redraw(false);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Make_Enemy -- Make an enemy of the house specified. *
+ *                                                                                             *
+ *    This routine will flag the house specified so that it will be an enemy to
+ *this house.    * Enemy houses are legal targets for attack. *
+ *                                                                                             *
+ * INPUT:   house -- The house to make an enemy of this house. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. * 07/27/1995 JLB : Making war is a
+ *bilateral action.                                        *
+ *=============================================================================================*/
+void HouseClass::Make_Enemy(HousesType house) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (house != HOUSE_NONE && Is_Ally(house)) {
+    HouseClass* enemy = As_Pointer(house);
+    Allies &= ~base::Bit<uint32_t>(house);
+
+    if (TheWorld().scenario_init()) {
+      Control.Allies &= ~base::Bit<uint32_t>(house);
+    }
+
+    /*
+    **	Breaking an alliance is a bilateral event.
+    */
+    if (enemy != nullptr && enemy->Is_Ally(this)) {
+      enemy->Allies &= ~base::Bit<uint32_t>(Class->House);
+
+      if (TheWorld().scenario_init()) {
+        Control.Allies &= ~base::Bit<uint32_t>(Class->House);
+      }
+    }
+
+    if ((TheDebugState().developer_mode() ||
+         TheSession().Type != GAME_NORMAL) &&
+        !TheWorld().scenario_init() && IsHuman) {
+      char buffer[80];
+
+      Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR),
+                          IniName, As_Pointer(house)->IniName);
+      //			sprintf(buffer, Text_String(TXT_AT_WAR),
+      // Session.Players[Class->House - HOUSE_MULTI1]->Name,
+      // Session.Players[enemy->Class->House - HOUSE_MULTI1]->Name);
+      TheSession().Messages.Add_Message(
+          nullptr, 0, buffer, RemapColor,
+          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+          kTicksPerMinute * TheRules().MessageDelay);
+      TheMap().Flag_To_Redraw(false);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Remap_Table -- Fetches the remap table for this house object. *
+ *                                                                                             *
+ *    This routine will return with the remap table to use when displaying an
+ *object owned     * by this house. If the object is blushing (flashing), then
+ *the lightening remap table is  * always used. The "unit" parameter allows
+ *proper remap selection for those houses that    * have a different remap table
+ *for buildings or units.                                     *
+ *                                                                                             *
+ * INPUT:   blushing -- Is the object blushing (flashing)? *
+ *                                                                                             *
+ *          remap    -- The remap control value to use. * REMAP_NONE     No
+ *remap pointer returned at all.                       * REMAP_NORMAL   Return
+ *the remap pointer for this house.                * REMAP_ALTERNATE   (Nod solo
+ *play only -- forces red remap).            * Multiplay returns same as
+ *REMAP_NORMAL               *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the remap table to use when drawing this
+ *object.         *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. * 10/25/1995 JLB : Uses remap control
+ *value.                                                *
+ *=============================================================================================*/
+std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
+                                                       RemapType remap) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (blushing) {
+    return MouseClass::FadingLight;
+  }
+
+  if (remap == REMAP_NONE) {
+    return {};
+  }
+
+  return ThePalettes().color_remaps().at(RemapColor).RemapTable;
+}
+
+/***********************************************************************************************
+ * HouseClass::Suggested_New_Team -- Determine what team should be created. *
+ *                                                                                             *
+ *    This routine examines the house condition and returns with the team that
+ *it thinks       * should be created. The units that are not currently a member
+ *of a team are examined      * to determine the team needed. *
+ *                                                                                             *
+ * INPUT:   alertcheck  -- Select from the auto-create team list. *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the team type that should be created. If
+ *no team should  * be created, then nullptr is returned. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+TeamTypeClass* HouseClass::Suggested_New_Team(bool alertcheck) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  return TeamTypeClass::Suggested_New_Team(this, AScan, UScan, IScan, VScan,
+                                           alertcheck);
+}
+
+/***********************************************************************************************
+ * HouseClass::Adjust_Threat -- Adjust threat for the region specified. *
+ *                                                                                             *
+ *    This routine is called when the threat rating for a region needs to
+ *change. The region   * and threat adjustment are provided. *
+ *                                                                                             *
+ * INPUT:   region   -- The region that adjustment is to occur on. *
+ *                                                                                             *
+ *          threat   -- The threat adjustment to perform. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Adjust_Threat(int region, int threat) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  static const int _val[] = {
+      -kMapRegionWidth - 1, -kMapRegionWidth, -kMapRegionWidth + 1, -1, 0, 1,
+      kMapRegionWidth - 1,  kMapRegionWidth,  kMapRegionWidth + 1};
+  // Divisor for each neighbor: a quarter for the corners, half for the
+  // edges, the full threat for the center.
+  static const int _div[] = {4, 2, 4, 2, 1, 2, 4, 2, 4};
+  bool neg = false;
+
+  if (threat < 0) {
+    threat = -threat;
+    neg = true;
+  } else {
+    neg = false;
+  }
+
+  for (int lp = 0; lp < 9; lp++) {
+    base::At(Regions, region + base::At(_val, lp))
+        .Adjust_Threat(threat / base::At(_div, lp), neg);
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Begin_Production -- Starts production of the specified object
+ *type.             *
+ *                                                                                             *
+ *    This routine is called from the event system. It will start production for
+ *the object    * type specified. This will be reflected in the sidebar as well
+ *as the house factory       * tracking variables. *
+ *                                                                                             *
+ * INPUT:   type  -- The type of object to begin production on. *
+ *                                                                                             *
+ *          id    -- The subtype of object. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the reason why, or why not, production was started. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. * 10/21/1996 JLB : Handles max object
+ *case.                                                 *
+ *=============================================================================================*/
+ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+  bool result = true;
+  const TechnoTypeClass* tech = Fetch_Techno_Type(type, id);
+
+  FactoryClass* fptr = Fetch_Factory(type);
+
+  /*
+  **	If the house is already busy producing the requested object, then
+  **	return with this failure code, unless we are restarting production.
+  */
+  if (fptr != nullptr) {
+    if (fptr->Is_Building()) {
+      return PROD_CANT;
+    }
+  } else {
+    fptr = base::NewPooled<FactoryClass>();
+    if (!fptr) {
+      return PROD_CANT;
+    }
+    Set_Factory(type, fptr);
+    result = fptr->Set(*tech, *this);
+  }
+
+  if (result) {
+    fptr->Start();
+
+    /*
+    **	Link this factory to the sidebar so that proper graphic feedback
+    **	can take place.
+    */
+    if (ThePlayer() == this) {
+      TheMap().Factory_Link(fptr->ID, type, id);
+    }
+    return PROD_OK;
+  }
+
+  base::DeletePooled(fptr);
+  return PROD_CANT;
+}
+
+/***********************************************************************************************
+ * HouseClass::Suspend_Production -- Temporarily puts production on hold. *
+ *                                                                                             *
+ *    This routine is called from the event system whenever the production of
+ *the specified    * type needs to be suspended. The suspended production will
+ *be reflected in the sidebar    * as well as in the house control structure. *
+ *                                                                                             *
+ * INPUT:   type  -- The type of object that production is being suspended for.
+ **
+ *                                                                                             *
+ * OUTPUT:  Returns why, or why not, production was suspended. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+ProdFailType HouseClass::Suspend_Production(RTTIType type) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  FactoryClass* fptr = Fetch_Factory(type);
+
+  /*
+  **	If the house is already busy producing the requested object, then
+  **	return with this failure code.
+  */
+  if (fptr == nullptr) {
+    return PROD_CANT;
+  }
+
+  /*
+  **	Actually suspend the production.
+  */
+  fptr->Suspend();
+
+  /*
+  **	Tell the sidebar that it needs to be redrawn because of this.
+  */
+  if (ThePlayer() == this) {
+    TheMap().SidebarClass::IsSidebarToRedraw = true;
+    TheMap().Flag_To_Redraw(false);
+  }
+
+  return PROD_OK;
+}
+
+/***********************************************************************************************
+ * HouseClass::Abandon_Production -- Abandons production of item type specified.
+ **
+ *                                                                                             *
+ *    This routine is called from the event system whenever production must be
+ *abandoned for   * the type specified. This will remove the factory and pending
+ *object from the sidebar as  * well as from the house factory record. *
+ *                                                                                             *
+ * INPUT:   type  -- The object type that production is being suspended for. *
+ *                                                                                             *
+ * OUTPUT:  Returns the reason why or why not, production was suspended. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+ProdFailType HouseClass::Abandon_Production(RTTIType type) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  FactoryClass* fptr = Fetch_Factory(type);
+
+  /*
+  **	If there is no factory to abandon, then return with a failure code.
+  */
+  if (fptr == nullptr) {
+    return PROD_CANT;
+  }
+
+  /*
+  **	Tell the sidebar that it needs to be redrawn because of this.
+  */
+  if (ThePlayer() == this) {
+    TheMap().Abandon_Production(type, fptr->ID);
+
+    if (type == RTTI_BUILDINGTYPE || type == RTTI_BUILDING) {
+      TheMap().PendingObjectPtr = nullptr;
+      TheMap().PendingObject = nullptr;
+      TheMap().PendingHouse = HOUSE_NONE;
+      TheMap().Set_Cursor_Shape({});
+    }
+  }
+
+  /*
+  **	Abandon production of the object.
+  */
+  fptr->Abandon();
+  Set_Factory(type, nullptr);
+  base::DeletePooled(fptr);
+
+  return PROD_OK;
+}
+
+/***********************************************************************************************
+ * HouseClass::Special_Weapon_AI -- Fires special weapon. *
+ *                                                                                             *
+ *    This routine will pick a good target to fire the special weapon specified.
+ **
+ *                                                                                             *
+ * INPUT:   id -- The special weapon id to fire. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/24/1995 PWG : Created. *
+ *=============================================================================================*/
+void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  ** Loop through all of the building objects on the map
+  ** and see which ones are available.
+  */
+  const BuildingClass* bestptr = nullptr;
+  int best = -1;
+
+  for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+    BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+
+    /*
+    ** If the building is valid, not in limbo, not in the process of
+    ** being destroyed and not our ally, then we can consider it.
+    */
+    if ((b != nullptr && !b->IsInLimbo && b->Strength && !Is_Ally(b)) &&
+        (Percent_Chance(90) && (b->Value() > best || best == -1))) {
+      best = b->Value();
+      bestptr = b;
+    }
+  }
+
+  if (bestptr) {
+    const CELL cell = Coord_Cell(bestptr->Center_Coord());
+    Place_Special_Blast(id, cell, CellCenterFraction());
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Place_Special_Blast -- Place a special blast effect at location
+ *specified.      *
+ *                                                                                             *
+ *    This routine will create a blast effect at the cell specified. This is the
+ *result of     * the special weapons. *
+ *                                                                                             *
+ * INPUT:   id    -- The special weapon id number. *
+ *                                                                                             *
+ *          cell  -- The location where the special weapon attack is to occur. *
+ *                                                                                             *
+ * OUTPUT:  Was the special weapon successfully fired at the location specified?
+ **
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/18/1995 JLB : commented. * 07/25/1995 JLB : Added scatter
+ *effect for nuclear bomb.                                   * 07/28/1995 JLB :
+ *Revamped to use super weapon class controller.                           *
+ *=============================================================================================*/
+bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
+                                     COORDINATE where) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  BuildingClass* launchsite = nullptr;
+  switch (id) {
+    case SPC_SONAR_PULSE:
+      // Automatically discharge the sonar pulse and uncloak all subs.
+      if (SuperWeapon.at(SPC_SONAR_PULSE).Is_Ready()) {
+        SuperWeapon.at(SPC_SONAR_PULSE).Discharged(this == ThePlayer());
+        if (this == ThePlayer()) {
+          TheMap().Column[1].Flag_To_Redraw();
+          TheMap().Activate_Pulse();
+        }
+        PlaySoundEffect(VOC_SONAR);
+        IsRecalcNeeded = true;
+        for (int index = 0; index < TheObjectHeaps().vessel().Count();
+             index++) {
+          VesselClass* sub = TheObjectHeaps().vessel().Ptr(index);
+          if (*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) {
+            sub->PulseCountDown.Set(static_cast<int64_t>(15) * kTicksPerSecond);
+            sub->Do_Uncloak();
+          }
+        }
+      }
+      break;
+
+    case SPC_NUCLEAR_BOMB:
+      if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_Ready()) {
+        if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_One_Time()) {
+          auto* bullet = base::NewPooled<BulletClass>(
+              BULLET_NUKE_DOWN, As_Target(cell), nullptr, 200, WARHEAD_NUKE,
+              static_cast<int>(MPH_VERY_FAST));
+          if (bullet) {
+            const int celly = std::max(Cell_Y(cell) - 15, 1);
+            const COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), celly));
+            if (!bullet->Unlimbo(start, DIR_S)) {
+              base::DeletePooled(bullet);
+            }
+            SuperWeapon.at(SPC_NUCLEAR_BOMB).Discharged(this == ThePlayer());
+            IsRecalcNeeded = true;
+            if (this == ThePlayer()) {
+              TheMap().Column[1].Flag_To_Redraw();
+              TheMap().IsTargettingMode = SPC_NONE;
+            }
+          }
+        } else {
+          /*
+          **	Search for a suitable launch site for this missile.
+          */
+          launchsite = Find_Building(STRUCT_MSLO);
+
+          /*
+          **	If a launch site was found, then proceed with the normal launch
+          **	sequence.
+          */
+          if (launchsite) {
+            launchsite->Assign_Mission(MISSION_MISSILE);
+            launchsite->Commence();
+            NukeDest = cell;
+          }
+          if (this == ThePlayer()) {
+            TheMap().IsTargettingMode = SPC_NONE;
+          }
+          SuperWeapon.at(SPC_NUCLEAR_BOMB).Discharged(this == ThePlayer());
+          IsRecalcNeeded = true;
+        }
+      }
+      break;
+
+    case SPC_PARA_INFANTRY:
+      if (SuperWeapon.at(SPC_PARA_INFANTRY).Is_Ready()) {
+        TeamTypeClass* ttype = TeamTypeClass::As_Pointer("@PINF");
+        if (ttype == nullptr) {
+          ttype = base::NewPooled<TeamTypeClass>();
+          if (ttype != nullptr) {
+            base::SafeCopy(ttype->IniName, "@PINF");
+            ttype->IsTransient = true;
+            ttype->IsPrebuilt = false;
+            ttype->IsReinforcable = false;
+            ttype->Origin = ScenarioClass::kSpecialWaypoint;
+            ttype->MissionCount = 1;
+            ttype->MissionList[0].Mission = TMISSION_ATT_WAYPT;
+            ttype->MissionList[0].Data.Value = ScenarioClass::kSpecialWaypoint;
+            ttype->ClassCount = 2;
+            ttype->Members[0].Quantity =
+                AircraftTypeClass::As_Reference(AIRCRAFT_BADGER)
+                    .Max_Passengers();
+            ttype->Members[0].Class =
+                &InfantryTypeClass::As_Reference(INFANTRY_E1);
+            ttype->Members[1].Quantity = 1;
+            ttype->Members[1].Class =
+                &AircraftTypeClass::As_Reference(AIRCRAFT_BADGER);
+          }
+        }
+
+        if (ttype != nullptr) {
+          ttype->House = Class->House;
+          TheScenario().Waypoint[ScenarioClass::kSpecialWaypoint] =
+              TheMap().Nearby_Location(cell, SPEED_FOOT);
+          Do_Reinforcements(ttype);
+        }
+
+        //				Create_Air_Reinforcement(this,
+        // AIRCRAFT_BADGER, 1, MISSION_HUNT, ::As_Target(cell), kTargetNone,
+        // INFANTRY_E1);
+        if (this == ThePlayer()) {
+          TheMap().IsTargettingMode = SPC_NONE;
+        }
+        SuperWeapon.at(SPC_PARA_INFANTRY).Discharged(this == ThePlayer());
+        IsRecalcNeeded = true;
+      }
+      break;
+
+    case SPC_SPY_MISSION:
+      if (SuperWeapon.at(SPC_SPY_MISSION).Is_Ready()) {
+        Create_Air_Reinforcement(this, AIRCRAFT_U2, 1, MISSION_HUNT,
+                                 As_Target(cell), As_Target(cell));
+        if (this == ThePlayer()) {
+          TheMap().IsTargettingMode = SPC_NONE;
+        }
+        SuperWeapon.at(SPC_SPY_MISSION).Discharged(this == ThePlayer());
+        IsRecalcNeeded = true;
+      }
+      break;
+
+    case SPC_PARA_BOMB:
+      if (SuperWeapon.at(SPC_PARA_BOMB).Is_Ready()) {
+        Create_Air_Reinforcement(this, AIRCRAFT_BADGER,
+                                 TheRules().BadgerBombCount, MISSION_HUNT,
+                                 As_Target(cell), kTargetNone);
+        if (this == ThePlayer()) {
+          TheMap().IsTargettingMode = SPC_NONE;
+        }
+        SuperWeapon.at(SPC_PARA_BOMB).Discharged(this == ThePlayer());
+        IsRecalcNeeded = true;
+      }
+      break;
+
+    case SPC_IRON_CURTAIN:
+      if (SuperWeapon.at(SPC_IRON_CURTAIN).Is_Ready()) {
+        TechnoClass* tech = TheMap().at(cell).Cell_Techno(
+            Lepton_To_Pixel(static_cast<LEPTON>(Coord_XLepton(where))),
+            Lepton_To_Pixel(static_cast<LEPTON>(Coord_YLepton(where))));
+        if (tech) {
+          switch (tech->What_Am_I()) {
+            case RTTI_UNIT:
+            case RTTI_BUILDING:
+            case RTTI_VESSEL:
+            case RTTI_AIRCRAFT:
+              tech->IronCurtainCountDown.Set(TheRules().IronCurtainDuration *
+                                             kTicksPerMinute);
+              if (tech->What_Am_I() == RTTI_UNIT &&
+                  *dynamic_cast<UnitClass*>(tech) == UNIT_DEMOTRUCK) {
+                tech->IronCurtainCountDown.Set(TheRules().IronCurtainDuration *
+                                               kTicksPerSecond);
+              }
+              tech->Mark(MARK_CHANGE);
+              PlaySoundEffectAt(VOC_IRON1, tech->Center_Coord());
+              if (this == ThePlayer()) {
+                TheMap().IsTargettingMode = SPC_NONE;
+              }
+              SuperWeapon.at(SPC_IRON_CURTAIN).Discharged(this == ThePlayer());
+              break;
+            case RTTIType::RTTI_NONE:
+            case RTTIType::RTTI_AIRCRAFTTYPE:
+            case RTTIType::RTTI_ANIM:
+            case RTTIType::RTTI_ANIMTYPE:
+            case RTTIType::RTTI_BUILDINGTYPE:
+            case RTTIType::RTTI_BULLET:
+            case RTTIType::RTTI_BULLETTYPE:
+            case RTTIType::RTTI_CELL:
+            case RTTIType::RTTI_FACTORY:
+            case RTTIType::RTTI_HOUSE:
+            case RTTIType::RTTI_HOUSETYPE:
+            case RTTIType::RTTI_INFANTRY:
+            case RTTIType::RTTI_INFANTRYTYPE:
+            case RTTIType::RTTI_OVERLAY:
+            case RTTIType::RTTI_OVERLAYTYPE:
+            case RTTIType::RTTI_SMUDGE:
+            case RTTIType::RTTI_SMUDGETYPE:
+            case RTTIType::RTTI_SPECIAL:
+            case RTTIType::RTTI_TEAM:
+            case RTTIType::RTTI_TEAMTYPE:
+            case RTTIType::RTTI_TEMPLATE:
+            case RTTIType::RTTI_TEMPLATETYPE:
+            case RTTIType::RTTI_TERRAIN:
+            case RTTIType::RTTI_TERRAINTYPE:
+            case RTTIType::RTTI_TRIGGER:
+            case RTTIType::RTTI_TRIGGERTYPE:
+            case RTTIType::RTTI_UNITTYPE:
+            case RTTIType::RTTI_VESSELTYPE:
+            default:
+              break;
+          }
+        }
+
+        IsRecalcNeeded = true;
+      }
+      break;
+
+    case SPC_CHRONOSPHERE:
+      if (SuperWeapon.at(SPC_CHRONOSPHERE).Is_Ready()) {
+        TechnoClass* tech = TheMap().at(cell).Cell_Techno(
+            Lepton_To_Pixel(static_cast<LEPTON>(Coord_XLepton(where))),
+            Lepton_To_Pixel(static_cast<LEPTON>(Coord_YLepton(where))));
+        if (tech && Is_Ally(tech)) {
+          if (tech->What_Am_I() == RTTI_UNIT ||
+              tech->What_Am_I() == RTTI_INFANTRY ||
+              (tech->What_Am_I() == RTTI_VESSEL &&
+               *dynamic_cast<VesselClass*>(tech) != VESSEL_TRANSPORT &&
+               *dynamic_cast<VesselClass*>(tech) != VESSEL_CARRIER)) {
+            if (tech->What_Am_I() != RTTI_UNIT ||
+                !dynamic_cast<UnitClass*>(tech)->IsDeploying) {
+              bool porthim = true;
+              if (tech->What_Am_I() == RTTI_UNIT &&
+                  dynamic_cast<UnitClass*>(tech)->Class->Type ==
+                      UNIT_CHRONOTANK) {
+                porthim = false;
+              }
+              if (porthim) {
+                if (this == ThePlayer()) {
+                  TheMap().IsTargettingMode = kSpcChrono2;
+                }
+                UnitToTeleport = tech->As_Target();
+              }
+            }
+          }
+        }
+      }
+      break;
+
+    case kSpcChrono2: {
+      auto* tech = dynamic_cast<TechnoClass*>(As_Object(UnitToTeleport));
+      if (tech != nullptr && tech->IsActive && tech->Is_Foot() &&
+          tech->What_Am_I() != RTTI_AIRCRAFT) {
+        /*
+        ** Destroy any infantryman that gets teleported
+        */
+        if (tech->What_Am_I() == RTTI_INFANTRY) {
+          auto& inf = dynamic_cast<InfantryClass&>(*tech);
+          inf.Mark(MARK_UP);
+          inf.Coord = Cell_Coord(cell);
+          inf.Mark(MARK_DOWN);
+          int damage = inf.Strength;
+          inf.Take_Damage(damage, 0, WARHEAD_FIRE, nullptr, true);
+        } else if (tech->What_Am_I() == RTTI_UNIT &&
+                   dynamic_cast<UnitClass&>(*tech) == UNIT_DEMOTRUCK) {
+          tech->Assign_Target(tech->As_Target());
+        } else {
+          /*
+          **	Warp the unit to the new location.
+          */
+          auto& drive = dynamic_cast<DriveClass&>(*tech);
+          drive.MoebiusCell = Coord_Cell(drive.Coord);
+          drive.Teleport_To(cell);
+          drive.IsMoebius = true;
+          if (tech->What_Am_I() == RTTI_UNIT &&
+              dynamic_cast<UnitClass&>(*tech) == UNIT_CHRONOTANK) {
+            drive.IsMoebius = false;
+          }
+          drive.MoebiusCountDown.Set(TheRules().ChronoDuration *
+                                     kTicksPerMinute);
+          if (tech->What_Am_I() == RTTI_UNIT &&
+              dynamic_cast<UnitClass&>(*tech) == UNIT_CHRONOTANK) {
+            drive.MoebiusCountDown.Set(TheRules().ChronoTankDuration *
+                                       kTicksPerMinute);
+          }
+          TheScenario().Do_BW_Fade();
+          PlaySoundEffectAt(VOC_CHRONO, drive.Coord);
+        }
+      }
+      UnitToTeleport = kTargetNone;
+      if (this == ThePlayer()) {
+        TheMap().IsTargettingMode = SPC_NONE;
+      }
+      if (tech && tech->IsActive &&
+          (tech->What_Am_I() != RTTI_UNIT ||
+           dynamic_cast<UnitClass&>(*tech) != UNIT_CHRONOTANK)) {
+        SuperWeapon.at(SPC_CHRONOSPHERE).Discharged(this == ThePlayer());
+      }
+      IsRecalcNeeded = true;
+
+      /*
+      ** Now set a percentage chance that a time quake will occur.
+      */
+      if (!TheWorld().time_quake()) {
+        TheWorld().time_quake() = Percent_Chance(TheRules().QuakeChance * 100);
+      }
+
+      /*
+      ** Now set a percentage chance that a chronal vortex will appear. It
+      **	might appear where the object teleported to or it might appear
+      **	where it teleported from -- random chance.
+      */
+      // Don't allow a vortex if the teleportation was due to a chrono tank.
+      if (tech && tech->IsActive &&
+          (tech->What_Am_I() != RTTI_UNIT ||
+           *dynamic_cast<UnitClass*>(tech) != UNIT_CHRONOTANK)) {
+        if (!TheWorld().chronal_vortex().Is_Active() &&
+            Percent_Chance(TheRules().VortexChance * 100)) {
+          const int x = Random_Pick(0, TheMap().MapCellWidth - 1);
+          const int y = Random_Pick(0, TheMap().MapCellHeight - 1);
+          TheWorld().chronal_vortex().Appear(Cell_Coord(
+              XY_Cell(TheMap().MapCellX + x, TheMap().MapCellY + y)));
+
+          //					if (Percent_Chance(50)) {
+          //						ChronalVortex.Appear(Cell_Coord(oldcell));
+          //					} else {
+          //						ChronalVortex.Appear(Cell_Coord(cell));
+          //					}
+        }
+      }
+
+      break;
+    }
+    case SpecialWeaponType::SPC_NONE:
+    case SpecialWeaponType::SPC_GPS:
+    default:
+      break;
+  }
+  return true;
+}
+
+/***********************************************************************************************
+ * HouseClass::Place_Object -- Places the object (building) at location
+ *specified.             *
+ *                                                                                             *
+ *    This routine is called when a building has been produced and now must be
+ *placed on       * the map. When the player clicks on the map, this routine is
+ *ultimately called when the   * event passes through the event queue system. *
+ *                                                                                             *
+ * INPUT:   type  -- The object type to place. The actual object is lifted from
+ *the sidebar.   *
+ *                                                                                             *
+ *                                                                                             *
+ *          cell  -- The location to place the object on the map. *
+ *                                                                                             *
+ * OUTPUT:  Was the placement successful? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/18/1995 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Place_Object(RTTIType type, CELL cell) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  TechnoClass* tech = nullptr;
+  FactoryClass* factory = Fetch_Factory(type);
+
+  /*
+  **	Only if there is a factory active for this type, can it be "placed".
+  **	In the case of a missing factory, then this request is completely bogus
+  *-- *	ignore it. This might occur if, between two events to exit the same
+  **	object, the mouse was clicked on the sidebar to start building again.
+  **	The second placement event should NOT try to place the object that is
+  **	just starting construction.
+  */
+  if (factory && factory->Has_Completed()) {
+    tech = factory->Get_Object();
+
+    if (cell == -1) {
+      TechnoClass* pending = factory->Get_Object();
+      if (pending != nullptr) {
+        bool intheory = false;
+        /*
+        ** BG hack - helicopters don't need a specific building to
+        ** emerge from, in fact, they'll land next to a building if
+        ** need be.
+        */
+        if ((pending->What_Am_I() == RTTI_AIRCRAFT) &&
+            (!dynamic_cast<AircraftClass*>(pending)->Class->IsFixedWing)) {
+          intheory = true;
+        }
+
+        TechnoClass* builder = pending->Who_Can_Build_Me(intheory, false);
+
+        if (builder != nullptr && builder->Exit_Object(pending)) {
+          /*
+          **	Since the object has left the factory under its own power,
+          *delete *	the production manager tied to this slot in the sidebar.
+          *Its job *	has been completed.
+          */
+          factory->Completed();
+          Abandon_Production(type);
+          switch (pending->What_Am_I()) {
+            case RTTI_UNIT:
+              JustBuiltUnit = dynamic_cast<UnitClass*>(pending)->Class->Type;
+              IsBuiltSomething = true;
+              break;
+
+            case RTTI_VESSEL:
+              JustBuiltVessel =
+                  dynamic_cast<VesselClass*>(pending)->Class->Type;
+              IsBuiltSomething = true;
+              break;
+
+            case RTTI_INFANTRY:
+              JustBuiltInfantry =
+                  dynamic_cast<InfantryClass*>(pending)->Class->Type;
+              IsBuiltSomething = true;
+              break;
+
+            case RTTI_BUILDING:
+              JustBuiltStructure =
+                  dynamic_cast<BuildingClass*>(pending)->Class->Type;
+              IsBuiltSomething = true;
+              break;
+
+            case RTTI_AIRCRAFT:
+              JustBuiltAircraft =
+                  dynamic_cast<AircraftClass*>(pending)->Class->Type;
+              IsBuiltSomething = true;
+              break;
+            case RTTIType::RTTI_NONE:
+            case RTTIType::RTTI_AIRCRAFTTYPE:
+            case RTTIType::RTTI_ANIM:
+            case RTTIType::RTTI_ANIMTYPE:
+            case RTTIType::RTTI_BUILDINGTYPE:
+            case RTTIType::RTTI_BULLET:
+            case RTTIType::RTTI_BULLETTYPE:
+            case RTTIType::RTTI_CELL:
+            case RTTIType::RTTI_FACTORY:
+            case RTTIType::RTTI_HOUSE:
+            case RTTIType::RTTI_HOUSETYPE:
+            case RTTIType::RTTI_INFANTRYTYPE:
+            case RTTIType::RTTI_OVERLAY:
+            case RTTIType::RTTI_OVERLAYTYPE:
+            case RTTIType::RTTI_SMUDGE:
+            case RTTIType::RTTI_SMUDGETYPE:
+            case RTTIType::RTTI_SPECIAL:
+            case RTTIType::RTTI_TEAM:
+            case RTTIType::RTTI_TEAMTYPE:
+            case RTTIType::RTTI_TEMPLATE:
+            case RTTIType::RTTI_TEMPLATETYPE:
+            case RTTIType::RTTI_TERRAIN:
+            case RTTIType::RTTI_TERRAINTYPE:
+            case RTTIType::RTTI_TRIGGER:
+            case RTTIType::RTTI_TRIGGERTYPE:
+            case RTTIType::RTTI_UNITTYPE:
+            case RTTIType::RTTI_VESSELTYPE:
+            default:
+              break;
+          }
+        } else {
+          /*
+          **	The object could not leave under it's own power. Just wait
+          **	until the player tries to place the object again.
+          */
+          return false;
+        }
+      }
+
+    } else {
+      if (tech) {
+        TechnoClass* builder = tech->Who_Can_Build_Me(false, false);
+        if (builder) {
+          builder->Transmit_Message(RADIO_HELLO, tech);
+          if (tech->Unlimbo(Cell_Coord(cell))) {
+            factory->Completed();
+            Abandon_Production(type);
+
+            if (ThePlayer() == this) {
+              PlaySoundEffect(VOC_PLACE_BUILDING_DOWN);
+              TheMap().Set_Cursor_Shape({});
+              TheMap().PendingObjectPtr = nullptr;
+              TheMap().PendingObject = nullptr;
+              TheMap().PendingHouse = HOUSE_NONE;
+            }
+            return true;
+          }
+          if (this == ThePlayer()) {
+            Speak(VOX_DEPLOY);
+          }
+          builder->Transmit_Message(RADIO_OVER_OUT);
+        }
+        return false;
+      }
+      // Play a bad sound here?
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/***********************************************************************************************
+ * HouseClass::Manual_Place -- Inform display system of building placement mode.
+ **
+ *                                                                                             *
+ *    This routine will inform the display system that building placement mode
+ *has begun.      * The cursor will be created that matches the layout of the
+ *building shape.                *
+ *                                                                                             *
+ * INPUT:   builder  -- The factory that is building this object. *
+ *                                                                                             *
+ *          object   -- The building that is going to be placed down on the map.
+ **
+ *                                                                                             *
+ * OUTPUT:  Was the building placement mode successfully initiated? *
+ *                                                                                             *
+ * WARNINGS:   This merely adjusts the cursor shape. Nothing that affects
+ *networked games      * is affected. *
+ *                                                                                             *
+ * HISTORY: * 05/04/1995 JLB : Created. * 05/30/1995 JLB : Uses the
+ *Bib_And_Offset() function to determine bib size.                *
+ *=============================================================================================*/
+bool HouseClass::Manual_Place(BuildingClass* builder, BuildingClass* object) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (this == ThePlayer() && !TheMap().PendingObject && builder && object) {
+    /*
+    **	Ensures that object selection doesn't remain when
+    **	building placement takes place.
+    */
+    Unselect_All();
+
+    TheMap().Repair_Mode_Control(0);
+    TheMap().Sell_Mode_Control(0);
+
+    TheMap().PendingObject = object->Class;
+    TheMap().PendingObjectPtr = object;
+    TheMap().PendingHouse = Class->House;
+
+    TheMap().Set_Cursor_Shape(object->Occupy_List(true));
+    TheMap().Set_Cursor_Pos(Coord_Cell(builder->Coord));
+    builder->Mark(MARK_CHANGE);
+    return true;
+  }
+  return false;
+}
+
+/***************************************************************************
+ * HouseClass::Clobber_All -- removes all objects for this house
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *      none.                                                              *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *      none.                                                              *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *      This routine removes the house itself, so the multiplayer code * must
+ *not rely on there being "empty" houses lying around. *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   05/16/1995 BRR : Created.                                             *
+ *   06/09/1995 JLB : Handles aircraft.                                    *
+ *=========================================================================*/
+void HouseClass::Clobber_All() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
+    if (TheObjectHeaps().aircraft().Ptr(i)->House == this) {
+      base::DeletePooled(TheObjectHeaps().aircraft().Ptr(i));
+      i--;
+    }
+  }
+  for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
+    if (TheObjectHeaps().unit().Ptr(i)->House == this) {
+      base::DeletePooled(TheObjectHeaps().unit().Ptr(i));
+      i--;
+    }
+  }
+  for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
+    if (TheObjectHeaps().vessel().Ptr(i)->House == this) {
+      base::DeletePooled(TheObjectHeaps().vessel().Ptr(i));
+      i--;
+    }
+  }
+  for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
+    if (TheObjectHeaps().infantry().Ptr(i)->House == this) {
+      base::DeletePooled(TheObjectHeaps().infantry().Ptr(i));
+      i--;
+    }
+  }
+  for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
+    if (TheObjectHeaps().building().Ptr(i)->House == this) {
+      base::DeletePooled(TheObjectHeaps().building().Ptr(i));
+      i--;
+    }
+  }
+  for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
+    if (TheObjectHeaps().team_type().Ptr(i)->House == Class->House) {
+      base::DeletePooled(TheObjectHeaps().team_type().Ptr(i));
+      i--;
+    }
+  }
+  for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
+    if (TheObjectHeaps().trigger().Ptr(i)->Class->House == Class->House) {
+      base::DeletePooled(TheObjectHeaps().trigger().Ptr(i));
+      i--;
+    }
+  }
+  for (int i = 0; i < TheObjectHeaps().trigger_type().Count(); i++) {
+    if (TheObjectHeaps().trigger_type().Ptr(i)->House == Class->House) {
+      base::DeletePooled(TheObjectHeaps().trigger_type().Ptr(i));
+      i--;
+    }
+  }
+
+  delete this;
+}
+
+/***********************************************************************************************
+ * HouseClass::Detach -- Removes specified object from house tracking systems. *
+ *                                                                                             *
+ *    This routine is called when an object is to be removed from the game
+ *system. If the      * specified object is part of the house tracking system,
+ *then it will be removed.          *
+ *                                                                                             *
+ * INPUT:   target   -- The target value of the object that is to be removed
+ *from the game.    *
+ *                                                                                             *
+ *          all      -- Is the target going away for good as opposed to just
+ *cloaking/hiding?  *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/18/1995 JLB : commented *
+ *=============================================================================================*/
+void HouseClass::Detach(TARGET target, bool /*unused*/) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (ToCapture == target) {
+    ToCapture = kTargetNone;
+  }
+
+  if (Is_Target_Trigger(target)) {
+    // The original indexed by the heap ID; the table is per house type, and
+    // the two only agree because houses are created in type order.
+    TheWorld().house_triggers().at(Class->House).Delete(As_Trigger(target));
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Does_Enemy_Building_Exist -- Checks for enemy building of
+ *specified type.       *
+ *                                                                                             *
+ *    This routine will examine the enemy houses and if there is a building
+ *owned by one       * of those house, true will be returned. *
+ *                                                                                             *
+ * INPUT:   btype -- The building type to check for. *
+ *                                                                                             *
+ * OUTPUT:  Does a building of the specified type exist for one of the enemy
+ *houses?           *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/23/1995 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  const auto bflag = ScanBit(static_cast<int>(btype));
+  return std::ranges::any_of(
+      magic_enum::enum_values<HousesType>(), [&](HousesType index) {
+        const HouseClass* house = As_Pointer(index);
+        return house && !Is_Ally(house) && (house->ActiveBScan & bflag) != 0;
+      });
+}
+
+/***********************************************************************************************
+ * HouseClass::Suggest_New_Object -- Determine what would the next buildable
+ *object be.        *
+ *                                                                                             *
+ *    This routine will examine the house status and return with a techno type
+ *pointer to      * the object type that it thinks should be created. The type
+ *is restricted to match the    * type specified. Typical use of this routine is
+ *by computer controlled factories.         *
+ *                                                                                             *
+ * INPUT:   objecttype  -- The type of object to restrict the scan for. *
+ *                                                                                             *
+ *          kennel      -- Is this from a kennel? There are special hacks to
+ *ensure that only  * dogs can be produced from a kennel. *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to a techno type for the object type that
+ *should be         * created. If no object should be created, then nullptr is
+ *returned.                    *
+ *                                                                                             *
+ * WARNINGS:   This is a time consuming routine. Only call when necessary. *
+ *                                                                                             *
+ * HISTORY: * 05/23/1995 JLB : Created. *
+ *=============================================================================================*/
+const TechnoTypeClass* HouseClass::Suggest_New_Object(RTTIType objecttype,
+                                                      bool kennel) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  const TechnoTypeClass* techno = nullptr;
+
+  switch (objecttype) {
+    case RTTI_AIRCRAFT:
+    case RTTI_AIRCRAFTTYPE:
+      if (BuildAircraft != AIRCRAFT_NONE) {
+        return &AircraftTypeClass::As_Reference(BuildAircraft);
+      }
+      return nullptr;
+
+    case RTTI_VESSEL:
+    case RTTI_VESSELTYPE:
+      if (BuildVessel != VESSEL_NONE) {
+        return &VesselTypeClass::As_Reference(BuildVessel);
+      }
+      return nullptr;
+
+    /*
+    **	Unit construction is based on the rule that up to twice the number
+    *required *	to fill all teams will be created.
+    */
+    case RTTI_UNIT:
+    case RTTI_UNITTYPE:
+      if (BuildUnit != UNIT_NONE) {
+        return &UnitTypeClass::As_Reference(BuildUnit);
+      }
+      return nullptr;
+
+    /*
+    **	Infantry construction is based on the rule that up to twice the number
+    *required *	to fill all teams will be created.
+    */
+    case RTTI_INFANTRY:
+    case RTTI_INFANTRYTYPE:
+      if (BuildInfantry != INFANTRY_NONE) {
+        if (kennel && BuildInfantry != INFANTRY_DOG) {
+          return nullptr;
+        }
+        if (!kennel && BuildInfantry == INFANTRY_DOG) {
+          return nullptr;
+        }
+        return &InfantryTypeClass::As_Reference(BuildInfantry);
+      }
+      return nullptr;
+
+    /*
+    **	Building construction is based upon the preconstruction list.
+    */
+    case RTTI_BUILDING:
+    case RTTI_BUILDINGTYPE:
+      if (BuildStructure != STRUCT_NONE) {
+        return &BuildingTypeClass::As_Reference(BuildStructure);
+      }
+      return nullptr;
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    default:
+      break;
+  }
+  return techno;
+}
+
+/***********************************************************************************************
+ * HouseClass::Flag_Remove -- Removes the flag from the specified target. *
+ *                                                                                             *
+ *    This routine will remove the flag attached to the specified target object
+ *or cell.       * Call this routine before placing the object down. This is
+ *called inherently by the       * the Flag_Attach() functions. *
+ *                                                                                             *
+ * INPUT:   target   -- The target that the flag was attached to but will be
+ *removed from.     *
+ *                                                                                             *
+ *          set_home -- if true, clears the flag's waypoint designation *
+ *                                                                                             *
+ * OUTPUT:  Was the flag successfully removed from the specified target? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/23/1995 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  bool rc = false;
+
+  if (Target_Legal(target)) {
+    /*
+    **	Remove the flag from a unit
+    */
+    UnitClass* object = As_Unit(target);
+    if (object) {
+      rc = object->Flag_Remove();
+      if (rc && FlagLocation == target) {
+        FlagLocation = kTargetNone;
+      }
+
+    } else {
+      /*
+      **	Remove the flag from a cell
+      */
+      const CELL cell = As_Cell(target);
+      if (TheMap().In_Radar(cell)) {
+        rc = TheMap().at(cell).Flag_Remove();
+        if (rc && FlagLocation == target) {
+          FlagLocation = kTargetNone;
+        }
+      }
+    }
+
+    /*
+    **	Handle the flag home cell:
+    **	If 'set_home' is set, clear the home value & the cell's overlay
+    */
+    if (set_home && (FlagHome != 0)) {
+      TheMap().at(FlagHome).Overlay = OVERLAY_NONE;
+      TheMap().Flag_Cell(FlagHome);
+      FlagHome = 0;
+    }
+
+    return rc;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * HouseClass::Flag_Attach -- Attach flag to specified cell (or thereabouts). *
+ *                                                                                             *
+ *    This routine will attach the house flag to the location specified. If the
+ *location       * cannot contain the flag, then a suitable nearby location will
+ *be selected.               *
+ *                                                                                             *
+ * INPUT:   cell  -- The desired cell location to place the flag. *
+ *                                                                                             *
+ *          set_home -- if true, resets the flag's waypoint designation *
+ *                                                                                             *
+ * OUTPUT:  Was the flag successfully placed? *
+ *                                                                                             *
+ * WARNINGS:   The cell picked for the flag might very likely not be the cell
+ *requested.       * Check the FlagLocation value to determine the final cell
+ *resting spot.          *
+ *                                                                                             *
+ * HISTORY: * 05/23/1995 JLB : Created. * 10/08/1996 JLB : Uses map nearby cell
+ *scanning handler.                                   *
+ *=============================================================================================*/
+bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  **	Only continue if this cell is a legal placement cell.
+  */
+  if (TheMap().In_Radar(cell)) {
+    /*
+    **	If the flag already exists, then it must be removed from the object
+    **	it is attached to.
+    */
+    Flag_Remove(FlagLocation, set_home);
+
+    /*
+    **	Attach the flag to the cell specified. If it can't be placed, then pick
+    **	a nearby cell where it can be placed.
+    */
+    CELL newcell = cell;
+    bool rc = TheMap().at(newcell).Flag_Place(Class->House);
+    if (!rc) {
+      newcell = TheMap().Nearby_Location(cell, SPEED_TRACK);
+      if (newcell != 0) {
+        rc = TheMap().at(newcell).Flag_Place(Class->House);
+      }
+    }
+
+    /*
+    **	If we've found a spot for the flag, place the flag at the new cell.
+    **	if 'set_home' is set, OR this house has no current flag home cell,
+    **	mark that cell as this house's flag home cell.
+    */
+    if (rc) {
+      FlagLocation = As_Target(newcell);
+
+      if (set_home || FlagHome == 0) {
+        TheMap().at(newcell).Overlay = OVERLAY_FLAG_SPOT;
+        TheMap().at(newcell).OverlayData = 0;
+        TheMap().at(newcell).Recalc_Attributes();
+        FlagHome = newcell;
+      }
+    }
+
+    return rc;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * HouseClass::Flag_Attach -- Attaches the house flag the specified unit. *
+ *                                                                                             *
+ *    This routine will attach the house flag to the specified unit. This
+ *routine is called    * when a unit drives over a cell containing a flag. *
+ *                                                                                             *
+ * INPUT:   object   -- Pointer to the object that the house flag is to be
+ *attached to.        *
+ *                                                                                             *
+ *          set_home -- if true, clears the flag's waypoint designation *
+ *                                                                                             *
+ * OUTPUT:  Was the flag attached successfully? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/23/1995 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Flag_Attach(UnitClass* object, bool set_home) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (object && !object->IsInLimbo) {
+    Flag_Remove(FlagLocation, set_home);
+
+    /*
+    **	Attach the flag to the object.
+    */
+    object->Flag_Attach(Class->House);
+    FlagLocation = object->As_Target();
+    return true;
+  }
+  return false;
+}
+
+/***************************************************************************
+ * HouseClass::MPlayer_Defeated -- multiplayer; house is defeated          *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *      none.                                                              *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *      none.                                                              *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *      none.                                                              *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   05/25/1995 BRR : Created.                                             *
+ *=========================================================================*/
+void HouseClass::MPlayer_Defeated() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  char txt[80];
+  int i = 0;
+  HouseClass* hptr = nullptr;
+
+  /*
+  **	Set the defeat flag for this house
+  */
+  IsDefeated = true;
+
+  /*
+  **	If this is a computer controlled house, then all computer controlled
+  **	houses become paranoid.
+  */
+  if (IQ == TheRules().MaxIQ && !IsHuman && TheRules().IsComputerParanoid) {
+    Computer_Paranoid();
+  }
+
+  /*
+  **	Remove this house's flag & flag home cell
+  */
+  if (TheSpecial().IsCaptureTheFlag) {
+    if (FlagLocation) {
+      Flag_Remove(FlagLocation, true);
+    } else {
+      if (FlagHome != 0) {
+        Flag_Remove(As_Target(FlagHome), true);
+      }
+    }
+  }
+
+  /*
+  **	If this is me:
+  **	- Set MPlayerObiWan, so I can only send messages to all players, and
+  **	  not just one (so I can't be obnoxiously omnipotent)
+  **	- Reveal the map
+  **	- Add my defeat message
+  */
+  if (ThePlayer() == this) {
+    TheSession().ObiWan = true;
+    TheDebugState().set_unshroud(true);
+    TheScreen().hidden_view().Clear();
+    TheMap().Flag_To_Redraw(true);
+
+    /*
+    **	Pop up a message showing that I was defeated
+    */
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
+                        IniName);
+    TheSession().Messages.Add_Message(
+        nullptr, 0, txt, TheSession().ColorIdx,
+        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+        TheRules().MessageDelay * kTicksPerMinute);
+    TheMap().Flag_To_Redraw(false);
+
+  } else {
+    /*
+    **	If it wasn't me, find out who was defeated
+    */
+    if (IsHuman) {
+      Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
+                          IniName);
+
+      TheSession().Messages.Add_Message(
+          nullptr, 0, txt, RemapColor,
+          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+          TheRules().MessageDelay * kTicksPerMinute);
+      TheMap().Flag_To_Redraw(false);
+      TheGameState().redraw_options_menu() = true;
+    }
+  }
+
+  /*
+  **	Find out how many players are left alive.
+  */
+  int num_alive = 0;
+  int num_humans = 0;
+  for (i = 0; i < TheSession().MaxPlayers; i++) {
+    hptr =
+        As_Pointer(static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + i));
+    if (hptr && !hptr->IsDefeated) {
+      if (hptr->IsHuman) {
+        num_humans++;
+      }
+      num_alive++;
+    }
+  }
+
+  /*
+  **	If all the houses left alive are allied with each other, then in reality
+  **	there's only one player left:
+  */
+  int all_allies = 1;
+  for (i = 0; i < TheSession().MaxPlayers; i++) {
+    /*
+    **	Get a pointer to this house
+    */
+    hptr =
+        As_Pointer(static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + i));
+    if (!hptr || hptr->IsDefeated) {
+      continue;
+    }
+
+    /*
+    **	Loop through all houses; if there's one left alive that this house
+    **	isn't allied with, then all_allies will be false
+    */
+    for (int j = 0; j < TheSession().MaxPlayers; j++) {
+      HouseClass* hptr2 = As_Pointer(
+          static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + j));
+      if (!hptr2) {
+        continue;
+      }
+
+      if (!hptr2->IsDefeated && !hptr->Is_Ally(hptr2)) {
+        all_allies = 0;
+        break;
+      }
+    }
+    if (!all_allies) {
+      break;
+    }
+  }
+
+  /*
+  **	If all houses left are allies, set 'num_alive' to 1; game over.
+  */
+  if (all_allies) {
+    num_alive = 1;
+  }
+
+  /*
+  **	If there's only one human player left or no humans left, the game is
+  *over: *	- Determine whether this player wins or loses, based on the
+  *state of the *	  player's IsDefeated flag *	- Find all players'
+  *indices in the Session.Score array *	- Tally up scores for this game
+  */
+  if (num_alive == 1 || num_humans == 0) {
+    if (ThePlayer()->IsDefeated) {
+      TheGameState().player_loses() = true;
+    } else {
+      TheGameState().player_wins() = true;
+    }
+
+    /*
+    ** Add up the scores
+    */
+    Tally_Score();
+
+    /*
+    **	Destroy all the IPX connections, since we have to go through the rest
+    **	of the RunFrame() before we detect that the game is over, and we'll
+    **	end up waiting for frame sync packets from the other machines.
+    */
+    if (TheSession().Type == GAME_IPX || TheSession().Type == GAME_INTERNET) {
+      i = 0;
+      while (TheNetwork().ipx().Num_Connections() && i++ < 1000) {
+        const int id = TheNetwork().ipx().Connection_ID(0);
+        TheNetwork().ipx().Delete_Connection(id);
+      }
+      TheSession().NumPlayers = 0;
+    }
+  }
+
+  /*
+  **	Be sure our messages get displayed, even if we're about to exit.
+  */
+  TheMap().Render();
+}
+
+/***************************************************************************
+ * HouseClass::Tally_Score -- Fills in the score system for this round     *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		none.
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/29/1995 BRR : Created.                                             *
+ *=========================================================================*/
+void HouseClass::Tally_Score() {
+
+  /*
+  ** Loop through all houses, tallying up each player's score
+  */
+  for (const HousesType house : magic_enum::enum_values<HousesType>()) {
+    HouseClass* hptr = As_Pointer(house);
+    /*
+    ** Skip this house if it's not human.
+    */
+    if (!hptr || !hptr->IsHuman) {
+      continue;
+    }
+    /*
+    ** Now find out where this player is in the score array
+    */
+    int score_index = -1;
+    for (int i = 0; i < TheSession().NumScores; i++) {
+      if (absl::EqualsIgnoreCase(hptr->IniName,
+                                 base::At(TheSession().Score, i).Name)) {
+        score_index = i;
+        break;
+      }
+    }
+
+    /*
+    **	If the index is still -1, the name wasn't found; add a new entry.
+    */
+    if (score_index == -1) {
+      /*
+      ** Just add this player to the end of the array, if there's room
+      */
+      if (TheSession().NumScores < MAX_MULTI_NAMES) {
+        score_index = TheSession().NumScores;
+        TheSession().NumScores++;
+      }
+      /*
+      ** If there's not room, we have to remove somebody.
+      **	For each player in the scores array, count the # of '-1' entries
+      **	from this game backwards; the one with the most is the one that
+      **	hasn't played the longest; replace him with this new guy.
+      */
+      else {
+        int max_index = 0;
+        int max_count = 0;
+        for (int j = 0; j < TheSession().NumScores; j++) {
+          int count = 0;
+          for (int k = TheSession().NumScores - 1; k >= 0; k--) {
+            if (base::At(base::At(TheSession().Score, j).Kills, k) == -1) {
+              count++;
+            } else {
+              break;
+            }
+          }
+          if (count > max_count) {
+            max_count = count;
+            max_index = j;
+          }
+        }
+        score_index = max_index;
+      }
+
+      /*
+      **	Initialize this new score entry
+      */
+      base::At(TheSession().Score, score_index).Wins = 0;
+      base::SafeCopy(base::At(TheSession().Score, score_index).Name,
+                     hptr->IniName);
+      for (int& Kill : base::At(TheSession().Score, score_index).Kills) {
+        Kill = -1;
+      }
+    }
+
+    /*
+    **	Init this player's Kills to 0 (-1 means he didn't play this round;
+    **	0 means he played but got no kills).
+    */
+    base::At(base::At(TheSession().Score, score_index).Kills,
+             TheSession().CurGame) = 0;
+
+    /*
+    **	Init this player's color to his last-used color index
+    */
+    base::At(TheSession().Score, score_index).Color = hptr->RemapColor;
+
+    /*
+    **	If this house was undefeated, it must have been the winner.
+    ** (If no human houses are undefeated, the computer won.)
+    */
+    if (!hptr->IsDefeated) {
+      base::At(TheSession().Score, score_index).Wins++;
+      TheSession().Winner = score_index;
+    }
+
+    /*
+    **	Tally up all kills for this player
+    */
+    for (const HousesType house2 : magic_enum::enum_values<HousesType>()) {
+      base::At(base::At(TheSession().Score, score_index).Kills,
+               TheSession().CurGame) += hptr->UnitsKilled.at(house2);
+      base::At(base::At(TheSession().Score, score_index).Kills,
+               TheSession().CurGame) += hptr->BuildingsKilled.at(house2);
+    }
+  }
+}
+
+/***************************************************************************
+ * HouseClass::Blowup_All -- blows up everything                           *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *      none.                                                              *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *      none.                                                              *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *      none.                                                              *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   05/16/1995 BRR : Created.                                             *
+ *   06/09/1995 JLB : Handles aircraft.                                    *
+ *   05/07/1996 JLB : Handles ships.                                       *
+ *=========================================================================*/
+void HouseClass::Blowup_All() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  int damage = 0;
+  int count = 0;
+
+  /*
+  **	Find everything owned by this house & blast it with a huge amount of
+  *damage *	at zero range.  Do units before infantry, so the units' drivers
+  *are killed *	too.  Using Explosion_Damage is like dropping a big bomb right
+  *on the *	object; it will also damage anything around it.
+  */
+  for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
+    if (TheObjectHeaps().unit().Ptr(i)->House == this &&
+        !TheObjectHeaps().unit().Ptr(i)->IsInLimbo) {
+      UnitClass* uptr = TheObjectHeaps().unit().Ptr(i);
+
+      /*
+      **	Some units can't be killed with one shot, so keep damaging them
+      *until *	they're gone.  The unit will destroy itself, and put an infantry
+      *in *	its place.  When the unit destroys itself, decrement 'i' since
+      **	its pointer will be removed from the active pointer list.
+      */
+      count = 0;
+      while (TheObjectHeaps().unit().Ptr(i) == uptr && uptr->Strength) {
+        damage = uptr->Strength;
+        uptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
+        count++;
+        if (count > 5 && uptr->IsActive) {
+          base::DeletePooled(uptr);
+          break;
+        }
+      }
+      i--;
+    }
+  }
+
+  /*
+  **	Destroy all aircraft owned by this house.
+  */
+  for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
+    if (TheObjectHeaps().aircraft().Ptr(i)->House == this &&
+        !TheObjectHeaps().aircraft().Ptr(i)->IsInLimbo) {
+      AircraftClass* aptr = TheObjectHeaps().aircraft().Ptr(i);
+
+      damage = aptr->Strength;
+      aptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
+      if (!aptr->IsActive) {
+        i--;
+      }
+    }
+  }
+
+  /*
+  **	Destroy all vessels owned by this house.
+  */
+  for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
+    if (TheObjectHeaps().vessel().Ptr(i)->House == this &&
+        !TheObjectHeaps().vessel().Ptr(i)->IsInLimbo) {
+      VesselClass* vptr = TheObjectHeaps().vessel().Ptr(i);
+
+      damage = vptr->Strength;
+      vptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
+      if (!vptr->IsActive) {
+        i--;
+      }
+    }
+  }
+
+  /*
+  **	Buildings don't delete themselves when they die; they shake the screen
+  **	and begin a countdown, so don't decrement 'i' when it's destroyed.
+  */
+  for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
+    if (TheObjectHeaps().building().Ptr(i)->House == this &&
+        !TheObjectHeaps().building().Ptr(i)->IsInLimbo) {
+      BuildingClass* bptr = TheObjectHeaps().building().Ptr(i);
+
+      count = 0;
+      while (TheObjectHeaps().building().Ptr(i) == bptr && bptr->Strength) {
+        damage = bptr->Strength;
+        bptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
+        count++;
+        if (count > 5) {
+          base::DeletePooled(bptr);
+          break;
+        }
+      }
+    }
+  }
+
+  /*
+  **	Infantry don't delete themselves when they die; they go into a death-
+  **	animation sequence, so there's no need to decrement 'i' when they die.
+  **	Infantry should die by different types of warheads, so their death
+  **	anims aren't all synchronized.
+  */
+  for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
+    if (TheObjectHeaps().infantry().Ptr(i)->House == this &&
+        !TheObjectHeaps().infantry().Ptr(i)->IsInLimbo) {
+      InfantryClass* iptr = TheObjectHeaps().infantry().Ptr(i);
+
+      count = 0;
+      while (TheObjectHeaps().infantry().Ptr(i) == iptr && iptr->Strength) {
+        damage = iptr->Strength;
+        const WarheadType warhead = Random_Pick(WARHEAD_SA, WARHEAD_FIRE);
+        iptr->Take_Damage(damage, 0, warhead, nullptr, true);
+
+        count++;
+        if (count > 5) {
+          base::DeletePooled(iptr);
+          break;
+        }
+      }
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Flag_To_Die -- Flags the house to blow up soon. *
+ *                                                                                             *
+ *    When this routine is called, the house will blow up after a period of
+ *time. Typically    * this is called when the flag is captured or the HQ
+ *destroyed.                            *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Was the house flagged to blow up? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/20/1995 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Flag_To_Die() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (!IsToWin && !IsToDie && !IsToLose) {
+    IsToDie = true;
+    BorrowedTime.Set(kTicksPerMinute * TheRules().SavourDelay);
+  }
+  return IsToDie;
+}
+
+/***********************************************************************************************
+ * HouseClass::Flag_To_Win -- Flags the house to win soon. *
+ *                                                                                             *
+ *    When this routine is called, the house will be declared the winner after a
+ *period of     * time. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Was the house flagged to win? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/20/1995 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Flag_To_Win() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (!IsToWin && !IsToDie && !IsToLose) {
+    IsToWin = true;
+    BorrowedTime.Set(kTicksPerMinute * TheRules().SavourDelay);
+  }
+  return IsToWin;
+}
+
+/***********************************************************************************************
+ * HouseClass::Flag_To_Lose -- Flags the house to die soon. *
+ *                                                                                             *
+ *    When this routine is called, it will spell the doom of this house. In a
+ *short while      * all of the object owned by this house will explode. Typical
+ *use of this routine is when  * the flag has been captured or the command
+ *vehicle has been destroyed.                    *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Has the doom been initiated? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/12/1995 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Flag_To_Lose() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  IsToWin = false;
+  if (!IsToDie && !IsToLose) {
+    IsToLose = true;
+    BorrowedTime.Set(kTicksPerMinute * TheRules().SavourDelay);
+  }
+  return IsToLose;
+}
+
+/***********************************************************************************************
+ * HouseClass::Init_Data -- Initializes the multiplayer color data. *
+ *                                                                                             *
+ *    This routine is called when initializing the color and remap data for this
+ *house. The    * primary user of this routine is the multiplayer version of the
+ *game, especially for		  * saving & loading multiplayer games.
+ **
+ *                                                                                             *
+ * INPUT:   color    -- The color of this house. *
+ *                                                                                             *
+ *          house    -- The house that this should act like. *
+ *                                                                                             *
+ *          credits  -- The initial credits to assign to this house. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/29/1995 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Init_Data(PlayerColorType color, HousesType house,
+                           int credits) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  Credits = Control.InitialCredits = credits;
+  RemapColor = color;
+  ActLike = house;
+}
+
+/***********************************************************************************************
+ * HouseClass::Power_Fraction -- Fetches the current power output rating. *
+ *                                                                                             *
+ *    Use this routine to fetch the current power output as a fixed point
+ *fraction. The        * value 0x0100 is 100% power. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with power rating as a fixed pointer number. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/22/1995 JLB : Created. *
+ *=============================================================================================*/
+Fixed HouseClass::Power_Fraction() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (Power >= Drain || Drain == 0) {
+    return Fixed(1);
+  }
+
+  if (Power) {
+    return {Power, Drain};
+  }
+  return Fixed(0);
+}
+
+/***********************************************************************************************
+ * HouseClass::Sell_Wall -- Tries to sell the wall at the specified location. *
+ *                                                                                             *
+ *    This routine will try to sell the wall at the specified location. If there
+ *is a wall     * present and it is owned by this house, then it can be sold. *
+ *                                                                                             *
+ * INPUT:   cell  -- The cell that wall selling is desired. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/05/1995 JLB : Created. * 11/02/1996 JLB : Checks unsellable bit
+ *for wall type.                                     *
+ *=============================================================================================*/
+void HouseClass::Sell_Wall(CELL cell) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (static_cast<unsigned>(cell) > 0) {
+    const OverlayType overlay = TheMap().at(cell).Overlay;
+
+    if (overlay != OVERLAY_NONE && TheMap().at(cell).Owner == Class->House) {
+      const OverlayTypeClass& optr = OverlayTypeClass::As_Reference(overlay);
+
+      if (optr.IsWall) {
+        const BuildingTypeClass* btype = nullptr;
+        switch (overlay) {
+          case OVERLAY_SANDBAG_WALL:
+            btype = &BuildingTypeClass::As_Reference(STRUCT_SANDBAG_WALL);
+            break;
+
+          case OVERLAY_CYCLONE_WALL:
+            btype = &BuildingTypeClass::As_Reference(STRUCT_CYCLONE_WALL);
+            break;
+
+          case OVERLAY_BRICK_WALL:
+            btype = &BuildingTypeClass::As_Reference(STRUCT_BRICK_WALL);
+            break;
+
+          case OVERLAY_BARBWIRE_WALL:
+            btype = &BuildingTypeClass::As_Reference(STRUCT_BARBWIRE_WALL);
+            break;
+
+          case OVERLAY_WOOD_WALL:
+            btype = &BuildingTypeClass::As_Reference(STRUCT_WOOD_WALL);
+            break;
+
+          case OVERLAY_FENCE:
+            btype = &BuildingTypeClass::As_Reference(STRUCT_FENCE);
+            break;
+
+          case OverlayType::OVERLAY_NONE:
+          case OverlayType::OVERLAY_GOLD1:
+          case OverlayType::OVERLAY_GOLD2:
+          case OverlayType::OVERLAY_GOLD3:
+          case OverlayType::OVERLAY_GOLD4:
+          case OverlayType::OVERLAY_GEMS1:
+          case OverlayType::OVERLAY_GEMS2:
+          case OverlayType::OVERLAY_GEMS3:
+          case OverlayType::OVERLAY_GEMS4:
+          case OverlayType::OVERLAY_V12:
+          case OverlayType::OVERLAY_V13:
+          case OverlayType::OVERLAY_V14:
+          case OverlayType::OVERLAY_V15:
+          case OverlayType::OVERLAY_V16:
+          case OverlayType::OVERLAY_V17:
+          case OverlayType::OVERLAY_V18:
+          case OverlayType::OVERLAY_FLAG_SPOT:
+          case OverlayType::OVERLAY_WOOD_CRATE:
+          case OverlayType::OVERLAY_STEEL_CRATE:
+          case OverlayType::OVERLAY_WATER_CRATE:
+          default:
+            break;
+        }
+        if (btype != nullptr && !btype->IsUnsellable) {
+          if (ThePlayer() == this) {
+            PlaySoundEffect(VOC_CASHTURN);
+          }
+
+          Refund_Money(btype->Raw_Cost() * TheRules().RefundPercent);
+          TheMap().at(cell).Overlay = OVERLAY_NONE;
+          TheMap().at(cell).OverlayData = 0;
+          TheMap().at(cell).Owner = HOUSE_NONE;
+          TheMap().at(cell).Wall_Update();
+          TheMap().at(cell).Recalc_Attributes();
+          TheMap().at(cell).Redraw_Objects();
+          TheMap().Radar_Pixel(cell);
+          Detach_This_From_All(As_Target(cell), true);
+
+          if (optr.IsCrushable) {
+            TheMap().Zone_Reset(kZoneFlagNormal);
+          } else {
+            TheMap().Zone_Reset(kZoneFlagCrusher | kZoneFlagNormal);
+          }
+        }
+      }
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Suggest_New_Building -- Examines the situation and suggests a
+ *building.         *
+ *                                                                                             *
+ *    This routine is called when a construction yard needs to know what to
+ *build next. It     * will either examine the prebuilt base list or try to
+ *figure out what to build next       * based on the current game situation. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the building type class to build. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/27/1995 JLB : Created. *
+ *=============================================================================================*/
+const BuildingTypeClass* HouseClass::Suggest_New_Building() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (BuildStructure != STRUCT_NONE) {
+    return &BuildingTypeClass::As_Reference(BuildStructure);
+  }
+  return nullptr;
+}
+
+/***********************************************************************************************
+ * HouseClass::Find_Building -- Finds a building of specified type. *
+ *                                                                                             *
+ *    This routine is used to find a building of the specified type. This is
+ *particularly      * useful for when some event requires a specific building
+ *instance. The nuclear missile    * launch is a good example. *
+ *                                                                                             *
+ * INPUT:   type  -- The building type to scan for. *
+ *                                                                                             *
+ *          zone  -- The zone that the building must be located in. If no zone
+ *specific search * is desired, then pass ZONE_NONE. *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the building type requested. If there is
+ *no building     * of the type requested, then nullptr is returned. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/27/1995 JLB : Created. * 10/02/1995 JLB : Allows for zone
+ *specifics.                                               *
+ *=============================================================================================*/
+BuildingClass* HouseClass::Find_Building(StructType type, ZoneType zone) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  **	Only scan if we KNOW there is at least one building of the type
+  **	requested.
+  */
+  if (BQuantity.at(type) > 0) {
+    /*
+    **	Search for a suitable launch site for this missile.
+    */
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+      if (b && !b->IsInLimbo && b->House == this && *b == type) {
+        if (zone == ZONE_NONE || Which_Zone(b) == zone) {
+          return b;
+        }
+      }
+    }
+  }
+  return nullptr;
+}
+
+/***********************************************************************************************
+ * HouseClass::Find_Build_Location -- Finds a suitable building location. *
+ *                                                                                             *
+ *    This routine is used to find a suitable building location for the building
+ *specified.    * The auto base building logic uses this when building the base
+ *for the computer.          *
+ *                                                                                             *
+ * INPUT:   building -- Pointer to the building that needs to be placed down. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the coordinate to place the building at. If there are
+ *no suitable     * locations, then nullptr is returned. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/27/1995 JLB : Created. *
+ *=============================================================================================*/
+COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  base::EnumArray<ZoneType, int> zonerating = {};
+  struct {
+    int AntiAir;       // Average air defense for the base.
+    int AntiArmor;     // Average armor defense for the base.
+    int AntiInfantry;  // Average infantry defense for the base.
+  } zoneinfo = {0, 0, 0};
+  const int antiair = building->Anti_Air();
+  const int antiarmor = building->Anti_Armor();
+  const int antiinfantry = building->Anti_Infantry();
+
+  /*
+  **	Never place combat buildings adjacent to each other. This is partly
+  **	because combat buildings don't have a bib and jamming will occur as well
+  **	as because spacing defensive buildings out will yield a better
+  **	defense.
+  */
+  // if (antiair || antiarmor || antiinfantry) {
+  //   adj = false;
+  // }
+
+  /*
+  **	Determine the average zone strengths for the base. This value is
+  **	used to determine what zones are considered under or over strength.
+  */
+  for (const ZoneType z : magic_enum::enum_values<ZoneType>()) {
+    if (z < ZONE_NORTH) {
+      continue;
+    }
+    zoneinfo.AntiAir += ZoneInfo.at(z).AirDefense;
+    zoneinfo.AntiArmor += ZoneInfo.at(z).ArmorDefense;
+    zoneinfo.AntiInfantry += ZoneInfo.at(z).InfantryDefense;
+  }
+  zoneinfo.AntiAir /= static_cast<int>(magic_enum::enum_count<ZoneType>()) -
+                      static_cast<int>(ZONE_NORTH);
+  zoneinfo.AntiArmor /= static_cast<int>(magic_enum::enum_count<ZoneType>()) -
+                        static_cast<int>(ZONE_NORTH);
+  zoneinfo.AntiInfantry /=
+      static_cast<int>(magic_enum::enum_count<ZoneType>()) -
+      static_cast<int>(ZONE_NORTH);
+
+  /*
+  **	Give each zone a rating for value. The higher the value the more
+  *desirable *	to place the specified building in that zone. Factor the average
+  *value of *	zone defense such that more weight is given to zones that are
+  *very under *	defended.
+  */
+  for (const ZoneType z : magic_enum::enum_values<ZoneType>()) {
+    int diff = zoneinfo.AntiAir - ZoneInfo.at(z).AirDefense;
+    if (z == ZONE_CORE) {
+      diff /= 2;
+    }
+    if (diff > 0) {
+      zonerating.at(z) += std::min(antiair, diff);
+    }
+
+    diff = zoneinfo.AntiArmor - ZoneInfo.at(z).ArmorDefense;
+    if (z == ZONE_CORE) {
+      diff /= 2;
+    }
+    if (diff > 0) {
+      zonerating.at(z) += std::min(antiarmor, diff);
+    }
+
+    diff = zoneinfo.AntiInfantry - ZoneInfo.at(z).InfantryDefense;
+    if (z == ZONE_CORE) {
+      diff /= 2;
+    }
+    if (diff > 0) {
+      zonerating.at(z) += std::min(antiinfantry, diff);
+    }
+  }
+
+  /*
+  **	Now that each zone has been given a desirability rating, find the zone
+  **	with the greatest value and try to place the building in that zone.
+  */
+  ZoneType zone =
+      Random_Pick(magic_enum::enum_values<ZoneType>().front(), ZONE_WEST);
+  int largest = 0;
+  for (const ZoneType z : magic_enum::enum_values<ZoneType>()) {
+    if (zonerating.at(z) > largest) {
+      zone = z;
+      largest = zonerating.at(z);
+    }
+  }
+
+  CELL zcell = Find_Cell_In_Zone(building, zone);
+  if (zcell) {
+    return Cell_Coord(zcell);
+  }
+
+  /*
+  **	Could not build in preferred zone, so try building in any zone.
+  */
+  static const ZoneType _zones[] = {ZONE_CORE, ZONE_NORTH, ZONE_SOUTH,
+                                    ZONE_EAST, ZONE_WEST};
+  const int start = Random_Pick<int>(0, std::ssize(_zones) - 1);
+  for (int zz = 0; zz < std::ssize(_zones); zz++) {
+    const ZoneType tryzone =
+        base::At(_zones, (zz + start) % std::ssize(_zones));
+    zcell = Find_Cell_In_Zone(building, tryzone);
+    if (zcell) {
+      return Cell_Coord(zcell);
+    }
+  }
+
+  return 0;
+}
+
+/***********************************************************************************************
+ * HouseClass::Recalc_Center -- Recalculates the center point of the base. *
+ *                                                                                             *
+ *    This routine will average the location of the base and record the center
+ *point. The      * recorded center point is used to determine such things as
+ *how far the base is spread     * out and where to protect the most. This
+ *routine should be called whenever a building     * is created or destroyed. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/28/1995 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Recalc_Center() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  **	First presume that there is no base. If there is a base, then these
+  *values will be *	properly filled in below.
+  */
+  Center = 0;
+  Radius = 0;
+  for (const ZoneType zone : magic_enum::enum_values<ZoneType>()) {
+    ZoneInfo.at(zone).AirDefense = 0;
+    ZoneInfo.at(zone).ArmorDefense = 0;
+    ZoneInfo.at(zone).InfantryDefense = 0;
+  }
+
+  /*
+  **	Only process the center base size/position calculation if there are
+  *buildings to *	consider. When no buildings for this house are present,
+  *then no processing need *	occur.
+  */
+  if (CurBuildings > 0) {
+    int x = 0;
+    int y = 0;
+    int count = 0;
+
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+
+      if (b != nullptr && !b->IsInLimbo &&
+          static_cast<HouseClass*>(b->House) == this && b->Strength > 0) {
+        /*
+        **	Give more "weight" to buildings that cost more. The presumption
+        *is that cheap *	buildings don't affect the base disposition as
+        *much as the more expensive *	buildings do.
+        */
+        const int weight = (b->Class->Cost_Of() / 1000) + 1;
+        for (int i = 0; i < weight; i++) {
+          x += Coord_X(b->Center_Coord());
+          y += Coord_Y(b->Center_Coord());
+          count++;
+        }
+      }
+    }
+
+    /*
+    **	This second check for quantity of buildings is necessary because the
+    *first *	check against CurBuildings doesn't take into account if the
+    *building is in *	limbo, but for base calculation, the limbo state
+    *disqualifies a building *	from being processed. Thus, CurBuildings may
+    *indicate a base, but count may *	not match.
+    */
+    if (count > 0) {
+      x /= count;
+      y /= count;
+
+      Center = XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
+    }
+
+    /*
+    **	If there were any buildings discovered as legal to consider as part of
+    *the base, *	then figure out the general average radius of the
+    *building disposition as it *	relates to the center of the base.
+    */
+    if (count > 1) {
+      int radius = 0;
+
+      for (int index = 0; index < TheObjectHeaps().building().Count();
+           index++) {
+        const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+
+        if (b != nullptr && !b->IsInLimbo &&
+            static_cast<HouseClass*>(b->House) == this && b->Strength > 0) {
+          radius += Distance(Center, b->Center_Coord());
+        }
+      }
+      Radius = std::max(radius / count, 2 * CELL_LEPTON_W);
+
+      /*
+      **	Determine the relative strength of each base defense zone.
+      */
+      for (int index = 0; index < TheObjectHeaps().building().Count();
+           index++) {
+        const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+
+        if (b != nullptr && !b->IsInLimbo &&
+            static_cast<HouseClass*>(b->House) == this && b->Strength > 0) {
+          const ZoneType z = Which_Zone(b);
+
+          if (z != ZONE_NONE) {
+            ZoneInfo.at(z).ArmorDefense += b->Anti_Armor();
+            ZoneInfo.at(z).AirDefense += b->Anti_Air();
+            ZoneInfo.at(z).InfantryDefense += b->Anti_Infantry();
+          }
+        }
+      }
+
+    } else {
+      Radius = 0x0200;
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Expert_AI -- Handles expert AI processing. *
+ *                                                                                             *
+ *    This routine is called when the computer should perform expert AI
+ *processing. This       * method of AI is categorized as an "Expert System"
+ *process.                               *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns the number of game frames to delay before calling this
+ *routine again.      *
+ *                                                                                             *
+ * WARNINGS:   This is relatively time consuming -- call periodically. *
+ *                                                                                             *
+ * HISTORY: * 09/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int HouseClass::Expert_AI() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  **	If the current enemy no longer has a base or is defeated, then don't
+  *consider *	that house a threat anymore. Clear out the enemy record and then
+  *try *	to find a new enemy.
+  */
+  if (Enemy != HOUSE_NONE) {
+    const HouseClass* h = As_Pointer(Enemy);
+
+    if (h == nullptr || !h->IsActive || h->IsDefeated || Is_Ally(h) ||
+        h->BScan == 0) {
+      Enemy = HOUSE_NONE;
+    }
+  }
+
+  /*
+  **	If there is no enemy assigned to this house, then assign one now. The
+  **	enemy that is closest is picked. However, don't pick an enemy if the
+  **	base has not been established yet.
+  */
+  if (ActiveBScan && Center && Attack.IsFinished()) {
+    int close = 0;
+    HousesType enemy = HOUSE_NONE;
+    int maxunit = 0;
+    int maxinfantry = 0;
+    int maxvessel = 0;
+    int maxaircraft = 0;
+    int maxbuilding = 0;
+    int enemycount = 0;
+
+    for (const HousesType house : magic_enum::enum_values<HousesType>()) {
+      const HouseClass* h = As_Pointer(house);
+      if (h != nullptr && h->IsActive && !h->IsDefeated && !Is_Ally(h)) {
+        /*
+        **	Perform a special restriction check to ensure that no enemy is
+        *chosen if *	there is even one enemy that has not established a base
+        *yet. This will *	ensure an accurate first pick for enemy since
+        *the distance to base *	value can be determined.
+        */
+        if (!h->IsStarted) {
+          enemy = HOUSE_NONE;
+          break;
+        }
+
+        /*
+        **	Keep track of the number of buildings and units owned by the
+        **	enemy. This is used to bring up the maximum allowed to match.
+        */
+        maxunit += h->CurUnits;
+        maxbuilding += h->CurBuildings;
+        maxinfantry += h->CurInfantry;
+        maxvessel += h->CurVessels;
+        maxaircraft += h->CurAircraft;
+        enemycount++;
+
+        /*
+        **	Determine a priority value based on distance to the center of
+        *the *	candidate base. The higher the value, the better the candidate
+        *house *	is to becoming the preferred enemy for this house.
+        */
+        int value = (MAP_CELL_W * 2) - Distance(Center, h->Center);
+        value *= 2;
+
+        /*
+        **	In addition to distance, record the number of kills directed
+        **	against this house. The enemy that does more damage might be
+        **	considered a greater threat.
+        */
+        value += h->BuildingsKilled.at(Class->House) * 5;
+        value += h->UnitsKilled.at(Class->House);
+
+        /*
+        **	Factor in the relative sizes of the bases. An enemy that has a
+        **	larger base will be considered a bigger threat. Conversely, a
+        **	smaller base is considered a lesser threat.
+        */
+        value += h->CurUnits - CurUnits;
+        value += h->CurBuildings - CurBuildings;
+        value += (h->CurInfantry - CurInfantry) / 4;
+
+        /*
+        **	Whoever last attacked is given a little more priority as
+        **	a potential designated enemy.
+        */
+        if (house == LAEnemy) {
+          value += 100;
+        }
+
+        /*
+        **	Compare the calculated value for this candidate house and if it
+        *is *	greater than the previously recorded maximum, record this house
+        *as *	the prime candidate for enemy.
+        */
+        if (value > close) {
+          enemy = house;
+          close = value;
+        }
+      }
+    }
+
+    /*
+    **	Record this closest enemy base as the first enemy to attack.
+    */
+    Enemy = enemy;
+
+    /*
+    **	Up the maximum allowed units and buildings to match a rough average
+    **	of what the enemies are allowed.
+    */
+    if (enemycount) {
+      maxunit /= enemycount;
+      maxbuilding /= enemycount;
+      maxinfantry /= enemycount;
+      maxvessel /= enemycount;
+      maxaircraft /= enemycount;
+    }
+
+    Control.MaxBuilding =
+        std::max(Control.MaxBuilding, maxbuilding + 10);
+    Control.MaxUnit = std::max(Control.MaxUnit, maxunit + 10);
+    Control.MaxInfantry =
+        std::max(Control.MaxInfantry, maxinfantry + 10);
+    Control.MaxVessel =
+        std::max(Control.MaxVessel, maxvessel + 10);
+    Control.MaxAircraft =
+        std::max(Control.MaxAircraft, maxaircraft + 10);
+  }
+
+  /*
+  **	House state transition check occurs here. Transitions that occur here
+  *are ones *	that relate to general base condition rather than specific
+  *combat events. *	Typically, this is limited to transitions between normal
+  *buildup mode and *	broke mode.
+  */
+  if (State == STATE_ENDGAME) {
+    Fire_Sale();
+    Do_All_To_Hunt();
+  } else {
+    if ((State == STATE_BUILDUP) && (Available_Money() < 25)) {
+      State = STATE_BROKE;
+    }
+
+    if ((State == STATE_BROKE) && (Available_Money() >= 25)) {
+      State = STATE_BUILDUP;
+    }
+
+    if (State == STATE_ATTACKED && LATime + kTicksPerMinute < CurrentFrame()) {
+      State = STATE_BUILDUP;
+    }
+    if (State != STATE_ATTACKED && LATime + kTicksPerMinute > CurrentFrame()) {
+      State = STATE_ATTACKED;
+    }
+  }
+
+  /*
+  **	Records the urgency of all actions possible.
+  */
+  base::EnumArray<StrategyType, UrgencyType> urgency = {};
+
+  for (const StrategyType strat : magic_enum::enum_values<StrategyType>()) {
+    urgency.at(strat) = URGENCY_NONE;
+
+    switch (strat) {
+      case STRATEGY_BUILD_POWER:
+        urgency.at(strat) = Check_Build_Power();
+        break;
+
+      case STRATEGY_BUILD_DEFENSE:
+        urgency.at(strat) = Check_Build_Defense();
+        break;
+
+      case STRATEGY_BUILD_INCOME:
+        urgency.at(strat) = Check_Build_Income();
+        break;
+
+      case STRATEGY_FIRE_SALE:
+        urgency.at(strat) = Check_Fire_Sale();
+        break;
+
+      case STRATEGY_BUILD_ENGINEER:
+        urgency.at(strat) = Check_Build_Engineer();
+        break;
+
+      case STRATEGY_BUILD_OFFENSE:
+        urgency.at(strat) = Check_Build_Offense();
+        break;
+
+      case STRATEGY_RAISE_MONEY:
+        urgency.at(strat) = Check_Raise_Money();
+        break;
+
+      case STRATEGY_RAISE_POWER:
+        urgency.at(strat) = Check_Raise_Power();
+        break;
+
+      case STRATEGY_LOWER_POWER:
+        urgency.at(strat) = Check_Lower_Power();
+        break;
+
+      case STRATEGY_ATTACK:
+        urgency.at(strat) = Check_Attack();
+        break;
+
+      default:
+        urgency.at(strat) = URGENCY_NONE;
+        break;
+    }
+  }
+
+  /*
+  **	Performs the action required for each of the strategies that share
+  **	the most urgent category. Stop processing if any strategy at the
+  **	highest urgency performed any action. This is because higher urgency
+  **	actions tend to greatly affect the lower urgency actions.
+  */
+  for (UrgencyType u = URGENCY_CRITICAL; u >= URGENCY_LOW; u--) {
+    for (const StrategyType strat : magic_enum::enum_values<StrategyType>()) {
+      if (urgency.at(strat) == u) {
+        switch (strat) {
+          case STRATEGY_BUILD_POWER:
+            AI_Build_Power(u);
+            break;
+
+          case STRATEGY_BUILD_DEFENSE:
+            AI_Build_Defense(u);
+            break;
+
+          case STRATEGY_BUILD_INCOME:
+            AI_Build_Income(u);
+            break;
+
+          case STRATEGY_FIRE_SALE:
+            AI_Fire_Sale(u);
+            break;
+
+          case STRATEGY_BUILD_ENGINEER:
+            AI_Build_Engineer(u);
+            break;
+
+          case STRATEGY_BUILD_OFFENSE:
+            AI_Build_Offense(u);
+            break;
+
+          case STRATEGY_RAISE_MONEY:
+            AI_Raise_Money(u);
+            break;
+
+          case STRATEGY_RAISE_POWER:
+            AI_Raise_Power(u);
+            break;
+
+          case STRATEGY_LOWER_POWER:
+            AI_Lower_Power(u);
+            break;
+
+          case STRATEGY_ATTACK:
+            AI_Attack(u);
+            break;
+
+          default:
+            break;
+        }
+      }
+    }
+  }
+
+  return (kTicksPerSecond * 5) + Random_Pick(1, kTicksPerSecond / 2);
+}
+
+UrgencyType HouseClass::Check_Build_Power() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  const Fixed frac = Power_Fraction();
+  UrgencyType urgency = URGENCY_NONE;
+
+  if (frac < 1 && Can_Make_Money()) {
+    urgency = URGENCY_LOW;
+
+    /*
+    **	Very low power condition is considered a higher priority.
+    */
+    if (frac < Fixed::kThreeQuarters) {
+      urgency = URGENCY_MEDIUM;
+    }
+
+    /*
+    **	When under attack and there is a need for power in defense,
+    **	then consider power building a higher priority.
+    */
+    if ((State == STATE_THREATENED || State == STATE_ATTACKED) &&
+        (BScan | kStructFlagChronosphere)) {
+      urgency = URGENCY_HIGH;
+    }
+  }
+  return urgency;
+}
+
+UrgencyType HouseClass::Check_Build_Defense() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  **	This routine determines what urgency level that base defense
+  **	should be given. The more vulnerable the base is, the higher
+  **	the urgency this routine should return.
+  */
+  return URGENCY_NONE;
+}
+
+UrgencyType HouseClass::Check_Build_Offense() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  **	This routine determines what urgency level that offensive
+  **	weaponry should be given. Surplus money or a very strong
+  **	defense will cause the offensive urgency to increase.
+  */
+  return URGENCY_NONE;
+}
+
+/*
+**	Determines what the attack state of the base is. The higher the state,
+**	the greater the immediate threat to base defense is.
+*/
+UrgencyType HouseClass::Check_Attack() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (CurrentFrame() > kTicksPerMinute && Attack.IsFinished()) {
+    if (State == STATE_ATTACKED) {
+      return URGENCY_LOW;
+    }
+    return URGENCY_CRITICAL;
+  }
+  return URGENCY_NONE;
+}
+
+UrgencyType HouseClass::Check_Build_Income() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  **	This routine should determine if income processing buildings
+  **	should be constructed and at what urgency. The lower the money,
+  **	the lower the refineries, or recent harvester losses should
+  **	cause a greater urgency to be returned.
+  */
+  return URGENCY_NONE;
+}
+
+UrgencyType HouseClass::Check_Fire_Sale() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  **	If there are no more factories at all, then sell everything off because
+  *the game *	is basically over at this point.
+  */
+  if (State != STATE_ATTACKED && CurBuildings &&
+      !(ActiveBScan &
+        (kStructFlagTent | kStructFlagBarracks | kStructFlagConst |
+         kStructFlagAirstrip | kStructFlagWeap | kStructFlagHelipad))) {
+    return URGENCY_CRITICAL;
+  }
+  return URGENCY_NONE;
+}
+
+UrgencyType HouseClass::Check_Build_Engineer() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  **	This routine should check to see what urgency that the production of
+  **	engineers should be. If a friendly building has been captured or the
+  **	enemy has weak defenses, then building an engineer would be a priority.
+  */
+  return URGENCY_NONE;
+}
+
+/*
+**	Checks to see if money is critically low and something must be done
+**	to immediately raise cash.
+*/
+UrgencyType HouseClass::Check_Raise_Money() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  UrgencyType urgency = URGENCY_NONE;
+  if (Available_Money() < 100) {
+    urgency = URGENCY_LOW;
+  }
+  if (Available_Money() < 2000 && !Can_Make_Money()) {
+    urgency++;
+  }
+
+  return urgency;
+}
+
+/*
+**	Checks to see if power is very low and if so, a greater urgency to
+**	build more power is returned.
+*/
+UrgencyType HouseClass::Check_Lower_Power() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (Power > Drain + 300) {
+    return URGENCY_LOW;
+  }
+  return URGENCY_NONE;
+}
+
+/*
+**	This routine determines if there is a power emergency. Such an
+**	emergency might require selling of structures in order to free
+**	up power. This might occur if the base is being attacked and there
+**	are defenses that require power, but are just short of having
+**	enough.
+*/
+UrgencyType HouseClass::Check_Raise_Power() const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  UrgencyType urgency = URGENCY_NONE;
+
+  if (Power_Fraction() < TheRules().PowerEmergencyFraction &&
+      Power < Drain - 400) {
+    //	if (Power_Fraction() < Rule.PowerEmergencyFraction &&
+    //(BQuantity[STRUCT_CONST] == 0 || Available_Money() < 200 || Power <
+    // Drain-400)) {
+    urgency = URGENCY_MEDIUM;
+    if (State == STATE_ATTACKED) {
+      urgency++;
+    }
+  }
+  return urgency;
+}
+
+bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  const bool shuffle =
+      (CurrentFrame() <= kTicksPerMinute || CurBuildings != 0) &&
+      !Percent_Chance(33);
+  const bool forced = CurBuildings == 0;
+  for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+    AircraftClass* a = TheObjectHeaps().aircraft().Ptr(index);
+
+    if ((a != nullptr && !a->IsInLimbo && a->House == this &&
+         a->Strength > 0) &&
+        (!shuffle && a->Is_Weapon_Equipped() &&
+         (forced || Percent_Chance(75)))) {
+      a->Assign_Mission(MISSION_HUNT);
+    }
+  }
+  for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+    UnitClass* u = TheObjectHeaps().unit().Ptr(index);
+
+    if (u != nullptr && !u->IsInLimbo && u->House == this && u->Strength > 0) {
+      if (!shuffle && u->Is_Weapon_Equipped() &&
+          (forced || Percent_Chance(75))) {
+        u->Assign_Mission(MISSION_HUNT);
+      } else {
+        /*
+        **	If this unit is guarding the base, then cause it to shuffle
+        **	location instead.
+        */
+        if (Percent_Chance(20) && u->Mission == MISSION_GUARD_AREA &&
+            Which_Zone(u) != ZONE_NONE) {
+          u->ArchiveTarget = As_Target(Where_To_Go(u));
+        }
+      }
+    }
+  }
+  for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
+    InfantryClass* i = TheObjectHeaps().infantry().Ptr(index);
+
+    if (i != nullptr && !i->IsInLimbo && i->House == this && i->Strength > 0) {
+      if (!shuffle && (i->Is_Weapon_Equipped() || *i == INFANTRY_RENOVATOR) &&
+          (forced || Percent_Chance(75))) {
+        i->Assign_Mission(MISSION_HUNT);
+      } else {
+        /*
+        **	If this soldier is guarding the base, then cause it to shuffle
+        **	location instead.
+        */
+        if (Percent_Chance(20) && i->Mission == MISSION_GUARD_AREA &&
+            Which_Zone(i) != ZONE_NONE) {
+          i->ArchiveTarget = As_Target(Where_To_Go(i));
+        }
+      }
+    }
+  }
+  Attack.Set(
+      TheRules().AttackInterval *
+      static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
+  return true;
+}
+
+/*
+**	Given the specified urgency, build a power structure to meet
+**	this need.
+*/
+bool HouseClass::AI_Build_Power(UrgencyType /*unused*/) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  return false;
+}
+
+/*
+**	Given the specified urgency, build base defensive structures
+**	according to need and according to existing base disposition.
+*/
+bool HouseClass::AI_Build_Defense(UrgencyType /*unused*/) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  return false;
+}
+
+/*
+**	Given the specified urgency, build offensive units according
+**	to need and according to the opponents base defenses.
+*/
+bool HouseClass::AI_Build_Offense(UrgencyType /*unused*/) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  return false;
+}
+
+/*
+**	Given the specified urgency, build income producing
+**	structures according to need.
+*/
+bool HouseClass::AI_Build_Income(UrgencyType /*unused*/) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  return false;
+}
+
+bool HouseClass::AI_Fire_Sale(UrgencyType urgency) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (CurBuildings && urgency == URGENCY_CRITICAL) {
+    Fire_Sale();
+    Do_All_To_Hunt();
+    return true;
+  }
+  return false;
+}
+
+/*
+**	Given the specified urgency, build an engineer.
+*/
+bool HouseClass::AI_Build_Engineer(UrgencyType /*unused*/) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  return false;
+}
+
+/*
+**	Given the specified urgency, sell of some power since
+**	there appears to be excess.
+*/
+bool HouseClass::AI_Lower_Power(UrgencyType /*unused*/) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  BuildingClass* b = Find_Building(STRUCT_POWER);
+  if (b != nullptr) {
+    b->Sell_Back(1);
+    return true;
+  }
+
+  b = Find_Building(STRUCT_ADVANCED_POWER);
+  if (b != nullptr) {
+    b->Sell_Back(1);
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * HouseClass::AI_Raise_Power -- Try to raise power levels by selling off
+ *buildings.           *
+ *                                                                                             *
+ *    This routine is called when the computer needs to raise power by selling
+ *off buildings.  * Usually this occurs because of some catastrophe that has
+ *lowered power levels to         * the danger zone. *
+ *                                                                                             *
+ * INPUT:   urgency  -- The urgency that the power needs to be raised. This
+ *controls what      * buildings will be sold. *
+ *                                                                                             *
+ * OUTPUT:  bool; Was a building sold to raise power? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/02/1996 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::AI_Raise_Power(UrgencyType urgency) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  **	Sell off structures in this order.
+  */
+  static const struct {
+    StructType Structure;
+    UrgencyType Urgency;
+  } _types[] = {{STRUCT_CHRONOSPHERE, URGENCY_LOW},
+                {STRUCT_SHIP_YARD, URGENCY_LOW},
+                {STRUCT_SUB_PEN, URGENCY_LOW},
+                {STRUCT_ADVANCED_TECH, URGENCY_LOW},
+                {STRUCT_FORWARD_COM, URGENCY_LOW},
+                {STRUCT_SOVIET_TECH, URGENCY_LOW},
+                {STRUCT_IRON_CURTAIN, URGENCY_MEDIUM},
+                {STRUCT_RADAR, URGENCY_MEDIUM},
+                {STRUCT_REPAIR, URGENCY_MEDIUM},
+                {STRUCT_TESLA, URGENCY_HIGH}};
+
+  /*
+  **	Find a structure to sell and then sell it. Bail from further scanning
+  *until *	the next time.
+  */
+  // Sells the first qualifying building; the side effect is the point, so this
+  // stays a loop. NOLINTNEXTLINE(readability-use-anyofallof)
+  for (const auto& _type : _types) {
+    if (urgency >= _type.Urgency) {
+      BuildingClass* b = Find_Building(_type.Structure);
+      if (b != nullptr) {
+        b->Sell_Back(1);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * HouseClass::AI_Raise_Money -- Raise emergency cash by selling buildings. *
+ *                                                                                             *
+ *    This routine handles the situation where the computer desperately needs
+ *cash but cannot  * wait for normal harvesting to raise it. Buildings must be
+ *sold.                          *
+ *                                                                                             *
+ * INPUT:   urgency  -- The urgency level that cash must be raised. The greater
+ *the urgency,   * the more important the buildings that can be sold become. *
+ *                                                                                             *
+ * OUTPUT:  bool; Was a building sold to raise cash? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/02/1996 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::AI_Raise_Money(UrgencyType urgency) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  /*
+  **	Sell off structures in this order.
+  */
+  static const struct {
+    StructType Structure;
+    UrgencyType Urgency;
+  } _types[] = {{STRUCT_CHRONOSPHERE, URGENCY_LOW},
+                {STRUCT_SHIP_YARD, URGENCY_LOW},
+                {STRUCT_SUB_PEN, URGENCY_LOW},
+                {STRUCT_ADVANCED_TECH, URGENCY_LOW},
+                {STRUCT_FORWARD_COM, URGENCY_LOW},
+                {STRUCT_SOVIET_TECH, URGENCY_LOW},
+                {STRUCT_STORAGE, URGENCY_LOW},
+                {STRUCT_REPAIR, URGENCY_LOW},
+                {STRUCT_TESLA, URGENCY_MEDIUM},
+                {STRUCT_HELIPAD, URGENCY_MEDIUM},
+                {STRUCT_POWER, URGENCY_HIGH},
+                {STRUCT_AIRSTRIP, URGENCY_HIGH},
+                //		{STRUCT_WEAP,URGENCY_HIGH},
+                //		{STRUCT_BARRACKS,URGENCY_HIGH},
+                //		{STRUCT_TENT,URGENCY_HIGH},
+                {STRUCT_CONST, URGENCY_CRITICAL}};
+  BuildingClass* b = nullptr;
+
+  /*
+  **	Find a structure to sell and then sell it. Bail from further scanning
+  *until *	the next time.
+  */
+  for (const auto& _type : _types) {
+    if (urgency >= _type.Urgency) {
+      b = Find_Building(_type.Structure);
+      if (b != nullptr) {
+        b->Sell_Back(1);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * HouseClass::AI_Building -- Determines what building to build. *
+ *                                                                                             *
+ *    This routine handles the general case of determining what building to
+ *build next.        *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of game frames to delay before calling this
+ *routine again. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/29/1995 JLB : Created. * 11/03/1996 JLB : Tries to match
+ *aircraft of enemy                                         *
+ *=============================================================================================*/
+int HouseClass::AI_Building() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (BuildStructure != STRUCT_NONE) {
+    return kTicksPerSecond;
+  }
+
+  if (TheSession().Type == GAME_NORMAL &&
+      TheWorld().base().House == Class->House) {
+    const BaseNodeClass* node = TheWorld().base().Next_Buildable();
+    if (node) {
+      BuildStructure = node->Type;
+    }
+  }
+
+  if (IsBaseBuilding) {
+    /*
+    **	Don't suggest anything to build if the base is already big enough.
+    */
+    int quant = 0;
+    for (const HousesType h : magic_enum::enum_values<HousesType>()) {
+      const HouseClass* hptr = As_Pointer(h);
+
+      if (hptr != nullptr && hptr->IsActive && hptr->IsHuman &&
+          quant < hptr->CurBuildings) {
+        quant = hptr->CurBuildings;
+      }
+    }
+
+    // TCTC -- Should multiply the largest player base by some rational number.
+    //		if (CurBuildings >= quant) return(kTicksPerSecond);
+
+    BuildChoice.Free_All();
+    BuildChoiceClass* choiceptr = nullptr;
+    const int money = static_cast<int>(Available_Money());
+    const bool hasincome = BQuantity.at(STRUCT_REFINERY) > 0 &&
+                           !IsTiberiumShort &&
+                           UQuantity[static_cast<int>(UNIT_HARVESTER)] > 0;
+    const BuildingTypeClass* b = nullptr;
+    const HouseClass* enemy = nullptr;
+    if (Enemy != HOUSE_NONE) {
+      enemy = As_Pointer(Enemy);
+    }
+
+    /*
+    **	Try to build a power plant if there is insufficient power and there is
+    *enough *	money available.
+    */
+    b = &BuildingTypeClass::As_Reference(STRUCT_ADVANCED_POWER);
+    if (Can_Build(b, ActLike) && Power <= Drain + TheRules().PowerSurplus &&
+        b->Cost_Of() < money) {
+      choiceptr = BuildChoice.Alloc();
+      if (choiceptr != nullptr) {
+        *choiceptr = BuildChoiceClass(
+            BQuantity.at(STRUCT_REFINERY) == 0 ? URGENCY_LOW : URGENCY_MEDIUM,
+            b->Type);
+      }
+    } else {
+      b = &BuildingTypeClass::As_Reference(STRUCT_POWER);
+      if (Can_Build(b, ActLike) && Power <= Drain + TheRules().PowerSurplus &&
+          b->Cost_Of() < money) {
+        choiceptr = BuildChoice.Alloc();
+        if (choiceptr != nullptr) {
+          *choiceptr = BuildChoiceClass(
+              BQuantity.at(STRUCT_REFINERY) == 0 ? URGENCY_LOW : URGENCY_MEDIUM,
+              b->Type);
+        }
+      }
+    }
+
+    /*
+    **	Build a refinery if there isn't one already available.
+    */
+    int current = BQuantity.at(STRUCT_REFINERY);
+    if (!IsTiberiumShort &&
+        (TheRules().RefineryRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
+                .RoundUp() > current &&
+        current < TheRules().RefineryLimit) {
+      b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
+      if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
+        choiceptr = BuildChoice.Alloc();
+        if (choiceptr != nullptr) {
+          *choiceptr = BuildChoiceClass(BQuantity.at(STRUCT_REFINERY) == 0
+                                            ? URGENCY_HIGH
+                                            : URGENCY_MEDIUM,
+                                        b->Type);
+        }
+      }
+    }
+
+    /*
+    **	Always make sure there is a barracks available, but only if there
+    **	will be sufficient money to train troopers.
+    */
+    current = BQuantity.at(STRUCT_BARRACKS) + BQuantity.at(STRUCT_TENT);
+    if ((TheRules().BarracksRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
+                .RoundUp() > current &&
+        current < TheRules().BarracksLimit && (money > 300 || hasincome)) {
+      b = &BuildingTypeClass::As_Reference(STRUCT_BARRACKS);
+      if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+        choiceptr = BuildChoice.Alloc();
+        if (choiceptr != nullptr) {
+          *choiceptr = BuildChoiceClass(
+              current > 0 ? URGENCY_LOW : URGENCY_MEDIUM, b->Type);
+        }
+      } else {
+        b = &BuildingTypeClass::As_Reference(STRUCT_TENT);
+        if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+          choiceptr = BuildChoice.Alloc();
+          if (choiceptr != nullptr) {
+            *choiceptr = BuildChoiceClass(
+                current > 0 ? URGENCY_LOW : URGENCY_MEDIUM, b->Type);
+          }
+        }
+      }
+    }
+
+    /*
+    **	Try to build one dog house.
+    */
+    current = BQuantity.at(STRUCT_KENNEL);
+    if (current < 1 && (money > 300 || hasincome)) {
+      b = &BuildingTypeClass::As_Reference(STRUCT_KENNEL);
+      if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+        choiceptr = BuildChoice.Alloc();
+        if (choiceptr != nullptr) {
+          *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
+        }
+      }
+    }
+
+    /*
+    **	Try to build one gap generator.
+    */
+    current = BQuantity.at(STRUCT_GAP);
+    if (current < 1 && Power_Fraction() >= 1 && hasincome) {
+      b = &BuildingTypeClass::As_Reference(STRUCT_GAP);
+      if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+        choiceptr = BuildChoice.Alloc();
+        if (choiceptr != nullptr) {
+          *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
+        }
+      }
+    }
+
+    /*
+    **	A source of combat vehicles is always needed, but only if there will
+    **	be sufficient money to build vehicles.
+    */
+    current = BQuantity.at(STRUCT_WEAP);
+    if ((TheRules().WarRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
+                .RoundUp() > current &&
+        current < TheRules().WarLimit && (money > 2000 || hasincome)) {
+      b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
+      if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+        choiceptr = BuildChoice.Alloc();
+        if (choiceptr != nullptr) {
+          *choiceptr = BuildChoiceClass(
+              current > 0 ? URGENCY_LOW : URGENCY_MEDIUM, b->Type);
+        }
+      }
+    }
+
+    /*
+    **	Always build up some base defense.
+    */
+    current = BQuantity.at(STRUCT_PILLBOX) + BQuantity.at(STRUCT_CAMOPILLBOX) +
+              BQuantity.at(STRUCT_TURRET) + BQuantity.at(STRUCT_FLAME_TURRET);
+    if ((TheRules().DefenseRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
+                .RoundUp() > current &&
+        current < TheRules().DefenseLimit) {
+      b = &BuildingTypeClass::As_Reference(STRUCT_FLAME_TURRET);
+      if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+        choiceptr = BuildChoice.Alloc();
+        if (choiceptr != nullptr) {
+          *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
+        }
+      } else {
+        if (Percent_Chance(50)) {
+          b = &BuildingTypeClass::As_Reference(STRUCT_PILLBOX);
+          if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+            choiceptr = BuildChoice.Alloc();
+            if (choiceptr != nullptr) {
+              *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
+            }
+          }
+        } else {
+          b = &BuildingTypeClass::As_Reference(STRUCT_TURRET);
+          if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+            choiceptr = BuildChoice.Alloc();
+            if (choiceptr != nullptr) {
+              *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
+            }
+          }
+        }
+      }
+    }
+
+    /*
+    **	Build some air defense.
+    */
+    current = BQuantity.at(STRUCT_SAM) + BQuantity.at(STRUCT_AAGUN);
+    if ((TheRules().AARatio * Fixed(static_cast<uint8_t>(CurBuildings)))
+                .RoundUp() > current &&
+        current < TheRules().AALimit) {
+      /*
+      **	Building air defense only makes sense if the opponent has
+      *aircraft *	of some kind.
+      */
+      bool airthreat = false;
+      int threat_quantity = 0;
+      if (enemy != nullptr && enemy->AScan != 0) {
+        airthreat = true;
+        threat_quantity = enemy->CurAircraft;
+      }
+      if (!airthreat) {
+        for (const HousesType house : magic_enum::enum_values<HousesType>()) {
+          const HouseClass* h = As_Pointer(house);
+          if (h != nullptr && !Is_Ally(house) && h->AScan != 0) {
+            airthreat = true;
+            break;
+          }
+        }
+      }
+
+      if (airthreat) {
+        if (BQuantity.at(STRUCT_RADAR) == 0) {
+          b = &BuildingTypeClass::As_Reference(STRUCT_RADAR);
+          if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+            choiceptr = BuildChoice.Alloc();
+            if (choiceptr != nullptr) {
+              *choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
+            }
+          }
+        }
+
+        b = &BuildingTypeClass::As_Reference(STRUCT_SAM);
+        if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+          choiceptr = BuildChoice.Alloc();
+          if (choiceptr != nullptr) {
+            *choiceptr = BuildChoiceClass(
+                current < threat_quantity ? URGENCY_HIGH : URGENCY_MEDIUM,
+                b->Type);
+          }
+        } else {
+          b = &BuildingTypeClass::As_Reference(STRUCT_AAGUN);
+          if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+            choiceptr = BuildChoice.Alloc();
+            if (choiceptr != nullptr) {
+              *choiceptr = BuildChoiceClass(
+                  current < threat_quantity ? URGENCY_HIGH : URGENCY_MEDIUM,
+                  b->Type);
+            }
+          }
+        }
+      }
+    }
+
+    /*
+    **	Advanced base defense would be good.
+    */
+    current = BQuantity.at(STRUCT_TESLA);
+    if ((TheRules().TeslaRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
+                .RoundUp() > current &&
+        current < TheRules().TeslaLimit) {
+      b = &BuildingTypeClass::As_Reference(STRUCT_TESLA);
+      if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
+          Power_Fraction() >= 1) {
+        choiceptr = BuildChoice.Alloc();
+        if (choiceptr != nullptr) {
+          *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
+        }
+      }
+    }
+
+    /*
+    **	Build a tech center as soon as possible.
+    */
+    current =
+        BQuantity.at(STRUCT_ADVANCED_TECH) + BQuantity.at(STRUCT_SOVIET_TECH);
+    if (current < 1) {
+      b = &BuildingTypeClass::As_Reference(STRUCT_ADVANCED_TECH);
+      if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
+          Power_Fraction() >= 1) {
+        choiceptr = BuildChoice.Alloc();
+        if (choiceptr != nullptr) {
+          *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
+        }
+      } else {
+        b = &BuildingTypeClass::As_Reference(STRUCT_SOVIET_TECH);
+        if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
+            Power_Fraction() >= 1) {
+          choiceptr = BuildChoice.Alloc();
+          if (choiceptr != nullptr) {
+            *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
+          }
+        }
+      }
+    }
+
+    /*
+    **	A helipad would be good.
+    */
+    current = BQuantity.at(STRUCT_HELIPAD);
+    if ((TheRules().HelipadRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
+                .RoundUp() > current &&
+        current < TheRules().HelipadLimit) {
+      b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
+      if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+        choiceptr = BuildChoice.Alloc();
+        if (choiceptr != nullptr) {
+          int threat_quantity = 0;
+          if (enemy != nullptr) {
+            threat_quantity = enemy->CurAircraft;
+          }
+
+          *choiceptr = BuildChoiceClass(
+              CurAircraft < threat_quantity ? URGENCY_HIGH : URGENCY_MEDIUM,
+              b->Type);
+        }
+      }
+    }
+
+    /*
+    **	An airstrip would be good.
+    */
+    current = BQuantity.at(STRUCT_AIRSTRIP);
+    if ((TheRules().AirstripRatio * Fixed(static_cast<uint8_t>(CurBuildings)))
+                .RoundUp() > current &&
+        current < TheRules().AirstripLimit) {
+      b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
+      if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
+        choiceptr = BuildChoice.Alloc();
+        if (choiceptr != nullptr) {
+          int threat_quantity = 0;
+          if (enemy != nullptr) {
+            threat_quantity = enemy->CurAircraft;
+          }
+
+          *choiceptr = BuildChoiceClass(
+              CurAircraft < threat_quantity ? URGENCY_HIGH : URGENCY_MEDIUM,
+              b->Type);
+        }
+      }
+    }
+
+#ifdef OLD
+    /*
+    **	Build a repair bay if there isn't one already available.
+    */
+    current = BQuantity[STRUCT_REPAIR];
+    if (current == 0) {
+      b = &BuildingTypeClass::As_Reference(STRUCT_REPAIR);
+      if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
+        choiceptr = BuildChoice.Alloc();
+        if (choiceptr) {
+          *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
+        }
+      }
+    }
+#endif
+
+    /*
+    **	Pick the choice that is the most urgent.
+    */
+    UrgencyType best = URGENCY_NONE;
+    int bestindex = 0;
+    for (int index = 0; index < BuildChoice.Count(); index++) {
+      if (BuildChoice.Ptr(index)->Urgency > best) {
+        bestindex = index;
+        best = BuildChoice.Ptr(index)->Urgency;
+      }
+    }
+    if (best != URGENCY_NONE) {
+      BuildStructure = BuildChoice.Ptr(bestindex)->Structure;
+    }
+  }
+
+  return kTicksPerSecond;
+}
+
+/***********************************************************************************************
+ * HouseClass::AI_Unit -- Determines what unit to build next. *
+ *                                                                                             *
+ *    This routine handles the general case of determining what units to build
+ *next.           *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of games frames to delay before calling this
+ *routine again.*
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int HouseClass::AI_Unit() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (BuildUnit != UNIT_NONE) {
+    return kTicksPerSecond;
+  }
+  if (CurUnits >= Control.MaxUnit) {
+    return kTicksPerSecond;
+  }
+
+  /*
+  **	A computer controlled house will try to build a replacement
+  **	harvester if possible.
+  */
+  if ((IQ >= TheRules().IQHarvester && !IsTiberiumShort && !IsHuman &&
+       BQuantity.at(STRUCT_REFINERY) >
+           UQuantity[static_cast<int>(UNIT_HARVESTER)] &&
+       Difficulty != DIFF_HARD) &&
+      (UnitTypeClass::As_Reference(UNIT_HARVESTER).Level <=
+       Control.TechLevel)) {
+    BuildUnit = UNIT_HARVESTER;
+    return kTicksPerSecond;
+  }
+
+  if (TheSession().Type == GAME_NORMAL) {
+    base::EnumArray<UnitType, int> counter = {};
+
+    /*
+    **	Build a list of the maximum of each type we wish to produce. This will
+    *be *	twice the number required to fill all teams.
+    */
+    for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+      const TeamClass* tptr = TheObjectHeaps().team().Ptr(index);
+      if (tptr != nullptr) {
+        const TeamTypeClass* team = tptr->Class;
+        if (((team->IsReinforcable && !tptr->IsFullStrength) ||
+             (!tptr->IsForcedActive && !tptr->IsHasBeen &&
+              !tptr->JustAltered)) &&
+            team->House == Class->House) {
+          for (int subindex = 0; subindex < team->ClassCount; subindex++) {
+            const TechnoTypeClass* memtype =
+                base::At(team->Members, subindex).Class;
+            if (memtype->What_Am_I() == RTTI_UNITTYPE) {
+              counter.at(dynamic_cast<const UnitTypeClass*>(memtype)->Type) = 1;
+            }
+          }
+        }
+      }
+    }
+
+    /*
+    **	Team types that are flagged as prebuilt, will always try to produce
+    *enough *	to fill one team of this type regardless of whether there is a
+    *team active *	of that type.
+    */
+    for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
+      const TeamTypeClass* team = TheObjectHeaps().team_type().Ptr(index);
+      if (team != nullptr && team->House == Class->House && team->IsPrebuilt &&
+          (!team->IsAutocreate || IsAlerted)) {
+        for (int subindex = 0; subindex < team->ClassCount; subindex++) {
+          const TechnoTypeClass* memtype =
+              base::At(team->Members, subindex).Class;
+
+          if (memtype->What_Am_I() == RTTI_UNITTYPE) {
+            const UnitType subtype =
+                dynamic_cast<const UnitTypeClass*>(memtype)->Type;
+            counter.at(subtype) =
+                std::max(counter.at(subtype),
+                         base::At(team->Members, subindex).Quantity);
+          }
+        }
+      }
+    }
+
+    /*
+    **	Reduce the theoretical maximum by the actual number of objects currently
+    **	in play.
+    */
+    for (int uindex = 0; uindex < TheObjectHeaps().unit().Count(); uindex++) {
+      const UnitClass* unit = TheObjectHeaps().unit().Ptr(uindex);
+      if (unit != nullptr && unit->Is_Recruitable(this) &&
+          counter.at(unit->Class->Type) > 0) {
+        counter.at(unit->Class->Type)--;
+      }
+    }
+
+    /*
+    **	Pick to build the most needed object but don't consider those objects
+    *that *	can't be built because of scenario restrictions or insufficient
+    *cash.
+    */
+    int bestval = -1;
+    int bestcount = 0;
+    constexpr auto kUnitTypeCount = magic_enum::enum_count<UnitType>();
+    UnitType bestlist[kUnitTypeCount];
+    for (const UnitType utype : magic_enum::enum_values<UnitType>()) {
+      if (counter.at(utype) > 0 &&
+          Can_Build(&UnitTypeClass::As_Reference(utype), Class->House) &&
+          UnitTypeClass::As_Reference(utype).Cost_Of() <= Available_Money()) {
+        if (bestval == -1 || bestval < counter.at(utype)) {
+          bestval = counter.at(utype);
+          bestcount = 0;
+        }
+        base::At(bestlist, bestcount++) = utype;
+      }
+    }
+
+    /*
+    **	The unit type to build is now known. Fetch a pointer to the techno type
+    *class.
+    */
+    if (bestcount) {
+      BuildUnit = base::At(bestlist, Random_Pick(0, bestcount - 1));
+    }
+  }
+
+  if (IsBaseBuilding) {
+    base::EnumArray<UnitType, int> counter = {};
+    int total = 0;
+    for (const UnitType index : magic_enum::enum_values<UnitType>()) {
+      const UnitTypeClass* utype = &UnitTypeClass::As_Reference(index);
+      if (Can_Build(utype, ActLike) && utype->Type != UNIT_HARVESTER) {
+        if (utype->PrimaryWeapon != nullptr) {
+          counter.at(index) = 20;
+        } else {
+          counter.at(index) = 1;
+        }
+      } else {
+        counter.at(index) = 0;
+      }
+      total += counter.at(index);
+    }
+
+    if (total > 0) {
+      int choice = Random_Pick(0, total - 1);
+      for (const UnitType index : magic_enum::enum_values<UnitType>()) {
+        if (choice < counter.at(index)) {
+          BuildUnit = index;
+          break;
+        }
+        choice -= counter.at(index);
+      }
+    }
+  }
+
+  return kTicksPerSecond;
+}
+
+int HouseClass::AI_Vessel() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+  if (BuildVessel != VESSEL_NONE) {
+    return kTicksPerSecond;
+  }
+
+  if (CurVessels >= Control.MaxVessel) {
+    return kTicksPerSecond;
+  }
+
+  if (TheSession().Type == GAME_NORMAL) {
+    base::EnumArray<VesselType, int> counter = {};
+    if (TheSession().Type == GAME_NORMAL) {
+      counter = {};
+    } else {
+      for (const VesselType index : magic_enum::enum_values<VesselType>()) {
+        if (Can_Build(&VesselTypeClass::As_Reference(index), Class->House) &&
+            VesselTypeClass::As_Reference(index).Level <= Control.TechLevel) {
+          counter.at(index) = 16;
+        } else {
+          counter.at(index) = 0;
+        }
+      }
+    }
+
+    /*
+    **	Build a list of the maximum of each type we wish to produce. This will
+    *be *	twice the number required to fill all teams.
+    */
+    for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+      const TeamClass* tptr = TheObjectHeaps().team().Ptr(index);
+      if (tptr) {
+        const TeamTypeClass* team = tptr->Class;
+
+        if (((team->IsReinforcable && !tptr->IsFullStrength) ||
+             (!tptr->IsForcedActive && !tptr->IsHasBeen &&
+              !tptr->JustAltered)) &&
+            team->House == Class->House) {
+          for (int subindex = 0; subindex < team->ClassCount; subindex++) {
+            if (base::At(team->Members, subindex).Class->What_Am_I() ==
+                RTTI_VESSELTYPE) {
+              counter.at(dynamic_cast<const VesselTypeClass*>(
+                             base::At(team->Members, subindex).Class)
+                             ->Type) = 1;
+            }
+          }
+        }
+      }
+    }
+
+    /*
+    **	Team types that are flagged as prebuilt, will always try to produce
+    *enough *	to fill one team of this type regardless of whether there is a
+    *team active *	of that type.
+    */
+    for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
+      const TeamTypeClass* team = TheObjectHeaps().team_type().Ptr(index);
+      if (team && (team->House == Class->House && team->IsPrebuilt &&
+                   (!team->IsAutocreate || IsAlerted))) {
+        for (int subindex = 0; subindex < team->ClassCount; subindex++) {
+          if (base::At(team->Members, subindex).Class->What_Am_I() ==
+              RTTI_VESSELTYPE) {
+            const VesselType subtype =
+                dynamic_cast<const VesselTypeClass*>(
+                    base::At(team->Members, subindex).Class)
+                    ->Type;
+            counter.at(subtype) =
+                std::max(counter.at(subtype),
+                         base::At(team->Members, subindex).Quantity);
+          }
+        }
+      }
+    }
+
+    /*
+    **	Reduce the theoretical maximum by the actual number of objects currently
+    **	in play.
+    */
+    for (int vindex = 0; vindex < TheObjectHeaps().vessel().Count(); vindex++) {
+      const VesselClass* unit = TheObjectHeaps().vessel().Ptr(vindex);
+      if (unit != nullptr && unit->Is_Recruitable(this) &&
+          counter.at(unit->Class->Type) > 0) {
+        counter.at(unit->Class->Type)--;
+      }
+    }
+
+    /*
+    **	Pick to build the most needed object but don't consider those object
+    *that *	can't be built because of scenario restrictions or insufficient
+    *cash.
+    */
+    int bestval = -1;
+    int bestcount = 0;
+    constexpr auto kVesselTypeCount = magic_enum::enum_count<VesselType>();
+    VesselType bestlist[kVesselTypeCount];
+    for (const VesselType utype : magic_enum::enum_values<VesselType>()) {
+      if (counter.at(utype) > 0 &&
+          Can_Build(&VesselTypeClass::As_Reference(utype), Class->House) &&
+          VesselTypeClass::As_Reference(utype).Cost_Of() <= Available_Money()) {
+        if (bestval == -1 || bestval < counter.at(utype)) {
+          bestval = counter.at(utype);
+          bestcount = 0;
+        }
+        base::At(bestlist, bestcount++) = utype;
+      }
+    }
+
+    /*
+    **	The unit type to build is now known. Fetch a pointer to the techno type
+    *class.
+    */
+    if (bestcount) {
+      BuildVessel = base::At(bestlist, Random_Pick(0, bestcount - 1));
+    }
+  }
+
+  if (IsBaseBuilding) {
+    BuildVessel = VESSEL_NONE;
+  }
+
+  return kTicksPerSecond;
+}
+
+/***********************************************************************************************
+ * HouseClass::AI_Infantry -- Determines the infantry unit to build. *
+ *                                                                                             *
+ *    This routine handles the general case of determining what infantry unit to
+ *build         * next. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of game frames to delay before being called
+ *again.         *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int HouseClass::AI_Infantry() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (BuildInfantry != INFANTRY_NONE) {
+    return kTicksPerSecond;
+  }
+  if (CurInfantry >= Control.MaxInfantry) {
+    return kTicksPerSecond;
+  }
+
+  if (TheSession().Type == GAME_NORMAL) {
+    base::EnumArray<InfantryType, int> counter = {};
+
+    /*
+    **	Build a list of the maximum of each type we wish to produce. This will
+    *be *	twice the number required to fill all teams.
+    */
+    for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+      const TeamClass* tptr = TheObjectHeaps().team().Ptr(index);
+      if (tptr != nullptr) {
+        const TeamTypeClass* team = tptr->Class;
+
+        if (((team->IsReinforcable && !tptr->IsFullStrength) ||
+             (!tptr->IsForcedActive && !tptr->IsHasBeen &&
+              !tptr->JustAltered)) &&
+            team->House == Class->House) {
+          for (int subindex = 0; subindex < team->ClassCount; subindex++) {
+            if (base::At(team->Members, subindex).Class->What_Am_I() ==
+                RTTI_INFANTRYTYPE) {
+              counter.at(dynamic_cast<const InfantryTypeClass*>(
+                             base::At(team->Members, subindex).Class)
+                             ->Type) +=
+                  base::At(team->Members, subindex).Quantity +
+                  (team->IsReinforcable ? 1 : 0);
+            }
+          }
+        }
+      }
+    }
+
+    /*
+    **	Team types that are flagged as prebuilt, will always try to produce
+    *enough *	to fill one team of this type regardless of whether there is a
+    *team active *	of that type.
+    */
+    for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
+      const TeamTypeClass* team = TheObjectHeaps().team_type().Ptr(index);
+      if ((team != nullptr) &&
+          (team->House == Class->House && team->IsPrebuilt &&
+           (!team->IsAutocreate || IsAlerted))) {
+        for (int subindex = 0; subindex < team->ClassCount; subindex++) {
+          if (base::At(team->Members, subindex).Class->What_Am_I() ==
+              RTTI_INFANTRYTYPE) {
+            const InfantryType subtype =
+                dynamic_cast<const InfantryTypeClass*>(
+                    base::At(team->Members, subindex).Class)
+                    ->Type;
+            //									counter[subtype]
+            //= 1;
+            counter.at(subtype) =
+                std::max(counter.at(subtype),
+                         base::At(team->Members, subindex).Quantity);
+            counter.at(subtype) = std::min(counter.at(subtype), 5);
+          }
+        }
+      }
+    }
+
+    /*
+    **	Reduce the theoretical maximum by the actual number of objects currently
+    **	in play.
+    */
+    for (int uindex = 0; uindex < TheObjectHeaps().infantry().Count();
+         uindex++) {
+      const InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(uindex);
+      if (infantry != nullptr && infantry->Is_Recruitable(this) &&
+          counter.at(infantry->Class->Type) > 0) {
+        counter.at(infantry->Class->Type)--;
+      }
+    }
+
+    /*
+    **	Pick to build the most needed object but don't consider those object
+    *that *	can't be built because of scenario restrictions or insufficient
+    *cash.
+    */
+    int bestval = -1;
+    int bestcount = 0;
+    constexpr auto kInfantryTypeCount = magic_enum::enum_count<InfantryType>();
+    InfantryType bestlist[kInfantryTypeCount];
+    for (const InfantryType utype : magic_enum::enum_values<InfantryType>()) {
+      if ((utype != INFANTRY_DOG || !(IScan & kInfantryFlagDog)) &&
+          (counter.at(utype) > 0 &&
+           Can_Build(&InfantryTypeClass::As_Reference(utype), Class->House) &&
+           InfantryTypeClass::As_Reference(utype).Cost_Of() <=
+               Available_Money())) {
+        if (bestval == -1 || bestval < counter.at(utype)) {
+          bestval = counter.at(utype);
+          bestcount = 0;
+        }
+        base::At(bestlist, bestcount++) = utype;
+      }
+    }
+
+    /*
+    **	The infantry type to build is now known. Fetch a pointer to the techno
+    *type class.
+    */
+    if (bestcount) {
+      const int pick = Random_Pick(0, bestcount - 1);
+      BuildInfantry = base::At(bestlist, pick);
+    }
+  }
+
+  if (IsBaseBuilding) {
+    const HouseClass* enemy = nullptr;
+    if (Enemy != HOUSE_NONE) {
+      enemy = As_Pointer(Enemy);
+    }
+
+    /*
+    **	This structure is used to keep track of the list of infantry types that
+    *should be *	built. The infantry type and the value assigned to it is
+    *recorded.
+    */
+    struct {
+      InfantryType Type;  // Infantry type.
+      int Value;          // Relative value assigned.
+    } typetrack[magic_enum::enum_count<InfantryType>()];
+    int count = 0;
+    int total = 0;
+    for (const InfantryType index : magic_enum::enum_values<InfantryType>()) {
+      if (Can_Build(&InfantryTypeClass::As_Reference(index), ActLike) &&
+          InfantryTypeClass::As_Reference(index).Level <= Control.TechLevel) {
+        base::At(typetrack, count).Value = 0;
+        // ajw 9/28/98 This looks like a potential bug.
+        // It is prob. for save game format compatibility.
+        int clipindex = static_cast<int>(index);
+        if (clipindex >= kOriginalInfantryCount) {
+          clipindex -= kOriginalInfantryCount;
+        }
+        if ((enemy != nullptr && base::At(enemy->IQuantity, clipindex) >
+                                     base::At(IQuantity, clipindex)) ||
+            Available_Money() > TheRules().InfantryReserve ||
+            CurInfantry < CurBuildings * TheRules().InfantryBaseMult) {
+          switch (index) {
+            case INFANTRY_E1:
+              base::At(typetrack, count).Value = 3;
+              break;
+
+            case INFANTRY_E2:
+              base::At(typetrack, count).Value = 5;
+              break;
+
+            case INFANTRY_E3:
+              base::At(typetrack, count).Value = 2;
+              break;
+
+            case INFANTRY_E4:
+              base::At(typetrack, count).Value = 5;
+              break;
+
+            case INFANTRY_RENOVATOR:
+              if (CurInfantry > 5) {
+                base::At(typetrack, count).Value =
+                    1 -
+                    std::max(base::At(IQuantity, static_cast<int>(index)), 0);
+              }
+              break;
+
+            case INFANTRY_TANYA:
+              base::At(typetrack, count).Value =
+                  1 - std::max(base::At(IQuantity, static_cast<int>(index)), 0);
+              break;
+
+            case InfantryType::INFANTRY_NONE:
+            case InfantryType::INFANTRY_SPY:
+            case InfantryType::INFANTRY_THIEF:
+            case InfantryType::INFANTRY_MEDIC:
+            case InfantryType::INFANTRY_GENERAL:
+            case InfantryType::INFANTRY_DOG:
+            case InfantryType::INFANTRY_C1:
+            case InfantryType::INFANTRY_C2:
+            case InfantryType::INFANTRY_C3:
+            case InfantryType::INFANTRY_C4:
+            case InfantryType::INFANTRY_C5:
+            case InfantryType::INFANTRY_C6:
+            case InfantryType::INFANTRY_C7:
+            case InfantryType::INFANTRY_C8:
+            case InfantryType::INFANTRY_C9:
+            case InfantryType::INFANTRY_C10:
+            case InfantryType::INFANTRY_EINSTEIN:
+            case InfantryType::INFANTRY_DELPHI:
+            case InfantryType::INFANTRY_CHAN:
+            case InfantryType::INFANTRY_SHOCK:
+            case InfantryType::INFANTRY_MECHANIC:
+            default:
+              base::At(typetrack, count).Value = 0;
+              break;
+          }
+        }
+
+        if (base::At(typetrack, count).Value > 0) {
+          base::At(typetrack, count).Type = index;
+          total += base::At(typetrack, count).Value;
+          count++;
+        }
+      }
+    }
+
+    /*
+    **	If there is at least one choice, then pick it. The object picked
+    **	is influenced by the weight (value) assigned to it. This is accomplished
+    **	by picking a number between 0 and the total weight value. The
+    *appropriate *	infantry object that matches the number picked is then
+    *selected to be built.
+    */
+    if (count > 0) {
+      int pick = Random_Pick(0, total - 1);
+      for (int index = 0; index < count; index++) {
+        if (pick < base::At(typetrack, index).Value) {
+          BuildInfantry = base::At(typetrack, index).Type;
+          break;
+        }
+        pick -= base::At(typetrack, index).Value;
+      }
+    }
+  }
+  return kTicksPerSecond;
+}
+
+/***********************************************************************************************
+ * HouseClass::AI_Aircraft -- Determines what aircraft to build next. *
+ *                                                                                             *
+ *    This routine is used to determine the general case of what aircraft to
+ *build next.       *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of frame to delay before calling this
+ *routine again.       *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/29/1995 JLB : Created. *
+ *=============================================================================================*/
+int HouseClass::AI_Aircraft() {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (!IsHuman && IQ >= TheRules().IQAircraft) {
+    if (BuildAircraft != AIRCRAFT_NONE) {
+      return kTicksPerSecond;
+    }
+    if (CurAircraft >= Control.MaxAircraft) {
+      return kTicksPerSecond;
+    }
+
+    if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_LONGBOW),
+                  ActLike) &&
+        AircraftTypeClass::As_Reference(AIRCRAFT_LONGBOW).Level <=
+            Control.TechLevel &&
+        BQuantity.at(STRUCT_HELIPAD) >
+            AQuantity.at(AIRCRAFT_LONGBOW) + AQuantity.at(AIRCRAFT_HIND)) {
+      BuildAircraft = AIRCRAFT_LONGBOW;
+      return kTicksPerSecond;
+    }
+
+    if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_HIND), ActLike) &&
+        AircraftTypeClass::As_Reference(AIRCRAFT_HIND).Level <=
+            Control.TechLevel &&
+        BQuantity.at(STRUCT_HELIPAD) >
+            AQuantity.at(AIRCRAFT_LONGBOW) + AQuantity.at(AIRCRAFT_HIND)) {
+      BuildAircraft = AIRCRAFT_HIND;
+      return kTicksPerSecond;
+    }
+
+    if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_MIG), ActLike) &&
+        AircraftTypeClass::As_Reference(AIRCRAFT_MIG).Level <=
+            Control.TechLevel &&
+        BQuantity.at(STRUCT_AIRSTRIP) >
+            AQuantity.at(AIRCRAFT_MIG) + AQuantity.at(AIRCRAFT_YAK)) {
+      BuildAircraft = AIRCRAFT_MIG;
+      return kTicksPerSecond;
+    }
+
+    if (Can_Build(&AircraftTypeClass::As_Reference(AIRCRAFT_YAK), ActLike) &&
+        AircraftTypeClass::As_Reference(AIRCRAFT_YAK).Level <=
+            Control.TechLevel &&
+        BQuantity.at(STRUCT_AIRSTRIP) >
+            AQuantity.at(AIRCRAFT_MIG) + AQuantity.at(AIRCRAFT_YAK)) {
+      BuildAircraft = AIRCRAFT_YAK;
+      return kTicksPerSecond;
+    }
+  }
+
+  return kTicksPerSecond;
+}
+
+/***********************************************************************************************
+ * HouseClass::Production_Begun -- Records that production has begun. *
+ *                                                                                             *
+ *    This routine is used to inform the Expert System that production of the
+ *specified object * has begun. This allows the AI to proceed with picking
+ *another object to begin production * on. *
+ *                                                                                             *
+ * INPUT:   product  -- Pointer to the object that production has just begun on.
+ **
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/29/1995 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Production_Begun(const TechnoClass* product) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (product != nullptr) {
+    switch (product->What_Am_I()) {
+      case RTTI_UNIT:
+        if (*dynamic_cast<const UnitClass*>(product) == BuildUnit) {
+          BuildUnit = UNIT_NONE;
+        }
+        break;
+
+      case RTTI_VESSEL:
+        if (*dynamic_cast<const VesselClass*>(product) == BuildVessel) {
+          BuildVessel = VESSEL_NONE;
+        }
+        break;
+
+      case RTTI_INFANTRY:
+        if (*dynamic_cast<const InfantryClass*>(product) == BuildInfantry) {
+          BuildInfantry = INFANTRY_NONE;
+        }
+        break;
+
+      case RTTI_BUILDING:
+        if (*dynamic_cast<const BuildingClass*>(product) == BuildStructure) {
+          BuildStructure = STRUCT_NONE;
+        }
+        break;
+
+      case RTTI_AIRCRAFT:
+        if (*dynamic_cast<const AircraftClass*>(product) == BuildAircraft) {
+          BuildAircraft = AIRCRAFT_NONE;
+        }
+        break;
+
+      case RTTIType::RTTI_NONE:
+      case RTTIType::RTTI_AIRCRAFTTYPE:
+      case RTTIType::RTTI_ANIM:
+      case RTTIType::RTTI_ANIMTYPE:
+      case RTTIType::RTTI_BUILDINGTYPE:
+      case RTTIType::RTTI_BULLET:
+      case RTTIType::RTTI_BULLETTYPE:
+      case RTTIType::RTTI_CELL:
+      case RTTIType::RTTI_FACTORY:
+      case RTTIType::RTTI_HOUSE:
+      case RTTIType::RTTI_HOUSETYPE:
+      case RTTIType::RTTI_INFANTRYTYPE:
+      case RTTIType::RTTI_OVERLAY:
+      case RTTIType::RTTI_OVERLAYTYPE:
+      case RTTIType::RTTI_SMUDGE:
+      case RTTIType::RTTI_SMUDGETYPE:
+      case RTTIType::RTTI_SPECIAL:
+      case RTTIType::RTTI_TEAM:
+      case RTTIType::RTTI_TEAMTYPE:
+      case RTTIType::RTTI_TEMPLATE:
+      case RTTIType::RTTI_TEMPLATETYPE:
+      case RTTIType::RTTI_TERRAIN:
+      case RTTIType::RTTI_TERRAINTYPE:
+      case RTTIType::RTTI_TRIGGER:
+      case RTTIType::RTTI_TRIGGERTYPE:
+      case RTTIType::RTTI_UNITTYPE:
+      case RTTIType::RTTI_VESSELTYPE:
+      default:
+        break;
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Tracking_Remove -- Remove object from house tracking system. *
+ *                                                                                             *
+ *    This routine informs the Expert System that the specified object is no
+ *longer part of    * this house's inventory. This occurs when the object is
+ *destroyed or captured.            *
+ *                                                                                             *
+ * INPUT:   techno   -- Pointer to the object to remove from the tracking
+ *systems of this      * house. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/29/1995 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Tracking_Remove(const TechnoClass* techno) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  int type = 0;
+
+  switch (techno->What_Am_I()) {
+    case RTTI_BUILDING:
+      CurBuildings--;
+      BQuantity.at(
+          dynamic_cast<const BuildingTypeClass&>(techno->Class_Of()).Type)--;
+      break;
+
+    case RTTI_AIRCRAFT:
+      CurAircraft--;
+      AQuantity.at(
+          dynamic_cast<const AircraftTypeClass&>(techno->Class_Of()).Type)--;
+      break;
+
+    case RTTI_INFANTRY:
+      CurInfantry--;
+      if (!dynamic_cast<const InfantryClass*>(techno)->IsTechnician) {
+        type = static_cast<int>(
+            dynamic_cast<const InfantryTypeClass&>(techno->Class_Of()).Type);
+        if (type >= kOriginalInfantryCount) {
+          type -= kOriginalInfantryCount;
+        }
+        base::At(IQuantity, type)--;
+      }
+      break;
+
+    case RTTI_UNIT:
+      CurUnits--;
+      type = static_cast<int>(
+          dynamic_cast<const UnitTypeClass&>(techno->Class_Of()).Type);
+      if (type >= kOriginalUnitCount) {
+        type -= kOriginalUnitCount;
+      }
+      base::At(UQuantity, type)--;
+      break;
+
+    case RTTI_VESSEL:
+      CurVessels--;
+      type = static_cast<int>(
+          dynamic_cast<const VesselTypeClass&>(techno->Class_Of()).Type);
+      if (type >= kOriginalVesselCount) {
+        type -= kOriginalVesselCount;
+      }
+      base::At(VQuantity, type)--;
+      break;
+
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
+    default:
+      break;
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Tracking_Add -- Informs house of new inventory item. *
+ *                                                                                             *
+ *    This function is called when the specified object is now available as part
+ *of the house's* inventory. This occurs when the object is newly produced and
+ *also when it is captured    * by this house. *
+ *                                                                                             *
+ * INPUT:   techno   -- Pointer to the object that is now part of the house
+ *inventory.         *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/29/1995 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Tracking_Add(const TechnoClass* techno) {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  StructType building = STRUCT_NONE;
+  AircraftType aircraft = AIRCRAFT_NONE;
+  InfantryType infantry = INFANTRY_NONE;
+  UnitType unit = UNIT_NONE;
+  VesselType vessel = VESSEL_NONE;
+  int quant = 0;
+
+  switch (techno->What_Am_I()) {
+    case RTTI_BUILDING:
+      CurBuildings++;
+      building =
+          dynamic_cast<const BuildingTypeClass&>(techno->Class_Of()).Type;
+      BQuantity.at(building)++;
+      BScan |= ScanBit(static_cast<int>(building));
+      if (TheSession().Type == GAME_INTERNET) {
+        BuildingTotals->Increment_Unit_Total(techno->Class_Of().ID);
+      }
+      break;
+
+    case RTTI_AIRCRAFT:
+      CurAircraft++;
+      aircraft =
+          dynamic_cast<const AircraftTypeClass&>(techno->Class_Of()).Type;
+      AQuantity.at(aircraft)++;
+      AScan |= ScanBit(static_cast<int>(aircraft));
+      if (TheSession().Type == GAME_INTERNET) {
+        AircraftTotals->Increment_Unit_Total(techno->Class_Of().ID);
+      }
+      break;
+
+    case RTTI_INFANTRY:
+      CurInfantry++;
+      infantry =
+          dynamic_cast<const InfantryTypeClass&>(techno->Class_Of()).Type;
+      if (!dynamic_cast<const InfantryClass*>(techno)->IsTechnician) {
+        quant = static_cast<int>(infantry);
+        if (quant >= kOriginalInfantryCount) {
+          quant -= kOriginalInfantryCount;
+        }
+        base::At(IQuantity, quant)++;
+        if (!dynamic_cast<const InfantryTypeClass&>(techno->Class_Of())
+                 .IsCivilian &&
+            TheSession().Type == GAME_INTERNET) {
+          InfantryTotals->Increment_Unit_Total(techno->Class_Of().ID);
+        }
+        IScan |= ScanBit(static_cast<int>(infantry));
+      }
+      break;
+
+    case RTTI_UNIT:
+      CurUnits++;
+      unit = dynamic_cast<const UnitTypeClass&>(techno->Class_Of()).Type;
+      quant = static_cast<int>(unit);
+      if (quant >= kOriginalUnitCount) {
+        quant -= kOriginalUnitCount;
+      }
+      base::At(UQuantity, quant)++;
+      UScan |= ScanBit(static_cast<int>(unit));
+      if (TheSession().Type == GAME_INTERNET) {
+        UnitTotals->Increment_Unit_Total(techno->Class_Of().ID);
+      }
+      break;
+
+    case RTTI_VESSEL:
+      CurVessels++;
+      vessel = dynamic_cast<const VesselTypeClass&>(techno->Class_Of()).Type;
+      quant = static_cast<int>(vessel);
+      if (quant >= kOriginalVesselCount) {
+        quant -= kOriginalVesselCount;
+      }
+      base::At(VQuantity, quant)++;
+      VScan |= ScanBit(static_cast<int>(vessel));
+      if (TheSession().Type == GAME_INTERNET) {
+        VesselTotals->Increment_Unit_Total(techno->Class_Of().ID);
+      }
+      break;
+
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
+    default:
+      break;
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Factory_Counter -- Fetches a pointer to the factory counter
+ *value.              *
+ *                                                                                             *
+ *    Use this routine to fetch a pointer to the variable that holds the number
+ *of factories   * that can produce the specified object type. This is a helper
+ *routine used when           * examining the number of factories as well as
+ *adjusting their number.                     *
+ *                                                                                             *
+ * INPUT:   rtti  -- The RTTI of the object that could be produced. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of factories owned by this house that could
+ *produce the    * object of the type specified. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/30/1996 JLB : Created. *
+ *=============================================================================================*/
+namespace {
+
+// Shared body of both Factory_Counter overloads; `House` is deduced as
+// `HouseClass` or `const HouseClass`, so the result carries the receiver's
+// constness without a cast.
+template <class House>
+auto* Factory_Counter_Of(House& house ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                         RTTIType rtti) {
+  switch (rtti) {
+    case RTTI_UNITTYPE:
+    case RTTI_UNIT:
+      return &house.UnitFactories;
+
+    case RTTI_VESSELTYPE:
+    case RTTI_VESSEL:
+      return &house.VesselFactories;
+
+    case RTTI_AIRCRAFTTYPE:
+    case RTTI_AIRCRAFT:
+      return &house.AircraftFactories;
+
+    case RTTI_INFANTRYTYPE:
+    case RTTI_INFANTRY:
+      return &house.InfantryFactories;
+
+    case RTTI_BUILDINGTYPE:
+    case RTTI_BUILDING:
+      return &house.BuildingFactories;
+
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    default:
+      break;
+  }
+  return decltype(&house.UnitFactories){nullptr};
+}
+
+}  // namespace
+
+int* HouseClass::Factory_Counter(RTTIType rtti) {
+  return Factory_Counter_Of(*this, rtti);
+}
+
+const int* HouseClass::Factory_Counter(RTTIType rtti) const {
+  return Factory_Counter_Of(*this, rtti);
+}
+
+/***********************************************************************************************
+ * HouseClass::Active_Remove -- Remove this object from active duty for this
+ *house.            *
+ *                                                                                             *
+ *    This routine will recognize the specified object as having been removed
+ *from active      * duty. *
+ *                                                                                             *
+ * INPUT:   techno   -- Pointer to the object to remove from active duty. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/16/1996 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Active_Remove(const TechnoClass* techno) {
+  if (techno == nullptr) {
+    return;
+  }
+
+  if (techno->What_Am_I() == RTTI_BUILDING) {
+    int* fptr = Factory_Counter(
+        dynamic_cast<const BuildingClass*>(techno)->Class->ToBuild);
+    if (fptr != nullptr) {
+      *fptr = *fptr - 1;
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Active_Add -- Add an object to active duty for this house. *
+ *                                                                                             *
+ *    This routine will recognize the specified object as having entered active
+ *duty. Any      * abilities granted to the house by that object are now
+ *available.                         *
+ *                                                                                             *
+ * INPUT:   techno   -- Pointer to the object that is entering active duty. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/16/1996 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Active_Add(const TechnoClass* techno) {
+  if (techno == nullptr) {
+    return;
+  }
+
+  if (techno->What_Am_I() == RTTI_BUILDING) {
+    int* fptr = Factory_Counter(
+        dynamic_cast<const BuildingClass*>(techno)->Class->ToBuild);
+    if (fptr != nullptr) {
+      *fptr = *fptr + 1;
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Which_Zone -- Determines what zone a coordinate lies in. *
+ *                                                                                             *
+ *    This routine will determine what zone the specified coordinate lies in
+ *with respect to   * this house's base. A location that is too distant from the
+ *base, even though it might    * be a building, is not considered part of the
+ *base and returns ZONE_NONE.                 *
+ *                                                                                             *
+ * INPUT:   coord -- The coordinate to examine. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the base zone that the specified coordinate lies in. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/02/1995 JLB : Created. *
+ *=============================================================================================*/
+ZoneType HouseClass::Which_Zone(COORDINATE coord) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (coord == 0) {
+    return ZONE_NONE;
+  }
+
+  const int distance = Distance(Center, coord);
+  if (distance <= Radius) {
+    return ZONE_CORE;
+  }
+  if (distance > Radius * 4) {
+    return ZONE_NONE;
+  }
+
+  const DirType facing = Direction(Center, coord);
+  if (facing < DIR_NE || facing > DIR_NW) {
+    return ZONE_NORTH;
+  }
+  if (facing >= DIR_NE && facing < DIR_SE) {
+    return ZONE_EAST;
+  }
+  if (facing >= DIR_SE && facing < DIR_SW) {
+    return ZONE_SOUTH;
+  }
+  return ZONE_WEST;
+}
+
+/***********************************************************************************************
+ * HouseClass::Which_Zone -- Determines which base zone the specified object
+ *lies in.          *
+ *                                                                                             *
+ *    Use this routine to determine what zone the specified object lies in. *
+ *                                                                                             *
+ * INPUT:   object   -- Pointer to the object that will be checked for zone
+ *occupation.        *
+ *                                                                                             *
+ * OUTPUT:  Returns with the base zone that the object lies in. For objects that
+ *are too       * distant from the center of the base, ZONE_NONE is returned. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/02/1995 JLB : Created. *
+ *=============================================================================================*/
+ZoneType HouseClass::Which_Zone(const ObjectClass* object) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  if (!object) {
+    return ZONE_NONE;
+  }
+  return Which_Zone(object->Center_Coord());
+}
+
+/***********************************************************************************************
+ * HouseClass::Which_Zone -- Determines which base zone the specified cell lies
+ *in.            *
+ *                                                                                             *
+ *    This routine is used to determine what base zone the specified cell is in.
+ **
+ *                                                                                             *
+ * INPUT:   cell  -- The cell to examine. *
+ *                                                                                             *
+ * OUTPUT:  Returns the base zone that the cell lies in or ZONE_NONE if the cell
+ *is too far    * away. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/02/1995 JLB : Created. *
+ *=============================================================================================*/
+ZoneType HouseClass::Which_Zone(CELL cell) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  return Which_Zone(Cell_Coord(cell));
+}
+
+/***********************************************************************************************
+ * HouseClass::Recalc_Attributes -- Recalcs all houses existence bits. *
+ *                                                                                             *
+ *    This routine will go through all game objects and reset the existence bits
+ *for the       * owning house. This method ensures that if the object exists,
+ *then the corresponding      * existence bit is also set. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/02/1995 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Recalc_Attributes() {
+  /*
+  **	Clear out all tracking values that will be filled in by this
+  **	routine. This allows the filling in process to not worry about
+  **	old existing values.
+  */
+  for (int index = 0; index < TheObjectHeaps().house().Count(); index++) {
+    HouseClass* house = TheObjectHeaps().house().Ptr(index);
+
+    if (house != nullptr) {
+      house->BScan = 0;
+      house->ActiveBScan = 0;
+      house->IScan = 0;
+      house->ActiveIScan = 0;
+      house->UScan = 0;
+      house->ActiveUScan = 0;
+      house->AScan = 0;
+      house->ActiveAScan = 0;
+      house->VScan = 0;
+      house->ActiveVScan = 0;
+    }
+  }
+
+  /*
+  **	A second pass through the sentient objects is required so that the
+  *appropriate scan *	bits will be set for the owner house.
+  */
+  for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+    const UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+    unit->House->UScan |= ScanBit(static_cast<int>(unit->Class->Type));
+    if ((unit->IsLocked &&
+         (TheSession().Type != GAME_NORMAL || !unit->House->IsHuman ||
+          unit->IsDiscoveredByPlayer)) &&
+        (!unit->IsInLimbo)) {
+      unit->House->ActiveUScan |= ScanBit(static_cast<int>(unit->Class->Type));
+    }
+  }
+  for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
+    const InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+    infantry->House->IScan |= ScanBit(static_cast<int>(infantry->Class->Type));
+    if ((infantry->IsLocked &&
+         (TheSession().Type != GAME_NORMAL || !infantry->House->IsHuman ||
+          infantry->IsDiscoveredByPlayer)) &&
+        (!infantry->IsInLimbo)) {
+      infantry->House->ActiveIScan |=
+          ScanBit(static_cast<int>(infantry->Class->Type));
+      infantry->House->OldIScan |=
+          ScanBit(static_cast<int>(infantry->Class->Type));
+    }
+  }
+  for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+    const AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(index);
+    aircraft->House->AScan |= ScanBit(static_cast<int>(aircraft->Class->Type));
+    if ((aircraft->IsLocked &&
+         (TheSession().Type != GAME_NORMAL || !aircraft->House->IsHuman ||
+          aircraft->IsDiscoveredByPlayer)) &&
+        (!aircraft->IsInLimbo)) {
+      aircraft->House->ActiveAScan |=
+          ScanBit(static_cast<int>(aircraft->Class->Type));
+      aircraft->House->OldAScan |=
+          ScanBit(static_cast<int>(aircraft->Class->Type));
+    }
+  }
+  for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+    const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+    if (static_cast<int>(building->Class->Type) < 32) {
+      building->House->BScan |=
+          ScanBit(static_cast<int>(building->Class->Type));
+      if ((building->IsLocked &&
+           (TheSession().Type != GAME_NORMAL || !building->House->IsHuman ||
+            building->IsDiscoveredByPlayer)) &&
+          (!building->IsInLimbo)) {
+        building->House->ActiveBScan |=
+            ScanBit(static_cast<int>(building->Class->Type));
+        building->House->OldBScan |=
+            ScanBit(static_cast<int>(building->Class->Type));
+      }
+    }
+  }
+  for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
+    const VesselClass* vessel = TheObjectHeaps().vessel().Ptr(index);
+    vessel->House->VScan |= ScanBit(static_cast<int>(vessel->Class->Type));
+    if ((vessel->IsLocked &&
+         (TheSession().Type != GAME_NORMAL || !vessel->House->IsHuman ||
+          vessel->IsDiscoveredByPlayer)) &&
+        (!vessel->IsInLimbo)) {
+      vessel->House->ActiveVScan |=
+          ScanBit(static_cast<int>(vessel->Class->Type));
+      vessel->House->OldVScan |= ScanBit(static_cast<int>(vessel->Class->Type));
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Zone_Cell -- Finds the cell closest to the center of the zone. *
+ *                                                                                             *
+ *    This routine is used to find the cell that is closest to the center point
+ *of the         * zone specified. Typical use of this routine is for building
+ *and unit placement so that   * they can "cover" the specified zone. *
+ *                                                                                             *
+ * INPUT:   zone  -- The zone that the center point is to be returned. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the cell that is closest to the center point of the
+ *zone specified.   *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/02/1995 JLB : Created. *
+ *=============================================================================================*/
+CELL HouseClass::Zone_Cell(ZoneType zone) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  switch (zone) {
+    case ZONE_CORE:
+      return Coord_Cell(Center);
+
+    case ZONE_NORTH:
+      return Coord_Cell(
+          Coord_Move(Center, DIR_N, static_cast<uint16_t>(Radius * 3)));
+
+    case ZONE_EAST:
+      return Coord_Cell(
+          Coord_Move(Center, DIR_E, static_cast<uint16_t>(Radius * 3)));
+
+    case ZONE_WEST:
+      return Coord_Cell(
+          Coord_Move(Center, DIR_W, static_cast<uint16_t>(Radius * 3)));
+
+    case ZONE_SOUTH:
+      return Coord_Cell(
+          Coord_Move(Center, DIR_S, static_cast<uint16_t>(Radius * 3)));
+
+    case ZoneType::ZONE_NONE:
+    default:
+      break;
+  }
+  return 0;
+}
+
+/***********************************************************************************************
+ * HouseClass::Where_To_Go -- Determines where the object should go and wait. *
+ *                                                                                             *
+ *    This function is called for every new unit produced or delivered in order
+ *to determine   * where the unit should "hang out" to await further orders. The
+ *best area for the          * unit to loiter is returned as a cell location. *
+ *                                                                                             *
+ * INPUT:   object   -- Pointer to the object that needs to know where to go. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the cell that the unit should move to. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/02/1995 JLB : Created. * 11/04/1996 JLB : Simplified to use
+ *helper functions                                       *
+ *=============================================================================================*/
+CELL HouseClass::Where_To_Go(const FootClass* object) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+  CHECK_NE(object, nullptr);
+
+  // The zone that the object should go to.
+  const ZoneType zone =
+      object->Anti_Air() + object->Anti_Armor() + object->Anti_Infantry() == 0
+          ? ZONE_CORE
+          : Random_Pick(ZONE_NORTH, ZONE_WEST);
+
+  const CELL cell = Random_Cell_In_Zone(zone);
+  CHECK_NE(cell, 0);
+
+  return TheMap().Nearby_Location(cell, SPEED_TRACK,
+                                  TheMap().at(cell).Zones.at(MZONE_NORMAL),
+                                  MZONE_NORMAL);
+}
+
+/***********************************************************************************************
+ * HouseClass::Find_Juicy_Target -- Finds a suitable field target. *
+ *                                                                                             *
+ *    This routine is used to find targets out in the field and away from base
+ *defense.        * Typical of this would be the attack helicopters and the
+ *roving attack bands of           * hunter killers. *
+ *                                                                                             *
+ * INPUT:   coord -- The coordinate of the attacker. Closer targets are given
+ *preference.      *
+ *                                                                                             *
+ * OUTPUT:  Returns with a suitable target to attack. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/12/1995 JLB : Created. *
+ *=============================================================================================*/
+TARGET HouseClass::Find_Juicy_Target(COORDINATE coord) const {
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
+
+  const UnitClass* best = nullptr;
+  int value = 0;
+
+  for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+
+    if (unit && !unit->IsInLimbo && !Is_Ally(unit) &&
+        unit->House->Which_Zone(unit) == ZONE_NONE) {
+      int val = Distance(coord, unit->Center_Coord());
+
+      if (unit->Anti_Air()) {
+        val *= 2;
+      }
+
+      if (*unit == UNIT_HARVESTER) {
+        val /= 2;
+      }
+
+      if (value == 0 || val < value) {
+        value = val;
+        best = unit;
+      }
+    }
+  }
+  if (best) {
+    return best->As_Target();
+  }
+  return kTargetNone;
+}
+
+/***********************************************************************************************
+ * HouseClass::Get_Quantity -- Fetches the total number of aircraft of the
+ *specified type.     *
+ *                                                                                             *
+ *    Call this routine to fetch the total quantity of aircraft of the type
+ *specified that is  * owned by this house. *
+ *                                                                                             *
+ * INPUT:   aircraft -- The aircraft type to check the quantity of. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the total quantity of all aircraft of that type that is
+ *owned by this * house. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/09/1996 JLB : Created. *
+ *=============================================================================================*/
+int HouseClass::Get_Quantity(AircraftType aircraft) {
+  return AQuantity.at(aircraft);
+}
+
+/***********************************************************************************************
+ * HouseClass::Fetch_Factory -- Finds the factory associated with the object
+ *type specified.   *
+ *                                                                                             *
+ *    This is the counterpart to the Set_Factory function. It will return with a
+ *factory       * pointer that is associated with the object type specified. *
+ *                                                                                             *
+ * INPUT:   rtti  -- The RTTI of the object type to find the factory for. *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the factory (if present) that can
+ *manufacture the        * object type specified. *
+ *                                                                                             *
+ * WARNINGS:   If this returns a non-nullptr pointer, then the factory is
+ * probably already busy   * producing another unit of that category. *
+ *                                                                                             *
+ * HISTORY: * 07/09/1996 JLB : Created. *
+ *=============================================================================================*/
+FactoryClass* HouseClass::Fetch_Factory(RTTIType rtti) const {
+  int factory_index = -1;
+
+  switch (rtti) {
+    case RTTI_INFANTRY:
+    case RTTI_INFANTRYTYPE:
+      factory_index = InfantryFactory;
+      break;
+
+    case RTTI_UNIT:
+    case RTTI_UNITTYPE:
+      factory_index = UnitFactory;
+      break;
+
+    case RTTI_BUILDING:
+    case RTTI_BUILDINGTYPE:
+      factory_index = BuildingFactory;
+      break;
+
+    case RTTI_AIRCRAFT:
+    case RTTI_AIRCRAFTTYPE:
+      factory_index = AircraftFactory;
+      break;
+
+    case RTTI_VESSEL:
+    case RTTI_VESSELTYPE:
+      factory_index = VesselFactory;
+      break;
+
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    default:
+      factory_index = -1;
+      break;
+  }
+
+  /*
+  **	Fetch the actual pointer to the factory object. If there is
+  **	no object factory that matches the specified rtti type, then
+  **	null is returned.
+  */
+  if (factory_index != -1) {
+    return TheObjectHeaps().factory().Raw_Ptr(factory_index);
+  }
+  return nullptr;
+}
+
+/***********************************************************************************************
+ * HouseClass::Set_Factory -- Assign specified factory to house tracking. *
+ *                                                                                             *
+ *    Call this routine when a factory has been created and it now must be
+ *passed on to the    * house for tracking purposes. The house maintains several
+ *factory pointers and this       * routine will ensure that the factory pointer
+ *gets stored correctly.                      *
+ *                                                                                             *
+ * INPUT:   rtti  -- The RTTI of the object the factory it to manufacture. *
+ *                                                                                             *
+ *          factory  -- The factory object pointer. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/09/1996 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Set_Factory(RTTIType rtti, FactoryClass* factory) {
+  int* factory_index = nullptr;
+
+  CHECK_NE(rtti, RTTI_NONE);
+
+  switch (rtti) {
+    case RTTI_UNIT:
+    case RTTI_UNITTYPE:
+      factory_index = &UnitFactory;
+      break;
+
+    case RTTI_INFANTRY:
+    case RTTI_INFANTRYTYPE:
+      factory_index = &InfantryFactory;
+      break;
+
+    case RTTI_VESSEL:
+    case RTTI_VESSELTYPE:
+      factory_index = &VesselFactory;
+      break;
+
+    case RTTI_BUILDING:
+    case RTTI_BUILDINGTYPE:
+      factory_index = &BuildingFactory;
+      break;
+
+    case RTTI_AIRCRAFT:
+    case RTTI_AIRCRAFTTYPE:
+      factory_index = &AircraftFactory;
+      break;
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_ANIM:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BULLET:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_OVERLAY:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAIN:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    default:
+      break;
+  }
+
+  CHECK_NE(factory_index, nullptr);
+
+  /*
+  **	Assign the factory to the appropriate slot. For the case of clearing
+  **	the factory out, then -1 is assigned.
+  */
+  if (factory != nullptr) {
+    *factory_index = factory->ID;
+  } else {
+    *factory_index = -1;
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Factory_Count -- Fetches the number of factories for specified
+ *type.            *
+ *                                                                                             *
+ *    This routine will count the number of factories owned by this house that
+ *can build       * objects of the specified type. *
+ *                                                                                             *
+ * INPUT:   rtti  -- The type of object (RTTI) that the factories are to be
+ *counted for.       *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of factories that can build the object type
+ *specified.     *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/30/1996 JLB : Created. *
+ *=============================================================================================*/
+int HouseClass::Factory_Count(RTTIType rtti) const {
+  const int* ptr = Factory_Counter(rtti);
+  if (ptr != nullptr) {
+    return *ptr;
+  }
+  return 0;
+}
+
+/***********************************************************************************************
+ * HouseClass::Get_Quantity -- Gets the quantity of the building type specified.
+ **
+ *                                                                                             *
+ *    This will return the total number of buildings of that type owned by this
+ *house.         *
+ *                                                                                             *
+ * INPUT:   building -- The building type to check. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of buildings of that type owned by this
+ *house.             *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/09/1996 JLB : Created. *
+ *=============================================================================================*/
+int HouseClass::Get_Quantity(StructType building) {
+  return BQuantity.at(building);
+}
+
+/***********************************************************************************************
+ * HouseClass::Read_INI -- Reads house specific data from INI. *
+ *                                                                                             *
+ *    This routine reads the house specific data for a particular * scenario
+ *from the scenario INI file. Typical data includes starting * credits, maximum
+ *unit count, etc.                                                        *
+ *                                                                                             *
+ * INPUT:   buffer   -- Pointer to loaded scenario INI file. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/24/1994 JLB : Created. * 05/18/1995 JLB : Creates all houses. *
+ *=============================================================================================*/
+void HouseClass::Read_INI(CCINIClass& ini) {
+
+  for (const HousesType index : magic_enum::enum_values<HousesType>()) {
+    const char* hname = HouseTypeClass::As_Reference(index)
+                            .IniName;  //	Pointer to house name.
+
+    auto* p =
+        base::NewPooled<HouseClass>(index);  // Pointer to current player data.
+    p->Control.TechLevel =
+        ini.Get_Int(hname, "TechLevel", TheScenario().Scenario);
+    p->Control.MaxBuilding =
+        ini.Get_Int(hname, "MaxBuilding", p->Control.MaxBuilding);
+    p->Control.MaxUnit = ini.Get_Int(hname, "MaxUnit", p->Control.MaxUnit);
+    p->Control.MaxInfantry =
+        ini.Get_Int(hname, "MaxInfantry", p->Control.MaxInfantry);
+    p->Control.MaxVessel =
+        ini.Get_Int(hname, "MaxVessel", p->Control.MaxVessel);
+    if (p->Control.MaxVessel == 0) {
+      p->Control.MaxVessel = p->Control.MaxUnit;
+    }
+    p->Control.InitialCredits =
+        static_cast<int64_t>(ini.Get_Int(hname, "Credits", 0)) * 100;
+    p->Credits = p->Control.InitialCredits;
+
+    int iq = ini.Get_Int(hname, "IQ", 0);
+    if (iq > TheRules().MaxIQ) {
+      iq = 1;
+    }
+    p->IQ = p->Control.IQ = iq;
+
+    p->Control.Edge = ini.Get_SourceType(hname, "Edge", SOURCE_NORTH);
+    p->IsPlayerControl = ini.Get_Bool(hname, "PlayerControl", false);
+
+    const uint32_t owners =
+        ini.Get_Owners(hname, "Allies", base::Bit<uint32_t>(HOUSE_NEUTRAL));
+    p->Make_Ally(index);
+    p->Make_Ally(HOUSE_NEUTRAL);
+    for (const HousesType h : magic_enum::enum_values<HousesType>()) {
+      if ((owners & base::Bit<uint32_t>(h)) != 0) {
+        p->Make_Ally(h);
+      }
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Write_INI -- Writes the house data to the INI database. *
+ *                                                                                             *
+ *    This routine will write out all data necessary to recreate it in
+ *anticipation of a       * new scenario. All houses (that are active) will have
+ *their scenario type data written    * out. *
+ *                                                                                             *
+ * INPUT:   ini   -- Reference to the INI database to write the data to. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/09/1996 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Write_INI(CCINIClass& ini) {
+  /*
+  **	The identity house control object. Only if the house value differs from
+  *the *	identity, will the data be written out.
+  */
+  const HouseStaticClass control;
+
+  for (const HousesType i : magic_enum::enum_values<HousesType>()) {
+    const HouseClass* p = As_Pointer(i);
+
+    if (p != nullptr) {
+      const char* name = p->Class->IniName;
+
+      ini.Clear(name);
+      if (i >= HOUSE_MULTI1) {
+        continue;
+      }
+
+      if (p->Control.InitialCredits != control.InitialCredits) {
+        ini.Put_Int(name, "Credits",
+                    static_cast<int>(p->Control.InitialCredits / 100));
+      }
+
+      if (p->Control.Edge != control.Edge) {
+        ini.Put_SourceType(name, "Edge", p->Control.Edge);
+      }
+
+      if (p->Control.MaxUnit > 0 && p->Control.MaxUnit != control.MaxUnit) {
+        ini.Put_Int(name, "MaxUnit", p->Control.MaxUnit);
+      }
+
+      if (p->Control.MaxInfantry > 0 &&
+          p->Control.MaxInfantry != control.MaxInfantry) {
+        ini.Put_Int(name, "MaxInfantry", p->Control.MaxInfantry);
+      }
+
+      if (p->Control.MaxBuilding > 0 &&
+          p->Control.MaxBuilding != control.MaxBuilding) {
+        ini.Put_Int(name, "MaxBuilding", p->Control.MaxBuilding);
+      }
+
+      if (p->Control.MaxVessel > 0 &&
+          p->Control.MaxVessel != control.MaxVessel) {
+        ini.Put_Int(name, "MaxVessel", p->Control.MaxVessel);
+      }
+
+      if (p->Control.TechLevel != control.TechLevel) {
+        ini.Put_Int(name, "TechLevel", p->Control.TechLevel);
+      }
+
+      if (p->Control.IQ != control.IQ) {
+        ini.Put_Int(name, "IQ", p->Control.IQ);
+      }
+
+      if (static_cast<bool>(p->IsPlayerControl) && p != ThePlayer()) {
+        ini.Put_Bool(name, "PlayerControl", p->IsPlayerControl);
+      }
+
+      ini.Put_Owners(
+          name, "Allies",
+          p->Control.Allies & ~(base::Bit<uint32_t>(p->Class->House) |
+                                base::Bit<uint32_t>(HOUSE_NEUTRAL)));
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Is_No_YakMig -- Determines if no more yaks or migs should be
+ *allowed.           *
+ *                                                                                             *
+ *    This routine will examine the current yak and mig situation verses
+ *airfields. If there   * are equal aircraft to airfields, then this routine
+ *will return true.                     *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Are all airfields full and thus no more yaks or migs are
+ *allowed?            *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/23/1996 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Is_No_YakMig() const {
+  int quantity = AQuantity.at(AIRCRAFT_YAK) + AQuantity.at(AIRCRAFT_MIG);
+
+  /*
+  **	Adjust the quantity down one if there is an aircraft in production. This
+  *will *	allow production to resume after being held.
+  */
+  const FactoryClass* factory = Fetch_Factory(RTTI_AIRCRAFT);
+  if (factory != nullptr && factory->Get_Object() != nullptr) {
+    const auto* air = dynamic_cast<const AircraftClass*>(factory->Get_Object());
+    if (*air == AIRCRAFT_MIG || *air == AIRCRAFT_YAK) {
+      quantity -= 1;
+    }
+  }
+
+  if (quantity >= BQuantity.at(STRUCT_AIRSTRIP)) {
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * HouseClass::Is_Hack_Prevented -- Is production of the specified type and id
+ *prohibted?      *
+ *                                                                                             *
+ *    This is a special hack check routine to see if the object type and id
+ *specified is       * prevented from being produced. The Yak and the Mig are so
+ *prevented if there would be    * insufficient airfields for them to land upon.
+ **
+ *                                                                                             *
+ * INPUT:   rtti  -- The RTTI type of the value specified. *
+ *                                                                                             *
+ *          value -- The type number (according to the RTTI type specified). *
+ *                                                                                             *
+ * OUTPUT:  bool; Is production of this object prohibited? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/23/1996 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Is_Hack_Prevented(RTTIType rtti, int value) const {
+  if (rtti == RTTI_AIRCRAFTTYPE && (value == static_cast<int>(AIRCRAFT_MIG) ||
+                                    value == static_cast<int>(AIRCRAFT_YAK))) {
+    return Is_No_YakMig();
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * HouseClass::Fire_Sale -- Cause all buildings to be sold. *
+ *                                                                                             *
+ *    This routine will sell back all buildings owned by this house. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Was a fire sale performed? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/23/1996 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Fire_Sale() {
+  if (CurBuildings > 0) {
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+
+      if (b != nullptr && !b->IsInLimbo && b->House == this &&
+          b->Strength > 0) {
+        b->Sell_Back(1);
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * HouseClass::Do_All_To_Hunt -- Send all units to hunt. *
+ *                                                                                             *
+ *    This routine will cause all combatants of this house to go into hunt mode.
+ *The effect of * this is to throw everything this house has to muster at the
+ *enemies of this house.       *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/23/1996 JLB : Created. * 10/02/1996 JLB : Handles aircraft too.
+ **
+ *=============================================================================================*/
+void HouseClass::Do_All_To_Hunt() const {
+  for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+
+    if (unit->House == this && unit->IsDown && !unit->IsInLimbo) {
+      if (unit->Team) {
+        unit->Team->Remove(unit);
+      }
+      unit->Assign_Mission(MISSION_HUNT);
+    }
+  }
+
+  for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
+    InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+
+    if (infantry->House == this && infantry->IsDown && !infantry->IsInLimbo) {
+      if (infantry->Team) {
+        infantry->Team->Remove(infantry);
+      }
+      infantry->Assign_Mission(MISSION_HUNT);
+    }
+  }
+
+  for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
+    VesselClass* vessel = TheObjectHeaps().vessel().Ptr(index);
+
+    if (vessel->House == this && vessel->IsDown && !vessel->IsInLimbo) {
+      if (vessel->Team) {
+        vessel->Team->Remove(vessel);
+      }
+      vessel->Assign_Mission(MISSION_HUNT);
+    }
+  }
+
+  for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+    AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(index);
+
+    if (aircraft->House == this && aircraft->IsDown && !aircraft->IsInLimbo) {
+      if (aircraft->Team) {
+        aircraft->Team->Remove(aircraft);
+      }
+      aircraft->Assign_Mission(MISSION_HUNT);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Is_Allowed_To_Ally -- Determines if this house is allied to make
+ *allies.        *
+ *                                                                                             *
+ *    Use this routine to determine if this house is legally allowed to ally
+ *with the          * house specified. There are many reason why an alliance is
+ *not allowed. Typically, this   * is when there would be no more opponents left
+ *to fight or if this house has been         * defeated. *
+ *                                                                                             *
+ * INPUT:   house -- The house that alliance with is desired. *
+ *                                                                                             *
+ * OUTPUT:  bool; Is alliance with the house specified prohibited? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/23/1996 JLB : Created. *
+ *=============================================================================================*/
+bool HouseClass::Is_Allowed_To_Ally(HousesType house) const {
+  /*
+  **	Is not allowed to ally with a house that is patently invalid, such
+  **	as one that is illegally defined.
+  */
+  if (house == HOUSE_NONE) {
+    return false;
+  }
+
+  /*
+  **	One cannot ally twice with the same house.
+  */
+  if (Is_Ally(house)) {
+    return false;
+  }
+
+  /*
+  **	If the scenario is being set up, then alliances are always
+  **	allowed. No further checking is required.
+  */
+  if (TheWorld().scenario_init()) {
+    return true;
+  }
+
+  /*
+  **	Alliances (outside of scneario init time) are allowed only if
+  **	this is a multiplayer game. Otherwise, they are prohibited.
+  */
+  if (TheSession().Type == GAME_NORMAL) {
+    return false;
+  }
+
+  /*
+  **	When the house is defeated, it can no longer make alliances.
+  */
+  if (IsDefeated) {
+    return false;
+  }
+
+  // Fix to prevent ally with computer.
+  if (!As_Pointer(house)->IsHuman) {
+    return false;
+  }
+
+  /*
+  **	Count the number of active houses in the game as well as the
+  **	number of existing allies with this house.
+  */
+  int housecount = 0;
+  int allycount = 0;
+  for (const HousesType house2 : magic_enum::enum_values<HousesType>()) {
+    if (house2 < HOUSE_MULTI1) {
+      continue;
+    }
+    const HouseClass* hptr = As_Pointer(house2);
+    if (hptr != nullptr && hptr->IsActive && !hptr->IsDefeated) {
+      housecount++;
+      if (Is_Ally(hptr)) {
+        allycount++;
+      }
+    }
+  }
+
+  /*
+  **	Alliance is not allowed if there wouldn't be any enemies left to
+  **	fight.
+  */
+  return housecount != allycount + 1;
+}
+
+/***********************************************************************************************
+ * HouseClass::Computer_Paranoid -- Cause the computer players to becom
+ *paranoid.              *
+ *                                                                                             *
+ *    This routine will cause the computer players to become suspicious of the
+ *human           * players and thus the computer players will band together in
+ *order to defeat the          * human players. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/23/1996 JLB : Created. *
+ *=============================================================================================*/
+void HouseClass::Computer_Paranoid() {
+  /*
+  **	Loop through every computer controlled house and make allies with all
+  *other computer *	controlled houses and then make enemies with all other
+  *human controlled houses.
+  */
+  for (const HousesType house : magic_enum::enum_values<HousesType>()) {
+    if (house < HOUSE_MULTI1) {
+      continue;
+    }
+    HouseClass* hptr = As_Pointer(house);
+    if (hptr != nullptr && hptr->IsActive && !hptr->IsDefeated &&
+        !hptr->IsHuman) {
+      hptr->IsParanoid = true;
+
+      /*
+      **	Break alliance with every human it is allied with and make
+      *friends with *	any other computer players.
+      */
+      for (const HousesType house2 : magic_enum::enum_values<HousesType>()) {
+        if (house2 < HOUSE_MULTI1) {
+          continue;
+        }
+        const HouseClass* hptr2 = As_Pointer(house2);
+        if (hptr2 != nullptr && hptr2->IsActive && !hptr2->IsDefeated) {
+          if (hptr2->IsHuman) {
+            hptr->Make_Enemy(house2);
+          } else {
+            hptr->Make_Ally(house2);
+          }
+        }
+      }
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Adjust_Power -- Adjust the power value of the house. *
+ *                                                                                             *
+ *    This routine will update the power output value of the house. It will
+ *cause any buildgins* that need to be redrawn to do so. *
+ *                                                                                             *
+ * INPUT:   adjust   -- The amount to adjust the power output value. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/01/1996 BWG : Created. *
+ *=============================================================================================*/
+void HouseClass::Adjust_Power(int adjust) {
+  Power += adjust;
+
+  Update_Spied_Power_Plants();
+}
+
+/***********************************************************************************************
+ * HouseClass::Adjust_Drain -- Adjust the power drain value of the house. *
+ *                                                                                             *
+ *    This routine will update the drain value of the house. It will cause any
+ *buildings that  * need to be redraw to do so. *
+ *                                                                                             *
+ * INPUT:   adjust   -- The amount to adjust the drain (positive means more
+ *drain).            *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/01/1996 BWG : Created. *
+ *=============================================================================================*/
+void HouseClass::Adjust_Drain(int adjust) {
+  Drain += adjust;
+  Update_Spied_Power_Plants();
+}
+
+/***********************************************************************************************
+ * HouseClass::Update_Spied_Power_Plants -- Redraw power graphs on spied-upon
+ *power plants.    *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/11/1996 BWG : Created. *
+ *=============================================================================================*/
+void HouseClass::Update_Spied_Power_Plants() {
+  const base::ssize count = TheWorld().current_object().Count();
+  if (count) {
+    for (int index = 0; index < count; index++) {
+      ObjectClass* tech = TheWorld().current_object().at(index);
+      if (tech && tech->What_Am_I() == RTTI_BUILDING) {
+        auto* bldg = dynamic_cast<BuildingClass*>(tech);
+        if (!bldg->IsOwnedByPlayer &&
+            (*bldg == STRUCT_POWER || *bldg == STRUCT_ADVANCED_POWER)) {
+          if (bldg->SpiedBy & base::Bit<uint32_t>(ThePlayer()->Class->House)) {
+            bldg->Mark(MARK_CHANGE);
+          }
+        }
+      }
+    }
+  }
+}
+
+/***********************************************************************************************
+ * HouseClass::Find_Cell_In_Zone -- Finds a legal placement cell within the
+ *zone.              *
+ *                                                                                             *
+ *    Use this routine to determine where the specified object should go if it
+ *were to go      * some random (but legal) location within the zone specified.
+ **
+ *                                                                                             *
+ * INPUT:   techno   -- The object that is desirous of going into the zone
+ *specified.          *
+ *                                                                                             *
+ *          zone     -- The zone to find a location within. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the cell that the specified object could be placed in
+ *the zone. If    * no valid location could be found, then 0 is returned. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/01/1996 JLB : Created. * 11/04/1996 JLB : Not so strict on zone
+ *requirement.                                       *
+ *=============================================================================================*/
+CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
+                                   ZoneType zone) const {
+  if (techno == nullptr) {
+    return 0;
+  }
+
+  int bestval = -1;
+  int bestcell = 0;
+  const TechnoTypeClass* ttype = techno->Techno_Type_Class();
+
+  /*
+  **	Pick a random location within the zone specified.
+  */
+  const CELL trycell = Random_Cell_In_Zone(zone);
+
+  std::span<const int16_t> list{};
+  if (techno->What_Am_I() == RTTI_BUILDING) {
+    list = techno->Occupy_List(true);
+  }
+
+  /*
+  **	Find a legal placement position as close as possible to the picked
+  *location while still *	remaining within the zone.
+  */
+  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+    //		if (Map.In_Radar(cell)) {
+    if (TheMap().In_Radar(cell) && Which_Zone(cell) != ZONE_NONE) {
+      bool ok = ttype->Legal_Placement(cell);
+
+      /*
+      **	Another (adjacency) check is required for buildings.
+      */
+      if (ok && !list.empty() &&
+          !TheMap().Passes_Proximity_Check(ttype, techno->House->Class->House,
+                                           list, cell)) {
+        ok = false;
+      }
+
+      if (ok) {
+        const int dist = Distance(Cell_Coord(cell), Cell_Coord(trycell));
+        if (bestval == -1 || dist < bestval) {
+          bestval = dist;
+          bestcell = cell;
+        }
+      }
+    }
+  }
+
+  /*
+  **	Return the best location to move to.
+  */
+  return static_cast<CELL>(bestcell);
+}
+
+/***********************************************************************************************
+ * HouseClass::Random_Cell_In_Zone -- Find a (technically) legal cell in the
+ *zone specified.   *
+ *                                                                                             *
+ *    This routine will pick a random cell within the zone specified. The pick
+ *will be         * clipped to the map edge when necessary. *
+ *                                                                                             *
+ * INPUT:   zone  -- The zone to pick a cell from. *
+ *                                                                                             *
+ * OUTPUT:  Returns with a picked cell within the zone. If the entire zone lies
+ *outside of the * map, then a cell in the core zone is returned instead. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/04/1996 JLB : Created. *
+ *=============================================================================================*/
+CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
+  COORDINATE coord = 0;
+  int maxdist = 0;
+  switch (zone) {
+    case ZONE_CORE:
+      coord = Coord_Scatter(Center, Random_Pick(0, Radius), true);
+      break;
+
+    case ZONE_NORTH:
+      maxdist = std::min(
+          Radius * 3,
+          Coord_Y(Center) - Cell_To_Lepton(TheMap().MapCellY) - CELL_LEPTON_H);
+      if (maxdist < 0) {
+        break;
+      }
+      coord = Coord_Move(
+          Center, Random_Pick(DIR_N, DIR_E) - static_cast<DirType>(32),
+          static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
+                                            std::min(Radius * 3, maxdist))));
+      break;
+
+    case ZONE_EAST:
+      maxdist = std::min(Radius * 3, Cell_To_Lepton(TheMap().MapCellX +
+                                                    TheMap().MapCellWidth) -
+                                         Coord_X(Center) - CELL_LEPTON_W);
+      if (maxdist < 0) {
+        break;
+      }
+      coord = Coord_Move(
+          Center, Random_Pick(DIR_NE, DIR_SE),
+          static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
+                                            std::min(Radius * 3, maxdist))));
+      break;
+
+    case ZONE_SOUTH:
+      maxdist = std::min(Radius * 3, Cell_To_Lepton(TheMap().MapCellY +
+                                                    TheMap().MapCellHeight) -
+                                         Coord_Y(Center) - CELL_LEPTON_H);
+      if (maxdist < 0) {
+        break;
+      }
+      coord = Coord_Move(
+          Center, Random_Pick(DIR_SE, DIR_SW),
+          static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
+                                            std::min(Radius * 3, maxdist))));
+      break;
+
+    case ZONE_WEST:
+      maxdist = std::min(
+          Radius * 3,
+          Coord_X(Center) - Cell_To_Lepton(TheMap().MapCellX) - CELL_LEPTON_W);
+      if (maxdist < 0) {
+        break;
+      }
+      coord = Coord_Move(
+          Center, Random_Pick(DIR_SW, DIR_NW),
+          static_cast<uint16_t>(Random_Pick(std::min(Radius * 2, maxdist),
+                                            std::min(Radius * 3, maxdist))));
+      break;
+    case ZoneType::ZONE_NONE:
+    default:
+      break;
+  }
+
+  /*
+  **	Double check that the location is valid and if so, convert it into a
+  *cell *	number.
+  */
+  CELL cell = 0;
+  if (coord == 0 || !TheMap().In_Radar(Coord_Cell(coord))) {
+    if (zone == ZONE_CORE) {
+      /*
+      **	Finding a cell within the core failed, so just pick the center
+      **	cell. This cell is guaranteed to be valid.
+      */
+      cell = Coord_Cell(Center);
+    } else {
+      /*
+      **	If the edge fails, then try to find a cell within the core.
+      */
+      cell = Random_Cell_In_Zone(ZONE_CORE);
+    }
+  } else {
+    cell = Coord_Cell(coord);
+  }
+
+  /*
+  **	If the randomly picked location is not in the legal map area, then clip
+  *it to *	the legal map area.
+  */
+  if (!TheMap().In_Radar(cell)) {
+    const int x = std::clamp(Cell_X(cell), TheMap().MapCellX,
+                             TheMap().MapCellX + TheMap().MapCellWidth - 1);
+    const int y = std::clamp(Cell_Y(cell), TheMap().MapCellY,
+                             TheMap().MapCellY + TheMap().MapCellHeight - 1);
+    cell = XY_Cell(x, y);
+  }
+  return cell;
+}

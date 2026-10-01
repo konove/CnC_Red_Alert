@@ -1,4 +1,4 @@
-add_executable(tdsdl WIN32 startup.cc)
+add_executable(tdsdl WIN32 startup/startup.cc)
 add_library(td_engine OBJECT)
 
 file(GLOB_RECURSE TD_SOURCES
@@ -6,17 +6,17 @@ file(GLOB_RECURSE TD_SOURCES
 )
 list(FILTER TD_SOURCES EXCLUDE REGEX "_test\\.cc$")
 list(REMOVE_ITEM TD_SOURCES
-        "${CMAKE_CURRENT_SOURCE_DIR}/startup.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/ccdde.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dde.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/startup/startup.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/startup/ccdde.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/startup/dde.cc"
 )
 
 file(GLOB_RECURSE TD_HEADERS
         CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 )
 list(REMOVE_ITEM TD_HEADERS
-        "${CMAKE_CURRENT_SOURCE_DIR}/dde.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/phone.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/startup/dde.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/net/phone.h"
 )
 
 target_sources(td_engine PRIVATE
@@ -35,8 +35,8 @@ set_target_properties(tdsdl PROPERTIES
 
 if (WIN32)
     target_sources(td_engine PRIVATE
-            dde.cc
-            ccdde.cc
+            startup/dde.cc
+            startup/ccdde.cc
     )
     target_sources(tdsdl PRIVATE cc_icon.rc)
     target_link_libraries(td_engine PUBLIC wsock32)
@@ -44,7 +44,7 @@ endif ()
 
 apply_dotenv_settings(td_engine)
 apply_dotenv_settings(tdsdl)
-# sdlstub.cc includes SDL headers directly, so td_engine links SDL2 itself
+# startup/sdlstub.cc includes SDL headers directly, so td_engine links SDL2 itself
 # rather than relying on it arriving transitively through engine_window/
 # engine_video.
 find_package(SDL2 REQUIRED)
@@ -58,7 +58,7 @@ include(Testing)
 # Real engine serializers, with startup helpers but no game entry point.
 add_gtest(
     NAME td_archive_roundtrip_test
-    SOURCES archive_roundtrip_test.cc jshell_test.cc pcx_test.cc number_parse_test.cc queue_alignment_test.cc list_test.cc startup.cc
+    SOURCES saveload/archive_roundtrip_test.cc core/jshell_test.cc assets/pcx_test.cc data/number_parse_test.cc net/queue_alignment_test.cc ui/list_test.cc startup/startup.cc
     LIBS td_engine absl::core_headers
 )
 target_compile_definitions(td_archive_roundtrip_test PRIVATE TD_NO_ENTRY_POINT=1)
@@ -70,7 +70,7 @@ apply_dotenv_settings(td_archive_roundtrip_test)
 # point.
 add_gtest(
     NAME td_saveload_test
-    SOURCES savevalues_test.cc startup.cc
+    SOURCES saveload/savevalues_test.cc startup/startup.cc
     LIBS td_engine absl::core_headers
 )
 target_compile_definitions(td_saveload_test PRIVATE TD_NO_ENTRY_POINT=1)
@@ -78,7 +78,7 @@ apply_dotenv_settings(td_saveload_test)
 
 add_gtest(
     NAME td_game_test
-    SOURCES game_test.cc startup.cc
+    SOURCES startup/game_test.cc startup/startup.cc
     LIBS td_engine absl::core_headers
 )
 target_compile_definitions(td_game_test PRIVATE TD_NO_ENTRY_POINT=1)
@@ -86,68 +86,68 @@ apply_dotenv_settings(td_game_test)
 
 add_gtest(
     NAME td_assets_test
-    SOURCES assets_test.cc assets.cc
+    SOURCES assets/assets_test.cc assets/assets.cc
     # SDL for the scancodes engine/window/keyboard.h names its keys by.
     LIBS base engine_file SDL2::SDL2 magic_enum::magic_enum absl::check absl::log absl::strings
 )
 
 add_gtest(
     NAME td_debug_state_test
-    SOURCES debug_state_test.cc
+    SOURCES debug/debug_state_test.cc
     LIBS base
 )
 
 add_gtest(
     NAME td_palettes_test
-    SOURCES palettes_test.cc
+    SOURCES assets/palettes_test.cc
     LIBS base
 )
 
 add_gtest(
     NAME td_screen_test
-    SOURCES screen_test.cc screen.cc
+    SOURCES assets/screen_test.cc assets/screen.cc
     LIBS base engine_window
 )
 
 add_gtest(
     NAME td_support_test
-    SOURCES support_test.cc support.cc
+    SOURCES core/support_test.cc core/support.cc
     LIBS base engine_gfx absl::check
 )
 
 add_gtest(
     NAME td_heap_test
-    SOURCES heap_test.cc heap.cc
+    SOURCES core/heap_test.cc core/heap.cc
     LIBS base engine_stream
 )
 
 add_gtest(
     NAME td_fixedmath_test
-    SOURCES fixedmath_test.cc fixedmath.cc
+    SOURCES core/fixedmath_test.cc core/fixedmath.cc
 )
 
 add_gtest(
     NAME td_connect_test
-    SOURCES connect_test.cc connect.cc combuf.cc noseqcon.cc
+    SOURCES net/connect_test.cc net/connect.cc net/combuf.cc net/noseqcon.cc
     LIBS base absl::check absl::log
 )
 
 add_gtest(
     NAME td_coord_inline_test
-    SOURCES coord_inline_test.cc
+    SOURCES core/coord_inline_test.cc
     LIBS base absl::check absl::log
 )
 
 add_gtest(
     NAME td_path_overlap_test
-    SOURCES path_overlap_test.cc
+    SOURCES map/path_overlap_test.cc
     LIBS base absl::check absl::log
 )
 
 # Real cell array from the engine, without a game entry point.
 add_gtest(
     NAME td_cell_adjacent_test
-    SOURCES cell_adjacent_test.cc startup.cc
+    SOURCES objects/cell_adjacent_test.cc startup/startup.cc
     LIBS td_engine absl::core_headers
 )
 target_compile_definitions(td_cell_adjacent_test PRIVATE TD_NO_ENTRY_POINT=1)

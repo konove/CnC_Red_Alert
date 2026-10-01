@@ -39,7 +39,7 @@ namespace {
 // and Blowfish leaves a three-byte tail.
 constexpr int kInputSize = 100003;
 
-// SAVE_BLOCK_SIZE in ra/saveload.cc.
+// SAVE_BLOCK_SIZE in ra/saveload/saveload.cc.
 constexpr int kSaveBlockSize = 4096;
 
 class RecordingSink : public ByteSink {

@@ -1,0 +1,185 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\bullet.h_v   2.18   16 Oct 1995 16:47:40
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : BULLET.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : April 23, 1994 *
+ *                                                                                             *
+ *                  Last Update : April 23, 1994   [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_TD_OBJECTS_BULLET_H_
+#define CNC_RED_ALERT_TD_OBJECTS_BULLET_H_
+
+class ArchiveReader;
+class ArchiveWriter;
+
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
+#include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "td/core/defines.h"
+#include "td/core/facing.h"
+#include "td/objects/fly.h"
+#include "td/objects/fuse.h"
+#include "td/objects/object.h"
+#include "td/objects/type.h"
+#include "td/startup/game_state.h"
+
+class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
+ public:
+  /*
+  **	This specifies exactly what kind of bullet this is. All of the static
+  *attributes *	for this bullet is located in the BulletTypeClass pointed to by
+  *this variable.
+  */
+  const BulletTypeClass* Class = nullptr;
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  operator BulletType() const { return Class->Type; }
+
+  /*
+  **	Records who sent this "present" so that an appropriate "thank you" can
+  **	be returned.
+  */
+  TechnoClass* Payback = nullptr;
+
+  /*
+  **	This is the facing that the projectile is travelling.
+  */
+  FacingClass PrimaryFacing;
+
+  /*---------------------------------------------------------------------
+  **	Constructors, Destructors, and overloaded operators.
+  */
+  void* operator new(std::size_t size) noexcept;
+  void* operator new(std::size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
+  void operator delete(void* ptr);
+  BulletClass() {
+    IsActive = true;
+    Strength = 0;
+  }
+  explicit BulletClass(BulletType id);
+  ~BulletClass() override {
+    if (TheGameState().active()) {
+      BulletClass::Limbo();
+    }
+  }
+  BulletClass(const BulletClass&) = delete;
+  BulletClass& operator=(const BulletClass&) = delete;
+  BulletClass(BulletClass&&) = delete;
+  BulletClass& operator=(BulletClass&&) = delete;
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_BULLET; }
+
+  /*---------------------------------------------------------------------
+  **	Member function prototypes.
+  */
+  static void Init();
+
+  virtual void Assign_Target(TARGET target) { TarCom = target; }
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+  [[nodiscard]] LayerType In_Which_Layer() const override { return LAYER_TOP; }
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
+  void Detach(TARGET target, bool all) override;
+  void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
+  bool Mark(MarkType mark = MARK_CHANGE) override;
+  void AI() override;
+  [[nodiscard]] std::span<const int16_t> Occupy_List(
+      bool /*placement*/ = false) const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List() const override {
+    return Occupy_List();
+  }
+  [[nodiscard]] TARGET As_Target() const override;
+
+  /*
+  **	File I/O.
+  */
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+  /*
+  **	Dee-buggin' support.
+  */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
+  int Validate() const;
+
+  /*
+  **	If this bullet is forced to be inaccurate because of some outside means.
+  *A tank *	firing while moving is a good example.
+  */
+  bool IsInaccurate : 1 = false;
+
+ private:
+  // Crude animation flag.
+  bool IsToAnimate : 1 = false;
+
+  /*
+  **	This is the height of the projectile. It starts at a low height, rises
+  *to an *	apogee and then drops to explode upon impact. The height is used
+  *to render *	the bullet's vertical offset.
+  */
+  int Altitude = 0;
+
+  /*
+  **	This is a modifier for the altitude that rises and falls in order to
+  *simulate *	the arc of the projectile. This value is added to the height
+  *every game tick *	while simultaneously being reduced itself. The net
+  *effect, is a rising *	projectile that slows and then eventually drops.
+  */
+  signed char Riser = 0;
+
+  /*
+  **	This is the target of the projectile. It is especially significant for
+  *those projectiles *	that home in on a target.
+  */
+  TARGET TarCom = kTargetNone;
+
+  /*
+  ** Is this missle allowed to come in from out of bounds?
+  */
+  bool IsLocked : 1 = true;
+};
+
+extern template void BulletClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void BulletClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+#endif  // CNC_RED_ALERT_TD_OBJECTS_BULLET_H_

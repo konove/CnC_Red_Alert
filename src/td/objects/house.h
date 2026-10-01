@@ -1,0 +1,624 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\house.h_v   2.21   16 Oct 1995 16:46:14
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : HOUSE.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : May 21, 1994 *
+ *                                                                                             *
+ *                  Last Update : May 21, 1994   [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_TD_OBJECTS_HOUSE_H_
+#define CNC_RED_ALERT_TD_OBJECTS_HOUSE_H_
+
+class ArchiveReader;
+class ArchiveWriter;
+
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <span>
+#include <string>
+
+#include "absl/base/attributes.h"
+#include "base/enum_array.h"
+#include "engine/platform/timer.h"
+#include "td/ai/region.h"
+#include "td/core/defines.h"
+#include "td/core/game_clock.h"
+#include "td/core/jshell.h"
+#include "td/objects/object.h"
+#include "td/objects/super.h"
+#include "td/objects/target.h"
+#include "td/objects/type.h"
+#include "td/objects/utracker.h"
+
+/****************************************************************************
+**	Player control structure. Each player (computer or human) has one of
+**	these structures associated. These are located in a global array.
+*/
+// #define	REBUILD_MAX		5		// Maximum number of
+// structures to rebuild.
+class HouseClass {
+ public:
+  /*
+  **	Pointer to the HouseTypeClass that this house is "owned" by.
+  **	All constant data for a house type is stored in that class.
+  */
+  const HouseTypeClass* Class = nullptr;
+
+  /*
+  **	This is the house type that this house object should act like. This
+  **	value controls production choices and radar cover plate imagery.
+  */
+  HousesType ActLike = HOUSE_NONE;
+
+  /*
+  **	Is this player active?  Usually that answer is true, but for civilians,
+  *it *	might possibly be false.
+  */
+  bool IsActive : 1 = true;
+
+  /*
+  **	If this house is controlled by the player, then this flag will be true.
+  *The *	computer controls all other active houses.
+  */
+  bool IsHuman : 1 = false;
+
+  /*
+  **	When the computer becomes alerted to the presence of the player's
+  *forces, it *	begins production and attack logic. This flag is set to true if
+  *the human *	player has been discovered by the computer.
+  */
+  bool IsStarted : 1 = false;
+
+  /*
+  **	When alerted, the house will create teams of the special "auto" type and
+  **	will generate appropriate units to fill those team types.
+  */
+  bool IsAlerted : 1 = false;
+
+  /*
+  **	If the house has been discovered, then this flag will be set
+  **	to true. However, the trigger even associated with discovery
+  **	will only be executed during the next house AI process.
+  */
+  bool IsDiscovered : 1 = false;
+
+  /*
+  **	If Tiberium storage is maxed out, then this flag will be set. At some
+  *point *	the player is told of this fact and then this flag is cleared.
+  *This allows the *	player to be told, but only occationally rather than
+  *continuously.
+  */
+  bool IsMaxedOut : 1 = false;
+
+  /*
+  ** If this house is played by a human in a multiplayer game, this flag
+  ** keeps track of whether this house has been defeated or not.
+  */
+  bool IsDefeated : 1 = false;
+
+  /*
+  **	These flags are used in conjunction with the BorrowedTime timer. When
+  **	that timer expires and one of these flags are set, then that event is
+  **	applied to the house. This allows a dramatic pause between the event
+  **	trigger and the result.
+  */
+  bool IsToDie : 1 = false;
+  bool IsToWin : 1 = false;
+  bool IsToLose : 1 = false;
+
+  /*
+  **	This flag is set when a transport carrying a civilian has been
+  **	successfully evacuated. It is presumed that a possible trigger
+  **	event will be sprung by this event.
+  */
+  bool IsCivEvacuated : 1 = false;
+
+  /*
+  **	If potentially something changed that might affect the sidebar list of
+  **	buildable objects, then this flag indicates that at the first LEGAL
+  *opportunity, *	the sidebar will be recalculated.
+  */
+  bool IsRecalcNeeded : 1 = false;
+
+  /*
+  **	If the map has been completely revealed to the player, then this flag
+  **	will be set to true. By examining this flag, a second "reveal all map"
+  **	crate won't be given to the player.
+  */
+  bool IsVisionary : 1 = false;
+
+  /*
+  **	If a trigger has indicated that the airstrike option should appear, this
+  *flag *	will be set to true. It is up to the normal house AI processing
+  *to actually *	add the airstrike to the sidebar.
+  */
+  bool IsAirstrikePending : 1 = false;
+
+  /*
+  **	This records the existance of the three nuke weapon pieces.
+  */
+  uint8_t NukePieces : 3 = 0;
+
+  /*
+  **	This flag indicates that a free harvester is pending and will be
+  **	created when the FreeHarvester timer expires.
+  */
+  bool IsFreeHarvester : 1 = false;
+
+  engine::platform::Timer<FrameTickSource> FreeHarvester;
+
+  /*
+  **	These super weapon control objects are used to control the recharge
+  **	and availability of these special weapons to this house.
+  */
+  SuperClass IonCannon;
+  SuperClass AirStrike;
+  SuperClass NukeStrike;
+
+  /*
+  **	This is a record of the last building that was built. For buildings that
+  **	were built as a part of scenario creation, it will be the last one
+  **	discovered.
+  */
+  StructType JustBuilt = STRUCT_NONE;
+
+  /*
+  **	This records the number of triggers associated with this house that are
+  **	blocking a win condition. A win will only occur if all the blocking
+  **	triggers have been deleted.
+  */
+  int Blockage = 0;
+
+  /*
+  **	This timer controls the computer auto-attack logic. When this timer
+  *expires *	and the house has been alerted, then it will create a set of
+  *attack *	teams.
+  */
+  engine::platform::Timer<FrameTickSource> AlertTime;
+
+  /*
+  **	This timer is used to handle the delay between some catastrophic
+  **	event trigger and when it is actually carried out.
+  */
+  engine::platform::Timer<FrameTickSource> BorrowedTime;
+
+  /*
+  **	This is the last working scan bits for buildings. If a building is
+  **	active and owned by this house, it will have a bit set in this element
+  **	that corresponds to the building type number. Since this value is
+  **	accumulated over time, the "New" element contains the under-construction
+  **	version.
+  */
+  uint64_t BScan = 0;
+  uint64_t ActiveBScan = 0;
+  uint64_t NewBScan = 0;
+  uint64_t NewActiveBScan = 0;
+
+  /*
+  **	This is the last working scan bits for units. For every existing unit
+  **	type owned by this house, a corresponding bit is set in this element. As
+  **	the scan bits are being constructed, they are built into the "New"
+  *element *	and then duplicated into the regular element at the end of every
+  *logic cycle.
+  */
+  uint64_t UScan = 0;
+  uint64_t ActiveUScan = 0;
+  uint64_t NewUScan = 0;
+  uint64_t NewActiveUScan = 0;
+
+  /*
+  **	Infantry type existence bits. Similar to unit and building bits.
+  */
+  uint64_t IScan = 0;
+  uint64_t ActiveIScan = 0;
+  uint64_t NewIScan = 0;
+  uint64_t NewActiveIScan = 0;
+
+  /*
+  **	Aircraft type existence bits. Similar to unit and building buts.
+  */
+  uint64_t AScan = 0;
+  uint64_t ActiveAScan = 0;
+  uint64_t NewAScan = 0;
+  uint64_t NewActiveAScan = 0;
+
+  /*
+  **	Record of gains and losses for this house during the course of the
+  **	scenario.
+  */
+  int CreditsSpent = 0;
+  int HarvestedCredits = 0;
+
+  /*
+  **	This is the running count of the number of units owned by this house.
+  *This *	value is used to keep track of ownership limits.
+  */
+  int CurUnits = 0;
+  int CurBuildings = 0;
+
+  /*
+  **	This is the maximum number allowed to be built by this house. The
+  **	value depends on the scenario being played.
+  */
+  int MaxUnit = 0;
+  int MaxBuilding = 0;
+
+  /*
+  **	This is the running total of the number of credits this house has
+  *accumulated.
+  */
+  int64_t Tiberium = 0;
+  int64_t Credits = 0;
+  int64_t InitialCredits = 0;
+  int64_t Capacity = 0;
+
+  /*
+  ** Did this house lose via resignation?
+  */
+  bool Resigned : 1 = false;
+
+  /*
+  ** Did this house lose because the player quit?
+  */
+  bool IGaveUp : 1 = false;
+
+  /*
+  ** Stuff to keep track of the total number of units built by this house.
+  */
+  std::unique_ptr<UnitTrackerClass> AircraftTotals;
+  std::unique_ptr<UnitTrackerClass> InfantryTotals;
+  std::unique_ptr<UnitTrackerClass> UnitTotals;
+  std::unique_ptr<UnitTrackerClass> BuildingTotals;
+
+  /*
+  ** Total number of units destroyed by this house
+  */
+  std::unique_ptr<UnitTrackerClass> DestroyedAircraft;
+  std::unique_ptr<UnitTrackerClass> DestroyedInfantry;
+  std::unique_ptr<UnitTrackerClass> DestroyedUnits;
+  std::unique_ptr<UnitTrackerClass> DestroyedBuildings;
+
+  /*
+  ** Total number of enemy buildings captured by this house
+  */
+  std::unique_ptr<UnitTrackerClass> CapturedBuildings;
+
+  /*
+  ** Total number of crates found by this house
+  */
+  std::unique_ptr<UnitTrackerClass> TotalCrates;
+
+  /*
+  **	Records the number of infantry and vehicle factories active. This value
+  *is *	used to regulate the speed of production.
+  */
+  int AircraftFactories = 0;
+  int InfantryFactories = 0;
+  int UnitFactories = 0;
+  int BuildingFactories = 0;
+  int SpecialFactories = 0;
+
+  /*
+  **	This is the accumulation of the total power and drain factors. From
+  *these *	values a ratio can be derived. This ratio is used to control the
+  *rate *	of building decay.
+  */
+  int Power = 0;  // Current power output.
+  int Drain = 0;  // Power consumption.
+
+  /*
+  **	For generic (unspecified) reinforcements, they arrive by a common
+  *method. This *	specifies which method is to be used.
+  */
+  SourceType Edge = SOURCE_NORTH;
+
+  /*
+  **	For human controlled houses, only one type of unit can be produced
+  **	at any one instant. These factory objects control this production.
+  */
+  int AircraftFactory = -1;
+  int InfantryFactory = -1;
+  int UnitFactory = -1;
+  int BuildingFactory = -1;
+  int SpecialFactory = -1;
+
+  /*
+  **	This target value specifies where the flag is located. It might be a
+  *cell *	or it might be an object.
+  */
+  TARGET FlagLocation = kTargetNone;
+
+  /*
+  ** This is the flag-home-cell for this house.  This is where we must bring
+  ** another house's flag back to, to defeat that house.
+  */
+  CELL FlagHome = 0;
+
+  /*
+  ** For multiplayer games, each house instance has a remap table; the table
+  ** in the HousesTypeClass isn't used.  This variable is set to the remap
+  ** table for the color the player wants to play.
+  */
+  std::span<const unsigned char> RemapTable;
+  PlayerColorType RemapColor = REMAP_NONE;
+
+  // Radar and text colors for this house; start as the type's defaults and
+  // change with the player's color choice.
+  unsigned char Color = 0;
+  unsigned char BrightColor = 0;
+  char Name[MPLAYER_NAME_MAX]{};
+
+  /*
+  ** For multiplayer games, each house needs to keep track of how many
+  ** objects of each other house they've killed.
+  */
+  base::EnumArray<HousesType, unsigned, kHouseCount> UnitsKilled{};
+  unsigned UnitsLost = 0;
+  base::EnumArray<HousesType, unsigned, kHouseCount> BuildingsKilled{};
+  unsigned BuildingsLost = 0;
+
+  /*
+  ** For multiplayer games, this keeps track of the last house to destroy
+  ** one of my units.
+  */
+  HousesType WhoLastHurtMe = HOUSE_NONE;
+
+  /*---------------------------------------------------------------------
+  **	Constructors, Destructors, and overloaded operators.
+  */
+  void* operator new(std::size_t size) noexcept;
+  void* operator new(std::size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
+  void operator delete(void* ptr);
+  // Load shell: allocate runtime trackers without touching scenario state.
+  HouseClass() { Init_Trackers(); }
+  explicit HouseClass(HousesType house);
+  ~HouseClass();
+  HouseClass(const HouseClass&) = delete;
+  HouseClass& operator=(const HouseClass&) = delete;
+  HouseClass(HouseClass&&) = delete;
+  HouseClass& operator=(HouseClass&&) = delete;
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  operator HousesType() const;
+
+  /*---------------------------------------------------------------------
+  **	Member function prototypes.
+  */
+  ProdFailType Begin_Production(RTTIType type, int id);
+  ProdFailType Suspend_Production(RTTIType type);
+  ProdFailType Abandon_Production(RTTIType type);
+  bool Place_Object(RTTIType type, CELL cell);
+  bool Manual_Place(BuildingClass* builder, BuildingClass* object);
+  void Special_Weapon_AI(SpecialWeaponType id);
+  bool Place_Special_Blast(SpecialWeaponType id, CELL cell);
+  bool Flag_Attach(CELL cell, bool set_home = false);
+  bool Flag_Attach(UnitClass* object, bool set_home = false);
+  bool Flag_Remove(TARGET target, bool set_home = false);
+  void Init_Data(PlayerColorType color, HousesType house, int credits);
+
+  void Sell_Wall(CELL cell);
+  bool Flag_To_Die();
+  bool Flag_To_Win();
+  bool Flag_To_Lose();
+  void Make_Ally(HousesType house);
+  void Make_Ally(ObjectClass* object) {
+    if (object) {
+      Make_Ally(object->Owner());
+    }
+  }
+  void Make_Enemy(HousesType house);
+  void Make_Enemy(ObjectClass* object) {
+    if (object) {
+      Make_Enemy(object->Owner());
+    }
+  }
+  [[nodiscard]] bool Is_Ally(HousesType house) const;
+  bool Is_Ally(const HouseClass* house) const;
+  bool Is_Ally(const ObjectClass* object) const;
+  void AI();
+  [[nodiscard]] bool Can_Build(StructType structure, HousesType house) const;
+  [[nodiscard]] bool Can_Build(InfantryType infantry, HousesType house) const;
+  [[nodiscard]] bool Can_Build(UnitType unit, HousesType /*house*/) const;
+  [[nodiscard]] bool Can_Build(AircraftType aircraft, HousesType house) const;
+  bool Can_Build(const TechnoTypeClass* type, HousesType house) const;
+  [[nodiscard]] std::span<const unsigned char> Remap_Table(
+      bool blushing = false, bool unit = false) const;
+
+  [[nodiscard]] const TechnoTypeClass* Suggest_New_Object(
+      RTTIType objecttype) const;
+  [[nodiscard]] bool Does_Enemy_Building_Exist(StructType /*btype*/) const;
+  // "tiberium" must not be negative.
+  void Harvested(int tiberium);
+  [[nodiscard]] int64_t Available_Money() const;
+  // "money" must not be negative.
+  void Spend_Money(int money);
+  // "money" must not be negative.
+  void Refund_Money(int money);
+  void Attacked();
+  void Adjust_Power(int adjust) { Power += adjust; }
+  void Adjust_Drain(int adjust) { Drain += adjust; }
+  int Adjust_Capacity(int adjust, bool inanger = false);
+  [[nodiscard]] int Power_Fraction() const;
+  [[nodiscard]] int Tiberium_Fraction() const {
+    return !static_cast<int>(Tiberium)
+               ? 0
+               : Cardinal_To_Fixed(static_cast<int>(Capacity),
+                                   static_cast<int>(Tiberium));
+  }
+  void Begin_Production() { IsStarted = true; }
+  const TeamTypeClass* Suggested_New_Team(bool alertcheck = false);
+  void Adjust_Threat(int region, int threat);
+
+  static void Init();
+  static void One_Time();
+  static HouseClass* As_Pointer(HousesType house);
+
+  /*
+  **	File I/O.
+  */
+  static void Read_INI(char* buffer);
+  static void Write_INI(std::string& buffer);
+  static void Read_Flag_INI(char* buffer);
+  static void Write_Flag_INI(char* buffer);
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+  /*
+  **	Dee-buggin' support.
+  */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
+  int Validate() const;
+
+  /*
+  **	Special house actions.
+  */
+  //		void  Init_Ion_Cannon(bool first_time, bool one_time_effect =
+  // false); 		void  Init_Air_Strike(bool first_time, bool
+  // one_time_effect = false); 		void  Init_Nuke_Bomb(bool first_time,
+  // bool one_time_effect = false); 		void  Remove_Ion_Cannon();
+  // void
+  // Remove_Air_Strike(); 		void  Remove_Nuke_Bomb();
+  void Add_Nuke_Piece(int piece = -1);
+  //		void  Make_Air_Strike_Available(bool present, bool
+  // one_time_effect = false);
+  [[nodiscard]] bool Has_Nuke_Device() const;
+
+  /*
+  **	This vector holds the recorded status of the map regions. It is through
+  **	this region information that team paths are calculated.
+  */
+  RegionClass Regions[MAP_TOTAL_REGIONS]{};
+
+#ifdef OBSOLETE
+  /*
+  **	This count down timer class handles decrements and then changes
+  ** the ion cannon state.  If the Ion cannon was out of range it is
+  ** now in range.  If the Ion cannon was in range it will toggle out
+  ** of range.
+  */
+  engine::platform::Timer<FrameTickSource> IonControl;
+  int IonOldStage = 0;
+
+  engine::platform::Timer<FrameTickSource> AirControl;
+  int AirOldStage = 0;
+
+  engine::platform::Timer<FrameTickSource> NukeControl;
+  int NukeOldStage = 0;
+#endif
+
+  /*
+  ** This timer is for multiplayer mode; for a computer-controlled house,
+  ** it determines how long until this player "blitzes" the hapless humans.
+  */
+  engine::platform::Timer<FrameTickSource> BlitzTime;
+
+  /*
+  **	This count down timer class decrements and then changes
+  ** the Atomic Bomb state.
+  */
+  CELL NukeDest = 0;
+
+  /*
+  ** This routine completely removes this house & all its objects from the game.
+  */
+  void Clobber_All();
+
+  /*
+  ** This routine blows up everything in this house.  Fun!
+  */
+  void Blowup_All();
+
+  /*
+  ** This routine gets called in multiplayer games when every unit, building,
+  ** and infantry for a house is destroyed.
+  */
+  void MPlayer_Defeated();
+
+ private:
+  // Recreate the runtime-only network statistics counters.
+  void Init_Trackers();
+  void Silo_Redraw_Check(int64_t oldtib, int64_t oldcap);
+
+  /*
+  **	This is a bit field record of all the other houses that are allies with
+  **	this house. It is presumed that any house that isn't an ally, is
+  *therefore *	an enemy. A house is always considered allied with itself.
+  */
+  unsigned Allies = 0;
+
+  /*
+  **	This is the standard delay time between announcements concerning the
+  **	state of the base or other intermittent house related events.
+  */
+  static constexpr int kSpeakDelay = kTicksPerMinute * 2;
+  static constexpr int kTeamDelay = kTicksPerMinute / 10;
+  static constexpr int kDamageDelay = kTicksPerMinute;
+
+  /*
+  **	General low-power related damaged is doled out whenever this timer
+  **	expires.
+  */
+  engine::platform::Timer<FrameTickSource> DamageTime;
+
+  /*
+  **	Team creation is done whenever this timer expires.
+  */
+  engine::platform::Timer<FrameTickSource> TeamTime;
+
+  /*
+  **	This controls the rate that the trigger time logic is processed.
+  */
+  engine::platform::Timer<FrameTickSource> TriggerTime;
+
+  /*
+  **	At various times, the computer may announce the player's condition. The
+  *following *	variables are used as countdown timers so that these
+  *announcements are paced *	far enough appart to reduce annoyance.
+  */
+  engine::platform::Timer<FrameTickSource> SpeakAttackDelay;
+  engine::platform::Timer<FrameTickSource> SpeakPowerDelay;
+  engine::platform::Timer<FrameTickSource> SpeakMoneyDelay;
+  engine::platform::Timer<FrameTickSource> SpeakMaxedDelay;
+};
+extern template void HouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void HouseClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+#endif  // CNC_RED_ALERT_TD_OBJECTS_HOUSE_H_

@@ -1,0 +1,72 @@
+#ifndef CNC_RED_ALERT_RA_CORE_CONFIG_H_
+#define CNC_RED_ALERT_RA_CORE_CONFIG_H_
+
+#include "ra/core/defines.h"
+
+// Modern C++23 compile-time configuration
+// This file is gradually replacing preprocessor macros from defines.h
+// with type-safe constexpr variables for use with 'if constexpr'
+
+namespace config {
+
+// Build version type
+enum class BuildVersion {
+  Release,   // Production release - no cheats, no editor
+  Playtest,  // Playtest version - limited cheats, no editor
+  Internal   // Internal dev build - full cheats, scenario editor
+};
+
+// Current build version (mutually exclusive by design)
+#ifdef INTERNAL_VERSION
+inline constexpr BuildVersion kBuildVersion = BuildVersion::Internal;
+#elifdef PLAYTEST_VERSION
+inline constexpr BuildVersion kBuildVersion = BuildVersion::Playtest;
+#else
+inline constexpr BuildVersion kBuildVersion = BuildVersion::Release;
+#endif
+
+// Convenience helpers for backward compatibility
+inline constexpr bool kReleaseVersion = kBuildVersion == BuildVersion::Release;
+inline constexpr bool kPlaytestVersion =
+    kBuildVersion == BuildVersion::Playtest;
+inline constexpr bool kInternalVersion =
+    kBuildVersion == BuildVersion::Internal;
+
+// Scenario editor enabled (migrated from SCENARIO_EDITOR macro).
+// Enabled only for internal builds
+inline constexpr bool kScenarioEditorEnabled = kInternalVersion;
+
+// Cheat keys enabled for internal and playtest builds.
+inline constexpr bool kCheatKeysEnabled = kInternalVersion || kPlaytestVersion;
+
+// Virgin cheat keys - limited cheat key set. This is a subset that only allows
+// Alt+W to win. Enabled only for playtest builds (internal builds have full
+// cheat keys).
+inline constexpr bool kVirginCheatKeysEnabled = kPlaytestVersion;
+
+// Westwood Online. This is not fed by a macro: nothing preprocesses it any
+// more, so there is nothing for a #define to do. The code it selects is
+// compiled and type-checked either way; turning it on would only make it
+// reachable, and the servers it dials have been gone for two decades.
+inline constexpr bool kWolapiEnabled = false;
+
+// Build language, from RA_LANGUAGE in CMake (or LANGUAGE in .env). It picks
+// the compiled-in layout tweaks and messages; the game data supplies the
+// string table, so the data's language should match.
+enum class BuildLanguage { English, German, French };
+
+#ifdef FRENCH
+inline constexpr auto kBuildLanguage = BuildLanguage::French;
+#elifdef GERMAN
+inline constexpr auto kBuildLanguage = BuildLanguage::German;
+#else
+inline constexpr auto kBuildLanguage = BuildLanguage::English;
+#endif
+
+inline constexpr bool kIsEnglish = kBuildLanguage == BuildLanguage::English;
+inline constexpr bool kIsGerman = kBuildLanguage == BuildLanguage::German;
+inline constexpr bool kIsFrench = kBuildLanguage == BuildLanguage::French;
+
+}  // namespace config
+
+#endif  // CNC_RED_ALERT_RA_CORE_CONFIG_H_

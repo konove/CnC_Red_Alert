@@ -1,0 +1,204 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\anim.h_v   2.20   16 Oct 1995 16:45:40
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : ANIM.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : May 30, 1994 *
+ *                                                                                             *
+ *                  Last Update : May 30, 1994   [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_TD_OBJECTS_ANIM_H_
+#define CNC_RED_ALERT_TD_OBJECTS_ANIM_H_
+
+class ArchiveReader;
+class ArchiveWriter;
+
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
+#include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "td/core/defines.h"
+#include "td/objects/object.h"
+#include "td/objects/stage.h"
+#include "td/objects/type.h"
+
+/**********************************************************************************************
+**	This is the class that controls the shape animation objects. Shape
+*animation objects are *	displayed over the top of the game map.
+*Typically, they are used for explosion and fire *	effects.
+*/
+class AnimClass final : public ObjectClass, private StageClass {
+ public:
+  void* operator new(std::size_t size) noexcept;
+  void* operator new(std::size_t /*unused*/,
+                     void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
+    return ptr;
+  }
+  void operator delete(void* ptr);
+  AnimClass() { IsActive = true; }
+  AnimClass(AnimType animnum, COORDINATE coord, int timedelay = 0, int loop = 1,
+            bool alt = false);
+  ~AnimClass() override;
+  AnimClass(const AnimClass&) = delete;
+  AnimClass& operator=(const AnimClass&) = delete;
+  AnimClass(AnimClass&&) = delete;
+  AnimClass& operator=(AnimClass&&) = delete;
+  // objects compare directly against their type ID.
+  // NOLINTNEXTLINE(*-explicit-constructor)
+  operator AnimType() const { return Class->Type; }
+  [[nodiscard]] RTTIType What_Am_I() const override { return RTTI_ANIM; }
+
+  /*---------------------------------------------------------------------
+  **	Member function prototypes.
+  */
+  static void Init();
+
+  void Attach_To(ObjectClass* obj);
+  void Make_Invisible() { IsInvisible = true; }
+
+  [[nodiscard]] static bool Can_Place_Here(COORDINATE /*unused*/) {
+    return true;
+  }
+  bool Mark(MarkType mark = MARK_CHANGE) override;
+  bool Render(PixelView& view, bool forced) override;
+  [[nodiscard]] COORDINATE Center_Coord() const override;
+  [[nodiscard]] COORDINATE Sort_Y() const override;
+  [[nodiscard]] LayerType In_Which_Layer() const override;
+  [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
+    return *Class;
+  }
+  [[nodiscard]] std::span<const int16_t> Occupy_List(
+      bool /*placement*/ = false) const override;
+  [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
+  void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
+  void AI() override;
+  [[nodiscard]] TARGET As_Target() const override;
+  void Detach(TARGET target, bool all) override;
+
+  /*
+  **	File I/O.
+  */
+  // Field-wise saved-game support, defined in ioobj.cc.
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+  /*
+  **	Dee-buggin' support.
+  */
+  // debug self-check; callers run it for its assertions and ignore the count.
+  // NOLINTNEXTLINE(modernize-use-nodiscard)
+  int Validate() const;
+
+  /*
+  **	If this animation is attached to an object, then this points to that
+  *object. An *	animation that is attached will follow that object as it moves.
+  *This is important *	for animations such as flames and smoke.
+  */
+  ObjectClass* Object = nullptr;
+
+  /*
+  **	If this animation has an owner, then it will be recorded here. An owner
+  **	is used when damage is caused by this animation during the middle of its
+  **	animation.
+  */
+  HousesType Owner = HOUSE_NONE;
+
+  /*
+  **	This counter tells how many more times the animation should loop before
+  *it *	terminates.
+  */
+  unsigned char Loops = 1;
+
+ protected:
+  void Middle();
+  void Start();
+
+ private:
+  /*
+  ** Define a function to make adjustments for where special animations
+  ** are going to render.
+  */
+  COORDINATE Adjust_Coord(COORDINATE coord);
+
+  /*
+  **	Delete this animation at the next opportunity. This is flagged when the
+  **	animation is to be prematurely ended as a result of some outside event.
+  */
+  bool IsToDelete : 1 = false;
+
+  /*
+  **	If the animation has just been created, then don't do any animation
+  **	processing until it has been through the render loop at least once.
+  */
+  bool IsBrandNew : 1 = true;
+
+  // Use alternate color when drawing?
+  bool IsAlternate : 1 = false;
+
+  /*
+  **	If this animation is invisible, then this flag will be true. An
+  *invisible *	animation is one that is created for the sole purpose of keeping
+  *all *	machines syncronised. It will not be displayed.
+  */
+  bool IsInvisible : 1 = false;
+
+  /*
+  **	This points to the type of animation object this is.
+  */
+  const AnimTypeClass* Class = nullptr;
+
+  /*
+  **	Is this animation in a temporary suspended state?  If so, then it won't
+  **	be rendered until this flag is false. The flag will be set to false
+  **	after the first countdown timer reaches 0.
+  */
+  unsigned char Delay = 0;
+
+  /*
+  **	If this is an animation that damages whatever it is attached to, then
+  *this *	value holds the accumulation of fractional damage points. When
+  *the accumulated *	fractions reach 256, then one damage point is applied to
+  *the attached object.
+  */
+  unsigned char Accum = 0;
+};
+
+void Shorten_Attached_Anims(const ObjectClass* obj);
+
+extern template void AnimClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void AnimClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+#endif  // CNC_RED_ALERT_TD_OBJECTS_ANIM_H_

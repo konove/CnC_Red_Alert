@@ -1,0 +1,4093 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\unit.cpv   2.17   16 Oct 1995 16:48:28
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : UNIT.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : September 10, 1993 *
+ *                                                                                             *
+ *                  Last Update : August 16, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions:
+ *   Recoil_Adjust -- Adjust pixel values in direction specified.
+ *     Turret_Adjust -- Turret adjustment routine for MLRS and MSAM units.
+ *   UnitClass::AI -- AI processing for the unit.
+ *   UnitClass::APC_Close_Door -- Closes an APC door.
+ *   UnitClass::APC_Open_Door -- Opens an APC door.
+ *   UnitClass::Active_Click_With -- Intercepts the active click to see if
+ *     deployment is possib
+ *   UnitClass::As_Target -- Returns the unit as a target value.
+ *   UnitClass::Blocking_Object -- Determines how a object blocks a unit
+ *   UnitClass::Can_Enter_Building -- Determines building entry legality.
+ *   UnitClass::Can_Fire -- Determines if this unit can fire.
+ *   UnitClass::Can_Player_Move -- Determines if the player is legally
+ *     allowed to move it.
+ *   UnitClass::Click_With -- Handles player map clicking while this unit is
+ *     selected.
+ *   UnitClass::Crew_Type -- Fetches the kind of crew that this object
+ *     produces.
+ *   UnitClass::Desired_Load_Dir -- Determines the best cell and facing for
+ *     loading.
+ *   UnitClass::Draw_It -- Draws a unit object.
+ *   UnitClass::Enter_Idle_Mode -- Unit enters idle mode state.
+ *   UnitClass::Find_LZ -- Maintenance function for transport units.
+ *   UnitClass::Flag_Attach -- Attaches a house flag to this unit.
+ *   UnitClass::Flag_Remove -- Removes the house flag from this unit.
+ *   UnitClass::Goto_Clear_Spot -- Finds a clear spot to deploy.
+ *   UnitClass::Goto_Tiberium -- Search for and head toward nearest
+ *     available Tiberium patch.
+ *   UnitClass::Harvesting -- Harvests tiberium at the current location.
+ *   UnitClass::Init -- Clears all units for scenario preparation.
+ *   UnitClass::Limbo -- Prepares vehicle and then limbos it.
+ *   UnitClass::Look -- Perform map revelation from a unit's position.
+ *   UnitClass::Mission_Attack -- Handles the mission attack logic.
+ *   UnitClass::Mission_Guard -- Special guard mission override processor.
+ *   UnitClass::Mission_Harvest -- Handles the harvesting process used by
+ *     harvesters.
+ *   UnitClass::Mission_Hunt -- This is the AI process for aggressive enemy
+ *     units.
+ *   UnitClass::Mission_Move -- Handles special move mission overrides.
+ *   UnitClass::Mission_Unload -- Handles unloading cargo.
+ *   UnitClass::Overlap_List -- Determines overlap list for units.
+ *   UnitClass::Per_Cell_Process -- Performs operations necessary on a per
+ *     cell basis.
+ *   UnitClass::Pip_Count -- Fetchs the number of pips to display on unit.
+ *   UnitClass::Random_Animate -- Handles random idle animation for the
+ *     unit.
+ *   UnitClass::Read_INI -- Reads units from scenario INI file.
+ *   UnitClass::Receive_Message -- Handles receiving a radio message.
+ *   UnitClass::Remap_Table -- Fetches the remap table to use for this
+ *     object.
+ *   UnitClass::Response_Attack -- Voice feedback when ordering the unit to
+ *     attack a target.
+ *   UnitClass::Response_Move -- Voice feedback when ordering the unit to
+ *     move.
+ *   UnitClass::Response_Select -- Voice feedback when selecting the unit.
+ *   UnitClass::Scatter -- Causes the unit to travel to a nearby safe cell.
+ *   UnitClass::Set_Speed -- Initiate unit movement physics.
+ *   UnitClass::Sort_Y -- Give Y coordinate sort value for unit.
+ *   UnitClass::Start_Driver -- Starts driving and reserves destination
+ *     cell.
+ *   UnitClass::Stop_Driver -- Handles removing occupation bits when driving
+ *     stops.
+ *   UnitClass::Stun -- Stuns the unit in preparation for unit removal.
+ *   UnitClass::Take_Damage -- Inflicts damage points on a unit.
+ *   UnitClass::Target_Coord -- The coordinate to use when targeting this
+ *     unit.
+ *   UnitClass::Try_To_Deploy -- The unit attempts to "deploy" at current
+ *     location.
+ *   UnitClass::UnitClass -- Constructor for units.
+ *   UnitClass::Unlimbo -- Removes unit from stasis.
+ *   UnitClass::Unload_Hovercraft_Process -- Handles unloading hovercraft
+ *     transport.
+ *   UnitClass::Validate -- validates unit pointer.
+ *   UnitClass::What_Action -- Determines what action would occur if clicked
+ *     on object.
+ *   UnitClass::What_Am_I -- Returns with the RTTI type this object is.
+ *   UnitClass::Write_INI -- Writes all the units out to an INI file.
+ *   UnitClass::delete -- Deletion operator for units.
+ *   UnitClass::new -- Allocate a unit slot and adjust access arrays.
+ *   UnitClass::~UnitClass -- Destructor for unit objects.
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "td/objects/unit.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iterator>
+#include <span>
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "absl/strings/str_format.h"
+#include "base/array.h"
+#include "base/enum_array.h"
+#include "base/pooled.h"
+#include "base/strings/number_parse.h"
+#include "base/strings/tokenizer.h"
+#include "engine/file/mix_archive.h"
+#include "engine/gfx/keyframe.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "engine/platform/timer.h"
+#include "td/ai/special.h"
+#include "td/ai/team.h"
+#include "td/ai/trigger.h"
+#include "td/assets/audio.h"
+#include "td/core/config.h"
+#include "td/core/const.h"
+#include "td/core/coord.h"
+#include "td/core/defines.h"
+#include "td/core/display_constants.h"
+#include "td/core/facing.h"
+#include "td/core/game_clock.h"
+#include "td/core/heap.h"
+#include "td/core/inline.h"
+#include "td/core/jshell.h"
+#include "td/core/object_heaps.h"
+#include "td/core/rand.h"
+#include "td/core/vector.h"
+#include "td/data/profile.h"
+#include "td/editor/mapedit.h"
+#include "td/map/layer.h"
+#include "td/map/mouse.h"
+#include "td/map/world.h"
+#include "td/net/session.h"
+#include "td/objects/anim.h"
+#include "td/objects/building.h"
+#include "td/objects/cargo.h"
+#include "td/objects/cell.h"
+#include "td/objects/combat.h"
+#include "td/objects/foot.h"
+#include "td/objects/house.h"
+#include "td/objects/infantry.h"
+#include "td/objects/object.h"
+#include "td/objects/radio.h"
+#include "td/objects/tarcom.h"
+#include "td/objects/target.h"
+#include "td/objects/techno.h"
+#include "td/objects/terrain.h"
+#include "td/objects/type.h"
+#include "td/objects/utracker.h"
+#include "td/screens/goptions.h"
+#include "td/startup/conquer.h"
+#include "td/startup/game_state.h"
+#include "td/startup/winstub.h"
+
+using engine::gfx::ShapeFlags;
+
+/*
+** This contains the value of the Virtual Function Table Pointer
+*/
+
+/***********************************************************************************************
+ * UnitClass::Validate -- validates unit pointer.
+ **
+ *                                                                                             *
+ * INPUT: * none.
+ **
+ *                                                                                             *
+ * OUTPUT: * 1 = ok, 0 = error
+ **
+ *                                                                                             *
+ * WARNINGS: * none.
+ **
+ *                                                                                             *
+ * HISTORY: * 08/09/1995 BRR : Created. *
+ *=============================================================================================*/
+int UnitClass::Validate() const {
+  if constexpr (config::kCheatKeysEnabled) {
+    const int num = TheObjectHeaps().unit().ID(this);
+    if (num < 0 || num >= kUnitMax) {
+      Validate_Error("UNIT");
+    }
+    return 1;
+  } else {
+    return 1;
+  }
+}
+
+/***********************************************************************************************
+ * Recoil_Adjust -- Adjust pixel values in direction specified. *
+ *                                                                                             *
+ *    This is a helper routine that modifies the pixel coordinates provided
+ *according to the   * direction specified. The effect is the simulate recoil
+ *effects by moving an object 'back'* one pixel. Since the pixels moved depend
+ *on facing, this routine handles the pixel       * adjustment quickly. *
+ *                                                                                             *
+ * INPUT:   dir   -- The direction to base the recoil on. *
+ *                                                                                             *
+ *          x,y   -- References to the pixel coordinates that will be adjusted.
+ **
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+static void Recoil_Adjust(DirType dir, int& x, int& y) {
+  static const struct {
+    signed char X, Y;
+  } _adjust[32] = {{0, 1},                                  // N
+                   {0, 1},   {0, 1},   {-1, 1},  {-1, 1},   // NE
+                   {-1, 1},  {-1, 0},  {-1, 0},  {-1, 0},   // E
+                   {-1, 0},  {-1, -1}, {-1, -1}, {-1, -1},  // SE
+                   {-1, -1}, {-1, -1}, {0, -1},  {0, -1},   // S
+                   {0, -1},  {0, -1},  {1, -1},  {1, -1},   // SW
+                   {1, -1},  {1, 0},   {1, 0},   {1, 0},    // W
+                   {1, 0},   {1, 1},   {1, 1},   {1, 1},    // NW
+                   {1, 1},   {0, 1},   {0, 1}};
+
+  const int index = Facing_To_32(dir);
+  x += base::At(_adjust, index).X;
+  y += base::At(_adjust, index).Y;
+}
+
+/***********************************************************************************************
+ * Turret_Adjust -- Turret adjustment routine for MLRS and MSAM units. *
+ *                                                                                             *
+ *    This routine adjusts the pixel coordinates specified to account for the
+ *displacement of  * the turret on the MLRS and MSAM vehicles. *
+ *                                                                                             *
+ * INPUT:   dir   -- The direction of the body of the vehicle. *
+ *                                                                                             *
+ *          x,y   -- References to the turret center pixel position. These will
+ *be modified as * necessary. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+static void Turret_Adjust(DirType dir, int& x, int& y) {
+  static const struct {
+    signed char X, Y;
+  } _adjust[32] = {{1, 2},                                  // N
+                   {-1, 1},  {-2, 0},  {-3, 0},  {-3, 1},   // NW
+                   {-4, -1}, {-4, -1}, {-5, -2}, {-5, -3},  // W
+                   {-5, -3}, {-3, -3}, {-3, -4}, {-3, -4},  // SW
+                   {-3, -5}, {-2, -5}, {-1, -5}, {0, -5},   // S
+                   {1, -6},  {2, -5},  {3, -5},  {4, -5},   // SE
+                   {6, -4},  {6, -3},  {6, -3},  {6, -3},   // E
+                   {5, -1},  {5, -1},  {4, 0},   {3, 0},    // NE
+                   {2, 0},   {2, 1},   {1, 2}};
+
+  const int index = Facing_To_32(dir);
+  x += base::At(_adjust, index).X;
+  y += base::At(_adjust, index).Y;
+}
+
+/***********************************************************************************************
+ * UnitClass::As_Target -- Returns the unit as a target value. *
+ *                                                                                             *
+ *    This routine will convert the unit into a target value that is then
+ *returned. Target     * values are typically used for navigation and other
+ *computer uses.                        *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with target value of unit. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/19/1994 JLB : Created. *
+ *=============================================================================================*/
+TARGET UnitClass::As_Target() const {
+  Validate();
+  return Build_Target(KIND_UNIT, TheObjectHeaps().unit().ID(this));
+}
+
+/***********************************************************************************************
+ * UnitClass::Sort_Y -- Give Y coordinate sort value for unit. *
+ *                                                                                             *
+ *    This routine is used by the rendering system in order to sort the * game
+ *objects in a back to front order. This is now the correct * overlap effect is
+ *achieved.                                                              *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with a coordinate value that can be used for sorting. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/17/1994 JLB : Created. *
+ *=============================================================================================*/
+COORDINATE UnitClass::Sort_Y() const {
+  Validate();
+  if (IsTethered && *this == UNIT_HOVER) {
+    return Coord_Add(Coord, 0xFF800000L);
+  }
+  return Coord_Add(Coord, 0x00800000L);
+}
+
+/***********************************************************************************************
+ * UnitClass::AI -- AI processing for the unit. *
+ *                                                                                             *
+ *    This routine will perform the AI processing necessary for the unit. These
+ *are non-       * graphic related operations. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/31/1994 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::AI() {
+  Validate();
+
+  /*
+  **	Act on new orders if the unit is at a good position to do so.
+  */
+  if (!IsDriving && Is_Door_Closed() /*Mission != MISSION_UNLOAD*/) {
+    Commence();
+  }
+
+  TarComClass::AI();
+
+  if (!IsActive) {
+    return;
+  }
+
+  /*
+  **	Delete this unit if it finds itself off the edge of the map and it is in
+  **	guard or other static mission mode.
+  */
+  if (!Team && Mission == MISSION_GUARD &&
+      !TheMap().In_Radar(Coord_Cell(Coord))) {
+    Stun();
+    delete this;
+    return;
+  }
+
+  /*
+  **	Rocket launchers will reload every so often.
+  */
+  if (*this == UNIT_MSAM && Ammo < Class->MaxAmmo) {
+    if (IsDriving) {
+      Reload.Set(Reload.Remaining() + 1);
+    } else {
+      if (Reload.IsFinished()) {
+        Ammo++;
+        if (Ammo < Class->MaxAmmo) {
+          Reload.Set(int64_t{kTicksPerSecond} * 30);
+        }
+        Mark(MARK_CHANGE);
+      }
+    }
+  }
+
+  /*
+  **	Hover landers always are flagged to redraw since they don't record
+  *themselves *	on the map in the normal fashion.
+  */
+  if (*this == UNIT_HOVER) {
+    //		Mark_For_Redraw();
+    Mark(MARK_CHANGE);
+  }
+
+  /*
+  **	If this is a vehicle that heals itself (e.g., Mammoth Tank), then it
+  *will perform *	the heal logic here.
+  */
+  if (*this == UNIT_HTANK && CurrentFrame() % 16 == 0 &&
+      Health_Ratio() < 0x0080) {
+    Strength++;
+    Mark(MARK_CHANGE);
+  }
+  if (*this == UNIT_VICE &&
+      TheMap().at(Coord_Cell(Coord)).Land_Type() == LAND_TIBERIUM &&
+      Health_Ratio() < 0x0100 && CurrentFrame() % 16 == 0) {
+    Strength++;
+    Mark(MARK_CHANGE);
+  }
+
+  /*
+  **	Transporters require special logic handled here since there isn't a
+  *MISSION_WAIT_FOR_PASSENGERS *	mission that they can follow. Passenger
+  *loading is merely a part of their normal operation.
+  */
+  if (Class->IsTransporter &&
+      (!Is_Door_Closed() && Mission != MISSION_UNLOAD &&
+       Transmit_Message(RADIO_TRYING_TO_LOAD) != RADIO_ROGER))
+  /*
+  **	Double check that there is a passenger that is trying to load or unload.
+  **	If not, then close the door.
+  */
+  {
+    APC_Close_Door();
+  }
+
+  /*
+  **	Don't start a new mission unless the vehicle is in the center of
+  **	a cell (not driving) and the door (if any) is closed.
+  */
+  if (!IsDriving && Is_Door_Closed() /*&& Mission != MISSION_UNLOAD*/) {
+    Commence();
+  }
+
+  /*
+  **	Handle recoil recovery here.
+  */
+  if (IsInRecoilState) {
+    IsInRecoilState = false;
+    Mark(MARK_CHANGE);
+  }
+
+  /*
+  ** For animating objects such as Visceroids, max-out their animation
+  ** stages here
+  */
+  if (Class->IsAnimating) {
+    if (!Fetch_Rate()) {
+      Set_Rate(2);
+    }
+    Graphic_Logic();
+    if (Fetch_Stage() >=
+        engine::gfx::KeyframeFrameCount(Class->Get_Image_Data()) - 1) {
+      Set_Stage(0);
+    }
+  }
+
+  /*
+  ** for Jurassic objects, animate them if they're walking
+  */
+  // Only animate if they're walking
+  if ((Class->IsPieceOfEight && TheSpecial().IsJurassic &&
+       TheGameState().thingies_enabled()) &&
+      (IsDriving || IsFiring)) {
+    if (!Fetch_Rate()) {
+      Set_Rate(static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));
+      Set_Stage(0);
+    }
+    Graphic_Logic();
+    if (Fetch_Stage() >=
+        (IsDriving || *this == UNIT_TREX || *this == UNIT_RAPT ? 8 : 12)) {
+      Set_Stage(0);
+      if (IsFiring) {
+        Set_Rate(0);
+        IsFiring = false;
+      }
+    }
+  }
+
+  /*
+  **	A cloaked object that is carrying the flag will always shimmer.
+  */
+  if (Cloak == CLOAKED && Flagged != HOUSE_NONE) {
+    Do_Shimmer();
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::Can_Fire -- Determines if this unit can fire. *
+ *                                                                                             *
+ * INPUT:   target   -- The target that is desired to fire upon. *
+ *                                                                                             *
+ *          which    -- The weapon (primary=0, secondary=1) to fire. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the fire error number if it cannot fire or else
+ *FIRE_OK.              *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. *
+ *=============================================================================================*/
+FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
+  Validate();
+
+  FireErrorType cf = TarComClass::Can_Fire(target, which);
+  /*
+  ** If it's a dinosaur, when it's OK to fire we should start the firing
+  ** animation, but wait for the proper attack stage before starting the
+  ** bullet, so things won't die prematurely.
+  */
+  if ((cf == FIRE_OK) && Class->IsFireAnim) {
+    if (!IsFiring) {
+      Set_Rate(static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));
+      Set_Stage(0);
+      IsFiring = true;
+      cf = FIRE_BUSY;
+    } else {
+      if (Fetch_Stage() < 4) {
+        cf = FIRE_BUSY;
+      }
+    }
+  }
+
+  return cf;
+}
+
+/***********************************************************************************************
+ * UnitClass::Receive_Message -- Handles receiving a radio message. *
+ *                                                                                             *
+ *    This is the handler function for when a unit receives a radio * message.
+ *Typical use of this is when a unit unloads from a hover * class so that
+ *clearing of the transport is successful.                                   *
+ *                                                                                             *
+ * INPUT:   from     -- Pointer to the originator of the message. *
+ *                                                                                             *
+ *          message  -- The radio message received. *
+ *                                                                                             *
+ *          param    -- Reference to an optional parameter the might be needed
+ *to return       * information back to the originator of the message. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the radio message response. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/22/1994 JLB : Created. *
+ *=============================================================================================*/
+RadioMessageType UnitClass::Receive_Message(RadioClass* from,
+                                            RadioMessageType message,
+                                            int32_t& param) {
+  Validate();
+  switch (message) {
+    /*
+    **	Asks if the passenger can load on this transport.
+    */
+    case RADIO_CAN_LOAD:
+      if (Class->IsTransporter && How_Many() < Class->Max_Passengers() &&
+          from && House->Class->House == from->Owner()) {
+        return RADIO_ROGER;
+      }
+      return RADIO_NEGATIVE;
+
+    /*
+    **	The refinery has told this harvester that it should begin the backup
+    *procedure *	so that proper unloading may take place.
+    */
+    case RADIO_BACKUP_NOW:
+      TarComClass::Receive_Message(from, message, param);
+      if (!IsRotating && PrimaryFacing != DIR_SW) {
+        Do_Turn(DIR_SW);
+      } else {
+        if (!IsDriving) {
+          Force_Track(kBackupIntoRefinery,
+                      Adjacent_Cell(Center_Coord(), FACING_N));
+          Set_Speed(128);
+        }
+      }
+      return RADIO_ROGER;
+
+    /*
+    **	This message is sent by the passenger when it determines that it has
+    **	entered the transport.
+    */
+    case RADIO_IM_IN:
+      if (How_Many() == Class->Max_Passengers()) {
+        APC_Close_Door();
+      }
+      return RADIO_ATTACH;
+
+    /*
+    **	Docking maintenance message received. Check to see if new orders should
+    *be given *	to the impatient unit.
+    */
+    case RADIO_DOCKING:
+      if (Class->IsTransporter && *this == UNIT_APC &&
+          How_Many() < Class->Max_Passengers()) {
+        TarComClass::Receive_Message(from, message, param);
+
+        /*
+        **	If the potential passenger needs someplace to go, then figure
+        *out a good *	spot and tell it to go.
+        */
+        if ((!IsDriving && !IsRotating && !IsTethered) &&
+            (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER)) {
+          CELL cell = 0;
+          const DirType dir = Desired_Load_Dir(from, cell);
+
+          /*
+          **	If no adjacent free cells are detected, then passenger loading
+          **	cannot occur. Break radio contact.
+          */
+          if (cell == 0) {
+            Transmit_Message(RADIO_OVER_OUT, from);
+          } else {
+            param = static_cast<int32_t>(::As_Target(cell));
+            Do_Turn(dir);
+
+            /*
+            **	If it is now facing the correct direction, then open the
+            **	transport doors. Close the doors if the transport is or
+            *needs *	to rotate.
+            */
+            if (IsRotating) {
+              if (!Is_Door_Closed()) {
+                APC_Close_Door();
+              }
+            } else {
+              if (!Is_Door_Open()) {
+                APC_Open_Door();
+              }
+            }
+
+            /*
+            **	Tell the potential passenger where it should go. If the
+            *passenger is *	already at the staging location, then tell it to
+            *move onto the transport *	directly.
+            */
+            if ((Transmit_Message(RADIO_MOVE_HERE, param, from) ==
+                 RADIO_YEA_NOW_WHAT) &&
+                Is_Door_Open()) {
+              param = static_cast<int32_t>(As_Target());
+              Transmit_Message(RADIO_TETHER);
+              if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
+                  RADIO_ROGER) {
+                Transmit_Message(RADIO_OVER_OUT, from);
+              } else {
+                Contact_With_Whom()->Unselect();
+              }
+            }
+          }
+        }
+
+        return RADIO_ROGER;
+      }
+      break;
+
+    /*
+    **	When this message is received, it means that the other object
+    **	has already turned its radio off. Turn this radio off as well.
+    */
+    case RADIO_OVER_OUT:
+      if (Mission == MISSION_RETURN) {
+        Assign_Mission(MISSION_GUARD);
+      }
+      TarComClass::Receive_Message(from, message, param);
+      return RADIO_ROGER;
+    case RadioMessageType::RADIO_STATIC:
+    case RadioMessageType::RADIO_ROGER:
+    case RadioMessageType::RADIO_HELLO:
+    case RadioMessageType::RADIO_PICK_UP:
+    case RadioMessageType::RADIO_ATTACH:
+    case RadioMessageType::RADIO_DELIVERY:
+    case RadioMessageType::RADIO_HOLD_STILL:
+    case RadioMessageType::RADIO_UNLOADED:
+    case RadioMessageType::RADIO_UNLOAD:
+    case RadioMessageType::RADIO_NEGATIVE:
+    case RadioMessageType::RADIO_BUILDING:
+    case RadioMessageType::RADIO_COMPLETE:
+    case RadioMessageType::RADIO_REDRAW:
+    case RadioMessageType::RADIO_ARE_REFINERY:
+    case RadioMessageType::RADIO_TRYING_TO_LOAD:
+    case RadioMessageType::RADIO_MOVE_HERE:
+    case RadioMessageType::RADIO_NEED_TO_MOVE:
+    case RadioMessageType::RADIO_YEA_NOW_WHAT:
+    case RadioMessageType::RADIO_RUN_AWAY:
+    case RadioMessageType::RADIO_TETHER:
+    case RadioMessageType::RADIO_UNTETHER:
+    case RadioMessageType::RADIO_REPAIR:
+    case RadioMessageType::RADIO_PREPARED:
+    case RadioMessageType::RADIO_ATTACK_THIS:
+    case RadioMessageType::RADIO_RELOAD:
+    case RadioMessageType::RADIO_KICK:
+    case RadioMessageType::RADIO_PUNCH:
+    case RadioMessageType::RADIO_PREPARE_TO_BOX:
+    case RadioMessageType::RADIO_COUNT:
+    default:
+      break;
+  }
+  return TarComClass::Receive_Message(from, message, param);
+}
+
+/***********************************************************************************************
+ * UnitClass::Unlimbo -- Removes unit from stasis. *
+ *                                                                                             *
+ *    This routine will place a unit into the game and out of its limbo * state.
+ *This occurs whenever a unit is unloaded from a transport. *
+ *                                                                                             *
+ * INPUT:   coord    -- The coordinate to make the unit appear. *
+ *                                                                                             *
+ *          dir      -- The initial facing to impart upon the unit. *
+ *                                                                                             *
+ * OUTPUT:  bool; Was the unit unlimboed successfully?  If the desired *
+ *                coordinate is illegal, then this might very well return *
+ *                false. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/22/1994 JLB : Created. *
+ *=============================================================================================*/
+bool UnitClass::Unlimbo(COORDINATE coord, DirType dir) {
+  Validate();
+  /*
+  **	All units must start out facing one of the 8 major directions.
+  */
+  dir = Facing_Dir(Dir_Facing(dir));
+
+  if (TarComClass::Unlimbo(coord, dir)) {
+    /*
+    **	Ensure that the owning house knows about the
+    **	new object.
+    */
+    House->UScan |= ScanBit(static_cast<int>(Class->Type));
+    House->ActiveUScan |= ScanBit(static_cast<int>(Class->Type));
+
+    /*
+    **	If it starts off the edge of the map, then it already starts cloaked.
+    */
+    if (IsCloakable && !IsLocked) {
+      Cloak = CLOAKED;
+    }
+
+    /*
+    **	Units default to no special animation.
+    */
+    Set_Rate(0);
+    Set_Stage(0);
+
+    /*
+    **	A gun boat and a hover craft are allowed to exit the map thus we
+    ** flag them so they can.  This undoes the work of Techno::Unlimbo which
+    ** stole their IsALoaner flag.
+    */
+    if (*this == UNIT_GUNBOAT || *this == UNIT_HOVER) {
+      IsALoaner = true;
+    }
+
+    /*
+    **	Start the gunboat animating when it is unlimboed.
+    */
+    if (*this == UNIT_GUNBOAT) {
+      Set_Rate(2);
+      Set_Stage(0);
+    }
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * UnitClass::Take_Damage -- Inflicts damage points on a unit. *
+ *                                                                                             *
+ *    This routine will inflict the specified number of damage points on * the
+ *given unit. If the unit is destroyed, then this routine will * remove the unit
+ *cleanly from the game. The return value indicates                        *
+ *    whether the unit was destroyed. This will allow appropriate death *
+ *    animation or whatever. *
+ *                                                                                             *
+ * INPUT:   damage-- The number of damage points to inflict. *
+ *                                                                                             *
+ *          distance -- The distance from the damage center point to the
+ *object's center point.*
+ *                                                                                             *
+ *          warhead--The type of damage to inflict. *
+ *                                                                                             *
+ *          source   -- Who is responsible for this damage? *
+ *                                                                                             *
+ * OUTPUT:  Returns the result of the damage process. This can range from
+ *RESULT_NONE up to    * RESULT_DESTROYED. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/30/1991 JLB : Created. * 07/12/1991 JLB : Script initiated by
+ *unit destruction.                                    * 04/15/1994 JLB :
+ *Converted to member function.                                            *
+ *   04/16/1994 JLB : Warhead modifier. * 06/03/1994 JLB : Added the source of
+ *the damage target value.                             * 06/20/1994 JLB : Source
+ *is a base class pointer.                                          * 11/22/1994
+ *JLB : Shares base damage handler for techno objects. * 06/30/1995 JLB : Lasers
+ *do maximum damage against gunboat.                                * 08/16/1995
+ *JLB : Harvester crushing doesn't occur on early missions. *
+ *=============================================================================================*/
+ResultType UnitClass::Take_Damage(int& damage, int distance,
+                                  WarheadType warhead, TechnoClass* source) {
+  Validate();
+  ResultType res = RESULT_NONE;
+
+  /*
+  **	Special case: If this is a laser attacking a gunboat, then the gunboat
+  *is ALWAYS toasted.
+  */
+  if (*this == UNIT_GUNBOAT && warhead == WARHEAD_LASER) {
+    damage = Strength * 3;
+  }
+
+  /*
+  **	Remember if this object was selected. If it was and it gets destroyed
+  *and it has *	passengers that pop out, then the passengers will inherit the
+  *select state.
+  */
+  const bool select = IsSelected && IsOwnedByPlayer;
+
+  /*
+  **	In order for a this to be damaged, it must either be a unit
+  **	with a crew or a sandworm.
+  */
+  res = TarComClass::Take_Damage(damage, distance, warhead, source);
+
+  if (res == RESULT_DESTROYED) {
+    Death_Announcement(source);
+    if (Class->Explosion != ANIM_NONE) {
+      AnimType anim = Class->Explosion;
+
+      /*
+      **	SSM launchers will really explode big if they are carrying
+      **	missiles at the time of the explosion.
+      */
+      if (*this == UNIT_MSAM && Ammo) {
+        anim = ANIM_NAPALM3;
+      }
+
+      if (*this == UNIT_TRIC || *this == UNIT_TREX || *this == UNIT_RAPT ||
+          *this == UNIT_STEG) {
+        Sound_Effect(VOC_DINODIE1, Coord);
+      }
+
+      base::NewPooled<AnimClass>(anim, Coord);
+
+      /*
+      **	When the flame tank blows up, it really blows up. It is
+      **	equivalent to a napalm strike.
+      */
+      if (Class->Explosion == ANIM_NAPALM3) {
+        Explosion_Damage(Coord, 200, source, WARHEAD_FIRE);
+      }
+
+      /*
+      **	Very strong units that have an explosion will also rock the
+      **	screen when they are destroyed.
+      */
+      if (Class->MaxStrength > 400) {
+        ShakeScreen(3);
+      }
+    }
+
+    /*
+    **	Possibly have the crew member run away.
+    */
+    Mark(MARK_UP);
+    if (Class->IsCrew && !Class->IsTransporter) {
+      if (Random_Pick(0, 1) == 0) {
+        InfantryClass* i = nullptr;
+        if (Class->Primary == WEAPON_NONE) {
+          i = base::NewPooled<InfantryClass>(INFANTRY_C1, House->Class->House);
+          i->IsTechnician = true;
+        } else {
+          i = base::NewPooled<InfantryClass>(INFANTRY_E1, House->Class->House);
+        }
+        if (i) {
+          if (i->Unlimbo(Coord, DIR_N)) {
+            i->Strength = static_cast<int16_t>(
+                Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2));
+            i->Scatter(0, true);
+            if (!House->IsHuman) {
+              i->Assign_Mission(MISSION_HUNT);
+            } else {
+              i->Assign_Mission(MISSION_GUARD);
+            }
+            if (select) {
+              i->Select();
+            }
+          } else {
+            base::DeletePooled(i);
+          }
+        }
+      }
+    } else {
+      if (*this != UNIT_HOVER) {
+        while (Is_Something_Attached()) {
+          FootClass* object = Detach_Object();
+
+          if (!object) {
+            break;  // How can this happen?
+          }
+
+          /*
+          **	Only infantry can run from a destroyed vehicle. Even then, it is
+          *not a sure *	thing.
+          */
+          if (object->Is_Infantry() && object->Unlimbo(Coord, DIR_N)) {
+            //					object->Strength =
+            // Random_Pick(5,
+            //(int)((InfantryClass*)object)->Class->MaxStrength/2);
+            object->Scatter(0, true);
+            if (select) {
+              object->Select();
+            }
+          } else {
+            object->Record_The_Kill(source);
+            base::DeletePooled(object);
+          }
+        }
+      } else {
+        Kill_Cargo(source);
+      }
+    }
+
+    /*
+    **	When the mobile head quarters blows up, the entire side blows up.
+    */
+    if (*this == UNIT_MHQ) {
+      House->Flag_To_Die();
+    }
+
+    /*
+    **	Finally, delete the vehicle.
+    */
+    delete this;
+
+  } else {
+    /*
+    **	When damaged and below half strength, start smoking if
+    **	it isn't already smoking.
+    */
+    if (Health_Ratio() < 0x0080 && !IsAnimAttached && *this != UNIT_VICE &&
+        *this != UNIT_STEG && *this != UNIT_TREX && *this != UNIT_TRIC &&
+        *this != UNIT_RAPT) {
+      auto* anim = base::NewPooled<AnimClass>(
+          ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
+      if (anim) {
+        anim->Attach_To(this);
+      }
+    }
+
+    /*
+    **	If at half damage, then start smoking or burning as appropriate.
+    */
+    if (res == RESULT_HALF) {
+      if (*this == UNIT_GUNBOAT) {
+        auto* anim = base::NewPooled<AnimClass>(
+            ANIM_ON_FIRE_MED,
+            Coord_Add(Coord, XYP_Coord(Random_Pick(0, 16) - 8, -2)));
+        if (anim) {
+          anim->Attach_To(this);
+        }
+      }
+    }
+
+    /*
+    **	Try to crush anyone that fires on this unit if possible. The harvester
+    **	typically is the only one that will qualify here.
+    */
+    if (!Team && source && !IsTethered && !House->Is_Ally(source) &&
+        (!House->IsHuman || TheSpecial().IsSmartDefense)) {
+      /*
+      **	Try to crush the attacker if it can be crushed by this unit and
+      *this unit is *	not equipped with a flame type weapon. If this unit has
+      *a weapon and the target *	is not very close, then fire on it
+      *instead. In easy mode, they never run over the *	player. In hard mode,
+      *they always do. In normal mode, they only overrun past *	mission #8.
+      */
+      if ((Class->Primary == WEAPON_NONE ||
+           (Distance(source) < 0x0180 &&
+            BulletTypeClass::As_Reference(Weapons.at(Class->Primary).Fires)
+                    .Warhead != WARHEAD_FIRE)) &&
+          (TheSession().type() != GAME_NORMAL || *this != UNIT_HARVESTER ||
+           TheWorld().build_level() > 8 || TheSpecial().IsDifficult) &&
+          !TheSpecial().IsEasy && Class->IsCrusher && source->Is_Techno() &&
+          source->Class_Of().IsCrushable) {
+        Assign_Destination(source->As_Target());
+        Assign_Mission(MISSION_MOVE);
+      } else {
+        /*
+        **	Try to return to base if possible.
+        */
+        if (*this == UNIT_HARVESTER && Pip_Count() && Health_Ratio() < 0x0080) {
+          /*
+          **	Find nearby refinery and head to it?
+          */
+          BuildingClass* building = Find_Docking_Bay(STRUCT_REFINERY, false);
+
+          /*
+          **	Since the refinery said it was ok to load, establish radio
+          **	contact with the refinery and then await docking orders.
+          */
+          if (building &&
+              Transmit_Message(RADIO_HELLO, building) == RADIO_ROGER) {
+            Assign_Mission(MISSION_ENTER);
+          }
+        }
+      }
+    }
+
+    /*
+    **	Computer controlled harvester will radio for help if they are attacked.
+    */
+    if (*this == UNIT_HARVESTER && !House->IsHuman && source) {
+      Base_Is_Attacked(source);
+    }
+  }
+  return res;
+}
+
+/***********************************************************************************************
+ * UnitClass::new -- Allocate a unit slot and adjust access arrays. *
+ *                                                                                             *
+ *    This routine will allocate a unit from the available unit pool and * fixup
+ *all the access lists to match. It will allocate a unit slot * from within the
+ *range allowed for the specified unit type. If no                         *
+ *    slot was found, then it will fail. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the allocated unit. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 04/11/1994 JLB : Created. * 04/21/1994 JLB : Converted to operator
+ *new.                                               *
+ *=============================================================================================*/
+void* UnitClass::operator new(std::size_t /*unused*/) noexcept {
+  void* ptr = static_cast<UnitClass*>(TheObjectHeaps().unit().Allocate());
+  if (ptr) {
+    static_cast<UnitClass*>(ptr)->IsActive = true;
+  }
+  return ptr;
+}
+
+/***********************************************************************************************
+ * UnitClass::delete -- Deletion operator for units. *
+ *                                                                                             *
+ *    This removes the unit from the local allocation system. Since this * is a
+ *fixed block of memory, not much has to be done to delete the * unit. Merely
+ *marking it as inactive is enough.                                           *
+ *                                                                                             *
+ * INPUT:   ptr   -- Pointer to the unit to delete. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 04/21/1994 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::operator delete(void* ptr) {
+  if (ptr) {
+    static_cast<UnitClass*>(ptr)->IsActive = false;
+  }
+  TheObjectHeaps().unit().Free(static_cast<UnitClass*>(ptr));
+}
+
+/***********************************************************************************************
+ * UnitClass::~UnitClass -- Destructor for unit objects. *
+ *                                                                                             *
+ *    This destructor will lower the unit count for the owning house as well as
+ *inform any     * other units in communication, that this unit is about to
+ *leave reality.                  *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/15/1994 JLB : Created. *
+ *=============================================================================================*/
+UnitClass::~UnitClass() {
+  if (TheGameState().active() && Class) {
+    /*
+    **	If there are any cargo members, delete them.
+    */
+    while (Is_Something_Attached()) {
+      base::DeletePooled(Detach_Object());
+    }
+
+    Limbo();
+  }
+  if (TheGameState().active() && Team) {
+    Team->Remove(this);
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::UnitClass -- Constructor for units. *
+ *                                                                                             *
+ *    This constructor for units will initialize the unit into the game *
+ *    system. It will be placed in all necessary tracking lists. The initial
+ *condition will    * be in a state of limbo. *
+ *                                                                                             *
+ * INPUT:   classid  -- The type of unit to create. *
+ *                                                                                             *
+ *          house -- The house owner of this unit. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 04/21/1994 JLB : Created. *
+ *=============================================================================================*/
+UnitClass::UnitClass(UnitType classid, HousesType house)
+    : TarComClass(classid, house) {
+  Reload.Set(0);
+  Ammo = Class->MaxAmmo;
+  IsCloakable = Class->IsCloakable;
+  if (Class->IsAnimating) {
+    Set_Rate(static_cast<unsigned char>(TheOptions().Normalize_Delay(3)));
+  }
+
+  /*
+  ** Keep count of the number of units created.
+  */
+  if (TheSession().type() == GAME_INTERNET) {
+    House->UnitTotals->Increment_Unit_Total(static_cast<int>(classid));
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::Active_Click_With -- Intercepts the active click to see if
+ *deployment is possible*
+ *                                                                                             *
+ *    This routine intercepts the active click operation. It check to see if
+ *this is a self    * deployment request (MCV's have this ability). If it is,
+ *then the object is initiated     * to self deploy. In the other cases, it
+ *passes the operation down to the lower            * classes for processing. *
+ *                                                                                             *
+ * INPUT:   action   -- The action requested of the unit. *
+ *                                                                                             *
+ *          object   -- The object that the mouse pointer is over. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/10/1995 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::Active_Click_With(ActionType action, ObjectClass* object) {
+  Validate();
+  if (action != What_Action(object)) {
+    switch (action) {
+      case ACTION_SABOTAGE:
+      case ACTION_CAPTURE:
+        action = ACTION_ATTACK;
+        break;
+
+      case ACTION_ENTER:
+        action = ACTION_MOVE;
+        break;
+
+      case ActionType::ACTION_NONE:
+      case ActionType::ACTION_MOVE:
+      case ActionType::ACTION_NOMOVE:
+      case ActionType::ACTION_SELF:
+      case ActionType::ACTION_ATTACK:
+      case ActionType::ACTION_HARVEST:
+      case ActionType::ACTION_SELECT:
+      case ActionType::ACTION_TOGGLE_SELECT:
+      case ActionType::ACTION_REPAIR:
+      case ActionType::ACTION_SELL:
+      case ActionType::ACTION_SELL_UNIT:
+      case ActionType::ACTION_NO_SELL:
+      case ActionType::ACTION_NO_REPAIR:
+      case ActionType::ACTION_ION:
+      case ActionType::ACTION_NUKE_BOMB:
+      case ActionType::ACTION_AIR_STRIKE:
+      case ActionType::ACTION_GUARD_AREA:
+      case ActionType::ACTION_COUNT:
+      default:
+        action = ACTION_NONE;
+        break;
+    }
+  }
+  TarComClass::Active_Click_With(action, object);
+}
+
+void UnitClass::Active_Click_With(ActionType action, CELL cell) {
+  TarComClass::Active_Click_With(action, cell);
+}
+
+/***********************************************************************************************
+ * UnitClass::Enter_Idle_Mode -- Unit enters idle mode state. *
+ *                                                                                             *
+ *    This routine is called when the unit completes one mission but does not
+ *have a clear     * follow up mission to perform. In such a case, the unit
+ *should enter a default idle       * state. This idle state varies depending on
+ *what the current internal computer            * settings of the unit is as
+ *well as what kind of unit it is.                              *
+ *                                                                                             *
+ * INPUT:   initial  -- Is this called when the unit just leaves a factory or is
+ *initially     * or is initially placed on the map? *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/31/1994 JLB : Created. * 06/03/1994 JLB : Fixed to handle
+ *non-combat vehicles.                                     * 06/18/1995 JLB :
+ *Allows a harvester to stop harvesting.                                   *
+ *=============================================================================================*/
+void UnitClass::Enter_Idle_Mode(bool initial) {
+  Validate();
+  MissionType order = MISSION_NONE;
+
+  /*
+  **	A movement mission without a NavCom would be pointless to have a radio
+  *contact since *	no radio coordination occurs on a just a simple movement
+  *mission.
+  */
+  if (Mission == MISSION_MOVE && !Target_Legal(NavCom)) {
+    Transmit_Message(RADIO_OVER_OUT);
+  }
+
+  if (Class->Primary == WEAPON_NONE) {
+    if (Class->IsToHarvest) {
+      if (!In_Radio_Contact() && Mission != MISSION_HARVEST) {
+        if (initial || !House->IsHuman ||
+            TheMap().at(Coord_Cell(Coord)).Land_Type() == LAND_TIBERIUM) {
+          order = MISSION_HARVEST;
+        } else {
+          order = MISSION_GUARD;
+        }
+        Assign_Target(kTargetNone);
+        Assign_Destination(kTargetNone);
+      } else {
+        return;
+      }
+    } else {
+      if (IsALoaner && Class->IsTransporter && Is_Something_Attached() &&
+          !Team) {
+        order = MISSION_UNLOAD;
+      } else {
+        order = MISSION_GUARD;
+        Assign_Target(kTargetNone);
+        Assign_Destination(kTargetNone);
+      }
+    }
+  } else {
+    if (Target_Legal(TarCom)) {
+      order = MISSION_ATTACK;
+    } else {
+      if (Target_Legal(NavCom)) {
+        order = MISSION_MOVE;
+      } else {
+        if (TheSession().type() == GAME_NORMAL || House->IsHuman) {
+          order = MISSION_GUARD;
+        } else {
+          if (TheSession().type() != GAME_NORMAL) {
+            order = MISSION_TIMED_HUNT;
+          } else {
+            order = MISSION_HUNT;
+          }
+        }
+      }
+    }
+  }
+  Assign_Mission(order);
+}
+
+/***********************************************************************************************
+ * UnitClass::Find_LZ -- Maintenance function for transport units. *
+ *                                                                                             *
+ *    This is a maintenance function for transport units. It checks to see if it
+ *is loaded     * with cargo, but it doesn't know where to put it. In such a
+ *case, the unit must look      * for a landing zone (LZ) to unload the cargo.
+ *This routine should be called every so      * often. Typically, calling this
+ *routine is controlled by the scripts.                     *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/31/1994 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::Find_LZ() {
+  Validate();
+
+  if (*this == UNIT_HOVER) {
+    if (!IsRotating && Is_Something_Attached() && !Target_Legal(NavCom)) {
+      CELL const cell = TheMap().Calculated_Cell(
+          SOURCE_BEACH, House->Class->House);  // Map exit cell number.
+      Assign_Destination(::As_Target(cell));
+    }
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::Unload_Hovercraft_Process -- Handles unloading hovercraft
+ *transport.             *
+ *                                                                                             *
+ *    This is a maintenance routine to handle the special operations necessary
+ *for a           * hovercraft transport. This routine checks to see if special
+ *unloading operations are     * necessary and performs them. These operations
+ *can include unloading the transported      * object, finding a new beach cell,
+ *and rotating to a convenient unloading facing.         *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Has the transport finished its unloading mission?  This is
+ *true after the    * hovercraft has completely dispatched its cargo. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/31/1994 JLB : Created. * 07/31/1995 JLB : Second infantry
+ *unloaded MUST be the one tethered.                       *
+ *=============================================================================================*/
+bool UnitClass::Unload_Hovercraft_Process() {
+  Validate();
+  const bool unloaded = false;
+
+  /*
+  **	If the hovercraft is currently waiting for the last unit
+  **	to completely unload, then don't do anything.
+  */
+  if (IsTethered || IsRotating) {
+    return false;
+  }
+
+  if (Is_Something_Attached()) {
+    /*
+    **	Only unload if the hovercraft has reached the beach.
+    */
+    if (!Target_Legal(NavCom)) {
+      CELL const cell = Coord_Cell(Adjacent_Cell(
+          Coord, Dir_Facing(PrimaryFacing.Current())));  // Cell to unload to.
+
+      FootClass* unit = Attached_Object();  // The unit to be unloaded.
+
+      Mark(MARK_UP);
+      if (TheMap().In_Radar(cell) && !TheMap().at(cell).Cell_Unit()) {
+        if (unit->Can_Enter_Cell(cell, FACING_NONE) == MOVE_OK) {
+          /*
+          **	Place all the transported units onto the map.
+          */
+          int count = 0;
+          bool first = true;
+          FootClass* secondary = nullptr;
+          while (Attached_Object()) {
+            FootClass* u = Detach_Object();
+
+            if (!first && !secondary) {
+              secondary = u;
+            }
+            first = false;
+
+            /*
+            **	Place the unit on the map and start it heading in the right
+            *direction.
+            */
+            TheWorld().scenario_init()++;
+            if (u->Unlimbo(Coord_Add(Coord & 0xFF00FF00L,
+                                     base::At(StoppingCoordAbs, count)),
+                           DIR_N)) {
+              u->Assign_Mission(MISSION_MOVE);
+              u->NavCom = ::As_Target(cell);
+              base::At(u->Path, 0) = Dir_Facing(u->PrimaryFacing.Current());
+              base::At(u->Path, 1) = FACING_NONE;
+              u->Set_Speed(0x80);
+              u->IsUnloading = true;
+
+            } else {
+              // Couldn't unlimbo for some strange reason. Kill the unit off.
+              if (secondary == u) {
+                secondary = nullptr;
+              }
+              if (unit == u) {
+                unit = nullptr;
+              }
+              base::DeletePooled(u);
+            }
+            TheWorld().scenario_init()--;
+            count++;
+          }
+          if (secondary) {
+            unit = secondary;
+          }
+
+          /*
+          **	Establish radio contact bond with the transport
+          **	hovercraft. This bond tells the hovercraft to
+          **	not move until the unit has completely unloaded.
+          */
+          if (Transmit_Message(RADIO_HELLO, unit) == RADIO_ROGER) {
+            Transmit_Message(RADIO_UNLOAD);
+          }
+          Mark(MARK_DOWN);
+          MouseClass::Layer.at(LAYER_GROUND).Sort();
+          MouseClass::Layer.at(LAYER_GROUND).Sort();
+          MouseClass::Layer.at(LAYER_GROUND).Sort();
+          return false;
+        }
+        /*
+         **	If the attached object cannot unload because the desired
+         *destination *	cell is impassable, then abort the landing. This
+         *is faked by pretending *	that the unload was successful. The
+         *controlling routine will cause *	the transport to leave.
+         */
+        Mark(MARK_DOWN);
+        return false;
+        //					return(true);
+      }
+
+      Mark(MARK_DOWN);
+    }
+  } else {
+    return true;
+  }
+
+  return unloaded;
+}
+
+/***********************************************************************************************
+ * UnitClass::Goto_Clear_Spot -- Finds a clear spot to deploy. *
+ *                                                                                             *
+ *    This routine is used by the MCV to find a clear spot to deploy. If a clear
+ *spot          * is found, then the MCV will assign that location to its
+ *navigation computer. This only   * occurs if the MCV isn't already heading
+ *toward a spot.                                   *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool;  Is the located at a spot where it can deploy? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/27/1994 JLB : Created. *
+ *=============================================================================================*/
+bool UnitClass::Goto_Clear_Spot() {
+  Validate();
+  Mark(MARK_UP);
+  if (!Target_Legal(NavCom) && BuildingTypeClass::As_Reference(STRUCT_CONST)
+                                   .Legal_Placement(Coord_Cell(Coord))) {
+    Mark(MARK_DOWN);
+    return true;
+  }
+
+  if (!Target_Legal(NavCom)) {
+    /*
+    **	This scan table is skewed to north scanning only. This should
+    **	probably be converted to a more flexible method.
+    */
+    static int _offsets[] = {
+        -MAP_CELL_W * 1,       -MAP_CELL_W * 2,       -(MAP_CELL_W * 2) + 1,
+        -(MAP_CELL_W * 2) - 1, -MAP_CELL_W * 3,       -(MAP_CELL_W * 3) + 1,
+        -(MAP_CELL_W * 3) - 1, -(MAP_CELL_W * 3) + 2, -(MAP_CELL_W * 3) - 2,
+        -MAP_CELL_W * 4,       -(MAP_CELL_W * 4) + 1, -(MAP_CELL_W * 4) - 1,
+        -(MAP_CELL_W * 4) + 2, -(MAP_CELL_W * 4) - 2, 0};
+
+    std::span<int> ptr = _offsets;
+    while (!ptr.empty() && ptr.front()) {
+      const CELL cell =
+          static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(ptr));
+
+      if (BuildingTypeClass::As_Reference(STRUCT_CONST).Legal_Placement(cell)) {
+        Assign_Destination(::As_Target(cell));
+        break;
+      }
+    }
+  }
+  Mark(MARK_DOWN);
+
+  return false;
+}
+
+/***********************************************************************************************
+ * UnitClass::Try_To_Deploy -- The unit attempts to "deploy" at current
+ *location.              *
+ *                                                                                             *
+ *    Certain units have the ability to deploy into a building. When this
+ *routine is called    * for one of those units, it will attempt to deploy at
+ *its current location. If the unit   * is in motion to a destination or it
+ *isn't one of the special units that can deploy or    * it isn't allowed to
+ *deploy at this location for some reason it won't deploy. In all      * other
+ *cases, it will begin to deploy and once it begins only a player abort action
+ *will  * stop it. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Was deployment begun? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/18/1994 JLB : Created. *
+ *=============================================================================================*/
+bool UnitClass::Try_To_Deploy() {
+  Validate();
+  if (!Target_Legal(NavCom) && !IsRotating) {
+    if (*this == UNIT_MCV) {
+      /*
+      **	Determine if it is legal to deploy at this location. If not,
+      *tell the *	player.
+      */
+      Mark(MARK_UP);
+      if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
+               .Legal_Placement(
+                   Coord_Cell(Adjacent_Cell(Center_Coord(), FACING_NW)))) {
+        if (ThePlayer() == House) {
+          Speak(VOX_DEPLOY);
+        }
+        Mark(MARK_DOWN);
+        IsDeploying = false;
+        return false;
+      }
+      Mark(MARK_DOWN);
+
+      /*
+      **	If the unit is not facing the correct direction, then start it
+      *rotating *	toward the right facing, but still flag it as if it had
+      *deployed. This is *	because it will deploy as soon as it reaches the
+      *correct facing.
+      */
+      if (PrimaryFacing.Current() != DIR_SW) {
+        Do_Turn(DIR_SW);
+        //				PrimaryFacing.Set_Desired(DIR_SW);
+        IsDeploying = true;
+        return true;
+      }
+
+      /*
+      **	Since the unit is already facing the correct direction, actually
+      *do the *	deploy logic. If for some reason this cannot occur, then don't
+      *delete the *	unit, just mark it as not deploying.
+      */
+      Mark(MARK_UP);
+      auto* building =
+          base::NewPooled<BuildingClass>(STRUCT_CONST, House->Class->House);
+      if (building) {
+        if (building->Unlimbo(Adjacent_Cell(Coord, FACING_NW))) {
+          /*
+          **	Always reveal the construction yard to the player that owned the
+          **	mobile construction vehicle.
+          */
+          building->Revealed(House);
+
+          /*
+          **	Force the newly placed construction yard to be in the same
+          *strength *	ratio as the MCV that deployed into it.
+          */
+          const int ratio = Health_Ratio();
+          building->Strength = static_cast<int16_t>(
+              Fixed_To_Cardinal(building->Class->MaxStrength, ratio));
+          /*
+          ** Force the MCV to drop any flag it was carrying.  This will also set
+          ** the owner house's flag home cell (since the house's FlagHome is
+          ** presumably 0 at this point).
+          */
+          Stun();
+          delete this;
+          return true;
+        }
+        /*
+         **	Could not deploy the construction yard at this location! Just
+         *revert *	back to normal "just sitting there" mode and await
+         *further instructions.
+         */
+        base::DeletePooled(building);
+      }
+      Mark(MARK_DOWN);
+      IsDeploying = false;
+    }
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * UnitClass::Per_Cell_Process -- Performs operations necessary on a per cell
+ *basis.           *
+ *                                                                                             *
+ *    This routine will perform the operations necessary that occur when a unit
+ *is at the      * center of a cell. These operations could entail deploying
+ *into a construction yard,      * radioing a transport unit, and looking around
+ *for the enemy.                             *
+ *                                                                                             *
+ * INPUT:   center   -- Is the unit safely at the center of a cell?  If it is
+ *merely "close"   * to the center, then this parameter will be false. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/18/1994 JLB : Created. * 06/17/1995 JLB : Handles case when
+ *building says "NO!"                                    * 06/30/1995 JLB :
+ *Gunboats head back and forth now.                                        *
+ *=============================================================================================*/
+void UnitClass::Per_Cell_Process(bool center) {
+  Validate();
+  const CELL cell = Coord_Cell(Coord);
+  HousesType house = HOUSE_NONE;
+
+  /*
+  **	If this is a unit that is driving onto a building then the unit must
+  *enter *	the building as the final step.
+  */
+  TechnoClass* whom = Contact_With_Whom();
+  if ((IsTethered && whom && center) &&
+      (whom->What_Am_I() == RTTI_BUILDING && Mission == MISSION_ENTER) &&
+      (whom == TheMap().at(cell).Cell_Building())) {
+    switch (Transmit_Message(RADIO_IM_IN, whom)) {
+      case RADIO_ROGER:
+        break;
+
+      case RADIO_ATTACH:
+        Mark(MARK_UP);
+        TheGameState().special_flag() = true;
+        Limbo();
+        TheGameState().special_flag() = false;
+        whom->Attach(this);
+        return;
+
+      case RadioMessageType::RADIO_STATIC:
+      case RadioMessageType::RADIO_HELLO:
+      case RadioMessageType::RADIO_OVER_OUT:
+      case RadioMessageType::RADIO_PICK_UP:
+      case RadioMessageType::RADIO_DELIVERY:
+      case RadioMessageType::RADIO_HOLD_STILL:
+      case RadioMessageType::RADIO_UNLOADED:
+      case RadioMessageType::RADIO_UNLOAD:
+      case RadioMessageType::RADIO_NEGATIVE:
+      case RadioMessageType::RADIO_BUILDING:
+      case RadioMessageType::RADIO_COMPLETE:
+      case RadioMessageType::RADIO_REDRAW:
+      case RadioMessageType::RADIO_DOCKING:
+      case RadioMessageType::RADIO_CAN_LOAD:
+      case RadioMessageType::RADIO_ARE_REFINERY:
+      case RadioMessageType::RADIO_TRYING_TO_LOAD:
+      case RadioMessageType::RADIO_MOVE_HERE:
+      case RadioMessageType::RADIO_NEED_TO_MOVE:
+      case RadioMessageType::RADIO_YEA_NOW_WHAT:
+      case RadioMessageType::RADIO_IM_IN:
+      case RadioMessageType::RADIO_BACKUP_NOW:
+      case RadioMessageType::RADIO_RUN_AWAY:
+      case RadioMessageType::RADIO_TETHER:
+      case RadioMessageType::RADIO_UNTETHER:
+      case RadioMessageType::RADIO_REPAIR:
+      case RadioMessageType::RADIO_PREPARED:
+      case RadioMessageType::RADIO_ATTACK_THIS:
+      case RadioMessageType::RADIO_RELOAD:
+      case RadioMessageType::RADIO_KICK:
+      case RadioMessageType::RADIO_PUNCH:
+      case RadioMessageType::RADIO_PREPARE_TO_BOX:
+      case RadioMessageType::RADIO_COUNT:
+      default:
+        // The original passed `true` as the threat coordinate; that value (1)
+        // is kept.
+        Scatter(static_cast<COORDINATE>(1));
+        break;
+    }
+  }
+
+  /*
+  **	When breaking away from a transport object or building, possibly
+  **	scatter or otherwise begin normal unit operations.
+  */
+  if (IsTethered && center && Mission != MISSION_ENTER) {
+    if (Transmit_Message(RADIO_UNLOADED) == RADIO_RUN_AWAY) {
+      if (!Target_Legal(NavCom)) {
+        Scatter(0, true);
+      }
+    } else {
+      if (*this == UNIT_HARVESTER) {
+        if (Target_Legal(ArchiveTarget)) {
+          Assign_Mission(MISSION_HARVEST);
+          Assign_Destination(ArchiveTarget);
+          ArchiveTarget = kTargetNone;
+        } else {
+          /*
+          **	Since there is no place to go, move away to clear
+          **	the pad for another harvester.
+          */
+          if (!Target_Legal(NavCom)) {
+            Scatter(0, true);
+          }
+        }
+      }
+    }
+  }
+
+#ifdef OBSOLETE
+  /*
+  **	If this unit is on a teather, then cut it at this time so that
+  **	the "parent" unit is free to proceed. Note that the parent
+  **	unit might actually be a building.
+  */
+  if (IsTethered && center && !TheMap()[cell].Cell_Building()) {
+    if (!Tiberium || *this != UNIT_HARVESTER) {
+      Transmit_Message(RADIO_UNLOADED);
+      if (*this == UNIT_HARVESTER) {
+        if (Target_Legal(ArchiveTarget)) {
+          Assign_Mission(MISSION_HARVEST);
+          Assign_Destination(ArchiveTarget);
+          ArchiveTarget = kTargetNone;
+        } else {
+          /*
+          **	Since there is no place to go, move away to clear
+          **	the pad for another harvester.
+          */
+          Scatter(0, true);
+        }
+      }
+    }
+  }
+#endif
+
+#ifdef OBSOLETE
+  /*
+  ** If the unit is at the center of the repair facility, and that was his
+  ** destination, then start him repairing.
+  */
+  if (center && !IsRepairing) {
+    BuildingClass* b = As_Building(NavCom);
+    if (b && *b == STRUCT_REPAIR && Coord == b->Center_Coord()) {
+      NavCom = 0;
+      IsRepairing = true;
+      Transmit_Message(RADIO_REPAIR_BEGIN_ANIM);
+    }
+  }
+#endif
+
+  /*
+  **	Check to see if this is merely the end of a rotation for the MCV as it
+  *is *	preparing to deploy. In this case, it should begin its deploy process.
+  */
+  if (center && IsDeploying) {
+    Try_To_Deploy();
+    if (!IsActive) {
+      return;  // Unit no longer exists -- bail.
+    }
+  }
+
+  /*
+  **	If this is a loaner unit and is is off the edge of the
+  **	map, then it gets eliminated. That is, unless it is carrying cargo. This
+  *means that *	it is probably carrying an incoming reinforcement and it should
+  *not be eliminated.
+  */
+  if (center && IsALoaner && !TheMap().In_Radar(cell)) {
+    if (IsReturning || !Is_Something_Attached()) {
+      if (*this == UNIT_GUNBOAT) {
+        const CELL current_cell = Coord_Cell(Coord);
+        if (Cell_X(current_cell) <= TheMap().MapCellX) {
+          Assign_Mission(MISSION_HUNT);
+          Assign_Destination(
+              ::As_Target(XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth,
+                                  Cell_Y(current_cell))));
+          Set_Speed(255);
+          PrimaryFacing = DIR_E;
+        } else {
+          Assign_Mission(MISSION_HUNT);
+          Assign_Destination(::As_Target(
+              XY_Cell(TheMap().MapCellX - 1, Cell_Y(current_cell))));
+          Set_Speed(255);
+          PrimaryFacing = DIR_W;
+        }
+        Mark(MARK_DOWN);
+      } else {
+        Mark(MARK_DOWN);
+        Stun();
+        delete this;
+        return;
+      }
+    }
+  }
+
+#ifdef OBSOLETE
+  /*
+  **	Destroy any crushable wall that is driven over by a tracked vehicle.
+  */
+  CellClass* cellptr = &TheMap()[cell];
+  if (center && Class->Speed == SPEED_TRACK &&
+      cellptr->Overlay != OVERLAY_NONE) {
+    const OverlayTypeClass* optr =
+        &OverlayTypeClass::As_Reference(cellptr->Overlay);
+
+    if (optr->IsCrushable) {
+      cellptr->Reduce_Wall(100);
+      cellptr->Reduce_Wall(100);
+      cellptr->Reduce_Wall(100);
+      cellptr->Reduce_Wall(100);
+      cellptr->Reduce_Wall(100);
+      cellptr->Reduce_Wall(100);
+    }
+  }
+#endif
+
+  /*
+  **	Check to see if crushing of any unfortunate infantry is warranted.
+  */
+  Overrun_Square(Coord_Cell(Coord), false);
+
+  /*
+  **	The unit performs looking around at this time. If the
+  **	unit moved further than one square during the last track
+  **	move, don't do an incremental look. Do a full look around
+  **	instead.
+  */
+  if (IsPlanningToLook) {
+    IsPlanningToLook = false;
+    Look(false);
+  } else {
+    Look(true);
+  }
+
+  /*
+  **	Act on new orders if the unit is at a good position to do so.
+  */
+  if (center) {
+    Commence();
+  }
+
+  /*
+  **	Certain units require some setup time after they come to a halt.
+  */
+  if (TheSpecial().IsDefenderAdvantage && /*center &&*/ !Target_Legal(NavCom) &&
+      base::At(Path, 0) == FACING_NONE) {
+    if (*this == UNIT_MLRS || *this == UNIT_ARTY || *this == UNIT_MSAM) {
+      Arm = static_cast<unsigned char>(Rearm_Delay(false) * 2);
+    }
+  }
+
+  /*
+  **	If there is a house flag here, then this unit just might pick it up.
+  */
+  if ((center && Flagged == HOUSE_NONE) &&
+      (TheMap().at(cell).IsFlagged &&
+       TheMap().at(cell).Owner != House->Class->House)) {
+    HouseClass::As_Pointer(TheMap().at(cell).Owner)->Flag_Attach(this);
+  }
+
+  /*
+  **	If this is the unit's own flag-home-cell and the unit is carrying
+  ** a flag, destroy the house of the flag the unit is carrying.
+  */
+  if (Flagged != HOUSE_NONE) {
+    /*
+    **	If this vehicle is carrying your flag, then it will reveal the
+    **	map for you as well as itself. This gives you and opportunity to
+    **	attack the unit.
+    */
+    if (!IsOwnedByPlayer && Flagged == ThePlayer()->Class->House) {
+      TheMap().Sight_From(Coord_Cell(Coord), Class->SightRange, true);
+    }
+
+    /*
+    **	If the flag reaches the home cell for the player, then the flag's
+    **	owner will be destroyed.
+    */
+    if (cell == HouseClass::As_Pointer(Owner())->FlagHome && center) {
+      house = Flagged;  // Flag_Remove will clear 'Flagged', so save it
+      HouseClass::As_Pointer(house)->Flag_Remove(As_Target(), true);
+      HouseClass::As_Pointer(house)->Flag_To_Die();
+    }
+  }
+
+  TarComClass::Per_Cell_Process(center);
+}
+
+/***********************************************************************************************
+ * UnitClass::Draw_It -- Draws a unit object. *
+ *                                                                                             *
+ *    This routine is the one that actually draws a unit object. It displays the
+ *unit          * according to its current state flags and centered at the
+ *location specified.             *
+ *                                                                                             *
+ * INPUT:   x,y   -- The X and Y coordinate of where to draw the unit. *
+ *                                                                                             *
+ *          window   -- The clipping window to use. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/20/1994 JLB : Created. * 06/27/1994 JLB : Takes a window
+ *parameter.                                                * 08/15/1994 JLB :
+ *Removed infantry support.                                                *
+ *   01/07/1995 JLB : Harvester animation support. * 07/08/1995 JLB : Uses
+ *general purpose draw routine.                                       *
+ *=============================================================================================*/
+void UnitClass::Draw_It(PixelView& view, int x, int y,
+                        WindowNumberType window) {
+  Validate();
+  int shapenum = 0;  // Working shape number.
+  int facing = Facing_To_32(PrimaryFacing.Current());
+  const int tfacing = Facing_To_32(SecondaryFacing.Current());
+
+  /*
+  **	Verify the legality of the unit class.
+  */
+  const auto shapefile =
+      Class->Get_Image_Data();  // Working shape file pointer.
+  if (shapefile.empty()) {
+    return;
+  }
+
+  /*
+  **	If drawing of this unit is not explicitly prohibited, then proceed
+  **	with the render process.
+  */
+  if (Visual_Character() != VISUAL_HIDDEN) {
+    /*
+    **	For eight facing units, adjust the facing number accordingly.
+    */
+    if (Class->IsPieceOfEight) {
+      facing = static_cast<int>(Dir_Facing(PrimaryFacing.Current()));
+    }
+
+    /*
+    **	Some units have only four facings, but are equipped with a turret
+    **	that has 32 facings.
+    */
+    if (Class->IsChunkyShape) {
+      /*
+      **	Special wake drawing occurs here.
+      */
+      if (*this == UNIT_GUNBOAT) {
+        int shapestart = 0;
+
+        int xx = x;
+        const int yy = y;
+        switch (Dir_Facing(PrimaryFacing.Current())) {
+          case FACING_NE:
+          case FACING_E:
+          case FACING_SE:
+            shapenum = base::At(BodyShape, tfacing) + 96;
+            shapestart = 0;
+            // xx -= 4;
+            break;
+
+          case FACING_W:
+          case FacingType::FACING_NONE:
+          case FacingType::FACING_N:
+          case FacingType::FACING_S:
+          case FacingType::FACING_SW:
+          case FacingType::FACING_NW:
+          case FacingType::FACING_COUNT:
+          default:
+            shapenum = base::At(BodyShape, tfacing);
+            shapestart = 6;
+            xx += 4;
+            break;
+        }
+
+        CC_Draw_Shape(view, UnitTypeClass::WakeShapes,
+                      shapestart + (Fetch_Stage() % 6), xx - 1, yy + 3, window,
+                      ShapeFlags::kCentered);
+
+        if (Health_Ratio() < 0x0080) {
+          shapenum += 32;
+        }
+        if (Health_Ratio() < 0x0040) {
+          shapenum += 32;
+        }
+
+      } else {
+        /*
+        **	Special hovercraft shape is ALWAYS N/S.
+        */
+        shapenum = 0;
+
+        // shapenum = ((UnitClass::BodyShape[facing] + 4) / 8) & 0x03;
+      }
+
+    } else {
+      /*
+      **	Fetch the harvesting animation stage as appropriate.
+      */
+      if (IsHarvesting && !PrimaryFacing.Is_Rotating() && !NavCom &&
+          !IsDriving) {
+        static const char _hstage[6] = {0, 1, 2, 3, 2, 1};
+        shapenum = 32 + ((base::At(BodyShape, facing) + 2) / 4 * 4) +
+                   base::At(_hstage, Fetch_Stage() % std::ssize(_hstage));
+      } else {
+        shapenum = base::At(BodyShape, facing);
+        if (Class->IsAnimating) {
+          shapenum = Fetch_Stage();
+        }
+        if (Class->IsPieceOfEight) {
+          shapenum = 0;
+          if (facing) {
+            shapenum = base::At(BodyShape, 24 + facing);
+          }
+          if (IsDriving) {
+            shapenum = Fetch_Stage() + 16 + (shapenum * 8);
+          }
+          if (IsFiring) {
+            shapenum = Fetch_Stage() + 80 +
+                       (shapenum *
+                        (*this == UNIT_TREX || *this == UNIT_RAPT ? 8 : 12));
+          }
+        } else {
+          /*
+          **	Door opening and closing animation must be handled carefully.
+          *There are only *	certain directions where this door animation
+          *will work.
+          */
+          if (!Is_Door_Closed() &&
+              (PrimaryFacing == DIR_NW || PrimaryFacing == DIR_NE)) {
+            if (PrimaryFacing == DIR_NE) {
+              shapenum = 32;
+            } else {
+              if (PrimaryFacing == DIR_NW) {
+                shapenum = 35;
+              }
+            }
+            shapenum += Door_Stage();
+          }
+        }
+      }
+    }
+
+    /*
+    **	The artillery unit should have its entire body recoil when it fires.
+    */
+    if (*this == UNIT_ARTY && IsInRecoilState) {
+      Recoil_Adjust(PrimaryFacing.Current(), x, y);
+    }
+
+    /*
+    **	Actually perform the draw. Overlay an optional shimmer effect as
+    *necessary.
+    */
+    Techno_Draw_Object(view, shapefile, shapenum, x, y, window);
+
+    /*
+    **	If there is a rotating radar dish, draw it now.
+    */
+    if (Class->IsRadarEquipped) {
+      shapenum = static_cast<int>(32 + (CurrentFrame() % 32));
+      Techno_Draw_Object(view, shapefile, shapenum, x, y - 5, window);
+    }
+
+    /*
+    **	If there is a turret, then it must be rendered as well. This may include
+    **	firing animation if required.
+    */
+    if (!Class->IsChunkyShape && Class->IsTurretEquipped) {
+      int x1 = x;
+      int y1 = y;
+
+      /*
+      **	Determine which turret shape to use. This depends on if there
+      **	is any firing animation in progress.
+      */
+      shapenum = base::At(BodyShape, tfacing) + 32;
+
+      /*
+      **	The shape to use for the rocket launcher is dependant on the
+      **	ammo remaining.
+      */
+      if (*this == UNIT_MSAM) {
+        if (Ammo == 0) {
+          shapenum += 64;
+        }
+        if (Ammo == 1) {
+          shapenum += 32;
+        }
+      }
+
+      /*
+      **	A recoiling turret moves "backward" one pixel.
+      */
+      if (IsInRecoilState) {
+        Recoil_Adjust(SecondaryFacing.Current(), x1, y1);
+      }
+
+      /*
+      ** The Mobile SAM and the Missile Launchers need their turrets moved based
+      ** on the facing of the vehicle.
+      */
+      if (*this == UNIT_MSAM || *this == UNIT_MLRS) {
+        Turret_Adjust(PrimaryFacing, x1, y1);
+      }
+      if (*this == UNIT_JEEP || *this == UNIT_BUGGY) {
+        y1 -= 4;
+      }
+
+      /*
+      **	Actually perform the draw. Overlay an optional shimmer effect as
+      *necessary.
+      */
+      Techno_Draw_Object(view, shapefile, shapenum, x1, y1, window);
+    }
+
+    /*
+    **	If this unit has "piggy back" unit(s), then render it at the same time.
+    */
+    if (*this == UNIT_HOVER && Is_Something_Attached()) {
+      TechnoClass* u = Attached_Object();
+
+      int counter = 0;
+      for (;;) {
+        int x1 = 0;
+        int y1 = 0;
+
+        if (TheMap().Coord_To_Pixel(
+                Coord_Add(Coord_Add(Coord, 0xFF80FF80L),
+                          base::At(StoppingCoordAbs, counter++)),
+                x1, y1)) {
+          u->Draw_It(view, x1, y1, WINDOW_TACTICAL);
+        }
+        if (!u->Next) {
+          break;
+        }
+        u = dynamic_cast<TechnoClass*>(u->Next);
+      }
+    }
+  }
+
+  /*
+  **	If this unit is carrying the flag, then draw that on top of everything
+  *else.
+  */
+  if (Flagged != HOUSE_NONE) {
+    CC_Draw_Shape(
+        view, MixArchive::RetrieveData("FLAGFLY.SHP"),
+        static_cast<int>(CurrentFrame() % 14), x, y, window,
+        ShapeFlags::kCentered | ShapeFlags::kFading | ShapeFlags::kGhost,
+        HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),
+        MouseClass::UnitShadow);
+  }
+
+  TarComClass::Draw_It(view, x, y, window);
+}
+
+/***********************************************************************************************
+ * UnitClass::Goto_Tiberium -- Search for and head toward nearest available
+ *Tiberium patch.    *
+ *                                                                                             *
+ *    This routine is used to move a harvester to a place where it can load up
+ *with            * Tiberium. It will return true only if it can start
+ *harvesting. Otherwise, it sets        * the navigation computer toward the
+ *nearest Tiberium and lets the unit head there         * automatically. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Is it located directly over a Tiberium patch? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/18/1994 JLB : Created. *
+ *=============================================================================================*/
+bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
+  Validate();
+  /*
+  **	If the specified offset from the origin will cause it
+  **	to spill past the map edge, then abort this cell check.
+  */
+  if (Cell_X(center) + x < TheMap().MapCellX) {
+    return false;
+  }
+  if (Cell_X(center) + x >= TheMap().MapCellX + TheMap().MapCellWidth) {
+    return false;
+  }
+  if (Cell_Y(center) + y < TheMap().MapCellY) {
+    return false;
+  }
+  if (Cell_Y(center) + y >= TheMap().MapCellY + TheMap().MapCellHeight) {
+    return false;
+  }
+
+  center = XY_Cell(Cell_X(center) + x, Cell_Y(center) + y);
+
+  return (TheSession().type() != GAME_NORMAL || !IsOwnedByPlayer ||
+          TheMap().at(center).IsVisible) &&
+         (TheMap().at(center).Cell_Techno() == nullptr &&
+          TheMap().at(center).Land_Type() == LAND_TIBERIUM);
+}
+
+bool UnitClass::Goto_Tiberium() {
+  Validate();
+  if (!Target_Legal(NavCom)) {
+    const CELL center = Coord_Cell(Center_Coord());
+    if (TheMap().at(center).Land_Type() == LAND_TIBERIUM) {
+      return true;
+    }
+    /*
+     **	Perform a ring search outward from the center.
+     */
+    for (int radius = 1; radius < 32; radius++) {
+      for (int x = -radius; x <= radius; x++) {
+        CELL cell = center;
+        if (Tiberium_Check(cell, x, -radius)) {
+          Assign_Destination(::As_Target(cell));
+          return false;
+        }
+
+        cell = center;
+        if (Tiberium_Check(cell, x, +radius)) {
+          Assign_Destination(::As_Target(cell));
+          return false;
+        }
+
+        cell = center;
+        if (Tiberium_Check(cell, -radius, x)) {
+          Assign_Destination(::As_Target(cell));
+          return false;
+        }
+
+        cell = center;
+        if (Tiberium_Check(cell, +radius, x)) {
+          Assign_Destination(::As_Target(cell));
+          return false;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+/***********************************************************************************************
+ * UnitClass::Harvesting -- Harvests tiberium at the current location. *
+ *                                                                                             *
+ *    This routine is used to by the harvester to harvest Tiberium at the
+ *current location.    * When harvesting is complete, this routine will return
+ *true.                              *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Is harvesting complete? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/18/1994 JLB : Created. *
+ *=============================================================================================*/
+bool UnitClass::Harvesting() {
+  Validate();
+  const CELL cell = Coord_Cell(Coord);
+  CellClass* ptr = &TheMap().at(cell);
+
+  /*
+  **	Keep waiting if still heading toward a spot to harvest.
+  */
+  if (Target_Legal(NavCom)) {
+    return true;
+  }
+
+  if (Tiberium_Load() < 0x0100 && ptr->Land_Type() == LAND_TIBERIUM) {
+    /*
+    **	Lift some Tiberium from the ground. Try to lift a complete
+    **	"level" of Tiberium. A level happens to be 6 steps. If there
+    **	is a partial level, then lift that instead. Never lift more
+    **	than the harvester can carry.
+    */
+    int reducer = (ptr->OverlayData % 6) + 1;
+    reducer = ptr->Reduce_Tiberium(
+        std::min(reducer, UnitTypeClass::kStepCount - Tiberium));
+    Tiberium += reducer;
+    Set_Stage(0);
+    Set_Rate(2);
+
+  } else {
+    /*
+    **	If the harvester is stopped on a non Tiberium field and the harvester
+    **	isn't loaded with Tiberium, then no further action can be performed
+    **	by this logic routine. Bail with a failure and thus cause a branch to
+    **	a better suited logic processor.
+    */
+    Set_Stage(0);
+    Set_Rate(0);
+    return false;
+  }
+  return true;
+}
+
+/***********************************************************************************************
+ * UnitClass::Mission_Unload -- Handles unloading cargo. *
+ *                                                                                             *
+ *    This is the AI control sequence for when a transport desires to unload its
+ *cargo and     * then exit the map. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the delay before calling this routine again. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/18/1994 JLB : Created. *
+ *=============================================================================================*/
+int UnitClass::Mission_Unload() {
+  Validate();
+  constexpr int kInitialCheck = 0;
+  constexpr int kManeuvering = 1;
+  constexpr int kOpeningDoor = 2;
+  constexpr int kUnloading = 3;
+  constexpr int kClosingDoor = 4;
+  DirType dir = DIR_N;
+  CELL cell = 0;
+
+  switch (Class->Type) {
+    case UNIT_APC:
+      switch (Status) {
+        case kInitialCheck:
+          dir = Desired_Load_Dir(nullptr, cell);
+          if (How_Many() && cell != 0) {
+            Do_Turn(dir);
+            Status = kManeuvering;
+            return 1;
+          }
+          Assign_Mission(MISSION_GUARD);
+          break;
+
+        case kManeuvering:
+          if (!IsRotating) {
+            APC_Open_Door();
+            if (Is_Door_Opening()) {
+              Status = kOpeningDoor;
+              return 1;
+            }
+          }
+          break;
+
+        case kOpeningDoor:
+          if (Is_Door_Open()) {
+            Status = kUnloading;
+            return 1;
+          }
+          if (!Is_Door_Opening()) {
+            Status = kInitialCheck;
+          }
+          break;
+
+        case kUnloading:
+          if (How_Many()) {
+            FootClass* passenger = Detach_Object();
+
+            if (passenger) {
+              const DirType toface = DIR_S + PrimaryFacing;
+              bool placed = false;
+
+              for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+                const DirType newface = toface + static_cast<int>(face);
+                const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+
+                if (passenger->Can_Enter_Cell(newcell) == MOVE_OK) {
+                  TheWorld().scenario_init()++;
+                  passenger->Unlimbo(Coord_Move(Coord, newface, 0x0080),
+                                     newface);
+                  TheWorld().scenario_init()--;
+                  passenger->Assign_Mission(MISSION_MOVE);
+                  passenger->Assign_Destination(::As_Target(newcell));
+                  placed = true;
+                  break;
+                }
+              }
+
+              /*
+              ** If the attached unit could NOT be deployed, then re-attach
+              **	it and then bail out of this deploy process.
+              */
+              if (!placed) {
+                Attach(passenger);
+                Status = kClosingDoor;
+              }
+            }
+          } else {
+            Status = kClosingDoor;
+          }
+          break;
+
+        /*
+        **	Close APC door in preparation for normal operation.
+        */
+        case kClosingDoor:
+          if (Is_Door_Open()) {
+            APC_Close_Door();
+          }
+          if (Is_Door_Closed()) {
+            Assign_Mission(MISSION_GUARD);
+          }
+          break;
+        default:
+          break;
+      }
+      break;
+
+    case UNIT_MCV:
+      switch (Status) {
+        case 0:
+          base::At(Path, 0) = FACING_NONE;
+          Status = 1;
+          break;
+
+        case 1:
+          if (!IsDriving) {
+            Try_To_Deploy();
+            if (IsDeploying) {
+              Status = 2;
+            } else {
+              Assign_Mission(MISSION_GUARD);
+            }
+          }
+          break;
+
+        case 2:
+        default:
+          break;
+      }
+      return 1;
+
+    case UNIT_HOVER:
+      switch (Status) {
+        case 0:
+          if (Unload_Hovercraft_Process()) {
+            Status = 1;
+          }
+          break;
+
+        /*
+        **	Hovercraft always leave the map when they finish
+        **	unloading.
+        */
+        case 1:
+          if (Team) {
+            Team->Remove(this);
+          }
+          Exit_Map();
+          break;
+        default:
+          break;
+      }
+      break;
+    case UnitType::UNIT_NONE:
+    case UnitType::UNIT_HTANK:
+    case UnitType::UNIT_MTANK:
+    case UnitType::UNIT_LTANK:
+    case UnitType::UNIT_STANK:
+    case UnitType::UNIT_FTANK:
+    case UnitType::UNIT_VICE:
+    case UnitType::UNIT_MLRS:
+    case UnitType::UNIT_JEEP:
+    case UnitType::UNIT_BUGGY:
+    case UnitType::UNIT_HARVESTER:
+    case UnitType::UNIT_ARTY:
+    case UnitType::UNIT_MSAM:
+    case UnitType::UNIT_MHQ:
+    case UnitType::UNIT_GUNBOAT:
+    case UnitType::UNIT_BIKE:
+    case UnitType::UNIT_TRIC:
+    case UnitType::UNIT_TREX:
+    case UnitType::UNIT_RAPT:
+    case UnitType::UNIT_STEG:
+    case UnitType::UNIT_COUNT:
+    default:
+      break;
+  }
+  return kTicksPerSecond;
+}
+
+/***********************************************************************************************
+ * UnitClass::Mission_Harvest -- Handles the harvesting process used by
+ *harvesters.            *
+ *                                                                                             *
+ *    This is the AI process used by harvesters when they are doing their
+ *harvesting action.   * This entails searching for nearby Tiberium, heading
+ *there, harvesting, and then          * returning to a refinery for unloading.
+ **
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the delay before calling this routine again. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/18/1994 JLB : Created. * 06/21/1995 JLB : Force guard mode if
+ *no Tiberium found.                                   *
+ *=============================================================================================*/
+int UnitClass::Mission_Harvest() {
+  Validate();
+  constexpr int kLooking = 0;
+  constexpr int kHarvesting = 1;
+  constexpr int kFindhome = 2;
+  constexpr int kHeadinghome = 3;
+  constexpr int kGoingtoidle = 4;
+
+  /*
+  **	A non-harvesting type unit will just sit still if it is given the
+  *harvest mission. This *	allows combat units to act "brain dead".
+  */
+  if (!Class->IsToHarvest) {
+    return kTicksPerSecond * 30;
+  }
+
+  switch (Status) {
+    /*
+    **	Go and find a Tiberium field to harvest.
+    */
+    case kLooking:
+      IsHarvesting = false;
+      if (Goto_Tiberium()) {
+        IsHarvesting = true;
+        Set_Rate(2);
+        Set_Stage(0);
+        Status = kHarvesting;
+        return 1;
+      }
+      /*
+       **	If the harvester isn't on Tiberium and it is not heading toward
+       *Tiberium, then *	force it to go into guard mode. This will
+       *prevent the harvester from repeatedly *	searching for Tiberium.
+       */
+      if (!Target_Legal(NavCom)) {
+        Status = kGoingtoidle;
+        return kTicksPerSecond * 15;
+      }
+      break;
+
+    /*
+    **	Harvest at current location until full or Tiberium exhausted.
+    */
+    case kHarvesting:
+      if (!Harvesting()) {
+        IsHarvesting = false;
+        if (Tiberium_Load() == 0x0100) {
+          Status = kFindhome;
+          ArchiveTarget = ::As_Target(Coord_Cell(Coord));
+        } else {
+          if (!Goto_Tiberium() && !Target_Legal(NavCom)) {
+            ArchiveTarget = kTargetNone;
+            Status = kFindhome;
+          } else {
+            Status = kHarvesting;
+            IsHarvesting = true;
+          }
+        }
+        return 1;
+      }
+      break;
+
+    /*
+    **	Find and head to refinery.
+    */
+    case kFindhome:
+      if (!Target_Legal(NavCom)) {
+        /*
+        **	Find nearby refinery and head to it?
+        */
+        BuildingClass* nearest = Find_Docking_Bay(STRUCT_REFINERY, false);
+
+        /*
+        **	Since the refinery said it was ok to load, establish radio
+        **	contact with the refinery and then await docking orders.
+        */
+        if (nearest && Transmit_Message(RADIO_HELLO, nearest) == RADIO_ROGER) {
+          Status = kHeadinghome;
+        } else {
+          TheWorld().scenario_init()++;
+          nearest = Find_Docking_Bay(STRUCT_REFINERY, false);
+          TheWorld().scenario_init()--;
+          if (nearest) {
+            Assign_Destination(::As_Target(nearest->Nearby_Location(this)));
+          }
+        }
+      }
+      break;
+
+    /*
+    **	In communication with refinery so that it will successfully dock and
+    **	unload. If, for some reason, radio contact was lost, then hunt for
+    **	another refinery to unload at.
+    */
+    case kHeadinghome:
+      Assign_Mission(MISSION_ENTER);
+      return 1;
+
+    case kGoingtoidle:
+      Assign_Mission(MISSION_GUARD);
+      break;
+    default:
+      break;
+  }
+  return kTicksPerSecond;
+}
+
+/***********************************************************************************************
+ * UnitClass::Mission_Hunt -- This is the AI process for aggressive enemy units.
+ **
+ *                                                                                             *
+ *    Computer controlled units must be intelligent enough to find enemies as
+ *well as to       * attack them. This AI process will handle both the simple
+ *attack process as well as the   * scanning for enemy units to attack. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the delay before calling this routine again. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/18/1994 JLB : Created. *
+ *=============================================================================================*/
+int UnitClass::Mission_Hunt() {
+  Validate();
+  if (*this == UNIT_MCV) {
+    switch (Status) {
+      /*
+      **	This stage handles locating a convenient spot, rotating to face
+      *the correct *	direction and then commencing the deployment operation.
+      */
+      case 0:
+        if (Goto_Clear_Spot() && Try_To_Deploy()) {
+          Status = 1;
+        }
+
+        break;
+
+      /*
+      **	This stage watchdogs the deployment operation and if for some
+      *reason, the deployment *	is aborted (the IsDeploying flag becomes false),
+      *then it reverts back to hunting for *	a convenient spot to deploy.
+      */
+      case 1:
+        if (!IsDeploying) {
+          Status = 0;
+        }
+        break;
+      default:
+        break;
+    }
+  } else {
+    if (*this == UNIT_GUNBOAT) {
+      if (!Target_Legal(NavCom)) {
+        if (PrimaryFacing == DIR_W) {
+          Assign_Destination(::As_Target(
+              XY_Cell(TheMap().MapCellX - 1, Cell_Y(Coord_Cell(Coord)))));
+        } else {
+          Assign_Destination(
+              ::As_Target(XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth,
+                                  Cell_Y(Coord_Cell(Coord)))));
+        }
+        Set_Speed(255);
+      }
+      if (!Speed) {
+        Set_Speed(255);
+      }
+      if (!Target_Legal(TarCom) || !In_Range(TarCom, 0)) {
+        Target_Something_Nearby(THREAT_AREA);
+      }
+    } else {
+      return TarComClass::Mission_Hunt();
+    }
+  }
+  return kTicksPerSecond;
+}
+
+/***********************************************************************************************
+ * UnitClass::Look -- Perform map revelation from a unit's position. *
+ *                                                                                             *
+ *    Reveal the map around the specified unit with the sighting range *
+ *    associated with the specified unit. *
+ *                                                                                             *
+ * INPUT:   incremental -- If looking is to process only the cells in the *
+ *                         outer ring of the unit's search radius, then * set
+ *this parameter to true. This method is                          * quite a bit
+ *faster than processing all cells,                       * but must be used
+ *with caution.                                      *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/08/1992 JLB : Created. * 03/08/1994 JLB : Added incremental
+ *option.                                                * 04/15/1994 JLB :
+ *Converted to member function.                                            *
+ *=============================================================================================*/
+void UnitClass::Look(bool incremental) {
+  Validate();
+  if (!IsInLimbo && IsOwnedByPlayer) {
+    const int sight = Class->SightRange;
+
+    if (sight) {
+      TheMap().Sight_From(Coord_Cell(Coord), sight,
+                          *this == UNIT_GUNBOAT ? false : incremental);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::Overlap_List -- Determines overlap list for units. *
+ *                                                                                             *
+ *    The unit overlap list is used to keep track of which cells are to * be
+ *marked for redraw. This is critical in order to keep the units * displayed
+ *correctly. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the overlap list pointer for the unit at its * present
+ *position.                                                                  *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/26/1994 JLB : Created. * 06/19/1994 JLB : Uses
+ *Coord_Spillable_List function.                                      *
+ *=============================================================================================*/
+std::span<const int16_t> UnitClass::Overlap_List() const {
+  Validate();
+  static const int16_t _gunboat[] = {-3, -2, 2, 3, REFRESH_EOL};
+
+  /*
+  **	The gunboat is a special case.
+  */
+  if (*this == UNIT_GUNBOAT) {
+    return _gunboat;
+  }
+
+  int size = ICON_PIXEL_W;
+  if (IsSelected || IsFiring) {
+    size += 24;
+  }
+  if (IsSelected || Class->IsGigundo || IsAnimAttached) {
+    size = ICON_PIXEL_W * 2;
+  }
+  return Coord_Spillage_List(Coord, size).subspan(1);
+}
+
+#ifdef NEVER
+/*********************************************************************************************
+ ** UnitClass::Blocking_Object -- Determines how a object blocks a unit *
+ *                                                                                             *
+ *    This routine is used by the Can_Enter_Cell logic when an object is in the
+ *desired cell   * and it needs to know if that causes blockage. If blocked,
+ *this routine will return why.  *
+ *                                                                                             *
+ * INPUT:      TechnoClass * pointer to object that is blocking unit *
+ *                                                                                             *
+ *               CELL           the cell the unit is being blocked in *
+ *                                                                                             *
+ * OUTPUT:      MoveBitType the way that the object is blocking the unit *
+ *                                                                                             *
+ * HISTORY: * 06/08/1995 PWG : Created. *
+ *=============================================================================================*/
+MoveBitType UnitClass::Blocking_Object(const TechnoClass* techno,
+                                       CELL cell) const {
+  Validate();
+  /*
+  ** There are some extra checks we need to make if the techno is a unit
+  */
+  bool unit = (techno->What_Am_I() == RTTI_INFANTRY ||
+               techno->What_Am_I() == RTTI_UNIT);
+  const CellClass* cellptr = &TheMap()[cell];
+
+  if (House->Is_Ally(techno)) {
+    if (techno == Contact_With_Whom() && IsTethered) {
+      return (MOVE_BIT_OK);
+    }
+
+    if (unit) {
+      /*
+      ** If the unit in question has a destination than we should
+      ** be prepared to wait for the unit to get out of our way.
+      */
+      if (dynamic_cast<const FootClass*>(techno)->NavCom != kTargetNone) {
+        int face = Dir_Facing(PrimaryFacing);
+        int techface =
+            Dir_Facing(dynamic_cast<const FootClass*>(techno)->PrimaryFacing) ^
+            4;
+        if (face != techface &&
+            Distance((const AbstractClass*)techno) > 0x1FF) {
+          return (MOVE_BIT_MOVING_BLOCK);
+        } else {
+          return (MOVE_BIT_NO);
+        }
+      }
+
+      return (MOVE_BIT_TEMP);
+    }
+  } else {
+    /*
+    ** If its an enemy unit, things are dealt with a little differently
+    */
+    if (unit) {
+#ifdef NEVER
+      /*
+      ** If this is an enemy unit and we are not doing a find path then
+      ** we need to tell the unit to uncloak just in case it is a
+      ** stealth tank.
+      */
+      if (!IsFindPath) {
+        techno->Do_Uncloak();
+      }
+#endif
+
+      /*
+      ** Can we just run it over?
+      */
+      if (techno->Class_Of().IsCrushable &&
+          (cellptr->Flag.Composite & 0xE0) == 0 && Class->IsCrusher) {
+        /*
+        ** Now lets run it over.
+        */
+        return (MOVE_BIT_OK);
+      }
+
+      /*
+      **	If the object is cloaked, then consider it passable for findpath
+      *purposes, *	but not so for all other cases.
+      */
+      if (techno->Cloak == CLOAKED) {
+        if (House == techno->House) {
+          return (MOVE_BIT_NO);
+        }
+        if (IsFindPath) {
+          return (MOVE_BIT_OK);
+        }
+        return (MOVE_BIT_CLOAK);
+      }
+
+      /*
+      **	If our vehicle is weapon equipped, then report that the cell
+      *occupier *	needs only to be destroyed in order to make the cell
+      *passable.
+      */
+      if (Class->Primary != WEAPON_NONE) {
+        return (MOVE_BIT_DESTROYABLE);
+      }
+    }
+  }
+  return (MOVE_BIT_NO);
+}
+#endif
+
+/***********************************************************************************************
+ * UnitClass::Can_Enter_Cell -- Determines cell entry legality. *
+ *                                                                                             *
+ *    Use this routine to determine if the unit can enter the cell * specified
+ *and given the direction of entry specified. Typically, * this is used when
+ *determining unit travel path.                                          *
+ *                                                                                             *
+ * INPUT:   cell     -- The cell to examine. *
+ *                                                                                             *
+ *          facing   -- The facing that the unit would enter the specified *
+ *                      cell. If this value is -1, then don't consider * facing
+ *when performing the check.                                      *
+ *                                                                                             *
+ * OUTPUT:  Returns the reason why it couldn't enter the cell or MOVE_OK if
+ *movement is        * allowed. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/07/1992 JLB : Created. * 04/16/1994 JLB : Converted to member
+ *function.                                            * 07/04/1995 JLB :
+ *Allowed to drive on building trying to enter it.                         *
+ *=============================================================================================*/
+MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
+  Validate();
+  const CellClass* cellptr = &TheMap().at(cell);
+
+  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+    return MOVE_NO;
+  }
+
+  /*
+  **	The gunboat can always move. This prevents it from trying to move around
+  *possible hover *	craft blockage.
+  */
+  if (*this == UNIT_GUNBOAT) {
+    return MOVE_OK;
+  }
+
+  /*
+  **	Moving off the edge of the map is not allowed unless
+  **	this is a loaner vehicle.
+  */
+  if (IsLocked && !IsALoaner && !TheWorld().scenario_init() &&
+      !TheMap().In_Radar(cell)) {
+    return MOVE_NO;
+  }
+
+  MoveType retval = MOVE_OK;
+
+  /*
+  **	Certain vehicles can drive over walls. Check for this case and
+  **	and return the appropriate flag. Other units treat walls as impassable.
+  */
+  if (cellptr->Overlay != OVERLAY_NONE) {
+    const OverlayTypeClass* optr =
+        &OverlayTypeClass::As_Reference(cellptr->Overlay);
+
+    if (optr->IsCrate && !House->IsHuman) {
+      return MOVE_NO;
+    }
+
+    if (optr->IsWall) {
+      if (Class->Primary != WEAPON_NONE) {
+        const WarheadTypeClass* whead = &Warheads.at(
+            BulletTypeClass::As_Reference(Weapons.at(Class->Primary).Fires)
+                .Warhead);
+
+        if (whead->IsWallDestroyer ||
+            (whead->IsWoodDestroyer && optr->IsWooden)) {
+          if (!House->IsHuman && !House->Is_Ally(cellptr->Owner)) {
+            retval = std::max(retval, MOVE_DESTROYABLE);
+          } else {
+            return MOVE_NO;
+          }
+        } else {
+          return MOVE_NO;
+        }
+      } else {
+        return MOVE_NO;
+      }
+    }
+  }
+
+  /*
+  **	If the cell is out and out impassable because of underlying terrain,
+  *then *	return this immutable fact.
+  */
+#ifdef ADVANCED
+  if (retval != MOVE_DESTROYABLE &&
+      !Ground[cellptr->Land_Type()].Cost[Class->Speed]) {
+#else
+  if (!Ground.at(cellptr->Land_Type()).Cost.at(Class->Speed)) {
+#endif
+    return MOVE_NO;
+  }
+
+  /*
+  ** Loop through all of the objects in the square setting a bit
+  ** for how they affect movement.
+  */
+  bool crushable = false;
+  ObjectClass* obj = cellptr->Cell_Occupier();
+  while (obj) {
+    if (obj != this) {
+      /*
+      **	Always allow entry if trying to move on a cell with
+      **	authorization from the occupier.
+      */
+      if (obj == Contact_With_Whom() &&
+          (IsTethered ||
+           (obj->What_Am_I() == RTTI_BUILDING &&
+            *dynamic_cast<BuildingClass*>(obj) == STRUCT_REPAIR))) {
+        return MOVE_OK;
+      }
+
+      const bool is_moving =
+          (obj->What_Am_I() == RTTI_INFANTRY ||
+           obj->What_Am_I() == RTTI_UNIT) &&
+          Target_Legal(dynamic_cast<FootClass*>(obj)->NavCom);
+
+      if (House->Is_Ally(obj)) {
+        if (is_moving) {
+          const FacingType face = Dir_Facing(PrimaryFacing);
+          const FacingType techface =
+              Dir_Facing(dynamic_cast<const FootClass*>(obj)->PrimaryFacing) +
+              4;
+          if (face == techface && Distance(obj) <= 0x1FF) {
+            return MOVE_NO;
+          }
+          retval = std::max(retval, MOVE_MOVING_BLOCK);
+        } else {
+          if (obj->What_Am_I() == RTTI_BUILDING) {
+            return MOVE_NO;
+          }
+          retval = std::max(retval, MOVE_TEMP);
+        }
+      } else {
+        /*
+        **	Cloaked enemy objects are not considered if this is a
+        *Find_Path() *	call.
+        */
+        if (!obj->Is_Techno() ||
+            dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED) {
+          /*
+          **	If this unit can crush infantry, and there is an enemy infantry
+          *in the *	cell, don't consider the cell impassible. This is true
+          *even if the unit *	doesn't contain a legitimate weapon.
+          */
+          if (!Class->IsCrusher || !obj->Class_Of().IsCrushable) {
+            /*
+            **	Any non-allied blockage is considered impassible if the unit
+            **	is not equipped with a weapon.
+            */
+            if (Class->Primary == WEAPON_NONE) {
+              return MOVE_NO;
+            }
+
+            /*
+            **	Some kinds of terrain are considered destroyable if the unit is
+            *equipped *	with the weapon that can destroy it. Otherwise, the
+            *terrain is considered *	impassable.
+            */
+            if (obj->What_Am_I() == RTTI_TERRAIN) {
+              if (dynamic_cast<TerrainClass*>(obj)->Class->IsFlammable &&
+                  BulletTypeClass::As_Reference(
+                      Weapons.at(Class->Primary).Fires)
+                          .Warhead == WARHEAD_FIRE) {
+                retval = std::max(retval, MOVE_DESTROYABLE);
+              } else {
+                return MOVE_NO;
+              }
+            } else {
+              retval = std::max(retval, MOVE_DESTROYABLE);
+            }
+          } else {
+            crushable = true;
+          }
+        } else {
+          retval = std::max(retval, MOVE_CLOAK);
+        }
+      }
+    }
+
+    /*
+    **	Move to next object in chain.
+    */
+    obj = obj->Next;
+  }
+
+  /*
+  **	If some allied object has reserved the cell, then consider the cell
+  **	as blocked by a moving object.
+  */
+  if (retval == MOVE_OK && !crushable && cellptr->Flag.Composite) {
+    /*
+    **	If reserved by a vehicle, then consider this blocked terrain.
+    */
+    if (cellptr->Flag.Occupy.Vehicle) {
+      retval = MOVE_MOVING_BLOCK;
+    } else {
+      if (cellptr->InfType != HOUSE_NONE && House->Is_Ally(cellptr->InfType)) {
+        retval = MOVE_MOVING_BLOCK;
+      } else {
+        /*
+        **	Enemy infantry have reserved the cell. If this unit can crush
+        **	infantry, consider the cell passable. If not, then consider the
+        **	cell destroyable if it has a weapon. If neither case applies,
+        *then *	this vehicle should avoid the cell altogether.
+        */
+        if (!Class->IsCrusher) {
+          if (Class->Primary != WEAPON_NONE) {
+            retval = MOVE_DESTROYABLE;
+          } else {
+            return MOVE_NO;
+          }
+        }
+      }
+    }
+  }
+
+  /*
+  ** If its ok to move into the cell because we can crush whats in the cell,
+  *then
+  ** make sure no one else is already moving into the cell to crush something.
+  */
+  if (retval == MOVE_OK && crushable && cellptr->Flag.Occupy.Vehicle) {
+#ifdef ADVANCED
+    /*
+    **	However, if the cell is occupied by a crushable vehicle, then we can
+    **	never be sure if some other friendly vehicle is also trying to crush
+    **	the cell at the same time. In the case of a crushable vehicle in the
+    **	cell, then allow entry.
+    */
+    if (!cellptr->Cell_Unit() || !cellptr->Cell_Unit()->Class->IsCrushable) {
+      return (MOVE_MOVING_BLOCK);
+    }
+#else
+    return MOVE_MOVING_BLOCK;
+#endif
+  }
+
+  /*
+  **	Return with the most severe reason why this cell would be impassable.
+  */
+  return retval;
+}
+
+/***********************************************************************************************
+ * UnitClass::Init -- Clears all units for scenario preparation. *
+ *                                                                                             *
+ *    This routine will zero out the unit list and unit objects. This routine is
+ *typically     * used in preparation for a new scenario load. All units are
+ *guaranteed to be eliminated   * by this routine. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/15/1994 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::Init() { TheObjectHeaps().unit().Free_All(); }
+
+/***********************************************************************************************
+ * UnitClass::Target_Coord -- The coordinate to use when targeting this unit. *
+ *                                                                                             *
+ *    Sometimes the coordinate to use when targeting an object is not the same
+ *as its center   * coordinate. This is especially true for boats since leading
+ *their movement is needed     * in order have any chance of hitting. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the coordinate to fire upon when attacking the unit. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/19/1994 JLB : Created. *
+ *=============================================================================================*/
+COORDINATE UnitClass::Target_Coord() const {
+  Validate();
+  //	if (*this == UNIT_GUNBOAT) {
+  //		return(Coord_Move(Coord, PrimaryFacing.Current(), 0x0080));
+  //	}
+  return TarComClass::Center_Coord();
+}
+
+/***********************************************************************************************
+ * UnitClass::Scatter -- Causes the unit to travel to a nearby safe cell. *
+ *                                                                                             *
+ *    This routine is called when the unit discovers that it should get out of
+ *the "hot seat"  * and move to an adjacent cell. Since the safety of the
+ *adjacent cell is not determined    * before the move begins, it will appear
+ *that the unit is just scattering (which it        * should). *
+ *                                                                                             *
+ * INPUT:   threat   -- The coordinate of the source of the threat. The unit
+ *will try to move  * roughly away from the threat. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/25/1994 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::Scatter(COORDINATE threat, bool forced) {
+  Validate();
+  if (*this != UNIT_GUNBOAT && *this != UNIT_HOVER) {
+    if ((!Target_Legal(TarCom) && !Target_Legal(NavCom)) || forced ||
+        Random_Pick(1, 4) == 1) {
+      FacingType toface = FACING_NONE;
+
+      if (threat) {
+        toface = Dir_Facing(Direction8(threat, Coord));
+        toface = toface + (Random_Pick(0, 2) - 1);
+      } else {
+        toface = Dir_Facing(PrimaryFacing.Current());
+      }
+
+      for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+        const FacingType newface = toface + face;
+        CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+
+        if (TheMap().In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
+          Assign_Destination(::As_Target(newcell));
+        }
+      }
+    }
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::Stop_Driver -- Handles removing occupation bits when driving
+ *stops.              *
+ *                                                                                             *
+ *    This routine will remove the "reservation" flag (if present) when the
+ *vehicle is         * required to stop movement. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Was the vehicle stopped? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/22/1994 JLB : Created. *
+ *=============================================================================================*/
+bool UnitClass::Stop_Driver() {
+  Validate();
+
+  /*
+  ** We only need to do something if the vehicle is actually going
+  ** somewhere.
+  */
+  if (Head_To_Coord()) {
+    /*
+    ** Safe off whether the vehicle is down or not so we know whether
+    ** we have to put it back down.
+    */
+    const int temp = IsDown;
+
+    /*
+    ** If the vehicle is down, pick it up so it doesnt interfere with
+    ** our flags.
+    */
+    if (temp) {
+      Mark(MARK_UP);
+    }
+
+    /*
+    ** Call the drive class function which will let us release the
+    ** reserved track.
+    */
+    Mark_Track(Head_To_Coord(), MARK_UP);
+
+    /*
+    ** If it was down it should be down when we are done.
+    */
+    if (temp) {
+      Mark(MARK_DOWN);
+    }
+  }
+  return TarComClass::Stop_Driver();
+}
+
+/***********************************************************************************************
+ * UnitClass::Start_Driver -- Starts driving and reserves destination cell. *
+ *                                                                                             *
+ *    This routine will start the vehicle moving by marking the destination cell
+ *as            * reserved. Cells must be reserved in this fashion or else they
+ *might become occupied as   * the vehicle is proceeding toward it. *
+ *                                                                                             *
+ * INPUT:   headto   -- The location where the vehicle will be heading. *
+ *                                                                                             *
+ * OUTPUT:  bool; Was the vehicle started to move? Failure could be the result
+ *of the cell     * being occupied. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/22/1994 JLB : Created. *
+ *=============================================================================================*/
+bool UnitClass::Start_Driver(COORDINATE& headto) {
+  Validate();
+  if (TarComClass::Start_Driver(headto)) {
+    Mark_Track(headto, MARK_DOWN);
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * UnitClass::Limbo -- Prepares vehicle and then limbos it. *
+ *                                                                                             *
+ *    This routine removes the occupation bits for the vehicle and also handles
+ *cleaning up    * any vehicle reservation bits. After this, it then proceeds
+ *with limboing the unit.       *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Was the vehicle limboed? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/22/1994 JLB : Created. *
+ *=============================================================================================*/
+bool UnitClass::Limbo() {
+  Validate();
+  if (!IsInLimbo) {
+    Stop_Driver();
+  }
+  return TarComClass::Limbo();
+}
+
+/***********************************************************************************************
+ * UnitClass::Response_Select -- Voice feedback when selecting the unit. *
+ *                                                                                             *
+ *    This is the voice to play when the unit is selected. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/30/1994 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::Response_Select() {
+  Validate();
+  static const VocType _response[] = {VOC_VEHIC,  VOC_UNIT,   VOC_YESSIR,
+                                      VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
+  VocType response = base::At(
+      _response,
+      Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                          sizeof(base::At(_response, 0))) -
+                             1));
+
+  if (*this == UNIT_TRIC || *this == UNIT_TREX || *this == UNIT_RAPT ||
+      *this == UNIT_STEG) {
+    response = VOC_DINOYES;
+  }
+
+  if (TheGameState().allow_voice()) {
+    Sound_Effect(response, 0, -(TheObjectHeaps().unit().ID(this) + 1));
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::Response_Move -- Voice feedback when ordering the unit to move. *
+ *                                                                                             *
+ *    This plays the audio feedback when ordering this unit to move to a new
+ *destination.      *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/30/1994 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::Response_Move() {
+  Validate();
+  static const VocType _response[] = {VOC_MOVEOUT, VOC_MOVEOUT, VOC_MOVEOUT,
+                                      VOC_ACKNOWL, VOC_AFFIRM,  VOC_AFFIRM};
+  VocType response = base::At(
+      _response,
+      Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                          sizeof(base::At(_response, 0))) -
+                             1));
+
+  if (*this == UNIT_TRIC || *this == UNIT_TREX || *this == UNIT_RAPT ||
+      *this == UNIT_STEG) {
+    response = VOC_DINOMOUT;
+  }
+
+  if (TheGameState().allow_voice()) {
+    Sound_Effect(response, 0, -(TheObjectHeaps().unit().ID(this) + 1));
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::Response_Attack -- Voice feedback when ordering the unit to attack
+ *a target.     *
+ *                                                                                             *
+ *    This plays the audio feedback when ordering this unit to attack. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/30/1994 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::Response_Attack() {
+  Validate();
+  static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL, VOC_YESSIR,
+                                      VOC_YESSIR, VOC_YESSIR};
+  VocType response = base::At(
+      _response,
+      Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
+                                          sizeof(base::At(_response, 0))) -
+                             1));
+
+  if (*this == UNIT_TRIC || *this == UNIT_TREX || *this == UNIT_RAPT ||
+      *this == UNIT_STEG) {
+    response = VOC_DINOMOUT;
+  }
+
+  if (TheGameState().allow_voice()) {
+    Sound_Effect(response, 0, -(TheObjectHeaps().unit().ID(this) + 1));
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::What_Action -- Determines what action would occur if clicked on
+ *object.          *
+ *                                                                                             *
+ *    Use this function to determine what action would likely occur if the
+ *specified object    * were clicked on while this unit was selected as current.
+ *This function controls, not     * only the action to perform, but indirectly
+ *controls the cursor shape to use as well.     *
+ *                                                                                             *
+ * INPUT:   object   -- The object that to check for against "this" object. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the default action to perform. If no clear action can
+ *be determined,  * then ACTION_NONE is returned. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/11/1995 JLB : Created. *
+ *=============================================================================================*/
+ActionType UnitClass::What_Action(ObjectClass* object) {
+  Validate();
+  ActionType action = TarComClass::What_Action(object);
+
+  /*
+  **	If the unit doesn't have a weapon, but can crush the object, then
+  *consider *	the object as a movable location.
+  */
+  if (action == ACTION_ATTACK && !Can_Player_Fire()) {
+    if (Class->IsCrusher && object->Class_Of().IsCrushable) {
+      action = ACTION_MOVE;
+    } else {
+      action = ACTION_SELECT;
+    }
+  }
+
+  /*
+  **	Don't allow special deploy action unless there is something to deploy.
+  */
+  if (action == ACTION_SELF) {
+    if (*this != UNIT_MCV) {
+      if (!Class->IsTransporter || !How_Many()) {
+        action = ACTION_NONE;
+      }
+    } else {
+      Mark(MARK_UP);
+      if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
+               .Legal_Placement(
+                   Coord_Cell(Adjacent_Cell(Center_Coord(), FACING_NW)))) {
+        action = ACTION_NONE;
+      }
+      Mark(MARK_DOWN);
+    }
+  }
+
+  /*
+  **	Special return to friendly refinery action.
+  */
+  if ((IsOwnedByPlayer && object->Is_Techno() &&
+       dynamic_cast<const TechnoClass*>(object)->House->Is_Ally(this)) &&
+      (object->What_Am_I() == RTTI_BUILDING &&
+       Transmit_Message(RADIO_CAN_LOAD, dynamic_cast<TechnoClass*>(object)) ==
+           RADIO_ROGER)) {
+    action = ACTION_ENTER;
+  }
+
+  /*
+  **	Special return to friendly repair factory action.
+  */
+  if (IsOwnedByPlayer && action == ACTION_SELECT &&
+      object->What_Am_I() == RTTI_BUILDING) {
+    const auto* building = dynamic_cast<BuildingClass*>(object);
+    if (building->Class->Type == STRUCT_REPAIR &&
+        !building->In_Radio_Contact() && !building->Is_Something_Attached()) {
+      action = ACTION_MOVE;
+    }
+  }
+
+  return action;
+}
+
+ActionType UnitClass::What_Action(CELL cell) const {
+  Validate();
+  const ActionType action = TarComClass::What_Action(cell);
+  if (action == ACTION_MOVE && TheMap().at(cell).Land_Type() == LAND_TIBERIUM &&
+      Class->IsToHarvest) {
+    return ACTION_HARVEST;
+  }
+  return action;
+}
+
+/***********************************************************************************************
+ * UnitClass::Can_Player_Move -- Determines if the player is legally allowed to
+ *move it.       *
+ *                                                                                             *
+ *    Use this routine to see if the player can move this object. If the player
+ *can move the   * object, even only in theory, then this function returns true.
+ *In all other cases, such   * as for enemy units, gunboats, or hovercraft, it
+ *returns false.                           *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  bool; Can the player give this object a movement order? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 01/19/1995 JLB : Created. *
+ *=============================================================================================*/
+bool UnitClass::Can_Player_Move() const {
+  Validate();
+  return TarComClass::Can_Player_Move() && *this != UNIT_GUNBOAT &&
+         *this != UNIT_HOVER;
+}
+
+/***********************************************************************************************
+ * UnitClass::Read_INI -- Reads units from scenario INI file. *
+ *                                                                                             *
+ *    This routine is used to read all the starting units from the * scenario
+ *control INI file. The units are created and placed on the * map by this
+ *routine.                                                                     *
+ *                                                                                             *
+ *    INI entry format: * Housename, Typename, Strength, Coord, Facingnum,
+ *Missionname, Triggername              *
+ *                                                                                             *
+ * INPUT:   buffer   -- Pointer to the loaded scenario INI file. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/24/1994 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::Read_INI(char* buffer) {
+  char buf[128];
+
+  std::vector<char> key_storage(std::string_view(buffer).size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
+
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
+  while (*tbuffer != '\0') {
+    WWGetPrivateProfileString(
+        INI_Name(), tbuffer, nullptr,
+        std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
+        buffer);
+    base::Tokenizer tokens(buf, ",\r\n");
+    const HousesType inhouse =
+        HouseTypeClass::From_Name(tokens.Next(","));  // Unit house.
+    if (inhouse != HOUSE_NONE) {
+      const UnitType classid =
+          UnitTypeClass::From_Name(tokens.Next(","));  // Unit class.
+
+      if (classid != UNIT_NONE) {
+        auto* unit = base::NewPooled<UnitClass>(
+            classid, inhouse);  // Working unit pointer.
+        if (unit) {
+          /*
+          **	Read the raw data.
+          */
+          const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
+          const COORDINATE coord =
+              Cell_Coord(base::ParseIntegerOr<CELL>(tokens.Next(), 0));
+          const auto dir =
+              static_cast<DirType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+          const MissionType mission = Mission_From_Name(tokens.Next(",\n\r"));
+          unit->Trigger = TriggerClass::As_Pointer(tokens.Next());
+          if (unit->Trigger) {
+            unit->Trigger->AttachCount++;
+          }
+
+          if (unit->Unlimbo(coord, dir)) {
+            unit->Strength = static_cast<int16_t>(
+                Fixed_To_Cardinal(unit->Class->MaxStrength, strength));
+            if (TheSession().type() == GAME_NORMAL || unit->House->IsHuman) {
+              unit->Assign_Mission(mission);
+              unit->Commence();
+            } else {
+              unit->Enter_Idle_Mode();
+            }
+
+            /*
+            **	The gunboat is a special case: It must "drive" off the edge of
+            *the map. *	Just pick the map edge that it is facing and set that as
+            *the destination *	of the drive.
+            */
+            if (*unit == UNIT_GUNBOAT) {
+              unit->PrimaryFacing.Set_Desired(DIR_W);
+              unit->PrimaryFacing.Set_Current(DIR_W);
+              unit->Assign_Mission(MISSION_HUNT);
+              unit->Commence();
+              unit->Assign_Destination(::As_Target(XY_Cell(
+                  TheMap().MapCellX - 1, Cell_Y(Coord_Cell(unit->Coord)))));
+            }
+
+          } else {
+            /*
+            **	If the unit could not be unlimboed, then this is a catastrophic
+            *error *	condition. Delete the unit.
+            */
+            base::DeletePooled(unit);
+          }
+        }
+      }
+    }
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::Write_INI -- Writes all the units out to an INI file. *
+ *                                                                                             *
+ *    This routine writes all of the units in the game out to an INI file. This
+ *is used        * in the scenario editor when the game needs to be saved. *
+ *                                                                                             *
+ *    INI entry format: * Housename, Typename, Strength, Coord, Facingnum,
+ *Missionname, Triggername              *
+ *                                                                                             *
+ * INPUT:   buffer   -- A pointer to the loaded INI file staging area. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/28/1994 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::Write_INI(std::string& buffer) {
+  char uname[10];
+  char buf[128];
+
+  /*
+  **	First, clear out all existing unit data from the ini file.
+  */
+  std::vector<char> key_storage(buffer.size() + 2);
+  auto key_cursor = std::span(key_storage);
+  char* tbuffer = key_cursor.data();  // Accumulation buffer of unit IDs.
+  WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor,
+                            buffer.data());
+  while (*tbuffer != '\0') {
+    WWWritePrivateProfileString(INI_Name(), tbuffer, nullptr, buffer);
+    key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
+    tbuffer = key_cursor.data();
+  }
+
+  /*
+  **	Write the unit data out.
+  */
+  for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+    if (!unit->IsInLimbo && unit->IsActive) {
+      absl::SNPrintF(uname, sizeof(uname), "%03d", index);
+      absl::SNPrintF(buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",
+                     unit->House->Class->IniName, unit->Class->IniName,
+                     unit->Health_Ratio(), Coord_Cell(unit->Coord),
+                     unit->PrimaryFacing.Current(), Mission_Name(unit->Mission),
+                     unit->Trigger ? unit->Trigger->Get_Name() : "None");
+      WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::Exit_Repair -- Drive the unit off the repair facility. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 04/03/1995 BWG : Created. *
+ *=============================================================================================*/
+#define XYCELL(x, y) ((y) * MAP_CELL_W + (x))
+void UnitClass::Exit_Repair() {
+  Validate();
+  bool found = false;
+  static const base::EnumArray<FacingType, int16_t, kFacingCount> ExitRepair = {
+      XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
+      XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
+
+  CELL cell = static_cast<CELL>(
+      Coord_Cell(Coord) + ExitRepair.at(Dir_Facing(PrimaryFacing.Current())));
+  if (Can_Enter_Cell(cell) == MOVE_OK) {
+    found = true;
+  }
+
+  if (!found) {
+    for (const int16_t i : ExitRepair) {
+      cell = static_cast<CELL>(Coord_Cell(Coord) + i);
+      if (Can_Enter_Cell(cell) == MOVE_OK) {
+        found = true;
+        break;
+      }
+    }
+  }
+  if (found) {
+    Assign_Mission(MISSION_MOVE);
+    Assign_Destination(::As_Target(cell));
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::Mission_Guard -- Special guard mission override processor. *
+ *                                                                                             *
+ *    This routine will intercept the guard mission and if it is for a
+ *hovercraft, assign      * it the unload mission instead. This prevents the
+ *hovercraft from being stuck in the      * water if something unexpected causes
+ *it to drop into guard mode.                         *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns the time delay before this command is executed again. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/08/1995 JLB : Created. * 05/08/1995 JLB : Fixes gunboat
+ *problems.                                                  *
+ *=============================================================================================*/
+int UnitClass::Mission_Guard() {
+  Validate();
+  if (*this == UNIT_HOVER) {
+    if (Is_Something_Attached()) {
+      Assign_Mission(MISSION_UNLOAD);
+      Find_LZ();
+    } else {
+      Exit_Map();
+    }
+    return kTicksPerSecond;
+  }
+
+  if (*this == UNIT_GUNBOAT) {
+    Assign_Mission(MISSION_HUNT);
+    return kTicksPerSecond;
+  }
+
+  if (*this == UNIT_HARVESTER && !House->IsHuman) {
+    Assign_Mission(MISSION_HARVEST);
+    return kTicksPerSecond;
+  }
+  return TarComClass::Mission_Guard();
+}
+
+/***********************************************************************************************
+ * UnitClass::Mission_Move -- Handles special move mission overrides. *
+ *                                                                                             *
+ *    This routine intercepts the normal move mission and if a gunboat is being
+ *processed,     * changes its mission to hunt. This is an attempt to keep the
+ *gunboat on the hunt mission  * regardless of what the player did. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns the number of ticks before this routine should be called
+ *again.            *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/09/1995 JLB : Created. *
+ *=============================================================================================*/
+int UnitClass::Mission_Move() {
+  Validate();
+  IsHarvesting = false;
+
+  /*
+  **	Always make sure that that transport door is closed if the vehcile is
+  *moving.
+  */
+  if (!Is_Door_Closed()) {
+    APC_Close_Door();
+  }
+
+  /*
+  **	Gunboats must always have the hunt mission.
+  */
+  if (*this == UNIT_GUNBOAT) {
+    Assign_Mission(MISSION_HUNT);
+    return kTicksPerSecond;
+  }
+  return TarComClass::Mission_Move();
+}
+
+/***********************************************************************************************
+ * UnitClass::Desired_Load_Dir -- Determines the best cell and facing for
+ *loading.             *
+ *                                                                                             *
+ *    This routine examines the unit and adjacent cells in order to find the
+ *best facing       * for the transport and best staging cell for the potential
+ *passengers. This location is   * modified by adjacent cell passability and
+ *direction of the potential passenger.          *
+ *                                                                                             *
+ * INPUT:   passenger   -- Pointer to the potential passenger. *
+ *                                                                                             *
+ *          moveto      -- Reference to the cell number that specifies where the
+ *potential     * passenger should move to first. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the direction the transport should face before opening
+ *the transport  * door. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/23/1995 JLB : Created. *
+ *=============================================================================================*/
+DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
+                                    CELL& moveto) const {
+  Validate();
+  /*
+  **	Determine the ideal facing that provides the least resistance. This
+  *would be the direction *	of the potential passenger or the current
+  *transport facing if it is going to unload.
+  */
+  const DirType faceto =
+      passenger ? Direction(passenger) : PrimaryFacing.Current() + DIR_S;
+
+  /*
+  **	Sweep through the adjacent cells in order to find the best candidate.
+  */
+  FacingType bestdir = FACING_N;
+  int bestval = -1;
+  for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
+    int value = 0;
+    const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
+
+    /*
+    **	Base the initial value of the potential cell according to whether the
+    *passenger is *	allowed to enter the cell. If it can't, then give such a
+    *negative value to the *	cell so that it is prevented from ever choosing
+    *that cell for load/unload.
+    */
+    if (passenger) {
+      value = passenger->Can_Enter_Cell(cellnum) == MOVE_OK ||
+                      Coord_Cell(passenger->Coord) == cellnum
+                  ? 128
+                  : -128;
+    } else {
+      const CellClass* cell = &TheMap().at(cellnum);
+      if (Ground.at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
+          cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
+          cell->Flag.Occupy.Monolith ||
+          (cell->Flag.Composite & 0x01F) == 0x01F) {
+        value = -128;
+      } else {
+        if (cell->Cell_Techno() && !House->Is_Ally(cell->Cell_Techno())) {
+          value = -128;
+        } else {
+          value = 128;
+        }
+      }
+    }
+
+    /*
+    **	Give more weight to the cells that require the least rotation of the
+    *transport or the *	least roundabout movement for the potential passenger.
+    */
+    value -= std::abs(Dir_Diff(Facing_Dir(face), faceto));
+    if (face == FACING_S) {
+      value -= 100;
+    }
+    if (face == FACING_SW || face == FACING_SE) {
+      value += 64;
+    }
+
+    /*
+    **	If the value for the potiential cell is greater than the last recorded
+    *potential *	value, then record this cell as the best candidate.
+    */
+    if (bestval == -1 || value > bestval) {
+      bestval = value;
+      bestdir = face;
+    }
+  }
+
+  /*
+  **	If a suitable direction was found, then return with the direction value.
+  */
+  moveto = 0;
+  if (bestval > 0) {
+    static const base::EnumArray<FacingType, DirType, kFacingCount>
+        _desired_to_actual = {DIR_S,  DIR_SW, DIR_NW, DIR_NW,
+                              DIR_NE, DIR_NE, DIR_NE, DIR_SE};
+
+    moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
+    return _desired_to_actual.at(bestdir);
+  }
+  return DIR_S;
+}
+
+/***********************************************************************************************
+ * UnitClass::Mission_Attack -- Handles the mission attack logic. *
+ *                                                                                             *
+ *    This routine intercepts the normal mission attack logic. If a gunboat is
+ *assigned the    * attack mission then it must be converted back to a hunt
+ *mission.                         *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the time before calling this routine again. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/23/1995 JLB : Created. *
+ *=============================================================================================*/
+int UnitClass::Mission_Attack() {
+  Validate();
+  if (*this == UNIT_GUNBOAT) {
+    Assign_Mission(MISSION_HUNT);
+    return kTicksPerSecond;
+  }
+  return TarComClass::Mission_Attack();
+}
+
+/***********************************************************************************************
+ * UnitClass::Flag_Attach -- Attaches a house flag to this unit. *
+ *                                                                                             *
+ *    This routine will attach a house flag to this unit. *
+ *                                                                                             *
+ * INPUT:   house -- The house that is having its flag attached to it. *
+ *                                                                                             *
+ * OUTPUT:  Was the house flag successfully attached to this unit? *
+ *                                                                                             *
+ * WARNINGS:   A unit can only carry one flag at a time. This might be a reason
+ *for failure    * of this routine. *
+ *                                                                                             *
+ * HISTORY: * 05/23/1995 JLB : Created. *
+ *=============================================================================================*/
+bool UnitClass::Flag_Attach(HousesType house) {
+  Validate();
+  if (house != HOUSE_NONE && Flagged == HOUSE_NONE) {
+    Flagged = house;
+    Mark(MARK_CHANGE);
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * UnitClass::Flag_Remove -- Removes the house flag from this unit. *
+ *                                                                                             *
+ *    This routine will remove the house flag that is attached to this unit. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Was the flag successfully removed? *
+ *                                                                                             *
+ * WARNINGS:   This routine doesn't put the flag into a new location. That
+ *operation must      * be performed or else the house flag will cease to exist.
+ **
+ *                                                                                             *
+ * HISTORY: * 05/23/1995 JLB : Created. *
+ *=============================================================================================*/
+bool UnitClass::Flag_Remove() {
+  Validate();
+  if (Flagged != HOUSE_NONE) {
+    Flagged = HOUSE_NONE;
+    Mark(MARK_CHANGE);
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * UnitClass::Stun -- Stuns the unit in preparation for unit removal. *
+ *                                                                                             *
+ *    This routine intercepts the stun operation for the unit and if there is a
+ *house flag     * attached, it will drop it to the ground. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/23/1995 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::Stun() {
+  Validate();
+  if (Flagged != HOUSE_NONE) {
+    HouseClass::As_Pointer(Flagged)->Flag_Attach(Coord_Cell(Coord));
+  }
+  TarComClass::Stun();
+}
+
+/***********************************************************************************************
+ * UnitClass::Pip_Count -- Fetchs the number of pips to display on unit. *
+ *                                                                                             *
+ *    This routine is used to fetch the number of "fullness" pips to display on
+ *the unit.      * This will either be the number of passengers or the
+ *percentage full (in 1/5ths) of       * a harvester. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the number of pips to draw on this unit. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/25/1995 JLB : Created. *
+ *=============================================================================================*/
+int UnitClass::Pip_Count() const {
+  Validate();
+  if (Class->IsTransporter) {
+    return How_Many();
+  }
+  if (Class->IsToHarvest) {
+    return Fixed_To_Cardinal(UnitTypeClass::kFullLoadCredits / 100,
+                             Tiberium_Load());
+  }
+  return 0;
+}
+
+/***********************************************************************************************
+ * UnitClass::APC_Close_Door -- Closes an APC door. *
+ *                                                                                             *
+ *    This routine will initiate closing of the APC door. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/25/1995 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::APC_Close_Door() {
+  Validate();
+  Close_Door(10, 2);
+}
+
+/***********************************************************************************************
+ * UnitClass::APC_Open_Door -- Opens an APC door. *
+ *                                                                                             *
+ *    This routine will initiate opening of the APC door. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/25/1995 JLB : Created. *
+ *=============================================================================================*/
+void UnitClass::APC_Open_Door() {
+  Validate();
+  if (!IsDriving && !IsRotating) {
+    if (PrimaryFacing == DIR_NW || PrimaryFacing == DIR_NE) {
+      Open_Door(10, 2);
+    } else {
+      Open_Door(1, 2);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * UnitClass::Remap_Table -- Fetches the remap table to use for this object. *
+ *                                                                                             *
+ *    Use this routine to determine the rendering remap table to use for this
+ *object. The      * remap table is normally the unit remap table, except for
+ *the MCV and the Harvestor.      * These units use the building remap table
+ *since these units become part of the building   * animation. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to the remap table to use for this unit. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/08/1995 JLB : Created. *
+ *=============================================================================================*/
+std::span<const unsigned char> UnitClass::Remap_Table() {
+  Validate();
+  if (*this == UNIT_MCV || *this == UNIT_HARVESTER) {
+    return House->Remap_Table(IsBlushing, false);
+  }
+  return TarComClass::Remap_Table();
+}
+
+/***********************************************************************************************
+ * UnitClass::Crew_Type -- Fetches the kind of crew that this object produces. *
+ *                                                                                             *
+ *    When a unit is destroyed, a crew member might be generated. This routine
+ *will return     * with the infantry type to produce for this unit. This
+ *routine will be called for every   * survivor that is generated. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with a suggested infantry type to generate as a survivor
+ *from this unit.   *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+InfantryType UnitClass::Crew_Type() const {
+  Validate();
+  if (Class->Primary == WEAPON_NONE) {
+    if (Random_Pick(0, 1) == 0) {
+      return INFANTRY_C1;
+    }
+    return INFANTRY_C7;
+  }
+  return TarComClass::Crew_Type();
+}
+
+/***********************************************************************************************
+ * UnitClass::What_Am_I -- Returns with the RTTI type this object is. *
+ *                                                                                             *
+ *    This will return that this is a normal vehicle unit type. Each object
+ *class overrides    * this function in order to provide run time type
+ *identification support.                  *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns the RTTI type that this object is (i.e., RTTI_UNIT). *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 08/13/1995 JLB : Created. *
+ *=============================================================================================*/
+RTTIType UnitClass::What_Am_I() const {
+  Validate();
+  return RTTI_UNIT;
+}

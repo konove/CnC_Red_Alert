@@ -1,0 +1,1143 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/ANIM.CPP 1     3/03/97 10:24a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Dune *
+ *                                                                                             *
+ *                    File Name : ANIM.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : June 3, 1991 *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * AnimClass::AI -- This is the low level anim processor. *
+ *   AnimClass::AnimClass -- The constructor for animation objects. *
+ *   AnimClass::Attach_To -- Attaches animation to object specified. *
+ *   AnimClass::Center_Coord -- Determine center of animation. *
+ *   AnimClass::Detach -- Remove animation if attached to target. *
+ *   AnimClass::Do_Atom_Damage -- Do atom bomb damage centered around the cell
+ *specified.      * AnimClass::Draw_It -- Draws the animation at the location
+ *specified.                      * AnimClass::In_Which_Layer -- Determines what
+ *render layer the anim should be in.          * AnimClass::Init -- Performs
+ *pre-scenario initialization.                                  *
+ *   AnimClass::Mark -- Signals to map that redrawing is necessary. *
+ *   AnimClass::Middle -- Processes any middle events. * AnimClass::Occupy_List
+ *-- Determines the occupy list for the animation.                   *
+ *   AnimClass::Overlap_List -- Determines the overlap list for the animation. *
+ *   AnimClass::Render -- Draws an animation object. * AnimClass::Sort_Y --
+ *Returns with the sorting coordinate for the animation.               *
+ *   AnimClass::Start -- Processes initial animation side effects. *
+ *   AnimClass::delete -- Returns an anim object back to the free pool. *
+ *   AnimClass::new -- Allocates an anim object from the pool. *
+ *   AnimClass::~AnimClass -- Destructor for anim objects. * Anim_From_Name --
+ *Given a name, this finds the corresponding anim type.                   *
+ *   Shorten_Attached_Anims -- Reduces attached animation durations. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "ra/objects/anim.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
+#include "absl/log/check.h"
+#include "absl/strings/match.h"
+#include "base/fixed.h"
+#include "base/pooled.h"
+#include "engine/gfx/keyframe.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "magic_enum/magic_enum.hpp"
+#include "ra/assets/audio.h"
+#include "ra/assets/palette.h"
+#include "ra/assets/palettes.h"
+#include "ra/assets/shape_draw.h"
+#include "ra/core/ccptr.h"
+#include "ra/core/coord.h"
+#include "ra/core/defines.h"
+#include "ra/core/display_constants.h"
+#include "ra/core/heap.h"
+#include "ra/core/inline.h"
+#include "ra/core/object_heaps.h"
+#include "ra/core/type_heaps.h"
+#include "ra/data/rules.h"
+#include "ra/editor/mapedit.h"
+#include "ra/map/display.h"
+#include "ra/map/gscreen.h"
+#include "ra/map/logic.h"
+#include "ra/map/mouse.h"
+#include "ra/map/world.h"
+#include "ra/net/session.h"
+#include "ra/objects/building.h"
+#include "ra/objects/cell.h"
+#include "ra/objects/combat.h"
+#include "ra/objects/object.h"
+#include "ra/objects/smudge.h"
+#include "ra/objects/target.h"
+#include "ra/objects/techno.h"
+#include "ra/objects/type.h"
+#include "ra/screens/goptions.h"
+#include "ra/startup/conquer.h"
+#include "ra/startup/game_state.h"
+
+/***********************************************************************************************
+ * Anim_From_Name -- Given a name, this finds the corresponding anim type. *
+ *                                                                                             *
+ *    This routine will convert the supplied ASCII name into the animation type
+ *that it        * represents. *
+ *                                                                                             *
+ * INPUT:   name  -- Pointer to the ASCII name to convert. *
+ *                                                                                             *
+ * OUTPUT:  Returns with the animation type that matches the name specified. If
+ *no match could * be found, then ANIM_NONE is returned. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/06/1996 JLB : Created. *
+ *=============================================================================================*/
+AnimType Anim_From_Name(const char* name) {
+  if (name == nullptr) {
+    return ANIM_NONE;
+  }
+
+  for (const AnimType anim : magic_enum::enum_values<AnimType>()) {
+    if (absl::EqualsIgnoreCase(AnimTypeClass::As_Reference(anim).IniName,
+                               name)) {
+      return anim;
+    }
+  }
+  return ANIM_NONE;
+}
+
+/***********************************************************************************************
+ * Shorten_Attached_Anims -- Reduces attached animation durations. *
+ *                                                                                             *
+ *    This routine is used to reduce the amount of time any attached animations
+ *will process.  * Typical use of this is when an object is on fire and the
+ *object should now be destroyed  * but the attached animations are to run until
+ *completion before destruction can follow.   * This routine will make the
+ *animation appear to run its course, but in as short of time   * as possible.
+ *The shortening effect is achieved by reducing the number of times the       *
+ *    animation will loop. *
+ *                                                                                             *
+ * INPUT:   obj   -- Pointer to the object that all attached animations will be
+ *processed.     *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/11/1994 JLB : Created. *
+ *=============================================================================================*/
+void Shorten_Attached_Anims(const ObjectClass* obj) {
+  if (obj != nullptr) {
+    for (int index = 0; index < TheObjectHeaps().anim().Count(); index++) {
+      AnimClass& anim = *TheObjectHeaps().anim().Ptr(index);
+
+      if (As_Object(anim.xObject) == obj) {
+        anim.Loops = 0;
+      }
+    }
+  }
+}
+
+/***********************************************************************************************
+ * AnimClass::Sort_Y -- Returns with the sorting coordinate for the animation. *
+ *                                                                                             *
+ *    This routine is used by the sorting system. Animations that are located in
+ *the ground    * layer will be sorted by this the value returned from this
+ *function.                      *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the sort coordinate to use for this animation. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 10/17/1994 JLB : Created. * 12/15/1994 JLB : Handles flat anims
+ *(infantry decay anims).                               *
+ *=============================================================================================*/
+COORDINATE AnimClass::Sort_Y() const {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+
+  if (xObject != kTargetNone) {
+    return Coord_Add(As_Object(xObject)->Sort_Y(), 0x00010000L);
+  }
+  if (*this == ANIM_MOVE_FLASH) {
+    return Coord_Add(Center_Coord(), XYP_COORD(0, -24));
+  }
+  if (Class->IsGroundLayer || *this == ANIM_LZ_SMOKE) {
+    return Coord_Add(Center_Coord(), XYP_COORD(0, 14));
+  }
+  return Coord;
+}
+
+/***********************************************************************************************
+ * AnimClass::Center_Coord -- Determine center of animation. *
+ *                                                                                             *
+ *    This support function will return the "center" of the animation. The
+ *actual coordinate   * of the animation may be dependent on if the
+ *animation is attached to an object.      * In such a case, it must factor in
+ *the object's location.                                 *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns the coordinate of the center of the animation. The
+ *coordinate is in real   * game coordinates -- taking into consideration if the
+ *animation is attached.        *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/19/1994 JLB : Created. * 02/02/1996 JLB : Coordinate based on
+ *visual center of object.                             *
+ *=============================================================================================*/
+COORDINATE AnimClass::Center_Coord() const {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+
+  if (xObject != kTargetNone) {
+    return Coord_Add(Coord, As_Object(xObject)->Target_Coord());
+  }
+  return Coord;
+}
+
+/***********************************************************************************************
+ * AnimClass::Render -- Draws an animation object. *
+ *                                                                                             *
+ *    This is the working routine that renders the animation shape. It gets
+ *called once        * per animation per frame. It needs to be fast. *
+ *                                                                                             *
+ * INPUT:   bool; Should the animation be rendered in spite of render flag? *
+ *                                                                                             *
+ * OUTPUT:  bool; Was the animation rendered? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/31/1994 JLB : Created. *
+ *=============================================================================================*/
+bool AnimClass::Render(PixelView& view, bool forced)  // const
+{
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+
+  if (Delay) {
+    return false;
+  }
+  if (TheMap().at(Center_Coord()).IsVisible) {
+    IsToDisplay = true;
+  }
+  return ObjectClass::Render(view, forced);
+}
+
+/***********************************************************************************************
+ * AnimClass::Draw_It -- Draws the animation at the location specified. *
+ *                                                                                             *
+ *    This routine is used to render the animation object at the location
+ *specified. This is   * how the map imagery gets updated. *
+ *                                                                                             *
+ * INPUT:   x,y      -- The pixel coordinates to draw the animation at. *
+ *                                                                                             *
+ *          window   -- The to base the draw coordinates upon. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/24/1994 JLB : Created. * 05/19/1995 JLB : Added white
+ *translucent effect.                                          *
+ *=============================================================================================*/
+void AnimClass::Draw_It(PixelView& view, int x, int y,
+                        WindowNumberType window) const {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+
+  if (!IsInvisible) {
+    const auto shapefile = Get_Image_Data();
+    if (!shapefile.empty()) {
+      std::span<const unsigned char> transtable;
+      const int shapenum = Class->Start + Fetch_Stage();
+      const std::span<const unsigned char> remap;
+
+      /*
+      **	If the translucent table hasn't been determined yet, then check
+      *to see if it *	should use the white or normal translucent tables.
+      */
+      if (transtable.empty() && Class->IsWhiteTrans) {
+        transtable = DisplayClass::WhiteTranslucentTable;
+      }
+      if (transtable.empty() && Class->IsTranslucent) {
+        transtable = DisplayClass::TranslucentTable;
+      }
+      if (Class->Type == ANIM_ATOM_BLAST) {
+        transtable = MouseClass::UnitShadow;
+      }
+
+      /*
+      **	Set the shape flags to properly take into account any fading or
+      *ghosting *	table necessary.
+      */
+      engine::gfx::ShapeFlags flags = engine::gfx::ShapeFlags::kCentered;
+      if (!transtable.empty()) {
+        flags = flags | engine::gfx::ShapeFlags::kGhost;
+      }
+
+      /*
+      **	Draw the animation shape.
+      */
+      CC_Draw_Shape(view, shapefile, shapenum, x, y, window, flags, remap,
+                    transtable);
+    }
+  }
+}
+
+/***********************************************************************************************
+ * AnimClass::Mark -- Signals to map that redrawing is necessary. *
+ *                                                                                             *
+ *    This routine is used by the animation logic system to inform the map that
+ *the cells      * under the animation must be rerendered. *
+ *                                                                                             *
+ * INPUT: *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/31/1994 JLB : Created. *
+ *=============================================================================================*/
+bool AnimClass::Mark(MarkType mark) {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+
+  if (ObjectClass::Mark(mark)) {
+    TheMap().Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
+    //		ObjectClass::Mark(mark);
+    return true;
+  }
+  return false;
+}
+
+/***********************************************************************************************
+ * AnimClass::Overlap_List -- Determines the overlap list for the animation. *
+ *                                                                                             *
+ *    Use this routine to fetch the overlap list for the animation. This overlap
+ *list is the   * cells that this animation spills over. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns a pointer to the overlap list for this particular instance
+ *of the          * animation. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/19/1995 JLB : Created. *
+ *=============================================================================================*/
+std::span<const int16_t> AnimClass::Overlap_List(bool /*redraw*/) const {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+  static const int16_t OverlapAtom[] = {
+      (-MAP_CELL_W * 2) - 1, (-MAP_CELL_W * 2),
+      (-MAP_CELL_W * 2) + 1, (-MAP_CELL_W * 1) - 1,
+      (-MAP_CELL_W * 1),     (-MAP_CELL_W * 1) + 1,
+      (-MAP_CELL_W * 0) - 1, (-MAP_CELL_W * 0),
+      (-MAP_CELL_W * 0) + 1, (MAP_CELL_W * 1) - 1,
+      (MAP_CELL_W * 1),      (MAP_CELL_W * 1) + 1,
+      (MAP_CELL_W * 2) - 1,  (MAP_CELL_W * 2),
+      (MAP_CELL_W * 2) + 1,  kRefreshEol};
+
+  if (IsToDelete) {
+    static const int16_t _list[] = {kRefreshEol};
+    return _list;
+  }
+
+  if (Class->Type == ANIM_ATOM_BLAST) {
+    return OverlapAtom;
+  }
+
+  return Coord_Spillage_List(Center_Coord(), Class->Size);
+}
+
+/***********************************************************************************************
+ * AnimClass::Occupy_List -- Determines the occupy list for the animation. *
+ *                                                                                             *
+ *    Animations always occupy only the cell that their center is located over.
+ *As such, this  * routine always returns a simple (center cell) occupation
+ *list.                           *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the occupation list for the animation. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 03/19/1995 JLB : Created. *
+ *=============================================================================================*/
+std::span<const int16_t> AnimClass::Occupy_List(bool /*placement*/) const {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+
+  static const int16_t _simple[] = {kRefreshEol};
+
+  return _simple;
+}
+
+/***********************************************************************************************
+ * AnimClass::Init -- Performs pre-scenario initialization. *
+ *                                                                                             *
+ *    This routine is used to initialize the animation system prior to a
+ *scenario being loaded * or reloaded. It effectively removes all animations
+ *from the system.                      *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/31/1994 JLB : Created. *
+ *=============================================================================================*/
+void AnimClass::Init() { TheObjectHeaps().anim().Free_All(); }
+
+/***********************************************************************************************
+ * AnimClass::new -- Allocates an anim object from the pool. *
+ *                                                                                             *
+ *    This routine is used to allocate a free anim class object from the
+ *preallocated pool     * in the near heap. If there are no free animation
+ *objects, then nullptr is returned.         *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with a pointer to a free anim object. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/31/1994 JLB : Created. *
+ *=============================================================================================*/
+void* AnimClass::operator new(std::size_t /*unused*/) noexcept {
+  void* ptr = TheObjectHeaps().anim().Allocate();
+  if (ptr != nullptr) {
+    static_cast<AnimClass*>(ptr)->IsActive = true;
+  }
+  return ptr;
+}
+
+/***********************************************************************************************
+ * AnimClass::delete -- Returns an anim object back to the free pool. *
+ *                                                                                             *
+ *    This routine is used to return an anim object back to the pool of free
+ *anim objects.     * Anim objects so returned are available to be reallocated
+ *for the next animation.         *
+ *                                                                                             *
+ * INPUT:   ptr   -- Pointer to the anim object to return to the pool. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/31/1994 JLB : Created. *
+ *=============================================================================================*/
+void AnimClass::operator delete(void* ptr) {
+  if (ptr != nullptr) {
+    static_cast<AnimClass*>(ptr)->IsActive = false;
+  }
+  TheObjectHeaps().anim().Free(static_cast<AnimClass*>(ptr));
+}
+
+/***********************************************************************************************
+ * AnimClass::AnimClass -- The constructor for animation objects. *
+ *                                                                                             *
+ *    This routine is used as the constructor of animation objects. It
+ *initializes and adds    * the animation object to the display and logic
+ *systems.                                   *
+ *                                                                                             *
+ * INPUT:   animnum  -- The animation number to start. *
+ *                                                                                             *
+ *          coord    -- The location of the animation. *
+ *                                                                                             *
+ *          timedelay-- The delay before the animation starts. *
+ *                                                                                             *
+ *          loop     -- The number of times to loop this animation. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/31/1994 JLB : Created. * 08/03/1994 JLB : Added a delayed
+ *affect parameter.                                        *
+ *=============================================================================================*/
+AnimClass::AnimClass(AnimType animnum, COORDINATE coord, int timedelay,
+                     int loop)
+    : ObjectClass(RTTI_ANIM, TheObjectHeaps().anim().ID(this)),
+      Class(TheTypeHeaps().anim().Ptr(static_cast<int>(animnum))),
+      Delay(timedelay) {
+  if (Class->Stages == -1) {
+    Class->Stages = engine::gfx::KeyframeFrameCount(Class->Get_Image_Data());
+  }
+  if (Class->LoopEnd == -1) {
+    Class->LoopEnd = Class->Stages;
+  }
+  if (Class->IsNormalized) {
+    Set_Rate(TheOptions().Normalize_Delay(Class->Delay));
+  } else {
+    Set_Rate(Class->Delay);
+  }
+  Set_Stage(0);
+
+  if (Class->IsGroundLayer) {
+    Height = kFlightLevel;
+  }
+
+  AnimClass::Unlimbo(coord);
+
+  /*
+  **	Drop zone smoke always reveals the map around itself.
+  */
+  if (*this == ANIM_LZ_SMOKE) {
+    TheMap().Sight_From(Coord_Cell(coord),
+                        TheRules().DropZoneRadius / CELL_LEPTON_W, ThePlayer(),
+                        false);
+  }
+
+  Loops = static_cast<unsigned char>(std::max(loop, 1) * Class->Loops);
+  Loops = static_cast<unsigned char>(std::max(static_cast<int>(Loops), 1));
+
+  /*
+  **	If the animation starts immediately, then play the associated sound
+  *effect now.
+  */
+  if (!Delay) {
+    Start();
+  }
+}
+
+/***********************************************************************************************
+ * AnimClass::~AnimClass -- Destructor for anim objects. *
+ *                                                                                             *
+ *    This destructor handles removing the animation object from the system. It
+ *might require  * informing any object this animation is attached to that it is
+ *no longer attached.        *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 11/29/1994 JLB : Created. *
+ *=============================================================================================*/
+AnimClass::~AnimClass() {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+  if (TheGameState().active()) {
+    /*
+    **	If this anim is attached to another object
+    **	then check to see if this is the last anim attached to it. If this
+    **	is the case, then inform the object that it is no longer attached to
+    **	an animation.
+    */
+    if (Target_Legal(xObject) && As_Object(xObject) != nullptr) {
+      ObjectClass* to = As_Object(xObject);
+
+      /*
+      **	Remove the object from the appropriate display list.
+      */
+      MapEditClass::Remove(this, In_Which_Layer());
+
+      /*
+      **	Scan for any other animations that are attached to the object
+      *that *	this animation is attached to. If there are no others, then
+      *inform the *	attached object of this fact.
+      */
+      int index = 0;
+      for (index = 0; index < TheObjectHeaps().anim().Count(); index++) {
+        if (TheObjectHeaps().anim().Ptr(index) != this &&
+            TheObjectHeaps().anim().Ptr(index)->xObject == xObject) {
+          break;
+        }
+      }
+
+      /*
+      **	Tell the object that it is no longer being damaged.
+      */
+      if (index == TheObjectHeaps().anim().Count()) {
+        to->Fire_Out();
+        to->Mark(MARK_OVERLAP_UP);
+        to->IsAnimAttached = false;
+        to->Mark(MARK_OVERLAP_DOWN);
+      }
+      Coord = Coord_Add(to->Center_Coord(), Coord);
+      xObject = kTargetNone;
+    }
+
+    Limbo();
+  }
+
+  xObject = kTargetNone;
+  Class = nullptr;
+  ID = -1;
+}
+
+/***********************************************************************************************
+ * AnimClass::AI -- This is the low level anim processor. *
+ *                                                                                             *
+ *    This routine is called once per frame per animation. It handles transition
+ *between       * animation frames and marks the map for redraw as necessary. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   Speed is of upmost importance. *
+ *                                                                                             *
+ * HISTORY: * 05/31/1994 JLB : Created. *
+ *=============================================================================================*/
+void AnimClass::AI() {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+
+  /*
+  **	For ground level based animations (ones that can run slowly as well as
+  **	occur behind other ground objects) always cause the cell to be redrawn.
+  */
+  TheMap().Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
+
+  /*
+  **	Special case check to make sure that building on top of a smoke marker
+  **	causes the smoke marker to vanish.
+  */
+  if (Class->Type == ANIM_LZ_SMOKE &&
+      TheMap().at(Center_Coord()).Cell_Building()) {
+    IsToDelete = true;
+  }
+
+  /*
+  **	Delete this animation and bail early if the animation is flagged to be
+  *deleted *	immediately.
+  */
+  if (IsToDelete) {
+    delete this;
+    return;
+  }
+
+  /*
+  **	If this is a brand new animation, then don't process it the first logic
+  *pass *	since it might end up skipping the first animation frame before
+  *it has had a *	chance to draw it.
+  */
+  if (IsBrandNew) {
+    IsBrandNew = false;
+    return;
+  }
+
+  if (Class->Stages == -1) {
+    Class->Stages = engine::gfx::KeyframeFrameCount(Class->Get_Image_Data());
+  }
+  if (Class->LoopEnd == -1) {
+    Class->LoopEnd = Class->Stages;
+  }
+
+  if (Delay) {
+    Delay--;
+    if (!Delay) {
+      Start();
+    }
+  } else {
+    if (Class->Stages == -1) {
+      Class->Stages = engine::gfx::KeyframeFrameCount(Class->Get_Image_Data());
+    }
+    if (Class->LoopEnd == -1) {
+      Class->LoopEnd = Class->Stages;
+    }
+
+    /*
+    **	This is necessary because there is no recording of animations on the map
+    **	and thus the animation cannot be intelligently flagged for redraw. Most
+    **	animations move fast enough that they would need to be redrawn every
+    **	game frame anyway so this isn't TOO bad.
+    */
+    Mark(MARK_CHANGE);
+
+    if (Graphic_Logic()) {
+      const int stage = Fetch_Stage();
+
+      /*
+      **	If this animation is attached to another object and it is a
+      **	damaging kind of animation, then do the damage to the other
+      **	object.
+      */
+      if (xObject != kTargetNone && Class->Damage > 0) {
+        Accum += Class->Damage;
+
+        if (Accum >= 1) {
+          /*
+          **	Administer the damage. If the object was destroyed by this anim,
+          **	then the attached damaging anim is also destroyed.
+          */
+          int damage = Accum.ToInt();
+          Accum.Clear();
+          if (As_Object(xObject)->Take_Damage(damage, 0, WARHEAD_FIRE) ==
+              RESULT_DESTROYED) {
+            delete this;
+            return;
+          }
+        }
+      }
+
+      /*
+      **	During the biggest stage (covers the most ground), perform any
+      *ground altering *	action required. This masks craters and scorch
+      *marks, so that they appear *	naturally rather than "popping" into
+      *existence while in plain sight.
+      */
+      if (Class->Biggest && Class->Start + stage == Class->Biggest) {
+        Middle();
+      }
+
+      /*
+      **	Check to see if the last frame has been displayed. If so, then
+      *the *	animation either ends or loops.
+      */
+      if ((Loops <= 1 && stage >= Class->Stages) ||
+          (Loops > 1 && stage >= Class->LoopEnd - Class->Start)) {
+        /*
+        **	Determine if this animation should loop another time. If so,
+        *then start the loop *	but if not, then proceed into the animation
+        *termination handler.
+        */
+        if (Loops) {
+          Loops--;
+        }
+        if (Loops) {
+          Set_Stage(Class->LoopStart);
+        } else {
+          /*
+          **	The animation should end now, but first check to see if
+          **	it needs to chain into another animation. If so, then the
+          **	animation isn't technically over. It metamorphoses into the
+          **	new form.
+          */
+          if (Class->ChainTo != ANIM_NONE) {
+            Class = &AnimTypeClass::As_Reference(Class->ChainTo);
+
+            if (Class->Stages == -1) {
+              Class->Stages =
+                  engine::gfx::KeyframeFrameCount(Class->Get_Image_Data());
+            }
+            if (Class->LoopEnd == -1) {
+              Class->LoopEnd = Class->Stages;
+            }
+
+            IsToDelete = false;
+            Loops = static_cast<unsigned char>(Class->Loops);
+            Accum = Fixed(0);
+            if (Class->IsNormalized) {
+              Set_Rate(TheOptions().Normalize_Delay(Class->Delay));
+            } else {
+              Set_Rate(Class->Delay);
+            }
+            Set_Stage(Class->Start);
+            Start();
+          } else {
+            delete this;
+          }
+        }
+      }
+    }
+  }
+}
+
+/***********************************************************************************************
+ * AnimClass::Attach_To -- Attaches animation to object specified. *
+ *                                                                                             *
+ *    An animation can be "attached" to an object. In such cases, the animation
+ *is rendered    * as an offset from the center of the object it is attached to.
+ *This allows affects such   * as fire or smoke to be consistently placed on the
+ *vehicle it is associated with.         *
+ *                                                                                             *
+ * INPUT:   obj   -- Pointer to the object to attach the animation to. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/19/1994 JLB : Created. *
+ *=============================================================================================*/
+void AnimClass::Attach_To(ObjectClass* obj) {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+
+  if (obj == nullptr) {
+    return;
+  }
+  DCHECK(obj->IsActive);
+
+  obj->Mark(MARK_OVERLAP_UP);
+  obj->IsAnimAttached = true;
+  obj->Mark(MARK_OVERLAP_DOWN);
+  MapEditClass::Remove(this, In_Which_Layer());
+  xObject = obj->As_Target();
+  MapEditClass::Submit(this, In_Which_Layer());
+  Coord = Coord_Sub(Coord, obj->Target_Coord());
+}
+
+/***********************************************************************************************
+ * AnimClass::In_Which_Layer -- Determines what render layer the anim should be
+ *in.            *
+ *                                                                                             *
+ *    Use this routine to find out which display layer (ground or air) that the
+ *animation      * should be in. This information is used to place the animation
+ *into the correct display   * list. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  Returns with the layer that the animation should exist in. *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/25/1994 JLB : Created. *
+ *=============================================================================================*/
+LayerType AnimClass::In_Which_Layer() const {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+
+  if (Class->Type >= ANIM_CORPSE1 && Class->Type <= ANIM_CORPSE3) {
+    return LAYER_SURFACE;
+  }
+
+  if (Target_Legal(xObject) || Class->IsGroundLayer) {
+    return LAYER_GROUND;
+  }
+  return LAYER_AIR;
+}
+
+/***********************************************************************************************
+ * AnimClass::Start -- Processes initial animation side effects. *
+ *                                                                                             *
+ *    This routine is called when the animation first starts. Sometimes there
+ *are side effects * associated with this animation that must occur immediately.
+ *Typically, this is the       * sound effect assigned to this animation. If
+ *this animation is supposed to attach itself  * to any object at its location,
+ *then do so at this time as well.                          *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/30/1995 JLB : Created. *
+ *=============================================================================================*/
+void AnimClass::Start() {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+
+  Mark();
+
+  /*
+  **	Play the sound effect for this animation.
+  */
+  PlaySoundEffectAt(Class->Sound, Coord);
+
+  /*
+  **	If the stage where collateral effects occur is the first stage of the
+  *animation, then *	perform this action now. Subsequent checks against this
+  *stage value starts with the *	second frame of the animation.
+  */
+  if (!Class->Biggest) {
+    Middle();
+  }
+}
+
+/***********************************************************************************************
+ * AnimClass::Middle -- Processes any middle events. *
+ *                                                                                             *
+ *    This routine is called when the animation as reached its largest stage.
+ *Typically, this  * routine is used to cause scorches or craters to appear at a
+ *cosmetically pleasing        * moment. *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/30/1995 JLB : Created. * 10/17/1995 JLB : Ion camera added. *
+ *=============================================================================================*/
+void AnimClass::Middle() {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+
+  const CELL cell = Coord_Cell(Center_Coord());
+  CellClass* cellptr = &TheMap().at(cell);
+
+  if (Class->Type == ANIM_ATOM_BLAST) {
+    Do_Atom_Damage(OwnerHouse, cell);
+  }
+
+  /*
+  **	If this animation leaves scorch marks (e.g., napalm), then do so at this
+  *time.
+  */
+  if (Class->IsScorcher) {
+    base::NewPooled<SmudgeClass>(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
+                                 Center_Coord());
+  }
+
+  /*
+  **	Some animations leave a crater when they occur. Artillery is a good
+  *example. *	Craters always remove the Tiberium where they occur.
+  */
+  if (Class->IsCraterForming) {
+    /*
+    **	Craters reduce the level of Tiberium in the cell.
+    */
+    cellptr->Reduce_Tiberium(6);
+
+    /*
+    **	If there already is a crater in the cell, then just expand the
+    **	crater.
+    */
+    base::NewPooled<SmudgeClass>(SMUDGE_CRATER1, Center_Coord());
+  }
+
+  AnimClass* newanim = nullptr;
+
+  /*
+  **	If this animation spawns side effects during its lifetime, then
+  **	do so now. Usually, these side effects are in the form of other
+  **	animations.
+  */
+  switch (Class->Type) {
+    case ANIM_NAPALM1:
+    case ANIM_NAPALM2:
+    case ANIM_NAPALM3:
+      base::NewPooled<AnimClass>(
+          ANIM_FIRE_SMALL,
+          MapEditClass::Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0040),
+                                          true),
+          0, static_cast<unsigned char>(Random_Pick(1, 2)));
+      if (Percent_Chance(50)) {
+        base::NewPooled<AnimClass>(
+            ANIM_FIRE_SMALL,
+            MapEditClass::Closest_Free_Spot(
+                Coord_Scatter(Center_Coord(), 0x00A0), true),
+            0, static_cast<unsigned char>(Random_Pick(1, 2)));
+      }
+      if (Percent_Chance(50)) {
+        base::NewPooled<AnimClass>(
+            ANIM_FIRE_MED,
+            MapEditClass::Closest_Free_Spot(
+                Coord_Scatter(Center_Coord(), 0x0070), true),
+            0, static_cast<unsigned char>(Random_Pick(1, 2)));
+      }
+      break;
+
+    case ANIM_FIRE_MED:
+    case ANIM_FIRE_MED2:
+      newanim = base::NewPooled<AnimClass>(
+          ANIM_FIRE_SMALL, Center_Coord(), 0,
+          static_cast<unsigned char>(Random_Pick(1, 2)));
+      if (newanim != nullptr && xObject != kTargetNone) {
+        newanim->Attach_To(As_Object(xObject));
+      }
+      break;
+
+    case AnimType::ANIM_NONE:
+    case AnimType::ANIM_FBALL1:
+    case AnimType::ANIM_FBALL_FADE:
+    case AnimType::ANIM_FRAG1:
+    case AnimType::ANIM_VEH_HIT1:
+    case AnimType::ANIM_VEH_HIT2:
+    case AnimType::ANIM_VEH_HIT3:
+    case AnimType::ANIM_ART_EXP1:
+    case AnimType::ANIM_SMOKE_PUFF:
+    case AnimType::ANIM_PIFF:
+    case AnimType::ANIM_PIFFPIFF:
+    case AnimType::ANIM_FIRE_SMALL:
+    case AnimType::ANIM_FIRE_TINY:
+    case AnimType::ANIM_MUZZLE_FLASH:
+    case AnimType::ANIM_SMOKE_M:
+    case AnimType::ANIM_BURN_SMALL:
+    case AnimType::ANIM_BURN_MED:
+    case AnimType::ANIM_BURN_BIG:
+    case AnimType::ANIM_ON_FIRE_SMALL:
+    case AnimType::ANIM_ON_FIRE_MED:
+    case AnimType::ANIM_ON_FIRE_BIG:
+    case AnimType::ANIM_SAM_N:
+    case AnimType::ANIM_SAM_NE:
+    case AnimType::ANIM_SAM_E:
+    case AnimType::ANIM_SAM_SE:
+    case AnimType::ANIM_SAM_S:
+    case AnimType::ANIM_SAM_SW:
+    case AnimType::ANIM_SAM_W:
+    case AnimType::ANIM_SAM_NW:
+    case AnimType::ANIM_GUN_N:
+    case AnimType::ANIM_GUN_NE:
+    case AnimType::ANIM_GUN_E:
+    case AnimType::ANIM_GUN_SE:
+    case AnimType::ANIM_GUN_S:
+    case AnimType::ANIM_GUN_SW:
+    case AnimType::ANIM_GUN_W:
+    case AnimType::ANIM_GUN_NW:
+    case AnimType::ANIM_LZ_SMOKE:
+    case AnimType::ANIM_CRATE_DEVIATOR:
+    case AnimType::ANIM_CRATE_DOLLAR:
+    case AnimType::ANIM_CRATE_EARTH:
+    case AnimType::ANIM_CRATE_EMPULSE:
+    case AnimType::ANIM_CRATE_INVUN:
+    case AnimType::ANIM_CRATE_MINE:
+    case AnimType::ANIM_CRATE_RAPID:
+    case AnimType::ANIM_CRATE_STEALTH:
+    case AnimType::ANIM_CRATE_MISSILE:
+    case AnimType::ANIM_MOVE_FLASH:
+    case AnimType::ANIM_OILFIELD_BURN:
+    case AnimType::ANIM_ELECT_DIE:
+    case AnimType::ANIM_PARACHUTE:
+    case AnimType::ANIM_DOG_ELECT_DIE:
+    case AnimType::ANIM_CORPSE1:
+    case AnimType::ANIM_CORPSE2:
+    case AnimType::ANIM_CORPSE3:
+    case AnimType::ANIM_SPUTDOOR:
+    case AnimType::ANIM_ATOM_BLAST:
+    case AnimType::ANIM_CHRONO_BOX:
+    case AnimType::ANIM_GPS_BOX:
+    case AnimType::ANIM_INVUL_BOX:
+    case AnimType::ANIM_PARA_BOX:
+    case AnimType::ANIM_SONAR_BOX:
+    case AnimType::ANIM_TWINKLE1:
+    case AnimType::ANIM_TWINKLE2:
+    case AnimType::ANIM_TWINKLE3:
+    case AnimType::ANIM_FLAK:
+    case AnimType::ANIM_WATER_EXP1:
+    case AnimType::ANIM_WATER_EXP2:
+    case AnimType::ANIM_WATER_EXP3:
+    case AnimType::ANIM_CRATE_ARMOR:
+    case AnimType::ANIM_CRATE_SPEED:
+    case AnimType::ANIM_CRATE_FPOWER:
+    case AnimType::ANIM_CRATE_TQUAKE:
+    case AnimType::ANIM_PARA_BOMB:
+    case AnimType::ANIM_MINE_EXP1:
+    case AnimType::ANIM_ANT_DEATH:
+    default:
+      break;
+  }
+}
+
+/***********************************************************************************************
+ * AnimClass::Detach -- Remove animation if attached to target. *
+ *                                                                                             *
+ *    This routine is called when the specified target is being removed from the
+ *game. If this * animation happens to be attached to this object, then the
+ *animation must be remove as    * well. *
+ *                                                                                             *
+ * INPUT:   target   -- The target that is about to be destroyed. *
+ *                                                                                             *
+ *          all      -- Is the target being destroyed RIGHT NOW? If not, then it
+ *will be       * destroyed soon. In that case, the animation should continue to
+ *remain  * attached for cosmetic reasons. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/30/1995 JLB : Created. * 07/02/1995 JLB : Detach is a precursor
+ *to animation destruction.                          *
+ *=============================================================================================*/
+void AnimClass::Detach(TARGET target, bool all) {
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
+  DCHECK(IsActive);
+
+  if (xObject == target && all) {
+    MapEditClass::Remove(this, In_Which_Layer());
+    xObject = kTargetNone;
+    IsToDelete = true;
+    Mark(MARK_UP);
+  }
+}
+
+/***********************************************************************************************
+ * AnimClass::Do_Atom_Damage -- Do atom bomb damage centered around the cell
+ *specified.        *
+ *                                                                                             *
+ *    This routine will apply damage around the ground-zero cell specified. *
+ *                                                                                             *
+ * INPUT:   ownerhouse  -- The owner of this atom bomb. *
+ *                                                                                             *
+ *          cell        -- The ground zero location to apply the atom bomb
+ *damage.             *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 07/06/1996 JLB : Created. *
+ *=============================================================================================*/
+void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
+  /*
+  **	Find someone to blame the explosion on. This is necessary in
+  **	order to properly enact retribution and record the kill for
+  **	score purposes.
+  */
+  BuildingClass* building = nullptr;
+  TechnoClass* backup = nullptr;
+  if (ownerhouse != HOUSE_NONE) {
+    for (int index = 0; index < TheWorld().logic().Count(); index++) {
+      ObjectClass* obj = TheWorld().logic().at(index);
+
+      if (obj != nullptr && obj->Is_Techno() && obj->Owner() == ownerhouse) {
+        backup = dynamic_cast<TechnoClass*>(obj);
+        if (obj->What_Am_I() == RTTI_BUILDING &&
+            *dynamic_cast<BuildingClass*>(obj) == STRUCT_MSLO) {
+          building = dynamic_cast<BuildingClass*>(obj);
+          break;
+        }
+      }
+    }
+
+    if (building == nullptr) {
+      building = dynamic_cast<BuildingClass*>(backup);
+    }
+  }
+
+  int radius = 0;
+  int rawdamage = 0;
+  if (TheSession().Type == GAME_NORMAL) {
+    radius = 4;
+    rawdamage = TheRules().AtomDamage;
+    ThePalettes().white_palette().Set(kFadePaletteSlow, ServiceRealTime);
+  } else {
+    radius = 3;
+    rawdamage = TheRules().AtomDamage / 5;
+  }
+
+  Wide_Area_Damage(Cell_Coord(cell),
+                   static_cast<LEPTON>(radius * CELL_LEPTON_W), rawdamage,
+                   building, WARHEAD_FIRE);
+  Shake_The_Screen(3);
+  if (TheSession().Type == GAME_NORMAL) {
+    ThePalettes().game_palette().Set(kFadePaletteSlow, ServiceRealTime);
+  }
+}

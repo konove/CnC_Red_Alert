@@ -1,0 +1,258 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\score.h_v   2.18   16 Oct 1995 16:46:18
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : SCORE.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : April 19, 1994 *
+ *                                                                                             *
+ *                  Last Update : April 19, 1994   [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_TD_SCREENS_SCORE_H_
+#define CNC_RED_ALERT_TD_SCREENS_SCORE_H_
+
+class ArchiveReader;
+class ArchiveWriter;
+struct FontStyle;
+
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <span>
+#include <string_view>
+
+#include "absl/base/attributes.h"
+#include "base/buffer.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
+#include "engine/platform/timer.h"
+#include "td/assets/presentation.h"
+
+class ScoreClass {
+ public:
+  int Score;
+  int NKilled;
+  int GKilled;
+  int CKilled;
+  int NBKilled;
+  int GBKilled;
+  int CBKilled;
+  int NHarvested;
+  int GHarvested;
+  int CHarvested;
+  int64_t ElapsedTime;
+
+  void Init() { base::FillBytes(base::ObjectBytes(*this), 0, sizeof(*this)); }
+  // Runs the mission's score screen: the animated tally of kills,
+  // buildings and harvested tiberium, and the high-score entry after it.
+  void Show();
+
+  /*
+  **	File I/O.
+  */
+  template <class Archive>
+  void Serialize(Archive& ar);
+
+
+
+ protected:
+ private:
+  unsigned char* ChangingGun;
+
+  void ScoreDelay(int ticks);
+  void Pulse_Bar_Graph();
+  void Print_Graph_Title(int, int);
+  static void Print_Minutes(Presentation& show, const FontStyle& font,
+                            int minutes);
+  static void Count_Up_Print(Presentation& show, const FontStyle& font,
+                             const char* str, int percent, int max, int xpos,
+                             int ypos);
+  static void Show_Credits(Presentation& show, int house,
+                           std::span<const unsigned char> pal);
+  static void Do_GDI_Graph(Presentation& show, const FontStyle& font,
+                           std::span<const std::byte> yellowptr,
+                           std::span<const std::byte> redptr, int gkilled,
+                           int nkilled, int ypos);
+  void Do_Nod_Casualties_Graph(Presentation& show, const FontStyle& font);
+  void Do_Nod_Buildings_Graph(Presentation& show, const FontStyle& font);
+  static void Input_Name(Presentation& show, std::span<char> str, int xpos,
+                         int ypos, std::span<const unsigned char> pal);
+};
+
+class ScoreAnimClass {
+ public:
+  ScoreAnimClass(Presentation& show ABSL_ATTRIBUTE_LIFETIME_BOUND, int x, int y,
+                 std::span<const std::byte> data ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  ScoreAnimClass(Presentation& show ABSL_ATTRIBUTE_LIFETIME_BOUND, int x, int y,
+                 const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  int XPos;
+  int Stage = 0;
+  int YPos;
+  engine::platform::Timer<engine::platform::SystemTickSource> AnimTimer;
+  std::span<const std::byte> DataPtr;
+  const char* TextData = "";
+  [[nodiscard]] char Text_At(int index) const {
+    const std::string_view text(TextData);
+    return index >= 0 && static_cast<size_t>(index) < text.size()
+               ? text.at(static_cast<size_t>(index))
+               : '\0';
+  }
+  // The animation's text, for the text-style animations.
+  [[nodiscard]] const char* Text() const { return TextData; }
+  virtual void Update() {}
+
+ protected:
+  // The presentation these draw into, which outlives every animation on it.
+  Presentation& show_;
+
+ public:
+  virtual ~ScoreAnimClass();
+  ScoreAnimClass(const ScoreAnimClass&) = delete;
+  ScoreAnimClass& operator=(const ScoreAnimClass&) = delete;
+  ScoreAnimClass(ScoreAnimClass&&) = delete;
+  ScoreAnimClass& operator=(ScoreAnimClass&&) = delete;
+};
+
+class ScoreCredsClass : public ScoreAnimClass {
+ public:
+  int MaxStage;
+  int TimerReset;
+  std::span<const std::byte> CashTurn;
+  std::span<const std::byte> Clock1;
+
+  void Update() override;
+  ScoreCredsClass(Presentation& show, int xpos, int ypos,
+                  std::span<const std::byte> data, int max, int timer);
+  ~ScoreCredsClass() override = default;
+  ScoreCredsClass(const ScoreCredsClass&) = delete;
+  ScoreCredsClass& operator=(const ScoreCredsClass&) = delete;
+  ScoreCredsClass(ScoreCredsClass&&) = delete;
+  ScoreCredsClass& operator=(ScoreCredsClass&&) = delete;
+};
+
+class ScoreTimeClass : public ScoreAnimClass {
+ public:
+  int MaxStage;
+  int TimerReset;
+  void Update() override;
+  ScoreTimeClass(Presentation& show, int xpos, int ypos,
+                 std::span<const std::byte> data, int max, int timer);
+  ~ScoreTimeClass() override = default;
+  ScoreTimeClass(const ScoreTimeClass&) = delete;
+  ScoreTimeClass& operator=(const ScoreTimeClass&) = delete;
+  ScoreTimeClass(ScoreTimeClass&&) = delete;
+  ScoreTimeClass& operator=(ScoreTimeClass&&) = delete;
+};
+
+class ScorePrintClass : public ScoreAnimClass {
+ public:
+  int Background;
+  std::span<const uint8_t> PrimaryPalette;
+  void Update() override;
+  ScorePrintClass(Presentation& show, const char* string, int xpos, int ypos,
+                  std::span<const uint8_t> palette
+                      ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                  int background = kTBlack);
+  ScorePrintClass(Presentation& show, int string, int xpos, int ypos,
+                  std::span<const uint8_t> palette
+                      ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                  int background = kTBlack);
+  ~ScorePrintClass() override = default;
+  ScorePrintClass(const ScorePrintClass&) = delete;
+  ScorePrintClass& operator=(const ScorePrintClass&) = delete;
+  ScorePrintClass(ScorePrintClass&&) = delete;
+  ScorePrintClass& operator=(ScorePrintClass&&) = delete;
+};
+
+class MultiStagePrintClass : public ScoreAnimClass {
+ public:
+  int Background;
+  std::span<const uint8_t> PrimaryPalette;
+  void Update() override;
+  MultiStagePrintClass(
+      Presentation& show, const char* string, int xpos, int ypos,
+      std::span<const uint8_t> palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      int background = kTBlack);
+  MultiStagePrintClass(Presentation& show, int string, int xpos, int ypos,
+                       std::span<const uint8_t> palette
+                           ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                       int background = kTBlack);
+  ~MultiStagePrintClass() override = default;
+  MultiStagePrintClass(const MultiStagePrintClass&) = delete;
+  MultiStagePrintClass& operator=(const MultiStagePrintClass&) = delete;
+  MultiStagePrintClass(MultiStagePrintClass&&) = delete;
+  MultiStagePrintClass& operator=(MultiStagePrintClass&&) = delete;
+};
+
+class ScoreScaleClass : public ScoreAnimClass {
+ public:
+  std::span<const uint8_t> Palette;
+  void Update() override;
+  ScoreScaleClass(Presentation& show, const char* string, int xpos, int ypos,
+                  std::span<const uint8_t> pal ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  ~ScoreScaleClass() override = default;
+  ScoreScaleClass(const ScoreScaleClass&) = delete;
+  ScoreScaleClass& operator=(const ScoreScaleClass&) = delete;
+  ScoreScaleClass(ScoreScaleClass&&) = delete;
+  ScoreScaleClass& operator=(ScoreScaleClass&&) = delete;
+};
+
+#define MAXSCOREOBJS 8
+// The animations running on the score or map selection screen. Each slot owns
+// its animation; an animation that finishes empties its own slot (and so
+// destroys itself) from Update().
+extern std::unique_ptr<ScoreAnimClass> ScoreObjs[MAXSCOREOBJS];
+
+void Multi_Score_Presentation();
+
+// The score font as the score and map selection screens print with it: no
+// extra spacing, and `palette` for the glyph values when it holds all 16
+// entries (the identity palette otherwise).
+FontStyle ScoreFontStyle(std::span<const uint8_t> palette = {});
+
+void Map_Selection();
+void Bit_It_In(Presentation& show, int x, int y, int w, int h, PixelBuffer* src,
+               PixelBuffer* dest, int delay = 0, bool dagger = false);
+void Call_Back_Delay(Presentation& show, int time);
+// Puts `obj` in the first free ScoreObjs slot and returns the slot's index.
+// When every slot is taken the animation is destroyed unrun and 0 is returned.
+int Alloc_Object(std::unique_ptr<ScoreAnimClass> obj);
+// Destroys every running score animation and empties its slot.
+void Clear_Score_Objects();
+
+extern template void ScoreClass::Serialize<ArchiveWriter>(ArchiveWriter&);
+extern template void ScoreClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+extern bool ControlQ;
+
+#endif  // CNC_RED_ALERT_TD_SCREENS_SCORE_H_

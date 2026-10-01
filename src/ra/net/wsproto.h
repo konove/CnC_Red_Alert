@@ -1,0 +1,199 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                     $Archive:: /Sun/WSProto.h $*
+ *                                                                                             *
+ *                      $Author:: Joe_b $*
+ *                                                                                             *
+ *                     $Modtime:: 8/12/97 5:42p $*
+ *                                                                                             *
+ *                    $Revision:: 4 $*
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_RA_NET_WSPROTO_H_
+#define CNC_RED_ALERT_RA_NET_WSPROTO_H_
+
+#include <cstddef>
+#include <span>
+
+class IPXAddressClass;
+
+#include "ra/core/owned_vector.h"
+
+#ifdef _WIN32
+/*
+** Include standard Winsock 1.0 header file.
+*/
+#include <winsock.h>
+#else
+using SOCKET = int;
+#define INVALID_SOCKET (-1)
+using HANDLE = void*;
+#define WM_USER 0x400
+#endif
+
+#include "engine/net/net_select.h"
+
+/*
+** Misc defines
+*/
+#define WINSOCK_MINOR_VER 1  // Version of Winsock
+#define WINSOCK_MAJOR_VER 1  // 	that we require
+
+// #define WS_RECEIVE_BUFFER_LEN	32768		// Length of our
+// temporary receive buffer. Needs to be more that the max packet size which is
+// about 550 bytes. #define SOCKET_BUFFER_SIZE		32768		//
+// Length of winsocks internal buffer.
+#define WS_RECEIVE_BUFFER_LEN 1024  // Length of our temporary receive buffer.
+#define SOCKET_BUFFER_SIZE (1024 * 128)  // Length of winsocks internal buffer.
+
+#define PLANET_WESTWOOD_HANDLE_MAX 20  // Max length of a WChat handle
+
+/*
+** Define events for Winsock callbacks
+*/
+#define WM_IPXASYNCEVENT (WM_USER + 115)  // IPX socket Async event
+#define WM_UDPASYNCEVENT (WM_USER + 116)  // UDP socket Async event
+
+/*
+** Enum to identify the protocols supported by the Winsock interface.
+*/
+enum class ProtocolEnum { PROTOCOL_NONE, PROTOCOL_IPX, PROTOCOL_UDP };
+using enum ProtocolEnum;
+
+/*
+**
+** Class to interface with Winsock. This interface only supports connectionless
+*packet protocols
+** like UDP & IPX. Connection orientated or streaming protocols like TCP are not
+*supported by this
+** class.
+**
+*/
+class WinsockInterfaceClass {
+ public:
+  WinsockInterfaceClass();
+  virtual ~WinsockInterfaceClass();
+  WinsockInterfaceClass(const WinsockInterfaceClass&) = delete;
+  WinsockInterfaceClass& operator=(const WinsockInterfaceClass&) = delete;
+  WinsockInterfaceClass(WinsockInterfaceClass&&) = delete;
+  WinsockInterfaceClass& operator=(WinsockInterfaceClass&&) = delete;
+
+  bool Init();
+  void Close();
+
+  void Close_Socket();
+  virtual int Read(std::span<std::byte> buffer, int& buffer_len,
+                   std::span<std::byte> address, int& address_len);
+  virtual void WriteTo(std::span<const std::byte> buffer, int buffer_len,
+                       const IPXAddressClass& address);
+  virtual void Broadcast(std::span<const std::byte> buffer, int buffer_len);
+  virtual void Discard_In_Buffers();
+  virtual void Discard_Out_Buffers();
+  virtual bool Start_Listening();
+  // final: nothing overrides these, and WinsockInterfaceClass::Close calls
+  // them from the destructor.
+  void Stop_Listening();
+  virtual void Clear_Socket_Error(SOCKET socket);
+  virtual bool Set_Socket_Options();
+  virtual void Set_Broadcast_Address(const char* /*unused*/) {}
+
+  virtual ProtocolEnum Get_Protocol() { return PROTOCOL_NONE; }
+
+  virtual int Protocol_Event_Message() { return 0; }
+
+  virtual bool Open_Socket(SOCKET /*unused*/) { return false; }
+
+  virtual void Event_Handler(int /*unused*/, SocketEvent /*unused*/) {}
+
+  enum class ConnectStatusEnum {
+    CONNECTED_OK = 0,
+    NOT_CONNECTING,
+    CONNECTING,
+    UNABLE_TO_CONNECT_TO_SERVER,
+    CONTACTING_SERVER,
+    SERVER_ADDRESS_LOOKUP_FAILED,
+    RESOLVING_HOST_ADDRESS,
+    UNABLE_TO_ACCEPT_CLIENT,
+    UNABLE_TO_CONNECT,
+    CONNECTION_LOST
+  };
+  using enum ConnectStatusEnum;
+
+  ConnectStatusEnum Get_Connection_Status() { return ConnectStatus; }
+
+ protected:
+  static int Get_Last_Error();
+
+  /*
+  ** This struct contains the information needed for each incoming and outgoing
+  *packet.
+  ** It acts as a temporary control for these packets.
+  */
+  struct tWinsockBufferType {
+    unsigned char Address[64];   // Address. IN_ADDR, IPXAddressClass etc.
+    int BufferLen;               // Length of data in buffer
+    bool IsBroadcast;            // Flag to broadcast this packet
+    unsigned char Buffer[1024];  // Buffer to store packet in.
+  };
+  using WinsockBufferType = tWinsockBufferType;
+
+  /*
+  ** Array of buffers to temporarily store incoming and outgoing packets.
+  */
+  OwnedVector<WinsockBufferType> InBuffers;
+  OwnedVector<WinsockBufferType> OutBuffers;
+
+  /*
+  ** Is Winsock present and initialised?
+  */
+  bool WinsockInitialised{false};
+
+  /*
+  ** Socket that communications will take place over.
+  */
+  SOCKET Socket{INVALID_SOCKET};
+
+  /*
+  ** Async object required for callbacks to our message handler.
+  */
+  HANDLE ASync{nullptr};
+
+  /*
+  ** Temporary receive buffer to use when querying Winsock for incoming packets.
+  */
+  unsigned char ReceiveBuffer[WS_RECEIVE_BUFFER_LEN]{};
+
+  /*
+  ** Current connection status.
+  */
+  ConnectStatusEnum ConnectStatus = NOT_CONNECTING;
+};
+
+#endif  // CNC_RED_ALERT_RA_NET_WSPROTO_H_

@@ -1,0 +1,4483 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /counterstrike/QUEUE.CPP 6     3/14/97 5:12p Steve_tall $ */
+/***************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ *                                                                         *
+ *                 Project Name : Command & Conquer                        *
+ *                                                                         *
+ *                    File Name : QUEUE.CPP                                *
+ *                                                                         *
+ *                   Programmer : Bill R. Randolph                         *
+ *                                                                         *
+ *                   Start Date : 11/28/95                                 *
+ *                                                                         *
+ *                  Last Update : October 14, 1996 [BRR]                   *
+ *                                                                         *
+ *-------------------------------------------------------------------------*
+ * Functions for Queueing Events:                                          *
+ *   Queue_Mission -- Queue a mega mission event.                          *
+ *   Queue_Options -- Queue the options event.                             *
+ *   Queue_Exit -- Add the exit game event to the queue.                   *
+ *                                                                         *
+ * Functions for processing Queued Events:
+ ** Queue_AI -- Process all queued events.                                *
+ *   Queue_AI_Normal -- Process all queued events.                         *
+ *   Queue_AI_Multiplayer -- Process all queued events.                    *
+ *                                                                         *
+ * Main Multiplayer Queue Logic:
+ ** Wait_For_Players -- Waits for other systems to come on-line           *
+ *   Generate_Timing_Event -- computes & queues a RESPONSE_TIME event      *
+ *   Process_Send_Period -- timing for sending packets every 'n' frames    *
+ *   Send_Packets -- sends out events from the OutList
+ *           * Send_FrameSync -- Sends a FRAMESYNC packet      *
+ *   Process_Receive_Packet -- processes an incoming packet                *
+ *   Process_Serial_Packet -- Handles an incoming serial packet            *
+ *   Can_Advance -- determines if it's OK to advance to the next frame     *
+ *   Process_Reconnect_Dialog -- processes the reconnection dialog         *
+ *   Handle_Timeout -- attempts to reconnect; if fails, bails.             *
+ *   Stop_Game -- stops the game
+ **
+ *                                                                         *
+ * Packet Compression / Decompression:
+ ** Build_Send_Packet -- Builds a big packet from a bunch of little ones.
+ ** Add_Uncompressed_Events -- adds uncompressed events to a packet       *
+ *   Add_Compressed_Events -- adds compressed events to a packet *
+ *   Breakup_Receive_Packet -- Splits a big packet into little ones.
+ ** Extract_Uncompressed_Events -- extracts events from a packet
+ ** Extract_Compressed_Events -- extracts events from a packet            *
+ *                                                                         *
+ * DoList Management:
+ ** Execute_DoList -- Executes commands from the DoList
+ *          * Clean_DoList -- Cleans out old events from the
+ * DoList                 * Queue_Record -- Records the
+ * DoList to disk                            * Queue_Playback --
+ * plays back queue entries from a record file         *
+ *                                                                         *
+ * Debugging:
+ ** Compute_Game_CRC -- Computes a CRC value of the entire game.
+ ** Add_CRC -- Adds a value to a CRC                                      *
+ *   Print_CRCs -- Prints a data file for finding Sync Bugs
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+#include "ra/net/queue.h"
+
+#include <algorithm>
+#include <cinttypes>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <memory>
+#include <span>
+#include <string_view>
+#include <utility>
+
+#include "absl/strings/str_format.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/fixed.h"
+#include "base/numeric.h"
+#include "base/random.h"
+#include "base/strings/safe_string.h"
+#include "base/unaligned.h"
+#include "engine/platform/timer.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/window/hardware_cursor.h"
+#include "engine/window/keyboard.h"
+#include "magic_enum/magic_enum.hpp"
+#include "ra/ai/scenario.h"
+#include "ra/assets/audio.h"
+#include "ra/core/ccptr.h"
+#include "ra/core/defines.h"
+#include "ra/core/game_clock.h"
+#include "ra/core/heap.h"
+#include "ra/core/inline.h"
+#include "ra/core/jshell.h"
+#include "ra/core/object_heaps.h"
+#include "ra/data/rules.h"
+#include "ra/data/text_ids.h"
+#include "ra/debug/debug_state.h"
+#include "ra/editor/mapedit.h"
+#include "ra/map/layer.h"
+#include "ra/map/logic.h"
+#include "ra/map/mouse.h"
+#include "ra/map/world.h"
+#include "ra/net/chat.h"
+#include "ra/net/connect.h"
+#include "ra/net/connmgr.h"
+#include "ra/net/event.h"
+#include "ra/net/netdlg.h"
+#include "ra/net/network.h"
+#include "ra/net/nulldlg.h"
+#include "ra/net/nullmgr.h"
+#include "ra/net/session.h"
+#include "ra/objects/aircraft.h"
+#include "ra/objects/anim.h"
+#include "ra/objects/building.h"
+#include "ra/objects/bullet.h"
+#include "ra/objects/house.h"
+#include "ra/objects/infantry.h"
+#include "ra/objects/mission.h"
+#include "ra/objects/object.h"
+#include "ra/objects/overlay.h"
+#include "ra/objects/smudge.h"
+#include "ra/objects/target.h"
+#include "ra/objects/template.h"
+#include "ra/objects/terrain.h"
+#include "ra/objects/type.h"
+#include "ra/objects/unit.h"
+#include "ra/objects/vessel.h"
+#include "ra/saveload/saveload.h"
+#include "ra/screens/goptions.h"
+#include "ra/screens/hotkeys.h"
+#include "ra/startup/conquer.h"
+#include "ra/startup/game_state.h"
+#include "ra/startup/startup.h"
+#include "ra/startup/version.h"
+#include "ra/ui/input.h"
+#include "ra/ui/msgbox.h"
+#include "ra/ui/msglist.h"
+#include "ra/wol/stats.h"
+
+// #include "ra/wol/woldebug.h"
+#include "ra/core/config.h"
+#include "ra/wol/wolapiob.h"
+
+/********************************** Defines *********************************/
+
+/********************************** Globals *********************************/
+//---------------------------------------------------------------------------
+//	GameCRC is the current computed CRC value for this frame.
+//	CRC[] is a record of our last 32 game CRC's.
+// ColorNames is for debug output in Print_CRCs
+//---------------------------------------------------------------------------
+static uint32_t GameCRC;
+static uint32_t CRC[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static const char* ColorNames[8] = {"Yellow", "LtBlue", "Red",  "Green",
+                                    "Orange", "Grey",   "Blue", "Brown"};
+
+//---------------------------------------------------------------------------
+// Several routines return various codes; here's an enum for all of them.
+//---------------------------------------------------------------------------
+enum class RetcodeType {
+  RC_NORMAL,             // no news is good news
+  RC_PLAYER_READY,       // a new player has been heard from
+  RC_SCENARIO_MISMATCH,  // scenario mismatch
+  RC_DOLIST_FULL,        // DoList is full
+  RC_SERIAL_PROCESSED,   // modem: SERIAL packet was processed
+  RC_PLAYER_LEFT,        // modem: other player left the game
+  RC_HUNG_UP,            // modem has hung up
+  RC_NOT_RESPONDING,     // other player not responding (timeout/hung up)
+  RC_CANCEL,             // user cancelled
+};
+using enum RetcodeType;
+
+namespace {
+
+// Closes a debug dump file.
+struct CloseFile {
+  void operator()(FILE* file) const {
+    std::fclose(file);  // NOLINT(cppcoreguidelines-owning-memory): the C API
+                        // owns FILE; DumpFile holds it.
+  }
+};
+
+// A debug dump file, closed when it goes out of scope; empty if it could not
+// be created.
+using DumpFile = std::unique_ptr<FILE, CloseFile>;
+
+DumpFile OpenDumpFile(const char* name) {
+  return DumpFile(std::fopen(name, "wt"));
+}
+
+}  // namespace
+
+/********************************* Prototypes *******************************/
+//...........................................................................
+// Main multiplayer queue logic
+//...........................................................................
+static void Queue_AI_Normal();
+static void Queue_AI_Multiplayer();
+static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
+                                    int resend_delta, int dialog_time,
+                                    int timeout,
+                                    std::span<std::byte> multi_packet_buf,
+                                    int my_sent, std::span<int64_t> their_frame,
+                                    std::span<uint16_t> their_sent,
+                                    std::span<uint16_t> their_recv);
+static void Generate_Timing_Event(ConnManClass* net, int my_sent);
+static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent);
+static void Generate_Process_Time_Event(ConnManClass* net);
+static int Process_Send_Period(ConnManClass* net);  //, int init);
+static int Send_Packets(ConnManClass* net,
+                        std::span<std::byte> multi_packet_buf,
+                        int multi_packet_max, int max_ahead, int my_sent);
+static void Send_FrameSync(ConnManClass* net, int cmd_count);
+static RetcodeType Process_Receive_Packet(ConnManClass* net,
+                                          std::span<std::byte> multi_packet_buf,
+                                          int id, int packetlen,
+                                          std::span<int64_t> their_frame,
+                                          std::span<uint16_t> their_sent,
+                                          std::span<uint16_t> their_recv);
+static RetcodeType Process_Serial_Packet(
+    std::span<const std::byte> multi_packet_buf, int packetlen, int first_time);
+static int Can_Advance(ConnManClass* net, int max_ahead,
+                       std::span<const int64_t> their_frame,
+                       std::span<const uint16_t> their_sent,
+                       std::span<const uint16_t> their_recv);
+static int Process_Reconnect_Dialog(
+    const engine::platform::Timer<engine::platform::SystemTickSource>*
+        timeout_timer,
+    std::span<const int64_t> their_frame, int num_conn, bool reconn,
+    bool fresh);
+static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
+                          std::span<uint16_t> their_sent,
+                          std::span<uint16_t> their_recv);
+static void Stop_Game();
+
+//...........................................................................
+// Packet compression/decompression:
+//...........................................................................
+static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
+                             int frame_delay, int num_cmds, int cap);
+static int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
+                                   int frame_delay, int size, int cap);
+static int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
+                                 int frame_delay, int size, int cap);
+static int Breakup_Receive_Packet(std::span<const std::byte> buf, int bufsize);
+
+//...........................................................................
+// DoList management:
+//...........................................................................
+static int Execute_DoList(
+    int max_houses, HousesType base_house, ConnManClass* net,
+    const engine::platform::Timer<FrameTickSource>* skip_crc,
+    //	ConnManClass *net, TCountDownTimerClass *skip_crc,
+    std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
+    std::span<uint16_t> their_recv);
+static void Clean_DoList();
+static void Queue_Record();
+static void Queue_Playback();
+
+//...........................................................................
+// Debugging:
+//...........................................................................
+static void Compute_Game_CRC();
+static void Print_CRCs(const EventClass* ev);
+// Bytes a compressed packet spends on each event's type tag.
+constexpr int kEventTypeSize = static_cast<int>(sizeof(EventClass::EventType));
+
+
+static void Dump_Packet_Too_Late_Stuff(const EventClass* event,
+                                       ConnManClass* net,
+                                       std::span<const int64_t> their_frame,
+                                       std::span<const uint16_t> their_sent,
+                                       std::span<const uint16_t> their_recv);
+
+/***************************************************************************
+ * Queue_Mission -- Queue a mega mission event.                            *
+ *                                                                         *
+ * This routine is called when the player causes a change to a game unit. * The
+ *event that initiates the change is queued to as a result of a call 	* to
+ * this routine.
+ *							*
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		whom		Whom this mission request applies to (a friendly
+ *unit).     * mission	The mission to assign to this object. * target	The
+ *target of this mission (if any).                        * dest
+ *The movement destination for this mission (if any).         *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		Was the mission request queued successfully? *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none. *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   09/21/1995 JLB : Created.                                             *
+ *=========================================================================*/
+bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
+                   TARGET destination) {
+  return TheNetwork().out_list().Add(
+      EventClass(whom, mission, TargetClass(target), TargetClass(destination)));
+}
+
+/***********************************************************************************************
+ * Queue_Mission -- Queue a mega mission event, formation override for common
+ *speed.           *
+ *                                                                                             *
+ *    This routine is called when the player causes a change to a game unit. The
+ *event that    * initiates the change is queued to as a result of a call to
+ *this routine.                 *
+ *                                                                                             *
+ * INPUT:   whom     -- Whom this mission request applies to (a friendly unit).
+ **
+ *                                                                                             *
+ *          mission  -- The mission to assign to this object. *
+ *                                                                                             *
+ *          target   -- The target of this mission (if any). *
+ *                                                                                             *
+ *          dest     -- The movement destination for this mission (if any). *
+ *																															  *
+ *				speed	   -- The override speed for this unit.
+ **
+ *																															  *
+ *				maxspeed -- The override maximum speed for this
+ *unit. *
+ *                                                                                             *
+ * OUTPUT:  Was the mission request queued successfully? *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 09/21/1995 JLB : Created. *
+ *=============================================================================================*/
+bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
+                   TARGET destination, SpeedType speed, MPHType maxspeed) {
+  return TheNetwork().out_list().Add(
+      EventClass(whom, mission, TargetClass(target), TargetClass(destination),
+                 speed, maxspeed));
+}
+
+/***************************************************************************
+ * Queue_Options -- Queue the options event.                               *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		none.
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		Was the options screen event queued successfully? *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   09/21/1995 JLB : Created.                                             *
+ *=========================================================================*/
+bool Queue_Options() {
+  return TheNetwork().out_list().Add(EventClass(EventClass::OPTIONS));
+
+} /* end of Queue_Options */
+
+/***************************************************************************
+ * Queue_Exit -- Add the exit game event to the queue.                     *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		none.
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		Was the exit event queued successfully? *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   09/21/1995 JLB : Created.                                             *
+ *=========================================================================*/
+bool Queue_Exit() {
+  return TheNetwork().out_list().Add(EventClass(EventClass::EXIT));
+} /* end of Queue_Exit */
+
+/***************************************************************************
+ * Queue_AI -- Process all queued events.                                  *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		none.
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   09/21/1995 JLB : Created.                                             *
+ *=========================================================================*/
+void Queue_AI() {
+  if (TheSession().Play) {
+    Queue_Playback();
+  }
+
+  else {
+    switch (TheSession().Type) {
+      case GAME_SKIRMISH:
+      case GAME_NORMAL:
+        Queue_AI_Normal();
+        break;
+
+      case GAME_MODEM:
+      case GAME_NULL_MODEM:
+      case GAME_IPX:
+      case GAME_INTERNET:
+        Queue_AI_Multiplayer();
+        break;
+      default:
+        break;
+    }
+  }
+
+} /* end of Queue_AI */
+
+/***************************************************************************
+ * Queue_AI_Normal -- Process all queued events.                           *
+ *                                                                         *
+ * This is the "normal" version of the queue management routine.  It does * the
+ *following:
+ **
+ * - Transfers items in the OutList to the
+ * DoList
+ **
+ * - Executes any commands in the DoList that are supposed to be
+ * done on * this frame #
+ *											*
+ * - Cleans out the DoList
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		none.
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   09/21/1995 JLB : Created.                                             *
+ *=========================================================================*/
+static void Queue_AI_Normal() {
+  //------------------------------------------------------------------------
+  //	Move events from the OutList (events generated by this
+  // player) into the 	DoList (the list of events to execute).
+  //------------------------------------------------------------------------
+  while (TheNetwork().out_list().Count()) {
+    TheNetwork().out_list().First().IsExecuted = false;
+    if (!TheNetwork().do_list().Add(TheNetwork().out_list().First())) {
+    }
+    TheNetwork().out_list().Next();
+  }
+
+  //------------------------------------------------------------------------
+  // Save the DoList to disk, if we're in "Record" mode
+  //------------------------------------------------------------------------
+  if (TheSession().Record) {
+    Queue_Record();
+  }
+
+  //------------------------------------------------------------------------
+  // Execute the DoList; if an error occurs, bail out.
+  //------------------------------------------------------------------------
+  if (!Execute_DoList(1, ThePlayer()->Class->House, nullptr, nullptr, {}, {},
+                      {})) {
+    TheGameState().active() = false;
+    return;
+  }
+
+  //------------------------------------------------------------------------
+  //	Clean out the DoList
+  //------------------------------------------------------------------------
+  Clean_DoList();
+
+} /* end of Queue_AI_Normal */
+
+/***************************************************************************
+ * Queue_AI_Multiplayer -- Process all queued events.                      *
+ *                                                                         *
+ * This is the network version of the queue management routine.  It does * the
+ *following:
+ **
+ * - If this is the 1st frame, waits for other systems to signal ready *
+ * - Generates a timing event, to allow the connection time to be dynamic
+ **
+ * - Handles timing related to sending packets every 'n' frames
+ **
+ * - Sends outgoing events
+ **
+ * - Frame-syncs to the other systems (see below)
+ **
+ * - Executes & cleans out the DoList
+ **
+ *                                                                         *
+ * The Frame-Sync'ing logic is the heart & soul of network play.  It works
+ ** by ensuring that any system won't out-run the other system by more than
+ ** 'Session.MaxAhead' frames; this in turn ensures that a packet's
+ ** execution frame # won't have been passed by the time that packet is
+ ** received by all systems.
+ **
+ *                                                                         *
+ * To achieve this, the system must keep track of all other system's * current
+ *frame #'s; these are stored in an array called 'their_frame[]'. * However,
+ *because current frame #'s are sent in FRAMEINFO packets, which * don't require
+ *an ACK, and command packets are sent in packets requiring * an ACK, it's
+ *possible for a command packet to get lost, and the next 	* frame's
+ *FRAMEINFO packet to not get lost; the other system may then 		*
+ * advance past the frame # the command is to execute on!  So, to prevent *
+ * this, all FRAMEINFO packets include a CommandCount field.  This value * tells
+ *the other system how many events it should have received by this 	* time.
+ * This system can therefore keep track of how many commands it's	*
+ * actually received, and compare it to the CommandCount field, to see if * it's
+ *missed an event packet.  The # of events we've received from each 	* system
+ *is stored in 'their_recv[]', and the # events they say they've 	* sent
+ *is stored in 'their_sent[]'.
+ **
+ *                                                                         *
+ * Thus, two conditions must be met in order to advance to the next frame:
+ **
+ * - Our current frame # must be < their_frame + Session.MaxAhead
+ **
+ * - their_recv[base::ToSize(i)] must be >= their_sent[base::ToSize(i)]
+ **
+ *                                                                         *
+ * 'their_frame[] is updated by Process_Receive_Packet()
+ ** 'their_recv[] is updated by Process_Receive_Packet()
+ ** 'their_sent[] is updated by Process_Receive_Packet()
+ ** 'my_sent' is updated by this routine.
+ **
+ *                                                                         *
+ * The order of the arrays their_frame[] etc is the same order the
+ ** connections are created in.  The Sender's ID is passed to
+ ** Connection_Index() to obtain the array index.
+ **
+ *                                                                         *
+ * The only routines allowed to pop up dialogs are:
+ ** Wait_For_Players() (only pops up the reconnect dialog)
+ ** Execute_DoList() (tells if out of sync, or packet recv'd too late)	*
+ *                                                                         *
+ * Sign-off's are detected by:
+ **
+ * - Timing out while waiting for a packet
+ **
+ * - Detecting that the other player is now at the score screen or
+ ** connection dialog (serial)
+ **
+ * - If we see an EventClass::EXIT event on the private channel
+ **
+ *                                                                         *
+ * The current communications protocol, COMM_PROTOCOL_MULTI_E_COMP, has * the
+ *following properties:
+ **
+ * - It compresses packets, so that the minimum number of bytes are
+ ** transmitted.  Packets are compressed by extracting all info common to * the
+ * events into the packet header, and then sending only the bytes 	*
+ * relevant to each type of event.  For instance, if 100 infantry guys 	* are
+ * told to move to the same location, the command itself & the 		*
+ * location will be included in the 1st movement command only; after
+ *	* that, there will be a rep count then 99 infantry TARGET numbers,
+ *	* identifying all the infantry told to move.
+ **
+ * - The protocol also only sends packets out every 'n' frames.  This cuts *
+ *   the data rate dramatically.  It means that 'Session.MaxAhead' must be
+ * * divisible by 'n'; also, the minimum value for 'Session.MaxAhead' is *
+ * 'n * 2', to give both sides some "breathing" room in case a FRAMEINFO
+ *	* packet gets missed.
+ **
+ *                                                                         *
+ * Note:  For synchronization-waiting loops (like waiting to hear from all *
+ * other players, waiting to advance to the next frame, etc), use
+ ** Net.Num_Connections() rather than Session.NumPlayers; this reflects the
+ * * actual # of connections, and can be "faked" into playing even when * there
+ *aren't any other players actually there.  A typical example of 	* this
+ *is playing back a recorded game.  For command-execution loops, use *
+ * Session.NumPlayers.  This ensures all commands get executed, even if *
+ * there isn't a human generating those commands.
+ **
+ *                                                                         *
+ * The modem works a little differently from the network in this respect:
+ **
+ * - The connection has to stay "alive" even if the other player exits to * the
+ *join dialog.  This prevents each system from timing out & hanging * the modem
+ *up.  Thus, packets are sent back & forth & just thrown away,* but each system
+ *knows the other is still there.  Messages may be sent	* between systems,
+ *though.
+ **
+ * - Destroy_Null_Connection doesn't hang up the modem, so
+ ** Num_Connections() still reports a value of 1 even though the other 	* player
+ *has left.
+ **
+ * - Any waits on Num_Connections() must also check for
+ ** Session.NumPlayers > 1, to keep from waiting forever if the other * guy
+ * has left
+ **
+ * - Packets sent to a player who's left require no ACK
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		none.
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static void Queue_AI_Multiplayer() {
+  if (TheSession().Type == GAME_SKIRMISH) {
+    return;
+  }
+
+  //........................................................................
+  // Enums:
+  //........................................................................
+  constexpr int kMixfileResendDelta = 120;   // ticks b/w resends
+  constexpr int kMixfileTimeout = 3600 * 2;  // timeout waiting for mixfiles.
+  constexpr int kFramesyncDlgTime =
+      3 * 60;  // time until displaying reconnect dialog
+  constexpr int kFramesyncTimeout =
+      15 * 60;  // timeout waiting for frame sync packet
+
+  const int timeout_factor = TheSession().Type == GAME_INTERNET ? 6 : 1;
+
+  //........................................................................
+  // Variables for sending, receiving & parsing packets:
+  //........................................................................
+  ConnManClass* net = nullptr;       // ptr to access all multiplayer functions
+  const EventClass packet;           // for sending single frame-sync's
+  std::span<std::byte> multi_packet_buf = {};  // buffer for sending/receiving
+  int multi_packet_max = 0;          // max length of multi_packet_buf
+
+  //........................................................................
+  // Frame-sync'ing variables
+  //........................................................................
+  static int64_t their_frame[kMaxPlayers - 1];  // other players' frame #'s
+  static uint16_t
+      their_sent[kMaxPlayers - 1];  // # cmds other player claims to have sent
+  static uint16_t
+      their_recv[kMaxPlayers - 1];  // # cmds actually received from others
+  static uint16_t my_sent;          // # cmds I've sent out
+
+  //........................................................................
+  // Timing variables
+  //........................................................................
+  static engine::platform::Timer<FrameTickSource>
+      skip_crc;  // to delay the CRC check
+  //	static TCountDownTimerClass skip_crc;	// to delay the CRC check
+
+  //........................................................................
+  // Other misc variables
+  //........................................................................
+  RetcodeType rc = RC_NORMAL;
+
+  //------------------------------------------------------------------------
+  //	Initialize the packet buffer pointer & its max size
+  //------------------------------------------------------------------------
+  if (TheSession().Type == GAME_MODEM || TheSession().Type == GAME_NULL_MODEM) {
+    multi_packet_buf = TheNetwork().null_modem().BuildBuf;
+    multi_packet_max = TheNetwork().null_modem().MaxLen -
+                       static_cast<int>(sizeof(CommHeaderType));
+    net = &TheNetwork().null_modem();
+  } else if (TheSession().Type == GAME_IPX ||
+             TheSession().Type == GAME_INTERNET) {
+    multi_packet_buf = base::ObjectBytes(TheSession().MetaPacket);
+    multi_packet_max = TheSession().MetaSize;
+    net = &TheNetwork().ipx();
+  }
+
+  //------------------------------------------------------------------------
+  //	Every multiplayer protocol above installs a connection manager. Without
+  // one there is no queue to service, and the rest of this routine would call
+  // through a null pointer.
+  //------------------------------------------------------------------------
+  if (net == nullptr) {
+    return;
+  }
+
+  //------------------------------------------------------------------------
+  //	Compute the Game's CRC
+  //------------------------------------------------------------------------
+  Compute_Game_CRC();
+  base::At(CRC, CurrentFrame() % 32) = GameCRC;
+
+  //------------------------------------------------------------------------
+  //	If we've just started a game, or loaded a multiplayer game, we must
+  // wait for all other systems to signal ready.
+  //------------------------------------------------------------------------
+  if (CurrentFrame() == 0 || TheSession().LoadGame) {
+    //.....................................................................
+    //	Initialize static locals
+    //.....................................................................
+    for (int i = 0; i < kMaxPlayers - 1; i++) {
+      base::At(their_frame, i) = -1;
+      base::At(their_sent, i) = 0;
+      base::At(their_recv, i) = 0;
+    }
+    my_sent = 0;
+    skip_crc.Set(32);
+    for (unsigned int& i : CRC) {
+      i = 0;
+    }
+
+    //.....................................................................
+    // If we've loaded a saved game:
+    // - If this game was saved as the result of a lost connection, clear
+    //   the CRC value so it will always match the other system's
+    // - Otherwise, use the GameCRC value, so we'll compare save-game files
+    //   rather than scenario INI files
+    //.....................................................................
+    if (TheSession().LoadGame) {
+      if (TheSession().EmergencySave) {
+        TheWorld().scenario_crc() = 0;
+      } else {
+        TheWorld().scenario_crc() = GameCRC;
+      }
+    }
+
+    //.....................................................................
+    // Send our initial FRAMESYNC packet
+    //.....................................................................
+    Send_FrameSync(net, my_sent);
+
+    //.....................................................................
+    // Wait for the other guys
+    //.....................................................................
+    rc = Wait_For_Players(1, net, kMixfileResendDelta,
+                          kFramesyncDlgTime * timeout_factor, kMixfileTimeout,
+                          multi_packet_buf, my_sent, their_frame, their_sent,
+                          their_recv);
+
+    if (rc != RC_NORMAL) {
+      if (TheSession().Type == GAME_INTERNET) {
+        Register_Game_End_Time();
+      }
+
+      if (rc == RC_NOT_RESPONDING) {
+        WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
+      } else if (rc == RC_SCENARIO_MISMATCH) {
+        WWMessageBox().Process(TXT_SCENARIOS_DO_NOT_MATCH);
+      } else if (rc == RC_DOLIST_FULL) {
+        WWMessageBox().Process(TXT_QUEUE_FULL);
+      }
+      Stop_Game();
+      return;
+    }
+
+    //.....................................................................
+    //	Re-initialize frame numbers (in case somebody signed off while I was
+    //	waiting for MIX files to load; we would have fallen through, but
+    //	their frame # would still be -1).
+    //.....................................................................
+    for (int64_t& frame : their_frame) {
+      frame = 0;
+    }
+
+    //.....................................................................
+    //	Reset the network response time computation, now that we're both
+    // sending data again  (loading MIX files will have introduced
+    // deceptively large values).
+    //.....................................................................
+    net->Reset_Response_Time();
+
+    //.....................................................................
+    // Initialize the frame timers
+    //.....................................................................
+    if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+      Process_Send_Period(net);  //, 1);
+    }
+
+    //.....................................................................
+    // Turn off our special load-game flags
+    //.....................................................................
+    if (TheSession().LoadGame) {
+      TheSession().EmergencySave = false;
+      TheSession().LoadGame = false;
+    }
+
+    // end of Frame 0 wait
+  } else if (CurrentFrame() % 128 == 0) {
+    //------------------------------------------------------------------------
+    // Adjust connection timing parameters every 128 frames.
+    //------------------------------------------------------------------------
+    //
+    // If we're using the new spiffy protocol, do proper timing handling.
+    // If we're the net "master", compute our desired frame rate & new
+    // 'MaxAhead' value.
+    //
+    if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+      //
+      // All systems will transmit their required process time.
+      //
+      Generate_Process_Time_Event(net);
+
+      //
+      // The game "host" will transmit timing adjustment events.
+      //
+      if (SessionClass::Am_I_Master()) {
+        Generate_Real_Timing_Event(net, my_sent);
+      }
+    } else {
+      //
+      // For the older protocols, do the old broken timing handling.
+      //
+      Generate_Timing_Event(net, my_sent);
+    }
+  }
+
+  //------------------------------------------------------------------------
+  // Only process every 'FrameSendRate' frames
+  //------------------------------------------------------------------------
+  if ((TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
+      (!Process_Send_Period(net))) {  //, 0)) {
+    return;
+  }
+
+  //------------------------------------------------------------------------
+  // Send our data packet(s); update my command-sent counter
+  //------------------------------------------------------------------------
+  my_sent += Send_Packets(net, multi_packet_buf, multi_packet_max,
+                          TheSession().MaxAhead, my_sent);
+
+  //------------------------------------------------------------------------
+  //	If this is our first time through, we're done.
+  //------------------------------------------------------------------------
+  if (CurrentFrame() == 0) {
+    return;
+  }
+
+  //------------------------------------------------------------------------
+  //	Frame-sync'ing: wait until it's OK to advance to the next frame.
+  //------------------------------------------------------------------------
+  //	Shortened resync timeout for non-2 player games.
+  const int iFramesyncTimeout =
+      (config::kWolapiEnabled && TheSession().Type == GAME_INTERNET &&
+       TheNetwork().wolapi() != nullptr &&
+       TheNetwork().wolapi()->GameInfoCurrent.iPlayerCount > 2)
+          ? 5 * 60  //	One minute.
+          : kFramesyncTimeout;
+
+  rc = Wait_For_Players(
+      0, net, TheSession().MaxAhead * 8,
+      std::max<int>(static_cast<int>(net->Response_Time()) * 3,
+                    kFramesyncDlgTime * timeout_factor),
+      iFramesyncTimeout * (2 * timeout_factor), multi_packet_buf, my_sent,
+      their_frame, their_sent, their_recv);
+
+  if (rc != RC_NORMAL) {
+    if (TheSession().Type == GAME_INTERNET) {
+      Register_Game_End_Time();
+      // New rule - if you cancel a waiting to reconnect dialog, you lose.
+      TheNetwork().reconnect_cancelled() = (rc == RC_CANCEL);
+    }
+    if (rc == RC_NOT_RESPONDING) {
+      WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
+    } else if (rc == RC_SCENARIO_MISMATCH) {
+      WWMessageBox().Process(TXT_SCENARIOS_DO_NOT_MATCH);
+    } else if (rc == RC_DOLIST_FULL) {
+      WWMessageBox().Process(TXT_QUEUE_FULL);
+    }
+    Stop_Game();
+    return;
+  }
+
+  //------------------------------------------------------------------------
+  //	Save the DoList to disk, if we're in "Record" mode
+  //------------------------------------------------------------------------
+  if (TheSession().Record) {
+    Queue_Record();
+  }
+
+  //------------------------------------------------------------------------
+  // Execute the DoList; if an error occurs, bail out.
+  //------------------------------------------------------------------------
+  if (!Execute_DoList(TheSession().MaxPlayers, HOUSE_MULTI1, net, &skip_crc,
+                      their_frame, their_sent, their_recv)) {
+    if (TheSession().Type == GAME_INTERNET) {
+      Register_Game_End_Time();
+    }
+    Stop_Game();
+    return;
+  }
+
+  //------------------------------------------------------------------------
+  //	Clean out the DoList
+  //------------------------------------------------------------------------
+  Clean_DoList();
+
+}  // end of Queue_AI_Multiplayer
+
+/***************************************************************************
+ * Wait_For_Players -- Waits for other systems to come on-line             *
+ *                                                                         *
+ * This routine performs the most critical logic in multiplayer; that of
+ ** synchronizing my frame number with those of the other systems.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		first_time				1 = 1st time this
+ *routine is called					* net
+ *ptr to connection manager
+ ** resend_delta			time (ticks) between FRAMESYNC resends
+ ** dialog_time				time (ticks) until pop up a reconnect
+ *dialog		* timeout					time
+ *(ticks) until we give up the ghost			* multi_packet_buf
+ *buffer to store packets in
+ ** my_sent					# commands I've sent so far
+ ** their_frame				array of their frame #'s
+ ** their_sent				array of their CommandCount values
+ ** their_recv				array of # cmds I've received from them
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		RC_NORMAL				OK to advance to the
+ *next frame						* RC_CANCEL
+ *user hit 'Cancel' at the timeout countdown dlg	* RC_NOT_RESPONDING
+ *other player(s) not responding * RC_SCENARIO_MISMATCH	scenario's don't match
+ *(first_time only)			* RC_DOLIST_FULL
+ *DoList was full
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
+                                    int resend_delta, int dialog_time,
+                                    int timeout,
+                                    std::span<std::byte> multi_packet_buf,
+                                    int my_sent, std::span<int64_t> their_frame,
+                                    std::span<uint16_t> their_sent,
+                                    std::span<uint16_t> their_recv) {
+  //........................................................................
+  // Variables for sending, receiving & parsing packets:
+  //........................................................................
+  int packetlen = 0;  // size of meta-packet sent, & received
+  int id = 0;         // id of other player
+
+  //........................................................................
+  // Variables used only if 'first_time':
+  //........................................................................
+
+  //........................................................................
+  // Timing variables
+  //........................................................................
+  engine::platform::Timer<engine::platform::SystemTickSource>
+      retry_timer;  // time between FRAMESYNC packet resends
+  engine::platform::Timer<engine::platform::SystemTickSource>
+      dialog_timer;  // time to pop up a dialog
+  engine::platform::Timer<engine::platform::SystemTickSource>
+      timeout_timer;  // general-purpose timeout
+
+  //........................................................................
+  // Dialog variables
+  //........................................................................
+  int reconnect_dlg = 0;  // 1 = the reconnect dialog is displayed
+
+  //........................................................................
+  // Other misc variables
+  //........................................................................
+  engine::window::KeyNumber input = engine::window::KN_NONE;  // for user input
+  int x = 0;
+  int y = 0;  // for map input
+  RetcodeType rc = RC_NORMAL;
+
+  //------------------------------------------------------------------------
+  // Wait to hear from all other players
+  //------------------------------------------------------------------------
+  int num_ready = 0;              // # players signalling ready
+  retry_timer.Set(resend_delta);  // time to retry
+  dialog_timer.Set(dialog_time);  // time to show dlg
+  timeout_timer.Set(timeout);     // time to bail out
+
+  while (true) {
+    TheKeyboard().Peek();
+
+    //---------------------------------------------------------------------
+    //	Resend a frame-sync packet if longer than one propagation delay goes
+    // by; this prevents a "deadlock".  If he's waiting for me to advance,
+    // but has missed my last few FRAMEINFO packets, I may be waiting for
+    // him to advance.  Resending a FRAMESYNC ensures he knows what frame
+    // number I'm on.
+    //---------------------------------------------------------------------
+    if (retry_timer.IsFinished()) {
+      retry_timer.Set(resend_delta);  // time to retry
+      Send_FrameSync(net, my_sent);
+    }
+
+    //---------------------------------------------------------------------
+    //	Service the connections
+    //---------------------------------------------------------------------
+    net->Service();
+
+    //---------------------------------------------------------------------
+    //	Pop up a reconnect dialog if enough time goes by
+    //---------------------------------------------------------------------
+    if (dialog_timer.IsFinished() &&
+        TheGameState().special_dialog() == SDLG_NONE) {
+      if (reconnect_dlg == 0 && first_time == 0) {
+        const DumpFile file = OpenDumpFile("recon.txt");
+        if (FILE* fp = file.get()) {
+          absl::FPrintF(fp, "# Connections: %d\n", net->Num_Connections());
+          absl::FPrintF(fp, "   My Frame #: %" PRId64 "\n", CurrentFrame());
+          for (int i = 0; i < net->Num_Connections(); i++) {
+            HouseClass* housep = HouseClass::As_Pointer(
+                static_cast<HousesType>(net->Connection_ID(i)));
+            absl::FPrintF(
+                fp,
+                "%15s: Their Sent:%d  Their Recv:%d  Their Frame:%" PRId64
+                "\\n",
+                housep->IniName, base::At(their_sent, base::ToSize(i)),
+                base::At(their_recv, base::ToSize(i)),
+                base::At(their_frame, base::ToSize(i)));
+          }
+        }
+
+        //	"Reconnecting" dialog is about to be shown.
+        // At this point, begin wolapi "disconnect pinging", if
+        // appropriate.
+        if (config::kWolapiEnabled && TheSession().Type == GAME_INTERNET &&
+            TheNetwork().wolapi() != nullptr &&
+            TheNetwork().wolapi()->GameInfoCurrent.bTournament) {
+          TheNetwork().wolapi()->Init_DisconnectPinging();
+        }
+      }
+
+      if (Process_Reconnect_Dialog(&timeout_timer,
+                                   their_frame,  //	(Returns immediately.)
+                                   net->Num_Connections(), first_time == 0,
+                                   reconnect_dlg == 0)) {
+        return RC_CANCEL;
+      }
+      reconnect_dlg = 1;
+
+      //	Continue wolapi "disconnect pinging", if appropriate.
+      if (config::kWolapiEnabled && TheSession().Type == GAME_INTERNET &&
+          TheNetwork().wolapi() != nullptr &&
+          TheNetwork().wolapi()->bDoingDisconnectPinging) {
+        TheNetwork().wolapi()->Pump_DisconnectPinging();
+      }
+    }
+
+    //---------------------------------------------------------------------
+    //	Exit if too much time goes by (the other system has crashed or
+    // bailed)
+    //---------------------------------------------------------------------
+    if (timeout_timer.IsFinished()) {
+      //..................................................................
+      // For the first-time run, just give up; something's wrong.
+      //..................................................................
+      if (first_time) {
+        return RC_NOT_RESPONDING;
+      }
+      //..................................................................
+      // Otherwise, we're in the middle of a game; so, the modem &
+      // network must deal with a timeout differently.
+      //..................................................................
+      if (Handle_Timeout(net, their_frame, their_sent, their_recv)) {
+        TheMap().Flag_To_Redraw(true);  // erase modem reconnect dialog
+        TheMap().Render();
+        retry_timer.Set(resend_delta);
+        dialog_timer.Set(dialog_time);
+        timeout_timer.Set(timeout);
+      } else if (TheSession().Type == GAME_MODEM ||
+                 TheSession().Type == GAME_NULL_MODEM) {
+        if (WWMessageBox().Process(TXT_ASK_EMERGENCY_SAVE_NOT_RESPONDING,
+                                   TXT_YES, TXT_NO, TXT_NONE) == 0) {
+          TheSession().EmergencySave = true;
+          // absl::PrintF("Saving emergency game; frame:%d,
+          // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); absl::PrintF("Before
+          // Save: Count1:%d, Count2:%d, Seed:%d\n", Scen.RandomNumber.Count1,
+          //	Scen.RandomNumber.Count2,
+          //	Scen.RandomNumber.Seed);
+          Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
+          // absl::PrintF("After Save: Count1:%d, Count2:%d, Seed:%d\n",
+          //	Scen.RandomNumber.Count1,
+          //	Scen.RandomNumber.Count2,
+          //	Scen.RandomNumber.Seed);
+          TheSession().EmergencySave = false;
+        }
+        return RC_CANCEL;
+      } else {
+        return RC_NOT_RESPONDING;
+      }
+    }
+
+    //---------------------------------------------------------------------
+    //	Check for an incoming message.  We must still process commands
+    // even if 'first_time' is set, in case the other system got my 1st
+    // FRAMESYNC, but I didn't get his; he'll be at the next frame, and
+    // may be sending commands.
+    // We have to limit the number of incoming messages we handle; it's
+    // possible to go into an infinite loop processing modem messages.
+    //---------------------------------------------------------------------
+    int messages_this_loop = 0;   // to limit # messages processed each loop
+    const int message_limit = 5;  // max # messages we'll read each frame
+
+    while (messages_this_loop++ < message_limit &&
+           net->Get_Private_Message(multi_packet_buf, &packetlen, &id)) {
+      TheKeyboard().Peek();
+
+      //------------------------------------------------------------------
+      // Special processing for a modem game: process SERIAL packets
+      //------------------------------------------------------------------
+      if (TheSession().Type == GAME_MODEM ||
+          TheSession().Type == GAME_NULL_MODEM) {
+        rc = Process_Serial_Packet(multi_packet_buf, packetlen, first_time);
+        //...............................................................
+        // SERIAL packet received & processed
+        //...............................................................
+        if (rc == RC_SERIAL_PROCESSED) {
+          net->Service();
+          retry_timer.Set(resend_delta);
+          dialog_timer.Set(dialog_time);
+          timeout_timer.Set(timeout);
+          continue;
+        }
+        //...............................................................
+        // other player has left the game
+        //...............................................................
+        if (rc == RC_PLAYER_LEFT) {
+          if (first_time) {
+            num_ready++;
+          }
+          break;
+        }
+        //...............................................................
+        // Connection was lost
+        //...............................................................
+        if (rc == RC_HUNG_UP) {
+          if (WWMessageBox().Process(TXT_ASK_EMERGENCY_SAVE_HUNG_UP, TXT_YES,
+                                     TXT_NO, TXT_NONE) == 0) {
+            TheSession().EmergencySave = true;
+            // absl::PrintF("Saving emergency game; frame:%d,
+            // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); absl::PrintF("Before
+            // Save: Count1:%d, Count2:%d, Seed:%d\n",
+            //	Scen.RandomNumber.Count1,
+            //	Scen.RandomNumber.Count2,
+            //	Scen.RandomNumber.Seed);
+            Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
+            // absl::PrintF("After Save: Count1:%d, Count2:%d, Seed:%d\n",
+            //	Scen.RandomNumber.Count1,
+            //	Scen.RandomNumber.Count2,
+            //	Scen.RandomNumber.Seed);
+            TheSession().EmergencySave = false;
+          }
+          return RC_CANCEL;
+        }
+        //...............................................................
+        // If it was any other type of serial packet, break
+        //...............................................................
+        if (rc != RC_NORMAL) {
+          break;
+        }
+      }
+
+      //------------------------------------------------------------------
+      //	Process the incoming packet
+      //------------------------------------------------------------------
+      rc = Process_Receive_Packet(net, multi_packet_buf, id, packetlen,
+                                  their_frame, their_sent, their_recv);
+      //..................................................................
+      // New player heard from
+      //..................................................................
+      if (rc == RC_PLAYER_READY) {
+        num_ready++;
+      } else if (rc == RC_SCENARIO_MISMATCH) {
+        //..................................................................
+        // Scenario's don't match
+        //..................................................................
+        return RC_SCENARIO_MISMATCH;
+      } else if (rc == RC_DOLIST_FULL) {
+        //..................................................................
+        // DoList was full
+        //..................................................................
+        return RC_DOLIST_FULL;
+      }
+
+      //..................................................................
+      //	Service the connection, to clean out the receive queues
+      //..................................................................
+      net->Service();
+    }
+
+    //---------------------------------------------------------------------
+    //	Attempt to advance to the next frame.
+    //---------------------------------------------------------------------
+    //.....................................................................
+    // For the first-time run, just check to see if we've heard from
+    // everyone.
+    //.....................................................................
+    if (first_time) {
+      if (num_ready >= net->Num_Connections()) {
+        break;
+      }
+    }
+    //.....................................................................
+    // For in-game processing, we have to check their_sent, their_recv,
+    // their_frame, etc.
+    //.....................................................................
+    else {
+      if (Can_Advance(net, TheSession().MaxAhead, their_frame, their_sent,
+                      their_recv)) {
+        break;
+      }
+    }
+
+    //---------------------------------------------------------------------
+    //	Service game stuff.  Servicing the map's input, and rendering the
+    //	map, allows the map to scroll even though we're hung up waiting for
+    //	packets.  Don't do this if 'first_time' is set, since users could be
+    // waiting a very long time for all systems to load the scenario, and
+    // it gets frustrating being able to scroll around without doing
+    // anything.
+    //---------------------------------------------------------------------
+    ServiceRealTime();
+    if (!first_time && TheGameState().special_dialog() == SDLG_NONE &&
+        reconnect_dlg == 0) {
+      input = TheMap().Input(x, y).key;
+      if (input) {
+        Keyboard_Process(input);
+      }
+      TheMap().Render();
+    }
+
+  } /* end of while */
+
+  //------------------------------------------------------------------------
+  //	If the reconnect dialog was shown, force the map to redraw.
+  //------------------------------------------------------------------------
+  if (reconnect_dlg) {
+    TheMap().Flag_To_Redraw(true);
+    TheMap().Render();
+  }
+
+  return RC_NORMAL;
+
+}  // end of Wait_For_Players
+
+/***************************************************************************
+ * Generate_Timing_Event -- computes & queues a RESPONSE_TIME event        *
+ *                                                                         *
+ * This routine adjusts the connection timing on the local system; it also
+ ** optionally generates a RESPONSE_TIME event, to tell all systems to *
+ * dynamically adjust the current MaxAhead value.  This allows both the *
+ * MaxAhead & the connection retry logic to have dynamic timing, to adjust
+ ** to varying line conditions.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net			ptr to connection manager
+ ** my_sent		# commands I've sent out so far
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
+  EventClass ev;
+
+  //------------------------------------------------------------------------
+  // Measure the current connection response time.  This time will be in
+  // 60ths of a second, and represents full round-trip time of a packet.
+  // To convert to one-way packet time, divide by 2; to convert to game
+  // frames, divide again by 4, assuming a game rate of 15 fps.
+  //------------------------------------------------------------------------
+  const int32_t resp_time =
+      net->Response_Time();  // connection response time, in ticks
+
+  //------------------------------------------------------------------------
+  //	Adjust my connection retry timing; only do this if I've sent out more
+  //	than 5 commands, so I know I have a measure of the response time.
+  //------------------------------------------------------------------------
+  if (my_sent > 5) {
+    net->Set_Timing(resp_time + 10, -1, (resp_time * 4) + 15);
+
+    //.....................................................................
+    // If I'm the network "master", I'm also responsible for updating the
+    // MaxAhead value on all systems, so do that here too.
+    //.....................................................................
+    if (SessionClass::Am_I_Master()) {
+      ev.Type = EventClass::RESPONSE_TIME;
+      //..................................................................
+      // For multi-frame compressed events, the MaxAhead must be an even
+      // multiple of the FrameSendRate.
+      //..................................................................
+      if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+        ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
+            ((resp_time / 8) + (TheSession().FrameSendRate - 1)) /
+                TheSession().FrameSendRate * TheSession().FrameSendRate,
+            TheSession().FrameSendRate * 2));
+      }
+      //..................................................................
+      // For sending packets every frame, just use the 1-way connection
+      // response time.
+      //..................................................................
+      else {
+        if (TheSession().Type == GAME_MODEM ||
+            TheSession().Type == GAME_NULL_MODEM) {
+          ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
+              resp_time / 8, MODEM_MIN_MAX_AHEAD));
+        } else if (TheSession().Type == GAME_IPX ||
+                   TheSession().Type == GAME_INTERNET) {
+          ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
+              resp_time / 8, NETWORK_MIN_MAX_AHEAD));
+        }
+      }
+      TheNetwork().out_list().Add(ev);
+    }
+  }
+
+}  // end of Generate_Timing_Event
+
+/***************************************************************************
+ * Generate_Real_Timing_Event -- Generates a TIMING event                  *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net			ptr to connection manager
+ ** my_sent		# commands I've sent out so far
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   07/02/1996 BRR : Created.                                             *
+ *=========================================================================*/
+static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
+  EventClass ev;
+  int specified_frame_rate = 0;
+
+  //
+  // If we haven't sent out at least 5 guaranteed-delivery packets, don't
+  // bother trying to measure our connection response time; just return.
+  //
+  if (my_sent < 5) {
+    return;
+  }
+
+  //
+  // Find the highest processing time we have stored
+  //
+  int highest_ticks = 0;
+  for (int i = 0; i < TheSession().Players.Count(); i++) {
+    //
+    // If we haven't heard from all systems yet, bail out.
+    //
+    if (TheSession().Players.at(i)->Player.ProcessTime == -1) {
+      return;
+    }
+    highest_ticks =
+        std::max(TheSession().Players.at(i)->Player.ProcessTime, highest_ticks);
+  }
+
+  //
+  // Compute our "desired" frame rate as the lower of:
+  // - What the user has dialed into the options screen
+  // - What we're really able to run at
+  //
+  if (highest_ticks == 0) {
+    TheSession().DesiredFrameRate = 60;
+  } else {
+    TheSession().DesiredFrameRate = 60 / highest_ticks;
+  }
+
+  if (TheOptions().GameSpeed == 0) {
+    specified_frame_rate = 60;
+  } else {
+    specified_frame_rate = 60 / TheOptions().GameSpeed;
+  }
+
+  TheSession().DesiredFrameRate =
+      std::min(TheSession().DesiredFrameRate, specified_frame_rate);
+
+  //
+  // Measure the current connection response time.  This time will be in
+  // 60ths of a second, and represents full round-trip time of a packet.
+  // To convert to one-way packet time, divide by 2; to convert to game
+  // frames, ....uh....
+  //
+  const int32_t resp_time =
+      net->Response_Time();  // connection response time, in ticks
+
+  //
+  // Compute our new 'MaxAhead' value, based upon the response time of our
+  // connection and our desired frame rate.
+  // 'MaxAhead' in frames is:
+  //
+  // (resp_time / 2 ticks) * (1 sec/60 ticks) * (n Frames / sec)
+  //
+  // resp_time is divided by 2 because, as reported, it represents a round-
+  // trip, and we only want to use a one-way trip.
+  //
+  int maxahead = resp_time * TheSession().DesiredFrameRate / (2 * 60);
+
+  //
+  // Now, we have to round 'maxahead' so it's an even multiple of our
+  // send rate.  It also must be at least thrice the FrameSendRate.
+  // (Isn't "thrice" a cool word?)
+  //
+  maxahead =
+      static_cast<int>((maxahead + TheSession().FrameSendRate - 1) /
+                       TheSession().FrameSendRate * TheSession().FrameSendRate);
+  maxahead =
+      std::max<int>(maxahead, static_cast<int>(TheSession().FrameSendRate * 3));
+
+  ev.Type = EventClass::TIMING;
+  ev.Data.Timing.DesiredFrameRate =
+      static_cast<uint16_t>(TheSession().DesiredFrameRate);
+  ev.Data.Timing.MaxAhead = static_cast<uint16_t>(maxahead);
+
+  TheNetwork().out_list().Add(ev);
+
+  //
+  //	Adjust my connection retry timing.  These values set the retry timeout
+  // to just over one round-trip time, the 'maxretries' to -1, and the
+  // connection timeout to allow for about 4 retries.
+  //
+  // net->Set_Timing (resp_time + 10, -1, (resp_time * 4)+15);
+
+  if (TheSession().Type == GAME_INTERNET) {
+    net->Set_Timing(resp_time + 10, -1, ((resp_time + 10) * 8) + 15);
+  } else {
+    net->Set_Timing(resp_time + 10, -1, (resp_time * 4) + 15);
+  }
+}
+
+/***************************************************************************
+ * Generate_Process_Time_Event -- Generates a PROCESS_TIME event           *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net			ptr to connection manager
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   07/02/1996 BRR : Created.                                             *
+ *=========================================================================*/
+static void Generate_Process_Time_Event(ConnManClass* net) {
+  EventClass ev;
+
+  //
+  // Measure the current connection response time.  This time will be in
+  // 60ths of a second, and represents full round-trip time of a packet.
+  // To convert to one-way packet time, divide by 2; to convert to game
+  // frames, ....uh....
+  //
+  const int32_t resp_time =
+      net->Response_Time();  // connection response time, in ticks
+
+  //
+  //	Adjust my connection retry timing.  These values set the retry timeout
+  // to just over one round-trip time, the 'maxretries' to -1, and the
+  // connection timeout to allow for about 4 retries.
+  //
+  // net->Set_Timing (resp_time + 10, -1, (resp_time * 4)+15);
+  if (TheSession().Type == GAME_INTERNET) {
+    net->Set_Timing(resp_time + 10, -1, ((resp_time + 10) * 8) + 15);
+  } else {
+    net->Set_Timing(resp_time + 10, -1, (resp_time * 4) + 15);
+  }
+
+  const int avgticks =
+      static_cast<int>(TheSession().ProcessTicks / TheSession().ProcessFrames);
+
+  ev.Type = EventClass::PROCESS_TIME;
+  ev.Data.ProcessTime.AverageTicks = static_cast<uint16_t>(avgticks);
+  TheNetwork().out_list().Add(ev);
+
+  TheSession().ProcessTicks = 0;
+  TheSession().ProcessFrames = 0;
+}
+
+/***************************************************************************
+ * Process_Send_Period -- timing for sending packets every 'n' frames      *
+ *                                                                         *
+ * This function is for a CommProtocol of COMM_PROTOCOL_MULTI_E_COMP only.
+ ** It determines if it's time to send a packet or not.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net		ptr to connection manager
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		1 = it's time to send a packet; 0 = don't send a packet this
+ *frame.	*
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static int Process_Send_Period(ConnManClass* net)  //, int init)
+{
+  //------------------------------------------------------------------------
+  // If the current frame # is not an even multiple of 'FrameSendRate', then
+  // it's not time to send a packet; just return.
+  //------------------------------------------------------------------------
+  if (CurrentFrame() != (CurrentFrame() + (TheSession().FrameSendRate - 1)) /
+                            TheSession().FrameSendRate *
+                            TheSession().FrameSendRate) {
+    net->Service();
+
+    return 0;
+  }
+
+  return 1;
+
+}  // end of Process_Send_Period
+
+/***************************************************************************
+ * Send_Packets -- sends out events from the OutList
+ *           *
+ *                                                                         *
+ * This routine computes how many events can be sent this frame, and then
+ ** builds the "meta-packet" & sends it.
+ **
+ *                                                                         *
+ * The 'cap' value is the max # of events we can send.  Ideally, it should
+ ** be based upon the bandwidth of our connection.  Currently, it's just
+ ** hardcoded to prevent the modem from having to resend "too much" data,
+ ** which is about 200 bytes per frame.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net						ptr to
+ *connection manager * multi_packet_buf		buffer to store packets in
+ ** multi_packet_max		max size of multi_packet_buf
+ ** max_ahead				current game MaxAhead value
+ ** my_sent					# commands I've sent this game
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		# events sent, NOT including the FRAMEINFO event
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static int Send_Packets(ConnManClass* net,
+                        std::span<std::byte> multi_packet_buf,
+                        int multi_packet_max, int max_ahead, int my_sent) {
+  int cap = 0;      // max # events to send, NOT including FRAMEINFO event
+  int do_once = 0;  // true: only go through packet loop once
+  int ack_req = 0;  // 0 = no ack required on outgoing packet
+
+  //------------------------------------------------------------------------
+  //	Determine how many events it's OK to send this frame.
+  //------------------------------------------------------------------------
+  //........................................................................
+  // If we have 4 or more packets queued for sending, don't add any more
+  // this frame.
+  //........................................................................
+  if (net->Private_Num_Send() >= 4) {
+    cap = 0;
+    do_once = 1;
+  } else if (net->Private_Num_Send() >= 2) {
+    //........................................................................
+    // If there are 2 or more packets queued, the entire packet we send must
+    // fit within a single ComQueue buffer, so limit # events to 5.
+    // (The Modem connection manager has a max buffer size of 200 bytes, which
+    // is large enough for 6 uncompressed events, which leaves room for 5
+    // events plus a FRAMEINFO.)
+    //........................................................................
+    cap = 5;
+    do_once = 1;
+
+  }
+  //........................................................................
+  // Otherwise, just send all events in the OutList
+  //........................................................................
+  else {
+    cap = TheNetwork().out_list().Count();
+    do_once = 0;
+  }
+
+  //........................................................................
+  // Make sure we aren't sending more events than are in the
+  // OutList
+  //........................................................................
+  cap = std::min(cap, TheNetwork().out_list().Count());
+
+  //........................................................................
+  // Make sure we don't send so many events that our DoList
+  // fills up
+  //........................................................................
+  cap = std::min(cap, (kMaxEvents * 64) - TheNetwork().do_list().Count());
+
+  //
+  // 10/21/96 5:12PM - ST
+  //
+  if (TheSession().Type == GAME_INTERNET || TheSession().Type == GAME_MODEM ||
+      TheSession().Type == GAME_NULL_MODEM) {
+    cap = TheNetwork().out_list().Count();
+    do_once = 0;
+  }
+
+  //------------------------------------------------------------------------
+  //	Build our meta-packet & transmit it.
+  //------------------------------------------------------------------------
+  while (true) {
+    TheKeyboard().Peek();
+
+    //.....................................................................
+    //	If there are no commands this frame, we'll just be sending a FRAMEINFO
+    //	packet; no ack is required.  For the modem's sake, check
+    // Session.NumPlayers; no ACK is needed if we're just sending to
+    // someone who's left the game.
+    //.....................................................................
+    if (cap == 0 || TheNetwork().out_list().Count() == 0 ||
+        TheSession().NumPlayers == 1) {
+      ack_req = 0;
+    } else {
+      ack_req = 1;
+    }
+
+    //.....................................................................
+    //	Build & send out our message
+    //.....................................................................
+    const int packetlen =
+        Build_Send_Packet(multi_packet_buf, multi_packet_max, max_ahead,
+                          my_sent, cap);  // size of meta-packet sent
+    net->Send_Private_Message(multi_packet_buf, packetlen, ack_req);
+
+    //.....................................................................
+    //	Call Service() to actually send the packet
+    //.....................................................................
+    net->Service();
+
+    //.....................................................................
+    //	Stop if there's no more data to send, or if our send queue is
+    // filling up.
+    //.....................................................................
+    if (TheNetwork().out_list().Count() == 0 || do_once) {
+      break;
+    }
+  }
+
+  return cap;
+
+}  // end of Send_Packets
+
+/***************************************************************************
+ * Send_FrameSync -- Sends a FRAMESYNC packet                              *
+ *                                                                         *
+ * This routine is used to periodically remind the other systems that * we're
+ *still here, and to tell them what frame # we're on, in case * they've missed
+ *my FRAMEINFO packets.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net				ptr to connection manager
+ ** cmd_count		# commands I've sent so far
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static void Send_FrameSync(ConnManClass* net, int cmd_count) {
+  EventClass packet;
+
+  //------------------------------------------------------------------------
+  //	Build a frame-sync event to send.  FRAMESYNC packets contain a
+  // scenario-based CRC rather than a game-state-based CRC, to let the
+  // games compare scenario CRC's on startup.
+  //------------------------------------------------------------------------
+  packet.Type = EventClass::FRAMESYNC;
+  if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+    packet.Frame = static_cast<unsigned>(
+        (CurrentFrame() + TheSession().MaxAhead +
+         (TheSession().FrameSendRate - 1)) /
+        (TheSession().FrameSendRate * TheSession().FrameSendRate));
+  } else {
+    packet.Frame =
+        static_cast<unsigned>(CurrentFrame() + TheSession().MaxAhead);
+  }
+  packet.ID = static_cast<unsigned>(ThePlayer()->ID);
+  packet.Data.FrameInfo.CRC =
+      static_cast<std::uint32_t>(TheWorld().scenario_crc());
+  packet.Data.FrameInfo.CommandCount = static_cast<uint16_t>(cmd_count);
+  packet.Data.FrameInfo.Delay =
+      static_cast<unsigned char>(TheSession().MaxAhead);
+
+  //------------------------------------------------------------------------
+  // Send the event.  For modem, this just sends to the other player;
+  // for network, it sends to everyone we're connected to.
+  //------------------------------------------------------------------------
+
+  net->Send_Private_Message(
+      base::ObjectBytes(packet),
+      offsetof(EventClass, Data) +
+          sizeof(std::declval<EventClass>().Data.FrameInfo),
+      0);
+}  // end of Send_FrameSync
+
+/***************************************************************************
+ * Process_Receive_Packet -- processes an incoming packet                  *
+ *                                                                         *
+ * This routine receives a packet from another system, adds it to our *
+ * execution queue (the DoList), and updates my arrays of their
+ * frame #,
+ ** their commands-sent, and their commands-received.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net					ptr to connection
+ *manager * multi_packet_buf	buffer containing packet(s) to parse
+ ** id						id of sender
+ ** their_frame			array containing frame #'s of other players
+ ** their_sent			array containing command count of other players
+ ** their_recv			array containing # recv'd cmds from other
+ *players	*
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		RC_NORMAL:					nothing unusual
+ *happened, although 				* their_sent or their_recv may
+ *have been 		* altered
+ ** RC_PLAYER_READY:			player has been heard from for the 1st
+ *time; * this presumes that his original * 'their_frame[]' value was -1 when
+ *this 		* routine was called
+ ** RC_SCENARIO_MISMATCH:	FRAMEINFO scenario CRC doesn't match;
+ ** normally only applies after loading a new 	* scenario or save-game
+ ** RC_DOLIST_FULL:			fatal error; unable to add events to
+ *DoList	*
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static RetcodeType Process_Receive_Packet(ConnManClass* net,
+                                          std::span<std::byte> multi_packet_buf,
+                                          int id, int packetlen,
+                                          std::span<int64_t> their_frame,
+                                          std::span<uint16_t> their_sent,
+                                          std::span<uint16_t> their_recv) {
+  EventClass event_storage;
+  const EventClass* event = &event_storage;
+  RetcodeType retcode = RC_NORMAL;
+
+  //------------------------------------------------------------------------
+  //	Get an event ptr to the incoming message
+  //------------------------------------------------------------------------
+  if (std::cmp_less(packetlen, offsetof(EventClass, Data) +
+                                   sizeof(event_storage.Data.FrameInfo))) {
+    return RC_NORMAL;
+  }
+  base::CopyBytes(
+      base::ObjectBytes(event_storage), multi_packet_buf,
+      offsetof(EventClass, Data) + sizeof(event_storage.Data.FrameInfo));
+
+  //------------------------------------------------------------------------
+  //	Get the index of the sender
+  //------------------------------------------------------------------------
+  const int index = net->Connection_Index(id);
+  if (index < 0 || static_cast<size_t>(index) >= their_frame.size() ||
+      static_cast<size_t>(index) >= their_sent.size() ||
+      static_cast<size_t>(index) >= their_recv.size()) {
+    return RC_NORMAL;
+  }
+
+  //------------------------------------------------------------------------
+  //	Compute the other player's frame # (at the time this packet was sent)
+  //------------------------------------------------------------------------
+  if (base::At(their_frame, base::ToSize(index)) <
+      static_cast<int>(event->Frame - event->Data.FrameInfo.Delay)) {
+    //.....................................................................
+    // If the original frame # for this player is -1, it means we've heard
+    // from this player for the 1st time; return the appropriate value.
+    //.....................................................................
+    if (base::At(their_frame, base::ToSize(index)) == -1) {
+      retcode = RC_PLAYER_READY;
+    }
+
+    base::At(their_frame, base::ToSize(index)) =
+        event->Frame - event->Data.FrameInfo.Delay;
+  }
+
+  //------------------------------------------------------------------------
+  //	Extract the other player's CommandCount.  This count will include
+  //	the commands in this packet, if there are any.
+  //------------------------------------------------------------------------
+  if (event->Data.FrameInfo.CommandCount >
+      base::At(their_sent, base::ToSize(index))) {
+    if (abs(base::At(their_sent, base::ToSize(index)) -
+            event->Data.FrameInfo.CommandCount) > 500) {
+      const DumpFile file = OpenDumpFile("badcount.txt");
+      if (FILE* fp = file.get()) {
+        absl::FPrintF(fp, "Event Type:%s\n",
+                      EventClass::EventNames.at(event->Type));
+        absl::FPrintF(fp, "Frame:%d  ID:%d  IsExec:%d\n", event->Frame,
+                      event->ID, event->IsExecuted);
+        if (event->Type != EventClass::FRAMEINFO) {
+          absl::FPrintF(fp, "Wrong Event Type!\n");
+        } else {
+          absl::FPrintF(fp, "CRC:%x  CommandCount:%d  Delay:%d\n",
+                        event->Data.FrameInfo.CRC,
+                        event->Data.FrameInfo.CommandCount,
+                        event->Data.FrameInfo.Delay);
+        }
+      }
+    }
+
+    base::At(their_sent, base::ToSize(index)) =
+        event->Data.FrameInfo.CommandCount;
+  }
+
+  if (TheDebugState().print_events()) {
+    if (event->Type == EventClass::FRAMESYNC) {
+      absl::PrintF("(%" PRId64 ") Received FRAMESYNC: ", CurrentFrame());
+    } else {
+      absl::PrintF("(%" PRId64 ") Received FRAMEINFO: ", CurrentFrame());
+    }
+    absl::PrintF("EvFrame:%d ID:%d CRC:%x CmdCount:%d Delay:%d\n", event->Frame,
+                 event->ID, event->Data.FrameInfo.CRC,
+                 event->Data.FrameInfo.CommandCount,
+                 event->Data.FrameInfo.Delay);
+  }
+
+  //------------------------------------------------------------------------
+  //	If this packet was not a FRAMESYNC packet:
+  //	- Add the events in it to our DoList
+  //	- Increment our commands-received counter by the number of non-
+  //	  FRAMEINFO packets received
+  //------------------------------------------------------------------------
+  if (event->Type != EventClass::FRAMESYNC) {
+    //.....................................................................
+    // Break up the packet into its component events.  A returned packet
+    // count of -1 indicates a fatal queue-full error.
+    //.....................................................................
+    int i = Breakup_Receive_Packet(multi_packet_buf, packetlen);
+    if (i == -1) {
+      return RC_DOLIST_FULL;
+    }
+    //.....................................................................
+    // Compute the actual # commands in the packet by subtracting off the
+    // FRAMEINFO event
+    //.....................................................................
+    if (event->Type == EventClass::FRAMEINFO && i > 0) {
+      i--;
+    }
+
+    base::At(their_recv, base::ToSize(index)) += i;
+  } else if (event->Data.FrameInfo.CRC != TheWorld().scenario_crc()) {
+    //------------------------------------------------------------------------
+    //	If the event was a FRAMESYNC packet, there will be no commands to add,
+    //	but we must check the ScenarioCRC value.
+    //------------------------------------------------------------------------
+    return RC_SCENARIO_MISMATCH;
+  }
+
+  return retcode;
+
+}  // end of Process_Receive_Packet
+
+/***************************************************************************
+ * Process_Serial_Packet -- Handles an incoming serial packet              *
+ *                                                                         *
+ * This routine is needed because the modem classes don't support a
+ ** "global channel" like the network classes do, but that functionality is
+ ** still needed for modem communications.  Specifically, the modem dialogs
+ ** transmit their own special packets back & forth, and messages are sent
+ ** using a special packet type.  Thus, we have to call this routine when
+ ** we receive a modem packet, to allow it to process messages & dialog *
+ * packets.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		multi_packet_buf		packet buffer to process
+ ** first_time				1 = this is the 1st game frame
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		RC_NORMAL:				this wasn't a
+ *SERIAL-type packet						*
+ *		RC_SERIAL_PROCESSED:	this was a SERIAL-type packet, and was
+ ** processed; the other player is still connected,	* even if he's not in
+ *the game.							*
+ *		RC_PLAYER_LEFT:		other player has left the game
+ ** RC_HUNG_UP:				we're getting our own packets back;
+ *thus, the 	* modem is mirroring our packets, which means the * modem hung
+ *up!
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static RetcodeType Process_Serial_Packet(
+    std::span<const std::byte> multi_packet_buf, int packetlen,
+    int first_time) {
+  SerialPacketType serial_storage{
+      .Command = SERIAL_LAST_COMMAND, .Name = {}, .ID = 0, .ScenarioInfo = {}};
+  SerialPacketType* serial_packet =
+      &serial_storage;  // for parsing serial packets
+  EventClass event_storage;
+  const EventClass* event = &event_storage;
+
+  //------------------------------------------------------------------------
+  //	Determine if this packet means that the other player has left the game
+  //------------------------------------------------------------------------
+  if (std::cmp_less(packetlen, sizeof(serial_storage.Command))) {
+    return RC_SERIAL_PROCESSED;
+  }
+  base::FillBytes(base::ObjectBytes(serial_storage), 0, sizeof(serial_storage));
+  base::CopyBytes(
+      base::ObjectBytes(serial_storage), multi_packet_buf,
+      std::min(sizeof(serial_storage), static_cast<size_t>(packetlen)));
+  int player_gone = 0;
+  //........................................................................
+  // On Frame 0, only a SIGN_OFF means the other player left; the other
+  // packet types may be left over from a previous session.
+  //........................................................................
+  if (first_time) {
+    if (serial_packet->Command == SERIAL_SIGN_OFF) {
+      player_gone = 1;
+    }
+  }
+  //........................................................................
+  // On subsequent frames, any of SIGN_OFF, TIMING, or SCORE_SCREEN means
+  // the other player is gone.
+  //........................................................................
+  else {
+    if (serial_packet->Command == SERIAL_SIGN_OFF ||
+        serial_packet->Command == SERIAL_TIMING ||
+        serial_packet->Command == SERIAL_SCORE_SCREEN) {
+      player_gone = 1;
+    }
+  }
+  if (player_gone) {
+    Destroy_Null_Connection(static_cast<int>(serial_packet->ScenarioInfo.Color),
+                            0);
+    return RC_PLAYER_LEFT;
+  }
+
+  //------------------------------------------------------------------------
+  // Process an incoming message
+  //------------------------------------------------------------------------
+  if (serial_packet->Command == SERIAL_MESSAGE) {
+    if (!TheSession().Messages.Concat_Message(
+            serial_packet->Name, serial_packet->ID,
+            serial_packet->Message.Message,
+            TheRules().MessageDelay * kTicksPerMinute)) {
+      const char* ptr = &base::At(serial_packet->Message.Message, 0);
+      if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
+          TheRules().NewUnitsEnabled) {
+        Enable_Secret_Units();
+      }
+      TheSession().Messages.Add_Message(
+          serial_packet->Name, serial_packet->ID,
+          serial_packet->Message.Message,
+          static_cast<PlayerColorType>(serial_packet->ID),
+          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+          TheRules().MessageDelay * kTicksPerMinute);
+
+      PlaySoundEffect(VOC_INCOMING_MESSAGE);
+    }
+
+    //.....................................................................
+    //	Save this message in our last-message buffer
+    //.....................................................................
+    if (!std::string_view(serial_packet->Message.Message).empty()) {
+      base::SafeCopy(TheSession().LastMessage, serial_packet->Message.Message);
+    }
+
+    //.....................................................................
+    //	Tell the map to do a partial update (just to force the
+    // messages to redraw).
+    //.....................................................................
+    // Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(true);
+    return RC_SERIAL_PROCESSED;
+  }
+
+  //------------------------------------------------------------------------
+  // Any other SERIAL-type packet means the other player is still there;
+  // throw them away, but let the caller know the connection is OK.
+  //------------------------------------------------------------------------
+  if ((serial_packet->Command >= SERIAL_CONNECT &&
+       serial_packet->Command < SERIAL_LAST_COMMAND) ||
+      (serial_packet->Command >= SERIAL_REQ_SCENARIO &&
+       serial_packet->Command <= SERIAL_NO_SCENARIO) ||
+      TheSession().NumPlayers == 1) {
+    return RC_SERIAL_PROCESSED;
+  }
+
+  //........................................................................
+  //	are we getting our own packets back??
+  //........................................................................
+  if (std::cmp_less(packetlen, offsetof(EventClass, Data) +
+                                   sizeof(event_storage.Data.FrameInfo))) {
+    return RC_NORMAL;
+  }
+  base::CopyBytes(
+      base::ObjectBytes(event_storage), multi_packet_buf,
+      offsetof(EventClass, Data) + sizeof(event_storage.Data.FrameInfo));
+
+  if (event->Type <= EventClass::EMPTY ||
+      event->Type >= EventClass::LAST_EVENT) {
+    return RC_SERIAL_PROCESSED;
+  }
+
+  if (std::cmp_equal(event->ID, ThePlayer()->ID)) {
+    return RC_HUNG_UP;
+  }
+
+  return RC_NORMAL;
+
+}  // end of Process_Serial_Packet
+
+/***************************************************************************
+ * Can_Advance -- determines if it's OK to advance to the next frame       *
+ *                                                                         *
+ * This routine uses the current values stored in their_frame[],
+ ** their_send[], and their_recv[] to see if it's OK to advance to the next
+ ** game frame.  We must not advance if:
+ **
+ * - If our frame # would be too far ahead of the slowest player (the * lowest
+ *their_frame[] value).  "Too far" means
+ ** (Frame >= their_frame + MaxAhead).
+ **
+ * - our current command count doesn't match the sent command count of one
+ ** other player (meaning that we've missed a command packet from that 	*
+ *   player, and thus the frame # we're receiving from him may be due to a
+ ** FRAMEINFO packet sent later than the command, so we shouldn't use * this
+ *frame # to see if we should advance; we should wait until we 		* have
+ *all the commands before we advance.
+ **
+ *                                                                         *
+ * Of course, this routine assumes the values in their_frame[] etc are * kept
+ *current by the caller.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net				ptr to connection manager
+ ** max_ahead		max frames ahead
+ ** their_frame		array of their frame #'s
+ ** their_sent		array of their sent command count
+ ** their_recv		array of their # received commands
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		1 = OK to advance; 0 = not OK
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static int Can_Advance(ConnManClass* net, int max_ahead,
+                       std::span<const int64_t> their_frame,
+                       std::span<const uint16_t> their_sent,
+                       std::span<const uint16_t> their_recv) {
+  //------------------------------------------------------------------------
+  // Special case for modem: if the other player has left, go ahead and
+  // advance to the next frame; don't wait on him.
+  //------------------------------------------------------------------------
+  if (TheSession().NumPlayers == 1) {
+    return 1;
+  }
+
+  //------------------------------------------------------------------------
+  //	Find the oldest frame # in 'their_frame'
+  //------------------------------------------------------------------------
+  int64_t their_oldest_frame =
+      CurrentFrame() + 1000;  // other players' oldest frame #
+  for (int i = 0; i < net->Num_Connections(); i++) {
+    their_oldest_frame =
+        std::min(base::At(their_frame, base::ToSize(i)), their_oldest_frame);
+  }
+
+  //------------------------------------------------------------------------
+  //	I can advance to the next frame IF:
+  //	1) I'm less than a one-way propagation delay ahead of the other
+  //    players' frame numbers, AND
+  //	2) their_recv[base::ToSize(i)] >= their_sent[base::ToSize(i)] (ie I've
+  //received all the commands 	   the other players have sent so far).
+  //------------------------------------------------------------------------
+  int count_ok = 1;  // true = my cmd count matches theirs
+  for (int i = 0; i < net->Num_Connections(); i++) {
+    if (base::At(their_recv, base::ToSize(i)) <
+        base::At(their_sent, base::ToSize(i))) {
+      count_ok = 0;
+      break;
+    }
+  }
+  if (count_ok && CurrentFrame() < their_oldest_frame + max_ahead) {
+    return 1;
+  }
+
+  return 0;
+
+}  // end of Can_Advance
+
+/***************************************************************************
+ * Process_Reconnect_Dialog -- processes the reconnection dialog           *
+ *                                                                         *
+ * This routine [re]draws the reconnection dialog; if 'reconn' is set, * it
+ *tells the user who we're trying to reconnect to; otherwise, is just	* says
+ *something generic like "Waiting for connections".
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		timeout_timer	ptr to count down timer, showing time remaining
+ ** their_frame		array of other players' frame #'s
+ ** num_conn			# connections in 'their_frame'
+ ** reconn			1 = reconnect, 0 = waiting for first-time
+ *connection	* fresh				1 = draw from scratch, 0 = only
+ *update time counter	*
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		1 = user wants to cancel, 0 = not
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static int Process_Reconnect_Dialog(
+    const engine::platform::Timer<engine::platform::SystemTickSource>*
+        timeout_timer,
+    std::span<const int64_t> their_frame, int num_conn, bool reconn,
+    bool fresh) {
+  static int displayed_time = 0;  // time value currently displayed
+
+  //------------------------------------------------------------------------
+  // Convert the timer to seconds
+  //------------------------------------------------------------------------
+  const int new_time = static_cast<int>(timeout_timer->Remaining()) / 60;
+
+  //------------------------------------------------------------------------
+  // If the timer has changed, or 'fresh' is set, redraw the dialog
+  //------------------------------------------------------------------------
+  if (fresh || new_time != displayed_time) {
+    int oldest_index = 0;
+    //.....................................................................
+    // Find the index of the person we're trying to reconnect to
+    //.....................................................................
+    if (reconn) {
+      int64_t j = 0x7fffffff;  // oldest frame number seen so far
+      oldest_index = 0;
+      for (int i = 0; i < num_conn; i++) {
+        if (base::At(their_frame, base::ToSize(i)) < j) {
+          j = base::At(their_frame, base::ToSize(i));
+          oldest_index = i;
+        }
+      }
+    }
+    Net_Reconnect_Dialog(reconn, fresh, oldest_index, new_time);
+  }
+  displayed_time = new_time;
+
+  //........................................................................
+  //	If user hits ESC, bail out
+  //........................................................................
+  if (TheKeyboard().Peek() &&
+      (TheKeyboard().Read().key == engine::window::KN_ESC)) {
+    return 1;
+  }
+
+  return 0;
+
+}  // end of Process_Reconnect_Dialog
+
+/***************************************************************************
+ * Handle_Timeout -- handles a timeout in the wait-for-players loop
+ **
+ *                                                                         *
+ * This routine "gracefully" handles a timeout in the frame-sync loop. * The
+ *timeout must be handled differently by a modem game or network * game.
+ **
+ *                                                                         *
+ * The modem game must detect if the other player is still connected
+ ** physically, even if he's not playing the game any more; if so, this *
+ * routine returns an OK status.  If the other player isn't even
+ ** physically connected, an error is returned.
+ **
+ *                                                                         *
+ * The network game must find the connection that's causing the timeout,
+ ** and destroy it.  The game continues, even if there are no more human
+ ** players left.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net					ptr to connection
+ *manager * their_frame			array containing frame #'s of other
+ *players			* their_sent			array containing
+ *command count of other players		* their_recv
+ *array containing # recv'd cmds from other players	*
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		1 = it's OK; reset timeout timers & keep processing
+ ** 0 = game over, man
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
+                          std::span<uint16_t> their_sent,
+                          std::span<uint16_t> their_recv) {
+  //------------------------------------------------------------------------
+  // For modem, attempt to reconnect; if that fails, save the game & bail.
+  //------------------------------------------------------------------------
+  if (TheSession().Type == GAME_MODEM || TheSession().Type == GAME_NULL_MODEM) {
+    if (net->Num_Connections()) {
+      if (!Reconnect_Modem()) {
+        return 0;
+      }
+      return 1;
+    }
+  } else if (TheSession().Type == GAME_IPX ||
+             TheSession().Type == GAME_INTERNET) {
+    //------------------------------------------------------------------------
+    //	For network, destroy the oldest connection
+    //------------------------------------------------------------------------
+    int64_t j = 0x7fffffff;  // oldest frame number seen so far
+    int oldest_index = 0;    // index of person requiring a reconnect
+    for (int i = 0; i < net->Num_Connections(); i++) {
+      if (base::At(their_frame, base::ToSize(i)) < j) {
+        j = base::At(their_frame, base::ToSize(i));
+        oldest_index = i;
+      }
+    }
+
+    const int id = net->Connection_ID(oldest_index);
+    /*
+    ** Send the game statistics packet now if the game is effectivly over
+    */
+    if (TheSession().Players.Count() == 2 &&
+        TheSession().Type == GAME_INTERNET && !TheNetwork().statistics_sent()) {
+      Register_Game_End_Time();
+      TheNetwork().connection_lost() = true;
+      Send_Statistics_Packet();  //	Disconnect, and I'll be the only one
+                                 // left.
+    }
+
+    if (id != ConnManClass::kConnectionNone) {
+      for (int i = oldest_index; i < net->Num_Connections() - 1; i++) {
+        base::At(their_frame, base::ToSize(i)) =
+            base::At(their_frame, base::ToSize(i + 1));
+        base::At(their_sent, base::ToSize(i)) =
+            base::At(their_sent, base::ToSize(i + 1));
+        base::At(their_recv, base::ToSize(i)) =
+            base::At(their_recv, base::ToSize(i + 1));
+      }
+      if (TheSession().Type == GAME_IPX || TheSession().Type == GAME_INTERNET) {
+        Destroy_Connection(id, 1);
+      }
+    }
+  }
+
+  return 1;
+
+}  // end of Handle_Timeout
+
+/***************************************************************************
+ * Stop_Game -- stops the game
+ **
+ *                                                                         *
+ * This routine clears any global flags that need it, in preparation for
+ ** halting the game prematurely.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		none.
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/22/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static void Stop_Game() {
+  TheSession().LoadGame = false;
+  TheSession().EmergencySave = false;
+  TheGameState().active() = false;
+  if (TheSession().Type == GAME_INTERNET) {
+    TheNetwork().connection_lost() = true;
+    Send_Statistics_Packet();  //	Stop_Game()
+  }
+}  // end of Stop_Game
+
+/***************************************************************************
+ * Build_Send_Packet -- Builds a big packet from a bunch of little ones.
+ **
+ *                                                                         *
+ * This routine takes events from the OutList, and puts them
+ * into a
+ ** "meta-packet", which is transmitted to all systems we're connected to.
+ ** Also, these events are added to our own DoList.
+ **
+ *                                                                         *
+ * Every Meta-Packet we send uses a FRAMEINFO packet as a header; this * tells
+ *the other systems what frame we're on, as well as serving as a 	*
+ * standard packet header.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		buf				buffer to store packet in
+ ** bufsize			max size of buffer
+ ** frame_delay		desired frame delay to attach to all outgoing packets
+ ** num_cmds			value to use for the CommandCount field
+ ** cap				max # events to send
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		new size of packet
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ * 'num_cmds' should be the total of of commands, including all those sent *
+ * this frame!
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
+                             int frame_delay, int num_cmds, int cap) {
+  int size = 0;
+
+  //------------------------------------------------------------------------
+  // All events start with a FRAMEINFO event; fill this part in.
+  //------------------------------------------------------------------------
+  //........................................................................
+  // Set the event type
+  //........................................................................
+  EventClass frame_info;
+  auto* finfo = &frame_info;
+  finfo->Type = EventClass::FRAMEINFO;
+  //........................................................................
+  // Set the frame to execute this event on; this is protocol-specific
+  //........................................................................
+  if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+    finfo->Frame = static_cast<unsigned>(
+        (CurrentFrame() + frame_delay + (TheSession().FrameSendRate - 1)) /
+        (TheSession().FrameSendRate * TheSession().FrameSendRate));
+  } else {
+    finfo->Frame = static_cast<unsigned>(CurrentFrame() + frame_delay);
+  }
+  //........................................................................
+  // Fill in the rest of the event
+  //........................................................................
+  finfo->ID = static_cast<unsigned>(ThePlayer()->ID);
+  finfo->Data.FrameInfo.CRC = GameCRC;
+  finfo->Data.FrameInfo.CommandCount = static_cast<uint16_t>(num_cmds);
+  finfo->Data.FrameInfo.Delay = static_cast<unsigned char>(frame_delay);
+  base::WriteUnaligned(buf, frame_info);
+  base::WriteUnaligned(buf, frame_info);
+  base::WriteUnaligned(buf, frame_info);
+
+  //------------------------------------------------------------------------
+  // Initialize the # of bytes processed; this is protocol-specific
+  //------------------------------------------------------------------------
+  if (TheSession().CommProtocol == COMM_PROTOCOL_SINGLE_NO_COMP) {
+    size += sizeof(EventClass);
+  } else {
+    size += offsetof(EventClass, Data) +
+            sizeof(std::declval<EventClass>().Data.FrameInfo);
+  }
+
+  //------------------------------------------------------------------------
+  //	Transfer all events from the OutList into the
+  // DoList, building our 	packet while we go.
+  //------------------------------------------------------------------------
+  switch (TheSession().CommProtocol) {
+    //.....................................................................
+    // COMM_PROTOCOL_SINGLE_NO_COMP:
+    // We'll send at least a FRAMEINFO every single frame, no compression
+    //.....................................................................
+    case COMM_PROTOCOL_SINGLE_NO_COMP:
+      size = Add_Uncompressed_Events(buf, bufsize, frame_delay, size, cap);
+      break;
+
+    //.....................................................................
+    // COMM_PROTOCOL_SINGLE_E_COMP:
+    //   Compress a group of packets into our send buffer; send out
+    //   compressed packets every frame.
+    // COMM_PROTOCOL_MULTI_E_COMP:
+    //   Compress a group of packets into our send buffer; send out
+    //   compressed packets every 'n' frames.
+    //.....................................................................
+    case COMM_PROTOCOL_SINGLE_E_COMP:
+    case COMM_PROTOCOL_MULTI_E_COMP:
+      size = Add_Compressed_Events(buf, bufsize, frame_delay, size, cap);
+      break;
+
+    //.....................................................................
+    // Default: We have no idea what to do, so do nothing.
+    //.....................................................................
+    case CommProtocolType::COMM_PROTOCOL_COUNT:
+    default:
+      size = 0;
+      break;
+  }
+
+  return size;
+
+} /* end of Build_Send_Packet */
+
+/***************************************************************************
+ * Add_Uncompressed_Events -- adds uncompressed events to a packet         *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		buf				buffer to store packet in
+ ** bufsize			max size of buffer
+ ** frame_delay		desired frame delay to attach to all outgoing packets
+ ** size				current packet size
+ ** cap				max # events to process
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		new size value
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		This routine MUST check to be sure it doesn't overflow the
+ *buffer.	*
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 DRD : Created.                                             *
+ *=========================================================================*/
+int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
+                            int frame_delay, int size, int cap) {
+  int num = 0;  // # of events processed
+  int ev_size = 0;  // size of event we're adding
+
+  //------------------------------------------------------------------------
+  // Loop until there are no more events, or we've processed our max # of
+  // events, or the buffer is full.
+  //------------------------------------------------------------------------
+  while (TheNetwork().out_list().Count() && num < cap) {
+    TheKeyboard().Peek();
+
+    if (TheNetwork().out_list().First().Type == EventClass::ADDPLAYER) {
+      ev_size =
+          static_cast<int>(sizeof(EventClass) +
+                           TheNetwork().out_list().First().Data.Variable.Size);
+    } else {
+      ev_size = sizeof(EventClass);
+    }
+    //.....................................................................
+    // Will the next event exceed the size of the buffer?  If so, break.
+    //.....................................................................
+    if (size + ev_size > bufsize) {
+      return size;
+    }
+
+    //.....................................................................
+    // Set the event's frame delay
+    //.....................................................................
+    TheNetwork().out_list().First().Frame =
+        static_cast<unsigned>(CurrentFrame() + frame_delay);
+
+    //.....................................................................
+    // Set the event's ID
+    //.....................................................................
+    TheNetwork().out_list().First().ID = static_cast<unsigned>(ThePlayer()->ID);
+
+    //.....................................................................
+    // Transfer the event in OutList to DoList,
+    // un-queue the OutList event.  If the
+    // DoList is full, stop transferring immediately.
+    //.....................................................................
+    TheNetwork().out_list().First().IsExecuted = 0;
+    if (!TheNetwork().do_list().Add(TheNetwork().out_list().First())) {
+      return size;
+    }
+
+    //.....................................................................
+    // Add event to the send packet
+    //.....................................................................
+    if (TheNetwork().out_list().First().Type == EventClass::ADDPLAYER) {
+      base::CopyBytes(buf.subspan(base::ToSize(size)),
+                      base::ObjectBytes(TheNetwork().out_list().First()),
+                      sizeof(EventClass));
+      size += sizeof(EventClass);
+      base::CopyBytes(buf.subspan(base::ToSize(size)),
+                      TheNetwork().out_list().First().variable_bytes(),
+                      TheNetwork().out_list().First().Data.Variable.Size);
+      size += TheNetwork().out_list().First().Data.Variable.Size;
+    } else {
+      base::CopyBytes(buf.subspan(base::ToSize(size)),
+                      base::ObjectBytes(TheNetwork().out_list().First()),
+                      sizeof(EventClass));
+      size += sizeof(EventClass);
+    }
+
+    //.....................................................................
+    // Increment our event counter; delete the last event from the queue
+    //.....................................................................
+    num++;
+    TheNetwork().out_list().Next();
+  }
+
+  return size;
+
+}  // end of Add_Uncompressed_Events
+
+/***************************************************************************
+ * Add_Compressed_Events -- adds an compressed events to a packet          *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		buf				buffer to store packet in
+ ** bufsize			max size of buffer
+ ** frame_delay		desired frame delay to attach to all outgoing packets
+ ** size				reference to current packet size
+ ** cap				max # events to process
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		new size value
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		This routine MUST check to be sure it doesn't overflow the
+ *buffer.	*
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 DRD : Created.                                             *
+ *=========================================================================*/
+int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
+                          int frame_delay, int size, int cap) {
+  int num = 0;                      // # of events processed
+  EventClass prevevent;             // last event processed
+  int storedsize = 0;               // actual # bytes stored from event
+  int units_offset = -1;       // ptr to buffer pos to store mega. rep count
+  unsigned char numunits = 0;  // megamission rep count value
+  bool missiondup = false;     // flag: is this event a megamission repeat?
+
+  //------------------------------------------------------------------------
+  // clear previous event
+  //------------------------------------------------------------------------
+
+  if (TheDebugState().print_events()) {
+    absl::PrintF("\n(%" PRId64 ") Building Send Packet\n", CurrentFrame());
+  }
+
+  //------------------------------------------------------------------------
+  // Loop until there are no more events, we've processed our max # of
+  // events, or the buffer is full.
+  //------------------------------------------------------------------------
+  while (TheNetwork().out_list().Count() && num < cap) {
+    TheKeyboard().Peek();
+
+    const EventClass::EventType eventtype =
+        TheNetwork().out_list().First().Type;  // type of event being compressed
+    int datasize =
+        EventClass::EventLength.at(eventtype);  // size of element plucked from
+                                                // event union
+    //.....................................................................
+    // For a variable-sized event, pull the size from the event; otherwise,
+    // the size will be the data element size plus the event type value.
+    // (The other data elements in the event, Frame, ID, etc, are stored
+    // in the packet header.)
+    //.....................................................................
+    if (eventtype == EventClass::ADDPLAYER) {
+      storedsize =
+          datasize + kEventTypeSize +
+          static_cast<int>(TheNetwork().out_list().First().Data.Variable.Size);
+    } else {
+      storedsize = datasize + kEventTypeSize;
+    }
+
+    //.....................................................................
+    // MegaMission compression:  MegaMissions are stored as:
+    //   EventType
+    //   Rep Count
+    //   MegaMission structure (event # 1 only)
+    //   Whom #2
+    //   Whom #3
+    //   Whom #4
+    //   ...
+    //   Whom #n
+    //.....................................................................
+    if (prevevent.Type == EventClass::MEGAMISSION) {
+      //..................................................................
+      // If previous & current events are both MegaMissions:
+      //..................................................................
+      if (eventtype == EventClass::MEGAMISSION) {
+        //...............................................................
+        // If the Mission, Target, & Destination are the same, compress
+        // the events into one:
+        // - Change datasize to the size of the 'Whom' field only
+        // - set total # bytes to store to the size of the 'Whom' only
+        // - increment the MegaMission rep count
+        // - set the MegaMission rep flag
+        //...............................................................
+        if (TheNetwork().out_list().First().Data.MegaMission.Mission ==
+                prevevent.Data.MegaMission.Mission &&
+            TheNetwork().out_list().First().Data.MegaMission.Target ==
+                prevevent.Data.MegaMission.Target &&
+            TheNetwork().out_list().First().Data.MegaMission.Destination ==
+                prevevent.Data.MegaMission.Destination) {
+          if (TheDebugState().print_events()) {
+            absl::PrintF(
+                "      adding Whom:%x (%x) Mission:%s Target:%x (%x) Dest:%x "
+                "(%x)\n",
+                static_cast<unsigned int>(
+
+                    TheNetwork()
+                        .out_list()
+                        .First()
+                        .Data.MegaMission.Whom.As_TARGET()),
+
+                TheNetwork().out_list().First().Data.MegaMission.Whom.Value(),
+                MissionClass::Mission_Name(
+                    TheNetwork().out_list().First().Data.MegaMission.Mission),
+                static_cast<unsigned int>(
+
+                    TheNetwork()
+                        .out_list()
+                        .First()
+                        .Data.MegaMission.Target.As_TARGET()),
+
+                TheNetwork().out_list().First().Data.MegaMission.Target.Value(),
+                static_cast<unsigned int>(
+
+                    TheNetwork()
+                        .out_list()
+                        .First()
+                        .Data.MegaMission.Destination.As_TARGET()),
+
+                TheNetwork()
+                    .out_list()
+                    .First()
+                    .Data.MegaMission.Destination.Value());
+          }
+
+          datasize = sizeof(prevevent.Data.MegaMission.Whom);
+          storedsize = datasize;
+          numunits++;
+          missiondup = true;
+        }
+        //...............................................................
+        // Data doesn't match; start a new run of MegaMissions:
+        // - Store previous MegaMission rep count
+        // - Init 'unitsptr' to buffer pos after next EventType
+        // - set total # bytes to store to 'datasize' + sizeof(EventType) +
+        //   sizeof (numunits)
+        // - init the MegaMission rep count to 1
+        // - clear the MegaMission rep flag
+        //...............................................................
+        else {
+          if (TheDebugState().print_events()) {
+            absl::PrintF("  New MEGAMISSION run:\n");
+          }
+
+          if (units_offset >= 0) {
+            base::At(buf, base::ToSize(units_offset)) =
+                static_cast<std::byte>(numunits);
+          }
+          units_offset = size + kEventTypeSize;
+          storedsize += sizeof(numunits);
+          numunits = 1;
+          missiondup = false;
+        }
+      }
+      //..................................................................
+      // Previous event was a MegaMission, but this one isn't: end the
+      // run of MegaMissions:
+      // - Store previous MegaMission rep count
+      // - Clear variables
+      //..................................................................
+      else {
+        if (units_offset >= 0) {
+          base::At(buf, base::ToSize(units_offset)) =
+              static_cast<std::byte>(numunits);  // save # events in our run
+        }
+        units_offset = -1;  // init other values
+        numunits = 0;
+        missiondup = false;
+      }
+    } else if (eventtype == EventClass::MEGAMISSION) {
+      //.....................................................................
+      // The previous event is not a MEGAMISSION but the current event is:
+      // Set up a new run of MegaMissions:
+      // - Init 'unitsptr' to buffer pos after next EventType
+      // - set total # bytes to store to 'datasize' + sizeof(EventType) +
+      //   sizeof (numunits)
+      // - init the MegaMission rep count to 1
+      // - clear the MegaMission rep flag
+      //.....................................................................
+      if (TheDebugState().print_events()) {
+        absl::PrintF("  New MEGAMISSION run:\n");
+      }
+
+      units_offset = size + kEventTypeSize;
+      storedsize += sizeof(numunits);
+      numunits = 1;
+      missiondup = false;
+    }
+
+    //.....................................................................
+    // Will the next event exceed the size of the buffer?  If so,
+    // stop compressing.
+    //.....................................................................
+    if (size + storedsize > bufsize) {
+      break;
+    }
+
+    //.....................................................................
+    // Set the event's frame delay (this is protocol-dependent)
+    //.....................................................................
+    if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+      TheNetwork().out_list().First().Frame = static_cast<unsigned>(
+          (CurrentFrame() + frame_delay + (TheSession().FrameSendRate - 1)) /
+          (TheSession().FrameSendRate * TheSession().FrameSendRate));
+    } else {
+      TheNetwork().out_list().First().Frame =
+          static_cast<unsigned>(CurrentFrame() + frame_delay);
+    }
+
+    //.....................................................................
+    // Set the event's ID
+    //.....................................................................
+    TheNetwork().out_list().First().ID = static_cast<unsigned>(ThePlayer()->ID);
+
+    //.....................................................................
+    // Transfer the event in OutList to DoList,
+    // un-queue the OutList event. If the DoList
+    // is full, stop transferring immediately.
+    //.....................................................................
+    TheNetwork().out_list().First().IsExecuted = 0;
+    if (!TheNetwork().do_list().Add(TheNetwork().out_list().First())) {
+      break;
+    }
+
+    //---------------------------------------------------------------------
+    // Compress the event into the send packet buffer
+    //---------------------------------------------------------------------
+    switch (eventtype) {
+      //..................................................................
+      // RESPONSE_TIME: just use the Delay field of the FrameInfo union
+      //..................................................................
+      case EventClass::RESPONSE_TIME:
+
+        base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
+
+        base::CopyBytes(
+            buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
+            base::ObjectBytes(
+                TheNetwork().out_list().First().Data.FrameInfo.Delay),
+            base::ToSize(datasize));
+
+        size += datasize + kEventTypeSize;
+        break;
+
+      //..................................................................
+      // MEGAMISSION:
+      //..................................................................
+      case EventClass::MEGAMISSION:
+        //...............................................................
+        // Repeated mission in a run:
+        //   - Update the rep count (in case we break out)
+        //   - Copy the Whom field only
+        //...............................................................
+        if (missiondup) {
+          if (units_offset >= 0) {
+            base::At(buf, base::ToSize(units_offset)) =
+                static_cast<std::byte>(numunits);
+          }
+
+          base::CopyBytes(
+              buf.subspan(base::ToSize(size)),
+              base::ObjectBytes(
+                  TheNetwork().out_list().First().Data.MegaMission.Whom),
+              base::ToSize(datasize));
+
+          size += datasize;
+        }
+        //...............................................................
+        // 1st mission in a run:
+        //   - Init the rep count (in case we break out)
+        //   - Set the EventType
+        //   - Copy the MegaMission structure, leaving room for 'numunits'
+        //...............................................................
+        else {
+          if (units_offset >= 0) {
+            base::At(buf, base::ToSize(units_offset)) =
+                static_cast<std::byte>(numunits);
+          }
+
+          base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
+
+          base::CopyBytes(
+              buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType) +
+                          sizeof(numunits)),
+              base::ObjectBytes(
+                  TheNetwork().out_list().First().Data.MegaMission),
+              base::ToSize(datasize));
+
+          size += datasize + kEventTypeSize + static_cast<int>(sizeof(numunits));
+        }
+        break;
+
+      //..................................................................
+      // Variable-sized packets: Copy the packet Size & the buffer
+      //..................................................................
+      case EventClass::ADDPLAYER:
+        base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
+
+        base::CopyBytes(
+            buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
+            base::ObjectBytes(
+                TheNetwork().out_list().First().Data.Variable.Size),
+            base::ToSize(datasize));
+        size += datasize + kEventTypeSize;
+
+        base::CopyBytes(buf.subspan(base::ToSize(size)),
+                        TheNetwork().out_list().First().variable_bytes(),
+                        TheNetwork().out_list().First().Data.Variable.Size);
+        size += TheNetwork().out_list().First().Data.Variable.Size;
+
+        break;
+
+      //..................................................................
+      // Default case: Just copy over the data field from the union
+      //..................................................................
+      case EventClass::EMPTY:
+      case EventClass::ALLY:
+      case EventClass::MEGAMISSION_F:
+      case EventClass::IDLE:
+      case EventClass::SCATTER:
+      case EventClass::DESTRUCT:
+      case EventClass::DEPLOY:
+      case EventClass::PLACE:
+      case EventClass::OPTIONS:
+      case EventClass::GAMESPEED:
+      case EventClass::PRODUCE:
+      case EventClass::SUSPEND:
+      case EventClass::ABANDON:
+      case EventClass::PRIMARY:
+      case EventClass::SPECIAL_PLACE:
+      case EventClass::EXIT:
+      case EventClass::ANIMATION:
+      case EventClass::REPAIR:
+      case EventClass::SELL:
+      case EventClass::SELLCELL:
+      case EventClass::SPECIAL:
+      case EventClass::FRAMESYNC:
+      case EventClass::MESSAGE:
+      case EventClass::FRAMEINFO:
+      case EventClass::SAVEGAME:
+      case EventClass::ARCHIVE:
+      case EventClass::TIMING:
+      case EventClass::PROCESS_TIME:
+      case EventClass::PROPOSE_DRAW:
+      case EventClass::RETRACT_DRAW:
+      case EventClass::LAST_EVENT:
+      default:
+        base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
+
+        base::CopyBytes(
+            buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
+            base::ObjectBytes(TheNetwork().out_list().First().Data),
+            base::ToSize(datasize));
+
+        size += datasize + kEventTypeSize;
+
+        break;
+    }
+
+    //---------------------------------------------------------------------
+    // update # events processed
+    //---------------------------------------------------------------------
+    num++;
+
+    //---------------------------------------------------------------------
+    // Update 'prevevent'
+    //---------------------------------------------------------------------
+    base::CopyBytes(base::ObjectBytes(prevevent),
+                    base::ObjectBytes(TheNetwork().out_list().First()),
+                    sizeof(EventClass));
+
+    //---------------------------------------------------------------------
+    // Go to the next event to process
+    //---------------------------------------------------------------------
+    TheNetwork().out_list().Next();
+  }
+
+  if (TheDebugState().print_events()) {
+    absl::PrintF("\n");
+  }
+
+  return size;
+
+}  // end of Add_Compressed_Events
+
+/***************************************************************************
+ * Breakup_Receive_Packet -- Splits a big packet into little ones.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		buf			buffer to break up
+ ** bufsize		length of buffer
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		# events added to queue, -1 if fatal error (queue is full)
+ ** (return value includes any FRAMEINFO packets encountered;
+ ** FRAMESYNC's are ignored)
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static int Breakup_Receive_Packet(std::span<const std::byte> buf, int bufsize) {
+  int count = 0;
+
+  /*
+  ** is there enough leftover for another record
+  */
+  if (TheSession().CommProtocol == COMM_PROTOCOL_SINGLE_NO_COMP) {
+    count = Extract_Uncompressed_Events(buf, bufsize);
+  } else {
+    count = Extract_Compressed_Events(buf, bufsize);
+  }
+
+  return count;
+
+} /* end of Breakup_Receive_Packet */
+
+/***************************************************************************
+ * Extract_Uncompressed_Events -- extracts events from a packet            *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		buf			buffer containing events to extract
+ ** bufsize		length of 'buf'
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		# events extracted
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 DRD : Created.                                             *
+ *=========================================================================*/
+int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize) {
+  if (bufsize < 0 || std::cmp_greater(bufsize, buf.size())) {
+    return 0;
+  }
+  buf = buf.first(base::ToSize(bufsize));
+  int count = 0;
+  int pos = 0;
+  int leftover = bufsize;
+  EventClass event_storage;
+  EventClass* event = &event_storage;
+
+  //------------------------------------------------------------------------
+  // Loop until there are no more events in the packet
+  //------------------------------------------------------------------------
+  while (std::cmp_greater_equal(leftover, sizeof(EventClass))) {
+    TheKeyboard().Peek();
+
+    event_storage =
+        base::ReadUnaligned<EventClass>(buf.subspan(base::ToSize(pos)));
+
+    //.....................................................................
+    // add event to the DoList, only if it's not a FRAMESYNC
+    // (but FRAMEINFO's do get added.)
+    //.....................................................................
+    if (event->Type != EventClass::FRAMESYNC) {
+      event->IsExecuted = 0;
+
+      //..................................................................
+      // Special processing for variable-sized events
+      //..................................................................
+      if (event->Type == EventClass::ADDPLAYER) {
+        if (std::cmp_greater(event->Data.Variable.Size,
+                             base::ToSize(leftover) - sizeof(EventClass))) {
+          return count;
+        }
+        base::CopyBytes(event->Allocate_Variable(event->Data.Variable.Size),
+                        buf.subspan(base::ToSize(pos) + sizeof(EventClass)),
+                        event->Data.Variable.Size);
+
+        pos += event->Data.Variable.Size;
+        leftover -= event->Data.Variable.Size;
+      }
+
+      if (!TheNetwork().do_list().Add(*event)) {
+        if (event->Type == EventClass::ADDPLAYER) {
+          event->Free_Variable();
+        }
+        return -1;
+      }
+
+      //..................................................................
+      // Keep count of how many events we add to the queue
+      //..................................................................
+      count++;
+    }
+
+    //.....................................................................
+    // Point to the next position in the buffer; decrement our 'leftover'
+    //.....................................................................
+    pos += sizeof(EventClass);
+    leftover -= sizeof(EventClass);
+  }
+
+  return count;
+
+}  // end of Extract_Uncompressed_Events
+
+/***************************************************************************
+ * Extract_Compressed_Events -- extracts events from a packet
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		buf			buffer containing events to extract
+ ** bufsize		length of 'buf'
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		# events extracted
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 DRD : Created.                                             *
+ *=========================================================================*/
+int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
+  if (bufsize < 0 || std::cmp_greater(bufsize, buf.size())) {
+    return 0;
+  }
+  buf = buf.first(base::ToSize(bufsize));
+  int pos = 0;                 // current buffer parsing position
+  int leftover = bufsize;      // # bytes left to process
+  EventClass::EventType event_type{};  // event ptr for parsing buffer
+  int count = 0;               // # events processed
+  int datasize = 0;            // size of data to copy
+  EventClass eventdata;        // stores Frame, ID, etc
+  unsigned char numunits = 0;  // # units stored in compressed MegaMissions
+
+  //------------------------------------------------------------------------
+  // Clear work event structure
+  //------------------------------------------------------------------------
+
+  //------------------------------------------------------------------------
+  // Assume the first event is a FRAMEINFO event
+  // Init 'datasize' to the amount of data to copy, minus the EventType value
+  // For the 1st packet only, this will include all info before the Data
+  // union, plus the size of the FrameInfo structure, minus the EventType size.
+  //------------------------------------------------------------------------
+  datasize = offsetof(EventClass, Data) +
+             sizeof(std::declval<EventClass>().Data.FrameInfo) -
+             sizeof(EventClass::EventType);
+  if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
+    return count;
+  }
+  event_type = base::ReadUnaligned<EventClass::EventType>(
+      buf.subspan(base::ToSize(pos)));
+  if (event_type < EventClass::EMPTY || event_type >= EventClass::LAST_EVENT) {
+    return count;
+  }
+
+  while (leftover >=
+         datasize + static_cast<int>(sizeof(EventClass::EventType))) {
+    TheKeyboard().Peek();
+
+    //.....................................................................
+    // add event to the DoList, only if it's not a FRAMESYNC
+    // (but FRAMEINFO's do get added.)
+    //.....................................................................
+    if (event_type != EventClass::FRAMESYNC) {
+      //..................................................................
+      // initialize the common data from the FRAMEINFO event
+      // keeping IsExecuted 0
+      //..................................................................
+      if (event_type == EventClass::FRAMEINFO) {
+        EventClass frame_header;
+        base::CopyBytes(base::ObjectBytes(frame_header),
+                        buf.subspan(base::ToSize(pos)),
+                        offsetof(EventClass, Data));
+        eventdata.Frame = frame_header.Frame;
+        eventdata.ID = frame_header.ID;
+
+        //...............................................................
+        // Adjust position past the common data
+        //...............................................................
+        pos += offsetof(EventClass, Data) - sizeof(EventClass::EventType);
+        leftover -= offsetof(EventClass, Data) - sizeof(EventClass::EventType);
+      } else if (event_type == EventClass::MEGAMISSION) {
+        //..................................................................
+        // if MEGAMISSION event get the number of units (events to generate)
+        //..................................................................
+        numunits = std::to_integer<unsigned char>(
+            base::At(buf, base::ToSize(pos) + sizeof(eventdata.Type)));
+        pos += sizeof(numunits);
+        leftover -= sizeof(numunits);
+      }
+
+      //..................................................................
+      // clear the union data portion of the event
+      //..................................................................
+      base::FillBytes(base::ObjectBytes(eventdata.Data), 0,
+                      sizeof(eventdata.Data));
+      eventdata.Type = event_type;
+      datasize = EventClass::EventLength.at(eventdata.Type);
+      if (datasize < 0 || leftover < datasize + kEventTypeSize) {
+        return count;
+      }
+
+      switch (eventdata.Type) {
+        case EventClass::RESPONSE_TIME:
+          base::CopyBytes(
+              base::ObjectBytes(eventdata.Data.FrameInfo.Delay),
+              buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType)),
+              base::ToSize(datasize));
+          break;
+
+        case EventClass::ADDPLAYER: {
+          base::CopyBytes(
+              base::ObjectBytes(eventdata.Data.Variable.Size),
+              buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType)),
+              base::ToSize(datasize));
+
+          const auto variable_size = eventdata.Data.Variable.Size;
+          if (std::cmp_greater(variable_size,
+                               leftover - datasize - kEventTypeSize)) {
+            return count;
+          }
+          base::CopyBytes(
+              eventdata.Allocate_Variable(variable_size),
+              buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType) +
+                          base::ToSize(datasize)),
+              variable_size);
+
+          pos += variable_size;
+          leftover -= variable_size;
+
+          break;
+        }
+
+        case EventClass::MEGAMISSION:
+          // Validate the entire repetition run before adding any of its events.
+          if (numunits == 0 ||
+              std::cmp_less(
+                  leftover - datasize - kEventTypeSize,
+                  (numunits - 1) * sizeof(eventdata.Data.MegaMission.Whom))) {
+            return count;
+          }
+          base::CopyBytes(
+              base::ObjectBytes(eventdata.Data.MegaMission),
+              buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType)),
+              base::ToSize(datasize));
+
+          if (numunits > 1) {
+            pos += datasize + kEventTypeSize;
+            leftover -= datasize + kEventTypeSize;
+            datasize = sizeof(eventdata.Data.MegaMission.Whom);
+
+            while (numunits) {
+              TheKeyboard().Peek();
+
+              if (!TheNetwork().do_list().Add(eventdata)) {
+                return -1;
+              }
+
+              //......................................................
+              // Keep count of how many events we add to the queue
+              //......................................................
+              count++;
+              numunits--;
+              base::CopyBytes(
+                  base::ObjectBytes(eventdata.Data.MegaMission.Whom),
+                  buf.subspan(base::ToSize(pos)), base::ToSize(datasize));
+
+              //......................................................
+              // if one unit left fall thru to normal code
+              //......................................................
+              if (numunits == 1) {
+                datasize -= sizeof(EventClass::EventType);
+                break;
+              }
+              pos += datasize;
+              leftover -= datasize;
+            }
+          }
+          break;
+
+        case EventClass::EMPTY:
+        case EventClass::ALLY:
+        case EventClass::MEGAMISSION_F:
+        case EventClass::IDLE:
+        case EventClass::SCATTER:
+        case EventClass::DESTRUCT:
+        case EventClass::DEPLOY:
+        case EventClass::PLACE:
+        case EventClass::OPTIONS:
+        case EventClass::GAMESPEED:
+        case EventClass::PRODUCE:
+        case EventClass::SUSPEND:
+        case EventClass::ABANDON:
+        case EventClass::PRIMARY:
+        case EventClass::SPECIAL_PLACE:
+        case EventClass::EXIT:
+        case EventClass::ANIMATION:
+        case EventClass::REPAIR:
+        case EventClass::SELL:
+        case EventClass::SELLCELL:
+        case EventClass::SPECIAL:
+        case EventClass::FRAMESYNC:
+        case EventClass::MESSAGE:
+        case EventClass::FRAMEINFO:
+        case EventClass::SAVEGAME:
+        case EventClass::ARCHIVE:
+        case EventClass::TIMING:
+        case EventClass::PROCESS_TIME:
+        case EventClass::PROPOSE_DRAW:
+        case EventClass::RETRACT_DRAW:
+        case EventClass::LAST_EVENT:
+        default:
+          base::CopyBytes(
+              base::ObjectBytes(eventdata.Data),
+              buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType)),
+              base::ToSize(datasize));
+          break;
+      }
+
+      if (!TheNetwork().do_list().Add(eventdata)) {
+        if (eventdata.Type == EventClass::ADDPLAYER) {
+          eventdata.Free_Variable();
+        }
+        // The analyzer does not model Add() taking ownership of the buffer on
+        // success, so it reads the stale pointer left in eventdata -- which is
+        // reused across loop iterations -- as still owned here.
+        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
+        return -1;
+      }
+
+      //..................................................................
+      // Keep count of how many events we add to the queue
+      //..................................................................
+      count++;
+
+      pos += datasize + kEventTypeSize;
+      leftover -= datasize + kEventTypeSize;
+
+      if (leftover) {
+        if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
+          return count;
+        }
+        event_type = base::ReadUnaligned<EventClass::EventType>(
+            buf.subspan(base::ToSize(pos)));
+        if (event_type < EventClass::EMPTY ||
+            event_type >= EventClass::LAST_EVENT) {
+          return count;
+        }
+        datasize = EventClass::EventLength.at(event_type);
+        if (event_type == EventClass::MEGAMISSION) {
+          datasize += sizeof(numunits);
+        }
+      }
+    }
+    //.....................................................................
+    // FRAMESYNC event: This >should< be the only event in the buffer,
+    // and it will be uncompressed.
+    //.....................................................................
+    else {
+      pos += datasize + kEventTypeSize;
+      leftover -= datasize + kEventTypeSize;
+      if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
+        return count;
+      }
+      event_type = base::ReadUnaligned<EventClass::EventType>(
+          buf.subspan(base::ToSize(pos)));
+      if (event_type < EventClass::EMPTY ||
+          event_type >= EventClass::LAST_EVENT) {
+        return count;
+      }
+
+      //..................................................................
+      // size of FRAMESYNC event - EventType size
+      //..................................................................
+      datasize = offsetof(EventClass, Data) +
+                 sizeof(std::declval<EventClass>().Data.FrameInfo) -
+                 sizeof(EventClass::EventType);
+    }
+  }
+
+  return count;
+
+}  // end of Extract_Compressed_Events
+
+/***************************************************************************
+ * Execute_DoList -- Executes commands from the DoList
+ *           *
+ *                                                                         *
+ * This routine executes any events in the DoList that need to
+ * be executed
+ ** on the current game frame.  The events must be executed in a special
+ ** order, so that all systems execute all events in exactly the same
+ ** order.
+ **
+ *                                                                         *
+ * This routine also handles checking the Game CRC sent by other systems
+ ** against my own, to be sure we're still in sync.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		max_houses	# houses to execute commands for
+ ** base_house	HousesType to start with
+ ** net			ptr to connection manager; NULL if none
+ ** skip_crc		a frame-based countdown timer; if it's non-zero, the
+ ** CRC check will be skipped.  Ignored if NULL.
+ ** their_frame	array of their frame #'s
+ ** their_sent	array of # commands they've sent
+ ** their_recv	array of # commands I've received from them
+ **
+ *                                                                         *
+ * (their_xxx are ignored if 'net' is NULL.)
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		1 = OK, 0 = some error occurred (CRC error, packet rcv'd too
+ *late.)	*
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static int Execute_DoList(
+    int max_houses, HousesType base_house, ConnManClass* net,
+    const engine::platform::Timer<FrameTickSource>* skip_crc,
+    std::span<int64_t> their_frame, std::span<uint16_t> their_sent,
+    std::span<uint16_t> their_recv) {
+  int index = 0;
+  int check_crc = 0;
+
+  //
+  // If MPlayerMaxAhead is recomputed such that it increases, the systems
+  // may try to free-run to the new MaxAhead value.  If so, they may miss
+  // an event that was generated after the TIMING event was created, but
+  // before it executed; this event will be scheduled with the older,
+  // shorter MaxAhead value.  If a system doesn't receive this event, it
+  // may execute past the frame it's scheduled to execute on, creating
+  // a Packet-Recieved-Too-Late error.  To prevent this, find any events
+  // that are scheduled to execute during this "period of vulnerability",
+  // and re-schedule for the end of that period.
+  //
+  for (int j = 0; j < TheNetwork().do_list().Count(); j++) {
+    if (TheNetwork().do_list().at(j).Type != EventClass::FRAMEINFO &&
+        std::cmp_greater(TheNetwork().do_list().at(j).Frame,
+                         TheNetwork().new_max_ahead_frame1()) &&
+        std::cmp_less(TheNetwork().do_list().at(j).Frame,
+                      TheNetwork().new_max_ahead_frame2())) {
+      TheNetwork().do_list().at(j).Frame =
+          static_cast<unsigned>(TheNetwork().new_max_ahead_frame2());
+    }
+  }
+
+  //------------------------------------------------------------------------
+  //	Execute the DoList.  Events must be executed in the same
+  // order on all 	systems; so, execute them in the order of the HouseClass
+  // array. This 	array is stored in the same order on all systems.
+  //------------------------------------------------------------------------
+  for (int i = 0; i < max_houses; i++) {
+    //.....................................................................
+    //	Convert our index into a HousesType value
+    //.....................................................................
+    const auto house =
+        static_cast<HousesType>(i + static_cast<int>(base_house));
+    HouseClass* hptr = HouseClass::As_Pointer(house);
+
+    //.....................................................................
+    // If for some reason this house doesn't exist, skip it.
+    // Also, if this house has exited the game, skip it.  (The user can
+    // generate events after he exits, because the exit event is scheduled
+    // at least FrameSendRate*3 frames ahead.  If one system gets these
+    // packets & another system doesn't, they'll go out of sync because
+    // they aren't checking the CommandCount for that house, since that
+    // house isn't connected any more.)
+    //.....................................................................
+    if (!hptr) {
+      continue;
+    }
+    if (!hptr->IsHuman) {
+      continue;
+    }
+
+    //.....................................................................
+    //	Loop through all events
+    //.....................................................................
+    for (int j = 0; j < TheNetwork().do_list().Count(); j++) {
+      //..................................................................
+      //	If this event was from the currently-executing player ID, and
+      // it's 	time to execute it, execute it.
+      //..................................................................
+      if (std::cmp_equal(TheNetwork().do_list().at(j).ID, hptr->ID) &&
+          std::cmp_greater_equal(CurrentFrame(),
+                                 TheNetwork().do_list().at(j).Frame) &&
+          !TheNetwork().do_list().at(j).IsExecuted) {
+        //...............................................................
+        //	Error if it's too late to execute this packet!
+        // (Hack: disable this check for solo or skirmish mode.)
+        //...............................................................
+        if (std::cmp_greater(CurrentFrame(),
+                             TheNetwork().do_list().at(j).Frame) &&
+            TheNetwork().do_list().at(j).Type != EventClass::FRAMEINFO &&
+            TheSession().Type != GAME_NORMAL &&
+            TheSession().Type != GAME_SKIRMISH) {
+          Dump_Packet_Too_Late_Stuff(&TheNetwork().do_list().at(j), net,
+                                     their_frame, their_sent, their_recv);
+          WWMessageBox().Process(TXT_PACKET_TOO_LATE);
+          return 0;
+        }
+
+        //...............................................................
+        //	Only execute EXIT & OPTIONS commands if they're from myself.
+        //...............................................................
+        if (TheNetwork().do_list().at(j).Type == EventClass::EXIT ||
+            TheNetwork().do_list().at(j).Type == EventClass::OPTIONS) {
+          if (TheNetwork().do_list().at(j).Type == EventClass::EXIT) {
+            /*
+            ** Flag that this house lost because it quit.
+            */
+
+            for (int player = 0; player < max_houses; player++) {
+              const auto quithouse = static_cast<HousesType>(
+                  player + static_cast<int>(base_house));
+              HouseClass* quithptr = HouseClass::As_Pointer(quithouse);
+              if (!quithptr) {
+                continue;
+              }
+              if (std::cmp_equal(quithptr->ID,
+                                 TheNetwork().do_list().at(j).ID)) {
+                quithptr->IsGiverUpper = true;
+                break;
+              }
+            }
+
+            /*
+            ** Send the game statistics packet now since the game is effectivly
+            *over
+            */
+            if (TheSession().Players.Count() == 2 &&
+                TheSession().Type == GAME_INTERNET &&
+                !TheNetwork().statistics_sent()) {
+              Register_Game_End_Time();
+              Send_Statistics_Packet();  //	Event - player aborted, and
+                                         // there were only 2 left.
+            }
+          }
+
+          if (TheDebugState().print_events() &&
+              (TheNetwork().do_list().at(j).Type == EventClass::EXIT)) {
+            absl::PrintF(
+                "(%" PRId64 ") Executing EXIT, ID:%d (%s), EvFrame:%d\\n",
+                CurrentFrame(), TheNetwork().do_list().at(j).ID,
+                HouseClass::As_Pointer(
+                    static_cast<HousesType>(TheNetwork().do_list().at(j).ID))
+                    ->IniName,
+                TheNetwork().do_list().at(j).Frame);
+          }
+
+          if (std::cmp_equal(TheNetwork().do_list().at(j).ID,
+                             ThePlayer()->ID)) {
+            TheNetwork().do_list().at(j).Execute();
+          } else if (TheNetwork().do_list().at(j).Type == EventClass::EXIT) {
+            //............................................................
+            //	If this EXIT event isn't from myself, destroy the connection
+            //	for that player.  The HousesType for this event is the
+            // connection ID.
+            //............................................................
+            if (TheSession().Type == GAME_MODEM ||
+                TheSession().Type == GAME_NULL_MODEM) {
+              Destroy_Null_Connection(static_cast<int>(house), 0);
+            } else if ((TheSession().Type == GAME_IPX ||
+                        TheSession().Type == GAME_INTERNET) &&
+                       net) {
+              index = net->Connection_Index(static_cast<int>(house));
+              if (index != -1) {
+                for (int k = index; k < net->Num_Connections() - 1; k++) {
+                  base::At(their_frame, base::ToSize(k)) =
+                      base::At(their_frame, base::ToSize(k + 1));
+                  base::At(their_sent, base::ToSize(k)) =
+                      base::At(their_sent, base::ToSize(k + 1));
+                  base::At(their_recv, base::ToSize(k)) =
+                      base::At(their_recv, base::ToSize(k + 1));
+                }
+                if (TheSession().Type == GAME_IPX ||
+                    TheSession().Type == GAME_INTERNET) {
+                  Destroy_Connection(static_cast<int>(house), 0);
+                }
+              }
+            }
+            //
+            // Special case for recording playback: turn the house over
+            // to the computer.
+            //
+            if (TheSession().Play &&
+                TheNetwork().do_list().at(j).Type == EventClass::EXIT) {
+              hptr->IsHuman = false;
+              hptr->IQ = TheRules().MaxIQ;
+              HouseClass::Computer_Paranoid();
+              base::SafeCopy(hptr->IniName, Text_String(TXT_COMPUTER));
+              TheSession().NumPlayers--;
+            }
+          }
+        } else if (TheNetwork().do_list().at(j).Type == EventClass::FRAMEINFO) {
+          //...............................................................
+          //	For a FRAMEINFO event, check the CRC value.
+          //...............................................................
+          //............................................................
+          // Skip the CRC check if we're less than 32 frames into the game;
+          // this will prevent a newly-loaded modem game from instantly
+          // going out of sync, if the games were saved at different
+          // frame numbers.
+          //............................................................
+          if (skip_crc == nullptr || skip_crc->IsFinished()) {
+            check_crc = 1;
+          } else {
+            check_crc = 0;
+          }
+          if (check_crc &&
+              std::cmp_equal(TheNetwork().do_list().at(j).Frame,
+                             CurrentFrame()) &&
+              TheNetwork().do_list().at(j).Data.FrameInfo.Delay < 32) {
+            // The delay is below 32, so adding a full turn keeps the
+            // difference non-negative before wrapping onto the CRC ring.
+            index = (TheNetwork().do_list().at(j).Frame -
+                     TheNetwork().do_list().at(j).Data.FrameInfo.Delay + 32) %
+                    32;
+            if (base::At(CRC, index) !=
+                TheNetwork().do_list().at(j).Data.FrameInfo.CRC) {
+              Print_CRCs(&TheNetwork().do_list().at(j));
+
+              if (WWMessageBox().Process(TXT_OUT_OF_SYNC, TXT_CONTINUE,
+                                         TXT_STOP) == 0) {
+                if (TheSession().Type == GAME_MODEM ||
+                    TheSession().Type == GAME_NULL_MODEM) {
+                  Destroy_Null_Connection(static_cast<int>(house), -1);
+                  Shutdown_Modem();
+                  TheSession().Type = GAME_NORMAL;
+                } else if ((TheSession().Type == GAME_IPX ||
+                            TheSession().Type == GAME_INTERNET) &&
+                           net) {
+                  while (net->Num_Connections()) {
+                    TheKeyboard().Peek();
+                    Destroy_Connection(net->Connection_ID(0), -1);
+                  }
+                }
+                TheMap().Flag_To_Redraw(true);
+              } else {
+                return 0;
+              }
+              return 1;
+            }
+          }
+        }
+        //...............................................................
+        //	Execute other commands
+        //...............................................................
+        else {
+          TheNetwork().do_list().at(j).Execute();
+        }
+
+        //...............................................................
+        //	Mark this event as executed.
+        //...............................................................
+        TheNetwork().do_list().at(j).IsExecuted = 1;
+      }
+    }
+  }
+
+  return 1;
+
+}  // end of Execute_DoList
+
+/***************************************************************************
+ * Clean_DoList -- Cleans out old events from the DoList
+ *           *
+ *                                                                         *
+ * Currently, an event can only be removed from the DoList if
+ * it's at the
+ ** head of the list; and event can't be removed from the middle.  So, * this
+ *routine loops as long as the next event in the DoList has been
+ * * executed, it's removed.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net		ptr to connection manager; ignored if NULL
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   11/21/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static void Clean_DoList() {
+  while (TheNetwork().do_list().Count()) {
+    TheKeyboard().Peek();
+
+    //.....................................................................
+    //	Discard events that have been executed, OR it's too late to execute.
+    //	(This happens if another player exits the game; he'll leave FRAMEINFO
+    //	events lying around in my queue.  They won't have been "executed",
+    //	because his IPX connection was destroyed.)
+    //.....................................................................
+    if (TheNetwork().do_list().First().IsExecuted ||
+        std::cmp_greater(CurrentFrame(),
+                         TheNetwork().do_list().First().Frame)) {
+      TheNetwork().do_list().Next();
+    } else {
+      break;
+    }
+  }
+
+}  // end of Clean_DoList
+
+/***************************************************************************
+ * Queue_Record -- Records the DoList to disk            *
+ *                                                                         *
+ * This routine just saves any events in the DoList to disk; we
+ * can later
+ ** "play back" the recording just be pulling events from disk rather than
+ ** from the network!
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		none.
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   08/14/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static void Queue_Record() {
+
+  //------------------------------------------------------------------------
+  //	Compute # of events to save this frame
+  //------------------------------------------------------------------------
+  int j = 0;
+  for (int i = 0; i < TheNetwork().do_list().Count(); i++) {
+    if (std::cmp_equal(CurrentFrame(), TheNetwork().do_list().at(i).Frame) &&
+        !TheNetwork().do_list().at(i).IsExecuted) {
+      j++;
+    }
+  }
+
+  //------------------------------------------------------------------------
+  //	Save the # of events, then all events.
+  //------------------------------------------------------------------------
+  ByteStream* const record = TheSession().record_stream().get();
+  if (record == nullptr) {
+    return;
+  }
+  record->WriteObject(j);
+  for (int i = 0; i < TheNetwork().do_list().Count(); i++) {
+    if (std::cmp_equal(CurrentFrame(), TheNetwork().do_list().at(i).Frame) &&
+        !TheNetwork().do_list().at(i).IsExecuted) {
+      record->WriteObject(TheNetwork().do_list().at(i));
+      j--;
+    }
+  }
+
+} /* end of Queue_Record */
+
+/***************************************************************************
+ * Queue_Playback -- plays back queue entries from a record file           *
+ *                                                                         *
+ * This routine reads events from disk, putting them into the
+ * DoList; * it then executes the DoList just
+ * like the network version does.  The		* result is that the game "plays
+ * back" like a recording.
+ **
+ *																									*
+ * This routine detects mouse motion and stops playback, so it can work * like
+ *an "attract" mode, showing a demo of the game itself.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		none.
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   05/15/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static void Queue_Playback() {
+  int numevents = 0;
+  EventClass event;
+  static int mx;
+  static int my;
+  int max_houses = 0;
+  HousesType base_house = HOUSE_NONE;
+
+  //------------------------------------------------------------------------
+  //	If the user hits ESC, stop the playback
+  //------------------------------------------------------------------------
+  if (TheKeyboard().Peek()) {
+    if (TheKeyboard().Read().key == engine::window::KN_ESC ||
+        TheSession().Attract) {
+      TheGameState().active() = false;
+      return;
+    }
+  }
+
+  //------------------------------------------------------------------------
+  // If we're in "Attract" mode, and the user moves the mouse, stop the
+  // playback.
+  //------------------------------------------------------------------------
+  if (TheSession().Attract && CurrentFrame() > 0 &&
+      (mx != TheMouse().x() || my != TheMouse().y())) {
+    TheGameState().active() = false;
+    return;
+  }
+  mx = TheMouse().x();
+  my = TheMouse().y();
+
+  //------------------------------------------------------------------------
+  //	Compute the Game's CRC
+  //------------------------------------------------------------------------
+  Compute_Game_CRC();
+  base::At(CRC, CurrentFrame() % 32) = GameCRC;
+
+  //------------------------------------------------------------------------
+  // If we've reached the CRC print frame, do so & exit
+  //------------------------------------------------------------------------
+  if (CurrentFrame() >= TheSession().TrapPrintCRC) {
+    Print_CRCs(nullptr);
+    // ShutDownEngine();
+    EmergencyExit(0);
+  }
+
+  //------------------------------------------------------------------------
+  //	Don't read anything the first time through (since the Queue_AI_Network
+  //	routine didn't write anything the first time through); do this after the
+  //	CRC is computed, since we'll still need a CRC for Frame 0.
+  //------------------------------------------------------------------------
+  if (CurrentFrame() == 0 && TheSession().Type != GAME_NORMAL) {
+    return;
+  }
+
+  //------------------------------------------------------------------------
+  // Only process every 'FrameSendRate' frames
+  //------------------------------------------------------------------------
+  const int testframe =
+      static_cast<int>((CurrentFrame() + (TheSession().FrameSendRate - 1)) /
+                       TheSession().FrameSendRate * TheSession().FrameSendRate);
+  if ((TheSession().Type != GAME_NORMAL && TheSession().Type != GAME_SKIRMISH &&
+       TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
+      (CurrentFrame() != testframe)) {
+    return;
+  }
+
+  //------------------------------------------------------------------------
+  //	Read the DoList from disk
+  //------------------------------------------------------------------------
+  int ok = 1;
+  ByteStream* const record = TheSession().record_stream().get();
+  if (record != nullptr && record->ReadObject(numevents)) {
+    for (int i = 0; i < numevents; i++) {
+      if (record->ReadObject(event)) {
+        event.IsExecuted = 0;
+        TheNetwork().do_list().Add(event);
+      } else {
+        ok = 0;
+        break;
+      }
+    }
+  } else {
+    ok = 0;
+  }
+
+  if (!ok) {
+    TheGameState().active() = false;
+    return;
+  }
+
+  //------------------------------------------------------------------------
+  // Execute the DoList; if an error occurs, bail out.
+  //------------------------------------------------------------------------
+  if (TheSession().Type == GAME_NORMAL) {
+    max_houses = 1;
+    base_house = ThePlayer()->Class->House;
+  } else {
+    max_houses = TheSession().MaxPlayers;
+    base_house = HOUSE_MULTI1;
+  }
+  if (!Execute_DoList(max_houses, base_house, nullptr, nullptr, {}, {}, {})) {
+    TheGameState().active() = false;
+    return;
+  }
+
+  //------------------------------------------------------------------------
+  //	Clean out the DoList
+  //------------------------------------------------------------------------
+  Clean_DoList();
+
+} /* end of Queue_Playback */
+
+/***************************************************************************
+ * Compute_Game_CRC -- Computes a CRC value of the entire game.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		none.
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   05/09/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static void Compute_Game_CRC() {
+  ObjectClass* objp = nullptr;
+
+  GameCRC = 0;
+
+  //------------------------------------------------------------------------
+  //	Infantry
+  //------------------------------------------------------------------------
+  for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
+    auto* infp =
+        static_cast<InfantryClass*>(TheObjectHeaps().infantry().Active_Ptr(i));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(
+                          static_cast<int>(infp->Coord) +
+                          static_cast<int>(infp->PrimaryFacing.Current())));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(infp->Speed + infp->NavCom));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(infp->Mission) +
+                                            infp->TarCom));
+  }
+
+  //------------------------------------------------------------------------
+  //	Units
+  //------------------------------------------------------------------------
+  for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
+    auto* unitp =
+        static_cast<UnitClass*>(TheObjectHeaps().unit().Active_Ptr(i));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(
+                          static_cast<int>(unitp->Coord) +
+                          static_cast<int>(unitp->PrimaryFacing.Current()) +
+                          static_cast<int>(unitp->SecondaryFacing.Current())));
+  }
+
+  //------------------------------------------------------------------------
+  //	Shippies
+  //------------------------------------------------------------------------
+  for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
+    auto* vessp =
+        static_cast<VesselClass*>(TheObjectHeaps().vessel().Active_Ptr(i));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(
+                          static_cast<int>(vessp->Coord) +
+                          static_cast<int>(vessp->PrimaryFacing.Current())));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(vessp->Speed + vessp->NavCom));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(vessp->Strength));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(vessp->Mission) +
+                                            vessp->TarCom));
+  }
+
+  //------------------------------------------------------------------------
+  //	Buildings
+  //------------------------------------------------------------------------
+  for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
+    auto* bldgp =
+        static_cast<BuildingClass*>(TheObjectHeaps().building().Active_Ptr(i));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(
+                          static_cast<int>(bldgp->Coord) +
+                          static_cast<int>(bldgp->PrimaryFacing.Current())));
+  }
+
+  //------------------------------------------------------------------------
+  //	Houses
+  //------------------------------------------------------------------------
+  for (int i = 0; i < TheObjectHeaps().house().Count(); i++) {
+    auto* housep =
+        static_cast<HouseClass*>(TheObjectHeaps().house().Active_Ptr(i));
+    Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(housep->Credits) +
+                                            housep->Power +
+                                            housep->Drain));
+  }
+
+  //------------------------------------------------------------------------
+  //	Map Layers
+  //------------------------------------------------------------------------
+  for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
+    for (int j = 0; j < MouseClass::Layer.at(layer).Count(); j++) {
+      objp = MouseClass::Layer.at(layer).at(j);
+      Add_CRC(&GameCRC,
+              static_cast<uint32_t>(static_cast<int>(objp->Coord) +
+                                    static_cast<int>(objp->What_Am_I())));
+    }
+  }
+
+  //------------------------------------------------------------------------
+  //	Logic Layers
+  //------------------------------------------------------------------------
+  for (int i = 0; i < TheWorld().logic().Count(); i++) {
+    objp = TheWorld().logic().at(i);
+    Add_CRC(&GameCRC,
+            static_cast<uint32_t>(static_cast<int>(objp->Coord) +
+                                  static_cast<int>(objp->What_Am_I())));
+  }
+
+  //------------------------------------------------------------------------
+  //	A random #
+  //------------------------------------------------------------------------
+  //	Add_CRC(&GameCRC, Scen.RandomNumber.Seed);
+  Add_CRC(&GameCRC, static_cast<uint32_t>(TheScenario().sync_rng_.Next()));
+
+} /* end of Compute_Game_CRC */
+
+/***************************************************************************
+ * Add_CRC -- Adds a value to a CRC                                        *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		crc		ptr to crc
+ ** val		value to add
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   05/09/1995 BRR : Created.                                             *
+ *=========================================================================*/
+void Add_CRC(uint32_t* crc, uint32_t val) {
+  uint32_t hibit = 0;
+
+  if (*crc & 0x80000000) {
+    hibit = 1;
+  } else {
+    hibit = 0;
+  }
+
+  *crc <<= 1;
+  *crc += val;
+  *crc += hibit;
+
+} /* end of Add_CRC */
+
+/***************************************************************************
+ * Print_CRCs -- Prints a data file for finding Sync Bugs
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		ev -- event to display
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   05/09/1995 BRR : Created.                                             *
+ *=========================================================================*/
+static void Print_CRCs(const EventClass* ev) {
+  ObjectClass* objp = nullptr;
+  HouseClass* housep = nullptr;
+
+  const DumpFile file = OpenDumpFile("OUT.TXT");
+  FILE* fp = file.get();
+  if (fp == nullptr) {
+    return;
+  }
+
+  for (int i = 0; i < 32; i++) {
+    absl::FPrintF(fp, "CRC[%d]=%x\n", i, base::At(CRC, i));
+  }
+
+  //
+  // Houses
+  //
+  for (HousesType house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
+    GameCRC = 0;
+    housep = HouseClass::As_Pointer(house);
+    if (housep) {
+      const HousesType actlike = housep->ActLike;
+      const PlayerColorType color = housep->RemapColor;
+      absl::FPrintF(fp, "%s: IsHuman:%d  Color:%s  ID:%d  ActLike:%s\n",
+                    housep->IniName, housep->IsHuman,
+                    base::At(ColorNames, static_cast<int>(color)), housep->ID,
+                    HouseClass::As_Pointer(actlike)->Class->Name());
+      Add_CRC(&GameCRC,
+              static_cast<uint32_t>(static_cast<int>(housep->Credits) +
+                                    housep->Power +
+                                    housep->Drain));
+    }
+  }
+
+  //
+  // Infantry
+  //
+  for (HousesType house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
+    housep = HouseClass::As_Pointer(house);
+    if (housep) {
+      GameCRC = 0;
+      absl::FPrintF(fp,
+                    "-------------------- %s Infantry -------------------\n",
+                    housep->Class->Name());
+      for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
+        auto* infp = static_cast<InfantryClass*>(
+            TheObjectHeaps().infantry().Active_Ptr(i));
+        if (infp->Owner() == house) {
+          Add_CRC(&GameCRC,
+                  static_cast<uint32_t>(
+                      static_cast<int>(infp->Coord) +
+                      static_cast<int>(infp->PrimaryFacing.Current())));
+          Add_CRC(&GameCRC, static_cast<uint32_t>(infp->Speed + infp->NavCom));
+          Add_CRC(&GameCRC,
+                  static_cast<uint32_t>(static_cast<int>(infp->Mission) +
+                                        infp->TarCom));
+          absl::FPrintF(fp,
+                        "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x "
+                        "Speed:%d NavCom:%x\n",
+                        infp->Coord,
+                        static_cast<int>(infp->PrimaryFacing.Current()),
+                        infp->Get_Mission(), infp->Class->Type,
+                        static_cast<unsigned int>(infp->As_Target()),
+                        infp->Speed, static_cast<unsigned int>(infp->NavCom));
+        }
+      }
+    }
+  }
+
+  //
+  // Units
+  //
+  for (HousesType house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
+    housep = HouseClass::As_Pointer(house);
+    if (housep) {
+      GameCRC = 0;
+      absl::FPrintF(fp, "-------------------- %s Units -------------------\n",
+                    housep->Class->Name());
+      for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
+        auto* unitp =
+            static_cast<UnitClass*>(TheObjectHeaps().unit().Active_Ptr(i));
+        if (unitp->Owner() == house) {
+          Add_CRC(&GameCRC,
+                  static_cast<uint32_t>(
+                      static_cast<int>(unitp->Coord) +
+                      static_cast<int>(unitp->PrimaryFacing.Current()) +
+                      static_cast<int>(unitp->SecondaryFacing.Current())));
+          absl::FPrintF(
+              fp,
+              "COORD:%x   Facing:%d   Facing2:%d   Mission:%d   Type:%d   "
+              "Tgt:%x\n",
+              unitp->Coord, static_cast<int>(unitp->PrimaryFacing.Current()),
+              static_cast<int>(unitp->SecondaryFacing.Current()),
+              unitp->Get_Mission(), unitp->Class->Type,
+              static_cast<unsigned int>(unitp->As_Target()));
+        }
+      }
+    }
+  }
+
+  //
+  // Vessels
+  //
+  for (HousesType house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
+    housep = HouseClass::As_Pointer(house);
+    if (housep) {
+      GameCRC = 0;
+      absl::FPrintF(fp, "-------------------- %s Vessels -------------------\n",
+                    housep->Class->Name());
+      for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
+        auto* vesselp =
+            static_cast<VesselClass*>(TheObjectHeaps().vessel().Active_Ptr(i));
+        if (vesselp->Owner() == house) {
+          Add_CRC(&GameCRC,
+                  static_cast<uint32_t>(
+                      static_cast<int>(vesselp->Coord) +
+                      static_cast<int>(vesselp->PrimaryFacing.Current())));
+          Add_CRC(&GameCRC, static_cast<uint32_t>(vesselp->Speed +
+                                                  vesselp->NavCom));
+          Add_CRC(&GameCRC, static_cast<uint32_t>(vesselp->Strength));
+          Add_CRC(&GameCRC,
+                  static_cast<uint32_t>(static_cast<int>(vesselp->Mission) +
+                                        vesselp->TarCom));
+          absl::FPrintF(
+              fp,
+              "COORD:%x   Facing:%d   Mission:%d   Strength:%d Type:%d   "
+              "Tgt:%x\n",
+              vesselp->Coord,
+              static_cast<int>(vesselp->PrimaryFacing.Current()),
+              vesselp->Get_Mission(), vesselp->Strength, vesselp->Class->Type,
+              static_cast<unsigned int>(vesselp->As_Target()));
+        }
+      }
+    }
+  }
+
+  //
+  // Buildings
+  //
+  for (HousesType house = HOUSE_MULTI1; house <= HOUSE_MULTI8; house++) {
+    housep = HouseClass::As_Pointer(house);
+    if (housep) {
+      GameCRC = 0;
+      absl::FPrintF(fp,
+                    "-------------------- %s Buildings -------------------\n",
+                    housep->Class->Name());
+      for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
+        auto* bldgp = static_cast<BuildingClass*>(
+            TheObjectHeaps().building().Active_Ptr(i));
+        if (bldgp->Owner() == house) {
+          Add_CRC(&GameCRC,
+                  static_cast<uint32_t>(
+                      static_cast<int>(bldgp->Coord) +
+                      static_cast<int>(bldgp->PrimaryFacing.Current())));
+          absl::FPrintF(
+              fp, "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x\n",
+              bldgp->Coord, static_cast<int>(bldgp->PrimaryFacing.Current()),
+              bldgp->Get_Mission(), bldgp->Class->Type,
+              static_cast<unsigned int>(bldgp->As_Target()));
+        }
+      }
+    }
+  }
+
+  //
+  // Animations
+  //
+  absl::FPrintF(fp, "-------------------- Animations -------------------\n");
+  for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
+    auto* animp =
+        static_cast<AnimClass*>(TheObjectHeaps().anim().Active_Ptr(i));
+    absl::FPrintF(fp, "Target:%x OwnerHouse:%d Loops:%d\\n",
+                  static_cast<unsigned int>(animp->xObject), animp->OwnerHouse,
+                  animp->Loops);
+  }
+
+  //------------------------------------------------------------------------
+  //	Map Layers
+  //------------------------------------------------------------------------
+  GameCRC = 0;
+  for (const LayerType layer : magic_enum::enum_values<LayerType>()) {
+    absl::FPrintF(fp, ">>>> MAP LAYER %d <<<<\n", layer);
+    for (int j = 0; j < MouseClass::Layer.at(layer).Count(); j++) {
+      objp = MouseClass::Layer.at(layer).at(j);
+      Add_CRC(&GameCRC,
+              static_cast<uint32_t>(static_cast<int>(objp->Coord) +
+                                    static_cast<int>(objp->What_Am_I())));
+      absl::FPrintF(fp, "Object %d: %x ", j, objp->Coord);
+
+      if (objp->What_Am_I() == RTTI_AIRCRAFT) {
+        absl::FPrintF(fp, "Aircraft  (Type:%d) ",
+                      static_cast<AircraftType>(
+                          dynamic_cast<const AircraftClass&>(*objp)));
+      } else if (objp->What_Am_I() == RTTI_ANIM) {
+        absl::FPrintF(
+            fp, "Anim      (Type:%d) ",
+            static_cast<AnimType>(dynamic_cast<const AnimClass&>(*objp)));
+      } else if (objp->What_Am_I() == RTTI_BUILDING) {
+        absl::FPrintF(
+            fp, "Building  (Type:%d) ",
+            static_cast<StructType>(dynamic_cast<const BuildingClass&>(*objp)));
+      } else if (objp->What_Am_I() == RTTI_BULLET) {
+        absl::FPrintF(
+            fp, "Bullet    (Type:%d) ",
+            static_cast<BulletType>(dynamic_cast<const BulletClass&>(*objp)));
+      } else if (objp->What_Am_I() == RTTI_INFANTRY) {
+        absl::FPrintF(fp, "Infantry  (Type:%d) ",
+                      static_cast<InfantryType>(
+                          dynamic_cast<const InfantryClass&>(*objp)));
+      } else if (objp->What_Am_I() == RTTI_OVERLAY) {
+        absl::FPrintF(
+            fp, "Overlay   (Type:%d) ",
+            static_cast<OverlayType>(dynamic_cast<const OverlayClass&>(*objp)));
+      } else if (objp->What_Am_I() == RTTI_SMUDGE) {
+        absl::FPrintF(
+            fp, "Smudge    (Type:%d) ",
+            static_cast<SmudgeType>(dynamic_cast<const SmudgeClass&>(*objp)));
+      } else if (objp->What_Am_I() == RTTI_TEMPLATE) {
+        absl::FPrintF(fp, "Template  (Type:%d) ",
+                      static_cast<TemplateType>(
+                          dynamic_cast<const TemplateClass&>(*objp)));
+      } else if (objp->What_Am_I() == RTTI_TERRAIN) {
+        absl::FPrintF(
+            fp, "Terrain   (Type:%d) ",
+            static_cast<TerrainType>(dynamic_cast<const TerrainClass&>(*objp)));
+      } else if (objp->What_Am_I() == RTTI_UNIT) {
+        absl::FPrintF(
+            fp, "Unit      (Type:%d) ",
+            static_cast<UnitType>(dynamic_cast<const UnitClass&>(*objp)));
+      } else if (objp->What_Am_I() == RTTI_VESSEL) {
+        absl::FPrintF(
+            fp, "Vessel    (Type:%d) ",
+            static_cast<VesselType>(dynamic_cast<const VesselClass&>(*objp)));
+      }
+
+      const HousesType house = objp->Owner();
+      if (house != HOUSE_NONE) {
+        housep = HouseClass::As_Pointer(house);
+        absl::FPrintF(fp, "Owner: %s\n", housep->Class->IniName);
+      } else {
+        absl::FPrintF(fp, "Owner: NONE\n");
+      }
+    }
+  }
+
+  //------------------------------------------------------------------------
+  //	Logic Layers
+  //------------------------------------------------------------------------
+  GameCRC = 0;
+  absl::FPrintF(fp, ">>>> LOGIC LAYER <<<<\n");
+  for (int i = 0; i < TheWorld().logic().Count(); i++) {
+    objp = TheWorld().logic().at(i);
+    Add_CRC(&GameCRC,
+            static_cast<uint32_t>(static_cast<int>(objp->Coord) +
+                                  static_cast<int>(objp->What_Am_I())));
+    absl::FPrintF(fp, "Object %d: %x ", i, objp->Coord);
+
+    if (objp->What_Am_I() == RTTI_AIRCRAFT) {
+      absl::FPrintF(
+          fp, "Aircraft  (Type:%d) ",
+          static_cast<AircraftType>(dynamic_cast<const AircraftClass&>(*objp)));
+    } else if (objp->What_Am_I() == RTTI_ANIM) {
+      absl::FPrintF(
+          fp, "Anim      (Type:%d) ",
+          static_cast<AnimType>(dynamic_cast<const AnimClass&>(*objp)));
+    } else if (objp->What_Am_I() == RTTI_BUILDING) {
+      absl::FPrintF(
+          fp, "Building  (Type:%d) ",
+          static_cast<StructType>(dynamic_cast<const BuildingClass&>(*objp)));
+    } else if (objp->What_Am_I() == RTTI_BULLET) {
+      absl::FPrintF(
+          fp, "Bullet    (Type:%d) ",
+          static_cast<BulletType>(dynamic_cast<const BulletClass&>(*objp)));
+    } else if (objp->What_Am_I() == RTTI_INFANTRY) {
+      absl::FPrintF(
+          fp, "Infantry  (Type:%d) ",
+          static_cast<InfantryType>(dynamic_cast<const InfantryClass&>(*objp)));
+    } else if (objp->What_Am_I() == RTTI_OVERLAY) {
+      absl::FPrintF(
+          fp, "Overlay   (Type:%d) ",
+          static_cast<OverlayType>(dynamic_cast<const OverlayClass&>(*objp)));
+    } else if (objp->What_Am_I() == RTTI_SMUDGE) {
+      absl::FPrintF(
+          fp, "Smudge    (Type:%d) ",
+          static_cast<SmudgeType>(dynamic_cast<const SmudgeClass&>(*objp)));
+    } else if (objp->What_Am_I() == RTTI_TEMPLATE) {
+      absl::FPrintF(
+          fp, "Template  (Type:%d) ",
+          static_cast<TemplateType>(dynamic_cast<const TemplateClass&>(*objp)));
+    } else if (objp->What_Am_I() == RTTI_TERRAIN) {
+      absl::FPrintF(
+          fp, "Terrain   (Type:%d) ",
+          static_cast<TerrainType>(dynamic_cast<const TerrainClass&>(*objp)));
+    } else if (objp->What_Am_I() == RTTI_UNIT) {
+      absl::FPrintF(
+          fp, "Unit      (Type:%d) ",
+          static_cast<UnitType>(dynamic_cast<const UnitClass&>(*objp)));
+    }
+
+    const HousesType house = objp->Owner();
+    if (house != HOUSE_NONE) {
+      housep = HouseClass::As_Pointer(house);
+      absl::FPrintF(fp, "Owner: %s\n", housep->Class->IniName);
+    } else {
+      absl::FPrintF(fp, "Owner: NONE\n");
+    }
+  }
+
+  //------------------------------------------------------------------------
+  //	Random # generator, frame #
+  //------------------------------------------------------------------------
+#ifdef RANDOM_COUNT
+  absl::FPrintF(fp, "\nRandom Number:%x (Count1:%d, Count2:%d)\n",
+                TheScenario().sync_rng_.seed(), TheScenario().sync_rng_.Count1,
+                TheScenario().sync_rng_.Count2);
+#else
+  absl::FPrintF(fp, "\nRandom Number:%x\n", TheScenario().sync_rng_.seed());
+#endif
+
+  absl::FPrintF(fp, "My Frame:%" PRId64 "\n", CurrentFrame());
+
+  if (ev) {
+    absl::FPrintF(fp, "\n");
+    absl::FPrintF(fp, "Offending event:\n");
+    absl::FPrintF(fp, "  Type:         %d\n", ev->Type);
+    absl::FPrintF(fp, "  Frame:        %d\n", ev->Frame);
+    absl::FPrintF(fp, "  ID:           %x\n",
+                  static_cast<unsigned int>(ev->ID));
+    absl::FPrintF(fp, "  CRC:          %x\n", ev->Data.FrameInfo.CRC);
+    absl::FPrintF(fp, "  CommandCount: %d\n", ev->Data.FrameInfo.CommandCount);
+    absl::FPrintF(fp, "  Delay:        %d\n", ev->Data.FrameInfo.Delay);
+  }
+
+} /* end of Print_CRCs */
+
+/***************************************************************************
+ * Dump_Packet_Too_Late_Stuff -- Dumps a debug file to disk                *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		event		ptr to event to print
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   06/28/1996 BRR : Created.                                             *
+ *=========================================================================*/
+void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
+                                std::span<const int64_t> their_frame,
+                                std::span<const uint16_t> their_sent,
+                                std::span<const uint16_t> their_recv) {
+  const DumpFile file = OpenDumpFile("toolate.txt");
+  FILE* fp = file.get();
+  if (fp == nullptr) {
+    return;
+  }
+  absl::FPrintF(fp, "----------------- Event data: ----------------------\n");
+  absl::FPrintF(fp, "Type:       %s\n", EventClass::EventNames.at(event->Type));
+  absl::FPrintF(fp, "Frame:      %d\n", event->Frame);
+  absl::FPrintF(fp, "ID:         %d\n", event->ID);
+
+  for (int i = 0; i < TheSession().Players.Count(); i++) {
+    if (event->ID ==
+        static_cast<unsigned>(TheSession().Players.at(i)->Player.ID)) {
+      absl::FPrintF(fp, "Player's Name: %s", TheSession().Players.at(i)->Name);
+    }
+  }
+  absl::FPrintF(fp, "\n");
+
+  absl::FPrintF(fp, "--------------------- My data: ---------------------\n");
+  absl::FPrintF(fp, "My Frame:%" PRId64 "\n", CurrentFrame());
+  absl::FPrintF(fp, "My MaxAhead:%d\n", TheSession().MaxAhead);
+
+  if (net) {
+    absl::FPrintF(fp, "-------------------- Frame Stats: ------------------\n");
+    absl::FPrintF(fp, "Name          ID  TheirFrame  TheirSent  TheirRecv\n");
+    for (int i = 0; i < net->Num_Connections(); i++) {
+      const auto house = static_cast<HousesType>(net->Connection_ID(i));
+      absl::FPrintF(fp, "%12s  %2d    %6" PRId64 "      %6d      %6d\n",
+                    HouseClass::As_Pointer(house)->IniName,
+                    net->Connection_ID(i),
+                    base::At(their_frame, base::ToSize(i)),
+                    base::At(their_sent, base::ToSize(i)),
+                    base::At(their_recv, base::ToSize(i)));
+    }
+  }
+}
+
+/*************************** end of queue.cpp ******************************/

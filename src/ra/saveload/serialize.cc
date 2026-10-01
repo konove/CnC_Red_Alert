@@ -1,0 +1,215 @@
+#include "ra/saveload/serialize.h"
+
+#include <concepts>
+#include <cstdint>
+
+#include "engine/stream/archive.h"
+#include "ra/core/defines.h"
+#include "ra/core/heap.h"
+#include "ra/core/object_heaps.h"
+#include "ra/core/vector_dynamic.h"
+#include "ra/objects/aircraft.h"
+#include "ra/objects/anim.h"
+#include "ra/objects/building.h"
+#include "ra/objects/bullet.h"
+#include "ra/objects/foot.h"
+#include "ra/objects/infantry.h"
+#include "ra/objects/object.h"
+#include "ra/objects/overlay.h"
+#include "ra/objects/radio.h"
+#include "ra/objects/smudge.h"
+#include "ra/objects/target.h"
+#include "ra/objects/techno.h"
+#include "ra/objects/template.h"
+#include "ra/objects/terrain.h"
+#include "ra/objects/type.h"
+#include "ra/objects/unit.h"
+#include "ra/objects/vessel.h"
+
+namespace {
+
+// Returns the slot for `index` in `heap`, or nullptr with an error recorded
+// when the index is outside it. Deliberately does not consult the slot's
+// IsActive flag: the object there may not have been loaded yet.
+template <class T>
+ObjectClass* Slot(TFixedIHeapClass<T>& heap, int index, ArchiveReader& ar) {
+  if (index < 0 || index >= heap.Length()) {
+    ar.Fail("saved object index outside its heap");
+    return nullptr;
+  }
+  return heap.Raw_Ptr(index);
+}
+
+bool IsTechnoKind(RTTIType kind) {
+  return kind == RTTI_BUILDING || kind == RTTI_UNIT || kind == RTTI_INFANTRY ||
+         kind == RTTI_VESSEL || kind == RTTI_AIRCRAFT;
+}
+
+bool IsFootKind(RTTIType kind) {
+  return kind == RTTI_UNIT || kind == RTTI_INFANTRY || kind == RTTI_VESSEL ||
+         kind == RTTI_AIRCRAFT;
+}
+
+// Whether a TARGET of `kind` may be stored in a T*. Mirrors the RTTI tests
+// ObjectClass::Is_Techno and Is_Foot make on live objects.
+template <class T>
+bool KindFits(RTTIType kind) {
+  if constexpr (std::derived_from<T, FootClass>) {
+    return IsFootKind(kind);
+  } else if constexpr (std::derived_from<T, TechnoClass>) {
+    return IsTechnoKind(kind);
+  } else {
+    return true;
+  }
+}
+
+}  // namespace
+
+ObjectClass* ResolveSavedObject(int32_t target, ArchiveReader& ar) {
+  if (target == kTargetNone) {
+    return nullptr;
+  }
+  const int index = Target_Value(target);
+  switch (Target_Kind(target)) {
+    case RTTI_INFANTRY:
+      return Slot(TheObjectHeaps().infantry(), index, ar);
+    case RTTI_UNIT:
+      return Slot(TheObjectHeaps().unit(), index, ar);
+    case RTTI_VESSEL:
+      return Slot(TheObjectHeaps().vessel(), index, ar);
+    case RTTI_BUILDING:
+      return Slot(TheObjectHeaps().building(), index, ar);
+    case RTTI_AIRCRAFT:
+      return Slot(TheObjectHeaps().aircraft(), index, ar);
+    case RTTI_TERRAIN:
+      return Slot(TheObjectHeaps().terrain(), index, ar);
+    case RTTI_BULLET:
+      return Slot(TheObjectHeaps().bullet(), index, ar);
+    case RTTI_ANIM:
+      return Slot(TheObjectHeaps().anim(), index, ar);
+    case RTTI_OVERLAY:
+      return Slot(TheObjectHeaps().overlay(), index, ar);
+    case RTTI_SMUDGE:
+      return Slot(TheObjectHeaps().smudge(), index, ar);
+    case RTTI_TEMPLATE:
+      return Slot(TheObjectHeaps().tmplate(), index, ar);
+    case RTTIType::RTTI_NONE:
+    case RTTIType::RTTI_AIRCRAFTTYPE:
+    case RTTIType::RTTI_ANIMTYPE:
+    case RTTIType::RTTI_BUILDINGTYPE:
+    case RTTIType::RTTI_BULLETTYPE:
+    case RTTIType::RTTI_CELL:
+    case RTTIType::RTTI_FACTORY:
+    case RTTIType::RTTI_HOUSE:
+    case RTTIType::RTTI_HOUSETYPE:
+    case RTTIType::RTTI_INFANTRYTYPE:
+    case RTTIType::RTTI_OVERLAYTYPE:
+    case RTTIType::RTTI_SMUDGETYPE:
+    case RTTIType::RTTI_SPECIAL:
+    case RTTIType::RTTI_TEAM:
+    case RTTIType::RTTI_TEAMTYPE:
+    case RTTIType::RTTI_TEMPLATETYPE:
+    case RTTIType::RTTI_TERRAINTYPE:
+    case RTTIType::RTTI_TRIGGER:
+    case RTTIType::RTTI_TRIGGERTYPE:
+    case RTTIType::RTTI_UNITTYPE:
+    case RTTIType::RTTI_VESSELTYPE:
+    default:
+      ar.Fail("saved object target is not an object kind");
+      return nullptr;
+  }
+}
+
+template <class T>
+void ObjectPtr<T>::Serialize(ArchiveWriter& ar) {
+  TARGET target = kTargetNone;
+  if (ref_ != nullptr && ref_->IsActive) {
+    target = ref_->As_Target();
+  }
+  ar(target);
+}
+
+template <class T>
+void ObjectPtr<T>::Serialize(ArchiveReader& ar) {
+  TARGET target = kTargetNone;
+  ar(target);
+  ref_ = nullptr;
+  if (target == kTargetNone) {
+    return;
+  }
+  if (!KindFits<T>(Target_Kind(target))) {
+    ar.Fail("saved object target has the wrong kind for its field");
+    return;
+  }
+  // The kind check above makes the downcast sound: the slot holds (or will
+  // hold once its heap loads) an object of a type derived from T.
+  ref_ = static_cast<T*>(ResolveSavedObject(target, ar));
+}
+
+template class ObjectPtr<ObjectClass>;
+template class ObjectPtr<RadioClass>;
+template class ObjectPtr<TechnoClass>;
+template class ObjectPtr<FootClass>;
+
+void TechnoTypePtr::Serialize(ArchiveWriter& ar) {
+  TARGET target = ref_ != nullptr ? ref_->As_Target() : kTargetNone;
+  ar(target);
+}
+
+void TechnoTypePtr::Serialize(ArchiveReader& ar) {
+  TARGET target = kTargetNone;
+  ar(target);
+  ref_ = nullptr;
+  if (target == kTargetNone) {
+    return;
+  }
+  ref_ = As_TechnoType(target);
+  if (ref_ == nullptr) {
+    ar.Fail("saved techno type target does not name a type");
+  }
+}
+
+template <class Archive>
+void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects) {
+  auto count = static_cast<int32_t>(objects.Count());
+  ar(count);
+  if constexpr (Archive::kIsReading) {
+    const int capacity = TheObjectHeaps().aircraft().Length() +
+                         TheObjectHeaps().anim().Length() +
+                         TheObjectHeaps().building().Length() +
+                         TheObjectHeaps().bullet().Length() +
+                         TheObjectHeaps().infantry().Length() +
+                         TheObjectHeaps().overlay().Length() +
+                         TheObjectHeaps().smudge().Length() +
+                         TheObjectHeaps().tmplate().Length() +
+                         TheObjectHeaps().terrain().Length() +
+                         TheObjectHeaps().unit().Length() +
+                         TheObjectHeaps().vessel().Length();
+    if (!ar.ok() || count < 0 || count > capacity) {
+      ar.Fail("invalid saved object list count");
+      return;
+    }
+    objects.Clear();
+    // Clear() releases the storage and Add() grows it back ten slots at a
+    // time, copying every element already there each time. The count is known
+    // here, so take the storage in one step.
+    if (count > 0) {
+      objects.Resize(count);
+    }
+    for (int i = 0; i < count; ++i) {
+      ObjectClass* object = nullptr;
+      ar(ObjectPtr(object));
+      if (!ar.ok() || object == nullptr) {
+        ar.Fail("invalid saved object list entry");
+        return;
+      }
+      objects.Add(object);
+    }
+  } else {
+    for (int i = 0; i < count; ++i) {
+      ar(ObjectPtr(objects.at(i)));
+    }
+  }
+}
+template void SerializeObjectList(ArchiveWriter&, DynamicVectorClass<ObjectClass*>&);
+template void SerializeObjectList(ArchiveReader&, DynamicVectorClass<ObjectClass*>&);

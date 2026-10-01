@@ -1,0 +1,305 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\colrlist.cpv   1.9   16 Oct 1995 16:50:02
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : LIST.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 01/15/95 *
+ *                                                                                             *
+ *                  Last Update : April 19, 1995 [BRR] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * ColorListClass::Add_Item -- Adds an item to the list *
+ *   ColorListClass::ColorListClass -- Class constructor *
+ *   ColorListClass::Draw_Entry -- Draws one text line *
+ *   ColorListClass::Remove_Item -- Removes an item from the list *
+ *   ColorListClass::Set_Selected_Style -- tells how to draw selected item *
+ *   ColorListClass::~ColorListClass -- Class destructor *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+/***************************************************************************
+ * ColorListClass::ColorListClass -- class constructor                     *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *      id               button ID                                         *
+ *      x,y            upper-left corner, in pixels                        *
+ *      w,h            width, height, in pixels                            *
+ *      list            ptr to array of char strings to list               *
+ *    flags          flags for mouse, style of listbox                     *
+ *      up,down         pointers to shapes for up/down buttons             *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *      none.                                                              *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *      none.                                                              *
+ *                                                                         *
+ * HISTORY:          01/05/1995 MML : Created.                             *
+ *=========================================================================*/
+#include "td/ui/colrlist.h"
+
+#include <cstddef>
+#include <span>
+
+#include "base/numeric.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
+#include "td/core/defines.h"
+#include "td/core/jshell.h"
+#include "td/core/vector.h"
+#include "td/data/text.h"
+#include "td/startup/conquer.h"
+#include "td/ui/dialog.h"
+#include "td/ui/list.h"
+
+ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
+                               TextPrintType flags,
+                               std::span<const std::byte> up,
+                               std::span<const std::byte> down)
+    : ListClass(id, x, y, w, h, flags, up, down) {}
+
+/***************************************************************************
+ * ColorListClass::~ColorListClass -- Class destructor                     *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *      none.                                                              *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *      none.                                                              *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *      none.                                                              *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/19/1995 BRR : Created.                                             *
+ *=========================================================================*/
+ColorListClass::~ColorListClass() { Colors.Clear(); }
+
+/***************************************************************************
+ * ColorListClass::Add_Item -- Adds an item to the list                    *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *      text      text to add to list                                      *
+ *      color      color for item                                          *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *      position of item in the list                                       *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *      none.                                                              *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/19/1995 BRR : Created.                                             *
+ *=========================================================================*/
+int ColorListClass::Add_Item(const char* text, char color) {
+  // ListClass adds nothing for a null text; keep Colors parallel to it.
+  if (text == nullptr) {
+    return Count() - 1;
+  }
+  Colors.Add(color);
+  return ListClass::Add_Item(text);
+}
+
+/***************************************************************************
+ * ColorListClass::Add_Item -- Adds an item to the list                    *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *      text      text to add to list                                      *
+ *      color      color for item                                          *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *      position of item in the list                                       *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *      none.                                                              *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/19/1995 BRR : Created.                                             *
+ *=========================================================================*/
+int ColorListClass::Add_Item(int text, char color) {
+  // Not ListClass::Add_Item(int): that would call back into the virtual
+  // Add_Item(const char*) and add a second color.
+  return Add_Item(text == TXT_NONE ? nullptr : Text_String(text), color);
+}
+
+/***************************************************************************
+ * ColorListClass::Remove_Item -- Removes an item from the list            *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *      text      ptr to item to remove                                    *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *      none.                                                              *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/19/1995 BRR : Created.                                             *
+ *=========================================================================*/
+void ColorListClass::Remove_Item(int index) {
+  if (index >= 0 && index < Count()) {
+    Colors.Delete(index);
+    ListClass::Remove_Item(index);
+  }
+}
+
+/***************************************************************************
+ * ColorListClass::Set_Selected_Style -- tells how to draw selected item   *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *      style      style to draw                                           *
+ *      color      color to draw the special style in; -1 = use item's color*
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *      none.                                                              *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *      none.                                                              *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/19/1995 BRR : Created.                                             *
+ *=========================================================================*/
+void ColorListClass::Set_Selected_Style(SelectStyleType style, int color) {
+  Style = style;
+  SelectColor = color;
+}
+
+/***************************************************************************
+ * ColorListClass::Draw_Entry -- Draws one text line                       *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *      index         index into List of item to draw                      *
+ *      x,y         x,y coords to draw at                                  *
+ *      width         maximum width allowed for text                       *
+ *      selected      true = this item is selected                         *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *      none.                                                              *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *      none.                                                              *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/19/1995 BRR : Created.                                             *
+ *=========================================================================*/
+void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
+                                int width, bool selected) {
+  int color = 0;
+
+  /*
+  ** Draw a non-selected item in its color
+  */
+  if (!selected) {
+    Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
+                            kTBlack, TextFlags, width, Tabs);
+    return;
+  }
+
+  /*
+  ** For selected items, choose the right color & style:
+  */
+  if (SelectColor == -1) {
+    color = static_cast<unsigned char>(Colors.at(index));
+  } else {
+    color = SelectColor;
+  }
+
+  switch (Style) {
+    /*
+    **	NONE: Just print the string in its native color
+    */
+    case SELECT_NONE:
+      Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
+                              kTBlack, TextFlags, width, Tabs);
+      break;
+
+    /*
+    **	HIGHLIGHT: Draw the string in the highlight color (SelectColor must
+    **	be set)
+    */
+    case SELECT_HIGHLIGHT:
+      if (base::Any(TextFlags & TPF_6PT_GRAD)) {
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, color, kTBlack,
+                                TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
+      } else {
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, color, kTBlack,
+                                TextFlags, width, Tabs);
+      }
+      break;
+
+    /*
+    **	BOX: Draw a box around the item in the current select color
+    */
+    case SELECT_BOX:
+      view.DrawRect(x, y, x + width - 2, y + LineHeight - 2,
+                    static_cast<unsigned char>(color));
+      Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
+                              kTBlack, TextFlags, width, Tabs);
+      break;
+
+    /*
+    **	BAR: draw a color bar under the text
+    */
+    case SELECT_BAR:
+      if (base::Any(TextFlags & TPF_6PT_GRAD)) {
+        view.FillRect(x, y, x + width - 1, y + LineHeight - 1,
+                      static_cast<unsigned char>(SelectColor));
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
+                                kTBlack, TextFlags | TPF_BRIGHT_COLOR, width,
+                                Tabs);
+      } else {
+        view.FillRect(x, y, x + width - 2, y + LineHeight - 2,
+                      static_cast<unsigned char>(SelectColor));
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
+                                kTBlack, TextFlags, width, Tabs);
+      }
+      break;
+
+    /*
+    **	INVERT: Draw text as the background color on foreground color
+    */
+    case SELECT_INVERT:
+      if (base::Any(TextFlags & TPF_6PT_GRAD)) {
+        view.FillRect(x, y, x + width - 1, y + LineHeight - 1,
+                      static_cast<unsigned char>(Colors.at(index)));
+        // Black text on the transparent color; the names only look swapped.
+        // NOLINTNEXTLINE(readability-suspicious-call-argument)
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kBlack, kTBlack,
+                                TextFlags, width, Tabs);
+      } else {
+        view.FillRect(x, y, x + width - 2, y + LineHeight - 2,
+                      static_cast<unsigned char>(Colors.at(index)));
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kLtGrey, kTBlack,
+                                TextFlags, width, Tabs);
+      }
+      break;
+    default:
+      break;
+  }
+}

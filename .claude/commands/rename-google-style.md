@@ -151,8 +151,8 @@ because the file should be named after what it holds now:
   -> `base64_sink`), library prefixes that meant "from the Westwood library" (`ww_`), and names of
   what a file used to hold.
 - Keep the name when it already fits, and keep the original's name when it is still accurate: the
-  twin in the other game (`td/audio.cc` for `ra/ww_audio.cc`) and the original source (`AUDIO.CPP`)
-  are worth matching, because they are what a reader compares against.
+  twin in the other game (`td/assets/audio.cc` for `ra/ww_audio.cc`) and the original source
+  (`AUDIO.CPP`) are worth matching, because they are what a reader compares against.
 - The new name must be free in its directory and should not echo a file in a shared directory that
   holds something else: `ra/audio_mixer.h` next to `engine/audio/audio_mixer.h` would mislead.
 - Tests follow their file: `wsa_test.cc` became `wsa_animation_test.cc`.

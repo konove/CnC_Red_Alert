@@ -132,7 +132,7 @@ if (STRICT_CHECKS)
     # The static analyzer's budget. Shallow inlines only tiny callees and caps
     # the paths it explores; deep is clang's default. Measured 2026-09-19 over
     # the tree, the analyzer's own cost is ~1080 CPU-s deep and ~540 shallow,
-    # and ra/ioobj.cc alone drops from 62 s to 4 s. Shallow is the local
+    # and ra/saveload/ioobj.cc alone drops from 62 s to 4 s. Shallow is the local
     # default for the edit loop; the CI lint job runs deep as the backstop, so
     # a path only deep mode finds still fails before it lands.
     set(CLANG_ANALYZER_MODE "shallow" CACHE STRING

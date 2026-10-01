@@ -1,0 +1,481 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\ipxaddr.cpv   2.17   16 Oct 1995 16:50:58
+ * JOE_BOSTIC  $ */
+/***************************************************************************
+ **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
+ ***************************************************************************
+ *                                                                         *
+ *                 Project Name : Command & Conquer                        *
+ *                                                                         *
+ *                    File Name : IPXADDR.CPP                              *
+ *                                                                         *
+ *                   Programmer : Bill Randolph                            *
+ *                                                                         *
+ *                   Start Date : December 19, 1994                        *
+ *                                                                         *
+ *                  Last Update : December 19, 1994   [BR]                 *
+ *                                                                         *
+ *-------------------------------------------------------------------------*
+ * Functions:                                                              *
+ *   IPXAddressClass::IPXAddressClass -- class constructor                 *
+ *   IPXAddressClass::IPXAddressClass -- class constructor form 2
+ ** IPXAddressClass::IPXAddressClass -- class constructor form 3
+ ** IPXAddressClass::Set_Address -- sets the IPX address values        	*
+ *   IPXAddressClass::Set_Address -- sets the IPX values from a header *
+ *   IPXAddressClass::Get_Address -- retrieves the IPX address values      *
+ *   IPXAddressClass::Get_Address -- copies address into an IPX header *
+ *   IPXAddressClass::Is_Broadcast -- tells if this is a broadcast address *
+ *   IPXAddressClass::operator== -- overloaded comparison operator         *
+ *   IPXAddressClass::operator!= -- overloaded comparison operator         *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+/***************************************************************************
+ * IPXAddressClass::IPXAddressClass -- class constructor                   *
+ *                                                                         *
+ * This default constructor generates a broadcast address.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net		Network Number for this address
+ ** node		Node Address for this address
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+#include "td/net/ipxaddr.h"
+
+#include <cstring>
+
+#include "base/array.h"
+#include "base/buffer.h"
+#include "td/net/ipx.h"
+
+IPXAddressClass::IPXAddressClass() noexcept {
+  base::At(NetworkNumber, 0) = 0xff;
+  base::At(NetworkNumber, 1) = 0xff;
+  base::At(NetworkNumber, 2) = 0xff;
+  base::At(NetworkNumber, 3) = 0xff;
+  base::At(NodeAddress, 0) = 0xff;
+  base::At(NodeAddress, 1) = 0xff;
+  base::At(NodeAddress, 2) = 0xff;
+  base::At(NodeAddress, 3) = 0xff;
+  base::At(NodeAddress, 4) = 0xff;
+  base::At(NodeAddress, 5) = 0xff;
+
+} /* end of IPXAddressClass */
+
+/***************************************************************************
+ * IPXAddressClass::IPXAddressClass -- class constructor form 2
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net		Network Number for this address
+ ** node		Node Address for this address
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+IPXAddressClass::IPXAddressClass(const NetNumType& net,
+                                 const NetNodeType& node) {
+  base::CopyBytes(base::ObjectBytes(NetworkNumber), base::ObjectBytes(net), 4);
+  base::CopyBytes(base::ObjectBytes(NodeAddress), base::ObjectBytes(node), 6);
+
+} /* end of IPXAddressClass */
+
+/***************************************************************************
+ * IPXAddressClass::IPXAddressClass -- class constructor form 3
+ **
+ *                                                                         *
+ * This form of the constructor takes an IPX header as an argument.  It *
+ * extracts the address from the Source address fields in the header. *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		header	Header from which to extract the address
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+IPXAddressClass::IPXAddressClass(IPXHeaderType* header) {
+  base::CopyBytes(base::ObjectBytes(NetworkNumber),
+                  base::ObjectBytes(header->SourceNetworkNumber), 4);
+  base::CopyBytes(base::ObjectBytes(NodeAddress),
+                  base::ObjectBytes(header->SourceNetworkNode), 6);
+
+} /* end of IPXAddressClass */
+
+/***************************************************************************
+ * IPXAddressClass::Set_Address -- sets the IPX address values *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net		Network Number for this address
+ ** node		Node Address for this address
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+void IPXAddressClass::Set_Address(const NetNumType& net,
+                                  const NetNodeType& node) {
+  base::CopyBytes(base::ObjectBytes(NetworkNumber), base::ObjectBytes(net), 4);
+  base::CopyBytes(base::ObjectBytes(NodeAddress), base::ObjectBytes(node), 6);
+
+} /* end of Set_Address */
+
+/***************************************************************************
+ * IPXAddressClass::Set_Address -- sets the IPX values from a header
+ **
+ *                                                                         *
+ * This routine extracts the source addresses from the given IPX header.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net		Network Number for this address
+ ** node		Node Address for this address
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+void IPXAddressClass::Set_Address(IPXHeaderType* header) {
+  if (header) {
+    base::CopyBytes(base::ObjectBytes(NetworkNumber),
+                    base::ObjectBytes(header->SourceNetworkNumber), 4);
+    base::CopyBytes(base::ObjectBytes(NodeAddress),
+                    base::ObjectBytes(header->SourceNetworkNode), 6);
+  } else {
+    /*
+    ** Address is meaningless when using winsock
+    */
+    base::FillBytes(base::ObjectBytes(NetworkNumber), 1, 4);
+    base::FillBytes(base::ObjectBytes(NodeAddress), 1, 6);
+  }
+} /* end of Set_Address */
+
+/***************************************************************************
+ * IPXAddressClass::Get_Address -- retrieves the IPX address values        *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net		Network Number for this address
+ ** node		Node Address for this address
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+void IPXAddressClass::Get_Address(NetNumType& net, NetNodeType& node) {
+  base::CopyBytes(base::ObjectBytes(net), base::ObjectBytes(NetworkNumber), 4);
+  base::CopyBytes(base::ObjectBytes(node), base::ObjectBytes(NodeAddress), 6);
+
+} /* end of Get_Address */
+
+/***************************************************************************
+ * IPXAddressClass::Get_Address -- copies address into an IPX header
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		net		Network Number for this address
+ ** node		Node Address for this address
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+void IPXAddressClass::Get_Address(IPXHeaderType* header) {
+  base::CopyBytes(base::ObjectBytes(header->DestNetworkNumber),
+                  base::ObjectBytes(NetworkNumber), 4);
+  base::CopyBytes(base::ObjectBytes(header->DestNetworkNode),
+                  base::ObjectBytes(NodeAddress), 6);
+
+} /* end of Get_Address */
+
+/***************************************************************************
+ * IPXAddressClass::Is_Broadcast -- tells if this is a broadcast address   *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		none.
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+bool IPXAddressClass::Is_Broadcast() {
+  return base::At(NetworkNumber, 0) == 0xff &&
+         base::At(NetworkNumber, 1) == 0xff &&
+         base::At(NetworkNumber, 2) == 0xff &&
+         base::At(NetworkNumber, 3) == 0xff &&
+         base::At(NodeAddress, 0) == 0xff && base::At(NodeAddress, 1) == 0xff &&
+         base::At(NodeAddress, 2) == 0xff && base::At(NodeAddress, 3) == 0xff &&
+         base::At(NodeAddress, 4) == 0xff && base::At(NodeAddress, 5) == 0xff;
+}
+
+/***************************************************************************
+ * IPXAddressClass::operator== -- overloaded comparison operator           *
+ *                                                                         *
+ * Since, if NETX isn't running, the network number on a received packet
+ ** can be bogus (all 0's), only the node address is used for comparison *
+ * purposes here.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		addr		address to compare to
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		0 = not equal, 1 = equal
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+bool IPXAddressClass::operator==(IPXAddressClass& addr) {
+  /*------------------------------------------------------------------------
+  If either Network Number is all 0's (which can happen if the system is
+  not running NETX), compare only the Node Addresses.
+  ------------------------------------------------------------------------*/
+  if ((base::At(NetworkNumber, 0) == 0 && base::At(NetworkNumber, 1) == 0 &&
+       base::At(NetworkNumber, 2) == 0 && base::At(NetworkNumber, 3) == 0) ||
+      (base::At(addr.NetworkNumber, 0) == 0 &&
+       base::At(addr.NetworkNumber, 1) == 0 &&
+       base::At(addr.NetworkNumber, 2) == 0 &&
+       base::At(addr.NetworkNumber, 3) == 0)) {
+    return base::CompareBytes(base::ObjectBytes(NodeAddress),
+                              base::ObjectBytes(addr.NodeAddress), 6) == 0;
+  }
+  /*------------------------------------------------------------------------
+      Otherwise, compare both the Network Numbers and Node Addresses
+      ------------------------------------------------------------------------*/
+  return base::CompareBytes(base::ObjectBytes(NodeAddress),
+                            base::ObjectBytes(addr.NodeAddress), 6) == 0 &&
+         base::CompareBytes(base::ObjectBytes(NetworkNumber),
+                            base::ObjectBytes(addr.NetworkNumber), 4) == 0;
+}
+
+/***************************************************************************
+ * IPXAddressClass::operator!= -- overloaded comparison operator           *
+ *                                                                         *
+ * Since, if NETX isn't running, the network number on a received packet
+ ** can be bogus (all 0's), only the node address is used for comparison *
+ * purposes here.
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		addr		address to compare to
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		0 = equal, 1 = not equal
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+bool IPXAddressClass::operator!=(IPXAddressClass& addr) {
+  /*------------------------------------------------------------------------
+  If either Network Number is all 0's (which can happen if the system is
+  not running NETX), compare only the Node Addresses.
+  ------------------------------------------------------------------------*/
+  if ((base::At(NetworkNumber, 0) == 0 && base::At(NetworkNumber, 1) == 0 &&
+       base::At(NetworkNumber, 2) == 0 && base::At(NetworkNumber, 3) == 0) ||
+      (base::At(addr.NetworkNumber, 0) == 0 &&
+       base::At(addr.NetworkNumber, 1) == 0 &&
+       base::At(addr.NetworkNumber, 2) == 0 &&
+       base::At(addr.NetworkNumber, 3) == 0)) {
+    return base::CompareBytes(base::ObjectBytes(NodeAddress),
+                              base::ObjectBytes(addr.NodeAddress), 6) != 0;
+  }
+  /*------------------------------------------------------------------------
+      Otherwise, compare both the Network Numbers and Node Addresses
+      ------------------------------------------------------------------------*/
+  return base::CompareBytes(base::ObjectBytes(NodeAddress),
+                            base::ObjectBytes(addr.NodeAddress), 6) != 0 ||
+         base::CompareBytes(base::ObjectBytes(NetworkNumber),
+                            base::ObjectBytes(addr.NetworkNumber), 4) != 0;
+}
+
+/***************************************************************************
+ * IPXAddressClass::operator > -- overloaded comparison operator           *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		addr		address to compare to
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		true = greater, FALSE = not
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+bool IPXAddressClass::operator>(IPXAddressClass& addr) {
+  return base::CompareBytes(base::ObjectBytes(*this), base::ObjectBytes(addr),
+                            10) > 0;
+
+} /* end of operator != */
+
+/***************************************************************************
+ * IPXAddressClass::operator < -- overloaded comparison operator           *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		addr		address to compare to
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		true = less, FALSE = not
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+bool IPXAddressClass::operator<(IPXAddressClass& addr) {
+  return base::CompareBytes(base::ObjectBytes(*this), base::ObjectBytes(addr),
+                            10) < 0;
+
+} /* end of operator != */
+
+/***************************************************************************
+ * IPXAddressClass::operator >= -- overloaded comparison operator          *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		addr		address to compare to
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		true = greater or equal, FALSE = not
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+bool IPXAddressClass::operator>=(IPXAddressClass& addr) {
+  return base::CompareBytes(base::ObjectBytes(*this), base::ObjectBytes(addr),
+                            10) >= 0;
+
+} /* end of operator != */
+
+/***************************************************************************
+ * IPXAddressClass::operator <= -- overloaded comparison operator          *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		addr		address to compare to
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		true = less or equal, FALSE = not
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/19/1994 BR : Created.                                              *
+ *=========================================================================*/
+bool IPXAddressClass::operator<=(IPXAddressClass& addr) {
+  return base::CompareBytes(base::ObjectBytes(*this), base::ObjectBytes(addr),
+                            10) <= 0;
+
+} /* end of operator != */

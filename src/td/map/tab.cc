@@ -1,0 +1,263 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\tab.cpv   2.18   16 Oct 1995 16:52:04
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : TAB.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 12/15/94 *
+ *                                                                                             *
+ *                  Last Update : August 25, 1995 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * TabClass::AI -- Handles player I/O with the tab buttons. *
+ *   TabClass::Draw_It -- Displays the tab buttons as necessary. *
+ *   TabClass::Set_Active -- Activates a "filefolder tab" button. *
+ *   TabClass::TabClass -- Default construct for the tab button class. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "td/map/tab.h"
+
+#include <cstddef>
+#include <span>
+
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/wwstd.h"
+#include "engine/window/keyboard.h"
+#include "td/ai/special.h"
+#include "td/assets/screen.h"
+#include "td/core/defines.h"
+#include "td/core/jshell.h"
+#include "td/debug/debug_state.h"
+#include "td/editor/mapedit.h"
+#include "td/map/credits.h"
+#include "td/map/sidebar.h"
+#include "td/map/world.h"
+#include "td/net/queue.h"
+#include "td/startup/conquer.h"
+#include "td/ui/dialog.h"
+
+using engine::gfx::ShapeFlags;
+
+std::span<const std::byte> TabClass::TabShape = {};
+
+/***********************************************************************************************
+ * TabClass::TabClass -- Default construct for the tab button class. *
+ *                                                                                             *
+ *    The default constructor merely sets the tab buttons to default
+ *non-selected state.       *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/15/1994 JLB : Created. *
+ *=============================================================================================*/
+TabClass::TabClass() = default;
+
+/***********************************************************************************************
+ * TabClass::Draw_It -- Displays the tab buttons as necessary. *
+ *                                                                                             *
+ *    This routine is called whenever the display is being redrawn (in some
+ *fashion). The      * parameter can be used to force the tab buttons to redraw
+ *completely. The default action  * is to only redraw if the tab buttons have
+ *been explicitly flagged to be redraw. The      * result of this is the
+ *elimination of unnecessary redraws.                                *
+ *                                                                                             *
+ * INPUT:   complete -- bool; Force redraw of the entire tab button graphics? *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/15/1994 JLB : Created. * 05/19/1995 JLB : New EVA style. *
+ *=============================================================================================*/
+void TabClass::Draw_It(PixelView& view, bool complete) {
+  SidebarClass::Draw_It(view, complete);
+
+  if (TheDebugState().map_editor_active()) {
+    // HidPage.Unlock();
+    return;
+  }
+
+  /*
+  **	Redraw the top bar imagery if flagged to do so or if the entire display
+  *needs *	to be redrawn.
+  */
+  const int width = TheScreen().visible_view().width();
+  const int rightx = width - 1;
+
+  if (complete || IsTabToRedraw) {
+    if (view.Lock()) {
+      view.FillRect(0, 0, rightx, Tab_Height - 2, kBlack);
+      CC_Draw_Shape(view, TabShape, 0, 0, 0, WINDOW_MAIN, ShapeFlags::kNone);
+      CC_Draw_Shape(view, TabShape, 0, width - Eva_Width, 0, WINDOW_MAIN,
+                    ShapeFlags::kNone);
+      Draw_Credits_Tab(view);
+      view.DrawLine(0, Tab_Height - 1, rightx, Tab_Height - 1, kBlack);
+
+      Fancy_Text_Print(view, TXT_TAB_BUTTON_CONTROLS, Eva_Width / 2, 0, 11,
+                       kTBlack,
+                       TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL);
+      Fancy_Text_Print(view, TXT_TAB_SIDEBAR, width - (Eva_Width / 2), 0, 11,
+                       kTBlack,
+                       TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL);
+    }
+    view.Unlock();
+  }
+
+  Credits.Graphic_Logic(view, complete || IsTabToRedraw);
+  IsTabToRedraw = false;
+}
+
+void TabClass::Draw_Credits_Tab(PixelView& view) {
+  CC_Draw_Shape(view, TabShape, 0, 320, 0, WINDOW_MAIN, ShapeFlags::kNone);
+}
+
+/***********************************************************************************************
+ * TC::Hilite_Tab -- Draw a tab in its depressed state *
+ *                                                                                             *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:    Tab to draw (not used) *
+ *                                                                                             *
+ * OUTPUT:   Nothing *
+ *                                                                                             *
+ * WARNINGS: None *
+ *                                                                                             *
+ * HISTORY: * 5/21/96 10:47AM ST : Created *
+ *=============================================================================================*/
+
+void TabClass::Hilite_Tab(PixelView& view, int /*tab*/) {
+  CC_Draw_Shape(view, TabShape, 1, 0, 0, WINDOW_MAIN, ShapeFlags::kNone);
+  Fancy_Text_Print(view, TXT_TAB_BUTTON_CONTROLS, 80, 0, 11, kTBlack,
+                   TPF_GREEN12 | TPF_CENTER | TPF_USE_GRAD_PAL);
+}
+
+/***********************************************************************************************
+ * TabClass::AI -- Handles player I/O with the tab buttons. *
+ *                                                                                             *
+ *    This routine is called every game tick and passed whatever key the player
+ *has supplied.  * If the input selects a tab button, then the graphic gets
+ *updated accordingly.            *
+ *                                                                                             *
+ * INPUT:   input -- The player's input character (might be mouse click). *
+ *                                                                                             *
+ *          x,y   -- Mouse coordinates at time of input. *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/15/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse coordinate
+ *parameters.                                        * 05/31/1995 JLB : Fixed to
+ *handle mouse shape properly.                                    * 08/25/1995
+ *JLB : Handles new scrolling option. *
+ *=============================================================================================*/
+void TabClass::AI(engine::window::InputEvent& event, int x, int y) {
+  if (y >= 0 && y < Tab_Height && x < TheScreen().visible_view().width() - 1 &&
+      x > 0) {
+    bool ok = false;
+    const int width = TheScreen().visible_view().width();
+
+    /*
+    **	If the mouse is at the top of the screen, then the tab bars only work
+    **	in certain areas. If the special scroll modification is not active, then
+    **	the tabs never work when the mouse is at the top of the screen.
+    */
+    if (y > 0 || (TheSpecial().IsScrollMod &&
+                  ((x > 3 && x < Eva_Width) ||
+                   (x < width - 3 && x > width - Eva_Width)))) {
+      ok = true;
+    }
+
+    if (ok) {
+      if (event.IsPress(engine::window::MouseButton::kLeft)) {
+        int sel = -1;
+        if (x < Eva_Width) {
+          sel = 0;
+        }
+        if (x > width - Eva_Width) {
+          sel = 1;
+        }
+        if (sel >= 0) {
+          Set_Active(sel);
+          event = {};  // The tab used up the click.
+        }
+      }
+
+      Override_Mouse_Shape(MOUSE_NORMAL, false);
+    }
+  }
+
+  Credits.AI();
+
+  SidebarClass::AI(event, x, y);
+}
+
+/***********************************************************************************************
+ * TabClass::Set_Active -- Activates a "filefolder tab" button. *
+ *                                                                                             *
+ *    This function is used to activate one of the file folder tab buttons that
+ *appear at the  * top edge of the screen. *
+ *                                                                                             *
+ * INPUT:   select   -- The button to activate. 0 = left button, 1=next button,
+ *etc.           *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 12/15/1994 JLB : Created. *
+ *=============================================================================================*/
+void TabClass::Set_Active(int select) {
+  switch (select) {
+    case 0:
+      Queue_Options();
+      break;
+
+    case 1:
+      TheMap().Activate(-1);
+      break;
+
+    default:
+      break;
+  }
+}
+
+void TabClass::One_Time() {
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
+  Eva_Width = 80 * factor;
+  Tab_Height = 8 * factor;
+
+  SidebarClass::One_Time();
+  TabShape = Hires_Retrieve("TABS.SHP");
+}

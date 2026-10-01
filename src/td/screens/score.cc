@@ -1,0 +1,2258 @@
+/*
+**	Command & Conquer(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header:   F:\projects\c&c\vcs\code\score.cpv   2.17   16 Oct 1995 16:49:54
+ * JOE_BOSTIC  $ */
+/***********************************************************************************************
+ ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : SCORE.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : April 19, 1994 *
+ *                                                                                             *
+ *                  Last Update : May 3, 1995   [BWG] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * Call_Back_Delay -- Combines Call_Back() and WaitTicks()     *
+ *   Draw_Bar_Graphs -- Draw "Casualties" bar graphs * Draw_InfantryMan -- Draw
+ *one guy in score screen, update animation                        *
+ *   Draw_Infantrymen -- Draw all the guys on the score screen *
+ *   New_Infantry_Anim -- Start up a new animation for one of the infantrymen *
+ *   ScoreClass::Count_Up_Print -- Prints a number (up to its max) into a
+ *string, cleanly      * ScoreClass::Delay -- Pauses waiting for keypress. *
+ *   ScoreClass::DO_GDI_GRAPH -- Show # of people or buildings killed on GDI
+ *score screen      * ScoreClass::Show -- Main routine to display score
+ *screen.                         * ScoreClass::Print_Graph_Title -- Prints
+ *title on score screen.                            * ScoreClass::Print_Minutes
+ *-- Print out hours/minutes up to max                            *
+ *   ScoreClass::Pulse_Bar_Graph -- Pulses the bargraph color. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "td/screens/score.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <memory>
+#include <span>
+#include <string_view>
+#include <utility>
+
+#include "absl/log/check.h"
+#include "absl/strings/ascii.h"
+#include "absl/strings/str_format.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/bytes_of.h"
+#include "base/numeric.h"
+#include "base/random.h"
+#include "engine/audio/audio_mixer.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/palette.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/wsa_animation.h"
+#include "engine/gfx/wwstd.h"
+#include "engine/platform/timer.h"
+#include "engine/window/hardware_cursor.h"
+#include "engine/window/keyboard.h"
+#include "td/ai/special.h"
+#include "td/assets/assets.h"
+#include "td/assets/audio.h"
+#include "td/assets/interpal.h"
+#include "td/assets/palette.h"
+#include "td/assets/palettes.h"
+#include "td/assets/presentation.h"
+#include "td/assets/screen.h"
+#include "td/assets/theme.h"
+#include "td/core/defines.h"
+#include "td/core/jshell.h"
+#include "td/core/vector.h"
+#include "td/data/text.h"
+#include "td/editor/mapedit.h"
+#include "td/map/logic.h"
+#include "td/map/mouse.h"
+#include "td/map/world.h"
+#include "td/net/network.h"
+#include "td/net/nullmgr.h"
+#include "td/net/session.h"
+#include "td/objects/house.h"
+#include "td/objects/object.h"
+#include "td/objects/type.h"
+#include "td/screens/goptions.h"
+#include "td/startup/conquer.h"
+#include "td/startup/game_state.h"
+#include "td/startup/winstub.h"
+#include "td/ui/input.h"
+
+using engine::gfx::ShapeFlags;
+
+#define SCORETEXT_X 184
+// #define SCORETEXT_Y 8
+#define CASUALTY_Y 88
+#define BUILDING_X 256
+#define BUILDING_Y 128
+#define BARGRAPH_X 266
+#define MAX_BAR_X 318  // max possible is 319 because of bar's right shadow
+#define SIZEGBAR 119
+#define HALLFAME_X 19
+#define HALLFAME_Y 120
+
+// #define MULTISCOREX 30
+
+// #define TEDIT_FAME 1
+#define NUMINFANTRYMEN 15
+#define NUMFAMENAMES 7
+#define MAX_FAMENAME_LENGTH 12
+
+static struct InfantryAnim {
+  int xpos{};
+  int ypos{};
+  std::span<const std::byte> shapefile;
+  std::span<const uint8_t> remap;
+  int anim{};
+  int stage{};
+  char delay{};
+  const InfantryTypeClass* Class{};
+} InfantryMan[NUMINFANTRYMEN];
+static void Draw_InfantryMen();
+static void Draw_InfantryMan(PixelView& view, int index);
+static void New_Infantry_Anim(int index, int anim);
+static void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
+                            int ckilled);
+static void Animate_Cursor(Presentation& show, int pos, int ypos);
+static void Animate_Score_Objs();
+static void Cycle_Wait_Click(Presentation& show);
+
+static std::span<const std::byte> Beepy6;
+
+bool ControlQ;  // cheat key to skip past score/mapsel screens
+
+static bool StillUpdating;
+
+static unsigned char RemapCiv[256] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+    0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0xD0,
+    0x18, 0x19, 0xD1, 0xD2, 0xD3, 0xD4, 0x1E, 0xD5, 0x20, 0x21, 0x22, 0x23,
+    0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
+    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B,
+    0x3C, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
+    0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53,
+    0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F,
+    0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B,
+    0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
+    0x78, 0x79, 0xD6, 0xD7, 0xD8, 0xD9, 0x7E, 0xDA, 0x80, 0x81, 0x82, 0x83,
+    0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F,
+    0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B,
+    0x9C, 0x9D, 0x9E, 0x9F, 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+    0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3,
+    0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF,
+    0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB,
+    0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xDB,
+    0xDC, 0xDD, 0xDE, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xE0, 0xE1, 0xE2, 0xE3,
+    0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
+    0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB,
+    0xFC, 0xFD, 0xFE, 0xFF};
+
+const unsigned char ScoreRemapGrey[256] = {
+    0,   1,   2,   3,   4,   5,   6,   7,
+    8,   9,   10,  11,  12,  13,  14,  15,  // 0..15
+    16,  17,  18,  19,  20,  176, 22,  208,
+    24,  25,  209, 210, 211, 212, 30,  213,  // 16..31
+    32,  33,  34,  35,  36,  37,  38,  39,
+    40,  41,  42,  43,  44,  45,  46,  47,  // 32..47
+    48,  49,  50,  51,  52,  53,  54,  55,
+    56,  57,  58,  59,  60,  61,  62,  63,  // 48..63
+    64,  65,  66,  67,  68,  69,  70,  71,
+    72,  73,  74,  75,  76,  77,  78,  79,  // 64..79
+    80,  81,  82,  83,  84,  85,  86,  87,
+    88,  89,  90,  91,  92,  93,  94,  95,  // 80..95
+    96,  97,  98,  99,  100, 101, 102, 103,
+    104, 105, 106, 107, 108, 109, 110, 111,  // 96..111
+    112, 113, 114, 115, 116, 117, 118, 119,
+    120, 121, 214, 215, 216, 217, 149, 218,  // 112..127
+    128, 129, 130, 131, 132, 133, 134, 135,
+    136, 137, 138, 108, 140, 141, 142, 143,  // 128..143
+    144, 145, 146, 147, 148, 149, 150, 151,
+    152, 153, 154, 155, 156, 157, 158, 159,  // 144..159
+    160, 161, 162, 163, 164, 165, 166, 167,
+    168, 169, 170, 171, 172, 173, 174, 175,  // 160..175
+    192, 193, 194, 195, 196, 197, 198, 199,
+    200, 201, 202, 203, 204, 205, 206, 207,  // 176..191
+    192, 193, 194, 195, 196, 197, 198, 199,
+    200, 201, 202, 203, 204, 205, 206, 207,  // 192..207
+    208, 209, 210, 211, 212, 213, 214, 219,
+    220, 221, 222, 219, 220, 221, 222, 223,  // 208..223
+    224, 225, 226, 227, 228, 229, 230, 231,
+    232, 233, 234, 235, 236, 237, 238, 239,  // 224..239
+    240, 241, 242, 243, 244, 245, 246, 247,
+    248, 249, 250, 251, 252, 253, 254, 255  // 240..255
+};
+
+const unsigned char ScoreRemapYellow[256] = {
+    0,   1,   2,   3,   4,   5,   6,   7,
+    8,   9,   10,  11,  12,  13,  14,  15,  // 0..15
+    16,  17,  18,  19,  20,  176, 22,  208,
+    24,  25,  209, 210, 211, 212, 30,  213,  // 16..31
+    32,  33,  34,  35,  36,  37,  38,  39,
+    40,  41,  42,  43,  44,  45,  46,  47,  // 32..47
+    48,  49,  50,  51,  52,  53,  54,  55,
+    56,  57,  58,  59,  60,  61,  62,  63,  // 48..63
+    64,  65,  66,  67,  68,  69,  70,  71,
+    72,  73,  74,  75,  76,  77,  78,  79,  // 64..79
+    80,  81,  82,  83,  84,  85,  86,  87,
+    88,  89,  90,  91,  92,  93,  94,  95,  // 80..95
+    96,  97,  98,  99,  100, 101, 102, 103,
+    104, 105, 106, 107, 108, 109, 110, 111,  // 96..111
+    112, 113, 114, 115, 116, 117, 118, 119,
+    120, 121, 214, 215, 216, 217, 149, 218,  // 112..127
+    128, 129, 130, 131, 132, 133, 134, 135,
+    136, 137, 138, 108, 140, 141, 142, 143,  // 128..143
+    144, 145, 146, 147, 148, 149, 150, 151,
+    152, 153, 154, 155, 156, 157, 158, 159,  // 144..159
+    160, 161, 162, 163, 164, 165, 166, 167,
+    168, 169, 170, 171, 172, 173, 174, 175,  // 160..175
+    176, 177, 178, 179, 180, 181, 182, 183,
+    184, 185, 186, 187, 188, 189, 190, 191,  // 176..191
+    192, 193, 194, 195, 196, 197, 198, 199,
+    200, 201, 202, 203, 204, 205, 206, 207,  // 192..207
+    208, 209, 210, 211, 212, 213, 214, 219,
+    220, 221, 222, 219, 220, 221, 222, 223,  // 208..223
+    224, 225, 226, 227, 228, 229, 230, 231,
+    232, 233, 234, 235, 236, 237, 238, 239,  // 224..239
+    240, 241, 242, 243, 244, 245, 246, 247,
+    248, 249, 250, 251, 252, 253, 254, 255  // 240..255
+};
+
+const unsigned char ScoreRemapBldg[256] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+    0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+    0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23,
+    0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
+    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B,
+    0x3C, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
+    0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53,
+    0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F,
+    0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B,
+    0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0xCE, 0xC5, 0x49, 0x48, 0x47, 0x77,
+    0x78, 0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80, 0x81, 0xB8, 0x83,
+    0x7C, 0x7A, 0x76, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F,
+    0x74, 0x91, 0x92, 0x93, 0x94, 0x95, 0xB5, 0x97, 0x98, 0xCF, 0x4B, 0x7F,
+    0x9C, 0x9D, 0x9E, 0x9F, 0xA0, 0xA1, 0xA2, 0x83, 0x79, 0xA5, 0xA6, 0xA7,
+    0x43, 0x99, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3,
+    0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF,
+    0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB,
+    0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7,
+    0xBB, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xE0, 0xE1, 0xE2, 0xE3,
+    0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
+    0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB,
+    0xFC, 0xFD, 0xFE, 0xFF};
+const unsigned char ScoreRemapFBall[256] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
+    0x0C, 0x0D, 0x0E, 0x0F, 0xB0, 0xE5, 0x82, 0xE4, 0xE3, 0xE2, 0xB1, 0xD0,
+    0xE1, 0xE0, 0xD1, 0xD2, 0xD3, 0xD4, 0xDF, 0xD5, 0x20, 0x21, 0x22, 0x23,
+    0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0xE6, 0xE7, 0xA0, 0xE8, 0x2E, 0x2F,
+    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B,
+    0x3C, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
+    0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53,
+    0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F,
+    0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B,
+    0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
+    0x78, 0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80, 0x81, 0x82, 0x83,
+    0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F,
+    0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B,
+    0x9C, 0x9D, 0x9E, 0x9F, 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+    0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3,
+    0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF,
+    0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB,
+    0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7,
+    0xD8, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xE0, 0xE1, 0xE2, 0xE3,
+    0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
+    0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB,
+    0xFC, 0xFD, 0xFE, 0xFF};
+
+static const char* ScreenNames[2] = {"S-GDIIN2.WSA", "SCRSCN1.WSA"};
+
+struct Fame {
+  char name[MAX_FAMENAME_LENGTH];
+  int score;
+  int level;
+};
+
+std::unique_ptr<ScoreAnimClass> ScoreObjs[MAXSCOREOBJS];
+
+namespace {
+
+// Empties the ScoreObjs slot holding `obj`, which destroys it. A finished
+// animation calls this on itself as the last thing it does.
+void Remove_Score_Object(const ScoreAnimClass* obj) {
+  for (auto& score_obj : ScoreObjs) {
+    if (score_obj.get() == obj) {
+      score_obj.reset();
+      return;
+    }
+  }
+  DCHECK(false) << "score animation is not in ScoreObjs";
+}
+
+}  // namespace
+
+FontStyle ScoreFontStyle(const std::span<const uint8_t> palette) {
+  FontStyle style{.font = FontView(TheAssets().font(FontType::kScore))};
+  if (palette.size() >= style.palette.size()) {
+    std::ranges::copy(palette.first(style.palette.size()),
+                      style.palette.begin());
+  }
+  return style;
+}
+
+ScoreAnimClass::ScoreAnimClass(Presentation& show, int x, int y,
+                               std::span<const std::byte> data)
+    : XPos(x), YPos(y), DataPtr(data), show_(show) {
+}
+
+ScoreAnimClass::ScoreAnimClass(Presentation& show, int x, int y,
+                               const char* text)
+    : XPos(x), YPos(y), TextData(text), show_(show) {
+  show_.AddTextRect(x * 2, y * 2, x * 2, y * 2,
+                    2 * StringPixelWidth(ScoreFontStyle(), Text()), 16);
+
+}
+
+ScoreAnimClass::~ScoreAnimClass() = default;
+
+ScoreTimeClass::ScoreTimeClass(Presentation& show, int xpos, int ypos,
+                               std::span<const std::byte> data, int max,
+                               int timer)
+    : ScoreAnimClass(show, xpos, ypos, data), MaxStage(max), TimerReset(timer) {
+  Stage = 0;
+}
+
+void ScoreTimeClass::Update() {
+  if (!AnimTimer.Remaining()) {
+    AnimTimer.Set(TimerReset);
+    if (++Stage >= MaxStage) {
+      Stage = 0;
+    }
+    CC_Draw_Shape(show_.page().view(), DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
+                  ShapeFlags::kNone, {}, {});
+  }
+}
+
+ScoreCredsClass::ScoreCredsClass(Presentation& show, int xpos, int ypos,
+                                 std::span<const std::byte> data, int max,
+                                 int timer)
+    : ScoreAnimClass(show, xpos, ypos, data),
+      MaxStage(max),
+      TimerReset(timer),
+      CashTurn(MixArchive::RetrieveData("CASHTURN.AUD")),
+      Clock1(MixArchive::RetrieveData("CLOCK1.AUD")) {
+  Stage = 0;
+}
+
+void ScoreCredsClass::Update() {
+  if (!AnimTimer.Remaining()) {
+    AnimTimer.Set(TimerReset);
+    if (++Stage >= MaxStage) {
+      Stage = 0;
+    }
+    if (Stage < 22) {
+      engine::audio::TheAudio().Play(Clock1, 255,
+                                     TheOptions().Normalize_Sound(70));
+    } else {
+      if (Stage == 24) {
+        engine::audio::TheAudio().Play(CashTurn, 255,
+                                       TheOptions().Normalize_Sound(70));
+      }
+    }
+    CC_Draw_Shape(show_.page().view(), DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
+                  ShapeFlags::kNone, {}, {});
+  }
+}
+
+ScorePrintClass::ScorePrintClass(Presentation& show, int string, int xpos,
+                                 int ypos, std::span<const uint8_t> palette,
+                                 int background)
+    : ScoreAnimClass(show, xpos, ypos, Text_String(string)),
+      Background(background),
+      PrimaryPalette(palette) {
+  Stage = 0;
+}
+
+ScorePrintClass::ScorePrintClass(Presentation& show, const char* string,
+                                 int xpos, int ypos,
+                                 std::span<const uint8_t> palette,
+                                 int background)
+    : ScoreAnimClass(show, xpos, ypos, string),
+      Background(background),
+      PrimaryPalette(palette) {
+  Stage = 0;
+}
+
+void ScorePrintClass::Update() {
+  static char localstr[2] = {0, 0};
+  static const unsigned char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+                                            0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+                                            0x0F, 0x0F, 0x0F, 0x0F};
+
+  if (Stage && Text_At(Stage - 1) == 0) {
+    show_.AddTextRect(XPos * 2, YPos * 2, XPos * 2, YPos * 2, (Stage * 6) + 14,
+                      16);
+    Remove_Score_Object(this);  // Destroys this.
+    return;
+  }
+
+  StillUpdating = true;
+
+  if (!AnimTimer.Remaining()) {
+    AnimTimer.Set(1);
+
+    const int pos = XPos + (Stage * 6);
+    if (Stage) {
+      base::At(localstr, 0) = Text_At(Stage - 1);
+
+      /*
+      ** Clear out the white letter overlay
+      */
+      static const unsigned char _blackpal[] = {
+          kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack,
+          kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack};
+      const FontStyle black_font = ScoreFontStyle(_blackpal);
+      show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6),
+                                     2 * (YPos - 1), kTBlack, kTBlack);
+      show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6),
+                                     2 * (YPos + 1), kTBlack, kTBlack);
+      show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6 + 1),
+                                     2 * YPos, kTBlack, kTBlack);
+
+      const FontStyle primary_font = ScoreFontStyle(PrimaryPalette);
+      show_.text_page().view().Print(primary_font, localstr, 2 * (pos - 6),
+                                     2 * YPos, kTBlack, kTBlack);
+    }
+    if (Text_At(Stage)) {
+      base::At(localstr, 0) = Text_At(Stage);
+      const FontStyle white_font = ScoreFontStyle(_whitepal);
+      show_.text_page().view().Print(white_font, localstr, pos * 2,
+                                     2 * (YPos - 1), kTBlack, kTBlack);
+      show_.text_page().view().Print(white_font, localstr, pos * 2,
+                                     2 * (YPos + 1), kTBlack, kTBlack);
+      show_.text_page().view().Print(white_font, localstr, (pos + 1) * 2,
+                                     2 * YPos, kTBlack, kTBlack);
+    }
+    Stage++;
+  }
+}
+
+MultiStagePrintClass::MultiStagePrintClass(Presentation& show, int string,
+                                           int xpos, int ypos,
+                                           std::span<const uint8_t> palette,
+                                           int background)
+    : ScoreAnimClass(show, xpos, ypos, Text_String(string)),
+      Background(background),
+      PrimaryPalette(palette) {
+  Stage = 0;
+}
+
+MultiStagePrintClass::MultiStagePrintClass(Presentation& show,
+                                           const char* string, int xpos,
+                                           int ypos,
+                                           std::span<const uint8_t> palette,
+                                           int background)
+    : ScoreAnimClass(show, xpos, ypos, string),
+      Background(background),
+      PrimaryPalette(palette) {
+  Stage = 0;
+}
+
+void MultiStagePrintClass::Update() {
+  static char localstr[2] = {0, 0};
+  static const unsigned char _whitepal[] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+                                            0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+                                            0x0F, 0x0F, 0x0F, 0x0F};
+
+  if (Stage && Text_At(Stage - 1) == 0) {
+    show_.AddTextRect(XPos * 2, YPos * 2, XPos * 2, YPos * 2, (Stage * 6) + 14,
+                      16);
+    Remove_Score_Object(this);  // Destroys this.
+    return;
+  }
+
+  StillUpdating = true;
+
+  if (!AnimTimer.Remaining()) {
+    AnimTimer.Set(1);
+
+    /*
+    ** Do 10 stages at once
+    */
+    for (int wibble = 0; wibble < 10; wibble++) {
+      const int pos = XPos + (Stage * 6);
+      if (Stage) {
+        base::At(localstr, 0) = Text_At(Stage - 1);
+
+        /*
+        ** Clear out the white letter overlay
+        */
+        static const unsigned char _blackpal[] = {
+            kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack,
+            kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack};
+        const FontStyle black_font = ScoreFontStyle(_blackpal);
+        show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6),
+                                       2 * (YPos - 1), kTBlack, kTBlack);
+        show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6),
+                                       2 * (YPos + 1), kTBlack, kTBlack);
+        show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6 + 1),
+                                       2 * YPos, kTBlack, kTBlack);
+
+        const FontStyle primary_font = ScoreFontStyle(PrimaryPalette);
+        show_.text_page().view().Print(primary_font, localstr, 2 * (pos - 6),
+                                       2 * YPos, kTBlack, kTBlack);
+      }
+      if (Text_At(Stage)) {
+        base::At(localstr, 0) = Text_At(Stage);
+        const FontStyle white_font = ScoreFontStyle(_whitepal);
+        show_.text_page().view().Print(white_font, localstr, pos * 2,
+                                       2 * (YPos - 1), kTBlack, kTBlack);
+        show_.text_page().view().Print(white_font, localstr, pos * 2,
+                                       2 * (YPos + 1), kTBlack, kTBlack);
+        show_.text_page().view().Print(white_font, localstr, (pos + 1) * 2,
+                                       2 * YPos, kTBlack, kTBlack);
+      }
+      Stage++;
+
+      if (Text_At(Stage - 1) == 0) {
+        break;
+      }
+    }
+  }
+}
+
+ScoreScaleClass::ScoreScaleClass(Presentation& show, const char* string,
+                                 int xpos, int ypos,
+                                 std::span<const uint8_t> palette)
+    : ScoreAnimClass(show, xpos, ypos, string), Palette(palette) {
+  Stage = 5;
+}
+
+void ScoreScaleClass::Update() {
+  static const int _destx[] = {0, 80, 107, 134, 180, 228};
+  static const int _destw[] = {6, 20, 30, 40, 60, 80};
+
+  /*
+  ** Restore the background for the scaled-up letter
+  */
+  if (!AnimTimer.Remaining()) {
+    AnimTimer.Set(1);
+    if (Stage != 5) {
+      show_.text_page().view().BlitTo(
+          TheScreen().hidden_view(), base::At(_destx, Stage + 1) * 2, YPos * 2,
+          base::At(_destx, Stage + 1) * 2, YPos * 2,
+          base::At(_destw, Stage + 1) * 2, base::At(_destw, Stage + 1) * 2);
+      // SysMemPage.Blit(*PseudoSeenBuff, _destx[Stage+1], YPos,
+      // _destx[Stage+1], YPos, _destw[Stage+1], _destw[Stage+1]);
+    }
+    if (Stage) {
+      const FontStyle font = ScoreFontStyle(Palette);
+      show_.text_page().view().FillRect(0, 0, 14, 14, kTBlack);
+      show_.text_page().view().Print(font, Text(), 0, 0, kTBlack, kTBlack);
+      show_.text_page().view().Scale(TheScreen().hidden_view(), 0, 0,
+                                     base::At(_destx, Stage) * 2, YPos * 2, 10,
+                                     10, base::At(_destw, Stage) * 2,
+                                     base::At(_destw, Stage) * 2, true);
+
+      // SysMemPage.FillRect(0,0, 7,7, TBLACK);
+      // SysMemPage.Print((char *)DataPtr, 0,0,   TBLACK, TBLACK);
+      // SysMemPage.Scale(*PseudoSeenBuff, 0,0, _destx[Stage], YPos, 5,5,
+      // _destw[Stage], _destw[Stage], true);
+      Stage--;
+    } else {
+      const FontStyle font = ScoreFontStyle(Palette);
+      show_.text_page().view().Print(font, Text(), XPos * 2, YPos * 2, kTBlack,
+                                     kTBlack);
+      // TextPrintBuffer->Blit(HidPage, XPos * 2, YPos * 2, XPos
+      // * 2, YPos * 2,2 * 6, 2 * 6);
+      // BlitList.Add (XPos, YPos, XPos, YPos, 6,6);
+
+      // SysMemPage.Print((char *)DataPtr, XPos,YPos,   TBLACK, TBLACK);
+      // SysMemPage.Blit(*PseudoSeenBuff, XPos,YPos, XPos, YPos, 6,6);
+      Remove_Score_Object(this);  // Destroys this.
+      return;
+    }
+  }
+}
+
+int Alloc_Object(std::unique_ptr<ScoreAnimClass> obj) {
+  for (int i = 0; i < MAXSCOREOBJS; i++) {
+    if (!base::At(ScoreObjs, i)) {
+      base::At(ScoreObjs, i) = std::move(obj);
+      return i;
+    }
+  }
+  return 0;
+}
+
+void Clear_Score_Objects() {
+  for (int i = 0; i < MAXSCOREOBJS; i++) {
+    base::At(ScoreObjs, i).reset();
+  }
+}
+
+/***********************************************************************************************
+ * ScoreClass::Show -- Main routine to display score screen. *
+ *                                                                                             *
+ *    This is the main routine that displays the score screen graphics. * It
+ *gets called at the end of each scenario and is used to present * the results
+ *and a rating of the player's battle.                                         *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/02/1994     : Created. *
+ *=============================================================================================*/
+void ScoreClass::Show() {
+  // static char const
+  // _redpal[]={0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,0x2A,0x2B,0x2C,0x2D,0x21,0x2F};
+  static const unsigned char redpal[] = {0x20, 0x22, 0x24, 0x26, 0x28, 0x28,
+                                         0x28, 0x28, 0x28, 0x29, 0x2A, 0x2B,
+                                         0x2C, 0x2D, 0x21, 0x2F};
+  static const unsigned char greenpal[] = {0x10, 0x12, 0x14, 0x16, 0x18, 0x18,
+                                           0x18, 0x18, 0x18, 0x19, 0x1A, 0x1B,
+                                           0x1C, 0x1D, 0x10, 0x1F};
+  static const unsigned char bluepal[] = {0x60, 0x62, 0x64, 0x66, 0x68, 0x68,
+                                          0x68, 0x68, 0x68, 0x69, 0x6A, 0x6B,
+                                          0x6C, 0x6D, 0x61, 0x6F};
+  // static char const
+  // _bluepal[]={0x60,0x61,0x62,0x63,0x64,0x65,0x66,0x67,0x68,0x69,0x6A,0x6B,0x6C,0x6D,0x61,0x6F};
+  static const unsigned char yellowpal[] = {0x0,  0x0, 0xEC, 0x0, 0xEB, 0x0,
+                                            0xEA, 0x0, 0xE9, 0x0, 0x0,  0x0,
+                                            0x0,  0x0, 0xED, 0x0};
+  static const int _casuax[2] = {144, 146};
+  static const int _casuay[2] = {78, 90};
+  static const int _gditxx[2] = {150, 224};
+  static const int _gditxy[2] = {90, 90};
+  static const int _nodtxx[2] = {150, 224};
+  static const int _nodtxy[2] = {102, 102};
+  //	static int _bargrx[2]={297,SCORETEXT_X+64};
+  //	static int _bargry[2]={ 90,CASUALTY_Y + 2};
+  static const int _bldggy[2] = {138, 128};
+  static const int _bldgny[2] = {150, 140};
+
+  //	int gdikilled, nodkilled, civkilled, max, i, k, shapenum;
+  int i = 0;
+  int max = 0;
+  std::span<const std::byte> yellowptr = {};
+  std::span<const std::byte> redptr = {};
+  struct Fame hallfame[NUMFAMENAMES] = {};
+  const HousesType player_house = ThePlayer()->Class->House;
+  const int house = static_cast<int>(player_house);  // 0 or 1
+  char inter_pal[15];
+
+  /*
+  ** Choose an appropriate palette file for the interpolation
+  */
+  if (player_house == HOUSE_GOOD) {
+    absl::SNPrintF(inter_pal, sizeof(inter_pal), "SCORPAL1.PAL");
+  } else {
+    absl::SNPrintF(inter_pal, sizeof(inter_pal), "SNODPAL1.PAL");
+  }
+
+  if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
+    return;
+  }
+
+  Presentation show;
+
+  ControlQ = false;
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
+  TheTheme().Queue_Song(THEME_WIN1);
+
+  TheScreen().visible_page().view().Clear();
+  show.page().view().Clear();
+  TheScreen().sys_mem_page().view().Clear();
+  TheScreen().hidden_page().view().Clear();
+  Set_Palette(ThePalettes().black_palette());
+
+  const auto country4 = MixArchive::RetrieveData("COUNTRY4.AUD");
+  const auto sfx4 = MixArchive::RetrieveData("SFX4.AUD");
+  Beepy6 = MixArchive::RetrieveData("BEEPY6.AUD");
+
+  /*
+  ** Load the background for the score screen
+  */
+  WsaAnimation anim(base::At(ScreenNames, house),
+                    &ThePalettes().title_palette());
+
+  const int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
+
+  /*
+  **	Determine leadership rating.
+  */
+  int leadership = 0;
+  for (int index = 0; index < TheWorld().logic().Count(); index++) {
+    const ObjectClass* object = TheWorld().logic().at(index);
+    if (object->Owner() == player_house) {
+      leadership++;
+    }
+  }
+
+  HouseClass* houses[3];
+  for (int index = 0; index < 3; index++) {
+    base::At(houses, index) = HouseClass::As_Pointer(
+        static_cast<HousesType>(static_cast<int>(HOUSE_GOOD) + index));
+  }
+
+  GKilled = static_cast<int>(HouseClass::As_Pointer(HOUSE_GOOD)->UnitsLost);
+  NKilled = static_cast<int>(HouseClass::As_Pointer(HOUSE_BAD)->UnitsLost);
+  CKilled = static_cast<int>(HouseClass::As_Pointer(HOUSE_NEUTRAL)->UnitsLost);
+  GBKilled =
+      static_cast<int>(HouseClass::As_Pointer(HOUSE_GOOD)->BuildingsLost);
+  NBKilled = static_cast<int>(HouseClass::As_Pointer(HOUSE_BAD)->BuildingsLost);
+  CBKilled =
+      static_cast<int>(HouseClass::As_Pointer(HOUSE_NEUTRAL)->BuildingsLost);
+
+  /*
+  ** New  - ST 6/12/96 2:40PM
+  */
+  GHarvested = HouseClass::As_Pointer(HOUSE_GOOD)->HarvestedCredits;
+  NHarvested = HouseClass::As_Pointer(HOUSE_BAD)->HarvestedCredits;
+
+  if (!leadership) {
+    leadership++;
+  }
+  leadership = Cardinal_To_Fixed(GKilled + GBKilled + leadership, leadership);
+  leadership = Fixed_To_Cardinal(100, leadership);
+  leadership = std::min(leadership, 100);
+
+  /*
+  **	Determine efficiency rating.
+  */
+  int efficiency =
+      Cardinal_To_Fixed((player_house == HOUSE_GOOD ? GHarvested : NHarvested) +
+                            static_cast<int>(ThePlayer()->InitialCredits) + 1,
+                        static_cast<int>(ThePlayer()->Available_Money()) + 1);
+  if (!efficiency) {
+    efficiency++;
+  }
+  efficiency = Fixed_To_Cardinal(100, efficiency);
+
+  efficiency = std::min(efficiency, 100);
+  /*
+  ** Calculate total score
+  */
+  int total = ((leadership * 40) + 4600 + (efficiency * 14)) / 100;
+  if (!total) {
+    total++;
+  }
+  total *= TheWorld().build_level() + 1;
+
+  // Load up the shapes for the Nod score screen
+  if (player_house == HOUSE_GOOD) {
+    yellowptr = MixArchive::RetrieveData("BAR3YLW.SHP");
+    redptr = MixArchive::RetrieveData("BAR3RED.SHP");
+  }
+
+  /* Change to the six-point font for Text_Print */
+  Call_Back();
+
+  /* --- Now display the background animation --- */
+  TheMouse().Hide();
+  anim.DrawFrame(TheScreen().sys_mem_page().view(), 1);
+  TheScreen().sys_mem_page().view().BlitTo(show.page().view());
+  engine::gfx::BrightenPalette(ThePalettes().title_palette(), 30, 30, 30);
+
+  Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), inter_pal);
+  Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteFast, Call_Back);
+
+  engine::audio::TheAudio().Play(country4, 255,
+                                 TheOptions().Normalize_Sound(90));
+
+  int frame = 1;
+  while (frame < anim.frame_count()) {
+    anim.DrawFrame(show.page().view(), frame++);
+    ////////////////Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
+    Call_Back_Delay(show, 2);
+  }
+  Call_Back();
+  anim.Close();
+
+  /*
+  ** Background's up, so now load various shapes and animations
+  */
+  const auto timeshape = MixArchive::RetrieveData("TIME.SHP");
+  base::At(ScoreObjs, 0) =
+      std::make_unique<ScoreTimeClass>(show, 233, 2, timeshape, 30, 4);
+
+  const auto hiscore1shape = MixArchive::RetrieveData("HISCORE1.SHP");
+  const auto hiscore2shape = MixArchive::RetrieveData("HISCORE2.SHP");
+  base::At(ScoreObjs, 1) =
+      std::make_unique<ScoreTimeClass>(show, 4, 97, hiscore1shape, 10, 4);
+  base::At(ScoreObjs, 2) =
+      std::make_unique<ScoreTimeClass>(show, 8, 172, hiscore2shape, 10, 4);
+
+  /* Now display the stuff */
+  show.page().view().BlitTo(TheScreen().sys_mem_page().view());
+
+  if (player_house == HOUSE_BAD) {
+    /*
+    ** load the logo
+    */
+    const auto logoptr = MixArchive::RetrieveData("LOGOS.SHP");
+    CC_Draw_Shape(TheScreen().sys_mem_page().view(), logoptr, 1, 0, 0,
+                  WINDOW_MAIN, ShapeFlags::kNone, {}, {});
+
+    Bit_It_In(show, 0, 0, 128, 104 - 16, &TheScreen().sys_mem_page(),
+              &show.page(), 1);
+  }
+
+#ifdef FRENCH
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_TIME, 200, 3,
+                                                 greenpal));
+#else
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_TIME, 206, 3,
+                                                 greenpal));
+#endif
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_LEAD, 182, 26,
+                                                 greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_EFFI, 182, 38,
+                                                 greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_TOTA, 182, 50,
+                                                 greenpal));
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(120));
+  Call_Back_Delay(show, 13);
+
+  max = static_cast<int>(std::max(static_cast<int32_t>(leadership),
+                                  static_cast<int32_t>(efficiency)));
+  int scorecounter = 0;
+  TheKeyboard().Clear();
+
+  show.AddTextRect(528, 52, 528, 52, 4 * 12, 12);
+  show.AddTextRect(528, 76, 528, 76, 4 * 12, 12);
+  show.AddTextRect(528, 100, 528, 100, 4 * 12, 12);
+  show.AddTextRect(550, 18, 550, 18, 64, 12);  // Minutes
+  const FontStyle font = ScoreFontStyle(greenpal);
+  for (i = 0; i <= 160; i++) {
+    Count_Up_Print(show, font, "%3d%%", i, leadership, 264, 26);
+    if (i >= 30) {
+      Count_Up_Print(show, font, "%3d%%", i - 30, efficiency, 264, 38);
+    }
+    if (i >= 60) {
+      Count_Up_Print(show, font, "%3d", scorecounter, total, 264, 50);
+      scorecounter = scorecounter + (total / 100);
+    }
+    Print_Minutes(show, font, minutes);
+    Call_Back_Delay(show, 1);
+    engine::audio::TheAudio().Play(Beepy6, 255,
+                                   TheOptions().Normalize_Sound(60));
+    if (TheKeyboard().Peek() && i < max - 5) {
+      i = 158;
+      TheKeyboard().Clear();
+    }
+  }
+  Count_Up_Print(show, font, "%3d", total, total, 264, 50);
+
+  Call_Back_Delay(show, 60);
+
+  if (player_house == HOUSE_BAD) {
+    Show_Credits(show, house, greenpal);
+  }
+
+  Call_Back_Delay(show, 60);
+
+  /*
+  ** Show stats on # of units killed
+  */
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_SCORE_CASU, base::At(_casuax, house), base::At(_casuay, house),
+      redpal));
+  Call_Back_Delay(show, 9);
+  if (player_house == HOUSE_BAD) {
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_NEUT, 200,
+                                                   114, redpal));
+    Call_Back_Delay(show, 4);
+  }
+
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_SCORE_GDI, base::At(_gditxx, house), base::At(_gditxy, house),
+      redpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_SCORE_NOD, base::At(_nodtxx, house), base::At(_nodtxy, house),
+      redpal));
+  Call_Back_Delay(show, 6);
+
+  if (player_house == HOUSE_BAD) {
+    Do_Nod_Casualties_Graph(show, ScoreFontStyle(redpal));
+  } else {
+    Do_GDI_Graph(show, ScoreFontStyle(redpal), yellowptr, redptr,
+                 GKilled + CKilled, NKilled, 88);
+  }
+
+  /*
+  ** Print out stats on buildings destroyed
+  */
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
+  if (player_house == HOUSE_GOOD) {
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_BUIL, 144,
+                                                   126, greenpal));
+    Call_Back_Delay(show, 9);
+  } else {
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_BUIL1, 146,
+                                                   128, greenpal));
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_BUIL2, 146,
+                                                   136, greenpal));
+    Call_Back_Delay(show, 9);
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_SCORE_NEUT, 200,
+                                                   152, greenpal));
+    Call_Back_Delay(show, 4);
+  }
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_SCORE_GDI, base::At(_gditxx, house), base::At(_bldggy, house),
+      greenpal));
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_SCORE_NOD, base::At(_gditxx, house), base::At(_bldgny, house),
+      greenpal));
+  Call_Back_Delay(show, 7);
+
+  if (player_house == HOUSE_BAD) {
+    Call_Back_Delay(show, 6);
+    Do_Nod_Buildings_Graph(show, ScoreFontStyle(greenpal));
+  } else {
+    Do_GDI_Graph(show, ScoreFontStyle(greenpal), yellowptr, redptr,
+                 GBKilled + CBKilled, NBKilled, 136);
+  }
+
+  // Wait for text printing to complete
+  while (StillUpdating) {
+    Call_Back_Delay(show, 1);
+  }
+
+  if (TheKeyboard().Peek()) {
+    TheKeyboard().Clear();
+  }
+
+  if (player_house == HOUSE_GOOD) {
+    Show_Credits(show, house, greenpal);
+  }
+
+  /*
+  ** Hall of fame display and processing
+  */
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
+  Alloc_Object(
+      std::make_unique<ScorePrintClass>(show, TXT_SCORE_TOP, 28, 110, bluepal));
+  Call_Back_Delay(show, 9);
+
+  /*
+  ** First check for the existence of the file, and if there isn't one,
+  ** make a new one filled with blanks.
+  */
+  if (!GameFileExists("HALLFAME.DAT")) {
+    // hall of fame doesn't exist, so blank it out & write it. The blanking
+    // has to happen even if the write below fails (a read-only directory,
+    // say): hallfame is used unconditionally further down, and it must not
+    // contain whatever value-initialization or the stack left behind.
+    for (i = 0; i < NUMFAMENAMES; i++) {
+      base::At(base::At(hallfame, i).name, 0) = static_cast<char>(
+          base::At(hallfame, i).score = base::At(hallfame, i).level = 0);
+    }
+    if (const auto out = OpenGameFile("HALLFAME.DAT", FileAccess::kWrite)) {
+      for (i = 0; i < NUMFAMENAMES; i++) {
+        out->WriteObject(base::At(hallfame, i));
+      }
+    }
+  }
+
+  if (const auto in = OpenGameFile("HALLFAME.DAT")) {
+    for (i = 0; i < NUMFAMENAMES; i++) {
+      in->ReadObject(base::At(hallfame, i));
+    }
+  }
+
+  /*
+  ** If the player's score is good enough to bump someone off the list,
+  ** remove their data, move everyone down a notch, and set index = where
+  ** their info goes
+  */
+  if (base::At(hallfame, NUMFAMENAMES - 1).score >= total) {
+    base::At(hallfame, NUMFAMENAMES - 1).score = 0;
+  }
+  int index = 0;
+  for (index = 0; index < NUMFAMENAMES; index++) {
+    if (total > base::At(hallfame, index).score) {
+      if (index < NUMFAMENAMES - 1) {
+        for (i = NUMFAMENAMES - 1; i > index; i--) {
+          base::At(hallfame, i) = base::At(hallfame, i - 1);
+        }
+      }
+      base::At(hallfame, index).score = total;
+      base::At(hallfame, index).level = TheWorld().scenario();
+      //			hallfame[index].level = BuildLevel;
+      // hallfame[index].name[0] = 0;	// blank out the name
+      base::FillBytes(base::ObjectBytes(base::At(hallfame, index).name), ' ',
+                      sizeof(base::At(hallfame, index).name) - 1);
+      base::At(base::At(hallfame, index).name,
+               sizeof(base::At(hallfame, index).name) - 1) = 0;
+      break;
+    }
+  }
+
+  /*
+  ** Now display the hall of fame
+  */
+
+  for (int j = 0; j < NUMFAMENAMES; j++) {
+    Alloc_Object(std::make_unique<ScorePrintClass>(
+        show, base::At(hallfame, j).name, HALLFAME_X, HALLFAME_Y + (j * 8),
+        bluepal));
+    if (base::At(hallfame, j).score) {
+      const auto str = base::CharBytes(TheScreen().sys_mem_page().bytes())
+                           .subspan(base::ToSize(j) * 32, 32);
+      absl::SNPrintF(str.data(), 16, "%d", base::At(hallfame, j).score);
+      Alloc_Object(std::make_unique<ScorePrintClass>(
+          show, str.data(), HALLFAME_X + (6 * 15), HALLFAME_Y + (j * 8),
+          bluepal, kBlack));
+      if (base::At(hallfame, j).level < 20) {
+        absl::SNPrintF(str.subspan(16).data(), 16, "%d",
+                       base::At(hallfame, j).level);
+      } else {
+        absl::SNPrintF(str.subspan(16).data(), 16, "**");
+      }
+      Alloc_Object(std::make_unique<ScorePrintClass>(
+          show, str.subspan(16).data(), HALLFAME_X + (6 * 12),
+          HALLFAME_Y + (j * 8), bluepal, kBlack));
+      Call_Back_Delay(show, 13);
+    }
+  }
+
+  // Wait for text printing to complete
+  while (StillUpdating) {
+    Call_Back_Delay(show, 1);
+  }
+
+  /*
+  ** If the player's on the hall of fame, have him enter his name now
+  */
+  TheKeyboard().Clear();
+  if (index < NUMFAMENAMES) {
+    Input_Name(show, base::At(hallfame, index).name, HALLFAME_X,
+               HALLFAME_Y + (index * 8), bluepal);
+
+    if (const auto out = OpenGameFile("HALLFAME.DAT", FileAccess::kWrite)) {
+      for (i = 0; i < NUMFAMENAMES; i++) {
+        out->WriteObject(base::At(hallfame, i));
+      }
+    }
+  } else {
+#ifdef FRENCH
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_CLICK2, 145,
+                                                   190, yellowpal));
+#else
+    Alloc_Object(std::make_unique<ScorePrintClass>(show, TXT_MAP_CLICK2, 149,
+                                                   190, yellowpal));
+#endif
+    Cycle_Wait_Click(show);
+  }
+
+  TheKeyboard().Clear();
+
+  /* get rid of all the animating objects */
+  Clear_Score_Objects();
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteFast, nullptr);
+  TheScreen().visible_page().view().Clear();
+
+  TheMouse().Show();
+  //	Map_Selection();
+
+  TheTheme().Queue_Song(THEME_NONE);
+
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteFast, nullptr);
+  TheScreen().visible_page().view().Clear();
+  Set_Palette(ThePalettes().game_palette());
+
+  ControlQ = false;
+}
+
+void Cycle_Wait_Click(Presentation& show) {
+  int counter = 0;
+  int minclicks = 20;
+  int64_t timingtime = engine::platform::SystemTicks();
+  SerialPacketType sendpacket{.Command = SERIAL_SCORE_SCREEN,
+                              .Name = {},
+                              .Version = 0,
+                              .House = HOUSE_NONE,
+                              .Color = 0,
+                              .Scenario = 0,
+                              .Credits = 0,
+                              .IsBases = 0,
+                              .IsTiberium = 0,
+                              .IsGoodies = 0,
+                              .IsGhosties = 0,
+                              .BuildLevel = 0,
+                              .UnitCount = 0,
+                              .Seed = 0,
+                              .Special = {},
+                              .GameSpeed = 0,
+                              .ResponseTime = 0,
+                              .Message = {},
+                              .ID = 0};
+  SerialPacketType receivepacket{.Command = SERIAL_LAST_COMMAND,
+                                 .Name = {},
+                                 .Version = 0,
+                                 .House = HOUSE_NONE,
+                                 .Color = 0,
+                                 .Scenario = 0,
+                                 .Credits = 0,
+                                 .IsBases = 0,
+                                 .IsTiberium = 0,
+                                 .IsGoodies = 0,
+                                 .IsGhosties = 0,
+                                 .BuildLevel = 0,
+                                 .UnitCount = 0,
+                                 .Seed = 0,
+                                 .Special = {},
+                                 .GameSpeed = 0,
+                                 .ResponseTime = 0,
+                                 .Message = {},
+                                 .ID = 0};
+  int packetlen = 0;
+
+  TheKeyboard().Clear();
+  while (minclicks || (!TheKeyboard().Peek() && !ControlQ)) {
+    if (TheSession().type() == GAME_NULL_MODEM ||
+        TheSession().type() == GAME_MODEM) {
+      // GameToPlay == GAME_INTERNET) {
+
+      //
+      // send a timing packet if enough time has gone by.
+      //
+      if (engine::platform::SystemTicks() - timingtime >
+          PACKET_TIMING_TIMEOUT) {
+        sendpacket.Command = SERIAL_SCORE_SCREEN;
+        sendpacket.ResponseTime =
+            static_cast<uint32_t>(TheNetwork().null_modem().Response_Time());
+        sendpacket.ID =
+            static_cast<unsigned char>(TheNetwork().modem_game_type());
+
+        TheNetwork().null_modem().Send_Message(base::ObjectBytes(sendpacket),
+                                               sizeof(sendpacket), 0);
+        timingtime = engine::platform::SystemTicks();
+      }
+
+      if (TheNetwork().null_modem().Get_Message(
+              base::ObjectBytes(receivepacket), &packetlen) > 0) {
+        // throw packet away
+      }
+
+      TheNetwork().null_modem().Service();
+    }
+
+    Call_Back_Delay(show, 1);
+    if (minclicks) {
+      minclicks--;
+      TheKeyboard().Clear();
+    }
+
+    counter = (counter + 1) % 8;
+
+    if (counter == 0) {
+      // Colors 233..237 each move down one entry and the first wraps to the
+      // last.
+      const auto cycle = ThePalettes().title_palette().colors().subspan(233, 5);
+      std::ranges::rotate(cycle, cycle.begin() + 1);
+
+      Set_Palette(ThePalettes().title_palette());
+    }
+  }
+  TheKeyboard().Clear();
+}
+
+// Not const: plays the score screen animation.
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
+                                        const FontStyle& font) {
+  const auto factptr = MixArchive::RetrieveData("FACT.SHP");
+  const auto rmboptr = MixArchive::RetrieveData("RMBO.SHP");
+  const auto fball1ptr = MixArchive::RetrieveData("FBALL1.SHP");
+  const InfantryTypeClass* ramboclass =
+      &InfantryTypeClass::As_Reference(INFANTRY_E5);
+
+  /*
+  ** Print the # of buildings on the hidpage so we only need to do it once
+  */
+  PixelView& view = TheScreen().sys_mem_page().view();
+  show.page().view().BlitTo(view);
+  Call_Back_Delay(show, 30);
+  show.AddTextRect(2 * (BUILDING_X + 8), 2 * BUILDING_Y, 2 * (BUILDING_X + 8),
+                   2 * BUILDING_Y, 5 * 12, 12);
+  show.AddTextRect(2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 12),
+                   2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 12), 5 * 12, 12);
+  show.AddTextRect(2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 24),
+                   2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 24), 5 * 12, 12);
+
+  show.text_page().view().Print(font, 0, (BUILDING_X + 8) * 2, BUILDING_Y * 2,
+                                kTBlack, kTBlack);
+  show.text_page().view().Print(font, 0, (BUILDING_X + 8) * 2,
+                                (BUILDING_Y + 12) * 2, kTBlack, kTBlack);
+  show.text_page().view().Print(font, 0, (BUILDING_X + 8) * 2,
+                                (BUILDING_Y + 24) * 2, kTBlack, kTBlack);
+
+  /*
+  ** Here's the animation/draw loop for blowing up the factory
+  */
+  for (int i = 0; i < 98; i++) {
+    TheScreen().sys_mem_page().view().BlitTo(TheScreen().sys_mem_page().view(),
+                                             BUILDING_X, BUILDING_Y, 0, 0,
+                                             320 - BUILDING_X, 48);
+    int shapenum = 0;  // no damage
+    if (i >= 60) {
+      shapenum = engine::gfx::CountShapeFrames(factptr) - 2;  // some damage
+      if (i == 60) {
+        ShakeScreen(6);
+        Sound_Effect(VOC_CRUMBLE, VOL_FULL, 0);
+      }
+      if (i > 65) {
+        shapenum = engine::gfx::CountShapeFrames(factptr) - 1;  // mega damage
+      }
+    }
+
+    /*
+    ** Draw the building before Rambo
+    */
+    if (i < 68) {
+      CC_Draw_Shape(view, factptr, shapenum, 0, 0, WINDOW_MAIN,
+                    ShapeFlags::kFading, ScoreRemapBldg,
+                    MouseClass::UnitShadow);
+    }
+
+    /*
+    ** Now draw some fires, if appropriate
+    */
+    if (i >= 61) {
+      const int firecount = engine::gfx::CountShapeFrames(fball1ptr);
+      int shapeindex = (i - 61) / 2;
+      if (shapeindex < firecount) {
+        CC_Draw_Shape(
+            view, fball1ptr, shapeindex, 10, 10, WINDOW_MAIN,
+            ShapeFlags::kFading | ShapeFlags::kCentered,  //|ShapeFlags::kGhost,
+            ScoreRemapFBall, {});
+      }
+      if (i > 64) {
+        shapeindex = (i - 64) / 2;
+        if (shapeindex < firecount) {
+          CC_Draw_Shape(view, fball1ptr, shapeindex, 50, 30, WINDOW_MAIN,
+                        ShapeFlags::kFading |
+                            ShapeFlags::kCentered,  //|ShapeFlags::kGhost,
+                        ScoreRemapFBall, {});
+        }
+      }
+    }
+    /*
+    ** Draw the Rambo character running away from the building
+    */
+    CC_Draw_Shape(
+        view, rmboptr,
+        ramboclass->DoControls.at(DO_WALK).Frame +
+            (ramboclass->DoControls.at(DO_WALK).Jump * 6) +
+            ((i / 2) % ramboclass->DoControls.at(DO_WALK).Count),
+        i + 32, 40, WINDOW_MAIN,
+        ShapeFlags::kFading | ShapeFlags::kCentered,  //|ShapeFlags::kGhost,
+        ScoreRemapYellow, MouseClass::UnitShadow);
+    TheScreen().sys_mem_page().view().BlitTo(
+        show.page().view(), 0, 0, BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48);
+
+    /*
+    ** Extra font related stuff. ST - 7/29/96 2:22PM
+    */
+    Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
+    show.DrawTextRects();
+    TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
+    // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
+
+    if (!TheKeyboard().Peek()) {
+      Call_Back_Delay(show, 1);
+    }
+  }
+
+  int i = std::max(GBKilled, NBKilled);
+  i = std::max(i, CBKilled);
+
+  for (int q = 0; q <= i; q++) {
+    Count_Up_Print(show, font, "%d", q, GBKilled, BUILDING_X + 8, BUILDING_Y);
+    Count_Up_Print(show, font, "%d", q, NBKilled, BUILDING_X + 8,
+                   BUILDING_Y + 12);
+    Count_Up_Print(show, font, "%d", q, CBKilled, BUILDING_X + 8,
+                   BUILDING_Y + 24);
+    if (!TheKeyboard().Peek()) {
+      engine::audio::TheAudio().Play(Beepy6, 255,
+                                     TheOptions().Normalize_Sound(110));
+      Call_Back_Delay(show, 1);
+    }
+  }
+}
+
+/***************************************************************************
+ * DO_GDI_GRAPH -- Show # of people or buildings killed on GDI score screen*
+ *                                                                         *
+ *                                                                         *
+ *                                                                         *
+ * INPUT:   yellowptr, redptr = pointers to shape file for graphs          *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   05/03/1995 BWG : Created.                                             *
+ *=========================================================================*/
+
+void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
+                              std::span<const std::byte> yellowptr,
+                              std::span<const std::byte> redptr, int gkilled,
+                              int nkilled, int ypos) {
+  int gdikilled = gkilled;
+  int nodkilled = nkilled;
+
+  int max = std::max(gdikilled, nodkilled);
+  if (!max) {
+    max = 1;
+  }
+
+  gdikilled = gdikilled * SIZEGBAR / max;
+  nodkilled = nodkilled * SIZEGBAR / max;
+  if (max < 20) {
+    gdikilled = gkilled * 5;
+    nodkilled = nkilled * 5;
+  }
+
+  max = std::max(gdikilled, nodkilled);
+  if (!max) {
+    max = 1;
+  }
+
+  // Draw the white-flash shape on the hidpage
+  TheScreen().sys_mem_page().view().FillRect(0, 0, 124, 9, kTBlack);
+  CC_Draw_Shape(TheScreen().sys_mem_page().view(), redptr, 120, 0, 0,
+                WINDOW_MAIN, ShapeFlags::kNone, {}, {});
+
+  // Everything below draws the bars themselves, onto the pseudo seen page.
+  PixelView& view = show.page().view();
+
+  show.AddTextRect(594, 2 * (ypos + 2), 594, 2 * (ypos + 2), 5 * 12, 12);
+
+  for (int i = 1; i <= gdikilled; i++) {
+    if (i != gdikilled) {
+      CC_Draw_Shape(view, yellowptr, i, 172, ypos, WINDOW_MAIN,
+                    ShapeFlags::kNone, {}, {});
+    } else {
+      TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0, 172,
+                                               ypos, 3 + gdikilled, 9);
+    }
+
+    Count_Up_Print(show, font, "%d", i * gkilled / max, gkilled, 297, ypos + 2);
+    if (!TheKeyboard().Peek()) {
+      engine::audio::TheAudio().Play(Beepy6, 255,
+                                     TheOptions().Normalize_Sound(110));
+      Call_Back_Delay(show, 2);
+    }
+  }
+  CC_Draw_Shape(view, yellowptr, gdikilled, 172, ypos, WINDOW_MAIN,
+                ShapeFlags::kNone, {}, {});
+  Count_Up_Print(show, font, "%d", gkilled, gkilled, 297, ypos + 2);
+  if (!TheKeyboard().Peek()) {
+    Call_Back_Delay(show, 40);
+  }
+
+  show.AddTextRect(594, 2 * (ypos + 14), 594, 2 * (ypos + 14), 5 * 12, 12);
+  for (int i = 1; i <= nodkilled; i++) {
+    if (i != nodkilled) {
+      CC_Draw_Shape(view, redptr, i, 172, ypos + 12, WINDOW_MAIN,
+                    ShapeFlags::kNone, {}, {});
+    } else {
+      TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0, 172,
+                                               ypos + 12, 3 + nodkilled, 9);
+    }
+
+    Count_Up_Print(show, font, "%d", i * nkilled / max, nkilled, 297,
+                   ypos + 14);
+    if (!TheKeyboard().Peek()) {
+      engine::audio::TheAudio().Play(Beepy6, 255,
+                                     TheOptions().Normalize_Sound(110));
+      Call_Back_Delay(show, 2);
+    }
+  }
+
+  //	if (TheKeyboard().Peek()) TheKeyboard().Clear();
+
+  /*
+  ** Make sure accurate count is printed at end
+  */
+  CC_Draw_Shape(view, redptr, nodkilled, 172, ypos + 12, WINDOW_MAIN,
+                ShapeFlags::kNone, {}, {});
+  Count_Up_Print(show, font, "%d", nkilled, nkilled, 297, ypos + 14);
+  if (!TheKeyboard().Peek()) {
+    Call_Back_Delay(show, 40);
+  }
+}
+
+// Not const: plays the score screen animation.
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
+                                         const FontStyle& font) {
+  const auto e1ptr = MixArchive::RetrieveData("E1.SHP");
+  const auto c1ptr = MixArchive::RetrieveData("C1.SHP");
+
+  int gdikilled = GKilled;
+  int nodkilled = NKilled;
+  int civkilled = CKilled;
+  int max = std::max(gdikilled, nodkilled);
+  max = std::max(max, civkilled);
+
+  if (!max) {
+    max = 1;
+  }
+  if (gdikilled > MAX_BAR_X - BARGRAPH_X ||
+      nodkilled > MAX_BAR_X - BARGRAPH_X ||
+      civkilled > MAX_BAR_X - BARGRAPH_X) {
+    gdikilled = gdikilled * (MAX_BAR_X - BARGRAPH_X) / max;
+    nodkilled = nodkilled * (MAX_BAR_X - BARGRAPH_X) / max;
+    civkilled = civkilled * (MAX_BAR_X - BARGRAPH_X) / max;
+  }
+
+  max = std::max(gdikilled, nodkilled);
+  max = std::max(max, civkilled);
+  if (!max) {
+    max = 1;
+  }
+
+  /*
+  ** Initialize a bunch of objects for the infantrymen who pose for the bar
+  ** graphs of casualties.
+  */
+  const int q = NUMINFANTRYMEN / 3;
+  const int r = q * 2;
+  for (int i = 0; i < NUMINFANTRYMEN / 3; i++) {
+    base::At(InfantryMan, i + 0).xpos = base::At(InfantryMan, i + q).xpos =
+        base::At(InfantryMan, i + r).xpos = (i * 10) + 7;
+    base::At(InfantryMan, i + 0).ypos = 11;
+    base::At(InfantryMan, i + q).ypos = 21;
+    base::At(InfantryMan, i + r).ypos = 31;
+    base::At(InfantryMan, i + 0).shapefile =
+        base::At(InfantryMan, i + q).shapefile = e1ptr;
+    base::At(InfantryMan, i + r).shapefile = c1ptr;
+    base::At(InfantryMan, i + 0).remap = ScoreRemapYellow;
+    base::At(InfantryMan, i + q).remap = ScoreRemapGrey;
+    base::At(InfantryMan, i + r).remap = RemapCiv;
+    base::At(InfantryMan, i + 0).anim = base::At(InfantryMan, i + q).anim =
+        base::At(InfantryMan, i + r).anim = 0;
+    base::At(InfantryMan, i + 0).stage = base::At(InfantryMan, i + q).stage =
+        base::At(InfantryMan, i + r).stage = 0;
+    base::At(InfantryMan, i + 0).delay = base::At(InfantryMan, i + q).delay =
+        base::At(InfantryMan, i + r).delay = static_cast<char>(Random() & 0x1F);
+    base::At(InfantryMan, i + 0).Class = base::At(InfantryMan, i + q).Class =
+        &InfantryTypeClass::As_Reference(INFANTRY_E1);
+    base::At(InfantryMan, i + r).Class =
+        &InfantryTypeClass::As_Reference(INFANTRY_C1);
+  }
+
+  /*
+  ** Draw the infantrymen and pause briefly before running the graph
+  */
+  Draw_InfantryMen();
+  TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0, BARGRAPH_X,
+                                           CASUALTY_Y, 320 - BARGRAPH_X, 34);
+  // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff, NULL);
+  /*
+  ** Extra font related stuff. ST - 7/29/96 2:22PM
+  */
+  Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
+  show.DrawTextRects();
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
+
+  Call_Back_Delay(show, 40);
+
+  show.AddTextRect(2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 2),
+                   2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 2), 5 * 12, 12);
+  show.AddTextRect(2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 14),
+                   2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 14), 5 * 12, 12);
+  show.AddTextRect(2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 26),
+                   2 * (SCORETEXT_X + 64), 2 * (CASUALTY_Y + 26), 5 * 12, 12);
+
+  for (int i = 1; i <= max; i++) {
+    // Draw & update infantrymen 3 times for every tick on the graph (i)
+    for (int j = 0; j < 3; j++) {
+      Draw_InfantryMen();
+      Draw_Bar_Graphs(TheScreen().sys_mem_page().view(), i, gdikilled,
+                      nodkilled, civkilled);
+      TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0,
+                                               BARGRAPH_X, CASUALTY_Y,
+                                               320 - BARGRAPH_X, 34);
+      Count_Up_Print(show, font, "%d", i * GKilled / max, GKilled,
+                     SCORETEXT_X + 64, CASUALTY_Y + 2);
+      Count_Up_Print(show, font, "%d", i * NKilled / max, NKilled,
+                     SCORETEXT_X + 64, CASUALTY_Y + 14);
+      Count_Up_Print(show, font, "%d", i * CKilled / max, CKilled,
+                     SCORETEXT_X + 64, CASUALTY_Y + 26);
+      if (!TheKeyboard().Peek()) {
+        Call_Back_Delay(show, 3);
+      }
+    }
+    engine::audio::TheAudio().Play(Beepy6, 255,
+                                   TheOptions().Normalize_Sound(110));
+  }
+  if (TheKeyboard().Peek()) {
+    TheKeyboard().Clear();
+  }
+
+  /*
+  ** Make sure accurate count is printed at end
+  */
+  Count_Up_Print(show, font, "%d", GKilled, GKilled, SCORETEXT_X + 64,
+                 CASUALTY_Y + 2);
+  Count_Up_Print(show, font, "%d", NKilled, NKilled, SCORETEXT_X + 64,
+                 CASUALTY_Y + 14);
+  Count_Up_Print(show, font, "%d", CKilled, CKilled, SCORETEXT_X + 64,
+                 CASUALTY_Y + 26);
+
+  /*
+  ** Finish up death animations, if there are any active
+  */
+  int k = 1;
+  while (k) {
+    for (int i = k = 0; i < NUMINFANTRYMEN; i++) {
+      if (base::At(InfantryMan, i).anim >= static_cast<int>(DO_GUN_DEATH)) {
+        k = 1;
+      }
+    }
+    if (k) {
+      Draw_InfantryMen();
+    }
+    Draw_Bar_Graphs(TheScreen().sys_mem_page().view(), max, gdikilled,
+                    nodkilled, civkilled);
+    TheScreen().sys_mem_page().view().BlitTo(
+        show.page().view(), 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34);
+    Call_Back_Delay(show, 1);
+  }
+}
+
+void ScoreClass::Show_Credits(Presentation& show, int house,
+                              std::span<const unsigned char> pal) {
+  static const int _credsx[2] = {276, 276};
+  static const int _credsy[2] = {173, 58};
+  static const int _credpx[2] = {228, 236};
+#ifdef GERMAN
+  static int _credpy[2] = {181, 74};
+  static int _credtx[2] = {162, 162};
+  static int _credty[2] = {173, 62};
+#else
+  static const int _credpy[2] = {189 - 12, 74};
+  static const int _credtx[2] = {182, 182};
+  static const int _credty[2] = {179 - 12, 62};
+#endif
+
+  const auto credshape = MixArchive::RetrieveData("CREDS.SHP");
+
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_SCORE_ENDCRED, base::At(_credtx, house),
+      base::At(_credty, house), pal));
+  Call_Back_Delay(show, 15);
+
+  const int credobj = Alloc_Object(std::make_unique<ScoreCredsClass>(
+      show, base::At(_credsx, house), base::At(_credsy, house), credshape, 32,
+      2));
+  const int min = static_cast<int>(ThePlayer()->Available_Money() / 100);
+
+  /*
+  ** Print out total credits left at end of scenario
+  */
+  int i = -50;
+  const FontStyle font = ScoreFontStyle(pal);
+
+  show.AddTextRect(2 * base::At(_credpx, house), 2 * base::At(_credpy, house),
+                   2 * base::At(_credpx, house), 2 * base::At(_credpy, house),
+                   5 * 12, 12);
+
+  do {
+    int add = 5;
+    if (ThePlayer()->Available_Money() - i > 100) {
+      add += 15;
+    }
+    if (ThePlayer()->Available_Money() - i > 1000) {
+      add += 30;
+    }
+    add = std::max(add, min);
+    i += add;
+
+    i = std::max(i, 0);
+
+    Count_Up_Print(show, font, "%d", i,
+                   static_cast<int>(ThePlayer()->Available_Money()),
+                   base::At(_credpx, house), base::At(_credpy, house));
+    Call_Back_Delay(show, 2);
+    if (TheKeyboard().Peek()) {
+      i = static_cast<int>(ThePlayer()->Available_Money() - 5);
+      TheKeyboard().Clear();
+    }
+  } while (i < ThePlayer()->Available_Money());
+
+  // Make sure the credits object doesn't freeze on the white stage
+  while (base::At(ScoreObjs, credobj)->Stage >= 20 && !ControlQ) {
+    Call_Back_Delay(show, 1);
+  }
+  base::At(ScoreObjs, credobj).reset();
+}
+
+/***************************************************************************
+ * SCORECLASS::PRINT_MINUTES -- Print out hours/minutes up to max          *
+ *                                                                         *
+ *    Same as count-up-print, but for the time                             *
+ *                                                                         *
+ * INPUT:   current minute count and maximum                               *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/13/1995 BWG : Created.                                             *
+ *=========================================================================*/
+void ScoreClass::Print_Minutes(Presentation& show, const FontStyle& font,
+                               int minutes) {
+  char str[20];
+  if (minutes >= 60) {
+    if (minutes / 60 > 9) {
+      minutes = (9 * 60) + 59;
+    }
+    Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT1),
+                        minutes / 60, minutes % 60);
+  } else {
+    Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT2),
+                        minutes);
+  }
+  show.text_page().view().Print(font, str, 550, 18, kTBlack, kTBlack);
+}
+
+/***********************************************************************************************
+ * ScoreClass::Count_Up_Print -- Prints a number (up to its max) into a string,
+ *cleanly.       *
+ *                                                                                             *
+ *    This routine prints out a number (like 70) or its maximum number, into a
+ *string,   onto  * the screen, on a clean section of the screen, and blits it
+ *forward to the seenpage so you* can print without flashing and can print over
+ *something (to count up %'s).               *
+ *                                                                                             *
+ * INPUT:   str = string to print into * percent = # to print * max = # to print
+ *if percent > max                                                * xpos = x
+ *pixel coord                                                             * ypos
+ *= y pixel coord                                                             *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 04/07/1995 BWG : Created. *
+ *=============================================================================================*/
+void ScoreClass::Count_Up_Print(Presentation& show, const FontStyle& font,
+                                const char* str, int percent, int max, int xpos,
+                                int ypos) {
+  char destbuf[64];
+
+  Format_Runtime_Text(destbuf, sizeof(destbuf), str,
+                      percent <= max ? percent : max);
+  const int width = static_cast<int>(std::string_view(destbuf).size()) * 7;
+
+  show.text_page().view().FillRect(xpos * 2, ypos * 2, (xpos + width) * 2,
+                                   (ypos + 7) * 2, kBlack);
+  show.text_page().view().Print(font, destbuf, xpos * 2, ypos * 2, kWhite,
+                                kTBlack);
+
+  // TextPrintBuffer->Blit(*TextPrintBuffer, xpos * 2, ypos * 2,
+  // 0, 0, width * 2, 8 * 2); TextPrintBuffer->Print(destbuf, 0,
+  // 0, WHITE, TBLACK); TextPrintBuffer->Blit(SeenBuff, 0, 0, xpos * 2,
+  // ypos * 2, width * 2, 8 * 2);
+
+  //	PseudoSeenBuff->Print(	destbuf, xpos, ypos, TBLACK, BLACK);
+  //	Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
+}
+
+/***********************************************************************************************
+ * ScoreClass::Input_Name -- Gets the name from the keyboard *
+ *                                                                                             *
+ *      This routine handles keyboard input, and does a nifty zooming letter
+ *effect too.       *
+ *                                                                                             *
+ * INPUT:   str = string to put user's typing into * xpos = x pixel coord * ypos
+ *= y pixel coord                                                             *
+ *            pal  = text remapping palette to print using *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 05/15/1995 BWG : Created. *
+ *=============================================================================================*/
+void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
+                            int ypos, std::span<const unsigned char> pal) {
+  char key = '\0';
+  char ascii = '\0';
+  int index = 0;
+
+  const auto keystrok = MixArchive::RetrieveData("KEYSTROK.AUD");
+
+  /*
+  ** Ready the hidpage so it can restore background under zoomed letters
+  */
+  show.page().view().BlitTo(TheScreen().sys_mem_page().view());
+
+  do {
+    Call_Back();
+    Animate_Score_Objs();
+    Animate_Cursor(show, index, ypos);
+    /*
+    ** Extra font related stuff. ST - 7/29/96 2:22PM
+    */
+    Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
+    show.DrawTextRects();
+    TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
+
+    if (TheKeyboard().Peek()) {
+      key = engine::window::KeyBuffer::Character(TheKeyboard().Read());
+
+      if (index == MAX_FAMENAME_LENGTH - 2) {
+        while (TheKeyboard().Peek()) {
+          TheKeyboard().Read();
+        }
+      }
+
+      /*
+      ** If they hit 'backspace' when they're on the last letter,
+      ** turn it into a space instead.
+      */
+      if ((key == '\b' && index == MAX_FAMENAME_LENGTH - 2) &&
+          (base::At(str, base::ToSize(index)) &&
+           base::At(str, base::ToSize(index)) != 32)) {
+        key = ' ';
+      }
+
+      if (key == '\b') {  // if (key == KN_BACKSPACE) {
+        if (index) {
+          base::At(str, base::ToSize(--index)) = 0;
+
+          const int xposindex6 = xpos + (index * 6);
+
+          show.page().view().FillRect(xposindex6, ypos, xposindex6 + 6,
+                                      ypos + 6, kTBlack);
+          TheScreen().sys_mem_page().view().FillRect(
+              xposindex6, ypos, xposindex6 + 6, ypos + 6, kTBlack);
+          show.text_page().view().FillRect(xposindex6 * 2, ypos * 2,
+                                           (xposindex6 + 6) * 2, (ypos + 6) * 2,
+                                           kBlack);
+        }
+
+      } else if (key != '\r') {  // else if (key != KN_RETURN &&
+                                 // key!=KN_KEYPAD_RETURN) {
+        ascii = absl::ascii_toupper(static_cast<unsigned char>(key));
+        // if (ascii >='A' && ascii<='Z' || ascii == ' ') {
+        if ((ascii >= '!' && ascii <= '~') || ascii == ' ') {
+          show.page().view().FillRect(xpos + (index * 6), ypos,
+                                      xpos + (index * 6) + 6, ypos + 5,
+                                      kTBlack);
+          TheScreen().sys_mem_page().view().FillRect(xpos + (index * 6), ypos,
+                                                     xpos + (index * 6) + 6,
+                                                     ypos + 5, kTBlack);
+          show.text_page().view().FillRect(2 * (xpos + (index * 6)), ypos * 2,
+                                           2 * (xpos + (index * 6) + 6),
+                                           2 * (ypos + 6), kBlack);
+          base::At(str, base::ToSize(index)) = ascii;
+          base::At(str, base::ToSize(index + 1)) = 0;
+
+          engine::audio::TheAudio().Play(keystrok, 255,
+                                         TheOptions().Normalize_Sound(255));
+          const int objindex = Alloc_Object(std::make_unique<ScoreScaleClass>(
+              show, str.subspan(base::ToSize(index)).data(), xpos + (index * 6),
+              ypos, pal));
+          while (base::At(ScoreObjs, objindex)) {
+            Call_Back_Delay(show, 1);
+          }
+
+          if (index < MAX_FAMENAME_LENGTH - 2) {
+            index++;
+          }
+        }
+      }
+    }
+  } while (key !=
+           '\r');  //	} while(key != KN_RETURN && key!=KN_KEYPAD_RETURN);
+}
+
+void Animate_Cursor(Presentation& show, int pos, int ypos) {
+  static int _lastpos;
+  static bool _state;
+  static engine::platform::Timer<engine::platform::SystemTickSource> _timer;
+
+  ypos += 7;  // move cursor to bottom of letter
+
+  // If they moved the cursor, erase old one and force state=0, to make green
+  // draw right away
+  if (pos != _lastpos) {
+    show.page().view().DrawLine(HALLFAME_X + (_lastpos * 6), ypos,
+                                HALLFAME_X + (_lastpos * 6) + 5, ypos, kTBlack);
+    show.text_page().view().FillRect(
+        2 * (HALLFAME_X + (_lastpos * 6)), 2 * ypos,
+        2 * (HALLFAME_X + (_lastpos * 6) + 5), (2 * ypos) + 1, kBlack);
+    _lastpos = pos;
+    _state = false;
+  }
+
+  show.page().view().DrawLine(HALLFAME_X + (pos * 6), ypos,
+                              HALLFAME_X + (pos * 6) + 5, ypos,
+                              _state ? kLtBlue : kTBlack);
+  show.text_page().view().FillRect(2 * (HALLFAME_X + (pos * 6)), 2 * ypos,
+                                   2 * (HALLFAME_X + (pos * 6) + 5),
+                                   (2 * ypos) + 1, _state ? kLtBlue : kBlack);
+
+  /*
+  ** Toggle the color of the cursor, green or black, if it's time to do so.
+  */
+  if (!_timer.Remaining()) {
+    _state = !_state;
+    _timer.Set(5);
+  }
+}
+
+/***************************************************************************
+ * Draw_InfantryMen -- Draw all the guys on the score screen               *
+ *                                                                         *
+ *                                                                         *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/13/1995 BWG : Created.                                             *
+ *=========================================================================*/
+void Draw_InfantryMen() {
+
+  // Only draw the infantrymen if we're playing Nod... GDI wouldn't execute
+  //	people like that.
+
+  PixelView& view = TheScreen().sys_mem_page().view();
+
+  /*
+  ** First restore the background
+  */
+  view.BlitTo(view, BARGRAPH_X, CASUALTY_Y, 0, 0, 320 - BARGRAPH_X, 34);
+  /*
+  ** Then draw all the infantrymen on the clean SysMemPage
+  */
+  for (int k = 0; k < NUMINFANTRYMEN; k++) {
+    Draw_InfantryMan(view, k);
+  }
+  /*
+  ** They'll all be blitted over to the seenpage after the graphs are drawn
+  */
+}
+
+/***************************************************************************
+ * Draw_InfantryMan -- Draw one guy in score screen, update animation      *
+ *                                                                         *
+ *    This routine draws one of the infantrymen in the "Casualties" area   *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/13/1995 BWG : Created.                                             *
+ *=========================================================================*/
+void Draw_InfantryMan(PixelView& view, int index) {
+  /* If the infantryman's dead, just abort this function */
+  if (base::At(InfantryMan, index).anim == -1) {
+    return;
+  }
+
+  const int stage =
+      base::At(InfantryMan, index).stage +
+      base::At(InfantryMan, index)
+          .Class->DoControls
+          .at(static_cast<DoType>(base::At(InfantryMan, index).anim))
+          .Frame;
+
+  CC_Draw_Shape(
+      view, base::At(InfantryMan, index).shapefile, stage,
+      base::At(InfantryMan, index).xpos, base::At(InfantryMan, index).ypos,
+      WINDOW_MAIN,
+      ShapeFlags::kFading | ShapeFlags::kCentered,  //|ShapeFlags::kGhost,
+      base::At(InfantryMan, index).remap, MouseClass::UnitShadow);
+  /*
+  ** see if it's time to run a new anim
+  */
+  if (--base::At(InfantryMan, index).delay < 0) {
+    base::At(InfantryMan, index).delay = 3;
+    if (std::cmp_greater_equal(
+            ++base::At(InfantryMan, index).stage,
+            base::At(InfantryMan, index)
+                .Class->DoControls
+                .at(static_cast<DoType>(base::At(InfantryMan, index).anim))
+                .Count)) {
+      /*
+      ** was he playing a death anim? If so, and it's done, erase him
+      */
+      if (base::At(InfantryMan, index).anim >= static_cast<int>(DO_GUN_DEATH)) {
+        base::At(InfantryMan, index).anim = -1;
+      } else {
+        New_Infantry_Anim(index, static_cast<int>(DO_STAND_READY));
+      }
+    }
+  }
+}
+
+/***************************************************************************
+ * New_Infantry_Anim -- Start up a new animation for one of the infantrymen*
+ *                                                                         *
+ *                                                                         *
+ *                                                                         *
+ * INPUT:   index: which of the 30 infantrymen to affect                   *
+ *          anim:  which animation sequence to start him into              *
+ * OUTPUT:                                                                 *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/13/1995 BWG : Created.                                             *
+ *=========================================================================*/
+void New_Infantry_Anim(int index, int anim) {
+  base::At(InfantryMan, index).anim = anim;
+  base::At(InfantryMan, index).stage = 0;
+  if (anim >= static_cast<int>(DO_GUN_DEATH)) {
+    base::At(InfantryMan, index).delay = 1;  // start right away
+  } else {
+    base::At(InfantryMan, index).delay = static_cast<char>(Random() & 15);
+  }
+}
+
+/***************************************************************************
+ * Draw_Bar_Graphs -- Draw "Casualties" bar graphs                         *
+ *                                                                         *
+ *                                                                         *
+ *                                                                         *
+ * INPUT:   i = current count of how far to draw graph                     *
+ *          gkilled = # of GDI forces killed (adjusted to fit in space)    *
+ *          nkilled = # of Nod forces killed (adjusted to fit in space)    *
+ *          ckilled = # of civilians killed (adjusted to fit in space)     *
+ * OUTPUT:                                                                 *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/13/1995 BWG : Created.                                             *
+ *=========================================================================*/
+void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
+                     int ckilled) {
+  if (gkilled) {
+    view.FillRect(0, 0 + 4, 0 + std::min(i, gkilled), 0 + 5, kLtCyan);
+    view.DrawLine(0 + 1, 0 + 6, 0 + std::min(i, gkilled) + 1, 0 + 6, kTBlack);
+    view.DrawLine(0 + std::min(i, gkilled) + 1, 0 + 5,
+                  0 + std::min(i, gkilled) + 1, 0 + 5, kTBlack);
+    if (i <= gkilled) {
+      const int anim = base::At(InfantryMan, i / 11).anim;
+      if (anim != -1 && anim < static_cast<int>(DO_GUN_DEATH)) {
+        if (i / 11) {
+          New_Infantry_Anim(i / 11,
+                            static_cast<int>(DO_GUN_DEATH) + (Random() & 3));
+        } else {
+          New_Infantry_Anim(i / 11, static_cast<int>(DO_GUN_DEATH));
+        }
+        //				Sound_Effect(Random_Pick(VOC_SCREAM1,
+        // VOC_SCREAM5));
+      }
+    }
+  }
+  if (nkilled) {
+    view.FillRect(0, 0 + 16, 0 + std::min(i, nkilled), 0 + 17, kRed);
+    view.DrawLine(0 + 1, 0 + 18, 0 + std::min(i, nkilled) + 1, 0 + 18, kTBlack);
+    view.DrawLine(0 + std::min(i, nkilled) + 1, 0 + 17,
+                  0 + std::min(i, nkilled) + 1, 0 + 17, kTBlack);
+    if (i <= nkilled) {
+      const int anim =
+          base::At(InfantryMan, (NUMINFANTRYMEN / 3) + (i / 11)).anim;
+      if (anim != -1 && anim < static_cast<int>(DO_GUN_DEATH)) {
+        if (i / 11) {
+          New_Infantry_Anim((NUMINFANTRYMEN / 3) + (i / 11),
+                            static_cast<int>(DO_GUN_DEATH) + (Random() & 3));
+        } else {
+          New_Infantry_Anim((NUMINFANTRYMEN / 3) + (i / 11),
+                            static_cast<int>(DO_GUN_DEATH));
+        }
+        //				Sound_Effect(Random_Pick(VOC_SCREAM1,
+        // VOC_SCREAM5));
+      }
+    }
+  }
+
+  if (ckilled) {
+    view.FillRect(0, 0 + 28, 0 + std::min(i, ckilled), 0 + 29, kRed);
+    view.DrawLine(0 + 1, 0 + 30, 0 + std::min(i, ckilled) + 1, 0 + 30, kTBlack);
+    view.DrawLine(0 + std::min(i, ckilled) + 1, 0 + 29,
+                  0 + std::min(i, ckilled) + 1, 0 + 29, kTBlack);
+    if (i <= ckilled) {
+      const int anim =
+          base::At(InfantryMan, (NUMINFANTRYMEN * 2 / 3) + (i / 11)).anim;
+      if (anim != -1 && anim < static_cast<int>(DO_GUN_DEATH)) {
+        if (i / 11) {
+          New_Infantry_Anim((NUMINFANTRYMEN * 2 / 3) + (i / 11),
+                            static_cast<int>(DO_GUN_DEATH) + (Random() & 3));
+        } else {
+          New_Infantry_Anim((NUMINFANTRYMEN * 2 / 3) + (i / 11),
+                            static_cast<int>(DO_GUN_DEATH));
+        }
+        //				Sound_Effect(Random_Pick(VOC_SCREAM1,
+        // VOC_SCREAM5));
+      }
+    }
+  }
+}
+
+/***************************************************************************
+ * Call_Back_Delay -- Combines Call_Back() and WaitTicks() functions           *
+ *                                                                         *
+ *    This is just to cut down on code size and typing a little.           *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   04/13/1995 BWG : Created.                                             *
+ *=========================================================================*/
+void Call_Back_Delay(Presentation& show, int time) {
+  engine::platform::Timer<engine::platform::SystemTickSource> cd;
+
+  if ((!ControlQ) &&
+      (engine::window::IsCtrlDown() &&
+       engine::window::KeyBuffer::IsDown(engine::window::KN_Q))) {
+    ControlQ = true;
+    TheKeyboard().Clear();
+  }
+
+  if (ControlQ) {
+    time = 0;
+  }
+
+  cd.Set(time);
+  do {
+    Call_Back();
+    // Animate_Score_Objs();
+    // Interpolate_2X_Scale(PseudoSeenBuff , &SeenBuff ,NULL);
+
+    // if (MouseHideCount()){
+    //	Interpolate_2X_Scale(PseudoSeenBuff , &SeenBuff ,NULL);
+    // BlitList.Update();
+    //}else{
+    Animate_Score_Objs();
+    Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
+    show.DrawTextRects();
+    TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
+    //}
+  } while (cd.Remaining());
+}
+
+void Animate_Score_Objs() {
+  StillUpdating = false;
+  for (auto& ScoreObj : ScoreObjs) {
+    if (ScoreObj) {
+      ScoreObj->Update();
+    }
+  }
+}
+
+static char* Int_Print(int a) {
+  static char str[10];
+
+  absl::SNPrintF(str, sizeof(str), "%d", a);
+  return str;
+}
+
+/***********************************************************************************************
+ * Multi_Score_Presentation -- Multiplayer routine to display score screen. *
+ *                                                                                             *
+ *                                                                                             *
+ * INPUT:   none *
+ *                                                                                             *
+ * OUTPUT:  none *
+ *                                                                                             *
+ * WARNINGS:   none *
+ *                                                                                             *
+ * HISTORY: * 06/11/1995  BWG: Created. *
+ *=============================================================================================*/
+void Multi_Score_Presentation() {
+  static const unsigned char _cycleyellowpal[] = {
+      0x0,  0xec, 0xEb, 0xea, 0xE9, 0xe9, 0xE9, 0x0,
+      0xE9, 0x0,  0x0,  0x0,  0x0,  0x0,  0xED, 0x0};
+
+  static const unsigned char greenpal[] = {0x0,  0x12, 0x14, 0x16, 0x18, 0x18,
+                                           0x18, 0x0,  0x18, 0x0,  0x0,  0x0,
+                                           0x0,  0x0,  0x10, 0x0};
+  static const unsigned char redpal[] = {0x0,  0x22, 0x24, 0x26, 0x28, 0x28,
+                                         0x28, 0x0,  0x28, 0x0,  0x0,  0x0,
+                                         0x0,  0x0,  0x20, 0x0};
+  static const unsigned char _graypal[] = {0x0,  0xca, 0xCb, 0xcc, 0xCd, 0xcd,
+                                           0xCd, 0x0,  0xCD, 0x0,  0x0,  0x0,
+                                           0x0,  0x0,  0xC8, 0x0};
+  static const unsigned char _orangepal[] = {0x0,  0xd1, 0xD2, 0xd3, 0xD4, 0xd4,
+                                             0xD4, 0x0,  0xD4, 0x0,  0x0,  0x0,
+                                             0x0,  0x0,  0xD0, 0x0};
+  static const unsigned char bluepal[] = {0x0,  0x2, 0x0a, 0xb, 0x0b, 0xb,
+                                          0x0B, 0x0, 0x0B, 0x0, 0x0,  0x0,
+                                          0x0,  0x0, 0x09, 0x0};
+  static const unsigned char yellowpal[] = {0x0,  0x5,  0xee, 0xf1, 0xf2, 0xf2,
+                                            0xF2, 0xf2, 0xF2, 0x0,  0x0,  0x0,
+                                            0x0,  0x0,  0x7D, 0x0};
+
+  // static char const _greenpal[]=
+  // {0x0,0x0,0x12,0x0,0x14,0x0,0x16,0x0,0x18,0x0,0x0,0x0,0x0,0x0,0x10,0x0};
+  // static char const _redpal[]=
+  // {0x0,0x0,0x22,0x0,0x24,0x0,0x26,0x0,0x28,0x0,0x0,0x0,0x0,0x0,0x20,0x0};
+  // static char const _graypal[]=
+  // {0x0,0x0,0xCA,0x0,0xCB,0x0,0xCC,0x0,0xCD,0x0,0x0,0x0,0x0,0x0,0xC8,0x0};
+  // static char const
+  // _orangepal[]={0x0,0x0,0xD1,0x0,0xD2,0x0,0xD3,0x0,0xD4,0x0,0x0,0x0,0x0,0x0,0xD0,0x0};
+  // static char const _bluepal[]=
+  // {0x0,0x0,0x02,0x0,0x0A,0x0,0x0B,0x0,0x0B,0x0,0x0,0x0,0x0,0x0,0x09,0x0};
+  // static char const
+  // _yellowpal[]={0x0,0x0,0x05,0x0,0xEE,0x0,0xF1,0x0,0xF2,0x0,0x0,0x0,0x0,0x0,0x7D,0x0};
+
+  static const std::span<const unsigned char> _colors[] = {
+      yellowpal, redpal, bluepal, _orangepal, greenpal, _graypal};
+
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
+  TheTheme().Queue_Song(THEME_WIN1);
+
+  Presentation show;
+
+  TheScreen().sys_mem_page().view().Clear();
+  show.page().view().Clear();
+  TheScreen().hidden_page().view().Clear();
+  show.text_page().view().Clear();
+
+  Set_Palette(ThePalettes().black_palette());
+
+  WsaAnimation anim("MLTIPLYR.WSA", &ThePalettes().title_palette());
+  TheMouse().Hide();
+
+  /*
+  ** Display the background animation
+  */
+  TheScreen().visible_page().view().Clear();
+  engine::gfx::BrightenPalette(ThePalettes().title_palette(), 30, 30, 30);
+  anim.DrawFrame(show.page().view(), 1);
+  Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
+                       "MULTSCOR.PAL");
+  Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteFast, Call_Back);
+
+  int frame = 1;
+  while (frame < anim.frame_count()) {
+    anim.DrawFrame(show.page().view(), frame++);
+    Call_Back_Delay(show, 2);
+  }
+  anim.Close();
+
+  /* Change to the six-point font for Text_Print */
+  Call_Back();
+
+  /*
+  ** Move all the scores over a notch if there's more games than can be
+  ** shown (which is known by MPlayerCurGame == MAX_MULTI_GAMES-1);
+  */
+  if (TheSession().current_game() == MAX_MULTI_GAMES - 1) {
+    for (auto& i : TheSession().scores()) {
+      for (int k = 0; k < MAX_MULTI_GAMES - 1; k++) {
+        base::At(i.Kills, k) = base::At(i.Kills, k + 1);
+      }
+    }
+  }
+
+  int y = 41;
+  for (auto& i : TheSession().scores()) {
+    if (!std::string_view(i.Name).empty()) {
+      const auto pal = base::At(_colors, i.Color);
+
+      Alloc_Object(std::make_unique<ScorePrintClass>(show, i.Name, 15, y, pal));
+      Call_Back_Delay(show, 20);
+
+      Alloc_Object(std::make_unique<ScorePrintClass>(show, Int_Print(i.Wins),
+                                                     118, y, pal));
+      Call_Back_Delay(show, 6);
+
+      for (int k = 0;
+           k <= std::min(TheSession().current_game(), MAX_MULTI_GAMES - 2);
+           k++) {
+        if (base::At(i.Kills, k) >= 0) {
+          Alloc_Object(std::make_unique<ScorePrintClass>(
+              show, Int_Print(base::At(i.Kills, k)), 225 + (24 * k), y, pal));
+          Call_Back_Delay(show, 6);
+        }
+      }
+      y += 12;
+    }
+  }
+
+#ifdef FRENCH
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_MAP_CLICK2, 90 /*(320-strlen(Text_String(TXT_MAP_CLICK2)))/2*/,
+      185, _cycleyellowpal));
+#else
+  Alloc_Object(std::make_unique<ScorePrintClass>(
+      show, TXT_MAP_CLICK2, 109 /*(320-strlen(Text_String(TXT_MAP_CLICK2)))/2*/,
+      185, _cycleyellowpal));
+#endif
+  Cycle_Wait_Click(show);
+
+  /* get rid of all the animating objects */
+  Clear_Score_Objects();
+
+  TheTheme().Queue_Song(THEME_NONE);
+
+  Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteFast, nullptr);
+  TheScreen().visible_page().view().Clear();
+  Set_Palette(ThePalettes().game_palette());
+
+  ControlQ = false;
+  TheMouse().Show();
+}
