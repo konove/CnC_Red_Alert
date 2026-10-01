@@ -61,26 +61,24 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "absl/log/log.h"
 #include "absl/strings/str_format.h"
-#include "base/aligned_buffer.h"
 #include "base/array.h"
-#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
-#include "base/unaligned.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
-#include "engine/net/combuf.h"
-#include "engine/net/connect.h"
+#include "engine/net/nullconn.h"
+#include "engine/net/nullmgr.h"
 #include "engine/net/serial/modemreg.h"
 #include "engine/net/serial/wincomm.h"
 #include "engine/window/hardware_cursor.h"
@@ -91,7 +89,7 @@
 #include "td/core/jshell.h"
 #include "td/data/text.h"
 #include "td/net/network.h"
-#include "td/net/nullconn.h"
+#include "td/net/session.h"
 #include "td/net/tcpip.h"
 #include "td/screens/goptions.h"
 #include "td/startup/conquer.h"
@@ -127,65 +125,66 @@ void (*NullModemClass::OrigAbortModemFunc)(int);
 engine::window::KeyNumber NullModemClass::Input;
 GadgetClass* NullModemClass::Commands;  // button list
 
-/***************************************************************************
- * NullModemClass::NullModemClass -- class constructor                     *
- *                                                                         *
- * INPUT:                                                                  *
- *		numsend			# desired entries for the send queue
- ** numreceive		# desired entries for the receive queue
- ** maxlen			application's max packet length
- ** magicnum			application-specific magic # (so we don't
- ** accidentally end up talking to another one of our own	* products using
- *the same protocol)							*
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   12/20/1994 BR : Created.                                              *
- *=========================================================================*/
+namespace {
+
+// In an Internet game (or once the TCP link is up), the "modem" packets go
+// over TCP instead of the serial port.
+bool SendOverWinsock(std::span<const std::byte> packet) {
+  if (TheNetwork().winsock().Get_Connected() ||
+      TheSession().type() == GAME_INTERNET) {
+    TheNetwork().winsock().Write(packet, static_cast<int>(packet.size()));
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
+
 NullModemClass::NullModemClass(int numsend, int numreceive, int maxlen,
                                uint16_t magicnum)
-    : MaxLen(maxlen),
-      NumSend(numsend),
-      NumReceive(numreceive),
-      MagicNum(magicnum) {
-  /*------------------------------------------------------------------------
-  Init Port to NULL; we haven't opened Greenleaf yet.
-  ------------------------------------------------------------------------*/
+    : engine::net::NullModemClass(numsend, numreceive, maxlen, magicnum,
+                                  &SendOverWinsock) {}
 
-  /*........................................................................
-  Init timing parameters
-  ........................................................................*/
+NullModemClass::~NullModemClass() = default;
 
-} /* end of NullModemClass */
+void NullModemClass::Shutdown() {
+  engine::net::NullModemClass::Shutdown();
+  if (TheNetwork().winsock().Get_Connected()) {
+    Delete_Connection();
+  }
+}
 
 /***************************************************************************
- * NullModemClass::~NullModemClass -- class destructor                     *
+ * NullModemClass::Init -- initialization                                  *
  *                                                                         *
  * INPUT:                                                                  *
- *		none.
- **
+ *		port				address, or 1 for the modem
+ * named dev_name              * irq				2-15 (unused)
+ *                                        * dev_name			name of
+ * the modem                                       * baud
+ *	300, 1200, 9600, etc                                    * parity
+ *		'O' (odd), 'E' (even), 'N' (none), 'S' (space),         * 'M'
+ * (mark)                                              * wordlength
+ *	5, 6, 7, or 8                                           * stopbits
+ *		1 or 2                                                  *
+ *		flowcontrol		1 for hardware flow control
+ *                *
  *                                                                         *
  * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
+ *		1 = OK, 0 = error     *
  *                                                                         *
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
+ *   10/9/1996  ST : Modified to take device name in win32                 *
  *=========================================================================*/
-NullModemClass::~NullModemClass() {
-  Delete_Connection();
-} /* end of ~NullModemClass */
+int NullModemClass::Init(int port, int /*irq*/, char* dev_name, int baud,
+                         char parity, int wordlength, int stopbits,
+                         int flowcontrol) {
+  const std::optional<std::string> device =
+      Port_Device(port, dev_name, TheNetwork().modem_registry());
+  return Open(device ? device->c_str() : nullptr, baud, parity, wordlength,
+              stopbits, flowcontrol);
+}
 
 /***************************************************************************
  * NullModemClass::Init -- initialization
@@ -214,203 +213,6 @@ NullModemClass::~NullModemClass() {
  *=========================================================================*/
 // int NullModemClass::Init (int port, int irq, int baud, char parity, int
 // wordlen, int stopbits)
-int NullModemClass::Init(int port, int /*unused*/, char* dev_name, int baud,
-                         char parity, int wordlen, int stopbits,
-                         int flowcontrol) {
-#ifdef _WIN32
-  if (PortHandle) {
-    CloseHandle(PortHandle);
-    PortHandle = NULL;
-  }
-#endif
-
-  if (!Connection) {
-    /*------------------------------------------------------------------------
-    Init our Connection
-    ------------------------------------------------------------------------*/
-    Connection = std::make_unique<NullModemConnClass>(NumSend, NumReceive,
-                                                      MaxLen, MagicNum);
-
-    Connection->Set_Retry_Delta(RetryDelta);
-    Connection->Set_Max_Retries(MaxRetries);
-    Connection->Set_TimeOut(Timeout);
-
-    /*------------------------------------------------------------------------
-    Allocate our packet parsing buffer; make it the same # of packets as the
-    # of receive queue entries the application has requested.  Use the
-    "Actual" maximum packet size, given from the connection; this allows for
-    both headers that get added to the packet.
-    ------------------------------------------------------------------------*/
-    RXSize = Connection->Actual_Max_Packet() * NumReceive;
-    RXBuf.resize(base::ToSize(RXSize));
-
-    // new char[] provides alignment for the packet headers stored at its base.
-    BuildBuf.resize(base::ToSize(MaxLen));
-
-    EchoBuf.resize(base::ToSize(EchoSize));
-  }
-
-  RXCount = 0;
-  EchoCount = 0;
-
-  /*
-  ** Create a new modem class for our com port
-  */
-  if (!SerialPort) {
-    SerialPort = std::make_unique<WinModemClass>();
-  }
-
-  /*
-  ** Shift up the baud rate to sensible values
-  */
-  //	if (baud == 14400) baud = 19200;
-  //	if (baud == 28800) baud = 38400;
-
-  static char com_ids[9][5] = {"COM1", "COM2", "COM3", "COM4", "COM5",
-                               "COM6", "COM7", "COM8", "COM9"};
-
-  const char* device = nullptr;
-
-  switch (port) {
-    case 0x3f8:
-      device = base::At(com_ids, 0);
-      break;
-
-    case 0x2f8:
-      device = base::At(com_ids, 1);
-      break;
-
-    case 0x3e8:
-      device = base::At(com_ids, 2);
-      break;
-
-    case 0x2e8:
-      device = base::At(com_ids, 3);
-      break;
-
-    case 1:
-      /*
-      ** 1 is a special value. It means use the device name not the port
-      *address.
-      */
-      device = dev_name;
-
-      /*
-      ** If we can match a registry entry with the device name then use that,
-      *otherwise use
-      ** the device name directly to open the port with.
-      */
-      TheNetwork().modem_registry().reset();
-      for (int i = 0; i < 10; i++) {
-        TheNetwork().modem_registry() =
-            std::make_unique<ModemRegistryEntryClass>(i);
-        if (TheNetwork().modem_registry()->Get_Modem_Name() &&
-            (std::string_view(dev_name) ==
-             TheNetwork().modem_registry()->Get_Modem_Name())) {
-          device = TheNetwork().modem_registry()->Get_Modem_Device_Name();
-          break;
-        }
-
-        TheNetwork().modem_registry().reset();
-      }
-      break;
-
-    default:
-      device = nullptr;
-  }
-
-  /*
-  ** Open the com port
-  */
-  PortHandle = SerialPort->Serial_Port_Open(device, baud, parity, wordlen,
-                                            stopbits, flowcontrol);
-  if (PortHandle == nullptr) {
-    Shutdown();
-    return 0;
-  }
-
-  /*------------------------------------------------------------------------
-  Init the Connection
-  ------------------------------------------------------------------------*/
-  Connection->Init(PortHandle);
-
-  NumConnections = 1;
-
-  return 1;
-}
-
-/***********************************************************************************************
- * NMC::Num_Connections -- returns NumConnections member *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   NumConnections *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 8/2/96 11:44AM ST : Documented / Win32 support *
- *=============================================================================================*/
-int NullModemClass::Num_Connections() { return NumConnections; }
-
-/***********************************************************************************************
- * NMC::Delete_Connection -- removes the connection *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   true *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 8/2/96 11:44AM ST : Documented / Win32 support *
- *=============================================================================================*/
-bool NullModemClass::Delete_Connection() {
-  Connection.reset();
-
-  if (!RXBuf.empty()) {
-    RXBuf.clear();
-  }
-
-  if (!BuildBuf.empty()) {
-    BuildBuf.clear();
-  }
-
-  if (!EchoBuf.empty()) {
-    EchoBuf.clear();
-  }
-
-  NumConnections = 0;
-
-  return true;
-} /* end of Delete_Connection */
-
-/***********************************************************************************************
- * NMC::Init_Send_Queue -- Initialises the connections send queue *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   true *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 8/2/96 11:46AM ST : Documented / Win32 support *
- *=============================================================================================*/
-bool NullModemClass::Init_Send_Queue() {
-  /*---------------------------------------------------------------
-  Init the send queue
-  -----------------------------------------------------------------*/
-  if (Connection) {
-    Connection->Queue->Init_Send_Queue();
-  }
-
-  return true;
-}
-
 // DetectPortType NullModemClass::Detect_Port( SerialSettingsType *settings )
 /***********************************************************************************************
  * NMC::Detect_Port -- Checks that the specified com port exists *
@@ -424,9 +226,6 @@ bool NullModemClass::Init_Send_Queue() {
  * HISTORY: * 8/2/96 11:47AM ST : Documented / Win32 support *
  *=============================================================================================*/
 DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
-  static char com_ids[9][5] = {"COM1", "COM2", "COM3", "COM4", "COM5",
-                               "COM6", "COM7", "COM8", "COM9"};
-
   /*
   ** Create a new modem class for our com port
   */
@@ -446,64 +245,17 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   /*
   ** Translate the port address into a usable device name
   */
-  const char* device = nullptr;
-
-  switch (settings->Port) {
-    case 0x3f8:
-      device = base::At(com_ids, 0);
-      break;
-
-    case 0x2f8:
-      device = base::At(com_ids, 1);
-      break;
-
-    case 0x3e8:
-      device = base::At(com_ids, 2);
-      break;
-
-    case 0x2e8:
-      device = base::At(com_ids, 3);
-      break;
-
-    case 1:
-      /*
-      ** 1 is a special value. It means use the device name not the port
-      *address.
-      */
-      device = settings->ModemName;
-
-      /*
-      ** If we can match a registry entry with the device name then use that,
-      *otherwise use
-      ** the device name directly to open the port with.
-      */
-      TheNetwork().modem_registry().reset();
-      for (int i = 0; i < 10; i++) {
-        TheNetwork().modem_registry() =
-            std::make_unique<ModemRegistryEntryClass>(i);
-        if (TheNetwork().modem_registry()->Get_Modem_Name() &&
-            (std::string_view(device) ==
-             TheNetwork().modem_registry()->Get_Modem_Name())) {
-          /*
-          ** Got a match. Break out leaving the registry info intact.
-          */
-          device = TheNetwork().modem_registry()->Get_Modem_Device_Name();
-          break;
-        }
-
-        TheNetwork().modem_registry().reset();
-      }
-      break;
-
-    default:
-      return PORT_INVALID;
+  const std::optional<std::string> device = Port_Device(
+      settings->Port, settings->ModemName, TheNetwork().modem_registry());
+  if (!device) {
+    return PORT_INVALID;
   }
 
   /*
   ** Open the com port
   */
   HANDLE porthandle = SerialPort->Serial_Port_Open(
-      device, baud, 0, 8, 1, settings->HardwareFlowControl ? 1 : 0);
+      device->c_str(), baud, 0, 8, 1, settings->HardwareFlowControl ? 1 : 0);
 
   if (porthandle == nullptr) {
     return PORT_INVALID;
@@ -512,485 +264,6 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   SerialPort->Serial_Port_Close();
   return PORT_VALID;
 }
-
-/***********************************************************************************************
- * NullModemClass::ShutDown -- Closes serial port and removes the connection *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Nothing *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 8/2/96 11:43AM ST : Documented / Win32 support *
- *=============================================================================================*/
-void NullModemClass::Shutdown() {
-  if (PortHandle && SerialPort) {
-    SerialPort->Serial_Port_Close();
-    SerialPort.reset();
-    PortHandle = nullptr;
-    Delete_Connection();
-  }
-
-#ifdef FORCE_WINSOCK
-  if (TheNetwork().winsock().Get_Connected()) {
-    Delete_Connection();
-  }
-#endif
-
-} /* end of Shutdown */
-
-/***************************************************************************
- * NullModemClass::Set_Timing -- sets timing for all connections
- **
- *                                                                         *
- * This will set the timing parameters.  This allows an application to * measure
- *the Response_Time while running, and adjust timing accordingly.	*
- *                                                                         *
- * INPUT:                                                                  *
- *		retrydelta	value to set for retry delta
- ** maxretries	value to set for max # retries
- ** timeout		value to set for connection timeout
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   08/07/1995 DRD : Created.                                             *
- *=========================================================================*/
-void NullModemClass::Set_Timing(int32_t retrydelta, int32_t maxretries,
-                                int32_t timeout) {
-  RetryDelta = retrydelta;
-  MaxRetries = maxretries;
-  Timeout = timeout;
-
-  Connection->Set_Retry_Delta(RetryDelta);
-  Connection->Set_Max_Retries(MaxRetries);
-  Connection->Set_TimeOut(Timeout);
-
-} /* end of Set_Timing */
-
-/***************************************************************************
- * NullModemClass::Send_Message -- sends a message
- **
- *                                                                         *
- * For clarity's sake, here's what happens to the buffer passed in:
- **
- * - It gets passed to the Connection's Send_Packet() routine
- **
- * - The CommHeaderType header gets tacked onto it
- **
- * - The resulting buffer gets added to the Connection's Send Queue
- **
- * - When Service() determines that it needs to send the data, it
- ** copies the entire packet (CommHeaderType and all) into its local * SendBuf,
- *adds the packet start ID, length, and CRC, then sends it out.*
- *                                                                         *
- * The ack_req argument will almost always be '1' (the default).  The only
- ** reason to use 0 is if you don't know whether the other system is
- ** ready or not, so you have to periodically send out a query packet, * and
- *wait for a response.  (Using the connection's built-in retry * system would
- *just blast out useless data if the other system isn't		* even there.)
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		buf			buffer to send
- ** buflen		length of buffer
- ** ack_req		1 = ACK is required; 0 = not
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		1 = OK; 0 = error
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   12/20/1994 BR : Created.                                              *
- *=========================================================================*/
-int NullModemClass::Send_Message(std::span<const std::byte> buf, int buflen,
-                                 int ack_req) {
-  if (NumConnections == 0) {
-    return 0;
-  }
-
-  const int rc = Connection->Send_Packet(buf, buflen, ack_req);
-  if (!rc) {
-    DLOG(WARNING) << "Serial send queue overflow; packet dropped";
-  }
-
-  return rc;
-
-} /* end of Send_Message */
-
-/***************************************************************************
- * NullModemClass::Get_Message -- polls the Queue for a message
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		buf			buffer to store message in
- ** buflen		ptr filled in with length of message
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		1 = message was received; 0 = wasn't
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   12/20/1994 BR : Created.                                              *
- *=========================================================================*/
-int NullModemClass::Get_Message(std::span<std::byte> buf, int* buflen) {
-  if (NumConnections == 0) {
-    return 0;
-  }
-  return Connection->Get_Packet(buf, buflen);
-}
-
-/***************************************************************************
- * NullModemClass::Service -- main polling routine
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		none.
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		1 = OK, 0 = connection has gone bad
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   12/20/1994 BR : Created.                                              *
- *=========================================================================*/
-int NullModemClass::Service() {
-  int i = 0;  // loop counter
-  // int status;
-  SerialHeaderType header{};  // decoded packet start, length
-  SerialCRCType crc{};        // decoded packet CRC
-  const char moredata = 0;
-
-  if (NumConnections == 0) {
-    return 0;
-  }
-
-  /*------------------------------------------------------------------------
-  First, copy all the bytes we can from the Greenleaf RX buffer to our
-  own buffer.
-  ------------------------------------------------------------------------*/
-  RXCount += WinModemClass::Read_From_Serial_Port(
-      std::span(RXBuf).subspan(base::ToSize(RXCount)).data(), RXSize - RXCount);
-
-  //	if (RXCount){
-  // char port[128];
-  // sprintf (port, "C&C95 - RXCount = %d bytes.\n", RXCount);
-  // CCDebugString (port);
-  //	}
-
-  // minimum packet size
-
-  if (RXCount < static_cast<int>(PACKET_SERIAL_OVERHEAD_SIZE) + 1) {
-    return Connection->Service();
-  }
-
-  /*------------------------------------------------------------------------
-  Now scan the buffer for the start of a packet.
-  ------------------------------------------------------------------------*/
-  int pos = -1;  // current position in RXBuf
-  for (i = 0; i <= RXCount - static_cast<int>(sizeof(int16_t)); i++) {
-    if (base::ReadUnaligned<uint16_t>(std::as_writable_bytes(std::span(RXBuf))
-                                          .subspan(base::ToSize(i))) ==
-        PACKET_SERIAL_START) {
-      pos = i;
-      break;
-    }
-  }
-
-  /*------------------------------------------------------------------------
-  No start code was found; throw away all bytes except the last few, and
-  return.
-  ------------------------------------------------------------------------*/
-  if (pos == -1) {
-    // Smart_Printf( "No magic number found \n" );
-    /*.....................................................................
-    move the remaining, un-checked bytes to the start of the buffer
-    .....................................................................*/
-    base::MoveBytes(
-        std::as_writable_bytes(std::span(RXBuf)),
-        std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(i)),
-        sizeof(int16_t) - 1);
-    RXCount = sizeof(int16_t) - 1;
-    return Connection->Service();
-  }
-
-  /*........................................................................
-  Check to see if there are enough bytes for the header to be decoded
-  ........................................................................*/
-  if (std::cmp_less(RXCount - pos, sizeof(SerialHeaderType))) {
-    base::MoveBytes(
-        std::as_writable_bytes(std::span(RXBuf)),
-        std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)),
-        base::ToSize(RXCount - pos));
-    RXCount -= pos;
-    return Connection->Service();
-  }
-
-  /*------------------------------------------------------------------------
-  A start code was found; check the packet's length & CRC
-  ------------------------------------------------------------------------*/
-  header = base::ReadUnaligned<SerialHeaderType>(
-      std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)));
-
-  /*........................................................................
-  If we lost a byte in the length, we may end up waiting a very long time
-  for the buffer to get to the right length; check the verify value to
-  make sure this didn't happen.
-  ........................................................................*/
-  if (header.MagicNumber2 != PACKET_SERIAL_VERIFY) {
-    // Smart_Printf( "Verify failed\n");
-    //		Hex_Dump_Data(
-    //(std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos))),
-    // PACKET_SERIAL_OVERHEAD_SIZE );
-
-    pos += sizeof(int16_t);  // throw away the bogus start code
-    base::MoveBytes(
-        std::as_writable_bytes(std::span(RXBuf)),
-        std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)),
-        base::ToSize(RXCount - pos));
-    RXCount -= pos;
-    return Connection->Service();
-  }
-
-  const uint16_t length = header.Length;
-
-  /*........................................................................
-  Special case: if the length comes out too long for us to process:
-  - Assume the packet is bad
-  - Throw away the bogus packet-start code
-  - Return;  we'll search for another packet-start code next time.
-  ........................................................................*/
-  if (std::cmp_greater(length, MaxLen)) {
-    // Smart_Printf( "length too lonnng %d, max %d \n", length, MaxLen );
-
-    pos += sizeof(int16_t);  // throw away the bogus start code
-    base::MoveBytes(
-        std::as_writable_bytes(std::span(RXBuf)),
-        std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)),
-        base::ToSize(RXCount - pos));
-    RXCount -= pos;
-    return Connection->Service();
-  }
-
-  /*........................................................................
-  If the entire packet isn't stored in our buffer, copy the remaining bytes
-  to the front of the buffer & return.
-  ........................................................................*/
-  if (pos + length + static_cast<int>(PACKET_SERIAL_OVERHEAD_SIZE) >
-        RXCount) {
-    if (moredata) {
-      // Smart_Printf( "waiting for more data %d, pos = %d \n", ((length +
-      // PACKET_SERIAL_OVERHEAD_SIZE) - (RXCount - pos)), pos );
-    }
-
-    if (pos) {
-      base::MoveBytes(
-          std::as_writable_bytes(std::span(RXBuf)),
-          std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)),
-          base::ToSize(RXCount - pos));
-      RXCount -= pos;
-    }
-    return Connection->Service();
-  }
-
-  /*........................................................................
-  Now grab the CRC value in the packet, & compare it to the CRC value
-  computed from the actual data.  If they don't match, throw away the bogus
-  start-code, move the rest to the front of the buffer, & return.
-  We'll continue parsing this data when we're called next time.
-  ........................................................................*/
-  crc = base::ReadUnaligned<SerialCRCType>(
-      std::as_writable_bytes(std::span(RXBuf))
-          .subspan(base::ToSize(pos) + sizeof(SerialHeaderType) + length));
-  if (NullModemConnClass::Compute_CRC(
-          std::as_writable_bytes(std::span(RXBuf))
-              .subspan(base::ToSize(pos) + sizeof(SerialHeaderType)),
-          length) != crc.SerialCRC) {
-    DLOG(WARNING) << "Serial packet failed its CRC check; packet dropped";
-
-    // Smart_Printf( "CRC check failed for packet of length %d \n", length );
-
-    //		if (length < 100) {
-    //			Hex_Dump_Data(
-    //(std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos))),
-    //(PACKET_SERIAL_OVERHEAD_SIZE + length) );
-    //		}
-
-    pos += sizeof(int16_t);  // throw away the bogus start code
-    base::MoveBytes(
-        std::as_writable_bytes(std::span(RXBuf)),
-        std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)),
-        base::ToSize(RXCount - pos));
-    RXCount -= pos;
-    return Connection->Service();
-  }
-
-  /*------------------------------------------------------------------------
-  Give the new packet to the Connection to process.
-  ------------------------------------------------------------------------*/
-  if (!Connection->Receive_Packet(
-          std::as_writable_bytes(std::span(RXBuf))
-              .subspan(base::ToSize(pos) + sizeof(SerialHeaderType)),
-          length)) {
-    DLOG(WARNING) << "Serial receive queue overflow; packet lost";
-  }
-
-  /*------------------------------------------------------------------------
-  Move all data past this packet to the front of the buffer.
-  ------------------------------------------------------------------------*/
-  pos += static_cast<int>(PACKET_SERIAL_OVERHEAD_SIZE) + length;
-  base::MoveBytes(
-      std::as_writable_bytes(std::span(RXBuf)),
-      std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)),
-      base::ToSize(RXCount - pos));
-  RXCount -= pos;
-
-  /*------------------------------------------------------------------------
-  Now, service the connection's Queue's; this will handle ACK & Retries.
-  ------------------------------------------------------------------------*/
-  return Connection->Service();
-
-} /* end of Service */
-
-/***************************************************************************
- * NullModemClass::Num_Send -- Returns # of unACK'd send entries
- **
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   05/01/1995 BRR : Created.                                             *
- *=========================================================================*/
-int NullModemClass::Num_Send() {
-  if (Connection) {
-    return Connection->Queue->Num_Send();
-  }
-  return 0;
-
-} /* end of Num_Send */
-
-/***************************************************************************
- * NullModemClass::Num_Receive -- Returns # entries in the receive queue   *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   05/01/1995 BRR : Created.                                             *
- *=========================================================================*/
-int NullModemClass::Num_Receive() {
-  if (Connection) {
-    return Connection->Queue->Num_Receive();
-  }
-  return 0;
-
-} /* end of Num_Receive */
-
-/***************************************************************************
- * NullModemClass::Response_Time -- Returns Queue's avg response time      *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   05/01/1995 BRR : Created.                                             *
- *=========================================================================*/
-int32_t NullModemClass::Response_Time() {
-  if (Connection) {
-    return Connection->Queue->Avg_Response_Time();
-  }
-  return 0;
-
-} /* end of Response_Time */
-
-/***************************************************************************
- * NullModemClass::Reset_Response_Time -- Resets response time computation *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   05/01/1995 BRR : Created.                                             *
- *=========================================================================*/
-void NullModemClass::Reset_Response_Time() {
-  if (Connection) {
-    Connection->Queue->Reset_Response_Time();
-  }
-
-} /* end of Reset_Response_Time */
-
-/***************************************************************************
- * Oldest_Send -- Returns ptr to oldest unACK'd send buffer                *
- *                                                                         *
- * INPUT:                                                                  *
- *                                                                         *
- * OUTPUT:                                                                 *
- *                                                                         *
- * WARNINGS:                                                               *
- *                                                                         *
- * HISTORY:                                                                *
- *   05/01/1995 BRR : Created.                                             *
- *=========================================================================*/
-std::span<const std::byte> NullModemClass::Oldest_Send() {
-  std::span<const std::byte> buf;
-
-  for (int i = 0; i < Connection->Queue->Num_Send(); i++) {
-    engine::net::SendQueueType* send_entry =
-        Connection->Queue->Get_Send(i);  // ptr to send entry header
-    if (send_entry) {
-      auto* packet = base::AlignedObject<engine::net::CommHeaderType>(
-          send_entry->Buffer.data());
-      if (packet->Code == static_cast<unsigned char>(
-                              engine::net::ConnectionClass::PACKET_DATA_ACK) &&
-          send_entry->IsACK == 0) {
-        buf = std::span(send_entry->Buffer)
-                  .first(base::ToSize(send_entry->BufLen));
-        break;
-      }
-    }
-  }
-
-  return buf;
-
-} /* end of Oldest_Send */
 
 /***************************************************************************
  * NullModemClass::Detect_Modem -- Detects and initializes the modem       *

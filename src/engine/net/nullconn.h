@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer(tm)
+**	Command & Conquer Red Alert(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\nullconn.h_v   1.12   16 Oct 1995
- * 16:45:54   JOE_BOSTIC  $ */
+/* $Header: /CounterStrike/NULLCONN.H 1     3/03/97 10:25a Joe_bostic $ */
 /***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
  ***************************************************************************
@@ -37,14 +36,14 @@
  * This is the Connection Class for a NULL-Modem connection.  It inherits
  ** a Queue, PacketBuf, timeout variables from ConnectionClass.  It
  ** inherits its Send_/Receive_/Get_Packet functions, and the non-sequenced
- ** ACK/Retry logic in Service_Send_Queue & Service_Recieve_Queue from *
+ ** ACK/Retry logic in Service_Send_Queue & Service_Receive_Queue from *
  * ConnectionClass.
  **
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef CNC_RED_ALERT_TD_NET_NULLCONN_H_
-#define CNC_RED_ALERT_TD_NET_NULLCONN_H_
+#ifndef CNC_RED_ALERT_ENGINE_NET_NULLCONN_H_
+#define CNC_RED_ALERT_ENGINE_NET_NULLCONN_H_
 
 #include <cstddef>
 #include <span>
@@ -55,11 +54,12 @@
 */
 #include <cstdint>
 
+#include "absl/base/attributes.h"
 #include "engine/net/connect.h"
 
 using HANDLE = void*;
 
-namespace td {
+namespace engine::net {
 
 /*
 ********************************** Defines **********************************
@@ -83,7 +83,7 @@ struct SerialCRCType {
 /*
 ***************************** Class Declaration *****************************
 */
-class NullModemConnClass : public engine::net::ConnectionClass {
+class NullModemConnClass : public ConnectionClass {
   /*
   ---------------------------- Public Interface ----------------------------
   */
@@ -91,8 +91,15 @@ class NullModemConnClass : public engine::net::ConnectionClass {
   /*.....................................................................
   Constructor/destructor.
   .....................................................................*/
-  NullModemConnClass(int numsend, int numreceive, int maxlen,
-                     uint16_t magicnum);
+  // Takes a framed packet that should not go out the serial port and
+  // returns true, or returns false to let it go out the port.
+  using PacketDiverter = bool (*)(std::span<const std::byte> packet);
+
+  // `divert`, when not null, sees every framed packet before the serial
+  // port does; Tiberian Dawn sends its modem games over TCP that way.
+  NullModemConnClass(
+      int numsend, int numreceive, int maxlen, uint16_t magicnum,
+      PacketDiverter divert ABSL_ATTRIBUTE_LIFETIME_BOUND = nullptr);
   ~NullModemConnClass() override;
   NullModemConnClass(const NullModemConnClass&) = delete;
   NullModemConnClass& operator=(const NullModemConnClass&) = delete;
@@ -102,7 +109,7 @@ class NullModemConnClass : public engine::net::ConnectionClass {
   /*.....................................................................
   Initialization.
   .....................................................................*/
-  using engine::net::ConnectionClass::Init;
+  using ConnectionClass::Init;
   void Init(HANDLE port_handle);
 
   /*.....................................................................
@@ -133,12 +140,10 @@ class NullModemConnClass : public engine::net::ConnectionClass {
   .....................................................................*/
   int Send(std::span<const std::byte> buf, int buflen,
            std::span<const std::byte> extrabuf, int extralen) override;
-
-  /*.....................................................................
-  This is the PORT value used by the GreenLeaf calls.
-  .....................................................................*/
+  /*
+  ** This is the winsoze port handle
+  */
   HANDLE PortHandle{nullptr};
-  // PORT *Port;
 
   /*.....................................................................
   This buffer is a staging area for data sent out; it includes the
@@ -150,10 +155,13 @@ class NullModemConnClass : public engine::net::ConnectionClass {
   This is the actual packet that gets sent across the serial line.
   .....................................................................*/
   std::vector<char> SendBuf;
+
+ private:
+  PacketDiverter Divert;
 };
 
-}  // namespace td
+}  // namespace engine::net
 
-#endif  // CNC_RED_ALERT_TD_NET_NULLCONN_H_
+#endif  // CNC_RED_ALERT_ENGINE_NET_NULLCONN_H_
 
 /************************** end of nullconn.h ******************************/

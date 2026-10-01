@@ -52,6 +52,7 @@ include(Testing)
 add_gtest(
         NAME engine_net_test
         SOURCES combuf_test.cc connect_test.cc inet_text_test.cc ipxaddr_test.cc
-                ipxmgr_test.cc packet_test.cc socket_bytes_test.cc
+                ipxmgr_test.cc nullconn_test.cc packet_test.cc
+                socket_bytes_test.cc
         LIBS engine_net
 )

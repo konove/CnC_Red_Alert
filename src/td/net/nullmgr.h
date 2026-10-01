@@ -52,10 +52,9 @@
 */
 #include <cstdint>
 
-#include "engine/net/connmgr.h"
+#include "engine/net/nullmgr.h"
 #include "engine/window/keyboard.h"
 #include "td/core/defines.h"
-#include "td/net/nullconn.h"
 #include "td/ui/gadget.h"
 
 namespace td {
@@ -68,7 +67,7 @@ inline char ModemRXString[80] = {};
 /*
 ***************************** Class Declaration *****************************
 */
-class NullModemClass : public engine::net::ConnManClass {
+class NullModemClass : public engine::net::NullModemClass {
   /*
   ---------------------------- Public Interface ----------------------------
   */
@@ -77,13 +76,6 @@ class NullModemClass : public engine::net::ConnManClass {
   static constexpr int kModemCmdOk = 1;
   static constexpr int kModemCmd0 = 2;
   static constexpr int kModemCmdError = 3;
-
-  std::vector<std::byte> BuildBuf;
-  int MaxLen;
-
-  std::vector<char> EchoBuf;
-  int EchoSize{500};
-  int EchoCount = 0;
 
   int OldIRQPri{-1};  // default true
 
@@ -115,62 +107,7 @@ class NullModemClass : public engine::net::ConnManClass {
   */
   int Init(int port, int irq, char* dev_name, int baud, char parity,
            int wordlength, int stopbits, int flowcontrol);
-  bool Delete_Connection();
-  int Num_Connections() override;
-  int Connection_ID(int /*index*/) override { return 0; }
-  int Connection_Index(int /*id*/) override { return 0; }
-  bool Init_Send_Queue();
-  void Shutdown();
-
-  void Set_Timing(int32_t retrydelta, int32_t maxretries,
-                  int32_t timeout) override;
-
-  /*
-  **	This is how the application sends & receives messages.
-  */
-  int Send_Message(std::span<const std::byte> buf, int buflen, int ack_req = 1);
-  int Get_Message(std::span<std::byte> buf, int* buflen);
-
-  /*
-  ** These are for compatibility
-  */
-  int Send_Private_Message(std::span<const std::byte> buf, int buflen,
-                           int ack_req = 1,
-                           int /*conn_id*/ = kConnectionNone) override {
-    return Send_Message(buf, buflen, ack_req);
-  }
-  int Get_Private_Message(std::span<std::byte> buf, int* buflen,
-                          int* /*conn_id*/) override {
-    return Get_Message(buf, buflen);
-  }
-
-  /*
-  **	The main polling routine; should be called as often as possible.
-  */
-  int Service() override;
-
-  /*
-  **	Queue utility routines.  The application can determine how many
-  **	messages are in the send/receive queues, and the queue's average
-  **	response time (in clock ticks).
-  */
-  int Num_Send();
-  int Num_Receive();
-  int32_t Response_Time() override;
-  void Reset_Response_Time() override;
-  std::span<const std::byte> Oldest_Send();
-
-  /*
-  ** These are for compatibility
-  */
-  int Global_Num_Send() override { return Num_Send(); }
-  int Global_Num_Receive() override { return Num_Receive(); }
-  int Private_Num_Send(int /*id*/ = kConnectionNone) override {
-    return Num_Send();
-  }
-  int Private_Num_Receive(int /*id*/ = kConnectionNone) override {
-    return Num_Receive();
-  }
+  void Shutdown() override;
 
   static DetectPortType Detect_Port(SerialSettingsType* settings);
   int Detect_Modem(SerialSettingsType* settings, bool reconnect = false);
@@ -193,42 +130,6 @@ class NullModemClass : public engine::net::ConnManClass {
                                 char* buffer, int buflen, int delay,
                                 int retries);
   static int Verify_And_Convert_To_Int(char* buffer);
-
-  /*
-  **	Private Interface.
-  */
- private:
-  /*
-  **	This is a pointer to the NULL-Modem Connection object.
-  */
-  std::unique_ptr<NullModemConnClass> Connection;
-  int NumConnections{0};  // # connection objects in use
-
-  /*
-  **	This is the Greenleaf port handle.
-  */
-  // PORT *Port;
-  HANDLE PortHandle{nullptr};
-
-  int NumSend;
-  int NumReceive;
-  uint16_t MagicNum;
-
-  /*
-  **	This is the staging buffer for parsing incoming packets.
-  **	RXSize is the allocated size of the RX buffer.
-  **	RXCount is the # of characters we currently have in our buffer.
-  */
-  std::vector<char> RXBuf;
-  int RXSize = 0;
-  int RXCount = 0;
-
-  /*.....................................................................
-  Timing parameters for all connections
-  .....................................................................*/
-  int32_t RetryDelta{60};  // ticks between retries
-  int32_t MaxRetries{-1};  // -1 means no limit: retry forever
-  int32_t Timeout{1200};   // report bad connection after 20 seconds
 };
 
 }  // namespace td

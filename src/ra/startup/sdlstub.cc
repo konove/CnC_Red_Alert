@@ -4,10 +4,10 @@
 
 #include "engine/audio/audio_mixer.h"
 #include "engine/net/net_select.h"
+#include "engine/net/nullconn.h"
 #include "engine/window/display.h"
 #include "engine/window/window_events.h"
 #include "ra/core/config.h"
-#include "ra/net/nullconn.h"
 #include "ra/startup/game_state.h"
 #include "ra/startup/startup.h"
 #include "ra/startup/winstub.h"

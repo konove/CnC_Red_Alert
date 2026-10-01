@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer(tm)
+**	Command & Conquer Red Alert(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\nullconn.cpv   1.10   16 Oct 1995
- * 16:51:36   JOE_BOSTIC  $ */
+/* $Header: /CounterStrike/NULLCONN.CPP 1     3/03/97 10:25a Joe_bostic $ */
 /***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
  ***************************************************************************
@@ -41,7 +40,7 @@
  *   NullModemConnClass::Packet_Overhead_Size -- number of extra bytes     *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "td/net/nullconn.h"
+#include "engine/net/nullconn.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -56,12 +55,8 @@
 #include "base/unaligned.h"
 #include "engine/net/connect.h"
 #include "engine/net/serial/wincomm.h"
-#include "td/core/defines.h"
-#include "td/net/network.h"
-#include "td/net/session.h"
-#include "td/net/tcpip.h"
 
-namespace td {
+namespace engine::net {
 
 /***************************************************************************
  * NullModemConnClass::NullModemConnClass -- class constructor             *
@@ -85,14 +80,14 @@ namespace td {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
-                                       uint16_t magicnum)
-    : engine::net::ConnectionClass(
+                                       uint16_t magicnum, PacketDiverter divert)
+    : ConnectionClass(
           numsend, numreceive, maxlen, magicnum,
           60,  // Retry Delta Time
           -1,  // Max Retries (-1 means ignore this timeout parameter)
           1200),
-      SendBuf(base::ToSize(Actual_Max_Packet()))  // Timeout: 20 seconds
-{
+      SendBuf(base::ToSize(Actual_Max_Packet())),  // Timeout: 20 seconds
+      Divert(divert) {
   /*------------------------------------------------------------------------
   Pre-set the port value to NULL, so Send won't send until we've been Init'd
   ------------------------------------------------------------------------*/
@@ -101,7 +96,6 @@ NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
   Allocate the Send Buffer; the parent constructor has set MaxPacketLen,
   so we can use it in our computation.
   ------------------------------------------------------------------------*/
-  //	SendBuf = new char [MaxPacketLen + sizeof(int) * 3];
   // new char[] provides alignment for the packet headers stored at its base.
 
 } /* end of NullModemConnClass */
@@ -145,17 +139,19 @@ NullModemConnClass::~NullModemConnClass() =
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 void NullModemConnClass::Init(HANDLE port_handle) {
-  engine::net::ConnectionClass::Init();
+  ConnectionClass::Init();
   PortHandle = port_handle;
-
-} /* end of Init */
+}
 
 /***************************************************************************
  * NullModemConnClass::Send -- hardware-dependent packet sending
  **
  *                                                                         *
  * INPUT:                                                                  *
- *		port		GreenLeaf port handle
+ *		buf			buffer to send
+ ** buflen		length of buffer to send
+ ** extrabuf		(not used by this class)
+ ** extralen		(not used by this class)
  **
  *                                                                         *
  * OUTPUT:                                                                 *
@@ -177,7 +173,6 @@ int NullModemConnClass::Send(std::span<const std::byte> buf, int buflen,
           SendBuf.size()) {
     return 0;
   }
-  // int status;
 
   /*------------------------------------------------------------------------
   Error if we haven't been properly initialized
@@ -210,26 +205,13 @@ int NullModemConnClass::Send(std::span<const std::byte> buf, int buflen,
   /*------------------------------------------------------------------------
   Send the data
   ------------------------------------------------------------------------*/
-  // status =
-#ifdef FORCE_WINSOCK
-  if (TheNetwork().winsock().Get_Connected() ||
-      TheSession().type() == GAME_INTERNET) {
-    TheNetwork().winsock().Write(std::as_bytes(std::span(SendBuf)), sendlen);
-  } else {
+  if (Divert == nullptr ||
+      !Divert(std::as_bytes(std::span(SendBuf)).first(base::ToSize(sendlen)))) {
     SerialPort->Write_To_Serial_Port(SendBuf.data(), sendlen);
   }
-#else
-  SerialPort->Write_To_Serial_Port(SendBuf.data(), sendlen);
-#endif  // WINSOCK
-
-  // if ( status == ASSUCCESS ) {
   return 1;
-  //} else {
-  // Smart_Printf( "Write Buffer status %d, Port->status %d, sendlen %d \n",
-  // status, Port->status, sendlen );
-  //	return(false);
-  //}
-}
+
+} /* end of Send */
 
 /***************************************************************************
  * NullModemConnClass::Compute_CRC -- computes CRC for given buffer
@@ -271,7 +253,8 @@ int NullModemConnClass::Compute_CRC(std::span<const std::byte> buf,
   }
 
   return static_cast<int>(sum);
-}
+
+} /* end of Compute_CRC */
 
 /***************************************************************************
  * NullModemConnClass::Packet_Overhead_Size -- number of extra bytes       *
@@ -292,15 +275,16 @@ int NullModemConnClass::Compute_CRC(std::span<const std::byte> buf,
  *   04/20/1995 DRD : Created.                                             *
  *=========================================================================*/
 int NullModemConnClass::Packet_Overhead_Size() {
-  //
-  // short for Null Modem Magic Number
-  // short for Null Modem length of packet
-  // int for Null Modem CRC check
-  // CommHeaderType for Queued packets
-  //
-
-  return PACKET_SERIAL_OVERHEAD_SIZE + sizeof(engine::net::CommHeaderType);
+  /*------------------------------------------------------------------------
+  short for Null Modem Magic Number
+  short for Null Modem length of packet
+  int for Null Modem CRC check
+  CommHeaderType for Queued packets
+  ------------------------------------------------------------------------*/
+  return PACKET_SERIAL_OVERHEAD_SIZE + sizeof(CommHeaderType);
 
 } /* end of Packet_Overhead_Size */
 
-}  // namespace td
+/************************** end of nullconn.cpp ****************************/
+
+}  // namespace engine::net
