@@ -239,7 +239,7 @@ Per step: `cmake --build build --parallel 22 && ctest --test-dir build --output-
 - [x] 4. `ra::`/`td::` namespaces
 - [x] 5a. `game_core`
 - [x] 5b. `game_sim`
-- [ ] 5c. `engine::net` core
+- [x] 5c. `engine::net` core (code; the manual two-instance games and packet capture are open)
 - [ ] 5d. `game_ui`
 - [ ] 5e. Map traits (optional)
 
@@ -390,3 +390,24 @@ The palette fade loop became `engine::window::FadePalette()`, not an `engine::gf
 planned: each step presents a frame. Tiberian Dawn now skips a fade to the palette already on screen
 and waits for the next tick between steps, as Red Alert did; its fades want the same real-display
 look as the 5d dialogs.
+
+### Step 5c
+
+`engine/net` now holds `CommBufferClass`, `ConnManClass`, `ConnectionClass` (Red Alert's, which
+already folded in Tiberian Dawn's `NonSequencedConnClass`), `IPXAddressClass`, `IPXConnClass`,
+`IPXManagerClass`, `NullModemConnClass` and the protocol half of `NullModemClass`, in namespace
+`engine::net`. The manager sends through an `engine::net::DatagramTransport`: Red Alert's
+`SocketTransport` forwards to whichever `WinsockInterfaceClass` `packet_transport()` holds, Tiberian
+Dawn's `TcpTransport` to its one TCP connection. It takes the game mode as `Init(bool internet)`,
+builds the game's global channel through a factory, and calls an unknown-sender handler that Red
+Alert installs to follow a player whose address changed.
+
+The global channels stay per game (the plan's fallback): header layout, ACK timing and resend
+detection differ, so each game's `IPXGlobalConnClass` implements `engine::net::GlobalConnClass`.
+Each game's `NullModemClass` keeps its dialing UI; Tiberian Dawn's TCP detour is a packet diverter
+handed to the connection, and its extra `Shutdown()` step an override. The DOS real-mode IPX
+plumbing, both `ipx.h` files and the bridge setup (it only chose an "immediate address" neither
+transport reads) are gone. `engine_net_test` runs two managers over a loopback transport.
+
+Open: a manual two-instance multiplayer game per game, and a packet capture before and after, which
+no test here can replace.
