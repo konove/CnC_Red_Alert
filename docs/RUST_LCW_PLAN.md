@@ -2349,8 +2349,11 @@ report no differences. `vqaplay REDINTRO.VQA` (188 frames at 15 fps) takes 12.54
 
 What differed from the plan:
 
-- The generated headers are where the plan expected (`engine_rs_cxx/lib.h`, `rust/cxx.h`), and
-  Corrosion picked up `rust-toolchain.toml` by itself; `Rust_TOOLCHAIN` was not needed.
+- The generated headers are where the plan expected (`engine_rs_cxx/lib.h`, `rust/cxx.h`).
+- Corrosion does not honor `rust-toolchain.toml` by itself: it asks rustup for the active toolchain
+  from CMake's working directory, so a configure from outside the tree took the default toolchain,
+  or found none and failed. The root `CMakeLists.txt` reads the channel from the file and forces
+  `Rust_TOOLCHAIN` to it.
 - A fresh configure failed to find the generated headers: Corrosion adds them to `engine_rs_cxx` as
   `PUBLIC` sources, and under `cmake_minimum_required(VERSION 3.14)` policy CMP0118 is OLD, so only
   `src/rust` knew they were generated. The root `CMakeLists.txt` sets CMP0118 to NEW.

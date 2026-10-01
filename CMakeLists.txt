@@ -83,6 +83,16 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
         GIT_TAG v0.6.1
 )
+# Corrosion asks rustup for the active toolchain from CMake's working
+# directory, which need not be in this tree, so it would miss the pin in
+# rust-toolchain.toml. Pass the pin itself, forced so a bump reaches existing
+# build directories.
+file(STRINGS ${CMAKE_SOURCE_DIR}/rust-toolchain.toml RUST_TOOLCHAIN_CHANNEL
+        REGEX "^channel = ")
+string(REGEX REPLACE "^channel = \"(.*)\"$" "\\1" RUST_TOOLCHAIN_CHANNEL
+        "${RUST_TOOLCHAIN_CHANNEL}")
+set(Rust_TOOLCHAIN ${RUST_TOOLCHAIN_CHANNEL} CACHE STRING
+        "The rustup toolchain (from rust-toolchain.toml)" FORCE)
 FetchContent_MakeAvailable(Corrosion)
 
 # Option to enable AddressSanitizer for debugging memory issues
