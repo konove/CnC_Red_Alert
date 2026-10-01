@@ -24,3 +24,11 @@ target_sources(game_ui PUBLIC
 target_link_libraries(game_ui
         PUBLIC game_core engine_window base absl::core_headers
 )
+
+# Tests
+include(Testing)
+add_gtest(
+        NAME game_ui_test
+        SOURCES checkbox_test.cc
+        LIBS game_ui
+)

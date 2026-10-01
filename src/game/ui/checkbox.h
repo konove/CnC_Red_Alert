@@ -48,7 +48,8 @@
 
 namespace game {
 
-// A 7x7 check box that turns itself on and off when clicked; read IsOn.
+// A 7x7 check box that turns itself on and off when clicked; read IsOn when
+// its ID comes back.
 // NOLINTBEGIN(portability-template-virtual-member-function): see WidgetSkin.
 template <WidgetSkin Skin>
 class CheckBoxClass : public ToggleClass {
@@ -68,7 +69,10 @@ class CheckBoxClass : public ToggleClass {
  protected:
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
               int y) override {
-    if (flags & kLeftRelease) {
+    // Only a release that ends a press on the box toggles it: that is the
+    // release ToggleClass reports as the box's ID, so whoever reads IsOn when
+    // the ID comes back sees the state drawn.
+    if (flags & kLeftRelease && IsPressed) {
       if (IsOn) {
         Turn_Off();
       } else {
