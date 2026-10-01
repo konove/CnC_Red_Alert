@@ -240,7 +240,7 @@ Per step: `cmake --build build --parallel 22 && ctest --test-dir build --output-
 - [x] 5a. `game_core`
 - [x] 5b. `game_sim`
 - [x] 5c. `engine::net` core (code; the manual two-instance games and packet capture are open)
-- [ ] 5d. `game_ui`
+- [x] 5d. `game_ui` (code; the real-display check of both games' dialogs is open)
 - [ ] 5e. Map traits (optional)
 
 ## Outcome
@@ -411,3 +411,36 @@ transport reads) are gone. `engine_net_test` runs two managers over a loopback t
 
 Open: a manual two-instance multiplayer game per game, and a packet capture before and after, which
 no test here can replace.
+
+### Step 5d
+
+`src/game/ui/` (`game_ui`) holds `LinkClass`, `Input`, `GadgetClass`, `ControlClass` and
+`ToggleClass` as plain classes, and `ShapeButtonClass`, `TextLabelClass`, `CheckBoxClass`,
+`TextButtonClass`, `GaugeClass`, `TriColorGaugeClass`, `SliderClass`, `EditClass` and `ListClass` as
+class templates over a per-game `UiSkin` (`ra/ui/ui_skin.h`, `td/ui/ui_skin.h`), which each game
+names under the old name (`using TextButtonClass = game::TextButtonClass<UiSkin>;`). This replaces
+the planned `ColorScheme` migration and virtual `UiSkin`: each skin is the game's own drawing code
+as static functions, plus the types that differ (text colour, `TextPrintType`, the label fields the
+message lists keep), so call sites and pixels stay as they were. The `game::WidgetSkin` concept
+lists what a skin provides, and is why the templates keep their virtual members under one reasoned
+suppression of `portability-template-virtual-member-function`, as the stream transform adapters do.
+
+Behavior that differed and is kept per game through the skin: the gauge thumb's hit width (RA 4, TD
+8), the gauge scaling arithmetic (RA `Fixed`, TD cardinal), an edit field's height pad, and whether
+selecting past a list's end selects its first line (RA) or nothing (TD). Fixes Tiberian Dawn takes
+from Red Alert: the gadget destructor clears every static pointer to it, a sticky button released
+elsewhere redraws, a toggle only toggles on a release over it, a thumb is never drawn left of its
+gauge, a thumbless gauge passes clicks on, edit buffers are narrowed and terminated, a click in an
+empty list no longer selects line -1, and `Set_View_Index()` clamps safely; Tiberian Dawn's one
+check box dialog reads `IsOn` as Red Alert's does. The screenshot on K is a key hook each `Game`
+installs.
+
+Kept per game: `CheckListClass` (RA keeps the check state in a vector and draws the glyph and a
+space before the text, TD writes the glyph into the text's first character), `ColorListClass` (each
+entry's colour is of the game's colour type), the direction dials (unrelated implementations), and
+Red Alert's `StaticButtonClass` and `TListClass` (`ra/ui/tlist.h`), which Tiberian Dawn lacks. Frame
+hashes of both games' main menus and of a mission matched the build before every step; dialogs are
+not covered by them.
+
+Open: the real-display check of the main menu, options, load/save and multiplayer dialogs in both
+games.
