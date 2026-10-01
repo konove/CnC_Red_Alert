@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <span>
 
+#include "base/fixed.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -60,6 +61,20 @@ void UiSkin::Print_Button_Text(PixelView& view, const char* text, const int x,
   Fancy_Text_Print(view, text, x, y, Get_Color_Scheme(), kTBlack,
                    flags | state | TPF_CENTER);
 }
+
+int UiSkin::Scale(const int amount, const int numerator,
+                  const int denominator) {
+  return amount * Fixed(numerator, denominator);
+}
+
+void UiSkin::Draw_Gauge_Box(PixelView& view, const int x, const int y,
+                            const int width, const int height,
+                            const bool raised) {
+  Draw_Box(view, x, y, width, height, raised ? BOXSTYLE_RAISED : BOXSTYLE_DOWN,
+           true);
+}
+
+unsigned char UiSkin::Gauge_Fill_Color() { return Get_Color_Scheme()->Bright; }
 
 void UiSkin::Print_Label(PixelView& view, const char* text, const int x,
                          const int y, TextColor color, const PrintFlags style) {

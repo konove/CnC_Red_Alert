@@ -70,7 +70,6 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 #include "td/ui/dial8.h"
-#include "td/ui/gauge.h"
 #include "td/ui/list.h"
 
 namespace td {

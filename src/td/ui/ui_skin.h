@@ -52,6 +52,20 @@ struct UiSkin {
                                 PrintFlags flags, bool disabled, bool pressed,
                                 bool on);
 
+  // A gauge's thumb width for hit tests, in pixels (the thumb drawn is 4).
+  static constexpr int kGaugeThumbPixels = 8;
+
+  // `amount` scaled by numerator/denominator in the game's gauge
+  // fixed-point arithmetic.
+  static int Scale(int amount, int numerator, int denominator);
+
+  // Draws a gauge's body (sunken) or thumb (raised).
+  static void Draw_Gauge_Box(PixelView& view, int x, int y, int width,
+                             int height, bool raised);
+
+  // The colour a gauge fills up to its value with.
+  static unsigned char Gauge_Fill_Color();
+
   // Prints a text label, unclipped or clipped to `width` pixels.
   static void Print_Label(PixelView& view, const char* text, int x, int y,
                           TextColor color, PrintFlags style);

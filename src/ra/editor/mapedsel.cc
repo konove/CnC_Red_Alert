@@ -71,7 +71,6 @@
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/ui/direction_dial.h"
-#include "ra/ui/gauge.h"
 #include "ra/ui/list.h"
 
 namespace ra {

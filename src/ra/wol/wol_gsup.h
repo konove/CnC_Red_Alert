@@ -35,7 +35,9 @@
 
 #include "absl/base/attributes.h"
 #include "ra/net/session.h"
+#include "ra/ui/gauge.h"
 #include "ra/ui/shapebtn.h"
+#include "ra/ui/slider.h"
 #include "ra/ui/textbtn.h"
 #include "ra/wol/wolapiob.h"
 
@@ -46,7 +48,6 @@ namespace ra {
 // class WolapiObject;
 class IconListClass;
 class EditClass;
-class GaugeClass;
 class CheckListClass;
 class StaticButtonClass;
 class DropListClass;
