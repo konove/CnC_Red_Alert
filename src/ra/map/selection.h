@@ -18,9 +18,9 @@
 #ifndef CNC_RED_ALERT_RA_MAP_SELECTION_H_
 #define CNC_RED_ALERT_RA_MAP_SELECTION_H_
 
-namespace ra {
-
 // File: The player's selection and numbered unit groups.
+
+namespace ra {
 
 // Deselects every currently selected object.
 void Unselect_All();

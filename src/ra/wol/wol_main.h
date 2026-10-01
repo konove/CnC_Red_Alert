@@ -1,9 +1,9 @@
 #ifndef CNC_RED_ALERT_RA_WOL_WOL_MAIN_H_
 #define CNC_RED_ALERT_RA_WOL_WOL_MAIN_H_
 
-namespace ra {
-
 // File: Entry point of the Westwood Online client.
+
+namespace ra {
 
 // Runs the Westwood Online session from login through the chat lobby to game
 // setup, creating pWolapi the first time through and reusing it after a game.

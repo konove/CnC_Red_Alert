@@ -18,9 +18,9 @@
 #ifndef CNC_RED_ALERT_RA_DATA_TEXT_IDS_H_
 #define CNC_RED_ALERT_RA_DATA_TEXT_IDS_H_
 
-namespace ra {
-
 // File: Indices into the language string table (the TXT_* ids).
+
+namespace ra {
 
 // Indices into the language string table; Text_String() turns one of these into
 // the localized string for the build's language. The trailing comments are the

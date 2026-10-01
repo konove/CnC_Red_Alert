@@ -18,12 +18,12 @@
 #ifndef CNC_RED_ALERT_RA_STARTUP_CONQUER_H_
 #define CNC_RED_ALERT_RA_STARTUP_CONQUER_H_
 
-namespace ra {
-
 // File: The game's outer loop: RunGame() picks and plays games until the
 // player exits, RunFrame() runs one frame, and ServiceRealTime() does the
 // real-time servicing that has to keep running inside blocking loops and
 // dialogs.
+
+namespace ra {
 
 // The game's entry point: one-time init, then a loop of choosing a game and
 // running it until the player exits.

@@ -18,10 +18,10 @@
 #ifndef CNC_RED_ALERT_RA_SAVELOAD_RECORD_PLAYBACK_H_
 #define CNC_RED_ALERT_RA_SAVELOAD_RECORD_PLAYBACK_H_
 
-namespace ra {
-
 // File: Recording and attract-mode playback of the view and selection state
 // that the event stream does not carry.
+
+namespace ra {
 
 // Saves or replays the parts of the game state that the event stream alone
 // cannot reconstruct: where the map is scrolled to, which objects are selected,

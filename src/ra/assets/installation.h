@@ -18,9 +18,9 @@
 #ifndef CNC_RED_ALERT_RA_ASSETS_INSTALLATION_H_
 #define CNC_RED_ALERT_RA_ASSETS_INSTALLATION_H_
 
-namespace ra {
-
 // File: Which game content is installed, and which disc holds it.
+
+namespace ra {
 
 // Returns the registry subkey, under HKEY_LOCAL_MACHINE, holding this game's
 // installer settings. The key name is language specific, because each
