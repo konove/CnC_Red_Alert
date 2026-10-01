@@ -86,8 +86,8 @@
 #include <span>
 
 #include "engine/net/connect.h"
+#include "engine/net/ipxaddr.h"
 #include "ra/net/ipx.h"
-#include "ra/net/ipxaddr.h"
 #include "ra/net/ipxconn.h"
 
 namespace ra {
@@ -155,18 +155,19 @@ class IPXGlobalConnClass : public IPXConnClass {
   // number and a destination address, which the base versions do not write.
   // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
   virtual int Send_Packet(std::span<const std::byte> buf, int buflen,
-                          IPXAddressClass* address, int ack_req);
+                          engine::net::IPXAddressClass* address, int ack_req);
   // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
   virtual int Receive_Packet(std::span<std::byte> buf, int buflen,
-                             IPXAddressClass* address);
+                             engine::net::IPXAddressClass* address);
   // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
   virtual int Get_Packet(std::span<std::byte> buf, int* buflen,
-                         IPXAddressClass* address, uint16_t* product_id);
+                         engine::net::IPXAddressClass* address,
+                         uint16_t* product_id);
 
   //.....................................................................
   // This is for telling the connection it can cross a bridge.
   //.....................................................................
-  void Set_Bridge(NetNumType bridge);
+  void Set_Bridge(engine::net::NetNumType bridge);
 
   //.....................................................................
   // The Product ID for this product.
@@ -179,8 +180,8 @@ class IPXGlobalConnClass : public IPXConnClass {
   // number allows us to obtain its local target address only once, then
   // re-use it.
   //.....................................................................
-  NetNumType BridgeNet{};
-  NetNodeType BridgeNode{};
+  engine::net::NetNumType BridgeNet{};
+  engine::net::NetNodeType BridgeNode{};
   int IsBridge{0};
 
   //------------------------------------------------------------------------
@@ -211,7 +212,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   // Note that, if network traffic is heavy, it's still possible for an
   // app to receive the same packet twice!
   //.....................................................................
-  IPXAddressClass LastAddress[4];  // array of last 4 addresses
+  engine::net::IPXAddressClass LastAddress[4];  // array of last 4 addresses
   uint32_t LastPacketID[4]{};  // array of last 4 packet ID's
   int LastRXIndex = 0;         // index of next avail pos
 };

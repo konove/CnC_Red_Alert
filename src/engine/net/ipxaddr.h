@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer(tm)
+**	Command & Conquer Red Alert(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\ipxaddr.h_v   2.19   16 Oct 1995 16:44:54
- * JOE_BOSTIC  $ */
+/* $Header: /CounterStrike/IPXADDR.H 1     3/03/97 10:24a Joe_bostic $ */
 /***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
  ***************************************************************************
@@ -44,12 +43,15 @@
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef CNC_RED_ALERT_TD_NET_IPXADDR_H_
-#define CNC_RED_ALERT_TD_NET_IPXADDR_H_
+#ifndef CNC_RED_ALERT_ENGINE_NET_IPXADDR_H_
+#define CNC_RED_ALERT_ENGINE_NET_IPXADDR_H_
 
-#include "td/net/ipx.h"  // for NetNumType & NetNodeType
+namespace engine::net {
 
-namespace td {
+// An IPX network number and node address, in wire byte order. The UDP
+// transport packs an IPv4 address and port into them.
+using NetNumType = unsigned char[4];
+using NetNodeType = unsigned char[6];
 
 /*
 ***************************** Class Declaration *****************************
@@ -63,21 +65,22 @@ class IPXAddressClass {
   Constructors:
   .....................................................................*/
   IPXAddressClass() noexcept;
+
+  // Network and node bytes are already in wire order.
+  template <class Archive>
+  void Serialize(Archive& ar) {
+    ar(NetworkNumber, NodeAddress);
+  }
   IPXAddressClass(const NetNumType& net, const NetNodeType& node);
-  explicit IPXAddressClass(IPXHeaderType* header);
 
   /*.....................................................................
-  Set the address from explicit variables, or from the SOURCE values
-  in an IPX packet header.
+  Set the address from explicit variables.
   .....................................................................*/
   void Set_Address(const NetNumType& net, const NetNodeType& node);
-  void Set_Address(IPXHeaderType* header);
   /*.....................................................................
-  Get the address values explicitly, or copy them into the DESTINATION
-  values in an IPX packet header.
+  Get the address values explicitly.
   .....................................................................*/
   void Get_Address(NetNumType& net, NetNodeType& node);
-  void Get_Address(IPXHeaderType* header);
 
   /*.....................................................................
   Tells if this address is a broadcast address
@@ -105,7 +108,8 @@ class IPXAddressClass {
   NetNodeType NodeAddress{};
 };
 
-}  // namespace td
+}  // namespace engine::net
 
-#endif  // CNC_RED_ALERT_TD_NET_IPXADDR_H_
+#endif  // CNC_RED_ALERT_ENGINE_NET_IPXADDR_H_
+
 /**************************** end of ipxaddr.h *****************************/

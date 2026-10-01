@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/installed.h"
-#include "td/net/ipxaddr.h"
+#include "engine/net/ipxaddr.h"
 
 namespace td {
 
@@ -77,7 +77,7 @@ struct StartupOptions {
 
   // -DESTNET<address>: a network on the far side of an IPX bridge. Absent
   // unless the whole address parsed.
-  std::optional<IPXAddressClass> bridge_net;
+  std::optional<engine::net::IPXAddressClass> bridge_net;
 
   // -WCHAT: Westwood Chat started the game, so go straight to the internet
   // menu rather than the intro.

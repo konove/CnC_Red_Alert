@@ -5,7 +5,7 @@
 #include <span>
 #include <string_view>
 
-#include "ra/net/ipxaddr.h"
+#include "engine/net/ipxaddr.h"
 #include "ra/startup/startup_options.h"
 
 namespace ra {
@@ -26,7 +26,8 @@ std::optional<StartupOptions> Parse_Command_Line(
 // node. Only the network is used; the returned address has the broadcast
 // node, so packets reach every machine across the bridge. Returns nothing for
 // a malformed address, or one shorter than four bytes.
-std::optional<IPXAddressClass> ParseDestNet(std::string_view address);
+std::optional<engine::net::IPXAddressClass> ParseDestNet(
+    std::string_view address);
 
 }  // namespace ra
 

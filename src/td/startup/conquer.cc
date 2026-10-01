@@ -97,6 +97,7 @@
 #include "engine/gfx/shape_blitter.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/platform/env.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
@@ -141,7 +142,6 @@
 #include "td/map/world.h"
 #include "td/net/event.h"
 #include "td/net/internet.h"
-#include "td/net/ipxaddr.h"
 #include "td/net/ipxgconn.h"
 #include "td/net/ipxmgr.h"
 #include "td/net/mplayer.h"
@@ -198,7 +198,7 @@ static engine::platform::Stopwatch<engine::platform::SystemTickSource>
 
 // Where the message being typed goes: a broadcast address after F4, or the
 // player picked with F1-F3. IPX only.
-static IPXAddressClass message_address;
+static engine::net::IPXAddressClass message_address;
 
 // Turned on at the [SyncBug] trap frame when CheckHeap is set; from then on
 // Heap_Dump_Check() dumps the heaps.
@@ -916,7 +916,7 @@ static void Message_Input(engine::window::KeyNumber& input) {
           TheSession().type() == GAME_INTERNET) {
         if (input == KN_F1 + TheSession().max_players() - 1 &&
             TheSession().messages().Get_Edit_Buf() == nullptr) {
-          message_address = IPXAddressClass();           // set to broadcast
+          message_address = engine::net::IPXAddressClass();  // set to broadcast
           base::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
           TheSession().messages().Add_Edit(

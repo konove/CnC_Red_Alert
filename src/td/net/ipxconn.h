@@ -55,8 +55,8 @@
 #include <cstdint>
 
 #include "engine/net/connect.h"
+#include "engine/net/ipxaddr.h"
 #include "td/net/ipx.h"
-#include "td/net/ipxaddr.h"
 
 namespace td {
 
@@ -80,7 +80,7 @@ class IPXConnClass : public engine::net::ConnectionClass {
   Constructor/destructor.
   .....................................................................*/
   IPXConnClass(int numsend, int numreceive, int maxlen, uint16_t magicnum,
-               IPXAddressClass* address, int id, const char* name);
+               engine::net::IPXAddressClass* address, int id, const char* name);
   ~IPXConnClass() override = default;
   IPXConnClass(const IPXConnClass&) = delete;
   IPXConnClass& operator=(const IPXConnClass&) = delete;
@@ -115,13 +115,13 @@ class IPXConnClass : public engine::net::ConnectionClass {
   /*.....................................................................
   The Destination IPX Address for this connection
   .....................................................................*/
-  IPXAddressClass Address;
+  engine::net::IPXAddressClass Address;
 
   /*.....................................................................
   The "Immediate" (Bridge) address for this connection, and a flag
   telling if the address has been precomputed.
   .....................................................................*/
-  NetNodeType ImmediateAddress{};
+  engine::net::NetNodeType ImmediateAddress{};
   int Immed_Set;
 
   /*.....................................................................
@@ -150,7 +150,7 @@ class IPXConnClass : public engine::net::ConnectionClass {
   static int Open_Socket(uint16_t socket);
   static void Close_Socket(uint16_t socket);
   static int Send_To(std::span<const std::byte> buf, int buflen,
-                     IPXAddressClass* address,
+                     engine::net::IPXAddressClass* address,
                      std::span<const unsigned char> immed);
   static int Broadcast(std::span<const std::byte> buf, int buflen);
 

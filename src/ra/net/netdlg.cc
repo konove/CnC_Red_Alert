@@ -155,6 +155,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
@@ -181,7 +182,6 @@
 #include "ra/debug/debug_state.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
-#include "ra/net/ipx.h"
 #include "ra/net/ipxgconn.h"
 #include "ra/net/ipxmgr.h"
 #include "ra/net/mplayer.h"
@@ -984,8 +984,8 @@ static int Update_WWChat();
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 bool Init_Network() {
-  NetNumType net;
-  NetNodeType node;
+  engine::net::NetNumType net;
+  engine::net::NetNodeType node;
   DCHECK(TheNetwork().packet_transport() != nullptr);
 
   //------------------------------------------------------------------------
@@ -1066,7 +1066,8 @@ TheSession().GameName[0] = 0;
  *                                                                         						  *
  * HISTORY: * 02/15/1995 BR : Created. *
  *=============================================================================================*/
-bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
+bool Process_Global_Packet(GlobalPacketType* packet,
+                           engine::net::IPXAddressClass* address) {
   GlobalPacketType mypacket{};
 
   //------------------------------------------------------------------------

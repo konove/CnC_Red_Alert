@@ -147,6 +147,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
@@ -163,7 +164,6 @@
 #include "td/map/world.h"
 #include "td/net/event.h"
 #include "td/net/internet.h"
-#include "td/net/ipx.h"
 #include "td/net/ipxgconn.h"
 #include "td/net/ipxmgr.h"
 #include "td/net/mplayer.h"
@@ -268,8 +268,8 @@ static int Net_Fake_Join_Dialog();
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 bool Init_Network() {
-  NetNumType net;
-  NetNodeType node;
+  engine::net::NetNumType net;
+  engine::net::NetNodeType node;
 
   /*------------------------------------------------------------------------
   This call allocates all necessary queue buffers, allocates Real-mode
@@ -362,7 +362,8 @@ base::At(TheSession().game_name(), 0) = 0;
  *                                                                         						  *
  * HISTORY: * 02/15/1995 BR : Created. *
  *=============================================================================================*/
-bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
+bool Process_Global_Packet(GlobalPacketType* packet,
+                           engine::net::IPXAddressClass* address) {
   GlobalPacketType mypacket{};
 
   /*
@@ -1761,7 +1762,7 @@ static int Net_Join_Dialog() {
                     .emplace_back(std::make_unique<NodeNameType>())
                     .get();
           base::SafeCopy(who->Name, TheSession().player_name());
-          who->Address = IPXAddressClass();
+          who->Address = engine::net::IPXAddressClass();
           who->Player.House = TheSession().house();
           who->Player.Color =
               static_cast<unsigned char>(TheSession().color_index());
@@ -5377,7 +5378,7 @@ static int Net_Fake_Join_Dialog() {
                     .emplace_back(std::make_unique<NodeNameType>())
                     .get();
           base::SafeCopy(who->Name, TheSession().player_name());
-          who->Address = IPXAddressClass();
+          who->Address = engine::net::IPXAddressClass();
           who->Player.House = TheSession().house();
           who->Player.Color =
               static_cast<unsigned char>(TheSession().color_index());

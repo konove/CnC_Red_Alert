@@ -55,6 +55,7 @@
 #include "base/buffer.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/profile_buffer.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/stream/byte_stream.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"  // IWYU pragma: keep (used only with an entry point)
@@ -62,7 +63,6 @@
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/data/profile.h"
-#include "td/net/ipxaddr.h"
 #include "td/net/ipxmgr.h"
 #include "td/net/network.h"
 #include "td/net/nullmgr.h"
@@ -531,7 +531,7 @@ void Read_Setup_Options(ByteStream& config_file,
   /*
   ** See if a destination network has been specified
   */
-  std::optional<IPXAddressClass> bridge_net = options.bridge_net;
+  std::optional<engine::net::IPXAddressClass> bridge_net = options.bridge_net;
   if (!bridge_net.has_value()) {
     char netbuf[512];
     base::FillBytes(base::ObjectBytes(netbuf), 0, sizeof(netbuf));

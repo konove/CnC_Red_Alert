@@ -28,6 +28,7 @@
 #include "base/buffer.h"
 #include "base/fixed.h"
 #include "base/strings/safe_string.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/window/keyboard.h"
 #include "ra/assets/audio.h"
 #include "ra/core/config.h"
@@ -38,8 +39,6 @@
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
-#include "ra/net/ipx.h"
-#include "ra/net/ipxaddr.h"
 #include "ra/net/ipxgconn.h"
 #include "ra/net/ipxmgr.h"
 #include "ra/net/netdlg.h"
@@ -82,11 +81,11 @@ constexpr engine::window::KeyNumber kPageRespondKey = KN_RETURN;  // KN_COMMA
 
   // An all-zero address is the flag the send path reads later to mean "this
   // is a reply to whoever paged me from outside the game".
-  NetNumType blip;
-  NetNodeType blop;
+  engine::net::NetNumType blip;
+  engine::net::NetNodeType blop;
   base::FillBytes(base::ObjectBytes(blip), 0, sizeof(blip));
   base::FillBytes(base::ObjectBytes(blop), 0, sizeof(blop));
-  TheSession().MessageAddress = IPXAddressClass(blip, blop);
+  TheSession().MessageAddress = engine::net::IPXAddressClass(blip, blop);
 
   // Tell pWolapi not to reset szExternalPager while the reply is
   // being typed.
@@ -209,7 +208,8 @@ void Message_Input(engine::window::KeyNumber& input) {
       // F1-F7 = "To <name> (house):" (only allowed if we're not in
       // ObiWan mode) F8 = "To All:"
       if (input == KN_F1 + TheSession().MaxPlayers - 1) {
-        TheSession().MessageAddress = IPXAddressClass();  // set to broadcast
+        TheSession().MessageAddress =
+            engine::net::IPXAddressClass();               // set to broadcast
         base::SafeCopy(txt, Text_String(TXT_TO_ALL));     // "To All:"
 
         TheSession().Messages.Add_Edit(
@@ -316,8 +316,8 @@ void Message_Input(engine::window::KeyNumber& input) {
         // An all-zero address is the flag Start_External_Page_Reply set,
         // meaning "this is a reply to whoever paged me from outside the
         // game". No F-key ever produces that address.
-        NetNumType blip;
-        NetNodeType blop;
+        engine::net::NetNumType blip;
+        engine::net::NetNodeType blop;
         TheSession().MessageAddress.Get_Address(blip, blop);
         const bool reply_to_external_page =
             blip[0] + blip[1] + blip[2] + blip[3] + blop[0] + blop[1] +

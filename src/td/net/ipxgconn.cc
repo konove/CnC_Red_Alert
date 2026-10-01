@@ -83,8 +83,7 @@
 #include "base/unaligned.h"
 #include "engine/net/combuf.h"
 #include "engine/net/connect.h"
-#include "td/net/ipx.h"
-#include "td/net/ipxaddr.h"
+#include "engine/net/ipxaddr.h"
 #include "td/net/ipxconn.h"
 
 namespace td {
@@ -129,7 +128,8 @@ IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXGlobalConnClass::Send_Packet(std::span<const std::byte> buf, int buflen,
-                                    IPXAddressClass* address, int ack_req) {
+                                    engine::net::IPXAddressClass* address,
+                                    int ack_req) {
   if (buflen < 0 || base::ToSize(buflen) > buf.size() ||
       base::ToSize(buflen) > PacketBuf.size() - sizeof(GlobalHeaderType)) {
     return 0;
@@ -174,7 +174,7 @@ int IPXGlobalConnClass::Send_Packet(std::span<const std::byte> buf, int buflen,
     base::AlignedObject<GlobalHeaderType>(PacketBuf.data())->Address = *address;
   } else {
     base::AlignedObject<GlobalHeaderType>(PacketBuf.data())->Address =
-        IPXAddressClass();
+        engine::net::IPXAddressClass();
   }
 
   /*------------------------------------------------------------------------
@@ -214,7 +214,7 @@ int IPXGlobalConnClass::Send_Packet(std::span<const std::byte> buf, int buflen,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXGlobalConnClass::Receive_Packet(std::span<std::byte> buf, int buflen,
-                                       IPXAddressClass* address) {
+                                       engine::net::IPXAddressClass* address) {
   /*
   --------------------------- Check the magic # ----------------------------
   */
@@ -311,7 +311,7 @@ int IPXGlobalConnClass::Receive_Packet(std::span<std::byte> buf, int buflen,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXGlobalConnClass::Get_Packet(std::span<std::byte> buf, int* buflen,
-                                   IPXAddressClass* address,
+                                   engine::net::IPXAddressClass* address,
                                    uint16_t* product_id) {
   /*
   ------------------------ Return if nothing to do -------------------------
@@ -397,7 +397,7 @@ int IPXGlobalConnClass::Send(std::span<const std::byte> buf, int buflen,
   Extract the packet's embedded IPX address
   ------------------------------------------------------------------------*/
   auto header = base::ReadUnaligned<GlobalHeaderType>(buf);
-  IPXAddressClass* addr = &header.Address;
+  engine::net::IPXAddressClass* addr = &header.Address;
 
   /*------------------------------------------------------------------------
   If it's a broadcast address, broadcast it
@@ -522,7 +522,7 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
  * HISTORY:                                                                *
  *   07/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-void IPXGlobalConnClass::Set_Bridge(const NetNumType& bridge) {
+void IPXGlobalConnClass::Set_Bridge(const engine::net::NetNumType& bridge) {
   if (Configured) {
     base::CopyBytes(base::ObjectBytes(BridgeNet), base::ObjectBytes(bridge), 4);
     base::FillBytes(base::ObjectBytes(BridgeNode), 0xff, 6);

@@ -57,8 +57,8 @@
 #include "base/buffer.h"
 #include "base/strings/safe_string.h"
 #include "engine/net/connect.h"
+#include "engine/net/ipxaddr.h"
 #include "ra/net/ipx.h"
-#include "ra/net/ipxaddr.h"
 #include "ra/net/network.h"
 #include "ra/net/wsproto.h"
 
@@ -107,7 +107,8 @@ int IPXConnClass::PacketLen;
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
-                           uint16_t magicnum, IPXAddressClass* address, int id,
+                           uint16_t magicnum,
+                           engine::net::IPXAddressClass* address, int id,
                            const char* name, int extralen)
     : engine::net::ConnectionClass(
           numsend, numreceive, maxlen, magicnum,
@@ -116,8 +117,8 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
           60,        // timeout
           extralen)  // (currently, this is only used by the Global Channel)
 {
-  NetNumType net;
-  NetNodeType node;
+  engine::net::NetNumType net;
+  engine::net::NetNodeType node;
 
   /*------------------------------------------------------------------------
   Save the values passed in
@@ -413,9 +414,10 @@ void IPXConnClass::Close_Socket(uint16_t /*socket*/) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
-                          IPXAddressClass* address,
-                          [[maybe_unused]] const NetNodeType immed) {
+int IPXConnClass::Send_To(
+    std::span<const std::byte> buf, int buflen,
+    engine::net::IPXAddressClass* address,
+    [[maybe_unused]] const engine::net::NetNodeType immed) {
   DCHECK(immed == nullptr);
   TheNetwork().packet_transport()->WriteTo(buf, buflen, *address);
   return 1;

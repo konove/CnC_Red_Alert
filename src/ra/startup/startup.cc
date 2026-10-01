@@ -62,6 +62,7 @@
 #include "engine/file/search_paths.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/platform/file_system.h"
 #include "engine/platform/win32/win32_registry.h"
 #include "engine/platform/win32/win32_system.h"
@@ -75,7 +76,6 @@
 #include "ra/data/language.h"
 #include "ra/debug/debug_state.h"
 #include "ra/map/world.h"
-#include "ra/net/ipxaddr.h"
 #include "ra/net/ipxmgr.h"
 #include "ra/net/network.h"
 #include "ra/net/nullconn.h"
@@ -197,7 +197,7 @@ static void ReadConfigOptions(const INIClass& ini,
   }
 
   // DestNet names a network on the far side of an IPX bridge.
-  std::optional<IPXAddressClass> bridge_net = options.bridge_net;
+  std::optional<engine::net::IPXAddressClass> bridge_net = options.bridge_net;
   if (!bridge_net.has_value()) {
     std::array<char, 512> dest_net{};
     // Get_String() returns the length of the trimmed value; 0 if absent.

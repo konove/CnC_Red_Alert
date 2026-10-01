@@ -75,9 +75,9 @@
 #include "absl/strings/str_format.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/net/net_select.h"
 #include "engine/net/socket_bytes.h"
-#include "ra/net/ipxaddr.h"
 #include "ra/ui/input.h"
 
 #ifdef _WIN32
@@ -411,9 +411,9 @@ int WinsockInterfaceClass::Read(std::span<std::byte> buffer, int& buffer_len,
  *                                                                                             *
  * HISTORY: * 3/20/96 3:00PM ST : Created *
  *=============================================================================================*/
-void WinsockInterfaceClass::WriteTo(std::span<const std::byte> buffer,
-                                    int buffer_len,
-                                    const IPXAddressClass& address) {
+void WinsockInterfaceClass::WriteTo(
+    std::span<const std::byte> buffer, int buffer_len,
+    const engine::net::IPXAddressClass& address) {
   /*
   ** Create a temporary holding area for the packet.
   */
@@ -429,8 +429,8 @@ void WinsockInterfaceClass::WriteTo(std::span<const std::byte> buffer,
   //	memcpy ( packet->Address, address, sizeof (packet->Address) );
   base::CopyBytes(
       base::ObjectBytes(packet->Address), base::ObjectBytes(address),
-      sizeof(
-          IPXAddressClass));  // Steve Tall has revised WriteTo due to this bug.
+      sizeof(engine::net::IPXAddressClass));  // Steve Tall has revised WriteTo
+                                              // due to this bug.
 
   /*
   ** Add it to our out list.

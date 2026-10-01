@@ -83,9 +83,8 @@
 #include "base/unaligned.h"
 #include "engine/net/combuf.h"
 #include "engine/net/connect.h"
+#include "engine/net/ipxaddr.h"
 #include "td/core/defines.h"
-#include "td/net/ipx.h"
-#include "td/net/ipxaddr.h"
 #include "td/net/ipxconn.h"
 #include "td/net/ipxgconn.h"
 #include "td/net/network.h"
@@ -371,7 +370,7 @@ void IPXManagerClass::Set_Timing(int32_t retrydelta, int32_t maxretries,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 bool IPXManagerClass::Create_Connection(int id, char* name,
-                                        IPXAddressClass* address) {
+                                        engine::net::IPXAddressClass* address) {
   /*
   ----------------------- Error if IPX not installed -----------------------
   */
@@ -572,7 +571,7 @@ char* IPXManagerClass::Connection_Name(int id) {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-IPXAddressClass* IPXManagerClass::Connection_Address(int id) {
+engine::net::IPXAddressClass* IPXManagerClass::Connection_Address(int id) {
   for (int i = 0; i < NumConnections; i++) {
     if (base::At(Connection, i)->ID == id) {
       return &base::At(Connection, i)->Address;
@@ -634,9 +633,9 @@ int IPXManagerClass::Connection_Index(int id) {
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Send_Global_Message(std::span<const std::byte> buf,
-                                         int buflen, int ack_req,
-                                         IPXAddressClass* address) {
+int IPXManagerClass::Send_Global_Message(
+    std::span<const std::byte> buf, int buflen, int ack_req,
+    engine::net::IPXAddressClass* address) {
   /*
   ------------ Error if IPX not installed or not Listening -----------------
   */
@@ -675,7 +674,7 @@ int IPXManagerClass::Send_Global_Message(std::span<const std::byte> buf,
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Get_Global_Message(std::span<std::byte> buf, int* buflen,
-                                        IPXAddressClass* address,
+                                        engine::net::IPXAddressClass* address,
                                         uint16_t* product_id) {
   /*
   ------------ Error if IPX not installed or not Listening -----------------
@@ -851,6 +850,10 @@ int IPXManagerClass::Get_Private_Message(std::span<std::byte> buf, int* buflen,
   return 0;
 }
 
+// The address Service() gives every packet read through Winsock.
+constexpr engine::net::NetNumType kWinsockSenderNet = {1, 1, 1, 1};
+constexpr engine::net::NetNodeType kWinsockSenderNode = {1, 1, 1, 1, 1, 1};
+
 /***************************************************************************
  * IPXManagerClass::Service -- main polling routine for IPX Connections *
  *                                                                         *
@@ -875,19 +878,17 @@ int IPXManagerClass::Service() {
   engine::net::CommHeaderType packet_storage{};
   engine::net::CommHeaderType* packet = &packet_storage;
   int packetlen = 0;
-  IPXAddressClass address;
+  engine::net::IPXAddressClass address;
 
   unsigned char temp_receive_buffer[1024];
   int recv_length = 0;
 
-  // Cursors into temp_receive_buffer above.
-  IPXHeaderType* cur_header_buf = nullptr;
+  // Cursor into temp_receive_buffer above.
   std::span<std::byte> cur_data_buf;
 
   if (TheNetwork().winsock().Get_Connected()) {
     while ((recv_length = TheNetwork().winsock().Read(
                 base::ObjectBytes(temp_receive_buffer), 1024)) != 0) {
-      cur_header_buf = nullptr;
       cur_data_buf = base::ObjectBytes(temp_receive_buffer);
 
       /*.....................................................................
@@ -896,9 +897,10 @@ int IPXManagerClass::Service() {
       packetlen = recv_length;
 
       /*.....................................................................
-      Extract the sender's address from the IPX header
+      Winsock packets carry no IPX header, so the sender's address is a
+      placeholder of all ones.
       .....................................................................*/
-      address.Set_Address(cur_header_buf);
+      address.Set_Address(kWinsockSenderNet, kWinsockSenderNode);
 
       /*.....................................................................
       Examine the Magic Number of the received packet to determine if this
@@ -1313,7 +1315,7 @@ std::span<const std::byte> IPXManagerClass::Oldest_Send() {
  * HISTORY:                                                                *
  *   07/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-void IPXManagerClass::Set_Bridge(const NetNumType& bridge) {
+void IPXManagerClass::Set_Bridge(const engine::net::NetNumType& bridge) {
   if (GlobalChannel) {
     GlobalChannel->Set_Bridge(bridge);
   }

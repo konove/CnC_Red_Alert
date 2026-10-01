@@ -10,11 +10,11 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/net/serial/modemreg.h"
 #include "game/core/queue.h"
 #include "td/core/defines.h"
 #include "td/net/event.h"
-#include "td/net/ipxaddr.h"
 #include "td/net/ipxmgr.h"
 #include "td/net/nodename.h"
 #include "td/net/nullmgr.h"
@@ -107,7 +107,7 @@ class Network {
   // to use it. Only the first four numbers are taken from it; the rest are
   // set to broadcast.
   int& is_bridge() ABSL_ATTRIBUTE_LIFETIME_BOUND { return is_bridge_; }
-  IPXAddressClass& bridge_net() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  engine::net::IPXAddressClass& bridge_net() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return bridge_net_;
   }
 
@@ -126,7 +126,7 @@ class Network {
   int& global_packet_length() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return global_packet_length_;
   }
-  IPXAddressClass& global_address() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  engine::net::IPXAddressClass& global_address() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return global_address_;
   }
   uint16_t& product_id() ABSL_ATTRIBUTE_LIFETIME_BOUND { return product_id_; }
@@ -250,7 +250,7 @@ class Network {
   ModemGameType modem_game_type_{};
 
   int is_bridge_ = 0;
-  IPXAddressClass bridge_net_;
+  engine::net::IPXAddressClass bridge_net_;
 
   bool stealth_ = false;
   bool protect_ = true;
@@ -258,7 +258,7 @@ class Network {
 
   GlobalPacketType global_packet_{};
   int global_packet_length_ = 0;
-  IPXAddressClass global_address_;
+  engine::net::IPXAddressClass global_address_;
   uint16_t product_id_ = 0;
 
   std::vector<std::byte> meta_packet_;

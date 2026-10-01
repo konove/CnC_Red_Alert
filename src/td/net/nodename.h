@@ -3,8 +3,8 @@
 
 #include <cstdint>
 
+#include "engine/net/ipxaddr.h"
 #include "td/core/defines.h"
-#include "td/net/ipxaddr.h"
 
 namespace td {
 
@@ -12,7 +12,7 @@ namespace td {
 // 'Game' structure is for games; 'Player' structure for players.
 struct NodeNameTag {
   char Name[MPLAYER_NAME_MAX]{};
-  IPXAddressClass Address;
+  engine::net::IPXAddressClass Address;
   union {
     struct {
       int Version;

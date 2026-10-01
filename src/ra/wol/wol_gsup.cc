@@ -45,6 +45,7 @@
 #include "engine/file/search_paths.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/sleep.h"
 #include "engine/platform/timer.h"
@@ -68,7 +69,6 @@
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
 #include "ra/map/world.h"
-#include "ra/net/ipx.h"
 #include "ra/net/netdlg.h"
 #include "ra/net/network.h"
 #include "ra/net/nulldlg.h"
@@ -3692,8 +3692,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
         pWO->TournamentOpponentIP = lAddress;
         pWO->bDisconnectPingingCompleted = false;
       }
-      NetNumType net;
-      NetNodeType node;
+      engine::net::NetNumType net;
+      engine::net::NetNodeType node;
       base::FillBytes(base::ObjectBytes(net), 0, 4);
       base::FillBytes(base::ObjectBytes(node), 0, 6);
       base::CopyBytes(base::ObjectBytes(node), base::ObjectBytes(lAddress), 4);

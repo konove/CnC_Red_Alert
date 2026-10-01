@@ -213,9 +213,9 @@ apply_language_setting(ra_intro_test)
 
 add_gtest(
     NAME ra_saveglobals_test
-    SOURCES saveload/saveglobals_test.cc saveload/saveglobals.cc net/ipxaddr.cc
+    SOURCES saveload/saveglobals_test.cc saveload/saveglobals.cc
     # SDL for the scancodes engine/window/keyboard.h names its keys by.
-    LIBS base engine_stream SDL2::SDL2 absl::check absl::log magic_enum::magic_enum
+    LIBS base engine_net engine_stream SDL2::SDL2 absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_saveglobals_test)
 

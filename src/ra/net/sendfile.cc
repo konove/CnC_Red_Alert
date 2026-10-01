@@ -60,6 +60,7 @@
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -72,7 +73,6 @@
 #include "ra/core/jshell.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/text_ids.h"
-#include "ra/net/ipxaddr.h"
 #include "ra/net/ipxmgr.h"
 #include "ra/net/network.h"
 #include "ra/net/nullmgr.h"
@@ -141,7 +141,7 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
   int packet_len = 0;
   uint16_t product_id = 0;
 
-  IPXAddressClass sender_address;
+  engine::net::IPXAddressClass sender_address;
 
   engine::platform::Timer<engine::platform::SystemTickSource>
       response_timer;  // timeout timer for waiting for responses
@@ -247,7 +247,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   // WWDebugString ("RA95 - In Receive_Remote_File\n");
   PixelView& view = TheScreen().visible_view();
   uint16_t product_id = 0;
-  IPXAddressClass sender_address;
+  engine::net::IPXAddressClass sender_address;
 
   /*
   ** Dialog & button dimensions

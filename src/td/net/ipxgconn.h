@@ -59,8 +59,8 @@
 #include <span>
 
 #include "engine/net/connect.h"
+#include "engine/net/ipxaddr.h"
 #include "td/net/ipx.h"
-#include "td/net/ipxaddr.h"
 #include "td/net/ipxconn.h"
 
 namespace td {
@@ -77,7 +77,7 @@ Connection Manager class, when it calls this class's Receive_Packet function.
 ---------------------------------------------------------------------------*/
 struct GlobalHeaderType {
   engine::net::CommHeaderType Header{};
-  IPXAddressClass Address;
+  engine::net::IPXAddressClass Address;
   uint16_t ProductID = 0;
 };
 
@@ -122,18 +122,19 @@ class IPXGlobalConnClass : public IPXConnClass {
   // number and a destination address, which the base versions do not write.
   // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
   virtual int Send_Packet(std::span<const std::byte> buf, int buflen,
-                          IPXAddressClass* address, int ack_req);
+                          engine::net::IPXAddressClass* address, int ack_req);
   // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
   virtual int Receive_Packet(std::span<std::byte> buf, int buflen,
-                             IPXAddressClass* address);
+                             engine::net::IPXAddressClass* address);
   // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
   virtual int Get_Packet(std::span<std::byte> buf, int* buflen,
-                         IPXAddressClass* address, uint16_t* product_id);
+                         engine::net::IPXAddressClass* address,
+                         uint16_t* product_id);
 
   /*.....................................................................
   This is for telling the connection it can cross a bridge.
   .....................................................................*/
-  void Set_Bridge(const NetNumType& bridge);
+  void Set_Bridge(const engine::net::NetNumType& bridge);
 
   /*.....................................................................
   The Product ID for this product.
@@ -145,8 +146,8 @@ class IPXGlobalConnClass : public IPXConnClass {
   supports crossing only one bridge.  Storing the bridge's network number
   allows us to obtain its local target address only once, then re-use it.
   .....................................................................*/
-  NetNumType BridgeNet{};
-  NetNodeType BridgeNode{};
+  engine::net::NetNumType BridgeNet{};
+  engine::net::NetNodeType BridgeNode{};
   int IsBridge{0};
 
   /*

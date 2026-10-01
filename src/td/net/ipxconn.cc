@@ -58,8 +58,8 @@
 #include "base/buffer.h"
 #include "base/strings/safe_string.h"
 #include "engine/net/connect.h"
+#include "engine/net/ipxaddr.h"
 #include "td/net/ipx.h"
-#include "td/net/ipxaddr.h"
 #include "td/net/network.h"
 #include "td/net/tcpip.h"
 
@@ -107,15 +107,16 @@ int IPXConnClass::PacketLen;
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
-                           uint16_t magicnum, IPXAddressClass* address, int id,
+                           uint16_t magicnum,
+                           engine::net::IPXAddressClass* address, int id,
                            const char* name)
     : engine::net::ConnectionClass(numsend, numreceive, maxlen, magicnum,
                                    2,   // retry delta
                                    -1,  // max retries
                                    60)  // timeout
 {
-  NetNumType net;
-  NetNodeType node;
+  engine::net::NetNumType net;
+  engine::net::NetNodeType node;
 
   /*------------------------------------------------------------------------
   Save the values passed in
@@ -427,7 +428,7 @@ void IPXConnClass::Close_Socket(uint16_t /*socket*/) {
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
-                          IPXAddressClass* /*address*/,
+                          engine::net::IPXAddressClass* /*address*/,
                           std::span<const unsigned char> /*immed*/) {
   if (TheNetwork().winsock().Get_Connected()) {
     TheNetwork().winsock().Write(buf, buflen);

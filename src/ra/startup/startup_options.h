@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/installed.h"
-#include "ra/net/ipxaddr.h"
+#include "engine/net/ipxaddr.h"
 
 namespace ra {
 
@@ -71,7 +71,7 @@ struct StartupOptions {
 
   // -DESTNET<address>: a network on the far side of an IPX bridge. Absent
   // unless the whole address parsed.
-  std::optional<IPXAddressClass> bridge_net;
+  std::optional<engine::net::IPXAddressClass> bridge_net;
 
   // Developer switches for save-game checks without a display; see
   // Select_Game() and RunFrame(). -1 or empty means the switch was not given.

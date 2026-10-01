@@ -10,6 +10,7 @@
 #include "base/buffer.h"
 #include "base/installed.h"
 #include "base/strings/safe_string.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/platform/timer.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
@@ -18,8 +19,6 @@
 #include "gtest/gtest.h"
 #include "ra/ai/special.h"
 #include "ra/core/defines.h"
-#include "ra/net/ipx.h"
-#include "ra/net/ipxaddr.h"
 #include "ra/net/session.h"
 #include "ra/screens/score.h"
 
@@ -121,8 +120,8 @@ TEST(SaveGlobalsTest, TruncatedScoreFails) {
 TEST(SaveGlobalsTest, PlayerRecordPreservesNameAddressAndPlayerFields) {
   NodeNameType player{};
   base::SafeCopy(player.Name, "Player");
-  NetNumType network = {1, 2, 3, 4};
-  NetNodeType node = {5, 6, 7, 8, 9, 10};
+  engine::net::NetNumType network = {1, 2, 3, 4};
+  engine::net::NetNodeType node = {5, 6, 7, 8, 9, 10};
   player.Address.Set_Address(network, node);
   player.Player.House = HOUSE_USSR;
   player.Player.Color = PCOLOR_RED;
@@ -137,8 +136,8 @@ TEST(SaveGlobalsTest, PlayerRecordPreservesNameAddressAndPlayerFields) {
   NodeNameType loaded{};
   ASSERT_TRUE(ReadValue(loaded, pipe.bytes));
   EXPECT_STREQ(loaded.Name, "Player");
-  NetNumType loaded_network{};
-  NetNodeType loaded_node{};
+  engine::net::NetNumType loaded_network{};
+  engine::net::NetNodeType loaded_node{};
   loaded.Address.Get_Address(loaded_network, loaded_node);
   EXPECT_EQ(base::CompareBytes(base::ObjectBytes(loaded_network),
                                base::ObjectBytes(network), sizeof(network)),

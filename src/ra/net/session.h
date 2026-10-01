@@ -50,6 +50,7 @@
 #include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/net/connect.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/platform/platform.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
@@ -58,7 +59,6 @@
 #include "ra/ai/special.h"
 #include "ra/core/defines.h"
 #include "ra/net/event.h"
-#include "ra/net/ipxaddr.h"
 #include "ra/objects/object.h"
 #include "ra/objects/target.h"
 #include "ra/startup/version.h"
@@ -287,7 +287,7 @@ struct NodeNameTag {
   void Serialize(Archive& ar);
 
   char Name[MPLAYER_NAME_MAX]{};  // player or game name
-  IPXAddressClass Address;
+  engine::net::IPXAddressClass Address;
   union {
     struct {
       unsigned char IsOpen;    // is the game open?
@@ -656,13 +656,13 @@ class SessionClass {
 
   char ScenarioRequests[20]{};  // Which players requested scenario files
   int RequestCount = 0;
-  IPXAddressClass HostAddress;
+  engine::net::IPXAddressClass HostAddress;
 
   //.....................................................................
   // This is the multiplayer messaging system
   //.....................................................................
   MessageListClass Messages;
-  IPXAddressClass MessageAddress;
+  engine::net::IPXAddressClass MessageAddress;
   char LastMessage[MAX_MESSAGE_LENGTH]{};
   bool WWChat : 1 {false};  // 1 = go into special WW Chat mode
 
@@ -703,14 +703,14 @@ class SessionClass {
   // IPX-specific variables
   //.....................................................................
   int IsBridge{0};                            // 1 = we're crossing a bridge
-  IPXAddressClass BridgeNet;                  // address of bridge
+  engine::net::IPXAddressClass BridgeNet;     // address of bridge
   bool NetStealth{false};                     // makes us invisible
   bool NetProtect{true};                      // keeps others from messaging us
   bool NetOpen{false};                        // 1 = game is open for joining
   char GameName[MPLAYER_NAME_MAX]{};          // game's name
   GlobalPacketType GPacket{};                 // global packet
   int GPacketlen = 0;                         // global packet length
-  IPXAddressClass GAddress;                   // address of sender
+  engine::net::IPXAddressClass GAddress;      // address of sender
   uint16_t GProductID{0};                     // product ID of sender
   char MetaPacket[MAX_IPX_PACKET_SIZE]{};     // packet building buffer
   int MetaSize;                               // size of MetaPacket

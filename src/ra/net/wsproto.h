@@ -58,9 +58,11 @@ using HANDLE = void*;
 
 #include "engine/net/net_select.h"
 
-namespace ra {
-
+namespace engine::net {
 class IPXAddressClass;
+}  // namespace engine::net
+
+namespace ra {
 
 /*
 ** Misc defines
@@ -114,7 +116,7 @@ class WinsockInterfaceClass {
   virtual int Read(std::span<std::byte> buffer, int& buffer_len,
                    std::span<std::byte> address, int& address_len);
   virtual void WriteTo(std::span<const std::byte> buffer, int buffer_len,
-                       const IPXAddressClass& address);
+                       const engine::net::IPXAddressClass& address);
   virtual void Broadcast(std::span<const std::byte> buffer, int buffer_len);
   virtual void Discard_In_Buffers();
   virtual void Discard_Out_Buffers();

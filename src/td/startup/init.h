@@ -5,7 +5,7 @@
 #include <span>
 #include <string_view>
 
-#include "td/net/ipxaddr.h"
+#include "engine/net/ipxaddr.h"
 #include "td/startup/startup_options.h"
 
 class ByteStream;
@@ -35,7 +35,8 @@ void Load_Recording_Values(ByteStream& file);
 // node. Only the network is used; the returned address has the broadcast
 // node, so packets reach every machine across the bridge. Returns nothing for
 // a malformed address, or one shorter than four bytes.
-std::optional<IPXAddressClass> ParseDestNet(std::string_view address);
+std::optional<engine::net::IPXAddressClass> ParseDestNet(
+    std::string_view address);
 
 }  // namespace td
 

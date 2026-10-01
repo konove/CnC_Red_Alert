@@ -55,8 +55,7 @@
 #include "base/unaligned.h"
 #include "engine/net/combuf.h"
 #include "engine/net/connect.h"
-#include "ra/net/ipx.h"
-#include "ra/net/ipxaddr.h"
+#include "engine/net/ipxaddr.h"
 #include "ra/net/ipxconn.h"
 
 namespace ra {
@@ -98,7 +97,7 @@ IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
           nullptr,          // IPX Address (none)
           0,                // Connection ID
           "",               // Connection Name
-          sizeof(IPXAddressClass)),
+          sizeof(engine::net::IPXAddressClass)),
       ProductID(product_id)  // extra storage for the sender's address
 {
   for (unsigned int& i : LastPacketID) {
@@ -133,12 +132,13 @@ IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXGlobalConnClass::Send_Packet(std::span<const std::byte> buf, int buflen,
-                                    IPXAddressClass* address, int ack_req) {
+                                    engine::net::IPXAddressClass* address,
+                                    int ack_req) {
   if (buflen < 0 || base::ToSize(buflen) > buf.size() ||
       base::ToSize(buflen) > PacketBuf.size() - sizeof(GlobalHeaderType)) {
     return 0;
   }
-  IPXAddressClass dest_addr;
+  engine::net::IPXAddressClass dest_addr;
 
   /*------------------------------------------------------------------------
   Store the packet's Magic Number
@@ -191,7 +191,7 @@ int IPXGlobalConnClass::Send_Packet(std::span<const std::byte> buf, int buflen,
   ------------------------------------------------------------------------*/
   return Queue->Queue_Send(
       PacketBuf, buflen + static_cast<int>(sizeof(GlobalHeaderType)),
-      base::ObjectBytes(dest_addr), sizeof(IPXAddressClass));
+      base::ObjectBytes(dest_addr), sizeof(engine::net::IPXAddressClass));
 
 } /* end of Send_Packet */
 
@@ -218,7 +218,7 @@ int IPXGlobalConnClass::Send_Packet(std::span<const std::byte> buf, int buflen,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXGlobalConnClass::Receive_Packet(std::span<std::byte> buf, int buflen,
-                                       IPXAddressClass* address) {
+                                       engine::net::IPXAddressClass* address) {
   GlobalHeaderType ackpacket{};  // ACK packet to send
 
   /*------------------------------------------------------------------------
@@ -268,7 +268,7 @@ int IPXGlobalConnClass::Receive_Packet(std::span<std::byte> buf, int buflen,
       //..................................................................
       if (!resend) {
         if (Queue->Queue_Receive(buf, buflen, base::ObjectBytes(*address),
-                                 sizeof(IPXAddressClass))) {
+                                 sizeof(engine::net::IPXAddressClass))) {
           base::At(LastAddress, LastRXIndex) = *address;
           base::At(LastPacketID, LastRXIndex) = packet->Header.PacketID;
           LastRXIndex++;
@@ -292,7 +292,7 @@ int IPXGlobalConnClass::Receive_Packet(std::span<std::byte> buf, int buflen,
         ackpacket.Header.PacketID = packet->Header.PacketID;
         ackpacket.ProductID = ProductID;
         Send(base::ObjectBytes(ackpacket), sizeof(GlobalHeaderType),
-             base::ObjectBytes(*address), sizeof(IPXAddressClass));
+             base::ObjectBytes(*address), sizeof(engine::net::IPXAddressClass));
       }
 
       break;
@@ -304,7 +304,7 @@ int IPXGlobalConnClass::Receive_Packet(std::span<std::byte> buf, int buflen,
     .....................................................................*/
     case PACKET_DATA_NOACK:
       Queue->Queue_Receive(buf, buflen, base::ObjectBytes(*address),
-                           sizeof(IPXAddressClass));
+                           sizeof(engine::net::IPXAddressClass));
       break;
 
     /*.....................................................................
@@ -374,7 +374,7 @@ int IPXGlobalConnClass::Receive_Packet(std::span<std::byte> buf, int buflen,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXGlobalConnClass::Get_Packet(std::span<std::byte> buf, int* buflen,
-                                   IPXAddressClass* address,
+                                   engine::net::IPXAddressClass* address,
                                    uint16_t* product_id) {
   /*------------------------------------------------------------------------
   Return if nothing to do
@@ -418,7 +418,8 @@ int IPXGlobalConnClass::Get_Packet(std::span<std::byte> buf, int* buflen,
     }
     *buflen = packetlen;
     *product_id = packet->ProductID;
-    *address = base::ReadUnaligned<IPXAddressClass>(rec_entry->ExtraBuffer);
+    *address = base::ReadUnaligned<engine::net::IPXAddressClass>(
+        rec_entry->ExtraBuffer);
 
     return 1;
   }
@@ -462,7 +463,8 @@ int IPXGlobalConnClass::Send(std::span<const std::byte> buf, int buflen,
   /*------------------------------------------------------------------------
   Extract the packet's embedded IPX address
   ------------------------------------------------------------------------*/
-  auto addr_storage = base::ReadUnaligned<IPXAddressClass>(extrabuf);
+  auto addr_storage =
+      base::ReadUnaligned<engine::net::IPXAddressClass>(extrabuf);
   auto* addr = &addr_storage;
 
   /*------------------------------------------------------------------------
@@ -551,7 +553,7 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
  * HISTORY:                                                                *
  *   07/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-void IPXGlobalConnClass::Set_Bridge(NetNumType /*bridge*/) {
+void IPXGlobalConnClass::Set_Bridge(engine::net::NetNumType /*bridge*/) {
   if (Configured) {
     IsBridge = 0;
   }

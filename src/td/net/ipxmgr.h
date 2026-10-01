@@ -142,8 +142,8 @@
 */
 #include "absl/base/attributes.h"
 #include "engine/net/connmgr.h"
+#include "engine/net/ipxaddr.h"
 #include "td/net/ipx.h"
-#include "td/net/ipxaddr.h"
 #include "td/net/ipxconn.h"
 #include "td/net/ipxgconn.h"
 
@@ -192,28 +192,32 @@ class IPXManagerClass : public engine::net::ConnManClass {
   [[nodiscard]] int Is_IPX() const;
   void Set_Timing(int32_t retrydelta, int32_t maxretries,
                   int32_t timeout) override;
-  void Set_Bridge(const NetNumType& bridge);
+  void Set_Bridge(const engine::net::NetNumType& bridge);
 
   /*.....................................................................
   These routines control creation of the "Connections" (data queues) for
   each remote system.
   .....................................................................*/
-  bool Create_Connection(int id, char* name, IPXAddressClass* address);
+  bool Create_Connection(int id, char* name,
+                         engine::net::IPXAddressClass* address);
   bool Delete_Connection(int id);
   int Num_Connections() override;
   int Connection_ID(int index) override;
   // Both point into the connection, which lives until Delete_Connection.
   char* Connection_Name(int id) ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  IPXAddressClass* Connection_Address(int id) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  engine::net::IPXAddressClass* Connection_Address(int id)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
   int Connection_Index(int id) override;
 
   /*.....................................................................
   This is how the application sends & receives messages.
   .....................................................................*/
   int Send_Global_Message(std::span<const std::byte> buf, int buflen,
-                          int ack_req = 0, IPXAddressClass* address = nullptr);
+                          int ack_req = 0,
+                          engine::net::IPXAddressClass* address = nullptr);
   int Get_Global_Message(std::span<std::byte> buf, int* buflen,
-                         IPXAddressClass* address, uint16_t* product_id);
+                         engine::net::IPXAddressClass* address,
+                         uint16_t* product_id);
 
   int Send_Private_Message(std::span<const std::byte> buf, int buflen,
                            int ack_req = 1,

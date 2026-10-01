@@ -54,8 +54,8 @@
 #include <cstdint>
 
 #include "engine/net/connect.h"
+#include "engine/net/ipxaddr.h"
 #include "ra/net/ipx.h"
-#include "ra/net/ipxaddr.h"
 
 namespace ra {
 
@@ -77,7 +77,7 @@ class IPXConnClass : public engine::net::ConnectionClass {
   Constructor/destructor.
   .....................................................................*/
   IPXConnClass(int numsend, int numreceive, int maxlen, uint16_t magicnum,
-               IPXAddressClass* address, int id, const char* name,
+               engine::net::IPXAddressClass* address, int id, const char* name,
                int extralen = 0);
   ~IPXConnClass() override = default;
   IPXConnClass(const IPXConnClass&) = delete;
@@ -113,13 +113,13 @@ class IPXConnClass : public engine::net::ConnectionClass {
   /*.....................................................................
   The Destination IPX Address for this connection
   .....................................................................*/
-  IPXAddressClass Address;
+  engine::net::IPXAddressClass Address;
 
   /*.....................................................................
   The "Immediate" (Bridge) address for this connection, and a flag
   telling if the address has been precomputed.
   .....................................................................*/
-  NetNodeType ImmediateAddress{};
+  engine::net::NetNodeType ImmediateAddress{};
   int Immed_Set;
 
   /*.....................................................................
@@ -148,7 +148,8 @@ class IPXConnClass : public engine::net::ConnectionClass {
   static int Open_Socket(uint16_t socket);
   static void Close_Socket(uint16_t socket);
   static int Send_To(std::span<const std::byte> buf, int buflen,
-                     IPXAddressClass* address, const NetNodeType immed);
+                     engine::net::IPXAddressClass* address,
+                     const engine::net::NetNodeType immed);
   static bool Broadcast(std::span<const std::byte> buf, int buflen);
 
   /*.....................................................................

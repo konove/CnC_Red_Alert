@@ -86,11 +86,10 @@
 #include "base/unaligned.h"
 #include "engine/net/combuf.h"
 #include "engine/net/connect.h"
+#include "engine/net/ipxaddr.h"
 #include "ra/core/defines.h"
 #include "ra/map/world.h"
 #include "ra/net/event.h"
-#include "ra/net/ipx.h"
-#include "ra/net/ipxaddr.h"
 #include "ra/net/ipxconn.h"
 #include "ra/net/ipxgconn.h"
 #include "ra/net/network.h"
@@ -385,7 +384,7 @@ void IPXManagerClass::Set_Timing(int32_t retrydelta, int32_t maxretries,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Create_Connection(int id, char* name,
-                                       IPXAddressClass* address) {
+                                       engine::net::IPXAddressClass* address) {
   //------------------------------------------------------------------------
   //	Error if IPX not installed
   //------------------------------------------------------------------------
@@ -584,7 +583,7 @@ char* IPXManagerClass::Connection_Name(int id) {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-IPXAddressClass* IPXManagerClass::Connection_Address(int id) {
+engine::net::IPXAddressClass* IPXManagerClass::Connection_Address(int id) {
   for (int i = 0; i < NumConnections; i++) {
     if (base::At(Connection, i)->ID == id) {
       return &base::At(Connection, i)->Address;
@@ -676,9 +675,9 @@ void IPXManagerClass::Set_Connection_Parms(int index, int id, char* name) {
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Send_Global_Message(std::span<const std::byte> buf,
-                                         int buflen, int ack_req,
-                                         IPXAddressClass* address) {
+int IPXManagerClass::Send_Global_Message(
+    std::span<const std::byte> buf, int buflen, int ack_req,
+    engine::net::IPXAddressClass* address) {
   //------------------------------------------------------------------------
   //	Error if IPX not installed or not Listening
   //------------------------------------------------------------------------
@@ -718,7 +717,7 @@ int IPXManagerClass::Send_Global_Message(std::span<const std::byte> buf,
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Get_Global_Message(std::span<std::byte> buf, int* buflen,
-                                        IPXAddressClass* address,
+                                        engine::net::IPXAddressClass* address,
                                         uint16_t* product_id) {
   //------------------------------------------------------------------------
   //	Error if IPX not installed or not Listening
@@ -909,7 +908,7 @@ int IPXManagerClass::Service() {
   engine::net::CommHeaderType packet_storage{};
   engine::net::CommHeaderType* packet = &packet_storage;
   int packetlen = 0;
-  IPXAddressClass address;
+  engine::net::IPXAddressClass address;
 
   unsigned char temp_receive_buffer[1024];
 
@@ -929,7 +928,7 @@ int IPXManagerClass::Service() {
       if (packetlen) {
         cur_data_buf = base::ObjectBytes(temp_receive_buffer)
                            .first(base::ToSize(packetlen));
-        address = base::ReadUnaligned<IPXAddressClass>(
+        address = base::ReadUnaligned<engine::net::IPXAddressClass>(
             base::ObjectBytes(temp_address));
 
         if (std::cmp_less(packetlen, sizeof(engine::net::CommHeaderType)) ||
@@ -1401,7 +1400,7 @@ std::span<const std::byte> IPXManagerClass::Oldest_Send() {
  * HISTORY:                                                                *
  *   07/06/1995 BRR : Created.                                             *
  *=========================================================================*/
-void IPXManagerClass::Set_Bridge(NetNumType bridge) {
+void IPXManagerClass::Set_Bridge(engine::net::NetNumType bridge) {
   if (GlobalChannel) {
     GlobalChannel->Set_Bridge(bridge);
   }

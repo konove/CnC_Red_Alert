@@ -54,6 +54,7 @@
 
 #include "base/array.h"
 #include "base/unaligned.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/net/packet.h"
 #include "engine/platform/timer.h"
 #include "engine/platform/win32/win32_com.h"
@@ -66,7 +67,6 @@
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/map/world.h"
-#include "ra/net/ipx.h"
 #include "ra/net/network.h"
 #include "ra/net/session.h"
 #include "ra/objects/aircraft.h"
@@ -400,8 +400,8 @@ void Send_Statistics_Packet() {
       if (player1 && player2) {  //	Can this ever fail?		ajw
         if constexpr (config::kWolapiEnabled) {
           //	Send IP addresses of both players.
-          NetNumType net;
-          NetNodeType node;
+          engine::net::NetNumType net;
+          engine::net::NetNodeType node;
           char szIPAddress[30];
           TheSession().Players.at(0)->Address.Get_Address(net, node);
           absl::SNPrintF(szIPAddress, sizeof(szIPAddress), "%i.%i.%i.%i",

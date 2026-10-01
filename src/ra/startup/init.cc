@@ -100,6 +100,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/net/ipxaddr.h"
 #include "engine/platform/file_system.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/random_seed.h"
@@ -140,8 +141,6 @@
 #include "ra/editor/mapedit.h"
 #include "ra/map/logic.h"
 #include "ra/map/world.h"
-#include "ra/net/ipx.h"
-#include "ra/net/ipxaddr.h"
 #include "ra/net/mplayer.h"
 #include "ra/net/netdlg.h"
 #include "ra/net/network.h"
@@ -1277,9 +1276,10 @@ static void Play_Intro(bool sequenced) {
 
 // Kept out of Parse_Command_Line() so the std::optional below does not make
 // clang-tidy run its optional-access dataflow over that whole function.
-std::optional<IPXAddressClass> ParseDestNet(const std::string_view address) {
-  NetNumType net;
-  NetNodeType node;
+std::optional<engine::net::IPXAddressClass> ParseDestNet(
+    const std::string_view address) {
+  engine::net::NetNumType net;
+  engine::net::NetNodeType node;
 
   /*
   ** Scan the command-line string, pulling off each address piece
@@ -1306,7 +1306,7 @@ std::optional<IPXAddressClass> ParseDestNet(const std::string_view address) {
   // The node becomes a broadcast address, so packets reach every machine on
   // the network across the bridge.
   base::FillBytes(base::ObjectBytes(node), 0xff, 6);
-  return IPXAddressClass(net, node);
+  return engine::net::IPXAddressClass(net, node);
 }
 
 // Returns the IPX socket "-SOCKET<offset>" asks for: 0x4000 plus an offset in
@@ -1327,7 +1327,8 @@ static std::optional<uint16_t> ParseSocketArgument(
 static void ApplyDestNet(const std::string_view address,
                          StartupOptions& options) {
   // A malformed address leaves any earlier one alone.
-  const std::optional<IPXAddressClass> bridge_net = ParseDestNet(address);
+  const std::optional<engine::net::IPXAddressClass> bridge_net =
+      ParseDestNet(address);
   if (bridge_net.has_value()) {
     options.bridge_net = bridge_net;
   }

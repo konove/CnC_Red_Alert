@@ -46,8 +46,6 @@ namespace td {
 /*
 ******************************** Structures *********************************
 */
-using NetNumType = unsigned char[4];
-using NetNodeType = unsigned char[6];
 
 /*---------------------------------------------------------------------------
 This is the IPX Packet structure.  It's followed by the data itself, which
