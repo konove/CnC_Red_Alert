@@ -14,6 +14,7 @@ crate-type = ["staticlib"]
 doctest = false
 
 [dependencies]
+cxx = "1.0.202"
 
 # Debug builds keep the kernels fast, as optimize_in_debug() does for C++
 # (cmake/OptimizeInDebug.cmake). A panic must not unwind into C++.

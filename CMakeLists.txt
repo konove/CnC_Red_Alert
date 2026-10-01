@@ -1,4 +1,10 @@
 cmake_minimum_required(VERSION 3.14)
+# The cxx bridge's headers are generated in src/rust and compiled by targets in
+# other directories; before this policy only src/rust would know they are
+# generated, and a fresh configure would fail to find them.
+if (POLICY CMP0118)
+    cmake_policy(SET CMP0118 NEW)
+endif ()
 project(CnCRedAlert)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -69,6 +75,15 @@ FetchContent_MakeAvailable(magic_enum)
 # "none" value. Reflecting from 0 makes enum_count/enum_values see exactly the
 # index values, so nothing needs FIRST/COUNT sentinels.
 target_compile_definitions(magic_enum INTERFACE MAGIC_ENUM_RANGE_MIN=0)
+
+# Corrosion: builds the Rust crate in src/rust with cargo and links it like
+# any other library, with the C++ side of its cxx bridge as a target.
+FetchContent_Declare(
+        Corrosion
+        GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
+        GIT_TAG v0.6.1
+)
+FetchContent_MakeAvailable(Corrosion)
 
 # Option to enable AddressSanitizer for debugging memory issues
 option(ENABLE_ASAN "Enable AddressSanitizer for memory debugging" OFF)
@@ -213,6 +228,7 @@ include(GoogleTest)
 enable_testing()
 
 add_subdirectory(src/base)
+add_subdirectory(src/rust)
 add_subdirectory(src/engine)
 add_subdirectory(third_party)
 
