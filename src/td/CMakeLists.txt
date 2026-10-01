@@ -44,6 +44,8 @@ endif ()
 
 apply_dotenv_settings(td_engine)
 apply_dotenv_settings(tdsdl)
+# The window icon; cc_icon.rc gives the Windows executable its file icon.
+embed_file(td_engine conquer.ico kConquerIcon)
 # startup/sdlstub.cc includes SDL headers directly, so td_engine links SDL2 itself
 # rather than relying on it arriving transitively through engine_window/
 # engine_video.

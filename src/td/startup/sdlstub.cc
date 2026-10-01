@@ -2,8 +2,12 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <span>
+#include <utility>
 
+#include "embedded/kConquerIcon.h"
 #include "engine/audio/audio_mixer.h"
+#include "engine/gfx/ico_image.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/net/nullconn.h"
 #include "engine/platform/timer.h"
@@ -34,7 +38,12 @@ void Check_For_Focus_Loss() {
 
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
-  engine::window::TheDisplay().Init(WINDOW_NAME, width, height);
+  engine::window::Display& display = engine::window::TheDisplay();
+  display.Init(WINDOW_NAME, width, height);
+  if (auto icon = engine::gfx::DecodeIco(
+          std::as_bytes(std::span(embedded::kConquerIcon)))) {
+    display.SetIcon(*std::move(icon));
+  }
 }
 
 GameWindowEvents::GameWindowEvents(game::Input& input)
