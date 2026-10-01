@@ -67,6 +67,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "td/ai/special.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
@@ -1673,7 +1674,7 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
     const COORDINATE coord =
         TheMap().at(cell).Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
-      return i->Unlimbo(coord, DIR_E);
+      return i->Unlimbo(coord, game::DIR_E);
     }
     base::DeletePooled(i);
   }

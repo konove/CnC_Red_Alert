@@ -2,12 +2,13 @@
 #define CNC_RED_ALERT_RA_CORE_COORD_H_
 
 #include <algorithm>
+#include <bit>
 #include <cstdint>
 #include <span>
 
 #include "engine/gfx/rect.h"
+#include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 
 namespace ra {
 
@@ -18,16 +19,24 @@ std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, const Rect& rect,
                                              bool no_center = true);
 
 // Moves `start` by `distance` leptons in the given `facing` direction.
-COORDINATE Coord_Move(COORDINATE start, DirType facing, uint16_t distance);
+COORDINATE Coord_Move(COORDINATE start, game::DirType facing,
+                      uint16_t distance);
 
 // Returns a random coordinate within `distance` pixels of `coord`. If `lock`
 // is true, the result is snapped to the nearest cell center.
 COORDINATE Coord_Scatter(COORDINATE coord, int distance,
                          bool lock = false);
 
-DirType Direction(COORDINATE coord1, COORDINATE coord2);
-DirType Direction256(COORDINATE coord1, COORDINATE coord2);
-DirType Direction8(COORDINATE coord1, COORDINATE coord2);
+game::DirType Direction(COORDINATE coord1, COORDINATE coord2);
+game::DirType Direction256(COORDINATE coord1, COORDINATE coord2);
+game::DirType Direction8(COORDINATE coord1, COORDINATE coord2);
+
+// Calculates the DirType from one cell to another (8-direction accuracy).
+inline game::DirType Direction(CELL cell1, CELL cell2) {
+  const auto from = std::bit_cast<CELL_COMPOSITE>(cell1);
+  const auto to = std::bit_cast<CELL_COMPOSITE>(cell2);
+  return game::Desired_Facing8(from.Sub.X, from.Sub.Y, to.Sub.X, to.Sub.Y);
+}
 
 // Returns the lepton distance between two coordinates using the "Dragon
 // Strike" approximation: max(dx,dy) + min(dx,dy)/2.

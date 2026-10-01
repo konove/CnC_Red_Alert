@@ -43,8 +43,8 @@
 
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "game/sim/facing.h"
 #include "td/core/defines.h"
-#include "td/core/facing.h"
 #include "td/objects/bullet.h"
 #include "td/objects/drive.h"
 
@@ -69,9 +69,10 @@ class TurretClass : public DriveClass {
   **	This is the facing of the turret. It can be, and usually is,
   **	rotated independently of the body it is attached to.
   */
-  FacingClass SecondaryFacing;
+  game::FacingClass SecondaryFacing;
 
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+               game::DirType dir = game::DIR_N) override;
 
   /*
   **	File I/O.
@@ -84,9 +85,9 @@ class TurretClass : public DriveClass {
   TurretClass& operator=(TurretClass&&) = delete;
 
   BulletClass* Fire_At(TARGET target, int which) override;
-  DirType Fire_Direction() const override;
+  game::DirType Fire_Direction() const override;
   FireErrorType Can_Fire(TARGET target, int which) const override;
-  bool Ok_To_Move(DirType dir) override;
+  bool Ok_To_Move(game::DirType dir) override;
   void AI() override;
   COORDINATE Fire_Coord(int which) const override;
 

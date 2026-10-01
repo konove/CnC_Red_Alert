@@ -46,6 +46,7 @@
 #include "base/enum_array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/jshell.h"
 
@@ -2434,56 +2435,9 @@ enum class WindowNumberType {
 };
 using enum WindowNumberType;
 
-/****************************************************************************
-**	For every cell there are 8 adjacent cells. Use these direction numbers
-**	when referring to adjacent cells. This comes into play when moving
-**	between cells and in the Desired_Facing() algorithm.
-*/
-enum class FacingType : int8_t {
-  FACING_NONE = -1,
-  FACING_N,   // North
-  FACING_NE,  // North-East
-  FACING_E,   // East
-  FACING_SE,  // South-East
-  FACING_S,   // South
-  FACING_SW,  // South-West
-  FACING_W,   // West
-  FACING_NW   // North-West
-};
-using enum FacingType;
-
-// Wraps a facing sum or difference onto the eight compass facings. Negative
-// values wrap the same way the old low-three-bits mask did (-1 is FACING_NW).
-constexpr FacingType WrapFacing(const int facing) {
-  return static_cast<FacingType>(((facing % 8) + 8) % 8);
-}
-
-inline FacingType operator+(const FacingType f1, const FacingType f2) {
-  return WrapFacing(static_cast<int>(f1) + static_cast<int>(f2));
-}
-inline FacingType operator+(const FacingType f1, const int f2) {
-  return WrapFacing(static_cast<int>(f1) + f2);
-}
-
-inline FacingType operator-(const FacingType f1, const FacingType f2) {
-  return WrapFacing(static_cast<int>(f1) - static_cast<int>(f2));
-}
-inline FacingType operator-(const FacingType f1, const int f2) {
-  return WrapFacing(static_cast<int>(f1) - f2);
-}
-
-inline FacingType operator+=(FacingType& f1, const FacingType f2) {
-  f1 = WrapFacing(static_cast<int>(f1) + static_cast<int>(f2));
-  return f1;
-}
-inline FacingType operator+=(FacingType& f1, const int f2) {
-  f1 = WrapFacing(static_cast<int>(f1) + f2);
-  return f1;
-}
-
-inline int operator*(const FacingType f1, const FacingType f2) {
-  return static_cast<int>(f1) * static_cast<int>(f2);
-}
+// The highest direction a random facing may take (Tiberian Dawn's stops at
+// 254).
+inline constexpr game::DirType kMaxRandomDirection = game::AsDirection(255);
 
 /****************************************************************************
 **	Timer constants. These are used when setting the countdown timer.
@@ -2899,7 +2853,7 @@ struct PathType {
   CELL Start = 0;                 // Starting cell number.
   int Cost = 0;                   // Accumulated terrain cost.
   int Length = 0;                 // Command string length.
-  std::span<FacingType> Command;  // Pointer to command string.
+  std::span<game::FacingType> Command;  // Pointer to command string.
   std::span<uint32_t> Overlap;    // Overlap bitmap, see ra/map/path_overlap.h.
   CELL LastOverlap = 0;           // stores position of last overlap
   CELL LastFixup = 0;             // stores position of last overlap

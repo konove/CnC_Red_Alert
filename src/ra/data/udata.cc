@@ -69,11 +69,11 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/core/type_heaps.h"
@@ -1136,7 +1136,8 @@ void UnitTypeClass::One_Time() {
 bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   auto* unit = base::NewPooled<UnitClass>(Type, house);
   if (unit != nullptr) {
-    return unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX));
+    return unit->Unlimbo(Cell_Coord(cell),
+                         Random_Pick(game::DIR_N, kMaxRandomDirection));
   }
   return false;
 }
@@ -1250,7 +1251,7 @@ int UnitTypeClass::Max_Pips() const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
+void UnitTypeClass::Turret_Adjust(game::DirType dir, int& x, int& y) const {
   static const struct {
     signed char X, Y;
   } _adjust[32] = {{1, 2},                                  // N
@@ -1270,7 +1271,7 @@ void UnitTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
       break;
 
     case UNIT_MGG:
-      index = Dir_To_32(dir);
+      index = game::Dir_To_32(dir);
       x += base::At(_adjust, index).X;
       y += base::At(_adjust, index).Y;
       break;

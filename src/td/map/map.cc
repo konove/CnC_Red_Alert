@@ -77,6 +77,7 @@
 #include "engine/gfx/tile.h"
 #include "engine/platform/platform.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/region.h"
 #include "td/ai/special.h"
@@ -1149,8 +1150,10 @@ void MapClass::Logic() {
         *tiberium.
         */
         if (TheMap().In_Radar(cell)) {
-          const FacingType offset = Random_Pick(FACING_N, FACING_NW);
-          for (const FacingType j : magic_enum::enum_values<FacingType>()) {
+          const game::FacingType offset =
+              Random_Pick(game::FACING_N, game::FACING_NW);
+          for (const game::FacingType j :
+               magic_enum::enum_values<game::FacingType>()) {
             CellClass* newcell = &(*this).at(cell).Adjacent_Cell(j + offset);
 
             if (newcell && newcell->Cell_Object() == nullptr &&

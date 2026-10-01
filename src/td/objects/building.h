@@ -224,7 +224,7 @@ class BuildingClass final : public TechnoClass {
     return *Class;
   }
   [[nodiscard]] int Refund_Amount() const override;
-  [[nodiscard]] DirType Fire_Direction() const override;
+  [[nodiscard]] game::DirType Fire_Direction() const override;
   [[nodiscard]] int Power_Output() const;
 
   /*
@@ -247,8 +247,10 @@ class BuildingClass final : public TechnoClass {
   void Grand_Opening(bool captured = false);
   void Update_Buildables();
   [[nodiscard]] MoveType Can_Enter_Cell(
-      CELL cell, FacingType /*unused*/ = FACING_NONE) const override;
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+      CELL cell,
+      game::FacingType /*unused*/ = game::FACING_NONE) const override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+               game::DirType dir = game::DIR_N) override;
   bool Limbo() override;
   bool Passes_Proximity_Check(CELL homecell);
 

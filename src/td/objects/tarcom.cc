@@ -55,11 +55,11 @@
  *=============================================================================================*/
 #include "td/objects/tarcom.h"
 
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "td/assets/audio.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/facing.h"
-#include "td/core/inline.h"
 #include "td/objects/target.h"
 #include "td/objects/turret.h"
 #include "td/objects/type.h"
@@ -124,7 +124,7 @@ void TarComClass::AI() {
         } else {
           if (*this == UNIT_FTANK) {
             SecondaryFacing.Set_Desired(
-                Facing_Dir(Dir_Facing(Direction(TarCom))));
+                game::Facing_Dir(game::Dir_Facing(Direction(TarCom))));
           } else {
             SecondaryFacing.Set_Desired(Direction(TarCom));
           }
@@ -151,7 +151,7 @@ void TarComClass::AI() {
   }
 
   if (Target_Legal(TarCom) && !IsRotating) {
-    const DirType dir = Direction(TarCom);
+    const game::DirType dir = Direction(TarCom);
 
     if (Class->IsTurretEquipped) {
       SecondaryFacing.Set_Desired(dir);
@@ -167,7 +167,7 @@ void TarComClass::AI() {
           !Target_Legal(NavCom) && !IsDriving &&
           PrimaryFacing.Difference(dir)) {
         if (*this == UNIT_FTANK) {
-          PrimaryFacing.Set_Desired(Facing_Dir(Dir_Facing(dir)));
+          PrimaryFacing.Set_Desired(game::Facing_Dir(game::Dir_Facing(dir)));
         } else {
           PrimaryFacing.Set_Desired(dir);
         }

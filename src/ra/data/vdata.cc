@@ -68,11 +68,11 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/text_ids.h"
@@ -451,7 +451,8 @@ ObjectClass* VesselTypeClass::Create_One_Of(HouseClass* house) const {
 bool VesselTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   auto* unit = base::NewPooled<VesselClass>(Type, house);
   if (unit != nullptr) {
-    return unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX));
+    return unit->Unlimbo(Cell_Coord(cell),
+                         Random_Pick(game::DIR_N, kMaxRandomDirection));
   }
   base::DeletePooled(unit);
   return false;
@@ -538,7 +539,7 @@ void VesselTypeClass::One_Time() {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
+void VesselTypeClass::Turret_Adjust(game::DirType dir, int& x, int& y) const {
   auto xx = static_cast<int16_t>(x);
   auto yy = static_cast<int16_t>(y);
 
@@ -556,7 +557,8 @@ void VesselTypeClass::Turret_Adjust(DirType dir, int& x, int& y) const {
       break;
 
     case VESSEL_DD:
-      base::MovePointIsometric(xx, yy, static_cast<uint8_t>(dir + DIR_S), 8);
+      base::MovePointIsometric(xx, yy, static_cast<uint8_t>(dir + game::DIR_S),
+                               8);
       x = xx;
       y = yy - 4;
       break;

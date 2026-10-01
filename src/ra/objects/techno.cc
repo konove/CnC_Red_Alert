@@ -170,6 +170,7 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
 #include "game/sim/door.h"
 #include "game/sim/utracker.h"
 #include "ra/ai/scenario.h"
@@ -185,7 +186,6 @@
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
@@ -607,7 +607,7 @@ bool TechnoClass::Is_Allowed_To_Recloak() const { return true; }
 COORDINATE TechnoClass::Fire_Coord(int which) const {
   DCHECK(IsActive);
 
-  const DirType dir = Turret_Facing();
+  const game::DirType dir = Turret_Facing();
   const TechnoTypeClass* tclass = Techno_Type_Class();
 
   int dist = 0;
@@ -621,12 +621,14 @@ COORDINATE TechnoClass::Fire_Coord(int which) const {
   }
 
   COORDINATE coord =
-      Coord_Move(Center_Coord(), DIR_N,
+      Coord_Move(Center_Coord(), game::DIR_N,
                  static_cast<uint16_t>(tclass->VerticalOffset + Height));
   if (IsSecondShot) {
-    coord = Coord_Move(coord, dir + DIR_E, static_cast<uint16_t>(lateral));
+    coord =
+        Coord_Move(coord, dir + game::DIR_E, static_cast<uint16_t>(lateral));
   } else {
-    coord = Coord_Move(coord, dir + DIR_W, static_cast<uint16_t>(lateral));
+    coord =
+        Coord_Move(coord, dir + game::DIR_W, static_cast<uint16_t>(lateral));
   }
   coord = Coord_Move(coord, dir, static_cast<uint16_t>(dist));
 
@@ -672,7 +674,7 @@ TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
       Cloak(UNCLOAKED),
       TarCom(kTargetNone),
       SuspendedTarCom(kTargetNone),
-      PrimaryFacing(DIR_N),
+      PrimaryFacing(game::DIR_N),
       Arm(0),
       Ammo(-1),
       PurchasePrice(0) {
@@ -1286,7 +1288,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 11/14/1994 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Unlimbo(COORDINATE coord, DirType dir) {
+bool TechnoClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   DCHECK(IsActive);
 
   if (RadioClass::Unlimbo(coord, dir)) {
@@ -3169,8 +3171,8 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
         **	Determine true (0..7) facing from current position to
         **	destination (actually the source coordinate of the zap).
         */
-        int facing =
-            static_cast<int>(Dir_Facing(Desired_Facing8(x, y, x1, y1)));
+        int facing = static_cast<int>(
+            game::Dir_Facing(game::Desired_Facing8(x, y, x1, y1)));
 
         /*
         ** If there's quite a bit of distance to go,
@@ -3241,7 +3243,7 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
 BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   DCHECK(IsActive);
 
-  DirType dir = DIR_N;          // The facing to impart upon the projectile.
+  game::DirType dir = game::DIR_N;  // The facing to impart upon the projectile.
   COORDINATE target_coord = 0;  // Coordinate of the target.
   const TechnoTypeClass& tclass = *Techno_Type_Class();
   const WeaponTypeClass* weapon =
@@ -3350,13 +3352,13 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       case ANIM_GUN_N:
         a = static_cast<AnimType>(
             static_cast<int>(a) +
-            static_cast<int>(Dir_Facing(Fire_Direction())));
+            static_cast<int>(game::Dir_Facing(Fire_Direction())));
         break;
 
       case ANIM_SAM_N:
         a = static_cast<AnimType>(
             static_cast<int>(ANIM_SAM_N) +
-            static_cast<int>(Dir_Facing(PrimaryFacing.Current())));
+            static_cast<int>(game::Dir_Facing(PrimaryFacing.Current())));
         break;
       case AnimType::ANIM_NONE:
       case AnimType::ANIM_FBALL1:
@@ -4598,8 +4600,8 @@ VisualType TechnoClass::Visual_Character(bool raw) const {
 void TechnoClass::Techno_Draw_Object(PixelView& view,
                                      std::span<const std::byte> shapefile,
                                      int shapenum, int x, int y,
-                                     WindowNumberType window, DirType rotation,
-                                     int scale) const {
+                                     WindowNumberType window,
+                                     game::DirType rotation, int scale) const {
   DCHECK(IsActive);
 
   if (!shapefile.empty()) {
@@ -5506,12 +5508,12 @@ Fixed TechnoClass::Tiberium_Load() const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
-                                      CELL& moveto) const {
+game::DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
+                                            CELL& moveto) const {
   DCHECK(IsActive);
 
   moveto = 0;
-  return DIR_N;
+  return game::DIR_N;
 }
 
 /***********************************************************************************************
@@ -5555,7 +5557,7 @@ int TechnoClass::Pip_Count() const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-DirType TechnoClass::Fire_Direction() const {
+game::DirType TechnoClass::Fire_Direction() const {
   DCHECK(IsActive);
 
   return Turret_Facing();

@@ -30,8 +30,8 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
+#include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/map/layer.h"
@@ -153,7 +153,7 @@ class DisplayClass : public MapClass {
                          int /*unused*/ = -1, int /*unused*/ = kYellow,
                          bool /*unused*/ = false) {}
   [[nodiscard]] virtual MouseType Get_Mouse_Shape() const = 0;
-  virtual bool Scroll_Map(DirType facing, int& distance, bool really);
+  virtual bool Scroll_Map(game::DirType facing, int& distance, bool really);
   virtual void Refresh_Cells(CELL cell, std::span<const int16_t> list);
   virtual void Set_View_Dimensions(int x, int y, int width = -1,
                                    int height = -1);

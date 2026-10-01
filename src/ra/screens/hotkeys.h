@@ -31,7 +31,7 @@ void Keyboard_Process(engine::window::KeyNumber& input);
 
 // Converts a keyboard code into the compass direction it represents, or
 // FACING_NONE for a key that is not directional. Used for keyboard scrolling.
-FacingType KN_To_Facing(engine::window::KeyNumber input);
+game::FacingType KN_To_Facing(engine::window::KeyNumber input);
 
 }  // namespace ra
 

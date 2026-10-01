@@ -49,6 +49,7 @@
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
 #include "game/sim/crew.h"
+#include "game/sim/direction.h"
 #include "game/sim/door.h"
 #include "game/sim/flasher.h"
 #include "magic_enum/magic_enum.hpp"
@@ -613,8 +614,9 @@ void FootClass::Serialize(Archive& ar) {
   for (int32_t i = 0; i < path_length; ++i) {
     ar(base::At(Path, i));
     if constexpr (Archive::kIsReading) {
-      if (base::At(Path, i) < FACING_NONE ||
-          base::At(Path, i) > magic_enum::enum_values<FacingType>().back()) {
+      if (base::At(Path, i) < game::FACING_NONE ||
+          base::At(Path, i) >
+              magic_enum::enum_values<game::FacingType>().back()) {
         ar.Fail("invalid saved path facing");
       }
     }

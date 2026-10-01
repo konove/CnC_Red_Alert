@@ -62,6 +62,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "td/ai/special.h"
 #include "td/core/config.h"
 #include "td/core/const.h"
@@ -295,9 +296,9 @@ bool OverlayClass::Mark(MarkType mark) {
               *whether this *	concrete is in an odd or even row.
               */
               if (Cell_X(cell) % 2 != 0) {
-                newcell = Adjacent_Cell(cellptr->Cell_Number(), FACING_W);
+                newcell = Adjacent_Cell(cellptr->Cell_Number(), game::FACING_W);
               } else {
-                newcell = Adjacent_Cell(cellptr->Cell_Number(), FACING_E);
+                newcell = Adjacent_Cell(cellptr->Cell_Number(), game::FACING_E);
               }
               if (TheMap().at(newcell).Overlay != OVERLAY_CONCRETE) {
                 Class->Create_And_Place(newcell);
@@ -308,8 +309,9 @@ bool OverlayClass::Mark(MarkType mark) {
               *adjacent *	cells since their shape can be altered by the
               *presence of *	concrete at this location.
               */
-              static const FacingType _face[4] = {FACING_N, FACING_E, FACING_S,
-                                                  FACING_W};
+              static const game::FacingType _face[4] = {
+                  game::FACING_N, game::FACING_E, game::FACING_S,
+                  game::FACING_W};
 
               for (const auto& index : _face) {
                 cellptr->Adjacent_Cell(index).Concrete_Calc();

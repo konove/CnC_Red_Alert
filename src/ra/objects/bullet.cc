@@ -72,12 +72,12 @@
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
-#include "ra/core/facing.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
@@ -130,7 +130,7 @@ BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass* payback,
     : ObjectClass(RTTI_BULLET, TheObjectHeaps().bullet().ID(this)),
       Class(TheTypeHeaps().bullet().Ptr(static_cast<int>(id))),
       Payback(payback),
-      PrimaryFacing(DIR_N),
+      PrimaryFacing(game::DIR_N),
       TarCom(target),
       MaxSpeed(speed),
       Warhead(warhead) {
@@ -190,7 +190,7 @@ BulletClass::~BulletClass() {
         */
         for (int i = -1; i < 8; i++) {
           if (i != -1) {
-            newcoord = Adjacent_Cell(Coord, static_cast<FacingType>(i));
+            newcoord = Adjacent_Cell(Coord, static_cast<game::FacingType>(i));
           }
           TheWorld().scenario_init()++;
           if (dog->Unlimbo(newcoord, dog->PrimaryFacing)) {
@@ -327,7 +327,7 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
     }
 
     const COORDINATE coord =
-        Coord_Move(Coord, DIR_N, static_cast<uint16_t>(Height));
+        Coord_Move(Coord, game::DIR_N, static_cast<uint16_t>(Height));
     const CELL cell2 = Coord_Cell(coord);
     ptr = Coord_Spillage_List(coord, 5);
     while (ptr.front() != kRefreshEol) {
@@ -527,7 +527,7 @@ int BulletClass::Shape_Number() const {
   int shapenum = 0;
 
   if (!Class->IsFaceless) {
-    shapenum = base::At(UnitClass::BodyShape, Dir_To_32(PrimaryFacing));
+    shapenum = base::At(UnitClass::BodyShape, game::Dir_To_32(PrimaryFacing));
   }
 
   /*
@@ -693,7 +693,7 @@ void BulletClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
-bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
+bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().bullet(), this);
   DCHECK(IsActive);
 
@@ -739,7 +739,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
             std::min(scatterdist, static_cast<int>(TheRules().HomingScatter));
         scatterdist = std::max(scatterdist, 0);
 
-        dir = AsDirection(static_cast<int>(dir) + (Random_Pick(0, 10) - 5));
+        dir =
+            game::AsDirection(static_cast<int>(dir) + (Random_Pick(0, 10) - 5));
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
         int scatterdist = (ra::Distance(coord, tcoord) / 16) - 0x0040;
@@ -877,7 +878,7 @@ COORDINATE BulletClass::Target_Coord() const {
 COORDINATE BulletClass::Sort_Y() const {
   DCHECK(IsActive);
 
-  return Coord_Move(Coord, DIR_S, CELL_LEPTON_H / 2);
+  return Coord_Move(Coord, game::DIR_S, CELL_LEPTON_H / 2);
 }
 
 /***********************************************************************************************

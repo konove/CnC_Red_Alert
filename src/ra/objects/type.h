@@ -56,8 +56,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/platform/platform.h"
+#include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 
@@ -689,7 +689,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   *find a *	legitimate foundation square. This location will be used for
   *targeting and capture *	move destination purposes.
   */
-  FacingType FoundationFace;
+  game::FacingType FoundationFace;
 
   /*
   **	Adjacent distance for building next to.
@@ -729,7 +729,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	gets constructed. The facing matches the final stage of the
   **	construction animation.
   */
-  DirType StartFace;
+  game::DirType StartFace;
 
   /*
   **	This is the Tiberium storage capacity of the building. The sum of all
@@ -771,13 +771,14 @@ class BuildingTypeClass : public TechnoTypeClass {
   **	This is the building type explicit constructor.
   */
   BuildingTypeClass(
-      StructType type, int name, const char* ininame, FacingType foundation,
-      COORDINATE exitpoint, RemapType remap, int verticaloffset,
-      int primaryoffset, int primarylateral, bool is_fake, bool is_regulated,
-      bool is_nominal, bool is_wall, bool is_simpledamage, bool is_stealthy,
-      bool is_selectable, bool is_legal_target, bool is_insignificant,
-      bool is_theater, bool is_turret_equipped, bool is_remappable,
-      RTTIType tobuild, DirType sframe, BSizeType size,
+      StructType type, int name, const char* ininame,
+      game::FacingType foundation, COORDINATE exitpoint, RemapType remap,
+      int verticaloffset, int primaryoffset, int primarylateral, bool is_fake,
+      bool is_regulated, bool is_nominal, bool is_wall, bool is_simpledamage,
+      bool is_stealthy, bool is_selectable, bool is_legal_target,
+      bool is_insignificant, bool is_theater, bool is_turret_equipped,
+      bool is_remappable, RTTIType tobuild, game::DirType sframe,
+      BSizeType size,
       std::span<const int16_t> exitlist ABSL_ATTRIBUTE_LIFETIME_BOUND,
       std::span<const int16_t> sizelist ABSL_ATTRIBUTE_LIFETIME_BOUND,
       std::span<const int16_t> overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
@@ -998,7 +999,7 @@ class UnitTypeClass : public TechnoTypeClass {
   ObjectClass* Create_One_Of(HouseClass* house) const override;
   [[nodiscard]] int Max_Pips() const override;
 
-  void Turret_Adjust(DirType dir, int& x, int& y) const;
+  void Turret_Adjust(game::DirType dir, int& x, int& y) const;
 
   void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house) const override;
@@ -1095,7 +1096,7 @@ class VesselTypeClass : public TechnoTypeClass {
   [[nodiscard]] int Max_Pips() const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
 
-  void Turret_Adjust(DirType dir, int& x, int& y) const;
+  void Turret_Adjust(game::DirType dir, int& x, int& y) const;
 
   void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house) const override;

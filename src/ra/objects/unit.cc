@@ -125,6 +125,8 @@
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
@@ -136,8 +138,6 @@
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
-#include "ra/core/facing.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
@@ -196,7 +196,7 @@ using engine::gfx::ShapeFlags;
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-static void Recoil_Adjust(DirType dir, int& x, int& y) {
+static void Recoil_Adjust(game::DirType dir, int& x, int& y) {
   static const struct {
     signed char X, Y;
   } _adjust[32] = {{0, 1},                                  // N
@@ -209,7 +209,7 @@ static void Recoil_Adjust(DirType dir, int& x, int& y) {
                    {1, 0},   {1, 1},   {1, 1},   {1, 1},    // NW
                    {1, 1},   {0, 1},   {0, 1}};
 
-  const int index = Dir_To_32(dir);
+  const int index = game::Dir_To_32(dir);
   x += base::At(_adjust, index).X;
   y += base::At(_adjust, index).Y;
 }
@@ -498,7 +498,7 @@ void UnitClass::AI() {
  *=============================================================================================*/
 void UnitClass::Rotation_AI() {
   if (Target_Legal(TarCom) && !IsRotating) {
-    const DirType dir = Direction(TarCom);
+    const game::DirType dir = Direction(TarCom);
 
     if (Class->IsTurretEquipped) {
       SecondaryFacing.Set_Desired(dir);
@@ -737,8 +737,8 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
     */
     case RADIO_BACKUP_NOW:
       DriveClass::Receive_Message(from, message, param);
-      if (!IsRotating && PrimaryFacing != DIR_W) {
-        Do_Turn(DIR_W);
+      if (!IsRotating && PrimaryFacing != game::DIR_W) {
+        Do_Turn(game::DIR_W);
       } else {
         if (!IsDriving) {
           TechnoClass* whom = Contact_With_Whom();
@@ -818,7 +818,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
         if ((!IsDriving && !IsRotating && !IsTethered) &&
             (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER)) {
           CELL cell = 0;
-          const DirType dir = Desired_Load_Dir(from, cell);
+          const game::DirType dir = Desired_Load_Dir(from, cell);
 
           /*
           **	If no adjacent free cells are detected, then passenger loading
@@ -935,14 +935,14 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
  *                                                                                             *
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Unlimbo(COORDINATE coord, DirType dir) {
+bool UnitClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
   /*
   **	All units must start out facing one of the 8 major directions.
   */
-  dir = Facing_Dir(Dir_Facing(dir));
+  dir = game::Facing_Dir(game::Dir_Facing(dir));
   if (DriveClass::Unlimbo(coord, dir)) {
     SecondaryFacing = dir;
     /*
@@ -1076,7 +1076,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
           i = base::NewPooled<InfantryClass>(INFANTRY_E1, House->Class->House);
         }
         if (i != nullptr) {
-          if (i->Unlimbo(Coord, DIR_N)) {
+          if (i->Unlimbo(Coord, game::DIR_N)) {
             i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2));
             i->Scatter(0, true);
@@ -1105,7 +1105,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         **	Only infantry can run from a destroyed vehicle. Even then, it is
         *not a sure *	thing.
         */
-        if (object->Is_Infantry() && object->Unlimbo(Coord, DIR_N)) {
+        if (object->Is_Infantry() && object->Unlimbo(Coord, game::DIR_N)) {
           object->Scatter(0, true);
           if (select) {
             object->Select();
@@ -1428,7 +1428,7 @@ bool UnitClass::Goto_Clear_Spot() {
   if (!Target_Legal(NavCom) &&
       BuildingTypeClass::As_Reference(STRUCT_CONST)
           .Legal_Placement(
-              Adjacent_Cell(Coord_Cell(Center_Coord()), FACING_NW))) {
+              Adjacent_Cell(Coord_Cell(Center_Coord()), game::FACING_NW))) {
     Mark(MARK_DOWN);
     return true;
   }
@@ -1460,7 +1460,7 @@ bool UnitClass::Goto_Clear_Spot() {
     while (ptr.front()) {
       const CELL cell =
           static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(ptr));
-      const CELL check_cell = Adjacent_Cell(cell, FACING_NW);
+      const CELL check_cell = Adjacent_Cell(cell, game::FACING_NW);
       if (BuildingTypeClass::As_Reference(STRUCT_CONST)
               .Legal_Placement(check_cell)) {
         Assign_Destination(ra::As_Target(cell));
@@ -1512,7 +1512,8 @@ bool UnitClass::Try_To_Deploy() {
       *tell the *	player.
       */
       Mark(MARK_UP);
-      const CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), FACING_NW));
+      const CELL cell =
+          Coord_Cell(Adjacent_Cell(Center_Coord(), game::FACING_NW));
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
                .Legal_Placement(cell)) {
         if (ThePlayer() == House) {
@@ -1534,8 +1535,8 @@ bool UnitClass::Try_To_Deploy() {
       *deployed. This is *	because it will deploy as soon as it reaches the
       *correct facing.
       */
-      if (PrimaryFacing.Current() != DIR_SW) {
-        Do_Turn(DIR_SW);
+      if (PrimaryFacing.Current() != game::DIR_SW) {
+        Do_Turn(game::DIR_SW);
         //				PrimaryFacing.Set_Desired(DIR_SW);
         IsDeploying = true;
         return true;
@@ -1550,7 +1551,7 @@ bool UnitClass::Try_To_Deploy() {
       auto* building =
           base::NewPooled<BuildingClass>(STRUCT_CONST, House->Class->House);
       if (building != nullptr) {
-        if (building->Unlimbo(Adjacent_Cell(Coord, FACING_NW))) {
+        if (building->Unlimbo(Adjacent_Cell(Coord, game::FACING_NW))) {
           /*
           **	Play the buildup sound for the player if this is the players
           **	MCV.
@@ -1815,7 +1816,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
     /*
     **	Certain units require some setup time after they come to a halt.
     */
-    if ((!Target_Legal(NavCom) && Path[0] == FACING_NONE) &&
+    if ((!Target_Legal(NavCom) && Path[0] == game::FACING_NONE) &&
         Class->IsNoFireWhileMoving) {
       Arm.Set(Rearm_Delay(true) / 4);
     }
@@ -1960,7 +1961,7 @@ int UnitClass::Shape_Number() const {
   DCHECK(IsActive);
 
   int shapenum = 0;  // Working shape number.
-  const int facing = Dir_To_32(PrimaryFacing);
+  const int facing = game::Dir_To_32(PrimaryFacing);
 
   /*
   **	This handles the ant case.
@@ -2032,11 +2033,11 @@ int UnitClass::Shape_Number() const {
         *will work.
         */
         if (!Is_Door_Closed() &&
-            (PrimaryFacing == DIR_NW || PrimaryFacing == DIR_NE)) {
-          if (PrimaryFacing == DIR_NE) {
+            (PrimaryFacing == game::DIR_NW || PrimaryFacing == game::DIR_NE)) {
+          if (PrimaryFacing == game::DIR_NE) {
             shapenum = 32;
           } else {
-            if (PrimaryFacing == DIR_NW) {
+            if (PrimaryFacing == game::DIR_NW) {
               shapenum = 35;
             }
           }
@@ -2085,8 +2086,8 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
-  const int tfacing = Dir_To_32(SecondaryFacing);
-  const DirType rotation = DIR_N;
+  const int tfacing = game::Dir_To_32(SecondaryFacing);
+  const game::DirType rotation = game::DIR_N;
   const int scale = 0x0100;
 
   /*
@@ -2435,14 +2436,14 @@ int UnitClass::Mission_Unload() {
   constexpr int kOpeningDoor = 2;
   constexpr int kUnloading = 3;
   constexpr int kClosingDoor = 4;
-  DirType dir = DIR_N;
+  game::DirType dir = game::DIR_N;
   CELL cell = 0;
 
   switch (Class->Type) {
     case UNIT_HARVESTER:
-      if (PrimaryFacing != DIR_W) {
+      if (PrimaryFacing != game::DIR_W) {
         if (!IsRotating) {
-          Do_Turn(DIR_W);
+          Do_Turn(game::DIR_W);
         }
         return 5;
       }
@@ -2493,12 +2494,12 @@ int UnitClass::Mission_Unload() {
             FootClass* passenger = Detach_Object();
 
             if (passenger != nullptr) {
-              const DirType toface = DIR_S + PrimaryFacing;
+              const game::DirType toface = game::DIR_S + PrimaryFacing;
               bool placed = false;
 
-              for (const FacingType face :
-                   magic_enum::enum_values<FacingType>()) {
-                const DirType newface = toface + Facing_Dir(face);
+              for (const game::FacingType face :
+                   magic_enum::enum_values<game::FacingType>()) {
+                const game::DirType newface = toface + game::Facing_Dir(face);
                 const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
                 if (passenger->Can_Enter_Cell(newcell) == MOVE_OK) {
@@ -2576,12 +2577,12 @@ int UnitClass::Mission_Unload() {
             FootClass* passenger = Detach_Object();
 
             if (passenger != nullptr) {
-              const DirType toface = DIR_S + PrimaryFacing;
+              const game::DirType toface = game::DIR_S + PrimaryFacing;
               bool placed = false;
 
-              for (const FacingType face :
-                   magic_enum::enum_values<FacingType>()) {
-                const DirType newface = toface + Facing_Dir(face);
+              for (const game::FacingType face :
+                   magic_enum::enum_values<game::FacingType>()) {
+                const game::DirType newface = toface + game::Facing_Dir(face);
                 const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
                 if (passenger->Can_Enter_Cell(newcell) == MOVE_OK) {
@@ -2629,7 +2630,7 @@ int UnitClass::Mission_Unload() {
     case UNIT_MCV:
       switch (Status) {
         case 0:
-          Path[0] = FACING_NONE;
+          Path[0] = game::FACING_NONE;
           Status = 1;
           break;
 
@@ -2663,7 +2664,7 @@ int UnitClass::Mission_Unload() {
     case UNIT_MINELAYER:
       switch (Status) {
         case kInitialCheck:
-          dir = DIR_NE;
+          dir = game::DIR_NE;
           if (Ammo > 0) {
             Do_Turn(dir);
             Status = kManeuvering;
@@ -2758,10 +2759,11 @@ int UnitClass::Mission_Unload() {
         }
 
         if (crew != nullptr) {
-          const DirType toface = DIR_S + PrimaryFacing;
+          const game::DirType toface = game::DIR_S + PrimaryFacing;
 
-          for (const FacingType face : magic_enum::enum_values<FacingType>()) {
-            const DirType newface = toface + Facing_Dir(face);
+          for (const game::FacingType face :
+               magic_enum::enum_values<game::FacingType>()) {
+            const game::DirType newface = toface + game::Facing_Dir(face);
             const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
             if (crew->Can_Enter_Cell(newcell) == MOVE_OK) {
               TheWorld().scenario_init()++;
@@ -3143,7 +3145,7 @@ std::span<const int16_t> UnitClass::Overlap_List(bool redraw) const {
  *function.                                            * 07/04/1995 JLB :
  *Allowed to drive on building trying to enter it.                         *
  *=============================================================================================*/
-MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
+MoveType UnitClass::Can_Enter_Cell(CELL cell, game::FacingType /*from*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -3269,9 +3271,9 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
 
       if (House->Is_Ally(obj)) {
         if (is_moving) {
-          const int face = static_cast<int>(Dir_Facing(PrimaryFacing));
+          const int face = static_cast<int>(game::Dir_Facing(PrimaryFacing));
           const int techface =
-              (static_cast<int>(Dir_Facing(
+              (static_cast<int>(game::Dir_Facing(
                    dynamic_cast<const FootClass*>(obj)->PrimaryFacing)) +
                4) %
               8;
@@ -3508,8 +3510,8 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
       */
       Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
-               .Legal_Placement(
-                   Coord_Cell(Adjacent_Cell(Center_Coord(), FACING_NW)))) {
+               .Legal_Placement(Coord_Cell(
+                   Adjacent_Cell(Center_Coord(), game::FACING_NW)))) {
         action = ACTION_NO_DEPLOY;
       }
       Mark(MARK_DOWN);
@@ -3704,8 +3706,9 @@ void UnitClass::Exit_Repair() {
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
   CELL cell = static_cast<CELL>(
-      Coord_Cell(Coord) + base::At(ExitRepair, static_cast<int>(Dir_Facing(
-                                                   PrimaryFacing.Current()))));
+      Coord_Cell(Coord) +
+      base::At(ExitRepair,
+               static_cast<int>(game::Dir_Facing(PrimaryFacing.Current()))));
   if (Can_Enter_Cell(cell) == MOVE_OK) {
     found = true;
   }
@@ -3817,8 +3820,8 @@ int UnitClass::Mission_Move() {
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
-                                    CELL& moveto) const {
+game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
+                                          CELL& moveto) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -3827,15 +3830,17 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   *would be the direction *	of the potential passenger or the current
   *transport facing if it is going to unload.
   */
-  const DirType faceto = passenger != nullptr ? Direction(passenger)
-                                              : PrimaryFacing.Current() + DIR_S;
+  const game::DirType faceto = passenger != nullptr
+                                   ? Direction(passenger)
+                                   : PrimaryFacing.Current() + game::DIR_S;
 
   /*
   **	Sweep through the adjacent cells in order to find the best candidate.
   */
-  FacingType bestdir = FACING_N;
+  game::FacingType bestdir = game::FACING_N;
   int bestval = -1;
-  for (const FacingType face : magic_enum::enum_values<FacingType>()) {
+  for (const game::FacingType face :
+       magic_enum::enum_values<game::FacingType>()) {
     int value = 0;
     const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
 
@@ -3870,13 +3875,13 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     **	Give more weight to the cells that require the least rotation of the
     *transport or the *	least roundabout movement for the potential passenger.
     */
-    value -=
-        std::abs(static_cast<int>(static_cast<signed char>(Facing_Dir(face))) -
-                 static_cast<int>(static_cast<signed char>(faceto)));
-    if (face == FACING_S) {
+    value -= std::abs(
+        static_cast<int>(static_cast<signed char>(game::Facing_Dir(face))) -
+        static_cast<int>(static_cast<signed char>(faceto)));
+    if (face == game::FACING_S) {
       value -= 100;
     }
-    if (face == FACING_SW || face == FACING_SE) {
+    if (face == game::FACING_SW || face == game::FACING_SE) {
       value += 64;
     }
 
@@ -3895,13 +3900,15 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   */
   moveto = 0;
   if (bestval > 0) {
-    static constexpr base::EnumArray<FacingType, DirType> _desired_to_actual = {
-        DIR_S, DIR_SW, DIR_NW, DIR_NW, DIR_NE, DIR_NE, DIR_NE, DIR_SE};
+    static constexpr base::EnumArray<game::FacingType, game::DirType>
+        _desired_to_actual = {game::DIR_S,  game::DIR_SW, game::DIR_NW,
+                              game::DIR_NW, game::DIR_NE, game::DIR_NE,
+                              game::DIR_NE, game::DIR_SE};
 
     moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
     return _desired_to_actual.at(bestdir);
   }
-  return DIR_S;
+  return game::DIR_S;
 }
 
 /***********************************************************************************************
@@ -4041,7 +4048,7 @@ void UnitClass::APC_Open_Door() {
   DCHECK(IsActive);
 
   if (!IsDriving && !IsRotating) {
-    if (PrimaryFacing == DIR_NW || PrimaryFacing == DIR_NE) {
+    if (PrimaryFacing == game::DIR_NW || PrimaryFacing == game::DIR_NE) {
       Open_Door(10, 2);
     } else {
       Open_Door(1, 2);
@@ -4148,23 +4155,23 @@ int UnitClass::Mission_Repair() {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-DirType UnitClass::Fire_Direction() const {
+game::DirType UnitClass::Fire_Direction() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
   if (Class->IsTurretEquipped) {
     if (*this == UNIT_V2_LAUNCHER) {
-      int diff1 = SecondaryFacing.Difference(DIR_E);
-      int diff2 = SecondaryFacing.Difference(DIR_W);
+      int diff1 = SecondaryFacing.Difference(game::DIR_E);
+      int diff2 = SecondaryFacing.Difference(game::DIR_W);
       diff1 = std::abs(diff1);
       diff2 = std::abs(diff2);
       const int diff = std::min(diff1, diff2);
       const int adj = base::FixedToCardinal(
-          std::abs(SecondaryFacing.Difference(DIR_N)), 64 - diff);
-      if (SecondaryFacing.Difference(DIR_N) < 0) {
-        return SecondaryFacing - AsDirection(adj);
+          std::abs(SecondaryFacing.Difference(game::DIR_N)), 64 - diff);
+      if (SecondaryFacing.Difference(game::DIR_N) < 0) {
+        return SecondaryFacing - game::AsDirection(adj);
       }
-      return SecondaryFacing + AsDirection(adj);
+      return SecondaryFacing + game::AsDirection(adj);
     }
     return SecondaryFacing.Current();
   }
@@ -4190,7 +4197,7 @@ DirType UnitClass::Fire_Direction() const {
  *                                                                                             *
  * HISTORY: * 05/12/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Ok_To_Move(DirType dir) {
+bool UnitClass::Ok_To_Move(game::DirType dir) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -4254,7 +4261,7 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
       return FIRE_ROTATING;
     }
 
-    const DirType dir =
+    const game::DirType dir =
         Direction(target);  // The facing to impart upon the projectile.
 
     /*
@@ -4598,10 +4605,10 @@ void UnitClass::Assign_Destination(TARGET target) {
         }
       }
     } else {
-      Path[0] = FACING_NONE;
+      Path[0] = game::FACING_NONE;
     }
   } else {
-    Path[0] = FACING_NONE;
+    Path[0] = game::FACING_NONE;
   }
 
   /*
@@ -4639,7 +4646,7 @@ void UnitClass::Assign_Destination(TARGET target) {
             // reset is done by hand on the next line.
             // NOLINTNEXTLINE(bugprone-parent-virtual-call)
             FootClass::Assign_Destination(target);
-            Path[0] = FACING_NONE;
+            Path[0] = game::FACING_NONE;
             return;
           }
 
@@ -4732,8 +4739,8 @@ void UnitClass::Read_INI(CCINIClass& ini) {
 
           const COORDINATE coord = Cell_Coord(cell);
 
-          const auto dir =
-              static_cast<DirType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+          const auto dir = static_cast<game::DirType>(
+              base::ParseIntegerOr<int>(tokens.Next(), 0));
           const MissionType mission =
               Mission_From_Name(tokens.Next());
 

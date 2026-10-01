@@ -49,10 +49,9 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/sim/direction.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
-#include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/debug/debug_state.h"
 #include "ra/map/help.h"
@@ -101,7 +100,7 @@ ScrollClass::ScrollClass() { Counter.Set(SCROLL_DELAY); }
  *=============================================================================================*/
 void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
   bool player_scrolled = false;
-  static DirType direction;
+  static game::DirType direction;
   int rate = 0;
 
   /*
@@ -153,11 +152,10 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
           }
           alty = std::min(alty, 400);
 
-          direction = Desired_Facing256(320,
-                                        200, altx, alty);
+          direction = game::Desired_Facing256(320, 200, altx, alty);
         }
 
-        const int control = static_cast<int>(Dir_Facing(direction));
+        const int control = static_cast<int>(game::Dir_Facing(direction));
 
         /*
         **	The mouse is over a scroll region so set the mouse shape
@@ -190,7 +188,7 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
         **	one of the 8 facings, then adjust the direction value
         **	accordingly.
         */
-        direction = Facing_Dir(Dir_Facing(direction));
+        direction = game::Facing_Dir(game::Dir_Facing(direction));
 
         // Inertia and the scroll rate option both feed into rate without any
         // guarantee they land inside _rate, so clamp before indexing.

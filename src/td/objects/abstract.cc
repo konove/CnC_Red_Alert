@@ -28,6 +28,7 @@
 
 #include "base/array.h"
 #include "base/strings/safe_string.h"
+#include "game/sim/direction.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 #include "td/objects/building.h"
@@ -38,7 +39,7 @@ namespace td {
 
 AbstractClass::~AbstractClass() = default;
 
-DirType AbstractClass::Direction(TARGET target) const {
+game::DirType AbstractClass::Direction(TARGET target) const {
   return td::Direction(Center_Coord(), As_Coord(target));
 }
 

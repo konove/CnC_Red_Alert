@@ -113,6 +113,7 @@
 #include "game/core/heap.h"
 #include "game/core/interpal.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/special.h"
@@ -813,15 +814,15 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   }
 
 #ifdef NEVER
-  FacingType facing = KN_To_Facing(input);
+  game::FacingType facing = KN_To_Facing(input);
 
   /*
   **	Scroll the map according to the cursor key pressed.
   */
-  if (facing != FACING_NONE) {
+  if (facing != game::FACING_NONE) {
     TheMap().Scroll_Map(facing);
     input = 0;
-    facing = FACING_NONE;
+    facing = game::FACING_NONE;
   }
 #endif
 
@@ -1534,35 +1535,35 @@ TheaterType Theater_From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-FacingType KN_To_Facing(const engine::window::KeyNumber input) {
+game::FacingType KN_To_Facing(const engine::window::KeyNumber input) {
   switch (static_cast<int>(engine::window::WithoutModifiers(input))) {
     case KN_LEFT:
-      return FACING_W;
+      return game::FACING_W;
 
     case KN_RIGHT:
-      return FACING_E;
+      return game::FACING_E;
 
     case KN_UP:
-      return FACING_N;
+      return game::FACING_N;
 
     case KN_DOWN:
-      return FACING_S;
+      return game::FACING_S;
 
     case KN_UPLEFT:
-      return FACING_NW;
+      return game::FACING_NW;
 
     case KN_UPRIGHT:
-      return FACING_NE;
+      return game::FACING_NE;
 
     case KN_DOWNLEFT:
-      return FACING_SW;
+      return game::FACING_SW;
 
     case KN_DOWNRIGHT:
-      return FACING_SE;
+      return game::FACING_SE;
     default:
       break;
   }
-  return FACING_NONE;
+  return game::FACING_NONE;
 }
 
 /***********************************************************************************************

@@ -98,14 +98,14 @@ class AbstractClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  DirType Direction(const AbstractClass* object) const {
+  game::DirType Direction(const AbstractClass* object) const {
     return td::Direction(Center_Coord(), object->Target_Coord());
   }
-  [[nodiscard]] DirType Direction(COORDINATE coord) const {
+  [[nodiscard]] game::DirType Direction(COORDINATE coord) const {
     return td::Direction(Center_Coord(), coord);
   }
-  [[nodiscard]] DirType Direction(TARGET target) const;
-  [[nodiscard]] DirType Direction(CELL cell) const {
+  [[nodiscard]] game::DirType Direction(TARGET target) const;
+  [[nodiscard]] game::DirType Direction(CELL cell) const {
     return td::Direction(Coord_Cell(Center_Coord()), cell);
   }
   [[nodiscard]] int Distance(TARGET target) const;
@@ -123,7 +123,7 @@ class AbstractClass {
   **	Object entry and exit from the game system.
   */
   [[nodiscard]] virtual MoveType Can_Enter_Cell(
-      CELL /*unused*/, FacingType /*unused*/ = FACING_NONE) const {
+      CELL /*unused*/, game::FacingType /*unused*/ = game::FACING_NONE) const {
     return MOVE_OK;
   }
 

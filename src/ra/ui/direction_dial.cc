@@ -30,10 +30,9 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/sim/direction.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
-#include "ra/core/inline.h"
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/gadget.h"
@@ -53,13 +52,13 @@ constexpr int kCompassTenths[8][2] = {{0, -10}, {7, -7}, {10, 0},  {7, 7},
 
 DirectionDial::DirectionDial(const int id, const int x, const int y,
                              const int width, const int height,
-                             const DirType initial_direction)
+                             const game::DirType initial_direction)
     : ControlClass(static_cast<unsigned>(id), x, y, width, height,
                    kLeftPress | kLeftHeld | kLeftRelease, true),
       center_x_(X + (Width / 2)),
       center_y_(Y + (Height / 2)),
       direction_(initial_direction),
-      facing_(Dir_Facing(direction_)) {
+      facing_(game::Dir_Facing(direction_)) {
   // The decorations sit at 8/10 of the radius and the hand reaches 6/10 of
   // it, with Width/2 as the x radius and Height/2 as the y radius. Integer
   // division truncates toward zero, so this lands on the same pixels as the
@@ -85,11 +84,11 @@ bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
   // Follow the mouse on a press, or while the button is held after a press on
   // the dial (StuckOn); a drag that starts elsewhere must not turn it.
   if (flags & kLeftPress || (flags & kLeftHeld && StuckOn == this)) {
-    const FacingType old_facing = facing_;
+    const game::FacingType old_facing = facing_;
     // Get the new dial position, snapped to one of the eight directions.
-    direction_ =
-        Desired_Facing8(center_x_, center_y_, TheMouse().x(), TheMouse().y());
-    facing_ = Dir_Facing(direction_);
+    direction_ = game::Desired_Facing8(center_x_, center_y_, TheMouse().x(),
+                                       TheMouse().y());
+    facing_ = game::Dir_Facing(direction_);
 
     if (facing_ != old_facing) {
       // Report the change: ControlClass::Action notifies the peer, replaces
@@ -143,11 +142,11 @@ bool DirectionDial::Draw_Me(PixelView& view, const bool forced) {
   return true;
 }
 
-DirType DirectionDial::direction() const { return direction_; }
+game::DirType DirectionDial::direction() const { return direction_; }
 
-void DirectionDial::set_direction(const DirType direction) {
+void DirectionDial::set_direction(const game::DirType direction) {
   direction_ = direction;
-  facing_ = Dir_Facing(direction_);
+  facing_ = game::Dir_Facing(direction_);
   Flag_To_Redraw();
 }
 

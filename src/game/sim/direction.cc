@@ -38,12 +38,53 @@
  *one coordinate to another.                    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-#include "td/core/face.h"
+
+#include "game/sim/direction.h"
+
+#include <array>
+#include <cstdint>
 
 #include "absl/log/check.h"
-#include "td/core/defines.h"
 
-namespace td {
+namespace game {
+namespace {
+
+// These convert 0..255 facing values into 16 or 32 facing values. A simple
+// shift won't suffice because 0..255 facing values should be converted to the
+// CLOSEST appropriate facing, NOT rounded down to the nearest facing.
+constexpr std::array<uint8_t, 256> kFacing16 = {
+    0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+    1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+    2,  2,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  4,
+    4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  5,  5,  5,  5,
+    5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  6,  6,  6,  6,  6,  6,  6,
+    6,  6,  6,  6,  6,  6,  6,  6,  6,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,
+    7,  7,  7,  7,  7,  7,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
+    8,  8,  8,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,
+    10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11,
+    11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12,
+    12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13,
+    13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+    14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+    15, 0,  0,  0,  0,  0,  0,  0,  0};
+
+constexpr std::array<uint8_t, 256> kFacing32 = {
+    0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,
+    2,  2,  2,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  4,  4,  4,  4,  4,
+    4,  5,  5,  5,  5,  5,  5,  5,  6,  6,  6,  6,  6,  6,  6,  7,  7,  7,  7,
+    7,  7,  7,  8,  8,  8,  8,  8,  8,  8,  9,  9,  9,  9,  9,  9,  9,  10, 10,
+    10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12,
+    12, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15,
+    15, 15, 15, 15, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+    17, 17, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19,
+    19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21,
+    21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 24, 24,
+    24, 24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26, 26, 26, 26,
+    27, 27, 27, 27, 27, 27, 27, 28, 28, 28, 28, 28, 28, 28, 28, 29, 29, 29, 29,
+    29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 31,
+    31, 31, 31, 0,  0,  0,  0,  0,  0};
+
+}  // namespace
 
 /***********************************************************************************************
  * Desired_Facing8 -- Determines facing from one coordinate to another. *
@@ -70,7 +111,7 @@ namespace td {
  * HISTORY: * 03/08/1996 JLB : Created. *
  *=============================================================================================*/
 DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
-  unsigned index = 0;  // Facing composite value.
+  uint32_t index = 0;  // Facing composite value.
 
   /*
   **	Figure the absolute X difference. This determines
@@ -78,7 +119,7 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
   */
   int xdiff = x2 - x1;
   if (xdiff < 0) {
-    index |= 0x00C0U;
+    index |= 0x00C0;
     xdiff = -xdiff;
   }
 
@@ -89,7 +130,7 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
   */
   int ydiff = y1 - y2;
   if (ydiff < 0) {
-    index ^= 0x0040U;
+    index ^= 0x0040;
     ydiff = -ydiff;
   }
 
@@ -121,9 +162,9 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
   **	Determine if the facing is closer to the Y axis or
   **	the X axis.
   */
-  unsigned adder = index & 0x0040U;
+  uint32_t adder = index & 0x0040;
   if (xdiff == bigger) {
-    adder ^= 0x0040U;
+    adder ^= 0x0040;
   }
   index += adder;
 
@@ -154,7 +195,7 @@ DirType Desired_Facing8(int x1, int y1, int x2, int y2) {
  * HISTORY: * 03/08/1996 JLB : Created. *
  *=============================================================================================*/
 DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
-  unsigned composite = 0;  // Facing built from intermediate calculations.
+  uint32_t composite = 0;  // Facing built from intermediate calculations.
 
   /*
   **	Fetch the absolute X difference. This also gives a clue as
@@ -162,7 +203,7 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   */
   int xdiff = dstx - srcx;
   if (xdiff < 0) {
-    composite |= 0x00C0U;
+    composite |= 0x00C0;
     xdiff = -xdiff;
   }
 
@@ -172,7 +213,7 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   */
   int ydiff = srcy - dsty;
   if (ydiff < 0) {
-    composite ^= 0x0040U;
+    composite ^= 0x0040;
     ydiff = -ydiff;
   }
 
@@ -216,7 +257,10 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   **	to the X or Y axis, we must make an adjustment toward the
   **	subsequent quadrant if necessary.
   */
-  const unsigned adder = (composite & 0x0040U) ^ (xdiff > ydiff ? 0x0040U : 0U);
+  uint32_t adder = composite & 0x0040;
+  if (xdiff > ydiff) {
+    adder ^= 0x0040;
+  }
   if (adder) {
     frac = static_cast<int>(adder) - frac - 1;
   }
@@ -224,7 +268,7 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   /*
   **	Integrate the fraction value into the quadrant.
   */
-  composite += static_cast<unsigned>(frac);
+  composite += static_cast<uint32_t>(frac);
 
   /*
   **	Return with the final facing value.
@@ -232,4 +276,12 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   return AsDirection(static_cast<int>(composite));
 }
 
-}  // namespace td
+int Dir_To_16(const DirType dir) {
+  return kFacing16.at(static_cast<uint8_t>(dir));
+}
+
+int Dir_To_32(const DirType dir) {
+  return kFacing32.at(static_cast<uint8_t>(dir));
+}
+
+}  // namespace game

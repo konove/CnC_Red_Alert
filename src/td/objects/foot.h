@@ -193,7 +193,7 @@ class FootClass : public TechnoClass {
   *generations *	of path lists before the ultimate destination is
   *reached. The game logic *	handles regenerating the path list as necessary.
   */
-  FacingType Path[kConquerPathMax]{};
+  game::FacingType Path[kConquerPathMax]{};
 
   /*
   **	When there is a complete findpath failure, this timer is initialized so
@@ -251,7 +251,8 @@ class FootClass : public TechnoClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+               game::DirType dir = game::DIR_N) override;
   bool Limbo() override;
   bool Mark(MarkType mark) override;
 
@@ -294,8 +295,9 @@ class FootClass : public TechnoClass {
   virtual void Approach_Target();
   virtual void Fixup_Path(PathType* /*unused*/) {}
   virtual void Set_Speed(int speed);
-  MoveType Can_Enter_Cell(CELL /*unused*/,
-                          FacingType /*unused*/ = FACING_NONE) const override;
+  MoveType Can_Enter_Cell(
+      CELL /*unused*/,
+      game::FacingType /*unused*/ = game::FACING_NONE) const override;
   int Optimize_Moves(PathType* path, MoveType threshhold);
   void Override_Mission(MissionType mission, TARGET tarcom,
                         TARGET navcom) override;
@@ -309,19 +311,19 @@ class FootClass : public TechnoClass {
   int Rescue_Mission(TARGET tarcom);
 
  private:
-  int Passable_Cell(CELL cell, FacingType face, int threat,
+  int Passable_Cell(CELL cell, game::FacingType face, int threat,
                     MoveType threshhold);
-  PathType* Find_Path(CELL dest, std::span<FacingType> final_moves, int maxlen,
-                      MoveType threshhold);
+  PathType* Find_Path(CELL dest, std::span<game::FacingType> final_moves,
+                      int maxlen, MoveType threshhold);
   void Debug_Draw_Map(const char* txt, CELL start, CELL dest, bool pause) const;
   static void Debug_Draw_Path(PathType* path);
-  bool Follow_Edge(CELL start, CELL target, PathType* path, FacingType search,
-                   FacingType olddir, int threat, int threat_stage,
-                   int max_cells, MoveType threshhold);
-  bool Register_Cell(PathType* path, CELL cell, FacingType dir, int cost,
+  bool Follow_Edge(CELL start, CELL target, PathType* path,
+                   game::FacingType search, game::FacingType olddir, int threat,
+                   int threat_stage, int max_cells, MoveType threshhold);
+  bool Register_Cell(PathType* path, CELL cell, game::FacingType dir, int cost,
                      MoveType threshhold);
-  bool Unravel_Loop(PathType* path, CELL& cell, FacingType& dir, int sx, int sy,
-                    int dx, int dy, MoveType threshhold);
+  bool Unravel_Loop(PathType* path, CELL& cell, game::FacingType& dir, int sx,
+                    int sy, int dx, int dy, MoveType threshhold);
 
   /*
   **	This is the coordinate that the unit is heading to

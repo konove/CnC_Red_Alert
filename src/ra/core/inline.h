@@ -90,12 +90,12 @@
 #include "base/array.h"
 #include "base/random.h"
 #include "engine/file/string_table.h"
+#include "game/sim/direction.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/assets.h"
 #include "ra/core/const.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/map/display.h"
 #include "ra/map/world.h"
 
@@ -628,83 +628,6 @@ inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
 }
 
 /***********************************************************************************************
- * Dir_Facing -- Convert a DirType into a FacingType value. *
- *                                                                                             *
- *    Use this routine to convert the specified DirType value into the closest
- *FacingType      * value that matches it. *
- *                                                                                             *
- * INPUT:   facing   -- The DirType to convert. *
- *                                                                                             *
- * OUTPUT:  Returns with a FacingType value that most closely matches the
- *DirType specified.   *
- *                                                                                             *
- * WARNINGS:   Precision of direction is lost by this transformation. *
- *                                                                                             *
- * HISTORY: * 08/26/1996 JLB : Created. *
- *=============================================================================================*/
-inline FacingType Dir_Facing(DirType facing) {
-  // The byte wrap folds the last sixteenth of the circle back onto north.
-  return static_cast<FacingType>(
-      static_cast<uint8_t>(static_cast<int>(facing) + 0x10) / 32);
-}
-
-/***********************************************************************************************
- * Facing_Dir -- Convert a FacingType into a DirType. *
- *                                                                                             *
- *    This will conver the specified FacingType value into the DirType that
- *exactly matches    * it. *
- *                                                                                             *
- * INPUT:   facing   -- The FacingType to convert. *
- *                                                                                             *
- * OUTPUT:  Returns with the DirType that exactly matches the facing. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/26/1996 JLB : Created. *
- *=============================================================================================*/
-inline DirType Facing_Dir(FacingType facing) {
-  return static_cast<DirType>(static_cast<int>(facing) * 32);
-}
-
-/***********************************************************************************************
- * Dir_To_16 -- Convert a facing to a 0..15 value. *
- *                                                                                             *
- *    Use this routine to convert a DirType into a 0 through 15 value. *
- *                                                                                             *
- * INPUT:   facing   -- The DirType to convert into a 0..15 value. *
- *                                                                                             *
- * OUTPUT:  Returns with the facing converted into a value where 0 equals North,
- *4 equals      * East, 8 equals South, etc. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/26/1996 JLB : Created. *
- *=============================================================================================*/
-inline int Dir_To_16(DirType facing) {
-  return base::At(Facing16, static_cast<int>(facing));
-}
-
-/***********************************************************************************************
- * Dir_To_32 -- Convert a DirType into a 0..31 value. *
- *                                                                                             *
- *    This will convert the DirType specified, into a 0 through 31 value where
- *zero is North,  * and rotates clockwise. The return value is baised to take
- *into consideration the         * distortion caused by 3D studio upon the game
- *vehicle objects.                            *
- *                                                                                             *
- * INPUT:   facing   -- The DirType to convert. *
- *                                                                                             *
- * OUTPUT:  Returns with the facing converted into a value from zero to 31. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/26/1996 JLB : Created. *
- *=============================================================================================*/
-inline int Dir_To_32(DirType facing) {
-  return base::At(Facing32, static_cast<int>(facing));
-}
-
-/***********************************************************************************************
  * Direction256 -- Calculate the facing value from one coordinate to another. *
  *                                                                                             *
  *    This will calculate the facing from the first coordinate to the second. *
@@ -721,9 +644,9 @@ inline int Dir_To_32(DirType facing) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
-  return Desired_Facing256(Coord_X(coord1), Coord_Y(coord1), Coord_X(coord2),
-                           Coord_Y(coord2));
+inline game::DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
+  return game::Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
+                                 Coord_X(coord2), Coord_Y(coord2));
 }
 
 /***********************************************************************************************
@@ -744,9 +667,9 @@ inline DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline DirType Direction(COORDINATE coord1, COORDINATE coord2) {
-  return Desired_Facing256(Coord_X(coord1), Coord_Y(coord1), Coord_X(coord2),
-                           Coord_Y(coord2));
+inline game::DirType Direction(COORDINATE coord1, COORDINATE coord2) {
+  return game::Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
+                                 Coord_X(coord2), Coord_Y(coord2));
 }
 
 /***********************************************************************************************
@@ -766,9 +689,9 @@ inline DirType Direction(COORDINATE coord1, COORDINATE coord2) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
-  return Desired_Facing8(Coord_X(coord1), Coord_Y(coord1), Coord_X(coord2),
-                         Coord_Y(coord2));
+inline game::DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
+  return game::Desired_Facing8(Coord_X(coord1), Coord_Y(coord1),
+                               Coord_X(coord2), Coord_Y(coord2));
 }
 
 /***********************************************************************************************
@@ -788,9 +711,9 @@ inline DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir) {
-  return Coord_Snap(
-      Coord_Add(AdjacentCoord.at(WrapFacing(static_cast<int>(dir))), coord));
+inline COORDINATE Adjacent_Cell(COORDINATE coord, game::FacingType dir) {
+  return Coord_Snap(Coord_Add(
+      AdjacentCoord.at(game::AsFacing(static_cast<int>(dir))), coord));
 }
 
 /***********************************************************************************************
@@ -810,8 +733,8 @@ inline COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
-  return Adjacent_Cell(coord, Dir_Facing(dir));
+inline COORDINATE Adjacent_Cell(COORDINATE coord, game::DirType dir) {
+  return Adjacent_Cell(coord, game::Dir_Facing(dir));
 }
 
 /***********************************************************************************************
@@ -831,11 +754,11 @@ inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
+inline CELL Adjacent_Cell(CELL cell, game::FacingType dir) {
   // Wrapped like the COORDINATE overload above, so that FACING_NONE (-1) does
   // not index before the start of the table.
-  return static_cast<CELL>(cell +
-                           AdjacentCell.at(WrapFacing(static_cast<int>(dir))));
+  return static_cast<CELL>(
+      cell + AdjacentCell.at(game::AsFacing(static_cast<int>(dir))));
 }
 
 /***********************************************************************************************
@@ -855,28 +778,8 @@ inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline CELL Adjacent_Cell(CELL cell, DirType dir) {
-  return static_cast<CELL>(cell + AdjacentCell.at(Dir_Facing(dir)));
-}
-
-/***********************************************************************************************
- * Dir_To_8 -- Convert a DirType into a value from 0 to 7. *
- *                                                                                             *
- *    This routine will convert a DirType value into a facing number from 0
- *to 7.              *
- *                                                                                             *
- * INPUT:   facing   -- The DirType to convert. *
- *                                                                                             *
- * OUTPUT:  Returns with the DirType converted to a number from 0 to 7 with 0
- *being North and  * rotating clockwise. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/26/1996 JLB : Created. *
- *=============================================================================================*/
-inline FacingType Dir_To_8(DirType facing) {
-  return static_cast<FacingType>(
-      static_cast<uint8_t>(static_cast<uint32_t>(facing) | 0x10U) / 32);
+inline CELL Adjacent_Cell(CELL cell, game::DirType dir) {
+  return static_cast<CELL>(cell + AdjacentCell.at(game::Dir_Facing(dir)));
 }
 
 /***********************************************************************************************

@@ -133,6 +133,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
@@ -143,8 +145,6 @@
 #include "td/core/const.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
-#include "td/core/face.h"
-#include "td/core/facing.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
@@ -600,7 +600,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
 void InfantryClass::Draw_It(PixelView& view, int x, int y,
                             WindowNumberType window) {
   Validate();
-  const int facing = Facing_To_32(PrimaryFacing.Current());
+  const int facing = game::Dir_To_32(PrimaryFacing.Current());
 
   /*
   **	Verify the legality of the unit class.
@@ -950,10 +950,10 @@ void InfantryClass::Assign_Destination(TARGET target) {
         }
       }
     } else {
-      base::At(Path, 0) = FACING_NONE;
+      base::At(Path, 0) = game::FACING_NONE;
     }
   } else {
-    base::At(Path, 0) = FACING_NONE;
+    base::At(Path, 0) = game::FACING_NONE;
   }
   FootClass::Assign_Destination(target);
 }
@@ -977,7 +977,7 @@ void InfantryClass::Assign_Destination(TARGET target) {
  *=============================================================================================*/
 void InfantryClass::Assign_Target(TARGET target) {
   Validate();
-  base::At(Path, 0) = FACING_NONE;
+  base::At(Path, 0) = game::FACING_NONE;
   FootClass::Assign_Target(target);
 
   /*
@@ -1168,7 +1168,7 @@ void InfantryClass::AI() {
           */
           if (TarCom == NavCom) {
             NavCom = kTargetNone;
-            base::At(Path, 0) = FACING_NONE;
+            base::At(Path, 0) = game::FACING_NONE;
           }
 #ifdef BOXING
         }
@@ -1330,10 +1330,10 @@ void InfantryClass::AI() {
         **	to be entered. If not, then abort the path and try
         **	again.
         */
-        if (base::At(Path, 0) != FACING_NONE &&
+        if (base::At(Path, 0) != game::FACING_NONE &&
             Can_Enter_Cell(Adjacent_Cell(Coord_Cell(Center_Coord()),
                                          base::At(Path, 0))) != MOVE_OK) {
-          base::At(Path, 0) = FACING_NONE;
+          base::At(Path, 0) = game::FACING_NONE;
         }
 
         /*
@@ -1344,13 +1344,13 @@ void InfantryClass::AI() {
         */
         const int d = Lepton_To_Cell(Distance(NavCom));
         if (d < kConquerPathMax) {
-          base::At(Path, d) = FACING_NONE;
+          base::At(Path, d) = game::FACING_NONE;
         }
 
         /*
         **	Find a path to follow if one isn't already calculated.
         */
-        if (base::At(Path, 0) == FACING_NONE) {
+        if (base::At(Path, 0) == game::FACING_NONE) {
           /*
           **	Calculate the path from the current location to the
           **	destination indicated by the navigation computer. If there
@@ -1414,7 +1414,7 @@ void InfantryClass::AI() {
             }
           }
 
-          base::At(Path, 0) = FACING_NONE;
+          base::At(Path, 0) = game::FACING_NONE;
           Stop_Driver();
           if (IsNewNavCom) {
             Sound_Effect(VOC_SCOLD);
@@ -1448,7 +1448,7 @@ void InfantryClass::AI() {
                         std::as_bytes(base::Suffix(Path, 1)),
                         sizeof(Path) - sizeof(Path[0]));
         base::At(Path, (sizeof(Path) / sizeof(base::At(Path, 0))) - 1) =
-            FACING_NONE;
+            game::FACING_NONE;
         Coord = Head_To_Coord();
         Stop_Driver();
         Per_Cell_Process(true);
@@ -1463,7 +1463,7 @@ void InfantryClass::AI() {
             Enter_Idle_Mode();
           }
           // Stop_Driver();
-          base::At(Path, 0) = FACING_NONE;
+          base::At(Path, 0) = game::FACING_NONE;
         }
       } else {
         int movespeed = Speed;
@@ -1593,7 +1593,8 @@ MoveBitType InfantryClass::Blocking_Object(const TechnoClass* techno,
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
+MoveType InfantryClass::Can_Enter_Cell(CELL cell,
+                                       game::FacingType /*unused*/) const {
   Validate();
   /*
   ** If we are moving into an illegal cell, then we can't do that.
@@ -2013,13 +2014,15 @@ void InfantryClass::Random_Animate() {
       case 4:
       case 3:
       case 0:
-        PrimaryFacing.Set(Facing_Dir(Random_Pick(FACING_N, FACING_NW)));
+        PrimaryFacing.Set(
+            game::Facing_Dir(Random_Pick(game::FACING_N, game::FACING_NW)));
         Mark(MARK_CHANGE);
         break;
 
       case 1:
         Do_Action(DO_IDLE1);
-        PrimaryFacing.Set(Facing_Dir(Random_Pick(FACING_N, FACING_NW)));
+        PrimaryFacing.Set(
+            game::Facing_Dir(Random_Pick(game::FACING_N, game::FACING_NW)));
         if (Sim_Random_Pick(1, 20) == 1 && !IsSelected &&
             *this == INFANTRY_MOEBIUS && IsDiscoveredByPlayer) {
           static const VocType _response[] = {
@@ -2043,7 +2046,8 @@ void InfantryClass::Random_Animate() {
 
       case 2:
         Do_Action(DO_IDLE2);
-        PrimaryFacing.Set(Facing_Dir(Random_Pick(FACING_N, FACING_NW)));
+        PrimaryFacing.Set(
+            game::Facing_Dir(Random_Pick(game::FACING_N, game::FACING_NW)));
         if (!IsSelected && IsOwnedByPlayer && *this == INFANTRY_RAMBO &&
             Sim_Random_Pick(0, 2) == 0) {
           Sound_Effect(VOC_RAMBO_CMON, Coord);
@@ -2120,25 +2124,26 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
   }
 
   if (forced || Class->IsFraidyCat /*|| !(Random_Pick(1, 4) == 1)*/) {
-    FacingType toface = FACING_NONE;
+    game::FacingType toface = game::FACING_NONE;
 
     if (threat) {
-      toface = Dir_Facing(Direction8(threat, Coord));
+      toface = game::Dir_Facing(Direction8(threat, Coord));
       toface = toface + (Random_Pick(0, 4) - 2);
     } else {
       const COORDINATE coord = Coord & 0x00FF00FFL;
 
       if (coord != 0x00800080L) {
-        toface = Dir_Facing(
-            Desired_Facing8(0x0080, 0x0080, Coord_X(coord), Coord_Y(coord)));
+        toface = game::Dir_Facing(game::Desired_Facing8(
+            0x0080, 0x0080, Coord_X(coord), Coord_Y(coord)));
       } else {
-        toface = Dir_Facing(PrimaryFacing.Current());
+        toface = game::Dir_Facing(PrimaryFacing.Current());
       }
       toface = toface + (Random_Pick(0, 4) - 2);
     }
 
-    for (const FacingType face : magic_enum::enum_values<FacingType>()) {
-      const FacingType newface = toface + face;
+    for (const game::FacingType face :
+         magic_enum::enum_values<game::FacingType>()) {
+      const game::FacingType newface = toface + face;
       CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
       if (TheMap().In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
@@ -2214,7 +2219,7 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
       case DO_ON_GUARD:
         IsBoxing = true;
         PrimaryFacing.Set(Direction8(Center_Coord(), As_Coord(TarCom)));
-        base::At(Path, 0) = FACING_NONE;
+        base::At(Path, 0) = game::FACING_NONE;
         break;
 
       case DoType::DO_NOTHING:
@@ -2329,12 +2334,13 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
   headto = TheMap()
                .at(Coord_Cell(headto))
                .Closest_Free_Spot(
-                   Coord_Move(headto, Direction(headto) + DIR_S, 0x007C));
+                   Coord_Move(headto, Direction(headto) + game::DIR_S, 0x007C));
   if (!headto && Can_Enter_Cell(Coord_Cell(old)) == MOVE_OK) {
-    headto = TheMap()
-                 .at(Coord_Cell(old))
-                 .Closest_Free_Spot(
-                     Coord_Move(old, Direction(headto) + DIR_S, 0x0080), true);
+    headto =
+        TheMap()
+            .at(Coord_Cell(old))
+            .Closest_Free_Spot(
+                Coord_Move(old, Direction(headto) + game::DIR_S, 0x0080), true);
   }
 
   /*
@@ -2373,7 +2379,7 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
  *                                                                                             *
  * HISTORY: * 12/11/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Set_Primary_Facing(DirType facing, bool) {
+void InfantryClass::Set_Primary_Facing(game::DirType facing, bool) {
   Validate();
   FootClass::Set_Primary_Facing(facing, true);
 }
@@ -2500,7 +2506,7 @@ BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
+bool InfantryClass::Unlimbo(COORDINATE coord, game::DirType facing) {
   Validate();
   /*
   **	Make sure that the infantry start in a legal position on the map.
@@ -3135,8 +3141,8 @@ void InfantryClass::Read_INI(char* buffer) {
           **	Fetch the mission and facing.
           */
           const MissionType mission = Mission_From_Name(tokens.Next());
-          const auto dir =
-              static_cast<DirType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+          const auto dir = static_cast<game::DirType>(
+              base::ParseIntegerOr<int>(tokens.Next(), 0));
           infantry->Trigger = TriggerClass::As_Pointer(tokens.Next());
           if (infantry->Trigger) {
             infantry->Trigger->AttachCount++;

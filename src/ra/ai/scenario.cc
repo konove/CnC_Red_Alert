@@ -103,6 +103,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/carry.h"
@@ -125,7 +126,6 @@
 #include "ra/core/const.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
@@ -181,7 +181,7 @@ using enum engine::window::KeyNumber;
 static void Remove_AI_Players();
 static void Create_Units(bool official);
 static CELL Clip_Scatter(CELL cell, int maxdist);
-static CELL Clip_Move(CELL cell, FacingType facing, int dist);
+static CELL Clip_Move(CELL cell, game::FacingType facing, int dist);
 
 // Paces the mission briefing: each line is left up for three seconds, or
 // until the speech playing over it finishes. Only this file shows briefings.
@@ -2843,7 +2843,7 @@ static void Create_Units(bool official) {
       */
       scaleval = 1;
       obj = base::NewPooled<UnitClass>(UNIT_MCV, house);
-      if ((!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) &&
+      if ((!obj->Unlimbo(Cell_Coord(centroid), game::DIR_N)) &&
           (!Scan_Place_Object(obj, centroid))) {
         base::DeletePooled(obj);
         obj = nullptr;
@@ -2994,7 +2994,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
     techno = TheMap().at(cell).Cell_Techno();
     if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                      obj->What_Am_I() == RTTI_INFANTRY)) &&
-        obj->Unlimbo(Cell_Coord(cell), DIR_N)) {
+        obj->Unlimbo(Cell_Coord(cell), game::DIR_N)) {
       return true;
     }
   }
@@ -3010,7 +3010,8 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
     /*
     **	Pick a random starting direction
     */
-    FacingType rot = Random_Pick(FACING_N, FACING_NW);  // for object placement
+    game::FacingType rot =
+        Random_Pick(game::FACING_N, game::FACING_NW);  // for object placement
 
     /*
     **	Try all directions twice
@@ -3019,7 +3020,8 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
       /*
       **	Loop through all directions, at this distance.
       */
-      for (FacingType fcounter = FACING_N; fcounter <= FACING_NW; fcounter++) {
+      for (game::FacingType fcounter = game::FACING_N;
+           fcounter <= game::FACING_NW; fcounter++) {
         bool skipit = false;
 
         /*
@@ -3053,14 +3055,14 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
           techno = TheMap().at(newcell).Cell_Techno();
           if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                            obj->What_Am_I() == RTTI_INFANTRY)) &&
-              obj->Unlimbo(Cell_Coord(newcell), DIR_N)) {
+              obj->Unlimbo(Cell_Coord(newcell), game::DIR_N)) {
             return true;
           }
         }
 
         rot++;
-        if (rot > FACING_NW) {
-          rot = FACING_N;
+        if (rot > game::FACING_NW) {
+          rot = game::FACING_N;
         }
       }
     }
@@ -3135,8 +3137,7 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
  *                                                                                             *
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
-static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
-
+static CELL Clip_Move(CELL cell, game::FacingType facing, int dist) {
   /*
   **	Get X & Y coords of given starting cell
   */
@@ -3155,42 +3156,42 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
   **	Adjust the x-coordinate
   */
   switch (facing) {
-    case FACING_N:
+    case game::FACING_N:
       y -= dist;
       break;
 
-    case FACING_NE:
+    case game::FACING_NE:
       x += dist;
       y -= dist;
       break;
 
-    case FACING_E:
+    case game::FACING_E:
       x += dist;
       break;
 
-    case FACING_SE:
+    case game::FACING_SE:
       x += dist;
       y += dist;
       break;
 
-    case FACING_S:
+    case game::FACING_S:
       y += dist;
       break;
 
-    case FACING_SW:
+    case game::FACING_SW:
       x -= dist;
       y += dist;
       break;
 
-    case FACING_W:
+    case game::FACING_W:
       x -= dist;
       break;
 
-    case FACING_NW:
+    case game::FACING_NW:
       x -= dist;
       y -= dist;
       break;
-    case FacingType::FACING_NONE:
+    case game::FacingType::FACING_NONE:
     default:
       break;
   }

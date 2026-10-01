@@ -64,6 +64,7 @@
 
 #include "base/cardinal.h"
 #include "game/core/display_constants.h"
+#include "game/sim/direction.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
 
@@ -71,7 +72,7 @@ namespace td {
 
 FlyClass::~FlyClass() = default;
 
-ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
+ImpactType FlyClass::Physics(COORDINATE& coord, game::DirType facing) {
   if (SpeedAdd != MPH_IMMOBILE) {
     int actual = static_cast<int>(SpeedAdd) + SpeedAccum;
     const std::div_t result = std::div(actual, PIXEL_LEPTON_W);

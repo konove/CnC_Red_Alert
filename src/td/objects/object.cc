@@ -121,6 +121,7 @@
 #include "engine/gfx/wwstd.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
@@ -682,8 +683,7 @@ void ObjectClass::Sell_Back(int /*unused*/) {}
  *                                                                                             *
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Move(FacingType facing) {
-
+void ObjectClass::Move(game::FacingType facing) {
   Mark(MARK_UP);
   COORDINATE const coord = Adjacent_Cell(Coord, facing);
   if (Can_Enter_Cell(Coord_Cell(coord)) == MOVE_OK) {
@@ -853,13 +853,14 @@ bool ObjectClass::Render(PixelView& view, bool forced) {
           int oldx = 0;
           int oldy = 0;
 
-          if (foot->Head_To_Coord() && base::At(foot->Path, 0) != FACING_NONE) {
-            CELL cell =
-                Adjacent_Cell(Coord_Cell(foot->Head_To_Coord()),
-                              base::At(foot->Path, 0) + FACING_S & FACING_NW);
+          if (foot->Head_To_Coord() &&
+              base::At(foot->Path, 0) != game::FACING_NONE) {
+            CELL cell = Adjacent_Cell(
+                Coord_Cell(foot->Head_To_Coord()),
+                base::At(foot->Path, 0) + game::FACING_S & game::FACING_NW);
             TheMap().Coord_To_Pixel(Cell_Coord(cell), oldx, oldy);
             for (const auto& index : foot->Path) {
-              if (index == FACING_NONE) {
+              if (index == game::FACING_NONE) {
                 break;
               }
               cell = Adjacent_Cell(cell, index);
@@ -1064,10 +1065,10 @@ bool ObjectClass::Limbo() {
  * HISTORY: * 09/24/1994 JLB : Created. * 12/23/1994 JLB : Sets object strength.
  **
  *=============================================================================================*/
-bool ObjectClass::Unlimbo(COORDINATE coord, DirType /*unused*/) {
+bool ObjectClass::Unlimbo(COORDINATE coord, game::DirType /*unused*/) {
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
-       Can_Enter_Cell(Coord_Cell(coord), FACING_NONE) == MOVE_OK)) {
+       Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == MOVE_OK)) {
     IsInLimbo = false;
     IsToDisplay = false;
     Coord = Class_Of().Coord_Fixup(coord);

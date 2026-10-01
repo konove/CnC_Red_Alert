@@ -46,10 +46,10 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
-#include "ra/core/facing.h"
 #include "ra/objects/fly.h"
 #include "ra/objects/fuse.h"
 #include "ra/objects/object.h"
@@ -79,7 +79,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*
   **	This is the facing that the projectile is traveling.
   */
-  FacingClass PrimaryFacing;
+  game::FacingClass PrimaryFacing;
 
  public:
   /*---------------------------------------------------------------------
@@ -114,7 +114,8 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   [[nodiscard]] LayerType In_Which_Layer() const override;
   [[nodiscard]] COORDINATE Sort_Y() const override;
   virtual void Assign_Target(TARGET target) { TarCom = target; }
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+               game::DirType dir = game::DIR_N) override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }

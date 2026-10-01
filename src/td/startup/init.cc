@@ -93,6 +93,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/special.h"
@@ -1656,11 +1657,11 @@ bool Select_Game(bool fade) {
       vehicle->IsReturning = true;
       vehicle->IsTurretLockedDown = true;
       vehicle->Reload.Set(173);
-      vehicle->SecondaryFacing.Set(DIR_NE);
-      vehicle->SecondaryFacing = DIR_SW;
-      base::At(vehicle->Path, 0) = FACING_NE;
-      base::At(vehicle->Path, 1) = FACING_E;
-      base::At(vehicle->Path, 2) = FACING_NONE;
+      vehicle->SecondaryFacing.Set(game::DIR_NE);
+      vehicle->SecondaryFacing = game::DIR_SW;
+      base::At(vehicle->Path, 0) = game::FACING_NE;
+      base::At(vehicle->Path, 1) = game::FACING_E;
+      base::At(vehicle->Path, 2) = game::FACING_NONE;
       vehicle->PathDelay.Set(181);
       vehicle->BaseAttackTimer.Set(217);
       vehicle->TryTryAgain = 3;
@@ -1682,15 +1683,15 @@ bool Select_Game(bool fade) {
       passenger->IsProne = true;
       passenger->IsBoxing = true;
       passenger->Fear = 81;
-      plane->SecondaryFacing.Set(DIR_SE);
-      plane->SecondaryFacing = DIR_N;
+      plane->SecondaryFacing.Set(game::DIR_SE);
+      plane->SecondaryFacing = game::DIR_N;
       bool launched = false;
       if (TheObjectHeaps().unit().Count() != 0) {
         const CELL start = Coord_Cell(TheObjectHeaps().unit().Ptr(0)->Coord);
         for (int offset = 1; offset <= 16; ++offset) {
           const CELL cell = static_cast<CELL>(start + offset);
           if (cell < MAP_CELL_TOTAL && TheMap().In_Radar(cell) &&
-              plane->Unlimbo(Cell_Coord(cell), DIR_E)) {
+              plane->Unlimbo(Cell_Coord(cell), game::DIR_E)) {
             launched = true;
             break;
           }
@@ -1757,8 +1758,8 @@ bool Select_Game(bool fade) {
       building->CloakingDevice.Set_Rate(9);
       building->TarCom = peer->As_Target();
       building->SuspendedTarCom = passenger->As_Target();
-      building->PrimaryFacing.Set(DIR_NE);
-      building->PrimaryFacing = DIR_SW;
+      building->PrimaryFacing.Set(game::DIR_NE);
+      building->PrimaryFacing = game::DIR_SW;
       building->Arm = 19;
       building->Ammo = 11;
       building->FlashCount = 23;
@@ -1798,8 +1799,8 @@ bool Select_Game(bool fade) {
       terrain->Set_Rate(7);
       bullet->Next = ground;
       bullet->Payback = owner;
-      bullet->PrimaryFacing.Set(DIR_NE);
-      bullet->PrimaryFacing = DIR_SE;
+      bullet->PrimaryFacing.Set(game::DIR_NE);
+      bullet->PrimaryFacing = game::DIR_SE;
       bullet->Fly_Speed(127, MPH_FAST);
       bullet->Arm_Fuse(owner->Coord, owner->Coord + 0x200, 95, 5);
       bullet->Assign_Target(owner->As_Target());
@@ -1810,7 +1811,7 @@ bool Select_Game(bool fade) {
       }
       missile->Payback = owner;
       missile->Assign_Target(td::As_Target(Coord_Cell(destination)));
-      if (!missile->Unlimbo(owner->Coord, DIR_E)) {
+      if (!missile->Unlimbo(owner->Coord, game::DIR_E)) {
         LOG(ERROR) << "-WORLDTEST: could not launch missile";
         return false;
       }

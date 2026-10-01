@@ -66,6 +66,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
 #include "game/core/path_overlap.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
@@ -89,8 +90,9 @@ namespace td {
 **	When an edge search is started, it can be performed CLOCKwise or
 **	COUNTERCLOCKwise direction.
 */
-constexpr FacingType kClockwise = static_cast<FacingType>(1);
-constexpr FacingType kCounterclockwise = static_cast<FacingType>(-1);
+constexpr game::FacingType kClockwise = static_cast<game::FacingType>(1);
+constexpr game::FacingType kCounterclockwise =
+    static_cast<game::FacingType>(-1);
 
 /*
 **	If defined, diagonal moves are allowed, else no diagonals.
@@ -100,14 +102,14 @@ constexpr FacingType kCounterclockwise = static_cast<FacingType>(-1);
 /*
 **	This is the marker to signify the end of the path list.
 */
-#define END FACING_NONE
+#define END game::FACING_NONE
 
 /*
 **	Modify this macro so that given two cell values, it will return
 **	a value between 0 and 7, with 0 being North and moving
 **	clockwise (just like map degrees).
 */
-#define CELL_FACING(a, b) Dir_Facing(td::Direction((a), (b)))
+#define CELL_FACING(a, b) game::Dir_Facing(td::Direction((a), (b)))
 
 /*
 **	Maximum lookahead cells. Twice this value in bytes will be
@@ -117,25 +119,12 @@ constexpr FacingType kCounterclockwise = static_cast<FacingType>(-1);
 #define MAX_MLIST_SIZE 300
 #define THREAT_THRESHOLD 5
 
-#ifdef NEVER
-enum FacingType {
-  FACING_N,   // North
-  FACING_NE,  // North-East
-  FACING_E,   // East
-  FACING_SE,  // South-East
-  FACING_S,   // South
-  FACING_SW,  // South-West
-  FACING_W,   // West
-  FACING_NW,  // North-West
-
-  FACING_COUNT  // Total of 8 directions (0..7).
-};
-#endif
-
 /*-------------------------------------------------------------------------*/
 static bool DrawPath;
 
-static inline FacingType Opposite(FacingType face) { return face + 4; }
+static inline game::FacingType Opposite(game::FacingType face) {
+  return face + 4;
+}
 
 static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
                                    int overide = 0) {
@@ -168,11 +157,11 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
   }
 }
 
-static FacingType Next_Direction(const FacingType current,
-                                 const FacingType delta) {
-  const FacingType result = current + delta;
+static game::FacingType Next_Direction(const game::FacingType current,
+                                       const game::FacingType delta) {
+  const game::FacingType result = current + delta;
 #ifndef DIAGONAL
-  result = static_cast<FacingType>(result & 0x06);
+  result = static_cast<game::FacingType>(result & 0x06);
 #endif
   return result;
 }
@@ -287,13 +276,13 @@ static int Point_Relative_To_Line(int x, int z, int x1, int z1, int x2,
  * HISTORY:                                                                *
  *   05/25/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
+bool FootClass::Unravel_Loop(PathType* path, CELL& cell, game::FacingType& dir,
                              int sx, int sy, int dx, int dy,
                              MoveType threshhold) {
   /*
   ** Walk back to the actual cell before we advanced our position
   */
-  FacingType curr_dir = dir;
+  game::FacingType curr_dir = dir;
   CELL curr_pos = Adjacent_Cell(cell, Opposite(curr_dir));
   int idx = path->Length;                      // start at the last position
   int list = idx - 1;
@@ -376,9 +365,8 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, FacingType& dir,
  * HISTORY:                                                                *
  *   05/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
+bool FootClass::Register_Cell(PathType* path, CELL cell, game::FacingType dir,
                               int cost, MoveType threshhold) {
-
   /*
   ** See if this point has already been registered as on the list.  If so
   ** we need to truncate the list back to this point and register the
@@ -470,9 +458,9 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
   return true;
 }
 #ifdef OBSOLETE
-bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
+bool FootClass::Register_Cell(PathType* path, CELL cell, game::FacingType dir,
                               int cost, MoveType threshhold) {
-  FacingType* list;
+  game::FacingType* list;
   int pos = cell >> 5;
   int bit = (cell & 31) - 1;
   int idx;
@@ -573,11 +561,12 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, FacingType dir,
  *                                                                                             *
  * HISTORY: * 07/08/1991  CY : Created. *
  *=============================================================================================*/
-PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
+PathType* FootClass::Find_Path(CELL dest,
+                               std::span<game::FacingType> final_moves,
                                int maxlen, MoveType threshhold) {
   const CELL source = Coord_Cell(Coord);  // Source expressed as cell
   static PathType path;             // Main path control.
-  FacingType newdir = FACING_NONE;  // Tentative facing value.
+  game::FacingType newdir = game::FACING_NONE;  // Tentative facing value.
 
   bool left = false;
   bool                // Was leftward path legal?
@@ -585,8 +574,8 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
 
   int len = 0;          // Length of detour command list.
   int unit_threat = 0;  // Calculated unit threat rating
-  FacingType moves_left[MAX_MLIST_SIZE + 2];
-  FacingType                            // Counterclockwise move list.
+  game::FacingType moves_left[MAX_MLIST_SIZE + 2];
+  game::FacingType                      // Counterclockwise move list.
       moves_right[MAX_MLIST_SIZE + 2];  // Clockwise move list.
   PathType pleft;
   PathType pright;                            // Path control structures.
@@ -690,7 +679,7 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
     **	Find the absolute correct direction to reach the next straight
     ** line cell and what cell it is.
     */
-    const FacingType direction =
+    const game::FacingType direction =
         CELL_FACING(startcell, dest);  // Working direction of look ahead.
     CELL next = Adjacent_Cell(startcell, direction);  // Next cell to enter
 
@@ -741,7 +730,7 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
           ** If the cell is passable then we have been completely
           ** sucessful.  If the cell is not passable then continue.
           */
-          if (Passable_Cell(next, FACING_NONE, threat, threshhold) ||
+          if (Passable_Cell(next, game::FACING_NONE, threat, threshhold) ||
               next == dest) {
             Draw_Cell_Point(next, true, threat_stage);
             break;
@@ -998,11 +987,11 @@ end_of_list:
  *commented.                                                  *
  *=============================================================================================*/
 bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
-                            FacingType search, FacingType olddir, int threat,
-                            int threat_stage, int max_cells,
+                            game::FacingType search, game::FacingType olddir,
+                            int threat, int threat_stage, int max_cells,
                             MoveType threshhold) {
-  FacingType newdir =
-      FACING_NONE;  // Direction of facing before surrounding cell check.
+  game::FacingType newdir =
+      game::FACING_NONE;  // Direction of facing before surrounding cell check.
   CELL oldcell = 0;
   CELL                // Current cell.
       newcell = 0;    // Tentative new cell.
@@ -1011,7 +1000,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
   int oldval = 0;
   int cellcount = 0;
   bool forceout = false;
-  auto firstdir = static_cast<FacingType>(-1);
+  auto firstdir = static_cast<game::FacingType>(-1);
   CELL firstcell = -1;
   const int startx = Cell_X(start);
   const int starty = Cell_Y(start);
@@ -1188,8 +1177,8 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
         ** attaining this square, we were moving turned farther in the
         ** search direction then we really were.
         */
-        newdir = Next_Direction(
-            newdir, static_cast<FacingType>(static_cast<int>(search) * 2));
+        newdir = Next_Direction(newdir, static_cast<game::FacingType>(
+                                            static_cast<int>(search) * 2));
       }
       /*
       ** Find out which side of the line this cell is on.  If it is on
@@ -1244,10 +1233,10 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
 */
 #ifdef DIAGONAL
     olddir = Next_Direction(
-        newdir, static_cast<FacingType>(-static_cast<int>(search) * 3));
+        newdir, static_cast<game::FacingType>(-static_cast<int>(search) * 3));
 #else
     olddir = Next_Direction(
-        newdir, static_cast<FacingType>(-static_cast<int>(search) * 4));
+        newdir, static_cast<game::FacingType>(-static_cast<int>(search) * 4));
 #endif
     oldcell = newcell;
   }
@@ -1273,7 +1262,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
  * HISTORY: * 07/08/1991  CY : Created. * 06/01/1992  JLB : Optimized and
  *commented.                                                *
  *=============================================================================================*/
-constexpr FacingType kEmptyCommand = static_cast<FacingType>(-2);
+constexpr game::FacingType kEmptyCommand = static_cast<game::FacingType>(-2);
 int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
 // int Optimize_Moves(PathType *path, int (*callback)(CELL, FacingType), int
 // threshold)
@@ -1285,19 +1274,25 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   *first command facing.
   */
 #ifdef DIAGONAL
-  static const base::EnumArray<FacingType, FacingType> _trans = {
-      static_cast<FacingType>(0),  static_cast<FacingType>(0),
-      static_cast<FacingType>(1),  static_cast<FacingType>(2),
-      static_cast<FacingType>(3),  kEmptyCommand,
-      static_cast<FacingType>(-1), static_cast<FacingType>(0)};  // Smoothing.
+  static const base::EnumArray<game::FacingType, game::FacingType> _trans = {
+      static_cast<game::FacingType>(0),
+      static_cast<game::FacingType>(0),
+      static_cast<game::FacingType>(1),
+      static_cast<game::FacingType>(2),
+      static_cast<game::FacingType>(3),
+      kEmptyCommand,
+      static_cast<game::FacingType>(-1),
+      static_cast<game::FacingType>(0)};  // Smoothing.
 #else
-  static base::EnumArray<FacingType, FacingType> _trans = {
-      (FacingType)0, (FacingType)0, (FacingType)0, (FacingType)2,
-      (FacingType)3, kEmptyCommand, (FacingType)0, (FacingType)0};
+  static base::EnumArray<game::FacingType, game::FacingType> _trans = {
+      (game::FacingType)0, (game::FacingType)0, (game::FacingType)0,
+      (game::FacingType)2, (game::FacingType)3, kEmptyCommand,
+      (game::FacingType)0, (game::FacingType)0};
 #endif
   size_t cmd1 = 0;
   size_t cmd2 = 0;
-  FacingType newdir = FACING_NONE;  // Tentative new direction for smoothing.
+  game::FacingType newdir =
+      game::FACING_NONE;  // Tentative new direction for smoothing.
 
   /*
   **	Abort if there is any illegal parameter.
@@ -1342,12 +1337,12 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       **	commands. Any other value is new direction and eliminate
       **	one command.
       */
-      FacingType newcmd =
+      game::FacingType newcmd =
           base::At(path->Command, cmd2) -
           base::At(path->Command, cmd1);  // Calculated new optimized command.
-      if (newcmd < FACING_N) {
-        newcmd =
-            newcmd + static_cast<int>(magic_enum::enum_count<FacingType>());
+      if (newcmd < game::FACING_N) {
+        newcmd = newcmd +
+                 static_cast<int>(magic_enum::enum_count<game::FacingType>());
       }
       newcmd = _trans.at(newcmd);
 
@@ -1355,7 +1350,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       **	Check for backtracking. If this occurs, then eliminate the
       **	two commands. This is the easiest optimization.
       */
-      if (newcmd == FACING_SE) {
+      if (newcmd == game::FACING_SE) {
         base::At(path->Command, cmd1) = kEmptyCommand;
         base::At(path->Command, cmd2++) = kEmptyCommand;
         continue;
@@ -1366,7 +1361,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       *a facing *	offset to more directly travel toward the immediate
       *destination cell.
       */
-      if (newcmd != FACING_N) {
+      if (newcmd != game::FACING_N) {
         /*
         **	Optimizations differ when dealing with diagonals. Especially
         *when dealing *	with diagonals of 90 degrees. In such a case, 90 degree
@@ -1380,10 +1375,10 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
           **	Diagonal optimizations are always only 45
           **	degree adjustments.
           */
-          newdir =
-              Next_Direction(base::At(path->Command, cmd1),
-                             newcmd < FACING_N ? static_cast<FacingType>(-1)
-                                               : static_cast<FacingType>(1));
+          newdir = Next_Direction(base::At(path->Command, cmd1),
+                                  newcmd < game::FACING_N
+                                      ? static_cast<game::FacingType>(-1)
+                                      : static_cast<game::FacingType>(1));
 
           /*
           **	Diagonal 90 degree changes can be smoothed, although
@@ -1419,7 +1414,8 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
         }
         if (base::At(path->Command, cmd1) != kEmptyCommand) {
           cell = Adjacent_Cell(
-              cell, Next_Direction(base::At(path->Command, cmd1), FACING_S));
+              cell,
+              Next_Direction(base::At(path->Command, cmd1), game::FACING_S));
         } else {
           cell = path->Start;
         }
@@ -1459,7 +1455,7 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
 }
 
 CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
-  const FacingType dir = CELL_FACING(src, dst) + 4 - 1;
+  const game::FacingType dir = CELL_FACING(src, dst) + 4 - 1;
 
   /*
   ** Loop through the different acceptable distances.
@@ -1509,7 +1505,7 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
   return -1;
 }
 
-int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
+int FootClass::Passable_Cell(CELL cell, game::FacingType face, int threat,
                              MoveType threshhold) {
   const MoveType move = Can_Enter_Cell(cell, face);
 

@@ -79,11 +79,11 @@
 #include "engine/gfx/shape.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
@@ -398,7 +398,8 @@ void TerrainClass::Init() { TheObjectHeaps().terrain().Free_All(); }
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. * 01/01/1995 JLB : Actually works now. *
  *=============================================================================================*/
-MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
+MoveType TerrainClass::Can_Enter_Cell(CELL cell,
+                                      game::FacingType /*unused*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().terrain(), this);
   DCHECK(IsActive);
 
@@ -561,7 +562,7 @@ void TerrainClass::AI() {
  * HISTORY: * 11/02/1994 JLB : Created. * 11/16/1994 JLB : Checks for theater
  *legality.                                             *
  *=============================================================================================*/
-bool TerrainClass::Unlimbo(COORDINATE coord, DirType dir) {
+bool TerrainClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().terrain(), this);
   DCHECK(IsActive);
 

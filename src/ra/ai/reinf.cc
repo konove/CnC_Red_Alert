@@ -51,6 +51,7 @@
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
@@ -58,7 +59,6 @@
 #include "ra/assets/audio.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/editor/mapedit.h"
@@ -388,7 +388,7 @@ static TechnoClass* Who_Can_Pop_Out_Of(CELL origin) {
   for (int f = -1; f < 8; f++) {
     CellClass* ptr = cellptr;
     if (f != -1) {
-      ptr = &ptr->Adjacent_Cell(static_cast<FacingType>(f));
+      ptr = &ptr->Adjacent_Cell(static_cast<game::FacingType>(f));
     }
 
     BuildingClass* building = ptr->Cell_Building();
@@ -486,8 +486,8 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   **	Pick the location where the reinforcements appear and then place
   **	them there.
   */
-  const auto eface = static_cast<FacingType>(static_cast<int>(source) *
-                                             2);  // Facing to enter map.
+  const auto eface = static_cast<game::FacingType>(static_cast<int>(source) *
+                                                   2);  // Facing to enter map.
 
   CELL cell = TheMap().Calculated_Cell(source, teamtype->Origin, -1,
                                        object->Techno_Type_Class()->Speed);
@@ -509,9 +509,9 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   object->Next = nullptr;
   bool okvoice = false;
   while (newcell > 0 && object != nullptr) {
-    DirType desiredfacing = Facing_Dir(eface);
+    game::DirType desiredfacing = game::Facing_Dir(eface);
     if (object->What_Am_I() == RTTI_AIRCRAFT) {
-      desiredfacing = Random_Pick(DIR_N, DIR_MAX);
+      desiredfacing = Random_Pick(game::DIR_N, kMaxRandomDirection);
     }
 
     TheWorld().scenario_init()++;
@@ -535,7 +535,8 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       *whole placement process.
       */
       bool found = false;
-      for (const FacingType adj : magic_enum::enum_values<FacingType>()) {
+      for (const game::FacingType adj :
+           magic_enum::enum_values<game::FacingType>()) {
         const CELL trycell = Adjacent_Cell(newcell, adj);
         if (!TheMap().In_Radar(trycell) &&
             object->Can_Enter_Cell(trycell, adj) == MOVE_OK) {
@@ -755,7 +756,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     ** Try and place the object onto the map.
     */
     TheWorld().scenario_init()++;
-    const bool placed = obj->Unlimbo(Cell_Coord(newcell), DIR_N);
+    const bool placed = obj->Unlimbo(Cell_Coord(newcell), game::DIR_N);
     TheWorld().scenario_init()--;
     if (placed) {
       /*

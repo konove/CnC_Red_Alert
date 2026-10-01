@@ -92,6 +92,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "td/ai/trigger.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
@@ -451,7 +452,8 @@ void TerrainClass::Init() { TheObjectHeaps().terrain().Free_All(); }
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. * 01/01/1995 JLB : Actually works now. *
  *=============================================================================================*/
-MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
+MoveType TerrainClass::Can_Enter_Cell(CELL cell,
+                                      game::FacingType /*unused*/) const {
   Validate();
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
@@ -635,7 +637,7 @@ void TerrainClass::AI() {
  * HISTORY: * 11/02/1994 JLB : Created. * 11/16/1994 JLB : Checks for theater
  *legality.                                             *
  *=============================================================================================*/
-bool TerrainClass::Unlimbo(COORDINATE coord, DirType dir) {
+bool TerrainClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   Validate();
   if ((Class->Theater & base::Bit<uint8_t>(TheMap().Theater)) != 0) {
     return ObjectClass::Unlimbo(coord, dir);

@@ -138,6 +138,8 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
@@ -148,8 +150,6 @@
 #include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
-#include "ra/core/facing.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
@@ -558,8 +558,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
             break;
 
           case STRUCT_REFINERY:
-            param =
-                ra::As_Target(Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_S)));
+            param = ra::As_Target(
+                Coord_Cell(Adjacent_Cell(Center_Coord(), game::DIR_S)));
             break;
           case StructType::STRUCT_NONE:
           case StructType::STRUCT_ADVANCED_TECH:
@@ -950,7 +950,7 @@ int BuildingClass::Shape_Number() const {
     **	the direction the turret is facing.
     */
     if (Class->IsTurretEquipped) {
-      shapenum = base::At(BodyShape, Dir_To_32(PrimaryFacing.Current()));
+      shapenum = base::At(BodyShape, game::Dir_To_32(PrimaryFacing.Current()));
 
       if (*this == STRUCT_SAM) {
         /*
@@ -1461,7 +1461,7 @@ void BuildingClass::AI() {
  *Handles wall placement.                                                  *
  *   06/18/1995 JLB : Checks for wall legality before placing down. *
  *=============================================================================================*/
-bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
+bool BuildingClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
@@ -1470,7 +1470,7 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
   *it gets *	converted to an overlay type.
   */
   if (Class->IsWall) {
-    if (Can_Enter_Cell(Coord_Cell(coord), FACING_NONE) == MOVE_OK) {
+    if (Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == MOVE_OK) {
       OverlayType otype = OVERLAY_NONE;
       switch (Class->Type) {
         case STRUCT_SANDBAG_WALL:
@@ -1857,34 +1857,34 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           auto* bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              ra::As_Target(Adjacent_Cell(cellcenter, FACING_N)), nullptr, 200,
-              WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
+              ra::As_Target(Adjacent_Cell(cellcenter, game::FACING_N)), nullptr,
+              200, WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
           if (bullet) {
-            bullet->Unlimbo(center, DIR_N);
+            bullet->Unlimbo(center, game::DIR_N);
           }
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              ra::As_Target(Adjacent_Cell(cellcenter, FACING_E)), nullptr, 200,
-              WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
+              ra::As_Target(Adjacent_Cell(cellcenter, game::FACING_E)), nullptr,
+              200, WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
           if (bullet) {
-            bullet->Unlimbo(center, DIR_E);
+            bullet->Unlimbo(center, game::DIR_E);
           }
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              ra::As_Target(Adjacent_Cell(cellcenter, FACING_S)), nullptr, 200,
-              WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
+              ra::As_Target(Adjacent_Cell(cellcenter, game::FACING_S)), nullptr,
+              200, WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
           if (bullet) {
-            bullet->Unlimbo(center, DIR_S);
+            bullet->Unlimbo(center, game::DIR_S);
           }
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              ra::As_Target(Adjacent_Cell(cellcenter, FACING_W)), nullptr, 200,
-              WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
+              ra::As_Target(Adjacent_Cell(cellcenter, game::FACING_W)), nullptr,
+              200, WARHEAD_FIRE, static_cast<int>(MPH_MEDIUM_FAST));
           if (bullet) {
-            bullet->Unlimbo(center, DIR_W);
+            bullet->Unlimbo(center, game::DIR_W);
           }
         }
         break;
@@ -2004,7 +2004,8 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
           *that this *	building can do.
           */
           if (!PrimaryFacing.Is_Rotating()) {
-            PrimaryFacing.Set_Desired(Random_Pick(DIR_N, DIR_MAX));
+            PrimaryFacing.Set_Desired(
+                Random_Pick(game::DIR_N, kMaxRandomDirection));
           }
         }
       }
@@ -2189,7 +2190,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
             i->IsTechnician = true;
           }
           TheWorld().scenario_init()++;
-          if (i->Unlimbo(Cell_Coord(newcell), DIR_N)) {
+          if (i->Unlimbo(Cell_Coord(newcell), game::DIR_N)) {
             count--;
             i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
@@ -2431,7 +2432,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
               Random_Pick(0, TheMap().MapCellHeight - 1) + TheMap().MapCellY);
         }
         TheWorld().scenario_init()++;
-        if (air->Unlimbo(Cell_Coord(cell), DIR_N)) {
+        if (air->Unlimbo(Cell_Coord(cell), game::DIR_N)) {
           // BG
           // air->Assign_Destination(ra::As_Target(Nearby_Location(air)));
           /*BG*/ air->Assign_Destination(
@@ -2558,11 +2559,11 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             cell = Coord_Cell(Center_Coord());
             auto* unit = dynamic_cast<UnitClass*>(base);
 
-            cell = Adjacent_Cell(cell, FACING_SW);
+            cell = Adjacent_Cell(cell, game::FACING_SW);
             TheWorld().scenario_init()++;
-            if (unit->Unlimbo(Cell_Coord(Adjacent_Cell(cell, DIR_S)),
-                              DIR_SW_X2)) {
-              unit->PrimaryFacing = DIR_S;
+            if (unit->Unlimbo(Cell_Coord(Adjacent_Cell(cell, game::DIR_S)),
+                              game::DIR_SW_X2)) {
+              unit->PrimaryFacing = game::DIR_S;
               unit->Assign_Mission(MISSION_HARVEST);
             }
             TheWorld().scenario_init()--;
@@ -2591,7 +2592,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             return 1;  // fail while we're still unloading previous
           }
           TheWorld().scenario_init()++;
-          if (base->Unlimbo(Exit_Coord(), DIR_S)) {
+          if (base->Unlimbo(Exit_Coord(), game::DIR_S)) {
             base->Mark(MARK_UP);
             base->Coord = Exit_Coord();
             base->Mark(MARK_DOWN);
@@ -2610,7 +2611,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
 
           cell = Find_Exit_Cell(base);
           if (cell != 0) {
-            const DirType dir = Direction(cell);
+            const game::DirType dir = Direction(cell);
             const COORDINATE start = Exit_Coord();
 
             TheWorld().scenario_init()++;
@@ -2728,7 +2729,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         default:
           cell = Find_Exit_Cell(base);
           if (cell != 0) {
-            const DirType dir = Direction(cell);
+            const game::DirType dir = Direction(cell);
             const COORDINATE start = Exit_Coord();
 
             TheWorld().scenario_init()++;
@@ -3031,7 +3032,7 @@ bool BuildingClass::Limbo() {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-DirType BuildingClass::Turret_Facing() const {
+game::DirType BuildingClass::Turret_Facing() const {
   if (!Class->IsTurretEquipped && Target_Legal(TarCom)) {
     return ra::Direction(Center_Coord(), As_Coord(TarCom));
   }
@@ -3122,7 +3123,7 @@ void BuildingClass::Grand_Opening(bool captured) {
         !TheDebugState().map_editor_active() &&
         (!House->IsHuman || PurchasePrice == 0 ||
          PurchasePrice > Class->Raw_Cost())) {
-      CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_S));
+      CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), game::DIR_S));
 
       auto* unit =
           base::NewPooled<UnitClass>(UNIT_HARVESTER, House->Class->House);
@@ -3131,14 +3132,14 @@ void BuildingClass::Grand_Opening(bool captured) {
         **	Try to place down the harvesters. If it could not be placed,
         *then try *	to place it in a nearby location.
         */
-        if (!unit->Unlimbo(Cell_Coord(cell), DIR_W)) {
+        if (!unit->Unlimbo(Cell_Coord(cell), game::DIR_W)) {
           cell = unit->Nearby_Location(this);
 
           /*
           **	If the harvester could still not be placed, then refund the
           *money *	to the owner and then bail.
           */
-          if (!unit->Unlimbo(Cell_Coord(cell), DIR_SW)) {
+          if (!unit->Unlimbo(Cell_Coord(cell), game::DIR_SW)) {
             House->Refund_Money(unit->Class->Cost_Of());
             base::DeletePooled(unit);
           }
@@ -3885,7 +3886,7 @@ COORDINATE BuildingClass::Sort_Y() const {
   *drawn *	before any objects that might overlap them.
   */
   if (*this == STRUCT_AVMINE || *this == STRUCT_APMINE) {
-    return Coord_Move(Center_Coord(), DIR_N, CELL_LEPTON_H);
+    return Coord_Move(Center_Coord(), game::DIR_N, CELL_LEPTON_H);
   }
 
   return Coord_Add(Center_Coord(),
@@ -3908,7 +3909,8 @@ COORDINATE BuildingClass::Sort_Y() const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
+MoveType BuildingClass::Can_Enter_Cell(CELL cell,
+                                       game::FacingType /*unused*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
@@ -4213,7 +4215,7 @@ int BuildingClass::Mission_Deconstruction() {
               COORDINATE coord = Coord_Add(Center_Coord(), XYP_COORD(0, -12));
               coord = TheMap().at(coord).Closest_Free_Spot(coord, false);
 
-              if (infantry->Unlimbo(coord, DIR_N)) {
+              if (infantry->Unlimbo(coord, game::DIR_N)) {
                 if (infantry->Class->IsNominal) {
                   infantry->IsTechnician = true;
                 }
@@ -4268,11 +4270,12 @@ int BuildingClass::Mission_Deconstruction() {
             const Fixed ratio = Health_Ratio();
             const int money = Refund_Amount();
             const TARGET arch = ArchiveTarget;
-            const COORDINATE place = Coord_Snap(Adjacent_Cell(Coord, DIR_SE));
+            const COORDINATE place =
+                Coord_Snap(Adjacent_Cell(Coord, game::DIR_SE));
 
             delete this;
 
-            if (unit->Unlimbo(place, DIR_SW)) {
+            if (unit->Unlimbo(place, game::DIR_SW)) {
               unit->Strength =
                   static_cast<int16_t>(unit->Class_Of().MaxStrength * ratio);
 
@@ -4373,7 +4376,7 @@ int BuildingClass::Mission_Attack() {
           return 1;
         }
         if (!PrimaryFacing.Is_Rotating()) {
-          const DirType facing = Direction(TarCom);
+          const game::DirType facing = Direction(TarCom);
           if (PrimaryFacing.Difference(facing)) {
             PrimaryFacing.Set_Desired(facing);
           } else {
@@ -4507,7 +4510,7 @@ int BuildingClass::Mission_Harvest() {
         **	Force any bib squatters to scatter.
         */
         TheMap()
-            .at(Adjacent_Cell(Coord_Cell(Center_Coord()), DIR_S))
+            .at(Adjacent_Cell(Coord_Cell(Center_Coord()), game::DIR_S))
             .Incoming(0, true, true);
 
         FootClass* techno = Attached_Object();
@@ -4847,7 +4850,7 @@ int BuildingClass::Mission_Missile() {
       */
       case kDoorOpening: {
         const COORDINATE door =
-            Coord_Move(Center_Coord(), static_cast<DirType>(0xC0), 0x30);
+            Coord_Move(Center_Coord(), static_cast<game::DirType>(0xC0), 0x30);
         const auto* sput = base::NewPooled<AnimClass>(ANIM_SPUTDOOR, door);
         if (sput) {
           IsReadyToCommence = false;
@@ -4872,9 +4875,9 @@ int BuildingClass::Mission_Missile() {
               BULLET_GPS_SATELLITE, targ, this, 200, WARHEAD_FIRE,
               static_cast<int>(MPH_ROCKET));
           if (bullet) {
-            const COORDINATE launch =
-                Coord_Move(Center_Coord(), static_cast<DirType>(0xC0), 0x30);
-            if (!bullet->Unlimbo(launch, DIR_N)) {
+            const COORDINATE launch = Coord_Move(
+                Center_Coord(), static_cast<game::DirType>(0xC0), 0x30);
+            if (!bullet->Unlimbo(launch, game::DIR_N)) {
               base::DeletePooled(bullet);
               bullet = nullptr;
             }
@@ -4934,8 +4937,8 @@ int BuildingClass::Mission_Missile() {
             static_cast<int>(MPH_VERY_FAST));
         if (bullet) {
           const COORDINATE launch =
-              Coord_Move(Center_Coord(), AsDirection(28), 0xA0);
-          if (!bullet->Unlimbo(launch, DIR_N)) {
+              Coord_Move(Center_Coord(), game::AsDirection(28), 0xA0);
+          if (!bullet->Unlimbo(launch, game::DIR_N)) {
             base::DeletePooled(bullet);
             bullet = nullptr;
           }
@@ -4963,7 +4966,7 @@ int BuildingClass::Mission_Missile() {
             const int celly = std::max(Cell_Y(House->NukeDest) - 64, 1);
             const COORDINATE start =
                 Cell_Coord(XY_Cell(Cell_X(House->NukeDest), celly));
-            if (!bullet->Unlimbo(start, DIR_S)) {
+            if (!bullet->Unlimbo(start, game::DIR_S)) {
               base::DeletePooled(bullet);
             }
           }
@@ -5146,14 +5149,14 @@ void BuildingClass::Death_Announcement(const TechnoClass* source) const {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-DirType BuildingClass::Fire_Direction() const {
+game::DirType BuildingClass::Fire_Direction() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (Class->IsTurretEquipped) {
     return PrimaryFacing.Current();
   }
-  return AsDirection(TarCom);
+  return game::AsDirection(TarCom);
 }
 
 /***********************************************************************************************
@@ -5218,7 +5221,8 @@ int BuildingClass::Mission_Unload() {
           /*
           **	Scatter everything around the weapon's factory door.
           */
-          for (const FacingType f : magic_enum::enum_values<FacingType>()) {
+          for (const game::FacingType f :
+               magic_enum::enum_values<game::FacingType>()) {
             CellClass* cptr = &cellptr->Adjacent_Cell(f);
             if (cptr->Cell_Building() == nullptr) {
               cptr->Incoming(coord, true, true);
@@ -5816,8 +5820,8 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
       /*
       **	5th token: facing.
       */
-      const auto facing =
-          static_cast<DirType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      const auto facing = static_cast<game::DirType>(
+          base::ParseIntegerOr<int>(tokens.Next(), 0));
 
       /*
       **	6th token: triggername (can be nullptr).
@@ -5936,7 +5940,7 @@ void BuildingClass::Write_INI(CCINIClass& ini) {
 COORDINATE BuildingClass::Target_Coord() const {
   const COORDINATE coord = Center_Coord();
 
-  if (Class->FoundationFace != FACING_NONE) {
+  if (Class->FoundationFace != game::FACING_NONE) {
     return Adjacent_Cell(coord, Class->FoundationFace);
   }
   return coord;

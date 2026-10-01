@@ -47,8 +47,8 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/sim/facing.h"
 #include "td/core/defines.h"
-#include "td/core/facing.h"
 #include "td/objects/fly.h"
 #include "td/objects/fuse.h"
 #include "td/objects/object.h"
@@ -81,7 +81,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   /*
   **	This is the facing that the projectile is travelling.
   */
-  FacingClass PrimaryFacing;
+  game::FacingClass PrimaryFacing;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
@@ -114,7 +114,8 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   static void Init();
 
   virtual void Assign_Target(TARGET target) { TarCom = target; }
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+               game::DirType dir = game::DIR_N) override;
   [[nodiscard]] LayerType In_Which_Layer() const override { return LAYER_TOP; }
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;

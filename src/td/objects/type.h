@@ -685,7 +685,7 @@ class BuildingTypeClass : public TechnoTypeClass {
     **	gets constructed. The facing matches the final stage of the
     **	construction animation.
     */
-    DirType StartFace;
+    game::DirType StartFace;
 
     /*
     **	This is the Tiberium storage capacity of the building. The sum of all
@@ -741,7 +741,7 @@ class BuildingTypeClass : public TechnoTypeClass {
         bool is_insignificant, bool is_immune, bool is_theater,
         bool is_turret_equipped, bool is_twoshooter, bool is_repairable,
         bool is_buildable, bool is_crew, bool is_sturdy, RTTIType tobuild,
-        DirType sframe, int16_t strength, int sightrange, int cost,
+        game::DirType sframe, int16_t strength, int sightrange, int cost,
         int scenario, int risk, int reward, int ownable, WeaponType primary,
         WeaponType secondary, ArmorType armor, uint32_t canenter, int capacity,
         int power, int drain, BSizeType size,

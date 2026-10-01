@@ -50,11 +50,10 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/sim/direction.h"
 #include "td/ai/special.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
-#include "td/core/face.h"
-#include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/map/help.h"
 #include "td/screens/goptions.h"
@@ -104,7 +103,7 @@ ScrollClass::ScrollClass() {
  *=============================================================================================*/
 #define EVA_WIDTH 80
 void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
-  static DirType direction;
+  static game::DirType direction;
   bool player_scrolled = false;
 
   /*
@@ -160,11 +159,11 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
           }
           alty = std::min(alty, TheScreen().visible_view().height());
 
-          direction = Desired_Facing256(TheScreen().visible_view().width() / 2,
-                                        TheScreen().visible_view().height() / 2,
-                                        altx, alty);
+          direction = game::Desired_Facing256(
+              TheScreen().visible_view().width() / 2,
+              TheScreen().visible_view().height() / 2, altx, alty);
         }
-        const int control = static_cast<int>(Dir_Facing(direction));
+        const int control = static_cast<int>(game::Dir_Facing(direction));
 
         /*
         **	The mouse is over a scroll region so set the mouse shape
@@ -196,7 +195,7 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
         **	accordingly.
         */
         if (!TheOptions().IsFreeScroll) {
-          direction = Facing_Dir(Dir_Facing(direction));
+          direction = game::Facing_Dir(game::Dir_Facing(direction));
         }
 
         // Inertia and the scroll rate option both feed into rate without any

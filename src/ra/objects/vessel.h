@@ -48,10 +48,10 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
-#include "ra/core/facing.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/bullet.h"
@@ -125,7 +125,7 @@ class VesselClass : public DriveClass {
   void Combat_AI();
   bool Edge_Of_World_AI();
   void Repair_AI();
-  [[nodiscard]] DirType Turret_Facing() const override {
+  [[nodiscard]] game::DirType Turret_Facing() const override {
     if (Class->IsTurretEquipped) {
       return SecondaryFacing.Current();
     }
@@ -138,12 +138,13 @@ class VesselClass : public DriveClass {
   void LST_Close_Door();
   [[nodiscard]] COORDINATE Fire_Coord(int which) const override;
   [[nodiscard]] MoveType Can_Enter_Cell(
-      CELL cell, FacingType from = FACING_NONE) const override;
+      CELL cell, game::FacingType from = game::FACING_NONE) const override;
   void Draw_It(PixelView& view, int x, int y,
                WindowNumberType window) const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List(
       bool redraw = false) const override;
-  DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
+  game::DirType Desired_Load_Dir(ObjectClass* passenger,
+                                 CELL& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
@@ -182,7 +183,7 @@ class VesselClass : public DriveClass {
   **	This is the facing of the turret. It can be, and usually is,
   **	rotated independently of the body it is attached to.
   */
-  FacingClass SecondaryFacing;
+  game::FacingClass SecondaryFacing;
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   VesselClass() = default;

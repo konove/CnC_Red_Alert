@@ -82,12 +82,13 @@
 #include "base/pooled.h"
 #include "engine/platform/timer.h"
 #include "game/core/display_constants.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/assets/audio.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/facing.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/editor/mapedit.h"
@@ -125,7 +126,7 @@ DriveClass::DriveClass() = default;
  *                                                                                             *
  * HISTORY: * 05/29/1995 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Do_Turn(DirType dir) {
+void DriveClass::Do_Turn(game::DirType dir) {
   if (dir != PrimaryFacing) {
     /*
     **	Special rotation track is needed for units that
@@ -139,16 +140,17 @@ void DriveClass::Do_Turn(DirType dir) {
       int facediff = PrimaryFacing.Difference(dir) >> 5;
       facediff = Bound(facediff, -2, 2);
       if (facediff) {
-        const FacingType face =
-            Dir_Facing(PrimaryFacing);  // Current facing (ordinal value).
+        const game::FacingType face =
+            game::Dir_Facing(PrimaryFacing);  // Current facing (ordinal value).
 
         IsOnShortTrack = true;
-        Force_Track((static_cast<int>(face) *
-                     static_cast<int>(magic_enum::enum_count<FacingType>())) +
-                        (static_cast<int>(face) + facediff),
-                    Coord);
+        Force_Track(
+            (static_cast<int>(face) *
+             static_cast<int>(magic_enum::enum_count<game::FacingType>())) +
+                (static_cast<int>(face) + facediff),
+            Coord);
 
-        base::At(Path, 0) = FACING_NONE;
+        base::At(Path, 0) = game::FACING_NONE;
         Set_Speed(0xFF);  // Full speed.
       }
     } else {
@@ -423,8 +425,8 @@ void DriveClass::Exit_Map() {
  * HISTORY: * 03/14/1994 JLB : Created. * 07/13/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType* dir) {
-  DirType workdir = *dir;
+COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, game::DirType* dir) {
+  game::DirType workdir = *dir;
   const TrackControlType flags = base::At(TrackControl, TrackNumber).Flag;
 
   int x = Coord_X(adj);
@@ -434,17 +436,19 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, DirType* dir) {
     const int temp = x;
     x = y;
     y = temp;
-    workdir = AsDirection(static_cast<int>(DIR_W) - static_cast<int>(workdir));
+    workdir = game::AsDirection(static_cast<int>(game::DIR_W) -
+                                static_cast<int>(workdir));
   }
 
   if (base::Any(flags & F_X)) {
     x = -x;
-    workdir = AsDirection(-static_cast<int>(workdir));
+    workdir = game::AsDirection(-static_cast<int>(workdir));
   }
 
   if (base::Any(flags & F_Y)) {
     y = -y;
-    workdir = AsDirection(static_cast<int>(DIR_S) - static_cast<int>(workdir));
+    workdir = game::AsDirection(static_cast<int>(game::DIR_S) -
+                                static_cast<int>(workdir));
   }
 
   *dir = workdir;
@@ -547,7 +551,7 @@ void DriveClass::Assign_Destination(TARGET target) {
         if (Ground.at(TheMap().at(cell).Land_Type()).Cost.at(Class->Speed)) {
           if (Transmit_Message(RADIO_DOCKING) == RADIO_ROGER) {
             FootClass::Assign_Destination(target);
-            base::At(Path, 0) = FACING_NONE;
+            base::At(Path, 0) = game::FACING_NONE;
             return;
           }
 
@@ -565,7 +569,7 @@ void DriveClass::Assign_Destination(TARGET target) {
   **	Set the unit's navigation computer.
   */
   FootClass::Assign_Destination(target);
-  base::At(Path, 0) = FACING_NONE;  // Force recalculation of path.
+  base::At(Path, 0) = game::FACING_NONE;  // Force recalculation of path.
   if (!IsDriving) {
     Start_Of_Move();
   }
@@ -625,7 +629,7 @@ bool DriveClass::While_Moving() {
     }
     auto ptr = base::At(RawTracks, tracknum - 1)
                    .Track;  // Pointer to coord offset values.
-    const FacingType nextface =
+    const game::FacingType nextface =
         base::At(Path, 0);  // Next facing queued in path.
 
     /*
@@ -633,7 +637,8 @@ bool DriveClass::While_Moving() {
     **	a turn, then track jumping might occur.
     */
     bool adj = false;  // Is a turn coming up?
-    if (nextface != FACING_NONE && Dir_Facing(track->Facing) != nextface) {
+    if (nextface != game::FACING_NONE &&
+        game::Dir_Facing(track->Facing) != nextface) {
       adj = true;
     }
 
@@ -649,7 +654,7 @@ bool DriveClass::While_Moving() {
 
       COORDINATE const offset = base::At(ptr, base::ToSize(TrackIndex)).Offset;
       if (offset || !TrackIndex) {
-        DirType dir = base::At(ptr, base::ToSize(TrackIndex)).Facing;
+        game::DirType dir = base::At(ptr, base::ToSize(TrackIndex)).Facing;
         Coord = Smooth_Turn(offset, &dir);
 
         PrimaryFacing.Set(dir);
@@ -669,12 +674,12 @@ bool DriveClass::While_Moving() {
         **	The unit could "jump tracks". Check to see if the unit should
         **	do so.
         */
-        if (*this != UNIT_GUNBOAT && nextface != FACING_NONE && adj &&
+        if (*this != UNIT_GUNBOAT && nextface != game::FACING_NONE && adj &&
             base::At(RawTracks, tracknum - 1).Jump == TrackIndex &&
             TrackIndex) {
           const int tnum =
-              (static_cast<int>(Dir_Facing(track->Facing)) *
-               static_cast<int>(magic_enum::enum_count<FacingType>())) +
+              (static_cast<int>(game::Dir_Facing(track->Facing)) *
+               static_cast<int>(magic_enum::enum_count<game::FacingType>())) +
               static_cast<int>(nextface);
           const TurnTrackType* newtrack =
               base::Suffix(TrackControl, tnum)
@@ -705,9 +710,9 @@ bool DriveClass::While_Moving() {
                   base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
                                   std::as_bytes(base::Suffix(Path, 1)),
                                   kConquerPathMax - 1);
-                  base::At(Path, kConquerPathMax - 1) = FACING_NONE;
+                  base::At(Path, kConquerPathMax - 1) = game::FACING_NONE;
                 } else {
-                  base::At(Path, 0) = FACING_NONE;
+                  base::At(Path, 0) = game::FACING_NONE;
                   TrackNumber = -1;
                   actual = 0;
                 }
@@ -795,7 +800,7 @@ void DriveClass::Per_Cell_Process(bool center) {
   if (center && As_Cell(NavCom) == cell) {
     IsTurretLockedDown = false;
     NavCom = kTargetNone;
-    base::At(Path, 0) = FACING_NONE;
+    base::At(Path, 0) = game::FACING_NONE;
   }
 
 #ifdef NEVER
@@ -841,9 +846,10 @@ bool DriveClass::Start_Of_Move() {
   CELL destcell = 0;    // Cell of destination.
   COORDINATE dest = 0;  // Destination coordinate.
 
-  FacingType facing = base::At(Path, 0);  // Direction movement will commence.
+  game::FacingType facing =
+      base::At(Path, 0);  // Direction movement will commence.
 
-  if (!Target_Legal(NavCom) && facing == FACING_NONE) {
+  if (!Target_Legal(NavCom) && facing == game::FACING_NONE) {
     IsTurretLockedDown = false;
     Stop_Driver();
     if (Mission == MISSION_MOVE) {
@@ -870,7 +876,7 @@ bool DriveClass::Start_Of_Move() {
   **	Reduce the path length if the target is a unit and the
   **	range to the unit is less than the precalculated path steps.
   */
-  if (facing != FACING_NONE &&
+  if (facing != game::FACING_NONE &&
       (Is_Target_Unit(NavCom) || Is_Target_Infantry(NavCom))) {
     const int dist = Lepton_To_Cell(Distance(NavCom));
 
@@ -879,7 +885,7 @@ bool DriveClass::Start_Of_Move() {
     //|| 				!Class->IsCrusher) {
 
     if (dist < kConquerPathMax) {
-      base::At(Path, dist) = FACING_NONE;
+      base::At(Path, dist) = game::FACING_NONE;
       facing = base::At(Path, 0);  // Maybe needed.
     }
     //			}
@@ -889,7 +895,7 @@ bool DriveClass::Start_Of_Move() {
   **	If the path is invalid at this point, then generate one. If
   **	generating a new path fails, then abort NavCom.
   */
-  if (facing == FACING_NONE) {
+  if (facing == game::FACING_NONE) {
     /*
     **	If after a path search, there is still no valid path, then set the
     **	NavCom to null and let the script take care of assigning a new
@@ -978,8 +984,8 @@ bool DriveClass::Start_Of_Move() {
   **	Determine the coordinate of the next cell to move into.
   */
   dest = Adjacent_Cell(Coord, facing);
-  const DirType dir =
-      Facing_Dir(facing);  // Desired actual facing toward destination.
+  const game::DirType dir =
+      game::Facing_Dir(facing);  // Desired actual facing toward destination.
 
   /*
   **	Set the facing correctly if it isn't already correct. This
@@ -1030,7 +1036,7 @@ bool DriveClass::Start_Of_Move() {
 
     Stop_Driver();
     if (cando != MOVE_MOVING_BLOCK) {
-      base::At(Path, 0) = FACING_NONE;  // Path is blocked!
+      base::At(Path, 0) = game::FACING_NONE;  // Path is blocked!
     }
 
     /*
@@ -1097,7 +1103,7 @@ bool DriveClass::Start_Of_Move() {
   **	occupied AS this unit is moving into it.
   */
   if (cando != MOVE_OK) {
-    base::At(Path, 0) = FACING_NONE;  // Path is blocked!
+    base::At(Path, 0) = game::FACING_NONE;  // Path is blocked!
     TrackNumber = -1;
     dest = 0;
   } else {
@@ -1106,17 +1112,18 @@ bool DriveClass::Start_Of_Move() {
     /*
     **	Determine which track to use (based on recorded path).
     */
-    FacingType nextface = base::At(Path, 1);
-    if (nextface == FACING_NONE) {
+    game::FacingType nextface = base::At(Path, 1);
+    if (nextface == game::FACING_NONE) {
       nextface = facing;
     }
 
     IsOnShortTrack = false;
-    TrackNumber = (static_cast<int>(facing) *
-                   static_cast<int>(magic_enum::enum_count<FacingType>())) +
-                  static_cast<int>(nextface);
+    TrackNumber =
+        (static_cast<int>(facing) *
+         static_cast<int>(magic_enum::enum_count<game::FacingType>())) +
+        static_cast<int>(nextface);
     if (base::At(TrackControl, TrackNumber).Track == 0) {
-      base::At(Path, 0) = FACING_NONE;
+      base::At(Path, 0) = game::FACING_NONE;
       TrackNumber = -1;
       return true;
     }
@@ -1152,7 +1159,7 @@ bool DriveClass::Start_Of_Move() {
           TheMap().at(destcell).Shimmer();
         }
 
-        base::At(Path, 0) = FACING_NONE;  // Path is blocked!
+        base::At(Path, 0) = game::FACING_NONE;  // Path is blocked!
         TrackNumber = -1;
         dest = 0;
         if (cando == MOVE_DESTROYABLE) {
@@ -1178,7 +1185,7 @@ bool DriveClass::Start_Of_Move() {
         base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
                         std::as_bytes(base::Suffix(Path, 2)),
                         kConquerPathMax - 2);
-        base::At(Path, kConquerPathMax - 2) = FACING_NONE;
+        base::At(Path, kConquerPathMax - 2) = game::FACING_NONE;
         IsPlanningToLook = true;
       }
     } else {
@@ -1186,14 +1193,14 @@ bool DriveClass::Start_Of_Move() {
                       std::as_bytes(base::Suffix(Path, 1)),
                       kConquerPathMax - 1);
     }
-    base::At(Path, kConquerPathMax - 1) = FACING_NONE;
+    base::At(Path, kConquerPathMax - 1) = game::FACING_NONE;
   }
 
   IsNewNavCom = false;
   TrackIndex = 0;
   if (!Start_Driver(dest)) {
     TrackNumber = -1;
-    base::At(Path, 0) = FACING_NONE;
+    base::At(Path, 0) = game::FACING_NONE;
     Set_Speed(0);
   }
   return false;
@@ -1238,7 +1245,7 @@ void DriveClass::AI() {
       return;
     }
     if (TrackNumber == -1 &&
-        (Target_Legal(NavCom) || base::At(Path, 0) != FACING_NONE)) {
+        (Target_Legal(NavCom) || base::At(Path, 0) != game::FACING_NONE)) {
       Start_Of_Move();
       While_Moving();
       if (!IsActive) {
@@ -1271,7 +1278,7 @@ void DriveClass::AI() {
       **	then start on a new track.
       */
       if (Mission != MISSION_GUARD || NavCom != kTargetNone) {
-        if (Target_Legal(NavCom) || base::At(Path, 0) != FACING_NONE) {
+        if (Target_Legal(NavCom) || base::At(Path, 0) != game::FACING_NONE) {
           Start_Of_Move();
           While_Moving();
           if (!IsActive) {
@@ -1307,42 +1314,43 @@ void DriveClass::AI() {
  *member function.                                            *
  *=============================================================================================*/
 void DriveClass::Fixup_Path(PathType* path) {
-  FacingType stage[6] = {FACING_N, FACING_N, FACING_N, FACING_N,
-                         FACING_N, FACING_N};  // Prefix path elements.
-  static FacingType _path[4][6] = {
-      {static_cast<FacingType>(2), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(0),
-       static_cast<FacingType>(0), static_cast<FacingType>(0)},
-      {static_cast<FacingType>(3), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(2),
-       static_cast<FacingType>(0), static_cast<FacingType>(0)},
-      {static_cast<FacingType>(4), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(2),
-       static_cast<FacingType>(0), static_cast<FacingType>(0)},
-      {static_cast<FacingType>(4), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(2),
-       static_cast<FacingType>(1), static_cast<FacingType>(0)}};
-  static FacingType _dpath[4][6] = {
-      {static_cast<FacingType>(0), static_cast<FacingType>(0),
-       static_cast<FacingType>(0), static_cast<FacingType>(0),
-       static_cast<FacingType>(0), static_cast<FacingType>(0)},
-      {static_cast<FacingType>(3), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(2),
-       static_cast<FacingType>(0), static_cast<FacingType>(0)},
-      {static_cast<FacingType>(4), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(2),
-       static_cast<FacingType>(1), static_cast<FacingType>(0)},
-      {static_cast<FacingType>(5), static_cast<FacingType>(0),
-       static_cast<FacingType>(2), static_cast<FacingType>(2),
-       static_cast<FacingType>(1), static_cast<FacingType>(0)}};
+  game::FacingType stage[6] = {
+      game::FACING_N, game::FACING_N, game::FACING_N,
+      game::FACING_N, game::FACING_N, game::FACING_N};  // Prefix path elements.
+  static game::FacingType _path[4][6] = {
+      {static_cast<game::FacingType>(2), static_cast<game::FacingType>(0),
+       static_cast<game::FacingType>(2), static_cast<game::FacingType>(0),
+       static_cast<game::FacingType>(0), static_cast<game::FacingType>(0)},
+      {static_cast<game::FacingType>(3), static_cast<game::FacingType>(0),
+       static_cast<game::FacingType>(2), static_cast<game::FacingType>(2),
+       static_cast<game::FacingType>(0), static_cast<game::FacingType>(0)},
+      {static_cast<game::FacingType>(4), static_cast<game::FacingType>(0),
+       static_cast<game::FacingType>(2), static_cast<game::FacingType>(2),
+       static_cast<game::FacingType>(0), static_cast<game::FacingType>(0)},
+      {static_cast<game::FacingType>(4), static_cast<game::FacingType>(0),
+       static_cast<game::FacingType>(2), static_cast<game::FacingType>(2),
+       static_cast<game::FacingType>(1), static_cast<game::FacingType>(0)}};
+  static game::FacingType _dpath[4][6] = {
+      {static_cast<game::FacingType>(0), static_cast<game::FacingType>(0),
+       static_cast<game::FacingType>(0), static_cast<game::FacingType>(0),
+       static_cast<game::FacingType>(0), static_cast<game::FacingType>(0)},
+      {static_cast<game::FacingType>(3), static_cast<game::FacingType>(0),
+       static_cast<game::FacingType>(2), static_cast<game::FacingType>(2),
+       static_cast<game::FacingType>(0), static_cast<game::FacingType>(0)},
+      {static_cast<game::FacingType>(4), static_cast<game::FacingType>(0),
+       static_cast<game::FacingType>(2), static_cast<game::FacingType>(2),
+       static_cast<game::FacingType>(1), static_cast<game::FacingType>(0)},
+      {static_cast<game::FacingType>(5), static_cast<game::FacingType>(0),
+       static_cast<game::FacingType>(2), static_cast<game::FacingType>(2),
+       static_cast<game::FacingType>(1), static_cast<game::FacingType>(0)}};
 
   int counter = 0;            // Path addition
-  std::span<FacingType> ptr;  // Path list pointer.
+  std::span<game::FacingType> ptr;  // Path list pointer.
 
   /*
   **	Verify that the unit is valid and there is a path problem to resolve.
   */
-  if (!path || base::At(path->Command, 0) == FACING_NONE) {
+  if (!path || base::At(path->Command, 0) == game::FACING_NONE) {
     return;
   }
 
@@ -1357,7 +1365,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   **	If the original path starts in the same direction as the unit, then
   **	there is no problem to resolve -- abort.
   */
-  const auto first_direction = Facing_Dir(base::At(path->Command, 0));
+  const auto first_direction = game::Facing_Dir(base::At(path->Command, 0));
   // The facing difference value (0..4 | 0..-4); the shift floors negative
   // differences as the original did.
   // NOLINTNEXTLINE(bugprone-signed-bitwise)
@@ -1368,7 +1376,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   }
 
   // The diagonal facings are the odd ones.
-  if (static_cast<int>(Dir_Facing(PrimaryFacing)) % 2 != 0) {
+  if (static_cast<int>(game::Dir_Facing(PrimaryFacing)) % 2 != 0) {
     ptr = base::Suffix(base::At(_dpath, std::abs(facediff) - 1),
                        1);  // Pointer to path adjust list.
     counter =
@@ -1385,8 +1393,8 @@ void DriveClass::Fixup_Path(PathType* path) {
   bool ok = true;  // Presume adjustment is all ok.
   CELL cell =
       Coord_Cell(Coord);  // Working cell value.              // Starting cell.
-  FacingType nextpath =
-      Dir_Facing(PrimaryFacing);  // Next path value.  // Starting path.
+  game::FacingType nextpath =
+      game::Dir_Facing(PrimaryFacing);  // Next path value.  // Starting path.
   for (int index = 0; index < counter; index++) {
     /*
     **	Determine next path element and add it to the
@@ -1422,7 +1430,7 @@ void DriveClass::Fixup_Path(PathType* path) {
     facediff = -facediff;
     ok = true;                             // Presume adjustment is all ok.
     cell = Coord_Cell(Coord);              // Starting cell.
-    nextpath = Dir_Facing(PrimaryFacing);  // Starting path.
+    nextpath = game::Dir_Facing(PrimaryFacing);  // Starting path.
     for (int index = 0; index < counter; index++) {
       /*
       **	Determine next path element and add it to the
@@ -1485,7 +1493,7 @@ void DriveClass::Fixup_Path(PathType* path) {
         path->Length += counter;
       }
     }
-    base::At(path->Command, base::ToSize(path->Length)) = FACING_NONE;
+    base::At(path->Command, base::ToSize(path->Length)) = game::FACING_NONE;
   }
 }
 
@@ -1549,7 +1557,7 @@ void DriveClass::Mark_Track(COORDINATE headto, MarkType type) {
         const auto ptr = base::At(RawTracks, tracknum - 1).Track;
         const int cellidx = base::At(RawTracks, tracknum - 1).Cell;
         if (cellidx > -1) {
-          DirType dir = base::At(ptr, base::ToSize(cellidx)).Facing;
+          game::DirType dir = base::At(ptr, base::ToSize(cellidx)).Facing;
 
           if (TrackIndex < cellidx && cellidx != -1) {
             const COORDINATE offset =
@@ -1607,7 +1615,7 @@ int DriveClass::Offload_Tiberium_Bail() {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-bool DriveClass::Ok_To_Move(DirType /*unused*/) { return true; }
+bool DriveClass::Ok_To_Move(game::DirType /*unused*/) { return true; }
 
 /***********************************************************************************************
  * DriveClass::Class_Of -- Fetches a reference to the class type for this
@@ -1645,476 +1653,477 @@ const ObjectTypeClass& DriveClass::Class_Of() const { return *Class; }
 **	Track 12= drive out of refinery
 */
 const DriveClass::TrackType DriveClass::Track1[24] = {
-    {0x00F50000L, static_cast<DirType>(0)},
-    {0x00EA0000L, static_cast<DirType>(0)},
-    {0x00DF0000L, static_cast<DirType>(0)},
-    {0x00D40000L, static_cast<DirType>(0)},
-    {0x00C90000L, static_cast<DirType>(0)},
-    {0x00BE0000L, static_cast<DirType>(0)},
-    {0x00B30000L, static_cast<DirType>(0)},
-    {0x00A80000L, static_cast<DirType>(0)},
-    {0x009D0000L, static_cast<DirType>(0)},
-    {0x00920000L, static_cast<DirType>(0)},
-    {0x00870000L, static_cast<DirType>(0)},
-    {0x007C0000L, static_cast<DirType>(0)},  // Track jump check here.
-    {0x00710000L, static_cast<DirType>(0)},
-    {0x00660000L, static_cast<DirType>(0)},
-    {0x005B0000L, static_cast<DirType>(0)},
-    {0x00500000L, static_cast<DirType>(0)},
-    {0x00450000L, static_cast<DirType>(0)},
-    {0x003A0000L, static_cast<DirType>(0)},
-    {0x002F0000L, static_cast<DirType>(0)},
-    {0x00240000L, static_cast<DirType>(0)},
-    {0x00190000L, static_cast<DirType>(0)},
-    {0x000E0000L, static_cast<DirType>(0)},
-    {0x00030000L, static_cast<DirType>(0)},
-    {0x00000000L, static_cast<DirType>(0)}};
+    {0x00F50000L, static_cast<game::DirType>(0)},
+    {0x00EA0000L, static_cast<game::DirType>(0)},
+    {0x00DF0000L, static_cast<game::DirType>(0)},
+    {0x00D40000L, static_cast<game::DirType>(0)},
+    {0x00C90000L, static_cast<game::DirType>(0)},
+    {0x00BE0000L, static_cast<game::DirType>(0)},
+    {0x00B30000L, static_cast<game::DirType>(0)},
+    {0x00A80000L, static_cast<game::DirType>(0)},
+    {0x009D0000L, static_cast<game::DirType>(0)},
+    {0x00920000L, static_cast<game::DirType>(0)},
+    {0x00870000L, static_cast<game::DirType>(0)},
+    {0x007C0000L, static_cast<game::DirType>(0)},  // Track jump check here.
+    {0x00710000L, static_cast<game::DirType>(0)},
+    {0x00660000L, static_cast<game::DirType>(0)},
+    {0x005B0000L, static_cast<game::DirType>(0)},
+    {0x00500000L, static_cast<game::DirType>(0)},
+    {0x00450000L, static_cast<game::DirType>(0)},
+    {0x003A0000L, static_cast<game::DirType>(0)},
+    {0x002F0000L, static_cast<game::DirType>(0)},
+    {0x00240000L, static_cast<game::DirType>(0)},
+    {0x00190000L, static_cast<game::DirType>(0)},
+    {0x000E0000L, static_cast<game::DirType>(0)},
+    {0x00030000L, static_cast<game::DirType>(0)},
+    {0x00000000L, static_cast<game::DirType>(0)}};
 
 const DriveClass::TrackType DriveClass::Track2[] = {
-    {0x00F8FF08L, static_cast<DirType>(32)},
-    {0x00F0FF10L, static_cast<DirType>(32)},
-    {0x00E8FF18L, static_cast<DirType>(32)},
-    {0x00E0FF20L, static_cast<DirType>(32)},
-    {0x00D8FF28L, static_cast<DirType>(32)},
-    {0x00D0FF30L, static_cast<DirType>(32)},
-    {0x00C8FF38L, static_cast<DirType>(32)},
-    {0x00C0FF40L, static_cast<DirType>(32)},
-    {0x00B8FF48L, static_cast<DirType>(32)},
-    {0x00B0FF50L, static_cast<DirType>(32)},
-    {0x00A8FF58L, static_cast<DirType>(32)},
-    {0x00A0FF60L, static_cast<DirType>(32)},
-    {0x0098FF68L, static_cast<DirType>(32)},
-    {0x0090FF70L, static_cast<DirType>(32)},
-    {0x0088FF78L, static_cast<DirType>(32)},
-    {0x0080FF80L, static_cast<DirType>(32)},  // Track jump check here.
-    {0x0078FF88L, static_cast<DirType>(32)},
-    {0x0070FF90L, static_cast<DirType>(32)},
-    {0x0068FF98L, static_cast<DirType>(32)},
-    {0x0060FFA0L, static_cast<DirType>(32)},
-    {0x0058FFA8L, static_cast<DirType>(32)},
-    {0x0050FFB0L, static_cast<DirType>(32)},
-    {0x0048FFB8L, static_cast<DirType>(32)},
-    {0x0040FFC0L, static_cast<DirType>(32)},
-    {0x0038FFC8L, static_cast<DirType>(32)},
-    {0x0030FFD0L, static_cast<DirType>(32)},
-    {0x0028FFD8L, static_cast<DirType>(32)},
-    {0x0020FFE0L, static_cast<DirType>(32)},
-    {0x0018FFE8L, static_cast<DirType>(32)},
-    {0x0010FFF0L, static_cast<DirType>(32)},
-    {0x0008FFF8L, static_cast<DirType>(32)},
-    {0x00000000L, static_cast<DirType>(32)}};
+    {0x00F8FF08L, static_cast<game::DirType>(32)},
+    {0x00F0FF10L, static_cast<game::DirType>(32)},
+    {0x00E8FF18L, static_cast<game::DirType>(32)},
+    {0x00E0FF20L, static_cast<game::DirType>(32)},
+    {0x00D8FF28L, static_cast<game::DirType>(32)},
+    {0x00D0FF30L, static_cast<game::DirType>(32)},
+    {0x00C8FF38L, static_cast<game::DirType>(32)},
+    {0x00C0FF40L, static_cast<game::DirType>(32)},
+    {0x00B8FF48L, static_cast<game::DirType>(32)},
+    {0x00B0FF50L, static_cast<game::DirType>(32)},
+    {0x00A8FF58L, static_cast<game::DirType>(32)},
+    {0x00A0FF60L, static_cast<game::DirType>(32)},
+    {0x0098FF68L, static_cast<game::DirType>(32)},
+    {0x0090FF70L, static_cast<game::DirType>(32)},
+    {0x0088FF78L, static_cast<game::DirType>(32)},
+    {0x0080FF80L, static_cast<game::DirType>(32)},  // Track jump check here.
+    {0x0078FF88L, static_cast<game::DirType>(32)},
+    {0x0070FF90L, static_cast<game::DirType>(32)},
+    {0x0068FF98L, static_cast<game::DirType>(32)},
+    {0x0060FFA0L, static_cast<game::DirType>(32)},
+    {0x0058FFA8L, static_cast<game::DirType>(32)},
+    {0x0050FFB0L, static_cast<game::DirType>(32)},
+    {0x0048FFB8L, static_cast<game::DirType>(32)},
+    {0x0040FFC0L, static_cast<game::DirType>(32)},
+    {0x0038FFC8L, static_cast<game::DirType>(32)},
+    {0x0030FFD0L, static_cast<game::DirType>(32)},
+    {0x0028FFD8L, static_cast<game::DirType>(32)},
+    {0x0020FFE0L, static_cast<game::DirType>(32)},
+    {0x0018FFE8L, static_cast<game::DirType>(32)},
+    {0x0010FFF0L, static_cast<game::DirType>(32)},
+    {0x0008FFF8L, static_cast<game::DirType>(32)},
+    {0x00000000L, static_cast<game::DirType>(32)}};
 
 const DriveClass::TrackType DriveClass::Track3[] = {
-    {0x01F5FF00L, static_cast<DirType>(0)},
-    {0x01EAFF00L, static_cast<DirType>(0)},
-    {0x01DFFF00L, static_cast<DirType>(0)},
-    {0x01D4FF00L, static_cast<DirType>(0)},
-    {0x01C9FF00L, static_cast<DirType>(0)},
-    {0x01BEFF00L, static_cast<DirType>(0)},
-    {0x01B3FF00L, static_cast<DirType>(0)},
-    {0x01A8FF00L, static_cast<DirType>(0)},
-    {0x019DFF00L, static_cast<DirType>(0)},
-    {0x0192FF00L, static_cast<DirType>(0)},
-    {0x0187FF00L, static_cast<DirType>(0)},
-    {0x0180FF00L, static_cast<DirType>(0)},
-    {0x0175FF00L, static_cast<DirType>(0)},  // Jump entry point here.
-    {0x016BFF00L, static_cast<DirType>(0)},
-    {0x0160FF02L, static_cast<DirType>(1)},
-    {0x0155FF04L, static_cast<DirType>(3)},
-    {0x014CFF06L, static_cast<DirType>(4)},
-    {0x0141FF08L, static_cast<DirType>(5)},
-    {0x0137FF0BL, static_cast<DirType>(7)},
-    {0x012EFF0FL, static_cast<DirType>(8)},
-    {0x0124FF13L, static_cast<DirType>(9)},
-    {0x011AFF17L, static_cast<DirType>(11)},
-    {0x0110FF1BL, static_cast<DirType>(12)},
-    {0x0107FF1FL, static_cast<DirType>(13)},  // Center cell processing here.
-    {0x00FCFF24L, static_cast<DirType>(15)},
-    {0x00F3FF28L, static_cast<DirType>(16)},
-    {0x00ECFF2CL, static_cast<DirType>(17)},
-    {0x00E0FF32L, static_cast<DirType>(19)},
-    {0x00D7FF36L, static_cast<DirType>(20)},
-    {0x00CFFF3DL, static_cast<DirType>(21)},
-    {0x00C6FF42L, static_cast<DirType>(23)},
-    {0x00BAFF49L, static_cast<DirType>(24)},
-    {0x00B0FF4DL, static_cast<DirType>(25)},
-    {0x00A8FF58L, static_cast<DirType>(27)},
-    {0x00A0FF60L, static_cast<DirType>(28)},
-    {0x0098FF68L, static_cast<DirType>(29)},
-    {0x0090FF70L, static_cast<DirType>(31)},
-    {0x0088FF78L, static_cast<DirType>(32)},
-    {0x0080FF80L, static_cast<DirType>(32)},  // Track jump check here.
-    {0x0078FF88L, static_cast<DirType>(32)},
-    {0x0070FF90L, static_cast<DirType>(32)},
-    {0x0068FF98L, static_cast<DirType>(32)},
-    {0x0060FFA0L, static_cast<DirType>(32)},
-    {0x0058FFA8L, static_cast<DirType>(32)},
-    {0x0050FFB0L, static_cast<DirType>(32)},
-    {0x0048FFB8L, static_cast<DirType>(32)},
-    {0x0040FFC0L, static_cast<DirType>(32)},
-    {0x0038FFC8L, static_cast<DirType>(32)},
-    {0x0030FFD0L, static_cast<DirType>(32)},
-    {0x0028FFD8L, static_cast<DirType>(32)},
-    {0x0020FFE0L, static_cast<DirType>(32)},
-    {0x0018FFE8L, static_cast<DirType>(32)},
-    {0x0010FFF0L, static_cast<DirType>(32)},
-    {0x0008FFF8L, static_cast<DirType>(32)},
-    {0x00000000L, static_cast<DirType>(32)}};
+    {0x01F5FF00L, static_cast<game::DirType>(0)},
+    {0x01EAFF00L, static_cast<game::DirType>(0)},
+    {0x01DFFF00L, static_cast<game::DirType>(0)},
+    {0x01D4FF00L, static_cast<game::DirType>(0)},
+    {0x01C9FF00L, static_cast<game::DirType>(0)},
+    {0x01BEFF00L, static_cast<game::DirType>(0)},
+    {0x01B3FF00L, static_cast<game::DirType>(0)},
+    {0x01A8FF00L, static_cast<game::DirType>(0)},
+    {0x019DFF00L, static_cast<game::DirType>(0)},
+    {0x0192FF00L, static_cast<game::DirType>(0)},
+    {0x0187FF00L, static_cast<game::DirType>(0)},
+    {0x0180FF00L, static_cast<game::DirType>(0)},
+    {0x0175FF00L, static_cast<game::DirType>(0)},  // Jump entry point here.
+    {0x016BFF00L, static_cast<game::DirType>(0)},
+    {0x0160FF02L, static_cast<game::DirType>(1)},
+    {0x0155FF04L, static_cast<game::DirType>(3)},
+    {0x014CFF06L, static_cast<game::DirType>(4)},
+    {0x0141FF08L, static_cast<game::DirType>(5)},
+    {0x0137FF0BL, static_cast<game::DirType>(7)},
+    {0x012EFF0FL, static_cast<game::DirType>(8)},
+    {0x0124FF13L, static_cast<game::DirType>(9)},
+    {0x011AFF17L, static_cast<game::DirType>(11)},
+    {0x0110FF1BL, static_cast<game::DirType>(12)},
+    {0x0107FF1FL,
+     static_cast<game::DirType>(13)},  // Center cell processing here.
+    {0x00FCFF24L, static_cast<game::DirType>(15)},
+    {0x00F3FF28L, static_cast<game::DirType>(16)},
+    {0x00ECFF2CL, static_cast<game::DirType>(17)},
+    {0x00E0FF32L, static_cast<game::DirType>(19)},
+    {0x00D7FF36L, static_cast<game::DirType>(20)},
+    {0x00CFFF3DL, static_cast<game::DirType>(21)},
+    {0x00C6FF42L, static_cast<game::DirType>(23)},
+    {0x00BAFF49L, static_cast<game::DirType>(24)},
+    {0x00B0FF4DL, static_cast<game::DirType>(25)},
+    {0x00A8FF58L, static_cast<game::DirType>(27)},
+    {0x00A0FF60L, static_cast<game::DirType>(28)},
+    {0x0098FF68L, static_cast<game::DirType>(29)},
+    {0x0090FF70L, static_cast<game::DirType>(31)},
+    {0x0088FF78L, static_cast<game::DirType>(32)},
+    {0x0080FF80L, static_cast<game::DirType>(32)},  // Track jump check here.
+    {0x0078FF88L, static_cast<game::DirType>(32)},
+    {0x0070FF90L, static_cast<game::DirType>(32)},
+    {0x0068FF98L, static_cast<game::DirType>(32)},
+    {0x0060FFA0L, static_cast<game::DirType>(32)},
+    {0x0058FFA8L, static_cast<game::DirType>(32)},
+    {0x0050FFB0L, static_cast<game::DirType>(32)},
+    {0x0048FFB8L, static_cast<game::DirType>(32)},
+    {0x0040FFC0L, static_cast<game::DirType>(32)},
+    {0x0038FFC8L, static_cast<game::DirType>(32)},
+    {0x0030FFD0L, static_cast<game::DirType>(32)},
+    {0x0028FFD8L, static_cast<game::DirType>(32)},
+    {0x0020FFE0L, static_cast<game::DirType>(32)},
+    {0x0018FFE8L, static_cast<game::DirType>(32)},
+    {0x0010FFF0L, static_cast<game::DirType>(32)},
+    {0x0008FFF8L, static_cast<game::DirType>(32)},
+    {0x00000000L, static_cast<game::DirType>(32)}};
 
 const DriveClass::TrackType DriveClass::Track4[] = {
-    {0x00F5FF00L, static_cast<DirType>(0)},
-    {0x00EBFF00L, static_cast<DirType>(0)},
-    {0x00E0FF00L, static_cast<DirType>(0)},
-    {0x00D5FF00L, static_cast<DirType>(0)},
-    {0x00CBFF01L, static_cast<DirType>(0)},
-    {0x00C0FF03L, static_cast<DirType>(0)},
-    {0x00B5FF05L, static_cast<DirType>(1)},
-    {0x00ABFF07L, static_cast<DirType>(1)},
-    {0x00A0FF0AL, static_cast<DirType>(2)},
-    {0x0095FF0DL, static_cast<DirType>(3)},
-    {0x008BFF10L, static_cast<DirType>(4)},
-    {0x0080FF14L, static_cast<DirType>(5)},  // Track entry here.
-    {0x0075FF18L, static_cast<DirType>(8)},
-    {0x006DFF1CL, static_cast<DirType>(12)},
-    {0x0063FF22L, static_cast<DirType>(16)},
-    {0x005AFF25L, static_cast<DirType>(20)},
-    {0x0052FF2BL, static_cast<DirType>(23)},
-    {0x0048FF32L, static_cast<DirType>(27)},
-    {0x0040FF37L, static_cast<DirType>(32)},
-    {0x0038FF3DL, static_cast<DirType>(36)},
-    {0x0030FF46L, static_cast<DirType>(39)},
-    {0x002BFF4FL, static_cast<DirType>(43)},
-    {0x0024FF58L, static_cast<DirType>(47)},
-    {0x0020FF60L, static_cast<DirType>(51)},
-    {0x001BFF6DL, static_cast<DirType>(54)},
-    {0x0017FF79L, static_cast<DirType>(57)},
-    {0x0014FF82L, static_cast<DirType>(60)},  // Track jump here.
-    {0x0011FF8FL, static_cast<DirType>(62)},
-    {0x000DFF98L, static_cast<DirType>(63)},
-    {0x0009FFA2L, static_cast<DirType>(64)},
-    {0x0006FFACL, static_cast<DirType>(64)},
-    {0x0004FFB5L, static_cast<DirType>(66)},
-    {0x0003FFC0L, static_cast<DirType>(64)},
-    {0x0002FFCBL, static_cast<DirType>(64)},
-    {0x0001FFD5L, static_cast<DirType>(64)},
-    {0x0000FFE0L, static_cast<DirType>(64)},
-    {0x0000FFEBL, static_cast<DirType>(64)},
-    {0x0000FFF5L, static_cast<DirType>(64)},
-    {0x00000000L, static_cast<DirType>(64)}};
+    {0x00F5FF00L, static_cast<game::DirType>(0)},
+    {0x00EBFF00L, static_cast<game::DirType>(0)},
+    {0x00E0FF00L, static_cast<game::DirType>(0)},
+    {0x00D5FF00L, static_cast<game::DirType>(0)},
+    {0x00CBFF01L, static_cast<game::DirType>(0)},
+    {0x00C0FF03L, static_cast<game::DirType>(0)},
+    {0x00B5FF05L, static_cast<game::DirType>(1)},
+    {0x00ABFF07L, static_cast<game::DirType>(1)},
+    {0x00A0FF0AL, static_cast<game::DirType>(2)},
+    {0x0095FF0DL, static_cast<game::DirType>(3)},
+    {0x008BFF10L, static_cast<game::DirType>(4)},
+    {0x0080FF14L, static_cast<game::DirType>(5)},  // Track entry here.
+    {0x0075FF18L, static_cast<game::DirType>(8)},
+    {0x006DFF1CL, static_cast<game::DirType>(12)},
+    {0x0063FF22L, static_cast<game::DirType>(16)},
+    {0x005AFF25L, static_cast<game::DirType>(20)},
+    {0x0052FF2BL, static_cast<game::DirType>(23)},
+    {0x0048FF32L, static_cast<game::DirType>(27)},
+    {0x0040FF37L, static_cast<game::DirType>(32)},
+    {0x0038FF3DL, static_cast<game::DirType>(36)},
+    {0x0030FF46L, static_cast<game::DirType>(39)},
+    {0x002BFF4FL, static_cast<game::DirType>(43)},
+    {0x0024FF58L, static_cast<game::DirType>(47)},
+    {0x0020FF60L, static_cast<game::DirType>(51)},
+    {0x001BFF6DL, static_cast<game::DirType>(54)},
+    {0x0017FF79L, static_cast<game::DirType>(57)},
+    {0x0014FF82L, static_cast<game::DirType>(60)},  // Track jump here.
+    {0x0011FF8FL, static_cast<game::DirType>(62)},
+    {0x000DFF98L, static_cast<game::DirType>(63)},
+    {0x0009FFA2L, static_cast<game::DirType>(64)},
+    {0x0006FFACL, static_cast<game::DirType>(64)},
+    {0x0004FFB5L, static_cast<game::DirType>(66)},
+    {0x0003FFC0L, static_cast<game::DirType>(64)},
+    {0x0002FFCBL, static_cast<game::DirType>(64)},
+    {0x0001FFD5L, static_cast<game::DirType>(64)},
+    {0x0000FFE0L, static_cast<game::DirType>(64)},
+    {0x0000FFEBL, static_cast<game::DirType>(64)},
+    {0x0000FFF5L, static_cast<game::DirType>(64)},
+    {0x00000000L, static_cast<game::DirType>(64)}};
 
 const DriveClass::TrackType DriveClass::Track5[] = {
-    {0xFFF8FE08L, static_cast<DirType>(32)},
-    {0xFFF0FE10L, static_cast<DirType>(32)},
-    {0xFFE8FE18L, static_cast<DirType>(32)},
-    {0xFFE0FE20L, static_cast<DirType>(32)},
-    {0xFFD8FE28L, static_cast<DirType>(32)},
-    {0xFFD0FE30L, static_cast<DirType>(32)},
-    {0xFFC8FE38L, static_cast<DirType>(32)},
-    {0xFFC0FE40L, static_cast<DirType>(32)},
-    {0xFFB8FE48L, static_cast<DirType>(32)},
-    {0xFFB0FE50L, static_cast<DirType>(32)},
-    {0xFFA8FE58L, static_cast<DirType>(32)},
-    {0xFFA0FE60L, static_cast<DirType>(32)},
-    {0xFF98FE68L, static_cast<DirType>(32)},
-    {0xFF90FE70L, static_cast<DirType>(32)},
-    {0xFF88FE78L, static_cast<DirType>(32)},
-    {0xFF80FE80L, static_cast<DirType>(32)},  // Track entry here.
-    {0xFF78FE88L, static_cast<DirType>(32)},
-    {0xFF71FE90L, static_cast<DirType>(32)},
-    {0xFF6AFE97L, static_cast<DirType>(32)},
-    {0xFF62FE9FL, static_cast<DirType>(32)},
-    {0xFF5AFEA8L, static_cast<DirType>(32)},
-    {0xFF53FEB0L, static_cast<DirType>(35)},
-    {0xFF4BFEB7L, static_cast<DirType>(38)},
-    {0xFF44FEBEL, static_cast<DirType>(41)},
-    {0xFF3EFEC4L, static_cast<DirType>(44)},
-    {0xFF39FECEL, static_cast<DirType>(47)},
-    {0xFF34FED8L, static_cast<DirType>(50)},
-    {0xFF30FEE0L, static_cast<DirType>(53)},
-    {0xFF2DFEEBL, static_cast<DirType>(56)},
-    {0xFF2CFEF5L, static_cast<DirType>(59)},
-    {0xFF2BFF00L, static_cast<DirType>(62)},
-    {0xFF2CFF0BL, static_cast<DirType>(66)},
-    {0xFF2DFF15L, static_cast<DirType>(69)},
-    {0xFF30FF1FL, static_cast<DirType>(72)},
-    {0xFF34FF28L, static_cast<DirType>(75)},
-    {0xFF39FF30L, static_cast<DirType>(78)},
-    {0xFF3EFF3AL, static_cast<DirType>(81)},
-    {0xFF44FF44L, static_cast<DirType>(84)},
-    {0xFF4BFF4BL, static_cast<DirType>(87)},
-    {0xFF53FF50L, static_cast<DirType>(90)},
-    {0xFF5AFF58L, static_cast<DirType>(93)},
-    {0xFF62FF60L, static_cast<DirType>(96)},
-    {0xFF6AFF68L, static_cast<DirType>(96)},
-    {0xFF71FF70L, static_cast<DirType>(96)},
-    {0xFF78FF78L, static_cast<DirType>(96)},
-    {0xFF80FF80L, static_cast<DirType>(96)},  // Track jump check here.
-    {0xFF88FF88L, static_cast<DirType>(96)},
-    {0xFF90FF90L, static_cast<DirType>(96)},
-    {0xFF98FF98L, static_cast<DirType>(96)},
-    {0xFFA0FFA0L, static_cast<DirType>(96)},
-    {0xFFA8FFA8L, static_cast<DirType>(96)},
-    {0xFFB0FFB0L, static_cast<DirType>(96)},
-    {0xFFB8FFB8L, static_cast<DirType>(96)},
-    {0xFFC0FFC0L, static_cast<DirType>(96)},
-    {0xFFC8FFC8L, static_cast<DirType>(96)},
-    {0xFFD0FFD0L, static_cast<DirType>(96)},
-    {0xFFD8FFD8L, static_cast<DirType>(96)},
-    {0xFFE0FFE0L, static_cast<DirType>(96)},
-    {0xFFE8FFE8L, static_cast<DirType>(96)},
-    {0xFFF0FFF0L, static_cast<DirType>(96)},
-    {0xFFF8FFF8L, static_cast<DirType>(96)},
-    {0x00000000L, static_cast<DirType>(96)}};
+    {0xFFF8FE08L, static_cast<game::DirType>(32)},
+    {0xFFF0FE10L, static_cast<game::DirType>(32)},
+    {0xFFE8FE18L, static_cast<game::DirType>(32)},
+    {0xFFE0FE20L, static_cast<game::DirType>(32)},
+    {0xFFD8FE28L, static_cast<game::DirType>(32)},
+    {0xFFD0FE30L, static_cast<game::DirType>(32)},
+    {0xFFC8FE38L, static_cast<game::DirType>(32)},
+    {0xFFC0FE40L, static_cast<game::DirType>(32)},
+    {0xFFB8FE48L, static_cast<game::DirType>(32)},
+    {0xFFB0FE50L, static_cast<game::DirType>(32)},
+    {0xFFA8FE58L, static_cast<game::DirType>(32)},
+    {0xFFA0FE60L, static_cast<game::DirType>(32)},
+    {0xFF98FE68L, static_cast<game::DirType>(32)},
+    {0xFF90FE70L, static_cast<game::DirType>(32)},
+    {0xFF88FE78L, static_cast<game::DirType>(32)},
+    {0xFF80FE80L, static_cast<game::DirType>(32)},  // Track entry here.
+    {0xFF78FE88L, static_cast<game::DirType>(32)},
+    {0xFF71FE90L, static_cast<game::DirType>(32)},
+    {0xFF6AFE97L, static_cast<game::DirType>(32)},
+    {0xFF62FE9FL, static_cast<game::DirType>(32)},
+    {0xFF5AFEA8L, static_cast<game::DirType>(32)},
+    {0xFF53FEB0L, static_cast<game::DirType>(35)},
+    {0xFF4BFEB7L, static_cast<game::DirType>(38)},
+    {0xFF44FEBEL, static_cast<game::DirType>(41)},
+    {0xFF3EFEC4L, static_cast<game::DirType>(44)},
+    {0xFF39FECEL, static_cast<game::DirType>(47)},
+    {0xFF34FED8L, static_cast<game::DirType>(50)},
+    {0xFF30FEE0L, static_cast<game::DirType>(53)},
+    {0xFF2DFEEBL, static_cast<game::DirType>(56)},
+    {0xFF2CFEF5L, static_cast<game::DirType>(59)},
+    {0xFF2BFF00L, static_cast<game::DirType>(62)},
+    {0xFF2CFF0BL, static_cast<game::DirType>(66)},
+    {0xFF2DFF15L, static_cast<game::DirType>(69)},
+    {0xFF30FF1FL, static_cast<game::DirType>(72)},
+    {0xFF34FF28L, static_cast<game::DirType>(75)},
+    {0xFF39FF30L, static_cast<game::DirType>(78)},
+    {0xFF3EFF3AL, static_cast<game::DirType>(81)},
+    {0xFF44FF44L, static_cast<game::DirType>(84)},
+    {0xFF4BFF4BL, static_cast<game::DirType>(87)},
+    {0xFF53FF50L, static_cast<game::DirType>(90)},
+    {0xFF5AFF58L, static_cast<game::DirType>(93)},
+    {0xFF62FF60L, static_cast<game::DirType>(96)},
+    {0xFF6AFF68L, static_cast<game::DirType>(96)},
+    {0xFF71FF70L, static_cast<game::DirType>(96)},
+    {0xFF78FF78L, static_cast<game::DirType>(96)},
+    {0xFF80FF80L, static_cast<game::DirType>(96)},  // Track jump check here.
+    {0xFF88FF88L, static_cast<game::DirType>(96)},
+    {0xFF90FF90L, static_cast<game::DirType>(96)},
+    {0xFF98FF98L, static_cast<game::DirType>(96)},
+    {0xFFA0FFA0L, static_cast<game::DirType>(96)},
+    {0xFFA8FFA8L, static_cast<game::DirType>(96)},
+    {0xFFB0FFB0L, static_cast<game::DirType>(96)},
+    {0xFFB8FFB8L, static_cast<game::DirType>(96)},
+    {0xFFC0FFC0L, static_cast<game::DirType>(96)},
+    {0xFFC8FFC8L, static_cast<game::DirType>(96)},
+    {0xFFD0FFD0L, static_cast<game::DirType>(96)},
+    {0xFFD8FFD8L, static_cast<game::DirType>(96)},
+    {0xFFE0FFE0L, static_cast<game::DirType>(96)},
+    {0xFFE8FFE8L, static_cast<game::DirType>(96)},
+    {0xFFF0FFF0L, static_cast<game::DirType>(96)},
+    {0xFFF8FFF8L, static_cast<game::DirType>(96)},
+    {0x00000000L, static_cast<game::DirType>(96)}};
 
 const DriveClass::TrackType DriveClass::Track6[] = {
-    {0x0100FE00L, static_cast<DirType>(32)},
-    {0x00F8FE08L, static_cast<DirType>(32)},
-    {0x00F0FE10L, static_cast<DirType>(32)},
-    {0x00E8FE18L, static_cast<DirType>(32)},
-    {0x00E0FE20L, static_cast<DirType>(32)},
-    {0x00D8FE28L, static_cast<DirType>(32)},
-    {0x00D0FE30L, static_cast<DirType>(32)},
-    {0x00C8FE38L, static_cast<DirType>(32)},
-    {0x00C0FE40L, static_cast<DirType>(32)},
-    {0x00B8FE48L, static_cast<DirType>(32)},
-    {0x00B0FE50L, static_cast<DirType>(32)},
-    {0x00A8FE58L, static_cast<DirType>(32)},
-    {0x00A0FE60L, static_cast<DirType>(32)},
-    {0x0098FE68L, static_cast<DirType>(32)},
-    {0x0090FE70L, static_cast<DirType>(32)},
-    {0x0088FE78L, static_cast<DirType>(32)},
-    {0x0080FE80L, static_cast<DirType>(32)},  // Jump entry point here.
-    {0x0078FE88L, static_cast<DirType>(32)},
-    {0x0070FE90L, static_cast<DirType>(32)},
-    {0x0068FE98L, static_cast<DirType>(32)},
-    {0x0060FEA0L, static_cast<DirType>(32)},
-    {0x0058FEA8L, static_cast<DirType>(32)},
-    {0x0055FEAEL, static_cast<DirType>(32)},
-    {0x004EFEB8L, static_cast<DirType>(35)},
-    {0x0048FEC0L, static_cast<DirType>(37)},
-    {0x0042FEC9L, static_cast<DirType>(40)},
-    {0x003BFED2L, static_cast<DirType>(43)},
-    {0x0037FEDAL, static_cast<DirType>(45)},
-    {0x0032FEE3L, static_cast<DirType>(48)},
-    {0x002BFEEBL, static_cast<DirType>(51)},
-    {0x0026FEF5L, static_cast<DirType>(53)},
-    {0x0022FEFEL, static_cast<DirType>(56)},
-    {0x001CFF08L, static_cast<DirType>(59)},
-    {0x0019FF12L, static_cast<DirType>(61)},
-    {0x0015FF1BL, static_cast<DirType>(64)},
-    {0x0011FF26L, static_cast<DirType>(64)},
-    {0x000EFF30L, static_cast<DirType>(64)},
-    {0x000BFF39L, static_cast<DirType>(64)},
-    {0x0009FF43L, static_cast<DirType>(64)},
-    {0x0007FF4EL, static_cast<DirType>(64)},
-    {0x0005FF57L, static_cast<DirType>(64)},
-    {0x0003FF62L, static_cast<DirType>(64)},
-    {0x0001FF6DL, static_cast<DirType>(64)},
-    {0x0000FF77L, static_cast<DirType>(64)},
-    {0x0000FF80L, static_cast<DirType>(64)},  // Track jump check here.
-    {0x0000FF8BL, static_cast<DirType>(64)},
-    {0x0000FF95L, static_cast<DirType>(64)},
-    {0x0000FFA0L, static_cast<DirType>(64)},
-    {0x0000FFABL, static_cast<DirType>(64)},
-    {0x0000FFB5L, static_cast<DirType>(64)},
-    {0x0000FFC0L, static_cast<DirType>(64)},
-    {0x0000FFCBL, static_cast<DirType>(64)},
-    {0x0000FFD5L, static_cast<DirType>(64)},
-    {0x0000FFE0L, static_cast<DirType>(64)},
-    {0x0000FFEBL, static_cast<DirType>(64)},
-    {0x0000FFF5L, static_cast<DirType>(64)},
-    {0x00000000L, static_cast<DirType>(64)}};
+    {0x0100FE00L, static_cast<game::DirType>(32)},
+    {0x00F8FE08L, static_cast<game::DirType>(32)},
+    {0x00F0FE10L, static_cast<game::DirType>(32)},
+    {0x00E8FE18L, static_cast<game::DirType>(32)},
+    {0x00E0FE20L, static_cast<game::DirType>(32)},
+    {0x00D8FE28L, static_cast<game::DirType>(32)},
+    {0x00D0FE30L, static_cast<game::DirType>(32)},
+    {0x00C8FE38L, static_cast<game::DirType>(32)},
+    {0x00C0FE40L, static_cast<game::DirType>(32)},
+    {0x00B8FE48L, static_cast<game::DirType>(32)},
+    {0x00B0FE50L, static_cast<game::DirType>(32)},
+    {0x00A8FE58L, static_cast<game::DirType>(32)},
+    {0x00A0FE60L, static_cast<game::DirType>(32)},
+    {0x0098FE68L, static_cast<game::DirType>(32)},
+    {0x0090FE70L, static_cast<game::DirType>(32)},
+    {0x0088FE78L, static_cast<game::DirType>(32)},
+    {0x0080FE80L, static_cast<game::DirType>(32)},  // Jump entry point here.
+    {0x0078FE88L, static_cast<game::DirType>(32)},
+    {0x0070FE90L, static_cast<game::DirType>(32)},
+    {0x0068FE98L, static_cast<game::DirType>(32)},
+    {0x0060FEA0L, static_cast<game::DirType>(32)},
+    {0x0058FEA8L, static_cast<game::DirType>(32)},
+    {0x0055FEAEL, static_cast<game::DirType>(32)},
+    {0x004EFEB8L, static_cast<game::DirType>(35)},
+    {0x0048FEC0L, static_cast<game::DirType>(37)},
+    {0x0042FEC9L, static_cast<game::DirType>(40)},
+    {0x003BFED2L, static_cast<game::DirType>(43)},
+    {0x0037FEDAL, static_cast<game::DirType>(45)},
+    {0x0032FEE3L, static_cast<game::DirType>(48)},
+    {0x002BFEEBL, static_cast<game::DirType>(51)},
+    {0x0026FEF5L, static_cast<game::DirType>(53)},
+    {0x0022FEFEL, static_cast<game::DirType>(56)},
+    {0x001CFF08L, static_cast<game::DirType>(59)},
+    {0x0019FF12L, static_cast<game::DirType>(61)},
+    {0x0015FF1BL, static_cast<game::DirType>(64)},
+    {0x0011FF26L, static_cast<game::DirType>(64)},
+    {0x000EFF30L, static_cast<game::DirType>(64)},
+    {0x000BFF39L, static_cast<game::DirType>(64)},
+    {0x0009FF43L, static_cast<game::DirType>(64)},
+    {0x0007FF4EL, static_cast<game::DirType>(64)},
+    {0x0005FF57L, static_cast<game::DirType>(64)},
+    {0x0003FF62L, static_cast<game::DirType>(64)},
+    {0x0001FF6DL, static_cast<game::DirType>(64)},
+    {0x0000FF77L, static_cast<game::DirType>(64)},
+    {0x0000FF80L, static_cast<game::DirType>(64)},  // Track jump check here.
+    {0x0000FF8BL, static_cast<game::DirType>(64)},
+    {0x0000FF95L, static_cast<game::DirType>(64)},
+    {0x0000FFA0L, static_cast<game::DirType>(64)},
+    {0x0000FFABL, static_cast<game::DirType>(64)},
+    {0x0000FFB5L, static_cast<game::DirType>(64)},
+    {0x0000FFC0L, static_cast<game::DirType>(64)},
+    {0x0000FFCBL, static_cast<game::DirType>(64)},
+    {0x0000FFD5L, static_cast<game::DirType>(64)},
+    {0x0000FFE0L, static_cast<game::DirType>(64)},
+    {0x0000FFEBL, static_cast<game::DirType>(64)},
+    {0x0000FFF5L, static_cast<game::DirType>(64)},
+    {0x00000000L, static_cast<game::DirType>(64)}};
 
 const DriveClass::TrackType DriveClass::Track7[] = {
-    {0x0006FFFFL, static_cast<DirType>(0)},
-    {0x000CFFFEL, static_cast<DirType>(4)},
-    {0x0011FFFCL, static_cast<DirType>(8)},
-    {0x0018FFFAL, static_cast<DirType>(12)},
-    {0x001FFFF6L, static_cast<DirType>(16)},
-    {0x0024FFF3L, static_cast<DirType>(19)},
-    {0x002BFFF0L, static_cast<DirType>(22)},
-    {0x0030FFFDL, static_cast<DirType>(23)},
-    {0x0035FFEBL, static_cast<DirType>(24)},
-    {0x0038FFE8L, static_cast<DirType>(25)},
-    {0x003CFFE6L, static_cast<DirType>(26)},
-    {0x0040FFE3L, static_cast<DirType>(27)},
-    {0x0043FFE0L, static_cast<DirType>(28)},
-    {0x0046FFDDL, static_cast<DirType>(29)},
-    {0x0043FFDFL, static_cast<DirType>(30)},
-    {0x0040FFE1L, static_cast<DirType>(30)},
-    {0x003CFFE3L, static_cast<DirType>(30)},
-    {0x0038FFE5L, static_cast<DirType>(30)},
-    {0x0035FFE7L, static_cast<DirType>(31)},
-    {0x0030FFE9L, static_cast<DirType>(31)},
-    {0x002BFFEBL, static_cast<DirType>(31)},
-    {0x0024FFEDL, static_cast<DirType>(31)},
-    {0x001FFFF1L, static_cast<DirType>(31)},
-    {0x0018FFF4L, static_cast<DirType>(32)},
-    {0x0011FFF7L, static_cast<DirType>(32)},
-    {0x000CFFFAL, static_cast<DirType>(32)},
-    {0x0006FFFDL, static_cast<DirType>(32)},
-    {0x00000000L, static_cast<DirType>(32)}};
+    {0x0006FFFFL, static_cast<game::DirType>(0)},
+    {0x000CFFFEL, static_cast<game::DirType>(4)},
+    {0x0011FFFCL, static_cast<game::DirType>(8)},
+    {0x0018FFFAL, static_cast<game::DirType>(12)},
+    {0x001FFFF6L, static_cast<game::DirType>(16)},
+    {0x0024FFF3L, static_cast<game::DirType>(19)},
+    {0x002BFFF0L, static_cast<game::DirType>(22)},
+    {0x0030FFFDL, static_cast<game::DirType>(23)},
+    {0x0035FFEBL, static_cast<game::DirType>(24)},
+    {0x0038FFE8L, static_cast<game::DirType>(25)},
+    {0x003CFFE6L, static_cast<game::DirType>(26)},
+    {0x0040FFE3L, static_cast<game::DirType>(27)},
+    {0x0043FFE0L, static_cast<game::DirType>(28)},
+    {0x0046FFDDL, static_cast<game::DirType>(29)},
+    {0x0043FFDFL, static_cast<game::DirType>(30)},
+    {0x0040FFE1L, static_cast<game::DirType>(30)},
+    {0x003CFFE3L, static_cast<game::DirType>(30)},
+    {0x0038FFE5L, static_cast<game::DirType>(30)},
+    {0x0035FFE7L, static_cast<game::DirType>(31)},
+    {0x0030FFE9L, static_cast<game::DirType>(31)},
+    {0x002BFFEBL, static_cast<game::DirType>(31)},
+    {0x0024FFEDL, static_cast<game::DirType>(31)},
+    {0x001FFFF1L, static_cast<game::DirType>(31)},
+    {0x0018FFF4L, static_cast<game::DirType>(32)},
+    {0x0011FFF7L, static_cast<game::DirType>(32)},
+    {0x000CFFFAL, static_cast<game::DirType>(32)},
+    {0x0006FFFDL, static_cast<game::DirType>(32)},
+    {0x00000000L, static_cast<game::DirType>(32)}};
 
 const DriveClass::TrackType DriveClass::Track8[] = {
-    {0x0003FFFCL, static_cast<DirType>(32)},
-    {0x0006FFF7L, static_cast<DirType>(36)},
-    {0x000AFFF1L, static_cast<DirType>(40)},
-    {0x000CFFEBL, static_cast<DirType>(44)},
-    {0x000DFFE4L, static_cast<DirType>(46)},
-    {0x000EFFDCL, static_cast<DirType>(48)},
-    {0x000FFFD5L, static_cast<DirType>(50)},
-    {0x0010FFD0L, static_cast<DirType>(52)},
-    {0x0011FFC9L, static_cast<DirType>(54)},
-    {0x0012FFC2L, static_cast<DirType>(56)},
-    {0x0011FFC0L, static_cast<DirType>(58)},
-    {0x0010FFC2L, static_cast<DirType>(60)},
-    {0x000EFFC9L, static_cast<DirType>(62)},
-    {0x000CFFCFL, static_cast<DirType>(64)},
-    {0x000AFFD5L, static_cast<DirType>(64)},
-    {0x0008FFDAL, static_cast<DirType>(64)},
-    {0x0006FFE2L, static_cast<DirType>(64)},
-    {0x0004FFE9L, static_cast<DirType>(64)},
-    {0x0002FFEFL, static_cast<DirType>(64)},
-    {0x0001FFF5L, static_cast<DirType>(64)},
-    {0x0000FFF9L, static_cast<DirType>(64)},
-    {0x00000000L, static_cast<DirType>(64)}};
+    {0x0003FFFCL, static_cast<game::DirType>(32)},
+    {0x0006FFF7L, static_cast<game::DirType>(36)},
+    {0x000AFFF1L, static_cast<game::DirType>(40)},
+    {0x000CFFEBL, static_cast<game::DirType>(44)},
+    {0x000DFFE4L, static_cast<game::DirType>(46)},
+    {0x000EFFDCL, static_cast<game::DirType>(48)},
+    {0x000FFFD5L, static_cast<game::DirType>(50)},
+    {0x0010FFD0L, static_cast<game::DirType>(52)},
+    {0x0011FFC9L, static_cast<game::DirType>(54)},
+    {0x0012FFC2L, static_cast<game::DirType>(56)},
+    {0x0011FFC0L, static_cast<game::DirType>(58)},
+    {0x0010FFC2L, static_cast<game::DirType>(60)},
+    {0x000EFFC9L, static_cast<game::DirType>(62)},
+    {0x000CFFCFL, static_cast<game::DirType>(64)},
+    {0x000AFFD5L, static_cast<game::DirType>(64)},
+    {0x0008FFDAL, static_cast<game::DirType>(64)},
+    {0x0006FFE2L, static_cast<game::DirType>(64)},
+    {0x0004FFE9L, static_cast<game::DirType>(64)},
+    {0x0002FFEFL, static_cast<game::DirType>(64)},
+    {0x0001FFF5L, static_cast<game::DirType>(64)},
+    {0x0000FFF9L, static_cast<game::DirType>(64)},
+    {0x00000000L, static_cast<game::DirType>(64)}};
 
 const DriveClass::TrackType DriveClass::Track9[] = {
-    {0xFFF50002L, static_cast<DirType>(0)},
-    {0xFFEB0004L, static_cast<DirType>(2)},
-    {0xFFE00006L, static_cast<DirType>(4)},
-    {0xFFD50009L, static_cast<DirType>(6)},
-    {0xFFCE000CL, static_cast<DirType>(9)},
-    {0xFFC8000FL, static_cast<DirType>(11)},
-    {0xFFC00012L, static_cast<DirType>(13)},
-    {0xFFB80015L, static_cast<DirType>(16)},
-    {0xFFC00012L, static_cast<DirType>(18)},
-    {0xFFC8000EL, static_cast<DirType>(20)},
-    {0xFFCE000AL, static_cast<DirType>(22)},
-    {0xFFD50004L, static_cast<DirType>(24)},
-    {0xFFDE0000L, static_cast<DirType>(26)},
-    {0xFFE9FFF8L, static_cast<DirType>(28)},
-    {0xFFEEFFF2L, static_cast<DirType>(30)},
-    {0xFFF5FFEBL, static_cast<DirType>(32)},
-    {0xFFFDFFE1L, static_cast<DirType>(34)},
-    {0x0002FFD8L, static_cast<DirType>(36)},
-    {0x0007FFD2L, static_cast<DirType>(39)},
-    {0x000BFFCBL, static_cast<DirType>(41)},
-    {0x0010FFC5L, static_cast<DirType>(43)},
-    {0x0013FFBEL, static_cast<DirType>(45)},
-    {0x0015FFB7L, static_cast<DirType>(48)},
-    {0x0013FFBEL, static_cast<DirType>(50)},
-    {0x0011FFC5L, static_cast<DirType>(52)},
-    {0x000BFFCCL, static_cast<DirType>(54)},
-    {0x0008FFD4L, static_cast<DirType>(56)},
-    {0x0005FFDFL, static_cast<DirType>(58)},
-    {0x0003FFEBL, static_cast<DirType>(62)},
-    {0x0001FFF5L, static_cast<DirType>(64)},
-    {0x00000000L, static_cast<DirType>(64)}};
+    {0xFFF50002L, static_cast<game::DirType>(0)},
+    {0xFFEB0004L, static_cast<game::DirType>(2)},
+    {0xFFE00006L, static_cast<game::DirType>(4)},
+    {0xFFD50009L, static_cast<game::DirType>(6)},
+    {0xFFCE000CL, static_cast<game::DirType>(9)},
+    {0xFFC8000FL, static_cast<game::DirType>(11)},
+    {0xFFC00012L, static_cast<game::DirType>(13)},
+    {0xFFB80015L, static_cast<game::DirType>(16)},
+    {0xFFC00012L, static_cast<game::DirType>(18)},
+    {0xFFC8000EL, static_cast<game::DirType>(20)},
+    {0xFFCE000AL, static_cast<game::DirType>(22)},
+    {0xFFD50004L, static_cast<game::DirType>(24)},
+    {0xFFDE0000L, static_cast<game::DirType>(26)},
+    {0xFFE9FFF8L, static_cast<game::DirType>(28)},
+    {0xFFEEFFF2L, static_cast<game::DirType>(30)},
+    {0xFFF5FFEBL, static_cast<game::DirType>(32)},
+    {0xFFFDFFE1L, static_cast<game::DirType>(34)},
+    {0x0002FFD8L, static_cast<game::DirType>(36)},
+    {0x0007FFD2L, static_cast<game::DirType>(39)},
+    {0x000BFFCBL, static_cast<game::DirType>(41)},
+    {0x0010FFC5L, static_cast<game::DirType>(43)},
+    {0x0013FFBEL, static_cast<game::DirType>(45)},
+    {0x0015FFB7L, static_cast<game::DirType>(48)},
+    {0x0013FFBEL, static_cast<game::DirType>(50)},
+    {0x0011FFC5L, static_cast<game::DirType>(52)},
+    {0x000BFFCCL, static_cast<game::DirType>(54)},
+    {0x0008FFD4L, static_cast<game::DirType>(56)},
+    {0x0005FFDFL, static_cast<game::DirType>(58)},
+    {0x0003FFEBL, static_cast<game::DirType>(62)},
+    {0x0001FFF5L, static_cast<game::DirType>(64)},
+    {0x00000000L, static_cast<game::DirType>(64)}};
 
 const DriveClass::TrackType DriveClass::Track10[] = {
-    {0xFFF6000BL, static_cast<DirType>(32)},
-    {0xFFF00015L, static_cast<DirType>(37)},
-    {0xFFEB0020L, static_cast<DirType>(42)},
-    {0xFFE9002BL, static_cast<DirType>(47)},
-    {0xFFE50032L, static_cast<DirType>(52)},
-    {0xFFE30038L, static_cast<DirType>(57)},
-    {0xFFE00040L, static_cast<DirType>(60)},
-    {0xFFE20038L, static_cast<DirType>(62)},
-    {0xFFE40032L, static_cast<DirType>(64)},
-    {0xFFE5002AL, static_cast<DirType>(68)},
-    {0xFFE6001EL, static_cast<DirType>(70)},
-    {0xFFE70015L, static_cast<DirType>(72)},
-    {0xFFE8000BL, static_cast<DirType>(74)},
-    {0xFFE90000L, static_cast<DirType>(76)},
-    {0xFFE8FFF5L, static_cast<DirType>(78)},
-    {0xFFE7FFEBL, static_cast<DirType>(80)},
-    {0xFFE6FFE0L, static_cast<DirType>(82)},
-    {0xFFE5FFD5L, static_cast<DirType>(84)},
-    {0xFFE4FFCEL, static_cast<DirType>(86)},
-    {0xFFE2FFC5L, static_cast<DirType>(88)},
-    {0xFFE0FFC0L, static_cast<DirType>(90)},
-    {0xFFE3FFC5L, static_cast<DirType>(92)},
-    {0xFFE5FFCEL, static_cast<DirType>(94)},
-    {0xFFE9FFD5L, static_cast<DirType>(95)},
-    {0xFFEBFFE0L, static_cast<DirType>(96)},
-    {0xFFF0FFEBL, static_cast<DirType>(96)},
-    {0xFFF6FFF5L, static_cast<DirType>(96)},
-    {0x00000000L, static_cast<DirType>(96)}};
+    {0xFFF6000BL, static_cast<game::DirType>(32)},
+    {0xFFF00015L, static_cast<game::DirType>(37)},
+    {0xFFEB0020L, static_cast<game::DirType>(42)},
+    {0xFFE9002BL, static_cast<game::DirType>(47)},
+    {0xFFE50032L, static_cast<game::DirType>(52)},
+    {0xFFE30038L, static_cast<game::DirType>(57)},
+    {0xFFE00040L, static_cast<game::DirType>(60)},
+    {0xFFE20038L, static_cast<game::DirType>(62)},
+    {0xFFE40032L, static_cast<game::DirType>(64)},
+    {0xFFE5002AL, static_cast<game::DirType>(68)},
+    {0xFFE6001EL, static_cast<game::DirType>(70)},
+    {0xFFE70015L, static_cast<game::DirType>(72)},
+    {0xFFE8000BL, static_cast<game::DirType>(74)},
+    {0xFFE90000L, static_cast<game::DirType>(76)},
+    {0xFFE8FFF5L, static_cast<game::DirType>(78)},
+    {0xFFE7FFEBL, static_cast<game::DirType>(80)},
+    {0xFFE6FFE0L, static_cast<game::DirType>(82)},
+    {0xFFE5FFD5L, static_cast<game::DirType>(84)},
+    {0xFFE4FFCEL, static_cast<game::DirType>(86)},
+    {0xFFE2FFC5L, static_cast<game::DirType>(88)},
+    {0xFFE0FFC0L, static_cast<game::DirType>(90)},
+    {0xFFE3FFC5L, static_cast<game::DirType>(92)},
+    {0xFFE5FFCEL, static_cast<game::DirType>(94)},
+    {0xFFE9FFD5L, static_cast<game::DirType>(95)},
+    {0xFFEBFFE0L, static_cast<game::DirType>(96)},
+    {0xFFF0FFEBL, static_cast<game::DirType>(96)},
+    {0xFFF6FFF5L, static_cast<game::DirType>(96)},
+    {0x00000000L, static_cast<game::DirType>(96)}};
 
 const DriveClass::TrackType DriveClass::Track11[] = {
-    {0x01000000L, DIR_SW},    {0x00F30008L, DIR_SW},
-    {0x00E50010L, DIR_SW_X1}, {0x00D60018L, DIR_SW_X1},
-    {0x00C80020L, DIR_SW_X1}, {0x00B90028L, DIR_SW_X1},
-    {0x00AB0030L, DIR_SW_X2}, {0x009C0038L, DIR_SW_X2},
-    {0x008D0040L, DIR_SW_X2}, {0x007F0048L, DIR_SW_X2},
-    {0x00710050L, DIR_SW_X2}, {0x00640058L, DIR_SW_X2},
-    {0x00550060L, DIR_SW_X2},
+    {0x01000000L, game::DIR_SW},    {0x00F30008L, game::DIR_SW},
+    {0x00E50010L, game::DIR_SW_X1}, {0x00D60018L, game::DIR_SW_X1},
+    {0x00C80020L, game::DIR_SW_X1}, {0x00B90028L, game::DIR_SW_X1},
+    {0x00AB0030L, game::DIR_SW_X2}, {0x009C0038L, game::DIR_SW_X2},
+    {0x008D0040L, game::DIR_SW_X2}, {0x007F0048L, game::DIR_SW_X2},
+    {0x00710050L, game::DIR_SW_X2}, {0x00640058L, game::DIR_SW_X2},
+    {0x00550060L, game::DIR_SW_X2},
 
-    {0x00000000L, DIR_SW_X2}};
+    {0x00000000L, game::DIR_SW_X2}};
 
 const DriveClass::TrackType DriveClass::Track12[] = {
-    {0xFF550060L, DIR_SW_X2}, {0xFF640058L, DIR_SW_X2},
-    {0xFF710050L, DIR_SW_X2}, {0xFF7F0048L, DIR_SW_X2},
-    {0xFF8D0040L, DIR_SW_X2}, {0xFF9C0038L, DIR_SW_X2},
-    {0xFFAB0030L, DIR_SW_X2}, {0xFFB90028L, DIR_SW_X1},
-    {0xFFC80020L, DIR_SW_X1}, {0xFFD60018L, DIR_SW_X1},
-    {0xFFE50010L, DIR_SW_X1}, {0xFFF30008L, DIR_SW},
+    {0xFF550060L, game::DIR_SW_X2}, {0xFF640058L, game::DIR_SW_X2},
+    {0xFF710050L, game::DIR_SW_X2}, {0xFF7F0048L, game::DIR_SW_X2},
+    {0xFF8D0040L, game::DIR_SW_X2}, {0xFF9C0038L, game::DIR_SW_X2},
+    {0xFFAB0030L, game::DIR_SW_X2}, {0xFFB90028L, game::DIR_SW_X1},
+    {0xFFC80020L, game::DIR_SW_X1}, {0xFFD60018L, game::DIR_SW_X1},
+    {0xFFE50010L, game::DIR_SW_X1}, {0xFFF30008L, game::DIR_SW},
 
-    {0x00000000L, DIR_SW}};
+    {0x00000000L, game::DIR_SW}};
 
 /*
 **	Drive out of weapon's factory.
 */
 const DriveClass::TrackType DriveClass::Track13[] = {
     {Pixel_Offset_Coord(10, -21),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(10, -21),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(10, -20),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(10, -20),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(9, -18),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(9, -18),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(9, -17),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(8, -16),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(8, -15),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(7, -14),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(7, -13),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(6, -12),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(6, -11),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(5, -10),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(5, -9),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(4, -8),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(4, -7),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(3, -6),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 10)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 10)},
     {Pixel_Offset_Coord(3, -5),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 9)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 9)},
     {Pixel_Offset_Coord(2, -4),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 7)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 7)},
     {Pixel_Offset_Coord(2, -3),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 5)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 5)},
     {Pixel_Offset_Coord(1, -2),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 3)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 3)},
     {Pixel_Offset_Coord(1, -1),
-     static_cast<DirType>(static_cast<int>(DIR_SW) - 1)},
+     static_cast<game::DirType>(static_cast<int>(game::DIR_SW) - 1)},
 
-    {0x00000000L, DIR_SW}};
+    {0x00000000L, game::DIR_SW}};
 
 /*
 **	There are a limited basic number of tracks that a vehicle can follow.
@@ -2134,74 +2143,74 @@ const DriveClass::RawTrackType DriveClass::RawTracks[13] = {
 **	be performed on the track data.
 */
 const DriveClass::TurnTrackType DriveClass::TrackControl[67] = {
-    {1, 0, DIR_N, F_},                         //	0-0
-    {3, 7, DIR_NE, F_D},                       //	0-1 (raw chart)
-    {4, 9, DIR_E, F_D},                        //	0-2 (raw chart)
-    {0, 0, DIR_SE, F_},                        //	0-3 !
-    {0, 0, DIR_S, F_},                         //	0-4 !
-    {0, 0, DIR_SW, F_},                        //	0-5 !
-    {4, 9, DIR_W, (F_X | F_D)},                //	0-6
-    {3, 7, DIR_NW, (F_X | F_D)},               //	0-7
-    {6, 8, DIR_N, (F_T | F_X | F_Y | F_D)},    //	1-0
-    {2, 0, DIR_NE, F_},                        //	1-1 (raw chart)
-    {6, 8, DIR_E, F_D},                        //	1-2 (raw chart)
-    {5, 10, DIR_SE, F_D},                      //	1-3 (raw chart)
-    {0, 0, DIR_S, F_},                         //	1-4 !
-    {0, 0, DIR_SW, F_},                        //	1-5 !
-    {0, 0, DIR_W, F_},                         //	1-6 !
-    {5, 10, DIR_NW, (F_T | F_X | F_Y | F_D)},  //	1-7
-    {4, 9, DIR_N, (F_T | F_X | F_Y | F_D)},    //	2-0
-    {3, 7, DIR_NE, (F_T | F_X | F_Y | F_D)},   //	2-1
-    {1, 0, DIR_E, (F_T | F_X)},                //	2-2
-    {3, 7, DIR_SE, (F_T | F_X | F_D)},         //	2-3
-    {4, 9, DIR_S, (F_T | F_X | F_D)},          //	2-4
-    {0, 0, DIR_SW, F_},                        //	2-5 !
-    {0, 0, DIR_W, F_},                         //	2-6 !
-    {0, 0, DIR_NW, F_},                        //	2-7 !
-    {0, 0, DIR_N, F_},                         //	3-0 !
-    {5, 10, DIR_NE, (F_Y | F_D)},              //	3-1
-    {6, 8, DIR_E, (F_Y | F_D)},                //	3-2
-    {2, 0, DIR_SE, F_Y},                       //	3-3
-    {6, 8, DIR_S, (F_T | F_X | F_D)},          //	3-4
-    {5, 10, DIR_SW, (F_T | F_X | F_D)},        //	3-5
-    {0, 0, DIR_W, F_},                         //	3-6 !
-    {0, 0, DIR_NW, F_},                        //	3-7 !
-    {0, 0, DIR_N, F_},                         //	4-0 !
-    {0, 0, DIR_NE, F_},                        //	4-1 !
-    {4, 9, DIR_E, (F_Y | F_D)},                //	4-2
-    {3, 7, DIR_SE, (F_Y | F_D)},               //	4-3
-    {1, 0, DIR_S, F_Y},                        //	4-4
-    {3, 7, DIR_SW, (F_X | F_Y | F_D)},         //	4-5
-    {4, 9, DIR_W, (F_X | F_Y | F_D)},          //	4-6
-    {0, 0, DIR_NW, F_},                        //	4-7 !
-    {0, 0, DIR_N, F_},                         //	5-0 !
-    {0, 0, DIR_NE, F_},                        //	5-1 !
-    {0, 0, DIR_E, F_},                         //	5-2 !
-    {5, 10, DIR_SE, (F_T | F_D)},              //	5-3
-    {6, 8, DIR_S, (F_T | F_D)},                //	5-4
-    {2, 0, DIR_SW, F_T},                       //	5-5
-    {6, 8, DIR_W, (F_X | F_Y | F_D)},          //	5-6
-    {5, 10, DIR_NW, (F_X | F_Y | F_D)},        //	5-7
-    {4, 9, DIR_N, (F_T | F_Y | F_D)},          //	6-0
-    {0, 0, DIR_NE, F_},                        //	6-1 !
-    {0, 0, DIR_E, F_},                         //	6-2 !
-    {0, 0, DIR_SE, F_},                        //	6-3 !
-    {4, 9, DIR_S, (F_T | F_D)},                //	6-4
-    {3, 7, DIR_SW, (F_T | F_D)},               //	6-5
-    {1, 0, DIR_W, F_T},                        //	6-6
-    {3, 7, DIR_NW, (F_T | F_Y | F_D)},         //	6-7
-    {6, 8, DIR_N, (F_T | F_Y | F_D)},          //	7-0
-    {5, 10, DIR_NE, (F_T | F_Y | F_D)},        //	7-1
-    {0, 0, DIR_E, F_},                         //	7-2 !
-    {0, 0, DIR_SE, F_},                        //	7-3 !
-    {0, 0, DIR_S, F_},                         //	7-4 !
-    {5, 10, DIR_SW, (F_X | F_D)},              //	7-5
-    {6, 8, DIR_W, (F_X | F_D)},                //	7-6
-    {2, 0, DIR_NW, F_X},                       //	7-7
+    {1, 0, game::DIR_N, F_},                         //	0-0
+    {3, 7, game::DIR_NE, F_D},                       //	0-1 (raw chart)
+    {4, 9, game::DIR_E, F_D},                        //	0-2 (raw chart)
+    {0, 0, game::DIR_SE, F_},                        //	0-3 !
+    {0, 0, game::DIR_S, F_},                         //	0-4 !
+    {0, 0, game::DIR_SW, F_},                        //	0-5 !
+    {4, 9, game::DIR_W, (F_X | F_D)},                //	0-6
+    {3, 7, game::DIR_NW, (F_X | F_D)},               //	0-7
+    {6, 8, game::DIR_N, (F_T | F_X | F_Y | F_D)},    //	1-0
+    {2, 0, game::DIR_NE, F_},                        //	1-1 (raw chart)
+    {6, 8, game::DIR_E, F_D},                        //	1-2 (raw chart)
+    {5, 10, game::DIR_SE, F_D},                      //	1-3 (raw chart)
+    {0, 0, game::DIR_S, F_},                         //	1-4 !
+    {0, 0, game::DIR_SW, F_},                        //	1-5 !
+    {0, 0, game::DIR_W, F_},                         //	1-6 !
+    {5, 10, game::DIR_NW, (F_T | F_X | F_Y | F_D)},  //	1-7
+    {4, 9, game::DIR_N, (F_T | F_X | F_Y | F_D)},    //	2-0
+    {3, 7, game::DIR_NE, (F_T | F_X | F_Y | F_D)},   //	2-1
+    {1, 0, game::DIR_E, (F_T | F_X)},                //	2-2
+    {3, 7, game::DIR_SE, (F_T | F_X | F_D)},         //	2-3
+    {4, 9, game::DIR_S, (F_T | F_X | F_D)},          //	2-4
+    {0, 0, game::DIR_SW, F_},                        //	2-5 !
+    {0, 0, game::DIR_W, F_},                         //	2-6 !
+    {0, 0, game::DIR_NW, F_},                        //	2-7 !
+    {0, 0, game::DIR_N, F_},                         //	3-0 !
+    {5, 10, game::DIR_NE, (F_Y | F_D)},              //	3-1
+    {6, 8, game::DIR_E, (F_Y | F_D)},                //	3-2
+    {2, 0, game::DIR_SE, F_Y},                       //	3-3
+    {6, 8, game::DIR_S, (F_T | F_X | F_D)},          //	3-4
+    {5, 10, game::DIR_SW, (F_T | F_X | F_D)},        //	3-5
+    {0, 0, game::DIR_W, F_},                         //	3-6 !
+    {0, 0, game::DIR_NW, F_},                        //	3-7 !
+    {0, 0, game::DIR_N, F_},                         //	4-0 !
+    {0, 0, game::DIR_NE, F_},                        //	4-1 !
+    {4, 9, game::DIR_E, (F_Y | F_D)},                //	4-2
+    {3, 7, game::DIR_SE, (F_Y | F_D)},               //	4-3
+    {1, 0, game::DIR_S, F_Y},                        //	4-4
+    {3, 7, game::DIR_SW, (F_X | F_Y | F_D)},         //	4-5
+    {4, 9, game::DIR_W, (F_X | F_Y | F_D)},          //	4-6
+    {0, 0, game::DIR_NW, F_},                        //	4-7 !
+    {0, 0, game::DIR_N, F_},                         //	5-0 !
+    {0, 0, game::DIR_NE, F_},                        //	5-1 !
+    {0, 0, game::DIR_E, F_},                         //	5-2 !
+    {5, 10, game::DIR_SE, (F_T | F_D)},              //	5-3
+    {6, 8, game::DIR_S, (F_T | F_D)},                //	5-4
+    {2, 0, game::DIR_SW, F_T},                       //	5-5
+    {6, 8, game::DIR_W, (F_X | F_Y | F_D)},          //	5-6
+    {5, 10, game::DIR_NW, (F_X | F_Y | F_D)},        //	5-7
+    {4, 9, game::DIR_N, (F_T | F_Y | F_D)},          //	6-0
+    {0, 0, game::DIR_NE, F_},                        //	6-1 !
+    {0, 0, game::DIR_E, F_},                         //	6-2 !
+    {0, 0, game::DIR_SE, F_},                        //	6-3 !
+    {4, 9, game::DIR_S, (F_T | F_D)},                //	6-4
+    {3, 7, game::DIR_SW, (F_T | F_D)},               //	6-5
+    {1, 0, game::DIR_W, F_T},                        //	6-6
+    {3, 7, game::DIR_NW, (F_T | F_Y | F_D)},         //	6-7
+    {6, 8, game::DIR_N, (F_T | F_Y | F_D)},          //	7-0
+    {5, 10, game::DIR_NE, (F_T | F_Y | F_D)},        //	7-1
+    {0, 0, game::DIR_E, F_},                         //	7-2 !
+    {0, 0, game::DIR_SE, F_},                        //	7-3 !
+    {0, 0, game::DIR_S, F_},                         //	7-4 !
+    {5, 10, game::DIR_SW, (F_X | F_D)},              //	7-5
+    {6, 8, game::DIR_W, (F_X | F_D)},                //	7-6
+    {2, 0, game::DIR_NW, F_X},                       //	7-7
 
-    {11, 11, DIR_SW, F_},     // Backup harvester into refinery.
-    {12, 12, DIR_SW_X2, F_},  // Drive back into refinery.
-    {13, 13, DIR_SW, F_}      // Drive out of weapons factory.
+    {11, 11, game::DIR_SW, F_},     // Backup harvester into refinery.
+    {12, 12, game::DIR_SW_X2, F_},  // Drive back into refinery.
+    {13, 13, game::DIR_SW, F_}      // Drive out of weapons factory.
 };
 
 }  // namespace td

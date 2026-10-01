@@ -7,6 +7,7 @@
 #include <span>
 
 #include "base/buffer.h"
+#include "game/sim/direction.h"
 #include "gtest/gtest.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
@@ -44,7 +45,7 @@ COORDINATE LegacyMid(COORDINATE coord1, COORDINATE coord2) {
                             2)));
 }
 
-int LegacyDirDiff(DirType dir1, DirType dir2) {
+int LegacyDirDiff(game::DirType dir1, game::DirType dir2) {
   signed char first = 0;
   signed char second = 0;
   base::CopyBytes(base::ObjectBytes(first), base::ObjectBytes(dir1), 1);
@@ -81,9 +82,9 @@ TEST(TdCoordInline, SnapAndMidMatchLegacyWords) {
 TEST(TdCoordInline, DirDiffMatchesSignedBytes) {
   for (int first = 0; first < 256; first += 5) {
     for (int second = 0; second < 256; second += 3) {
-      const DirType dir1 = AsDirection(first);
-      const DirType dir2 = AsDirection(second);
-      EXPECT_EQ(Dir_Diff(dir1, dir2), LegacyDirDiff(dir1, dir2))
+      const game::DirType dir1 = game::AsDirection(first);
+      const game::DirType dir2 = game::AsDirection(second);
+      EXPECT_EQ(game::Dir_Diff(dir1, dir2), LegacyDirDiff(dir1, dir2))
           << first << " " << second;
     }
   }

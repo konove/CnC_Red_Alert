@@ -128,6 +128,8 @@
 #include "engine/platform/timer.h"
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/team.h"
@@ -136,7 +138,6 @@
 #include "td/core/const.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
-#include "td/core/facing.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
@@ -331,7 +332,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Unlimbo(COORDINATE coord, DirType dir) {
+bool AircraftClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   Validate();
   if (FootClass::Unlimbo(coord, dir)) {
     /*
@@ -387,7 +388,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
                             WindowNumberType window) {
   Validate();
   int shapenum = 0;
-  const int facing = Facing_To_32(SecondaryFacing);
+  const int facing = game::Dir_To_32(SecondaryFacing);
 
   /*
   **	Verify the legality of the unit class.
@@ -463,23 +464,23 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
     }
 
     if (*this == AIRCRAFT_TRANSPORT) {
-      const base::EnumArray<FacingType, int> _stretch = {8, 9, 10, 9,
-                                                         8, 9, 10, 9};
+      const base::EnumArray<game::FacingType, int> _stretch = {8, 9, 10, 9,
+                                                               8, 9, 10, 9};
 
       /*
       **	Dual rotors offset along flight axis.
       */
       auto xx = static_cast<int16_t>(x);
       auto yy = static_cast<int16_t>(y - Altitude);
-      const FacingType face = Dir_Facing(SecondaryFacing);
+      const game::FacingType face = game::Dir_Facing(SecondaryFacing);
       base::MovePoint(xx, yy, static_cast<uint8_t>(SecondaryFacing.Current()),
                       static_cast<int16_t>(_stretch.at(face)));
       CC_Draw_Shape(view, AircraftTypeClass::RRotorData, shapenum, xx, yy - 2,
                     window, flags, {}, MouseClass::UnitShadow);
 
-      base::MovePoint(xx, yy,
-                      static_cast<uint8_t>(SecondaryFacing.Current() + DIR_S),
-                      static_cast<int16_t>(_stretch.at(face) * 2));
+      base::MovePoint(
+          xx, yy, static_cast<uint8_t>(SecondaryFacing.Current() + game::DIR_S),
+          static_cast<int16_t>(_stretch.at(face) * 2));
       CC_Draw_Shape(view, AircraftTypeClass::LRotorData, shapenum, xx, yy - 2,
                     window, flags, {}, MouseClass::UnitShadow);
 
@@ -542,8 +543,8 @@ void AircraftClass::Read_INI(char* buffer) {
           const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
           COORDINATE const coord =
               Cell_Coord(base::ParseIntegerOr<CELL>(tokens.Next(), 0));
-          const auto dir =
-              static_cast<DirType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+          const auto dir = static_cast<game::DirType>(
+              base::ParseIntegerOr<int>(tokens.Next(), 0));
 
           if (!TheMap().In_Radar(Coord_Cell(coord))) {
             base::DeletePooled(air);
@@ -1082,7 +1083,8 @@ int AircraftClass::Mission_Unload() {
             /*
             **	Pick a new direction and fly off.
             */
-            PrimaryFacing.Set_Desired(Random_Pick(DIR_N, DIR_MAX));
+            PrimaryFacing.Set_Desired(
+                Random_Pick(game::DIR_N, kMaxRandomDirection));
             SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
             return kTicksPerSecond * 3;
           }
@@ -1448,7 +1450,7 @@ int AircraftClass::Mission_Retreat() {
       *map edge.
       */
       PrimaryFacing.Set_Desired(
-          Facing_Dir(AsFacing(static_cast<int>(House->Edge) * 2)));
+          game::Facing_Dir(game::AsFacing(static_cast<int>(House->Edge) * 2)));
       SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
       Status = kKeepFlying;
       break;
@@ -1485,16 +1487,17 @@ int AircraftClass::Mission_Retreat() {
  *=============================================================================================*/
 int AircraftClass::Exit_Object(TechnoClass* unit) {
   Validate();
-  static const base::EnumArray<FacingType, FacingType> _toface = {
-      FACING_S,  FACING_SW, FACING_SE, FACING_NW,
-      FACING_NE, FACING_N,  FACING_W,  FACING_E};
+  static const base::EnumArray<game::FacingType, game::FacingType> _toface = {
+      game::FACING_S,  game::FACING_SW, game::FACING_SE, game::FACING_NW,
+      game::FACING_NE, game::FACING_N,  game::FACING_W,  game::FACING_E};
   CELL cell = 0;
 
   /*
   **	Find a free cell to drop the unit off at.
   */
-  FacingType face = FACING_N;
-  for (const FacingType candidate : magic_enum::enum_values<FacingType>()) {
+  game::FacingType face = game::FACING_N;
+  for (const game::FacingType candidate :
+       magic_enum::enum_values<game::FacingType>()) {
     face = candidate;
     cell = Adjacent_Cell(Coord_Cell(Coord), _toface.at(face));
     if (unit->Can_Enter_Cell(cell) == MOVE_OK) {
@@ -1510,7 +1513,7 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   *This is used *	to make sure that the transport waits until the
   *passenger is clear before *	unloading the next passenger or taking off.
   */
-  if (unit->Unlimbo(Coord, Facing_Dir(_toface.at(face)))) {
+  if (unit->Unlimbo(Coord, game::Facing_Dir(_toface.at(face)))) {
     unit->Assign_Mission(MISSION_MOVE);
     unit->Assign_Destination(td::As_Target(cell));
     if (Transmit_Message(RADIO_HELLO, unit) == RADIO_ROGER) {
@@ -2147,12 +2150,12 @@ ActionType AircraftClass::What_Action(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-DirType AircraftClass::Pose_Dir() const {
+game::DirType AircraftClass::Pose_Dir() const {
   Validate();
   if (*this == AIRCRAFT_TRANSPORT) {
-    return DIR_N;
+    return game::DIR_N;
   }
-  return DIR_NE;
+  return game::DIR_NE;
 }
 
 /***********************************************************************************************
@@ -2412,16 +2415,18 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
     **	in cells.
     */
     for (int radius = 0; radius < 16; radius++) {
-      const FacingType modifier = Random_Pick(FACING_N, FACING_NW);
+      const game::FacingType modifier =
+          Random_Pick(game::FACING_N, game::FACING_NW);
       CELL lastcell = -1;
 
       /*
       **	Perform a radius scan out from the original center location. Try
       *to *	find a cell that is allowed to be a legal LZ.
       */
-      for (const FacingType facing : magic_enum::enum_values<FacingType>()) {
+      for (const game::FacingType facing :
+           magic_enum::enum_values<game::FacingType>()) {
         const CELL newcell = Coord_Cell(
-            Coord_Move(coord, Facing_Dir(facing + modifier),
+            Coord_Move(coord, game::Facing_Dir(facing + modifier),
                        static_cast<uint16_t>(radius * ICON_LEPTON_W)));
         if (TheMap().In_Radar(newcell)) {
           const TARGET newtarget = td::As_Target(newcell);
@@ -2682,27 +2687,27 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
  * HISTORY: * 06/12/1995 JLB : Created. * 07/30/1995 JLB : Revamped to scan all
  *adjacent cells.                                     *
  *=============================================================================================*/
-DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
-                                        CELL& moveto) const {
+game::DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
+                                              CELL& moveto) const {
   Validate();
   const CELL center = Coord_Cell(Center_Coord());
-  for (int sweep = static_cast<int>(FACING_N);
-       sweep < static_cast<int>(FACING_S); sweep++) {
-    moveto = Adjacent_Cell(center, FACING_S + sweep);
+  for (int sweep = static_cast<int>(game::FACING_N);
+       sweep < static_cast<int>(game::FACING_S); sweep++) {
+    moveto = Adjacent_Cell(center, game::FACING_S + sweep);
     if (TheMap().In_Radar(moveto) &&
         (Coord_Cell(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Generally_Clear())) {
-      return DIR_N;
+      return game::DIR_N;
     }
 
-    moveto = Adjacent_Cell(center, FACING_S - sweep);
+    moveto = Adjacent_Cell(center, game::FACING_S - sweep);
     if (TheMap().In_Radar(moveto) &&
         (Coord_Cell(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Generally_Clear())) {
-      return DIR_N;
+      return game::DIR_N;
     }
   }
-  return DIR_N;
+  return game::DIR_N;
 }
 
 /***********************************************************************************************
@@ -2805,7 +2810,8 @@ bool AircraftClass::Process_Landing() {
  *                                                                                             *
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
-MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
+MoveType AircraftClass::Can_Enter_Cell(CELL cell,
+                                       game::FacingType /*unused*/) const {
   Validate();
   if (!TheMap().In_Radar(cell)) {
     return MOVE_NO;
@@ -2859,8 +2865,8 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
 
     for (int r = range - 0x0180; r > 0x0180; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        const COORDINATE newcoord =
-            Coord_Move(tcoord, AsDirection(face), static_cast<uint16_t>(r));
+        const COORDINATE newcoord = Coord_Move(tcoord, game::AsDirection(face),
+                                               static_cast<uint16_t>(r));
         const CELL newcell = Coord_Cell(newcoord);
 
         if (TheMap().In_Radar(newcell) &&
@@ -3214,7 +3220,7 @@ void AircraftClass::Set_Speed(int speed) {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-DirType AircraftClass::Fire_Direction() const {
+game::DirType AircraftClass::Fire_Direction() const {
   Validate();
   return SecondaryFacing.Current();
 }

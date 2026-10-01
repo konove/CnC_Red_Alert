@@ -128,7 +128,8 @@ class UnitClass final : public TarComClass {
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+               game::DirType dir = game::DIR_N) override;
   bool Limbo() override;
 
   /*
@@ -170,7 +171,8 @@ class UnitClass final : public TarComClass {
   /*
   **	AI.
   */
-  DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
+  game::DirType Desired_Load_Dir(ObjectClass* passenger,
+                                 CELL& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
@@ -190,8 +192,8 @@ class UnitClass final : public TarComClass {
   **	Movement and animation.
   */
   void Enter_Idle_Mode(bool initial = false) override;
-  MoveType Can_Enter_Cell(CELL cell,
-                          FacingType facing = FACING_NONE) const override;
+  MoveType Can_Enter_Cell(
+      CELL cell, game::FacingType facing = game::FACING_NONE) const override;
   void Per_Cell_Process(bool center) override;
   void Scatter(COORDINATE threat, bool forced = false) override;
   void Exit_Repair();

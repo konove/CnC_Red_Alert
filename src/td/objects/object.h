@@ -189,7 +189,8 @@ class ObjectClass : public AbstractClass {
   **	Object entry and exit from the game system.
   */
   virtual bool Limbo();
-  virtual bool Unlimbo(COORDINATE /*coord*/, DirType facing = DIR_N);
+  virtual bool Unlimbo(COORDINATE /*coord*/,
+                       game::DirType facing = game::DIR_N);
   virtual void Detach(TARGET /*unused*/, bool /*unused*/) {}
   virtual void Detach_All(bool all = true);
   static void Detach_This_From_All(TARGET target, bool all = true);
@@ -252,7 +253,7 @@ class ObjectClass : public AbstractClass {
   virtual void Repair(int /*unused*/);
   virtual void Sell_Back(int /*unused*/);
 
-  virtual void Move(FacingType /*facing*/);
+  virtual void Move(game::FacingType /*facing*/);
 };
 
 extern template void ObjectClass::Serialize<ArchiveWriter>(ArchiveWriter&);

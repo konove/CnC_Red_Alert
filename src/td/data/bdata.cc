@@ -81,6 +81,7 @@
 #include "engine/gfx/shape.h"
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "td/ai/special.h"
 #include "td/assets/assets.h"
 #include "td/core/const.h"
@@ -182,34 +183,34 @@ static const BuildingTypeClass ClassTemple(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     7,                         // Build level.
     kStructFlagRadar,          // Building prerequisite.
-    false,      // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    true,       // Requires a bib dirt patch?
-    false,      // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    false,      // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    1000,       // STRNTH:		Full strength of building.
-    4,          // SIGHTRANGE:	Range of sighting.
-    3000,       // COST:			Cost to purchase.
-    13,         // SCENARIO:	Starting availability scenario.
-    0, 20,      // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    true,         // Requires a bib dirt patch?
+    false,        // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    false,        // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    1000,         // STRNTH:		Full strength of building.
+    4,            // SIGHTRANGE:	Range of sighting.
+    3000,         // COST:			Cost to purchase.
+    13,           // SCENARIO:	Starting availability scenario.
+    0, 20,        // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
@@ -254,12 +255,13 @@ static const BuildingTypeClass ClassEye(
     true,       // Does it contain a crew?
     false,      // Does building care less if placed on concrete?
     RTTI_NONE,  // The object type produced at this factory.
-    static_cast<DirType>(160),  // Starting idle frame to match construction.
-    500,                        // STRNTH:		Full strength of building.
-    10,                         // SIGHTRANGE:	Range of sighting.
-    2800,                       // COST:			Cost to purchase.
-    13,                         // SCENARIO:	Starting availability scenario.
-    0, 100,                     // RISK/RWRD:	Risk/reward rating values.
+    static_cast<game::DirType>(
+        160),  // Starting idle frame to match construction.
+    500,       // STRNTH:		Full strength of building.
+    10,        // SIGHTRANGE:	Range of sighting.
+    2800,      // COST:			Cost to purchase.
+    13,        // SCENARIO:	Starting availability scenario.
+    0, 100,    // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -307,7 +309,7 @@ static const BuildingTypeClass ClassWeapon(
     true,           // Does it contain a crew?
     false,          // Does building care less if placed on concrete?
     RTTI_UNITTYPE,  // The object type produced at this factory.
-    DIR_N,          // Starting idle frame to match construction.
+    game::DIR_N,    // Starting idle frame to match construction.
 #ifdef ADVANCED
     500,  // STRNTH:		Full strength of building.
 #else
@@ -339,34 +341,34 @@ static const BuildingTypeClass ClassGTower(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     2,                         // Build level.
     kStructFlagBarracks,       // Building prerequisite.
-    true,       // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    false,      // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    false,      // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    3,          // SIGHTRANGE:	Range of sighting.
-    500,        // COST:			Cost to purchase.
-    7,          // SCENARIO:	Starting availability scenario.
-    100, 25,    // RISK/RWRD:	Risk/reward rating values.
+    true,         // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    false,        // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    false,        // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    3,            // SIGHTRANGE:	Range of sighting.
+    500,          // COST:			Cost to purchase.
+    7,            // SCENARIO:	Starting availability scenario.
+    100, 25,      // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -390,34 +392,34 @@ static const BuildingTypeClass ClassATower(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     4,                         // Build level.
     kStructFlagRadar,          // Building prerequisite.
-    true,       // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    false,      // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    false,      // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    true,       // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    300,        // STRNTH:		Full strength of building.
-    4,          // SIGHTRANGE:	Range of sighting.
-    1000,       // COST:			Cost to purchase.
-    13,         // SCENARIO:	Starting availability scenario.
-    100, 30,    // RISK/RWRD:	Risk/reward rating values.
+    true,         // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    false,        // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    false,        // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    true,         // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    300,          // STRNTH:		Full strength of building.
+    4,            // SIGHTRANGE:	Range of sighting.
+    1000,         // COST:			Cost to purchase.
+    13,           // SCENARIO:	Starting availability scenario.
+    100, 30,      // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -441,34 +443,34 @@ static const BuildingTypeClass ClassObelisk(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     4,                         // Build level.
     kStructFlagRadar,          // Building prerequisite.
-    true,       // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    false,      // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    false,      // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    5,          // SIGHTRANGE:	Range of sighting.
-    1500,       // COST:			Cost to purchase.
-    11,         // SCENARIO:	Starting availability scenario.
-    100, 35,    // RISK/RWRD:	Risk/reward rating values.
+    true,         // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    false,        // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    false,        // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    5,            // SIGHTRANGE:	Range of sighting.
+    1500,         // COST:			Cost to purchase.
+    11,           // SCENARIO:	Starting availability scenario.
+    100, 35,      // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
@@ -513,9 +515,10 @@ static const BuildingTypeClass ClassTurret(
     true,       // Does it contain a crew?
     false,      // Does building care less if placed on concrete?
     RTTI_NONE,  // The object type produced at this factory.
-    static_cast<DirType>(208),  // Starting idle frame to match construction.
-    200,                        // STRNTH:		Full strength of building.
-    5,                          // SIGHTRANGE:	Range of sighting.
+    static_cast<game::DirType>(
+        208),  // Starting idle frame to match construction.
+    200,       // STRNTH:		Full strength of building.
+    5,         // SIGHTRANGE:	Range of sighting.
 #ifdef ADVANCED
     600,  // COST:			Cost to purchase.
 #else
@@ -571,7 +574,7 @@ static const BuildingTypeClass ClassConst(
     true,               // Does it contain a crew?
     false,              // Does building care less if placed on concrete?
     RTTI_BUILDINGTYPE,  // The object type produced at this factory.
-    DIR_N,              // Starting idle frame to match construction.
+    game::DIR_N,        // Starting idle frame to match construction.
     400,                // STRNTH:		Full strength of building.
     3,                  // SIGHTRANGE:	Range of sighting.
     5000,               // COST:			Cost to purchase.
@@ -599,34 +602,34 @@ static const BuildingTypeClass ClassRefinery(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     1,                         // Build level.
     kStructFlagPower,          // Building prerequisite.
-    false,      // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    true,       // Requires a bib dirt patch?
-    false,      // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    true,       // Can this building be captured?
-    false,      // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    450,        // STRNTH:		Full strength of building.
-    4,          // SIGHTRANGE:	Range of sighting.
-    2000,       // COST:			Cost to purchase.
-    2,          // SCENARIO:	Starting availability scenario.
-    0, 55,      // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    true,         // Requires a bib dirt patch?
+    false,        // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    true,         // Can this building be captured?
+    false,        // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    450,          // STRNTH:		Full strength of building.
+    4,            // SIGHTRANGE:	Range of sighting.
+    2000,         // COST:			Cost to purchase.
+    2,            // SCENARIO:	Starting availability scenario.
+    0, 55,        // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
@@ -649,36 +652,36 @@ static const BuildingTypeClass ClassStorage(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     1,                         // Build level.
     kStructFlagRefinery,       // Building prerequisite.
-    false,      // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    true,       // Requires a bib dirt patch?
-    false,      // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    true,       // Can this building be captured?
-    false,      // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    false,      // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    150,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    150,        // COST:			Cost to purchase.
-                //	300,
-                //// COST:			Cost to purchase.
-    2,          // SCENARIO:	Starting availability scenario.
-    0, 16,      // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    true,         // Requires a bib dirt patch?
+    false,        // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    true,         // Can this building be captured?
+    false,        // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    false,        // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    150,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    150,          // COST:			Cost to purchase.
+                  //	300,
+                  //// COST:			Cost to purchase.
+    2,            // SCENARIO:	Starting availability scenario.
+    0, 16,        // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
@@ -723,7 +726,7 @@ static const BuildingTypeClass ClassHelipad(
     false,              // Does it contain a crew?
     false,              // Does building care less if placed on concrete?
     RTTI_AIRCRAFTTYPE,  // The object type produced at this factory.
-    DIR_N,              // Starting idle frame to match construction.
+    game::DIR_N,        // Starting idle frame to match construction.
     400,                // STRNTH:		Full strength of building.
     3,                  // SIGHTRANGE:	Range of sighting.
     1500,               // COST:			Cost to purchase.
@@ -773,12 +776,13 @@ static const BuildingTypeClass ClassCommand(
     true,       // Does it contain a crew?
     false,      // Does building care less if placed on concrete?
     RTTI_NONE,  // The object type produced at this factory.
-    static_cast<DirType>(160),  // Starting idle frame to match construction.
-    500,                        // STRNTH:		Full strength of building.
-    10,                         // SIGHTRANGE:	Range of sighting.
-    1000,                       // COST:			Cost to purchase.
-    3,                          // SCENARIO:	Starting availability scenario.
-    0, 20,                      // RISK/RWRD:	Risk/reward rating values.
+    static_cast<game::DirType>(
+        160),  // Starting idle frame to match construction.
+    500,       // STRNTH:		Full strength of building.
+    10,        // SIGHTRANGE:	Range of sighting.
+    1000,      // COST:			Cost to purchase.
+    3,         // SCENARIO:	Starting availability scenario.
+    0, 20,     // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
@@ -801,34 +805,34 @@ static const BuildingTypeClass ClassSAM(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     6,                         // Build level.
     kStructFlagBarracks,       // Building prerequisite.
-    false,      // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    false,      // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    false,      // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    true,       // Does it have a rotating turret?
-    true,       // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    false,      // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    3,          // SIGHTRANGE:	Range of sighting.
-    750,        // COST:			Cost to purchase.
-    5,          // SCENARIO:	Starting availability scenario.
-    300, 40,    // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    false,        // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    false,        // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    true,         // Does it have a rotating turret?
+    true,         // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    false,        // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    3,            // SIGHTRANGE:	Range of sighting.
+    750,          // COST:			Cost to purchase.
+    5,            // SCENARIO:	Starting availability scenario.
+    300, 40,      // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
@@ -873,7 +877,7 @@ static const BuildingTypeClass ClassAirStrip(
     true,           // Does it contain a crew?
     false,          // Does building care less if placed on concrete?
     RTTI_UNITTYPE,  // The object type produced at this factory.
-    DIR_N,          // Starting idle frame to match construction.
+    game::DIR_N,    // Starting idle frame to match construction.
     500,            // STRNTH:		Full strength of building.
     5,              // SIGHTRANGE:	Range of sighting.
     2000,           // COST:			Cost to purchase.
@@ -901,34 +905,34 @@ static const BuildingTypeClass ClassPower(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     0,                         // Build level.
     kStructFlagNone,           // Building prerequisite.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    true,       // Requires a bib dirt patch?
-    false,      // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    true,       // Can this building be captured?
-    false,      // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    300,        // COST:			Cost to purchase.
-    1,          // SCENARIO:	Starting availability scenario.
-    0, 50,      // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    true,         // Requires a bib dirt patch?
+    false,        // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    true,         // Can this building be captured?
+    false,        // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    300,          // COST:			Cost to purchase.
+    1,            // SCENARIO:	Starting availability scenario.
+    0, 50,        // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -952,34 +956,34 @@ static const BuildingTypeClass ClassAdvancedPower(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     5,                         // Build level.
     kStructFlagPower,          // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    true,       // Requires a bib dirt patch?
-    false,      // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    true,       // Can this building be captured?
-    false,      // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    300,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    700,        // COST:			Cost to purchase.
-    13,         // SCENARIO:	Starting availability scenario.
-    0, 75,      // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    true,         // Requires a bib dirt patch?
+    false,        // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    true,         // Can this building be captured?
+    false,        // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    300,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    700,          // COST:			Cost to purchase.
+    13,           // SCENARIO:	Starting availability scenario.
+    0, 75,        // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -1002,34 +1006,34 @@ static const BuildingTypeClass ClassHospital(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagBarracks,       // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    true,       // Requires a bib dirt patch?
-    false,      // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    true,       // Can this building be captured?
-    false,      // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    500,        // COST:			Cost to purchase.
-    99,         // SCENARIO:	Starting availability scenario.
-    0, 20,      // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    true,         // Requires a bib dirt patch?
+    false,        // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    true,         // Can this building be captured?
+    false,        // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    500,          // COST:			Cost to purchase.
+    99,           // SCENARIO:	Starting availability scenario.
+    0, 20,        // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -1052,34 +1056,34 @@ static const BuildingTypeClass ClassBioLab(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagHospital,       // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    true,       // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    false,      // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    300,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    500,        // COST:			Cost to purchase.
-    99,         // SCENARIO:	Starting availability scenario.
-    0, 1,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    true,         // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    false,        // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    300,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    500,          // COST:			Cost to purchase.
+    99,           // SCENARIO:	Starting availability scenario.
+    0, 1,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
@@ -1124,7 +1128,7 @@ static const BuildingTypeClass ClassBarracks(
     true,               // Does it contain a crew?
     false,              // Does building care less if placed on concrete?
     RTTI_INFANTRYTYPE,  // The object type produced at this factory.
-    DIR_N,              // Starting idle frame to match construction.
+    game::DIR_N,        // Starting idle frame to match construction.
     400,                // STRNTH:		Full strength of building.
     3,                  // SIGHTRANGE:	Range of sighting.
     300,                // COST:			Cost to purchase.
@@ -1174,7 +1178,7 @@ static const BuildingTypeClass ClassHand(
     true,               // Does it contain a crew?
     false,              // Does building care less if placed on concrete?
     RTTI_INFANTRYTYPE,  // The object type produced at this factory.
-    DIR_N,              // Starting idle frame to match construction.
+    game::DIR_N,        // Starting idle frame to match construction.
     400,                // STRNTH:		Full strength of building.
     3,                  // SIGHTRANGE:	Range of sighting.
     300,                // COST:			Cost to purchase.
@@ -1202,34 +1206,34 @@ static const BuildingTypeClass ClassTanker(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagPower,          // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    true,       // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    100,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 1,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    true,         // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    100,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 1,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1252,34 +1256,34 @@ static const BuildingTypeClass ClassRepair(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     5,                         // Build level.
     kStructFlagPower,          // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    true,       // Requires a bib dirt patch?
-    false,      // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    true,       // Can this building be captured?
-    false,      // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    400,        // STRNTH:		Full strength of building.
-    3,          // SIGHTRANGE:	Range of sighting.
-    1200,       // COST:			Cost to purchase.
-    8,          // SCENARIO:	Starting availability scenario.
-    0, 46,      // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    true,         // Requires a bib dirt patch?
+    false,        // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    true,         // Can this building be captured?
+    false,        // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    400,          // STRNTH:		Full strength of building.
+    3,            // SIGHTRANGE:	Range of sighting.
+    1200,         // COST:			Cost to purchase.
+    8,            // SCENARIO:	Starting availability scenario.
+    0, 46,        // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
@@ -1304,34 +1308,34 @@ static const BuildingTypeClass ClassRoad(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     0,                         // Building prerequisite.
-    false,      // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    false,      // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    false,      // Can the player select this?
-    false,      // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    false,      // Does it contain a crew?
-    true,       // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    1,          // STRNTH:		Full strength of building.
-    0,          // SIGHTRANGE:	Range of sighting.
-    50,         // COST:			Cost to purchase.
-    99,         // SCENARIO:	Starting availability scenario.
-    0, 0,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    false,        // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    false,        // Can the player select this?
+    false,        // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    false,        // Does it contain a crew?
+    true,         // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    1,            // STRNTH:		Full strength of building.
+    0,            // SIGHTRANGE:	Range of sighting.
+    50,           // COST:			Cost to purchase.
+    99,           // SCENARIO:	Starting availability scenario.
+    0, 0,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
@@ -1355,34 +1359,34 @@ static const BuildingTypeClass ClassV01(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1405,34 +1409,34 @@ static const BuildingTypeClass ClassV02(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1455,34 +1459,34 @@ static const BuildingTypeClass ClassV03(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1505,34 +1509,34 @@ static const BuildingTypeClass ClassV04(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1555,34 +1559,34 @@ static const BuildingTypeClass ClassV05(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1605,34 +1609,34 @@ static const BuildingTypeClass ClassV06(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1655,34 +1659,34 @@ static const BuildingTypeClass ClassV07(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1705,34 +1709,34 @@ static const BuildingTypeClass ClassV08(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1755,34 +1759,34 @@ static const BuildingTypeClass ClassV09(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1805,34 +1809,34 @@ static const BuildingTypeClass ClassV10(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1855,34 +1859,34 @@ static const BuildingTypeClass ClassV11(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1905,34 +1909,34 @@ static const BuildingTypeClass ClassV12(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -1955,34 +1959,34 @@ static const BuildingTypeClass ClassV13(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -2005,34 +2009,34 @@ static const BuildingTypeClass ClassV14(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -2055,34 +2059,34 @@ static const BuildingTypeClass ClassV15(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -2105,34 +2109,34 @@ static const BuildingTypeClass ClassV16(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -2155,34 +2159,34 @@ static const BuildingTypeClass ClassV17(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -2205,34 +2209,34 @@ static const BuildingTypeClass ClassV18(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    true,       // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    1,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    true,         // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    1,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp |
         kHouseFlagNeutral,  // OWNABLE:		Ownable by house (bit field).
@@ -2255,34 +2259,34 @@ static const BuildingTypeClass ClassV19(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2305,34 +2309,34 @@ static const BuildingTypeClass ClassV20(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2355,34 +2359,34 @@ static const BuildingTypeClass ClassV21(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2405,34 +2409,34 @@ static const BuildingTypeClass ClassV22(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2455,34 +2459,34 @@ static const BuildingTypeClass ClassV23(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2505,34 +2509,34 @@ static const BuildingTypeClass ClassV24(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2555,34 +2559,34 @@ static const BuildingTypeClass ClassV25(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2605,34 +2609,34 @@ static const BuildingTypeClass ClassV26(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2655,34 +2659,34 @@ static const BuildingTypeClass ClassV27(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2705,34 +2709,34 @@ static const BuildingTypeClass ClassV28(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2755,34 +2759,34 @@ static const BuildingTypeClass ClassV29(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2805,34 +2809,34 @@ static const BuildingTypeClass ClassV30(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2855,34 +2859,34 @@ static const BuildingTypeClass ClassV31(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2905,34 +2909,34 @@ static const BuildingTypeClass ClassV32(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -2955,34 +2959,34 @@ static const BuildingTypeClass ClassV33(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -3005,34 +3009,34 @@ static const BuildingTypeClass ClassV34(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -3055,34 +3059,34 @@ static const BuildingTypeClass ClassV35(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -3105,34 +3109,34 @@ static const BuildingTypeClass ClassV36(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -3154,34 +3158,34 @@ static const BuildingTypeClass ClassV37(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    true,       // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    300,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    0,          // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    true,         // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    300,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    0,            // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -3203,34 +3207,34 @@ static const BuildingTypeClass ClassMission(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    true,       // Has ability to detect adjacent cloaked objects?
-    true,       // Animation rate is regulated for constant speed?
-    true,       // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    false,      // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    true,       // Can this building be captured?
-    true,       // Does it catch fire?
-    true,       // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    true,       // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    false,      // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    true,       // Can it be repaired?
-    false,      // Can it be manufactured by the player?
-    true,       // Does it contain a crew?
-    false,      // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    200,        // STRNTH:		Full strength of building.
-    2,          // SIGHTRANGE:	Range of sighting.
-    1000,       // COST:			Cost to purchase.
-    0,          // SCENARIO:	Starting availability scenario.
-    0, 2,       // RISK/RWRD:	Risk/reward rating values.
+    true,         // Has ability to detect adjacent cloaked objects?
+    true,         // Animation rate is regulated for constant speed?
+    true,         // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    false,        // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    true,         // Can this building be captured?
+    true,         // Does it catch fire?
+    true,         // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    true,         // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    false,        // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    true,         // Can it be repaired?
+    false,        // Can it be manufactured by the player?
+    true,         // Does it contain a crew?
+    false,        // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    200,          // STRNTH:		Full strength of building.
+    2,            // SIGHTRANGE:	Range of sighting.
+    1000,         // COST:			Cost to purchase.
+    0,            // SCENARIO:	Starting availability scenario.
+    0, 2,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagNeutral |
@@ -3255,34 +3259,34 @@ static const BuildingTypeClass Sandbag(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     2,                         // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    true,       // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    false,      // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    false,      // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    false,      // Does it contain a crew?
-    true,       // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    1,          // STRNTH:		Full strength of building.
-    0,          // SIGHTRANGE:	Range of sighting.
-    50,         // COST:			Cost to purchase.
-    5,          // SCENARIO:	Starting availability scenario.
-    0, 0,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    true,         // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    false,        // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    false,        // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    false,        // Does it contain a crew?
+    true,         // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    1,            // STRNTH:		Full strength of building.
+    0,            // SIGHTRANGE:	Range of sighting.
+    50,           // COST:			Cost to purchase.
+    5,            // SCENARIO:	Starting availability scenario.
+    0, 0,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
@@ -3305,34 +3309,34 @@ static const BuildingTypeClass Cyclone(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     5,                         // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    true,       // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    false,      // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    false,      // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    false,      // Does it contain a crew?
-    true,       // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    1,          // STRNTH:		Full strength of building.
-    0,          // SIGHTRANGE:	Range of sighting.
-    75,         // COST:			Cost to purchase.
-    9,          // SCENARIO:	Starting availability scenario.
-    0, 0,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    true,         // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    false,        // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    false,        // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    false,        // Does it contain a crew?
+    true,         // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    1,            // STRNTH:		Full strength of building.
+    0,            // SIGHTRANGE:	Range of sighting.
+    75,           // COST:			Cost to purchase.
+    9,            // SCENARIO:	Starting availability scenario.
+    0, 0,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagGood |
         kHouseFlagBad,  // OWNABLE:		Ownable by house (bit field).
@@ -3355,34 +3359,34 @@ static const BuildingTypeClass Brick(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     7,                         // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    true,       // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    false,      // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    false,      // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    false,      // Does it contain a crew?
-    true,       // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    1,          // STRNTH:		Full strength of building.
-    0,          // SIGHTRANGE:	Range of sighting.
-    100,        // COST:			Cost to purchase.
-    13,         // SCENARIO:	Starting availability scenario.
-    0, 0,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    true,         // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    false,        // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    false,        // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    false,        // Does it contain a crew?
+    true,         // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    1,            // STRNTH:		Full strength of building.
+    0,            // SIGHTRANGE:	Range of sighting.
+    100,          // COST:			Cost to purchase.
+    13,           // SCENARIO:	Starting availability scenario.
+    0, 0,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagBad |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -3406,34 +3410,34 @@ static const BuildingTypeClass Barbwire(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     98,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    true,       // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    false,      // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    false,      // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    false,      // Does it contain a crew?
-    true,       // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    1,          // STRNTH:		Full strength of building.
-    0,          // SIGHTRANGE:	Range of sighting.
-    25,         // COST:			Cost to purchase.
-    98,         // SCENARIO:	Starting availability scenario.
-    0, 0,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    true,         // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    false,        // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    false,        // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    false,        // Does it contain a crew?
+    true,         // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    1,            // STRNTH:		Full strength of building.
+    0,            // SIGHTRANGE:	Range of sighting.
+    25,           // COST:			Cost to purchase.
+    98,           // SCENARIO:	Starting availability scenario.
+    0, 0,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagBad | kHouseFlagJp |
         kHouseFlagNeutral |
@@ -3457,34 +3461,34 @@ static const BuildingTypeClass Wood(
     Pixel_Offset_Coord(0, 0),  // Exit point for produced units.
     99,                        // Build level.
     kStructFlagNone,           // PREREQ:		Buildings that must exist first.
-    false,      // Has ability to detect adjacent cloaked objects?
-    false,      // Animation rate is regulated for constant speed?
-    false,      // Requires a bib dirt patch?
-    true,       // Always use the given name for the building?
-    true,       // Is this a wall type structure?
-    false,      // Is it a factory type building?
-    false,      // Can this building be captured?
-    false,      // Does it catch fire?
-    false,      // Simple (one frame) damage imagery?
-    false,      // Is it invisible to radar?
-    false,      // Can the player select this?
-    true,       // Is this a legal target for attack or move?
-    true,       // Is this an insignificant building?
-    false,      // Is it immune to normal combat damage?
-    false,      // Theater specific graphic image?
-    false,      // Does it have a rotating turret?
-    false,      // Fires multiple shots in quick succession?
-    false,      // Can it be repaired?
-    true,       // Can it be manufactured by the player?
-    false,      // Does it contain a crew?
-    true,       // Does building care less if placed on concrete?
-    RTTI_NONE,  // The object type produced at this factory.
-    DIR_N,      // Starting idle frame to match construction.
-    1,          // STRNTH:		Full strength of building.
-    0,          // SIGHTRANGE:	Range of sighting.
-    25,         // COST:			Cost to purchase.
-    98,         // SCENARIO:	Starting availability scenario.
-    0, 0,       // RISK/RWRD:	Risk/reward rating values.
+    false,        // Has ability to detect adjacent cloaked objects?
+    false,        // Animation rate is regulated for constant speed?
+    false,        // Requires a bib dirt patch?
+    true,         // Always use the given name for the building?
+    true,         // Is this a wall type structure?
+    false,        // Is it a factory type building?
+    false,        // Can this building be captured?
+    false,        // Does it catch fire?
+    false,        // Simple (one frame) damage imagery?
+    false,        // Is it invisible to radar?
+    false,        // Can the player select this?
+    true,         // Is this a legal target for attack or move?
+    true,         // Is this an insignificant building?
+    false,        // Is it immune to normal combat damage?
+    false,        // Theater specific graphic image?
+    false,        // Does it have a rotating turret?
+    false,        // Fires multiple shots in quick succession?
+    false,        // Can it be repaired?
+    true,         // Can it be manufactured by the player?
+    false,        // Does it contain a crew?
+    true,         // Does building care less if placed on concrete?
+    RTTI_NONE,    // The object type produced at this factory.
+    game::DIR_N,  // Starting idle frame to match construction.
+    1,            // STRNTH:		Full strength of building.
+    0,            // SIGHTRANGE:	Range of sighting.
+    25,           // COST:			Cost to purchase.
+    98,           // SCENARIO:	Starting availability scenario.
+    0, 0,         // RISK/RWRD:	Risk/reward rating values.
     kHouseFlagMulti1 | kHouseFlagMulti2 | kHouseFlagMulti3 | kHouseFlagMulti4 |
         kHouseFlagMulti5 | kHouseFlagMulti6 | kHouseFlagJp | kHouseFlagNeutral |
         kHouseFlagGood,  // OWNABLE:		Ownable by house (bit field).
@@ -3596,10 +3600,10 @@ BuildingTypeClass::BuildingTypeClass(
     bool is_insignificant, bool is_immune, bool is_theater,
     bool is_turret_equipped, bool is_twoshooter, bool is_repairable,
     bool is_buildable, bool is_crew, bool is_sturdy, RTTIType tobuild,
-    DirType sframe, int16_t strength, int sightrange, int cost, int scenario,
-    int risk, int reward, int ownable, WeaponType primary, WeaponType secondary,
-    ArmorType armor, uint32_t canenter, int capacity, int power, int drain,
-    BSizeType size, std::span<const int16_t> exitlist,
+    game::DirType sframe, int16_t strength, int sightrange, int cost,
+    int scenario, int risk, int reward, int ownable, WeaponType primary,
+    WeaponType secondary, ArmorType armor, uint32_t canenter, int capacity,
+    int power, int drain, BSizeType size, std::span<const int16_t> exitlist,
     std::span<const int16_t> sizelist,
     std::span<const int16_t> overlap) noexcept
     : TechnoTypeClass(
@@ -3866,7 +3870,7 @@ void BuildingTypeClass::Prep_For_Add() {
 bool BuildingTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   auto* ptr = base::NewPooled<BuildingClass>(Type, house);
   if (ptr) {
-    return ptr->Unlimbo(Cell_Coord(cell), DIR_N);
+    return ptr->Unlimbo(Cell_Coord(cell), game::DIR_N);
   }
   return false;
 }

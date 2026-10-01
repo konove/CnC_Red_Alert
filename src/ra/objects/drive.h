@@ -42,8 +42,8 @@
 
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/jshell.h"
 #include "ra/objects/foot.h"
 
@@ -129,11 +129,11 @@ class DriveClass : public FootClass {
   void Scatter(COORDINATE threat, bool forced = false,
                bool nokidding = false) override;
   bool Limbo() override;
-  void Do_Turn(DirType dir);
+  void Do_Turn(game::DirType dir);
   virtual void Overrun_Square(CELL /*unused*/, bool /*unused*/ = true) {}
   void Assign_Destination(TARGET target) override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
-  virtual bool Ok_To_Move(DirType /*unused*/);
+  virtual bool Ok_To_Move(game::DirType /*unused*/);
   void AI() override;
   void Force_Track(int track, COORDINATE coord);
   bool Stop_Driver() override;
@@ -168,13 +168,13 @@ class DriveClass : public FootClass {
   struct TurnTrackType {
     int Track;              // Which track to use.
     int StartTrack;         // Track when starting from stand-still.
-    DirType Facing;         // Facing when track has been completed.
+    game::DirType Facing;   // Facing when track has been completed.
     TrackControlType Flag;  // List processing flag bits.
   };
 
   struct TrackType {
     COORDINATE Offset;  // Offset to origin coordinate.
-    DirType Facing;     // Facing (primary track).
+    game::DirType Facing;  // Facing (primary track).
   };
 
   struct RawTrackType {
@@ -206,7 +206,7 @@ class DriveClass : public FootClass {
   bool While_Moving();
   bool Start_Of_Move();
   void Lay_Track();
-  COORDINATE Smooth_Turn(COORDINATE adj, DirType& dir);
+  COORDINATE Smooth_Turn(COORDINATE adj, game::DirType& dir);
 
   static const TurnTrackType TrackControl[67];
   static const RawTrackType RawTracks[13];

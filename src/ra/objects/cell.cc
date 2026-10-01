@@ -108,6 +108,7 @@
 #include "engine/platform/timer.h"
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
+#include "game/sim/direction.h"
 #include "game/sim/utracker.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
@@ -1277,8 +1278,9 @@ void CellClass::Concrete_Calc() {}
 void CellClass::Wall_Update() {
   DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  static const FacingType _offsets[5] = {FACING_N, FACING_E, FACING_S, FACING_W,
-                                         FACING_NONE};
+  static const game::FacingType _offsets[5] = {game::FACING_N, game::FACING_E,
+                                               game::FACING_S, game::FACING_W,
+                                               game::FACING_NONE};
 
   for (const auto& _offset : _offsets) {
     CellClass& newcell = Adjacent_Cell(_offset);
@@ -1445,10 +1447,10 @@ bool CellClass::Reduce_Wall(int damage) {
           OverlayData = 0;
           Recalc_Attributes();
           Redraw_Objects();
-          Adjacent_Cell(FACING_N).Wall_Update();
-          Adjacent_Cell(FACING_W).Wall_Update();
-          Adjacent_Cell(FACING_S).Wall_Update();
-          Adjacent_Cell(FACING_E).Wall_Update();
+          Adjacent_Cell(game::FACING_N).Wall_Update();
+          Adjacent_Cell(game::FACING_W).Wall_Update();
+          Adjacent_Cell(game::FACING_S).Wall_Update();
+          Adjacent_Cell(game::FACING_E).Wall_Update();
           Detach_This_From_All(As_Target());
 
           /*
@@ -1676,10 +1678,11 @@ void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-int CellClass::Adjacent_Offset(FacingType face) const {
+int CellClass::Adjacent_Offset(game::FacingType face) const {
   DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
-  if (static_cast<unsigned>(face) >= magic_enum::enum_count<FacingType>()) {
+  if (static_cast<unsigned>(face) >=
+      magic_enum::enum_count<game::FacingType>()) {
     return 0;
   }
 
@@ -1805,7 +1808,8 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
     **	Add up all adjacent cells that contain tiberium.
     ** (Skip those cells which aren't on the map)
     */
-    for (const FacingType face : magic_enum::enum_values<FacingType>()) {
+    for (const game::FacingType face :
+         magic_enum::enum_values<game::FacingType>()) {
       const CellClass& adj = Adjacent_Cell(face);
 
       if (adj.Overlay != OVERLAY_NONE &&
@@ -2820,10 +2824,11 @@ bool CellClass::Spread_Tiberium(bool forced) {
     return false;
   }
 
-  const FacingType offset = Random_Pick(FACING_N, FACING_NW);
+  const game::FacingType offset = Random_Pick(game::FACING_N, game::FACING_NW);
   // Placing the overlay is the point of the search, so not any_of.
   // NOLINTNEXTLINE(readability-use-anyofallof)
-  for (const FacingType index : magic_enum::enum_values<FacingType>()) {
+  for (const game::FacingType index :
+       magic_enum::enum_values<game::FacingType>()) {
     CellClass* newcell = &Adjacent_Cell(index + offset);
 
     if (newcell != nullptr && newcell->Can_Tiberium_Germinate()) {
@@ -2881,13 +2886,13 @@ bool CellClass::Can_Tiberium_Germinate() const {
   return true;
 }
 
-CellClass& CellClass::Adjacent_Cell(FacingType face) {
+CellClass& CellClass::Adjacent_Cell(game::FacingType face) {
   const int offset = Adjacent_Offset(face);
   return offset == 0 ? *this
                      : TheMap().at(static_cast<CELL>(Cell_Number() + offset));
 }
 
-const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
+const CellClass& CellClass::Adjacent_Cell(game::FacingType face) const {
   const int offset = Adjacent_Offset(face);
   return offset == 0 ? *this
                      : TheMap().at(static_cast<CELL>(Cell_Number() + offset));

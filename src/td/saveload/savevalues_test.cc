@@ -11,13 +11,14 @@
 #include "engine/stream/span_source.h"
 #include "game/core/game_clock.h"
 #include "game/sim/crew.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "game/sim/flasher.h"
 #include "gtest/gtest.h"
 #include "td/ai/region.h"
 #include "td/ai/special.h"
 #include "td/ai/teamtype.h"
 #include "td/core/defines.h"
-#include "td/core/facing.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
 #include "td/objects/abstract.h"
@@ -111,12 +112,12 @@ TEST(TdSaveValuesTest, CountdownRejectsTruncationAndNegativeDuration) {
 }
 
 TEST(TdSaveValuesTest, FacingPreservesCurrentAndDesiredSeparately) {
-  FacingClass facing(DIR_N);
+  game::FacingClass facing(game::DIR_N);
   std::array<uint8_t, 8> bytes{};
   SpanSink sink(std::as_writable_bytes(std::span(bytes).first(8)));
   ArchiveWriter writer(sink);
-  DirType current = DIR_E;
-  DirType desired = DIR_SW;
+  game::DirType current = game::DIR_E;
+  game::DirType desired = game::DIR_SW;
   writer(current, desired);
   SpanSource source(std::as_bytes(std::span(bytes).first(8)));
   ArchiveReader reader(source);
@@ -124,7 +125,7 @@ TEST(TdSaveValuesTest, FacingPreservesCurrentAndDesiredSeparately) {
   ASSERT_TRUE(reader.ok());
   EXPECT_EQ(facing.Current(), current);
   EXPECT_EQ(facing.Desired(), desired);
-  FacingClass loaded(DIR_N);
+  game::FacingClass loaded(game::DIR_N);
   Restore(loaded, Save(facing));
   EXPECT_EQ(loaded.Current(), current);
   EXPECT_EQ(loaded.Desired(), desired);

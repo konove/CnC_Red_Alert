@@ -34,10 +34,10 @@
 #include "base/trig.h"
 #include "engine/gfx/rect.h"
 #include "game/core/display_constants.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/objects/target.h"
 
@@ -96,7 +96,7 @@ std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
   return offsets;
 }
 
-COORDINATE Coord_Move(const COORDINATE start, const DirType facing,
+COORDINATE Coord_Move(const COORDINATE start, const game::DirType facing,
                       const uint16_t distance) {
   auto x = static_cast<int16_t>(Coord_X(start));
   auto y = static_cast<int16_t>(Coord_Y(start));
@@ -107,8 +107,9 @@ COORDINATE Coord_Move(const COORDINATE start, const DirType facing,
 
 COORDINATE Coord_Scatter(const COORDINATE coord, const int distance,
                          const bool lock) {
-  COORDINATE result = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX),
-                                 static_cast<uint16_t>(distance));
+  COORDINATE result =
+      Coord_Move(coord, Random_Pick(game::DIR_N, kMaxRandomDirection),
+                 static_cast<uint16_t>(distance));
 
   // If the move overflowed the valid coordinate range, discard it.
   if (result & kHighCoordMask) {
@@ -146,9 +147,8 @@ int Distance(const TARGET target1, const TARGET target2) {
 
 std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
                                              int maxsize) {
-  static const int16_t
-      kFacingOffsets[static_cast<int>(magic_enum::enum_count<FacingType>()) +
-                     1][5] = {
+  static const int16_t kFacingOffsets
+      [static_cast<int>(magic_enum::enum_count<game::FacingType>()) + 1][5] = {
           {0, -MAP_CELL_W, kRefreshEol, 0, 0},                   // N
           {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), kRefreshEol},   // NE
           {0, 1, kRefreshEol, 0, 0},                             // E

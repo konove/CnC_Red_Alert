@@ -49,6 +49,7 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "engine/gfx/wwstd.h"
+#include "game/sim/direction.h"
 #include "td/ai/special.h"
 
 namespace td {
@@ -1944,84 +1945,8 @@ enum class WindowNumberType {
 };
 using enum WindowNumberType;
 
-/****************************************************************************
-**	For every cell there are 8 adjacent cells. Use these direction numbers
-**	when referring to adjacent cells. This comes into play when moving
-**	between cells and in the Desired_Facing() algorithm.
-*/
-enum class FacingType : int8_t {
-  FACING_NONE = -1,
-  FACING_N,   // North
-  FACING_NE,  // North-East
-  FACING_E,   // East
-  FACING_SE,  // South-East
-  FACING_S,   // South
-  FACING_SW,  // South-West
-  FACING_W,   // West
-  FACING_NW,  // North-West
-
-};
-using enum FacingType;
-
-// Wraps any facing arithmetic result onto the eight compass points. Negative
-// values wrap the same way the two's complement mask always did.
-constexpr FacingType AsFacing(const int facing) {
-  return static_cast<FacingType>(static_cast<unsigned>(facing) & 0x07U);
-}
-
-inline FacingType operator+(FacingType f1, FacingType f2) {
-  return AsFacing(static_cast<int>(f1) + static_cast<int>(f2));
-}
-inline FacingType operator+(FacingType f1, int f2) {
-  return AsFacing(static_cast<int>(f1) + f2);
-}
-
-inline FacingType operator-(FacingType f1, FacingType f2) {
-  return AsFacing(static_cast<int>(f1) - static_cast<int>(f2));
-}
-inline FacingType operator-(FacingType f1, int f2) {
-  return AsFacing(static_cast<int>(f1) - f2);
-}
-
-inline FacingType operator+=(FacingType& f1, FacingType f2) {
-  f1 = AsFacing(static_cast<int>(f1) + static_cast<int>(f2));
-  return f1;
-}
-inline FacingType operator+=(FacingType& f1, int f2) {
-  f1 = AsFacing(static_cast<int>(f1) + f2);
-  return f1;
-}
-
-enum class DirType : uint8_t {
-  DIR_MIN = 0,
-  DIR_N = 0,
-  DIR_NE = 1 << 5,
-  DIR_E = 2 << 5,
-  DIR_SE = 3 << 5,
-  DIR_S = 4 << 5,
-  DIR_SW = 5 << 5,
-  DIR_SW_X1 = (5 << 5) - 8,   // Direction of harvester while unloading.
-  DIR_SW_X2 = (5 << 5) - 16,  // Direction of harvester while unloading.
-  DIR_W = 6 << 5,
-  DIR_NW = 7 << 5,
-  DIR_MAX = 254
-};
-using enum DirType;
-
-// Builds a direction from any angle, wrapping it to the 256-step circle.
-// Every value is a valid DirType; only the compass points are named. This is
-// the one place that turns a computed integer into the type, and the one place
-// the analyzer's named-enumerator model of the enum is set aside.
-constexpr DirType AsDirection(const int angle) {
-  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-  return static_cast<DirType>(static_cast<unsigned>(angle) & 0xFFU);
-}
-constexpr DirType operator+(const DirType f1, const DirType f2) {
-  return AsDirection(static_cast<int>(f1) + static_cast<int>(f2));
-}
-constexpr DirType operator+(const DirType f1, const int f2) {
-  return AsDirection(static_cast<int>(f1) + f2);
-}
+// The highest direction a random facing may take (Red Alert's reaches 255).
+inline constexpr game::DirType kMaxRandomDirection = game::AsDirection(254);
 
 /****************************************************************************
 **	Timer constants. These are used when setting the countdown timer.
@@ -2370,7 +2295,7 @@ struct PathType {
   CELL Start = 0;                 // Starting cell number.
   int Cost = 0;                   // Accumulated terrain cost.
   int Length = 0;                 // Command string length.
-  std::span<FacingType> Command;  // Pointer to command string.
+  std::span<game::FacingType> Command;  // Pointer to command string.
   std::span<uint32_t> Overlap;    // Overlap bitmap, see td/map/path_overlap.h.
   CELL LastOverlap = 0;           // stores position of last overlap
   CELL LastFixup = 0;             // stores position of last overlap

@@ -20,9 +20,9 @@
 
 #include <algorithm>
 
+#include "game/sim/direction.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/objects/building.h"
 #include "ra/objects/target.h"
@@ -32,7 +32,7 @@ namespace ra {
 
 AbstractClass::~AbstractClass() = default;
 
-DirType AbstractClass::Direction(const TARGET target) const {
+game::DirType AbstractClass::Direction(const TARGET target) const {
   return ra::Direction(Center_Coord(), As_Coord(target));
 }
 

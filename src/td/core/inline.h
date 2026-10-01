@@ -6,9 +6,9 @@
 
 #include "base/array.h"
 #include "game/core/display_constants.h"
+#include "game/sim/direction.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/face.h"
 
 namespace td {
 
@@ -54,13 +54,6 @@ constexpr COORDINATE Pixel_Offset_Coord(int x, int y) noexcept {
       static_cast<uint32_t>((y * ICON_LEPTON_H) / CELL_PIXEL_H);
   return static_cast<COORDINATE>((y_lepton << 16) + x_lepton);
 }
-inline FacingType Dir_Facing(DirType facing) {
-  // Rounds to the nearest of the eight facings; the DirType sum wraps.
-  return static_cast<FacingType>(static_cast<unsigned>(facing + 0x10) >> 5);
-}
-inline DirType Facing_Dir(FacingType facing) {
-  return static_cast<DirType>(static_cast<int>(facing) * 32);
-}
 inline int Cell_To_Lepton(int cell) { return cell * 256; }
 inline int Lepton_To_Cell(int lepton) {
   return static_cast<unsigned>(lepton + 0x0080) >> 8;
@@ -84,11 +77,6 @@ inline int Cell_X(CELL cell) {
 }
 inline int Cell_Y(CELL cell) {
   return static_cast<int>(static_cast<unsigned>(cell) >> 6);
-}
-inline int Dir_Diff(DirType dir1, DirType dir2) {
-  // Facings wrap at 256, so the difference is taken between their signed
-  // byte values.
-  return static_cast<int8_t>(dir2) - static_cast<int8_t>(dir1);
 }
 // A COORDINATE packs, from the low byte up: X lepton, X cell, Y lepton, Y cell.
 inline CELL Coord_XLepton(COORDINATE coord) {
@@ -133,40 +121,37 @@ inline COORDINATE XYPixel_Coord(int x, int y) {
                static_cast<uint16_t>(x * ICON_LEPTON_W /
                                      ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
 }
-inline int Facing_To_32(DirType facing) {
-  return base::At(Facing32, static_cast<int>(facing));
+inline game::DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
+  return game::Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
+                                 Coord_X(coord2), Coord_Y(coord2));
 }
-inline DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
-  return Desired_Facing256(Coord_X(coord1), Coord_Y(coord1), Coord_X(coord2),
-                           Coord_Y(coord2));
+inline game::DirType Direction(COORDINATE coord1, COORDINATE coord2) {
+  return game::Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
+                                 Coord_X(coord2), Coord_Y(coord2));
 }
-inline DirType Direction(COORDINATE coord1, COORDINATE coord2) {
-  return Desired_Facing256(Coord_X(coord1), Coord_Y(coord1), Coord_X(coord2),
-                           Coord_Y(coord2));
+inline game::DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
+  return game::Desired_Facing8(Coord_X(coord1), Coord_Y(coord1),
+                               Coord_X(coord2), Coord_Y(coord2));
 }
-inline DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
-  return Desired_Facing8(Coord_X(coord1), Coord_Y(coord1), Coord_X(coord2),
-                         Coord_Y(coord2));
+inline game::DirType Direction(CELL cell1, CELL cell2) {
+  return game::Desired_Facing8(Cell_X(cell1), Cell_Y(cell1), Cell_X(cell2),
+                               Cell_Y(cell2));
 }
-inline DirType Direction(CELL cell1, CELL cell2) {
-  return Desired_Facing8(Cell_X(cell1), Cell_Y(cell1), Cell_X(cell2),
-                         Cell_Y(cell2));
+inline COORDINATE Adjacent_Cell(COORDINATE coord, game::FacingType dir) {
+  return Coord_Snap(Coord_Add(
+      AdjacentCoord.at(game::AsFacing(static_cast<int>(dir))), coord));
 }
-inline COORDINATE Adjacent_Cell(COORDINATE coord, FacingType dir) {
-  return Coord_Snap(
-      Coord_Add(AdjacentCoord.at(AsFacing(static_cast<int>(dir))), coord));
+inline COORDINATE Adjacent_Cell(COORDINATE coord, game::DirType dir) {
+  return Adjacent_Cell(coord, game::Dir_Facing(dir));
 }
-inline COORDINATE Adjacent_Cell(COORDINATE coord, DirType dir) {
-  return Adjacent_Cell(coord, Dir_Facing(dir));
-}
-inline CELL Adjacent_Cell(CELL cell, FacingType dir) {
+inline CELL Adjacent_Cell(CELL cell, game::FacingType dir) {
   // Masked like the COORDINATE overload above, so that FACING_NONE (-1) does
   // not index before the start of the table.
-  return static_cast<CELL>(cell +
-                           AdjacentCell.at(AsFacing(static_cast<int>(dir))));
+  return static_cast<CELL>(
+      cell + AdjacentCell.at(game::AsFacing(static_cast<int>(dir))));
 }
-inline CELL Adjacent_Cell(CELL cell, DirType dir) {
-  return static_cast<CELL>(cell + AdjacentCell.at(Dir_Facing(dir)));
+inline CELL Adjacent_Cell(CELL cell, game::DirType dir) {
+  return static_cast<CELL>(cell + AdjacentCell.at(game::Dir_Facing(dir)));
 }
 inline int Lepton_To_Pixel(int lepton) {
   return ((lepton * ICON_PIXEL_W) + (ICON_LEPTON_W / 2)) / ICON_LEPTON_W;

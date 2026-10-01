@@ -179,7 +179,7 @@ class InfantryClass final : public FootClass {
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE coord, DirType facing) override;
+  bool Unlimbo(COORDINATE coord, game::DirType facing) override;
   bool Limbo() override;
   void Detach(TARGET target, bool all) override;
 
@@ -250,8 +250,9 @@ class InfantryClass final : public FootClass {
   */
   bool Do_Action(DoType todo, bool force = false);
   void Random_Animate() override;
-  MoveType Can_Enter_Cell(CELL /*cell*/ /*unused*/,
-                          FacingType /*unused*/ = FACING_NONE) const override;
+  MoveType Can_Enter_Cell(
+      CELL /*cell*/ /*unused*/,
+      game::FacingType /*unused*/ = game::FACING_NONE) const override;
   void Per_Cell_Process(bool center) override;
   void Enter_Idle_Mode(bool initial = false) override;
   void Scatter(COORDINATE threat, bool forced = false) override;

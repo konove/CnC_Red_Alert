@@ -58,6 +58,7 @@
 #include "base/cardinal.h"
 #include "base/trig.h"
 #include "game/core/display_constants.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/core/const.h"
 #include "td/core/defines.h"
@@ -92,7 +93,7 @@ namespace td {
  *=============================================================================================*/
 std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize) {
   static const int16_t
-      MoveSpillage[magic_enum::enum_count<FacingType>() + 1][5] = {
+      MoveSpillage[magic_enum::enum_count<game::FacingType>() + 1][5] = {
           {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
           {0, -MAP_CELL_W, 1, -(MAP_CELL_W - 1), REFRESH_EOL},   // NE
           {0, 1, REFRESH_EOL, 0, 0},                             // E
@@ -225,7 +226,7 @@ std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE Coord_Move(COORDINATE start, DirType dir, uint16_t distance) {
+COORDINATE Coord_Move(COORDINATE start, game::DirType dir, uint16_t distance) {
   auto x = static_cast<int16_t>(Coord_X(start));
   auto y = static_cast<int16_t>(Coord_Y(start));
 
@@ -257,8 +258,9 @@ COORDINATE Coord_Move(COORDINATE start, DirType dir, uint16_t distance) {
  * HISTORY: * 02/01/1992 JLB : Created. * 05/13/1992 JLB : Only uses Random(). *
  *=============================================================================================*/
 COORDINATE Coord_Scatter(COORDINATE coord, int distance, bool lock) {
-  COORDINATE newcoord = Coord_Move(coord, Random_Pick(DIR_N, DIR_MAX),
-                                   static_cast<uint16_t>(distance));
+  COORDINATE newcoord =
+      Coord_Move(coord, Random_Pick(game::DIR_N, kMaxRandomDirection),
+                 static_cast<uint16_t>(distance));
 
   if (newcoord & 0xC000C000L) {
     newcoord = coord;

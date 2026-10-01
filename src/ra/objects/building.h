@@ -49,9 +49,9 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "game/sim/direction.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/factory.h"
@@ -272,7 +272,7 @@ class BuildingClass : public TechnoClass {
   [[nodiscard]] int Value() const override;
   [[nodiscard]] std::span<const std::byte> Get_Image_Data() const override;
   [[nodiscard]] int How_Many_Survivors() const override;
-  [[nodiscard]] DirType Turret_Facing() const override;
+  [[nodiscard]] game::DirType Turret_Facing() const override;
   CELL Find_Exit_Cell(const TechnoClass* techno) const override;
   [[nodiscard]] InfantryType Crew_Type() const override;
   [[nodiscard]] int Pip_Count() const override;
@@ -283,7 +283,7 @@ class BuildingClass : public TechnoClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  [[nodiscard]] DirType Fire_Direction() const override;
+  [[nodiscard]] game::DirType Fire_Direction() const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List(
       bool redraw = false) const override;
   [[nodiscard]] int Shape_Number() const;
@@ -308,8 +308,10 @@ class BuildingClass : public TechnoClass {
   virtual void Grand_Opening(bool captured = false);
   virtual void Update_Buildables();
   [[nodiscard]] MoveType Can_Enter_Cell(
-      CELL cell, FacingType /*unused*/ = FACING_NONE) const override;
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+      CELL cell,
+      game::FacingType /*unused*/ = game::FACING_NONE) const override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+               game::DirType dir = game::DIR_N) override;
   bool Limbo() override;
 
   /*

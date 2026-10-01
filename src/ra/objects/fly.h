@@ -40,8 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_OBJECTS_FLY_H_
 #define CNC_RED_ALERT_RA_OBJECTS_FLY_H_
 
+#include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 
 namespace ra {
 
@@ -77,7 +77,7 @@ class FlyClass {
   **	Member function prototypes.
   */
   void Fly_Speed(int speed, MPHType maximum);
-  ImpactType Physics(COORDINATE& coord, DirType facing);
+  ImpactType Physics(COORDINATE& coord, game::DirType facing);
   [[nodiscard]] MPHType Get_Speed() const { return SpeedAdd; }
 
  private:

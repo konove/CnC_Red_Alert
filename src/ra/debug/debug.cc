@@ -49,12 +49,12 @@
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/screen.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/debug/debug_state.h"
@@ -145,7 +145,7 @@ void Debug_Key(unsigned input) {
         if (air) {
           air->Height = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
-                       DIR_N);
+                       game::DIR_N);
         }
       } break;
 
@@ -155,7 +155,7 @@ void Debug_Key(unsigned input) {
         if (air) {
           air->Height = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
-                       DIR_N);
+                       game::DIR_N);
         }
       } break;
 
@@ -289,8 +289,8 @@ void Debug_Key(unsigned input) {
             int y = 0;
             int x1 = 0;
             int y1 = 0;
-            const DirType r1 = AsDirection(r);
-            const DirType r2 = AsDirection(r + 10);
+            const game::DirType r1 = game::AsDirection(r);
+            const game::DirType r2 = game::AsDirection(r + 10);
 
             if (TheMap().Coord_To_Pixel(
                     Coord_Move(center, r1, static_cast<uint16_t>(sight)), x,

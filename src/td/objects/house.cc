@@ -150,6 +150,8 @@
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "td/ai/base.h"
 #include "td/ai/region.h"
@@ -164,7 +166,6 @@
 #include "td/core/const.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
-#include "td/core/facing.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
@@ -2520,7 +2521,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         **	Scatter the nuclear bomb impact point into an adjacent cell.
         */
         for (;;) {
-          CELL newcell = Adjacent_Cell(cell, Random_Pick(FACING_N, FACING_NW));
+          CELL newcell =
+              Adjacent_Cell(cell, Random_Pick(game::FACING_N, game::FACING_NW));
           if (TheMap().In_Radar(newcell)) {
             cell = newcell;
             break;
@@ -2568,10 +2570,10 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
             bullet->Assign_Target(As_Target(cell));
             bullet->Payback = nullptr;
             bullet->Strength = 1;
-            if (!bullet->Unlimbo(start, DIR_S)) {
+            if (!bullet->Unlimbo(start, game::DIR_S)) {
               base::DeletePooled(bullet);
             } else {
-              bullet->PrimaryFacing.Set_Current(DIR_S);
+              bullet->PrimaryFacing.Set_Current(game::DIR_S);
             }
             Speak(VOX_INCOMING_NUKE);
             Sound_Effect(VOC_NUKE_FIRE, start);
@@ -3650,7 +3652,7 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
  *=============================================================================================*/
 bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
   Validate();
-  FacingType rot = FACING_NONE;
+  game::FacingType rot = game::FACING_NONE;
 
   /*
   **	Randomly decide if we're going to search cells clockwise or counter-
@@ -3686,11 +3688,12 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
         **	Clockwise search.
         */
         if (clockwise) {
-          rot = Random_Pick(FACING_N, FACING_NW);
-          for (FacingType fcounter = FACING_N; fcounter <= FACING_NW;
-               fcounter++) {
-            newcell = Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
-                                            static_cast<uint16_t>(dist * 256)));
+          rot = Random_Pick(game::FACING_N, game::FACING_NW);
+          for (game::FacingType fcounter = game::FACING_N;
+               fcounter <= game::FACING_NW; fcounter++) {
+            newcell =
+                Coord_Cell(Coord_Move(Cell_Coord(cell), game::Facing_Dir(rot),
+                                      static_cast<uint16_t>(dist * 256)));
             if (TheMap().In_Radar(newcell) &&
                 TheMap().at(newcell).Flag_Place(Class->House)) {
               dist = 32;
@@ -3698,19 +3701,20 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
               break;
             }
             rot++;
-            if (rot > FACING_NW) {
-              rot = FACING_N;
+            if (rot > game::FACING_NW) {
+              rot = game::FACING_N;
             }
           }
         } else {
           /*
           **	Counter-clockwise search
           */
-          rot = Random_Pick(FACING_N, FACING_NW);
-          for (FacingType fcounter = FACING_NW; fcounter >= FACING_N;
-               fcounter--) {
-            newcell = Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
-                                            static_cast<uint16_t>(dist * 256)));
+          rot = Random_Pick(game::FACING_N, game::FACING_NW);
+          for (game::FacingType fcounter = game::FACING_NW;
+               fcounter >= game::FACING_N; fcounter--) {
+            newcell =
+                Coord_Cell(Coord_Move(Cell_Coord(cell), game::Facing_Dir(rot),
+                                      static_cast<uint16_t>(dist * 256)));
             if (TheMap().In_Radar(newcell) &&
                 TheMap().at(newcell).Flag_Place(Class->House)) {
               dist = 32;
@@ -3718,8 +3722,8 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
               break;
             }
             rot--;
-            if (rot < FACING_N) {
-              rot = FACING_NW;
+            if (rot < game::FACING_N) {
+              rot = game::FACING_NW;
             }
           }
         }

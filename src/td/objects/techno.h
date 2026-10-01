@@ -47,9 +47,9 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "game/sim/crew.h"
+#include "game/sim/facing.h"
 #include "game/sim/flasher.h"
 #include "td/core/defines.h"
-#include "td/core/facing.h"
 #include "td/objects/bullet.h"
 #include "td/objects/cargo.h"
 #include "td/objects/door.h"
@@ -186,7 +186,7 @@ class TechnoClass : public RadioClass,
   /*
   **	This is the visible facing for the unit or building.
   */
-  FacingClass PrimaryFacing;
+  game::FacingClass PrimaryFacing;
 
   /*
   **	This is the arming countdown. It represents the time necessary
@@ -245,9 +245,10 @@ class TechnoClass : public RadioClass,
   ActionType What_Action(ObjectClass* object) override;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
   [[nodiscard]] virtual int Tiberium_Load() const;
-  virtual DirType Desired_Load_Dir(ObjectClass* /*unused*/, CELL& moveto) const;
+  virtual game::DirType Desired_Load_Dir(ObjectClass* /*unused*/,
+                                         CELL& moveto) const;
   [[nodiscard]] virtual int Pip_Count() const;
-  [[nodiscard]] virtual DirType Fire_Direction() const;
+  [[nodiscard]] virtual game::DirType Fire_Direction() const;
 
   /*
   **	User I/O.
@@ -337,7 +338,8 @@ class TechnoClass : public RadioClass,
   /*
   **	Map entry and exit logic.
   */
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+               game::DirType dir = game::DIR_N) override;
   void Detach(TARGET target, bool all) override;
 
   /*

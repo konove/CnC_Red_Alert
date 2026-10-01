@@ -141,6 +141,7 @@
 #include "game/core/heap.h"
 #include "game/core/vector.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/trigger.h"
@@ -157,7 +158,6 @@
 #include "ra/core/const.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
@@ -793,7 +793,8 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
         break;
       }
 
-      for (const FacingType facing : magic_enum::enum_values<FacingType>()) {
+      for (const game::FacingType facing :
+           magic_enum::enum_values<game::FacingType>()) {
         const CELL newcell = Adjacent_Cell(cell, facing);
 
         if (!In_Radar(newcell)) {
@@ -839,7 +840,8 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
           break;
         }
 
-        for (const FacingType newface : magic_enum::enum_values<FacingType>()) {
+        for (const game::FacingType newface :
+             magic_enum::enum_values<game::FacingType>()) {
           const CELL newercell = Adjacent_Cell(newcell, newface);
 
           if ((building->IsWall ||
@@ -1243,7 +1245,8 @@ CELL DisplayClass::Click_Cell_Calc(int x, int y) const {
  *distance parameter.                                                *
  *   08/10/1995 JLB : Any direction scrolling. *
  *=============================================================================================*/
-bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
+bool DisplayClass::Scroll_Map(game::DirType facing, int& distance,
+                              bool really) {
   /*
   **	If the distance is invalid then no further checking is required. Bail
   **	with a no-can-do flag.
@@ -1251,42 +1254,44 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
   if (distance == 0) {
     return false;
   }
-  const FacingType crude = Dir_Facing(facing);
+  const game::FacingType crude = game::Dir_Facing(facing);
 
-  if (Coord_X(TacticalCoord) == Cell_To_Lepton(MapCellX) && crude != FACING_W) {
-    if (crude == FACING_SW) {
-      facing = DIR_S;
+  if (Coord_X(TacticalCoord) == Cell_To_Lepton(MapCellX) &&
+      crude != game::FACING_W) {
+    if (crude == game::FACING_SW) {
+      facing = game::DIR_S;
     }
-    if (crude == FACING_NW) {
-      facing = DIR_N;
+    if (crude == game::FACING_NW) {
+      facing = game::DIR_N;
     }
   }
-  if (Coord_Y(TacticalCoord) == Cell_To_Lepton(MapCellY) && crude != FACING_N) {
-    if (crude == FACING_NW) {
-      facing = DIR_W;
+  if (Coord_Y(TacticalCoord) == Cell_To_Lepton(MapCellY) &&
+      crude != game::FACING_N) {
+    if (crude == game::FACING_NW) {
+      facing = game::DIR_W;
     }
-    if (crude == FACING_NE) {
-      facing = DIR_E;
+    if (crude == game::FACING_NE) {
+      facing = game::DIR_E;
     }
   }
   if (Coord_X(TacticalCoord) + TacLeptonWidth ==
           Cell_To_Lepton(MapCellX + MapCellWidth) &&
-      crude != FACING_E) {
-    if (crude == FACING_NE) {
-      facing = DIR_N;
+      crude != game::FACING_E) {
+    if (crude == game::FACING_NE) {
+      facing = game::DIR_N;
     }
-    if (crude == FACING_SE) {
-      facing = DIR_S;
+    if (crude == game::FACING_SE) {
+      facing = game::DIR_S;
     }
   }
   if (Coord_Y(TacticalCoord) + TacLeptonHeight ==
           Cell_To_Lepton(MapCellY + MapCellHeight) &&
-      crude != FACING_S) {
-    if (crude == FACING_SE) {
-      facing = DIR_E;
+      crude != game::FACING_S) {
+    if (crude == game::FACING_SE) {
+      facing = game::DIR_E;
     }
-    if (crude == FACING_SW) {
-      facing = DIR_W;
+    if (crude == game::FACING_SW) {
+      facing = game::DIR_W;
     }
   }
 
@@ -1561,7 +1566,8 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
   **	are not allowed, and to fix this, just map the cells until
   **	all is ok.
   */
-  for (const FacingType dir : magic_enum::enum_values<FacingType>()) {
+  for (const game::FacingType dir :
+       magic_enum::enum_values<game::FacingType>()) {
     CELL const c = Adjacent_Cell(cell, dir);
     CellClass* cptr = &(*this).at(c);
     cptr->Redraw_Objects();
@@ -4011,7 +4017,8 @@ void DisplayClass::Shroud_Cell(CELL cell /*KO, bool shadeit*/) {
     **	shrouded cells such that more cells must be shrouded in order for
     **	this to work.
     */
-    for (const FacingType dir : magic_enum::enum_values<FacingType>()) {
+    for (const game::FacingType dir :
+         magic_enum::enum_values<game::FacingType>()) {
       const CELL c = Adjacent_Cell(cell, dir);
       CellClass* cptr = &(*this).at(c);
 

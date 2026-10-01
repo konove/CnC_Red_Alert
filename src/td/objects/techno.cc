@@ -185,7 +185,9 @@
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
 #include "game/sim/door.h"
+#include "game/sim/facing.h"
 #include "game/sim/utracker.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
@@ -193,7 +195,6 @@
 #include "td/assets/audio.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/facing.h"
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
@@ -485,7 +486,7 @@ TechnoClass::TechnoClass()
   CloakingDevice.Set_Stage(1);
   CloakingDevice.Set_Rate(0);
 
-  PrimaryFacing.Set(DIR_N);
+  PrimaryFacing.Set(game::DIR_N);
 }
 
 /***********************************************************************************************
@@ -815,7 +816,7 @@ TechnoClass::TechnoClass(HousesType house)
   CloakingDevice.Set_Stage(1);
   CloakingDevice.Set_Rate(0);
 
-  PrimaryFacing.Set(DIR_N);
+  PrimaryFacing.Set(game::DIR_N);
 
   /*
   **	There is a chance that a vehicle will be a "lemon".
@@ -1015,7 +1016,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 11/14/1994 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Unlimbo(COORDINATE coord, DirType dir) {
+bool TechnoClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   if (RadioClass::Unlimbo(coord, dir)) {
     PrimaryFacing = dir;
     Enter_Idle_Mode(true);
@@ -2092,7 +2093,7 @@ int TechnoClass::Rearm_Delay(bool second) const {
  *inaccurate projectiles.                            *
  *=============================================================================================*/
 BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
-  DirType dir = DIR_N;          // The facing to impart upon the projectile.
+  game::DirType dir = game::DIR_N;  // The facing to impart upon the projectile.
   COORDINATE target_coord = 0;  // Coordinate of the target.
   const TechnoTypeClass& tclass = *Techno_Type_Class();
   const WeaponTypeClass* weapon =
@@ -2187,7 +2188,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       case ANIM_FLAME_N:
         a = static_cast<AnimType>(
             static_cast<int>(a) +
-            static_cast<int>(Dir_Facing(Fire_Direction())));
+            static_cast<int>(game::Dir_Facing(Fire_Direction())));
         break;
       case AnimType::ANIM_NONE:
       case AnimType::ANIM_FBALL1:
@@ -3812,10 +3813,10 @@ int TechnoClass::Tiberium_Load() const { return 0x0000; }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
-                                      CELL& moveto) const {
+game::DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
+                                            CELL& moveto) const {
   moveto = 0;
-  return DIR_N;
+  return game::DIR_N;
 }
 
 /***********************************************************************************************
@@ -3855,7 +3856,9 @@ int TechnoClass::Pip_Count() const { return 0; }
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-DirType TechnoClass::Fire_Direction() const { return PrimaryFacing.Current(); }
+game::DirType TechnoClass::Fire_Direction() const {
+  return PrimaryFacing.Current();
+}
 
 /***********************************************************************************************
  * TechnoClass::Response_Select -- Handles the voice response when selected. *

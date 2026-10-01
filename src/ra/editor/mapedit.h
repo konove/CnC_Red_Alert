@@ -58,9 +58,9 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/sim/direction.h"
 #include "ra/ai/teamtype.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/data/ccini.h"
 #include "ra/map/mouse.h"
 #include "ra/objects/object.h"
@@ -189,7 +189,8 @@ class MapEditClass : public MouseClass {
   void Init_IO() override;   // Inits button list
   void AI(engine::window::InputEvent& event, int x, int y) override;
   void Draw_It(PixelView& view, bool forced = true) override;
-  bool Scroll_Map(DirType facing, int& distance, bool really = true) override;
+  bool Scroll_Map(game::DirType facing, int& distance,
+                  bool really = true) override;
   void Read_INI(CCINIClass& ini) override;
   void Detach(ObjectClass* object) override;
   using MouseClass::Detach;

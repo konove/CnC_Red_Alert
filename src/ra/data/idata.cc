@@ -68,12 +68,12 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/core/type_heaps.h"
@@ -1117,7 +1117,7 @@ bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
     const COORDINATE coord =
         TheMap().at(cell).Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
-      return i->Unlimbo(coord, DIR_E);
+      return i->Unlimbo(coord, game::DIR_E);
     }
     base::DeletePooled(i);
   }

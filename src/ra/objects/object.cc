@@ -125,6 +125,7 @@
 #include "engine/gfx/wwstd.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
@@ -133,7 +134,6 @@
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
@@ -1031,7 +1031,7 @@ void ObjectClass::Sell_Back(int /*unused*/) { DCHECK(IsActive); }
  *                                                                                             *
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Move(FacingType facing) {
+void ObjectClass::Move(game::FacingType facing) {
   DCHECK(IsActive);
 
   Mark(MARK_UP);
@@ -1301,11 +1301,11 @@ bool ObjectClass::Limbo() {
  * HISTORY: * 09/24/1994 JLB : Created. * 12/23/1994 JLB : Sets object strength.
  **
  *=============================================================================================*/
-bool ObjectClass::Unlimbo(COORDINATE coord, DirType /*unused*/) {
+bool ObjectClass::Unlimbo(COORDINATE coord, game::DirType /*unused*/) {
   DCHECK(IsActive);
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
-       Can_Enter_Cell(Coord_Cell(coord), FACING_NONE) == MOVE_OK)) {
+       Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == MOVE_OK)) {
     IsInLimbo = false;
     IsToDisplay = false;
     Coord = Class_Of().Coord_Fixup(coord);
@@ -1746,16 +1746,16 @@ bool ObjectClass::Paradrop(COORDINATE coord) {
 
   Height = kFlightLevel;
   IsFalling = true;
-  if (Unlimbo(coord, DIR_S)) {
+  if (Unlimbo(coord, game::DIR_S)) {
     AnimClass* anim = nullptr;
 
     if (What_Am_I() == RTTI_BULLET) {
       anim = base::NewPooled<AnimClass>(
-          ANIM_PARA_BOMB, Coord_Move(Center_Coord(), DIR_N,
+          ANIM_PARA_BOMB, Coord_Move(Center_Coord(), game::DIR_N,
                                      static_cast<uint16_t>(0x0030 + Height)));
     } else {
       anim = base::NewPooled<AnimClass>(
-          ANIM_PARACHUTE, Coord_Move(Center_Coord(), DIR_N,
+          ANIM_PARACHUTE, Coord_Move(Center_Coord(), game::DIR_N,
                                      static_cast<uint16_t>(0x0030 + Height)));
     }
 

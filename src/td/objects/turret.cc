@@ -59,10 +59,10 @@
 
 #include "base/array.h"
 #include "base/cardinal.h"
+#include "game/sim/direction.h"
 #include "td/core/const.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/objects/drive.h"
 #include "td/objects/target.h"
 #include "td/objects/type.h"
@@ -108,7 +108,7 @@ TurretClass::TurretClass(UnitType classid, HousesType house)
  *                                                                                             *
  * HISTORY: * 05/12/1994 JLB : Created. *
  *=============================================================================================*/
-bool TurretClass::Ok_To_Move(DirType dir) {
+bool TurretClass::Ok_To_Move(game::DirType dir) {
   if (Class->IsLockTurret) {
     if (IsRotating) {
       return false;
@@ -257,7 +257,7 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
       return FIRE_ROTATING;
     }
 
-    const DirType dir =
+    const game::DirType dir =
         Direction(target);  // The facing to impart upon the projectile.
 
     /*
@@ -274,7 +274,7 @@ FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
     **	Special flame tank logic.
     */
     if (weapon->Fires == BULLET_FLAME) {
-      if (Dir_Facing(dir) == Dir_Facing(PrimaryFacing)) {
+      if (game::Dir_Facing(dir) == game::Dir_Facing(PrimaryFacing)) {
         diff = 0;
       }
     }
@@ -311,7 +311,7 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
   COORDINATE coord = Center_Coord();
   int dist = 0;
   int lateral = 0;
-  DirType dir = PrimaryFacing.Current();
+  game::DirType dir = PrimaryFacing.Current();
 
   if (Class->IsTurretEquipped) {
     dir = SecondaryFacing.Current();
@@ -325,21 +325,21 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
       break;
 
     case UNIT_ARTY:
-      coord = Coord_Move(coord, DIR_N, 0x0040);
+      coord = Coord_Move(coord, game::DIR_N, 0x0040);
       dist = 0x0060;
       break;
 
     case UNIT_FTANK:
       dist = 0x30;
       if (IsSecondShot) {
-        coord = Coord_Move(coord, dir + DIR_E, 0x20);
+        coord = Coord_Move(coord, dir + game::DIR_E, 0x20);
       } else {
-        coord = Coord_Move(coord, dir + DIR_W, 0x20);
+        coord = Coord_Move(coord, dir + game::DIR_W, 0x20);
       }
       break;
 
     case UNIT_HTANK:
-      coord = Coord_Move(coord, DIR_N, 0x0040);
+      coord = Coord_Move(coord, game::DIR_N, 0x0040);
       if (which == 0) {
         dist = 0x00C0;
         lateral = 0x0028;
@@ -348,26 +348,28 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
         lateral = 0x0040;
       }
       if (IsSecondShot) {
-        coord = Coord_Move(coord, dir + DIR_E, static_cast<uint16_t>(lateral));
+        coord = Coord_Move(coord, dir + game::DIR_E,
+                           static_cast<uint16_t>(lateral));
       } else {
-        coord = Coord_Move(coord, dir + DIR_W, static_cast<uint16_t>(lateral));
+        coord = Coord_Move(coord, dir + game::DIR_W,
+                           static_cast<uint16_t>(lateral));
       }
       break;
 
     case UNIT_LTANK:
-      coord = Coord_Move(coord, DIR_N, 0x0020);
+      coord = Coord_Move(coord, game::DIR_N, 0x0020);
       dist = 0x00C0;
       break;
 
     case UNIT_MTANK:
-      coord = Coord_Move(coord, DIR_N, 0x0030);
+      coord = Coord_Move(coord, game::DIR_N, 0x0030);
       dist = 0x00C0;
       break;
 
     case UNIT_APC:
     case UNIT_JEEP:
     case UNIT_BUGGY:
-      coord = Coord_Move(coord, DIR_N, 0x0030);
+      coord = Coord_Move(coord, game::DIR_N, 0x0030);
       dist = 0x0030;
       break;
     case UnitType::UNIT_NONE:
@@ -412,7 +414,7 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-bool TurretClass::Unlimbo(COORDINATE coord, DirType dir) {
+bool TurretClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   if (DriveClass::Unlimbo(coord, dir)) {
     SecondaryFacing = dir;
     return true;
@@ -436,20 +438,21 @@ bool TurretClass::Unlimbo(COORDINATE coord, DirType dir) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-DirType TurretClass::Fire_Direction() const {
+game::DirType TurretClass::Fire_Direction() const {
   if (Class->IsTurretEquipped) {
     if (*this == UNIT_MSAM) {
-      int diff1 = SecondaryFacing.Difference(DIR_E);
-      int diff2 = SecondaryFacing.Difference(DIR_W);
+      int diff1 = SecondaryFacing.Difference(game::DIR_E);
+      int diff2 = SecondaryFacing.Difference(game::DIR_W);
       diff1 = std::abs(diff1);
       diff2 = std::abs(diff2);
       const int diff = std::min(diff1, diff2);
       const int adj = base::FixedToCardinal(
-          std::abs(SecondaryFacing.Difference(DIR_N)), 64 - diff);
-      if (SecondaryFacing.Difference(DIR_N) < 0) {
-        return AsDirection(static_cast<int>(SecondaryFacing.Current()) - adj);
+          std::abs(SecondaryFacing.Difference(game::DIR_N)), 64 - diff);
+      if (SecondaryFacing.Difference(game::DIR_N) < 0) {
+        return game::AsDirection(static_cast<int>(SecondaryFacing.Current()) -
+                                 adj);
       }
-      return SecondaryFacing + static_cast<DirType>(adj);
+      return SecondaryFacing + static_cast<game::DirType>(adj);
     }
     return SecondaryFacing.Current();
   }

@@ -50,11 +50,11 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/sim/crew.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "game/sim/flasher.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
-#include "ra/core/facing.h"
 #include "ra/core/jshell.h"
 #include "ra/objects/bullet.h"
 #include "ra/objects/cargo.h"
@@ -238,7 +238,7 @@ class TechnoClass : public RadioClass,
   /*
   **	This is the visible facing for the unit or building.
   */
-  FacingClass PrimaryFacing;
+  game::FacingClass PrimaryFacing;
 
   /*
   **	This is the arming countdown. It represents the time necessary
@@ -301,7 +301,7 @@ class TechnoClass : public RadioClass,
         CloakDelay(0),
         TarCom(kTargetNone),
         SuspendedTarCom(kTargetNone),
-        PrimaryFacing(DIR_N),
+        PrimaryFacing(game::DIR_N),
         Arm(0),
         Ammo(-1),
         PurchasePrice(0) {}
@@ -323,7 +323,7 @@ class TechnoClass : public RadioClass,
   // to [1, 5], or 0 if the object cannot produce survivors.
   [[nodiscard]] virtual int How_Many_Survivors() const;
 
-  [[nodiscard]] virtual DirType Turret_Facing() const {
+  [[nodiscard]] virtual game::DirType Turret_Facing() const {
     return PrimaryFacing.Current();
   }
   CELL Nearby_Location(const TechnoClass* techno = nullptr) const;
@@ -342,8 +342,9 @@ class TechnoClass : public RadioClass,
   virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly);
   virtual CELL Find_Exit_Cell(const TechnoClass* techno) const;
   [[nodiscard]] COORDINATE Fire_Coord(int which) const override;
-  virtual DirType Desired_Load_Dir(ObjectClass* /*unused*/, CELL& moveto) const;
-  [[nodiscard]] virtual DirType Fire_Direction() const;
+  virtual game::DirType Desired_Load_Dir(ObjectClass* /*unused*/,
+                                         CELL& moveto) const;
+  [[nodiscard]] virtual game::DirType Fire_Direction() const;
   [[nodiscard]] HousesType Owner() const override;
   [[nodiscard]] virtual InfantryType Crew_Type() const;
   [[nodiscard]] bool Can_Player_Fire() const override;
@@ -442,7 +443,8 @@ class TechnoClass : public RadioClass,
   // work correctly. `scale` uses 24.8 fixed point (0x0100 = 1x).
   void Techno_Draw_Object(PixelView& view, std::span<const std::byte> shapefile,
                           int shapenum, int x, int y, WindowNumberType window,
-                          DirType rotation = DIR_N, int scale = 0x0100) const;
+                          game::DirType rotation = game::DIR_N,
+                          int scale = 0x0100) const;
 
   void Draw_It(PixelView& view, int x, int y,
                WindowNumberType window) const override;
@@ -468,7 +470,8 @@ class TechnoClass : public RadioClass,
   /*
   **	Map entry and exit logic.
   */
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+               game::DirType dir = game::DIR_N) override;
   void Detach(TARGET target, bool all) override;
 
   /*

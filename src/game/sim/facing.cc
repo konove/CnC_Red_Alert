@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer(tm)
+**	Command & Conquer Red Alert(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\facing.cpv   1.9   16 Oct 1995 16:49:40
- * JOE_BOSTIC  $ */
+/* $Header: /CounterStrike/FACING.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
  ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
  ****
@@ -34,23 +33,22 @@
  *                  Last Update : March 21, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * FacingClass::Rotation_Adjust -- Perform a rotation adjustment to
- *current facing.          * FacingClass::Set_Current -- Sets the current
- *rotation value.                              * FacingClass::Set_Desired --
- *Sets the desired facing  value.                               *
- *   FacingClass::FacingClass -- Default constructor for the facing class. *
+ * Functions: * FacingClass::FacingClass -- Default constructor for the facing
+ *class.                     * FacingClass::Rotation_Adjust -- Perform a
+ *rotation adjustment to current facing.          * FacingClass::Set_Current --
+ *Sets the current rotation value.                              *
+ *   FacingClass::Set_Desired -- Sets the desired facing  value. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/core/facing.h"
+#include "game/sim/facing.h"
 
 #include <algorithm>
 #include <cstdlib>
 
-#include "td/core/defines.h"
-#include "td/core/inline.h"
+#include "game/sim/direction.h"
 
-namespace td {
+namespace game {
 
 /***********************************************************************************************
  * FacingClass::FacingClass -- Default constructor for the facing class. *
@@ -72,9 +70,9 @@ FacingClass::FacingClass() : CurrentFacing(DIR_N), DesiredFacing(DIR_N) {}
  * FacingClass::Set_Desired -- Sets the desired facing  value. *
  *                                                                                             *
  *    This routine is used to set the desired facing value without altering the
- *current        * facing setting. Typicall use of this routine is when a
- *vehicle needs to face a           * direction, but currently isn't facing the
- *correct direction. After this routine is       * called, it is presumed that
+ *current        * facing setting. Typical use of this routine is when a vehicle
+ *needs to face a           * direction, but currently isn't facing the correct
+ *direction. After this routine is       * called, it is presumed that
  *subsequent calls to Rotation_Adjust() will result in the     * eventual
  *alignment of the current facing. *
  *                                                                                             *
@@ -165,7 +163,7 @@ bool FacingClass::Rotation_Adjust(int rate) {
       *current *	facing.
       */
       if (diff < 0) {
-        CurrentFacing = AsDirection(static_cast<int>(CurrentFacing) - rate);
+        CurrentFacing = CurrentFacing - static_cast<DirType>(rate);
       } else {
         CurrentFacing = CurrentFacing + static_cast<DirType>(rate);
       }
@@ -176,9 +174,9 @@ bool FacingClass::Rotation_Adjust(int rate) {
     **	new 1/32 rotation zone (likely to cause a redraw), then return
     **	this fact with a true value.
     */
-    return Facing_To_32(CurrentFacing) != Facing_To_32(oldfacing);
+    return Dir_To_32(CurrentFacing) != Dir_To_32(oldfacing);
   }
   return false;
 }
 
-}  // namespace td
+}  // namespace game

@@ -71,6 +71,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "td/assets/audio.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
@@ -1216,15 +1217,15 @@ void AnimClass::Middle() {
   if (Class->IsFlameThrower) {
     COORDINATE c2 = Coord_Move(
         Center_Coord(),
-        Facing_Dir(static_cast<FacingType>(static_cast<int>(Class->Type) -
-                                           static_cast<int>(ANIM_FLAME_N))),
+        game::Facing_Dir(static_cast<game::FacingType>(
+            static_cast<int>(Class->Type) - static_cast<int>(ANIM_FLAME_N))),
         0x00E0);
     const COORDINATE c3 = TheMap().Closest_Free_Spot(
-        Coord_Move(
-            Center_Coord(),
-            Facing_Dir(static_cast<FacingType>(static_cast<int>(Class->Type) -
-                                               static_cast<int>(ANIM_FLAME_N))),
-            0x0140),
+        Coord_Move(Center_Coord(),
+                   game::Facing_Dir(static_cast<game::FacingType>(
+                       static_cast<int>(Class->Type) -
+                       static_cast<int>(ANIM_FLAME_N))),
+                   0x0140),
         true);
 
     c2 = TheMap().Closest_Free_Spot(c2, true);

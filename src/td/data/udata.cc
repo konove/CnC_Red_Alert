@@ -68,6 +68,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "td/ai/special.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
@@ -1554,7 +1555,8 @@ void UnitTypeClass::Init(TheaterType theater) {
 bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   auto* unit = base::NewPooled<UnitClass>(Type, house);
   if (unit) {
-    return unit->Unlimbo(Cell_Coord(cell), Random_Pick(DIR_N, DIR_MAX));
+    return unit->Unlimbo(Cell_Coord(cell),
+                         Random_Pick(game::DIR_N, kMaxRandomDirection));
   }
   return false;
 }

@@ -40,9 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_OBJECTS_ABSTRACT_H_
 #define CNC_RED_ALERT_RA_OBJECTS_ABSTRACT_H_
 
+#include "game/sim/direction.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 
 namespace ra {
 
@@ -96,14 +96,14 @@ class AbstractClass {
   [[nodiscard]] virtual COORDINATE Center_Coord() const { return Coord; }
   [[nodiscard]] virtual COORDINATE Target_Coord() const { return Coord; }
 
-  DirType Direction(const AbstractClass* object) const {
+  game::DirType Direction(const AbstractClass* object) const {
     return ra::Direction(Center_Coord(), object->Target_Coord());
   }
-  [[nodiscard]] DirType Direction(const COORDINATE coord) const {
+  [[nodiscard]] game::DirType Direction(const COORDINATE coord) const {
     return ra::Direction(Center_Coord(), coord);
   }
-  [[nodiscard]] DirType Direction(TARGET target) const;
-  [[nodiscard]] DirType Direction(const CELL cell) const {
+  [[nodiscard]] game::DirType Direction(TARGET target) const;
+  [[nodiscard]] game::DirType Direction(const CELL cell) const {
     return ra::Direction(Coord_Cell(Center_Coord()), cell);
   }
 
@@ -118,7 +118,7 @@ class AbstractClass {
   }
 
   [[nodiscard]] virtual MoveType Can_Enter_Cell(
-      CELL /*unused*/, FacingType /*unused*/ = FACING_NONE) const {
+      CELL /*unused*/, game::FacingType /*unused*/ = game::FACING_NONE) const {
     return MOVE_OK;
   }
 

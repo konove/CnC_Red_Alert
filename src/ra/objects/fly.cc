@@ -46,9 +46,9 @@
 
 #include "base/fixed.h"
 #include "game/core/display_constants.h"
+#include "game/sim/direction.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 
 namespace ra {
 
@@ -70,7 +70,7 @@ namespace ra {
  * HISTORY: * 04/24/1994 JLB : Created. * 06/05/1995 JLB : Simplified to just do
  *movement.                                          *
  *=============================================================================================*/
-ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
+ImpactType FlyClass::Physics(COORDINATE& coord, game::DirType facing) {
   if (SpeedAdd != MPH_IMMOBILE) {
     int actual = static_cast<int>(SpeedAdd) + SpeedAccum;
     const std::div_t result = std::div(actual, PIXEL_LEPTON_W);

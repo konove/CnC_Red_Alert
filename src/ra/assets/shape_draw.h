@@ -28,8 +28,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/gfx/shape.h"
+#include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 
 namespace ra {
 
@@ -46,7 +46,8 @@ void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
                    engine::gfx::ShapeFlags flags,
                    std::span<const uint8_t> fading_data = {},
                    std::span<const uint8_t> ghostdata = {},
-                   DirType rotation = DIR_N, int32_t scale = 0x0100);
+                   game::DirType rotation = game::DIR_N,
+                   int32_t scale = 0x0100);
 
 // Returns the smallest rectangle enclosing the shape's non-transparent pixels,
 // positioned relative to the center of the shape's maximum extent. Used to

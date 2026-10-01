@@ -46,9 +46,9 @@
 
 #include "base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/sim/direction.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/jshell.h"
 #include "ra/objects/abstract.h"
 
@@ -230,7 +230,8 @@ class ObjectClass : public AbstractClass {
   **	Object entry and exit from the game system.
   */
   virtual bool Limbo();
-  virtual bool Unlimbo(COORDINATE /*coord*/, DirType facing = DIR_N);
+  virtual bool Unlimbo(COORDINATE /*coord*/,
+                       game::DirType facing = game::DIR_N);
   virtual void Detach(TARGET target, bool all = true);
   virtual void Detach_All(bool all = true);
   virtual void Record_The_Kill(TechnoClass* /*unused*/);
@@ -307,7 +308,7 @@ class ObjectClass : public AbstractClass {
   /*
   **	Scenario and debug support.
   */
-  virtual void Move(FacingType /*facing*/);
+  virtual void Move(game::FacingType /*facing*/);
 
   static constexpr int kFlightLevel = 256;
 };

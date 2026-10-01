@@ -119,10 +119,10 @@ class TerrainClass final : public ObjectClass, public StageClass {
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE coord, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE coord, game::DirType dir = game::DIR_N) override;
   bool Limbo() override;
   [[nodiscard]] MoveType Can_Enter_Cell(
-      CELL cell, FacingType facing = FACING_NONE) const override;
+      CELL cell, game::FacingType facing = game::FACING_NONE) const override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how

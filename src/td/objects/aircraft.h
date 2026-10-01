@@ -28,8 +28,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "game/sim/facing.h"
 #include "td/core/defines.h"
-#include "td/core/facing.h"
 #include "td/objects/bullet.h"
 #include "td/objects/fly.h"
 #include "td/objects/foot.h"
@@ -87,19 +87,20 @@ class AircraftClass : public FootClass, public FlyClass {
   // Query functions.
   int Threat_Range(int control) const override;
   int Rearm_Delay(bool second) const override;
-  MoveType Can_Enter_Cell(CELL cell,
-                          FacingType facing = FACING_NONE) const override;
+  MoveType Can_Enter_Cell(
+      CELL cell, game::FacingType facing = game::FACING_NONE) const override;
   LayerType In_Which_Layer() const override;
   const ObjectTypeClass& Class_Of() const override { return *Class; }
   ActionType What_Action(ObjectClass* target) override;
   ActionType What_Action(CELL cell) const override;
-  DirType Desired_Load_Dir(ObjectClass* object, CELL& moveto) const override;
+  game::DirType Desired_Load_Dir(ObjectClass* object,
+                                 CELL& moveto) const override;
   int Pip_Count() const override;
   TARGET Good_Fire_Location(TARGET target) const;
   bool Cell_Seems_Ok(CELL cell, bool strict = false) const;
-  DirType Pose_Dir() const;
+  game::DirType Pose_Dir() const;
   TARGET Good_LZ() const;
-  DirType Fire_Direction() const override;
+  game::DirType Fire_Direction() const override;
 
   // Landing zone support functionality.
   bool Is_LZ_Clear(TARGET target) const;
@@ -111,7 +112,8 @@ class AircraftClass : public FootClass, public FlyClass {
   COORDINATE Target_Coord() const override;
 
   // Object entry and exit from the game system.
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+               game::DirType dir = game::DIR_N) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -167,7 +169,7 @@ class AircraftClass : public FootClass, public FlyClass {
   *the same *	as the PrimaryFacing, but in the case of helicopters, it can be
   *different.
   */
-  FacingClass SecondaryFacing;
+  game::FacingClass SecondaryFacing;
 
   /*
   **	This is the altitude of the aircraft. It is expressed in pixels that

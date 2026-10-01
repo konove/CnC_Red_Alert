@@ -64,9 +64,9 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/sim/direction.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/inline.h"
 #include "ra/data/text_ids.h"
 #include "ra/map/tab.h"
@@ -364,7 +364,7 @@ void HelpClass::Set_Text(int text) {
  *                                                                                             *
  * HISTORY: * 12/15/1994 JLB : Created. *
  *=============================================================================================*/
-bool HelpClass::Scroll_Map(DirType facing, int& distance, bool really) {
+bool HelpClass::Scroll_Map(game::DirType facing, int& distance, bool really) {
   if (really) {
     Help_Text(TXT_NONE);
   }

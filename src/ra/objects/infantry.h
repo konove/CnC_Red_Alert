@@ -49,10 +49,10 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "game/sim/direction.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/bullet.h"
@@ -171,7 +171,7 @@ class InfantryClass final : public FootClass {
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE coord, DirType facing) override;
+  bool Unlimbo(COORDINATE coord, game::DirType facing) override;
   bool Paradrop(COORDINATE coord) override;
   bool Limbo() override;
   void Detach(TARGET target, bool all) override;
@@ -258,7 +258,8 @@ class InfantryClass final : public FootClass {
   bool Do_Action(DoType todo, bool force = false);
   bool Random_Animate() override;
   [[nodiscard]] MoveType Can_Enter_Cell(
-      CELL /*cell*/, FacingType /*from*/ = FACING_NONE) const override;
+      CELL /*cell*/,
+      game::FacingType /*from*/ = game::FACING_NONE) const override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   void Enter_Idle_Mode(bool initial = false) override;
   void Scatter(COORDINATE threat, bool forced = false,

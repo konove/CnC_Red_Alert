@@ -49,10 +49,10 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
-#include "ra/core/facing.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/bullet.h"
@@ -133,7 +133,7 @@ class UnitClass final : public DriveClass {
   **	This is the facing of the turret. It can be, and usually is,
   **	rotated independently of the body it is attached to.
   */
-  FacingClass SecondaryFacing;
+  game::FacingClass SecondaryFacing;
 
  protected:
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
@@ -184,7 +184,7 @@ class UnitClass final : public DriveClass {
   */
   bool Should_Crush_It(const TechnoClass* it) const;
   [[nodiscard]] int Credit_Load() const;
-  [[nodiscard]] DirType Turret_Facing() const override {
+  [[nodiscard]] game::DirType Turret_Facing() const override {
     if (Class->IsTurretEquipped) {
       return SecondaryFacing.Current();
     }
@@ -193,8 +193,8 @@ class UnitClass final : public DriveClass {
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] int Pip_Count() const override;
   [[nodiscard]] InfantryType Crew_Type() const override;
-  [[nodiscard]] DirType Fire_Direction() const override;
-  bool Ok_To_Move(DirType dir) override;
+  [[nodiscard]] game::DirType Fire_Direction() const override;
+  bool Ok_To_Move(game::DirType dir) override;
   [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
   [[nodiscard]] Fixed Tiberium_Load() const override;
 
@@ -208,7 +208,8 @@ class UnitClass final : public DriveClass {
   **	Object entry and exit from the game system.
   */
   bool Limbo() override;
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+               game::DirType dir = game::DIR_N) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -245,7 +246,8 @@ class UnitClass final : public DriveClass {
   **	AI.
   */
   TARGET Greatest_Threat(ThreatType threat) override;  // const;
-  DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
+  game::DirType Desired_Load_Dir(ObjectClass* passenger,
+                                 CELL& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
@@ -273,7 +275,7 @@ class UnitClass final : public DriveClass {
   void Approach_Target() override;
   void Enter_Idle_Mode(bool initial = false) override;
   [[nodiscard]] MoveType Can_Enter_Cell(
-      CELL cell, FacingType facing = FACING_NONE) const override;
+      CELL cell, game::FacingType facing = game::FACING_NONE) const override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   void Exit_Repair();
   void Shroud_Regen();

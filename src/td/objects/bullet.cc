@@ -66,10 +66,11 @@
 #include "engine/gfx/shape.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "td/core/config.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
-#include "td/core/facing.h"
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
@@ -513,7 +514,7 @@ void BulletClass::AI() {
 void BulletClass::Draw_It(PixelView& view, int x, int y,
                           WindowNumberType window) {
   Validate();
-  const int facing = Facing_To_32(PrimaryFacing);
+  const int facing = game::Dir_To_32(PrimaryFacing);
 
   /*
   **	Certain projectiles aren't visible. This includes small bullets (which
@@ -643,7 +644,7 @@ void BulletClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
-bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
+bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   Validate();
   /*
   **	Try to unlimbo the bullet as far as the base class is concerned. Use the
@@ -685,7 +686,8 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
           scatterdist = std::min(scatterdist, 0x0080);
         }
 
-        dir = AsDirection(static_cast<int>(dir) + (Random_Pick(0, 10) - 5));
+        dir =
+            game::AsDirection(static_cast<int>(dir) + (Random_Pick(0, 10) - 5));
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
         tcoord = Coord_Move(tcoord, dir,

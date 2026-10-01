@@ -48,10 +48,10 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
-#include "ra/core/facing.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/bullet.h"
@@ -120,24 +120,25 @@ class AircraftClass : public FootClass, public FlyClass {
   **	Query functions.
   */
   [[nodiscard]] LayerType In_Which_Layer() const override;
-  [[nodiscard]] DirType Turret_Facing() const override {
+  [[nodiscard]] game::DirType Turret_Facing() const override {
     return SecondaryFacing.Current();
   }
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] MoveType Can_Enter_Cell(
-      CELL cell, FacingType facing = FACING_NONE) const override;
+      CELL cell, game::FacingType facing = game::FACING_NONE) const override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
   ActionType What_Action(ObjectClass* target) override;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
-  DirType Desired_Load_Dir(ObjectClass* object, CELL& moveto) const override;
+  game::DirType Desired_Load_Dir(ObjectClass* object,
+                                 CELL& moveto) const override;
   [[nodiscard]] int Pip_Count() const override;
   [[nodiscard]] TARGET Good_Fire_Location(TARGET target) const;
   [[nodiscard]] bool Cell_Seems_Ok(CELL cell, bool strict = false) const;
-  [[nodiscard]] DirType Pose_Dir() const;
+  [[nodiscard]] game::DirType Pose_Dir() const;
   [[nodiscard]] TARGET Good_LZ() const;
-  [[nodiscard]] DirType Fire_Direction() const override;
+  [[nodiscard]] game::DirType Fire_Direction() const override;
   [[nodiscard]] FireErrorType Can_Fire(TARGET target, int which) const override;
 
   /*
@@ -156,7 +157,8 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/, DirType dir = DIR_N) override;
+  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+               game::DirType dir = game::DIR_N) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -219,7 +221,7 @@ class AircraftClass : public FootClass, public FlyClass {
   *the same *	as the PrimaryFacing, but in the case of helicopters, it can be
   *different.
   */
-  FacingClass SecondaryFacing;
+  game::FacingClass SecondaryFacing;
 
   /*
   **	If this is a passenger carrying aircraft then this flag will be set.

@@ -66,7 +66,7 @@ class HelpClass : public TabClass {
 
   void Draw_It(PixelView& view, bool forced = false) override;
   void AI(engine::window::InputEvent& event, int x, int y) override;
-  bool Scroll_Map(DirType facing, int& distance, bool really) override;
+  bool Scroll_Map(game::DirType facing, int& distance, bool really) override;
   void Set_Tactical_Position(COORDINATE coord) override;
 
   void Help_Text(int text, int x = -1, int y = -1, int color = kLtGrey,

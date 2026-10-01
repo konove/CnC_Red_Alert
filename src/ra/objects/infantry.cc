@@ -116,6 +116,8 @@
 #include "engine/gfx/rect.h"
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/special.h"
 #include "ra/ai/team.h"
@@ -127,8 +129,6 @@
 #include "ra/core/const.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
-#include "ra/core/facing.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
@@ -528,7 +528,7 @@ int InfantryClass::Shape_Number() const {
   */
   if (base::At(Class->DoControls, base::ToSize(static_cast<int>(doit))).Jump) {
     shapenum +=
-        base::At(HumanShape, Dir_To_32(PrimaryFacing.Current())) *
+        base::At(HumanShape, game::Dir_To_32(PrimaryFacing.Current())) *
         base::At(Class->DoControls, base::ToSize(static_cast<int>(doit))).Jump;
   }
 
@@ -1004,10 +1004,10 @@ void InfantryClass::Assign_Destination(TARGET target) {
         }
       }
     } else {
-      base::At(Path, 0) = FACING_NONE;
+      base::At(Path, 0) = game::FACING_NONE;
     }
   } else {
-    base::At(Path, 0) = FACING_NONE;
+    base::At(Path, 0) = game::FACING_NONE;
   }
   FootClass::Assign_Destination(target);
 }
@@ -1033,7 +1033,7 @@ void InfantryClass::Assign_Target(TARGET target) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
-  base::At(Path, 0) = FACING_NONE;
+  base::At(Path, 0) = game::FACING_NONE;
   if (Class->IsDog &&
       (As_Object(target) && As_Object(target)->What_Am_I() != RTTI_INFANTRY)) {
     target = kTargetNone;
@@ -1176,7 +1176,8 @@ void InfantryClass::AI() {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
+MoveType InfantryClass::Can_Enter_Cell(CELL cell,
+                                       game::FacingType /*from*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
@@ -1713,14 +1714,16 @@ bool InfantryClass::Random_Animate() {
 
       case 6:
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(Facing_Dir(Random_Pick(FACING_N, FACING_NW)));
+        PrimaryFacing.Set(
+            game::Facing_Dir(Random_Pick(game::FACING_N, game::FACING_NW)));
         Mark(MARK_CHANGE_REDRAW);
         break;
 
       case 7:
         Do_Action(DO_IDLE2);
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(Facing_Dir(Random_Pick(FACING_N, FACING_NW)));
+        PrimaryFacing.Set(
+            game::Facing_Dir(Random_Pick(game::FACING_N, game::FACING_NW)));
         Mark(MARK_CHANGE_REDRAW);
         if (!IsSelected && IsOwnedByPlayer && *this == INFANTRY_TANYA &&
             Sim_Random_Pick(0, 2) == 0) {
@@ -1733,7 +1736,8 @@ bool InfantryClass::Random_Animate() {
       */
       case 8:
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(Facing_Dir(Random_Pick(FACING_N, FACING_NW)));
+        PrimaryFacing.Set(
+            game::Facing_Dir(Random_Pick(game::FACING_N, game::FACING_NW)));
         Mark(MARK_CHANGE_REDRAW);
         if (!House->IsHuman && Class->IsFraidyCat) {
           Scatter(0, true);
@@ -1743,7 +1747,8 @@ bool InfantryClass::Random_Animate() {
       case 9:
       case 10:
         Mark(MARK_CHANGE_REDRAW);
-        PrimaryFacing.Set(Facing_Dir(Random_Pick(FACING_N, FACING_NW)));
+        PrimaryFacing.Set(
+            game::Facing_Dir(Random_Pick(game::FACING_N, game::FACING_NW)));
         Mark(MARK_CHANGE_REDRAW);
         break;
 
@@ -1824,28 +1829,29 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   }
 
   if (forced || Class->IsFraidyCat /*|| !(Random_Pick(1, 4) == 1)*/) {
-    FacingType toface = FACING_NONE;
+    game::FacingType toface = game::FACING_NONE;
 
     if (threat) {
-      toface = Dir_Facing(Direction8(threat, Coord));
-      toface = toface + static_cast<FacingType>(Random_Pick(0, 4) - 2);
+      toface = game::Dir_Facing(Direction8(threat, Coord));
+      toface = toface + static_cast<game::FacingType>(Random_Pick(0, 4) - 2);
     } else {
       const COORDINATE coord = Coord_Fraction(Center_Coord());
 
       if (coord != 0x00800080L) {
-        toface = Dir_Facing(
-            Desired_Facing8(0x0080, 0x0080, Coord_X(coord), Coord_Y(coord)));
+        toface = game::Dir_Facing(game::Desired_Facing8(
+            0x0080, 0x0080, Coord_X(coord), Coord_Y(coord)));
       } else {
-        toface = Dir_Facing(PrimaryFacing.Current());
+        toface = game::Dir_Facing(PrimaryFacing.Current());
       }
-      toface = toface + static_cast<FacingType>(Random_Pick(0, 4) - 2);
+      toface = toface + static_cast<game::FacingType>(Random_Pick(0, 4) - 2);
     }
 
     CELL newcell = 0;
     CELL altcell = 0;
     bool found = false;
-    for (const FacingType face : magic_enum::enum_values<FacingType>()) {
-      const FacingType newface = toface + face;
+    for (const game::FacingType face :
+         magic_enum::enum_values<game::FacingType>()) {
+      const game::FacingType newface = toface + face;
       newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
       if (TheMap().In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
@@ -2049,10 +2055,10 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
   **	Convert the head to coordinate to a legal sub-position location.
   */
   headto = TheMap().at(headto).Closest_Free_Spot(
-      Coord_Move(headto, Direction(headto) + DIR_S, 0x007C));
+      Coord_Move(headto, Direction(headto) + game::DIR_S, 0x007C));
   if (!headto && Can_Enter_Cell(Coord_Cell(old)) == MOVE_OK) {
     headto = TheMap().at(old).Closest_Free_Spot(
-        Coord_Move(old, Direction(headto) + DIR_S, 0x0080), true);
+        Coord_Move(old, Direction(headto) + game::DIR_S, 0x0080), true);
   }
 
   /*
@@ -2167,7 +2173,7 @@ BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
+bool InfantryClass::Unlimbo(COORDINATE coord, game::DirType facing) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
@@ -2948,7 +2954,8 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
           while (list.front() != kRefreshEol && !found) {
             const CELL newcell =
                 static_cast<CELL>(cell + base::ConsumeFront(list));
-            for (const FacingType i : magic_enum::enum_values<FacingType>()) {
+            for (const game::FacingType i :
+                 magic_enum::enum_values<game::FacingType>()) {
               if (std::cmp_equal(TheMap()
                                      .at(Adjacent_Cell(newcell, i))
                                      .Zones.at(Class->MZone),
@@ -3285,7 +3292,7 @@ const ObjectTypeClass& InfantryClass::Class_Of() const {
  *=============================================================================================*/
 void InfantryClass::Read_INI(CCINIClass& ini) {
   char buf[128];
-  DirType dir = DIR_N;
+  game::DirType dir = game::DIR_N;
   TriggerTypeClass* tp = nullptr;
 
   const int len = ini.Entry_Count(INI_Name());
@@ -3340,8 +3347,8 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
               Mission_From_Name(tokens.Next());
           char* validation = tokens.Next();
           if (validation) {
-            dir =
-                static_cast<DirType>(base::ParseIntegerOr<int>(validation, 0));
+            dir = static_cast<game::DirType>(
+                base::ParseIntegerOr<int>(validation, 0));
             validation = tokens.Next();
             if (validation) {
               tp = TriggerTypeClass::From_Name(validation);
@@ -3349,7 +3356,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
               tp = nullptr;
             }
           } else {
-            dir = static_cast<DirType>(0);
+            dir = static_cast<game::DirType>(0);
             tp = nullptr;
           }
 
@@ -3595,7 +3602,7 @@ void InfantryClass::Firing_AI() {
           */
           if (TarCom == NavCom) {
             NavCom = kTargetNone;
-            base::At(Path, 0) = FACING_NONE;
+            base::At(Path, 0) = game::FACING_NONE;
           }
           break;
         case FireErrorType::FIRE_AMMO:
@@ -3821,10 +3828,10 @@ void InfantryClass::Movement_AI() {
         **	to be entered. If not, then abort the path and try
         **	again.
         */
-        if (base::At(Path, 0) != FACING_NONE &&
+        if (base::At(Path, 0) != game::FACING_NONE &&
             Can_Enter_Cell(Adjacent_Cell(Coord_Cell(Center_Coord()),
                                          base::At(Path, 0))) != MOVE_OK) {
-          base::At(Path, 0) = FACING_NONE;
+          base::At(Path, 0) = game::FACING_NONE;
         }
 
         /*
@@ -3835,13 +3842,13 @@ void InfantryClass::Movement_AI() {
         */
         const int d = Lepton_To_Cell(static_cast<LEPTON>(Distance(NavCom)));
         if (d < kConquerPathMax) {
-          base::At(Path, d) = FACING_NONE;
+          base::At(Path, d) = game::FACING_NONE;
         }
 
         /*
         **	Find a path to follow if one isn't already calculated.
         */
-        if (base::At(Path, 0) == FACING_NONE) {
+        if (base::At(Path, 0) == game::FACING_NONE) {
           /*
           **	Calculate the path from the current location to the
           **	destination indicated by the navigation computer. If there
@@ -3947,7 +3954,7 @@ void InfantryClass::Movement_AI() {
             }
           }
 
-          base::At(Path, 0) = FACING_NONE;
+          base::At(Path, 0) = game::FACING_NONE;
           Stop_Driver();
           if (IsNewNavCom) {
             PlaySoundEffect(VOC_SCOLD);
@@ -4004,7 +4011,7 @@ void InfantryClass::Movement_AI() {
                         std::as_bytes(base::Suffix(Path, 1)),
                         sizeof(Path) - sizeof(base::At(Path, 0)));
         base::At(Path, (sizeof(Path) / sizeof(base::At(Path, 0))) - 1) =
-            FACING_NONE;
+            game::FACING_NONE;
         Coord = Head_To_Coord();
         if (Per_Cell_Process(PCP_END)) {
           return;
@@ -4024,7 +4031,7 @@ void InfantryClass::Movement_AI() {
             Enter_Idle_Mode();
           }
           // Stop_Driver();
-          base::At(Path, 0) = FACING_NONE;
+          base::At(Path, 0) = game::FACING_NONE;
         }
       } else {
         int movespeed = Speed;

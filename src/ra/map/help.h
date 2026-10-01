@@ -47,8 +47,8 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
+#include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/map/tab.h"
@@ -71,7 +71,7 @@ class HelpClass : public TabClass {
 
   void Draw_It(PixelView& view, bool forced = false) override;
   void AI(engine::window::InputEvent& event, int x, int y) override;
-  bool Scroll_Map(DirType facing, int& distance, bool really) override;
+  bool Scroll_Map(game::DirType facing, int& distance, bool really) override;
   void Set_Tactical_Position(COORDINATE coord) override;
 
   void Help_Text(int text, int x = -1, int y = -1, int color = kLtGrey,

@@ -250,12 +250,12 @@ class CellClass {
   }
   // Returns the cell adjacent to this one in direction `face`, or this cell
   // itself when `face` is invalid or the neighbour lies outside the map.
-  CellClass& Adjacent_Cell(FacingType face) ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  [[nodiscard]] const CellClass& Adjacent_Cell(FacingType face) const
+  CellClass& Adjacent_Cell(game::FacingType face) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  [[nodiscard]] const CellClass& Adjacent_Cell(game::FacingType face) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
   // Returns the cell-index delta from this cell to its neighbour in direction
   // `face`, or 0 when `face` is invalid or the neighbour lies off the map.
-  [[nodiscard]] int Adjacent_Offset(FacingType face) const;
+  [[nodiscard]] int Adjacent_Offset(game::FacingType face) const;
   [[nodiscard]] InfantryClass* Cell_Infantry() const;
   [[nodiscard]] LandType Land_Type() const { return Land; }
   [[nodiscard]] ObjectClass* Cell_Find_Object(RTTIType rtti) const;

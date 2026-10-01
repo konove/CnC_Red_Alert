@@ -16,6 +16,7 @@
 #include "engine/stream/span_source.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
+#include "game/sim/direction.h"
 #include "gtest/gtest.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
@@ -320,9 +321,9 @@ TEST_F(TdArchiveRoundTripTest, UnitRestoresBaseFieldsReferencesTimersAndPathTail
   unit->NavCom = As_Target(CELL{1200});
   unit->Flagged = HOUSE_BAD;
   unit->Reload.Set(87);
-  unit->Path[0] = FACING_E;
-  unit->Path[1] = FACING_NONE;
-  unit->Path[kConquerPathMax - 1] = FACING_S;
+  unit->Path[0] = game::FACING_E;
+  unit->Path[1] = game::FACING_NONE;
+  unit->Path[kConquerPathMax - 1] = game::FACING_S;
   const auto bytes = Save(*unit);
   auto* restored = base::NewPooled<UnitClass>();
   ASSERT_TRUE(Restore(*restored, bytes));
@@ -333,9 +334,9 @@ TEST_F(TdArchiveRoundTripTest, UnitRestoresBaseFieldsReferencesTimersAndPathTail
   EXPECT_EQ(restored->NavCom, unit->NavCom);
   EXPECT_EQ(restored->Flagged, HOUSE_BAD);
   EXPECT_EQ(restored->Reload.Remaining(), 87);
-  EXPECT_EQ(restored->Path[0], FACING_E);
-  EXPECT_EQ(restored->Path[1], FACING_NONE);
-  EXPECT_EQ(restored->Path[kConquerPathMax - 1], FACING_S);
+  EXPECT_EQ(restored->Path[0], game::FACING_E);
+  EXPECT_EQ(restored->Path[1], game::FACING_NONE);
+  EXPECT_EQ(restored->Path[kConquerPathMax - 1], game::FACING_S);
   EXPECT_EQ(Save(*restored), bytes);
 }
 

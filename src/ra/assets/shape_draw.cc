@@ -39,8 +39,8 @@
 #include "engine/gfx/wwstd.h"
 #include "game/core/game_clock.h"
 #include "game/core/interpal.h"
+#include "game/sim/direction.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
 #include "ra/map/display.h"
 
 namespace ra {
@@ -56,7 +56,7 @@ namespace {
 // whatever falls outside the doubled frame is cropped.
 std::vector<uint8_t> ScaleRotateShape(const std::span<const uint8_t> pixels,
                                       const int width, const int height,
-                                      const DirType rotation,
+                                      const game::DirType rotation,
                                       const int32_t scale) {
   const int out_width = width * 2;
   const int out_height = height * 2;
@@ -115,8 +115,8 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
                    const int shape_num, const int x, const int y,
                    const WindowNumberType window, ShapeFlags flags,
                    std::span<const uint8_t> fading_data,
-                   std::span<const uint8_t> ghostdata, const DirType rotation,
-                   const int32_t scale) {
+                   std::span<const uint8_t> ghostdata,
+                   const game::DirType rotation, const int32_t scale) {
   // Special kludge for E3 to prevent crashes
   //
   // Callers that ask for ghosting or fading without supplying the table get
@@ -149,7 +149,7 @@ void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
       // Rotation and scale handler.
       // 0x0100 is 1.0 in the 24.8 fixed point scale, so this is "no rotation
       // and no scaling" -- the common case, which skips the slow path below.
-      if (rotation != DIR_N || scale != 0x0100) {
+      if (rotation != game::DIR_N || scale != 0x0100) {
         frame_pixels =
             ScaleRotateShape(frame_pixels, width, height, rotation, scale);
         width *= 2;

@@ -109,6 +109,7 @@
 #include "base/numeric.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
+#include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
@@ -174,7 +175,7 @@ FootClass::FootClass()
       TryTryAgain(kPathRetry),
       HeadToCoord(0) {
   for (auto& facing : Path) {
-    facing = FACING_NONE;
+    facing = game::FACING_NONE;
   }
 
   PathDelay.Set(0);
@@ -239,7 +240,7 @@ FootClass::FootClass(HousesType house)
       TryTryAgain(kPathRetry),
       HeadToCoord(0L) {
   for (auto& facing : Path) {
-    facing = FACING_NONE;
+    facing = game::FACING_NONE;
   }
 
   PathDelay.Set(0);
@@ -344,7 +345,7 @@ bool FootClass::Basic_Path() {
   CELL cell = 0;
   const bool skip_path = false;
 
-  base::At(Path, 0) = FACING_NONE;
+  base::At(Path, 0) = game::FACING_NONE;
 
   if (Target_Legal(NavCom)) {
     cell = As_Cell(NavCom);
@@ -357,13 +358,13 @@ bool FootClass::Basic_Path() {
     //		IsFindPath = true;
     if (Can_Enter_Cell(cell) == MOVE_NO && Distance(NavCom) > 0x0300) {
       static const int _faceadjust[8] = {0, 1, -1, 2, -2, 3, -3, 4};
-      const auto f2 = static_cast<FacingType>(
+      const auto f2 = static_cast<game::FacingType>(
           static_cast<unsigned>(td::Direction(cell, Coord_Cell(Coord))) >> 5);
 
       for (const int index : _faceadjust) {
         CELL const cell2 =
-            Adjacent_Cell(cell, AsFacing(static_cast<int>(f2) + index));
-        if (Can_Enter_Cell(cell2, FACING_NONE) <= MOVE_CLOAK) {
+            Adjacent_Cell(cell, game::AsFacing(static_cast<int>(f2) + index));
+        if (Can_Enter_Cell(cell2, game::FACING_NONE) <= MOVE_CLOAK) {
           cell = cell2;
           break;
         }
@@ -379,7 +380,7 @@ bool FootClass::Basic_Path() {
       while (obj) {
         if (obj != this && obj->What_Am_I() == RTTI_INFANTRY) {
           auto* inf = dynamic_cast<InfantryClass*>(obj);
-          if (inf->NavCom == NavCom && inf->Path[0] != FACING_NONE) {
+          if (inf->NavCom == NavCom && inf->Path[0] != game::FACING_NONE) {
             if (Coord_Cell(inf->Head_To_Coord()) == Coord_Cell(inf->Coord)) {
               base::CopyBytes(std::as_writable_bytes(std::span(Path)),
                               std::as_bytes(std::span(inf->Path).subspan(1)),
@@ -389,7 +390,7 @@ bool FootClass::Basic_Path() {
                               std::as_bytes(std::span(inf->Path)),
                               sizeof(Path));
             }
-            if (Path[0] != FACING_NONE) {
+            if (Path[0] != game::FACING_NONE) {
               skip_path = true;
             }
             break;
@@ -403,7 +404,7 @@ bool FootClass::Basic_Path() {
 
     if (!skip_path) {
       Mark(MARK_UP);
-      base::At(Path, 0) = FACING_NONE;  // Probably not necessary, but...
+      base::At(Path, 0) = game::FACING_NONE;  // Probably not necessary, but...
 
       /*
       **	Try to find a path to the destination. If a failure occurs, then
@@ -412,8 +413,8 @@ bool FootClass::Basic_Path() {
       */
       bool found1 = false;  // Found a best path yet?
       PathType path1;
-      FacingType workpath1[200];  // Staging area for path list.
-      FacingType workpath2[200];  // Staging area for path list.
+      game::FacingType workpath1[200];  // Staging area for path list.
+      game::FacingType workpath2[200];  // Staging area for path list.
       MoveType maxtype = MOVE_TEMP;
       if (!House->IsHuman) {
         maxtype = MOVE_DESTROYABLE;
@@ -516,13 +517,13 @@ bool FootClass::Basic_Path() {
     ** retry logic.
     */
     CELL cell = Adjacent_Cell(Coord_Cell(Coord), Path[0]);
-    if (Can_Enter_Cell(cell, FACING_NONE) == MOVEF_TEMP) {
-      Path[0] = FACING_NONE;
+    if (Can_Enter_Cell(cell, game::FACING_NONE) == MOVEF_TEMP) {
+      Path[0] = game::FACING_NONE;
     }
 #endif
 
     PathDelay.Set(kPathDelay);
-    if (base::At(Path, 0) != FACING_NONE) {
+    if (base::At(Path, 0) != game::FACING_NONE) {
       return true;
     }
 
@@ -838,7 +839,7 @@ COORDINATE FootClass::Sort_Y() const {
  *=============================================================================================*/
 void FootClass::Stun() {
   Assign_Destination(kTargetNone);
-  base::At(Path, 0) = FACING_NONE;
+  base::At(Path, 0) = game::FACING_NONE;
   Stop_Driver();
   TechnoClass::Stun();
 }
@@ -905,7 +906,7 @@ void FootClass::Approach_Target() {
       COORDINATE trycoord = 0;
       const CELL tcell = Coord_Cell(tcoord);
       CELL trycell = tcell;
-      const DirType dir = Direction256(tcoord, Center_Coord());
+      const game::DirType dir = Direction256(tcoord, Center_Coord());
       bool found = false;
 
       /*
@@ -1026,7 +1027,7 @@ int FootClass::Mission_Guard_Area() {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
-bool FootClass::Unlimbo(COORDINATE coord, DirType dir) {
+bool FootClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   /*
   **	Try to unlimbo the unit.
   */
@@ -1039,7 +1040,7 @@ bool FootClass::Unlimbo(COORDINATE coord, DirType dir) {
     /*
     **	Start in a still (non-moving) state.
     */
-    base::At(Path, 0) = FACING_NONE;
+    base::At(Path, 0) = game::FACING_NONE;
     return true;
   }
   return false;
@@ -1063,7 +1064,7 @@ bool FootClass::Unlimbo(COORDINATE coord, DirType dir) {
 void FootClass::Assign_Mission(MissionType order) {
   if (What_Am_I() != RTTI_UNIT ||
       *dynamic_cast<UnitClass*>(this) != UNIT_GUNBOAT) {
-    base::At(Path, 0) = FACING_NONE;
+    base::At(Path, 0) = game::FACING_NONE;
   }
   TechnoClass::Assign_Mission(order);
 }
@@ -1386,7 +1387,8 @@ void FootClass::Per_Cell_Process(bool center) {
   *stealth tank, *	then shimmer the cloaked object.
   */
   if (Cloak == CLOAKED) {
-    for (const FacingType face : magic_enum::enum_values<FacingType>()) {
+    for (const game::FacingType face :
+         magic_enum::enum_values<game::FacingType>()) {
       const CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
 
       if (TheMap().In_Radar(cell)) {
@@ -1419,7 +1421,7 @@ void FootClass::Per_Cell_Process(bool center) {
          Mission == MISSION_ATTACK || Mission == MISSION_HUNT) &&
         inrange) {
       Assign_Destination(kTargetNone);
-      base::At(Path, 0) = FACING_NONE;
+      base::At(Path, 0) = game::FACING_NONE;
     }
   }
 
@@ -1922,7 +1924,7 @@ void FootClass::Detach(TARGET target, bool all) {
   */
   if (NavCom == target) {
     NavCom = kTargetNone;
-    base::At(Path, 0) = FACING_NONE;
+    base::At(Path, 0) = game::FACING_NONE;
     Restore_Mission();
   }
 
@@ -1931,7 +1933,7 @@ void FootClass::Detach(TARGET target, bool all) {
   **	toward the target to get within range, then abort the path.
   */
   if (TarCom == target && House->IsHuman) {
-    base::At(Path, 0) = FACING_NONE;
+    base::At(Path, 0) = game::FACING_NONE;
   }
 }
 
@@ -1978,7 +1980,7 @@ int FootClass::Offload_Tiberium_Bail() { return 0; }
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
 MoveType FootClass::Can_Enter_Cell(CELL /*unused*/,
-                                   FacingType /*unused*/) const {
+                                   game::FacingType /*unused*/) const {
   return MOVE_OK;
 }
 

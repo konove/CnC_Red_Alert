@@ -56,6 +56,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/profile_buffer.h"
 #include "engine/stream/byte_stream.h"
+#include "game/sim/direction.h"
 #include "td/assets/palettes.h"  // IWYU pragma: keep (used only with an entry point)
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
@@ -137,7 +138,7 @@ void Delete_Swap_Files();
 HINSTANCE ProgramInstance;
 #endif
 extern bool CC95AlreadyRunning;
-void Move_Point(int16_t& x, int16_t& y, DirType dir, uint16_t distance);
+void Move_Point(int16_t& x, int16_t& y, game::DirType dir, uint16_t distance);
 
 // The one Game; main() creates it and ShutDown() destroys it. nullptr before
 // main() and after ShutDown(). The pointer itself is never destroyed: a Game

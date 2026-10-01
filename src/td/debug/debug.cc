@@ -55,6 +55,7 @@
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
 #include "td/ai/team.h"  // IWYU pragma: keep (DeletePooled needs TeamClass complete)
 #include "td/assets/palette.h"
 #include "td/assets/screen.h"
@@ -162,7 +163,7 @@ void Debug_Key(unsigned input) {
         if (air) {
           air->Altitude = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
-                       DIR_N);
+                       game::DIR_N);
         }
       } break;
 
@@ -175,7 +176,7 @@ void Debug_Key(unsigned input) {
         if (air) {
           air->Altitude = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
-                       DIR_N);
+                       game::DIR_N);
         }
       } break;
 
@@ -185,7 +186,7 @@ void Debug_Key(unsigned input) {
         if (air) {
           air->Altitude = 0;
           air->Unlimbo(TheMap().Pixel_To_Coord(TheMouse().x(), TheMouse().y()),
-                       DIR_N);
+                       game::DIR_N);
         }
       } break;
 
@@ -395,8 +396,8 @@ void Debug_Key(unsigned input) {
             int y = 0;
             int x1 = 0;
             int y1 = 0;
-            const DirType r1 = AsDirection(r);
-            const DirType r2 = AsDirection(r + 10);
+            const game::DirType r1 = game::AsDirection(r);
+            const game::DirType r2 = game::AsDirection(r + 10);
 
             if (TheMap().Coord_To_Pixel(
                     Coord_Move(center, r1, static_cast<uint16_t>(sight)), x,

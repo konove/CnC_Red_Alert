@@ -84,6 +84,8 @@
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
 #include "game/core/vector_dynamic.h"
+#include "game/sim/direction.h"
+#include "game/sim/facing.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/scenario.h"
@@ -92,8 +94,6 @@
 #include "ra/assets/screen.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/face.h"
-#include "ra/core/facing.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
@@ -253,7 +253,7 @@ void MapEditClass::One_Time() {
   */
   FacingDial = std::make_unique<DirectionDial>(
       kPopupFacingdial, kPopupFaceboxX, kPopupFaceboxY, kPopupFaceboxW,
-      kPopupFaceboxH, static_cast<DirType>(0));
+      kPopupFaceboxH, static_cast<game::DirType>(0));
 
   /*
   **	The base percent-built slider & its label
@@ -1910,7 +1910,8 @@ void MapEditClass::Fatal(int txt) {
   EmergencyExit(EXIT_FAILURE);
 }
 
-bool MapEditClass::Scroll_Map(DirType facing, int& distance, bool really) {
+bool MapEditClass::Scroll_Map(game::DirType facing, int& distance,
+                              bool really) {
   /*
   ** The popup gadgets require the entire map to be redrawn if we scroll.
   */

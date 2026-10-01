@@ -120,13 +120,13 @@ class DriveClass : public FootClass {
   **	Member function prototypes.
   */
   int Offload_Tiberium_Bail() override;
-  void Do_Turn(DirType dir);
+  void Do_Turn(game::DirType dir);
   void Approach_Target() override;
   const ObjectTypeClass& Class_Of() const override;
   virtual void Overrun_Square(CELL cell, bool threaten = true);
   void Assign_Destination(TARGET target) override;
   void Per_Cell_Process(bool center) override;
-  virtual bool Ok_To_Move(DirType /*unused*/);
+  virtual bool Ok_To_Move(game::DirType /*unused*/);
   void Fixup_Path(PathType* path) override;
   void AI() override;
   void Force_Track(int track, COORDINATE coord);
@@ -166,13 +166,13 @@ class DriveClass : public FootClass {
   struct TurnTrackType {
     int Track;              // Which track to use.
     int StartTrack;         // Track when starting from stand-still.
-    DirType Facing;         // Facing when track has been completed.
+    game::DirType Facing;   // Facing when track has been completed.
     TrackControlType Flag;  // List processing flag bits.
   };
 
   struct TrackType {
     COORDINATE Offset;  // Offset to origin coordinate.
-    DirType Facing;     // Facing (primary track).
+    game::DirType Facing;  // Facing (primary track).
   };
 
   struct RawTrackType {
@@ -204,7 +204,7 @@ class DriveClass : public FootClass {
   bool While_Moving();
   bool Start_Of_Move();
   void Lay_Track();
-  COORDINATE Smooth_Turn(COORDINATE adj, DirType* dir);
+  COORDINATE Smooth_Turn(COORDINATE adj, game::DirType* dir);
 
   static const TurnTrackType TrackControl[67];
   static const RawTrackType RawTracks[13];
