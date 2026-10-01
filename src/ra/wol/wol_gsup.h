@@ -36,6 +36,7 @@
 #include "absl/base/attributes.h"
 #include "ra/net/session.h"
 #include "ra/ui/shapebtn.h"
+#include "ra/ui/textbtn.h"
 #include "ra/wol/wolapiob.h"
 
 class PixelView;
@@ -47,7 +48,6 @@ class IconListClass;
 class EditClass;
 class GaugeClass;
 class CheckListClass;
-class TextButtonClass;
 class StaticButtonClass;
 class DropListClass;
 class BigCheckBoxClass;

@@ -32,6 +32,26 @@ struct UiSkin {
   static void Draw_Shape(PixelView& view, std::span<const std::byte> shapes,
                          int frame, int x, int y);
 
+  // The string-table number for "no text", and the flags a default-built
+  // text button prints with.
+  static constexpr int kTextNone = 0;  // TXT_NONE
+  static constexpr PrintFlags kButtonDefaultFlags = TPF_8POINT;
+
+  // Looks up text number `id`.
+  static const char* Text_String(int id);
+
+  // The width of `text` and the line height in the font `flags` select.
+  static int Text_Width(PrintFlags flags, const char* text);
+  static int Text_Height(PrintFlags flags);
+
+  // Draws a text button's box and its caption centered at x, in its state.
+  static void Draw_Button_Box(PixelView& view, int x, int y, int width,
+                              int height, PrintFlags flags, bool disabled,
+                              bool pressed);
+  static void Print_Button_Text(PixelView& view, const char* text, int x, int y,
+                                PrintFlags flags, bool disabled, bool pressed,
+                                bool on);
+
   // Prints a text label, unclipped or clipped to `width` pixels.
   static void Print_Label(PixelView& view, const char* text, int x, int y,
                           TextColor color, PrintFlags style);
