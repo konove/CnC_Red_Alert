@@ -256,7 +256,7 @@ bool LoadOptionsClass::Process() {
 
   EditClass editbtn(kButtonEdit, game_descr, 40,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_edit_x,
-                    d_edit_y, d_edit_w, -1, EditClass::ALPHANUMERIC);
+                    d_edit_y, d_edit_w, -1, EditClass::kAlphanumeric);
 
   PixelView& view = TheScreen().visible_view();
 

@@ -768,24 +768,24 @@ int MapEditClass::Edit_Team() {
   ........................................................................*/
   EditClass name_edt(kButtonName, name_buf, 8,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNameX,
-                     kNameY, kNameW, kNameH, EditClass::ALPHANUMERIC);
+                     kNameY, kNameW, kNameH, EditClass::kAlphanumeric);
 
   EditClass recr_edt(kButtonRecruit, recr_buf, 3,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPriorityX,
-                     kPriorityY, kPriorityW, kPriorityH, EditClass::NUMERIC);
+                     kPriorityY, kPriorityW, kPriorityH, EditClass::kNumeric);
 
   EditClass maxnum_edt(kButtonMaxnum, maxnum_buf, 3,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMaxnumX,
-                       kMaxnumY, kMaxnumW, kMaxnumH, EditClass::NUMERIC);
+                       kMaxnumY, kMaxnumW, kMaxnumH, EditClass::kNumeric);
 
   EditClass initnum_edt(kButtonInitnum, initnum_buf, 3,
                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                         kInitnumX, kInitnumY, kInitnumW, kInitnumH,
-                        EditClass::NUMERIC);
+                        EditClass::kNumeric);
 
   EditClass fear_edt(kButtonFear, fear_buf, 3,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kFearX,
-                     kFearY, kFearW, kFearH, EditClass::NUMERIC);
+                     kFearY, kFearW, kFearH, EditClass::kNumeric);
 
   TextButtonClass gdibtn(
       kButtonGdi, "GDI",
@@ -884,7 +884,7 @@ int MapEditClass::Edit_Team() {
 
   EditClass arg_edt(kButtonArg, arg_buf, 4,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kArgX,
-                    kArgY, kArgW, kArgH, EditClass::ALPHANUMERIC);
+                    kArgY, kArgW, kArgH, EditClass::kAlphanumeric);
 
   TextButtonClass membersbtn(
       kButtonMembers, "Members",

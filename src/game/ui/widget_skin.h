@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <span>
 
+#include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 
 namespace game {

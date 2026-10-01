@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "td/core/defines.h"
 
@@ -65,6 +66,24 @@ struct UiSkin {
 
   // The colour a gauge fills up to its value with.
   static unsigned char Gauge_Fill_Color();
+
+  // The font `flags` select.
+  static FontStyle Font(PrintFlags flags);
+
+  // An edit field's height above its font's tallest glyph.
+  static constexpr int kEditHeightPad = 2;
+
+  // The flags and colour an edit field draws its text with.
+  static PrintFlags Edit_Flags(PrintFlags flags);
+  static TextColor Edit_Default_Color();
+
+  // Draws an edit field's box, and its text with the cursor after it while
+  // it has the focus and room for another character.
+  static void Draw_Edit_Box(PixelView& view, int x, int y, int width,
+                            int height);
+  static void Draw_Edit_Text(PixelView& view, const char* text, int x, int y,
+                             int width, TextColor color, PrintFlags flags,
+                             bool focused, int max_length);
 
   // Prints a text label, unclipped or clipped to `width` pixels.
   static void Print_Label(PixelView& view, const char* text, int x, int y,

@@ -965,7 +965,7 @@ static int Net_Join_Dialog() {
 
   EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
-                     d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
+                     d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
 
   TextButtonClass gdibtn(
       kButtonGdi, TXT_G_D_I,
@@ -3015,7 +3015,7 @@ static int Net_New_Dialog() {
   EditClass credit_edt(kButtonCredits, credbuf, CREDITSBUF_MAX,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                        d_credits_x, d_credits_y, d_credits_w, d_credits_h,
-                       EditClass::ALPHANUMERIC);
+                       EditClass::kAlphanumeric);
 
   TextButtonClass rejectbtn(
       kButtonReject, TXT_REJECT,

@@ -2,6 +2,8 @@
 
 #include <cstddef>
 #include <span>
+#include <string_view>
+#include <utility>
 
 #include "base/cardinal.h"
 #include "base/numeric.h"
@@ -9,6 +11,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"
+#include "td/assets/assets.h"
 #include "td/core/defines.h"
 #include "td/data/text.h"
 #include "td/startup/conquer.h"
@@ -92,6 +95,51 @@ void UiSkin::Draw_Gauge_Box(PixelView& view, const int x, const int y,
 
 unsigned char UiSkin::Gauge_Fill_Color() {
   return static_cast<unsigned char>(kCcBrightGreen);
+}
+
+FontStyle UiSkin::Font(const PrintFlags flags) { return TextFontStyle(flags); }
+
+UiSkin::PrintFlags UiSkin::Edit_Flags(const PrintFlags flags) { return flags; }
+
+UiSkin::TextColor UiSkin::Edit_Default_Color() { return kCcGreen; }
+
+void UiSkin::Draw_Edit_Box(PixelView& view, const int x, const int y,
+                           const int width, const int height) {
+  Draw_Box(view, x, y, width, height, BOXSTYLE_GREEN_BOX, true);
+}
+
+void UiSkin::Draw_Edit_Text(PixelView& view, const char* text, const int x,
+                            const int y, const int width, TextColor color,
+                            const PrintFlags flags, const bool focused,
+                            const int max_length) {
+  // Conquer_Clip_Text_Print() selects the font of `flags`; the colour flags
+  // added below do not change it.
+  const FontStyle font = TextFontStyle(flags);
+  if (font.font.data().data() ==
+      TheAssets().font(FontType::k6PointGradient).data()) {
+    const TextPrintType state =
+        focused ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
+
+    Conquer_Clip_Text_Print(view, text, x + 1, y + 1, color, kTBlack,
+                            flags | state, width - 2);
+
+    if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&
+        StringPixelWidth(font, text) + StringPixelWidth(font, "_") <
+            width - 2) {
+      Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(font, text),
+                              y + 1, color, kTBlack, flags | state);
+    }
+  } else {
+    Conquer_Clip_Text_Print(view, text, x + 1, y + 1, focused ? kBlue : kWhite,
+                            kTBlack, flags, width - 2);
+
+    if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&
+        StringPixelWidth(font, text) + StringPixelWidth(font, "_") <
+            width - 2) {
+      Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(font, text),
+                              y + 1, kBlue, kTBlack, flags);
+    }
+  }
 }
 
 void UiSkin::Print_Label(PixelView& view, const char* text, const int x,

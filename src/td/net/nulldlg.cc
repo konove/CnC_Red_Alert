@@ -1959,7 +1959,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
   EditClass port_edt(kButtonPort, portbuf, PORTBUF_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_port_x,
-                     d_port_y, d_port_w, d_port_h, EditClass::ALPHANUMERIC);
+                     d_port_y, d_port_w, d_port_h, EditClass::kAlphanumeric);
 
   ListClass portlist(
       kButtonPortlist, d_portlist_x, d_portlist_y, d_portlist_w, d_portlist_h,
@@ -1968,7 +1968,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 #ifdef EDIT_IRQ
   EditClass irq_edt(kButtonIrq, irqbuf, IRQBUF_MAX,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_irq_x,
-                    d_irq_y, d_irq_w, d_irq_h, EditClass::NUMERIC);
+                    d_irq_y, d_irq_w, d_irq_h, EditClass::kNumeric);
 
   ListClass irqlist(kButtonIrqlist, d_irqlist_x, d_irqlist_y, d_irqlist_w,
                     d_irqlist_h, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
@@ -1977,7 +1977,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
   EditClass baud_edt(kButtonBaud, baudbuf, BAUDBUF_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_baud_x,
-                     d_baud_y, d_baud_w, d_baud_h, EditClass::NUMERIC);
+                     d_baud_y, d_baud_w, d_baud_h, EditClass::kNumeric);
 
   ListClass baudlist(
       kButtonBaudlist, d_baudlist_x, d_baudlist_y, d_baudlist_w, d_baudlist_h,
@@ -1986,7 +1986,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   EditClass initstr_edt(kButtonInitstr, initstrbuf, INITSTRBUF_MAX,
                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                         d_initstr_x, d_initstr_y, d_initstr_w, d_initstr_h,
-                        EditClass::ALPHANUMERIC);
+                        EditClass::kAlphanumeric);
 
   ListClass initstrlist(kButtonInitstrlist, d_initstrlist_x, d_initstrlist_y,
                         d_initstrlist_w, d_initstrlist_h,
@@ -2014,7 +2014,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   EditClass cwaitstr_edt(kButtonCwaitstr, cwaitstrbuf, CWAITSTRBUF_MAX,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                          d_cwaitstr_x, d_cwaitstr_y, d_cwaitstr_w, d_cwaitstr_h,
-                         EditClass::ALPHANUMERIC);
+                         EditClass::kAlphanumeric);
 
   ListClass cwaitstrlist(kButtonCwaitstrlist, d_cwaitstrlist_x,
                          d_cwaitstrlist_y, d_cwaitstrlist_w, d_cwaitstrlist_h,
@@ -3292,7 +3292,7 @@ int Com_Scenario_Dialog() {
 
   EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
-                     d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
+                     d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
 
   TextButtonClass gdibtn(
       kButtonGdi, TXT_G_D_I,
@@ -3307,7 +3307,7 @@ int Com_Scenario_Dialog() {
   EditClass credit_edt(kButtonCredits, credbuf, CREDITSBUF_MAX,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                        d_credits_x, d_credits_y, d_credits_w, d_credits_h,
-                       EditClass::ALPHANUMERIC);
+                       EditClass::kAlphanumeric);
 
   ListClass scenariolist(kButtonScenariolist, d_scenariolist_x,
                          d_scenariolist_y, d_scenariolist_w, d_scenariolist_h,
@@ -4738,7 +4738,7 @@ int Com_Show_Scenario_Dialog() {
 
   EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
-                     d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
+                     d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
 
   TextButtonClass gdibtn(
       kButtonGdi, TXT_G_D_I,
@@ -5950,7 +5950,7 @@ static int Phone_Dialog() {
   EditClass numedit(kButtonNumedit, phone_num, PhoneEntryClass::kPhoneMaxNum,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_numedit_x,
                     d_numedit_y, d_numedit_w, d_numedit_h,
-                    EditClass::ALPHANUMERIC);
+                    EditClass::kAlphanumeric);
 
   /*
   ------------------------- Build the button list --------------------------
@@ -6522,12 +6522,12 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
 
   EditClass nameedit(kButtonName, namebuf, PhoneEntryClass::kPhoneMaxName,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
-                     d_name_y, d_name_w, d_name_h, EditClass::ALPHANUMERIC);
+                     d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
 
   EditClass numedit(kButtonNumber, numbuf, PhoneEntryClass::kPhoneMaxNum,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_number_x,
                     d_number_y, d_number_w, d_number_h,
-                    EditClass::ALPHANUMERIC);
+                    EditClass::kAlphanumeric);
 
   TextButtonClass defaultbtn(
       kButtonDefault, TXT_DEFAULT_SETTINGS,

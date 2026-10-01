@@ -4,7 +4,7 @@
 #ifndef CNC_RED_ALERT_TD_UI_GAUGE_H_
 #define CNC_RED_ALERT_TD_UI_GAUGE_H_
 
-#include "game/ui/gauge.h"
+#include "game/ui/gauge.h"  // IWYU pragma: export
 #include "td/ui/ui_skin.h"
 
 namespace td {

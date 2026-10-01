@@ -551,7 +551,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
 
   EditClass editbtn(kButtonScenario, scen_buf, 5,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kScenX,
-                    kScenY, kScenW, kScenH, EditClass::NUMERIC);
+                    kScenY, kScenW, kScenH, EditClass::kNumeric);
 
   TextButtonClass varabtn(
       kButtonVarA, "A",
@@ -1617,19 +1617,19 @@ int MapEditClass::Scenario_Dialog() {
 
   EditClass leveledt(kTeditGdicred, level_buf, 4,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLevelX,
-                     kLevelY, kLevelW, kLevelH, EditClass::NUMERIC);
+                     kLevelY, kLevelW, kLevelH, EditClass::kNumeric);
 
   EditClass gdicred(kTeditGdicred, gdicred_buf, 8,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdicredX,
-                    kGdicredY, kGdicredW, kGdicredH, EditClass::NUMERIC);
+                    kGdicredY, kGdicredW, kGdicredH, EditClass::kNumeric);
 
   EditClass nodcred(kTeditNodcred, nodcred_buf, 8,
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodcredX,
-                    kNodcredY, kNodcredW, kNodcredH, EditClass::NUMERIC);
+                    kNodcredY, kNodcredW, kNodcredH, EditClass::kNumeric);
 
   EditClass neutcred(kTeditNeutcred, neutcred_buf, 8,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNeutcredX,
-                     kNeutcredY, kNeutcredW, kNeutcredH, EditClass::NUMERIC);
+                     kNeutcredY, kNeutcredW, kNeutcredH, EditClass::kNumeric);
 
   TextButtonClass gdinbtn(
       kButtonGdiN, TXT_UP,
@@ -2666,11 +2666,11 @@ int MapEditClass::Edit_Trigger() {
 
   EditClass name_edt(kNameEdit, namebuf, 5,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNameX,
-                     kNameY, kNameW, kNameH, EditClass::ALPHANUMERIC);
+                     kNameY, kNameW, kNameH, EditClass::kAlphanumeric);
 
   EditClass data_edt(kDataEdit, databuf, 8,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kDataX,
-                     kDataY, kDataW, kDataH, EditClass::ALPHANUMERIC);
+                     kDataY, kDataW, kDataH, EditClass::kAlphanumeric);
 
   TextButtonClass teambtn(
       kButtonTeam, "Team",

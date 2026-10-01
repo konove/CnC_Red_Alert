@@ -2,6 +2,8 @@
 
 #include <cstddef>
 #include <span>
+#include <string_view>
+#include <utility>
 
 #include "base/fixed.h"
 #include "engine/gfx/font.h"
@@ -75,6 +77,37 @@ void UiSkin::Draw_Gauge_Box(PixelView& view, const int x, const int y,
 }
 
 unsigned char UiSkin::Gauge_Fill_Color() { return Get_Color_Scheme()->Bright; }
+
+FontStyle UiSkin::Font(const PrintFlags flags) { return TextFontStyle(flags); }
+
+UiSkin::PrintFlags UiSkin::Edit_Flags(const PrintFlags flags) {
+  return flags & ~TPF_CENTER;
+}
+
+UiSkin::TextColor UiSkin::Edit_Default_Color() { return Get_Color_Scheme(); }
+
+void UiSkin::Draw_Edit_Box(PixelView& view, const int x, const int y,
+                           const int width, const int height) {
+  Draw_Box(view, x, y, width, height, BOXSTYLE_BOX, true);
+}
+
+void UiSkin::Draw_Edit_Text(PixelView& view, const char* text, const int x,
+                            const int y, const int width, TextColor color,
+                            const PrintFlags flags, const bool focused,
+                            const int max_length) {
+  const TextPrintType state =
+      focused ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
+
+  Conquer_Clip_Text_Print(view, text, x + 1, y + 1, color, kTBlack,
+                          flags | state, width - 2);
+
+  const FontStyle font = TextFontStyle(flags | state);
+  if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&
+      StringPixelWidth(font, text) + StringPixelWidth(font, "_") < width - 2) {
+    Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(font, text),
+                            y + 1, color, kTBlack, flags | state);
+  }
+}
 
 void UiSkin::Print_Label(PixelView& view, const char* text, const int x,
                          const int y, TextColor color, const PrintFlags style) {

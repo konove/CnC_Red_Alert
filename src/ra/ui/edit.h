@@ -1,124 +1,14 @@
-/*
-**	Command & Conquer Red Alert(tm)
-**	Copyright 2025 Electronic Arts Inc.
-**
-**	This program is free software: you can redistribute it and/or modify
-**	it under the terms of the GNU General Public License as published by
-**	the Free Software Foundation, either version 3 of the License, or
-**	(at your option) any later version.
-**
-**	This program is distributed in the hope that it will be useful,
-**	but WITHOUT ANY WARRANTY; without even the implied warranty of
-**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**	GNU General Public License for more details.
-**
-**	You should have received a copy of the GNU General Public License
-**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-// Single-line text input UI gadget for the game's dialog system.
+// File: EditClass, game::EditClass drawn Red Alert's way.
 
 #ifndef CNC_RED_ALERT_RA_UI_EDIT_H_
 #define CNC_RED_ALERT_RA_UI_EDIT_H_
 
-#include <span>
-
-#include "absl/base/attributes.h"
-#include "engine/gfx/pixel_buffer.h"
-#include "engine/window/keyboard.h"
-#include "game/ui/control.h"
-#include "ra/core/defines.h"
+#include "game/ui/edit.h"  // IWYU pragma: export
+#include "ra/ui/ui_skin.h"
 
 namespace ra {
 
-// A text editing gadget that accepts keyboard input and displays the result.
-// Supports filtering by character type (alpha, numeric, misc) and optional
-// uppercase forcing. The gadget does not own its text buffer; the caller
-// provides a char array that EditClass modifies in place.
-class EditClass : public game::ControlClass {
- public:
-  // Character filter flags for the text input field.
-  struct EditStyle {
-    bool alpha;      // Accept alphabetic characters.
-    bool numeric;    // Accept numbers.
-    bool misc;       // Accept misc graphic characters.
-    bool uppercase;  // Force to upper case.
-  };
-
-  static constexpr EditStyle kAlphanumeric{
-      .alpha = true,
-      .numeric = true,
-      .misc = true,
-      .uppercase = false,
-  };
-  static constexpr EditStyle kNumeric{
-      .alpha = false,
-      .numeric = true,
-      .misc = false,
-      .uppercase = false,
-  };
-  static constexpr EditStyle kAlpha{
-      .alpha = true,
-      .numeric = false,
-      .misc = false,
-      .uppercase = false,
-  };
-
-  // Constructs an edit gadget. |text| is a caller-owned buffer that will be
-  // modified in place. |max_len| is the buffer size including the null
-  // terminator. |w| and |h| default to -1, meaning auto-sized from the text.
-  EditClass(int id, std::span<char> text ABSL_ATTRIBUTE_LIFETIME_BOUND, int max_len,
-            TextPrintType flags, int x, int y, int w = -1, int h = -1,
-            EditStyle style = kAlphanumeric);
-  ~EditClass() override;
-  EditClass(const EditClass&) = delete;
-  EditClass& operator=(const EditClass&) = delete;
-  EditClass(EditClass&&) = delete;
-  EditClass& operator=(EditClass&&) = delete;
-
-  void Set_Focus() override;
-  bool Draw_Me(PixelView& view, bool forced) override;
-
-  // Changes the text buffer and maximum length. Does not copy; |text| must
-  // outlive this gadget.
-  virtual void Set_Text(std::span<char> text, int max_len);
-  std::span<char> Get_Text_Buffer() { return String; }
-  virtual char* Get_Text() { return String.data(); }
-  void Set_Color(RemapControlType* color) { Color = color; }
-
-  void Set_Read_Only(bool rdonly) { IsReadOnly = rdonly; }
-  [[nodiscard]] int Get_Max_Length() const { return MaxLength; }
-
- protected:
-  TextPrintType TextFlags;  // Text rendering style (font, alignment).
-  EditStyle EditFlags{};    // Allowed character types for input filtering.
-
-  std::span<char> String;   // Caller-owned text buffer modified in place.
-  int MaxLength;  // Max string length (excludes null terminator).
-  int Length{};     // Current string length, always <= MaxLength.
-
-  RemapControlType* Color;  // Color scheme for rendering.
-
-  // Processes mouse and keyboard events. Sets focus on left-click; inserts
-  // characters on keypress. Returns the gadget ID on RETURN, clears focus
-  // on ESC.
-  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
-              int y) override;
-
-  // Draws the gadget background. Called with the mouse hidden.
-  virtual void Draw_Background(PixelView& view);
-
-  // Draws the text content and cursor. Called after Draw_Background with
-  // the mouse hidden.
-  virtual void Draw_Text(PixelView& view, const char* text);
-
-  // Processes a single keyboard character. Returns false if the RETURN key
-  // was pressed (allowing the gadget ID to propagate), true otherwise.
-  virtual bool Handle_Key(char ascii);
-
- private:
-  bool IsReadOnly = false;
-};
+using EditClass = game::EditClass<UiSkin>;
 
 }  // namespace ra
 

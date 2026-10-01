@@ -3,7 +3,7 @@
 #ifndef CNC_RED_ALERT_RA_UI_TXTLABEL_H_
 #define CNC_RED_ALERT_RA_UI_TXTLABEL_H_
 
-#include "game/ui/txtlabel.h"
+#include "game/ui/txtlabel.h"  // IWYU pragma: export
 #include "ra/ui/ui_skin.h"
 
 namespace ra {

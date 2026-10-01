@@ -3,7 +3,7 @@
 #ifndef CNC_RED_ALERT_RA_UI_TEXTBTN_H_
 #define CNC_RED_ALERT_RA_UI_TEXTBTN_H_
 
-#include "game/ui/textbtn.h"
+#include "game/ui/textbtn.h"  // IWYU pragma: export
 #include "ra/ui/ui_skin.h"
 
 namespace ra {
