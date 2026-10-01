@@ -1,18 +1,14 @@
 #include "ra/assets/palette.h"
 
-#include <algorithm>
-#include <chrono>
-#include <cstdint>
 #include <cstdlib>
 #include <span>
-#include <thread>
 
 #include "base/array.h"
 #include "engine/gfx/palette.h"
 #include "engine/gfx/palette_color.h"
-#include "engine/platform/timer.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
+#include "engine/window/palette_fade.h"
 #include "ra/ui/input.h"
 
 namespace ra {
@@ -27,45 +23,10 @@ static void ShowPalette(const engine::gfx::Palette& palette) {
 }
 
 void PaletteClass::Set(int fade, void (*callback)()) {
-  // A fade to the palette already on screen would spend its whole duration
-  // redrawing an unchanged screen, e.g. the fade to black before a movie
-  // that starts from black.
-  if (fades_disabled_ || *this == CurrentPalette) {
-    fade = 0;
+  if (!fades_disabled_) {
+    engine::window::FadePalette(CurrentPalette, *this, fade, ShowPalette,
+                                callback);
   }
-
-  if (fade > 0) {
-    const auto start_time = engine::platform::SystemTicks();
-
-    while (true) {
-      const int64_t now = engine::platform::SystemTicks();
-      const int cur_time =
-          static_cast<int>(std::min<int64_t>(now - start_time, fade));
-
-      const engine::gfx::Palette fade_palette =
-          engine::gfx::BlendedPalette(CurrentPalette, *this, cur_time, fade);
-
-      ShowPalette(fade_palette);
-      if (callback) {
-        callback();
-      } else {
-        // make sure we actually display the fade
-        engine::window::TheDisplay().EndFrame();
-      }
-
-      if (cur_time == fade) {
-        break;
-      }
-
-      // The blend only changes when the tick does, so presenting again
-      // before then redraws an identical frame. Unpaced, this loop presented
-      // over a thousand times a second and kept a core busy for the fade.
-      while (engine::platform::SystemTicks() == now) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-      }
-    }
-  }
-
   CurrentPalette = *this;
   ShowPalette(*this);
 }

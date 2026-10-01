@@ -1,11 +1,9 @@
 #include "td/assets/palette.h"
 
-#include <algorithm>
-
 #include "engine/gfx/palette.h"
-#include "engine/platform/timer.h"
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
+#include "engine/window/palette_fade.h"
 #include "td/ui/input.h"
 
 namespace td {
@@ -21,31 +19,8 @@ static void ShowPalette(const engine::gfx::Palette& palette) {
 
 void Fade_Palette_To(const engine::gfx::Palette& palette, int fade,
                      void (*callback)()) {
-  if (fade > 0) {
-    // fade to new palette
-    const auto start_time = engine::platform::SystemTicks();
-
-    while (true) {
-      const int cur_time = std::min<int>(
-          static_cast<int>(engine::platform::SystemTicks() - start_time), fade);
-
-      const engine::gfx::Palette fade_palette =
-          engine::gfx::BlendedPalette(CurrentPalette, palette, cur_time, fade);
-
-      ShowPalette(fade_palette);
-      if (callback) {
-        callback();
-      }
-      else {  // make sure we actually display the fade
-        engine::window::TheDisplay().EndFrame();
-      }
-
-      if (cur_time == fade) {
-        break;
-      }
-    }
-  }
-
+  engine::window::FadePalette(CurrentPalette, palette, fade, ShowPalette,
+                              callback);
   Set_Palette(palette);
 }
 
