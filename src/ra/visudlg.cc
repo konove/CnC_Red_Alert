@@ -41,6 +41,7 @@
 #include "ra/visudlg.h"
 
 #include <iterator>
+#include <string_view>
 
 #include "base/array.h"
 #include "base/fixed.h"
@@ -54,6 +55,7 @@
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/goptions.h"
+#include "ra/inline.h"
 #include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/screen.h"
@@ -63,6 +65,21 @@
 #include "ra/textbtn.h"
 
 using enum engine::window::KeyNumber;
+
+namespace {
+
+// Returns the label for slider title `text_id`. The English CONQUER.ENG the
+// game shipped spells TXT_BRIGHTNESS "BRIGHTNESS:" beside "Color:",
+// "Contrast:" and "Tint:"; a translated table passes through unchanged.
+const char* SliderTitle(const int text_id) {
+  const char* const text = Text_String(text_id);
+  if (std::string_view(text) == "BRIGHTNESS:") {
+    return "Brightness:";
+  }
+  return text;
+}
+
+}  // namespace
 
 /***********************************************************************************************
  * VisualControlsClass::Process -- Process the visual control dialog box. *
@@ -238,7 +255,7 @@ void VisualControlsClass::Process() {
       **	Draw the titles.
       */
       for (int i = 0; i < std::ssize(_titles); i++) {
-        Fancy_Text_Print(view, base::At(_titles, i), slider_x - 16,
+        Fancy_Text_Print(view, SliderTitle(base::At(_titles, i)), slider_x - 16,
                          text_y + (i * slider_y_spacing),
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          kTpfText | TPF_RIGHT |
