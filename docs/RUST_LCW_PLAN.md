@@ -2,7 +2,8 @@
 
 Written 2026-09-30, on the tree at fa329aeb.
 
-**Status: planned.**
+**Status: done** (2026-09-30, 20208375..HEAD of branch `rust-lcw`); the real-display check of Task 5
+step 2 is pending.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development
 > (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use
@@ -2325,3 +2326,39 @@ Done when all of these hold on the final tree:
 - The intro movie, title screen, cursor, shapes and TD's map-selection animations look right on a
   real display, in `RelWithDebInfo` and in `Debug`, and the Debug intro plays in real time.
 - `lcw_bench` shows neither decoder more than 10% slower than the C++ reference.
+
+## Outcome
+
+Done 2026-09-30 on branch `rust-lcw`. Every C++ test passes unchanged, and `LcwDifferentialTest`
+holds the Rust kernels to the C++ reference byte for byte.
+
+`lcw_bench` at `RelWithDebInfo`, 8 MiB of game-like data (third of three runs; the encoder varies by
+about ±8% from run to run in both directions):
+
+| Kernel         | Rust        | C++         | Change |
+| -------------- | ----------- | ----------- | ------ |
+| lenient decode | 6120.3 MB/s | 3266.1 MB/s | +87%   |
+| bounded decode | 9398.8 MB/s | 3081.4 MB/s | +205%  |
+| compress       | 50.2 MB/s   | 51.0 MB/s   | -2%    |
+
+In the game, eight interleaved headless runs (`SDL_VIDEODRIVER=offscreen`, `-NOMOVIES`) of the
+commit before the switch (5f48e4f1) against the switch: `-NEWGAMESCG01EA -QUITFRAME1` took 0.42 s
+and `-LOADGAME -QUITFRAME61` 0.24 s with either kernel, within noise. Both save/load smoke scripts
+report no differences. `vqaplay REDINTRO.VQA` (188 frames at 15 fps) takes 12.54 s in `Debug` and in
+`RelWithDebInfo`, so the Debug build still plays it in real time.
+
+What differed from the plan:
+
+- The generated headers are where the plan expected (`engine_rs_cxx/lib.h`, `rust/cxx.h`), and
+  Corrosion picked up `rust-toolchain.toml` by itself; `Rust_TOOLCHAIN` was not needed.
+- A fresh configure failed to find the generated headers: Corrosion adds them to `engine_rs_cxx` as
+  `PUBLIC` sources, and under `cmake_minimum_required(VERSION 3.14)` policy CMP0118 is OLD, so only
+  `src/rust` knew they were generated. The root `CMakeLists.txt` sets CMP0118 to NEW.
+- `Rust_CARGO_CACHED` is the toolchain's own `cargo`, which looks up `rustc` on `PATH`; the
+  `engine_rs_cargo_test` and the lint run it under
+  `cmake -E env --modify PATH=path_list_prepend:...` so they work without `~/.cargo/bin` on `PATH`.
+- Corrosion's target directory is `<build>/cargo/rust_<hash>/`, not `<build>/cargo/build/`; a Debug
+  build reports `Finished dev profile [optimized + debuginfo]`.
+- The no-change cargo step takes under 0.1 s, not 0.2 s.
+- The death tests needed the tree's usual `NOLINTNEXTLINE` for gtest's macro internals, and the
+  differential test uses `base::ToSize()` instead of `static_cast<std::size_t>`.

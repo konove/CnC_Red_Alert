@@ -272,3 +272,10 @@
   (`cmake-build-debug-ra/src/ra/`, `cmake-build-strict-ra-clang/src/ra/`)
   - An older build saved scancodes there; the hotkeys now load as Windows key codes, so those
     entries come back unbound until the section is removed and the game saves it again
+- Build the Rust crate for Emscripten
+  - `src/rust` is linked into every target since `docs/RUST_LCW_PLAN.md`, and no CI job builds
+    Emscripten; Corrosion needs `Rust_CARGO_TARGET=wasm32-unknown-emscripten` and that target
+    installed through rustup
+- Decide when to delete the C++ LCW reference
+  - `engine/codec/lcw_reference_test_util.cc` exists only for `LcwDifferentialTest` and `lcw_bench`;
+    once the Rust kernels have shipped without a report, both can go

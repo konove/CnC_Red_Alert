@@ -35,7 +35,9 @@ add a file there only if a Debug profile shows it hot.
 
 ### Required Dependencies
 
-**All platforms:** SDL2, C++23 compiler, Ninja
+**All platforms:** SDL2, C++23 compiler, Ninja, and the Rust toolchain through rustup
+(`curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`); `rust-toolchain.toml` pins the
+version and rustup installs it on first use.
 
 **Linux (Debian/Ubuntu):**
 
@@ -93,6 +95,9 @@ one; don't run bare `ninja` in those directories, and pass ninja flags through i
 `cmake --build <build-dir> -- -d explain`. Also, `ninja -n` always prints "Re-running CMake..."
 because a dry run can't check whether the glob verification changed anything; only a real build
 shows whether CMake re-runs.
+
+Corrosion's cargo step runs on every build and lets cargo decide what is stale (under 0.1 s), so
+`cmake --build` never prints `ninja: no work to do`; that is not the rebuild loop described above.
 
 ccache caches only the compile; clang-tidy runs as a separate pass in front of it and is cached by
 `clang-tidy-cache` (below). IWYU is off by default, `STRICT_CHECKS` included: its suggestions never
@@ -167,8 +172,8 @@ engine/      → The shared libraries, one folder per domain (docs/ENGINE_FOLDER
                span/stream sinks and sources, tee, readline (target `engine_stream`)
                [depends: engine_platform]
   codec/     → Compression and encoding: LCW, LZW, base64, the block codec backends, the .AUD
-               decoders and the animated-cursor XOR delta (target `engine_codec`; links `lzo`)
-               [depends: engine_stream]
+               decoders and the animated-cursor XOR delta (target `engine_codec`; links `lzo`, and
+               `engine_rs_cxx`, whose Rust kernels the LCW entry points call) [depends: engine_stream]
   crypto/    → Ciphers, hashes and bignum public-key: Blowfish, SHA-1, the RSA-style bignum and
                PKey (target `engine_crypto`; sibling of engine/codec/, neither includes the other)
                [depends: engine_stream]
@@ -188,6 +193,8 @@ engine/      → The shared libraries, one folder per domain (docs/ENGINE_FOLDER
                engine_vqa]
     vqa/     → The standalone VQA video codec, independent of engine/file and engine/audio
                (target `engine_vqa`) [depends: engine_stream, engine_codec, SDL2]
+rust/        → engine_rs, the engine kernels written in Rust (LCW), linked through the cxx bridge in
+               src/lib.rs; CMake target engine_rs_cxx (Corrosion) [depends: nothing]
 ra/          → Red Alert (~200 files) [depends: engine_net, engine_window, engine_video]
 td/          → Tiberian Dawn (~288 files) [depends: engine_net, engine_window, engine_video]
 ```
