@@ -84,7 +84,6 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/interpal.h"
 #include "game/ui/input.h"
 #include "td/ai/special.h"
 #include "td/assets/assets.h"
@@ -793,8 +792,7 @@ void ScoreClass::Show() {
   TheScreen().sys_mem_page().view().BlitTo(show.page().view());
   engine::gfx::BrightenPalette(ThePalettes().title_palette(), 30, 30, 30);
 
-  game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
-                             inter_pal);
+  show.ShowPage();
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteFast, Call_Back);
 
   engine::audio::TheAudio().Play(country4, 255,
@@ -1297,7 +1295,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
     /*
     ** Extra font related stuff. ST - 7/29/96 2:22PM
     */
-    game::Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
+    show.ShowPage();
     show.DrawTextRects();
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
     // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
@@ -1498,7 +1496,7 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
   /*
   ** Extra font related stuff. ST - 7/29/96 2:22PM
   */
-  game::Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
+  show.ShowPage();
   show.DrawTextRects();
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
 
@@ -1744,7 +1742,7 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
     /*
     ** Extra font related stuff. ST - 7/29/96 2:22PM
     */
-    game::Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
+    show.ShowPage();
     show.DrawTextRects();
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
 
@@ -2090,7 +2088,7 @@ void Call_Back_Delay(Presentation& show, int time) {
     // BlitList.Update();
     //}else{
     Animate_Score_Objs();
-    game::Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
+    show.ShowPage();
     show.DrawTextRects();
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
     //}
@@ -2186,8 +2184,7 @@ void Multi_Score_Presentation() {
   TheScreen().visible_page().view().Clear();
   engine::gfx::BrightenPalette(ThePalettes().title_palette(), 30, 30, 30);
   anim.DrawFrame(show.page().view(), 1);
-  game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
-                             "MULTSCOR.PAL");
+  show.ShowPage();
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteFast, Call_Back);
 
   int frame = 1;

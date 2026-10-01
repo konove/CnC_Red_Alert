@@ -13,26 +13,29 @@ namespace td {
 // The two pages a full-screen presentation draws through - the score screens,
 // the map selection, the side choice and the Nod ending.
 //
-// Art is drawn into page() at the 320x200 it was made for and scaled to twice
-// its size onto the screen, so the whole sequence looks the way it did on a
-// VGA card. Text would come out doubled with it, so captions are printed into
-// text_page(), which is the size of the screen, and only the rectangles that
-// changed are brought forward: AddTextRect() records one and DrawTextRects()
-// blits them all onto the hidden page, over the art that is already there.
+// Art is drawn into page() at the 320x200 it was made for, and ShowPage()
+// puts it on the window stretched to the window's size, as the Display's
+// backdrop under the screen. Text would come out doubled with it, so captions
+// are printed into text_page(), which is the size of the screen, and only the
+// rectangles that changed are brought forward: AddTextRect() records one and
+// DrawTextRects() blits them all onto the hidden page. Color 0 on the screen
+// is see-through, so the art shows around the letters.
 //
 // A presentation builds one on the stack and passes it down; nothing outlives
-// the sequence that made it.
+// the sequence that made it, and the backdrop leaves the window with it.
 //
 // Example:
 //   Presentation show;
 //   show.page().view().Clear();
+//   show.ShowPage();
 //   show.text_page().view().Print("MISSION ACCOMPLISHED", 0, 0, kWhite,
 //   kBlack); show.AddTextRect(0, 0, 0, 0, 320, 16); show.DrawTextRects();
 class Presentation {
  public:
   // The screen must already have its video mode: the text page is sized to it.
   Presentation();
-  ~Presentation() = default;
+  // Takes the art off the window, as HidePage() does.
+  ~Presentation();
   Presentation(const Presentation&) = delete;
   Presentation& operator=(const Presentation&) = delete;
   Presentation(Presentation&&) = delete;
@@ -43,15 +46,25 @@ class Presentation {
   // The caption page, the size of the screen, which reaches it unscaled.
   PixelBuffer& text_page() ABSL_ATTRIBUTE_LIFETIME_BOUND { return text_page_; }
 
+  // Shows page() on the window, stretched to its size, under the screen. The
+  // art stays there, under whatever is drawn on the screen afterwards, until
+  // the next ShowPage(), HidePage() or movie frame.
+  void ShowPage();
+  // Takes the art off the window, which then shows the screen alone. A movie
+  // that replaced the art stays.
+  void HidePage();
+
   // Records a `width` x `height` rectangle of the text page at x,y to be
   // blitted to dest_x,dest_y by the next DrawTextRects(). Silently drops the
   // rectangle once kMaxTextRects are queued.
   void AddTextRect(int x, int y, int dest_x, int dest_y, int width, int height);
   // Forgets every queued rectangle.
   void ClearTextRects();
-  // Blits every queued rectangle from the text page onto the hidden page,
-  // leaving pixel 0 transparent so the art shows through around the letters.
-  // The queue is left alone, because the same captions are redrawn every tick.
+  // Copies every queued rectangle from the text page onto the hidden page,
+  // color 0 included: the art no longer erases the hidden page every tick, so
+  // a caption that changed (a counter going up) must replace the old one
+  // there. The queue is left alone, because the same captions are redrawn
+  // every tick.
   void DrawTextRects();
 
  private:

@@ -65,7 +65,6 @@
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/interpal.h"
 #include "game/sim/enums.h"
 #include "game/ui/input.h"
 #include "td/assets/assets.h"
@@ -588,8 +587,7 @@ void Map_Selection() {
   show.page().view().PutPixel(237, 92, kTBlack);
   show.page().view().PutPixel(237, 93, kTBlack);
 
-  game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
-                             "MAP1.PAL");
+  show.ShowPage();
 
   engine::gfx::BrightenPalette(localpalette, 30, 30, 30);
 
@@ -627,7 +625,7 @@ void Map_Selection() {
   anim.DrawFrame(TheScreen().sys_mem_page().view(), 1);
   TheScreen().sys_mem_page().view().BlitTo(show.page().view());
 
-  game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
+  show.ShowPage();
 
   Stop_Speaking();
 
@@ -642,7 +640,7 @@ void Map_Selection() {
   ** now make the grid appear
   */
   TheScreen().sys_mem_page().view().BlitTo(show.page().view());
-  game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
+  show.ShowPage();
 
   engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(130));
   engine::audio::TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
@@ -853,7 +851,7 @@ void Map_Selection() {
                                    kBlack);
 #endif
 
-  game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
+  show.ShowPage();
 
   TheScreen().sys_mem_page().view().BlitTo(backpage.view(), xcoord, 1, 0, 0,
                                            20 * 6, 8);
@@ -890,7 +888,7 @@ void Map_Selection() {
                                    kBlack);
 #endif
 
-  game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
+  show.ShowPage();
 
   startframe = base::At(base::At(CountryArray, scenario).ContAnim,
                         static_cast<int>(TheWorld().scen_dir()));
@@ -932,17 +930,10 @@ void Map_Selection() {
     Bit_It_In(show, 0, 0, 320, 200, &TheScreen().sys_mem_page(), &show.page());
   }
 
-  /*
-  ** Fix up the palette that seems different for the last scenario
-  */
+  // The original scaled the last scenario's art again here, through each
+  // side's own interpolation table; SDL needs no table.
   if (lastscenario) {
-    if (house == HOUSE_GOOD) {
-      game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
-                                 "LASTSCNG.PAL");
-    } else {
-      game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
-                                 "LASTSCNB.PAL");
-    }
+    show.ShowPage();
   }
 
   int q = 0;
@@ -1059,7 +1050,7 @@ void Map_Selection() {
 #endif
   }
 
-  game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
+  show.ShowPage();
 
   /*
   ** Now the crosshairs are over the target countries - loop until a
@@ -1162,7 +1153,7 @@ void Map_Selection() {
                                      kBlack);
 #endif  // GERMAN
 
-    game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
+    show.ShowPage();
 
     /*
     ** Draw the country's shape in non-fading colors
@@ -1179,7 +1170,7 @@ void Map_Selection() {
                   base::At(_countryy, xshuffled_rows), WINDOW_MAIN,
                   engine::gfx::ShapeFlags::kCentered, {}, {});
     TheScreen().sys_mem_page().view().BlitTo(show.page().view());
-    game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
+    show.ShowPage();
 
     /*
     ** Now clear the palette of all but the country's colors, and fade
@@ -1192,8 +1183,7 @@ void Map_Selection() {
     }
     //		Load_Data("DARK_E.PAL", localpalette, 768);
     engine::gfx::BrightenPalette(localpalette, 30, 30, 30);
-    game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
-                               "MAP_LOC2.PAL");
+    show.ShowPage();
     Fade_Palette_To(localpalette, kFadePaletteMedium, Call_Back);
 
     countryshape = {};
@@ -1208,8 +1198,7 @@ void Map_Selection() {
       }
     }
     engine::gfx::BrightenPalette(localpalette, 30, 30, 30);
-    game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
-                               "MAP_LOC3.PAL");
+    show.ShowPage();
     Set_Palette(localpalette);
     //		Load_Data(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL",
     // localpalette, 768);
@@ -1228,7 +1217,7 @@ void Map_Selection() {
         2 * attackxcoord, 320, 2 * (attackxcoord + (17 * 6)), 398,
         kBlack);  // erase "Select country to attack"
 #endif
-    game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
+    show.ShowPage();
 
     progress.DrawFrame(show.page().view(), progress.frame_count() - 1);
     Set_Palette(localpalette);

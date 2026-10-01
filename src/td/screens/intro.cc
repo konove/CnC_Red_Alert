@@ -61,7 +61,6 @@
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/interpal.h"
 #include "game/ui/input.h"
 #include "td/ai/special.h"
 #include "td/assets/palette.h"
@@ -284,8 +283,7 @@ void Choose_Side() {
   // erase the "choose side" text
   show.page().view().FillRect(0, 180, 319, 199, 0);
   TheScreen().visible_view().FillRect(0, 180 * 2, 319 * 2, 199 * 2, 0);
-  game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
-                             "SIDES.PAL");
+  show.ShowPage();
   TheScreen().sys_mem_page().view().Clear();
 
   game::TheKeyboard().Clear();

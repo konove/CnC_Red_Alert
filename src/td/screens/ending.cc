@@ -56,7 +56,6 @@
 #include "engine/window/display.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/interpal.h"
 #include "game/ui/input.h"
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
@@ -200,8 +199,7 @@ void Nod_Ending() {
   game::TheMouse().Show();
 
   engine::gfx::BrightenPalette(localpal, 30, 30, 30);
-  game::Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
-                             "SATSELIN.PAL");
+  show.ShowPage();
 
   game::TheKeyboard().Clear();
   engine::audio::TheAudio().Play(kanefinl, 255, 128);
@@ -264,6 +262,9 @@ void Nod_Ending() {
   engine::audio::TheAudio().Stop(kanefinl.data());
   engine::audio::TheAudio().Stop(loopie6m.data());
 
+  // The pictures after the movie are drawn on the screen, so the satellite
+  // art must not show through their black, even with movies off.
+  show.HidePage();
   absl::SNPrintF(fname, sizeof(fname), "NODEND%d", selection);
   TheGameState().preserve_movie_screen() = true;
   Play_Movie(fname);

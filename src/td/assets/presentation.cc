@@ -3,6 +3,7 @@
 #include <span>
 
 #include "base/array.h"
+#include "engine/window/display.h"
 #include "td/assets/screen.h"
 
 namespace td {
@@ -12,6 +13,18 @@ Presentation::Presentation()
                  TheScreen().visible_view().height()) {
   text_page_.view().Clear();
 }
+
+Presentation::~Presentation() { HidePage(); }
+
+// The page is a plain buffer with no surface behind it, so it needs no lock.
+void Presentation::ShowPage() {
+  engine::window::TheDisplay().PresentBackdrop(page_.bytes(), page_.width(),
+                                               page_.height());
+}
+
+// Ends this presentation's art, though the art lives in the Display.
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Presentation::HidePage() { engine::window::TheDisplay().ClearBackdrop(); }
 
 void Presentation::AddTextRect(int x, int y, int dest_x, int dest_y, int width,
                                int height) {
@@ -38,7 +51,7 @@ void Presentation::DrawTextRects() {
         const auto& [source_x, source_y, dest_x, dest_y, width, height] =
             base::At(std::span(text_rects_), i);
         source.BlitToLocked(dest, source_x, source_y, dest_x, dest_y, width,
-                            height, true);
+                            height, /*transparent=*/false);
       }
       dest.Unlock();
     }
