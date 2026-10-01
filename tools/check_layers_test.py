@@ -85,6 +85,18 @@ class LayoutTest(unittest.TestCase):
         self.assertIsNone(layout.game_of("game/core/vector.h"))
         self.assertIsNone(layout.game_of("tools/mixdump.cc"))
 
+    def test_game_folders(self):
+        self.assertEqual(layout.game_folder_of("ra/objects/techno.cc"), "objects")
+        self.assertEqual(layout.game_folder_of("ra/wol/wolapi.h"), "wol")
+        self.assertIsNone(layout.game_folder_of("ra/techno.cc"))  # Not in a folder.
+        self.assertIsNone(layout.game_folder_of("td/nowhere/x.h"))
+        self.assertIsNone(layout.game_folder_of("engine/gfx/rgb.h"))
+        self.assertIn("saveload", layout.GAME_FOLDER_EXCLUDES["ui"])
+        for folder, excluded in layout.GAME_FOLDER_EXCLUDES.items():
+            self.assertIn(folder, layout.GAME_FOLDERS)
+            self.assertNotIn(folder, excluded)
+            self.assertTrue(set(excluded) <= set(layout.GAME_FOLDERS))
+
     def test_header_guard_follows_the_path(self):
         self.assertEqual(
             layout.header_guard("engine/gfx/pixel_buffer.h"),
@@ -213,6 +225,34 @@ class CheckerTest(unittest.TestCase):
         self.assertIn("relative to the file", errors[0])
         self.assertIn("no such file", errors[1])
 
+    def test_game_files_must_be_in_a_known_folder(self):
+        paths = ["ra/objects/techno.h", "ra/techno.h", "td/nowhere/x.cc"]
+        for path in paths:
+            self.write(path)
+        self.assertEqual(
+            check_layers.game_folder_errors(check_layers.game_files(self.src)),
+            [
+                "src/ra/techno.h: not in a known game folder",
+                "src/td/nowhere/x.cc: not in a known game folder",
+            ],
+        )
+
+    def test_game_folders_keep_their_exclusions(self):
+        self.write("ra/objects/techno.h")
+        self.write("ra/saveload/saveload.h")
+        self.write("ra/core/defines.h")
+        self.write(
+            "ra/ui/gadget.cc",
+            '#include "ra/core/defines.h"\n#include "ra/objects/techno.h"\n',
+        )
+        self.write("ra/startup/init.cc", '#include "ra/saveload/saveload.h"\n')
+        self.write("ra/ui/gadget_test.cc", '#include "ra/objects/techno.h"\n')
+        errors = self.errors("ra/ui/gadget.cc")
+        self.assertEqual(len(errors), 1)
+        self.assertIn("ra/ui may not include ra/objects", errors[0])
+        self.assertEqual(self.errors("ra/startup/init.cc"), [])
+        self.assertEqual(self.errors("ra/ui/gadget_test.cc"), [])
+
     def test_header_guard_errors(self):
         self.write(
             "ra/techno.h",
@@ -250,13 +290,15 @@ class CheckerTest(unittest.TestCase):
         )
 
     def test_check_covers_games_and_guards(self):
-        self.write("ra/filepcx.h", "#ifndef X\n#define X\n#endif\n")
-        self.write("td/winstub.cc", '#include "ra/filepcx.h"\n')
+        self.write("ra/assets/filepcx.h", "#ifndef X\n#define X\n#endif\n")
+        self.write("td/startup/winstub.cc", '#include "ra/assets/filepcx.h"\n')
         self.write("tools/mixdump.h", "#ifndef Y\n#define Y\n#endif\n")
         errors = check_layers.check(self.src)
         self.assertEqual(len(errors), 3)
         self.assertTrue(any("td may not include ra/" in e for e in errors))
-        self.assertTrue(any("src/ra/filepcx.h:1: header guard X" in e for e in errors))
+        self.assertTrue(
+            any("src/ra/assets/filepcx.h:1: header guard X" in e for e in errors)
+        )
         self.assertTrue(any("src/tools/mixdump.h:1: header guard Y" in e for e in errors))
 
     def test_tests_may_include_anything(self):

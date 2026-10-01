@@ -15,8 +15,11 @@ src/base/ or src/game/ by its path (tools/engine_layout.py) and fails on:
 - a quoted include written relative to the including file ("hsv.h") rather
   than to src/, which hides the folder it names, or a project include that
   names no file;
-- in a game (src/ra, src/td), an include of the other game, of src/tools or of
-  src/testing, or either of the previous rule's two mistakes;
+- in a game (src/ra, src/td), a source file outside the known game folders
+  (engine_layout.GAME_FOLDERS); an include of the other game, of src/tools
+  or of src/testing; an include of a game folder its own folder excludes
+  (engine_layout.GAME_FOLDER_EXCLUDES, tests exempt); or either of the
+  previous rule's two mistakes;
 - a header anywhere under src/ whose include guard is not
   CNC_RED_ALERT_<PATH>_H_ (engine_layout.header_guard()).
 
@@ -216,10 +219,21 @@ def include_errors(src_root: Path, path: str) -> list[str]:
     return errors
 
 
+def game_folder_errors(files: list[str]) -> list[str]:
+    """Returns the game files that sit outside the known game folders."""
+    return [
+        f"src/{path}: not in a known game folder"
+        for path in files
+        if layout.game_folder_of(path) is None
+    ]
+
+
 def _game_include_errors(src_root: Path, path: str, game: str) -> list[str]:
     """Returns the include-rule violations in one file of game. A game may
     include every library, its own files and SDL; not the other game, the
-    tools or the test main."""
+    tools or the test main, nor a folder its own folder excludes."""
+    folder = layout.game_folder_of(path)
+    excluded = () if layout.is_test(path) else layout.GAME_FOLDER_EXCLUDES.get(folder, ())
     errors: list[str] = []
     text = (src_root / path).read_text(encoding="utf-8", errors="replace")
     for line, delimiter, included in includes(text):
@@ -233,6 +247,11 @@ def _game_include_errors(src_root: Path, path: str, game: str) -> list[str]:
         root = name.split("/", 1)[0]
         if root in FORBIDDEN_ROOTS and root != game:
             errors.append(f"{where}: {game} may not include {root}/")
+        elif root == game and layout.game_folder_of(name) in excluded:
+            errors.append(
+                f"{where}: {game}/{folder} may not include "
+                f"{game}/{layout.game_folder_of(name)}"
+            )
     return errors
 
 
@@ -261,8 +280,9 @@ def header_guard_errors(src_root: Path, path: str) -> list[str]:
 def check(src_root: Path) -> list[str]:
     """Returns every violation in the tree at src_root."""
     files = engine_files(src_root)
-    errors = folder_errors(files)
-    for path in files + game_files(src_root):
+    games = game_files(src_root)
+    errors = folder_errors(files) + game_folder_errors(games)
+    for path in files + games:
         errors.extend(include_errors(src_root, path))
     for path in _files_under(src_root, PROJECT_ROOTS):
         if path.endswith(".h"):

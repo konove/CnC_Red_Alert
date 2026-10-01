@@ -235,10 +235,100 @@ Per step: `cmake --build build --parallel 22 && ctest --test-dir build --output-
 - [x] 0. Plan committed
 - [x] 1. Cleanup and game-agnostic engine
 - [x] 2. Layer and header-guard tooling
-- [ ] 3. Game folders
+- [x] 3. Game folders
 - [ ] 4. `ra::`/`td::` namespaces
 - [ ] 5a. `game_core`
 - [ ] 5b. `game_sim`
 - [ ] 5c. `engine::net` core
 - [ ] 5d. `game_ui`
 - [ ] 5e. Map traits (optional)
+
+## Outcome
+
+### Steps 1 and 2
+
+Besides the files Findings lists, step 1 deleted what the deletions left defined or read nowhere
+(the IPX prototypes, interrupt numbers and DPMI types in both `ipx.h`, TD's `UseVSS` setting) and,
+while mapping files for step 3, `ra/file.cc` (license text only), `ra/fakesock.h`, `ra/lint.h`,
+`ra/style.h` and `td/winasm.h` (no includers). TD's IPX call sites were folded only as far as the
+stubs reached: the DOS real-mode buffers and ECB members they fed are unreachable but stay until 5c
+replaces those classes. `DrawStamp()` takes its clip rectangle in pixels and each game converts a
+`WindowList` row with `WindowRect()` (`window_rect.h`); `tile.h` defines both games' icon-set
+headers and `Get_Icon_Set_Map()` takes an `IconSetLayout`. The top-level `CMakeLists.txt` passes
+clang-tidy its own `--header-filter`, which overrides `.clang-tidy`'s; it gains `game` in 5a, when
+`src/game/` first exists, since changing it re-analyzes every translation unit.
+
+### Step 3
+
+Every `.cc`/`.h` moved with a script (not committed) that `git mv`ed it, rewrote includes outside
+comments and literals, renamed header guards, rewrote the game's `CMakeLists.txt` file names and the
+`ra/x.ext` mentions in comments, `CLAUDE.md`, `TODO.md`, `.claude/commands` and `tools/`, and
+re-sorted the touched include blocks with `clang-format --lines`. `ra/wolapi/` became part of
+`ra/wol/`. Older plan documents keep their paths. Red Alert's folders, by stem (tests with their
+subject):
+
+| Folder     | Red Alert                                                                                                                                                                                                                                                                 |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `objects`  | abstract abstract_type aircraft anim building bullet cargo cell combat crate crew door drive factory flasher fly foot fuse house infantry mission object overlay radio smudge stage super target techno template terrain tracker type unit utracker vessel warhead weapon |
+| `data`     | aadata adata bbdata bdata ccini cdata hdata idata ini ini_number language mission_id odata options profile profile_buffer rules sdata tdata text_ids udata vdata                                                                                                          |
+| `map`      | credits display findpath gscreen help layer logic map mouse path_overlap power radar scroll selection sidebar tab vortex world                                                                                                                                            |
+| `ai`       | base carry region reinf scenario special taction team teamtype tevent trigger trigtype                                                                                                                                                                                    |
+| `ui`       | bigcheck checkbox cheklist colrlist control dialog direction_dial drop edit gadget gauge iconlist input link list msgbox msglist seditdlg shapebtn slider statbtn textbtn toggle tooltip txtlabel                                                                         |
+| `screens`  | egos expand gamedlg goptions hall_of_fame hotkeys intro loaddlg mapsel menus movie score sounddlg visudlg                                                                                                                                                                 |
+| `net`      | chat combuf connect connmgr event ipx ipxaddr ipxconn ipxgconn ipxmgr mplayer netdlg network nullconn nulldlg nullmgr queue sendfile session udpaddr wsproto wspudp                                                                                                       |
+| `wol`      | chatdefs downloaddefs ftpdefs netutildefs passedit rawolapi stats wolapi wolapi_iids wolapiob wol_cgam wol_chat woldebug wol_dnld woledit wol_gsup wol_logn wol_main wol_opt wolstrng                                                                                     |
+| `editor`   | mapeddlg mapedit mapedplc mapedsel mapedtm                                                                                                                                                                                                                                |
+| `saveload` | iomap ioobj record_playback saveglobals saveload serialize                                                                                                                                                                                                                |
+| `assets`   | assets audio compat dib filepcx graphics_loader installation interpal palette palettes screen shape_draw theme winbits window_rect writepcx                                                                                                                               |
+| `startup`  | conquer game game_state init nondosstub sdlstub startup startup_options version winstub                                                                                                                                                                                   |
+| `core`     | ccptr config const coord count_up defines display_constants dynavec face facing fixed_point game_clock heap heap_instances inline jshell object_heaps owned_vector search type_heaps vector vector_dynamic                                                                |
+| `debug`    | debug debug_state                                                                                                                                                                                                                                                         |
+
+Tiberian Dawn's same-named files sit in the same folders. Its own: `objects` tarcom, turret; `data`
+text; `ui` dial8, confdlg; `screens` movie_screen, scorevalues, ending; `net` noseqcon, tcpip,
+internet, nodename, phone, stats; `saveload` cellvalues; `assets` presentation; `startup` ccdde,
+dde; `core` vector_impl, fixedmath, rand, randomstate, support.
+
+Includes between folders, non-test files, counted per `#include` line (row includes column):
+
+```
+RA        ai asset core data debug edito  map  net objec savel scree start   ui  wol
+ai        52   26   92   19    4    6   13    8   89    .    6    8   37    1
+assets     1   20   22    4    2    1    3    2    2    .    2    3    3    .
+core      25    5   45    3    .    .    2    4   62    .    3    1    .    .
+data       1   21   87   32    2    9   13    1   55    .    .    .    .    .
+debug      .    1    8    .    2    1    3    .   10    .    .    .    1    .
+editor    14   12   36    8    4    5    8    2   31    .    2    6   50    .
+map       20   31  107   14    6   13   68   15   64    1    3    2   26    .
+net       10   29   60   23    3    6   12  131   43    4    7   23   62   13
+objects   57   30  303   47    6   20   60   21  368    .    7   18    4    .
+saveload  16    5   18    6    1    2   20    3   68    6    4    4    .    .
+screens    6   49   54   14    3    5   11   22   12    1   31   21   56    6
+startup    6   28   24   12    4    3    8   30    8    3   12   28   10    6
+ui         .   21   59    7    2    .    .    .    .    .    .    4  131    1
+wol        3   29   40   11    .    .    3   13    9    .    2   16   70   65
+
+TD        ai asset core data debug edito  map  net objec savel scree start   ui
+ai        23    8   43    4    .    5    8    6   62    .    4   10    8
+assets     2    9   10    1    1    1    2    1    .    .    2    4    1
+core       8    .   39    .    .    .    .    2   26    .    .    1    .
+data       9    8   62    5    3    7   10    5   53    .    .   20    .
+debug      1    2    7    .    2    1    2    1    8    .    1    .    1
+editor    12    7   28    4    1    5    7    2   29    .    4    7   43
+map       12   16   74    4    6   11   50   15   52    .    3   10   29
+net        8   14   42   11    2    5    7  122   23    .    9   27   40
+objects   38   17  230   11    7   15   36   22  324    .    7   34    4
+saveload  11    .   21    1    .    1   18    1   66    7    2    4    .
+screens    3   43   27   11    2    4   11   15    5    1   29   27   49
+startup   11   21   25    3    5    3   11   34   26    2   11   35    9
+ui         .    8   40    6    .    .    .    1    .    .    2    9   98
+```
+
+There is no layer order to enforce: `core` includes `objects` and `ai` (the heaps, vector
+instantiations and `inline.h` need the classes), and every folder includes `editor`, because
+`MapEditClass` is the top of the display chain that `TheMap()` returns, so the plan's example rule
+(nothing outside `editor/` includes it) does not hold. `engine_layers_test` enforces the exclusions
+that hold in both games (`GAME_FOLDER_EXCLUDES` in `tools/engine_layout.py`): `ui` includes none of
+`ai`, `editor`, `map`, `objects` and `saveload`; `core` none of `debug`, `editor`, `saveload`, `ui`
+and `wol`; `data` none of `saveload`, `screens`, `ui` and `wol`; and `ai`, `assets`, `debug`,
+`editor` and `objects` do not include `saveload`. It also fails on a game file outside the folders.

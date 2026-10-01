@@ -39,6 +39,41 @@ LIBRARY_ROOTS = (ENGINE_ROOT, *TOP_LEVEL_ROOTS)
 # the other.
 GAMES = ("ra", "td")
 
+# The subfolders every game file lives in, the same in both games (Red Alert
+# alone has wol/). They are for navigation, not namespaces or libraries.
+GAME_FOLDERS = (
+    "ai",
+    "assets",
+    "core",
+    "data",
+    "debug",
+    "editor",
+    "map",
+    "net",
+    "objects",
+    "saveload",
+    "screens",
+    "startup",
+    "ui",
+    "wol",
+)
+
+# The game folders a folder's files (tests aside) may not include. The
+# legacy code is too intertwined for a dependency order, so these are only
+# the exclusions that held in both games when the folders were made
+# (docs/GAME_NAMESPACES_PLAN.md step 3); the rest of the include graph is
+# recorded there.
+GAME_FOLDER_EXCLUDES = {
+    "ai": ("saveload",),
+    "assets": ("saveload",),
+    "core": ("debug", "editor", "saveload", "ui", "wol"),
+    "data": ("saveload", "screens", "ui", "wol"),
+    "debug": ("saveload",),
+    "editor": ("saveload",),
+    "objects": ("saveload",),
+    "ui": ("ai", "editor", "map", "objects", "saveload"),
+}
+
 # Each library's folder and its CMake target.
 LIBRARIES = {
     "base": "base",
@@ -146,6 +181,17 @@ def game_of(path: str) -> str | None:
     """Returns the game path belongs to ("ra/techno.cc" -> "ra"), or None."""
     root = path.split("/", 1)[0]
     return root if root in GAMES and "/" in path else None
+
+
+def game_folder_of(path: str) -> str | None:
+    """Returns the game folder path lives in ("ra/objects/techno.cc" ->
+    "objects"), or None for a file outside the games or the known folders."""
+    if game_of(path) is None:
+        return None
+    parts = path.split("/")
+    if len(parts) < 3 or parts[1] not in GAME_FOLDERS:
+        return None
+    return parts[1]
 
 
 def header_guard(path: str) -> str:
