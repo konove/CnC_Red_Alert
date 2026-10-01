@@ -238,11 +238,7 @@ void OptionsClass::Set_Sound_Volume(int volume, bool feedback) {
 void OptionsClass::Set_Brightness(int brightness) {
   Brightness =
       static_cast<unsigned char>(0x40 + Fixed_To_Cardinal(0x80, brightness));
-  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
-                 Brightness, Color, Tint, Contrast);
-  if (TheGameState().in_main_loop()) {
-    Set_Palette(ThePalettes().game_palette());
-  }
+  ShowPalette();
 }
 
 /***********************************************************************************************
@@ -281,11 +277,7 @@ int OptionsClass::Get_Brightness() const {
  *=============================================================================================*/
 void OptionsClass::Set_Color(int color) {
   Color = static_cast<unsigned char>(color);
-  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
-                 Brightness, Color, Tint, Contrast);
-  if (TheGameState().in_main_loop()) {
-    Set_Palette(ThePalettes().game_palette());
-  }
+  ShowPalette();
 }
 
 /***********************************************************************************************
@@ -322,11 +314,7 @@ int OptionsClass::Get_Color() const { return Color; }
 void OptionsClass::Set_Contrast(int contrast) {
   Contrast =
       static_cast<unsigned char>(0x40 + Fixed_To_Cardinal(0x80, contrast));
-  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
-                 Brightness, Color, Tint, Contrast);
-  if (TheGameState().in_main_loop()) {
-    Set_Palette(ThePalettes().game_palette());
-  }
+  ShowPalette();
 }
 
 /***********************************************************************************************
@@ -365,11 +353,7 @@ int OptionsClass::Get_Contrast() const {
  *=============================================================================================*/
 void OptionsClass::Set_Tint(int tint) {
   Tint = static_cast<unsigned char>(tint);
-  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
-                 Brightness, Color, Tint, Contrast);
-  if (TheGameState().in_main_loop()) {
-    Set_Palette(ThePalettes().game_palette());
-  }
+  ShowPalette();
 }
 
 /***********************************************************************************************
@@ -487,14 +471,21 @@ void OptionsClass::Load_Settings() {
   GameSpeed = static_cast<unsigned>(
       WWGetPrivateProfileInt("Options", "GameSpeed", 4, buffer));
   ScrollRate = WWGetPrivateProfileInt("Options", "ScrollRate", 4, buffer);
-  Set_Brightness(WWGetPrivateProfileInt("Options", "Brightness", 0x80, buffer));
+  // The file holds the stored values, not the slider positions the setters
+  // take.
+  Brightness = static_cast<unsigned char>(
+      WWGetPrivateProfileInt("Options", "Brightness", 0x80, buffer));
   Set_Sound_Volume(WWGetPrivateProfileInt("Options", "Volume", 0x66, buffer),
                    false);
   Set_Score_Volume(
       WWGetPrivateProfileInt("Options", "ScoreVolume", 0x40, buffer));
-  Set_Contrast(WWGetPrivateProfileInt("Options", "Contrast", 0x80, buffer));
-  Set_Color(WWGetPrivateProfileInt("Options", "Color", 0x80, buffer));
-  Set_Tint(WWGetPrivateProfileInt("Options", "Tint", 0x80, buffer));
+  Contrast = static_cast<unsigned char>(
+      WWGetPrivateProfileInt("Options", "Contrast", 0x80, buffer));
+  Color = static_cast<unsigned char>(
+      WWGetPrivateProfileInt("Options", "Color", 0x80, buffer));
+  Tint = static_cast<unsigned char>(
+      WWGetPrivateProfileInt("Options", "Tint", 0x80, buffer));
+  ShowPalette();
   AutoScroll =
       WWGetPrivateProfileInt("Options", "AutoScroll", 1, buffer) != 0;
   Set_Repeat(WWGetPrivateProfileInt("Options", "IsScoreRepeat", 0, buffer));
@@ -670,10 +661,7 @@ void OptionsClass::Save_Settings() const {
  * HISTORY: * 06/24/1995 BRR : Created. *
  *=============================================================================================*/
 void OptionsClass::Set() {
-  Set_Brightness(Brightness);
-  Set_Contrast(Contrast);
-  Set_Color(Color);
-  Set_Tint(Tint);
+  ShowPalette();
   Set_Sound_Volume(Volume, false);
   Set_Score_Volume(ScoreVolume);
   Set_Repeat(IsScoreRepeat);
@@ -715,6 +703,16 @@ int OptionsClass::Normalize_Delay(int delay) const {
     }
   }
   return delay;
+}
+
+// Not const: sets the display palette.
+// NOLINTNEXTLINE(readability-make-member-function-const)
+void OptionsClass::ShowPalette() {
+  Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
+                 Brightness, Color, Tint, Contrast);
+  if (TheGameState().in_main_loop()) {
+    Set_Palette(ThePalettes().game_palette());
+  }
 }
 
 void OptionsClass::Fixup_Palette() const {

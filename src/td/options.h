@@ -85,6 +85,7 @@ class OptionsClass {
   unsigned int GameSpeed;
 
   int ScrollRate;  // Distance to scroll.
+  // Brightness and Contrast hold 0x40 + slider / 2, not the slider position.
   unsigned char Brightness{0x80};
   unsigned char Volume{0xE0};            // Volume for sound effects.
   unsigned char ScoreVolume{0x90};       // Volume for scores.
@@ -104,6 +105,9 @@ class OptionsClass {
                              unsigned char tint, unsigned char contrast);
 
  private:
+  // Rebuilds the game palette from the stored settings and, inside the main
+  // loop, shows it.
+  void ShowPalette();
 };
 
 #endif  // CNC_RED_ALERT_TD_OPTIONS_H_
