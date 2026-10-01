@@ -1,0 +1,26 @@
+# engine_rs: the engine kernels written in Rust, linked into the C++ engine
+# through cxx (src/lib.rs). One crate for the whole tree: each Rust staticlib
+# carries its own copy of std, so two in one binary would clash at link time.
+[package]
+name = "engine_rs"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98"
+publish = false
+
+[lib]
+crate-type = ["staticlib"]
+# Doc tests need an rlib.
+doctest = false
+
+[dependencies]
+
+# Debug builds keep the kernels fast, as optimize_in_debug() does for C++
+# (cmake/OptimizeInDebug.cmake). A panic must not unwind into C++.
+[profile.dev]
+opt-level = 2
+panic = "abort"
+
+[profile.release]
+debug = "line-tables-only"
+panic = "abort"
