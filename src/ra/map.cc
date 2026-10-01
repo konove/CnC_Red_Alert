@@ -1444,7 +1444,8 @@ bool MapClass::Validate() {
       const TemplateTypeClass* tclass = &TemplateTypeClass::As_Reference(ttype);
       const unsigned char ticon = (*this).at(cell).TIcon;
       base::CopyBytes(base::ObjectBytes(map),
-                      std::as_bytes(Get_Icon_Set_Map(tclass->Get_Image_Data())),
+                      std::as_bytes(Get_Icon_Set_Map(tclass->Get_Image_Data(),
+                                                     IconSetLayout::kRedAlert)),
                       tclass->Width * tclass->Height);
       if (ticon >= tclass->Width * tclass->Height ||
           base::At(map, ticon) == 0xff) {

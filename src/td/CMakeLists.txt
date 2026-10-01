@@ -42,7 +42,6 @@ if (WIN32)
     target_link_libraries(td_engine PUBLIC wsock32)
 endif ()
 
-target_compile_definitions(td_engine PUBLIC TD=1)
 apply_dotenv_settings(td_engine)
 apply_dotenv_settings(tdsdl)
 # sdlstub.cc includes SDL headers directly, so td_engine links SDL2 itself
@@ -121,34 +120,29 @@ add_gtest(
     SOURCES heap_test.cc heap.cc
     LIBS base engine_stream
 )
-target_compile_definitions(td_heap_test PRIVATE TD=1)
 
 add_gtest(
     NAME td_fixedmath_test
     SOURCES fixedmath_test.cc fixedmath.cc
 )
-target_compile_definitions(td_fixedmath_test PRIVATE TD=1)
 
 add_gtest(
     NAME td_connect_test
     SOURCES connect_test.cc connect.cc combuf.cc noseqcon.cc
     LIBS base absl::check absl::log
 )
-target_compile_definitions(td_connect_test PRIVATE TD=1)
 
 add_gtest(
     NAME td_coord_inline_test
     SOURCES coord_inline_test.cc
     LIBS base absl::check absl::log
 )
-target_compile_definitions(td_coord_inline_test PRIVATE TD=1)
 
 add_gtest(
     NAME td_path_overlap_test
     SOURCES path_overlap_test.cc
     LIBS base absl::check absl::log
 )
-target_compile_definitions(td_path_overlap_test PRIVATE TD=1)
 
 # Real cell array from the engine, without a game entry point.
 add_gtest(

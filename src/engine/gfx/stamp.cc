@@ -14,27 +14,10 @@
 #include "base/types.h"
 #include "base/unaligned.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/gfx/tile.h"
 
 namespace {
-
-// The icon set header of Tiberian Dawn, which lacks Red Alert's MapWidth,
-// MapHeight and ColorMap fields. engine_gfx is compiled without TD, so
-// IControl_Type is always Red Alert's layout and Tiberian Dawn's sets are read
-// through this one. Only the three table offsets are read; the rest hold
-// their place in the layout.
-struct TiberianDawnIconSetHeader {
-  [[maybe_unused]] int16_t width;      // Width of icons (pixels).
-  [[maybe_unused]] int16_t height;     // Height of icons (pixels).
-  [[maybe_unused]] int16_t count;      // Number of (logical) icons in this set.
-  [[maybe_unused]] int16_t allocated;  // Was this IconSet allocated?
-  [[maybe_unused]] int32_t size;       // Size of the whole IconSet.
-  int32_t icons;                       // Offset of the icon data.
-  [[maybe_unused]] int32_t palettes;   // Offset of the palette data.
-  [[maybe_unused]] int32_t remaps;     // Offset of the remap index data.
-  int32_t trans_flag;                  // Offset of the transparency flags.
-  int32_t map;                         // Offset of the icon map, if present.
-};
 
 // What drawing a tile needs from an icon set, the tables as views into the
 // set's data.
@@ -114,6 +97,17 @@ static std::optional<IconSetTables> ReadIconSet(
                        .tiles = tiles,
                        .transparent = transparent,
                        .cell_tiles = TableAt(icon_set, cell_tiles_offset)};
+}
+
+void PixelView::DrawStamp(const std::span<const std::byte> icon_set,
+                          const int cell, const int x, const int y,
+                          const std::span<const uint8_t> remap_table,
+                          const Rect& clip) {
+  if (Lock()) {
+    DrawStampLocked(icon_set, cell, x, y, remap_table, clip.X, clip.Y,
+                    clip.Width, clip.Height);
+    Unlock();
+  }
 }
 
 void PixelView::DrawStampLocked(const std::span<const std::byte> icon_set,

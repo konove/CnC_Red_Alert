@@ -133,6 +133,7 @@
 #include "td/unit.h"
 #include "td/utracker.h"
 #include "td/vector.h"
+#include "td/window_rect.h"
 #include "td/world.h"
 
 using engine::gfx::ShapeFlags;
@@ -978,7 +979,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
       */
       if (!ttype->Get_Image_Data().empty()) {
         view.DrawStamp(ttype->Get_Image_Data(), icon, x, y, {},
-                       static_cast<int>(WINDOW_TACTICAL));
+                       WindowRect(WINDOW_TACTICAL));
         if (!remap.empty()) {
           view.Remap(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
                      ICON_PIXEL_W, ICON_PIXEL_H, remap);
@@ -1107,10 +1108,10 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
         */
         if (TheMap().ProximityCheck && Is_Generally_Clear()) {
           view.DrawStamp(MouseClass::TransIconset, 0, x, y, {},
-                         static_cast<int>(WINDOW_TACTICAL));
+                         WindowRect(WINDOW_TACTICAL));
         } else {
           view.DrawStamp(MouseClass::TransIconset, 2, x, y, {},
-                         static_cast<int>(WINDOW_TACTICAL));
+                         WindowRect(WINDOW_TACTICAL));
         }
 
         if constexpr (config::kScenarioEditorEnabled) {
@@ -1135,7 +1136,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
                                                     TheMap().ZoneOffset))) *
                           tptr->Width);
                   view.DrawStamp(tptr->Get_Image_Data(), icon, x, y, {},
-                                 static_cast<int>(WINDOW_TACTICAL));
+                                 WindowRect(WINDOW_TACTICAL));
                 }
                 break;
 

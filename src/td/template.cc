@@ -273,7 +273,7 @@ bool TemplateClass::Mark(MarkType mark) {
   static bool noup = false;
   const auto iset = Class->Get_Image_Data();
   if (!iset.empty() && ObjectClass::Mark(mark)) {
-    const auto map = Get_Icon_Set_Map(iset);
+    const auto map = Get_Icon_Set_Map(iset, IconSetLayout::kTiberianDawn);
 
     for (int y = 0; std::cmp_less(y, Class->Height); y++) {
       for (int x = 0; std::cmp_less(x, Class->Width); x++) {

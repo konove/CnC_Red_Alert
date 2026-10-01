@@ -35,7 +35,6 @@
 #include "td/game_state.h"
 #include "td/winstub.h"
 #include "td/world.h"
-// #include "ra/filepcx.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"

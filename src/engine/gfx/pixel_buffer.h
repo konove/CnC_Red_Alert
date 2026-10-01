@@ -42,9 +42,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "base/array.h"
 #include "engine/gfx/pixel_surface.h"
-#include "engine/gfx/text_window.h"
 
 // The VGA mode the games were written for. Both still decode their
 // low-resolution movies at this size, whatever video mode is set.
@@ -54,6 +52,7 @@ inline constexpr int kDefaultScreenHeight = 200;
 struct FontStyle;
 class PixelBuffer;
 class PixelView;
+class Rect;
 
 // A rectangular window onto a PixelBuffer. Coordinates passed to the
 // drawing members are relative to the window's top left corner and are
@@ -217,19 +216,17 @@ class PixelView {
                    std::span<const uint8_t> remap_table);
 
   // Draws cell `cell` of an icon set (a terrain template) at x,y, clipped to
-  // the WindowList entry `clip_window` rather than to the view - the map
-  // draws its terrain through this. `remap_table` may be empty for no
-  // remapping.
+  // `clip` (in view coordinates) rather than to the view - the map draws its
+  // terrain through this. x,y are relative to the clip rectangle's corner.
+  // `remap_table` may be empty for no remapping.
   void DrawStamp(std::span<const std::byte> icon_set, int cell, int x, int y,
-                 std::span<const uint8_t> remap_table, int clip_window);
-  // Clipped to the rectangle at clip_x,clip_y in view coordinates rather
-  // than to a WindowList entry. x,y are relative to the rectangle's corner.
-  // The set's map translates `cell` into the tile drawn; an empty cell, a
-  // cell or a tile outside the set, damaged set data, or a `remap_table`
-  // shorter than 256 draws nothing. Color 0 is
-  // transparent when the tile is flagged transparent, and whenever
-  // `remap_table` is given (tested after the remap). The buffer must be
-  // locked.
+                 std::span<const uint8_t> remap_table, const Rect& clip);
+  // DrawStamp's work on a locked buffer, the clip rectangle given as its
+  // corner and size. The set's map translates `cell` into the tile drawn; an
+  // empty cell, a cell or a tile outside the set, damaged set data, or a
+  // `remap_table` shorter than 256 draws nothing. Color 0 is transparent when
+  // the tile is flagged transparent, and whenever `remap_table` is given
+  // (tested after the remap).
   void DrawStampLocked(std::span<const std::byte> icon_set, int cell, int x,
                        int y, std::span<const uint8_t> remap_table, int clip_x,
                        int clip_y, int clip_width, int clip_height);
@@ -353,29 +350,5 @@ class PixelBuffer {
   // UnlockSurface().
   PixelView whole_;
 };
-
-// Inline rather than in the .cc because the window unit differs between the
-// two games, and engine_gfx is compiled once, without TD defined.
-inline void PixelView::DrawStamp(const std::span<const std::byte> icon_set,
-                                 const int cell, const int x, const int y,
-                                 const std::span<const uint8_t> remap_table,
-                                 const int clip_window) {
-  // Tiberian Dawn stores a window's x and width in units of eight pixels;
-  // Red Alert stores them in pixels.
-#ifdef TD
-  constexpr int kWindowUnit = 8;
-#else
-  constexpr int kWindowUnit = 1;
-#endif
-  if (Lock()) {
-    DrawStampLocked(
-        icon_set, cell, x, y, remap_table,
-        base::At(base::At(WindowList, clip_window), kWindowX) * kWindowUnit,
-        base::At(base::At(WindowList, clip_window), kWindowY),
-        base::At(base::At(WindowList, clip_window), kWindowWidth) * kWindowUnit,
-        base::At(base::At(WindowList, clip_window), kWindowHeight));
-    Unlock();
-  }
-}
 
 #endif  // CNC_RED_ALERT_ENGINE_GFX_PIXEL_BUFFER_H_

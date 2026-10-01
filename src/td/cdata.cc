@@ -73,6 +73,7 @@
 #include "td/screen.h"
 #include "td/template.h"
 #include "td/type.h"
+#include "td/window_rect.h"
 #include "td/world.h"
 
 static const char slope00000001[] = {7, -1};
@@ -1344,7 +1345,8 @@ std::span<const int16_t> TemplateTypeClass::Occupy_List(
   unsigned char map[13 * 8];
 
   base::CopyBytes(std::as_writable_bytes(std::span(map)),
-                  std::as_bytes(Get_Icon_Set_Map(Get_Image_Data())),
+                  std::as_bytes(Get_Icon_Set_Map(Get_Image_Data(),
+                                                 IconSetLayout::kTiberianDawn)),
                   Width * Height);
 
   std::span<int16_t> ptr(_occupy);
@@ -1431,13 +1433,14 @@ void TemplateTypeClass::Display(PixelView& view, int x, int y,
   y += base::At(base::At(WindowList, static_cast<int>(window)), kWindowY);
 
   base::CopyBytes(std::as_writable_bytes(std::span(map)),
-                  std::as_bytes(Get_Icon_Set_Map(Get_Image_Data())),
+                  std::as_bytes(Get_Icon_Set_Map(Get_Image_Data(),
+                                                 IconSetLayout::kTiberianDawn)),
                   Width * Height);
 
   for (int index = 0; index < w * h; index++) {
     if (base::At(map, index) != 0xFF) {
       TheScreen().hidden_view().DrawStamp(Get_Image_Data(), index, 0, 0, {},
-                                          static_cast<int>(WINDOW_MAIN));
+                                          WindowRect(WINDOW_MAIN));
       if (scale) {
         TheScreen().hidden_view().Scale(
             view, 0, 0, x + ((index % w) * (ICON_PIXEL_W / 2)),

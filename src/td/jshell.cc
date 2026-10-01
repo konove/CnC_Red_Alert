@@ -101,16 +101,16 @@
 std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
                                           int iconnum) {
   static unsigned char icon[9];
-  if (iconptr.size() < sizeof(IControl_Type)) {
+  if (iconptr.size() < sizeof(TiberianDawnIconSetHeader)) {
     return {};
   }
-  const auto control = base::ReadUnaligned<IControl_Type>(iconptr);
-  const auto map = Get_Icon_Set_Map(iconptr);
-  if (iconnum < 0 || base::ToSize(iconnum) >= map.size() || control.Icons < 0) {
+  const auto control = base::ReadUnaligned<TiberianDawnIconSetHeader>(iconptr);
+  const auto map = Get_Icon_Set_Map(iconptr, IconSetLayout::kTiberianDawn);
+  if (iconnum < 0 || base::ToSize(iconnum) >= map.size() || control.icons < 0) {
     return {};
   }
   const auto offset =
-      base::ToSize(control.Icons) +
+      base::ToSize(control.icons) +
       (std::to_integer<size_t>(base::At(map, base::ToSize(iconnum))) * 24 * 24);
   if (offset > iconptr.size() || iconptr.size() - offset < size_t{24} * 24) {
     return {};

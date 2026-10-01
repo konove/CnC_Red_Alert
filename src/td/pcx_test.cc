@@ -15,6 +15,7 @@
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "gtest/gtest.h"
+#include "td/winstub.h"
 
 namespace {
 

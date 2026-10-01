@@ -80,6 +80,7 @@
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
+#include "ra/window_rect.h"
 #include "ra/world.h"
 
 static const TemplateTypeClass Empty(TEMPLATE_CLEAR1,
@@ -2094,7 +2095,7 @@ void TemplateTypeClass::Display(PixelView& view, int x, int y,
     if (static_cast<size_t>(index) < map.size() &&
         base::At(map, static_cast<size_t>(index)) != 0xFF) {
       TheScreen().hidden_view().DrawStamp(Get_Image_Data(), index, 0, 0, {},
-                                          static_cast<int>(WINDOW_MAIN));
+                                          WindowRect(WINDOW_MAIN));
       if (scale) {
         TheScreen().hidden_view().Scale(
             view, 0, 0, x + ((index % w) * (ICON_PIXEL_W / 2)),

@@ -964,7 +964,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
       const auto shape =
           TemplateTypeClass::As_Reference(temp.TType).Get_Image_Data();
       if (!shape.empty()) {
-        const auto map = Get_Icon_Set_Map(shape);
+        const auto map = Get_Icon_Set_Map(shape, IconSetLayout::kTiberianDawn);
         if ((!map.empty()) && (temp.TIcon >= map.size() ||
                                base::At(map, temp.TIcon) == std::byte{0xff})) {
           temp.TIcon = 0;
@@ -1300,9 +1300,11 @@ bool MapClass::Validate() {
     if (ttype != TEMPLATE_NONE) {
       const TemplateTypeClass* tclass = &TemplateTypeClass::As_Reference(ttype);
       const unsigned char ticon = (*this).at(cell).TIcon;
-      base::CopyBytes(std::as_writable_bytes(std::span(map)),
-                      std::as_bytes(Get_Icon_Set_Map(tclass->Get_Image_Data())),
-                      tclass->Width * tclass->Height);
+      base::CopyBytes(
+          std::as_writable_bytes(std::span(map)),
+          std::as_bytes(Get_Icon_Set_Map(tclass->Get_Image_Data(),
+                                         IconSetLayout::kTiberianDawn)),
+          tclass->Width * tclass->Height);
       if (ticon >= tclass->Width * tclass->Height ||
           base::At(map, ticon) == 0xff) {
         return false;

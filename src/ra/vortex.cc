@@ -104,6 +104,7 @@
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "ra/window_rect.h"
 #include "ra/world.h"
 
 /*
@@ -874,7 +875,7 @@ void ChronalVortexClass::Render(PixelView& view) {
             if (!ttype->Get_Image_Data().empty()) {
               RenderBuffer.view().DrawStamp(ttype->Get_Image_Data(), icon,
                                             x * CELL_PIXEL_W, y * CELL_PIXEL_H,
-                                            {}, static_cast<int>(WINDOW_MAIN));
+                                            {}, WindowRect(WINDOW_MAIN));
             }
 
             /*

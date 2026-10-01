@@ -32,8 +32,6 @@
 ;*                                                                         *
 ;*-------------------------------------------------------------------------*
 ;* Functions:                                                              *
-;* PixelBuffer* Read_PCX_File (char* name, BYTE* palette,void *buff, long
-size);
 ;* int Write_PCX_File (char* name, PixelView& pic, BYTE* palette );*
 ;*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
@@ -41,8 +39,6 @@ size);
 #define CNC_RED_ALERT_ENGINE_GFX_PCX_FILE_H_
 
 #include <cstdint>
-#include <memory>
-#include <span>
 
 #include "engine/gfx/palette.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -71,14 +67,6 @@ struct PCX_HEADER {
   int16_t palette_type;
   char filler[58];
 };
-
-// Reads the PCX picture `name` into a new buffer, backed by `buff` when it is
-// not empty (at most `size` bytes of it, 0 meaning all). Fills `*palette` with
-// the file's palette when `palette` is not nullptr. Returns null if the file
-// is missing, malformed or does not fit. Each game defines its own.
-std::unique_ptr<PixelBuffer> Read_PCX_File(
-    const char* name, engine::gfx::Palette* palette = nullptr,
-    std::span<uint8_t> buff = {}, int32_t size = 0);
 
 // Writes `pic` to the file `name` as a PCX picture with `palette`. Returns 0.
 int Write_PCX_File(const char* name, PixelView& pic,
