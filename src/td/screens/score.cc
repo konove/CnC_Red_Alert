@@ -95,7 +95,6 @@
 #include "td/assets/theme.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
-#include "td/core/vector.h"
 #include "td/data/text.h"
 #include "td/editor/mapedit.h"
 #include "td/map/logic.h"

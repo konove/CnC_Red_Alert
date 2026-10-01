@@ -48,7 +48,6 @@
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
-#include "td/core/vector.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/net/session.h"

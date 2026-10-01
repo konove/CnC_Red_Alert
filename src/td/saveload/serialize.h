@@ -9,13 +9,18 @@
 #include "engine/stream/archive.h"
 #include "td/core/defines.h"
 
+namespace game {
+template <class T>
+class DynamicVectorClass;
+}  // namespace game
+
 namespace td {
 
 class ObjectClass;
-template <class T> class DynamicVectorClass;
 // Ordered active object references, loaded only after all object heaps.
 template <class Archive>
-void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects);
+void SerializeObjectList(Archive& ar,
+                         game::DynamicVectorClass<ObjectClass*>& objects);
 
 // Resolves an object TARGET by kind and heap bounds without dereferencing the
 // slot. A later heap may not have constructed the referenced object yet.
@@ -160,8 +165,10 @@ class TypePtr {
 template <class T>
 TypePtr(const T*&) -> TypePtr<T>;
 
-extern template void SerializeObjectList<ArchiveWriter>(ArchiveWriter&, DynamicVectorClass<ObjectClass*>&);
-extern template void SerializeObjectList<ArchiveReader>(ArchiveReader&, DynamicVectorClass<ObjectClass*>&);
+extern template void SerializeObjectList<ArchiveWriter>(
+    ArchiveWriter&, game::DynamicVectorClass<ObjectClass*>&);
+extern template void SerializeObjectList<ArchiveReader>(
+    ArchiveReader&, game::DynamicVectorClass<ObjectClass*>&);
 
 class TechnoClass;
 class RadioClass;

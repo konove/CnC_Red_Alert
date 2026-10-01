@@ -1,13 +1,13 @@
-#ifndef CNC_RED_ALERT_RA_CORE_VECTOR_DYNAMIC_H_
-#define CNC_RED_ALERT_RA_CORE_VECTOR_DYNAMIC_H_
+#ifndef CNC_RED_ALERT_GAME_CORE_VECTOR_DYNAMIC_H_
+#define CNC_RED_ALERT_GAME_CORE_VECTOR_DYNAMIC_H_
 
 #include <algorithm>
 #include <type_traits>
 
 #include "base/types.h"
-#include "ra/core/vector.h"
+#include "game/core/vector.h"
 
-namespace ra {
+namespace game {
 
 // Dynamic array that supports adding/deleting elements. Elements are packed
 // at the beginning (no holes). Auto-grows when full if GrowthStep > 0.
@@ -169,6 +169,6 @@ base::ssize DynamicVectorClass<T>::ID(const T& ptr) {
   return -1;
 }
 
-}  // namespace ra
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_RA_CORE_VECTOR_DYNAMIC_H_
+#endif  // CNC_RED_ALERT_GAME_CORE_VECTOR_DYNAMIC_H_

@@ -15,7 +15,7 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "ra/core/vector.h"
+#include "game/core/vector.h"
 
 #include "ra/ai/base.h"
 #include "ra/ai/taction.h"
@@ -30,8 +30,8 @@
 #include "ra/objects/object.h"
 #include "ra/screens/egos.h"
 
-namespace ra {
-
+// An explicit instantiation of a game:: template must sit in a namespace
+// that encloses game::, so these are at global scope.
 /*
 **	The following template function can be located here ONLY if all the
 *instantiations are *	declared in a header file this module includes. By
@@ -39,26 +39,24 @@ namespace ra {
 *reduces object module size.
 */
 
-template class VectorClass<CCPtr<TeamTypeClass> >;
-template class VectorClass<CCPtr<TriggerTypeClass> >;
-template class VectorClass<TeamMissionClass*>;
-template class VectorClass<EventChoiceClass*>;
-template class VectorClass<ActionChoiceClass*>;
-template class VectorClass<EgoClass*>;
-template class VectorClass<NodeNameTag*>;
-template class VectorClass<PhoneEntryClass*>;
-template class VectorClass<MultiMission*>;
-template class VectorClass<ObjectClass*>;
-template class VectorClass<TriggerClass*>;
-template class VectorClass<RemapControlType*>;
-template class VectorClass<BaseNodeClass>;
-template class VectorClass<CellClass>;
-template class VectorClass<char*>;
-template class VectorClass<unsigned char*>;
-template class VectorClass<const char*>;
-template class VectorClass<void*>;
-template class VectorClass<unsigned char>;
+template class game::VectorClass<ra::CCPtr<ra::TeamTypeClass> >;
+template class game::VectorClass<ra::CCPtr<ra::TriggerTypeClass> >;
+template class game::VectorClass<ra::TeamMissionClass*>;
+template class game::VectorClass<ra::EventChoiceClass*>;
+template class game::VectorClass<ra::ActionChoiceClass*>;
+template class game::VectorClass<ra::EgoClass*>;
+template class game::VectorClass<ra::NodeNameTag*>;
+template class game::VectorClass<ra::PhoneEntryClass*>;
+template class game::VectorClass<ra::MultiMission*>;
+template class game::VectorClass<ra::ObjectClass*>;
+template class game::VectorClass<ra::TriggerClass*>;
+template class game::VectorClass<ra::RemapControlType*>;
+template class game::VectorClass<ra::BaseNodeClass>;
+template class game::VectorClass<ra::CellClass>;
+template class game::VectorClass<char*>;
+template class game::VectorClass<unsigned char*>;
+template class game::VectorClass<const char*>;
+template class game::VectorClass<void*>;
+template class game::VectorClass<unsigned char>;
 
-template class VectorClass<WinsockInterfaceClass::WinsockBufferType*>;
-
-}  // namespace ra
+template class game::VectorClass<ra::WinsockInterfaceClass::WinsockBufferType*>;

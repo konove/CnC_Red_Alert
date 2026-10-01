@@ -11,10 +11,10 @@
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
+#include "game/core/vector_dynamic.h"
 #include "td/ai/base.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
-#include "td/core/vector.h"
 #include "td/editor/mapedit.h"
 #include "td/map/logic.h"
 #include "td/screens/score.h"
@@ -73,17 +73,18 @@ class World {
   ScoreClass& score() ABSL_ATTRIBUTE_LIFETIME_BOUND { return score_; }
 
   // The objects the player has selected, in selection order.
-  DynamicVectorClass<ObjectClass*>& current_object()
+  game::DynamicVectorClass<ObjectClass*>& current_object()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return current_object_;
   }
 
   // The triggers attached to cells, and those attached to a house.
-  DynamicVectorClass<TriggerClass*>& cell_triggers()
+  game::DynamicVectorClass<TriggerClass*>& cell_triggers()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return cell_triggers_;
   }
-  base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>, kHouseCount>&
+  base::EnumArray<HousesType, game::DynamicVectorClass<TriggerClass*>,
+                  kHouseCount>&
   house_triggers() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return house_triggers_;
   }
@@ -180,9 +181,10 @@ class World {
   BaseClass base_;
   ScoreClass score_;
 
-  DynamicVectorClass<ObjectClass*> current_object_;
-  DynamicVectorClass<TriggerClass*> cell_triggers_;
-  base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>, kHouseCount>
+  game::DynamicVectorClass<ObjectClass*> current_object_;
+  game::DynamicVectorClass<TriggerClass*> cell_triggers_;
+  base::EnumArray<HousesType, game::DynamicVectorClass<TriggerClass*>,
+                  kHouseCount>
       house_triggers_;
 
   CELL waypoint_[kWayptCount]{};

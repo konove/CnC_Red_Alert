@@ -41,42 +41,42 @@
  *   DynamicVectorClass<T>::Resize -- Changes size of a dynamic vector.    *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "game/core/vector_dynamic.h"
 #include "ra/ai/base.h"
 #include "ra/ai/taction.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/tevent.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
-#include "ra/core/vector_dynamic.h"
 #include "ra/data/ccini.h"
 #include "ra/net/session.h"
 #include "ra/net/wsproto.h"
 #include "ra/objects/object.h"
 #include "ra/screens/egos.h"
 
-namespace ra {
+// An explicit instantiation of a game:: template must sit in a namespace
+// that encloses game::, so these are at global scope.
+template class game::DynamicVectorClass<ra::CCPtr<ra::TeamTypeClass> >;
+template class game::DynamicVectorClass<ra::CCPtr<ra::TriggerTypeClass> >;
+template class game::DynamicVectorClass<ra::TeamMissionClass*>;
+template class game::DynamicVectorClass<ra::EventChoiceClass*>;
+template class game::DynamicVectorClass<ra::ActionChoiceClass*>;
+template class game::DynamicVectorClass<ra::EgoClass*>;
+template class game::DynamicVectorClass<ra::NodeNameTag*>;
+template class game::DynamicVectorClass<ra::PhoneEntryClass*>;
+template class game::DynamicVectorClass<ra::MultiMission*>;
+template class game::DynamicVectorClass<ra::ObjectClass*>;
+template class game::DynamicVectorClass<ra::TriggerClass*>;
+template class game::DynamicVectorClass<ra::RemapControlType*>;
+template class game::DynamicVectorClass<ra::BaseNodeClass>;
+template class game::DynamicVectorClass<int>;
+template class game::DynamicVectorClass<char*>;
+template class game::DynamicVectorClass<unsigned char*>;
+template class game::DynamicVectorClass<const char*>;
+template class game::DynamicVectorClass<void*>;
 
-template class DynamicVectorClass<CCPtr<TeamTypeClass> >;
-template class DynamicVectorClass<CCPtr<TriggerTypeClass> >;
-template class DynamicVectorClass<TeamMissionClass*>;
-template class DynamicVectorClass<EventChoiceClass*>;
-template class DynamicVectorClass<ActionChoiceClass*>;
-template class DynamicVectorClass<EgoClass*>;
-template class DynamicVectorClass<NodeNameTag*>;
-template class DynamicVectorClass<PhoneEntryClass*>;
-template class DynamicVectorClass<MultiMission*>;
-template class DynamicVectorClass<ObjectClass*>;
-template class DynamicVectorClass<TriggerClass*>;
-template class DynamicVectorClass<RemapControlType*>;
-template class DynamicVectorClass<BaseNodeClass>;
-template class DynamicVectorClass<int>;
-template class DynamicVectorClass<char*>;
-template class DynamicVectorClass<unsigned char*>;
-template class DynamicVectorClass<const char*>;
-template class DynamicVectorClass<void*>;
-
-template class DynamicVectorClass<WinsockInterfaceClass::WinsockBufferType*>;
+template class game::DynamicVectorClass<
+    ra::WinsockInterfaceClass::WinsockBufferType*>;
 
 /************************** end of dynavec.cpp *****************************/
 
-}  // namespace ra

@@ -331,12 +331,12 @@ class WOL_GameSetupDialog {
   SCENARIO_GAMEKIND ScenKindCurrent{
       SCENARIO_UNINITIALIZED};  //	Describes what gamekind of
                                 // scenarios we are viewing, if host.
-  DynamicVectorClass<const char*>
+  game::DynamicVectorClass<const char*>
       ar_szScenarios[4];  //	Lists of scenarios, by SCENARIO_GAMEKIND.
   //	ar_szScenIndexes parallels ar_szScenarios, holds ScenarioIndex. It's
   // actually an int, but I'm using void* to avoid 	template instantiation
   // problems and the need to change defines.h.
-  DynamicVectorClass<int> ar_szScenIndexes[4];
+  game::DynamicVectorClass<int> ar_szScenIndexes[4];
 
   //------------------------------------------------------------------------
   static constexpr int kButtonDisconnect = 100;

@@ -51,7 +51,7 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "engine/stream/archive.h"
-#include "td/core/vector.h"
+#include "game/core/vector_dynamic.h"
 
 namespace td {
 
@@ -173,7 +173,7 @@ class FixedIHeapClass : public FixedHeapClass {
   *processing. *	It also allows access to this array so that custom
   *sorting can be *	performed.
   */
-  DynamicVectorClass<void*> ActivePointers;
+  game::DynamicVectorClass<void*> ActivePointers;
 };
 
 /**************************************************************************

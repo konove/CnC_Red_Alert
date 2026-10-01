@@ -44,8 +44,8 @@
 #include <span>
 
 #include "engine/gfx/pixel_buffer.h"
+#include "game/core/vector_dynamic.h"
 #include "ra/core/defines.h"
-#include "ra/core/vector_dynamic.h"
 #include "ra/ui/list.h"
 
 namespace ra {
@@ -90,7 +90,7 @@ class ColorListClass : public ListClass {
   /*
   **	This is the list of colors for each item.
   */
-  DynamicVectorClass<RemapControlType*> Colors;
+  game::DynamicVectorClass<RemapControlType*> Colors;
 
  protected:
   void Draw_Entry(PixelView& view, int index, int x, int y, int width,

@@ -76,6 +76,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
+#include "game/core/vector_dynamic.h"
 #include "td/ai/base.h"
 #include "td/ai/scenario.h"
 #include "td/ai/teamtype.h"
@@ -89,7 +90,6 @@
 #include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
-#include "td/core/vector.h"
 #include "td/data/ini.h"
 #include "td/data/profile.h"
 #include "td/editor/mapedit.h"
@@ -3155,7 +3155,7 @@ int MapEditClass::Import_Triggers() {
   ........................................................................*/
   bool cancel = false;
   static const int tabs[] = {70, 220, 370, 420};  // list box tab stops
-  DynamicVectorClass<char*> trignames;      // list of INI trigger names
+  game::DynamicVectorClass<char*> trignames;      // list of INI trigger names
   char buf[128];                            // for reading an INI entry
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
@@ -3469,7 +3469,7 @@ int MapEditClass::Import_Teams() {
   ........................................................................*/
   bool cancel = false;
   static const int tabs[] = {120, 180};  // list box tab stops
-  DynamicVectorClass<char*> teamnames;  // list of INI team names
+  game::DynamicVectorClass<char*> teamnames;  // list of INI team names
   char buf[128];                        // for reading an INI entry
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box

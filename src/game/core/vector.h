@@ -18,8 +18,8 @@
 
 // Dynamically-sized array containers for game objects.
 
-#ifndef CNC_RED_ALERT_RA_CORE_VECTOR_H_
-#define CNC_RED_ALERT_RA_CORE_VECTOR_H_
+#ifndef CNC_RED_ALERT_GAME_CORE_VECTOR_H_
+#define CNC_RED_ALERT_GAME_CORE_VECTOR_H_
 
 #include <memory>
 #include <span>
@@ -29,10 +29,8 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
-#include "ra/core/defines.h"  // IWYU pragma: keep
-#include "ra/screens/egos.h"  // IWYU pragma: keep
 
-namespace ra {
+namespace game {
 
 // Resizable array of arbitrary objects. Not optimized for integral types -
 // consider a specialized version for char/int if performance is critical.
@@ -240,6 +238,6 @@ bool VectorClass<T>::Resize(base::ssize newsize, std::span<T> array) {
   return false;
 }
 
-}  // namespace ra
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_RA_CORE_VECTOR_H_
+#endif  // CNC_RED_ALERT_GAME_CORE_VECTOR_H_

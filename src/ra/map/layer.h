@@ -40,7 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_MAP_LAYER_H_
 #define CNC_RED_ALERT_RA_MAP_LAYER_H_
 
-#include "ra/core/vector_dynamic.h"
+#include "game/core/vector_dynamic.h"
 
 class ArchiveReader;
 class ArchiveWriter;
@@ -49,7 +49,7 @@ namespace ra {
 
 class ObjectClass;
 
-class LayerClass : public DynamicVectorClass<ObjectClass*> {
+class LayerClass : public game::DynamicVectorClass<ObjectClass*> {
  public:
   LayerClass() = default;
   virtual ~LayerClass();

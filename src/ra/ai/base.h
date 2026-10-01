@@ -40,9 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_AI_BASE_H_
 #define CNC_RED_ALERT_RA_AI_BASE_H_
 
+#include "game/core/vector.h"
+#include "game/core/vector_dynamic.h"
 #include "ra/core/defines.h"
-#include "ra/core/vector.h"
-#include "ra/core/vector_dynamic.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 
@@ -134,7 +134,7 @@ class BaseClass {
   ** list can be pre-built by simply saving those buildings in the INI
   ** along with non-base buildings, so Is_Built will return true for them.
   */
-  DynamicVectorClass<BaseNodeClass> Nodes;
+  game::DynamicVectorClass<BaseNodeClass> Nodes;
 
   /*
   ** This is the house this base belongs to.

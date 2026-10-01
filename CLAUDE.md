@@ -195,8 +195,9 @@ engine/      → The shared libraries, one folder per domain (docs/ENGINE_FOLDER
                (target `engine_vqa`) [depends: engine_stream, engine_codec, SDL2]
 game/        → The code both games share, in namespace game::, above the engine and below the games
                (docs/GAME_NAMESPACES_PLAN.md)
-  core/      → The frame clock, path-overlap bits, the 2x interpolation scaler, cell/pixel sizes
-               (target `game_core`) [depends: base, engine_window]
+  core/      → VectorClass/DynamicVectorClass/OwnedVector, the frame clock, path-overlap bits,
+               the 2x interpolation scaler, cell/pixel sizes (target `game_core`)
+               [depends: base, engine_window]
 rust/        → engine_rs, the engine kernels written in Rust (LCW), linked through the cxx bridge in
                src/lib.rs; CMake target engine_rs_cxx (Corrosion) [depends: nothing]
 ra/          → Red Alert (~420 files) [depends: game_core, engine_net, engine_window, engine_video]
@@ -265,7 +266,7 @@ clang-tidy's `misc-include-cleaner` requires every `.cc` file to include the hea
 directly and nothing more. It misses three kinds of use: a complete type needed only for an implicit
 derived-to-base conversion, a header that supplies template definitions for an explicit
 instantiation, and a comparison C++20 rewrites to a header's `operator<=>` (`ra/map/power.cc`'s
-`Power_Fraction() < 1`). Keep those with `#include "td/core/vector_impl.h"  // IWYU pragma: keep`.
+`Power_Fraction() < 1`). Keep those with `#include "base/fixed.h"  // IWYU pragma: keep`.
 
 ### New Files
 

@@ -42,7 +42,7 @@
 #include <cstddef>
 #include <span>
 
-#include "ra/core/owned_vector.h"
+#include "game/core/owned_vector.h"
 
 #ifdef _WIN32
 /*
@@ -169,8 +169,8 @@ class WinsockInterfaceClass {
   /*
   ** Array of buffers to temporarily store incoming and outgoing packets.
   */
-  OwnedVector<WinsockBufferType> InBuffers;
-  OwnedVector<WinsockBufferType> OutBuffers;
+  game::OwnedVector<WinsockBufferType> InBuffers;
+  game::OwnedVector<WinsockBufferType> OutBuffers;
 
   /*
   ** Is Winsock present and initialised?

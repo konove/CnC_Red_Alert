@@ -10,22 +10,22 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
+#include "game/core/vector.h"
+#include "game/core/vector_dynamic.h"
 #include "gtest/gtest.h"
-#include "td/core/vector.h"
-#include "td/core/vector_impl.h"  // IWYU pragma: keep
+
+template class game::VectorClass<void*>;
+template class game::DynamicVectorClass<void*>;
+template class game::VectorClass<char>;
 
 namespace td {
-
-template class VectorClass<void*>;
-template class DynamicVectorClass<void*>;
-template class VectorClass<char>;
 
 namespace {
 TEST(VectorStorageTest, BorrowedStorageRetainsExtentAndDoesNotGrow) {
   int first = 1;
   int second = 2;
   void* storage[2] = {};
-  DynamicVectorClass<void*> values(2, storage);
+  game::DynamicVectorClass<void*> values(2, storage);
   EXPECT_TRUE(values.Add(&first));
   EXPECT_TRUE(values.Add_Head(&second));
   EXPECT_EQ(values.at(0), &second);

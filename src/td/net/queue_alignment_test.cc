@@ -8,9 +8,9 @@
 #include "base/buffer.h"
 #include "base/installed.h"
 #include "base/unaligned.h"
+#include "game/core/vector.h"
 #include "gtest/gtest.h"
 #include "td/core/defines.h"
-#include "td/core/vector.h"
 #include "td/net/connect.h"
 #include "td/net/event.h"
 #include "td/net/network.h"
@@ -153,9 +153,9 @@ TEST_F(QueueAlignmentTest, RejectsTruncatedMissionRun) {
 namespace {
 
 TEST(TdCheckedContainerTest, VectorAccessPreservesConstnessAndCapacity) {
-  VectorClass<int> values(2);
+  game::VectorClass<int> values(2);
   values.at(1) = 42;
-  const VectorClass<int>& view = values;
+  const game::VectorClass<int>& view = values;
   EXPECT_EQ(view.at(1), 42);
   EXPECT_EQ(&view.at(1), &values.at(1));
 }
@@ -175,8 +175,8 @@ TEST(TdCheckedContainerTest, QueueAccessFollowsWrappedLogicalOrder) {
 }
 
 TEST(TdCheckedContainerDeathTest, RejectsInvalidVectorAndQueueIndices) {
-  VectorClass<int> values(2);
-  const VectorClass<int>& view = values;
+  game::VectorClass<int> values(2);
+  const game::VectorClass<int>& view = values;
   QueueClass<int, 3> queue;
   // GoogleTest's death-test macro formats subprocess diagnostics with libc.
   // NOLINTBEGIN(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)

@@ -4,12 +4,12 @@
 #include <concepts>
 #include <cstdint>
 
+#include "game/core/vector_dynamic.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
 #include "td/core/heap.h"
 #include "td/core/object_heaps.h"
-#include "td/core/vector.h"
 #include "td/objects/aircraft.h"
 #include "td/objects/anim.h"
 #include "td/objects/building.h"
@@ -311,7 +311,8 @@ void TriggerPtr::Serialize(ArchiveReader& ar) {
 }
 
 template <class Archive>
-void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects) {
+void SerializeObjectList(Archive& ar,
+                         game::DynamicVectorClass<ObjectClass*>& objects) {
   auto count = static_cast<int32_t>(objects.Count());
   ar(count);
   if constexpr (Archive::kIsReading) {
@@ -356,7 +357,9 @@ void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects)
     }
   }
 }
-template void SerializeObjectList(ArchiveWriter&, DynamicVectorClass<ObjectClass*>&);
-template void SerializeObjectList(ArchiveReader&, DynamicVectorClass<ObjectClass*>&);
+template void SerializeObjectList(ArchiveWriter&,
+                                  game::DynamicVectorClass<ObjectClass*>&);
+template void SerializeObjectList(ArchiveReader&,
+                                  game::DynamicVectorClass<ObjectClass*>&);
 
 }  // namespace td

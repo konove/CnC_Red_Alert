@@ -11,12 +11,12 @@
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
 #include "base/installed.h"
+#include "game/core/vector_dynamic.h"
 #include "ra/ai/base.h"
 #include "ra/ai/carry.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/trigger.h"
 #include "ra/core/defines.h"
-#include "ra/core/vector_dynamic.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/logic.h"
 #include "ra/map/vortex.h"
@@ -86,22 +86,22 @@ class World {
   }
 
   // The objects the player has selected, in selection order.
-  DynamicVectorClass<ObjectClass*>& current_object()
+  game::DynamicVectorClass<ObjectClass*>& current_object()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return current_object_;
   }
 
   // The triggers that fire on a game event rather than on a cell or an
   // object, and the id counters that name new ones.
-  DynamicVectorClass<TriggerClass*>& logic_triggers()
+  game::DynamicVectorClass<TriggerClass*>& logic_triggers()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return logic_triggers_;
   }
-  DynamicVectorClass<TriggerClass*>& map_triggers()
+  game::DynamicVectorClass<TriggerClass*>& map_triggers()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return map_triggers_;
   }
-  base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>>&
+  base::EnumArray<HousesType, game::DynamicVectorClass<TriggerClass*>>&
   house_triggers() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return house_triggers_;
   }
@@ -204,10 +204,10 @@ class World {
   ScoreClass score_;
   ChronalVortexClass chronal_vortex_;
 
-  DynamicVectorClass<ObjectClass*> current_object_;
-  DynamicVectorClass<TriggerClass*> logic_triggers_;
-  DynamicVectorClass<TriggerClass*> map_triggers_;
-  base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>>
+  game::DynamicVectorClass<ObjectClass*> current_object_;
+  game::DynamicVectorClass<TriggerClass*> logic_triggers_;
+  game::DynamicVectorClass<TriggerClass*> map_triggers_;
+  base::EnumArray<HousesType, game::DynamicVectorClass<TriggerClass*>>
       house_triggers_;
   int map_trigger_id_ = 0;
   int logic_trigger_id_ = 0;

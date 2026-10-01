@@ -53,9 +53,9 @@
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
+#include "game/core/owned_vector.h"
 #include "ra/ai/special.h"
 #include "ra/core/defines.h"
-#include "ra/core/owned_vector.h"
 #include "ra/net/connect.h"
 #include "ra/net/event.h"
 #include "ra/net/ipxaddr.h"
@@ -641,7 +641,7 @@ class SessionClass {
   //.....................................................................
   // List of scenarios & their file numbers
   //.....................................................................
-  OwnedVector<MultiMission> Scenarios;
+  game::OwnedVector<MultiMission> Scenarios;
   //		DynamicVectorClass <char *> Scenarios;
   //		DynamicVectorClass <int> Filenum;
 
@@ -713,9 +713,9 @@ class SessionClass {
   uint16_t GProductID{0};                     // product ID of sender
   char MetaPacket[MAX_IPX_PACKET_SIZE]{};     // packet building buffer
   int MetaSize;                               // size of MetaPacket
-  OwnedVector<NodeNameType> Games;            // list of games
-  OwnedVector<NodeNameType> Players;          // list of players
-  OwnedVector<NodeNameType> Chat;             // list of chat nodes
+  game::OwnedVector<NodeNameType> Games;      // list of games
+  game::OwnedVector<NodeNameType> Players;    // list of players
+  game::OwnedVector<NodeNameType> Chat;       // list of chat nodes
 
   //.....................................................................
   // Modem-specific variables
@@ -725,8 +725,8 @@ class SessionClass {
   SerialSettingsType SerialDefaults{};  // default serial settings
   ModemGameType ModemType{MODEM_NULL_HOST};  // caller or answerer?
 
-  OwnedVector<PhoneEntryClass> PhoneBook;
-  OwnedVector<InitString> InitStrings;
+  game::OwnedVector<PhoneEntryClass> PhoneBook;
+  game::OwnedVector<InitString> InitStrings;
   static base::EnumArray<DialMethodType, const char*,
                          static_cast<int>(DIAL_METHODS)>
       DialMethodCheck;

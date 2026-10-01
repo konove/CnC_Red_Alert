@@ -1,12 +1,12 @@
 // Tests OwnedVector, the session's owning list.
 
-#include "ra/core/owned_vector.h"
+#include "game/core/owned_vector.h"
 
 #include <memory>
 
 #include "gtest/gtest.h"
 
-namespace ra {
+namespace game {
 
 namespace {
 
@@ -109,4 +109,4 @@ TEST(OwnedVectorDeathTest, AtOutOfRangeFails) {
 
 }  // namespace
 
-}  // namespace ra
+}  // namespace game

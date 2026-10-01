@@ -84,6 +84,7 @@
 #include "engine/stream/stream_source.h"
 #include "engine/stream/tee_sink.h"
 #include "game/core/game_clock.h"
+#include "game/core/vector_dynamic.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/carry.h"
@@ -104,7 +105,6 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
-#include "ra/core/vector_dynamic.h"
 #include "ra/data/ccini.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
@@ -164,7 +164,8 @@ static bool Rejected(const ArchiveReader& reader, std::string_view tag) {
 
 // Trigger lists load after the trigger heap, so targets can resolve directly.
 template <class Archive>
-static void SerializeTriggerList(Archive& ar, DynamicVectorClass<TriggerClass*>& list) {
+static void SerializeTriggerList(
+    Archive& ar, game::DynamicVectorClass<TriggerClass*>& list) {
   auto count = static_cast<int32_t>(list.Count());
   ar(count);
   if constexpr (Archive::kIsReading) {

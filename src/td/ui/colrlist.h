@@ -46,8 +46,8 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "game/core/vector_dynamic.h"
 #include "td/core/defines.h"
-#include "td/core/vector.h"
 #include "td/ui/list.h"
 
 namespace td {
@@ -90,7 +90,7 @@ class ColorListClass : public ListClass {
   /*
   **	This is the list of colors for each item.
   */
-  DynamicVectorClass<char> Colors;
+  game::DynamicVectorClass<char> Colors;
 
  protected:
   void Draw_Entry(PixelView& view, int index, int x, int y, int width,

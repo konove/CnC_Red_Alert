@@ -45,14 +45,14 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
+#include "game/core/vector_dynamic.h"
 #include "td/core/defines.h"
-#include "td/core/vector.h"
 #include "td/objects/cell.h"
 #include "td/ui/gadget.h"
 
 namespace td {
 
-class GScreenClass : public VectorClass<CellClass> {
+class GScreenClass : public game::VectorClass<CellClass> {
  public:
   virtual void ResetTransientUiState();
   GScreenClass();

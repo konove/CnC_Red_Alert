@@ -54,9 +54,9 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/core/vector_dynamic.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
-#include "ra/core/vector_dynamic.h"
 #include "ra/data/text_ids.h"
 #include "ra/ui/control.h"
 #include "ra/ui/dialog.h"
@@ -262,7 +262,7 @@ class TListClass final : public ControlClass {
   /*
   **	The actual list of text pointers is maintained by this list manager.
   */
-  DynamicVectorClass<T> List;
+  game::DynamicVectorClass<T> List;
 
   /*
   **	This is the total pixel height of a standard line of text. This is

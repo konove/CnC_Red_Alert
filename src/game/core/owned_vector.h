@@ -1,7 +1,7 @@
 // OwnedVector, a list that owns the objects it holds.
 
-#ifndef CNC_RED_ALERT_RA_CORE_OWNED_VECTOR_H_
-#define CNC_RED_ALERT_RA_CORE_OWNED_VECTOR_H_
+#ifndef CNC_RED_ALERT_GAME_CORE_OWNED_VECTOR_H_
+#define CNC_RED_ALERT_GAME_CORE_OWNED_VECTOR_H_
 
 #include <algorithm>
 #include <concepts>
@@ -13,7 +13,7 @@
 #include "base/array.h"
 #include "base/types.h"
 
-namespace ra {
+namespace game {
 
 // A list of heap objects that it owns and destroys, for the session's player,
 // game, chat, phone book and scenario lists. It keeps the shape of the
@@ -88,6 +88,6 @@ class OwnedVector {
   std::vector<std::unique_ptr<T>> elements_;
 };
 
-}  // namespace ra
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_RA_CORE_OWNED_VECTOR_H_
+#endif  // CNC_RED_ALERT_GAME_CORE_OWNED_VECTOR_H_

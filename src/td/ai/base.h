@@ -44,8 +44,8 @@
 #include <span>
 #include <string>
 
+#include "game/core/vector_dynamic.h"
 #include "td/core/defines.h"
-#include "td/core/vector.h"
 #include "td/objects/building.h"
 
 class ArchiveReader;
@@ -129,7 +129,7 @@ class BaseClass {
   ** list can be pre-built by simply saving those buildings in the INI
   ** along with non-base buildings, so Is_Built will return true for them.
   */
-  DynamicVectorClass<BaseNodeClass> Nodes;
+  game::DynamicVectorClass<BaseNodeClass> Nodes;
 
   /**********************************************************************
   ** This is the house this base belongs to.

@@ -54,8 +54,8 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "engine/stream/archive.h"
-#include "ra/core/vector.h"
-#include "ra/core/vector_dynamic.h"
+#include "game/core/vector.h"
+#include "game/core/vector_dynamic.h"
 
 namespace ra {
 
@@ -225,7 +225,7 @@ class FixedIHeapClass : public FixedHeapClass {
   *processing. *	It also allows access to this array so that custom
   *sorting can be *	performed.
   */
-  DynamicVectorClass<void*> ActivePointers;
+  game::DynamicVectorClass<void*> ActivePointers;
 
  private:
   SlotIdReader slot_id_;  // nullptr when the objects cache no slot index.

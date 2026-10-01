@@ -11,11 +11,11 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
+#include "game/core/vector.h"
+#include "game/core/vector_dynamic.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "ra/core/search.h"
-#include "ra/core/vector.h"
-#include "ra/core/vector_dynamic.h"
 #include "ra/net/queue.h"
 
 namespace ra {
@@ -25,7 +25,7 @@ TEST(VectorStorageTest, BorrowedStorageRetainsExtentAndDoesNotGrow) {
   int first = 1;
   int second = 2;
   void* storage[2] = {};
-  DynamicVectorClass<void*> values(2, storage);
+  game::DynamicVectorClass<void*> values(2, storage);
   EXPECT_TRUE(values.Add(&first));
   EXPECT_TRUE(values.Add_Head(&second));
   EXPECT_EQ(values.at(0), &second);
@@ -289,9 +289,9 @@ TEST(HeapDestroyTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
 }
 
 TEST(RaCheckedContainerTest, VectorAccessPreservesConstnessAndCapacity) {
-  VectorClass<int> values(2);
+  game::VectorClass<int> values(2);
   values.at(1) = 42;
-  const VectorClass<int>& view = values;
+  const game::VectorClass<int>& view = values;
   EXPECT_EQ(view.at(1), 42);
   EXPECT_EQ(&view.at(1), &values.at(1));
 }
@@ -311,8 +311,8 @@ TEST(RaCheckedContainerTest, QueueAccessFollowsWrappedLogicalOrder) {
 }
 
 TEST(RaCheckedContainerDeathTest, RejectsInvalidVectorAndQueueIndices) {
-  VectorClass<int> values(2);
-  const VectorClass<int>& view = values;
+  game::VectorClass<int> values(2);
+  const game::VectorClass<int>& view = values;
   QueueClass<int, 3> queue;
   // GoogleTest's death-test macro formats subprocess diagnostics with libc.
   // NOLINTBEGIN(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)

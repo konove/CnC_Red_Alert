@@ -24,8 +24,8 @@
 #include <cstdint>
 
 #include "engine/stream/byte_stream.h"
+#include "game/core/vector_dynamic.h"
 #include "ra/core/defines.h"
-#include "ra/core/vector_dynamic.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/selection.h"
 #include "ra/map/world.h"

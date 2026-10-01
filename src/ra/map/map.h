@@ -44,9 +44,9 @@
 
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
+#include "game/core/vector.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/vector.h"
 #include "ra/map/gscreen.h"
 #include "ra/objects/cell.h"
 #include "ra/objects/crate.h"
@@ -152,7 +152,7 @@ class MapClass : public GScreenClass {
   /*
   **	This is the array of cell objects.
   */
-  VectorClass<CellClass> Array;
+  game::VectorClass<CellClass> Array;
 
   /*
   **	These are the size dimensions of the underlying array of cell objects.

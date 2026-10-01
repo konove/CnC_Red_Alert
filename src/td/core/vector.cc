@@ -38,39 +38,38 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/core/vector.h"
-
+#include "game/core/vector.h"
+#include "game/core/vector_dynamic.h"
 #include "td/ai/base.h"
-#include "td/core/vector_impl.h"  // IWYU pragma: keep
+#include "td/ai/trigger.h"
 #include "td/net/nodename.h"
 #include "td/net/phone.h"
 #include "td/objects/cell.h"
+#include "td/objects/object.h"
 
-namespace td {
-
-template class VectorClass<NodeNameTag*>;
-template class VectorClass<PhoneEntryClass*>;
-template class VectorClass<ObjectClass*>;
-template class VectorClass<TriggerClass*>;
-template class VectorClass<BaseNodeClass>;
-template class VectorClass<CellClass>;
-template class VectorClass<char>;
-template class VectorClass<int>;
-template class VectorClass<char*>;
-template class VectorClass<unsigned char*>;
-template class VectorClass<const char*>;
-template class VectorClass<void*>;
-template class VectorClass<unsigned char>;
-template class DynamicVectorClass<NodeNameTag*>;
-template class DynamicVectorClass<PhoneEntryClass*>;
-template class DynamicVectorClass<ObjectClass*>;
-template class DynamicVectorClass<TriggerClass*>;
-template class DynamicVectorClass<BaseNodeClass>;
-template class DynamicVectorClass<char>;
-template class DynamicVectorClass<int>;
-template class DynamicVectorClass<char*>;
-template class DynamicVectorClass<unsigned char*>;
-template class DynamicVectorClass<const char*>;
-template class DynamicVectorClass<void*>;
-
-}  // namespace td
+// An explicit instantiation of a game:: template must sit in a namespace
+// that encloses game::, so these are at global scope.
+template class game::VectorClass<td::NodeNameTag*>;
+template class game::VectorClass<td::PhoneEntryClass*>;
+template class game::VectorClass<td::ObjectClass*>;
+template class game::VectorClass<td::TriggerClass*>;
+template class game::VectorClass<td::BaseNodeClass>;
+template class game::VectorClass<td::CellClass>;
+template class game::VectorClass<char>;
+template class game::VectorClass<int>;
+template class game::VectorClass<char*>;
+template class game::VectorClass<unsigned char*>;
+template class game::VectorClass<const char*>;
+template class game::VectorClass<void*>;
+template class game::VectorClass<unsigned char>;
+template class game::DynamicVectorClass<td::NodeNameTag*>;
+template class game::DynamicVectorClass<td::PhoneEntryClass*>;
+template class game::DynamicVectorClass<td::ObjectClass*>;
+template class game::DynamicVectorClass<td::TriggerClass*>;
+template class game::DynamicVectorClass<td::BaseNodeClass>;
+template class game::DynamicVectorClass<char>;
+template class game::DynamicVectorClass<int>;
+template class game::DynamicVectorClass<char*>;
+template class game::DynamicVectorClass<unsigned char*>;
+template class game::DynamicVectorClass<const char*>;
+template class game::DynamicVectorClass<void*>;

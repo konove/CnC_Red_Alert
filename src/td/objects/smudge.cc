@@ -67,7 +67,6 @@
 #include "td/core/heap.h"
 #include "td/core/inline.h"
 #include "td/core/object_heaps.h"
-#include "td/core/vector.h"
 #include "td/data/profile.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"

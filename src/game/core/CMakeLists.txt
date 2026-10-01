@@ -30,6 +30,6 @@ target_link_libraries(game_core
 include(Testing)
 add_gtest(
         NAME game_core_test
-        SOURCES path_overlap_test.cc
+        SOURCES owned_vector_test.cc path_overlap_test.cc
         LIBS game_core
 )

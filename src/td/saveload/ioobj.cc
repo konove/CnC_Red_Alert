@@ -46,6 +46,7 @@
 
 #include "base/array.h"
 #include "engine/stream/archive.h"
+#include "game/core/vector_dynamic.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"
@@ -53,7 +54,6 @@
 #include "td/core/defines.h"
 #include "td/core/heap.h"
 #include "td/core/object_heaps.h"
-#include "td/core/vector.h"
 #include "td/map/layer.h"
 #include "td/objects/abstract.h"
 #include "td/objects/aircraft.h"

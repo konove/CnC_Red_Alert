@@ -48,8 +48,8 @@
 #include <memory>
 #include <vector>
 
+#include "game/core/vector_dynamic.h"
 #include "td/core/defines.h"
-#include "td/core/vector.h"
 #include "td/ui/list.h"
 
 namespace td {

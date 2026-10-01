@@ -4,10 +4,10 @@
 #include <cstdint>
 
 #include "engine/stream/archive.h"
+#include "game/core/vector_dynamic.h"
 #include "ra/core/defines.h"
 #include "ra/core/heap.h"
 #include "ra/core/object_heaps.h"
-#include "ra/core/vector_dynamic.h"
 #include "ra/objects/aircraft.h"
 #include "ra/objects/anim.h"
 #include "ra/objects/building.h"
@@ -172,7 +172,8 @@ void TechnoTypePtr::Serialize(ArchiveReader& ar) {
 }
 
 template <class Archive>
-void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects) {
+void SerializeObjectList(Archive& ar,
+                         game::DynamicVectorClass<ObjectClass*>& objects) {
   auto count = static_cast<int32_t>(objects.Count());
   ar(count);
   if constexpr (Archive::kIsReading) {
@@ -213,7 +214,9 @@ void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects)
     }
   }
 }
-template void SerializeObjectList(ArchiveWriter&, DynamicVectorClass<ObjectClass*>&);
-template void SerializeObjectList(ArchiveReader&, DynamicVectorClass<ObjectClass*>&);
+template void SerializeObjectList(ArchiveWriter&,
+                                  game::DynamicVectorClass<ObjectClass*>&);
+template void SerializeObjectList(ArchiveReader&,
+                                  game::DynamicVectorClass<ObjectClass*>&);
 
 }  // namespace ra

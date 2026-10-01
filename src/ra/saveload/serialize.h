@@ -19,17 +19,20 @@
 #include "absl/base/attributes.h"
 #include "engine/stream/archive.h"
 
-namespace ra {
-
+namespace game {
 template <class T>
 class DynamicVectorClass;
+}  // namespace game
+
+namespace ra {
 
 class ObjectClass;
 class TechnoTypeClass;
 
 // Saves an ordered list of object TARGETs. Read only after all object heaps.
 template <class Archive>
-void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects);
+void SerializeObjectList(Archive& ar,
+                         game::DynamicVectorClass<ObjectClass*>& objects);
 
 // Resolves a saved TARGET to the raw heap slot it names, without looking at
 // the slot's contents. Returns nullptr for kTargetNone. Records an error on
@@ -79,8 +82,10 @@ extern template class ObjectPtr<RadioClass>;
 extern template class ObjectPtr<TechnoClass>;
 extern template class ObjectPtr<FootClass>;
 
-extern template void SerializeObjectList<ArchiveWriter>(ArchiveWriter&, DynamicVectorClass<ObjectClass*>&);
-extern template void SerializeObjectList<ArchiveReader>(ArchiveReader&, DynamicVectorClass<ObjectClass*>&);
+extern template void SerializeObjectList<ArchiveWriter>(
+    ArchiveWriter&, game::DynamicVectorClass<ObjectClass*>&);
+extern template void SerializeObjectList<ArchiveReader>(
+    ArchiveReader&, game::DynamicVectorClass<ObjectClass*>&);
 
 }  // namespace ra
 

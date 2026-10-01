@@ -53,6 +53,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
+#include "game/core/vector_dynamic.h"
 #include "td/ai/team.h"  // IWYU pragma: keep (DeletePooled needs TeamClass complete)
 #include "td/assets/palette.h"
 #include "td/assets/screen.h"
@@ -61,7 +62,6 @@
 #include "td/core/defines.h"
 #include "td/core/heap.h"
 #include "td/core/object_heaps.h"
-#include "td/core/vector.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
 #include "td/map/gscreen.h"

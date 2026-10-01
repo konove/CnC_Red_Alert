@@ -120,7 +120,6 @@
 #include "td/core/jshell.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
-#include "td/core/vector.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/net/event.h"
