@@ -25,37 +25,15 @@ file(GLOB_RECURSE RA_SOURCES
 list(FILTER RA_SOURCES EXCLUDE REGEX "_test\\.cc$")
 list(REMOVE_ITEM RA_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/startup.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/adpcm.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/cominit.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dtable.cc"  # ADPCM tables for adpcm.cc
-        "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/itable.cc"  # ADPCM tables for adpcm.cc
-        "${CMAKE_CURRENT_SOURCE_DIR}/number.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/rand.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/stub.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/turret.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/w95trace.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/winstub.cc"
 )
 
 file(GLOB_RECURSE RA_HEADERS
         CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 )
 list(REMOVE_ITEM RA_HEADERS
-        "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/cominit.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/crew.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/externs.h" # Removed since it is crashing IWYU.
-        "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/memcheck.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/nullconn.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/nullmgr.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/turret.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/w95trace.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/wspipx.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/wspudp.h"
 )
 

@@ -37,9 +37,9 @@ games' Windows stubs) are excluded rather than cleaned up; they are dead-code ca
 **Configuration** lives in `CPPLINT.cfg` at the repository root (`set noparent`, `root=src`,
 `linelength=80`, the filter list with a comment per entry), which cpplint and IDE plugins read by
 themselves. The filter has two blocks: the permanent one above, and a temporary one listing each
-real category with its count. `src/ra/CPPLINT.cfg` and `src/td/CPPLINT.cfg` hold the `exclude_files`
+real category with its count. `src/ra/CPPLINT.cfg` and `src/td/CPPLINT.cfg` held the `exclude_files`
 for the unbuilt files, since cpplint matches that option only against files in the config's own
-directory.
+directory, until step 1 of `docs/GAME_NAMESPACES_PLAN.md` deleted those files and both configs.
 
 **Enforcement** is a ctest, `cpplint_test`, next to `engine_layers_test`: `tools/run_cpplint.py`
 walks `src/` and runs cpplint in parallel (a single process takes ~45 s; the test takes a few). CI's

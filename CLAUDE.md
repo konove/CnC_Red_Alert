@@ -401,11 +401,11 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 
 ## Tools Configuration
 
-| Tool       | Config File                              | Notes                                                                                          |
-| ---------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| clang-tidy | `.clang-tidy`                            | Many checks disabled for legacy code                                                           |
-| IWYU       | `cmake/IWYU.cmake`, `.iwyu_mappings`     | Opt-in (`-DENABLE_IWYU=ON`); advice only, never fails                                          |
-| cpplint    | `CPPLINT.cfg` (root, `src/ra`, `src/td`) | `cpplint_test` ctest via `tools/run_cpplint.py`; filters and ratchet in `docs/CPPLINT_PLAN.md` |
+| Tool       | Config File                          | Notes                                                                                          |
+| ---------- | ------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| clang-tidy | `.clang-tidy`                        | Many checks disabled for legacy code                                                           |
+| IWYU       | `cmake/IWYU.cmake`, `.iwyu_mappings` | Opt-in (`-DENABLE_IWYU=ON`); advice only, never fails                                          |
+| cpplint    | `CPPLINT.cfg` (root)                 | `cpplint_test` ctest via `tools/run_cpplint.py`; filters and ratchet in `docs/CPPLINT_PLAN.md` |
 
 ## Key Files
 

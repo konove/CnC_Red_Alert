@@ -139,7 +139,7 @@ Checks: '*,
          -readability-trailing-comma,
          '
 WarningsAsErrors: '*'
-HeaderFilterRegex: '.*/CnC_Red_Alert/src/(engine|jshell|ra|td)/.*'
+HeaderFilterRegex: '.*/CnC_Red_Alert/src/(base|engine|game|ra|td)/.*'
 FormatStyle: file
 CheckOptions:
   # glibc spells POSIX declarations through private headers: htonl and in_addr

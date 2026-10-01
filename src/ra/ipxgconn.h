@@ -132,7 +132,6 @@ class IPXGlobalConnClass : public IPXConnClass {
   // This list should be continually updated & kept current.  Never
   // ever ever use an old product ID for your product!
   //..................................................................
-  static constexpr int kCommandAndConquer = 0xaa01;
   static constexpr int kCommandAndConquer0 = 0xaa00;
 
   //.....................................................................
