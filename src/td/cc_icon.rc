@@ -8,7 +8,7 @@ produced by Borland Resource Workshop
 
 *****************************************************************************/
 
-#include "cc_icon.rh"
+#define ICON_1	1
 
 
 

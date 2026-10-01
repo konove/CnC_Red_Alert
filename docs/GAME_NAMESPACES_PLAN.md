@@ -126,8 +126,8 @@ their UI loops.
 - Both: `led.h`, `message.h`, `savedlg.h` (no includers), `CONN_DEBUG` blocks in nullmgr, RA's
   unused `kCommandAndConquer` 0xaa01.
 - Legacy non-source files in `src/ra/`: `*.mak`, `makefile`, `*.bat`, `*.pjt`, `*.ide`, `*.lnt`,
-  `*.cfg`, `*.mac`, `profile.def`, `cwstub.c`, the `*.txt` notes and `eng/`. Keep `cc_icon.rc/.rh`,
-  the icons and `testdata/` (used by `tools/ra_saveload_smoke.sh`).
+  `*.cfg`, `*.mac`, `profile.def`, `cwstub.c`, the `*.txt` notes and `eng/`. Keep `cc_icon.rc`, the
+  icons and `testdata/` (used by `tools/ra_saveload_smoke.sh`).
 - Stale entries: `externs.h` and `memcheck.h` in the CMake header remove-lists, `alloc`/`surface` in
   `src/ra/CPPLINT.cfg`, `jshell` in `.clang-tidy`'s `HeaderFilterRegex` (which also misses
   `src/base/`).
