@@ -238,7 +238,8 @@ Per step: `cmake --build build --parallel 22 && ctest --test-dir build --output-
 - [x] 3. Game folders
 - [x] 4. `ra::`/`td::` namespaces
 - [x] 5a. `game_core`
-- [ ] 5b. `game_sim`
+- [ ] 5b. `game_sim` (utracker, crew, flasher, door done; direction module, `defines.h` enums and
+      the palette fade open)
 - [ ] 5c. `engine::net` core
 - [ ] 5d. `game_ui`
 - [ ] 5e. Map traits (optional)
@@ -369,3 +370,17 @@ which the RA fixture save written before the move confirms; TD's empty-buffer gu
 `QueueClass` gained TD's failed-add `DLOG`; the `Queue_*` prototypes stay in each game's
 `net/queue.h`. The heap and queue tests of both games became `game_core_test` (`heap_test.cc`,
 `heap_load_test.cc`); RA's `IndexClass` test became `ra_search_test`.
+
+### Step 5b (in progress)
+
+`src/game/sim/` (`game_sim`, over `game_core`) holds `UnitTrackerClass` and `CrewClass` (Red
+Alert's), `FlasherClass` (with Tiberian Dawn's load check) and `game::DoorClass<Stage>`, which each
+game names as `using DoorClass = game::DoorClass<StageClass>;`. TD's `StageClass::Set_Rate()` takes
+an `int` and keeps its low byte, as its `unsigned char` parameter did. Save bytes are unchanged.
+
+Open: the direction module and the identical `defines.h` enums are used unqualified thousands of
+times (`DIR_N`, `FACING_NE`, ...), so sharing them needs either qualified enumerators everywhere or
+namespace-scope `using` declarations in each game's headers, which the Decisions rule out. The
+palette fade presents frames (`Display::EndFrame()`), so it fits `engine::window` rather than
+`engine::gfx`, and Red Alert's version skips a fade to the palette already on screen, which would
+change Tiberian Dawn's screen timing.
