@@ -58,6 +58,8 @@
 #include "td/net/nullconn.h"
 #include "td/ui/gadget.h"
 
+namespace td {
+
 /*
 ** Ugly hack: this string stores the string received from the modem
 */
@@ -228,5 +230,7 @@ class NullModemClass : public ConnManClass {
   int32_t MaxRetries{-1};  // -1 means no limit: retry forever
   int32_t Timeout{1200};   // report bad connection after 20 seconds
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_NULLMGR_H_

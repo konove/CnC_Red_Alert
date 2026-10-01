@@ -96,6 +96,8 @@
 #include "td/objects/terrain.h"
 #include "td/objects/type.h"
 
+namespace td {
+
 #define MCW MAP_CELL_W
 const int MapClass::RadiusOffset[] = {
     /* 0  */ 0,
@@ -1443,3 +1445,5 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
   }
   return object;
 }
+
+}  // namespace td

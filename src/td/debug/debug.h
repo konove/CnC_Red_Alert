@@ -18,6 +18,8 @@
 #ifndef CNC_RED_ALERT_TD_DEBUG_DEBUG_H_
 #define CNC_RED_ALERT_TD_DEBUG_DEBUG_H_
 
+namespace td {
+
 #define TXT_NONE_DEBUG 0x3e8         //
 #define TXTED_BLANK 0x3e9            // ____
 #define TXTED_UNABLETOREAD 0x3ea     // Unable to read scenario!
@@ -44,5 +46,7 @@
 #define TXT_RADIO_17 0x3ff           // Take this punch! You...
 
 void Debug_Key(unsigned input);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_DEBUG_DEBUG_H_

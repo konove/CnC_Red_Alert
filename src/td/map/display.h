@@ -62,6 +62,11 @@
 #include "td/objects/type.h"
 #include "td/ui/gadget.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
+
 class DisplayClass : public MapClass {
  public:
   void ResetTransientUiState() override;
@@ -350,9 +355,9 @@ class DisplayClass : public MapClass {
 #define CELL_BLIT_ONLY 1
 #define CELL_DRAW_ONLY 2
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void DisplayClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void DisplayClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_MAP_DISPLAY_H_

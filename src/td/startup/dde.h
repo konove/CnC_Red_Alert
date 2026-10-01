@@ -63,6 +63,8 @@
 
 #include <cstdint>
 
+namespace td {
+
 #define DDE_ADVISE_CONNECT -1     // advisory "client has connected"
 #define DDE_ADVISE_DISCONNECT -2  // advisory "client has disconnected"
 
@@ -178,5 +180,7 @@ class Instance_Class {
   HCONV conv_handle;  // conversation handle
   BOOL dde_error;     // error flag
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_STARTUP_DDE_H_

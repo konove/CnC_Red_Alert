@@ -208,6 +208,8 @@
 #include "td/startup/game_state.h"
 #include "td/startup/winstub.h"
 
+namespace td {
+
 constexpr int kSamUnderground =
     0;  // Launcher is underground and awaiting orders.
 constexpr int kSamRising =
@@ -524,10 +526,10 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
         } else {
           if (*this == STRUCT_REPAIR) {
             Transmit_Message(RADIO_TETHER);
-            param = ::As_Target(Coord_Cell(Center_Coord()));
+            param = td::As_Target(Coord_Cell(Center_Coord()));
           } else {
             param =
-                ::As_Target(Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_SW)));
+                td::As_Target(Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_SW)));
           }
         }
 
@@ -2306,7 +2308,7 @@ void BuildingClass::Active_Click_With(ActionType action, ObjectClass* object) {
 void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
   Validate();
   if (action == ACTION_ATTACK) {
-    Player_Assign_Mission(MISSION_ATTACK, ::As_Target(cell));
+    Player_Assign_Mission(MISSION_ATTACK, td::As_Target(cell));
   }
 }
 
@@ -2427,7 +2429,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         }
         TheWorld().scenario_init()++;
         if (air->Unlimbo(Cell_Coord(cell), DIR_N)) {
-          air->Assign_Destination(::As_Target(Nearby_Location(air)));
+          air->Assign_Destination(td::As_Target(Nearby_Location(air)));
           air->Assign_Mission(MISSION_MOVE);
           TheWorld().scenario_init()--;
           return 2;
@@ -2540,7 +2542,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
           TheWorld().scenario_init()++;
           if (base->Unlimbo(Coord_Add(Coord, Class->ExitPoint), DIR_SW)) {
             //						base->Assign_Mission(MISSION_MOVE);
-            //						base->Assign_Destination(::As_Target(As_Cell(Coord)+MAP_CELL_W*2));
+            //						base->Assign_Destination(td::As_Target(As_Cell(Coord)+MAP_CELL_W*2));
             base->Mark(MARK_UP);
             base->Coord = Coord_Add(Coord, Class->ExitPoint);
             base->Mark(MARK_DOWN);
@@ -2583,7 +2585,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             TheWorld().scenario_init()++;
             if (base->Unlimbo(start, dir)) {
               base->Assign_Mission(MISSION_MOVE);
-              base->Assign_Destination(::As_Target(cell));
+              base->Assign_Destination(td::As_Target(cell));
 
               /*
               **	Establish radio contact so unload coordination can
@@ -3025,7 +3027,7 @@ COORDINATE BuildingClass::Fire_Coord(int /*unused*/) const {
     case STRUCT_ATOWER:
       coord = Coord_Move(coord, DIR_N, 0x0030);
       if (Target_Legal(TarCom)) {
-        coord = Coord_Move(coord, ::Direction(coord, As_Coord(TarCom)), 0x0040);
+        coord = Coord_Move(coord, td::Direction(coord, As_Coord(TarCom)), 0x0040);
       }
       break;
     case STRUCT_OBELISK:
@@ -3840,7 +3842,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     tech = Contact_With_Whom();
     if (tech) {
       if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER &&
-          ::Distance(tech->Center_Coord(), Docking_Coord()) < 0x0040) {
+          td::Distance(tech->Center_Coord(), Docking_Coord()) < 0x0040) {
         tech->Captured(newowner);
       } else {
         Transmit_Message(RADIO_RUN_AWAY);
@@ -4929,7 +4931,7 @@ int BuildingClass::Mission_Missile() {
           //						Theme.Queue_Song(THEME_NONE);
           const COORDINATE start =
               Cell_Coord(XY_Cell(Cell_X(House->NukeDest), 1));
-          bullet->Assign_Target(::As_Target(House->NukeDest));
+          bullet->Assign_Target(td::As_Target(House->NukeDest));
           bullet->Payback = nullptr;
           bullet->Strength = 1;
           if (!bullet->Unlimbo(start, DIR_S)) {
@@ -5653,3 +5655,5 @@ bool BuildingClass::Passes_Proximity_Check(CELL homecell) {
   }
   return false;
 }
+
+}  // namespace td

@@ -10,9 +10,12 @@
 #include "engine/gfx/palette.h"
 #include "engine/window/window_events.h"
 
-class Input;
 class PixelBuffer;
 class PixelView;
+
+namespace td {
+
+class Input;
 
 // Writes a line to the platform's debug output.
 void CCDebugString(const char* string);
@@ -58,5 +61,7 @@ void ShakeScreen(int shakes);
 // Called when the window loses and regains the input focus.
 void Focus_Loss();
 void Focus_Restore();
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_STARTUP_WINSTUB_H_

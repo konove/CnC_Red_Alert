@@ -53,6 +53,8 @@
 #include "td/ui/control.h"
 #include "td/ui/toggle.h"
 
+namespace td {
+
 /***********************************************************************************************
  * ShapeButtonClass::ShapeButtonClass -- Default Constructor for a shape type
  *button.          *
@@ -153,3 +155,5 @@ bool ShapeButtonClass::Draw_Me(PixelView& view, bool forced) {
   }
   return false;
 }
+
+}  // namespace td

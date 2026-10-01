@@ -90,6 +90,8 @@
 #include "engine/window/keyboard.h"
 #include "td/ui/link.h"
 
+namespace td {
+
 class ControlClass;
 
 class GadgetClass : public LinkClass {
@@ -246,5 +248,7 @@ class GadgetClass : public LinkClass {
   virtual bool Clicked_On(engine::window::KeyNumber& key, unsigned flags, int x,
                           int y);
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_GADGET_H_

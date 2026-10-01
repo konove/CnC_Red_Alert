@@ -108,6 +108,8 @@
 #include "td/startup/ccdde.h"
 #endif
 
+namespace td {
+
 void Delete_Swap_Files();
 
 [[maybe_unused]] static void Read_Setup_Options(ByteStream& config_file,
@@ -216,10 +218,9 @@ static void ApplyStartupOptions(const StartupOptions& options) {
 }
 
 #ifdef _WIN32
-int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
-                   int command_show)
+static int Run(HINSTANCE instance, char* command_line, int command_show)
 #else   // _WIN32
-int main(int argc, char* argv[])
+static int Run(int argc, char* argv[])
 #endif  // _WIN32
 {
   absl::InitializeLog();
@@ -542,3 +543,16 @@ void Read_Setup_Options(ByteStream& config_file,
     TheNetwork().bridge_net() = *bridge_net;
   }
 }
+
+}  // namespace td
+
+#ifndef TD_NO_ENTRY_POINT
+#ifdef _WIN32
+int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
+                   int command_show) {
+  return td::Run(instance, command_line, command_show);
+}
+#else   // _WIN32
+int main(int argc, char* argv[]) { return td::Run(argc, argv); }
+#endif  // _WIN32
+#endif  // TD_NO_ENTRY_POINT

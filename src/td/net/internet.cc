@@ -96,6 +96,8 @@
 #include "td/startup/ccdde.h"
 #endif
 
+namespace td {
+
 #ifdef _WIN32
 HWND WChatHWND = 0;  // Handle to Wchat window.
 #endif
@@ -587,3 +589,5 @@ bool Do_The_Internet_Menu_Thang() {
 
   return false;
 }
+
+}  // namespace td

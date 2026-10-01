@@ -51,6 +51,8 @@
 #include "base/numeric.h"
 #include "td/net/combuf.h"
 
+namespace td {
+
 /*
 ********************************* Globals ***********************************
 */
@@ -269,3 +271,5 @@ const char* ConnectionClass::Command_Name(int command) {
   }
   return nullptr;
 }
+
+}  // namespace td

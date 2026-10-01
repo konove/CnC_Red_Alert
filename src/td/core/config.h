@@ -7,7 +7,7 @@
 // This file is gradually replacing preprocessor macros from defines.h
 // with type-safe constexpr variables for use with 'if constexpr'
 
-namespace config {
+namespace td::config {
 
 // Build version type
 enum class BuildVersion {
@@ -60,6 +60,6 @@ inline constexpr auto kBuildLanguage = BuildLanguage::English;
 inline constexpr bool kIsGerman = kBuildLanguage == BuildLanguage::German;
 inline constexpr bool kIsFrench = kBuildLanguage == BuildLanguage::French;
 
-}  // namespace config
+}  // namespace td::config
 
 #endif  // CNC_RED_ALERT_TD_CORE_CONFIG_H_

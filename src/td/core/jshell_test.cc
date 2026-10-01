@@ -12,6 +12,8 @@
 #include "engine/stream/memory_stream.h"
 #include "gtest/gtest.h"
 
+namespace td {
+
 namespace {
 
 // An uncompressed four-pixel picture reserving `reserved` ahead of its data.
@@ -52,3 +54,5 @@ TEST(LoadUncompressTest, AShortPaletteLeavesTheOtherColorsAlone) {
 }
 
 }  // namespace
+
+}  // namespace td

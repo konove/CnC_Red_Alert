@@ -3,4 +3,8 @@
 
 #include "td/net/connmgr.h"
 
+namespace td {
+
 ConnManClass::~ConnManClass() = default;
+
+}  // namespace td

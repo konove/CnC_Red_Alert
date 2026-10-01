@@ -41,11 +41,13 @@
 #ifndef CNC_RED_ALERT_TD_MAP_LAYER_H_
 #define CNC_RED_ALERT_TD_MAP_LAYER_H_
 
+#include "td/core/vector.h"
+#include "td/objects/object.h"
+
 class ArchiveReader;
 class ArchiveWriter;
 
-#include "td/core/vector.h"
-#include "td/objects/object.h"
+namespace td {
 
 class LayerClass : public DynamicVectorClass<ObjectClass*> {
  public:
@@ -70,10 +72,11 @@ class LayerClass : public DynamicVectorClass<ObjectClass*> {
   template <class Archive>
   void Serialize(Archive& ar);
 
-
 };
 
 extern template void LayerClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void LayerClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_MAP_LAYER_H_

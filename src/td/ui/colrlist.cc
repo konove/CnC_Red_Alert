@@ -78,6 +78,8 @@
 #include "td/ui/dialog.h"
 #include "td/ui/list.h"
 
+namespace td {
+
 ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
                                TextPrintType flags,
                                std::span<const std::byte> up,
@@ -303,3 +305,5 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
       break;
   }
 }
+
+}  // namespace td

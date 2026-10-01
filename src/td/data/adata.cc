@@ -52,6 +52,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 // Dinosaur death animations
 static const AnimTypeClass TricDie(
     ANIM_TRIC_DIE,  // Animation number.
@@ -2290,3 +2292,5 @@ void AnimTypeClass::One_Time() {
     }
   }
 }
+
+}  // namespace td

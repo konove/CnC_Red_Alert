@@ -62,6 +62,8 @@
 #include "td/net/session.h"
 #include "td/net/tcpip.h"
 
+namespace td {
+
 /***************************************************************************
  * NullModemConnClass::NullModemConnClass -- class constructor             *
  *                                                                         *
@@ -299,3 +301,5 @@ int NullModemConnClass::Packet_Overhead_Size() {
   return PACKET_SERIAL_OVERHEAD_SIZE + sizeof(CommHeaderType);
 
 } /* end of Packet_Overhead_Size */
+
+}  // namespace td

@@ -136,6 +136,8 @@
 #include "td/startup/conquer.h"
 #include "td/ui/dialog.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 // #define FIXUP 0
@@ -956,12 +958,12 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
         */
         if (TheDebugState().map_editor_active() &&
             TheDebugState().show_passability()) {
-          if (::Ground.at(Land).Cost.at(SPEED_FOOT) == 0 ||
+          if (td::Ground.at(Land).Cost.at(SPEED_FOOT) == 0 ||
               (Cell_Occupier() != nullptr &&
                Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
             remap = MapEditClass::FadingRed;
           } else {
-            if (::Ground.at(Land).Cost.at(SPEED_FOOT) >
+            if (td::Ground.at(Land).Cost.at(SPEED_FOOT) >
                 0x70) {  // pretty passable
               remap = MapEditClass::FadingGreen;
             } else {
@@ -1479,28 +1481,28 @@ void CellClass::Wall_Update() {
       if (newcell.Overlay == OVERLAY_BRICK_WALL && newcell.OverlayData == 48) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        ObjectClass::Detach_This_From_All(::As_Target(newcell.Cell_Number()),
+        ObjectClass::Detach_This_From_All(td::As_Target(newcell.Cell_Number()),
                                           true);
       }
       if (newcell.Overlay == OVERLAY_SANDBAG_WALL &&
           newcell.OverlayData == 16) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        ObjectClass::Detach_This_From_All(::As_Target(newcell.Cell_Number()),
+        ObjectClass::Detach_This_From_All(td::As_Target(newcell.Cell_Number()),
                                           true);
       }
       if (newcell.Overlay == OVERLAY_CYCLONE_WALL &&
           newcell.OverlayData == 32) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        ObjectClass::Detach_This_From_All(::As_Target(newcell.Cell_Number()),
+        ObjectClass::Detach_This_From_All(td::As_Target(newcell.Cell_Number()),
                                           true);
       }
       if (newcell.Overlay == OVERLAY_BARBWIRE_WALL &&
           newcell.OverlayData == 16) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        ObjectClass::Detach_This_From_All(::As_Target(newcell.Cell_Number()),
+        ObjectClass::Detach_This_From_All(td::As_Target(newcell.Cell_Number()),
                                           true);
       }
 
@@ -1526,7 +1528,7 @@ void CellClass::Wall_Update() {
  *=============================================================================================*/
 COORDINATE CellClass::Cell_Coord() const {
   Validate();
-  return ::Cell_Coord(Cell_Number());
+  return td::Cell_Coord(Cell_Number());
 }
 
 /***********************************************************************************************
@@ -2478,3 +2480,5 @@ const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
   const int offset = Adjacent_Offset(face);
   return offset == 0 ? *this : TheMap().at(Cell_Number() + offset);
 }
+
+}  // namespace td

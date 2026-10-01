@@ -50,6 +50,8 @@
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 
+namespace td {
+
 /***********************************************************************************************
  * FacingClass::FacingClass -- Default constructor for the facing class. *
  *                                                                                             *
@@ -178,3 +180,5 @@ bool FacingClass::Rotation_Adjust(int rate) {
   }
   return false;
 }
+
+}  // namespace td

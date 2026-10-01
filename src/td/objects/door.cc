@@ -59,6 +59,8 @@
 
 #include "td/objects/stage.h"
 
+namespace td {
+
 DoorClass::DoorClass() = default;
 
 /***********************************************************************************************
@@ -197,3 +199,5 @@ int DoorClass::Door_Stage() const {
   }
   return 0;
 }
+
+}  // namespace td

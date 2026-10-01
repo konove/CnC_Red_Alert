@@ -76,6 +76,8 @@
 #include "td/startup/conquer.h"
 #include "td/ui/dialog.h"
 
+namespace td {
+
 CreditClass::CreditClass() = default;
 
 /***********************************************************************************************
@@ -188,3 +190,5 @@ void CreditClass::AI(bool forced) {
   IsToRedraw = true;
   TheMap().Flag_To_Redraw(false);
 }
+
+}  // namespace td

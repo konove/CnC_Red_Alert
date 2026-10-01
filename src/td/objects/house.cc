@@ -202,6 +202,8 @@
 #include "td/startup/game_state.h"
 #include "td/ui/msglist.h"
 
+namespace td {
+
 /***********************************************************************************************
  * HouseClass::Validate -- validates house pointer
  **
@@ -4503,3 +4505,5 @@ void HouseClass::Sell_Wall(CELL cell) {
     }
   }
 }
+
+}  // namespace td

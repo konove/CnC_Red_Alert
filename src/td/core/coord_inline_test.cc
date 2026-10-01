@@ -11,6 +11,8 @@
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 
+namespace td {
+
 namespace {
 
 // The legacy implementations read COORDINATE through byte and word pointers.
@@ -88,3 +90,5 @@ TEST(TdCoordInline, DirDiffMatchesSignedBytes) {
 }
 
 }  // namespace
+
+}  // namespace td

@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_UNIT_H_
 #define CNC_RED_ALERT_TD_OBJECTS_UNIT_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -57,6 +54,11 @@ class ArchiveWriter;
 #include "td/objects/tarcom.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 /****************************************************************************
 **	For each instance of a unit (vehicle) in the game, there is one of
@@ -213,5 +215,7 @@ class UnitClass final : public TarComClass {
 
 extern template void UnitClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void UnitClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_UNIT_H_

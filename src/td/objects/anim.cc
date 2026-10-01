@@ -100,6 +100,8 @@
 #include "td/startup/game_state.h"
 #include "td/startup/winstub.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 /***********************************************************************************************
@@ -1461,3 +1463,5 @@ void AnimClass::Detach(TARGET target, bool all) {
     IsToDelete = true;
   }
 }
+
+}  // namespace td

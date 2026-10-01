@@ -75,6 +75,8 @@
 #include "td/ui/textbtn.h"
 #include "td/ui/txtlabel.h"
 
+namespace td {
+
 /*
 ********************************** Defines **********************************
 */
@@ -371,5 +373,7 @@ class MapEditClass : public MouseClass {
       MISSION_RETURN, MISSION_AMBUSH, MISSION_HUNT,    MISSION_SLEEP,
   };
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_EDITOR_MAPEDIT_H_

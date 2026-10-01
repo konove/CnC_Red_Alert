@@ -72,6 +72,8 @@
 #include "td/ui/input.h"
 #include "td/ui/list.h"
 
+namespace td {
+
 /***************************************************************************
  * Select_Object -- selects an object for processing                       *
  *                                                                         *
@@ -647,3 +649,5 @@ bool MapEditClass::Change_House(HousesType newhouse) {
 
   return true;
 }
+
+}  // namespace td

@@ -79,6 +79,8 @@
 #include "td/core/support.h"
 #include "td/startup/startup.h"
 
+namespace td {
+
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *
  *                                                                                             *
@@ -408,3 +410,5 @@ std::span<unsigned char> Conquer_Build_Translucent_Table(
   }
   return buffer;
 }
+
+}  // namespace td

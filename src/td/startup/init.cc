@@ -162,13 +162,14 @@
 
 #endif
 
+namespace td {
+
 /****************************************
 **	Function prototypes for this module **
 *****************************************/
 static void Play_Intro(bool for_real = false);
 
 #define ATTRACT_MODE_TIMEOUT 3600  // timeout for attract mode
-
 
 /***********************************************************************************************
  * Init_Game -- Main game initialization routine. *
@@ -1700,7 +1701,7 @@ bool Select_Game(bool fade) {
         LOG(ERROR) << "-MOBILETEST: could not launch aircraft";
         return false;
       }
-      plane->Assign_Destination(::As_Target(Coord_Cell(plane->Coord + 0x800)));
+      plane->Assign_Destination(td::As_Target(Coord_Cell(plane->Coord + 0x800)));
       plane->Assign_Mission(MISSION_MOVE);
       plane->Set_Speed(123);
     }
@@ -1809,7 +1810,7 @@ bool Select_Game(bool fade) {
         return false;
       }
       missile->Payback = owner;
-      missile->Assign_Target(::As_Target(Coord_Cell(destination)));
+      missile->Assign_Target(td::As_Target(Coord_Cell(destination)));
       if (!missile->Unlimbo(owner->Coord, DIR_E)) {
         LOG(ERROR) << "-WORLDTEST: could not launch missile";
         return false;
@@ -2706,3 +2707,5 @@ void Load_Title_Page(bool visible) {
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   }
 }
+
+}  // namespace td

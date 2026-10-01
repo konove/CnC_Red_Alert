@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_TD_CORE_DISPLAY_CONSTANTS_H_
 #define CNC_RED_ALERT_TD_CORE_DISPLAY_CONSTANTS_H_
 
+namespace td {
+
 #define ICON_PIXEL_W 24
 #define ICON_PIXEL_H 24
 #define ICON_LEPTON_W 256
@@ -13,5 +15,7 @@
 //	-----------------------------------------------------------
 #define PIXEL_LEPTON_W (ICON_LEPTON_W / ICON_PIXEL_W)
 #define PIXEL_LEPTON_H (ICON_LEPTON_H / ICON_PIXEL_H)
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_DISPLAY_CONSTANTS_H_

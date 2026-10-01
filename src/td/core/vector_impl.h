@@ -10,6 +10,8 @@
 #include "base/numeric.h"
 #include "td/core/vector.h"
 
+namespace td {
+
 /***********************************************************************************************
  * VectorClass<T>::VectorClass -- Constructor for vector class. *
  *                                                                                             *
@@ -563,5 +565,7 @@ bool DynamicVectorClass<T>::Delete(int index) {
   }
   return false;
 }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_VECTOR_IMPL_H_

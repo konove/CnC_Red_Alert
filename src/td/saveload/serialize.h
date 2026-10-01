@@ -9,6 +9,8 @@
 #include "engine/stream/archive.h"
 #include "td/core/defines.h"
 
+namespace td {
+
 class ObjectClass;
 template <class T> class DynamicVectorClass;
 // Ordered active object references, loaded only after all object heaps.
@@ -94,7 +96,7 @@ class TechnoTypePtr {
   const TechnoTypeClass*& ref_;
 };
 
-namespace td_save_detail {
+namespace save_detail {
 
 // Each supported type enum indexes a static table, with no holes below COUNT.
 constexpr int TypeCount(HousesType /*unused*/) { return kHouseCount; }
@@ -109,7 +111,7 @@ constexpr int TypeCount(AircraftType /*unused*/) { return kAircraftCount; }
 constexpr int TypeCount(OverlayType /*unused*/) { return kOverlayCount; }
 constexpr int TypeCount(SmudgeType /*unused*/) { return kSmudgeCount; }
 
-}  // namespace td_save_detail
+}  // namespace save_detail
 
 // Saves a concrete type pointer as its enum ID (int32, -1 for null). Valid IDs
 // resolve through T::As_Reference only after bounds checks. T exposes Type, or
@@ -135,7 +137,7 @@ class TypePtr {
       if (!ar.ok() || id == -1) {
         return;
       }
-      if (id < 0 || id >= td_save_detail::TypeCount(Enum{})) {
+      if (id < 0 || id >= save_detail::TypeCount(Enum{})) {
         ar.Fail("saved type ID outside its table");
         return;
       }
@@ -205,5 +207,7 @@ extern template void TypePtr<OverlayTypeClass>::Serialize(ArchiveWriter&);
 extern template void TypePtr<OverlayTypeClass>::Serialize(ArchiveReader&);
 extern template void TypePtr<SmudgeTypeClass>::Serialize(ArchiveWriter&);
 extern template void TypePtr<SmudgeTypeClass>::Serialize(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_SAVELOAD_SERIALIZE_H_

@@ -51,6 +51,8 @@
 
 #include "td/ui/link.h"
 
+namespace td {
+
 /***********************************************************************************************
  * LinkClass::LinkClass -- Default constructor for linked list object. *
  *                                                                                             *
@@ -307,3 +309,5 @@ LinkClass* LinkClass::Remove() {
   }
   return head;
 }
+
+}  // namespace td

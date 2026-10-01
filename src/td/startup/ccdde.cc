@@ -63,6 +63,8 @@
 #include "engine/platform/timer.h"
 #include "td/startup/winstub.h"
 
+namespace td {
+
 DDEServerClass DDEServer;  // Instance of the DDE Server class
 
 Instance_Class* DDE_Class = NULL;  // pointer for client callback
@@ -364,3 +366,5 @@ BOOL Send_Data_To_DDE_Server(const char* data, int length, int packet_type) {
 
   return (true);
 }
+
+}  // namespace td

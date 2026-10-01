@@ -5,6 +5,8 @@
 
 #include "td/core/defines.h"
 
+namespace td {
+
 inline PlayerColorType MPlayerID_To_ColorIndex(uint16_t id) {
   return static_cast<PlayerColorType>(id >> 4);
 }
@@ -23,5 +25,7 @@ void Read_Scenario_Descriptions();
 void Free_Scenario_Descriptions();
 void Computer_Message();
 int Surrender_Dialog();
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_MPLAYER_H_

@@ -1,5 +1,7 @@
 #include "td/ui/input.h"
 
+namespace td {
+
 namespace {
 // The largest cursor shape the mouse accepts, in pixels. The original picked
 // a square large enough for every mouse shape the game draws.
@@ -10,3 +12,5 @@ constexpr int kCursorHeight = 32;
 Input::Input() : mouse_(kCursorWidth, kCursorHeight) {}
 
 Input::~Input() = default;
+
+}  // namespace td

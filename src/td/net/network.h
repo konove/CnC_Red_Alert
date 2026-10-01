@@ -21,6 +21,8 @@
 #include "td/net/queue.h"
 #include "td/net/tcpip.h"
 
+namespace td {
+
 // The transports a multiplayer game runs over -- the null modem and the IPX
 // manager -- together with the two event queues their traffic is, the
 // phone book the serial dialog dials from, the lists the network dialog
@@ -290,5 +292,7 @@ class Network {
 // Returns the Network that Game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.
 inline Network& TheNetwork() { return base::Installed<Network>::Get(); }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_NETWORK_H_

@@ -17,6 +17,8 @@
 #include "td/startup/winstub.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 void CCDebugString(const char* /*string*/) {}
 
 void Check_For_Focus_Loss() {
@@ -92,3 +94,5 @@ void ShakeScreen(int shakes) {
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   TheMouse().Show();
 }
+
+}  // namespace td

@@ -5,6 +5,8 @@
 
 #include "engine/video/vqa/vqa_player.h"
 
+namespace td {
+
 // Copies each frame, centered, into the 320x200 system memory page, sets its
 // palette, and scales the page to the screen. Esc stops the movie where
 // breaking out is allowed; losing the window's focus pauses it.
@@ -33,5 +35,7 @@ class MovieScreen final : public VqaClient {
 
   bool broken_out_ = false;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_SCREENS_MOVIE_SCREEN_H_

@@ -75,6 +75,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 HousesType SmudgeClass::ToOwn = HOUSE_NONE;
 
 /***********************************************************************************************
@@ -411,3 +413,5 @@ void SmudgeClass::Disown(CELL cell) {
     }
   }
 }
+
+}  // namespace td

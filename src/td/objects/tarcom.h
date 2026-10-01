@@ -44,6 +44,11 @@
 #include "td/core/defines.h"
 #include "td/objects/turret.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
+
 /****************************************************************************
 **	Units that can perform combat are handled by this class. It performs
 **	such operations as determining threat value down to actually launching
@@ -79,9 +84,9 @@ class TarComClass : public TurretClass {
   */
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void TarComClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TarComClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_TARCOM_H_

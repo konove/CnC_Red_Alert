@@ -129,6 +129,8 @@
 #include "td/ui/msgbox.h"
 #include "td/ui/msglist.h"
 
+namespace td {
+
 /********************************** Globals *********************************/
 //---------------------------------------------------------------------------
 //	GameCRC is the current computed CRC value for this frame.
@@ -4164,3 +4166,5 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event) {
 #endif  // DEMO
 
 /*************************** end of queue.cpp ******************************/
+
+}  // namespace td

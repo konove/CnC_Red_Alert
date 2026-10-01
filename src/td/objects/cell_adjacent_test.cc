@@ -6,6 +6,8 @@
 #include "td/map/world.h"
 #include "td/objects/cell.h"
 
+namespace td {
+
 namespace {
 
 // The map these tests walk; Game owns the World that holds it in the real
@@ -72,3 +74,5 @@ TEST_F(TdAdjacentCellTest, InvalidFacingReturnsSelf) {
 }
 
 }  // namespace
+
+}  // namespace td

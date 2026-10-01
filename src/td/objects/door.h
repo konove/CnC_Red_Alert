@@ -43,6 +43,8 @@
 
 #include "td/objects/stage.h"
 
+namespace td {
+
 class DoorClass {
  private:
   /*
@@ -100,5 +102,7 @@ class DoorClass {
   **	File I/O.
   */
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_DOOR_H_

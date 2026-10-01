@@ -92,6 +92,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 /*
 **	This array records the number of teams in existance of each type.
 */
@@ -387,7 +389,7 @@ void TeamClass::AI() {
       }
 
       // Should calculate a regroup location.
-      Target = ::As_Target(dest);
+      Target = td::As_Target(dest);
       Coordinate_Move();
       return;
     }
@@ -473,13 +475,13 @@ void TeamClass::AI() {
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
           Assign_Mission_Target(
-              ::As_Target(static_cast<CELL>(mission->Argument)));
+              td::As_Target(static_cast<CELL>(mission->Argument)));
           break;
 
         case TMISSION_MOVE:
         case TMISSION_UNLOAD:
           Assign_Mission_Target(
-              ::As_Target(base::At(TheWorld().waypoint(), mission->Argument)));
+              td::As_Target(base::At(TheWorld().waypoint(), mission->Argument)));
           break;
 
         case TMISSION_ATTACKTARCOM:
@@ -1188,9 +1190,9 @@ bool TeamClass::Coordinate_Regroup() {
           (unit->Mission != MISSION_GUARD_AREA ||
            !Target_Legal(unit->TarCom))) {
         if (unit->Mission != MISSION_MOVE || !Target_Legal(unit->NavCom) ||
-            ::Distance(As_Cell(unit->NavCom), Center) > STRAY_DISTANCE) {
+            td::Distance(As_Cell(unit->NavCom), Center) > STRAY_DISTANCE) {
           unit->Assign_Mission(MISSION_MOVE);
-          unit->Assign_Destination(::As_Target(Center));
+          unit->Assign_Destination(td::As_Target(Center));
         }
         retval = false;
       } else {
@@ -1323,10 +1325,10 @@ bool TeamClass::Lagging_Units() {
       */
       if (unit->Distance(ObjectiveCenter) > STRAY_DISTANCE) {
         if (unit->Mission != MISSION_MOVE || !Target_Legal(unit->NavCom) ||
-            ::Distance(As_Cell(unit->NavCom), ObjectiveCenter) >
+            td::Distance(As_Cell(unit->NavCom), ObjectiveCenter) >
                 STRAY_DISTANCE) {
           unit->Assign_Mission(MISSION_MOVE);
-          unit->Assign_Destination(::As_Target(ObjectiveCenter));
+          unit->Assign_Destination(td::As_Target(ObjectiveCenter));
         }
         lag = true;
       } else {
@@ -1423,7 +1425,7 @@ void TeamClass::Coordinate_Conscript(FootClass* unit) {
       if (!Target_Legal(unit->NavCom)) {
         unit->Assign_Mission(MISSION_MOVE);
         unit->Assign_Target(kTargetNone);
-        unit->Assign_Destination(::As_Target(Center));
+        unit->Assign_Destination(td::As_Target(Center));
       }
     } else {
       /*
@@ -1490,3 +1492,5 @@ void TeamClass::Suspend_Teams(int priority) {
     }
   }
 }
+
+}  // namespace td

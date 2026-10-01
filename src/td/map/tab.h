@@ -49,6 +49,8 @@
 #include "td/map/credits.h"
 #include "td/map/sidebar.h"
 
+namespace td {
+
 class TabClass : public SidebarClass {
  public:
   void ResetTransientUiState() override;
@@ -85,5 +87,7 @@ class TabClass : public SidebarClass {
 
   static std::span<const std::byte> TabShape;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_MAP_TAB_H_

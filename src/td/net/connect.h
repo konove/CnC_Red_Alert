@@ -232,6 +232,8 @@
 #include "base/enum_array.h"
 #include "td/net/combuf.h"
 
+namespace td {
+
 /*
 ********************************** Defines **********************************
 */
@@ -385,5 +387,7 @@ class ConnectionClass {
                          static_cast<int>(PACKET_COUNT)>
       Commands;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_CONNECT_H_

@@ -83,6 +83,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 std::span<const std::byte> UnitTypeClass::WakeShapes = {};
 
 // Visceroid
@@ -1732,3 +1734,5 @@ int UnitTypeClass::Max_Pips() const {
   }
   return 0;
 }
+
+}  // namespace td

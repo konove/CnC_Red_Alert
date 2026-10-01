@@ -19,6 +19,8 @@
 #include "td/startup/winstub.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 namespace {
 
 // Movie palettes are 6 bits a color; brightens one the way the DOS game did,
@@ -81,3 +83,5 @@ bool MovieScreen::Present() {
   engine::window::TheDisplay().EndFrame();
   return true;
 }
+
+}  // namespace td

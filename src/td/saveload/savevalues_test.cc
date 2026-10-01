@@ -30,6 +30,8 @@
 #include "td/saveload/serialize.h"
 #include "td/screens/score.h"
 
+namespace td {
+
 // The value tests need a frame source and the command overrides the
 // serializers read, but no game session.
 namespace {
@@ -426,7 +428,6 @@ TEST(TdSaveValuesTest, RandomStateRejectsInvalidIndexAndTruncation) {
   EXPECT_FALSE(reader.ok());
 }
 
-
 TEST(TdSaveValuesTest, CellDefaultsAndResetNeedNoSparseRecord) {
   CellClass cell;
   EXPECT_FALSE(cell.Should_Save());
@@ -457,7 +458,6 @@ TEST(TdSaveValuesTest, PreviouslyOmittedCellFieldsRequireSaving) {
   check([](CellClass& value) { value.InfType = HOUSE_BAD; });
 }
 
-
 TEST(TdSaveValuesTest, ScorePreservesEveryCounterAndWideElapsedTime) {
   ScoreClass score{};
   score.Score = 101;
@@ -476,3 +476,5 @@ TEST(TdSaveValuesTest, ScorePreservesEveryCounterAndWideElapsedTime) {
   restored.Serialize(reader);
   EXPECT_FALSE(reader.ok());
 }
+
+}  // namespace td

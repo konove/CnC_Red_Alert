@@ -63,6 +63,8 @@
 #include "td/net/combuf.h"
 #include "td/net/connect.h"
 
+namespace td {
+
 /*
 ***************************** Class Declaration *****************************
 */
@@ -134,5 +136,7 @@ class NonSequencedConnClass : public ConnectionClass {
   .....................................................................*/
   uint32_t LastReadID = 0xffffffff;  // 0xffffffff: none yet; +1 wraps to 0
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_NOSEQCON_H_

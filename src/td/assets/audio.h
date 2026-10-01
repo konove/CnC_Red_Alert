@@ -45,6 +45,8 @@
 
 #include "td/core/defines.h"
 
+namespace td {
+
 // #include "memory.h"
 //
 // class AudioClass {
@@ -105,5 +107,7 @@ void Speak_AI();
 void Stop_Speaking();
 void Sound_Effect(VocType voc, COORDINATE coord = 0, int variation = 1);
 bool Is_Speaking();
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_ASSETS_AUDIO_H_

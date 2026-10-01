@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_MAP_SIDEBAR_H_
 #define CNC_RED_ALERT_TD_MAP_SIDEBAR_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -56,6 +53,11 @@ class ArchiveWriter;
 #include "td/ui/control.h"
 #include "td/ui/gadget.h"
 #include "td/ui/shapebtn.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 class InitClass {};
 
@@ -389,5 +391,7 @@ class SidebarClass : public PowerClass {
 
 extern template void SidebarClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void SidebarClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_MAP_SIDEBAR_H_

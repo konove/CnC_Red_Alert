@@ -63,6 +63,8 @@
 #include "td/startup/conquer.h"
 #include "td/ui/dialog.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 std::span<const std::byte> TabClass::TabShape = {};
@@ -261,3 +263,5 @@ void TabClass::One_Time() {
   SidebarClass::One_Time();
   TabShape = Hires_Retrieve("TABS.SHP");
 }
+
+}  // namespace td

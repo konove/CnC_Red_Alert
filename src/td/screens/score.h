@@ -41,10 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_SCREENS_SCORE_H_
 #define CNC_RED_ALERT_TD_SCREENS_SCORE_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-struct FontStyle;
-
 #include <cstdint>
 #include <cstring>
 #include <memory>
@@ -57,6 +53,12 @@ struct FontStyle;
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "td/assets/presentation.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+struct FontStyle;
+
+namespace td {
 
 class ScoreClass {
  public:
@@ -82,8 +84,6 @@ class ScoreClass {
   */
   template <class Archive>
   void Serialize(Archive& ar);
-
-
 
  protected:
  private:
@@ -254,5 +254,7 @@ extern template void ScoreClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void ScoreClass::Serialize<ArchiveReader>(ArchiveReader&);
 
 extern bool ControlQ;
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_SCREENS_SCORE_H_

@@ -3,6 +3,8 @@
 #include "td/core/defines.h"
 #include "td/objects/cell.h"
 
+namespace td {
+
 CellClass::CellClass() { Flag.Composite = 0; }
 
 void CellClass::Reset() {
@@ -41,3 +43,5 @@ bool CellClass::Should_Save() const {
          base::At(Overlappers, 2) != nullptr || Flag.Composite != 0 ||
          Land != LAND_CLEAR;
 }
+
+}  // namespace td

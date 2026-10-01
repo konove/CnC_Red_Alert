@@ -41,6 +41,8 @@
 
 #include "base/buffer.h"
 
+namespace td {
+
 /*
 ***************************** Class Declaration *****************************
 */
@@ -86,5 +88,7 @@ class PhoneEntryClass {
   char Name[kPhoneMaxName] = {};   // destination person's name
   char Number[kPhoneMaxNum] = {};  // phone #
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_PHONE_H_

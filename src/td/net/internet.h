@@ -3,6 +3,8 @@
 #ifndef CNC_RED_ALERT_TD_NET_INTERNET_H_
 #define CNC_RED_ALERT_TD_NET_INTERNET_H_
 
+namespace td {
+
 // Shows the internet menu. Returns whether the player chose to go on to a
 // game rather than backing out.
 bool Do_The_Internet_Menu_Thang();
@@ -13,5 +15,7 @@ bool Spawn_WChat(bool can_launch);
 
 // Reads the settings Westwood Chat left in C&CSPAWN.INI and applies them.
 void Check_From_WChat(const char* wchat_name);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_INTERNET_H_

@@ -67,6 +67,8 @@
 #include "td/objects/techno.h"
 #include "td/objects/unit.h"
 
+namespace td {
+
 /***********************************************************************************************
  * Do_Reinforcements -- Create and place a reinforcement team. *
  *                                                                                             *
@@ -733,3 +735,5 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
   }
   return sub;
 }
+
+}  // namespace td

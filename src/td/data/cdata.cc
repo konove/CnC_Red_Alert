@@ -76,6 +76,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 static const char slope00000001[] = {7, -1};
 static const char slope000000101[] = {6, 8, -1};
 static const char slope00000011[] = {6, 7, -1};
@@ -1536,3 +1538,5 @@ ObjectClass* TemplateTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void TemplateTypeClass::One_Time() {}
+
+}  // namespace td

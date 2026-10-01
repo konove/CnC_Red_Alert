@@ -45,6 +45,8 @@
 
 #include "td/core/defines.h"
 
+namespace td {
+
 /****************************************************************************
 **	The fuse is used by projectiles to determine whether detonation should
 **	occur. This is usually determined by tracking the distance to the
@@ -97,5 +99,7 @@ class FuseClass {
 };
 
 inline COORDINATE FuseClass::Fuse_Target() const { return HeadTo; }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_FUSE_H_

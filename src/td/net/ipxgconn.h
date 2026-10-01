@@ -63,6 +63,8 @@
 #include "td/net/ipxaddr.h"
 #include "td/net/ipxconn.h"
 
+namespace td {
+
 /*
 ********************************** Defines **********************************
 */
@@ -165,5 +167,7 @@ class IPXGlobalConnClass : public IPXConnClass {
   .....................................................................*/
   int Service_Receive_Queue() override;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_IPXGCONN_H_

@@ -185,6 +185,8 @@
 #include "td/startup/game_state.h"
 #include "td/startup/winstub.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 /*
@@ -619,7 +621,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
           if (cell == 0) {
             Transmit_Message(RADIO_OVER_OUT, from);
           } else {
-            param = static_cast<int32_t>(::As_Target(cell));
+            param = static_cast<int32_t>(td::As_Target(cell));
             Do_Turn(dir);
 
             /*
@@ -1304,7 +1306,7 @@ void UnitClass::Find_LZ() {
     if (!IsRotating && Is_Something_Attached() && !Target_Legal(NavCom)) {
       CELL const cell = TheMap().Calculated_Cell(
           SOURCE_BEACH, House->Class->House);  // Map exit cell number.
-      Assign_Destination(::As_Target(cell));
+      Assign_Destination(td::As_Target(cell));
     }
   }
 }
@@ -1377,7 +1379,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
                                      base::At(StoppingCoordAbs, count)),
                            DIR_N)) {
               u->Assign_Mission(MISSION_MOVE);
-              u->NavCom = ::As_Target(cell);
+              u->NavCom = td::As_Target(cell);
               base::At(u->Path, 0) = Dir_Facing(u->PrimaryFacing.Current());
               base::At(u->Path, 1) = FACING_NONE;
               u->Set_Speed(0x80);
@@ -1477,7 +1479,7 @@ bool UnitClass::Goto_Clear_Spot() {
           static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(ptr));
 
       if (BuildingTypeClass::As_Reference(STRUCT_CONST).Legal_Placement(cell)) {
-        Assign_Destination(::As_Target(cell));
+        Assign_Destination(td::As_Target(cell));
         break;
       }
     }
@@ -1765,13 +1767,13 @@ void UnitClass::Per_Cell_Process(bool center) {
         if (Cell_X(current_cell) <= TheMap().MapCellX) {
           Assign_Mission(MISSION_HUNT);
           Assign_Destination(
-              ::As_Target(XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth,
+              td::As_Target(XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth,
                                   Cell_Y(current_cell))));
           Set_Speed(255);
           PrimaryFacing = DIR_E;
         } else {
           Assign_Mission(MISSION_HUNT);
-          Assign_Destination(::As_Target(
+          Assign_Destination(td::As_Target(
               XY_Cell(TheMap().MapCellX - 1, Cell_Y(current_cell))));
           Set_Speed(255);
           PrimaryFacing = DIR_W;
@@ -2204,25 +2206,25 @@ bool UnitClass::Goto_Tiberium() {
       for (int x = -radius; x <= radius; x++) {
         CELL cell = center;
         if (Tiberium_Check(cell, x, -radius)) {
-          Assign_Destination(::As_Target(cell));
+          Assign_Destination(td::As_Target(cell));
           return false;
         }
 
         cell = center;
         if (Tiberium_Check(cell, x, +radius)) {
-          Assign_Destination(::As_Target(cell));
+          Assign_Destination(td::As_Target(cell));
           return false;
         }
 
         cell = center;
         if (Tiberium_Check(cell, -radius, x)) {
-          Assign_Destination(::As_Target(cell));
+          Assign_Destination(td::As_Target(cell));
           return false;
         }
 
         cell = center;
         if (Tiberium_Check(cell, +radius, x)) {
-          Assign_Destination(::As_Target(cell));
+          Assign_Destination(td::As_Target(cell));
           return false;
         }
       }
@@ -2362,7 +2364,7 @@ int UnitClass::Mission_Unload() {
                                      newface);
                   TheWorld().scenario_init()--;
                   passenger->Assign_Mission(MISSION_MOVE);
-                  passenger->Assign_Destination(::As_Target(newcell));
+                  passenger->Assign_Destination(td::As_Target(newcell));
                   placed = true;
                   break;
                 }
@@ -2537,7 +2539,7 @@ int UnitClass::Mission_Harvest() {
         IsHarvesting = false;
         if (Tiberium_Load() == 0x0100) {
           Status = kFindhome;
-          ArchiveTarget = ::As_Target(Coord_Cell(Coord));
+          ArchiveTarget = td::As_Target(Coord_Cell(Coord));
         } else {
           if (!Goto_Tiberium() && !Target_Legal(NavCom)) {
             ArchiveTarget = kTargetNone;
@@ -2572,7 +2574,7 @@ int UnitClass::Mission_Harvest() {
           nearest = Find_Docking_Bay(STRUCT_REFINERY, false);
           TheWorld().scenario_init()--;
           if (nearest) {
-            Assign_Destination(::As_Target(nearest->Nearby_Location(this)));
+            Assign_Destination(td::As_Target(nearest->Nearby_Location(this)));
           }
         }
       }
@@ -2644,11 +2646,11 @@ int UnitClass::Mission_Hunt() {
     if (*this == UNIT_GUNBOAT) {
       if (!Target_Legal(NavCom)) {
         if (PrimaryFacing == DIR_W) {
-          Assign_Destination(::As_Target(
+          Assign_Destination(td::As_Target(
               XY_Cell(TheMap().MapCellX - 1, Cell_Y(Coord_Cell(Coord)))));
         } else {
           Assign_Destination(
-              ::As_Target(XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth,
+              td::As_Target(XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth,
                                   Cell_Y(Coord_Cell(Coord)))));
         }
         Set_Speed(255);
@@ -3165,7 +3167,7 @@ void UnitClass::Scatter(COORDINATE threat, bool forced) {
         CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
         if (TheMap().In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
-          Assign_Destination(::As_Target(newcell));
+          Assign_Destination(td::As_Target(newcell));
         }
       }
     }
@@ -3562,7 +3564,7 @@ void UnitClass::Read_INI(char* buffer) {
               unit->PrimaryFacing.Set_Current(DIR_W);
               unit->Assign_Mission(MISSION_HUNT);
               unit->Commence();
-              unit->Assign_Destination(::As_Target(XY_Cell(
+              unit->Assign_Destination(td::As_Target(XY_Cell(
                   TheMap().MapCellX - 1, Cell_Y(Coord_Cell(unit->Coord)))));
             }
 
@@ -3669,7 +3671,7 @@ void UnitClass::Exit_Repair() {
   }
   if (found) {
     Assign_Mission(MISSION_MOVE);
-    Assign_Destination(::As_Target(cell));
+    Assign_Destination(td::As_Target(cell));
   }
 }
 
@@ -4091,3 +4093,5 @@ RTTIType UnitClass::What_Am_I() const {
   Validate();
   return RTTI_UNIT;
 }
+
+}  // namespace td

@@ -112,6 +112,8 @@
 #include "td/ui/input.h"
 #include "td/ui/msgbox.h"
 
+namespace td {
+
 /***********************************************************************************************
  * Start_Scenario -- Starts the scenario. *
  *                                                                                             *
@@ -761,3 +763,5 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
   }
   return false;
 }
+
+}  // namespace td

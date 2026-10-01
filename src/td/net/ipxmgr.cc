@@ -92,6 +92,8 @@
 #include "td/net/session.h"
 #include "td/net/tcpip.h"
 
+namespace td {
+
 /***************************************************************************
  * IPXManagerClass::IPXManagerClass -- class constructor                   *
  *                                                                         *
@@ -1360,3 +1362,5 @@ int IPXManagerClass::Alloc_RealMode_Mem() {
 int IPXManagerClass::Free_RealMode_Mem() {
   return 1;
 } /* end of Free_RealMode_Mem */
+
+}  // namespace td

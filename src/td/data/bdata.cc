@@ -100,6 +100,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 #define MCW MAP_CELL_W
 
 #define XYCELL(x, y) ((y) * MAP_CELL_W + (x))
@@ -3571,7 +3573,6 @@ const base::EnumArray<StructType, const BuildingTypeClass*, kStructCount>
         &Wood,      //	STRUCT_WOOD_WALL
 };
 
-
 /***********************************************************************************************
  * BuildingTypeClass::BuildingTypeClass -- This is the constructor for the
  *building types.     *
@@ -4469,3 +4470,5 @@ int BuildingTypeClass::Cost_Of() const {
 
   return TechnoTypeClass::Cost_Of();
 }
+
+}  // namespace td

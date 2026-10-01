@@ -13,6 +13,8 @@
 #include "td/core/jshell.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 namespace {
 
 // Where each font comes from, in FontType order. The fonts the archives
@@ -59,3 +61,5 @@ void Assets::LoadFonts() {
 void Assets::LoadStrings() {
   system_strings_ = MixArchive::RetrieveData(Language_Name("CONQUER"));
 }
+
+}  // namespace td

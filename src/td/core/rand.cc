@@ -45,6 +45,8 @@
 #include "td/core/jshell.h"
 #include "td/core/randomstate.h"
 
+namespace td {
+
 static int SimRandIndex = 0;
 
 namespace {
@@ -140,3 +142,5 @@ int Sim_IRandom(int minval, int maxval) {
 This routine can be used to create the _RandVals[] table.  It will be
 different every time it's run.
 ---------------------------------------------------------------------------*/
+
+}  // namespace td

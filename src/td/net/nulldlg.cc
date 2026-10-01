@@ -117,6 +117,8 @@
 #include "td/ui/msglist.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 // Whether Smart_Print() echoes to stdout; on while a serial game runs.
@@ -162,7 +164,6 @@ static HousesType TheirHouse;
 static unsigned char TheirID;
 static char DialString[CWAITSTRBUF_MAX + PhoneEntryClass::kPhoneMaxNum - 1];
 static SerialSettingsType* DialSettings;
-
 
 /***************************************************************************
  * Init_Null_Modem -- Initializes Null Modem communications                *
@@ -3511,7 +3512,6 @@ int Com_Scenario_Dialog() {
 
   while (process) {
 
-
     /*
     ........................ Invoke game callback .........................
     */
@@ -4827,7 +4827,6 @@ int Com_Show_Scenario_Dialog() {
   TheMouse().ForceShow();
 
   while (process) {
-
 
     /*
     ........................ Invoke game callback .........................
@@ -7192,3 +7191,5 @@ void itoh(int i, std::span<char> s) {
   base::At(s, 1) = digits.at(bits & 0xfU);
   base::At(s, 2) = '\0';
 }
+
+}  // namespace td

@@ -56,6 +56,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 const int COLOR_GOOD = 180;            // GOLD
 const int COLOR_BRIGHT_GOOD = 176;     // GOLD
 const int COLOR_BAD = 123;             // RED;
@@ -289,3 +291,5 @@ HousesType HouseTypeClass::From_Name(const char* name) {
 const HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
   return *Pointers.at(house);
 }
+
+}  // namespace td

@@ -192,6 +192,8 @@
 #include "td/startup/ccdde.h"
 #endif
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 // Which multiplayer colors the players in the game dialog have taken; nonzero
@@ -5657,3 +5659,5 @@ static int Net_Fake_Join_Dialog() {
 }
 
 #endif
+
+}  // namespace td

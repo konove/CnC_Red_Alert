@@ -5,6 +5,8 @@
 #include "base/installed.h"
 #include "gtest/gtest.h"
 
+namespace td {
+
 namespace {
 
 TEST(DebugStateTest, EverySwitchStartsOff) {
@@ -43,3 +45,5 @@ TEST(DebugStateTest, TheDebugStateReturnsTheInstalledDebugState) {
 }
 
 }  // namespace
+
+}  // namespace td

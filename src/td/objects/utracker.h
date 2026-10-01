@@ -45,6 +45,8 @@
 
 #include "absl/base/attributes.h"
 
+namespace td {
+
 /*
 ** UnitTracker Class
 */
@@ -74,5 +76,7 @@ class UnitTrackerClass {
   int UnitCount;           // Keep a record of how many unit entries there are
   int InNetworkFormat{0};  // The unit entries are in host format
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_UTRACKER_H_

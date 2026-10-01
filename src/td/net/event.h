@@ -49,6 +49,8 @@
 #include "td/ai/special.h"
 #include "td/core/defines.h"
 
+namespace td {
+
 /*
 **	This event class is used to contain all external game events (things
 *that the player can *	do at any time) so that these events can be transported
@@ -240,5 +242,7 @@ class EventClass {
   static base::EnumArray<EventType, const char*, static_cast<int>(LAST_EVENT)>
       EventNames;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_EVENT_H_

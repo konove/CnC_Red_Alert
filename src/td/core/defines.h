@@ -51,6 +51,8 @@
 #include "engine/gfx/wwstd.h"
 #include "td/ai/special.h"
 
+namespace td {
+
 /**********************************************************************
 **	If defined, then the advanced balancing features will be enabled
 **	for this version.
@@ -2733,5 +2735,7 @@ inline constexpr int kOptionCount = static_cast<int>(OPTION_COUNT);
 #define TOTAL_CRATE_TYPES 15
 
 #define size_of(typ, id) sizeof(std::declval<typ>().id)
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_DEFINES_H_

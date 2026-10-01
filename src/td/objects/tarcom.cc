@@ -64,6 +64,8 @@
 #include "td/objects/turret.h"
 #include "td/objects/type.h"
 
+namespace td {
+
 TarComClass::~TarComClass() = default;
 
 /***********************************************************************************************
@@ -173,3 +175,5 @@ void TarComClass::AI() {
     }
   }
 }
+
+}  // namespace td

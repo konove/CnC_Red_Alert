@@ -59,6 +59,8 @@
 
 using HANDLE = void*;
 
+namespace td {
+
 /*
 ********************************** Defines **********************************
 */
@@ -148,6 +150,8 @@ class NullModemConnClass : public NonSequencedConnClass {
   .....................................................................*/
   std::vector<char> SendBuf;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_NULLCONN_H_
 

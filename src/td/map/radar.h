@@ -53,6 +53,11 @@
 #include "td/objects/house.h"
 #include "td/ui/gadget.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
+
 class RadarClass : public DisplayClass {
  public:
   void ResetTransientUiState() override;
@@ -227,9 +232,9 @@ class RadarClass : public DisplayClass {
   CELL PixelStack[kPixelstack]{};
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void RadarClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void RadarClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_MAP_RADAR_H_

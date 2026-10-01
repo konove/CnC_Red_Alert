@@ -115,6 +115,8 @@
 #include "td/ui/textbtn.h"
 #include "td/ui/txtlabel.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 /*
@@ -1947,3 +1949,5 @@ void MapEditClass::Detach(ObjectClass* object) {
     GrabbedObject = nullptr;
   }
 }
+
+}  // namespace td

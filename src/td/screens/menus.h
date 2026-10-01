@@ -7,6 +7,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 
+namespace td {
+
 struct MenuConfig {
   int x = 1;
   int y = 3;
@@ -24,5 +26,7 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
                std::span<const char* const> text, uint32_t field, int index);
 int Do_Menu(std::span<const char* const> strings, bool blue);
 int Main_Menu(int timeout);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_SCREENS_MENUS_H_

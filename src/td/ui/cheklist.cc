@@ -72,6 +72,8 @@
 #include "td/core/defines.h"
 #include "td/ui/list.h"
 
+namespace td {
+
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
                                TextPrintType flags,
                                std::span<const std::byte> up,
@@ -167,3 +169,5 @@ bool CheckListClass::Action(unsigned flags, engine::window::KeyNumber& key,
 
   return rc;
 }
+
+}  // namespace td

@@ -61,6 +61,8 @@
 
 #include "absl/base/attributes.h"
 
+namespace td {
+
 /*
 ********************************** Defines **********************************
 */
@@ -181,6 +183,8 @@ class CommBufferClass {
   uint32_t ReceiveTotal = 0;       // total # added to receive queue
   std::vector<int> ReceiveIndex;   // array of Receive entry indices
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_COMBUF_H_
 

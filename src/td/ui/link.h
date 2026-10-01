@@ -43,6 +43,8 @@
 
 #include "absl/base/attributes.h"
 
+namespace td {
+
 /*
 **	This implements a simple linked list. It is possible to add, remove, and
 *traverse the *	list. Since this is a doubly linked list, it is possible to
@@ -111,5 +113,7 @@ class LinkClass {
   LinkClass* Next = nullptr;
   LinkClass* Prev = nullptr;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_LINK_H_

@@ -72,6 +72,8 @@
 #include "td/ui/list.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 #ifdef NEWMENU
@@ -218,7 +220,6 @@ bool Expansion_Dialog() {
   while (process) {
     Call_Back();
 
-
     if (display) {
       display = false;
 
@@ -266,7 +267,6 @@ bool Expansion_Dialog() {
         break;
     }
   }
-
 
   return okval;
 }
@@ -360,7 +360,6 @@ bool Bonus_Dialog() {
   while (process) {
     Call_Back();
 
-
     if (display) {
       display = false;
 
@@ -408,8 +407,9 @@ bool Bonus_Dialog() {
     }
   }
 
-
   return okval;
 }
 
 #endif
+
+}  // namespace td

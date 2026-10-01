@@ -2,4 +2,8 @@
 
 #include "td/objects/stage.h"
 
+namespace td {
+
 StageClass::~StageClass() = default;
+
+}  // namespace td

@@ -51,6 +51,8 @@
 #include "td/core/defines.h"
 #include "td/ui/list.h"
 
+namespace td {
+
 // A list box whose items each carry a check mark the user can toggle by
 // clicking. The mark is the item's first character: add items with a leading
 // space (kUncheckChar) and Check_Item swaps it for kCheckChar.
@@ -90,6 +92,8 @@ class CheckListClass : public ListClass {
  private:
   bool IsReadOnly{false};
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_CHEKLIST_H_
 /************************** end of cheklist.h ******************************/

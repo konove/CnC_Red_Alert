@@ -52,6 +52,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 /***************************************************************************
 **	Detailed information about each class of bullet (projectile) in the
 *game.
@@ -602,3 +604,5 @@ void BulletTypeClass::One_Time() {
     }
   }
 }
+
+}  // namespace td

@@ -92,6 +92,8 @@
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 /***************************************************************************
@@ -1998,3 +2000,5 @@ void MapEditClass::Build_Base_To(int percent) {
 
   // ScenarioInit--;
 }
+
+}  // namespace td

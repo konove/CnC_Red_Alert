@@ -59,6 +59,8 @@
 #include "td/ui/dialog.h"
 #include "td/ui/toggle.h"
 
+namespace td {
+
 /***********************************************************************************************
  * TextButtonClass::TextButtonClass -- Normal constructor for a text button. *
  *                                                                                             *
@@ -348,3 +350,5 @@ void TextButtonClass::Draw_Text(PixelView& view, const char* text) {
     }
   }
 }
+
+}  // namespace td

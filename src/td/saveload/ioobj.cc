@@ -89,6 +89,8 @@
 #include "td/saveload/serialize.h"
 #include "td/screens/score.h"
 
+namespace td {
+
 template <class Archive>
 void FactoryClass::Serialize(Archive& ar) {
   StageClass::Serialize(ar);
@@ -732,3 +734,5 @@ void AircraftClass::Serialize(Archive& ar) {
 }
 template void AircraftClass::Serialize(ArchiveWriter&);
 template void AircraftClass::Serialize(ArchiveReader&);
+
+}  // namespace td

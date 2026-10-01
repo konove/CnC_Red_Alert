@@ -61,6 +61,8 @@
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
 
+namespace td {
+
 TextLabelClass::TextLabelClass(char* txt, int x, int y, int color,
                                TextPrintType style)
     : GadgetClass(x, y, 1, 1, 0, false),
@@ -92,3 +94,5 @@ bool TextLabelClass::Draw_Me(PixelView& view, bool forced) {
   }
   return false;
 }
+
+}  // namespace td

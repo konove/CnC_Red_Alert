@@ -95,6 +95,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 int FactoryClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
     const int num = TheObjectHeaps().factory().ID(this);
@@ -742,3 +744,5 @@ bool FactoryClass::Completed() {
   }
   return false;
 }
+
+}  // namespace td

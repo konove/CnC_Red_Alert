@@ -41,15 +41,17 @@
 #ifndef CNC_RED_ALERT_TD_AI_BASE_H_
 #define CNC_RED_ALERT_TD_AI_BASE_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <span>
 #include <string>
 
 #include "td/core/defines.h"
 #include "td/core/vector.h"
 #include "td/objects/building.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 /****************************************************************************
 ** This class defines one "node" in the pre-built base list.  Each node
@@ -96,8 +98,6 @@ class BaseClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-
-
   /**********************************************************************
   ** Tells if the given node has been built or not
   */
@@ -139,5 +139,7 @@ class BaseClass {
 
 extern template void BaseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void BaseClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_AI_BASE_H_

@@ -43,6 +43,8 @@
 
 #include "td/core/defines.h"
 
+namespace td {
+
 /*
 **	This is a general facing handler class. It is used in those cases where
 *facing needs to be *	kept track of, but there could also be an associated
@@ -98,5 +100,7 @@ class FacingClass {
   DirType CurrentFacing;
   DirType DesiredFacing;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_FACING_H_

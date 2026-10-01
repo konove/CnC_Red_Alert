@@ -7,6 +7,8 @@
 #include "absl/strings/str_format.h"
 #include "td/core/defines.h"
 
+namespace td {
+
 bool Init_Null_Modem(SerialSettingsType* settings);
 void Shutdown_Modem();
 void Modem_Signoff();
@@ -29,5 +31,7 @@ void Smart_Printf(const absl::FormatSpec<Args...>& format,
 }
 void Hex_Dump_Data(std::span<const char> buffer);
 void itoh(int i, std::span<char> s);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_NULLDLG_H_

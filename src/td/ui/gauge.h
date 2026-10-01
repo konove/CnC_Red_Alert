@@ -45,6 +45,8 @@
 #include "engine/window/keyboard.h"
 #include "td/ui/control.h"
 
+namespace td {
+
 class GaugeClass : public ControlClass {
  public:
   GaugeClass(unsigned id, int x, int y, int w, int h);
@@ -107,5 +109,7 @@ class TriColorGaugeClass : public GaugeClass {
   int RedLimit{0};     // maximum value for red
   int YellowLimit{0};  // maximum value for yellow
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_GAUGE_H_

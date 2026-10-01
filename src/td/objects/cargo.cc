@@ -46,6 +46,8 @@
 #include "td/objects/foot.h"
 #include "td/objects/object.h"
 
+namespace td {
+
 CargoClass::~CargoClass() { CargoHold = nullptr; }
 
 /***********************************************************************************************
@@ -158,3 +160,5 @@ FootClass* CargoClass::Attached_Object() const {
   }
   return nullptr;
 }
+
+}  // namespace td

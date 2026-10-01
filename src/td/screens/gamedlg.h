@@ -41,10 +41,14 @@
 #ifndef CNC_RED_ALERT_TD_SCREENS_GAMEDLG_H_
 #define CNC_RED_ALERT_TD_SCREENS_GAMEDLG_H_
 
+namespace td {
+
 class GameControlsClass {
  public:
   GameControlsClass() = default;
   static void Process();
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_SCREENS_GAMEDLG_H_

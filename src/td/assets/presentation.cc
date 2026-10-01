@@ -5,6 +5,8 @@
 #include "base/array.h"
 #include "td/assets/screen.h"
 
+namespace td {
+
 Presentation::Presentation()
     : text_page_(TheScreen().visible_view().width(),
                  TheScreen().visible_view().height()) {
@@ -43,3 +45,5 @@ void Presentation::DrawTextRects() {
     source.Unlock();
   }
 }
+
+}  // namespace td

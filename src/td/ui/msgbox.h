@@ -43,6 +43,8 @@
 
 #include "td/startup/conquer.h"
 
+namespace td {
+
 class CCMessageBox {
   int Caption;
 #ifdef JAPANESE
@@ -63,5 +65,7 @@ class CCMessageBox {
   int Process(const char* msg, int b1txt = TXT_OK, int b2txt = TXT_NONE,
               int b3txt = TXT_NONE, bool preserve = false) const;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_MSGBOX_H_

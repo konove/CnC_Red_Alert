@@ -63,6 +63,8 @@
 #include "td/core/jshell.h"
 #include "td/core/rand.h"
 
+namespace td {
+
 /***********************************************************************************************
  * Coord_Spillage_List -- Determines the offset list for cell
  *spillage/occupation.             *
@@ -266,3 +268,5 @@ COORDINATE Coord_Scatter(COORDINATE coord, int distance, bool lock) {
 
   return newcoord;
 }
+
+}  // namespace td

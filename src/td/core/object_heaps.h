@@ -22,6 +22,8 @@
 #include "td/objects/terrain.h"
 #include "td/objects/unit.h"
 
+namespace td {
+
 // One heap per kind of object on the map, plus the team types that belong
 // to the scenario. Everything here is part of the scenario and is saved:
 // the save file walks each heap in turn. Game owns the one instance;
@@ -112,5 +114,7 @@ class ObjectHeaps {
 inline ObjectHeaps& TheObjectHeaps() {
   return base::Installed<ObjectHeaps>::Get();
 }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_OBJECT_HEAPS_H_

@@ -50,6 +50,8 @@
 #include "td/objects/cell.h"
 #include "td/ui/gadget.h"
 
+namespace td {
+
 class GScreenClass : public VectorClass<CellClass> {
  public:
   virtual void ResetTransientUiState();
@@ -156,5 +158,7 @@ class GScreenClass : public VectorClass<CellClass> {
 };
 
 extern bool ScreenRecording;
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_MAP_GSCREEN_H_

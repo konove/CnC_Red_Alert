@@ -52,6 +52,8 @@
 #include "td/core/vector.h"
 #include "td/ui/list.h"
 
+namespace td {
+
 class FileEntryClass {
  public:
   char Descr[40];          // save-game description
@@ -101,5 +103,7 @@ class LoadOptionsClass {
   // not move while the list box shows it: they are held by pointer.
   std::vector<std::unique_ptr<FileEntryClass>> Files;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_SCREENS_LOADDLG_H_

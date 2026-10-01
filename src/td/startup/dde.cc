@@ -46,6 +46,8 @@
 
 #include "td/startup/dde.h"
 
+namespace td {
+
 /***************************************************************************
  * These are static members of Instance_Class
  *=========================================================================*/
@@ -450,3 +452,5 @@ HDDEDATA CALLBACK Instance_Class::dde_callback(
       return (HDDEDATA)NULL;
   }
 }
+
+}  // namespace td

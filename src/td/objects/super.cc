@@ -76,6 +76,8 @@
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 
+namespace td {
+
 /***********************************************************************************************
  * SuperClass::Suspend -- Suspend the charging of the super weapon. *
  *                                                                                             *
@@ -360,3 +362,5 @@ void SuperClass::Forced_Charge(bool player) {
     }
   }
 }
+
+}  // namespace td

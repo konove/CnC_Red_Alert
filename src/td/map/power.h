@@ -52,6 +52,8 @@
 #include "td/map/radar.h"
 #include "td/ui/gadget.h"
 
+namespace td {
+
 class PowerClass : public RadarClass {
  public:
   void ResetTransientUiState() override;
@@ -134,5 +136,7 @@ class PowerClass : public RadarClass {
   */
   static std::span<const std::byte> PowerBarShape;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_MAP_POWER_H_

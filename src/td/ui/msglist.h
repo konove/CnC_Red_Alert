@@ -66,6 +66,8 @@
 #include "td/core/defines.h"
 #include "td/ui/txtlabel.h"
 
+namespace td {
+
 /*
 **	Class declaration
 */
@@ -130,5 +132,7 @@ class MessageListClass {
   static char MessageBuffers[MAX_NUM_MESSAGES][MAX_MESSAGE_LENGTH + 30];
   static char BufferAvail[MAX_NUM_MESSAGES];
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_MSGLIST_H_

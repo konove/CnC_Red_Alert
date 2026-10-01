@@ -50,6 +50,8 @@
 #include "td/core/defines.h"
 #include "td/ui/gadget.h"
 
+namespace td {
+
 class TextLabelClass : public GadgetClass {
  public:
   /*
@@ -79,5 +81,7 @@ class TextLabelClass : public GadgetClass {
   uint8_t Segments{0};
   uint16_t CRC = 0;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_TXTLABEL_H_

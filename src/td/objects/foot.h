@@ -52,6 +52,11 @@
 #include "td/objects/target.h"
 #include "td/objects/techno.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
+
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects
 **	cover everything except buildings.
@@ -328,9 +333,9 @@ class FootClass : public TechnoClass {
   COORDINATE HeadToCoord;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void FootClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void FootClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_FOOT_H_

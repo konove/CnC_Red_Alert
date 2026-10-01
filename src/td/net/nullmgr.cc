@@ -107,6 +107,8 @@
 #include <windows.h>
 #endif
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 // the following line was taken from Greenleaf's <ibmkeys.h> <asciidef.h>
@@ -156,7 +158,6 @@ NullModemClass::NullModemClass(int numsend, int numreceive, int maxlen,
   /*------------------------------------------------------------------------
   Init Port to NULL; we haven't opened Greenleaf yet.
   ------------------------------------------------------------------------*/
-
 
   /*........................................................................
   Init timing parameters
@@ -251,7 +252,6 @@ int NullModemClass::Init(int port, int /*unused*/, char* dev_name, int baud,
 
   RXCount = 0;
   EchoCount = 0;
-
 
   /*
   ** Create a new modem class for our com port
@@ -426,7 +426,6 @@ bool NullModemClass::Init_Send_Queue() {
 DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
   static char com_ids[9][5] = {"COM1", "COM2", "COM3", "COM4", "COM5",
                                "COM6", "COM7", "COM8", "COM9"};
-
 
   /*
   ** Create a new modem class for our com port
@@ -1428,7 +1427,6 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   while (process) {
     // Timer_Test(__LINE__, __FILE__);
 
-
     // Timer_Test(__LINE__, __FILE__);
 
     // delay = HMInputLine( Port, delay, buffer, 81 );
@@ -1551,7 +1549,6 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   int height = 0;  // dialog dimensions
   char text_buffer[80 * 3];
   char comm_buffer[80 * 3];
-
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -2106,3 +2103,5 @@ int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
 } /* end of Verify_And_Convert_To_Int */
 
 /*************************** end of nullmgr.cpp ****************************/
+
+}  // namespace td

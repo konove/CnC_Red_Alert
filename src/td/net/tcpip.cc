@@ -87,6 +87,8 @@ using socklen_t = int;
 #define SOCKET_ERROR (-1)
 #endif
 
+namespace td {
+
 #ifdef FORCE_WINSOCK
 
 /*
@@ -610,3 +612,5 @@ void TcpipManagerClass::Clear_Socket_Error(SOCKET socket) {
 }
 
 #endif  // FORCE_WINSOCK
+
+}  // namespace td

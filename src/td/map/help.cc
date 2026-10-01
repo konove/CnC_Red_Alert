@@ -75,6 +75,8 @@
 #include "td/ui/dialog.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 /*
 **	This is the holding buffer for the text overlap list. This buffer must
 *be in the near *	data segment. It will be filled in by the Set_Text()
@@ -404,3 +406,5 @@ void HelpClass::Set_Tactical_Position(COORDINATE coord) {
   }
   TabClass::Set_Tactical_Position(coord);
 }
+
+}  // namespace td

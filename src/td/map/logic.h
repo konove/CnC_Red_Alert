@@ -43,6 +43,8 @@
 
 #include "td/map/layer.h"
 
+namespace td {
+
 /***********************************************************************************************
 **	Game logic processing is controlled by this class. The graphic and AI
 *logic is handled *	separately so that on slower machines, the graphic
@@ -59,4 +61,7 @@ class LogicClass : public LayerClass {
 
   void AI();
 };
+
+}  // namespace td
+
 #endif  // CNC_RED_ALERT_TD_MAP_LOGIC_H_

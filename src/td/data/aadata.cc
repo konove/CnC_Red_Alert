@@ -45,6 +45,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 std::span<const std::byte> AircraftTypeClass::LRotorData = {};
 std::span<const std::byte> AircraftTypeClass::RRotorData = {};
 
@@ -431,3 +433,5 @@ void AircraftTypeClass::Dimensions(int& width, int& height) const {
 }
 
 RTTIType AircraftTypeClass::What_Am_I() const { return RTTI_AIRCRAFTTYPE; }
+
+}  // namespace td

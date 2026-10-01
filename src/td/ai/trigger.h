@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_AI_TRIGGER_H_
 #define CNC_RED_ALERT_TD_AI_TRIGGER_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstdint>
 #include <cstring>
 #include <span>
@@ -55,6 +52,11 @@ class ArchiveWriter;
 #include "td/ai/teamtype.h"
 #include "td/core/defines.h"
 #include "td/objects/object.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 enum class EventType {
   EVENT_NONE = -1,
@@ -285,5 +287,7 @@ class TriggerClass {
 
 extern template void TriggerClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TriggerClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_AI_TRIGGER_H_

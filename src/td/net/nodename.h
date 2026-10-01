@@ -6,6 +6,8 @@
 #include "td/core/defines.h"
 #include "td/net/ipxaddr.h"
 
+namespace td {
+
 // Node for lists of available games & players in multiplayer.
 // 'Game' structure is for games; 'Player' structure for players.
 struct NodeNameTag {
@@ -24,5 +26,7 @@ struct NodeNameTag {
   };
 };
 using NodeNameType = NodeNameTag;
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_NODENAME_H_

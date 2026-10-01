@@ -45,6 +45,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "td/data/options.h"
 
+namespace td {
+
 class GameOptionsClass : public OptionsClass {
   static constexpr int kButtonLoad = 1;
   static constexpr int kButtonSave = 2;
@@ -82,5 +84,7 @@ void Draw_Caption(PixelView& view, int text, int x, int y, int w);
 inline GameOptionsClass& TheOptions() {
   return base::Installed<GameOptionsClass>::Get();
 }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_SCREENS_GOPTIONS_H_

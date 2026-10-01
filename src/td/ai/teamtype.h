@@ -37,9 +37,6 @@
 #ifndef CNC_RED_ALERT_TD_AI_TEAMTYPE_H_
 #define CNC_RED_ALERT_TD_AI_TEAMTYPE_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 #include <span>
 #include <string>
@@ -50,6 +47,11 @@ class ArchiveWriter;
 #include "td/objects/house.h"
 #include "td/objects/target.h"
 #include "td/objects/type.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 /*
 ********************************** Defines **********************************
@@ -286,5 +288,7 @@ class TeamTypeClass : public AbstractTypeClass {
 
 extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TeamTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_AI_TEAMTYPE_H_

@@ -45,6 +45,8 @@
 
 #include "engine/gfx/palette.h"
 
+namespace td {
+
 class OptionsClass {
  public:
   static constexpr int kMaxScrollSetting = 7;
@@ -109,5 +111,7 @@ class OptionsClass {
   // loop, shows it.
   void ShowPalette();
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_DATA_OPTIONS_H_

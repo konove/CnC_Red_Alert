@@ -171,6 +171,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 const int InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
                                            5, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3,
                                            2, 2, 2, 2, 1, 1, 1, 1, 1, 0};
@@ -1405,7 +1407,7 @@ void InfantryClass::AI() {
               if (TheMap().at(acell).Overlay != OVERLAY_NONE &&
                   OverlayTypeClass::As_Reference(TheMap().at(acell).Overlay)
                       .IsWall) {
-                Override_Mission(MISSION_ATTACK, ::As_Target(acell),
+                Override_Mission(MISSION_ATTACK, td::As_Target(acell),
                                  kTargetNone);
               }
             }
@@ -2140,7 +2142,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
 
       if (TheMap().In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
         Assign_Mission(MISSION_MOVE);
-        Assign_Destination(::As_Target(newcell));
+        Assign_Destination(td::As_Target(newcell));
       }
     }
   }
@@ -3431,3 +3433,5 @@ bool InfantryClass::Is_Infantry() const {
   Validate();
   return true;
 }
+
+}  // namespace td

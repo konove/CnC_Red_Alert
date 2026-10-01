@@ -76,6 +76,8 @@
 #include "base/buffer.h"
 #include "td/net/ipx.h"
 
+namespace td {
+
 IPXAddressClass::IPXAddressClass() noexcept {
   base::At(NetworkNumber, 0) = 0xff;
   base::At(NetworkNumber, 1) = 0xff;
@@ -479,3 +481,5 @@ bool IPXAddressClass::operator<=(IPXAddressClass& addr) {
                             10) <= 0;
 
 } /* end of operator != */
+
+}  // namespace td

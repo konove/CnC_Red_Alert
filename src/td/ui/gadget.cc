@@ -82,6 +82,8 @@
 #include "td/ui/input.h"
 #include "td/ui/link.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 GadgetClass* GadgetClass::StuckOn = nullptr;
@@ -737,3 +739,5 @@ bool GadgetClass::Is_List_To_Redraw() {
   }
   return false;
 }
+
+}  // namespace td

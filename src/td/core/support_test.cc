@@ -9,6 +9,8 @@
 #include "engine/gfx/palette_color.h"
 #include "gtest/gtest.h"
 
+namespace td {
+
 namespace {
 
 using engine::gfx::Palette;
@@ -50,3 +52,5 @@ TEST(ConquerBuildFadingTableTest, CandidateColorsMapToThemselves) {
 }
 
 }  // namespace
+
+}  // namespace td

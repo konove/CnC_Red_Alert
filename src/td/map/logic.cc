@@ -61,6 +61,8 @@
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
 
+namespace td {
+
 LogicClass::~LogicClass() = default;
 
 /***********************************************************************************************
@@ -204,3 +206,5 @@ void LogicClass::AI() {
 
   //	Heap_Dump_Check( "After House AI" );
 }
+
+}  // namespace td

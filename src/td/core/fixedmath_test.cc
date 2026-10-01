@@ -7,6 +7,8 @@
 #include "gtest/gtest.h"
 #include "td/core/jshell.h"
 
+namespace td {
+
 namespace {
 
 // The helpers as they were written before they took signed arguments.
@@ -70,3 +72,5 @@ TEST(FixedPointTest, MatchesLegacyOutsideGameDomain) {
 }
 
 }  // namespace
+
+}  // namespace td

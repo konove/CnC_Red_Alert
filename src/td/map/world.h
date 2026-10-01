@@ -19,6 +19,8 @@
 #include "td/map/logic.h"
 #include "td/screens/score.h"
 
+namespace td {
+
 class HouseClass;
 class ObjectClass;
 
@@ -228,5 +230,7 @@ inline World& TheWorld() { return base::Installed<World>::Get(); }
 // Shorthands for the two pieces of the world the game reads most.
 inline MapEditClass& TheMap() { return TheWorld().map(); }
 inline HouseClass*& ThePlayer() { return TheWorld().player(); }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_MAP_WORLD_H_

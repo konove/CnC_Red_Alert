@@ -88,6 +88,8 @@
 #include "td/net/combuf.h"
 #include "td/net/connect.h"
 
+namespace td {
+
 NonSequencedConnClass::NonSequencedConnClass(int numsend, int numreceive,
                                              int maxlen, uint16_t magicnum,
                                              int32_t retry_delta,
@@ -715,3 +717,5 @@ int NonSequencedConnClass::Service_Receive_Queue() {
 
   return 1;
 }
+
+}  // namespace td

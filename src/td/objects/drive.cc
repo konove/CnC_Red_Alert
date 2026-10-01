@@ -103,6 +103,8 @@
 #include "td/objects/unit.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 DriveClass::DriveClass() = default;
 
 /***********************************************************************************************
@@ -394,7 +396,7 @@ void DriveClass::Exit_Map() {
     cell = XY_Cell(Cell_X(Coord_Cell(Coord)),
                    TheMap().MapCellY + TheMap().MapCellHeight);
     IsReturning = true;
-    Assign_Destination(::As_Target(cell));
+    Assign_Destination(td::As_Target(cell));
   }
 }
 
@@ -1044,7 +1046,7 @@ bool DriveClass::Start_Of_Move() {
         if (TheMap().at(destcell).Overlay != OVERLAY_NONE &&
             OverlayTypeClass::As_Reference(TheMap().at(destcell).Overlay)
                 .IsWall) {
-          Override_Mission(MISSION_ATTACK, ::As_Target(destcell), kTargetNone);
+          Override_Mission(MISSION_ATTACK, td::As_Target(destcell), kTargetNone);
         }
       }
     } else {
@@ -1161,7 +1163,7 @@ bool DriveClass::Start_Of_Move() {
             if (TheMap().at(destcell).Overlay != OVERLAY_NONE &&
                 OverlayTypeClass::As_Reference(TheMap().at(destcell).Overlay)
                     .IsWall) {
-              Override_Mission(MISSION_ATTACK, ::As_Target(destcell),
+              Override_Mission(MISSION_ATTACK, td::As_Target(destcell),
                                kTargetNone);
             }
           }
@@ -2198,3 +2200,5 @@ const DriveClass::TurnTrackType DriveClass::TrackControl[67] = {
     {12, 12, DIR_SW_X2, F_},  // Drive back into refinery.
     {13, 13, DIR_SW, F_}      // Drive out of weapons factory.
 };
+
+}  // namespace td

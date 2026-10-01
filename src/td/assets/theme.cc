@@ -74,6 +74,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 /*
 **	These are the actual filename list for the theme sample files.
 */
@@ -560,3 +562,5 @@ void ThemeClass::Scan() {
     //		}
   }
 }
+
+}  // namespace td

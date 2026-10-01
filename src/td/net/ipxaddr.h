@@ -49,6 +49,8 @@
 
 #include "td/net/ipx.h"  // for NetNumType & NetNodeType
 
+namespace td {
+
 /*
 ***************************** Class Declaration *****************************
 */
@@ -102,6 +104,8 @@ class IPXAddressClass {
   NetNumType NetworkNumber{};
   NetNodeType NodeAddress{};
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_IPXADDR_H_
 /**************************** end of ipxaddr.h *****************************/

@@ -106,6 +106,8 @@
 #include "td/ui/msglist.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 static void Garble_Message(std::span<char> buf);
@@ -1295,3 +1297,5 @@ int Surrender_Dialog() {
 
   return retcode;
 }
+
+}  // namespace td

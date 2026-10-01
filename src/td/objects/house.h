@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_HOUSE_H_
 #define CNC_RED_ALERT_TD_OBJECTS_HOUSE_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -62,6 +59,11 @@ class ArchiveWriter;
 #include "td/objects/target.h"
 #include "td/objects/type.h"
 #include "td/objects/utracker.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 /****************************************************************************
 **	Player control structure. Each player (computer or human) has one of
@@ -620,5 +622,7 @@ class HouseClass {
 };
 extern template void HouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void HouseClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_HOUSE_H_

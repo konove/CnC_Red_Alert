@@ -50,6 +50,8 @@
 #include "td/core/vector.h"
 #include "td/ui/list.h"
 
+namespace td {
+
 /***************************************************************************
 ** This class adds the ability for every list item to have a different color.
 */
@@ -100,5 +102,7 @@ class ColorListClass : public ListClass {
   SelectStyleType Style{SELECT_HIGHLIGHT};
   int SelectColor{-1};
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_COLRLIST_H_

@@ -67,6 +67,8 @@
 #include "td/core/display_constants.h"
 #include "td/core/jshell.h"
 
+namespace td {
+
 FlyClass::~FlyClass() = default;
 
 ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
@@ -137,3 +139,5 @@ void FlyClass::Fly_Speed(int speed, MPHType maximum) {
   SpeedAdd =
       static_cast<MPHType>(Fixed_To_Cardinal(static_cast<int>(maximum), speed));
 }
+
+}  // namespace td

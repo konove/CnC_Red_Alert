@@ -11,6 +11,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "td/core/config.h"
 
+namespace td {
+
 std::span<uint8_t> Conquer_Build_Fading_Table(
     const engine::gfx::Palette& palette,
     std::span<uint8_t> dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color, int frac);
@@ -25,5 +27,7 @@ inline void Check_Ptr(const void* ptr, std::source_location loc =
                           << ", line:" << loc.line();
   }
 }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_SUPPORT_H_

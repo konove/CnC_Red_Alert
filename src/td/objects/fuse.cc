@@ -60,6 +60,8 @@
 #include "td/core/display_constants.h"
 #include "td/core/inline.h"
 
+namespace td {
+
 FuseClass::FuseClass() = default;
 
 /***********************************************************************************************
@@ -146,3 +148,5 @@ bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
   }
   return false;
 }
+
+}  // namespace td

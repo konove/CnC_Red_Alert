@@ -43,6 +43,8 @@
 
 #include <cstdint>
 
+namespace td {
+
 class StageClass {
   // The animation state is mutable because a firing animation restarts from
   // const queries: UnitClass::Can_Fire() const resets the stage and rate when
@@ -105,5 +107,7 @@ class StageClass {
   void Code_Pointers() {}
   void Decode_Pointers() {}
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_STAGE_H_

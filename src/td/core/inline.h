@@ -10,6 +10,8 @@
 #include "td/core/display_constants.h"
 #include "td/core/face.h"
 
+namespace td {
+
 // Extracts the lower 16 bits (low word) from an integer.
 template <std::integral T>
 [[nodiscard]] constexpr uint16_t LowWord(T value) {
@@ -258,5 +260,7 @@ inline int Distance(CELL coord1, CELL coord2) {
   }
   return diff2 + (diff1 / 2);
 }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_INLINE_H_

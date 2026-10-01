@@ -43,6 +43,8 @@
 #ifndef CNC_RED_ALERT_TD_AI_SPECIAL_H_
 #define CNC_RED_ALERT_TD_AI_SPECIAL_H_
 
+namespace td {
+
 class SpecialClass {
  public:
   void Init() {
@@ -251,5 +253,7 @@ void Special_Dialog();
 inline SpecialClass& TheSpecial() {
   return base::Installed<SpecialClass>::Get();
 }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_AI_SPECIAL_H_

@@ -45,6 +45,8 @@
 #include "engine/window/keyboard.h"
 #include "td/map/help.h"
 
+namespace td {
+
 class ScrollClass : public HelpClass {
   /*
   **	If map scrolling is automatic, then this flag is true. Automatic
@@ -88,5 +90,7 @@ class ScrollClass : public HelpClass {
   **	File I/O.
   */
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_MAP_SCROLL_H_

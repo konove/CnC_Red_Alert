@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_TERRAIN_H_
 #define CNC_RED_ALERT_TD_OBJECTS_TERRAIN_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 #include <span>
 #include <string>
@@ -56,6 +53,11 @@ class ArchiveWriter;
 #include "td/objects/stage.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 /****************************************************************************
 **	Each type of terrain has certain pieces of static information associated
@@ -197,5 +199,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
 
 extern template void TerrainClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TerrainClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_TERRAIN_H_

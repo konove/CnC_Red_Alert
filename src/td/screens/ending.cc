@@ -71,6 +71,8 @@
 #include "td/startup/winstub.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 void GDI_Ending() {
 #ifdef DEMO
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
@@ -310,3 +312,5 @@ void Nod_Ending() {
   Play_Movie("CC2TEASE");
 }
 #endif
+
+}  // namespace td

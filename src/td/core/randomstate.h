@@ -4,6 +4,8 @@
 
 #include <cstdint>
 
+namespace td {
+
 struct TdRandomState {
   uint32_t gameplay = 0;
   uint32_t byte_stream = 0;
@@ -26,5 +28,7 @@ int GameRandomRange(int low, int high);
 int GameRandomDraw();
 TdRandomState CaptureRandomState();
 void RestoreRandomState(const TdRandomState& state);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_RANDOMSTATE_H_

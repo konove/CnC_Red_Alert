@@ -68,6 +68,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 #define TREE_NORMAL 600
 // #define TREE_WEAK 400
 // #define TREE_STRONG 800
@@ -811,3 +813,5 @@ std::span<const int16_t> TerrainTypeClass::Overlap_List() const {
   static const int16_t _simple[1] = {REFRESH_EOL};
   return _simple;
 }
+
+}  // namespace td

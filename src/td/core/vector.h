@@ -66,6 +66,8 @@
 #include "base/numeric.h"
 #include "base/types.h"
 
+namespace td {
+
 // IWYU pragma: no_include "td/objects/cell.h"
 // IWYU pragma: no_include "td/net/nodename.h"
 // IWYU pragma: no_include "td/objects/object.h"
@@ -189,7 +191,6 @@ class DynamicVectorClass : public VectorClass<T> {
     return this->Elements().first(base::ToSize(ActiveCount));
   }
 
-
   // Add object to vector (growing as necessary).
   bool Add(const T& object);
   bool Add_Head(const T& object);
@@ -272,5 +273,7 @@ extern template class DynamicVectorClass<char*>;
 extern template class DynamicVectorClass<unsigned char*>;
 extern template class DynamicVectorClass<const char*>;
 extern template class DynamicVectorClass<void*>;
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_VECTOR_H_

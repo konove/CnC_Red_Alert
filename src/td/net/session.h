@@ -14,6 +14,8 @@
 #include "td/core/vector.h"
 #include "td/ui/msglist.h"
 
+namespace td {
+
 // What kind of game is being played and, when it is a multiplayer one, who
 // is in it and under what rules. Red Alert gathers the same state into a
 // SessionClass of its own; Tiberian Dawn kept it in three dozen MPlayer*
@@ -263,5 +265,7 @@ class SessionClass {
 inline SessionClass& TheSession() {
   return base::Installed<SessionClass>::Get();
 }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_SESSION_H_

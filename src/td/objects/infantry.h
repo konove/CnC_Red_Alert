@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_INFANTRY_H_
 #define CNC_RED_ALERT_TD_OBJECTS_INFANTRY_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -63,6 +60,11 @@ class ArchiveWriter;
 #include "td/objects/radio.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 /**********************************************************************
 **	Infantry can be afraid. These defines are for the various infantry
@@ -272,5 +274,7 @@ class InfantryClass final : public FootClass {
 
 extern template void InfantryClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void InfantryClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_INFANTRY_H_

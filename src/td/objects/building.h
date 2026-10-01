@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_BUILDING_H_
 #define CNC_RED_ALERT_TD_OBJECTS_BUILDING_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -62,6 +59,11 @@ class ArchiveWriter;
 #include "td/objects/radio.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 #define MAX_DOOR_STAGE 18  // # of frames of door opening on weapons factory
 #define DOOR_OPEN_STAGE 9  // frame on which the door is entirely open
@@ -331,5 +333,7 @@ class BuildingClass final : public TechnoClass {
 
 extern template void BuildingClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void BuildingClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_BUILDING_H_

@@ -63,6 +63,8 @@
 #include "td/map/scroll.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 /*
 **	This points to the loaded mouse shapes.
 */
@@ -362,3 +364,5 @@ base::EnumArray<MouseType, MouseClass::MouseStruct, kMouseCount>
         {122, 3, 4, 127, 15, 12},  //	MOUSE_DEMOLITIONS
         {153, 1, 0, 152, 15, 12},  //	MOUSE_AREA_GUARD
     }};
+
+}  // namespace td

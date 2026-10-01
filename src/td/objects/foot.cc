@@ -141,6 +141,8 @@
 #include "td/startup/game_state.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 /***********************************************************************************************
  * FootClass::FootClass -- Default constructor for foot class objects. *
  *                                                                                             *
@@ -357,7 +359,7 @@ bool FootClass::Basic_Path() {
     if (Can_Enter_Cell(cell) == MOVE_NO && Distance(NavCom) > 0x0300) {
       static const int _faceadjust[8] = {0, 1, -1, 2, -2, 3, -3, 4};
       const auto f2 = static_cast<FacingType>(
-          static_cast<unsigned>(::Direction(cell, Coord_Cell(Coord))) >> 5);
+          static_cast<unsigned>(td::Direction(cell, Coord_Cell(Coord))) >> 5);
 
       for (const int index : _faceadjust) {
         CELL const cell2 =
@@ -922,7 +924,7 @@ void FootClass::Approach_Target() {
           trycoord =
               Coord_Move(tcoord, dir + _angle, static_cast<uint16_t>(range));
 
-          if (::Distance(trycoord, tcoord) < range) {
+          if (td::Distance(trycoord, tcoord) < range) {
             trycell = Coord_Cell(trycoord);
             if (Can_Enter_Cell(trycell) <= MOVE_CLOAK &&
                 TheMap().In_Radar(trycell)) {
@@ -941,7 +943,7 @@ void FootClass::Approach_Target() {
       *it. *	Otherwise, head toward the enemy unit directly.
       */
       if (found) {
-        Assign_Destination(::As_Target(trycell));
+        Assign_Destination(td::As_Target(trycell));
       } else {
         Assign_Destination(TarCom);
       }
@@ -978,7 +980,7 @@ int FootClass::Mission_Guard_Area() {
   **	Ensure that the archive target is valid.
   */
   if (!Target_Legal(ArchiveTarget)) {
-    ArchiveTarget = ::As_Target(Coord_Cell(Coord));
+    ArchiveTarget = td::As_Target(Coord_Cell(Coord));
   }
 
   /*
@@ -1309,7 +1311,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
 void FootClass::Active_Click_With(ActionType action, CELL cell) {
   switch (action) {
     case ACTION_HARVEST:
-      Player_Assign_Mission(MISSION_HARVEST, kTargetNone, ::As_Target(cell));
+      Player_Assign_Mission(MISSION_HARVEST, kTargetNone, td::As_Target(cell));
       break;
 
     case ACTION_MOVE:
@@ -1323,12 +1325,12 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
 
     case ACTION_NOMOVE:
       if (What_Am_I() != RTTI_AIRCRAFT || TheMap().at(cell).IsVisible) {
-        Player_Assign_Mission(MISSION_MOVE, kTargetNone, ::As_Target(cell));
+        Player_Assign_Mission(MISSION_MOVE, kTargetNone, td::As_Target(cell));
       }
       break;
 
     case ACTION_ATTACK:
-      Player_Assign_Mission(MISSION_ATTACK, ::As_Target(cell));
+      Player_Assign_Mission(MISSION_ATTACK, td::As_Target(cell));
       break;
     case ActionType::ACTION_NONE:
     case ActionType::ACTION_ENTER:
@@ -1545,7 +1547,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     */
     case RADIO_MOVE_HERE:
       if (NavCom != static_cast<TARGET>(param)) {
-        if (::As_Target(Coord_Cell(Coord)) == static_cast<TARGET>(param)) {
+        if (td::As_Target(Coord_Cell(Coord)) == static_cast<TARGET>(param)) {
           return RADIO_YEA_NOW_WHAT;
         }
         if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
@@ -2086,3 +2088,5 @@ COORDINATE FootClass::Likely_Coord() const {
   }
   return Target_Coord();
 }
+
+}  // namespace td

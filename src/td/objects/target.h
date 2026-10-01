@@ -44,6 +44,8 @@
 #include "td/core/defines.h"
 #include "td/objects/object.h"
 
+namespace td {
+
 /**************************************************************************
 ** When a unit proceeds with carrying out its mission, it can have several
 **	intermediate goals. Each goal (or target if you will) can be one of the
@@ -193,5 +195,7 @@ TriggerClass* As_Trigger(TARGET target);
 UnitClass* As_Unit(TARGET target);
 inline bool Target_Legal(TARGET target) { return target != kTargetNone; }
 ObjectClass* As_Object(TARGET target);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_TARGET_H_

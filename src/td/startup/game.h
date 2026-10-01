@@ -25,6 +25,8 @@
 #include "td/startup/winstub.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 // Owns the game's subsystems and so fixes the order they are built and torn
 // down in. Members are declared in dependency order, which C++ constructs
 // front to back and destroys back to front; each one is installed with
@@ -100,5 +102,7 @@ class Game {
   DebugState debug_state_;
   base::Installed<DebugState>::Scope debug_state_scope_{debug_state_};
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_STARTUP_GAME_H_

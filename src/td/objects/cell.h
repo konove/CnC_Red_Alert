@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_CELL_H_
 #define CNC_RED_ALERT_TD_OBJECTS_CELL_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstdint>
 
 #include "absl/base/attributes.h"
@@ -57,6 +54,11 @@ class ArchiveWriter;
 #include "td/objects/techno.h"
 #include "td/objects/terrain.h"
 #include "td/objects/unit.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 /****************************************************************************
 **	Each cell on the map is controlled by the following structure.
@@ -218,7 +220,7 @@ class CellClass {
     return Closest_Free_Spot(Cell_Coord());
   }
   [[nodiscard]] bool Is_Generally_Clear() const;
-  [[nodiscard]] TARGET As_Target() const { return ::As_Target(Cell_Number()); }
+  [[nodiscard]] TARGET As_Target() const { return td::As_Target(Cell_Number()); }
   [[nodiscard]] BuildingClass* Cell_Building() const;
   // Returns the cell adjacent to this one in direction `face`, or this cell
   // itself when `face` is invalid or the neighbour lies outside the map.
@@ -292,5 +294,7 @@ class CellClass {
 
 extern template void CellClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void CellClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_CELL_H_

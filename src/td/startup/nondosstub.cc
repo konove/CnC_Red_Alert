@@ -44,6 +44,8 @@
 #include "td/startup/game_state.h"
 #include "td/startup/winstub.h"
 
+namespace td {
+
 static ThemeType OldTheme = THEME_NONE;
 
 /***********************************************************************************************
@@ -256,3 +258,5 @@ std::unique_ptr<PixelBuffer> Read_PCX_File(const char* name,
   }
   return pic;
 }
+
+}  // namespace td

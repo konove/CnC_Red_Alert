@@ -36,6 +36,8 @@
 #include "td/objects/unit.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 // The frame counter and the object heaps every suite in this binary needs;
 // Game owns them in the real game.
 namespace {
@@ -352,3 +354,5 @@ TEST_F(TdArchiveRoundTripTest, TruncatedCellHouseAndUnitRecordsFail) {
   check(*unit);
 }
 }  // namespace
+
+}  // namespace td

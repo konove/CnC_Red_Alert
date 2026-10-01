@@ -56,6 +56,8 @@
 #include "engine/file/profile_buffer.h"
 #include "td/core/defines.h"
 
+namespace td {
+
 bool Read_Private_Config_Struct(char* profile, NewConfigType* config) {
   config->DigitCard = WWGetPrivateProfileHex("Sound", "Card", profile);
   config->IRQ = static_cast<unsigned>(
@@ -116,3 +118,5 @@ void WWWritePrivateProfileString(const char* section, const char* entry,
     engine::file::WriteProfile(profile, section, entry, string);
   }
 }
+
+}  // namespace td

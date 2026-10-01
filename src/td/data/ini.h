@@ -4,11 +4,15 @@
 #include "td/core/defines.h"
 #include "td/objects/object.h"
 
+namespace td {
+
 void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
                        ScenarioDirType dir = SCEN_DIR_NONE,
                        ScenarioVarType var = SCEN_VAR_NONE);
 void Write_Scenario_Ini(const char* root);
 bool Read_Scenario_Ini(const char* root, bool fresh = true);
 bool Scan_Place_Object(ObjectClass* obj, CELL cell);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_DATA_INI_H_

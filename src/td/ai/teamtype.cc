@@ -85,6 +85,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 /*
 ********************************** Globals **********************************
 */
@@ -970,3 +972,5 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
 
   return best;
 }
+
+}  // namespace td

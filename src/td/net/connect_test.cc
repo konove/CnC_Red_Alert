@@ -13,6 +13,8 @@
 #include "td/net/combuf.h"
 #include "td/net/noseqcon.h"
 
+namespace td {
+
 namespace {
 
 constexpr uint16_t kMagic = 0x1234;
@@ -200,3 +202,5 @@ TEST(CommBufferTest, ShortDestinationLeavesThePacketQueued) {
 }
 
 }  // namespace
+
+}  // namespace td

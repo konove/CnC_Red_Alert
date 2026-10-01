@@ -45,6 +45,11 @@
 #include "td/objects/foot.h"
 #include "td/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
+
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects
 **	cover everything except buildings.
@@ -218,9 +223,9 @@ class DriveClass : public FootClass {
   static const TrackType Track1[24];
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void DriveClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void DriveClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_DRIVE_H_

@@ -66,6 +66,8 @@
 #include "td/ui/input.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 #define kOptionWidth 236
@@ -305,3 +307,5 @@ void Special_Dialog() {
   TheMap().Flag_To_Redraw(true);
   TheMap().Render();
 }
+
+}  // namespace td

@@ -12,6 +12,8 @@
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 
+namespace td {
+
 // Word wraps `string` in place so that no line exceeds `max_line_len` pixels
 // in `font`, writing '\r' at each break. `width` and `height` receive the
 // size of the wrapped text. Returns the number of lines.
@@ -71,5 +73,7 @@ TextStyle TextStyleFor(TextPrintType flag, int fore = kTBlack,
 
 void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
                        int fore, int back, TextPrintType flag);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_DIALOG_H_

@@ -59,6 +59,8 @@
 #include "td/map/help.h"
 #include "td/screens/goptions.h"
 
+namespace td {
+
 #define SCROLL_DELAY 1
 
 engine::platform::Timer<engine::platform::SystemTickSource>
@@ -267,3 +269,5 @@ bool ScrollClass::Set_Autoscroll(int control) {
   }
   return old;
 }
+
+}  // namespace td

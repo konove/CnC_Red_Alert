@@ -151,6 +151,8 @@
 #include "td/startup/game_state.h"
 #include "td/ui/dialog.h"
 
+namespace td {
+
 std::span<const std::byte> ObjectTypeClass::SelectShapes = {};
 
 std::span<const std::byte> ObjectTypeClass::PipShapes = {};
@@ -1456,3 +1458,5 @@ int ObjectClass::Health_Ratio() const {
   return Cardinal_To_Fixed(Class_Of().MaxStrength, Strength);
 }
 int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); }
+
+}  // namespace td

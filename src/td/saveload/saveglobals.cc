@@ -7,6 +7,8 @@
 #include "td/map/layer.h"
 #include "td/saveload/serialize.h"
 
+namespace td {
+
 template <class Archive>
 void BaseClass::Serialize(Archive& ar) {
   ar.Section(FourCC("BASE"));
@@ -48,3 +50,5 @@ void LayerClass::Serialize(Archive& ar) {
 }
 template void LayerClass::Serialize(ArchiveWriter&);
 template void LayerClass::Serialize(ArchiveReader&);
+
+}  // namespace td

@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_ANIM_H_
 #define CNC_RED_ALERT_TD_OBJECTS_ANIM_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -54,6 +51,11 @@ class ArchiveWriter;
 #include "td/objects/object.h"
 #include "td/objects/stage.h"
 #include "td/objects/type.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 /**********************************************************************************************
 **	This is the class that controls the shape animation objects. Shape
@@ -200,5 +202,7 @@ void Shorten_Attached_Anims(const ObjectClass* obj);
 
 extern template void AnimClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void AnimClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_ANIM_H_

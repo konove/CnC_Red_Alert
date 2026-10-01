@@ -74,6 +74,8 @@
 #include "td/ui/gadget.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
     : ControlClass(static_cast<unsigned>(id), x, y, w, h,
                    kLeftPress | kLeftHeld | kLeftRelease, true),
@@ -320,3 +322,5 @@ void Dial8Class::Set_Direction(DirType dir) {
   OldFacing = Facing;
   Flag_To_Redraw();
 }
+
+}  // namespace td

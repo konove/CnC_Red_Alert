@@ -71,6 +71,8 @@
 #include "td/objects/techno.h"
 #include "td/objects/unit.h"
 
+namespace td {
+
 /***********************************************************************************************
  * As_Trigger -- Converts specified target into a trigger pointer. *
  *                                                                                             *
@@ -507,3 +509,5 @@ COORDINATE As_Movement_Coord(TARGET target) {
   */
   return 0x00000000L;
 }
+
+}  // namespace td

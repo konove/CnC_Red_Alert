@@ -9,6 +9,8 @@
 #include "base/installed.h"
 #include "td/core/defines.h"
 
+namespace td {
+
 // The developer and cheat switches, all of which start off. The command line
 // turns some of them on before the game starts (see Parse_Command_Line()),
 // and the debug keys in debug.cc, the map editor and the mission code toggle
@@ -134,5 +136,7 @@ class DebugState {
 inline DebugState& TheDebugState() {
   return base::Installed<DebugState>::Get();
 }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_DEBUG_DEBUG_STATE_H_

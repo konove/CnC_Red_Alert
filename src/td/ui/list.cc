@@ -85,6 +85,8 @@
 #include "td/ui/shapebtn.h"
 #include "td/ui/slider.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 /***************************************************************************
@@ -869,3 +871,5 @@ int ListClass::Step_Selected_Index(int step) {
   Set_Selected_Index(old + step);
   return old;
 }
+
+}  // namespace td

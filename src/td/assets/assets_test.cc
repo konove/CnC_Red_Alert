@@ -14,6 +14,9 @@
 // LoadFonts() and LoadStrings() are not run here; these stand in for the game
 // code they call, which would pull in most of the engine.
 class ByteStream;
+
+namespace td {
+
 // NOLINTBEGIN(misc-use-internal-linkage): these satisfy other units' externs.
 std::vector<std::byte> LoadAllocData(ByteStream& file);
 std::vector<std::byte> LoadAllocData(ByteStream& /*file*/) { return {}; }
@@ -49,3 +52,5 @@ TEST(AssetsTest, TheAssetsReturnsTheInstalledAssets) {
 }
 
 }  // namespace
+
+}  // namespace td

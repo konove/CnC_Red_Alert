@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_FACTORY_H_
 #define CNC_RED_ALERT_TD_OBJECTS_FACTORY_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 
 #include "absl/base/attributes.h"
@@ -51,6 +48,11 @@ class ArchiveWriter;
 #include "td/objects/stage.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 class FactoryClass : StageClass {
  public:
@@ -164,5 +166,7 @@ class FactoryClass : StageClass {
 
 extern template void FactoryClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void FactoryClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_FACTORY_H_

@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_BULLET_H_
 #define CNC_RED_ALERT_TD_OBJECTS_BULLET_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -57,6 +54,11 @@ class ArchiveWriter;
 #include "td/objects/object.h"
 #include "td/objects/type.h"
 #include "td/startup/game_state.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
  public:
@@ -181,5 +183,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
 
 extern template void BulletClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void BulletClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_BULLET_H_

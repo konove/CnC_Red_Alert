@@ -113,6 +113,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 #define BARNACLE_STAGE 22
@@ -853,3 +855,5 @@ void TerrainClass::Write_INI(std::string& buffer) {
     }
   }
 }
+
+}  // namespace td

@@ -45,6 +45,8 @@
 #include "td/core/defines.h"
 #include "td/objects/type.h"
 
+namespace td {
+
 const base::EnumArray<SourceType, const char*, kSourceCount> SourceName = {
     "North", "East",    "South",     "West",     "Shipping", "Beach",
     "Air",   "Visible", "EnemyBase", "HomeBase", "Ocean",
@@ -587,3 +589,5 @@ const unsigned char RemapNone[256] = {
     240, 241, 242, 243, 244, 245, 246, 247,
     248, 249, 250, 251, 252, 253, 254, 255  // 240..255
 };
+
+}  // namespace td

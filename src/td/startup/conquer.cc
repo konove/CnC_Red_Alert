@@ -181,6 +181,8 @@
 #include "td/startup/ccdde.h"
 #endif
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 using enum engine::window::KeyNumber;
 
@@ -3231,3 +3233,5 @@ std::span<const std::byte> Hires_Retrieve(const char* name) {
 // The static sidebar buttons call this during static initialization, before
 // there is a Screen, so it must not ask one.
 int Get_Resolution_Factor() { return Screen::kWidth == 320 ? 0 : 1; }
+
+}  // namespace td

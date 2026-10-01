@@ -46,6 +46,8 @@
 #include "td/core/defines.h"
 #include "td/ui/control.h"
 
+namespace td {
+
 class Dial8Class : public ControlClass {
  public:
   /*
@@ -80,5 +82,7 @@ class Dial8Class : public ControlClass {
   FacingType Facing;     // numerical facing direction of dial (0 - 7)
   FacingType OldFacing;  // previous Facing value
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_DIAL8_H_

@@ -63,6 +63,8 @@
 #include "td/ui/input.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 bool ConfirmationClass::Process(int text) { return Process(Text_String(text)); }
@@ -158,7 +160,6 @@ bool ConfirmationClass::Process(const char* string) {
         result = false;
       }
     }
-
 
     /*
     **	Refresh display if needed.
@@ -258,3 +259,5 @@ bool ConfirmationClass::Process(const char* string) {
   }
   return result;
 }
+
+}  // namespace td

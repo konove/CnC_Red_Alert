@@ -162,6 +162,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 /*
@@ -823,7 +825,7 @@ void AircraftClass::AI() {
       */
       bool ok = true;
       if ((In_Which_Layer() == LAYER_GROUND) &&
-          (!Is_LZ_Clear(::As_Target(Coord_Cell(Coord))))) {
+          (!Is_LZ_Clear(td::As_Target(Coord_Cell(Coord))))) {
         IsTakingOff = true;
         Altitude++;
         ok = false;
@@ -1179,7 +1181,7 @@ int AircraftClass::Mission_Unload() {
         } else {
           if (!Is_LZ_Clear(NavCom)) {
             Assign_Destination(New_LZ(
-                ::As_Target(base::At(TheWorld().waypoint(), kWayptReinf))));
+                td::As_Target(base::At(TheWorld().waypoint(), kWayptReinf))));
           } else {
             if (Altitude == kFlightLevel) {
               Status = kFlyToLz;
@@ -1508,7 +1510,7 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   */
   if (unit->Unlimbo(Coord, Facing_Dir(_toface.at(face)))) {
     unit->Assign_Mission(MISSION_MOVE);
-    unit->Assign_Destination(::As_Target(cell));
+    unit->Assign_Destination(td::As_Target(cell));
     if (Transmit_Message(RADIO_HELLO, unit) == RADIO_ROGER) {
       Transmit_Message(RADIO_UNLOAD);
     }
@@ -1762,7 +1764,7 @@ int AircraftClass::Mission_Move() {
         }
 
         SecondaryFacing.Set_Desired(
-            ::Direction(Fire_Coord(0), As_Coord(NavCom)));
+            td::Direction(Fire_Coord(0), As_Coord(NavCom)));
       } else {
         Assign_Destination(New_LZ(NavCom));
         if (!Target_Legal(NavCom)) {
@@ -2015,7 +2017,7 @@ void AircraftClass::Active_Click_With(ActionType action, CELL cell) {
   switch (action) {
     case ACTION_MOVE:
       if (TheMap()[cell].IsVisible) {
-        Player_Assign_Mission(MISSION_MOVE, kTargetNone, ::As_Target(cell));
+        Player_Assign_Mission(MISSION_MOVE, kTargetNone, td::As_Target(cell));
       }
       break;
 
@@ -2023,7 +2025,7 @@ void AircraftClass::Active_Click_With(ActionType action, CELL cell) {
       break;
 
     case ACTION_ATTACK:
-      Player_Assign_Mission(MISSION_ATTACK, ::As_Target(cell));
+      Player_Assign_Mission(MISSION_ATTACK, td::As_Target(cell));
       break;
   }
 #endif
@@ -2267,7 +2269,7 @@ int AircraftClass::Mission_Attack() {
           }
         } else {
           SecondaryFacing.Set_Desired(
-              ::Direction(Fire_Coord(0), As_Coord(NavCom)));
+              td::Direction(Fire_Coord(0), As_Coord(NavCom)));
           return 1;
         }
       } else {
@@ -2420,7 +2422,7 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
             Coord_Move(coord, Facing_Dir(facing + modifier),
                        static_cast<uint16_t>(radius * ICON_LEPTON_W)));
         if (TheMap().In_Radar(newcell)) {
-          const TARGET newtarget = ::As_Target(newcell);
+          const TARGET newtarget = td::As_Target(newcell);
 
           if (newcell != lastcell && Is_LZ_Clear(newtarget) &&
               Cell_Seems_Ok(newcell)) {
@@ -2585,7 +2587,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
             if (cell == 0) {
               Transmit_Message(RADIO_OVER_OUT, from);
             } else {
-              param = static_cast<int32_t>(::As_Target(cell));
+              param = static_cast<int32_t>(td::As_Target(cell));
 
               /*
               **	Tell the potential passenger where it should go. If the
@@ -2887,9 +2889,9 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
     */
     if (bestval != -1) {
       if (Random_Pick(0, 1) == 0) {
-        return ::As_Target(bestcell);
+        return td::As_Target(bestcell);
       }
-      return ::As_Target(best2cell);
+      return td::As_Target(best2cell);
     }
   }
   return kTargetNone;
@@ -2922,7 +2924,7 @@ bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
   **	Make sure that no other aircraft are heading to the selected location.
   *If they *	are, then don't consider the location as valid.
   */
-  const TARGET astarget = ::As_Target(cell);
+  const TARGET astarget = td::As_Target(cell);
   for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
     const AircraftClass* air = TheObjectHeaps().aircraft().Ptr(index);
     if ((air && (strict || air != this) && !air->IsInLimbo) &&
@@ -3056,7 +3058,7 @@ int AircraftClass::Mission_Enter() {
           break;
         }
         SecondaryFacing.Set_Desired(
-            ::Direction(Fire_Coord(0), As_Coord(NavCom)));
+            td::Direction(Fire_Coord(0), As_Coord(NavCom)));
         return 3;
       }
       break;
@@ -3166,13 +3168,13 @@ TARGET AircraftClass::Good_LZ() const {
   **	Return with the suitable location if one was found.
   */
   if (bestdist != -1) {
-    return ::As_Target(bestcell);
+    return td::As_Target(bestcell);
   }
 
   /*
   **	No good location was found. Just try to land here.
   */
-  return ::As_Target(Coord_Cell(Coord));
+  return td::As_Target(Coord_Cell(Coord));
 }
 
 /***********************************************************************************************
@@ -3361,7 +3363,7 @@ int AircraftClass::Mission_Guard() {
     }
 
     if (Class->Primary == WEAPON_NONE) {
-      Assign_Destination(::As_Target(Coord_Cell(Coord)));
+      Assign_Destination(td::As_Target(Coord_Cell(Coord)));
       Assign_Mission(MISSION_MOVE);
     } else {
       Enter_Idle_Mode();
@@ -3561,3 +3563,5 @@ void AircraftClass::Response_Select() {
     Sound_Effect(response, 0, -(TheObjectHeaps().aircraft().ID(this) + 1));
   }
 }
+
+}  // namespace td

@@ -56,6 +56,8 @@
 #include "td/core/defines.h"
 #include "td/objects/object.h"
 
+namespace td {
+
 /**********************************************************************
 **	This is the constant data associated with a weapon. Some objects
 **	can have multiple weapons and this class is used to isolate and
@@ -1921,5 +1923,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
   static const base::EnumArray<SmudgeType, const SmudgeTypeClass*, kSmudgeCount>
       Pointers;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_TYPE_H_

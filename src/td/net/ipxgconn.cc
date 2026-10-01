@@ -87,6 +87,8 @@
 #include "td/net/ipxaddr.h"
 #include "td/net/ipxconn.h"
 
+namespace td {
+
 IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
                                        uint16_t product_id)
     : IPXConnClass(numsend, numreceive,
@@ -525,3 +527,5 @@ void IPXGlobalConnClass::Set_Bridge(const NetNumType& bridge) {
     IsBridge = 1;
   }
 }
+
+}  // namespace td

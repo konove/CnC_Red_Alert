@@ -67,6 +67,8 @@
 #include "td/objects/target.h"
 #include "td/objects/type.h"
 
+namespace td {
+
 /***********************************************************************************************
  * TurretClass::TurretClass -- Normal constructor for the turret class. *
  *                                                                                             *
@@ -454,3 +456,5 @@ DirType TurretClass::Fire_Direction() const {
 
   return PrimaryFacing.Current();
 }
+
+}  // namespace td

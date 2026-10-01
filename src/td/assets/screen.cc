@@ -5,6 +5,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/display.h"
 
+namespace td {
+
 // The views start out covering a 640x480 page that does not exist yet, as the
 // original globals did; Init() attaches them to the real game area.
 Screen::Screen()
@@ -34,3 +36,5 @@ bool Screen::Init() {
   hidden_view_.Attach(&hidden_page_, 0, letterbox_top, kWidth, kHeight);
   return true;
 }
+
+}  // namespace td

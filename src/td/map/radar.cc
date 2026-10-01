@@ -128,6 +128,8 @@
 #include "td/ui/input.h"
 #include "td/ui/shapebtn.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 // void const * RadarClass::CoverShape;
@@ -825,7 +827,6 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, CELL cell) {
     cell = 1;
   }
 
-
   /*
   **	Perform any clipping on the cell coordinate.
   */
@@ -1429,7 +1430,6 @@ bool RadarClass::TacticalClass::Action(unsigned flags,
     return true;
   }
 
-
   const int result = TheMap().Click_In_Radar(x, y, false);
 
   if (result == 1) {
@@ -1945,3 +1945,5 @@ void RadarClass::Draw_Names(PixelView& view) const {
     }
   }
 }
+
+}  // namespace td

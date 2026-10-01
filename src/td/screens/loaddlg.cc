@@ -94,6 +94,8 @@
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 /***********************************************************************************************
  * LoadOptionsClass::LoadOptionsClass -- class constructor *
  *                                                                                             *
@@ -303,7 +305,6 @@ bool LoadOptionsClass::Process() {
         cancel = true;
       }
     }
-
 
     /*
     **	Refresh display if needed.
@@ -667,3 +668,4 @@ int LoadOptionsClass::Num_From_Ext(const char* fname) {
   return num;
 }
 
+}  // namespace td

@@ -17,6 +17,8 @@
 #include "gtest/gtest.h"
 #include "td/startup/winstub.h"
 
+namespace td {
+
 namespace {
 
 // A two-pixel, one-row PCX file, removed when the test finishes.
@@ -173,3 +175,5 @@ TEST(PcxTest, RejectsTruncatedPadding) {
 }
 
 }  // namespace
+
+}  // namespace td

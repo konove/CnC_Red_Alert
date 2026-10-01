@@ -85,6 +85,8 @@
 #include "td/startup/game_state.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 #ifndef DEMO
 
 void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
@@ -615,7 +617,6 @@ void Map_Selection() {
     Call_Back_Delay(show, 4);
   }
   greyearth2.Close();
-
 
   /*
   ** Copy the first frame up to the seenpage (while screen is black)
@@ -1728,3 +1729,5 @@ void Bit_It_In(Presentation& show, const int x, const int y, const int w,
     }
   }
 }
+
+}  // namespace td

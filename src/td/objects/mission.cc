@@ -75,6 +75,8 @@
 #include "td/core/jshell.h"
 #include "td/objects/object.h"
 
+namespace td {
+
 MissionClass::MissionClass() { MissionTimer.Set(0); }
 
 int MissionClass::Mission_Sleep() { return kTicksPerSecond * 30; }
@@ -413,3 +415,5 @@ base::EnumArray<MissionType, const char*, kMissionCount>
         "Unload", "Sabotage", "Construction", "Selling", "Repair",
         "Rescue", "Missile",
 };
+
+}  // namespace td

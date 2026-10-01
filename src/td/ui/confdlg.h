@@ -39,6 +39,8 @@
 #ifndef CNC_RED_ALERT_TD_UI_CONFDLG_H_
 #define CNC_RED_ALERT_TD_UI_CONFDLG_H_
 
+namespace td {
+
 class ConfirmationClass {
  private:
   static constexpr int kButtonYes = 1;  // Button number for "Options menu"
@@ -49,5 +51,7 @@ class ConfirmationClass {
   static bool Process(const char* string);
   static bool Process(int text);
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_CONFDLG_H_

@@ -83,6 +83,8 @@
 #include "td/objects/object.h"
 #include "td/objects/type.h"
 
+namespace td {
+
 bool BaseNodeClass::operator==(const BaseNodeClass& node) const {
   return Type == node.Type && Coord == node.Coord;
 }
@@ -372,3 +374,5 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
 
   return nullptr;
 }
+
+}  // namespace td

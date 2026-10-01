@@ -59,6 +59,11 @@
 #include "td/objects/stage.h"
 #include "td/objects/type.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
+
 /****************************************************************************
 **	This is the common data between building and units.
 */
@@ -302,7 +307,6 @@ class TechnoClass : public RadioClass,
   template <class Archive>
   void Serialize(Archive& ar);
 
-
   /*
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
@@ -344,9 +348,9 @@ class TechnoClass : public RadioClass,
   //		static int const TurretShape[32];
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void TechnoClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TechnoClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_TECHNO_H_

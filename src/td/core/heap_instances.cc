@@ -18,6 +18,8 @@
 #include "td/objects/terrain.h"
 #include "td/objects/unit.h"
 
+namespace td {
+
 // Every object heap now declares its own field-wise serializer.
 static_assert(Serializable<AircraftClass>);
 static_assert(Serializable<BuildingClass>);
@@ -46,3 +48,5 @@ template class TFixedIHeapClass<TriggerClass>;
 template class TFixedIHeapClass<UnitClass>;
 
 template class TFixedIHeapClass<TeamTypeClass>;
+
+}  // namespace td

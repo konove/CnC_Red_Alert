@@ -12,6 +12,8 @@
 #include "td/ui/msglist.h"
 #include "td/ui/txtlabel.h"
 
+namespace td {
+
 namespace {
 
 // Measuring a list item reads the font it is printed in, which Game installs
@@ -167,3 +169,5 @@ TEST(TdMessageListTest, MatchingCrcDoesNotMergeDifferentPlayers) {
 }
 
 }  // namespace
+
+}  // namespace td

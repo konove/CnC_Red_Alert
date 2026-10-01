@@ -47,6 +47,11 @@
 #include "td/core/game_clock.h"
 #include "td/objects/object.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
+
 /****************************************************************************
 **	This handles order assignment and tracking. The order is used to guide
 **	overall AI processing.
@@ -126,7 +131,6 @@ class MissionClass : public ObjectClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-
  private:
   /*
   **	This the thread processing timer. When this value counts down to zero,
@@ -140,9 +144,9 @@ class MissionClass : public ObjectClass {
   static base::EnumArray<MissionType, const char*, kMissionCount> Missions;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void MissionClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void MissionClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_MISSION_H_

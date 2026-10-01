@@ -77,6 +77,8 @@
 #include "td/startup/game_state.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 #ifndef DEMO
 
 // Opens a movie without playing it, to be shown on screen and heard on audio
@@ -324,3 +326,5 @@ void Choose_Side() {
   engine::audio::TheAudio().Stop(statichandle);
 }
 #endif
+
+}  // namespace td

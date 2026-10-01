@@ -10,6 +10,8 @@
 
 class ByteStream;
 
+namespace td {
+
 void Uninit_Game();
 void Load_Title_Page(bool visible = false);
 bool Init_Game();
@@ -34,5 +36,7 @@ void Load_Recording_Values(ByteStream& file);
 // node, so packets reach every machine across the bridge. Returns nothing for
 // a malformed address, or one shorter than four bytes.
 std::optional<IPXAddressClass> ParseDestNet(std::string_view address);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_STARTUP_INIT_H_

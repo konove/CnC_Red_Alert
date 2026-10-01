@@ -48,6 +48,11 @@
 #include "td/objects/bullet.h"
 #include "td/objects/drive.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
+
 class TurretClass : public DriveClass {
  public:
   // Field-wise state and checked references; load shells have no scenario effects.
@@ -90,9 +95,9 @@ class TurretClass : public DriveClass {
   TurretClass() = default;
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void TurretClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TurretClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_TURRET_H_

@@ -22,6 +22,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "td/ui/toggle.h"
 
+namespace td {
+
 // A small 7x7 checkbox gadget that draws an X when toggled on.
 class CheckBoxClass : public ToggleClass {
  public:
@@ -32,5 +34,7 @@ class CheckBoxClass : public ToggleClass {
   // Returns true if the checkbox was actually rendered.
   bool Draw_Me(PixelView& view, bool forced = false) override;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_CHECKBOX_H_

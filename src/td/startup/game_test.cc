@@ -13,6 +13,8 @@
 #include "td/core/object_heaps.h"
 #include "td/map/world.h"
 
+namespace td {
+
 namespace {
 
 // Only ShutDown() may end the one Game, so it cannot be copied or moved out.
@@ -47,3 +49,5 @@ TEST(GameTest, InstallsItsSubsystemsForItsLifetime) {
 }
 
 }  // namespace
+
+}  // namespace td

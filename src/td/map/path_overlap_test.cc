@@ -10,6 +10,8 @@
 #include "gtest/gtest.h"
 #include "td/core/defines.h"
 
+namespace td {
+
 namespace {
 
 constexpr int kWordCount = OverlapWordCount(MAP_CELL_TOTAL);
@@ -81,3 +83,5 @@ TEST(TdPathOverlapTest, ClearKeepsTheRestOfTheWord) {
 }
 
 }  // namespace
+
+}  // namespace td

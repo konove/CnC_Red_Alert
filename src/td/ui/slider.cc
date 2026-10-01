@@ -65,6 +65,8 @@
 #include "td/ui/input.h"
 #include "td/ui/shapebtn.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 /***********************************************************************************************
@@ -364,3 +366,5 @@ void SliderClass::Peer_To_Peer(unsigned flags,
     }
   }
 }
+
+}  // namespace td

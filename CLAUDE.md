@@ -199,6 +199,7 @@ ra/          → Red Alert (~420 files) [depends: engine_net, engine_window, eng
 td/          → Tiberian Dawn (~330 files) [depends: engine_net, engine_window, engine_video]
 ```
 
+Each game's code is in one flat namespace, `ra::` or `td::` (only `main`/`WinMain` stay global).
 Both games use the same subfolders, for navigation only: `objects/` (the object hierarchy, types,
 houses), `data/` (the `*data.cc` tables, rules, INI), `map/` (the display chain, layers,
 pathfinding, the world), `ai/` (teams, triggers, scenario), `ui/` (widgets and dialog helpers),

@@ -43,6 +43,8 @@
 
 #include <cstdint>
 
+namespace td {
+
 class FlasherClass {
  public:
   /*
@@ -88,5 +90,7 @@ class FlasherClass {
   **	File I/O.
   */
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_FLASHER_H_

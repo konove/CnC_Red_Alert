@@ -47,6 +47,11 @@
 #include "td/map/gscreen.h"
 #include "td/objects/object.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
+
 #define BIGMAP 0
 
 class MapClass : public GScreenClass {
@@ -162,9 +167,9 @@ class MapClass : public GScreenClass {
 int Terrain_Cost(CELL cell, FacingType facing);
 int Coord_Spillage_Number(COORDINATE coord, int maxsize);
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void MapClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void MapClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_MAP_MAP_H_

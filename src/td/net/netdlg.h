@@ -6,6 +6,8 @@
 #include "td/core/defines.h"
 #include "td/net/ipxaddr.h"
 
+namespace td {
+
 bool Init_Network();
 void Shutdown_Network();
 bool Remote_Connect();
@@ -17,5 +19,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
 
 bool Client_Remote_Connect();
 bool Server_Remote_Connect();
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_NETDLG_H_

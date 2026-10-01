@@ -70,6 +70,8 @@
 #include "td/ui/slider.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 // The score list: each line is a track, with its theme kept alongside the
 // text.
 class MusicListClass : public ListClass {
@@ -348,7 +350,6 @@ void SoundControlsClass::Process() {
       }
     }
 
-
     /*
     **	Refresh display if needed.
     */
@@ -497,3 +498,5 @@ void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
                             width, Tabs);
   }
 }
+
+}  // namespace td

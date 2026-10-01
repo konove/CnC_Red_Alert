@@ -74,6 +74,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 static const SmudgeTypeClass Crater1(
 
     SMUDGE_CRATER1, "CR1", TXT_CRATER, 1,
@@ -439,3 +441,5 @@ void SmudgeTypeClass::Draw_It(PixelView& view, int x, int y, int data) const {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void SmudgeTypeClass::One_Time() {}
+
+}  // namespace td

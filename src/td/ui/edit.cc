@@ -68,6 +68,8 @@
 #include "td/ui/gadget.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 /***********************************************************************************************
@@ -465,3 +467,5 @@ bool EditClass::Handle_Key(char ascii) {
   }
   return true;
 }
+
+}  // namespace td

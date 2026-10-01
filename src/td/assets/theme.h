@@ -45,6 +45,8 @@
 #include "base/installed.h"
 #include "td/core/defines.h"
 
+namespace td {
+
 class ThemeClass {
  private:
   static const char* Theme_File_Name(ThemeType theme);
@@ -91,5 +93,7 @@ class ThemeClass {
 // Returns the music player that Game installed. CHECK-fails outside a
 // Game's lifetime unless a test installed its own.
 inline ThemeClass& TheTheme() { return base::Installed<ThemeClass>::Get(); }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_ASSETS_THEME_H_

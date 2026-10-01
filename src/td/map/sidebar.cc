@@ -141,6 +141,8 @@
 #include "td/ui/gadget.h"
 #include "td/ui/shapebtn.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 using enum engine::window::KeyNumber;
@@ -2588,3 +2590,5 @@ bool SidebarClass::StripClass::Abandon_Production(int factory) {
   }
   return abandon;
 }
+
+}  // namespace td

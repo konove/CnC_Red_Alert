@@ -79,6 +79,8 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 
+namespace td {
+
 CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen)
     : MaxSend(numsend),
       MaxReceive(numreceive),
@@ -714,3 +716,5 @@ void CommBufferClass::Reset_Response_Time() {
   MaxDelay = 0L;
 
 } /* end of Reset_Response_Time */
+
+}  // namespace td

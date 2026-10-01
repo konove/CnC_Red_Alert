@@ -51,6 +51,8 @@
 #include "td/core/defines.h"
 #include "td/ui/control.h"
 
+namespace td {
+
 class EditClass : public ControlClass {
  public:
   enum class CNC_FLAG_ENUM EditStyle : uint32_t {
@@ -116,5 +118,7 @@ class EditClass : public ControlClass {
  private:
   bool IsReadOnly = false;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_EDIT_H_

@@ -76,6 +76,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 HousesType OverlayClass::ToOwn = HOUSE_NONE;
 
 /***********************************************************************************************
@@ -428,3 +430,5 @@ void OverlayClass::Write_INI(std::string& buffer) {
     }
   }
 }
+
+}  // namespace td

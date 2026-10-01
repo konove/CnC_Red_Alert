@@ -44,6 +44,8 @@
 #include "td/core/defines.h"
 #include "td/core/inline.h"
 
+namespace td {
+
 class AbstractClass {
  public:
   /*
@@ -97,24 +99,24 @@ class AbstractClass {
   **	combat purposes.
   */
   DirType Direction(const AbstractClass* object) const {
-    return ::Direction(Center_Coord(), object->Target_Coord());
+    return td::Direction(Center_Coord(), object->Target_Coord());
   }
   [[nodiscard]] DirType Direction(COORDINATE coord) const {
-    return ::Direction(Center_Coord(), coord);
+    return td::Direction(Center_Coord(), coord);
   }
   [[nodiscard]] DirType Direction(TARGET target) const;
   [[nodiscard]] DirType Direction(CELL cell) const {
-    return ::Direction(Coord_Cell(Center_Coord()), cell);
+    return td::Direction(Coord_Cell(Center_Coord()), cell);
   }
   [[nodiscard]] int Distance(TARGET target) const;
   [[nodiscard]] int Distance(COORDINATE coord) const {
-    return ::Distance(Center_Coord(), coord);
+    return td::Distance(Center_Coord(), coord);
   }
   [[nodiscard]] int Distance(CELL cell) const {
-    return ::Distance(Coord_Cell(Center_Coord()), cell);
+    return td::Distance(Coord_Cell(Center_Coord()), cell);
   }
   int Distance(const AbstractClass* object) const {
-    return ::Distance(Center_Coord(), object->Target_Coord());
+    return td::Distance(Center_Coord(), object->Target_Coord());
   }
 
   /*
@@ -130,5 +132,7 @@ class AbstractClass {
   */
   virtual void AI() {}
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_ABSTRACT_H_

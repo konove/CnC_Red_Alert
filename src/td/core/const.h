@@ -4,6 +4,8 @@
 #include "base/enum_array.h"
 #include "td/core/defines.h"
 
+namespace td {
+
 class WeaponTypeClass;   // IWYU pragma: keep
 class WarheadTypeClass;  // IWYU pragma: keep
 
@@ -30,5 +32,7 @@ extern const COORDINATE StoppingCoordAbs[5];
 extern const base::EnumArray<FacingType, CELL, kFacingCount> AdjacentCell;
 extern const base::EnumArray<FacingType, COORDINATE, kFacingCount>
     AdjacentCoord;
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_CONST_H_

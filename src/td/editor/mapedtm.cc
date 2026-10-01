@@ -87,6 +87,8 @@
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 /***************************************************************************
@@ -2025,3 +2027,5 @@ void MapEditClass::Build_Mission_List(
     list->Add_Item(base::At(missionbuf, i));
   }
 }
+
+}  // namespace td

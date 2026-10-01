@@ -94,6 +94,8 @@
 #include "td/startup/ccdde.h"
 #endif
 
+namespace td {
+
 base::EnumArray<EventClass::EventType, unsigned char,
                 static_cast<int>(EventClass::LAST_EVENT)>
     EventClass::EventLength = {
@@ -834,3 +836,5 @@ void EventClass::Execute() {
       break;
   }
 }
+
+}  // namespace td

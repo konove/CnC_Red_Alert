@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_SCREENS_SOUNDDLG_H_
 #define CNC_RED_ALERT_TD_SCREENS_SOUNDDLG_H_
 
+namespace td {
+
 class SoundControlsClass {
 #ifdef FRENCH
   static constexpr int kOptionWidth = 308;
@@ -152,5 +154,7 @@ class SoundControlsClass {
   int FXSlider_W = 0;
   int FXSlider_Height = 0;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_SCREENS_SOUNDDLG_H_

@@ -89,6 +89,8 @@
 #include "td/objects/unit.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 #define GRAVITY 3
@@ -675,11 +677,11 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       *the straight line flight.
       */
       if (Class->IsHoming || Class->IsArcing) {
-        int scatterdist = ::Distance(coord, tcoord) / 3;
+        int scatterdist = td::Distance(coord, tcoord) / 3;
         scatterdist = std::min(scatterdist, 0x0200);
 
         if (*this == BULLET_GRENADE) {
-          scatterdist = ::Distance(coord, tcoord) / 4;
+          scatterdist = td::Distance(coord, tcoord) / 4;
           scatterdist = std::min(scatterdist, 0x0080);
         }
 
@@ -696,7 +698,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       if (Payback &&
           (!Payback->In_Range(tcoord, 0) && !Payback->In_Range(tcoord, 1))) {
         tcoord = Coord_Move(
-            tcoord, ::Direction(tcoord, Coord),
+            tcoord, td::Direction(tcoord, Coord),
             static_cast<uint16_t>(
                 Distance(tcoord) -
                 std::max(Payback->Weapon_Range(0), Payback->Weapon_Range(1))));
@@ -720,7 +722,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     if (!Class->Range) {
       if (!Class->IsDropping) {
         range =
-            (::Distance(tcoord, Coord) / static_cast<int>(Class->MaxSpeed)) + 4;
+            (td::Distance(tcoord, Coord) / static_cast<int>(Class->MaxSpeed)) + 4;
       }
     } else {
       range = Class->Range;
@@ -800,3 +802,5 @@ TARGET BulletClass::As_Target() const {
   Validate();
   return Build_Target(KIND_BULLET, TheObjectHeaps().bullet().ID(this));
 }
+
+}  // namespace td

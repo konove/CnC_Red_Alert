@@ -63,6 +63,8 @@
 #include "td/net/noseqcon.h"
 #include "td/net/tcpip.h"
 
+namespace td {
+
 /*
 ********************************* Globals ***********************************
 */
@@ -460,3 +462,5 @@ int IPXConnClass::Broadcast(std::span<const std::byte> buf, int buflen) {
   }
   return 0;  // There is no IPX driver to send through.
 }
+
+}  // namespace td

@@ -78,6 +78,8 @@
 #include "td/screens/ending.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 /***********************************************************************************************
@@ -443,3 +445,5 @@ void Debug_Key(unsigned input) {
     }
   }
 }
+
+}  // namespace td

@@ -164,6 +164,8 @@
 #include "td/ui/gadget.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 // The current theater's art and icons, registered and cached by
 // Init_Theater(). The MixArchive registry owns them.
 static MixArchive* theater_data = nullptr;
@@ -205,8 +207,6 @@ std::vector<bool> DisplayClass::CellRedraw;
 ** The main button that intercepts user input to the map
 */
 DisplayClass::TacticalClass DisplayClass::TacButton;
-
-
 
 /***********************************************************************************************
  * DisplayClass::DisplayClass -- Default constructor for display class. *
@@ -3613,3 +3613,5 @@ void DisplayClass::Flag_Cell(CELL cell) {
   IsDisplayToRedraw = true;
   CellRedraw.at(base::ToSize(cell)) = true;
 }
+
+}  // namespace td

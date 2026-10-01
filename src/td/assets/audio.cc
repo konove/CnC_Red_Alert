@@ -66,6 +66,8 @@
 #include "td/screens/goptions.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.
 */
@@ -675,3 +677,5 @@ bool Is_Speaking() {
          (speak_queue != VOX_NONE || engine::audio::TheAudio().IsPlaying(
                                          TheAssets().speech_buffer().data()));
 }
+
+}  // namespace td

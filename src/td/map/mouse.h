@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_MAP_MOUSE_H_
 #define CNC_RED_ALERT_TD_MAP_MOUSE_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 #include <span>
 
@@ -53,6 +50,11 @@ class ArchiveWriter;
 #include "td/core/defines.h"
 #include "td/core/game_clock.h"
 #include "td/map/scroll.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 class MouseClass : public ScrollClass {
  public:
@@ -141,5 +143,7 @@ class MouseClass : public ScrollClass {
 
 extern template void MouseClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void MouseClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_MAP_MOUSE_H_

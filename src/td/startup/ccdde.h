@@ -90,4 +90,6 @@ extern BOOL Send_Data_To_DDE_Server(const char* data, int length,
 
 #endif  // _WIN32
 
+namespace td {}  // namespace td
+
 #endif  // CNC_RED_ALERT_TD_STARTUP_CCDDE_H_

@@ -53,6 +53,8 @@
 #include "engine/stream/archive.h"
 #include "td/core/vector.h"
 
+namespace td {
+
 // Heap templates are generic - users must include type headers themselves.
 // IWYU pragma: no_include "td/objects/aircraft.h"
 // IWYU pragma: no_include "td/objects/anim.h"
@@ -329,5 +331,7 @@ bool TFixedIHeapClass<T>::Load(ArchiveReader& file)
 
   return file.ok();
 }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_HEAP_H_

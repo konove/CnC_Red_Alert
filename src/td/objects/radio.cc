@@ -51,6 +51,8 @@
 #include "td/objects/mission.h"
 #include "td/objects/techno.h"  // IWYU pragma: keep
 
+namespace td {
+
 // Every radio in the game is part of a TechnoClass object, so the cast only
 // fails when there is no contact at all.
 TechnoClass* RadioClass::Contact_With_Whom() const {
@@ -203,3 +205,5 @@ RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
                                               RadioClass* to) {
   return Transmit_Message(message, DiscardedParam(), to);
 }
+
+}  // namespace td

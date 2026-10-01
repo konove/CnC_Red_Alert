@@ -8,6 +8,8 @@
 #include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
 
+namespace td {
+
 // Owns the full-screen pages, the 640x400 game-area views into them and the
 // staging page movies decode into. Game owns the one Screen; everything
 // else reaches it through TheScreen().
@@ -87,5 +89,7 @@ class Screen {
 // Returns the Screen that Game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.
 inline Screen& TheScreen() { return base::Installed<Screen>::Get(); }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_ASSETS_SCREEN_H_

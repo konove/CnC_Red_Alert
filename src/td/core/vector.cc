@@ -46,6 +46,8 @@
 #include "td/net/phone.h"
 #include "td/objects/cell.h"
 
+namespace td {
+
 template class VectorClass<NodeNameTag*>;
 template class VectorClass<PhoneEntryClass*>;
 template class VectorClass<ObjectClass*>;
@@ -70,3 +72,5 @@ template class DynamicVectorClass<char*>;
 template class DynamicVectorClass<unsigned char*>;
 template class DynamicVectorClass<const char*>;
 template class DynamicVectorClass<void*>;
+
+}  // namespace td

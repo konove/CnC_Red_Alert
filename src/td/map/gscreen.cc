@@ -77,6 +77,8 @@
 #include "td/ui/input.h"
 #include "td/ui/msglist.h"
 
+namespace td {
+
 GadgetClass* GScreenClass::Buttons = nullptr;
 
 std::unique_ptr<PixelBuffer> GScreenClass::ShadowPage;
@@ -468,3 +470,5 @@ void GScreenClass::Blit_Display() {
     Add_Current_Screen();
   }
 }
+
+}  // namespace td

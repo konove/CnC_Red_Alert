@@ -80,6 +80,8 @@
 #include <cstdint>
 #include <span>
 
+namespace td {
+
 /*
 ***************************** Class Declaration *****************************
 */
@@ -157,5 +159,7 @@ class ConnManClass {
   - A buffer to store incoming packets
   .....................................................................*/
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_CONNMGR_H_

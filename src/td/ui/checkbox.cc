@@ -48,6 +48,8 @@
 #include "td/ui/input.h"
 #include "td/ui/toggle.h"
 
+namespace td {
+
 bool CheckBoxClass::Draw_Me(PixelView& view, bool forced) {
   if (ToggleClass::Draw_Me(view, forced)) {
     TheMouse().Hide();
@@ -62,3 +64,5 @@ bool CheckBoxClass::Draw_Me(PixelView& view, bool forced) {
   }
   return false;
 }
+
+}  // namespace td

@@ -34,10 +34,12 @@
 #include "td/objects/target.h"
 #include "td/objects/type.h"
 
+namespace td {
+
 AbstractClass::~AbstractClass() = default;
 
 DirType AbstractClass::Direction(TARGET target) const {
-  return ::Direction(Center_Coord(), As_Coord(target));
+  return td::Direction(Center_Coord(), As_Coord(target));
 }
 
 int AbstractClass::Distance(const TARGET target) const {
@@ -67,3 +69,5 @@ COORDINATE AbstractTypeClass::Coord_Fixup(const COORDINATE coord) const {
 }
 int AbstractTypeClass::Full_Name() const { return Name; }
 uint16_t AbstractTypeClass::Get_Ownable() const { return 0xffff; }
+
+}  // namespace td

@@ -12,6 +12,8 @@
 #include "engine/window/keyboard.h"
 #include "td/core/defines.h"
 
+namespace td {
+
 // The flags that say what the game is doing right now: whether it is
 // running at all, whether the window has the focus, whether a movie is
 // playing, how the scenario ended, and what the modal dialogs need to tell
@@ -85,7 +87,6 @@ class GameState {
 
   // The build this executable shows in the menus.
   auto& version_text() ABSL_ATTRIBUTE_LIFETIME_BOUND { return version_text_; }
-
 
   // Which dialog the main loop should pop up on its way round, because a
   // dialog cannot be opened from where the request came from.
@@ -166,5 +167,7 @@ class GameState {
 // Returns the GameState that Game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.
 inline GameState& TheGameState() { return base::Installed<GameState>::Get(); }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_STARTUP_GAME_STATE_H_

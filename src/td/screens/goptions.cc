@@ -90,6 +90,8 @@
 #include "td/ui/msgbox.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 void GameOptionsClass::Adjust_Variables_For_Resolution() {
@@ -683,3 +685,5 @@ void Draw_Caption(PixelView& view, int text, int x, int y, int w) {
                   y + FontLineHeight(font) + (5 * factor), kCcGreen);
   }
 }
+
+}  // namespace td

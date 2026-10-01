@@ -39,6 +39,10 @@
 #ifndef CNC_RED_ALERT_TD_SCREENS_INTRO_H_
 #define CNC_RED_ALERT_TD_SCREENS_INTRO_H_
 
+namespace td {
+
 void Choose_Side();
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_SCREENS_INTRO_H_

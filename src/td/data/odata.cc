@@ -77,6 +77,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 static const OverlayTypeClass Road(
@@ -914,3 +916,5 @@ void OverlayTypeClass::Init(TheaterType theater) {
     }
   }
 }
+
+}  // namespace td

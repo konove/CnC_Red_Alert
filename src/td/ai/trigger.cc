@@ -109,6 +109,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 static void Do_All_To_Hunt();
 
 // #define FIXUP 0
@@ -1483,3 +1485,5 @@ static void Do_All_To_Hunt() {
     }
   }
 }
+
+}  // namespace td

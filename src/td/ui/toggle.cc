@@ -49,6 +49,8 @@
 #include "td/ui/gadget.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 /***********************************************************************************************
  * ToggleClass::ToggleClass -- Normal constructor for toggle button gadgets. *
  *                                                                                             *
@@ -191,3 +193,5 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   */
   return ControlClass::Action(flags, key, x, y);
 }
+
+}  // namespace td

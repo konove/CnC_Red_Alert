@@ -8,6 +8,8 @@
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 
+namespace td {
+
 // The two pages a full-screen presentation draws through - the score screens,
 // the map selection, the side choice and the Nod ending.
 //
@@ -70,5 +72,7 @@ class Presentation {
   std::array<TextRect, kMaxTextRects> text_rects_{};
   int text_rect_count_ = 0;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_ASSETS_PRESENTATION_H_

@@ -5,6 +5,8 @@
 #include "td/assets/assets.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 inline const char* Text_String(int index) {
   // can't find a conquer.eng that contains these
   switch (index) {
@@ -39,5 +41,7 @@ inline const char* Text_String(int index) {
   }
   return Extract_String(TheAssets().system_strings(), index).data();
 }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_DATA_TEXT_H_

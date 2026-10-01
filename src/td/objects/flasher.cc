@@ -42,6 +42,8 @@
 
 #include "td/objects/flasher.h"
 
+namespace td {
+
 FlasherClass::~FlasherClass() = default;
 
 /***********************************************************************************************
@@ -72,3 +74,5 @@ bool FlasherClass::Process() {
   }
   return false;
 }
+
+}  // namespace td

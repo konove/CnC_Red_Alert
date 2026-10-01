@@ -147,6 +147,8 @@
 #include "td/net/ipxconn.h"
 #include "td/net/ipxgconn.h"
 
+namespace td {
+
 /*
 ********************************** Defines **********************************
 */
@@ -381,6 +383,8 @@ class IPXManagerClass : public ConnManClass {
   .....................................................................*/
   int BadConnection = IPXConnClass::kConnectionNone;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_IPXMGR_H_
 /*************************** end of ipxmgr.h *******************************/

@@ -96,6 +96,8 @@
 #include "td/startup/game_state.h"
 #include "td/startup/startup.h"
 
+namespace td {
+
 /*
 ********************************** Defines **********************************
 */
@@ -626,3 +628,5 @@ bool Get_Savefile_Info(int id, std::span<char> buf, unsigned* scenp,
   }
   return false;
 }
+
+}  // namespace td

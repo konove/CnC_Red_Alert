@@ -41,6 +41,11 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_CARGO_H_
 #define CNC_RED_ALERT_TD_OBJECTS_CARGO_H_
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
+
 class FootClass;
 
 /****************************************************************************
@@ -95,9 +100,9 @@ class CargoClass {
   FootClass* CargoHold{nullptr};
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void CargoClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void CargoClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_CARGO_H_

@@ -55,6 +55,8 @@
 #include "absl/log/log.h"
 #include "td/core/defines.h"
 
+namespace td {
+
 /*
 **	This class implements a classic FIFO queue (also known as - standing in
 *line). Objects *	are added to the end (tail) of the line. Objects are
@@ -290,5 +292,7 @@ void Queue_AI();
 int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize);
 int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize);
 void Add_CRC(uint32_t* crc, uint32_t val);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_QUEUE_H_

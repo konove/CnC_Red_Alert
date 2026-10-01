@@ -8,6 +8,8 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 
+namespace td {
+
 // The two devices the player plays with. Both exist for the whole of a Game,
 // because the startup path reads keys before there is a window; the games grab
 // the mouse into the window once it is open (HardwareCursor::GrabMouse()).
@@ -50,5 +52,7 @@ inline engine::window::KeyBuffer& TheKeyboard() {
   return TheInput().keyboard();
 }
 inline engine::window::HardwareCursor& TheMouse() { return TheInput().mouse(); }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_INPUT_H_

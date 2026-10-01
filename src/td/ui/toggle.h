@@ -44,6 +44,8 @@
 #include "engine/window/keyboard.h"
 #include "td/ui/control.h"
 
+namespace td {
+
 /*
 **	This class handles gadgets that behave like the Windows buttons. That
 *is, once the mouse *	button is clicked over them, they capture the focus
@@ -83,5 +85,7 @@ class ToggleClass : public ControlClass {
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
               int y) override;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_TOGGLE_H_

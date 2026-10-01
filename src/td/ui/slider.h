@@ -49,6 +49,8 @@
 #include "td/ui/gauge.h"
 #include "td/ui/shapebtn.h"
 
+namespace td {
+
 /***************************************************************************
  * SliderClass -- Like a Windows ListBox structure
  **
@@ -121,5 +123,7 @@ class SliderClass final : public GaugeClass {
  private:
   void Recalc_Thumb();
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_SLIDER_H_

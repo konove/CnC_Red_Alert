@@ -222,6 +222,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 using enum engine::window::KeyNumber;
@@ -1051,7 +1053,7 @@ bool TechnoClass::In_Range(TARGET target, int which) const {
       range += (building->Class->Width() + building->Class->Height()) *
                (ICON_LEPTON_W / 4);
     }
-    if (::Distance(Fire_Coord(which), As_Coord(target)) <= range) {
+    if (td::Distance(Fire_Coord(which), As_Coord(target)) <= range) {
       return true;
     }
   }
@@ -1086,7 +1088,7 @@ bool TechnoClass::In_Range(const ObjectClass* target, int which) const {
                (ICON_LEPTON_W / 4);
     }
 
-    if (::Distance(Fire_Coord(which), target->Center_Coord()) <= range) {
+    if (td::Distance(Fire_Coord(which), target->Center_Coord()) <= range) {
       return true;
     }
   }
@@ -1114,7 +1116,7 @@ bool TechnoClass::In_Range(const ObjectClass* target, int which) const {
  *=============================================================================================*/
 bool TechnoClass::In_Range(COORDINATE coord, int which) const {
   return IsLocked &&
-         ::Distance(Fire_Coord(which), coord) <= Weapon_Range(which);
+         td::Distance(Fire_Coord(which), coord) <= Weapon_Range(which);
 }
 
 /***********************************************************************************************
@@ -2024,7 +2026,7 @@ void TechnoClass::Assign_Target(TARGET target) {
     **	Prevent targeting of self.
     */
     if (target == As_Target()) {
-      target = ::As_Target(Coord_Cell(Coord));
+      target = td::As_Target(Coord_Cell(Coord));
     } else {
       /*
       **	Make sure that the target is not already dead.
@@ -2130,7 +2132,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       fire_coord = Center_Coord();
     }
   } else {
-    dir = ::Direction(fire_coord, target_coord);
+    dir = td::Direction(fire_coord, target_coord);
   }
 
   /*
@@ -2494,7 +2496,7 @@ ActionType TechnoClass::What_Action(CELL cell) const {
     if ((!optr ||
          (optr->IsWall && (whead->IsWallDestroyer ||
                            (whead->IsWoodDestroyer && optr->IsWooden)))) &&
-        (Can_Player_Move() || In_Range(::As_Target(cell), 0))) {
+        (Can_Player_Move() || In_Range(td::As_Target(cell), 0))) {
       return ACTION_ATTACK;
     }
   }
@@ -4232,3 +4234,5 @@ int TechnoClass::Refund_Amount() const {
   }
   return cost;
 }
+
+}  // namespace td

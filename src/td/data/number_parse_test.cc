@@ -8,6 +8,8 @@
 #include "td/core/object_heaps.h"
 #include "td/data/profile.h"
 
+namespace td {
+
 namespace {
 
 TEST(TdNumberParseTest, InvalidProfileNumbersKeepTheDefault) {
@@ -84,3 +86,5 @@ TEST_F(TdTeamTypeParseTest, TeamTypeOutsideItsHeapFailsValidation) {
 }
 
 }  // namespace
+
+}  // namespace td

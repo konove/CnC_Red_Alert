@@ -82,6 +82,8 @@
 #include "td/ui/dialog.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 /*
 **	When an edge search is started, it can be performed CLOCKwise or
 **	COUNTERCLOCKwise direction.
@@ -104,7 +106,7 @@ constexpr FacingType kCounterclockwise = static_cast<FacingType>(-1);
 **	a value between 0 and 7, with 0 being North and moving
 **	clockwise (just like map degrees).
 */
-#define CELL_FACING(a, b) Dir_Facing(::Direction((a), (b)))
+#define CELL_FACING(a, b) Dir_Facing(td::Direction((a), (b)))
 
 /*
 **	Maximum lookahead cells. Twice this value in bytes will be
@@ -1645,3 +1647,5 @@ void FootClass::Debug_Draw_Path(PathType* path) {
     Draw_Cell_Point(pos, true, -1, 0);
   }
 }
+
+}  // namespace td

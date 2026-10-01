@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_AI_TEAM_H_
 #define CNC_RED_ALERT_TD_AI_TEAM_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 
 #include "absl/base/attributes.h"
@@ -55,6 +52,11 @@ class ArchiveWriter;
 #include "td/objects/foot.h"
 #include "td/objects/house.h"
 #include "td/objects/techno.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 /*
 ** Units are only allowed to stray a certain distance away from their
@@ -273,5 +275,7 @@ class TeamClass : public AbstractClass {
 
 extern template void TeamClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TeamClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_AI_TEAM_H_

@@ -111,6 +111,8 @@
 #include "td/startup/startup.h"
 #include "td/startup/winstub.h"
 
+namespace td {
+
 // The most money a scenario lets the player carry over from the last one,
 // from its [Basic] CarryOverCap; negative means uncapped.
 static int carry_over_cap;
@@ -1659,3 +1661,5 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
   y = std::clamp(y, ymin, ymax);
   return XY_Cell(x, y);
 }
+
+}  // namespace td

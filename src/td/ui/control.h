@@ -46,6 +46,8 @@
 #include "td/core/jshell.h"
 #include "td/ui/gadget.h"
 
+namespace td {
+
 /***************************************************************************
  * ControlClass -- Region tracking class
  **
@@ -96,5 +98,7 @@ class ControlClass : public GadgetClass {
   */
   GadgetClass* Peer{nullptr};
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_CONTROL_H_

@@ -6,6 +6,8 @@
 #include "engine/gfx/palette.h"
 #include "gtest/gtest.h"
 
+namespace td {
+
 namespace {
 
 TEST(PalettesTest, PalettesStartBlack) {
@@ -32,3 +34,5 @@ TEST(PalettesTest, ThePalettesReturnsTheInstalledPalettes) {
 }
 
 }  // namespace
+
+}  // namespace td

@@ -4,6 +4,8 @@
 
 #include "td/core/jshell.h"
 
+namespace td {
+
 // Both helpers compute in unsigned 32-bit arithmetic so their results,
 // including the wraparound for inputs outside the game's range, match the
 // original code bit for bit; the simulation depends on that.
@@ -26,3 +28,5 @@ int Fixed_To_Cardinal(int base, int fixed) {
 
   return static_cast<int>(ret >> 8);
 }
+
+}  // namespace td

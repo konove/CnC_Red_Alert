@@ -7,6 +7,8 @@
 #include "engine/gfx/rect.h"
 #include "engine/gfx/text_window.h"
 
+namespace td {
+
 enum class WindowNumberType;
 
 // Returns the rectangle of WindowList row `window`, in page pixels. Tiberian
@@ -18,5 +20,7 @@ inline Rect WindowRect(const WindowNumberType window) {
               base::At(row, kWindowWidth) * kWindowUnit,
               base::At(row, kWindowHeight));
 }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_ASSETS_WINDOW_RECT_H_

@@ -43,6 +43,8 @@
 #include "td/saveload/serialize.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 template <class Archive>
 void CellClass::Serialize(Archive& ar) {
   auto flags = static_cast<uint8_t>(
@@ -302,7 +304,6 @@ void MouseClass::ResetTransientUiState() {
   AnimTimer.Set(0);
 }
 
-
 template <class Archive>
 void MouseClass::Serialize(Archive& ar) {
   ar.Section(FourCC("MAPS"));
@@ -385,3 +386,5 @@ bool MouseClass::Save(ArchiveWriter& file) {
   Serialize(file);
   return true;
 }
+
+}  // namespace td

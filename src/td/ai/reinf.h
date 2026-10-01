@@ -6,6 +6,8 @@
 #include "td/objects/house.h"
 #include "td/objects/type.h"
 
+namespace td {
+
 bool Do_Reinforcements(const TeamTypeClass* team);
 bool Create_Special_Reinforcement(const HouseClass* house,
                                   const TechnoTypeClass* type,
@@ -14,5 +16,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
                                   int argument = 0);
 int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
                              MissionType mission, TARGET tarcom, TARGET navcom);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_AI_REINF_H_

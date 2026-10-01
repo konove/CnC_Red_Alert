@@ -58,6 +58,8 @@
 #include "td/net/ipxaddr.h"
 #include "td/net/noseqcon.h"
 
+namespace td {
+
 /*
 ***************************** Class Declaration *****************************
 */
@@ -209,5 +211,7 @@ class IPXConnClass : public NonSequencedConnClass {
   .....................................................................*/
   static int Listening;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_IPXCONN_H_

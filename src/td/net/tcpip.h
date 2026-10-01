@@ -63,6 +63,7 @@ using HANDLE = void*;
 #define WM_USER 0x400
 #endif
 
+namespace td {
 
 #define FORCE_WINSOCK 1
 
@@ -189,7 +190,6 @@ class TcpipManagerClass {
   int RXBufferTail = 0;
 };
 
-
 extern int Read_Game_Options(const char* /*name*/);
 
 #define TXT_WINSOCK_CONNECTING (4567 + 13)
@@ -201,5 +201,7 @@ extern int Read_Game_Options(const char* /*name*/);
 #define TXT_WINSOCK_UNABLE_TO_CONNECT (4567 + 19)
 #define TXT_WINSOCK_CONNECTION_LOST (4567 + 20)
 #define TXT_WINSOCK_RESOLVING_HOST_ADDRESS (4567 + 21)
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_TCPIP_H_

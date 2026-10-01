@@ -45,6 +45,8 @@
 
 #include "td/objects/object.h"
 
+namespace td {
+
 LayerClass::~LayerClass() = default;
 
 /***********************************************************************************************
@@ -156,3 +158,5 @@ bool LayerClass::Sorted_Add(ObjectClass* const object) {
   ActiveCount++;
   return true;
 }
+
+}  // namespace td

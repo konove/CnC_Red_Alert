@@ -1,6 +1,8 @@
 #ifndef CNC_RED_ALERT_TD_STARTUP_STARTUP_H_
 #define CNC_RED_ALERT_TD_STARTUP_STARTUP_H_
 
+namespace td {
+
 // Tiberian Dawn's shared exit path. main() itself lives in startup.cc.
 
 // Cleans up the engine systems the game started (audio, mouse)
@@ -13,5 +15,7 @@ void ShutDownEngine();
 // and the SDL quit handler. It does not draw, so it is safe before the video
 // pages exist.
 void ShutDown();
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_STARTUP_STARTUP_H_

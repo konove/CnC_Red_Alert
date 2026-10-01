@@ -14,6 +14,8 @@
 #include "td/core/vector.h"
 #include "td/core/vector_impl.h"  // IWYU pragma: keep
 
+namespace td {
+
 template class VectorClass<void*>;
 template class DynamicVectorClass<void*>;
 template class VectorClass<char>;
@@ -91,7 +93,6 @@ TEST(TdHeapTest, FieldObjectsPreserveSparseSlots) {
   EXPECT_EQ(loaded.ID(loaded.Alloc()), 1);  // The saved hole remains reusable.
 }
 
-
 TEST(TdHeapTest, RejectsNegativeCountsAndOutOfRangeSlots) {
   for (const bool invalid_count : {false, true}) {
     std::array<uint8_t, 256> bytes{};
@@ -122,7 +123,6 @@ TEST(TdHeapTest, RejectsDuplicateSlotsAndTruncatedFields) {
   heap.Free_All();
   EXPECT_FALSE(LoadHeap(heap, bytes, 12));  // First object's bool is missing.
 }
-
 
 TEST(TdHeapTest, RejectsOversizedCountsAndTruncatedHeaders) {
   std::array<uint8_t, 256> bytes{};
@@ -207,3 +207,5 @@ TEST(TdHeapTest, AllocationQueryRejectsHolesAndOutOfRangeSlots) {
   heap.Free(object);
   EXPECT_FALSE(heap.Is_Allocated(0));
 }
+
+}  // namespace td

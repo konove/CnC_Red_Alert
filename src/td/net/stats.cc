@@ -83,6 +83,8 @@
 #include "td/startup/ccdde.h"
 #endif
 
+namespace td {
+
 #define FIELD_PACKET_TYPE "TYPE"
 #define FIELD_GAME_ID "IDNO"
 #define FIELD_START_CREDITS "CRED"
@@ -663,3 +665,5 @@ void Register_Game_Start_Time() { GameTimer.Reset(); }
 extern void Register_Game_End_Time() {
   GameEndTime = static_cast<int32_t>(GameTimer.Elapsed());
 }
+
+}  // namespace td

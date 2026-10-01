@@ -75,6 +75,8 @@
 #include "engine/window/keyboard.h"
 #include "td/ui/gadget.h"
 
+namespace td {
+
 ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
                            unsigned flags, bool sticky) noexcept
     : GadgetClass(x, y, w, h, flags, sticky), ID(id) {}
@@ -193,3 +195,5 @@ bool ControlClass::Draw_Me(PixelView& view, bool forced) {
   }
   return GadgetClass::Draw_Me(view, forced);
 }
+
+}  // namespace td

@@ -41,6 +41,8 @@
 
 #include <cstdint>
 
+namespace td {
+
 /*
 ******************************** Structures *********************************
 */
@@ -89,5 +91,7 @@ struct ECB {
   } Packet[2];
 };
 using ECBType = ECB;
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_NET_IPX_H_

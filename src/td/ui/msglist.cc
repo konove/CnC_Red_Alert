@@ -71,6 +71,8 @@
 #include "td/ui/input.h"
 #include "td/ui/txtlabel.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 char MessageListClass::MessageBuffers[MAX_NUM_MESSAGES]
@@ -776,3 +778,5 @@ void MessageListClass::Set_Width(int width) {
     }
   }
 }
+
+}  // namespace td

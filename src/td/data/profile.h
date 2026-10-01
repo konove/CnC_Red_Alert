@@ -9,6 +9,8 @@
 #include "absl/base/attributes.h"
 #include "td/core/defines.h"  // NewConfigType.
 
+namespace td {
+
 int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
                            const char* profile);
 // Sets entry in section of the INI text profile, which grows as needed. A
@@ -29,5 +31,7 @@ unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 const char* profile);
 
 bool Read_Private_Config_Struct(char* profile, NewConfigType* config);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_DATA_PROFILE_H_

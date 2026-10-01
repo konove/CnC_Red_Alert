@@ -61,6 +61,8 @@
 
 class ByteStream;
 
+namespace td {
+
 /*
 **	These templates allow enumeration types to have simple bitwise
 **	arithmatic performed. The operators must be instatiated for the
@@ -213,5 +215,7 @@ std::span<unsigned char> Build_Translucent_Table(
 std::span<unsigned char> Conquer_Build_Translucent_Table(
     const engine::gfx::Palette& palette, std::span<const TLucentType> control,
     int count, std::span<unsigned char> buffer ABSL_ATTRIBUTE_LIFETIME_BOUND);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_JSHELL_H_

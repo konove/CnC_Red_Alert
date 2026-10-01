@@ -7,6 +7,8 @@
 #include "base/installed.h"
 #include "engine/gfx/palette.h"
 
+namespace td {
+
 // The palettes the game switches between. Game owns the one Palettes;
 // everything else reaches it through ThePalettes(). A new Palettes has every
 // palette black; Init_Game() fills in the white one.
@@ -61,5 +63,7 @@ class Palettes {
 // Returns the Palettes that Game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.
 inline Palettes& ThePalettes() { return base::Installed<Palettes>::Get(); }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_ASSETS_PALETTES_H_

@@ -57,6 +57,8 @@
 #include "td/ui/shapebtn.h"
 #include "td/ui/slider.h"
 
+namespace td {
+
 /***************************************************************************
  * ListClass -- Like a Windows ListBox structure
  **
@@ -189,5 +191,7 @@ class ListClass : public ControlClass {
   */
   int CurrentTopIndex{0};
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_LIST_H_

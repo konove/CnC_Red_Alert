@@ -48,6 +48,11 @@
 #include "td/core/defines.h"
 #include "td/objects/abstract.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
+
 class TechnoClass;
 class ObjectTypeClass;
 class HouseClass;
@@ -250,9 +255,9 @@ class ObjectClass : public AbstractClass {
   virtual void Move(FacingType /*facing*/);
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void ObjectClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void ObjectClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_OBJECT_H_

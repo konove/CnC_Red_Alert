@@ -58,6 +58,8 @@
 #include "td/objects/object.h"
 #include "td/objects/type.h"
 
+namespace td {
+
 int Modify_Damage(int damage, WarheadType warhead, ArmorType armor);
 
 /***********************************************************************************************
@@ -255,3 +257,5 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
     }
   }
 }
+
+}  // namespace td

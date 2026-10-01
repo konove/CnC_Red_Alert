@@ -67,6 +67,8 @@
 #include "td/ui/input.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 #ifdef JAPANESE
@@ -491,3 +493,5 @@ int CCMessageBox::Process(const char* msg, int b1txt, int b2txt, int b3txt,
   return Process(msg, Text_String(b1txt), Text_String(b2txt),
                  Text_String(b3txt), preserve);
 }
+
+}  // namespace td

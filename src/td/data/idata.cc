@@ -85,6 +85,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 /*
  * There were too many parameters for the InfantryTypeClass constructor so I
  * have created a table of Do Controls for each unit type and I am passing a
@@ -1946,3 +1948,5 @@ int InfantryTypeClass::Full_Name() const {
   }
   return TXT_CIVILIAN;
 }
+
+}  // namespace td

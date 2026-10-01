@@ -3,6 +3,8 @@
 
 #include "td/core/randomstate.h"
 
+namespace td {
+
 int Sim_IRandom(int minval, int maxval);
 int Sim_Random();
 
@@ -19,5 +21,7 @@ template <class T>
 T Sim_Random_Pick(T a, T b) {
   return static_cast<T>(Sim_IRandom(static_cast<int>(a), static_cast<int>(b)));
 }
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_CORE_RAND_H_

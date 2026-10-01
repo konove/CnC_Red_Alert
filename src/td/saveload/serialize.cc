@@ -26,6 +26,8 @@
 #include "td/objects/type.h"
 #include "td/objects/unit.h"
 
+namespace td {
+
 namespace {
 
 template <class T>
@@ -308,7 +310,6 @@ void TriggerPtr::Serialize(ArchiveReader& ar) {
   ref_ = TheObjectHeaps().trigger().Raw_Ptr(Target_Value(target));
 }
 
-
 template <class Archive>
 void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects) {
   auto count = static_cast<int32_t>(objects.Count());
@@ -357,3 +358,5 @@ void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects)
 }
 template void SerializeObjectList(ArchiveWriter&, DynamicVectorClass<ObjectClass*>&);
 template void SerializeObjectList(ArchiveReader&, DynamicVectorClass<ObjectClass*>&);
+
+}  // namespace td

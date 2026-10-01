@@ -41,9 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_TEMPLATE_H_
 #define CNC_RED_ALERT_TD_OBJECTS_TEMPLATE_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 #include <span>
 #include <string>
@@ -54,6 +51,11 @@ class ArchiveWriter;
 #include "td/objects/object.h"
 #include "td/objects/type.h"
 #include "td/startup/game_state.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 /******************************************************************************
 **	This class controls the template object. Template objects function
@@ -144,5 +146,7 @@ class TemplateClass : public ObjectClass {
 
 extern template void TemplateClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TemplateClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_TEMPLATE_H_

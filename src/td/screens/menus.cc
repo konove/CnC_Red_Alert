@@ -75,6 +75,8 @@
 #include "td/ui/input.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
@@ -980,3 +982,5 @@ int Main_Menu(int timeout) {
   }
   return retval;
 }
+
+}  // namespace td

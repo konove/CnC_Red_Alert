@@ -3,6 +3,8 @@
 
 #include "engine/gfx/palette.h"
 
+namespace td {
+
 // The palette on screen.
 extern engine::gfx::Palette CurrentPalette;
 
@@ -14,5 +16,7 @@ void Set_Palette(const engine::gfx::Palette& palette);
 // step, or presents the frame itself when callback is nullptr.
 void Fade_Palette_To(const engine::gfx::Palette& palette, int fade,
                      void (*callback)());
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_ASSETS_PALETTE_H_

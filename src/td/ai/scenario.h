@@ -3,6 +3,8 @@
 
 #include "td/core/defines.h"
 
+namespace td {
+
 bool End_Game();
 bool Read_Scenario(char* root);
 bool Start_Scenario(char* root, bool briefing = true);
@@ -14,5 +16,7 @@ void Do_Win();
 void Do_Restart();
 void Fill_In_Data();
 bool Restate_Mission(const char* name, int right_btn, int left_btn);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_AI_SCENARIO_H_

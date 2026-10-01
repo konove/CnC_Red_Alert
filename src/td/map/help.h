@@ -52,6 +52,8 @@
 #include "td/map/tab.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 class HelpClass : public TabClass {
  public:
   void ResetTransientUiState() override;
@@ -152,5 +154,7 @@ class HelpClass : public TabClass {
   static constexpr int kXOffset =
       10;  // The X pixel offset from cursor for help text print.
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_MAP_HELP_H_

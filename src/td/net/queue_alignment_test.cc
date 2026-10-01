@@ -17,6 +17,8 @@
 #include "td/net/noseqcon.h"
 #include "td/net/queue.h"
 
+namespace td {
+
 namespace {
 // Extract_*_Events() writes into the event queue Network owns, so the
 // fixture installs one. No socket and no port is opened by doing so.
@@ -192,3 +194,5 @@ TEST(TdCheckedContainerDeathTest, RejectsInvalidVectorAndQueueIndices) {
 }
 
 }  // namespace
+
+}  // namespace td

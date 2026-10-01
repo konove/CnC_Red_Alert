@@ -85,6 +85,8 @@
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 
+namespace td {
+
 /***********************************************************************************************
  * TemplateClass::Validate -- validates template pointer
  **
@@ -404,3 +406,5 @@ TemplateClass::TemplateClass(TemplateType type, CELL pos)
     Unlimbo(Cell_Coord(pos));
   }
 }
+
+}  // namespace td

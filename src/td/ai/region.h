@@ -45,6 +45,8 @@
 
 #include "base/buffer.h"
 
+namespace td {
+
 class RegionClass {
  public:
   RegionClass() = default;
@@ -86,5 +88,7 @@ class RegionClass {
  protected:
   int64_t Threat{0};
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_AI_REGION_H_

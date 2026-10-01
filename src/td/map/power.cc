@@ -72,6 +72,8 @@
 #include "td/startup/conquer.h"
 #include "td/ui/gadget.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 std::span<const std::byte> PowerClass::PowerShape;
@@ -474,3 +476,5 @@ bool PowerClass::PowerButtonClass::Action(unsigned flags,
   GadgetClass::Action(flags, key, x, y);
   return true;
 }
+
+}  // namespace td

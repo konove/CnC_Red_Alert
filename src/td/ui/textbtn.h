@@ -46,6 +46,8 @@
 #include "td/core/defines.h"
 #include "td/ui/toggle.h"
 
+namespace td {
+
 class TextButtonClass final : public ToggleClass {
  public:
   TextButtonClass();
@@ -75,5 +77,7 @@ class TextButtonClass final : public ToggleClass {
   */
   TextPrintType PrintFlags;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_UI_TEXTBTN_H_

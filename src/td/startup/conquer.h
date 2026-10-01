@@ -31,6 +31,8 @@
 #include "engine/window/keyboard.h"
 #include "td/core/defines.h"
 
+namespace td {
+
 #define TXT_NONE 0                         //
 #define TXT_CREDIT_FORMAT 1                // %3d.%02d
 #define TXT_BUTTON_UPGRADE 2               // Upgrade
@@ -848,5 +850,7 @@ void Keyboard_Process(engine::window::KeyNumber& input);
 // Tiles `shapefile`'s frame `shapenum` over the given rectangle of `view`.
 void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
                      int shapenum, int xpos, int ypos, int width, int height);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_STARTUP_CONQUER_H_

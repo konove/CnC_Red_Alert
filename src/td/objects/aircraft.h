@@ -19,9 +19,6 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_AIRCRAFT_H_
 #define CNC_RED_ALERT_TD_OBJECTS_AIRCRAFT_H_
 
-class ArchiveReader;
-class ArchiveWriter;
-
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -40,6 +37,11 @@ class ArchiveWriter;
 #include "td/objects/radio.h"
 #include "td/objects/techno.h"
 #include "td/objects/type.h"
+
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
 
 class AircraftClass : public FootClass, public FlyClass {
  public:
@@ -232,5 +234,7 @@ class AircraftClass : public FootClass, public FlyClass {
 
 extern template void AircraftClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void AircraftClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_AIRCRAFT_H_

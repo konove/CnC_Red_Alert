@@ -71,6 +71,8 @@
 #include "td/ui/gadget.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 GaugeClass::GaugeClass(unsigned id, int x, int y, int w, int h)
     : ControlClass(id, x, y, w, h, kLeftHeld | kLeftPress | kLeftRelease, true),
       IsHorizontal(w > h) {
@@ -498,3 +500,5 @@ bool TriColorGaugeClass::Draw_Me(PixelView& view, bool forced) {
   }
   return false;
 }
+
+}  // namespace td

@@ -8,6 +8,8 @@
 #include "engine/window/hardware_cursor.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 engine::gfx::Palette CurrentPalette;
 
 // Shows `palette` on the display and recolors the mouse cursor, which SDL
@@ -51,3 +53,5 @@ void Set_Palette(const engine::gfx::Palette& palette) {
   CurrentPalette = palette;
   ShowPalette(palette);
 }
+
+}  // namespace td

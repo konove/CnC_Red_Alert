@@ -64,6 +64,8 @@
 #include "base/algorithm.h"
 #include "base/numeric.h"
 
+namespace td {
+
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management
  *class.             *
@@ -368,3 +370,5 @@ bool FixedIHeapClass::Free(void* pointer) {
   }
   return false;
 }
+
+}  // namespace td

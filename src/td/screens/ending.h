@@ -39,7 +39,11 @@
 #ifndef CNC_RED_ALERT_TD_SCREENS_ENDING_H_
 #define CNC_RED_ALERT_TD_SCREENS_ENDING_H_
 
+namespace td {
+
 void GDI_Ending();
 void Nod_Ending();
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_SCREENS_ENDING_H_

@@ -92,6 +92,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.
  **
@@ -723,3 +725,5 @@ void OptionsClass::Fixup_Palette() const {
 int OptionsClass::Normalize_Sound(int volume) const {
   return Fixed_To_Cardinal(volume, Volume);
 }
+
+}  // namespace td

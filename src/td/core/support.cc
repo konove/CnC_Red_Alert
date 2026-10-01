@@ -14,6 +14,8 @@
 #include "engine/gfx/palette_color.h"
 #include "engine/gfx/pixel_buffer.h"
 
+namespace td {
+
 std::span<uint8_t> Conquer_Build_Fading_Table(
     const engine::gfx::Palette& palette, std::span<uint8_t> dest, int color,
     int frac) {
@@ -131,3 +133,5 @@ void strtrim(char* buffer) {
                   last - first);
   base::At(storage, last - first) = '\0';
 }
+
+}  // namespace td

@@ -112,6 +112,8 @@
 #include "td/startup/winstub.h"
 #include "td/ui/input.h"
 
+namespace td {
+
 using engine::gfx::ShapeFlags;
 
 #define SCORETEXT_X 184
@@ -2256,3 +2258,5 @@ void Multi_Score_Presentation() {
   ControlQ = false;
   TheMouse().Show();
 }
+
+}  // namespace td

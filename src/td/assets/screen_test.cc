@@ -6,6 +6,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "gtest/gtest.h"
 
+namespace td {
+
 namespace {
 
 TEST(ScreenTest, AsksForA400LineModeByDefault) {
@@ -46,3 +48,5 @@ TEST(ScreenTest, SetModeHeightSticks) {
 }
 
 }  // namespace
+
+}  // namespace td

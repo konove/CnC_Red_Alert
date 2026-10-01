@@ -2,6 +2,8 @@
 #include "engine/stream/archive.h"
 #include "td/screens/score.h"
 
+namespace td {
+
 template <class Archive>
 void ScoreClass::Serialize(Archive& ar) {
   ar.Section(FourCC("SCOR"));
@@ -13,3 +15,5 @@ void ScoreClass::Serialize(Archive& ar) {
 }
 template void ScoreClass::Serialize(ArchiveWriter&);
 template void ScoreClass::Serialize(ArchiveReader&);
+
+}  // namespace td

@@ -79,6 +79,8 @@
 #include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
+namespace td {
+
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *
  *                                                                                             *
@@ -788,3 +790,5 @@ void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
     source = source.subspan(tab + 1);
   }
 }
+
+}  // namespace td

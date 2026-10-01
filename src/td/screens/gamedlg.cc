@@ -67,6 +67,8 @@
 #include "td/ui/slider.h"
 #include "td/ui/textbtn.h"
 
+namespace td {
+
 using enum engine::window::KeyNumber;
 
 /***********************************************************************************************
@@ -227,7 +229,6 @@ void GameControlsClass::Process() {
         process = false;
       }
     }
-
 
     /*
     **	Refresh display if needed.
@@ -453,3 +454,5 @@ void GameControlsClass::Process() {
     }
   }
 }
+
+}  // namespace td

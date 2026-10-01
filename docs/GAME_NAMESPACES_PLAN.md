@@ -236,7 +236,7 @@ Per step: `cmake --build build --parallel 22 && ctest --test-dir build --output-
 - [x] 1. Cleanup and game-agnostic engine
 - [x] 2. Layer and header-guard tooling
 - [x] 3. Game folders
-- [ ] 4. `ra::`/`td::` namespaces
+- [x] 4. `ra::`/`td::` namespaces
 - [ ] 5a. `game_core`
 - [ ] 5b. `game_sim`
 - [ ] 5c. `engine::net` core
@@ -332,3 +332,20 @@ that hold in both games (`GAME_FOLDER_EXCLUDES` in `tools/engine_layout.py`): `u
 `ai`, `editor`, `map`, `objects` and `saveload`; `core` none of `debug`, `editor`, `saveload`, `ui`
 and `wol`; `data` none of `saveload`, `screens`, `ui` and `wol`; and `ai`, `assets`, `debug`,
 `editor` and `objects` do not include `saveload`. It also fails on a game file outside the folders.
+
+### Step 4
+
+A script (not committed) wrapped every game file: `namespace ra {` / `namespace td {` opens after
+the include block, any code that sat above a late include moves below it, and forward declarations
+of engine types (`class PixelView;`, `class ArchiveReader;`, `namespace engine::gfx { ... }`) stay
+outside. By hand: `magic_enum::customize::enum_range` for `TemplateType` and `VocType` is
+specialized outside the namespace; `main`/`WinMain` are thin global wrappers over a file-local
+`Run()`; the non-Windows `HANDLE` alias in both `nullconn.h` stays global like the other copies;
+`ra::config`, `td::config` and `ra::dib` are concatenated (`namespace ra::config {`), and
+`td_save_detail` became `td::save_detail`. The 228 calls written `::As_Target(...)`,
+`::Distance(...)` and the like to escape a member of the same name now say `ra::`/`td::`. Tests sit
+in the namespace of the code they test.
+
+`nm -C` of every `ra_engine`/`td_engine`/`rasdl`/`tdsdl` object shows no game symbol outside `ra::`
+and `td::` except `main`; what remains global is the engine's own global types (`PixelBuffer`,
+`ArchiveReader`, the stream transforms) instantiated or inlined into game objects.

@@ -45,6 +45,8 @@
 #include "td/core/defines.h"
 #include "td/core/game_clock.h"
 
+namespace td {
+
 class SuperClass {
  public:
   explicit SuperClass(int recharge = 0, VoxType ready = VOX_NONE,
@@ -113,5 +115,7 @@ class SuperClass {
 
   static constexpr int kAnimationStages = 102;
 };
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_SUPER_H_

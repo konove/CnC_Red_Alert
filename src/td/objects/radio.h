@@ -47,6 +47,11 @@
 #include "td/objects/mission.h"
 #include "td/objects/object.h"
 
+class ArchiveReader;
+class ArchiveWriter;
+
+namespace td {
+
 /****************************************************************************
 **	Radio contact is controlled by this class. It handles the mundane chore
 **	of keeping the radio contact alive as well as broadcasting messages
@@ -114,9 +119,9 @@ class RadioClass : public MissionClass {
 
 };
 
-class ArchiveReader;
-class ArchiveWriter;
 extern template void RadioClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void RadioClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+}  // namespace td
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_RADIO_H_
