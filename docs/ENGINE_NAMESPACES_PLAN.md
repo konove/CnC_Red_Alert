@@ -56,3 +56,5 @@ of each library shows no symbols outside `engine::`, `std::`, `absl::`.
 - [x] 2. `engine::` for platform, crypto, file, net
 - [x] 3. `/migrate-namespaces` policy; `engine::audio`. Still global: `stream`, `codec`, `gfx`,
      `window`, `video`, `vqa`, each a later `/migrate-namespaces` pass.
+
+Continued for the games in `docs/GAME_NAMESPACES_PLAN.md` (`ra::`, `td::`, shared `game::`).
