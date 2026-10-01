@@ -33,6 +33,6 @@ endif ()
 include(Testing)
 add_gtest(
         NAME game_sim_test
-        SOURCES utracker_test.cc
-        LIBS game_sim
+        SOURCES door_test.cc utracker_test.cc
+        LIBS game_sim engine_stream
 )

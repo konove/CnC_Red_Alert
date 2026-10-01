@@ -87,7 +87,11 @@ class StageClass {
   [[nodiscard]] int Fetch_Stage() const { return Stage; }
   [[nodiscard]] int Fetch_Rate() const { return Rate; }
   void Set_Stage(int stage) const { Stage = static_cast<uint16_t>(stage); }
-  void Set_Rate(unsigned char rate) const { Rate = StageTimer = rate; }
+  // Keeps the low byte of `rate`, as the original's unsigned char parameter
+  // did.
+  void Set_Rate(int rate) const {
+    Rate = StageTimer = static_cast<unsigned char>(rate);
+  }
   void AI() {}
   bool Graphic_Logic() {
     if (Rate) {

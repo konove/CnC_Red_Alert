@@ -37,6 +37,7 @@
  */
 #include <cstdint>
 
+#include "game/sim/door.h"
 #include "game/sim/flasher.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
@@ -49,7 +50,6 @@
 #include "ra/objects/building.h"
 #include "ra/objects/bullet.h"
 #include "ra/objects/cargo.h"
-#include "ra/objects/door.h"
 #include "ra/objects/drive.h"
 #include "ra/objects/factory.h"
 #include "ra/objects/fly.h"
