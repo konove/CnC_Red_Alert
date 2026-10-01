@@ -12,3 +12,8 @@ find_package(SDL2 REQUIRED)
 add_executable(vqaplay vqaplay.cc)
 target_link_libraries(vqaplay PRIVATE tool_game_data engine_video base
                       absl::str_format absl::strings SDL2::SDL2)
+
+# Times the Rust LCW kernels against the C++ reference they replaced.
+add_executable(lcw_bench lcw_bench.cc
+        ${CMAKE_SOURCE_DIR}/src/engine/codec/lcw_reference_test_util.cc)
+target_link_libraries(lcw_bench PRIVATE engine_codec base absl::str_format)

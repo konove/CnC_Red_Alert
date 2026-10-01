@@ -23,12 +23,8 @@ target_sources(engine_codec PUBLIC
 
 target_link_libraries(engine_codec
         PUBLIC engine_stream
-        PRIVATE absl::core_headers lzo
+        PRIVATE absl::check absl::core_headers engine_rs_cxx lzo
 )
-
-# Byte- and pixel-crunching kernels: keep them fast when debugging
-# everything else (cmake/OptimizeInDebug.cmake).
-optimize_in_debug(lcw.cc lcw_uncompress.cc)
 
 # Tests
 include(Testing)

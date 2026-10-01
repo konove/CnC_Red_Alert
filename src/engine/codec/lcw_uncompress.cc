@@ -38,85 +38,37 @@
 #include "engine/codec/lcw_uncompress.h"
 
 #include <algorithm>
+#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <span>
 
-#include "base/array.h"
+#include "absl/log/check.h"
+#include "engine/codec/rust_bytes.h"
+#include "engine_rs_cxx/lib.h"
 
+// The decoder is engine_rs's lcw::uncompress (src/rust/src/lcw/decode.rs).
 int32_t LCW_Uncompress(std::span<const std::byte> source,
                        std::span<std::byte> dest) {
-  std::size_t written = 0;
-  while (written < dest.size() && !source.empty()) {
-    const auto opcode = std::to_integer<unsigned char>(source.front());
-    source = source.subspan(1);
-    std::size_t count = 0;
-    std::size_t offset = 0;
-    if (!(opcode & 0x80)) {
-      if (source.empty()) {
-        break;
-      }
-      count = (opcode >> 4) + 3;
-      const std::size_t distance =
-          std::to_integer<unsigned char>(source.front()) +
-          ((opcode & 0x0f) * 256);
-      source = source.subspan(1);
-      if (distance == 0 || distance > written) {
-        break;
-      }
-      offset = written - distance;
-    } else if (!(opcode & 0x40)) {
-      if (opcode == 0x80) {
-        break;
-      }
-      count = std::min<std::size_t>(opcode & 0x3f, dest.size() - written);
-      count = std::min(count, source.size());
-      // Forward copies preserve the legacy in-place decompression behavior.
-      for (std::size_t i = 0; i < count; ++i) {
-        base::At(dest, written++) = base::At(source, i);
-      }
-      source = source.subspan(count);
-      continue;
-    } else if (opcode == 0xfe) {
-      if (source.size() < 3) {
-        break;
-      }
-      count = std::to_integer<std::size_t>(base::At(source, 0)) +
-              (std::to_integer<std::size_t>(base::At(source, 1)) << 8);
-      const std::byte value = base::At(source, 2);
-      source = source.subspan(3);
-      count = std::min(count, dest.size() - written);
-      std::ranges::fill(dest.subspan(written, count), value);
-      written += count;
-      continue;
-    } else {
-      if (opcode == 0xff) {
-        if (source.size() < 2) {
-          break;
-        }
-        count = std::to_integer<std::size_t>(base::At(source, 0)) +
-                (std::to_integer<std::size_t>(base::At(source, 1)) << 8);
-        source = source.subspan(2);
-      } else {
-        count = (opcode & 0x3f) + 3;
-      }
-      if (source.size() < 2) {
-        break;
-      }
-      offset = std::to_integer<std::size_t>(base::At(source, 0)) +
-               (std::to_integer<std::size_t>(base::At(source, 1)) << 8);
-      source = source.subspan(2);
-      // A zero-length copy does not access its offset.
-      if (count != 0 && offset >= written) {
-        break;
-      }
-    }
-    count = std::min(count, dest.size() - written);
-    for (std::size_t i = 0; i < count; ++i) {
-      base::At(dest, written++) = base::At(dest, offset++);
-    }
+  if (!Overlaps(source, dest)) {
+    return static_cast<int32_t>(
+        engine_rs::lcw_uncompress(AsRustSlice(source), AsRustSlice(dest)));
   }
-  return static_cast<int32_t>(written);
+  // The stream lies in the destination's own storage, as WSA animations, VQA
+  // movies and Load_Uncompress() lay it out. Rust may not see one buffer as a
+  // shared and a mutable slice at once, so the whole of it crosses once.
+  const auto dest_begin = std::bit_cast<uintptr_t>(dest.data());
+  const auto source_begin = std::bit_cast<uintptr_t>(source.data());
+  CHECK_GE(source_begin, dest_begin)
+      << "LCW stream overlaps the front of its destination";
+  const std::size_t source_start = source_begin - dest_begin;
+  const std::size_t buffer_size =
+      std::max(dest.size(), source_start + source.size());
+  // Both spans lie in one array, which runs at least this far.
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+  const std::span<std::byte> buffer(dest.data(), buffer_size);
+  return static_cast<int32_t>(engine_rs::lcw_uncompress_in_place(
+      AsRustSlice(buffer), source_start, source.size(), dest.size()));
 }
 
 int32_t LCW_Uncompress(std::span<const unsigned char> source,

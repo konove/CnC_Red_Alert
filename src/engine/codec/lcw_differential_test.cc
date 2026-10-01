@@ -12,6 +12,7 @@
 #include "base/types.h"
 #include "engine/codec/lcw.h"
 #include "engine/codec/lcw_reference_test_util.h"
+#include "engine/codec/lcw_uncompress.h"
 #include "engine/codec/rust_bytes.h"
 #include "engine_rs_cxx/lib.h"
 #include "gtest/gtest.h"
@@ -208,6 +209,78 @@ TEST(LcwDifferentialTest, InPlaceMatchesReference) {
     EXPECT_EQ(static_cast<int64_t>(got_size), int64_t{want_size});
     EXPECT_TRUE(got == want);
   }
+}
+
+// The callers' in-place layouts, through the public entry point: the shim
+// must route them to the in-place decoder and decode exactly as before.
+TEST(LcwDifferentialTest, PublicApiDecodesInPlace) {
+  Lcg lcg(7);
+  for (int iteration = 0; iteration < 500; ++iteration) {
+    SCOPED_TRACE(iteration);
+    const auto plain = Corpus(lcg, 1 + lcg.Below(4000));
+    const auto stream = ReferenceCompress(plain);
+    const auto buffer_size = std::max(plain.size(), stream.size()) + 16;
+    // At the tail (WSA, VQA), or from the destination's first byte.
+    const auto source_start =
+        lcg.Below(2) == 0 ? buffer_size - stream.size() : 0;
+    std::vector<std::byte> want(buffer_size, kFill);
+    std::ranges::copy(stream,
+                      want.begin() + static_cast<base::ssize>(source_start));
+    std::vector<std::byte> got(want);
+
+    const auto source = [&](std::vector<std::byte>& buffer) {
+      return std::span<const std::byte>(buffer).subspan(source_start,
+                                                        stream.size());
+    };
+    const int32_t want_size = lcw_reference::Uncompress(
+        source(want), std::span(want).first(plain.size()));
+    const int32_t got_size =
+        LCW_Uncompress(source(got), std::span(got).first(plain.size()));
+    EXPECT_EQ(got_size, want_size);
+    EXPECT_TRUE(got == want);
+  }
+}
+
+// Load_Uncompress()'s layout: the packet at the tail of the buffer and the
+// destination a prefix that may stop short of it, touch it, or run into it.
+TEST(LcwDifferentialTest, PublicApiDecodesTailLayoutDisjoint) {
+  Lcg lcg(8);
+  const auto plain = Corpus(lcg, 3000);
+  const auto stream = ReferenceCompress(plain);
+  for (const int gap : {-100, -1, 0, 1, 100}) {
+    SCOPED_TRACE(gap);
+    const auto buffer_size = static_cast<std::size_t>(
+        std::max<base::ssize>(std::ssize(plain) + gap, 0) + std::ssize(stream));
+    std::vector<std::byte> want(buffer_size, kFill);
+    const auto source_start = buffer_size - stream.size();
+    std::ranges::copy(stream,
+                      want.begin() + static_cast<base::ssize>(source_start));
+    std::vector<std::byte> got(want);
+    const int32_t want_size = lcw_reference::Uncompress(
+        std::span<const std::byte>(want).subspan(source_start),
+        std::span(want).first(plain.size()));
+    const int32_t got_size =
+        LCW_Uncompress(std::span<const std::byte>(got).subspan(source_start),
+                       std::span(got).first(plain.size()));
+    EXPECT_EQ(got_size, want_size);
+    EXPECT_TRUE(got == want);
+  }
+}
+
+TEST(LcwDifferentialDeathTest, PublicApiRejectsSourceOverlappingTheFront) {
+  std::vector<std::byte> buffer(16, std::byte{0x80});
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH(LCW_Uncompress(std::span<const std::byte>(buffer).first(8),
+                              std::span(buffer).subspan(4, 8)),
+               "overlaps the front");
+}
+
+TEST(LcwDifferentialDeathTest, BoundedRejectsOverlappingSpans) {
+  std::vector<std::byte> buffer(16, std::byte{0x80});
+  // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH(LcwUncompBounded(std::span<const std::byte>(buffer).subspan(8),
+                                std::span(buffer).first(12)),
+               "separate buffers");
 }
 
 }  // namespace
