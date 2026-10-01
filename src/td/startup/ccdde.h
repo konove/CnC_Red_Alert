@@ -47,6 +47,8 @@
 
 #include "td/startup/dde.h"
 
+namespace td {
+
 class DDEServerClass {
  public:
   DDEServerClass();
@@ -88,8 +90,8 @@ extern DDEServerClass DDEServer;
 extern BOOL Send_Data_To_DDE_Server(const char* data, int length,
                                     int packet_type);
 
-#endif  // _WIN32
+}  // namespace td
 
-namespace td {}  // namespace td
+#endif  // _WIN32
 
 #endif  // CNC_RED_ALERT_TD_STARTUP_CCDDE_H_
