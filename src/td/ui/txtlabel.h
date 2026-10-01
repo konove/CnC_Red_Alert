@@ -1,86 +1,14 @@
-/*
-**	Command & Conquer(tm)
-**	Copyright 2025 Electronic Arts Inc.
-**
-**	This program is free software: you can redistribute it and/or modify
-**	it under the terms of the GNU General Public License as published by
-**	the Free Software Foundation, either version 3 of the License, or
-**	(at your option) any later version.
-**
-**	This program is distributed in the hope that it will be useful,
-**	but WITHOUT ANY WARRANTY; without even the implied warranty of
-**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**	GNU General Public License for more details.
-**
-**	You should have received a copy of the GNU General Public License
-**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* $Header:   F:\projects\c&c\vcs\code\txtlabel.h_v   1.14   16 Oct 1995
- * 16:46:08   JOE_BOSTIC  $ */
-/***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : TXTLABEL.H *
- *                                                                                             *
- *                   Programmer : Bill Randolph
- **
- *                                                                                             *
- *                   Start Date : 02/06/95 *
- *                                                                                             *
- *                  Last Update : February 6, 1995 [BR]
- **
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// File: TextLabelClass, game::TextLabelClass drawn Tiberian Dawn's way.
 
 #ifndef CNC_RED_ALERT_TD_UI_TXTLABEL_H_
 #define CNC_RED_ALERT_TD_UI_TXTLABEL_H_
 
-#include <cstdint>
-
-#include "absl/base/attributes.h"
-#include "engine/gfx/pixel_buffer.h"
-#include "game/ui/gadget.h"
-#include "td/core/defines.h"
+#include "game/ui/txtlabel.h"
+#include "td/ui/ui_skin.h"
 
 namespace td {
 
-class TextLabelClass : public game::GadgetClass {
- public:
-  /*
-  ** Constructor/Destructor
-  */
-  TextLabelClass(char* txt ABSL_ATTRIBUTE_LIFETIME_BOUND, int x, int y,
-                 int color, TextPrintType style);
-
-  /*
-  ** Overloaded draw routine
-  */
-  bool Draw_Me(PixelView& view, bool forced = false) override;
-
-  /*
-  ** Sets the displayed text of the label
-  */
-  virtual void Set_Text(char* txt) { Text = txt; }
-
-  /*
-  ** General-purpose data field
-  */
-  int64_t UserData{0};
-  TextPrintType Style;
-  char* Text;
-  int Color;
-  int PixWidth{-1};
-  uint8_t Segments{0};
-  uint16_t CRC = 0;
-};
+using TextLabelClass = game::TextLabelClass<UiSkin>;
 
 }  // namespace td
 

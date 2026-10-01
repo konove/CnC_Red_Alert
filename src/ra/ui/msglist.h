@@ -104,6 +104,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "ra/core/defines.h"
+#include "ra/ui/txtlabel.h"
 
 namespace ra {
 
@@ -128,7 +129,6 @@ namespace ra {
 //***************************************************************************
 // Forward declarations
 //***************************************************************************
-class TextLabelClass;
 
 //***************************************************************************
 // Class declaration

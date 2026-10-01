@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer(tm)
+**	Command & Conquer Red Alert(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\checkbox.cpv   1.6   16 Oct 1995 16:49:36
- * JOE_BOSTIC  $ */
+/* $Header: /CounterStrike/CHECKBOX.H 1     3/03/97 10:24a Joe_bostic $ */
 /***********************************************************************************************
  ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
  ****
@@ -25,44 +24,62 @@
  *                                                                                             *
  *                 Project Name : Command & Conquer *
  *                                                                                             *
- *                    File Name : CHECKBOX.CPP *
+ *                    File Name : CHECKBOX.H *
  *                                                                                             *
  *                   Programmer : Joe L. Bostic *
  *                                                                                             *
  *                   Start Date : 05/26/95 *
  *                                                                                             *
- *                  Last Update : July 1, 1995 [JLB] *
+ *                  Last Update : May 26, 1995 [JLB] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * CheckBoxClass::Draw_Me -- Draws the checkbox imagery. *
+ * Functions: *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "td/ui/checkbox.h"
+#ifndef CNC_RED_ALERT_GAME_UI_CHECKBOX_H_
+#define CNC_RED_ALERT_GAME_UI_CHECKBOX_H_
 
 #include "engine/gfx/pixel_buffer.h"
-#include "engine/gfx/wwstd.h"
-#include "engine/window/hardware_cursor.h"
+#include "engine/window/keyboard.h"
 #include "game/ui/input.h"
 #include "game/ui/toggle.h"
-#include "td/core/defines.h"
-#include "td/ui/dialog.h"
+#include "game/ui/widget_skin.h"
 
-namespace td {
+namespace game {
 
-bool CheckBoxClass::Draw_Me(PixelView& view, bool forced) {
-  if (game::ToggleClass::Draw_Me(view, forced)) {
-    game::TheMouse().Hide();
-    Draw_Box(view, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, false);
-    view.FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, kGrey);
-    if (IsOn) {
-      view.DrawLine(X + 1, Y + 1, X + Width - 2, Y + Height - 2, kBlack);
-      view.DrawLine(X + Width - 2, Y + 1, X + 1, Y + Height - 2, kBlack);
+// A 7x7 check box that turns itself on and off when clicked; read IsOn.
+// NOLINTBEGIN(portability-template-virtual-member-function): see WidgetSkin.
+template <WidgetSkin Skin>
+class CheckBoxClass : public ToggleClass {
+ public:
+  CheckBoxClass(unsigned id, int x, int y) : ToggleClass(id, x, y, 7, 7) {}
+
+  bool Draw_Me(PixelView& view, bool forced = false) override {
+    if (!ToggleClass::Draw_Me(view, forced)) {
+      return false;
     }
-    game::TheMouse().Show();
+    TheMouse().Hide();
+    Skin::Draw_Check_Box(view, X, Y, Width, Height, IsOn);
+    TheMouse().Show();
     return true;
   }
-  return false;
-}
 
-}  // namespace td
+ protected:
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override {
+    if (flags & kLeftRelease) {
+      if (IsOn) {
+        Turn_Off();
+      } else {
+        Turn_On();
+      }
+    }
+    return ToggleClass::Action(flags, key, x, y);
+  }
+};
+// NOLINTEND(portability-template-virtual-member-function)
+
+}  // namespace game
+
+#endif  // CNC_RED_ALERT_GAME_UI_CHECKBOX_H_

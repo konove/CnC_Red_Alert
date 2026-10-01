@@ -289,13 +289,9 @@ void Special_Dialog() {
         const int index = ButtonId(input) - 100;
         if (static_cast<unsigned>(index) <
             sizeof(_options) / sizeof(base::At(_options, 0))) {
+          // The box has turned itself on or off.
           base::At(_options, index).Setting =
-              !base::At(_options, index).Setting;
-          if (base::At(_options, index).Setting) {
-            base::At(_options, index).Button->Turn_On();
-          } else {
-            base::At(_options, index).Button->Turn_Off();
-          }
+              base::At(_options, index).Button->IsOn;
         }
         break;
     }
