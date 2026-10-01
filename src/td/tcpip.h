@@ -99,8 +99,6 @@ using HANDLE = void*;
 #define WM_ASYNCEVENT (WM_USER + 104)     // other Async event
 #define WM_UDPASYNCEVENT (WM_USER + 105)  // UDP socket Async event
 
-#define VSS_ID (-1)  // ID of the VSS connection.
-
 class TcpipManagerClass {
  public:
   TcpipManagerClass();

@@ -435,10 +435,6 @@ int main(int argc, char* argv[])
   /*
   **	Restore the current drive and directory.
   */
-#ifdef NOT_FOR_WIN95
-  _dos_setdrive(olddrive, &drivecount);
-  chdir(oldpath);
-#endif  // NOT_FOR_WIN95
 
   ShutDown();
   return EXIT_SUCCESS;

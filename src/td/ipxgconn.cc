@@ -522,10 +522,6 @@ void IPXGlobalConnClass::Set_Bridge(const NetNumType& bridge) {
     base::CopyBytes(base::ObjectBytes(BridgeNet), base::ObjectBytes(bridge), 4);
     base::FillBytes(base::ObjectBytes(BridgeNode), 0xff, 6);
 
-    if (IPX_Get_Local_Target(BridgeNet, BridgeNode, Socket, BridgeNode) == 0) {
-      IsBridge = 1;
-    } else {
-      IsBridge = 0;
-    }
+    IsBridge = 1;
   }
 }

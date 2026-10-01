@@ -272,7 +272,9 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Misc variables
   .....................................................................*/
-  bool IPXStatus : 1;              // 0 = no IPX, 1 = IPX found
+  // 0 = no IPX, 1 = IPX found. There is no IPX driver, so only Init() for an
+  // Internet game sets it.
+  bool IPXStatus : 1 {false};
   bool Listening : 1 {false};      // 1 = Listening is on
   bool RealMemAllocd : 1 {false};  // 1 = Real-mode memory has been alloc'd
 
@@ -294,27 +296,27 @@ class IPXManagerClass : public ConnManClass {
   The Socket ID, and local Novell Connection Number
   .....................................................................*/
   uint16_t Socket;        // Our socket ID for sending/receiving
-  int ConnectionNum;      // local connection #, 0=not logged in
+  int ConnectionNum = 0;  // Novell connection #, 0=not logged in (always).
 
   /*.....................................................................
   Array of connection queues
   .....................................................................*/
   std::unique_ptr<IPXConnClass>
       Connection[CONNECT_MAX]{};          // connection objects
-  int NumConnections;                     // # connection objects in use
+  int NumConnections = 0;                 // # connection objects in use
   std::unique_ptr<IPXGlobalConnClass> GlobalChannel;  // the Global Channel
 
   /*.....................................................................
   Current queue for polling for received packets
   .....................................................................*/
-  int CurConnection;
+  int CurConnection = 0;
 
   /*.....................................................................
   Timing parameters for all connections
   .....................................................................*/
-  int32_t RetryDelta;
-  int32_t MaxRetries;  // -1 means no limit
-  int32_t Timeout;     // -1 means no limit
+  int32_t RetryDelta = 2;   // Ticks between retries.
+  int32_t MaxRetries = -1;  // -1 means no limit
+  int32_t Timeout = 60;     // Ticks before a connection is bad; -1: no limit
 
   /*---------------------------------------------------------------------
   Real-mode memory pointers and such
@@ -368,16 +370,6 @@ class IPXManagerClass : public ConnManClass {
   char* FirstDataBuf = nullptr;   // 1st data buffer area
 
   /*.....................................................................
-  Current packet index & ptrs for parsing packets. Only the legacy DOS IPX
-  path uses these; the Winsock path in Service() walks its own receive buffer
-  with locals, so that nothing survives the call pointing into that frame.
-  .....................................................................*/
-#ifdef NOT_FOR_WIN95
-  IPXHeaderType* CurHeaderBuf;  // Current packet ptr, for reading
-  char* CurDataBuf;             // Current actual data ptr
-#endif
-
-  /*.....................................................................
   ECB, header, & buffer for sending
   .....................................................................*/
   ECBType* SendECB = nullptr;  // ECB for sending
@@ -387,7 +379,7 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Various Statistics
   .....................................................................*/
-  int BadConnection;
+  int BadConnection = IPXConnClass::kConnectionNone;
 };
 
 #endif  // CNC_RED_ALERT_TD_IPXMGR_H_

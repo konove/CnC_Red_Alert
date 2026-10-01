@@ -4609,19 +4609,6 @@ static int Net_Fake_New_Dialog() {
                  static_cast<int>(std::ssize(TheNetwork().players())));
   CCDebugString(a_buffer);
 
-#ifdef VIRTUAL_SUBNET_SERVER
-  /*
-  ** Send a bogus packet to wake up the VSS
-  */
-  memset(&TheNetwork().global_packet(), 0, sizeof(GlobalPacketType));
-
-  TheNetwork().global_packet().Command = (NetCommandType)50;  // Invalid command
-  base::SafeCopy(TheNetwork().global_packet().Name, TheSession().player_name());
-  TheNetwork().ipx().Send_Global_Message(
-      base::ObjectBytes(TheNetwork().global_packet()), sizeof(GlobalPacketType),
-      0, NULL);
-#endif  // VIRTUAL_SUBNET_SERVER
-
   CCDebugString("C&C95 - About to reveal mouse\n");
   TheMouse().ForceShow();
 
@@ -4740,12 +4727,7 @@ static int Net_Fake_New_Dialog() {
       default: exit loop with true status
       ------------------------------------------------------------------*/
       default:
-#ifdef VIRTUAL_SUBNET_SERVER
-        if (std::ssize(TheNetwork().players()) ==
-            TheNetwork().internet_max_players() - 1) {
-#else   // VIRTUAL_SUBNET_SERVER
         if (std::ssize(TheNetwork().players()) > 0) {
-#endif  // VIRTUAL_SUBNET_SERVER
 
           // char ddkks[128];
           // sprintf (ddkks, "C&C95 - Players.Count() = %d\n", Players.Count());
@@ -4953,21 +4935,6 @@ static int Net_Fake_New_Dialog() {
           &TheNetwork().players().at(base::ToSize(i))->Address);
     }
 
-#ifdef VIRTUAL_SUBNET_SERVER
-    CCDebugString("C&C95 - Creating connection to the VSS\n");
-    /*
-    ** Create an additional connection to the VSS
-    */
-    if (TheNetwork().use_subnet_server()) {
-      IPXAddressClass vss_global_address;
-      NetNodeType vss_node;
-      NetNumType vss_net;
-      memset(vss_net, 1, sizeof(vss_net));
-      memset(vss_node, 0, sizeof(vss_node));
-      vss_global_address.Set_Address(vss_net, vss_node);
-      TheNetwork().ipx().Create_Connection(VSS_ID, "VSS", &vss_global_address);
-    }
-#endif  // VIRTUAL_SUBNET_SERVER
     base::At(tmp_id, i) = TheSession().local_id();
 
     /*.....................................................................
@@ -5615,22 +5582,6 @@ static int Net_Fake_Join_Dialog() {
           base::At(tmp_id, i) = TheSession().local_id();
         }
       }
-
-#ifdef VIRTUAL_SUBNET_SERVER
-      /*
-      ** Create an additional connection to the VSS
-      */
-      if (TheNetwork().use_subnet_server()) {
-        IPXAddressClass vss_global_address;
-        NetNodeType vss_node;
-        NetNumType vss_net;
-        memset(vss_net, 1, sizeof(vss_net));
-        memset(vss_node, 0, sizeof(vss_node));
-        vss_global_address.Set_Address(vss_net, vss_node);
-        TheNetwork().ipx().Create_Connection(VSS_ID, "VSS",
-                                             &vss_global_address);
-      }
-#endif  // VIRTUAL_SUBNET_SERVER
 
       /*..................................................................
       Store every player's ID in the MPlayerID[] array.  This array will

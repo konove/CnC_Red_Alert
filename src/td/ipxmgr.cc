@@ -85,7 +85,6 @@
 #include "td/connect.h"
 #include "td/defines.h"
 #include "td/ipx.h"
-#include "td/ipx95.h"
 #include "td/ipxaddr.h"
 #include "td/ipxconn.h"
 #include "td/ipxgconn.h"
@@ -119,44 +118,14 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
                                  int glb_num_packets, int pvt_num_packets,
                                  uint16_t socket, uint16_t product_id)
     // IPX requires socket IDs stored high/low, so the socket is byte-swapped.
-    : IPXStatus(IPX_SPX_Installed()),
-      Glb_MaxPacketLen(glb_maxlen),
+    : Glb_MaxPacketLen(glb_maxlen),
       Glb_NumPackets(glb_num_packets),
       Pvt_MaxPacketLen(pvt_maxlen),
       Pvt_NumPackets(pvt_num_packets),
       ProductID(product_id),
       Socket(static_cast<uint16_t>(
           (static_cast<uint32_t>(socket) & 0x00ffU) << 8 |
-          (static_cast<uint32_t>(socket) & 0xff00U) >> 8)) {
-  /*........................................................................
-  Get the user's IPX local connection number
-  ........................................................................*/
-  if (IPXStatus) {
-    ConnectionNum = IPX_Get_Connection_Number();
-  } else {
-    ConnectionNum = 0;
-  }
-
-  /*........................................................................
-  Init connection states
-  ........................................................................*/
-  NumConnections = 0;
-  CurConnection = 0;
-  for (auto& i : Connection) {
-    i = nullptr;
-  }
-  GlobalChannel = nullptr;
-
-  BadConnection = IPXConnClass::kConnectionNone;
-
-  /*........................................................................
-  Init timing parameters
-  ........................................................................*/
-  RetryDelta = 2;   // 2 ticks between retries
-  MaxRetries = -1;  // disregard # retries
-  Timeout = 60;     // report bad connection after 1 second
-
-} /* end of IPXManagerClass */
+          (static_cast<uint32_t>(socket) & 0xff00U) >> 8)) {}
 
 /***************************************************************************
  * IPXManagerClass::~IPXManagerClass -- class destructor                   *
@@ -523,21 +492,8 @@ bool IPXManagerClass::Delete_Connection(int id) {
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Num_Connections() {
-#ifdef VIRTUAL_SUBNET_SERVER
-  /*
-  ** If we are connected to the VSS then dont coumt that in the number of
-  *connections.
-  */
-  if (Connection_Index(VSS_ID) == IPXConnClass::kConnectionNone) {
-    return (NumConnections);
-  } else {
-    return (NumConnections - 1);
-  }
-#else  // VIRTUAL_SUBNET_SERVER
 
   return NumConnections;
-
-#endif  // VIRTUAL_SUBNET_SERVER
 
 } /* end of Num_Connections */
 
@@ -774,26 +730,16 @@ int IPXManagerClass::Send_Private_Message(std::span<const std::byte> buf,
     *players.
     */
 
-#ifdef VIRTUAL_SUBNET_SERVER
-    if (ack_req || (!TheNetwork().winsock().Get_Connected() ||
-                    !TheNetwork().use_subnet_server())) {
-#endif  // VIRTUAL_SUBNET_SERVER
       /*.....................................................................
       Check for room in all connections
       .....................................................................*/
       for (i = 0; i < NumConnections; i++) {
-#ifdef VIRTUAL_SUBNET_SERVER
-        if (Connection[i]->ID != VSS_ID) {
-#endif  // VIRTUAL_SUBNET_SERVER
           if (base::At(Connection, i)->Queue->Num_Send() ==
               base::At(Connection, i)->Queue->Max_Send()) {
             DLOG(WARNING) << "IPX send queue full for connection " << i
                           << "; broadcast dropped";
             return 0;
           }
-#ifdef VIRTUAL_SUBNET_SERVER
-        }
-#endif  // VIRTUAL_SUBNET_SERVER
       }
 
       /*.....................................................................
@@ -801,30 +747,8 @@ int IPXManagerClass::Send_Private_Message(std::span<const std::byte> buf,
       .....................................................................*/
 
       for (i = 0; i < NumConnections; i++) {
-#ifdef VIRTUAL_SUBNET_SERVER
-        if (Connection[i]->ID != VSS_ID) {
-#endif  // VIRTUAL_SUBNET_SERVER
           base::At(Connection, i)->Send_Packet(buf, buflen, ack_req);
-#ifdef VIRTUAL_SUBNET_SERVER
-        }
-#endif  // VIRTUAL_SUBNET_SERVER
       }
-
-#ifdef VIRTUAL_SUBNET_SERVER
-    } else {
-      /*
-      ** Send the packet to the VSS with a 0 header so it gets forwarded to all
-      *players.
-      */
-      if (Connection[Connection_Index(VSS_ID)]->Queue->Num_Send() ==
-          Connection[Connection_Index(VSS_ID)]->Queue->Max_Send()) {
-        DLOG(WARNING) << "IPX send queue full for the virtual subnet server; "
-                         "broadcast dropped";
-        return (false);
-      }
-      Connection[Connection_Index(VSS_ID)]->Send_Packet(buf, buflen, 0);
-    }
-#endif  // VIRTUAL_SUBNET_SERVER
 
     return 1;
   }
@@ -880,9 +804,6 @@ int IPXManagerClass::Get_Private_Message(std::span<std::byte> buf, int* buflen,
   int i = 0;
   int rc = 0;
   int c_id = 0;
-#ifdef VIRTUAL_SUBNET_SERVER
-  int vss = 0;
-#endif  // VIRTUAL_SUBNET_SERVER
 
   /*
   ------------ Error if IPX not installed or not Listening -----------------
@@ -891,31 +812,17 @@ int IPXManagerClass::Get_Private_Message(std::span<std::byte> buf, int* buflen,
     return 0;
   }
 
-#ifdef VIRTUAL_SUBNET_SERVER
-  if (TheNetwork().winsock().Get_Connected()) {
-    vss = int{TheNetwork().use_subnet_server()};
-  }
-#endif  // VIRTUAL_SUBNET_SERVER
-
   /*------------------------------------------------------------------------
   Safety check: ensure CurConnection is in range.
   ------------------------------------------------------------------------*/
-#ifdef VIRTUAL_SUBNET_SERVER
-  if (CurConnection >= NumConnections - vss) {
-#else   // VIRTUAL_SUBNET_SERVER
   if (CurConnection >= NumConnections) {
-#endif  // VIRTUAL_SUBNET_SERVER
     CurConnection = 0;
   }
 
   /*------------------------------------------------------------------------
   Scan all connections for a received packet, starting with 'CurConnection'
   ------------------------------------------------------------------------*/
-#ifdef VIRTUAL_SUBNET_SERVER
-  for (i = 0; i < NumConnections - vss; i++) {
-#else   // VIRTUAL_SUBNET_SERVER
   for (i = 0; i < NumConnections; i++) {
-#endif  // VIRTUAL_SUBNET_SERVER
     /*.....................................................................
     Check this connection for a packet
     .....................................................................*/
@@ -926,11 +833,7 @@ int IPXManagerClass::Get_Private_Message(std::span<std::byte> buf, int* buflen,
     Increment CurConnection to the next connection index
     .....................................................................*/
     CurConnection++;
-#ifdef VIRTUAL_SUBNET_SERVER
-    if (CurConnection >= NumConnections - vss) {
-#else   // VIRTUAL_SUBNET_SERVER
     if (CurConnection >= NumConnections) {
-#endif  // VIRTUAL_SUBNET_SERVER
       CurConnection = 0;
     }
 
@@ -972,38 +875,16 @@ int IPXManagerClass::Service() {
   int packetlen = 0;
   IPXAddressClass address;
 
-#ifndef NOT_FOR_WIN95
-
   unsigned char temp_receive_buffer[1024];
   int recv_length = 0;
 
-  // Cursors into temp_receive_buffer above. The members of the same name are
-  // the legacy DOS path's cursor over FirstHeaderBuf/FirstDataBuf; using them
-  // here left the object pointing into this frame's stack after Service()
-  // returned.
-  IPXHeaderType header_storage{};  // Copy of the received IPX header.
+  // Cursors into temp_receive_buffer above.
   IPXHeaderType* cur_header_buf = nullptr;
   std::span<std::byte> cur_data_buf;
 
   if (TheNetwork().winsock().Get_Connected()) {
     while ((recv_length = TheNetwork().winsock().Read(
                 base::ObjectBytes(temp_receive_buffer), 1024)) != 0) {
-#ifdef VIRTUAL_SUBNET_SERVER
-      /*
-      ** Get a pointer to the data header and swap the bit mask
-      */
-      cur_header_buf =
-          reinterpret_cast<IPXHEADER*>(&temp_receive_buffer[0]);  // NULL;
-      uint16_t* swapptr = reinterpret_cast<uint16_t*>(cur_header_buf);
-      *swapptr = ntohs(*swapptr);
-
-      cur_data_buf = base::ObjectBytes(temp_receive_buffer).subspan(2);
-
-      /*.....................................................................
-      Compute the length of the packet (byte-swap the length in the IPX hdr)
-      .....................................................................*/
-      packetlen = recv_length - 2;
-#else  // VIRTUAL_SUBNET_SERVER
       cur_header_buf = nullptr;
       cur_data_buf = base::ObjectBytes(temp_receive_buffer);
 
@@ -1012,8 +893,6 @@ int IPXManagerClass::Service() {
       .....................................................................*/
       packetlen = recv_length;
 
-#endif  // VIRTUAL_SUBNET_SERVER
-
       /*.....................................................................
       Extract the sender's address from the IPX header
       .....................................................................*/
@@ -1042,67 +921,6 @@ int IPXManagerClass::Service() {
           Find the Private Queue that this packet is for
           ..................................................................*/
           for (i = 0; i < NumConnections; i++) {
-#ifdef VIRTUAL_SUBNET_SERVER
-            if (Connection[i]->Address == address &&
-                Connection[i]->ID != VSS_ID) {
-#else   // VIRTUAL_SUBNET_SERVER
-            if (base::At(Connection, i)->Address == address) {
-#endif  // VIRTUAL_SUBNET_SERVER
-              if (!base::At(Connection, i)
-                       ->Receive_Packet(cur_data_buf, packetlen)) {
-                DLOG(WARNING) << "IPX receive queue overflow for connection "
-                              << i << "; packet lost";
-              }
-              break;
-            }
-          }
-        }
-      }
-    }
-  } else {
-    while (IPX_Get_Outstanding_Buffer95(&base::At(temp_receive_buffer, 0))) {
-      header_storage = base::ReadUnaligned<IPXHeaderType>(
-          base::ObjectBytes(temp_receive_buffer));
-      cur_header_buf = &header_storage;
-      cur_data_buf =
-          base::ObjectBytes(temp_receive_buffer).subspan(sizeof(IPXHeaderType));
-
-      /*.....................................................................
-      Compute the length of the packet (byte-swap the length in the IPX hdr)
-      .....................................................................*/
-      const auto length = static_cast<uint32_t>(cur_header_buf->Length);
-      packetlen = static_cast<int>((length & 0xffU) << 8 | length >> 8);
-      packetlen -= sizeof(IPXHeaderType);
-
-      /*.....................................................................
-      Extract the sender's address from the IPX header
-      .....................................................................*/
-      address.Set_Address(cur_header_buf);
-
-      /*.....................................................................
-      Examine the Magic Number of the received packet to determine if this
-      packet goes into the Global Queue, or into one of the Private Queues
-      .....................................................................*/
-      if (std::cmp_less(packetlen, sizeof(CommHeaderType)) ||
-          base::ToSize(packetlen) > cur_data_buf.size()) {
-        continue;
-      }
-      cur_data_buf = cur_data_buf.first(base::ToSize(packetlen));
-      packet_storage = base::ReadUnaligned<CommHeaderType>(cur_data_buf);
-
-      if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
-        /*..................................................................
-        Put the packet in the Global Queue
-        ..................................................................*/
-        if (!GlobalChannel->Receive_Packet(cur_data_buf, packetlen, &address)) {
-          DLOG(WARNING) << "IPX global receive queue overflow; packet lost";
-        }
-      } else {
-        if (packet->MagicNumber == ProductID) {
-          /*..................................................................
-          Find the Private Queue that this packet is for
-          ..................................................................*/
-          for (i = 0; i < NumConnections; i++) {
             if (base::At(Connection, i)->Address == address) {
               if (!base::At(Connection, i)
                        ->Receive_Packet(cur_data_buf, packetlen)) {
@@ -1116,91 +934,6 @@ int IPXManagerClass::Service() {
       }
     }
   }
-
-  // IPX_Start_Listening95();
-
-#else  // NOT_FOR_WIN95
-
-  /*
-  ------------ Error if IPX not installed or not Listening -----------------
-  */
-  if (!IPXStatus || !Listening) {
-    return (false);
-  }
-
-  /*------------------------------------------------------------------------
-  Loop until there are no more packets to process.
-  ------------------------------------------------------------------------*/
-  for (;;) {
-    /*.....................................................................
-    Check the BufferFlags for the "current" buffer; if it's empty,
-    break; out of the loop.
-    .....................................................................*/
-    if (BufferFlags[CurIndex] == 0) {
-      break;
-    }
-
-    /*.....................................................................
-    Compute the length of the packet (byte-swap the length in the IPX hdr)
-    .....................................................................*/
-    packetlen =
-        ((CurHeaderBuf->Length & 0xff) << 8) | (CurHeaderBuf->Length >> 8);
-    packetlen -= sizeof(IPXHeaderType);
-
-    /*.....................................................................
-    Extract the sender's address from the IPX header
-    .....................................................................*/
-    address.Set_Address(CurHeaderBuf);
-
-    /*.....................................................................
-    Examine the Magic Number of the received packet to determine if this
-    packet goes into the Global Queue, or into one of the Private Queues
-    .....................................................................*/
-    packet = reinterpret_cast<CommHeaderType*>(CurDataBuf);
-    if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
-      /*..................................................................
-      Put the packet in the Global Queue
-      ..................................................................*/
-      if (!GlobalChannel->Receive_Packet(cur_data_buf, packetlen, &address)) {
-        DLOG(WARNING) << "IPX global receive queue overflow; packet lost";
-      }
-    } else {
-      if (packet->MagicNumber == ProductID) {
-        /*..................................................................
-        Find the Private Queue that this packet is for
-        ..................................................................*/
-        for (i = 0; i < NumConnections; i++) {
-          if (Connection[i]->Address == address) {
-            if (!Connection[i]->Receive_Packet(cur_data_buf, packetlen)) {
-              DLOG(WARNING) << "IPX receive queue overflow for connection " << i
-                            << "; packet lost";
-            }
-            break;
-          }
-        }
-      }
-    }
-
-    /*.....................................................................
-    Set the current BufferFlags to 0 (since we've cleaned out this buffer)
-    .....................................................................*/
-    BufferFlags[CurIndex] = 0;
-
-    /*.....................................................................
-    Go to the next packet buffer
-    .....................................................................*/
-    CurIndex++;
-    CurHeaderBuf = reinterpret_cast<IPXHeaderType*>(
-        reinterpret_cast<char*>(CurHeaderBuf) + FullPacketLen);
-    CurDataBuf += FullPacketLen;
-    if (CurIndex >= NumBufs) {
-      CurHeaderBuf = FirstHeaderBuf;
-      CurDataBuf = FirstDataBuf;
-      CurIndex = 0;
-    }
-  }
-
-#endif  // NOT_FOR_WIN95
 
   /*------------------------------------------------------------------------
   Service all connections.  If a connection reports that it's gone "bad",
@@ -1215,14 +948,8 @@ int IPXManagerClass::Service() {
 
   for (i = 0; i < NumConnections; i++) {
     if (!base::At(Connection, i)->Service()) {
-#ifdef VIRTUAL_SUBNET_SERVER
-      if (Connection[i]->ID != VSS_ID) {
-#endif  // VIRTUAL_SUBNET_SERVER
         rc = 0;
         BadConnection = base::At(Connection, i)->ID;
-#ifdef VIRTUAL_SUBNET_SERVER
-      }
-#endif  // VIRTUAL_SUBNET_SERVER
     }
   }
 
@@ -1466,17 +1193,7 @@ int32_t IPXManagerClass::Response_Time() {
   int32_t resp = 0;
   int32_t maxresp = 0;
   int i = 0;
-#ifdef VIRTUAL_SUBNET_SERVER
-  int vss = 0;
-
-  if (TheNetwork().winsock().Get_Connected()) {
-    vss = int{TheNetwork().use_subnet_server()};
-  }
-
-  for (i = 0; i < NumConnections - vss; i++) {
-#else   // VIRTUAL_SUBNET_SERVER
   for (i = 0; i < NumConnections; i++) {
-#endif  // VIRTUAL_SUBNET_SERVER
     resp = base::At(Connection, i)->Queue->Avg_Response_Time();
     maxresp = std::max(resp, maxresp);
   }

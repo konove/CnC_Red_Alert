@@ -55,11 +55,9 @@
 #include <cstring>
 #include <span>
 
-#include "base/array.h"
 #include "base/buffer.h"
 #include "base/strings/safe_string.h"
 #include "td/ipx.h"
-#include "td/ipx95.h"
 #include "td/ipxaddr.h"
 #include "td/network.h"
 #include "td/noseqcon.h"
@@ -136,22 +134,11 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
     if (!Address.Is_Broadcast() && Configured == 1) {
       Address.Get_Address(net, node);
       /*.....................................................................
-      If the user is logged in & has a valid Novell Connection Number, get the
-      bridge address the "official" way
+      Use the destination node address as the ImmediateAddress, and just hope
+      there's no network bridge in the path.
       .....................................................................*/
-      if (ConnectionNum != 0) {
-        if (IPX_Get_Local_Target(net, node, Socket, ImmediateAddress) != 0) {
-          base::CopyBytes(base::ObjectBytes(ImmediateAddress),
-                          base::ObjectBytes(node), 6);
-        }
-      } else {
-        /*.....................................................................
-        Otherwise, use the destination node address as the ImmediateAddress, and
-        just hope there's no network bridge in the path.
-        .....................................................................*/
-        base::CopyBytes(base::ObjectBytes(ImmediateAddress),
-                        base::ObjectBytes(node), 6);
-      }
+      base::CopyBytes(base::ObjectBytes(ImmediateAddress),
+                      base::ObjectBytes(node), 6);
 
       Immed_Set = 1;
     } else {
@@ -274,89 +261,15 @@ void IPXConnClass::Configure(uint16_t socket, int conn_num, ECBType* listen_ecb,
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 bool IPXConnClass::Start_Listening() {
-#ifndef NOT_FOR_WIN95
 
   if (TheNetwork().winsock().Get_Connected()) {
     return true;
   }
 
-  /*------------------------------------------------------------------------
-  Open the Socket
-  ------------------------------------------------------------------------*/
-  if (!Open_Socket(Socket)) {
-    return false;
-  }
-
-  if (IPX_Start_Listening95()) {
-    Listening = 1;
-    return true;
-  }
+  // There is no IPX driver: only the Winsock path can listen.
+  Open_Socket(Socket);
   return false;
 
-#else
-
-  void* hdr_ptr;
-  uintptr_t hdr_val;
-  void* buf_ptr;
-  uintptr_t buf_val;
-  int rc;
-
-  /*------------------------------------------------------------------------
-  Don't do a thing unless we've been configured, and we're not listening.
-  ------------------------------------------------------------------------*/
-  if (Configured == 0 || Listening == 1) {
-    return (false);
-  }
-
-  /*------------------------------------------------------------------------
-  Open the Socket
-  ------------------------------------------------------------------------*/
-  if (!Open_Socket(Socket)) {
-    return (false);
-  }
-
-  /*------------------------------------------------------------------------
-  Clear the ECB & header
-  ------------------------------------------------------------------------*/
-  memset(ListenECB, 0, sizeof(ECBType));
-  memset(ListenHeader, 0, sizeof(IPXHeaderType));
-
-  /*------------------------------------------------------------------------
-  Convert protected-mode ptrs to real-mode ptrs
-  ------------------------------------------------------------------------*/
-  hdr_val = reinterpret_cast<uintptr_t>(ListenHeader);
-  hdr_ptr =
-      reinterpret_cast<void*>(((hdr_val & 0xffff0) << 12) | (hdr_val & 0x000f));
-
-  buf_val = reinterpret_cast<uintptr_t>(ListenBuf);
-  buf_ptr =
-      reinterpret_cast<void*>(((buf_val & 0xffff0) << 12) | (buf_val & 0x000f));
-
-  /*------------------------------------------------------------------------
-  Fill in the ECB
-  ------------------------------------------------------------------------*/
-  ListenECB->SocketNumber = Socket;
-  ListenECB->PacketCount = 2;
-  ListenECB->Packet[0].Address = hdr_ptr;
-  ListenECB->Packet[0].Length = sizeof(IPXHeaderType);
-  ListenECB->Packet[1].Address = buf_ptr;
-  ListenECB->Packet[1].Length = static_cast<uint16_t>(PacketLen);
-
-  reinterpret_cast<int32_t&>(ListenECB->Event_Service_Routine) = Handler;
-
-  /*------------------------------------------------------------------------
-  Command IPX to listen
-  ------------------------------------------------------------------------*/
-  rc = IPX_Listen_For_Packet(ListenECB);
-  if (rc != 0) {
-    Close_Socket(Socket);
-    return (false);
-  } else {
-    Listening = 1;
-    return (true);
-  }
-
-#endif  // NOT_FOR_WIN95
 } /* end of Start_Listening */
 
 /***************************************************************************
@@ -385,24 +298,11 @@ bool IPXConnClass::Stop_Listening() {
     return false;
   }
 
-#ifndef NOT_FOR_WIN95
-
   if (TheNetwork().winsock().Get_Connected()) {
     Listening = 0;
     return true;
   }
-  IPX_Shut_Down95();
   Close_Socket(Socket);
-
-#else  // NOT_FOR_WIN95
-
-  /*------------------------------------------------------------------------
-  Shut IPX down.
-  ------------------------------------------------------------------------*/
-  IPX_Cancel_Event(ListenECB);
-  Close_Socket(Socket);
-
-#endif  // NOT_FOR_WIN95
 
   Listening = 0;
 
@@ -461,38 +361,8 @@ int IPXConnClass::Send(std::span<const std::byte> buf, int buflen) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Open_Socket(uint16_t socket) {
-  if (TheNetwork().winsock().Get_Connected()) {
-    SocketOpen = 1;
-    return 1;
-  }
-
-  SocketOpen = 0;
-
-  /*------------------------------------------------------------------------
-  Try to open a listen socket.  The socket may have been left open by
-  a previously-crashed program, so ignore the state of the SocketOpen
-  flag for this call; use IPX to determine if the socket was already open.
-  ------------------------------------------------------------------------*/
-  int rc = IPX_Open_Socket(socket);
-  if (rc) {
-    /*
-    ................. If already open, close & reopen it ..................
-    */
-    if (rc == IPXERR_SOCKET_ERROR) {
-      IPX_Close_Socket(socket);
-      rc = IPX_Open_Socket(socket);
-      /*
-      .................. Still can't open: return error ..................
-      */
-      if (rc) {
-        return 0;
-      }
-    }
-  }
-
+int IPXConnClass::Open_Socket(uint16_t /*socket*/) {
   SocketOpen = 1;
-
   return 1;
 }
 
@@ -515,22 +385,8 @@ int IPXConnClass::Open_Socket(uint16_t socket) {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-void IPXConnClass::Close_Socket(uint16_t socket) {
-  if (TheNetwork().winsock().Get_Connected()) {
-    SocketOpen = 0;
-    return;
-  }
-  /*------------------------------------------------------------------------
-  Never, ever, ever, under any circumstances whatsoever, close a socket
-  that isn't open.  You'll regret it forever (or until at least until you're
-  through rebooting, which, if you're on a Pentium is the same thing).
-  ------------------------------------------------------------------------*/
-  if (SocketOpen == 1) {
-    IPX_Close_Socket(socket);
-  }
-
+void IPXConnClass::Close_Socket(uint16_t /*socket*/) {
   SocketOpen = 0;
-
 } /* end of Close_Socket */
 
 /***************************************************************************
@@ -567,71 +423,15 @@ void IPXConnClass::Close_Socket(uint16_t socket) {
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
-                          IPXAddressClass* address,
-                          std::span<const unsigned char> immed) {
-  NetNumType net;
-  NetNodeType node;
-  int rc = 0;
-
-  unsigned char send_address[6];
-
+                          IPXAddressClass* /*address*/,
+                          std::span<const unsigned char> /*immed*/) {
   if (TheNetwork().winsock().Get_Connected()) {
-#ifdef VIRTUAL_SUBNET_SERVER
-    if (!immed.empty()) {
-      base::CopyBytes(base::ObjectBytes(send_address), std::as_bytes(immed), 6);
-    } else {
-      address->Get_Address(net, node);
-      base::CopyBytes(send_address, node, 6);
-    }
-    /*
-    ** Use first two bytes of ipx address as target mask
-    */
-    uint16_t* maskptr = reinterpret_cast<uint16_t*>(&send_address[0]);
-    uint16_t target_mask = *maskptr;
-
-    char* tempsend = new char[buflen + sizeof(target_mask)];
-
-    *reinterpret_cast<uint16_t*>(tempsend) = htons(target_mask);
-    base::CopyBytes(tempsend + 2, buf, buflen);
-
-    TheNetwork().winsock().Write(static_cast<void*>(tempsend),
-                                 buflen + sizeof(target_mask));
-    delete[] tempsend;
-#else   // VIRTUAL_SUBNET_SERVER
     TheNetwork().winsock().Write(buf, buflen);
-#endif  // VIRTUAL_SUBNET_SERVER
 
     return 1;
   }
 
-  if (!immed.empty()) {
-    base::CopyBytes(base::ObjectBytes(send_address), std::as_bytes(immed), 6);
-    // base::CopyBytes(node, immed, 6);
-    // memset (net, 0, sizeof(net) );
-    address->Get_Address(net, node);
-  } else {
-    address->Get_Address(net, node);
-    /*.....................................................................
-    If the user is logged in & has a valid Novell Connection Number, get the
-    bridge address the "official" way
-    .....................................................................*/
-    if (ConnectionNum != 0) {
-      rc = IPX_Get_Local_Target(net, node, Socket, &base::At(send_address, 0));
-      if (rc != 0) {
-        return 0;
-      }
-    } else {
-      /*.....................................................................
-      Otherwise, use the destination node address as the ImmediateAddress, and
-      just hope there's no network bridge in the path.
-      .....................................................................*/
-      base::CopyBytes(base::ObjectBytes(send_address), base::ObjectBytes(node),
-                      6);
-    }
-  }
-
-  return IPX_Send_Packet95(&base::At(send_address, 0), buf.data(), buflen, net,
-                           node);
+  return 0;  // There is no IPX driver to send through.
 }
 
 /***************************************************************************
@@ -655,19 +455,8 @@ int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
  *=========================================================================*/
 int IPXConnClass::Broadcast(std::span<const std::byte> buf, int buflen) {
   if (TheNetwork().winsock().Get_Connected()) {
-#ifdef VIRTUAL_SUBNET_SERVER
-    char* tempsend = new char[buflen + sizeof(uint16_t)];
-    base::CopyBytes(tempsend + 2, buf, buflen);
-    *tempsend = 0;
-    *(tempsend + 1) = 0;
-
-    TheNetwork().winsock().Write(static_cast<void*>(tempsend),
-                                 buflen + sizeof(uint16_t));
-    delete[] tempsend;
-#else   // VIRTUAL_SUBNET_SERVER
     TheNetwork().winsock().Write(buf, buflen);
-#endif  // VIRTUAL_SUBNET_SERVER
     return 1;
   }
-  return IPX_Broadcast_Packet95(buf.data(), buflen);
+  return 0;  // There is no IPX driver to send through.
 }

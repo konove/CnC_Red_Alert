@@ -190,9 +190,6 @@ void Check_From_WChat(const char* wchat_name) {
     TheNetwork().westwood_is_host() =
         std::string_view(key_string).contains('1');
 
-    TheNetwork().use_subnet_server() =
-        WWGetPrivateProfileInt("Internet", "UseVSS", 0, ini_file) != 0;
-
     TheSpecial().IsFromWChat = true;
   }
 

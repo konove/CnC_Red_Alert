@@ -43,12 +43,7 @@
 #include <cstddef>
 #include <memory>
 #include <span>
-
-#ifdef NOT_FOR_WIN95
 #include <vector>
-
-#include "base/buffer.h"
-#endif
 
 #include <cstdint>
 #include <cstdio>
@@ -167,9 +162,6 @@ void Nod_Ending() {
                                           0x0,  0x0,  0x52, 0x0};
 
   char fname[12];
-#ifdef NOT_FOR_WIN95
-  std::vector<uint8_t> satpic(64000);
-#endif  // NOT_FOR_WIN95
 
   TheWorld().score().Show();
 
@@ -188,13 +180,7 @@ void Nod_Ending() {
     Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                     TheScreen().sys_mem_page().bytes(), nullptr);
   }
-#ifdef NOT_FOR_WIN95
-  base::CopyBytes(std::as_writable_bytes(std::span(satpic)),
-                  std::as_bytes(TheScreen().hidden_view().bytes()),
-                  satpic.size());
-#else
   TheScreen().sys_mem_page().view().BlitTo(show.page().view());
-#endif  // NOT_FOR_WIN95
   // Read from the file: MixArchive::RetrieveData() only serves cached archives.
   const auto kanefinl_file = OpenGameFile("KANEFINL.AUD");
   const std::vector<std::byte> kanefinl =
@@ -210,10 +196,6 @@ void Nod_Ending() {
   TheMouse().Hide();
   engine::window::TheDisplay().EndFrame();
   Set_Palette(localpal);
-#ifdef NOT_FOR_WIN95
-  base::CopyBytes(std::as_writable_bytes(TheScreen().visible_view().bytes()),
-                  std::as_writable_bytes(std::span(satpic)), satpic.size());
-#endif  // NOT_FOR_WIN95
   TheMouse().Show();
 
   engine::gfx::BrightenPalette(localpal, 30, 30, 30);
@@ -268,9 +250,6 @@ void Nod_Ending() {
   if (mouseshown) {
     TheMouse().Hide();
   }
-#ifdef NOT_FOR_WIN95
-  satpic.clear();
-#endif  // NOT_FOR_WIN95
 
   /* get rid of all the animating objects */
   Clear_Score_Objects();

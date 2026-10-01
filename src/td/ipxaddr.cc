@@ -76,11 +76,6 @@
 #include "base/buffer.h"
 #include "td/ipx.h"
 
-// Only the virtual subnet server code uses this.
-#ifdef VIRTUAL_SUBNET_SERVER
-#include <cstdint>
-#endif
-
 IPXAddressClass::IPXAddressClass() noexcept {
   base::At(NetworkNumber, 0) = 0xff;
   base::At(NetworkNumber, 1) = 0xff;
@@ -202,30 +197,6 @@ void IPXAddressClass::Set_Address(const NetNumType& net,
  *   12/19/1994 BR : Created.                                              *
  *=========================================================================*/
 void IPXAddressClass::Set_Address(IPXHeaderType* header) {
-#ifdef VIRTUAL_SUBNET_SERVER
-  if (TheNetwork().winsock().Get_Connected()) {
-    memset(NetworkNumber, 1, 4);
-    memset(NodeAddress, 0, 6);
-    uint16_t target_mask = *reinterpret_cast<uint16_t*>(header);
-    /*
-    ** If this is a head to head game (no VSS) --
-    **  If mask is 0 then this packet was broadcast from the other player
-    **  Otherwise exclusive or with 3 to get other players mask
-    */
-    if (!TheNetwork().use_subnet_server()) {
-      if (target_mask == 0) {
-        target_mask = 1 << TheNetwork().westwood_is_host();
-      }
-      target_mask ^= 3;
-    }
-
-    *reinterpret_cast<uint16_t*>(&NodeAddress[0]) = target_mask;
-
-  } else {
-    memcpy(NetworkNumber, header->SourceNetworkNumber, 4);
-    memcpy(NodeAddress, header->SourceNetworkNode, 6);
-  }
-#else   // VIRTUAL_SUBNET_SERVER
   if (header) {
     base::CopyBytes(base::ObjectBytes(NetworkNumber),
                     base::ObjectBytes(header->SourceNetworkNumber), 4);
@@ -238,7 +209,6 @@ void IPXAddressClass::Set_Address(IPXHeaderType* header) {
     base::FillBytes(base::ObjectBytes(NetworkNumber), 1, 4);
     base::FillBytes(base::ObjectBytes(NodeAddress), 1, 6);
   }
-#endif  // VIRTUAL_SUBNET_SERVER
 } /* end of Set_Address */
 
 /***************************************************************************

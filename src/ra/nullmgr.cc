@@ -771,9 +771,6 @@ int NullModemClass::Service() {
   - Return;  we'll search for another packet-start code next time.
   ------------------------------------------------------------------------*/
   if (std::cmp_greater(length, MaxLen)) {
-#if (CONN_DEBUG)
-    printf("length too lonnng\n");
-#endif
     // Smart_Printf( "length too lonnng %d, max %d \n", length, MaxLen );
 
     pos += sizeof(int16_t);  // throw away the bogus start code
@@ -821,9 +818,6 @@ int NullModemClass::Service() {
           length) != crc.SerialCRC) {
     DLOG(WARNING) << "Serial packet failed its CRC check; packet dropped";
 
-#if (CONN_DEBUG)
-    printf("CRC check failed\n");
-#endif
     // Smart_Printf( "CRC check failed for packet of length %d \n", length );
 
     //		if (length < 100) {

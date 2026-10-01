@@ -149,15 +149,11 @@ class Network {
   }
 
   // The TCP/IP transport, whether this machine is the server rather than a
-  // client, whether the games are routed through Westwood's subnet server,
-  // and how many players an internet game may hold.
+  // client, and how many players an internet game may hold.
   TcpipManagerClass& winsock() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return winsock_;
   }
   bool& is_server() ABSL_ATTRIBUTE_LIFETIME_BOUND { return is_server_; }
-  bool& use_subnet_server() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return use_subnet_server_;
-  }
   int& internet_max_players() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return internet_max_players_;
   }
@@ -269,7 +265,6 @@ class Network {
 
   TcpipManagerClass winsock_;
   bool is_server_ = false;
-  bool use_subnet_server_ = false;
   int internet_max_players_ = 0;
 
   std::unique_ptr<ModemRegistryEntryClass> modem_registry_;

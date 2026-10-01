@@ -232,8 +232,6 @@
 #include "base/enum_array.h"
 #include "td/combuf.h"
 
-#define CONN_DEBUG 0
-
 /*
 ********************************** Defines **********************************
 */

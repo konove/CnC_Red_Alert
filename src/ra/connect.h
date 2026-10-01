@@ -123,7 +123,6 @@
 /*
 ********************************** Defines **********************************
 */
-#define CONN_DEBUG 0
 /*---------------------------------------------------------------------------
 This structure is the header prefixed to any packet sent by the application.
 MagicNumber:	This is a number unique to the application; it's up to the
