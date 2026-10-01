@@ -200,7 +200,10 @@ td/          → Tiberian Dawn (~288 files) [depends: engine_net, engine_window,
 ```
 
 The `[depends: ...]` list on each folder above is enforced, not just documented: an engine file may
-only include a folder its own library links, per `tools/check_layers.py` (see Key Files).
+only include a folder its own library links, per `tools/check_layers.py` (see Key Files). The same
+check keeps `ra/` and `td/` from including each other, and the shared game code that
+docs/GAME_NAMESPACES_PLAN.md moves to `src/game/` (`game_core`, `game_sim`, `game_ui`, above the
+engine) from including either game.
 
 **Class hierarchy:**
 `AbstractClass → ObjectClass → TechnoClass → FootClass → InfantryClass/AircraftClass/DriveClass` and
@@ -255,7 +258,8 @@ instantiation, and a comparison C++20 rewrites to a header's `operator<=>` (`ra/
 
 - NO Electronic Arts copyright header (only applies to original EA code)
 - Use `#ifndef` guards: `<PROJECT>_<PATH>_<FILE>_H_` (e.g., `CNC_RED_ALERT_BASE_TYPES_H_`,
-  `CNC_RED_ALERT_ENGINE_GFX_PIXEL_BUFFER_H_`)
+  `CNC_RED_ALERT_ENGINE_GFX_PIXEL_BUFFER_H_`); `engine_layers_test` fails on a guard that does not
+  match its path, so a moved header needs its guard renamed
 
 ### Documentation (Google Style - REQUIRED for new code)
 
@@ -409,14 +413,14 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 
 ## Key Files
 
-| Purpose         | File(s)                                                                                                                                           |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Build config    | `CMakeLists.txt`, `ra/CMakeLists.txt`, `td/CMakeLists.txt`                                                                                        |
-| Global state    | `ra/externs.h`                                                                                                                                    |
-| Streams         | `engine/stream/byte_sink.h`, `engine/stream/byte_source.h`                                                                                        |
-| Graphics        | `engine/gfx/pixel_buffer.h`                                                                                                                       |
-| Engine layering | `tools/check_layers.py` (enforces the dependency order), `tools/engine_layout.py` (the folder/library table it reads), `engine_layers_test` ctest |
-| Video           | `engine/video/vqa/vqa_player.h`                                                                                                                   |
+| Purpose         | File(s)                                                                                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Build config    | `CMakeLists.txt`, `ra/CMakeLists.txt`, `td/CMakeLists.txt`                                                                                                          |
+| Global state    | `ra/externs.h`                                                                                                                                                      |
+| Streams         | `engine/stream/byte_sink.h`, `engine/stream/byte_source.h`                                                                                                          |
+| Graphics        | `engine/gfx/pixel_buffer.h`                                                                                                                                         |
+| Engine layering | `tools/check_layers.py` (enforces the dependency order and header guards), `tools/engine_layout.py` (the folder/library table it reads), `engine_layers_test` ctest |
+| Video           | `engine/video/vqa/vqa_player.h`                                                                                                                                     |
 
 ## Platform Notes
 

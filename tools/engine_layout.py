@@ -1,19 +1,21 @@
-"""The engine's folder layout: where each file lives, and who may include whom.
+"""The source tree's layout: where each file lives, and who may include whom.
 
 docs/ENGINE_FOLDERS_PLAN.md moved the shared code that used to live in
 src/base, src/port, src/sdllib, src/tech and src/winvq under src/engine/, one
 folder per domain; docs/ENGINE_NAMESPACES_PLAN.md then moved the vocabulary
 library, base, back out to src/base/, beside the engine rather than in it.
+docs/GAME_NAMESPACES_PLAN.md adds src/game/, the code both games share, as a
+layer between the engine and the games: base -> engine -> game -> {ra, td}.
 This module is the one copy of the library list and dependency order;
 tools/check_layers.py imports it to enforce them.
 
 Paths here are relative to src/ and always use '/'. A "folder" names a
-library's directory or a subdirectory of one ("gfx", "base/strings"); a
-"library" is the CMake target that builds it. Folders live under src/engine/,
-except those of TOP_LEVEL_LIBRARIES, which live at the top of src/
-(folder_path()). Subfolders belong to their parent's library, except
-video/vqa, which is a library of its own. ra/, td/, tools/ and testing/ hold
-no library code.
+library's directory or a subdirectory of one ("gfx", "base/strings",
+"game/core"); a "library" is the CMake target that builds it. Folders live
+under src/engine/, except those whose first component is one of
+TOP_LEVEL_ROOTS, which live at the top of src/ (folder_path()). Subfolders
+belong to their parent's library, except video/vqa, which is a library of its
+own. The games (GAMES), tools/ and testing/ hold no library code.
 """
 
 from __future__ import annotations
@@ -21,12 +23,21 @@ from __future__ import annotations
 # Where engine code lives, relative to src/.
 ENGINE_ROOT = "engine"
 
-# The libraries at the top of src/ rather than under engine/: the vocabulary
-# the engine, the games and the tools all share.
-TOP_LEVEL_LIBRARIES = ("base",)
+# Where the code both games share lives, relative to src/. Each of its
+# subfolders is a library of its own; nothing lives in the folder itself.
+GAME_ROOT = "game"
+
+# The library folders at the top of src/ rather than under engine/: the
+# vocabulary the engine, the games and the tools all share, and the shared
+# game code.
+TOP_LEVEL_ROOTS = ("base", GAME_ROOT)
 
 # The directories under src/ that hold library code.
-LIBRARY_ROOTS = (ENGINE_ROOT, *TOP_LEVEL_LIBRARIES)
+LIBRARY_ROOTS = (ENGINE_ROOT, *TOP_LEVEL_ROOTS)
+
+# The games, each a folder of src/ above every library. Neither may include
+# the other.
+GAMES = ("ra", "td")
 
 # Each library's folder and its CMake target.
 LIBRARIES = {
@@ -42,6 +53,9 @@ LIBRARIES = {
     "window": "engine_window",
     "video/vqa": "engine_vqa",
     "video": "engine_video",
+    "game/core": "game_core",
+    "game/sim": "game_sim",
+    "game/ui": "game_ui",
 }
 
 # Folders compiled into their parent's library rather than one of their own.
@@ -51,10 +65,14 @@ SUBFOLDERS = {
     "net/serial": "net",
 }
 
+# The engine libraries nothing else in the engine depends on. A game library
+# may include these and so, through allowed_libraries(), the whole engine.
+_ENGINE_TOP = ("net", "window", "video")
+
 # The plan's "Dependency order": each library and the libraries it points at.
 # A library may include what it points at and what those point at in turn;
 # allowed_libraries() takes that closure. Games sit above all of it and are
-# not listed: no engine library may include them.
+# not listed: no library may include them.
 DEPENDS_ON = {
     "base": (),
     "platform": ("base",),
@@ -68,6 +86,9 @@ DEPENDS_ON = {
     "audio": ("file", "codec"),
     "video/vqa": ("stream", "codec"),
     "video": ("file", "audio", "video/vqa"),
+    "game/core": _ENGINE_TOP,
+    "game/sim": ("game/core",),
+    "game/ui": ("game/core",),
 }
 
 # The libraries whose files may include SDL headers. Everything else, gfx and
@@ -94,7 +115,7 @@ def folders() -> tuple[str, ...]:
 def folder_path(folder: str) -> str:
     """Returns where folder lives, relative to src/ ("gfx" -> "engine/gfx",
     "base/strings" -> "base/strings")."""
-    if library_of(folder).split("/", 1)[0] in TOP_LEVEL_LIBRARIES:
+    if library_of(folder).split("/", 1)[0] in TOP_LEVEL_ROOTS:
         return folder
     return f"{ENGINE_ROOT}/{folder}"
 
@@ -119,6 +140,22 @@ def is_source(path: str) -> bool:
 def is_test(path: str) -> bool:
     """Returns whether path is a test or a test-only helper."""
     return _stem(path).endswith(_TEST_SUFFIXES)
+
+
+def game_of(path: str) -> str | None:
+    """Returns the game path belongs to ("ra/techno.cc" -> "ra"), or None."""
+    root = path.split("/", 1)[0]
+    return root if root in GAMES and "/" in path else None
+
+
+def header_guard(path: str) -> str:
+    """Returns the include guard the header at path must use:
+    CNC_RED_ALERT_ and its path with every non-alphanumeric character an
+    underscore, upper-cased ("ra/wolapi/wolapi.h" ->
+    "CNC_RED_ALERT_RA_WOLAPI_WOLAPI_H_")."""
+    stem = path.rsplit(".", 1)[0]
+    mangled = "".join(c if c.isalnum() else "_" for c in stem)
+    return f"CNC_RED_ALERT_{mangled.upper()}_H_"
 
 
 def _stem(path: str) -> str:

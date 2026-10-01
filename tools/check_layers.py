@@ -1,33 +1,39 @@
 #!/usr/bin/env python3
-"""Checks that the engine's includes follow its dependency order.
+"""Checks that the tree's includes follow its dependency order.
 
-Every engine target shares the src/ include root, so linking only proves that
-a library calls nothing it does not link; a header-only include from a folder
+Every target shares the src/ include root, so linking only proves that a
+library calls nothing it does not link; a header-only include from a folder
 the library may not see still builds. This script reads the include lines
-instead. It places each library file in its folder under src/engine/ or
-src/base/ by its path (tools/engine_layout.py) and fails on:
+instead. It places each library file in its folder under src/engine/,
+src/base/ or src/game/ by its path (tools/engine_layout.py) and fails on:
 
-- a source file under src/engine/ or src/base/ outside the known folders;
+- a source file under src/engine/, src/base/ or src/game/ outside the known
+  folders;
 - an include of a folder the file's library may not see (the plan's
   "Dependency order"), or of src/ra, src/td, src/tools or src/testing;
 - an SDL header outside window/, audio/, video/ and video/vqa/;
 - a quoted include written relative to the including file ("hsv.h") rather
   than to src/, which hides the folder it names, or a project include that
-  names no file.
+  names no file;
+- in a game (src/ra, src/td), an include of the other game, of src/tools or of
+  src/testing, or either of the previous rule's two mistakes;
+- a header anywhere under src/ whose include guard is not
+  CNC_RED_ALERT_<PATH>_H_ (engine_layout.header_guard()).
 
 Project includes are checked whether written with quotes or angle brackets
 (src/ is on the include path, so <engine/window/display.h> compiles too).
 
-Tests (*_test.cc, *_test_util.h) link more than their library does, so they
-may include any folder, the games and SDL; the folder rule and the last rule
-still apply to them. Files that are not C++ (CMakeLists.txt, notes) are not
+Tests (*_test.cc, *_test_util.h) of a library link more than their library
+does, so they may include any folder, the games and SDL; the folder rule and
+the relative/missing rule still apply to them. A game's tests may not include
+the other game either. Files that are not C++ (CMakeLists.txt, notes) are not
 placed and not checked.
 
 Usage:
   tools/check_layers.py
   tools/check_layers.py --src path/to/src
 
-Runs as the engine_layers_test ctest.
+Runs as the engine_layers_test ctest; the name predates the game rules.
 """
 
 import argparse
@@ -42,11 +48,16 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # The top-level folders under src/ that hold project code. A quoted include
 # starting with one of them is a project include and must resolve.
-PROJECT_ROOTS = (*layout.LIBRARY_ROOTS, "ra", "td", "tools", "testing")
+PROJECT_ROOTS = (*layout.LIBRARY_ROOTS, *layout.GAMES, "tools", "testing")
 
-# The folders engine code may never include: the games, the tools and the
-# test main sit above every engine library.
-FORBIDDEN_ROOTS = ("ra", "td", "tools", "testing")
+# The folders library code may never include: the games, the tools and the
+# test main sit above every library.
+FORBIDDEN_ROOTS = (*layout.GAMES, "tools", "testing")
+
+_GUARD = re.compile(
+    r"^[ \t]*#[ \t]*ifndef[ \t]+(\w+)[ \t]*\n[ \t]*#[ \t]*define[ \t]+(\w+)",
+    re.MULTILINE,
+)
 
 _INCLUDE = re.compile(r'^[ \t]*#[ \t]*include[ \t]*([<"])([^>"\n]+)[>"]', re.MULTILINE)
 
@@ -104,7 +115,16 @@ def is_sdl_header(name: str) -> bool:
 
 def engine_files(src_root: Path) -> list[str]:
     """Returns every library source file, relative to src_root."""
-    roots = [src_root / root for root in layout.LIBRARY_ROOTS]
+    return _files_under(src_root, layout.LIBRARY_ROOTS)
+
+
+def game_files(src_root: Path) -> list[str]:
+    """Returns every source file of the games, relative to src_root."""
+    return _files_under(src_root, layout.GAMES)
+
+
+def _files_under(src_root: Path, root_names) -> list[str]:
+    roots = [src_root / root for root in root_names]
     return sorted(
         path.relative_to(src_root).as_posix()
         for root in roots
@@ -118,14 +138,42 @@ def folder_errors(files: list[str]) -> list[str]:
     """Returns the files the layout cannot place: under a library root but
     not in a known folder."""
     return [
-        f"src/{path}: not in a known engine folder"
+        f"src/{path}: not in a known library folder"
         for path in files
         if layout.library_folder_of(path) is None
     ]
 
 
+def _resolve(src_root: Path, path: str, delimiter: str, included: str):
+    """Places one include of the file at path.
+
+    Returns (name, error): name is the include's path from src/ when it is a
+    project file, else None (a system or third-party header); error describes
+    a project include that names no file or is written relative to the
+    including file, else None. A relative include that resolves still gets
+    its name, so the caller checks it like any other.
+    """
+    root = included.split("/", 1)[0]
+    sibling = Path(os.path.normpath((src_root / path).parent / included))
+    if root in PROJECT_ROOTS:
+        # Angle brackets reach src/ too (it is on the include path), so
+        # <engine/window/display.h> is checked like "engine/window/display.h".
+        if not (src_root / included).is_file():
+            return None, "no such file under src/"
+        return included, None
+    if delimiter == '"' and sibling.is_file() and sibling.is_relative_to(src_root):
+        return (
+            sibling.relative_to(src_root).as_posix(),
+            "include relative to the file; write the path from src/",
+        )
+    return None, None
+
+
 def include_errors(src_root: Path, path: str) -> list[str]:
-    """Returns the include-rule violations in one engine file."""
+    """Returns the include-rule violations in one library or game file."""
+    game = layout.game_of(path)
+    if game is not None:
+        return _game_include_errors(src_root, path, game)
     folder = layout.library_folder_of(path)
     if folder is None:
         return []  # Reported by folder_errors().
@@ -138,33 +186,19 @@ def include_errors(src_root: Path, path: str) -> list[str]:
     for line, delimiter, included in includes(text):
         closer = ">" if delimiter == "<" else '"'
         where = f"src/{path}:{line}: {delimiter}{included}{closer}"
-        root = included.split("/", 1)[0]
-        sibling = Path(os.path.normpath((src_root / path).parent / included))
-        if root in PROJECT_ROOTS:
-            # Angle brackets reach src/ too (it is on the include path), so
-            # <engine/window/display.h> is checked like
-            # "engine/window/display.h".
-            if not (src_root / included).is_file():
-                errors.append(f"{where}: no such file under src/")
-                continue
-        elif (
-            delimiter == '"'
-            and sibling.is_file()
-            and sibling.is_relative_to(src_root)
-        ):
-            errors.append(
-                f"{where}: include relative to the file; write the path from src/"
-            )
-            included = sibling.relative_to(src_root).as_posix()
-            root = included.split("/", 1)[0]
-        else:
+        name, error = _resolve(src_root, path, delimiter, included)
+        if error is not None:
+            errors.append(f"{where}: {error}")
+        if name is None:
             # Outside src/: a system or third-party header (absl, gtest, lzo,
             # SDL). Only SDL is restricted.
-            if is_sdl_header(included) and not sdl_allowed:
+            if error is None and is_sdl_header(included) and not sdl_allowed:
                 errors.append(
                     f"{where}: SDL header in {folder}, which compiles without SDL"
                 )
             continue
+        included = name
+        root = included.split("/", 1)[0]
         if test:
             continue
         if root in FORBIDDEN_ROOTS:
@@ -182,12 +216,57 @@ def include_errors(src_root: Path, path: str) -> list[str]:
     return errors
 
 
+def _game_include_errors(src_root: Path, path: str, game: str) -> list[str]:
+    """Returns the include-rule violations in one file of game. A game may
+    include every library, its own files and SDL; not the other game, the
+    tools or the test main."""
+    errors: list[str] = []
+    text = (src_root / path).read_text(encoding="utf-8", errors="replace")
+    for line, delimiter, included in includes(text):
+        closer = ">" if delimiter == "<" else '"'
+        where = f"src/{path}:{line}: {delimiter}{included}{closer}"
+        name, error = _resolve(src_root, path, delimiter, included)
+        if error is not None:
+            errors.append(f"{where}: {error}")
+        if name is None:
+            continue
+        root = name.split("/", 1)[0]
+        if root in FORBIDDEN_ROOTS and root != game:
+            errors.append(f"{where}: {game} may not include {root}/")
+    return errors
+
+
+def header_guard_errors(src_root: Path, path: str) -> list[str]:
+    """Returns the include-guard violations in the header at path: none, or
+    one if its first #ifndef/#define pair is missing or names another guard
+    than engine_layout.header_guard(path)."""
+    text = (src_root / path).read_text(encoding="utf-8", errors="replace")
+    code = strip_comments(text)
+    match = _GUARD.search(code)
+    expected = layout.header_guard(path)
+    if match is None:
+        return [f"src/{path}: no header guard; expected {expected}"]
+    where = f"src/{path}:{code.count(chr(10), 0, match.start()) + 1}"
+    guard, defined = match.group(1), match.group(2)
+    if guard != expected:
+        return [
+            f"{where}: header guard {guard} does not match the path; "
+            f"expected {expected}"
+        ]
+    if defined != guard:
+        return [f"{where}: tests {guard} but defines {defined}"]
+    return []
+
+
 def check(src_root: Path) -> list[str]:
     """Returns every violation in the tree at src_root."""
     files = engine_files(src_root)
     errors = folder_errors(files)
-    for path in files:
+    for path in files + game_files(src_root):
         errors.extend(include_errors(src_root, path))
+    for path in _files_under(src_root, PROJECT_ROOTS):
+        if path.endswith(".h"):
+            errors.extend(header_guard_errors(src_root, path))
     return errors
 
 
@@ -211,7 +290,10 @@ def main() -> int:
     if errors:
         print(f"{len(errors)} layering violation(s)")
         return 1
-    print(f"{len(engine_files(src_root))} engine files follow the dependency order")
+    print(
+        f"{len(engine_files(src_root))} library and {len(game_files(src_root))} "
+        "game files follow the dependency order"
+    )
     return 0
 
 

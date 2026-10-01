@@ -234,7 +234,7 @@ Per step: `cmake --build build --parallel 22 && ctest --test-dir build --output-
 
 - [x] 0. Plan committed
 - [x] 1. Cleanup and game-agnostic engine
-- [ ] 2. Layer and header-guard tooling
+- [x] 2. Layer and header-guard tooling
 - [ ] 3. Game folders
 - [ ] 4. `ra::`/`td::` namespaces
 - [ ] 5a. `game_core`
