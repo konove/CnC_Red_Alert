@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/fixed.h"
+#include "base/numeric.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
@@ -107,6 +108,26 @@ void UiSkin::Draw_Edit_Text(PixelView& view, const char* text, const int x,
     Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(font, text),
                             y + 1, color, kTBlack, flags | state);
   }
+}
+
+void UiSkin::Draw_List_Box(PixelView& view, const int x, const int y,
+                           const int width, const int height) {
+  Draw_Box(view, x, y, width, height, BOXSTYLE_BOX, true);
+}
+
+void UiSkin::Draw_List_Entry(PixelView& view, const char* text, const int x,
+                             const int y, const int width,
+                             const int line_height, PrintFlags flags,
+                             const bool selected, std::span<const int> tabs) {
+  RemapControlType* scheme = Get_Color_Scheme();
+  if (selected) {
+    flags = flags | TPF_BRIGHT_COLOR;
+    view.FillRect(x, y, x + width - 1, y + line_height - 1, scheme->Shadow);
+  } else if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
+    flags = flags | TPF_MEDIUM_COLOR;
+  }
+  Conquer_Clip_Text_Print(view, text, x, y, scheme, kTBlack, flags, width,
+                          tabs);
 }
 
 void UiSkin::Print_Label(PixelView& view, const char* text, const int x,

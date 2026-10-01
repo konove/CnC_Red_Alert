@@ -142,6 +142,31 @@ void UiSkin::Draw_Edit_Text(PixelView& view, const char* text, const int x,
   }
 }
 
+void UiSkin::Draw_List_Box(PixelView& view, const int x, const int y,
+                           const int width, const int height) {
+  Draw_Box(view, x, y, width, height, BOXSTYLE_GREEN_BOX, true);
+}
+
+void UiSkin::Draw_List_Entry(PixelView& view, const char* text, const int x,
+                             const int y, const int width,
+                             const int line_height, PrintFlags flags,
+                             const bool selected, std::span<const int> tabs) {
+  if (base::Any(flags & TPF_6PT_GRAD)) {
+    TextPrintType state = flags;
+    if (selected) {
+      state = state | TPF_BRIGHT_COLOR;
+      view.FillRect(x, y, x + width - 1, y + line_height - 1, kCcGreenShadow);
+    } else if (!base::Any(state & TPF_USE_GRAD_PAL)) {
+      state = state | TPF_MEDIUM_COLOR;
+    }
+    Conquer_Clip_Text_Print(view, text, x, y, kCcGreen, kTBlack, state, width,
+                            tabs);
+  } else {
+    Conquer_Clip_Text_Print(view, text, x, y, selected ? kBlue : kWhite,
+                            kTBlack, flags, width, tabs);
+  }
+}
+
 void UiSkin::Print_Label(PixelView& view, const char* text, const int x,
                          const int y, TextColor color, const PrintFlags style) {
   Fancy_Text_Print(view, "%s", x, y, color, kTBlack, style, text);

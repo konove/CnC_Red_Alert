@@ -113,6 +113,7 @@
 #include "ra/ui/slider.h"
 #include "ra/ui/statbtn.h"
 #include "ra/ui/textbtn.h"
+#include "ra/ui/tlist.h"
 
 namespace ra {
 

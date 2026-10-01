@@ -124,8 +124,8 @@
 #include "ra/ui/dialog.h"
 #include "ra/ui/drop.h"
 #include "ra/ui/edit.h"
-#include "ra/ui/list.h"
 #include "ra/ui/textbtn.h"
+#include "ra/ui/tlist.h"
 
 namespace ra {
 

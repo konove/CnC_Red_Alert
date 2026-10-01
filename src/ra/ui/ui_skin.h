@@ -83,6 +83,18 @@ struct UiSkin {
                              int width, TextColor color, PrintFlags flags,
                              bool focused, int max_length);
 
+  // Whether selecting a line past either end of a list selects its first
+  // line (else the selection stays).
+  static constexpr bool kListOutOfRangeSelectsFirst = true;
+
+  // Draws a list box's frame, and one of its lines `line_height` high,
+  // highlighted when `selected`.
+  static void Draw_List_Box(PixelView& view, int x, int y, int width,
+                            int height);
+  static void Draw_List_Entry(PixelView& view, const char* text, int x, int y,
+                              int width, int line_height, PrintFlags flags,
+                              bool selected, std::span<const int> tabs);
+
   // Prints a text label, unclipped or clipped to `width` pixels.
   static void Print_Label(PixelView& view, const char* text, int x, int y,
                           TextColor color, PrintFlags style);

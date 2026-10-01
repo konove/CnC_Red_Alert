@@ -70,9 +70,9 @@
 #include "ra/startup/conquer.h"
 #include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/list.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
+#include "ra/ui/tlist.h"
 
 namespace ra {
 

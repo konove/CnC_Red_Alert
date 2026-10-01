@@ -42,6 +42,7 @@
 #include "ra/assets/dib.h"
 #include "ra/assets/winbits.h"
 #include "ra/ui/iconlist.h"
+#include "ra/ui/shapebtn.h"
 #include "ra/wol/rawolapi.h"
 
 namespace ra {

@@ -56,6 +56,7 @@
 #include "ra/ui/edit.h"
 #include "ra/ui/list.h"
 #include "ra/ui/shapebtn.h"
+#include "ra/ui/tlist.h"
 
 namespace ra {
 
