@@ -20,15 +20,15 @@
 #define CNC_RED_ALERT_TD_UI_CHECKBOX_H_
 
 #include "engine/gfx/pixel_buffer.h"
-#include "td/ui/toggle.h"
+#include "game/ui/toggle.h"
 
 namespace td {
 
 // A small 7x7 checkbox gadget that draws an X when toggled on.
-class CheckBoxClass : public ToggleClass {
+class CheckBoxClass : public game::ToggleClass {
  public:
   CheckBoxClass(const unsigned id, const int x, const int y)
-      : ToggleClass(id, x, y, 7, 7) {}
+      : game::ToggleClass(id, x, y, 7, 7) {}
 
   // Draws the checkbox as a filled or empty box.
   // Returns true if the checkbox was actually rendered.

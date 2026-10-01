@@ -42,12 +42,12 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/ui/toggle.h"
 #include "ra/core/defines.h"
-#include "ra/ui/toggle.h"
 
 namespace ra {
 
-class TextButtonClass final : public ToggleClass {
+class TextButtonClass final : public game::ToggleClass {
  public:
   TextButtonClass();
   TextButtonClass(unsigned id, const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND,

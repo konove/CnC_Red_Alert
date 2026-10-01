@@ -40,7 +40,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/ui/toggle.h"
+#include "game/ui/toggle.h"
 
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
@@ -48,7 +48,7 @@
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 
-namespace ra {
+namespace game {
 
 /***********************************************************************************************
  * ToggleClass::ToggleClass -- Normal constructor for toggle button gadgets. *
@@ -70,7 +70,7 @@ namespace ra {
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
 ToggleClass::ToggleClass(unsigned id, int x, int y, int w, int h) noexcept
-    : game::ControlClass(id, x, y, w, h, kLeftPress | kLeftRelease, true) {}
+    : ControlClass(id, x, y, w, h, kLeftPress | kLeftRelease, true) {}
 
 /***********************************************************************************************
  * ToggleClass::Turn_On -- Turns the toggle button to the "ON" state. *
@@ -138,10 +138,10 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   *forced call *	must never actually function like a real call, but
   *rather only performs any necessary *	graphic updating.
   */
-  const bool overbutton = static_cast<unsigned>(game::TheMouse().x() - X) <
-                              static_cast<unsigned>(Width) &&
-                          static_cast<unsigned>(game::TheMouse().y() - Y) <
-                              static_cast<unsigned>(Height);
+  const bool overbutton =
+      static_cast<unsigned>(TheMouse().x() - X) <
+          static_cast<unsigned>(Width) &&
+      static_cast<unsigned>(TheMouse().y() - Y) < static_cast<unsigned>(Height);
   if (!flags) {
     if (overbutton) {
       if (!IsPressed) {
@@ -171,9 +171,9 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
     IsPressed = true;
     Flag_To_Redraw();
     flags &= ~unsigned{kLeftPress};
-    game::ControlClass::Action(flags, key, x, y);
+    ControlClass::Action(flags, key, x, y);
     key = engine::window::KN_NONE;  // erase the event
-    return true;    // stop processing other buttons now
+    return true;                    // stop processing other buttons now
   }
 
   if (flags & kLeftRelease) {
@@ -192,7 +192,7 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
   **	Do normal button processing. This ends up causing the button's ID number
   *to *	be returned from the controlling Input() function.
   */
-  return game::ControlClass::Action(flags, key, x, y);
+  return ControlClass::Action(flags, key, x, y);
 }
 
-}  // namespace ra
+}  // namespace game

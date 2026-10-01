@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer(tm)
+**	Command & Conquer Red Alert(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -16,10 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\toggle.h_v   2.16   16 Oct 1995 16:47:34
- * JOE_BOSTIC  $ */
+/* $Header: /CounterStrike/TOGGLE.H 1     3/03/97 10:26a Joe_bostic $ */
 /***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
  ****
  ***********************************************************************************************
  *                                                                                             *
@@ -38,13 +37,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_TD_UI_TOGGLE_H_
-#define CNC_RED_ALERT_TD_UI_TOGGLE_H_
+#ifndef CNC_RED_ALERT_GAME_UI_TOGGLE_H_
+#define CNC_RED_ALERT_GAME_UI_TOGGLE_H_
 
 #include "engine/window/keyboard.h"
 #include "game/ui/control.h"
 
-namespace td {
+namespace game {
 
 /*
 **	This class handles gadgets that behave like the Windows buttons. That
@@ -53,11 +52,11 @@ namespace td {
 *pressed and released states. They only recognize *	a valid selection when
 *the mouse button is release while over the button.
 */
-class ToggleClass : public game::ControlClass {
+class ToggleClass : public ControlClass {
  public:
   ToggleClass(unsigned id, int x, int y, int w, int h) noexcept;
-  virtual void Turn_On();
-  virtual void Turn_Off();
+  void Turn_On();
+  void Turn_Off();
 
   /*
   **	Is this button in a pressed down state? This occurs when the mouse is
@@ -86,6 +85,6 @@ class ToggleClass : public game::ControlClass {
               int y) override;
 };
 
-}  // namespace td
+}  // namespace game
 
-#endif  // CNC_RED_ALERT_TD_UI_TOGGLE_H_
+#endif  // CNC_RED_ALERT_GAME_UI_TOGGLE_H_

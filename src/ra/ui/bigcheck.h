@@ -25,8 +25,8 @@
 #include <string>
 
 #include "engine/gfx/pixel_buffer.h"
+#include "game/ui/toggle.h"
 #include "ra/core/defines.h"
-#include "ra/ui/toggle.h"
 
 namespace ra {
 
@@ -34,12 +34,12 @@ namespace ra {
 #define BIGCHECK_OFFSETY 0
 
 //***********************************************************************************************
-class BigCheckBoxClass : public ToggleClass {
+class BigCheckBoxClass : public game::ToggleClass {
  public:
   BigCheckBoxClass(unsigned id, int x, int y, int w, int h,
                    const char* szCaptionIn, TextPrintType text_flags,
                    bool bInitiallyChecked = false)
-      : ToggleClass(id, x, y, w, h),
+      : game::ToggleClass(id, x, y, w, h),
         TextFlags(text_flags),
         szCaption(szCaptionIn) {
     if (bInitiallyChecked) {

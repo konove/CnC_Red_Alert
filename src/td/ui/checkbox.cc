@@ -44,14 +44,14 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "game/ui/input.h"
+#include "game/ui/toggle.h"
 #include "td/core/defines.h"
 #include "td/ui/dialog.h"
-#include "td/ui/toggle.h"
 
 namespace td {
 
 bool CheckBoxClass::Draw_Me(PixelView& view, bool forced) {
-  if (ToggleClass::Draw_Me(view, forced)) {
+  if (game::ToggleClass::Draw_Me(view, forced)) {
     game::TheMouse().Hide();
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, false);
     view.FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, kGrey);

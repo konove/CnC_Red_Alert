@@ -50,6 +50,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "game/ui/control.h"
+#include "game/ui/toggle.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
@@ -57,7 +58,6 @@
 #include "ra/data/text_ids.h"
 #include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/toggle.h"
 
 namespace ra {
 
@@ -94,7 +94,7 @@ namespace ra {
 TextButtonClass::TextButtonClass(unsigned id, const char* text,
                                  TextPrintType style, int x, int y, int w,
                                  int h, bool blackborder)
-    : ToggleClass(id, x, y, w, h),
+    : game::ToggleClass(id, x, y, w, h),
       IsBlackBorder(blackborder),
       String(text),
       PrintFlags(style) {
@@ -121,7 +121,7 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
 TextButtonClass::TextButtonClass()
-    : ToggleClass(0, 0, 0, 0, 0),
+    : game::ToggleClass(0, 0, 0, 0, 0),
       IsBlackBorder(false),
       String(nullptr),
       PrintFlags(TPF_8POINT) {}
@@ -158,7 +158,7 @@ TextButtonClass::TextButtonClass()
  *=============================================================================================*/
 TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
                                  int x, int y, int w, int h, bool blackborder)
-    : ToggleClass(id, x, y, w, h),
+    : game::ToggleClass(id, x, y, w, h),
       IsBlackBorder(blackborder),
       String(nullptr),
       PrintFlags(style) {

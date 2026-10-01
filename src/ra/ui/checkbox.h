@@ -42,13 +42,14 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
-#include "ra/ui/toggle.h"
+#include "game/ui/toggle.h"
 
 namespace ra {
 
-class CheckBoxClass : public ToggleClass {
+class CheckBoxClass : public game::ToggleClass {
  public:
-  CheckBoxClass(unsigned id, int x, int y) : ToggleClass(id, x, y, 7, 7) {}
+  CheckBoxClass(unsigned id, int x, int y)
+      : game::ToggleClass(id, x, y, 7, 7) {}
 
   bool Draw_Me(PixelView& view, bool forced = false) override;
 

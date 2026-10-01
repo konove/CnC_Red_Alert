@@ -89,6 +89,7 @@
 #include "ra/core/jshell.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/seditdlg.h"
+#include "ra/ui/shapebtn.h"
 #include "ra/ui/statbtn.h"
 #include "ra/ui/tooltip.h"
 #include "ra/wol/rawolapi.h"

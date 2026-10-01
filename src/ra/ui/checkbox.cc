@@ -46,10 +46,10 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/ui/input.h"
+#include "game/ui/toggle.h"
 #include "ra/assets/compat.h"
 #include "ra/core/defines.h"
 #include "ra/ui/dialog.h"
-#include "ra/ui/toggle.h"
 
 namespace ra {
 
@@ -68,7 +68,7 @@ namespace ra {
  * HISTORY: * 07/01/1995 JLB : Created. *
  *=============================================================================================*/
 bool CheckBoxClass::Draw_Me(PixelView& view, bool forced) {
-  if (ToggleClass::Draw_Me(view, forced)) {
+  if (game::ToggleClass::Draw_Me(view, forced)) {
     game::TheMouse().Hide();
     Draw_Box(view, X, Y, Width, Height, BOXSTYLE_DOWN, false);
     view.FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, DKGREY);
@@ -107,7 +107,7 @@ bool CheckBoxClass::Action(unsigned flags, engine::window::KeyNumber& key,
       Turn_On();
     }
   }
-  return ToggleClass::Action(flags, key, x, y);
+  return game::ToggleClass::Action(flags, key, x, y);
 }
 
 }  // namespace ra

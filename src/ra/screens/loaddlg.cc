@@ -75,6 +75,7 @@
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
+#include "game/ui/toggle.h"
 #include "ra/assets/audio.h"
 #include "ra/assets/palette.h"
 #include "ra/assets/palettes.h"
@@ -94,7 +95,6 @@
 #include "ra/ui/list.h"
 #include "ra/ui/msgbox.h"
 #include "ra/ui/textbtn.h"
-#include "ra/ui/toggle.h"
 
 namespace ra {
 
@@ -346,14 +346,14 @@ bool LoadOptionsClass::Process() {
     */
     if (input == engine::window::KN_RETURN ||
         input == engine::window::ButtonKey(kButtonEdit)) {
-      ToggleClass* toggle = nullptr;
+      game::ToggleClass* toggle = nullptr;
       switch (Style) {
         case SAVE:
           input = engine::window::ButtonKey(kButtonSave);
           cancelbtn.Turn_Off();
           //					cancelbtn.IsOn = false;
-          toggle =
-              dynamic_cast<ToggleClass*>(commands->Extract_Gadget(kButtonSave));
+          toggle = dynamic_cast<game::ToggleClass*>(
+              commands->Extract_Gadget(kButtonSave));
           if (toggle != nullptr) {
             toggle->Turn_On();
             //						toggle->IsOn = true;
@@ -365,8 +365,8 @@ bool LoadOptionsClass::Process() {
           input = engine::window::ButtonKey(kButtonLoad);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
-          toggle =
-              dynamic_cast<ToggleClass*>(commands->Extract_Gadget(kButtonLoad));
+          toggle = dynamic_cast<game::ToggleClass*>(
+              commands->Extract_Gadget(kButtonLoad));
           if (toggle != nullptr) {
             toggle->IsOn = true;
             toggle->IsPressed = true;
@@ -377,7 +377,7 @@ bool LoadOptionsClass::Process() {
           input = engine::window::ButtonKey(kButtonDelete);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
-          toggle = dynamic_cast<ToggleClass*>(
+          toggle = dynamic_cast<game::ToggleClass*>(
               commands->Extract_Gadget(kButtonDelete));
           if (toggle != nullptr) {
             toggle->IsOn = true;
@@ -502,7 +502,7 @@ bool LoadOptionsClass::Process() {
           if (listbtn.Count() == 0) {
             process = false;
           } else {
-            auto* toggle = dynamic_cast<ToggleClass*>(
+            auto* toggle = dynamic_cast<game::ToggleClass*>(
                 commands->Extract_Gadget(kButtonDelete));
             if (toggle != nullptr) {
               //							toggle->IsOn

@@ -52,12 +52,12 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "game/ui/control.h"
+#include "game/ui/toggle.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"
 #include "td/data/text.h"
 #include "td/startup/conquer.h"
 #include "td/ui/dialog.h"
-#include "td/ui/toggle.h"
 
 namespace td {
 
@@ -84,7 +84,7 @@ namespace td {
 TextButtonClass::TextButtonClass(unsigned id, const char* text,
                                  TextPrintType style, int x, int y, int w,
                                  int h, bool blackborder)
-    : ToggleClass(id, x, y, w, h),
+    : game::ToggleClass(id, x, y, w, h),
       IsBlackBorder(blackborder),
       String(text),
       PrintFlags(style) {
@@ -113,7 +113,7 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
 TextButtonClass::TextButtonClass()
-    : ToggleClass(0, 0, 0, 0, 0),
+    : game::ToggleClass(0, 0, 0, 0, 0),
       IsBlackBorder(false),
       String(nullptr),
       PrintFlags(TPF_8POINT) {
@@ -153,7 +153,7 @@ TextButtonClass::TextButtonClass()
  *=============================================================================================*/
 TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
                                  int x, int y, int w, int h, bool blackborder)
-    : ToggleClass(id, x, y, w, h),
+    : game::ToggleClass(id, x, y, w, h),
       IsBlackBorder(blackborder),
       String(nullptr),
       PrintFlags(style) {
