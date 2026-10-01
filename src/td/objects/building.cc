@@ -147,6 +147,7 @@
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "base/enum_array.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
@@ -3540,7 +3541,7 @@ void BuildingClass::Read_INI(char* buffer) {
       if (b) {
         if (b->Unlimbo(Cell_Coord(cell), facing)) {
           strength = std::min(strength, 0x100);
-          strength = Fixed_To_Cardinal(b->Class->MaxStrength, strength);
+          strength = base::FixedToCardinal(b->Class->MaxStrength, strength);
           b->Strength = static_cast<int16_t>(strength);
           b->IsALemon = false;
           b->Trigger = TriggerClass::As_Pointer(trigname);
@@ -4343,7 +4344,7 @@ int BuildingClass::Mission_Deconstruction() {
             if (unit->Unlimbo(Coord_Snap(Adjacent_Cell(Coord, DIR_SE)),
                               DIR_SW)) {
               unit->Strength = static_cast<int16_t>(
-                  Fixed_To_Cardinal(unit->Class_Of().MaxStrength, ratio));
+                  base::FixedToCardinal(unit->Class_Of().MaxStrength, ratio));
             } else {
               /*
               **	If, for some strange reason, the MCV could not be placed
@@ -4778,8 +4779,8 @@ int BuildingClass::Mission_Repair() {
 #ifdef OBSOLETE
           } else {
             int time = Bound(
-                Fixed_To_Cardinal(kTicksPerSecond, House->Power_Fraction()), 0,
-                kTicksPerSecond);
+                base::FixedToCardinal(kTicksPerSecond, House->Power_Fraction()),
+                0, kTicksPerSecond);
             time = (kTicksPerSecond + (kTicksPerSecond / 2)) - time;
             return (time);
 #endif
@@ -4827,8 +4828,8 @@ int BuildingClass::Mission_Repair() {
             return 1;
           }
           int time = Bound(
-              Fixed_To_Cardinal(kTicksPerSecond, House->Power_Fraction()), 0,
-              kTicksPerSecond);
+              base::FixedToCardinal(kTicksPerSecond, House->Power_Fraction()),
+              0, kTicksPerSecond);
           time = (kTicksPerSecond * 3) - time;
           IsReadyToCommence = false;
           return time;
@@ -5059,7 +5060,7 @@ void BuildingClass::Enter_Idle_Mode(bool initial) {
  *=============================================================================================*/
 int BuildingClass::Pip_Count() const {
   Validate();
-  return Fixed_To_Cardinal(Class->Max_Pips(), House->Tiberium_Fraction());
+  return base::FixedToCardinal(Class->Max_Pips(), House->Tiberium_Fraction());
 }
 
 /***********************************************************************************************
@@ -5253,8 +5254,8 @@ int BuildingClass::Mission_Unload() {
 int BuildingClass::Power_Output() const {
   Validate();
   if (Class->Power) {
-    return Fixed_To_Cardinal(
-        Class->Power, Cardinal_To_Fixed(Class->MaxStrength, LastStrength));
+    return base::FixedToCardinal(
+        Class->Power, base::CardinalToFixed(Class->MaxStrength, LastStrength));
   }
   return 0;
 }
@@ -5307,9 +5308,10 @@ int BuildingClass::Refund_Amount() const {
   **	Add in any Tiberium that was stored within the building.
   */
   if (TheGameState().compatibility_v107() && Class->Capacity > 0) {
-    cost += Fixed_To_Cardinal(
-        Class->Capacity, Cardinal_To_Fixed(static_cast<int>(House->Capacity),
-                                           static_cast<int>(House->Tiberium)));
+    cost += base::FixedToCardinal(
+        Class->Capacity,
+        base::CardinalToFixed(static_cast<int>(House->Capacity),
+                              static_cast<int>(House->Tiberium)));
   }
   return cost;
 }

@@ -171,11 +171,6 @@ add_gtest(
 )
 
 add_gtest(
-    NAME ra_count_up_test
-    SOURCES core/count_up_test.cc
-)
-
-add_gtest(
     NAME ra_hall_of_fame_test
     SOURCES screens/hall_of_fame_test.cc screens/hall_of_fame.cc
     LIBS base
@@ -229,13 +224,6 @@ add_gtest(
     LIBS base engine_stream SDL2::SDL2 absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_saveglobals_test)
-
-add_gtest(
-    NAME ra_fixed_point_test
-    SOURCES core/fixed_point_test.cc
-    LIBS base engine_gfx absl::check absl::log magic_enum::magic_enum
-)
-apply_language_setting(ra_fixed_point_test)
 
 add_gtest(
     NAME ra_connect_test

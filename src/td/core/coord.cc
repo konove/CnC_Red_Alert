@@ -55,12 +55,12 @@
 #include <span>
 
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "base/trig.h"
 #include "game/core/display_constants.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
-#include "td/core/jshell.h"
 #include "td/core/rand.h"
 
 namespace td {
@@ -144,8 +144,8 @@ std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize) {
   if (maxsize > ICON_PIXEL_W) {
     maxsize = std::min(maxsize, ICON_PIXEL_W * 2) / 2;
 
-    x = Fixed_To_Cardinal(ICON_PIXEL_W, Coord_XLepton(coord));
-    y = Fixed_To_Cardinal(ICON_PIXEL_H, Coord_YLepton(coord));
+    x = base::FixedToCardinal(ICON_PIXEL_W, Coord_XLepton(coord));
+    y = base::FixedToCardinal(ICON_PIXEL_H, Coord_YLepton(coord));
     const int left = x - maxsize;
     const int right = x + maxsize;
     const int top = y - maxsize;

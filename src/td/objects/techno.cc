@@ -173,6 +173,7 @@
 #include <utility>
 
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -943,8 +944,8 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
       **	Determine the width of the interior strength
       **	graph.
       */
-      int pwidth =
-          Fixed_To_Cardinal(width - 2, ratio);  // Pixel width of bar interior.
+      int pwidth = base::FixedToCardinal(
+          width - 2, ratio);  // Pixel width of bar interior.
 
       pwidth = Bound(pwidth, 1, width - 2);
 
@@ -3223,7 +3224,7 @@ VisualType TechnoClass::Visual_Character(bool raw) const {
     return VISUAL_NORMAL;
   }
 
-  stage = Cardinal_To_Fixed(MAX_UNCLOAK_STAGE, stage);
+  stage = base::CardinalToFixed(MAX_UNCLOAK_STAGE, stage);
 
   if (stage < 0x0040) {
     return VISUAL_INDISTINCT;
@@ -4227,7 +4228,8 @@ int TechnoClass::Refund_Amount() const {
   **	account for the credits of the load.
   */
   cost +=
-      Fixed_To_Cardinal(UnitTypeClass::kFullLoadCredits, Tiberium_Load()) / 2;
+      base::FixedToCardinal(UnitTypeClass::kFullLoadCredits, Tiberium_Load()) /
+      2;
 
   if (House->IsHuman) {
     cost /= 2;

@@ -59,6 +59,7 @@
 #include <string>
 
 #include "absl/strings/match.h"
+#include "base/cardinal.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
@@ -1688,7 +1689,8 @@ void UnitTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 04/03/1995 BWG : Created. *
  *=============================================================================================*/
 int UnitTypeClass::Repair_Cost() const {
-  return Fixed_To_Cardinal(Cost / (MaxStrength / kRepairStep), kRepairPercent);
+  return base::FixedToCardinal(Cost / (MaxStrength / kRepairStep),
+                               kRepairPercent);
 }
 
 /***********************************************************************************************

@@ -52,12 +52,12 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/cardinal.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/ui/control.h"
 #include "td/ui/dialog.h"
 #include "td/ui/gadget.h"
@@ -187,10 +187,10 @@ bool SliderClass::Set_Value(int value) {
 void SliderClass::Recalc_Thumb() {
   const int length = IsHorizontal ? Width : Height;
   const int size =
-      Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue, Thumb));
+      base::FixedToCardinal(length, base::CardinalToFixed(MaxValue, Thumb));
   ThumbSize = std::max(size, 4);
   const int start =
-      Fixed_To_Cardinal(length, Cardinal_To_Fixed(MaxValue, CurValue));
+      base::FixedToCardinal(length, base::CardinalToFixed(MaxValue, CurValue));
   ThumbStart = std::min(start, length - ThumbSize);
 }
 

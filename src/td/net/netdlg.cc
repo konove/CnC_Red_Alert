@@ -138,6 +138,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/cardinal.h"
 #include "base/numeric.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
@@ -3440,10 +3441,10 @@ static int Net_New_Dialog() {
           basesbtn.Turn_Off();
           basesbtn.Set_Text(TXT_BASES_OFF);
           TheSession().unit_count() =
-              Fixed_To_Cardinal(
+              base::FixedToCardinal(
                   base::At(TheSession().unit_count_max(), 0) -
                       base::At(TheSession().unit_count_min(), 0),
-                  Cardinal_To_Fixed(
+                  base::CardinalToFixed(
                       base::At(TheSession().unit_count_max(), 1) -
                           base::At(TheSession().unit_count_min(), 1),
                       TheSession().unit_count() -
@@ -3454,10 +3455,10 @@ static int Net_New_Dialog() {
           basesbtn.Turn_On();
           basesbtn.Set_Text(TXT_BASES_ON);
           TheSession().unit_count() =
-              Fixed_To_Cardinal(
+              base::FixedToCardinal(
                   base::At(TheSession().unit_count_max(), 1) -
                       base::At(TheSession().unit_count_min(), 1),
-                  Cardinal_To_Fixed(
+                  base::CardinalToFixed(
                       base::At(TheSession().unit_count_max(), 0) -
                           base::At(TheSession().unit_count_min(), 0),
                       TheSession().unit_count() -

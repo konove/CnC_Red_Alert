@@ -122,11 +122,6 @@ add_gtest(
 )
 
 add_gtest(
-    NAME td_fixedmath_test
-    SOURCES core/fixedmath_test.cc core/fixedmath.cc
-)
-
-add_gtest(
     NAME td_connect_test
     SOURCES net/connect_test.cc net/connect.cc net/combuf.cc net/noseqcon.cc
     LIBS base absl::check absl::log

@@ -71,6 +71,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -1306,7 +1307,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         /*
         .......... Derive strength from current gauge reading ...........
         */
-        int strength = Fixed_To_Cardinal(
+        int strength = base::FixedToCardinal(
             TheWorld().current_object().at(0)->Class_Of().MaxStrength,
             HealthGauge->Get_Value());
 

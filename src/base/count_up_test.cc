@@ -1,8 +1,8 @@
-#include "ra/core/count_up.h"
+#include "base/count_up.h"
 
 #include "gtest/gtest.h"
 
-namespace ra {
+namespace base {
 
 namespace {
 
@@ -48,4 +48,4 @@ TEST(CountUpValueTest, LargeValuesDoNotOverflow) {
 
 }  // namespace
 
-}  // namespace ra
+}  // namespace base

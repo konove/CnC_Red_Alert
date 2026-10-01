@@ -132,6 +132,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "base/enum_array.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
@@ -1565,7 +1566,7 @@ bool UnitClass::Try_To_Deploy() {
           */
           const int ratio = Health_Ratio();
           building->Strength = static_cast<int16_t>(
-              Fixed_To_Cardinal(building->Class->MaxStrength, ratio));
+              base::FixedToCardinal(building->Class->MaxStrength, ratio));
           /*
           ** Force the MCV to drop any flag it was carrying.  This will also set
           ** the owner house's flag home cell (since the house's FlagHome is
@@ -3546,7 +3547,7 @@ void UnitClass::Read_INI(char* buffer) {
 
           if (unit->Unlimbo(coord, dir)) {
             unit->Strength = static_cast<int16_t>(
-                Fixed_To_Cardinal(unit->Class->MaxStrength, strength));
+                base::FixedToCardinal(unit->Class->MaxStrength, strength));
             if (TheSession().type() == GAME_NORMAL || unit->House->IsHuman) {
               unit->Assign_Mission(mission);
               unit->Commence();
@@ -3975,8 +3976,8 @@ int UnitClass::Pip_Count() const {
     return How_Many();
   }
   if (Class->IsToHarvest) {
-    return Fixed_To_Cardinal(UnitTypeClass::kFullLoadCredits / 100,
-                             Tiberium_Load());
+    return base::FixedToCardinal(UnitTypeClass::kFullLoadCredits / 100,
+                                 Tiberium_Load());
   }
   return 0;
 }

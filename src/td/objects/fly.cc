@@ -62,10 +62,10 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "base/cardinal.h"
 #include "game/core/display_constants.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 
 namespace td {
 
@@ -136,8 +136,8 @@ ImpactType FlyClass::Physics(COORDINATE& coord, DirType facing) {
  *as guiding value.                                    *
  *=============================================================================================*/
 void FlyClass::Fly_Speed(int speed, MPHType maximum) {
-  SpeedAdd =
-      static_cast<MPHType>(Fixed_To_Cardinal(static_cast<int>(maximum), speed));
+  SpeedAdd = static_cast<MPHType>(
+      base::FixedToCardinal(static_cast<int>(maximum), speed));
 }
 
 }  // namespace td

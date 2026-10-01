@@ -71,6 +71,7 @@
 
 #include "absl/strings/match.h"
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
@@ -4310,7 +4311,7 @@ int BuildingTypeClass::Repair_Cost() const {
   int cost = Raw_Cost() * kRepairStep / MaxStrength;
   cost /= 2;
   cost = std::max(cost, 1);
-  cost = Fixed_To_Cardinal(cost, kRepairPercent);
+  cost = base::FixedToCardinal(cost, kRepairPercent);
   return std::max(cost, 1);
 }
 

@@ -60,6 +60,7 @@
  *=========================================================================*/
 #include "td/ui/gauge.h"
 
+#include "base/cardinal.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
@@ -164,7 +165,7 @@ int GaugeClass::Pixel_To_Value(int pixel) {
   pixel = Bound(pixel, 0, maximum);
   //	pixel = std::min(pixel, maximum);
   //	pixel = std::max(pixel, 0);
-  return Fixed_To_Cardinal(MaxValue, Cardinal_To_Fixed(maximum, pixel));
+  return base::FixedToCardinal(MaxValue, base::CardinalToFixed(maximum, pixel));
 }
 
 /***********************************************************************************************
@@ -193,7 +194,8 @@ int GaugeClass::Value_To_Pixel(int value) {
     start = Y;
   }
   maximum -= 2;
-  return start + Fixed_To_Cardinal(maximum, Cardinal_To_Fixed(MaxValue, value));
+  return start +
+         base::FixedToCardinal(maximum, base::CardinalToFixed(MaxValue, value));
 }
 
 /***********************************************************************************************

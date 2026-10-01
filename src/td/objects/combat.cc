@@ -45,6 +45,7 @@
 #include <iterator>
 
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "base/numeric.h"
 #include "game/core/display_constants.h"
 #include "td/ai/special.h"
@@ -99,7 +100,7 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
 
   const WarheadTypeClass* whead = &Warheads.at(warhead);
 
-  damage = Fixed_To_Cardinal(damage, whead->Modifier.at(armor));
+  damage = base::FixedToCardinal(damage, whead->Modifier.at(armor));
 
   /*
   **	Reduce damage according to the distance from the impact point.

@@ -117,6 +117,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "base/enum_array.h"
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
@@ -548,7 +549,7 @@ void AircraftClass::Read_INI(char* buffer) {
             base::DeletePooled(air);
           } else {
             air->Strength = static_cast<int16_t>(
-                Fixed_To_Cardinal(air->Class->MaxStrength, strength));
+                base::FixedToCardinal(air->Class->MaxStrength, strength));
             if (air->Unlimbo(coord, dir)) {
               air->Assign_Mission(Mission_From_Name(tokens.Next(",\n\r")));
             } else {
@@ -1113,8 +1114,8 @@ int AircraftClass::Mission_Unload() {
           const int navdist = Distance(As_Movement_Coord(NavCom));
           Altitude = kFlightLevel;
           if (navdist < 0x0600) {
-            Altitude = Fixed_To_Cardinal(kFlightLevel,
-                                         Cardinal_To_Fixed(0x0600, navdist));
+            Altitude = base::FixedToCardinal(
+                kFlightLevel, base::CardinalToFixed(0x0600, navdist));
           }
 
           if (navdist < 0x0080) {
@@ -2958,8 +2959,8 @@ int AircraftClass::Pip_Count() const {
     retval = How_Many();
   } else {
     if (Ammo) {
-      retval = Cardinal_To_Fixed(Class->MaxAmmo, Ammo);
-      retval = Fixed_To_Cardinal(Class->Max_Pips(), retval);
+      retval = base::CardinalToFixed(Class->MaxAmmo, Ammo);
+      retval = base::FixedToCardinal(Class->Max_Pips(), retval);
       if (!retval) {
         retval = 1;
       }

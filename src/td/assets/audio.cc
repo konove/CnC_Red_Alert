@@ -52,6 +52,7 @@
 #include <span>
 #include <vector>
 
+#include "base/cardinal.h"
 #include "base/enum_array.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/game_file.h"
@@ -359,7 +360,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
         XY_Coord(TheMap().TacLeptonWidth / 2, TheMap().TacLeptonHeight / 2));
     distance = MapEditClass::Cell_Distance(cell_pos, Coord_Cell(view_center));
     distance = std::min<int>(distance, MAP_CELL_W);
-    distance = Cardinal_To_Fixed(MAP_CELL_W, distance);
+    distance = base::CardinalToFixed(MAP_CELL_W, distance);
     distance = std::min(distance, 0xFF);
     distance = 0xFF - distance;
 
@@ -381,10 +382,10 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
     }
   }
 
-  Sound_Effect(
-      voc,
-      static_cast<VolType>(Fixed_To_Cardinal(distance, TheOptions().Volume)),
-      variation, static_cast<int16_t>(pan_value));
+  Sound_Effect(voc,
+               static_cast<VolType>(
+                   base::FixedToCardinal(distance, TheOptions().Volume)),
+               variation, static_cast<int16_t>(pan_value));
 }
 
 /***********************************************************************************************
@@ -452,7 +453,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   if (!ptr.empty()) {
     const int vol = static_cast<int>(volume);
     return engine::audio::TheAudio().Play(
-        ptr, Fixed_To_Cardinal(SoundEffectName.at(voc).Priority, vol), vol,
+        ptr, base::FixedToCardinal(SoundEffectName.at(voc).Priority, vol), vol,
         pan_value);
   }
   return -1;

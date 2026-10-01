@@ -25,6 +25,7 @@
 #include <string>
 
 #include "absl/strings/match.h"
+#include "base/cardinal.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
@@ -385,7 +386,8 @@ BuildingClass* AircraftTypeClass::Who_Can_Build_Me(bool /*unused*/, bool legal,
 }
 
 int AircraftTypeClass::Repair_Cost() const {
-  return Fixed_To_Cardinal(Cost / (MaxStrength / kRepairStep), kRepairPercent);
+  return base::FixedToCardinal(Cost / (MaxStrength / kRepairStep),
+                               kRepairPercent);
 }
 
 int AircraftTypeClass::Repair_Step() const { return kRepairStep; }

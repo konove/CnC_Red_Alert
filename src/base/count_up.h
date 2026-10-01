@@ -1,12 +1,12 @@
 // Arithmetic for the score screen's counting numbers.
 
-#ifndef CNC_RED_ALERT_RA_CORE_COUNT_UP_H_
-#define CNC_RED_ALERT_RA_CORE_COUNT_UP_H_
+#ifndef CNC_RED_ALERT_BASE_COUNT_UP_H_
+#define CNC_RED_ALERT_BASE_COUNT_UP_H_
 
 #include <algorithm>
 #include <cstdint>
 
-namespace ra {
+namespace base {
 
 // Returns what a counter running from 0 to `final_value` shows at `step` of
 // `steps` evenly spaced steps: 0 at step 0 and exactly `final_value` at the
@@ -20,6 +20,6 @@ constexpr int CountUpValue(int final_value, int step, int steps) {
                           steps);
 }
 
-}  // namespace ra
+}  // namespace base
 
-#endif  // CNC_RED_ALERT_RA_CORE_COUNT_UP_H_
+#endif  // CNC_RED_ALERT_BASE_COUNT_UP_H_

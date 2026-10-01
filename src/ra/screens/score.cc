@@ -44,6 +44,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/count_up.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
 #include "engine/audio/audio_mixer.h"
@@ -71,7 +72,6 @@
 #include "ra/assets/theme.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/config.h"
-#include "ra/core/count_up.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
@@ -508,9 +508,9 @@ void ScoreClass::Presentation() {
   // ticks after leadership. The loop ends as soon as both show their final
   // values, which is only early when a rating is zero.
   for (int i = 0; i <= 130; i++) {
-    const int lead = CountUpValue(leadership, i, 100);
+    const int lead = base::CountUpValue(leadership, i, 100);
     Count_Up_Print("%3d%%", lead, leadership, 244, 26, greenpal);
-    const int econo = CountUpValue(economy, i - 30, 100);
+    const int econo = base::CountUpValue(economy, i - 30, 100);
     if (i >= 30) {
       Count_Up_Print("%3d%%", econo, economy, 244, 38, greenpal);
     }
@@ -813,8 +813,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
       hidden.BlitTo(view, 0, 0, xpos * 2, ypos * 2, (3 + gdikilled) * 2, 16);
     }
 
-    Count_Up_Print("%d", CountUpValue(gkilled, i, gdikilled), gkilled, 297,
-                   ypos + 2, top_palette);
+    Count_Up_Print("%d", base::CountUpValue(gkilled, i, gdikilled), gkilled,
+                   297, ypos + 2, top_palette);
     engine::audio::TheAudio().Play(Beepy6, 255,
                                    TheOptions().Normalize_Volume(150));
     TickScoreScreen(2);
@@ -834,8 +834,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
                     16);
     }
 
-    Count_Up_Print("%d", CountUpValue(nkilled, i, nodkilled), nkilled, 297,
-                   ypos + 14, bottom_palette);
+    Count_Up_Print("%d", base::CountUpValue(nkilled, i, nodkilled), nkilled,
+                   297, ypos + 14, bottom_palette);
     engine::audio::TheAudio().Play(Beepy6, 255,
                                    TheOptions().Normalize_Volume(150));
     TickScoreScreen(2);

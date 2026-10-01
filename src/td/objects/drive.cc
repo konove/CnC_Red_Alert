@@ -77,6 +77,7 @@
 
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/cardinal.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "engine/platform/timer.h"
@@ -200,7 +201,7 @@ void DriveClass::Force_Track(int track, COORDINATE coord) {
  *=============================================================================================*/
 int DriveClass::Tiberium_Load() const {
   if (*this == UNIT_HARVESTER) {
-    return Cardinal_To_Fixed(UnitTypeClass::kStepCount, Tiberium);
+    return base::CardinalToFixed(UnitTypeClass::kStepCount, Tiberium);
   }
   return 0x0000;
 }
@@ -604,11 +605,11 @@ bool DriveClass::While_Moving() {
   ** Slow the unit down if he's carrying a flag.
   */
   if (dynamic_cast<UnitClass*>(this)->Flagged != HOUSE_NONE) {
-    actual = SpeedAccum +
-             Fixed_To_Cardinal(static_cast<int>(Class->MaxSpeed) / 2, Speed);
+    actual = SpeedAccum + base::FixedToCardinal(
+                              static_cast<int>(Class->MaxSpeed) / 2, Speed);
   } else {
     actual = SpeedAccum +
-             Fixed_To_Cardinal(static_cast<int>(Class->MaxSpeed), Speed);
+             base::FixedToCardinal(static_cast<int>(Class->MaxSpeed), Speed);
   }
 
   if (actual > PIXEL_LEPTON_W) {

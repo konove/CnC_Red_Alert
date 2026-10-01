@@ -124,6 +124,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/cardinal.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
@@ -1489,7 +1490,7 @@ void InfantryClass::AI() {
         **	Advance the infantry as far as it should go.
         */
         Coord = Coord_Move(Coord, Direction(Head_To_Coord()),
-                           static_cast<uint16_t>(Fixed_To_Cardinal(
+                           static_cast<uint16_t>(base::FixedToCardinal(
                                static_cast<int>(Class->MaxSpeed), movespeed)));
       }
       Mark(MARK_DOWN);
@@ -3142,8 +3143,8 @@ void InfantryClass::Read_INI(char* buffer) {
           }
 
           if (infantry->Unlimbo(coord, dir)) {
-            infantry->Strength = static_cast<int16_t>(
-                Fixed_To_Cardinal(infantry->Class_Of().MaxStrength, strength));
+            infantry->Strength = static_cast<int16_t>(base::FixedToCardinal(
+                infantry->Class_Of().MaxStrength, strength));
             if (TheSession().type() == GAME_NORMAL ||
                 infantry->House->IsHuman) {
               infantry->Assign_Mission(mission);

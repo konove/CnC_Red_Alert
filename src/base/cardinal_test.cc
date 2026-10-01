@@ -1,12 +1,12 @@
-// Checks the signed fixed-point helpers in ra/core/coord.h against the original
-// unsigned 32-bit implementations, whose results the simulation depends on.
+// Checks the signed fixed-point helpers against the original unsigned 32-bit
+// implementations, whose results the simulation depends on.
 
 #include <cstdint>
 
+#include "base/cardinal.h"
 #include "gtest/gtest.h"
-#include "ra/core/coord.h"
 
-namespace ra {
+namespace base {
 
 namespace {
 
@@ -39,7 +39,7 @@ int ExpectedFixedToCardinal(int base, int fixed) {
 TEST(FixedToCardinalTest, MatchesLegacyOverGameDomain) {
   for (int base = 0; base <= 0xFFFF; ++base) {
     for (int fixed = 0; fixed <= 0x1FF; ++fixed) {
-      ASSERT_EQ(Fixed_To_Cardinal(base, fixed),
+      ASSERT_EQ(FixedToCardinal(base, fixed),
                 ExpectedFixedToCardinal(base, fixed))
           << "base " << base << " fixed " << fixed;
     }
@@ -49,7 +49,7 @@ TEST(FixedToCardinalTest, MatchesLegacyOverGameDomain) {
 TEST(CardinalToFixedTest, MatchesLegacyOverGameDomain) {
   for (int base = 0; base <= 0x3FF; ++base) {
     for (int cardinal = 0; cardinal <= 0xFFFF; ++cardinal) {
-      ASSERT_EQ(Cardinal_To_Fixed(base, cardinal),
+      ASSERT_EQ(CardinalToFixed(base, cardinal),
                 ExpectedCardinalToFixed(base, cardinal))
           << "base " << base << " cardinal " << cardinal;
     }
@@ -62,20 +62,20 @@ TEST(FixedPointTest, MatchesLegacyOutsideGameDomain) {
                           0xFFFFFF,  0x1000000, 0x7FFFFFFF, 12345};
   for (const int a : kSamples) {
     for (const int b : kSamples) {
-      EXPECT_EQ(Fixed_To_Cardinal(a, b), ExpectedFixedToCardinal(a, b))
+      EXPECT_EQ(FixedToCardinal(a, b), ExpectedFixedToCardinal(a, b))
           << a << ", " << b;
-      EXPECT_EQ(Cardinal_To_Fixed(a, b), ExpectedCardinalToFixed(a, b))
+      EXPECT_EQ(CardinalToFixed(a, b), ExpectedCardinalToFixed(a, b))
           << a << ", " << b;
     }
   }
 }
 
 TEST(FixedPointTest, IsUsableInConstantExpressions) {
-  static_assert(Cardinal_To_Fixed(0, 5) == 0xFFFF);
-  static_assert(Cardinal_To_Fixed(4, 2) == 0x80);
-  static_assert(Fixed_To_Cardinal(200, 0x80) == 100);
+  static_assert(CardinalToFixed(0, 5) == 0xFFFF);
+  static_assert(CardinalToFixed(4, 2) == 0x80);
+  static_assert(FixedToCardinal(200, 0x80) == 100);
 }
 
 }  // namespace
 
-}  // namespace ra
+}  // namespace base

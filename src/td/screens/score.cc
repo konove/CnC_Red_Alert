@@ -68,6 +68,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/bytes_of.h"
+#include "base/cardinal.h"
 #include "base/numeric.h"
 #include "base/random.h"
 #include "engine/audio/audio_mixer.h"
@@ -751,21 +752,22 @@ void ScoreClass::Show() {
   if (!leadership) {
     leadership++;
   }
-  leadership = Cardinal_To_Fixed(GKilled + GBKilled + leadership, leadership);
-  leadership = Fixed_To_Cardinal(100, leadership);
+  leadership =
+      base::CardinalToFixed(GKilled + GBKilled + leadership, leadership);
+  leadership = base::FixedToCardinal(100, leadership);
   leadership = std::min(leadership, 100);
 
   /*
   **	Determine efficiency rating.
   */
-  int efficiency =
-      Cardinal_To_Fixed((player_house == HOUSE_GOOD ? GHarvested : NHarvested) +
-                            static_cast<int>(ThePlayer()->InitialCredits) + 1,
-                        static_cast<int>(ThePlayer()->Available_Money()) + 1);
+  int efficiency = base::CardinalToFixed(
+      (player_house == HOUSE_GOOD ? GHarvested : NHarvested) +
+          static_cast<int>(ThePlayer()->InitialCredits) + 1,
+      static_cast<int>(ThePlayer()->Available_Money()) + 1);
   if (!efficiency) {
     efficiency++;
   }
-  efficiency = Fixed_To_Cardinal(100, efficiency);
+  efficiency = base::FixedToCardinal(100, efficiency);
 
   efficiency = std::min(efficiency, 100);
   /*

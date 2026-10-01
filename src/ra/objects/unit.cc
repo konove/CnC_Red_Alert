@@ -112,6 +112,7 @@
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
 #include "base/pooled.h"
@@ -4158,7 +4159,7 @@ DirType UnitClass::Fire_Direction() const {
       diff1 = std::abs(diff1);
       diff2 = std::abs(diff2);
       const int diff = std::min(diff1, diff2);
-      const int adj = Fixed_To_Cardinal(
+      const int adj = base::FixedToCardinal(
           std::abs(SecondaryFacing.Difference(DIR_N)), 64 - diff);
       if (SecondaryFacing.Difference(DIR_N) < 0) {
         return SecondaryFacing - AsDirection(adj);

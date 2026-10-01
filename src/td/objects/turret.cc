@@ -58,11 +58,11 @@
 #include <cstdlib>
 
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "td/core/const.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
-#include "td/core/jshell.h"
 #include "td/objects/drive.h"
 #include "td/objects/target.h"
 #include "td/objects/type.h"
@@ -444,7 +444,7 @@ DirType TurretClass::Fire_Direction() const {
       diff1 = std::abs(diff1);
       diff2 = std::abs(diff2);
       const int diff = std::min(diff1, diff2);
-      const int adj = Fixed_To_Cardinal(
+      const int adj = base::FixedToCardinal(
           std::abs(SecondaryFacing.Difference(DIR_N)), 64 - diff);
       if (SecondaryFacing.Difference(DIR_N) < 0) {
         return AsDirection(static_cast<int>(SecondaryFacing.Current()) - adj);

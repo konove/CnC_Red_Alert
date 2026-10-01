@@ -41,8 +41,8 @@
 #include <cstdint>
 
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "base/random.h"
-#include "td/core/jshell.h"
 #include "td/core/randomstate.h"
 
 namespace td {
@@ -135,7 +135,7 @@ int Sim_Random() {
  *   06/17/1995 JLB : Uses fixed point math helper routine.                *
  *=========================================================================*/
 int Sim_IRandom(int minval, int maxval) {
-  return Fixed_To_Cardinal(maxval - minval, Sim_Random()) + minval;
+  return base::FixedToCardinal(maxval - minval, Sim_Random()) + minval;
 }
 
 /*---------------------------------------------------------------------------

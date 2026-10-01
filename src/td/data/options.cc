@@ -75,6 +75,7 @@
 #include <string_view>
 
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "engine/audio/audio_mixer.h"
 #include "engine/crypto/key_phrase_hash.h"
 #include "engine/file/profile_buffer.h"
@@ -238,8 +239,8 @@ void OptionsClass::Set_Sound_Volume(int volume, bool feedback) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Brightness(int brightness) {
-  Brightness =
-      static_cast<unsigned char>(0x40 + Fixed_To_Cardinal(0x80, brightness));
+  Brightness = static_cast<unsigned char>(
+      0x40 + base::FixedToCardinal(0x80, brightness));
   ShowPalette();
 }
 
@@ -259,7 +260,7 @@ void OptionsClass::Set_Brightness(int brightness) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 int OptionsClass::Get_Brightness() const {
-  return Cardinal_To_Fixed(0x80, Brightness - 0x40);
+  return base::CardinalToFixed(0x80, Brightness - 0x40);
 }
 
 /***********************************************************************************************
@@ -315,7 +316,7 @@ int OptionsClass::Get_Color() const { return Color; }
  *=============================================================================================*/
 void OptionsClass::Set_Contrast(int contrast) {
   Contrast =
-      static_cast<unsigned char>(0x40 + Fixed_To_Cardinal(0x80, contrast));
+      static_cast<unsigned char>(0x40 + base::FixedToCardinal(0x80, contrast));
   ShowPalette();
 }
 
@@ -335,7 +336,7 @@ void OptionsClass::Set_Contrast(int contrast) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 int OptionsClass::Get_Contrast() const {
-  return Cardinal_To_Fixed(0x80, Contrast - 0x40);
+  return base::CardinalToFixed(0x80, Contrast - 0x40);
 }
 
 /***********************************************************************************************
@@ -723,7 +724,7 @@ void OptionsClass::Fixup_Palette() const {
 }
 
 int OptionsClass::Normalize_Sound(int volume) const {
-  return Fixed_To_Cardinal(volume, Volume);
+  return base::FixedToCardinal(volume, Volume);
 }
 
 }  // namespace td

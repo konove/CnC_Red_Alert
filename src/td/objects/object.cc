@@ -114,6 +114,7 @@
 #include <span>
 
 #include "base/array.h"
+#include "base/cardinal.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
@@ -1455,7 +1456,7 @@ BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
   return Class_Of().Who_Can_Build_Me(intheory, legal, Owner());
 }
 int ObjectClass::Health_Ratio() const {
-  return Cardinal_To_Fixed(Class_Of().MaxStrength, Strength);
+  return base::CardinalToFixed(Class_Of().MaxStrength, Strength);
 }
 int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); }
 

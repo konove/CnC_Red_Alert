@@ -48,6 +48,7 @@
 #include <string>
 
 #include "absl/base/attributes.h"
+#include "base/cardinal.h"
 #include "base/enum_array.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
@@ -480,8 +481,8 @@ class HouseClass {
   [[nodiscard]] int Tiberium_Fraction() const {
     return !static_cast<int>(Tiberium)
                ? 0
-               : Cardinal_To_Fixed(static_cast<int>(Capacity),
-                                   static_cast<int>(Tiberium));
+               : base::CardinalToFixed(static_cast<int>(Capacity),
+                                       static_cast<int>(Tiberium));
   }
   void Begin_Production() { IsStarted = true; }
   const TeamTypeClass* Suggested_New_Team(bool alertcheck = false);

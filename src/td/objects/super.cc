@@ -70,11 +70,11 @@
  *=============================================================================================*/
 #include "td/objects/super.h"
 
+#include "base/cardinal.h"
 #include "engine/platform/timer.h"
 #include "td/assets/audio.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 
 namespace td {
 
@@ -303,8 +303,9 @@ int SuperClass::Anim_Stage() const {
       time = SuspendTime;
     }
 
-    return Fixed_To_Cardinal(
-        kAnimationStages, Cardinal_To_Fixed(RechargeTime, RechargeTime - time));
+    return base::FixedToCardinal(
+        kAnimationStages,
+        base::CardinalToFixed(RechargeTime, RechargeTime - time));
   }
   return 0;
 }

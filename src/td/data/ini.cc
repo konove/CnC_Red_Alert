@@ -67,6 +67,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/cardinal.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
@@ -434,7 +435,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     TheWorld().carry_over_percent() =
         WWGetPrivateProfileInt("Basic", "CarryOverMoney", 100, buffer);
     TheWorld().carry_over_percent() =
-        Cardinal_To_Fixed(100, TheWorld().carry_over_percent());
+        base::CardinalToFixed(100, TheWorld().carry_over_percent());
     carry_over_cap =
         WWGetPrivateProfileInt("Basic", "carry_over_cap", -1, buffer);
 
@@ -444,12 +445,13 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     // Any negative cap, not just the -1 default, means uncapped; the original
     // compared the cap as unsigned.
     if (carry_over_cap >= 0) {
-      carryover = std::min(Fixed_To_Cardinal(TheWorld().carry_over_money(),
-                                             TheWorld().carry_over_percent()),
-                           carry_over_cap);
+      carryover =
+          std::min(base::FixedToCardinal(TheWorld().carry_over_money(),
+                                         TheWorld().carry_over_percent()),
+                   carry_over_cap);
     } else {
-      carryover = Fixed_To_Cardinal(TheWorld().carry_over_money(),
-                                    TheWorld().carry_over_percent());
+      carryover = base::FixedToCardinal(TheWorld().carry_over_money(),
+                                        TheWorld().carry_over_percent());
     }
     ThePlayer()->Credits += carryover;
     ThePlayer()->InitialCredits += carryover;
@@ -747,7 +749,7 @@ void Write_Scenario_Ini(const char* root) {
                              ini);
     WWWritePrivateProfileInt(
         "Basic", "CarryOverMoney",
-        Fixed_To_Cardinal(100, TheWorld().carry_over_percent()), ini);
+        base::FixedToCardinal(100, TheWorld().carry_over_percent()), ini);
     WWWritePrivateProfileInt("Basic", "carry_over_cap", carry_over_cap, ini);
 
     TeamTypeClass::Write_INI(ini, true);

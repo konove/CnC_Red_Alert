@@ -150,14 +150,6 @@ inline int Bound(int original, int minval, int maxval) {
   return std::clamp(original, minval, maxval);
 }
 
-// Returns the rounded "fixed" fraction of "base", where "fixed" is 0x100 for
-// one; 0xFFFF if the product does not fit in 24 bits.
-int Fixed_To_Cardinal(int base, int fixed);
-
-// Returns "cardinal" as a fixed-point fraction of "base", where 0x100 is one;
-// 0xFFFF if "base" is zero.
-int Cardinal_To_Fixed(int base, int cardinal);
-
 // Prints `format` with `args`, checked at compile time, to stderr, then
 // exits with a failure code.
 [[noreturn]] void Fatal_Message(std::string_view message);

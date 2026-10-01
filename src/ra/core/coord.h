@@ -44,31 +44,6 @@ std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize);
 // Converts a coordinate to its cell number (map array index).
 CELL Coord_Cell(COORDINATE coord);
 
-// Returns "cardinal" as a fixed-point fraction of "base", where 0x100 is one;
-// 0xFFFF if "base" is zero.
-constexpr int Cardinal_To_Fixed(const int base, const int cardinal) {
-  if (base == 0) {
-    return 0xFFFF;
-  }
-  // Unsigned 32-bit arithmetic keeps the original results, including the
-  // wraparound for inputs outside the game's range; the simulation is
-  // deterministic across peers only if these stay bit-identical.
-  return static_cast<int>((static_cast<uint32_t>(cardinal) << 8) /
-                          static_cast<uint32_t>(base));
-}
-
-// Returns the rounded "fixed" fraction of "base", where "fixed" is 0x100 for
-// one; 0xFFFF if the product does not fit in 24 bits.
-constexpr int Fixed_To_Cardinal(const int base, const int fixed) {
-  // Unsigned 32-bit arithmetic for the same reason as Cardinal_To_Fixed.
-  const uint32_t ret =
-      (static_cast<uint32_t>(base) * static_cast<uint32_t>(fixed)) + 0x80;
-  if (ret > 0x00FFFFFF) {
-    return 0xFFFF;
-  }
-  return static_cast<int>(ret >> 8);
-}
-
 // Rescales a value from an old range to a new range with rounding.
 // Maps: (value / old_base) * new_base
 constexpr uint32_t Rescale(const uint32_t value, const uint32_t old_base,

@@ -139,6 +139,7 @@
 #include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/cardinal.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
@@ -4381,7 +4382,7 @@ int HouseClass::Power_Fraction() const {
   Validate();
   if (Power) {
     if (Drain) {
-      return Cardinal_To_Fixed(Drain, Power);
+      return base::CardinalToFixed(Drain, Power);
     }
     return 0x0100;
   }
