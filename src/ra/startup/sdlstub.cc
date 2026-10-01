@@ -1,8 +1,12 @@
 // more portable replacements for winstub
 
 #include <cstdlib>
+#include <span>
+#include <utility>
 
+#include "embedded/kRedAlertIcon.h"
 #include "engine/audio/audio_mixer.h"
+#include "engine/gfx/ico_image.h"
 #include "engine/net/net_select.h"
 #include "engine/net/nullconn.h"
 #include "engine/window/display.h"
@@ -35,7 +39,12 @@ static constexpr const char* kWindowName = [] {
 
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
-  engine::window::TheDisplay().Init(kWindowName, width, height);
+  engine::window::Display& display = engine::window::TheDisplay();
+  display.Init(kWindowName, width, height);
+  if (auto icon = engine::gfx::DecodeIco(
+          std::as_bytes(std::span(embedded::kRedAlertIcon)))) {
+    display.SetIcon(*std::move(icon));
+  }
 }
 
 GameWindowEvents::GameWindowEvents(game::Input& input)

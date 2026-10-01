@@ -62,6 +62,8 @@ apply_dotenv_settings(ra_engine)
 apply_dotenv_settings(rasdl)
 apply_language_setting(ra_engine)
 apply_language_setting(rasdl)
+# The window icon; cc_icon.rc gives the Windows executable its file icon.
+embed_file(ra_engine redalert.ico kRedAlertIcon)
 # magic_enum is PUBLIC because the public header core/defines.h includes it; the
 # interface-header-set verification compiles that header standalone.
 # startup/sdlstub.cc includes SDL headers directly, so ra_engine links SDL2 itself
