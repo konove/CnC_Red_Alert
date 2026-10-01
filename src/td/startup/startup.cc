@@ -56,6 +56,7 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/file/profile_buffer.h"
 #include "engine/net/ipxaddr.h"
+#include "engine/net/ipxmgr.h"
 #include "engine/stream/byte_stream.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"  // IWYU pragma: keep (used only with an entry point)
@@ -63,7 +64,6 @@
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/data/profile.h"
-#include "td/net/ipxmgr.h"
 #include "td/net/network.h"
 #include "td/net/nullmgr.h"
 #include "td/net/session.h"

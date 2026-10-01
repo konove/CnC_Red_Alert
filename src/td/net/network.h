@@ -11,14 +11,16 @@
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "engine/net/ipxaddr.h"
+#include "engine/net/ipxmgr.h"
 #include "engine/net/serial/modemreg.h"
 #include "game/core/queue.h"
 #include "td/core/defines.h"
 #include "td/net/event.h"
-#include "td/net/ipxmgr.h"
+#include "td/net/ipxgconn.h"
 #include "td/net/nodename.h"
 #include "td/net/nullmgr.h"
 #include "td/net/phone.h"
+#include "td/net/tcp_transport.h"
 #include "td/net/tcpip.h"
 
 namespace td {
@@ -80,7 +82,9 @@ class Network {
 
   // The IPX link, which carries both the global channel the lobby uses and
   // one private channel per connected player.
-  IPXManagerClass& ipx() ABSL_ATTRIBUTE_LIFETIME_BOUND { return ipx_; }
+  engine::net::IPXManagerClass& ipx() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return ipx_;
+  }
 
   // The numbers the serial dialog can dial, which one is selected, the
   // modem init strings to choose from, the port settings read from the INI
@@ -234,13 +238,21 @@ class Network {
                              0x1234};
   bool modem_service_ = true;
 
-  IPXManagerClass ipx_{sizeof(GlobalPacketType),
-                       (546 - sizeof(engine::net::CommHeaderType)) /
-                           sizeof(EventClass) * sizeof(EventClass),
-                       10,             // # entries in Global Queue
-                       8,              // # entries in Private Queues
-                       VIRGIN_SOCKET,  // Socket ID #
-                       IPXGlobalConnClass::kCommandAndConquer};  // Product ID #
+  TcpipManagerClass winsock_;
+  TcpTransport tcp_transport_{winsock_};
+
+  engine::net::IPXManagerClass ipx_{
+      tcp_transport_,
+      false,  // no IPX driver: only an Internet game can play
+      &IPXGlobalConnClass::Make,
+      6,  // most private connections
+      sizeof(GlobalPacketType),
+      (546 - sizeof(engine::net::CommHeaderType)) / sizeof(EventClass) *
+          sizeof(EventClass),
+      10,                                       // # entries in Global Queue
+      8,                                        // # entries in Private Queues
+      engine::net::kVirginSocket,               // Socket ID #
+      IPXGlobalConnClass::kCommandAndConquer};  // Product ID #
 
   std::vector<std::unique_ptr<PhoneEntryClass>> phone_book_;
   int current_phone_index_ = 0;
@@ -266,7 +278,6 @@ class Network {
   std::vector<std::unique_ptr<NodeNameType>> games_;
   std::vector<std::unique_ptr<NodeNameType>> players_;
 
-  TcpipManagerClass winsock_;
   bool is_server_ = false;
   int internet_max_players_ = 0;
 

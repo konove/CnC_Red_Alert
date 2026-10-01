@@ -148,6 +148,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/net/ipxaddr.h"
+#include "engine/net/ipxmgr.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
@@ -165,7 +166,6 @@
 #include "td/net/event.h"
 #include "td/net/internet.h"
 #include "td/net/ipxgconn.h"
-#include "td/net/ipxmgr.h"
 #include "td/net/mplayer.h"
 #include "td/net/network.h"
 #include "td/net/nodename.h"
@@ -268,14 +268,11 @@ static int Net_Fake_Join_Dialog();
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 bool Init_Network() {
-  engine::net::NetNumType net;
-  engine::net::NetNodeType node;
-
   /*------------------------------------------------------------------------
-  This call allocates all necessary queue buffers, allocates Real-mode
-  memory, and commands IPX to start listening on the Global Channel.
+  This call allocates all necessary queue buffers and commands IPX to start
+  listening on the Global Channel.
   ------------------------------------------------------------------------*/
-  if (!TheNetwork().ipx().Init()) {
+  if (!TheNetwork().ipx().Init(TheSession().type() == GAME_INTERNET)) {
     return false;
   }
 
@@ -286,13 +283,8 @@ bool Init_Network() {
     TheNetwork().meta_packet().resize(sizeof(EventClass) * MAX_EVENTS);
   }
 
-  /*------------------------------------------------------------------------
-  Set up the IPX manager to cross a bridge
-  ------------------------------------------------------------------------*/
-  if ((!(TheSession().type() == GAME_INTERNET)) && TheNetwork().is_bridge()) {
-    TheNetwork().bridge_net().Get_Address(net, node);
-    TheNetwork().ipx().Set_Bridge(net);
-  }
+  // A bridge (TheNetwork().is_bridge()) needs no setup: the TCP transport
+  // routes on its own.
 
   return true;
 

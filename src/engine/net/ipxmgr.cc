@@ -55,29 +55,24 @@
  *   IPXManagerClass::Global_Num_Receive -- gets # entries in recv queue   *
  *   IPXManagerClass::Private_Num_Send -- gets # entries in send queue	   *
  *   IPXManagerClass::Private_Num_Receive -- gets # entries in recv queue  *
- *   IPXManagerClass::Set_Bridge -- prepares to cross a bridge             *
  *   IPXManagerClass::Set_Socket -- sets socket ID for all connections *
  *   IPXManagerClass::Response_Time -- Returns largest Avg Response Time   *
  *   IPXManagerClass::Global_Response_Time -- Returns Avg Response Time    *
  *   IPXManagerClass::Reset_Response_Time -- Reset response time
  ** IPXManagerClass::Oldest_Send -- gets ptr to oldest send buf           *
- *   IPXManagerClass::Alloc_RealMode_Mem -- allocates real-mode memory *
- *   IPXManagerClass::Free_RealMode_Mem -- frees real-mode memory
- **
+ *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "ra/net/ipxmgr.h"
+#include "engine/net/ipxmgr.h"
 
 #include <algorithm>
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <memory>
 #include <span>
 #include <utility>
 
-#include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "base/array.h"
 #include "base/buffer.h"
@@ -86,28 +81,27 @@
 #include "base/unaligned.h"
 #include "engine/net/combuf.h"
 #include "engine/net/connect.h"
+#include "engine/net/datagram_transport.h"
+#include "engine/net/global_conn.h"
 #include "engine/net/ipxaddr.h"
-#include "ra/core/defines.h"
-#include "ra/map/world.h"
-#include "ra/net/event.h"
-#include "ra/net/ipxconn.h"
-#include "ra/net/ipxgconn.h"
-#include "ra/net/network.h"
-#include "ra/net/session.h"
-#include "ra/net/wsproto.h"
-#include "ra/objects/house.h"  // IWYU pragma: keep - used by an DCHECK() below.
+#include "engine/net/ipxconn.h"
 
-namespace ra {
+namespace engine::net {
 
 /***************************************************************************
  * IPXManagerClass::IPXManagerClass -- class constructor                   *
  *                                                                         *
  * INPUT:                                                                  *
+ *		transport		where the packets go; it must outlive
+ * the manager * available		false if the transport cannot work
+ * outside an     * Internet game                                     *
+ *		make_global_channel	builds the game's global channel       *
+ *		max_connections	the most private connections at once   *
  *		glb_maxlen		Global Channel maximum packet length
- ** pvt_maxlen		Private Channel maximum packet length
- ** socket			socket ID to use
- ** product_id		a unique numerical ID for this product
- **
+ *          * pvt_maxlen		Private Channel maximum packet length
+ *          * socket			socket ID to use           * product_id
+ *	a unique numerical ID for this product            *
+ *                                                                         *
  *                                                                         *
  * OUTPUT:                                                                 *
  *		none.
@@ -121,26 +115,24 @@ namespace ra {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
-                                 int glb_num_packets, int pvt_num_packets,
-                                 uint16_t socket, uint16_t product_id)
-    : Glb_MaxPacketLen(glb_maxlen),
+IPXManagerClass::IPXManagerClass(
+    DatagramTransport& transport, const bool available,
+    GlobalChannelFactory make_global_channel, const int max_connections,
+    const int glb_maxlen, const int pvt_maxlen, const int glb_num_packets,
+    const int pvt_num_packets, const uint16_t socket, const uint16_t product_id)
+    : Transport(transport),
+      MakeGlobalChannel(make_global_channel),
+      IPXStatus(available),
+      Glb_MaxPacketLen(glb_maxlen),
       Glb_NumPackets(glb_num_packets),
       Pvt_MaxPacketLen(pvt_maxlen),
       Pvt_NumPackets(pvt_num_packets),
       ProductID(product_id),
       // IPX wants the socket ID stored high byte first.
-      Socket(static_cast<uint16_t>(
-          (static_cast<uint32_t>(socket) & 0x00ff) << 8 |
-          (static_cast<uint32_t>(socket) & 0xff00) >> 8)) {
-  /*
-  ** Find out if Packet protocol services are available through Winsock. The
-  ** probe is a local: the interface this manager sends through is opened
-  ** later, by Init(), and the constructor must not reach for Network while
-  ** Network is still building this very member.
-  */
-  WinsockInterfaceClass probe;
-  IPXStatus = probe.Init();
+      Socket(
+          static_cast<uint16_t>((static_cast<uint32_t>(socket) & 0x00ff) << 8 |
+                                (static_cast<uint32_t>(socket) & 0xff00) >> 8)),
+      MaxConnections(std::min(max_connections, kMaxConnections)) {
 } /* end of IPXManagerClass */
 
 /***************************************************************************
@@ -162,7 +154,6 @@ IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 IPXManagerClass::~IPXManagerClass() {
-
   //------------------------------------------------------------------------
   //	Stop all IPX events
   //------------------------------------------------------------------------
@@ -176,14 +167,6 @@ IPXManagerClass::~IPXManagerClass() {
     base::At(Connection, i).reset();
   }
   NumConnections = 0;
-
-  //------------------------------------------------------------------------
-  //	Free all real-mode memory
-  //------------------------------------------------------------------------
-  if (RealMemAllocd) {
-    Free_RealMode_Mem();
-    RealMemAllocd = false;
-  }
 } /* end of ~IPXManagerClass */
 
 /***************************************************************************
@@ -208,8 +191,9 @@ IPXManagerClass::~IPXManagerClass() {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Init() {
-  if (TheSession().Type != GAME_INTERNET) {
+int IPXManagerClass::Init(const bool internet) {
+  Internet = internet;
+  if (!internet) {
     //------------------------------------------------------------------------
     //	Error if IPX not installed
     //------------------------------------------------------------------------
@@ -221,15 +205,6 @@ int IPXManagerClass::Init() {
     //	Stop Listening
     //------------------------------------------------------------------------
     Stop_Listening();
-
-    //------------------------------------------------------------------------
-    //	Free Real-mode memory
-    //------------------------------------------------------------------------
-    if (RealMemAllocd) {
-      Free_RealMode_Mem();
-      RealMemAllocd = false;
-    }
-
   } else {
     /*
     ** Pretend IPX is available for Internet games whether it is or not
@@ -246,38 +221,20 @@ int IPXManagerClass::Init() {
   }
   NumConnections = 0;
 
-  if (TheSession().Type != GAME_INTERNET) {
-    //------------------------------------------------------------------------
-    //	Allocate real-mode memory
-    //------------------------------------------------------------------------
-    if (!Alloc_RealMode_Mem()) {
-      return 0;
-    }
-    RealMemAllocd = true;
-  }
-
   //------------------------------------------------------------------------
   //	Allocate the Global Channel
   //------------------------------------------------------------------------
-  GlobalChannel = std::make_unique<IPXGlobalConnClass>(
-      Glb_NumPackets, Glb_NumPackets, Glb_MaxPacketLen, ProductID);
+  GlobalChannel =
+      MakeGlobalChannel(Transport, Glb_NumPackets, Glb_MaxPacketLen, ProductID);
   GlobalChannel->Init();
   GlobalChannel->Set_Retry_Delta(RetryDelta);
   GlobalChannel->Set_Max_Retries(MaxRetries);
   GlobalChannel->Set_TimeOut(Timeout);
 
   //------------------------------------------------------------------------
-  //	Configure the IPX Connections
-  //------------------------------------------------------------------------
-  IPXConnClass::Configure(Socket, ConnectionNum, ListenECB, SendECB,
-                          FirstHeaderBuf, SendHeader, FirstDataBuf, SendBuf,
-                          Handler, PacketLen);
-
-  //------------------------------------------------------------------------
   //	Start Listening
   //------------------------------------------------------------------------
-  if ((TheSession().Type != GAME_INTERNET) &&
-      (!IPXConnClass::Start_Listening())) {
+  if (!internet && !Transport.Start_Listening(Socket)) {
     return 0;
   }
 
@@ -289,7 +246,7 @@ int IPXManagerClass::Init() {
 
 void IPXManagerClass::Stop_Listening() {
   if (Listening) {
-    IPXConnClass::Stop_Listening();
+    Transport.Stop_Listening();
     Listening = false;
   }
 }
@@ -343,7 +300,6 @@ bool IPXManagerClass::Is_IPX() const { return IPXStatus; } /* end of Is_IPX */
  *=========================================================================*/
 void IPXManagerClass::Set_Timing(int32_t retrydelta, int32_t maxretries,
                                  int32_t timeout) {
-
   RetryDelta = retrydelta;
   MaxRetries = maxretries;
   Timeout = timeout;
@@ -384,7 +340,7 @@ void IPXManagerClass::Set_Timing(int32_t retrydelta, int32_t maxretries,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Create_Connection(int id, char* name,
-                                       engine::net::IPXAddressClass* address) {
+                                       IPXAddressClass* address) {
   //------------------------------------------------------------------------
   //	Error if IPX not installed
   //------------------------------------------------------------------------
@@ -395,7 +351,7 @@ int IPXManagerClass::Create_Connection(int id, char* name,
   //------------------------------------------------------------------------
   //	Error if no more room
   //------------------------------------------------------------------------
-  if (NumConnections == CONNECT_MAX) {
+  if (NumConnections == MaxConnections) {
     return 0;
   }
 
@@ -403,8 +359,8 @@ int IPXManagerClass::Create_Connection(int id, char* name,
   //	Create new connection
   //------------------------------------------------------------------------
   base::At(Connection, NumConnections) = std::make_unique<IPXConnClass>(
-      Pvt_NumPackets, Pvt_NumPackets, Pvt_MaxPacketLen, ProductID, address, id,
-      name);
+      Transport, Pvt_NumPackets, Pvt_NumPackets, Pvt_MaxPacketLen, ProductID,
+      address, id, name);
 
   base::At(Connection, NumConnections)->Init();
   base::At(Connection, NumConnections)->Set_Retry_Delta(RetryDelta);
@@ -436,7 +392,6 @@ int IPXManagerClass::Create_Connection(int id, char* name,
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Delete_Connection(int id) {
-
   //------------------------------------------------------------------------
   //	Error if IPX not installed
   //------------------------------------------------------------------------
@@ -583,7 +538,7 @@ char* IPXManagerClass::Connection_Name(int id) {
  * HISTORY:                                                                *
  *   01/19/1995 BR : Created.                                              *
  *=========================================================================*/
-engine::net::IPXAddressClass* IPXManagerClass::Connection_Address(int id) {
+IPXAddressClass* IPXManagerClass::Connection_Address(int id) {
   for (int i = 0; i < NumConnections; i++) {
     if (base::At(Connection, i)->ID == id) {
       return &base::At(Connection, i)->Address;
@@ -675,9 +630,9 @@ void IPXManagerClass::Set_Connection_Parms(int index, int id, char* name) {
  * HISTORY:                                                                *
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
-int IPXManagerClass::Send_Global_Message(
-    std::span<const std::byte> buf, int buflen, int ack_req,
-    engine::net::IPXAddressClass* address) {
+int IPXManagerClass::Send_Global_Message(std::span<const std::byte> buf,
+                                         int buflen, int ack_req,
+                                         IPXAddressClass* address) {
   //------------------------------------------------------------------------
   //	Error if IPX not installed or not Listening
   //------------------------------------------------------------------------
@@ -717,7 +672,7 @@ int IPXManagerClass::Send_Global_Message(
  *   01/25/1995 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Get_Global_Message(std::span<std::byte> buf, int* buflen,
-                                        engine::net::IPXAddressClass* address,
+                                        IPXAddressClass* address,
                                         uint16_t* product_id) {
   //------------------------------------------------------------------------
   //	Error if IPX not installed or not Listening
@@ -905,123 +860,61 @@ int IPXManagerClass::Get_Private_Message(std::span<std::byte> buf, int* buflen,
  *=========================================================================*/
 int IPXManagerClass::Service() {
   int rc = 1;
-  engine::net::CommHeaderType packet_storage{};
-  engine::net::CommHeaderType* packet = &packet_storage;
+  CommHeaderType packet_storage{};
+  const CommHeaderType* packet = &packet_storage;
   int packetlen = 0;
-  engine::net::IPXAddressClass address;
+  IPXAddressClass address;
 
   unsigned char temp_receive_buffer[1024];
-
-  char temp_address[128];
 
   // Cursor into temp_receive_buffer above. This was a member, which left the
   // object holding a pointer into this frame's stack after Service() returned.
   std::span<std::byte> cur_data_buf;
 
-  if (TheNetwork().packet_transport()) {
-    do {
-      int temp_receive_buffer_len = sizeof(temp_receive_buffer);
-      int temp_address_len = sizeof(temp_address);
-      packetlen = TheNetwork().packet_transport()->Read(
-          base::ObjectBytes(temp_receive_buffer), temp_receive_buffer_len,
-          base::ObjectBytes(temp_address), temp_address_len);
-      if (packetlen) {
-        cur_data_buf = base::ObjectBytes(temp_receive_buffer)
-                           .first(base::ToSize(packetlen));
-        address = base::ReadUnaligned<engine::net::IPXAddressClass>(
-            base::ObjectBytes(temp_address));
-
-        if (std::cmp_less(packetlen, sizeof(engine::net::CommHeaderType)) ||
-            base::ToSize(packetlen) > cur_data_buf.size()) {
-          continue;
-        }
-        cur_data_buf = cur_data_buf.first(base::ToSize(packetlen));
-        packet_storage =
-            base::ReadUnaligned<engine::net::CommHeaderType>(cur_data_buf);
-        if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
-          /*
-          ** Put the packet in the Global Queue
-          */
-          if (!GlobalChannel->Receive_Packet(cur_data_buf, packetlen,
-                                             &address)) {
-            DLOG(WARNING) << "IPX global receive queue overflow; packet lost";
+  while ((packetlen = Transport.Read(base::ObjectBytes(temp_receive_buffer),
+                                     address)) != 0) {
+    cur_data_buf = base::ObjectBytes(temp_receive_buffer);
+    if (std::cmp_less(packetlen, sizeof(CommHeaderType)) ||
+        base::ToSize(packetlen) > cur_data_buf.size()) {
+      continue;
+    }
+    cur_data_buf = cur_data_buf.first(base::ToSize(packetlen));
+    packet_storage = base::ReadUnaligned<CommHeaderType>(cur_data_buf);
+    if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
+      /*
+      ** Put the packet in the Global Queue
+      */
+      if (!GlobalChannel->Receive_Packet(cur_data_buf, packetlen, &address)) {
+        DLOG(WARNING) << "IPX global receive queue overflow; packet lost";
+      }
+    } else if (packet->MagicNumber == ProductID) {
+      /*
+      ** Find the Private Queue that this packet is for
+      */
+      bool found_address = false;
+      for (int i = 0; i < NumConnections; i++) {
+        if (base::At(Connection, i)->Address == address) {
+          found_address = true;
+          if (!base::At(Connection, i)
+                   ->Receive_Packet(cur_data_buf, packetlen)) {
+            DLOG(WARNING) << "IPX receive queue overflow for connection " << i
+                          << "; packet lost";
           }
-        } else {
-          if (packet->MagicNumber == ProductID) {
-            /*
-            ** Find the Private Queue that this packet is for
-            */
-            bool found_address = false;
-            for (int i = 0; i < NumConnections; i++) {
-              if (base::At(Connection, i)->Address == address) {
-                found_address = true;
-                if (!base::At(Connection, i)
-                         ->Receive_Packet(cur_data_buf, packetlen)) {
-                  DLOG(WARNING) << "IPX receive queue overflow for connection "
-                                << i << "; packet lost";
-                }
-                break;
-              }
-            }
-            /*
-            ** This packet came from an unknown source. If it looks like one
-            *of our players
-            ** packets then it might be from a player whos IP has changed.
-            */
-            if ((TheSession().Type == GAME_INTERNET) && (!found_address) &&
-                (packet->Code ==
-                 static_cast<unsigned char>(
-                     engine::net::ConnectionClass::PACKET_DATA_NOACK))) {
-              /*
-              ** Magic number and packet code are valid. It's probably a C&C
-              *packet.
-              */
-              if (cur_data_buf.size() < sizeof(engine::net::CommHeaderType) +
-                                            offsetof(EventClass, Data)) {
-                continue;
-              }
-              EventClass event_storage;
-              base::CopyBytes(
-                  base::ObjectBytes(event_storage),
-                  cur_data_buf.subspan(sizeof(engine::net::CommHeaderType)),
-                  offsetof(EventClass, Data));
-              const EventClass* event = &event_storage;
-
-              /*
-              ** If this is a framesync packet then grab the address and
-              *match it to an existing player.
-              */
-              if (event->Type == EventClass::FRAMESYNC) {
-                const int id = event->ID;
-
-                DCHECK(id != ThePlayer()->ID);
-                for (int k = 1; k < TheSession().Players.Count(); k++) {
-                  if (TheSession().Players.at(k)->Player.ID ==
-                      static_cast<HousesType>(id)) {
-                    const int iConnectionIndex = Connection_Index(id);
-                    if (iConnectionIndex != kConnectionNone) {
-                      //	(else
-                      // Create_Connections() has not
-                      // yet been called)
-                      /*
-                      ** Found a likely candidate. Update his address. It
-                      *should be OK to drop this
-                      ** packet since it's a framesync packet and will will
-                      *pick up the next one.
-                      */
-                      TheSession().Players.at(k)->Address = address;
-                      base::At(Connection, iConnectionIndex)->Address = address;
-                    }
-                    break;
-                  }
-                }
-              }
-            }
-          }
+          break;
         }
       }
-
-    } while (packetlen);
+      /*
+      ** This packet came from an unknown source. If it is a valid private
+      ** packet in an Internet game, it may be from a player whose address
+      ** has changed; the game decides.
+      */
+      if (Internet && !found_address && UnknownSender != nullptr &&
+          packet->Code ==
+              static_cast<unsigned char>(ConnectionClass::PACKET_DATA_NOACK)) {
+        UnknownSender(*this, cur_data_buf.subspan(sizeof(CommHeaderType)),
+                      address);
+      }
+    }
   }
 
   //------------------------------------------------------------------------
@@ -1365,96 +1258,17 @@ void IPXManagerClass::Reset_Response_Time() {
  *   05/04/1995 BRR : Created.                                             *
  *=========================================================================*/
 std::span<const std::byte> IPXManagerClass::Oldest_Send() {
-  std::array<engine::net::CommBufferClass*, CONNECT_MAX> queues{};
+  std::array<CommBufferClass*, kMaxConnections> queues{};
   for (int i = 0; i < NumConnections; i++) {
     queues.at(base::ToSize(i)) = base::At(Connection, i)->Queue.get();
   }
-  const engine::net::SendQueueType* oldest =
-      engine::net::ConnectionClass::OldestUnackedSend(queues);
+  const SendQueueType* oldest = ConnectionClass::OldestUnackedSend(queues);
   return oldest != nullptr
              ? std::span(oldest->Buffer).first(base::ToSize(oldest->BufLen))
              : std::span<const std::byte>{};
 
 } /* end of Oldest_Send */
 
-/***************************************************************************
- * IPXManagerClass::Set_Bridge -- prepares to cross a bridge               *
- *                                                                         *
- * This routine is designed to prevent the connection from having to
- ** call Get_Local_Target, except the minimum number of times, since that
- ** routine is buggy & goes away for long periods sometimes.
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		bridge		network number of the destination bridge
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   07/06/1995 BRR : Created.                                             *
- *=========================================================================*/
-void IPXManagerClass::Set_Bridge(engine::net::NetNumType bridge) {
-  if (GlobalChannel) {
-    GlobalChannel->Set_Bridge(bridge);
-  }
-
-} /* end of Set_Bridge */
-
-/***************************************************************************
- * IPXManagerClass::Alloc_RealMode_Mem -- allocates real-mode memory
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		none.
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		1 = OK, 0 = error
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   12/20/1994 BR : Created.                                              *
- *=========================================================================*/
-int IPXManagerClass::Alloc_RealMode_Mem() {
-  return 1;
-} /* end of Alloc_Realmode_Mem */
-
-/***************************************************************************
- * IPXManagerClass::Free_RealMode_Mem -- frees real-mode memory
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		none.
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		1 = OK, 0 = error
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   12/20/1994 BR : Created.                                              *
- *=========================================================================*/
-int IPXManagerClass::Free_RealMode_Mem() {
-
-  return 1;
-
-} /* end of Free_Realmode_Mem */
+}  // namespace engine::net
 
 /*************************** end of ipxmgr.cpp *****************************/
-
-}  // namespace ra

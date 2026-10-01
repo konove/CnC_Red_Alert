@@ -10,11 +10,13 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
+#include "engine/net/ipxmgr.h"
 #include "game/core/queue.h"
 #include "ra/core/defines.h"
 #include "ra/net/event.h"
-#include "ra/net/ipxmgr.h"
+#include "ra/net/ipxgconn.h"
 #include "ra/net/nullmgr.h"
+#include "ra/net/socket_transport.h"
 
 class ModemRegistryEntryClass;
 
@@ -74,7 +76,9 @@ class Network {
 
   // The IPX link, which carries both the global channel the lobby uses and
   // one private channel per connected player.
-  IPXManagerClass& ipx() ABSL_ATTRIBUTE_LIFETIME_BOUND { return ipx_; }
+  engine::net::IPXManagerClass& ipx() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return ipx_;
+  }
 
   // The Winsock interface the IPX manager sends through, or null when no
   // socket is open. The protocol setup code creates and resets it.
@@ -150,6 +154,10 @@ class Network {
   }
 
  private:
+  // Whether Winsock can be started, which IPX play outside an Internet game
+  // needs.
+  static bool WinsockAvailable();
+
   game::QueueClass<EventClass, kMaxEvents> out_list_;
   game::QueueClass<EventClass, kMaxEvents * 64> do_list_;
 
@@ -162,16 +170,21 @@ class Network {
           sizeof(engine::net::CommHeaderType),
       0x1234};
 
-  IPXManagerClass ipx_{
+  std::unique_ptr<WinsockInterfaceClass> packet_transport_;
+  SocketTransport socket_transport_{packet_transport_};
+
+  engine::net::IPXManagerClass ipx_{
+      socket_transport_,
+      WinsockAvailable(),
+      &IPXGlobalConnClass::Make,
+      7,  // most private connections
       std::max(sizeof(GlobalPacketType), sizeof(RemoteFileTransferType)),
       (546 - sizeof(engine::net::CommHeaderType)) / sizeof(EventClass) *
           sizeof(EventClass),
       160,                                       // # entries in Global Queue
       32,                                        // # entries in Private Queues
-      VIRGIN_SOCKET,                             // Socket ID #
+      engine::net::kVirginSocket,                // Socket ID #
       IPXGlobalConnClass::kCommandAndConquer0};  // Product ID #
-
-  std::unique_ptr<WinsockInterfaceClass> packet_transport_;
   std::vector<char> packet_later_;
   std::unique_ptr<WolapiObject> wolapi_;
   std::unique_ptr<ModemRegistryEntryClass> modem_registry_;

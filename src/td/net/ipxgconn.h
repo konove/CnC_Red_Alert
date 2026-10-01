@@ -56,12 +56,12 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <span>
 
 #include "engine/net/connect.h"
+#include "engine/net/global_conn.h"
 #include "engine/net/ipxaddr.h"
-#include "td/net/ipx.h"
-#include "td/net/ipxconn.h"
 
 namespace td {
 
@@ -84,7 +84,7 @@ struct GlobalHeaderType {
 /*
 ***************************** Class Declaration *****************************
 */
-class IPXGlobalConnClass : public IPXConnClass {
+class IPXGlobalConnClass : public engine::net::GlobalConnClass {
   /*
   ---------------------------- Public Interface ----------------------------
   */
@@ -106,8 +106,13 @@ class IPXGlobalConnClass : public IPXConnClass {
   /*.....................................................................
   Constructor/destructor.
   .....................................................................*/
-  IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
-                     uint16_t product_id);
+  IPXGlobalConnClass(engine::net::DatagramTransport& transport, int numsend,
+                     int numreceive, int maxlen, uint16_t product_id);
+  // Builds the channel for engine::net::IPXManagerClass, with `num_packets`
+  // queue entries each way.
+  static std::unique_ptr<engine::net::GlobalConnClass> Make(
+      engine::net::DatagramTransport& transport, int num_packets, int maxlen,
+      uint16_t product_id);
   ~IPXGlobalConnClass() override = default;
   IPXGlobalConnClass(const IPXGlobalConnClass&) = delete;
   IPXGlobalConnClass& operator=(const IPXGlobalConnClass&) = delete;
@@ -120,35 +125,19 @@ class IPXGlobalConnClass : public IPXConnClass {
   // These deliberately hide the inherited point-to-point routines rather than
   // overriding them: a global packet carries a GlobalHeaderType with a magic
   // number and a destination address, which the base versions do not write.
-  // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
-  virtual int Send_Packet(std::span<const std::byte> buf, int buflen,
-                          engine::net::IPXAddressClass* address, int ack_req);
-  // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
-  virtual int Receive_Packet(std::span<std::byte> buf, int buflen,
-                             engine::net::IPXAddressClass* address);
-  // NOLINTNEXTLINE(clang-diagnostic-overloaded-virtual)
-  virtual int Get_Packet(std::span<std::byte> buf, int* buflen,
-                         engine::net::IPXAddressClass* address,
-                         uint16_t* product_id);
-
-  /*.....................................................................
-  This is for telling the connection it can cross a bridge.
-  .....................................................................*/
-  void Set_Bridge(const engine::net::NetNumType& bridge);
+  int Send_Packet(std::span<const std::byte> buf, int buflen,
+                  engine::net::IPXAddressClass* address, int ack_req) override;
+  int Receive_Packet(std::span<std::byte> buf, int buflen,
+                     engine::net::IPXAddressClass* address) override;
+  int Get_Packet(std::span<std::byte> buf, int* buflen,
+                 engine::net::IPXAddressClass* address,
+                 uint16_t* product_id) override;
 
   /*.....................................................................
   The Product ID for this product.
   .....................................................................*/
   uint16_t ProductID;
 
-  /*.....................................................................
-  This describes the address of a bridge we have to cross.  This class
-  supports crossing only one bridge.  Storing the bridge's network number
-  allows us to obtain its local target address only once, then re-use it.
-  .....................................................................*/
-  engine::net::NetNumType BridgeNet{};
-  engine::net::NetNodeType BridgeNode{};
-  int IsBridge{0};
 
   /*
   -------------------------- Protected Interface ---------------------------

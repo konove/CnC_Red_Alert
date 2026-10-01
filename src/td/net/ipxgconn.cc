@@ -39,7 +39,6 @@
  *   IPXGlobalConnClass::Get_Packet -- gets a packet from the receive queue*
  *   IPXGlobalConnClass::Send -- sends a packet
  ** IPXGlobalConnClass::Service_Receive_Queue -- services recieve queue	*
- *   IPXGlobalConnClass::Set_Bridge -- Sets up connection to cross a bridge*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 /***************************************************************************
@@ -74,6 +73,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <utility>
 
@@ -83,15 +83,17 @@
 #include "base/unaligned.h"
 #include "engine/net/combuf.h"
 #include "engine/net/connect.h"
+#include "engine/net/datagram_transport.h"
+#include "engine/net/global_conn.h"
 #include "engine/net/ipxaddr.h"
-#include "td/net/ipxconn.h"
 
 namespace td {
 
-IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
-                                       uint16_t product_id)
-    : IPXConnClass(
-          numsend, numreceive,
+IPXGlobalConnClass::IPXGlobalConnClass(
+    engine::net::DatagramTransport& transport, int numsend, int numreceive,
+    int maxlen, uint16_t product_id)
+    : engine::net::GlobalConnClass(
+          transport, numsend, numreceive,
           maxlen + static_cast<int>(sizeof(GlobalHeaderType) -
                                     sizeof(engine::net::CommHeaderType)),
           kGlobalMagicnum,  // magic number for this connection
@@ -100,6 +102,13 @@ IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
           ""),
       ProductID(product_id)  // Connection Name
 {}                           /* end of IPXGlobalConnClass */
+
+std::unique_ptr<engine::net::GlobalConnClass> IPXGlobalConnClass::Make(
+    engine::net::DatagramTransport& transport, const int num_packets,
+    const int maxlen, const uint16_t product_id) {
+  return std::make_unique<IPXGlobalConnClass>(transport, num_packets,
+                                              num_packets, maxlen, product_id);
+}
 
 /***************************************************************************
  * IPXGlobalConnClass::Send_Packet -- adds a packet to the send queue *
@@ -391,7 +400,6 @@ int IPXGlobalConnClass::Get_Packet(std::span<std::byte> buf, int* buflen,
 int IPXGlobalConnClass::Send(std::span<const std::byte> buf, int buflen,
                              std::span<const std::byte> /*extrabuf*/,
                              int /*extralen*/) {
-  int rc = 0;
 
   /*------------------------------------------------------------------------
   Extract the packet's embedded IPX address
@@ -403,18 +411,12 @@ int IPXGlobalConnClass::Send(std::span<const std::byte> buf, int buflen,
   If it's a broadcast address, broadcast it
   ------------------------------------------------------------------------*/
   if (addr->Is_Broadcast()) {
-    return Broadcast(buf, buflen);
+    return Broadcast(buf, buflen) ? 1 : 0;
   }
   /*------------------------------------------------------------------------
       Otherwise, send it
       ------------------------------------------------------------------------*/
-  if (IsBridge && base::CompareBytes(base::ObjectBytes(*addr),
-                                     base::ObjectBytes(BridgeNet), 4) == 0) {
-    rc = Send_To(buf, buflen, addr, BridgeNode);
-  } else {
-    rc = Send_To(buf, buflen, addr, {});
-  }
-  return rc;
+  return Send_To(buf, buflen, *addr);
 
 } /* end of Send */
 
@@ -498,37 +500,5 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
   return 1;
 
 } /* end of Service_Receive_Queue */
-
-/***************************************************************************
- * Set_Bridge -- Sets up connection to cross a bridge                      *
- *                                                                         *
- * This routine is designed to prevent the connection from having to
- ** call Get_Local_Target, except the minimum number of times, since that
- ** routine is buggy & goes away for long periods sometimes.
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		bridge		network number of the destination bridge
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   07/06/1995 BRR : Created.                                             *
- *=========================================================================*/
-void IPXGlobalConnClass::Set_Bridge(const engine::net::NetNumType& bridge) {
-  if (Configured) {
-    base::CopyBytes(base::ObjectBytes(BridgeNet), base::ObjectBytes(bridge), 4);
-    base::FillBytes(base::ObjectBytes(BridgeNode), 0xff, 6);
-
-    IsBridge = 1;
-  }
-}
 
 }  // namespace td

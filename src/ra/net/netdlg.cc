@@ -156,6 +156,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/net/ipxaddr.h"
+#include "engine/net/ipxmgr.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
@@ -183,7 +184,6 @@
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
 #include "ra/net/ipxgconn.h"
-#include "ra/net/ipxmgr.h"
 #include "ra/net/mplayer.h"
 #include "ra/net/network.h"
 #include "ra/net/nulldlg.h"
@@ -984,27 +984,14 @@ static int Update_WWChat();
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 bool Init_Network() {
-  engine::net::NetNumType net;
-  engine::net::NetNodeType node;
   DCHECK(TheNetwork().packet_transport() != nullptr);
 
   //------------------------------------------------------------------------
-  //	This call allocates all necessary queue buffers, allocates Real-mode
-  //	memory, and commands IPX to start listening on the Global Channel.
+  //	This call allocates all necessary queue buffers and commands IPX to
+  //	start listening on the Global Channel. A bridge (TheSession().IsBridge)
+  //	needs no setup: the UDP transport routes on its own.
   //------------------------------------------------------------------------
-  if (!TheNetwork().ipx().Init()) {
-    return false;
-  }
-
-  //------------------------------------------------------------------------
-  //	Set up the IPX manager to cross a bridge
-  //------------------------------------------------------------------------
-  if ((TheSession().Type != GAME_INTERNET) && TheSession().IsBridge) {
-    TheSession().BridgeNet.Get_Address(net, node);
-    TheNetwork().ipx().Set_Bridge(net);
-  }
-
-  return true;
+  return TheNetwork().ipx().Init(TheSession().Type == GAME_INTERNET) != 0;
 
 } /* end of Init_Network */
 
