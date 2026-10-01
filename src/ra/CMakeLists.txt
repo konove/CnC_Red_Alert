@@ -219,11 +219,6 @@ add_gtest(
 )
 apply_language_setting(ra_saveglobals_test)
 
-add_gtest(
-    NAME ra_connect_test
-    SOURCES net/connect_test.cc net/connect.cc
-    LIBS base engine_net absl::check absl::log
-)
 
 
 if (EMSCRIPTEN)

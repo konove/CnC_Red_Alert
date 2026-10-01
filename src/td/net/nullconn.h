@@ -38,7 +38,7 @@
  ** a Queue, PacketBuf, timeout variables from ConnectionClass.  It
  ** inherits its Send_/Receive_/Get_Packet functions, and the non-sequenced
  ** ACK/Retry logic in Service_Send_Queue & Service_Recieve_Queue from *
- * NonSequencedConnClass.
+ * ConnectionClass.
  **
  *                                                                         *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -55,7 +55,7 @@
 */
 #include <cstdint>
 
-#include "td/net/noseqcon.h"
+#include "engine/net/connect.h"
 
 using HANDLE = void*;
 
@@ -83,7 +83,7 @@ struct SerialCRCType {
 /*
 ***************************** Class Declaration *****************************
 */
-class NullModemConnClass : public NonSequencedConnClass {
+class NullModemConnClass : public engine::net::ConnectionClass {
   /*
   ---------------------------- Public Interface ----------------------------
   */
@@ -102,7 +102,7 @@ class NullModemConnClass : public NonSequencedConnClass {
   /*.....................................................................
   Initialization.
   .....................................................................*/
-  using ConnectionClass::Init;
+  using engine::net::ConnectionClass::Init;
   void Init(HANDLE port_handle);
 
   /*.....................................................................
@@ -131,7 +131,8 @@ class NullModemConnClass : public NonSequencedConnClass {
   /*.....................................................................
   This routine actually performs a hardware-dependent data send.
   .....................................................................*/
-  int Send(std::span<const std::byte> buf, int buflen) override;
+  int Send(std::span<const std::byte> buf, int buflen,
+           std::span<const std::byte> extrabuf, int extralen) override;
 
   /*.....................................................................
   This is the PORT value used by the GreenLeaf calls.

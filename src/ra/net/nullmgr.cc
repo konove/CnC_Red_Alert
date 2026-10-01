@@ -78,6 +78,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/net/combuf.h"
+#include "engine/net/connect.h"
 #include "engine/net/serial/modemreg.h"
 #include "engine/net/serial/wincomm.h"
 #include "engine/window/hardware_cursor.h"
@@ -88,7 +89,6 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
-#include "ra/net/connect.h"
 #include "ra/net/network.h"
 #include "ra/net/nullconn.h"
 #include "ra/net/session.h"
@@ -961,10 +961,10 @@ std::span<const std::byte> NullModemClass::Oldest_Send() {
     engine::net::SendQueueType* send_entry =
         Connection->Queue->Get_Send(i);  // ptr to send entry header
     if (send_entry) {
-      auto* packet =
-          base::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
-      if (packet->Code ==
-              static_cast<unsigned char>(ConnectionClass::PACKET_DATA_ACK) &&
+      auto* packet = base::AlignedObject<engine::net::CommHeaderType>(
+          send_entry->Buffer.data());
+      if (packet->Code == static_cast<unsigned char>(
+                              engine::net::ConnectionClass::PACKET_DATA_ACK) &&
           send_entry->IsACK == 0) {
         buf = std::span(send_entry->Buffer)
                   .first(base::ToSize(send_entry->BufLen));

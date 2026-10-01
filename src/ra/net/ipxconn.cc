@@ -56,7 +56,7 @@
 #include "absl/log/check.h"
 #include "base/buffer.h"
 #include "base/strings/safe_string.h"
-#include "ra/net/connect.h"
+#include "engine/net/connect.h"
 #include "ra/net/ipx.h"
 #include "ra/net/ipxaddr.h"
 #include "ra/net/network.h"
@@ -109,7 +109,7 @@ int IPXConnClass::PacketLen;
 IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
                            uint16_t magicnum, IPXAddressClass* address, int id,
                            const char* name, int extralen)
-    : ConnectionClass(
+    : engine::net::ConnectionClass(
           numsend, numreceive, maxlen, magicnum,
           2,         // retry delta
           -1,        // max retries
@@ -157,7 +157,7 @@ void IPXConnClass::Init() {
   /*------------------------------------------------------------------------
   Invoke the parent's Init routine
   ------------------------------------------------------------------------*/
-  ConnectionClass::Init();
+  engine::net::ConnectionClass::Init();
 
 } /* end of Init */
 

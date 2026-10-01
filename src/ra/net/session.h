@@ -49,6 +49,7 @@
 #include "base/enum_array.h"
 #include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/net/connect.h"
 #include "engine/platform/platform.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
@@ -56,7 +57,6 @@
 #include "game/core/owned_vector.h"
 #include "ra/ai/special.h"
 #include "ra/core/defines.h"
-#include "ra/net/connect.h"
 #include "ra/net/event.h"
 #include "ra/net/ipxaddr.h"
 #include "ra/objects/object.h"
@@ -83,8 +83,9 @@ namespace ra {
 // The IPX packet's size is IPX's max size (546), rounded down to accommodate
 // the max number of events possible.
 //...........................................................................
-#define MAX_IPX_PACKET_SIZE \
-  (((546 - sizeof(CommHeaderType)) / sizeof(EventClass)) * sizeof(EventClass))
+#define MAX_IPX_PACKET_SIZE                                             \
+  (((546 - sizeof(engine::net::CommHeaderType)) / sizeof(EventClass)) * \
+   sizeof(EventClass))
 #define MAX_SERIAL_PACKET_SIZE 256
 
 //...........................................................................

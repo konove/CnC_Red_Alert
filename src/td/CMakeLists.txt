@@ -115,11 +115,6 @@ add_gtest(
     LIBS base engine_gfx absl::check
 )
 
-add_gtest(
-    NAME td_connect_test
-    SOURCES net/connect_test.cc net/connect.cc net/noseqcon.cc
-    LIBS base engine_net absl::check absl::log
-)
 
 add_gtest(
     NAME td_coord_inline_test

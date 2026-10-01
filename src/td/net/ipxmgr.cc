@@ -82,8 +82,8 @@
 #include "base/numeric.h"
 #include "base/unaligned.h"
 #include "engine/net/combuf.h"
+#include "engine/net/connect.h"
 #include "td/core/defines.h"
-#include "td/net/connect.h"
 #include "td/net/ipx.h"
 #include "td/net/ipxaddr.h"
 #include "td/net/ipxconn.h"
@@ -872,8 +872,8 @@ int IPXManagerClass::Get_Private_Message(std::span<std::byte> buf, int* buflen,
 int IPXManagerClass::Service() {
   int rc = 1;
   int i = 0;
-  CommHeaderType packet_storage{};
-  CommHeaderType* packet = &packet_storage;
+  engine::net::CommHeaderType packet_storage{};
+  engine::net::CommHeaderType* packet = &packet_storage;
   int packetlen = 0;
   IPXAddressClass address;
 
@@ -904,12 +904,13 @@ int IPXManagerClass::Service() {
       Examine the Magic Number of the received packet to determine if this
       packet goes into the Global Queue, or into one of the Private Queues
       .....................................................................*/
-      if (std::cmp_less(packetlen, sizeof(CommHeaderType)) ||
+      if (std::cmp_less(packetlen, sizeof(engine::net::CommHeaderType)) ||
           base::ToSize(packetlen) > cur_data_buf.size()) {
         continue;
       }
       cur_data_buf = cur_data_buf.first(base::ToSize(packetlen));
-      packet_storage = base::ReadUnaligned<CommHeaderType>(cur_data_buf);
+      packet_storage =
+          base::ReadUnaligned<engine::net::CommHeaderType>(cur_data_buf);
       if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
         /*..................................................................
         Put the packet in the Global Queue
@@ -1279,10 +1280,10 @@ void IPXManagerClass::Reset_Response_Time() {
 std::span<const std::byte> IPXManagerClass::Oldest_Send() {
   std::array<engine::net::CommBufferClass*, CONNECT_MAX> queues{};
   for (int i = 0; i < NumConnections; i++) {
-    queues.at(base::ToSize(i)) = base::At(Connection, i)->Queue;
+    queues.at(base::ToSize(i)) = base::At(Connection, i)->Queue.get();
   }
   const engine::net::SendQueueType* oldest =
-      ConnectionClass::OldestUnackedSend(queues);
+      engine::net::ConnectionClass::OldestUnackedSend(queues);
   return oldest != nullptr
              ? std::span(oldest->Buffer).first(base::ToSize(oldest->BufLen))
              : std::span<const std::byte>{};

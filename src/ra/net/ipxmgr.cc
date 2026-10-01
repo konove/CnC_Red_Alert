@@ -85,9 +85,9 @@
 #include "base/strings/safe_string.h"
 #include "base/unaligned.h"
 #include "engine/net/combuf.h"
+#include "engine/net/connect.h"
 #include "ra/core/defines.h"
 #include "ra/map/world.h"
-#include "ra/net/connect.h"
 #include "ra/net/event.h"
 #include "ra/net/ipx.h"
 #include "ra/net/ipxaddr.h"
@@ -906,8 +906,8 @@ int IPXManagerClass::Get_Private_Message(std::span<std::byte> buf, int* buflen,
  *=========================================================================*/
 int IPXManagerClass::Service() {
   int rc = 1;
-  CommHeaderType packet_storage{};
-  CommHeaderType* packet = &packet_storage;
+  engine::net::CommHeaderType packet_storage{};
+  engine::net::CommHeaderType* packet = &packet_storage;
   int packetlen = 0;
   IPXAddressClass address;
 
@@ -932,12 +932,13 @@ int IPXManagerClass::Service() {
         address = base::ReadUnaligned<IPXAddressClass>(
             base::ObjectBytes(temp_address));
 
-        if (std::cmp_less(packetlen, sizeof(CommHeaderType)) ||
+        if (std::cmp_less(packetlen, sizeof(engine::net::CommHeaderType)) ||
             base::ToSize(packetlen) > cur_data_buf.size()) {
           continue;
         }
         cur_data_buf = cur_data_buf.first(base::ToSize(packetlen));
-        packet_storage = base::ReadUnaligned<CommHeaderType>(cur_data_buf);
+        packet_storage =
+            base::ReadUnaligned<engine::net::CommHeaderType>(cur_data_buf);
         if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
           /*
           ** Put the packet in the Global Queue
@@ -969,20 +970,22 @@ int IPXManagerClass::Service() {
             ** packets then it might be from a player whos IP has changed.
             */
             if ((TheSession().Type == GAME_INTERNET) && (!found_address) &&
-                (packet->Code == static_cast<unsigned char>(
-                                     ConnectionClass::PACKET_DATA_NOACK))) {
+                (packet->Code ==
+                 static_cast<unsigned char>(
+                     engine::net::ConnectionClass::PACKET_DATA_NOACK))) {
               /*
               ** Magic number and packet code are valid. It's probably a C&C
               *packet.
               */
-              if (cur_data_buf.size() <
-                  sizeof(CommHeaderType) + offsetof(EventClass, Data)) {
+              if (cur_data_buf.size() < sizeof(engine::net::CommHeaderType) +
+                                            offsetof(EventClass, Data)) {
                 continue;
               }
               EventClass event_storage;
-              base::CopyBytes(base::ObjectBytes(event_storage),
-                              cur_data_buf.subspan(sizeof(CommHeaderType)),
-                              offsetof(EventClass, Data));
+              base::CopyBytes(
+                  base::ObjectBytes(event_storage),
+                  cur_data_buf.subspan(sizeof(engine::net::CommHeaderType)),
+                  offsetof(EventClass, Data));
               const EventClass* event = &event_storage;
 
               /*
@@ -1368,7 +1371,7 @@ std::span<const std::byte> IPXManagerClass::Oldest_Send() {
     queues.at(base::ToSize(i)) = base::At(Connection, i)->Queue.get();
   }
   const engine::net::SendQueueType* oldest =
-      ConnectionClass::OldestUnackedSend(queues);
+      engine::net::ConnectionClass::OldestUnackedSend(queues);
   return oldest != nullptr
              ? std::span(oldest->Buffer).first(base::ToSize(oldest->BufLen))
              : std::span<const std::byte>{};

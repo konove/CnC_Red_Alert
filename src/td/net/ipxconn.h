@@ -54,16 +54,16 @@
 */
 #include <cstdint>
 
+#include "engine/net/connect.h"
 #include "td/net/ipx.h"
 #include "td/net/ipxaddr.h"
-#include "td/net/noseqcon.h"
 
 namespace td {
 
 /*
 ***************************** Class Declaration *****************************
 */
-class IPXConnClass : public NonSequencedConnClass {
+class IPXConnClass : public engine::net::ConnectionClass {
   /*
   ---------------------------- Public Interface ----------------------------
   */
@@ -138,7 +138,8 @@ class IPXConnClass : public NonSequencedConnClass {
   This is the overloaded Send routine declared in ConnectionClass, and
   used in SequencedConnClass.
   .....................................................................*/
-  int Send(std::span<const std::byte> buf, int buflen) override;
+  int Send(std::span<const std::byte> buf, int buflen,
+           std::span<const std::byte> extrabuf, int extralen) override;
 
   /*.....................................................................
   These are the routines that access IPX.  Open_Socket & Close_Socket are

@@ -93,6 +93,7 @@
 #include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "base/unaligned.h"
+#include "engine/net/connect.h"
 #include "engine/net/connmgr.h"
 #include "engine/platform/timer.h"
 #include "engine/stream/byte_stream.h"
@@ -107,7 +108,6 @@
 #include "td/data/text.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
-#include "td/net/connect.h"
 #include "td/net/event.h"
 #include "td/net/mplayer.h"
 #include "td/net/netdlg.h"
@@ -142,8 +142,8 @@ static uint32_t GameCRC;
 
 // The size of MetaPacket: IPX's largest packet (546 bytes), less its header,
 // rounded down to a whole number of events.
-static constexpr int kMetaSize =
-    (546 - sizeof(CommHeaderType)) / sizeof(EventClass) * sizeof(EventClass);
+static constexpr int kMetaSize = (546 - sizeof(engine::net::CommHeaderType)) /
+                                 sizeof(EventClass) * sizeof(EventClass);
 static uint32_t CRC[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -621,7 +621,7 @@ static void Queue_AI_Multiplayer() {
       TheSession().type() == GAME_NULL_MODEM) {
     multi_packet_buf = TheNetwork().null_modem().BuildBuf;
     multi_packet_max = TheNetwork().null_modem().MaxLen -
-                       static_cast<int>(sizeof(CommHeaderType));
+                       static_cast<int>(sizeof(engine::net::CommHeaderType));
     net = &TheNetwork().null_modem();
   } else if (TheSession().type() == GAME_IPX ||
              TheSession().type() == GAME_INTERNET) {

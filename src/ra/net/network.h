@@ -159,15 +159,16 @@ class Network {
       16,  // number of send entries
       16,  // number of receive entries
       (MAX_SERIAL_PACKET_SIZE / sizeof(EventClass) * sizeof(EventClass)) +
-          sizeof(CommHeaderType),
+          sizeof(engine::net::CommHeaderType),
       0x1234};
 
   IPXManagerClass ipx_{
       std::max(sizeof(GlobalPacketType), sizeof(RemoteFileTransferType)),
-      (546 - sizeof(CommHeaderType)) / sizeof(EventClass) * sizeof(EventClass),
-      160,             // # entries in Global Queue
-      32,              // # entries in Private Queues
-      VIRGIN_SOCKET,   // Socket ID #
+      (546 - sizeof(engine::net::CommHeaderType)) / sizeof(EventClass) *
+          sizeof(EventClass),
+      160,                                       // # entries in Global Queue
+      32,                                        // # entries in Private Queues
+      VIRGIN_SOCKET,                             // Socket ID #
       IPXGlobalConnClass::kCommandAndConquer0};  // Product ID #
 
   std::unique_ptr<WinsockInterfaceClass> packet_transport_;

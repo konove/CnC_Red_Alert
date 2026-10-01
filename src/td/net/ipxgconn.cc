@@ -82,7 +82,7 @@
 #include "base/numeric.h"
 #include "base/unaligned.h"
 #include "engine/net/combuf.h"
-#include "td/net/connect.h"
+#include "engine/net/connect.h"
 #include "td/net/ipx.h"
 #include "td/net/ipxaddr.h"
 #include "td/net/ipxconn.h"
@@ -91,13 +91,14 @@ namespace td {
 
 IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
                                        uint16_t product_id)
-    : IPXConnClass(numsend, numreceive,
-                   maxlen + static_cast<int>(sizeof(GlobalHeaderType) -
-                                             sizeof(CommHeaderType)),
-                   kGlobalMagicnum,  // magic number for this connection
-                   nullptr,          // IPX Address (none)
-                   0,                // Connection ID
-                   ""),
+    : IPXConnClass(
+          numsend, numreceive,
+          maxlen + static_cast<int>(sizeof(GlobalHeaderType) -
+                                    sizeof(engine::net::CommHeaderType)),
+          kGlobalMagicnum,  // magic number for this connection
+          nullptr,          // IPX Address (none)
+          0,                // Connection ID
+          ""),
       ProductID(product_id)  // Connection Name
 {}                           /* end of IPXGlobalConnClass */
 
@@ -387,7 +388,9 @@ int IPXGlobalConnClass::Get_Packet(std::span<std::byte> buf, int* buflen,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXGlobalConnClass::Send(std::span<const std::byte> buf, int buflen) {
+int IPXGlobalConnClass::Send(std::span<const std::byte> buf, int buflen,
+                             std::span<const std::byte> /*extrabuf*/,
+                             int /*extralen*/) {
   int rc = 0;
 
   /*------------------------------------------------------------------------
@@ -476,7 +479,7 @@ int IPXGlobalConnClass::Service_Receive_Queue() {
     ackpacket.Address = packet_hdr->Address;
     ackpacket.ProductID = ProductID;
 
-    Send(base::ObjectBytes(ackpacket), sizeof(GlobalHeaderType));
+    Send(base::ObjectBytes(ackpacket), sizeof(GlobalHeaderType), {}, 0);
 
     rec_entry->IsACK = 1;
   }

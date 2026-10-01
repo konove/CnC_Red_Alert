@@ -98,6 +98,7 @@
 #include "base/random.h"
 #include "base/strings/safe_string.h"
 #include "base/unaligned.h"
+#include "engine/net/connect.h"
 #include "engine/net/connmgr.h"
 #include "engine/platform/timer.h"
 #include "engine/stream/byte_stream.h"
@@ -123,7 +124,6 @@
 #include "ra/map/mouse.h"
 #include "ra/map/world.h"
 #include "ra/net/chat.h"
-#include "ra/net/connect.h"
 #include "ra/net/event.h"
 #include "ra/net/netdlg.h"
 #include "ra/net/network.h"
@@ -702,7 +702,7 @@ static void Queue_AI_Multiplayer() {
   if (TheSession().Type == GAME_MODEM || TheSession().Type == GAME_NULL_MODEM) {
     multi_packet_buf = TheNetwork().null_modem().BuildBuf;
     multi_packet_max = TheNetwork().null_modem().MaxLen -
-                       static_cast<int>(sizeof(CommHeaderType));
+                       static_cast<int>(sizeof(engine::net::CommHeaderType));
     net = &TheNetwork().null_modem();
   } else if (TheSession().Type == GAME_IPX ||
              TheSession().Type == GAME_INTERNET) {

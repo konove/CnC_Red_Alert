@@ -8,14 +8,13 @@
 #include "base/buffer.h"
 #include "base/installed.h"
 #include "base/unaligned.h"
+#include "engine/net/connect.h"
 #include "game/core/queue.h"
 #include "game/core/vector.h"
 #include "gtest/gtest.h"
 #include "td/core/defines.h"
-#include "td/net/connect.h"
 #include "td/net/event.h"
 #include "td/net/network.h"
-#include "td/net/noseqcon.h"
 #include "td/net/queue.h"
 
 namespace td {
@@ -34,25 +33,28 @@ class QueueAlignmentTest : public testing::Test {
 };
 
 // Queue-only connection: these tests do not send through a network device.
-class TestConnection : public NonSequencedConnClass {
+class TestConnection : public engine::net::ConnectionClass {
  public:
-  TestConnection() : NonSequencedConnClass(4, 4, 64, 0x1234, 1, 3, 60) {
+  TestConnection() : engine::net::ConnectionClass(4, 4, 64, 0x1234, 1, 3, 60) {
     Init();
   }
 
  protected:
-  int Send(std::span<const std::byte> /*buf*/, int /*buflen*/) override {
+  int Send(std::span<const std::byte> /*buf*/, int /*buflen*/,
+           std::span<const std::byte> /*extrabuf*/, int /*extralen*/) override {
     return 1;
   }
 };
 
 TEST_F(QueueAlignmentTest, ReceivesPacketHeaderAtOddAddress) {
   TestConnection connection;
-  alignas(CommHeaderType) std::array<uint8_t, sizeof(CommHeaderType) + 4>
-      bytes{};
-  CommHeaderType header{};
+  alignas(engine::net::CommHeaderType)
+      std::array<uint8_t, sizeof(engine::net::CommHeaderType) + 4>
+          bytes{};
+  engine::net::CommHeaderType header{};
   header.MagicNumber = 0x1234;
-  header.Code = static_cast<unsigned char>(ConnectionClass::PACKET_DATA_NOACK);
+  header.Code = static_cast<unsigned char>(
+      engine::net::ConnectionClass::PACKET_DATA_NOACK);
   header.PacketID = 7;
   base::WriteUnaligned(std::as_writable_bytes(std::span(bytes)).subspan(1),
                        header);

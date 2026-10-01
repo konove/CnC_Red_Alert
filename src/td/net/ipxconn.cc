@@ -57,10 +57,10 @@
 
 #include "base/buffer.h"
 #include "base/strings/safe_string.h"
+#include "engine/net/connect.h"
 #include "td/net/ipx.h"
 #include "td/net/ipxaddr.h"
 #include "td/net/network.h"
-#include "td/net/noseqcon.h"
 #include "td/net/tcpip.h"
 
 namespace td {
@@ -109,10 +109,10 @@ int IPXConnClass::PacketLen;
 IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
                            uint16_t magicnum, IPXAddressClass* address, int id,
                            const char* name)
-    : NonSequencedConnClass(numsend, numreceive, maxlen, magicnum,
-                            2,   // retry delta
-                            -1,  // max retries
-                            60)  // timeout
+    : engine::net::ConnectionClass(numsend, numreceive, maxlen, magicnum,
+                                   2,   // retry delta
+                                   -1,  // max retries
+                                   60)  // timeout
 {
   NetNumType net;
   NetNodeType node;
@@ -174,7 +174,7 @@ void IPXConnClass::Init() {
   /*------------------------------------------------------------------------
   Invoke the parent's Init routine
   ------------------------------------------------------------------------*/
-  NonSequencedConnClass::Init();
+  engine::net::ConnectionClass::Init();
 }
 
 /***************************************************************************
@@ -333,7 +333,9 @@ bool IPXConnClass::Stop_Listening() {
  * HISTORY:                                                                *
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
-int IPXConnClass::Send(std::span<const std::byte> buf, int buflen) {
+int IPXConnClass::Send(std::span<const std::byte> buf, int buflen,
+                       std::span<const std::byte> /*extrabuf*/,
+                       int /*extralen*/) {
   /*------------------------------------------------------------------------
   Invoke our own Send_To routine, filling in our Address as the destination.
   ------------------------------------------------------------------------*/

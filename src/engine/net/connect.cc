@@ -1,5 +1,5 @@
 /*
-**	Command & Conquer(tm)
+**	Command & Conquer Red Alert(tm)
 **	Copyright 2025 Electronic Arts Inc.
 **
 **	This program is free software: you can redistribute it and/or modify
@@ -16,41 +16,67 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header:   F:\projects\c&c\vcs\code\noseqcon.cpv   1.9   16 Oct 1995 16:49:38
- * JOE_BOSTIC  $ */
+/* $Header: /CounterStrike/CONNECT.CPP 1     3/03/97 10:24a Joe_bostic $ */
 /***************************************************************************
  **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
  ***************************************************************************
  *                                                                         *
  *                 Project Name : Command & Conquer                        *
  *                                                                         *
- *                    File Name : SEQCONN.CPP                              *
+ *                    File Name : CONNECT.CPP                              *
  *                                                                         *
  *                   Programmer : Bill Randolph                            *
  *                                                                         *
  *                   Start Date : December 20, 1994                        *
  *                                                                         *
- *                  Last Update : April 9, 1995 [BRR]
+ *                  Last Update : May 31, 1995 [BRR]
  **
- *                                                                         *
  *-------------------------------------------------------------------------*
- * Functions: * NonSequencedConnClass::NonSequencedConnClass -- class
- *constructor     * NonSequencedConnClass::~NonSequencedConnClass -- class
- *destructor     * NonSequencedConnClass::Init -- Initializes connection queue
- *to empty	* NonSequencedConnClass::Send_Packet -- adds a packet to the
- *send queue	* NonSequencedConnClass::Receive_Packet -- adds packet to
- *receive queue	* NonSequencedConnClass::Get_Packet -- gets a packet from
- *receive queue	* NonSequencedConnClass::Service_Send_Queue -- services the send
- *queue	* NonSequencedConnClass::Service_Receive_Queue -- services recieve
- *queue*
+ * Functions: * ConnectionClass::ConnectionClass -- class constructor *
+ *   ConnectionClass::~ConnectionClass -- class destructor                 *
+ *   ConnectionClass::Init -- Initializes connection queue to empty
+ ** ConnectionClass::Send_Packet -- adds a packet to the send queue
+ ** ConnectionClass::Receive_Packet -- adds packet to receive queue
+ ** ConnectionClass::Get_Packet -- gets a packet from receive queue
+ ** ConnectionClass::Service -- main polling routine; services packets *
+ *   ConnectionClass::Service_Send_Queue -- services the send queue
+ ** ConnectionClass::Service_Receive_Queue -- services receive queue *
+ *   ConnectionClass::Time -- gets current time
+ ** ConnectionClass::Command_Name -- returns name for a packet command *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "engine/net/connect.h"
+
+#include <chrono>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <span>
+#include <utility>
+
+#include "base/aligned_buffer.h"
+#include "base/buffer.h"
+#include "base/enum_array.h"
+#include "base/numeric.h"
+#include "base/unaligned.h"
+#include "engine/net/combuf.h"
+
+namespace engine::net {
+
+/*
+********************************* Globals ***********************************
+*/
+base::EnumArray<ConnectionClass::ConnectionEnum, const char*,
+                static_cast<int>(ConnectionClass::PACKET_COUNT)>
+    ConnectionClass::Commands = {"ADATA", "NDATA", "ACK"};
+
 /***************************************************************************
- * NonSequencedConnClass::NonSequencedConnClass -- class constructor       *
+ * ConnectionClass::ConnectionClass -- class constructor                   *
  *                                                                         *
  * INPUT:                                                                  *
  *		numsend			desired # of entries for the send queue
- ** numreceive		desired # of entries for the recieve queue
+ ** numreceive		desired # of entries for the receive queue
  ** maxlen			max length of an application packet
  ** magicnum			the packet "magic number" for this connection
  ** retry_delta		the time to wait between sends
@@ -60,7 +86,8 @@
  *based on this parameter)		* timeout			the max
  *amount of time before we give up on a packet	*
  *							(-1 means retry forever,
- *based on this parameter)		*
+ *based on this parameter)		* extralen			max size
+ *of app-specific extra bytes (optional)			*
  *                                                                         *
  * OUTPUT:                                                                 *
  *		none.
@@ -73,40 +100,56 @@
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-#include "td/net/noseqcon.h"
-
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <span>
-#include <utility>
-
-#include "base/aligned_buffer.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "base/unaligned.h"
-#include "engine/net/combuf.h"
-#include "td/net/connect.h"
-
-namespace td {
-
-NonSequencedConnClass::NonSequencedConnClass(int numsend, int numreceive,
-                                             int maxlen, uint16_t magicnum,
-                                             int32_t retry_delta,
-                                             int32_t max_retries,
-                                             int32_t timeout)
-    : ConnectionClass(maxlen, magicnum, retry_delta, max_retries, timeout),
-      Queue(
-          new engine::net::CommBufferClass(numsend, numreceive, MaxPacketLen)) {
+ConnectionClass::ConnectionClass(int numsend, int numreceive, int maxlen,
+                                 uint16_t magicnum, int32_t retry_delta,
+                                 int32_t max_retries, int32_t timeout,
+                                 int extralen)
+    : MaxPacketLen(maxlen + static_cast<int>(sizeof(CommHeaderType))),
+      PacketBuf(base::ToSize(MaxPacketLen)),
+      MagicNum(magicnum),
+      RetryDelta(retry_delta),
+      MaxRetries(max_retries),
+      Timeout(timeout) {
   /*------------------------------------------------------------------------
-  Allocate the packet Queue.  This will store incoming packets (which will
-  be placed there by the Connection Manager), and outgoing packets (which
-  are placed there by this class when it "sends" a packet).
+  Compute our maximum packet length
   ------------------------------------------------------------------------*/
-}
+
+  /*------------------------------------------------------------------------
+  Assign the magic number
+  ------------------------------------------------------------------------*/
+
+  /*------------------------------------------------------------------------
+  Initialize the retry time.  This is the time that t2 - t1 must be greater
+  than before a retry will occur.
+  ------------------------------------------------------------------------*/
+
+  /*------------------------------------------------------------------------
+  Set the maximum allowable retries.
+  ------------------------------------------------------------------------*/
+
+  /*------------------------------------------------------------------------
+  Set the timeout for this connection.
+  ------------------------------------------------------------------------*/
+
+  /*------------------------------------------------------------------------
+  Allocate the packet staging buffer.  This will be used to
+  ------------------------------------------------------------------------*/
+  // new char[] provides alignment for the packet headers stored at its base.
+
+  /*------------------------------------------------------------------------
+  Allocate the packet Queue.  This will store incoming packets (placed there
+  by Receive_Packet), and outgoing packets (placed there by Send_Packet).
+  It can optionally store "extra" bytes, which are stored along with each
+  packet, but aren't transmitted as part of the packet.  If 'extralen'
+  is 0, the CommBufferClass ignores this parameter.
+  ------------------------------------------------------------------------*/
+  Queue = std::make_unique<engine::net::CommBufferClass>(
+      numsend, numreceive, MaxPacketLen, extralen);
+
+} /* end of ConnectionClass */
 
 /***************************************************************************
- * NonSequencedConnClass::~NonSequencedConnClass -- class destructor       *
+ * ConnectionClass::~ConnectionClass -- class destructor                   *
  *                                                                         *
  * INPUT:                                                                  *
  *		none.
@@ -123,10 +166,11 @@ NonSequencedConnClass::NonSequencedConnClass(int numsend, int numreceive,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-NonSequencedConnClass::~NonSequencedConnClass() { delete Queue; }
+ConnectionClass::~ConnectionClass() = default;
 
 /***************************************************************************
- * NonSequencedConnClass::Init -- Initializes connection queue to empty *
+ * ConnectionClass::Init -- Initializes connection queue to empty
+ **
  *                                                                         *
  * INPUT:                                                                  *
  *		none.
@@ -143,7 +187,7 @@ NonSequencedConnClass::~NonSequencedConnClass() { delete Queue; }
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void NonSequencedConnClass::Init() {
+void ConnectionClass::Init() {
   NumRecNoAck = 0;
   NumRecAck = 0;
   NumSendNoAck = 0;
@@ -153,10 +197,11 @@ void NonSequencedConnClass::Init() {
   LastReadID = 0xffffffff;
 
   Queue->Init();
-}
+
+} /* end of Init */
 
 /***************************************************************************
- * NonSequencedConnClass::Send_Packet -- adds a packet to the send queue
+ * ConnectionClass::Send_Packet -- adds a packet to the send queue
  **
  *                                                                         *
  * This routine prefixes the given buffer with a CommHeaderType and
@@ -168,7 +213,7 @@ void NonSequencedConnClass::Init() {
  * INPUT:                                                                  *
  *		buf			buffer to send
  ** buflen		length of buffer
- ** ack_req		true = ACK is required for this packet; false = isn't
+ ** ack_req		1 = ACK is required for this packet; 0 = isn't
  **
  *                                                                         *
  * OUTPUT:                                                                 *
@@ -182,21 +227,21 @@ void NonSequencedConnClass::Init() {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NonSequencedConnClass::Send_Packet(std::span<const std::byte> buf,
-                                       int buflen, int ack_req) {
+int ConnectionClass::Send_Packet(std::span<const std::byte> buf, int buflen,
+                                 int ack_req) {
   if (buflen < 0 || base::ToSize(buflen) > buf.size() ||
       base::ToSize(buflen) > PacketBuf.size() - sizeof(CommHeaderType)) {
     return 0;
   }
-  /*........................................................................
+  /*------------------------------------------------------------------------
   Set the magic # for the packet
-  ........................................................................*/
+  ------------------------------------------------------------------------*/
   base::AlignedObject<CommHeaderType>(PacketBuf.data())->MagicNumber = MagicNum;
 
-  /*........................................................................
+  /*------------------------------------------------------------------------
   Set the packet Code: DATA_ACK if it requires an ACK, NOACK if it doesn't
   Set the packet ID to the appropriate counter value.
-  ........................................................................*/
+  ------------------------------------------------------------------------*/
   if (ack_req) {
     base::AlignedObject<CommHeaderType>(PacketBuf.data())->Code =
         static_cast<unsigned char>(PACKET_DATA_ACK);
@@ -209,34 +254,30 @@ int NonSequencedConnClass::Send_Packet(std::span<const std::byte> buf,
         NumSendNoAck;
   }
 
-  /*........................................................................
+  /*------------------------------------------------------------------------
   Now build the packet
-  ........................................................................*/
+  ------------------------------------------------------------------------*/
   base::CopyBytes(std::span(PacketBuf).subspan(sizeof(CommHeaderType)), buf,
                   base::ToSize(buflen));
 
-  /*........................................................................
-  Add it to the queue.
-  ........................................................................*/
-  if (Queue->Queue_Send(PacketBuf, buflen + static_cast<int>(sizeof(CommHeaderType)))) {
+  /*------------------------------------------------------------------------
+  Add it to the queue; don't add any extra data with it.
+  ------------------------------------------------------------------------*/
+  if (Queue->Queue_Send(PacketBuf,
+                        buflen + static_cast<int>(sizeof(CommHeaderType)), {},
+                        0)) {
     if (ack_req) {
-      // Smart_Printf( "Packet ack Queued ID %d \n", ((CommHeaderType
-      // *)PacketBuf)->PacketID );
       NumSendAck++;
     } else {
-      // Smart_Printf( "Packet noack Queued ID %d \n", ((CommHeaderType
-      // *)PacketBuf)->PacketID );
       NumSendNoAck++;
     }
     return 1;
   }
-  // Smart_Printf( "Packet not Queued ID %d \n", ((CommHeaderType
-  // *)PacketBuf)->PacketID );
   return 0;
-}
+} /* end of Send_Packet */
 
 /***************************************************************************
- * NonSequencedConnClass::Receive_Packet -- adds packet to the receive queue
+ * ConnectionClass::Receive_Packet -- adds packet to receive queue
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -256,18 +297,17 @@ int NonSequencedConnClass::Send_Packet(std::span<const std::byte> buf,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
-                                          int buflen) {
+int ConnectionClass::Receive_Packet(std::span<std::byte> buf, int buflen) {
   engine::net::ReceiveQueueType* rec_entry =
-      nullptr;                            // ptr to recv entry header
-  CommHeaderType* entry_data = nullptr;   // ptr to queue entry data
-  CommHeaderType ackpacket{};             // ACK packet to send
-  int save_packet = 1;  // 0 = this is a resend
+      nullptr;                           // ptr to recv entry header
+  CommHeaderType* entry_data = nullptr;  // ptr to queue entry data
+  CommHeaderType ackpacket{};            // ACK packet to send
+  int save_packet = 1;                   // 0 = this is a resend
   int found = 0;
 
-  /*
-  --------------------------- Check the magic # ----------------------------
-  */
+  /*------------------------------------------------------------------------
+  Check the magic #
+  ------------------------------------------------------------------------*/
   if (std::cmp_less(buflen, sizeof(CommHeaderType)) ||
       base::ToSize(buflen) > buf.size()) {
     return 0;
@@ -275,7 +315,6 @@ int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
   auto packet_storage = base::ReadUnaligned<CommHeaderType>(buf);
   CommHeaderType* packet = &packet_storage;  // ptr to packet header
   if (packet->MagicNumber != MagicNum) {
-    // Smart_Printf( "Bad Magic Number\n" );
     return 0;
   }
 
@@ -284,34 +323,29 @@ int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
   ------------------------------------------------------------------------*/
   if (packet->Code == static_cast<unsigned char>(PACKET_ACK)) {
     for (int i = 0; i < Queue->Num_Send(); i++) {
-      /*
-      ....................... Get queue entry ptr ........................
-      */
+      /*..................................................................
+      Get queue entry ptr
+      ..................................................................*/
       engine::net::SendQueueType* send_entry =
           Queue->Get_Send(i);  // ptr to send entry header
-      /*
-      ............... If ptr is valid, get ptr to its data ...............
-      */
+
+      /*..................................................................
+      If ptr is valid, get ptr to its data
+      ..................................................................*/
       if (send_entry != nullptr) {
         entry_data =
             base::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
-        /*
-        .............. If ACK is for this entry, mark it ................
-        */
+
+        /*...............................................................
+        If ACK is for this entry, mark it
+        ...............................................................*/
         if (packet->PacketID == entry_data->PacketID &&
             entry_data->Code == static_cast<unsigned char>(PACKET_DATA_ACK)) {
-          // Smart_Printf( "Received ACK for %d \n", packet->PacketID );
           send_entry->IsACK = 1;
           break;
         }
       }
     }
-
-    //{
-    //		if (i == Queue->Num_Send() ) {
-    // Smart_Printf( "Received bad ACK for %d \n", packet->PacketID );
-    //		}
-    //}
 
     return 1;
   }
@@ -320,24 +354,20 @@ int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
   Handle an incoming PACKET_DATA_NOACK packet
   ------------------------------------------------------------------------*/
   if (packet->Code == static_cast<unsigned char>(PACKET_DATA_NOACK)) {
-    /*---------------------------------------------------------------------
+    /*.....................................................................
     If there's only one slot left, don't tie up the queue with this packet
-    ---------------------------------------------------------------------*/
+    .....................................................................*/
     if (Queue->Max_Receive() - Queue->Num_Receive() <= 1) {
-      // Smart_Printf( "Only one slot left don't tie up with DATA NOACK packet
-      // %d \n", packet->PacketID );
       return 0;
     }
 
-    /*---------------------------------------------------------------------
+    /*.....................................................................
     Error if we can't queue the packet
-    ---------------------------------------------------------------------*/
-    if (!Queue->Queue_Receive(buf, buflen)) {
-      // Smart_Printf( "Can't Queue the packet %d \n", packet->PacketID );
+    .....................................................................*/
+    if (!Queue->Queue_Receive(buf, buflen, {}, 0)) {
       return 0;
     }
 
-    // Smart_Printf( "Queued DATA NOACK for %d \n", packet->PacketID );
     NumRecNoAck++;
 
     return 1;
@@ -347,33 +377,32 @@ int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
   Handle an incoming PACKET_DATA_ACK packet
   ------------------------------------------------------------------------*/
   if (packet->Code == static_cast<unsigned char>(PACKET_DATA_ACK)) {
-    // Smart_Printf( "Looking at ID %d, LastSeqID=%d \n", packet->PacketID,
-    // LastSeqID );
-    /*....................................................................
+    /*.....................................................................
     If this is a packet requires an ACK, and it's ID is older than our
     "oldest" ID, we know it's a resend; send an ACK, but don't queue it
-    ....................................................................*/
+    .....................................................................*/
     if (packet->PacketID <= LastSeqID && LastSeqID != 0xffffffff) {
-      // Smart_Printf( "Older than oldest\n" );
       save_packet = 0;
     }
-    /*....................................................................
+
+    /*.....................................................................
     Otherwise, scan the queue for this entry; if it's found, it's a
     resend, so don't save it.
-    ....................................................................*/
+    .....................................................................*/
     else {
       save_packet = 1;
       for (int i = 0; i < Queue->Num_Receive(); i++) {
         rec_entry = Queue->Get_Receive(i);
+
         if (rec_entry) {
           entry_data =
               base::AlignedObject<CommHeaderType>(rec_entry->Buffer.data());
+
           /*...........................................................
           Packet is found; it's a resend
           ...........................................................*/
           if (entry_data->Code == static_cast<unsigned char>(PACKET_DATA_ACK) &&
               entry_data->PacketID == packet->PacketID) {
-            // Smart_Printf( "It's a resend\n" );
             save_packet = 0;
             break;
           }
@@ -381,45 +410,41 @@ int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
       }
     } /* end of scan for resend */
 
-    /*---------------------------------------------------------------------
+    /*.....................................................................
     Queue the packet & update our LastSeqID value.
-    ---------------------------------------------------------------------*/
+    .....................................................................*/
     if (save_packet) {
-      /*------------------------------------------------------------------
-      If there's only one slot left, make sure we only put a packet in it if
-      this packet will let us increment our LastSeqID; otherwise, we'll get
-      stuck, forever unable to increment LastSeqID.
-      ------------------------------------------------------------------*/
+      /*..................................................................
+      If there's only one slot left, make sure we only put a packet in it
+      if this packet will let us increment our LastSeqID; otherwise, we'll
+      get stuck, forever unable to increment LastSeqID.
+      ..................................................................*/
       if ((Queue->Max_Receive() - Queue->Num_Receive() <= 1) &&
           (packet->PacketID != LastSeqID + 1)) {
-        // Smart_Printf( "One slot left not what we looking for max=%d,num=%d
-        // \n",
-        //	Queue->Max_Receive(), Queue->Num_Receive() );
         return 0;
       }
 
-      /*------------------------------------------------------------------
+      /*..................................................................
       If we can't queue the packet, return; don't send an ACK.
-      ------------------------------------------------------------------*/
-      if (!Queue->Queue_Receive(buf, buflen)) {
-        // Smart_Printf( "unable to queue packet\n" );
+      ..................................................................*/
+      if (!Queue->Queue_Receive(buf, buflen, {}, 0)) {
         return 0;
       }
 
       NumRecAck++;
 
-      /*------------------------------------------------------------------
+      /*..................................................................
       Update our LastSeqID value if we can.  Anything less than LastSeqID
       we'll know is a resend.
-      ------------------------------------------------------------------*/
+      ..................................................................*/
       if (packet->PacketID == LastSeqID + 1) {
         LastSeqID = packet->PacketID;
-        /*............................................................
+        /*...............................................................
         Now that we have a new 'LastSeqID', search our Queue to see if
         the next ID is there; if so, keep checking for the next one;
         break only when the next one isn't found.  This forces
         LastSeqID to be the largest possible value.
-        ............................................................*/
+        ...............................................................*/
         do {
           found = 0;
           for (int i = 0; i < Queue->Num_Receive(); i++) {
@@ -445,24 +470,23 @@ int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
       }
     } /* end of save packet */
 
-    /*---------------------------------------------------------------------
+    /*.....................................................................
     Send an ACK, regardless of whether this was a resend or not.
-    ---------------------------------------------------------------------*/
+    .....................................................................*/
     ackpacket.MagicNumber = Magic_Num();
     ackpacket.Code = static_cast<unsigned char>(PACKET_ACK);
     ackpacket.PacketID = packet->PacketID;
-    // Smart_Printf( "Sending ACK for %d \n", packet->PacketID );
-    Send(base::ObjectBytes(ackpacket), sizeof(CommHeaderType));
+    Send(base::ObjectBytes(ackpacket), sizeof(CommHeaderType), {}, 0);
 
     return 1;
   }
-  // Smart_Printf( "invalid packet type %d \n", packet->Code );
 
   return 0;
-}
+
+} /* end of Receive_Packet */
 
 /***************************************************************************
- * NonSequencedConnClass::Get_Packet -- gets a packet from receive queue
+ * ConnectionClass::Get_Packet -- gets a packet from receive queue
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -481,7 +505,7 @@ int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NonSequencedConnClass::Get_Packet(std::span<std::byte> buf, int* buflen) {
+int ConnectionClass::Get_Packet(std::span<std::byte> buf, int* buflen) {
   int packetlen = 0;  // size of received packet
 
   /*------------------------------------------------------------------------
@@ -513,7 +537,8 @@ int NonSequencedConnClass::Get_Packet(std::span<std::byte> buf, int* buflen) {
         LastReadID = entry_data->PacketID;
         rec_entry->IsRead = 1;
 
-        packetlen = rec_entry->BufLen - static_cast<int>(sizeof(CommHeaderType));
+        packetlen =
+            rec_entry->BufLen - static_cast<int>(sizeof(CommHeaderType));
         if (packetlen > 0) {
           base::CopyBytes(
               buf, std::span(rec_entry->Buffer).subspan(sizeof(CommHeaderType)),
@@ -534,7 +559,8 @@ int NonSequencedConnClass::Get_Packet(std::span<std::byte> buf, int* buflen) {
 
         rec_entry->IsRead = 1;
 
-        packetlen = rec_entry->BufLen - static_cast<int>(sizeof(CommHeaderType));
+        packetlen =
+            rec_entry->BufLen - static_cast<int>(sizeof(CommHeaderType));
         if (packetlen > 0) {
           base::CopyBytes(
               buf, std::span(rec_entry->Buffer).subspan(sizeof(CommHeaderType)),
@@ -547,10 +573,48 @@ int NonSequencedConnClass::Get_Packet(std::span<std::byte> buf, int* buflen) {
   }
 
   return 0;
-}
+
+} /* end of Get_Packet */
 
 /***************************************************************************
- * NonSequencedConnClass::Service_Send_Queue -- services the send queue *
+ * ConnectionClass::Service -- main polling routine; services packets *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		none.
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		1 = OK, 0 = error (connection is broken!)
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/20/1994 BR : Created.                                              *
+ *=========================================================================*/
+int ConnectionClass::Service() {
+  /*------------------------------------------------------------------------
+  Service the Send Queue:  This [re]sends packets in the Send Queue which
+  haven't been ACK'd yet, and if their retry timeout has expired, and
+  updates the FirstTime, LastTime & SendCount values in the Queue entry.
+  Entries that have been ACK'd should be removed.
+
+  Service the Receive Queue:  This sends ACKs for packets that haven't
+  been ACK'd yet.  Entries that the app has read, and have been ACK'd,
+  should be removed.
+  ------------------------------------------------------------------------*/
+  if (Service_Send_Queue() && Service_Receive_Queue()) {
+    return 1;
+  }
+  return 0;
+
+} /* end of Service */
+
+/***************************************************************************
+ * ConnectionClass::Service_Send_Queue -- services the send queue
+ **
  *                                                                         *
  * INPUT:                                                                  *
  *		none.
@@ -567,35 +631,37 @@ int NonSequencedConnClass::Get_Packet(std::span<std::byte> buf, int* buflen) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NonSequencedConnClass::Service_Send_Queue() {
+int ConnectionClass::Service_Send_Queue() {
   engine::net::SendQueueType* send_entry = nullptr;  // ptr to send queue entry
-  CommHeaderType* packet_hdr = nullptr;  // packet header
+  CommHeaderType* packet_hdr = nullptr;              // packet header
   int bad_conn = 0;
 
   /*------------------------------------------------------------------------
   Remove any ACK'd packets from the queue
   ------------------------------------------------------------------------*/
   for (int i = 0; i < Queue->Num_Send(); i++) {
-    /*
-    ------------------------- Get this queue entry ------------------------
-    */
+    /*.....................................................................
+    Get this queue entry
+    .....................................................................*/
     send_entry = Queue->Get_Send(i);
-    /*
-    ---------------- If ACK has been received, unqueue it -----------------
-    */
+
+    /*.....................................................................
+    If ACK has been received, unqueue it
+    .....................................................................*/
     if (send_entry->IsACK) {
-      /*
-      ................ Update this queue's response time .................
-      */
+      /*..................................................................
+      Update this queue's response time
+      ..................................................................*/
       packet_hdr =
           base::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
       if (packet_hdr->Code == static_cast<unsigned char>(PACKET_DATA_ACK)) {
         Queue->Add_Delay(Time() - send_entry->FirstTime);
       }
-      /*
-      ....................... unqueue the packet .........................
-      */
-      Queue->UnQueue_Send({}, nullptr, i);
+
+      /*..................................................................
+      Unqueue the packet
+      ..................................................................*/
+      Queue->UnQueue_Send({}, nullptr, i, {}, nullptr);
       i--;
     }
   }
@@ -620,17 +686,19 @@ int NonSequencedConnClass::Service_Send_Queue() {
     .....................................................................*/
     const int64_t curtime = Time();  // current time
     if (curtime - send_entry->LastTime > RetryDelta) {
-      /*
-      ......................... Send the message .........................
-      */
-      Send(send_entry->Buffer, send_entry->BufLen);
+      /*..................................................................
+      Send the message
+      ..................................................................*/
+      Send(send_entry->Buffer, send_entry->BufLen, send_entry->ExtraBuffer,
+           send_entry->ExtraLen);
 
-      /*
-      ....................... Fill in Time fields ........................
-      */
+      /*..................................................................
+      Fill in Time fields
+      ..................................................................*/
       send_entry->LastTime = curtime;
       if (send_entry->SendCount == 0) {
         send_entry->FirstTime = curtime;
+
         /*...............................................................
         If this is the 1st time we're sending this packet, and it doesn't
         require an ACK, mark it as ACK'd; then, the next time through,
@@ -642,23 +710,21 @@ int NonSequencedConnClass::Service_Send_Queue() {
           send_entry->IsACK = 1;
         }
       }
-      /*
-      ......................... Update SendCount .........................
-      */
+
+      /*..................................................................
+      Update SendCount
+      ..................................................................*/
       send_entry->SendCount++;
+
       /*..................................................................
       Perform error detection, based on either MaxRetries or Timeout
       ..................................................................*/
       if (MaxRetries != -1 && send_entry->SendCount > MaxRetries) {
-        // Smart_Printf( "Max Retries!!! %d !!! \n", MaxRetries );
         bad_conn = 1;
       }
 
       if (Timeout != -1 &&
           send_entry->LastTime - send_entry->FirstTime > Timeout) {
-        // Smart_Printf( "Timed out!!! Time %d, Timeout %d, buflen %d !!! \n",
-        //	(send_entry->LastTime - send_entry->FirstTime), Timeout,
-        //	send_entry->BufLen );
         bad_conn = 1;
       }
     }
@@ -667,11 +733,15 @@ int NonSequencedConnClass::Service_Send_Queue() {
   /*------------------------------------------------------------------------
   If the connection is going bad, return an error
   ------------------------------------------------------------------------*/
-  return bad_conn == 0 ? 1 : 0;
-}
+  if (bad_conn) {
+    return 0;
+  }
+  return 1;
+
+} /* end of Service_Send_Queue */
 
 /***************************************************************************
- * NonSequencedConnClass::Service_Receive_Queue -- services recieve queue
+ * ConnectionClass::Service_Receive_Queue -- services receive queue
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -689,8 +759,7 @@ int NonSequencedConnClass::Service_Send_Queue() {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NonSequencedConnClass::Service_Receive_Queue() {
-
+int ConnectionClass::Service_Receive_Queue() {
   /*------------------------------------------------------------------------
   Remove all dead packets.
   PACKET_DATA_NOACK: if it's been read, throw it away.
@@ -705,19 +774,96 @@ int NonSequencedConnClass::Service_Receive_Queue() {
       auto* packet_hdr = base::AlignedObject<CommHeaderType>(
           rec_entry->Buffer.data());  // packet header
 
-      if (packet_hdr->Code == static_cast<unsigned char>(PACKET_DATA_NOACK)) {
-        Queue->UnQueue_Receive({}, nullptr, i);
+      if (packet_hdr->Code == static_cast<unsigned char>(PACKET_DATA_NOACK) ||
+          packet_hdr->PacketID < LastSeqID) {
+        Queue->UnQueue_Receive({}, nullptr, i, {}, nullptr);
         i--;
-      } else {
-        if (packet_hdr->PacketID < LastSeqID) {
-          Queue->UnQueue_Receive({}, nullptr, i);
-          i--;
-        }
       }
     }
   }
 
   return 1;
+
+} /* end of Service_Receive_Queue */
+
+/***************************************************************************
+ * ConnectionClass::Time -- gets current time
+ **
+ *                                                                         *
+ * INPUT:                                                                  *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		none.
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   12/20/1994 BR : Created.                                              *
+ *=========================================================================*/
+int64_t ConnectionClass::Time() {
+  const auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(
+                        std::chrono::steady_clock::now().time_since_epoch())
+                        .count();
+  return msec / 100 * 6;
 }
 
-}  // namespace td
+engine::net::SendQueueType* ConnectionClass::OldestUnackedSend(
+    std::span<engine::net::CommBufferClass* const> queues) {
+  // "Found" is tracked through the result pointer rather than a latest-time
+  // sentinel: ticks count from boot and outgrow any fixed 32-bit bound.
+  engine::net::SendQueueType* oldest = nullptr;
+  for (engine::net::CommBufferClass* queue : queues) {
+    if (queue == nullptr) {
+      continue;
+    }
+    for (int i = 0; i < queue->Num_Send(); i++) {
+      engine::net::SendQueueType* entry = queue->Get_Send(i);
+      if (entry == nullptr) {
+        continue;
+      }
+      const CommHeaderType* packet =
+          base::AlignedObject<CommHeaderType>(entry->Buffer.data());
+      if (packet->Code == static_cast<unsigned char>(PACKET_DATA_ACK) &&
+          entry->IsACK == 0) {
+        if (oldest == nullptr || entry->FirstTime < oldest->FirstTime) {
+          oldest = entry;
+        }
+        break;
+      }
+    }
+  }
+  return oldest;
+}
+
+/***************************************************************************
+ * ConnectionClass::Command_Name -- returns name for given packet command  *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *		command		packet Command value to get name for
+ **
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *		ptr to command name, nullptr if invalid
+ **
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *		none.
+ **
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   05/31/1995 BRR : Created.                                             *
+ *=========================================================================*/
+const char* ConnectionClass::Command_Name(int command) {
+  if (command >= 0 && command < static_cast<int>(PACKET_COUNT)) {
+    return Commands.at(static_cast<ConnectionEnum>(command));
+  }
+  return nullptr;
+
+} /* end of Command_Name */
+
+/************************** end of connect.cpp *****************************/
+
+}  // namespace engine::net

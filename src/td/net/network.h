@@ -227,20 +227,20 @@ class Network {
 
   // The magic number must have each digit unique and different from the
   // queue's own.
-  NullModemClass null_modem_{
-      16,  // number of send entries
-      64,  // number of receive entries
-      (200 / sizeof(EventClass) * sizeof(EventClass)) + sizeof(CommHeaderType),
-      0x1234};
+  NullModemClass null_modem_{16,  // number of send entries
+                             64,  // number of receive entries
+                             (200 / sizeof(EventClass) * sizeof(EventClass)) +
+                                 sizeof(engine::net::CommHeaderType),
+                             0x1234};
   bool modem_service_ = true;
 
-  IPXManagerClass ipx_{
-      sizeof(GlobalPacketType),
-      (546 - sizeof(CommHeaderType)) / sizeof(EventClass) * sizeof(EventClass),
-      10,             // # entries in Global Queue
-      8,              // # entries in Private Queues
-      VIRGIN_SOCKET,  // Socket ID #
-      IPXGlobalConnClass::kCommandAndConquer};  // Product ID #
+  IPXManagerClass ipx_{sizeof(GlobalPacketType),
+                       (546 - sizeof(engine::net::CommHeaderType)) /
+                           sizeof(EventClass) * sizeof(EventClass),
+                       10,             // # entries in Global Queue
+                       8,              // # entries in Private Queues
+                       VIRGIN_SOCKET,  // Socket ID #
+                       IPXGlobalConnClass::kCommandAndConquer};  // Product ID #
 
   std::vector<std::unique_ptr<PhoneEntryClass>> phone_book_;
   int current_phone_index_ = 0;

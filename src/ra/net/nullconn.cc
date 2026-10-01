@@ -53,8 +53,8 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/unaligned.h"
+#include "engine/net/connect.h"
 #include "engine/net/serial/wincomm.h"
-#include "ra/net/connect.h"
 
 namespace ra {
 
@@ -81,7 +81,7 @@ namespace ra {
  *=========================================================================*/
 NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
                                        uint16_t magicnum)
-    : ConnectionClass(
+    : engine::net::ConnectionClass(
           numsend, numreceive, maxlen, magicnum,
           60,  // Retry Delta Time
           -1,  // Max Retries (-1 means ignore this timeout parameter)
@@ -139,7 +139,7 @@ NullModemConnClass::~NullModemConnClass() =
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 void NullModemConnClass::Init(HANDLE port_handle) {
-  ConnectionClass::Init();
+  engine::net::ConnectionClass::Init();
   PortHandle = port_handle;
 }
 
@@ -278,7 +278,7 @@ int NullModemConnClass::Packet_Overhead_Size() {
   int for Null Modem CRC check
   CommHeaderType for Queued packets
   ------------------------------------------------------------------------*/
-  return PACKET_SERIAL_OVERHEAD_SIZE + sizeof(CommHeaderType);
+  return PACKET_SERIAL_OVERHEAD_SIZE + sizeof(engine::net::CommHeaderType);
 
 } /* end of Packet_Overhead_Size */
 

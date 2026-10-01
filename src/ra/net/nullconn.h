@@ -54,7 +54,7 @@
 */
 #include <cstdint>
 
-#include "ra/net/connect.h"
+#include "engine/net/connect.h"
 
 using HANDLE = void*;
 
@@ -82,7 +82,7 @@ struct SerialCRCType {
 /*
 ***************************** Class Declaration *****************************
 */
-class NullModemConnClass : public ConnectionClass {
+class NullModemConnClass : public engine::net::ConnectionClass {
   /*
   ---------------------------- Public Interface ----------------------------
   */
@@ -101,7 +101,7 @@ class NullModemConnClass : public ConnectionClass {
   /*.....................................................................
   Initialization.
   .....................................................................*/
-  using ConnectionClass::Init;
+  using engine::net::ConnectionClass::Init;
   void Init(HANDLE port_handle);
 
   /*.....................................................................

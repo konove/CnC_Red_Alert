@@ -53,7 +53,7 @@
 */
 #include <cstdint>
 
-#include "ra/net/connect.h"
+#include "engine/net/connect.h"
 #include "ra/net/ipx.h"
 #include "ra/net/ipxaddr.h"
 
@@ -62,7 +62,7 @@ namespace ra {
 /*
 ***************************** Class Declaration *****************************
 */
-class IPXConnClass : public ConnectionClass {
+class IPXConnClass : public engine::net::ConnectionClass {
   /*
   ---------------------------- Public Interface ----------------------------
   */

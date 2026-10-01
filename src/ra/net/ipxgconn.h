@@ -85,7 +85,7 @@
 #include <cstdint>
 #include <span>
 
-#include "ra/net/connect.h"
+#include "engine/net/connect.h"
 #include "ra/net/ipx.h"
 #include "ra/net/ipxaddr.h"
 #include "ra/net/ipxconn.h"
@@ -104,7 +104,7 @@ namespace ra {
 // function.
 //---------------------------------------------------------------------------
 struct GlobalHeaderType {
-  CommHeaderType Header;
+  engine::net::CommHeaderType Header;
   uint16_t ProductID;
 };
 

@@ -58,7 +58,7 @@
 #include <cstdint>
 #include <span>
 
-#include "td/net/connect.h"
+#include "engine/net/connect.h"
 #include "td/net/ipx.h"
 #include "td/net/ipxaddr.h"
 #include "td/net/ipxconn.h"
@@ -76,7 +76,7 @@ of this message.  This address field must be provided in by the IXP
 Connection Manager class, when it calls this class's Receive_Packet function.
 ---------------------------------------------------------------------------*/
 struct GlobalHeaderType {
-  CommHeaderType Header{};
+  engine::net::CommHeaderType Header{};
   IPXAddressClass Address;
   uint16_t ProductID = 0;
 };
@@ -158,7 +158,8 @@ class IPXGlobalConnClass : public IPXConnClass {
   used in SequencedConnClass.  This special version sends to the address
   embedded within the GlobalHeaderType.
   .....................................................................*/
-  int Send(std::span<const std::byte> buf, int buflen) override;
+  int Send(std::span<const std::byte> buf, int buflen,
+           std::span<const std::byte> extrabuf, int extralen) override;
 
   /*.....................................................................
   This routine is overloaded from SequencedConnClass, because the

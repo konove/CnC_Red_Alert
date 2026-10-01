@@ -54,11 +54,10 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/unaligned.h"
+#include "engine/net/connect.h"
 #include "engine/net/serial/wincomm.h"
 #include "td/core/defines.h"
-#include "td/net/connect.h"
 #include "td/net/network.h"
-#include "td/net/noseqcon.h"
 #include "td/net/session.h"
 #include "td/net/tcpip.h"
 
@@ -87,7 +86,7 @@ namespace td {
  *=========================================================================*/
 NullModemConnClass::NullModemConnClass(int numsend, int numreceive, int maxlen,
                                        uint16_t magicnum)
-    : NonSequencedConnClass(
+    : engine::net::ConnectionClass(
           numsend, numreceive, maxlen, magicnum,
           60,  // Retry Delta Time
           -1,  // Max Retries (-1 means ignore this timeout parameter)
@@ -146,7 +145,7 @@ NullModemConnClass::~NullModemConnClass() =
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 void NullModemConnClass::Init(HANDLE port_handle) {
-  NonSequencedConnClass::Init();
+  engine::net::ConnectionClass::Init();
   PortHandle = port_handle;
 
 } /* end of Init */
@@ -170,7 +169,9 @@ void NullModemConnClass::Init(HANDLE port_handle) {
  * HISTORY:                                                                *
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
-int NullModemConnClass::Send(std::span<const std::byte> buf, int buflen) {
+int NullModemConnClass::Send(std::span<const std::byte> buf, int buflen,
+                             std::span<const std::byte> /*extrabuf*/,
+                             int /*extralen*/) {
   if (buflen < 0 || base::ToSize(buflen) > buf.size() ||
       base::ToSize(buflen) + sizeof(SerialHeaderType) + sizeof(int) + 1 >
           SendBuf.size()) {
@@ -298,7 +299,7 @@ int NullModemConnClass::Packet_Overhead_Size() {
   // CommHeaderType for Queued packets
   //
 
-  return PACKET_SERIAL_OVERHEAD_SIZE + sizeof(CommHeaderType);
+  return PACKET_SERIAL_OVERHEAD_SIZE + sizeof(engine::net::CommHeaderType);
 
 } /* end of Packet_Overhead_Size */
 

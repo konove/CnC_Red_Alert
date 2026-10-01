@@ -1,5 +1,5 @@
-// Tests for Tiberian Dawn's non-sequenced connection and send-queue search.
-#include "td/net/connect.h"
+// Tests for ConnectionClass sequencing and send-queue search.
+#include "engine/net/connect.h"
 
 #include <array>
 #include <cstddef>
@@ -11,9 +11,8 @@
 #include "base/unaligned.h"
 #include "engine/net/combuf.h"
 #include "gtest/gtest.h"
-#include "td/net/noseqcon.h"
 
-namespace td {
+namespace engine::net {
 
 namespace {
 
@@ -22,19 +21,18 @@ constexpr uint16_t kMagic = 0x1234;
 // A tick count past 2^32. ConnectionClass::Time() counts 60ths of a second
 // from steady_clock, which on Linux starts at boot, so it reaches this after
 // about 828 days of uptime.
-constexpr int64_t kLongUptimeTicks = int64_t{1} * 8 * 1024 * 1024 * 1024;
+constexpr int64_t kLongUptimeTicks = 8'589'934'592;  // 2^33
 
 // A connection that counts sends instead of touching a network device.
-class TestConnection : public NonSequencedConnClass {
+class TestConnection : public ConnectionClass {
  public:
-  TestConnection() : NonSequencedConnClass(4, 8, 64, kMagic, 1, 3, 60) {
-    Init();
-  }
+  TestConnection() : ConnectionClass(4, 8, 64, kMagic, 1, 3, 60) { Init(); }
 
   [[nodiscard]] int sent_count() const { return sent_count_; }
 
  protected:
-  int Send(std::span<const std::byte> /*buf*/, int /*buflen*/) override {
+  int Send(std::span<const std::byte> /*buf*/, int /*buflen*/,
+           std::span<const std::byte> /*extrabuf*/, int /*extralen*/) override {
     ++sent_count_;
     return 1;
   }
@@ -74,13 +72,13 @@ engine::net::SendQueueType* QueueHeader(
   return entry;
 }
 
-// Packet IDs are 32 bits on the wire, as in the original game and in Red
-// Alert, so the "no packet yet" sentinel 0xffffffff wraps to ID 0.
-TEST(NonSequencedConnTest, PacketIdIs32Bits) {
+// Packet IDs are 32 bits on the wire, as in the original games, so the
+// "no packet yet" sentinel 0xffffffff wraps to ID 0.
+TEST(ConnectionTest, PacketIdIs32Bits) {
   EXPECT_EQ(sizeof(CommHeaderType{}.PacketID), sizeof(uint32_t));
 }
 
-TEST(NonSequencedConnTest, DeliversAckRequiredPacketsInIdOrder) {
+TEST(ConnectionTest, DeliversAckRequiredPacketsInIdOrder) {
   TestConnection connection;
   Packet second = MakePacket(ConnectionClass::PACKET_DATA_ACK, 1, 'b');
   Packet first = MakePacket(ConnectionClass::PACKET_DATA_ACK, 0, 'a');
@@ -100,7 +98,7 @@ TEST(NonSequencedConnTest, DeliversAckRequiredPacketsInIdOrder) {
   EXPECT_FALSE(connection.Get_Packet(base::ObjectBytes(payload), &length));
 }
 
-TEST(NonSequencedConnTest, DropsResendOfDeliveredPacket) {
+TEST(ConnectionTest, DropsResendOfDeliveredPacket) {
   TestConnection connection;
   Packet packet = MakePacket(ConnectionClass::PACKET_DATA_ACK, 0, 'a');
   EXPECT_TRUE(connection.Receive_Packet(base::ObjectBytes(packet),
@@ -118,7 +116,7 @@ TEST(NonSequencedConnTest, DropsResendOfDeliveredPacket) {
   EXPECT_FALSE(connection.Get_Packet(base::ObjectBytes(payload), &length));
 }
 
-TEST(NonSequencedConnTest, OldestUnackedSendFindsPacketsAfterLongUptime) {
+TEST(ConnectionTest, OldestUnackedSendFindsPacketsAfterLongUptime) {
   engine::net::CommBufferClass newer(4, 4, 64);
   engine::net::CommBufferClass older(4, 4, 64);
   QueueHeader(newer, ConnectionClass::PACKET_DATA_ACK, kLongUptimeTicks + 50);
@@ -130,7 +128,7 @@ TEST(NonSequencedConnTest, OldestUnackedSendFindsPacketsAfterLongUptime) {
   EXPECT_EQ(ConnectionClass::OldestUnackedSend(queues), expected);
 }
 
-TEST(NonSequencedConnTest, OldestUnackedSendSkipsAckedAndNoAckPackets) {
+TEST(ConnectionTest, OldestUnackedSendSkipsAckedAndNoAckPackets) {
   engine::net::CommBufferClass queue(4, 4, 64);
   QueueHeader(queue, ConnectionClass::PACKET_DATA_NOACK, 1);
   engine::net::SendQueueType* acked =
@@ -144,7 +142,7 @@ TEST(NonSequencedConnTest, OldestUnackedSendSkipsAckedAndNoAckPackets) {
   EXPECT_EQ(ConnectionClass::OldestUnackedSend(queues), expected);
 }
 
-TEST(NonSequencedConnTest, OldestUnackedSendReturnsNullWhenNothingPending) {
+TEST(ConnectionTest, OldestUnackedSendReturnsNullWhenNothingPending) {
   engine::net::CommBufferClass empty(4, 4, 64);
   std::array<engine::net::CommBufferClass*, 2> queues{nullptr, &empty};
   EXPECT_EQ(ConnectionClass::OldestUnackedSend(queues), nullptr);
@@ -203,4 +201,4 @@ TEST(CommBufferTest, ShortDestinationLeavesThePacketQueued) {
 
 }  // namespace
 
-}  // namespace td
+}  // namespace engine::net

@@ -104,8 +104,8 @@
  **
  *																									*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef CNC_RED_ALERT_RA_NET_CONNECT_H_
-#define CNC_RED_ALERT_RA_NET_CONNECT_H_
+#ifndef CNC_RED_ALERT_ENGINE_NET_CONNECT_H_
+#define CNC_RED_ALERT_ENGINE_NET_CONNECT_H_
 
 #include <cstddef>
 #include <memory>
@@ -120,7 +120,7 @@
 #include "base/enum_array.h"
 #include "engine/net/combuf.h"
 
-namespace ra {
+namespace engine::net {
 
 /*
 ********************************** Defines **********************************
@@ -306,8 +306,8 @@ class ConnectionClass {
       Commands;
 };
 
-}  // namespace ra
+}  // namespace engine::net
 
-#endif  // CNC_RED_ALERT_RA_NET_CONNECT_H_
+#endif  // CNC_RED_ALERT_ENGINE_NET_CONNECT_H_
 
 /**************************** end of connect.h *****************************/

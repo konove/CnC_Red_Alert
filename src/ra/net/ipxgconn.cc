@@ -54,7 +54,7 @@
 #include "base/numeric.h"
 #include "base/unaligned.h"
 #include "engine/net/combuf.h"
-#include "ra/net/connect.h"
+#include "engine/net/connect.h"
 #include "ra/net/ipx.h"
 #include "ra/net/ipxaddr.h"
 #include "ra/net/ipxconn.h"
@@ -90,14 +90,15 @@ namespace ra {
  *=========================================================================*/
 IPXGlobalConnClass::IPXGlobalConnClass(int numsend, int numreceive, int maxlen,
                                        uint16_t product_id)
-    : IPXConnClass(numsend, numreceive,
-                   maxlen + static_cast<int>(sizeof(GlobalHeaderType) -
-                                             sizeof(CommHeaderType)),
-                   kGlobalMagicnum,  // magic number for this connection
-                   nullptr,          // IPX Address (none)
-                   0,                // Connection ID
-                   "",               // Connection Name
-                   sizeof(IPXAddressClass)),
+    : IPXConnClass(
+          numsend, numreceive,
+          maxlen + static_cast<int>(sizeof(GlobalHeaderType) -
+                                    sizeof(engine::net::CommHeaderType)),
+          kGlobalMagicnum,  // magic number for this connection
+          nullptr,          // IPX Address (none)
+          0,                // Connection ID
+          "",               // Connection Name
+          sizeof(IPXAddressClass)),
       ProductID(product_id)  // extra storage for the sender's address
 {
   for (unsigned int& i : LastPacketID) {
