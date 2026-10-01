@@ -225,6 +225,81 @@ TEST_F(DisplayTest, DrawingOnTheSurfaceDropsTheScaledFrame) {
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 0, 0}));
 }
 
+// A backdrop is art stretched up to the window with captions drawn over it at
+// full resolution: wherever the surface holds color 0, the backdrop shows.
+TEST_F(DisplayTest, ABackdropShowsThroughColorZeroOfTheSurface) {
+  display().SetPalette(PaletteWith(1, 63, 0, 0));
+  display().PresentBackdrop(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
+
+  EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{255, 0, 0}));
+}
+
+// Drawing on the surface keeps a backdrop and is presented over it, at the end
+// of the frame like any other drawing.
+TEST_F(DisplayTest, TheSurfaceIsDrawnOverABackdrop) {
+  PixelBuffer page;
+  page.Init(2, 2, display());
+  engine::gfx::Palette palette = PaletteWith(1, 63, 0, 0);
+  palette.at(2) = engine::gfx::PaletteColor(0, 0, 255);
+  display().SetPalette(palette);
+  display().PresentBackdrop(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
+
+  page.view().Clear(2);
+  EXPECT_TRUE(display().redraw_pending());
+  display().EndFrame();
+
+  EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 0, 255}));
+}
+
+TEST_F(DisplayTest, DrawingColorZeroOnTheSurfaceKeepsABackdrop) {
+  display().SetPalette(PaletteWith(1, 63, 0, 0));
+  display().PresentBackdrop(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
+
+  ASSERT_TRUE(display().Lock().has_value());
+  display().Unlock();
+  display().EndFrame();
+
+  EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{255, 0, 0}));
+}
+
+TEST_F(DisplayTest, ClearBackdropLeavesTheSurfaceAlone) {
+  display().SetPalette(PaletteWith(1, 63, 0, 0));
+  display().PresentBackdrop(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
+
+  display().ClearBackdrop();
+  display().EndFrame();
+
+  EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 0, 0}));
+}
+
+// A presentation that ends while a movie is up must not take the movie's frame
+// down with it.
+TEST_F(DisplayTest, ClearBackdropLeavesAMovieFrame) {
+  display().SetPalette(PaletteWith(1, 63, 0, 0));
+  display().PresentScaledFrame(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
+
+  display().ClearBackdrop();
+  display().EndFrame();
+
+  EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{255, 0, 0}));
+}
+
+// A movie frame shows alone, even over a surface that a backdrop showed under.
+TEST_F(DisplayTest, AMovieFrameReplacesABackdrop) {
+  PixelBuffer page;
+  page.Init(2, 2, display());
+  engine::gfx::Palette palette = PaletteWith(1, 63, 0, 0);
+  palette.at(2) = engine::gfx::PaletteColor(0, 0, 255);
+  palette.at(3) = engine::gfx::PaletteColor(0, 255, 0);
+  display().SetPalette(palette);
+  display().PresentBackdrop(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
+  page.view().Clear(2);
+
+  display().PresentScaledFrame(std::array<uint8_t, 4>{3, 3, 3, 3}, 2, 2);
+
+  EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 255, 0}));
+}
+
 // A frame with no pixels, or with fewer pixels than its size says, is
 // rejected without presenting anything; the surface (all color 0, black)
 // stays what an end of frame shows.

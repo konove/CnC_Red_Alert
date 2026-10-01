@@ -27,7 +27,9 @@ namespace engine::window {
 // borrows the surface's pixels while it draws, and giving them back presents
 // them, soon if not at once. A 320x200 movie bypasses the surface:
 // PresentScaledFrame() shows its frames stretched to the window until the
-// game draws again.
+// game draws again. PresentBackdrop() stretches 320x200 art the same way but
+// keeps the surface on top, so captions drawn on it at full resolution sit
+// over the art.
 //
 // It also runs the SDL event loop the games pump from wherever they wait:
 // PumpEvents() presents the frames the redraw timer asks for and hands every
@@ -87,8 +89,9 @@ class Display : public PixelSurface {
   // Locks the paletted surface for a page to draw on. Fails before
   // SetVideoMode() or if SDL cannot lock it.
   std::optional<Pixels> Lock() override;
-  // Unlocks the surface, drops a scaled frame so that what was drawn shows
-  // instead, and arms the redraw timer to present it.
+  // Unlocks the surface, drops a movie frame so that what was drawn shows
+  // instead (a backdrop stays under it), and arms the redraw timer to present
+  // it.
   void Unlock() override;
 
   // The SDL_Renderer, as a void* so that callers need no SDL header. For
@@ -120,6 +123,16 @@ class Display : public PixelSurface {
   // Drops the scaled frame, so the next present shows the surface again.
   // Unlock() calls it as soon as anything draws.
   void DropScaledFrame();
+
+  // Presents `frame` stretched to the window like PresentScaledFrame(), but
+  // as a backdrop: the surface is drawn over it with color 0 see-through, and
+  // drawing on the surface keeps the backdrop and is presented over it. It
+  // stays until ClearBackdrop(), DropScaledFrame() or a movie frame. Rejects
+  // the frames PresentScaledFrame() does.
+  void PresentBackdrop(std::span<const uint8_t> frame, int width, int height);
+  // Drops the scaled frame if it is a backdrop, so the next present shows the
+  // surface alone; a movie frame stays.
+  void ClearBackdrop();
 
   // Presents the renderer, at most 70 times a second. With working vsync the
   // present itself waits for the display refresh and this never sleeps.
@@ -179,6 +192,17 @@ class Display : public PixelSurface {
   // its event to.
   void CancelRedrawTimer();
 
+  // Stores `frame` as the scaled frame, a backdrop if `backdrop`, and
+  // presents it; PresentScaledFrame() and PresentBackdrop() differ only in
+  // `backdrop`.
+  void ShowScaledFrame(std::span<const uint8_t> frame, int width, int height,
+                       bool backdrop);
+
+  // Converts the paletted surface to window_texture_ in the current palette.
+  // With `see_through` set, color 0 becomes transparent, for drawing the
+  // surface over a backdrop; otherwise every pixel is opaque.
+  void UploadSurface(bool see_through);
+
   // Converts scaled_frame_ to RGBA with the current palette and uploads it to
   // scaled_frame_texture_. Returns false if SDL refused the texture.
   bool UploadScaledFrame();
@@ -194,8 +218,9 @@ class Display : public PixelSurface {
   // SDL_Surface*, the 8-bit pixels the game draws on; null before
   // SetVideoMode().
   void* palette_surface_ = nullptr;
-  // SDL_Texture*, the surface converted to the renderer's format for
-  // presenting; null exactly when palette_surface_ is.
+  // SDL_Texture*, the surface converted to ARGB for presenting, with alpha
+  // blending so that it can be drawn over a backdrop; null exactly when
+  // palette_surface_ is.
   void* window_texture_ = nullptr;
   // SDL_Texture* holding the scaled frame, stretched to the window when
   // presented; null while the surface is what the window shows.
@@ -206,6 +231,9 @@ class Display : public PixelSurface {
   // scaled_frame_height_. The texture holds baked colors, so a palette change
   // has to convert these again. Empty while there is no texture.
   std::vector<uint8_t> scaled_frame_;
+  // Whether the scaled frame is a backdrop, shown under the surface, rather
+  // than a movie frame shown instead of it. False while there is none.
+  bool backdrop_ = false;
   // The SDL event type PostRedrawEvent() posts, 0 before Init().
   uint32_t redraw_event_ = 0;
   // SDL_TimerID of the pending redraw, 0 when none is armed.

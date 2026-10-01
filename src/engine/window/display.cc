@@ -5,6 +5,7 @@
 #include "engine/window/display.h"
 
 #include <SDL.h>
+#include <SDL_blendmode.h>
 #include <SDL_events.h>
 #include <SDL_pixels.h>
 #include <SDL_render.h>
@@ -150,7 +151,7 @@ void Display::SetIcon(engine::gfx::IcoImage icon) {
 bool Display::SetVideoMode(const int width, const int height) {
   ResetVideoMode();
   SDL_Texture* texture = SDL_CreateTexture(
-      static_cast<SDL_Renderer*>(renderer_), SDL_PIXELFORMAT_RGB888,
+      static_cast<SDL_Renderer*>(renderer_), SDL_PIXELFORMAT_ARGB8888,
       SDL_TEXTUREACCESS_STREAMING, width, height);
   SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 8, 0, 0, 0, 0);
   if (texture == nullptr || surface == nullptr) {
@@ -162,6 +163,8 @@ bool Display::SetVideoMode(const int width, const int height) {
     }
     return false;
   }
+  // Opaque everywhere unless a backdrop is up, so blending only matters then.
+  SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
   window_texture_ = texture;
   palette_surface_ = surface;
   return true;
@@ -199,8 +202,11 @@ void Display::Unlock() {
     return;
   }
   SDL_UnlockSurface(static_cast<SDL_Surface*>(palette_surface_));
-  // The game drew on the surface, so it is what the window shows from now on.
-  DropScaledFrame();
+  // The game drew on the surface, so it is what the window shows from now on,
+  // over a backdrop or instead of a movie frame.
+  if (!backdrop_) {
+    DropScaledFrame();
+  }
   Present(false);
 }
 
@@ -212,10 +218,10 @@ void Display::EndFrame() {
 
 void Display::Present(const bool end_frame) {
   auto* renderer = static_cast<SDL_Renderer*>(renderer_);
-  // A scaled frame stays up until the game draws again (the mission map
+  // A movie frame stays up until the game draws again (the mission map
   // select keeps the movie's last frame on screen indefinitely), and only an
   // end of frame presents it.
-  if (scaled_frame_texture_ != nullptr) {
+  if (scaled_frame_texture_ != nullptr && !backdrop_) {
     CancelRedrawTimer();
 
     if (!end_frame) {
@@ -239,21 +245,37 @@ void Display::Present(const bool end_frame) {
 
   CancelRedrawTimer();
 
-  // Convert the paletted surface to the texture's format through its palette.
-  auto* window_texture = static_cast<SDL_Texture*>(window_texture_);
-  SDL_Surface* texture_surface = nullptr;
-  SDL_LockTextureToSurface(window_texture, nullptr, &texture_surface);
-  SDL_BlitSurface(static_cast<SDL_Surface*>(palette_surface_), nullptr,
-                  texture_surface, nullptr);
-  SDL_UnlockTexture(window_texture);
-
+  UploadSurface(backdrop_);
   SDL_RenderClear(renderer);
-  SDL_RenderCopy(renderer, window_texture, nullptr, nullptr);
+  if (backdrop_) {
+    SDL_RenderCopy(renderer, static_cast<SDL_Texture*>(scaled_frame_texture_),
+                   nullptr, nullptr);
+  }
+  SDL_RenderCopy(renderer, static_cast<SDL_Texture*>(window_texture_), nullptr,
+                 nullptr);
   PresentFrame();
 
   // The game presents from its loops that wait for input, so pumping events
   // here keeps them answering.
   PumpEvents();
+}
+
+void Display::UploadSurface(const bool see_through) {
+  auto* surface = static_cast<SDL_Surface*>(palette_surface_);
+  auto* window_texture = static_cast<SDL_Texture*>(window_texture_);
+  SDL_Surface* texture_surface = nullptr;
+  if (SDL_LockTextureToSurface(window_texture, nullptr, &texture_surface) !=
+      0) {
+    return;
+  }
+  // A keyed blit skips color 0, leaving the transparent fill under it. The
+  // other pixels take their alpha from the palette, which SDL makes opaque.
+  SDL_SetColorKey(surface, see_through ? SDL_TRUE : SDL_FALSE, 0);
+  if (see_through) {
+    SDL_FillRect(texture_surface, nullptr, 0);
+  }
+  SDL_BlitSurface(surface, nullptr, texture_surface, nullptr);
+  SDL_UnlockTexture(window_texture);
 }
 
 void Display::SetPalette(const engine::gfx::Palette& palette) {
@@ -310,6 +332,23 @@ const void* Display::palette() const {
 
 void Display::PresentScaledFrame(const std::span<const uint8_t> frame,
                                  const int width, const int height) {
+  ShowScaledFrame(frame, width, height, /*backdrop=*/false);
+}
+
+void Display::PresentBackdrop(const std::span<const uint8_t> frame,
+                              const int width, const int height) {
+  ShowScaledFrame(frame, width, height, /*backdrop=*/true);
+}
+
+void Display::ClearBackdrop() {
+  if (backdrop_) {
+    DropScaledFrame();
+  }
+}
+
+void Display::ShowScaledFrame(const std::span<const uint8_t> frame,
+                              const int width, const int height,
+                              const bool backdrop) {
   if (width <= 0 || height <= 0) {
     return;
   }
@@ -340,6 +379,7 @@ void Display::PresentScaledFrame(const std::span<const uint8_t> frame,
   scaled_frame_.assign(
       frame.begin(),
       frame.begin() + static_cast<std::ptrdiff_t>(frame_width * frame_height));
+  backdrop_ = backdrop;
   if (!UploadScaledFrame()) {
     return;
   }
@@ -394,6 +434,7 @@ void Display::DropScaledFrame() {
     scaled_frame_height_ = 0;
     scaled_frame_.clear();
   }
+  backdrop_ = false;
 }
 
 void Display::PresentFrame() {
