@@ -140,7 +140,7 @@ impl Writer<'_> {
 /// `worst_case_size(input.len())`.
 // A port of the C++ LCW_Comp(): a back-reference or fill is used only when it
 // saves at least one byte over literals, which also pays for any literal
-// opcode it forces afterwards, so the output never exceeds worst_case_size().
+// opcode it forces afterward, so the output never exceeds worst_case_size().
 pub fn compress(input: &[u8], output: &mut [u8]) -> Option<usize> {
     let length = input.len();
     if output.len() < worst_case_size(length) {
@@ -290,8 +290,9 @@ mod tests {
         assert!(stream.len() <= worst_case_size(plain.len()));
         let mut decoded = vec![0_u8; plain.len()];
         assert_eq!(uncompress_bounded(&stream, &mut decoded), Some(plain.len()));
-        assert!(
-            decoded == plain,
+        assert_eq!(
+            decoded,
+            plain,
             "round trip changed {} bytes of input",
             plain.len()
         );
