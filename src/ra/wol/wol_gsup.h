@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "absl/base/attributes.h"
+#include "game/core/vector_dynamic.h"
 #include "ra/net/session.h"
 #include "ra/ui/edit.h"
 #include "ra/ui/gauge.h"

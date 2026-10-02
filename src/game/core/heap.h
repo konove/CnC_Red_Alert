@@ -16,26 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/HEAP.H 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : HEAP.H *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 02/18/95 *
- *                                                                                             *
- *                  Last Update : February 18, 1995 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// File: the fixed-slot object pools that game objects are allocated from.
 
 #ifndef CNC_RED_ALERT_GAME_CORE_HEAP_H_
 #define CNC_RED_ALERT_GAME_CORE_HEAP_H_
@@ -51,62 +32,89 @@
 #include <vector>
 
 #include "absl/log/check.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "engine/stream/archive.h"
-#include "game/core/vector.h"
-#include "game/core/vector_dynamic.h"
 
 namespace game {
 
-// Fixed-size block memory allocator that manages a pool of uniformly-sized
-// memory blocks.
+// A pool of equally sized slots for one class of game object, and the list
+// of the slots in use. Each class with a fixed number of objects (units,
+// buildings, triggers, ...) allocates them here through its operator new.
 //
-// This class provides efficient allocation and deallocation of fixed-size
-// memory blocks, similar to an array but with dynamic allocation tracking. Each
-// block is the same size, determined at construction time. The class is
-// commonly used to implement custom operator new/delete for game objects,
-// enabling fast allocation from a pre-allocated pool.
+// The slot index is game state, not an allocation detail: TARGET values and
+// CCPtr name an object by it, and a saved game puts every object back into
+// the slot it came from. The in-use list keeps allocation order, which is the
+// order the game iterates objects in, so removing one keeps the others in
+// order. Multiplayer games stay in sync only if that order is the same on
+// every machine.
 //
-// Key features:
-// - Allocates blocks from a contiguous buffer (user-provided or internally
-// allocated)
-// - Tracks free/allocated blocks using a bitmap (BooleanVectorClass)
-// - Supports indexed access to blocks via operator[]
-// - Returns nullptr when no blocks are available
-// - Provides Count() for active allocations and Avail() for remaining capacity
+// Nothing is virtual: CCPtr reaches a heap through a FixedIHeapClass*, but
+// only for its slots, and nothing derives from it except the typed
+// TFixedIHeapClass below.
 //
-// Thread safety: Not thread-safe. Caller must synchronize access if used
-// concurrently.
-//
-// Example usage:
-//   FixedHeapClass heap(sizeof(MyClass));
-//   heap.Set_Heap(100);  // Pre-allocate 100 blocks
-//   void* ptr = heap.Allocate();  // Get a block
-//   heap.Free(ptr);  // Return block to pool
-class FixedHeapClass {
+// Example:
+//   FixedIHeapClass heap(sizeof(Widget));
+//   heap.Set_Heap(100);              // room for 100 widgets
+//   void* slot = heap.Allocate();    // zero-filled; nullptr when full
+//   heap.Free(slot);
+class FixedIHeapClass {
  public:
-  explicit FixedHeapClass(int size) noexcept;
-  virtual ~FixedHeapClass();
-  FixedHeapClass(FixedHeapClass&&) = delete;
-  FixedHeapClass& operator=(FixedHeapClass&&) = delete;
+  // Reads the slot index an object caches in its own `ID` field.
+  using SlotIdReader = int (*)(const void* object);
 
+  // `size` is the size of one slot. slot_id is nullptr for objects that cache
+  // no slot index; Validate() then checks the heap's own bookkeeping only.
+  // clang's lifetime analysis reads slot_id as borrowed storage, but a
+  // function pointer outlives any heap.
+  // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
+  explicit FixedIHeapClass(int size, SlotIdReader slot_id = nullptr) noexcept
+      : Size(size), slot_id_(slot_id) {}
+  ~FixedIHeapClass() = default;
+  FixedIHeapClass(const FixedIHeapClass&) = delete;
+  FixedIHeapClass& operator=(const FixedIHeapClass&) = delete;
+  FixedIHeapClass(FixedIHeapClass&&) = delete;
+  FixedIHeapClass& operator=(FixedIHeapClass&&) = delete;
+
+  // Returns the number of slots in use.
   [[nodiscard]] int Count() const { return ActiveCount; }
+  // Returns the number of slots.
   [[nodiscard]] int Length() const { return TotalCount; }
+  // Returns the number of free slots.
   [[nodiscard]] int Avail() const { return TotalCount - ActiveCount; }
 
-  virtual int ID(const void* pointer) const;
+  // Returns the slot index of `pointer`, or -1 for nullptr. Any other pointer
+  // gives a number, so use Owns() first when `pointer` may not be a slot.
+  [[nodiscard]] int ID(const void* pointer) const;
 
   // Whether slot `index` holds an allocated object; false for a free slot
   // or an index outside the heap.
   [[nodiscard]] bool Is_Allocated(int index) const {
     return index >= 0 && index < TotalCount && FreeFlag.at(base::ToSize(index));
   }
-  virtual bool Set_Heap(int count, std::span<char> buffer = {});
-  virtual void* Allocate();
-  virtual void Clear();
-  virtual bool Free(void* pointer);
-  virtual bool Free_All();
+
+  // Makes room for `count` objects and frees every slot. Returns false for a
+  // negative count or a heap whose slot size is not positive. A count of 0
+  // leaves the heap without storage. Called again with the same count, it
+  // keeps the storage where it is, because rule loading re-sizes the type
+  // heaps while pointers into them are still held.
+  bool Set_Heap(int count);
+
+  // Returns a zero-filled free slot, the lowest-numbered one, and appends it
+  // to the in-use list. Returns nullptr when every slot is taken.
+  void* Allocate();
+
+  // Releases the storage; the heap holds no slots afterwards.
+  void Clear();
+
+  // Frees the slot `pointer` names and removes it from the in-use list,
+  // keeping the others in order. Returns false, doing nothing, when `pointer`
+  // is null, outside the heap or already free. Does not run a destructor.
+  bool Free(void* pointer);
+
+  // Frees every slot without running destructors.
+  void Free_All();
 
   // How far into the buffer `pointer` lies, or -1 when it lies outside it.
   [[nodiscard]] base::ssize Offset_Of(const void* pointer) const;
@@ -117,11 +125,17 @@ class FixedHeapClass {
   [[nodiscard]] bool Owns(const void* pointer) const;
 
   // Everything known about the slot `pointer` claims to be, for the DCHECKs
-  // that guard heap objects and for Validate(). The four ways a pointer can
-  // be wrong look different here: outside the buffer, inside but not on a
-  // slot boundary, on a boundary whose free flag is clear (use after free),
-  // or sound, which leaves the object's own ID field as the corrupted one.
-  [[nodiscard]] virtual std::string Describe(const void* pointer) const;
+  // that guard heap objects and for Validate(). The ways a pointer can be
+  // wrong look different here: outside the buffer, inside but not on a slot
+  // boundary, on a boundary whose slot is free (use after free), or on a
+  // live slot the in-use list does not hold.
+  [[nodiscard]] std::string Describe(const void* pointer) const;
+
+  // Describes the first disagreement between the in-use list, the free
+  // flags, the slot buffer and the slot index each object caches, or "" when
+  // the heap is sound. Walks every active pointer, so it is for the
+  // once-a-frame -CHECKHEAPS sweep, not for the inner loop.
+  [[nodiscard]] std::string Validate() const;
 
   // Returns a storage slot; index must be in [0, Length()).
   void* at(int index) {
@@ -137,103 +151,44 @@ class FixedHeapClass {
   }
   const void* operator[](int index) const { return at(index); }
 
- protected:
-  /*
-  **	If the memory block buffer was allocated by this class, then this flag
-  **	will be true. The block must be deallocated by this class if true.
-  */
-  bool IsAllocated : 1 {false};
-
-  /*
-  **	This is the size of each sub-block within the buffer.
-  */
-  int Size;
-
-  /*
-  **	This records the absolute number of sub-blocks in the buffer.
-  */
-  int TotalCount{0};
-
-  /*
-  **	This is the total blocks allocated out of the heap. This number
-  **	will never exceed Count.
-  */
-  int ActiveCount{0};
-
-  /*
-  **	Pointer to the heap's memory buffer.
-  */
-  std::span<char> Buffer;
-
-  /*
-  **	This is a boolean vector array of allocation flag bits.
-  */
-  std::vector<bool> FreeFlag;
-
- public:
-  // The assignment operator is not supported.
-  FixedHeapClass& operator=(const FixedHeapClass&) = delete;
-
-  // The copy constructor is not supported.
-  FixedHeapClass(const FixedHeapClass&) = delete;
-};
-
-// Fixed-size block allocator with fast iteration over active (allocated)
-// objects. Extends FixedHeapClass by maintaining an array of pointers to all
-// allocated blocks, enabling efficient iteration without scanning the entire
-// pool for active objects. Memory overhead: 4-8 bytes per potential block
-// (pointer size) in ActivePointers vector.
-class FixedIHeapClass : public FixedHeapClass {
- public:
-  // Reads the slot index an object caches in its own `ID` field.
-  using SlotIdReader = int (*)(const void* object);
-
-  // slot_id is nullptr for objects that cache no slot index; Validate() then
-  // checks the heap's own bookkeeping only. clang's lifetime analysis reads
-  // slot_id as borrowed storage, but a function pointer outlives any heap.
-  // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
-  explicit FixedIHeapClass(int size, SlotIdReader slot_id = nullptr) noexcept
-      : FixedHeapClass(size), slot_id_(slot_id) {}
-  ~FixedIHeapClass() override = default;
-  FixedIHeapClass(const FixedIHeapClass&) = delete;
-  FixedIHeapClass& operator=(const FixedIHeapClass&) = delete;
-  FixedIHeapClass(FixedIHeapClass&&) = delete;
-  FixedIHeapClass& operator=(FixedIHeapClass&&) = delete;
-
-  bool Set_Heap(int count, std::span<char> buffer = {}) override;
-  void* Allocate() override;
-  void Clear() override;
-  bool Free(void* pointer) override;
-  bool Free_All() override;
-  virtual int Logical_ID(const void* pointer) const;
-  [[nodiscard]] virtual int Logical_ID(int id) const {
+  // Returns the position of `pointer` in the in-use list, or -1 when the list
+  // does not hold it.
+  [[nodiscard]] int Logical_ID(const void* pointer) const;
+  [[nodiscard]] int Logical_ID(int id) const {
     return Logical_ID((*this).at(id));
   }
 
-  // Adds whether ActivePointers lists the slot, which is what tells a live
-  // object apart from one the layer lists but the heap has let go.
-  [[nodiscard]] std::string Describe(const void* pointer) const override;
-
-  // Describes the first disagreement between ActivePointers, FreeFlag, the
-  // slot buffer and the slot index each object caches, or "" when the heap is
-  // sound. Walks every active pointer, so it is for the once-a-frame
-  // -CHECKHEAPS sweep, not for the inner loop.
-  [[nodiscard]] std::string Validate() const;
-
-  virtual void* Active_Ptr(int index) { return ActivePointers.at(index); }
-  [[nodiscard]] virtual const void* Active_Ptr(int index) const {
-    return ActivePointers.at(index);
+  // Returns the object at position `index` of the in-use list, which must be
+  // in [0, Count()).
+  void* Active_Ptr(int index) { return base::At(ActivePointers, index); }
+  [[nodiscard]] const void* Active_Ptr(int index) const {
+    return base::At(ActivePointers, index);
   }
 
-  /*
-  **	This is an array of pointers to allocated objects. Using this array
-  **	to control iteration through the objects ensures a minimum of
-  *processing. *	It also allows access to this array so that custom
-  *sorting can be *	performed.
-  */
-  game::DynamicVectorClass<void*> ActivePointers;
+ protected:
+  // Size of one slot in bytes.
+  int Size;
+
+  // Number of slots in the buffer.
+  int TotalCount{0};
+
+  // Number of slots in use; never more than TotalCount.
+  int ActiveCount{0};
+
+  // The slots, viewing storage_; empty when the heap has none.
+  std::span<char> Buffer;
+
+  // Whether each slot is in use (true) or free.
+  std::vector<bool> FreeFlag;
+
+  // The slots in use, in the order they were allocated.
+  std::vector<void*> ActivePointers;
 
  private:
+  // The allocation Buffer views. operator new[] aligns it for any type up to
+  // __STDCPP_DEFAULT_NEW_ALIGNMENT__, which TFixedIHeapClass checks.
+  std::unique_ptr<char[]> storage_;
+
   SlotIdReader slot_id_;  // nullptr when the objects cache no slot index.
 };
 
@@ -258,8 +213,11 @@ concept HasHeapId = requires(const T& object) {
 template <class T>
 class TFixedIHeapClass : public FixedIHeapClass {
  public:
+  static_assert(alignof(T) <= __STDCPP_DEFAULT_NEW_ALIGNMENT__,
+                "the slots are carved from new char[], which aligns no more");
+
   TFixedIHeapClass() noexcept : FixedIHeapClass(sizeof(T), SlotIdReaderFor()) {}
-  ~TFixedIHeapClass() override = default;
+  ~TFixedIHeapClass() = default;
   TFixedIHeapClass(const TFixedIHeapClass&) = delete;
   TFixedIHeapClass& operator=(const TFixedIHeapClass&) = delete;
   TFixedIHeapClass(TFixedIHeapClass&&) = delete;
@@ -269,9 +227,6 @@ class TFixedIHeapClass : public FixedIHeapClass {
   using FixedIHeapClass::ID;
   using FixedIHeapClass::Logical_ID;
 
-  // The typed members below are deliberately not virtual: nothing derives
-  // from this template, and portability-template-virtual-member-function
-  // reports every virtual member a translation unit does not instantiate.
   [[nodiscard]] int ID(const T* pointer) const {
     return FixedIHeapClass::ID(pointer);
   }
@@ -300,7 +255,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
   bool Load(ArchiveReader& reader)
     requires Serializable<T>;
   [[nodiscard]] T* Ptr(int index) const {
-    return static_cast<T*>(ActivePointers.at(index));
+    return static_cast<T*>(base::At(ActivePointers, index));
   }
   T* Raw_Ptr(int index) { return static_cast<T*>((*this).at(index)); }
 
@@ -364,7 +319,7 @@ bool TFixedIHeapClass<T>::Load(ArchiveReader& reader)
     T* ptr = static_cast<T*>((*this).at(idx));
     FreeFlag.at(base::ToSize(idx)) = true;
     ActiveCount++;
-    ActivePointers.Add(ptr);
+    ActivePointers.push_back(ptr);
 
     new (ptr) T();
     ptr->Serialize(reader);

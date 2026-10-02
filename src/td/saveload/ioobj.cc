@@ -47,7 +47,6 @@
 #include "base/array.h"
 #include "engine/stream/archive.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/crew.h"
 #include "game/sim/direction.h"
 #include "game/sim/door.h"
@@ -218,7 +217,7 @@ void TeamClass::Serialize(Archive& ar) {
         break;
       }
     }
-    if (!known_type || TheObjectHeaps().house().ActivePointers.ID(House) < 0 ||
+    if (!known_type || TheObjectHeaps().house().Logical_ID(House) < 0 ||
         Total < 0 || CurrentMission < -1 ||
         CurrentMission >= Class->MissionCount) {
       ar.Fail("invalid team state");

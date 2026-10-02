@@ -1,4 +1,4 @@
-  #include "game/core/heap.h"
+#include "game/core/heap.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -12,30 +12,12 @@
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
 #include "game/core/vector.h"
-#include "game/core/vector_dynamic.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 namespace game {
 
 namespace {
-TEST(VectorStorageTest, BorrowedStorageRetainsExtentAndDoesNotGrow) {
-  int first = 1;
-  int second = 2;
-  void* storage[2] = {};
-  DynamicVectorClass<void*> values(2, storage);
-  EXPECT_TRUE(values.Add(&first));
-  EXPECT_TRUE(values.Add_Head(&second));
-  EXPECT_EQ(values.at(0), &second);
-  EXPECT_EQ(values.at(1), &first);
-  EXPECT_FALSE(values.Add(nullptr));
-  EXPECT_TRUE(values.Resize(4));
-  EXPECT_EQ(values.at(0), &second);
-  EXPECT_EQ(values.at(1), &first);
-  EXPECT_TRUE(values.Add(nullptr));
-  EXPECT_EQ(values.Count(), 3);
-}
-
 // A stand-in for a game object: something with a slot ID and a few fields.
 struct Widget {
   int32_t ID = -1;
@@ -94,6 +76,59 @@ std::string LoadError(TFixedIHeapClass<Widget>& heap,
 
 bool Load(TFixedIHeapClass<Widget>& heap, const std::vector<uint8_t>& bytes) {
   return LoadError(heap, bytes).empty();
+}
+
+TEST(HeapTest, FreeKeepsTheOrderOfTheOthers) {
+  TFixedIHeapClass<Widget> heap;
+  heap.Set_Heap(4);
+  Widget* first = Allocate(heap, 1);
+  Widget* second = Allocate(heap, 2);
+  Widget* third = Allocate(heap, 3);
+
+  heap.Free(second);
+
+  ASSERT_EQ(heap.Count(), 2);
+  EXPECT_EQ(heap.Ptr(0), first);
+  EXPECT_EQ(heap.Ptr(1), third);
+}
+
+TEST(HeapTest, FreeReportsWhetherItFreedAnything) {
+  TFixedIHeapClass<Widget> heap;
+  heap.Set_Heap(4);
+  Widget* widget = Allocate(heap, 1);
+
+  EXPECT_TRUE(heap.Free(widget));
+  EXPECT_FALSE(heap.Free(widget));
+  EXPECT_EQ(heap.Count(), 0);
+}
+
+// Rule loading sizes the type heaps again with the same count while objects
+// still point into them, so the storage must stay where it is.
+TEST(HeapTest, SetHeapWithTheSameCountKeepsTheStorage) {
+  TFixedIHeapClass<Widget> heap;
+  heap.Set_Heap(4);
+  Allocate(heap, 1);
+  const Widget* slot_zero = heap.Raw_Ptr(0);
+
+  heap.Set_Heap(4);
+
+  EXPECT_EQ(heap.Raw_Ptr(0), slot_zero);
+  EXPECT_EQ(heap.Count(), 0);
+  EXPECT_EQ(heap.Avail(), 4);
+}
+
+TEST(HeapTest, AllocateAfterFreeAllReusesSlotZeroZeroed) {
+  TFixedIHeapClass<Widget> heap;
+  heap.Set_Heap(4);
+  Allocate(heap, 7);
+  Allocate(heap, 8);
+
+  heap.Free_All();
+  const Widget* again = heap.Alloc();
+
+  EXPECT_EQ(heap.ID(again), 0);
+  EXPECT_EQ(again->value, 0);
+  EXPECT_EQ(heap.Count(), 1);
 }
 
 TEST(HeapDiagnosticsTest, OwnsOnlySlotStartsInsideTheBuffer) {
