@@ -41,8 +41,8 @@ class HeapSlotPtr {
     int32_t slot_index = -1;
     if constexpr (!Archive::kIsReading) {
       if (pointer_ != nullptr) {
-        DCHECK(heap_.Owns(pointer_)) << heap_.Describe(pointer_);
         slot_index = heap_.SlotIndexOf(pointer_);
+        DCHECK_GE(slot_index, 0) << heap_.Describe(pointer_);
       }
     }
     ar(slot_index);

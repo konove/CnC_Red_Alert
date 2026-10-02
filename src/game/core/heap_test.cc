@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "base/types.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
@@ -108,17 +109,18 @@ TEST(HeapTest, FreeReportsWhetherItFreedAnything) {
   EXPECT_EQ(heap.Count(), 0);
 }
 
-// A pointer that is not the start of a slot names no object, even though
-// SlotIndexOf() turns it into a plausible slot index.
+// ObjectHeap<T>::Free() takes only a T*, but the untyped core can be handed
+// anything, and a pointer into the middle of a slot must not free it.
 TEST(HeapTest, FreeRejectsAPointerThatIsNotASlot) {
-  ObjectHeap<Widget> heap;
+  ObjectHeapBase heap(base::ssize{sizeof(Widget)});
   heap.Reset(4);
-  Widget* widget = Allocate(heap, 1);
+  auto* widget = std::construct_at(static_cast<Widget*>(heap.AllocateSlot()));
 
+  EXPECT_EQ(heap.SlotIndexOf(&widget->value), -1);
   EXPECT_FALSE(heap.Free(&widget->value));
   EXPECT_EQ(heap.Count(), 1);
   EXPECT_TRUE(heap.IsAllocated(0));
-  EXPECT_EQ(heap.Validate(), "");
+  EXPECT_EQ(heap.CheckBookkeeping(), "");
 }
 
 // Rule loading sizes the type heaps again with the same count while objects
