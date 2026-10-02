@@ -10,7 +10,6 @@
 #include "base/unaligned.h"
 #include "engine/net/connect.h"
 #include "game/core/queue.h"
-#include "game/core/vector.h"
 #include "gtest/gtest.h"
 #include "td/core/defines.h"
 #include "td/net/event.h"
@@ -155,14 +154,6 @@ TEST_F(QueueAlignmentTest, RejectsTruncatedMissionRun) {
 
 namespace {
 
-TEST(TdCheckedContainerTest, VectorAccessPreservesConstnessAndCapacity) {
-  game::VectorClass<int> values(2);
-  values.at(1) = 42;
-  const game::VectorClass<int>& view = values;
-  EXPECT_EQ(view.at(1), 42);
-  EXPECT_EQ(&view.at(1), &values.at(1));
-}
-
 TEST(TdCheckedContainerTest, QueueAccessFollowsWrappedLogicalOrder) {
   game::QueueClass<int, 3> queue;
   ASSERT_TRUE(queue.Add(10));
@@ -177,14 +168,10 @@ TEST(TdCheckedContainerTest, QueueAccessFollowsWrappedLogicalOrder) {
   EXPECT_EQ(queue.at(1), 31);
 }
 
-TEST(TdCheckedContainerDeathTest, RejectsInvalidVectorAndQueueIndices) {
-  game::VectorClass<int> values(2);
-  const game::VectorClass<int>& view = values;
+TEST(TdCheckedContainerDeathTest, RejectsInvalidQueueIndices) {
   game::QueueClass<int, 3> queue;
   // GoogleTest's death-test macro formats subprocess diagnostics with libc.
   // NOLINTBEGIN(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
-  EXPECT_DEATH((void)values.at(-1), "Check failed");
-  EXPECT_DEATH((void)view.at(2), "Check failed");
   EXPECT_DEATH((void)queue.at(0), "Check failed");
   ASSERT_TRUE(queue.Add(10));
   ASSERT_TRUE(queue.Add(20));

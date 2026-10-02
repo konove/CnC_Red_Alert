@@ -2,7 +2,10 @@
 
 Written 2026-10-01 against `main` at 2d8a614a.
 
-**Status: not started.**
+**Status: complete (2026-10-01).** `VectorClass` and `DynamicVectorClass` are gone; the pool is one
+non-virtual class; `QueueClass` is trimmed. Headless 600-frame logic logs (RA SCU05EA, TD SCG01EA)
+match the pre-plan code line for line, every save/load smoke fixture passes, and the checked-in
+pre-plan RA save loads. See Progress for the commits and the deviations from the plan.
 
 ## Context
 
@@ -304,5 +307,29 @@ Before the Step 5 commit:
 
 ## Progress
 
-| Step | Commit | Notes |
-| ---- | ------ | ----- |
+| Step | Commit(s)          | Notes                                                                                       |
+| ---- | ------------------ | ------------------------------------------------------------------------------------------- |
+| 0    | 17b104e0           | This plan.                                                                                  |
+| 1    | 886e6a17           | `base::At(vector)`, `base::IndexOf`, `base::EraseFirst`.                                    |
+| 2    | b7d5127d, 91a0e1fd | Added `base::At(std::array)`: a temporary span over a member fails lifetime analysis.       |
+| 3    | 6475411a           | Pool collapsed; `Free()` returns true when it frees.                                        |
+| 4    | 3d54a3b0, 49c63675 | One commit per game. `LayerClass` moved here from Step 5 (it shares `SerializeObjectList`). |
+| 5    | see `git log`      | Cell arrays, then the legacy vectors deleted.                                               |
+
+Deviations and findings:
+
+- **`LogicClass::AI()` read past the end.** When the last object removed itself during its AI, the
+  loop re-read the slot just past `Count()`, which the old vector's spare capacity made legal. The
+  stricter `base::At` crashed every save/load smoke run until the loop stopped there instead.
+- **TD's map editor tested a stale slot.** Alt-1..4 asked whether `current_object().at(0)` was
+  non-null, which read a stale pointer once the selection emptied; it asks `!empty()` now.
+- **Cells cannot be resized.** `CellClass` deletes its copy and move constructors (RA's cell takes
+  its `ID` from its address), so `std::vector::resize` does not compile under clang (GCC accepted
+  it). `Alloc_Cells()` builds a new `std::vector<CellClass>(Size)` instead. RA's old `Resize()` kept
+  existing cells, but `Alloc_Cells()` runs only from `One_Time()`, before `Init_Cells()` rebuilds
+  every cell. TD's `GScreenClass` gained `Replace_Cells()`; its tests call that and `Free_Cells()`
+  instead of the inherited `Resize()`/`Clear()`.
+- **TD logic depends on the build directory.** The pre-plan source built in a scratch worktree logs
+  a different SCG01EA run (22,384 differing lines from frame 2) than the same source built in
+  `build/`, while every `build/` binary from before and after this plan logs the same run. The plan
+  changed no logic; the build-directory dependence is pre-existing and unexplained.

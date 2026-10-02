@@ -16,9 +16,8 @@
 namespace game {
 
 // A list of heap objects that it owns and destroys, for the session's player,
-// game, chat, phone book and scenario lists. It keeps the shape of the
-// DynamicVectorClass<T*> it replaces -- Count() and at() hand out plain
-// pointers -- so code that only reads the list reads it the same way, while
+// game, chat, phone book and scenario lists. Count() and at() hand out plain
+// pointers, so code that only reads the list never sees the ownership, while
 // adding takes a std::unique_ptr and deleting or clearing destroys the object.
 //
 // Example:

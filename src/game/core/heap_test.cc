@@ -11,7 +11,6 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
-#include "game/core/vector.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
@@ -304,24 +303,6 @@ TEST(HeapDestroyTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
   EXPECT_EQ(destroyed, 2);
   EXPECT_EQ(heap.Count(), 0);
   EXPECT_EQ(heap.Avail(), 3);
-}
-
-TEST(CheckedContainerTest, VectorAccessPreservesConstnessAndCapacity) {
-  VectorClass<int> values(2);
-  values.at(1) = 42;
-  const VectorClass<int>& view = values;
-  EXPECT_EQ(view.at(1), 42);
-  EXPECT_EQ(&view.at(1), &values.at(1));
-}
-
-TEST(CheckedContainerDeathTest, RejectsInvalidVectorIndices) {
-  VectorClass<int> values(2);
-  const VectorClass<int>& view = values;
-  // GoogleTest's death-test macro formats subprocess diagnostics with libc.
-  // NOLINTBEGIN(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
-  EXPECT_DEATH((void)values.at(-1), "Check failed");
-  EXPECT_DEATH((void)view.at(2), "Check failed");
-  // NOLINTEND(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
 }
 
 }  // namespace
