@@ -1171,16 +1171,20 @@ It fails to compile until Step 2.
 
 ## Progress
 
-| Task | Status | Commit |
-| ---- | ------ | ------ |
-| 1    |        |        |
-| 2    |        |        |
-| 3    |        |        |
-| 4    |        |        |
-| 5    |        |        |
-| 6    |        |        |
-| 7    |        |        |
-| 8    |        |        |
-| 9    |        |        |
+| Task | Status | Commit  |
+| ---- | ------ | ------- |
+| 1    | done   | a3ebfc7 |
+| 2    | done   | 0ee07f6 |
+| 3    | done   | (this)  |
+| 4    |        |         |
+| 5    |        |         |
+| 6    |        |         |
+| 7    |        |         |
+| 8    |        |         |
+| 9    |        |         |
+
+Task 3 dry run of the printer callees: RA 36 files (232 lines) rewritten, 7 arguments reported; TD
+29 files (226 lines), 7 reported. Golden fingerprints: RA `0xAC8A29F9D28546BC` (1,080 lines), TD
+`0x780934A45B2F86E3` (2,700 lines).
 
 ## Outcome
