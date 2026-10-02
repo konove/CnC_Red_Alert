@@ -19,23 +19,6 @@ class MixArchive;
 
 namespace ra {
 
-// The fonts the game prints with. Fancy_Text_Print() picks one from the
-// TextPrintType it is given; the names say what the font looks like, not
-// what it is used for.
-enum class FontType {
-  k3Point,
-  k6Point,
-  k6PointGradient,
-  k8Point,
-  kEditor,  // The map editor's own font.
-  kLed,     // Seven-segment digits, for the credits counter.
-  kMap,     // The font of the mission briefing screen.
-  kMetal12,
-  kScore,  // The font of the score screen.
-  kType,   // The typewriter font of the tooltips.
-  kVcr,    // The font of the movie playback controls.
-};
-
 // The data that is loaded once, from the MIX archives, and read for the rest
 // of the process: fonts, the string tables, the tutorial messages and the
 // speech buffers. Game owns the one Assets; everything else reaches it
@@ -104,6 +87,12 @@ class Assets {
   }
   void set_lightning_shapes(std::span<const std::byte> shapes) {
     lightning_shapes_ = shapes;
+  }
+
+  // Installs `font` as the font `type` names; for tests, which cannot
+  // LoadFonts() without the archives.
+  void set_font(FontType type, std::span<const std::byte> font) {
+    fonts_.at(type) = font;
   }
 
   // Returns tutorial message `index`, or nullptr if TUTORIAL.INI has no

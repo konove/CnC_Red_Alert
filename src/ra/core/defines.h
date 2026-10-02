@@ -2031,6 +2031,23 @@ inline constexpr int kCycleColorCount = 7;
 inline constexpr int kPulseColor = 255;
 inline constexpr int kEmberColor = kCycleColorStart + kCycleColorCount;
 
+// The fonts the game prints with. The low four bits of a TextPrintType
+// select one; docs/TEXT_PRINT_SPLIT_PLAN.md moves that choice into a FontType
+// parameter. The names say what the font looks like, not what it is used for.
+enum class FontType {
+  k3Point,
+  k6Point,
+  k6PointGradient,
+  k8Point,
+  kEditor,  // The map editor's own font.
+  kLed,     // Seven-segment digits, for the credits counter.
+  kMap,     // The font of the mission briefing screen.
+  kMetal12,
+  kScore,  // The font of the score screen.
+  kType,   // The typewriter font of the tooltips.
+  kVcr,    // The font of the movie playback controls.
+};
+
 /**********************************************************************
 **	These are the control flags for Fancy_Text_Print function.
 */
@@ -2047,7 +2064,7 @@ enum class CNC_FLAG_ENUM TextPrintType {
   TPF_EFNT = 0x0009,          // Use scenario editor font.
   TPF_TYPE = 0x000A,          // Use teletype font
   TPF_SCORE = 0x000B,         // Use score screen font.
-  TPF_LASTSHADOW = 0x0000,    // Use previous font palette.
+  TPF_NONE = 0x0000,          // No style flags.
   TPF_NOSHADOW = 0x0010,      // Don't have any shadow.
   TPF_DROPSHADOW = 0x0020,    //	Use a simple drop shadow.
   TPF_FULLSHADOW = 0x0040,    // Use a full outline shadow.

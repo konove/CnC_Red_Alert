@@ -128,6 +128,15 @@ apply_dotenv_settings(ra_options_test)
 apply_language_setting(ra_options_test)
 
 add_gtest(
+    NAME ra_text_style_test
+    SOURCES ui/text_style_test.cc startup/startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_text_style_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_text_style_test)
+apply_language_setting(ra_text_style_test)
+
+add_gtest(
     NAME ra_assets_test
     SOURCES assets/assets_test.cc assets/assets.cc data/ini.cc
     LIBS base engine_file magic_enum::magic_enum absl::strings absl::check absl::log
