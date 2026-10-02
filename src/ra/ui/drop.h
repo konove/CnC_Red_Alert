@@ -139,8 +139,8 @@ class TDropListClass : public EditClass {
   // Returns the indexed list entry through the checked backing vector.
   [[nodiscard]] T at(int index) const { return List.at(index); }
   T operator[](int index) const { return at(index); }
-  T& at(int index) { return List.at(index); }
-  T& operator[](int index) { return at(index); }
+  T& at(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND { return List.at(index); }
+  T& operator[](int index) ABSL_ATTRIBUTE_LIFETIME_BOUND { return at(index); }
 
   // As DropListClass's: each returns the head of the chain.
   game::LinkClass& Add(game::LinkClass& object)

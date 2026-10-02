@@ -42,9 +42,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "engine/net/net_select.h"
-#include "game/core/vector_dynamic.h"
 #include "ra/net/wsproto.h"
 
 namespace ra {
@@ -74,12 +74,12 @@ class UDPInterfaceClass : public WinsockInterfaceClass {
   /*
   ** Address to use when broadcasting a packet.
   */
-  game::DynamicVectorClass<uint32_t> BroadcastAddresses;
+  std::vector<uint32_t> BroadcastAddresses;
 
   /*
   ** List of local addresses.
   */
-  game::DynamicVectorClass<uint32_t> LocalAddresses;
+  std::vector<uint32_t> LocalAddresses;
 };
 
 bool Get_Broadcast_Addresses();

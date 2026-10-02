@@ -2,10 +2,12 @@
 
 #include <concepts>
 #include <cstdint>
+#include <vector>
 
+#include "base/array.h"
+#include "base/numeric.h"
 #include "engine/stream/archive.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/objects/aircraft.h"
@@ -173,9 +175,8 @@ void TechnoTypePtr::Serialize(ArchiveReader& ar) {
 }
 
 template <class Archive>
-void SerializeObjectList(Archive& ar,
-                         game::DynamicVectorClass<ObjectClass*>& objects) {
-  auto count = static_cast<int32_t>(objects.Count());
+void SerializeObjectList(Archive& ar, std::vector<ObjectClass*>& objects) {
+  auto count = static_cast<int32_t>(objects.size());
   ar(count);
   if constexpr (Archive::kIsReading) {
     const int capacity = TheObjectHeaps().aircraft().Length() +
@@ -193,13 +194,8 @@ void SerializeObjectList(Archive& ar,
       ar.Fail("invalid saved object list count");
       return;
     }
-    objects.Clear();
-    // Clear() releases the storage and Add() grows it back ten slots at a
-    // time, copying every element already there each time. The count is known
-    // here, so take the storage in one step.
-    if (count > 0) {
-      objects.Resize(count);
-    }
+    objects.clear();
+    objects.reserve(base::ToSize(count));
     for (int i = 0; i < count; ++i) {
       ObjectClass* object = nullptr;
       ar(ObjectPtr(object));
@@ -207,17 +203,15 @@ void SerializeObjectList(Archive& ar,
         ar.Fail("invalid saved object list entry");
         return;
       }
-      objects.Add(object);
+      objects.push_back(object);
     }
   } else {
     for (int i = 0; i < count; ++i) {
-      ar(ObjectPtr(objects.at(i)));
+      ar(ObjectPtr(base::At(objects, i)));
     }
   }
 }
-template void SerializeObjectList(ArchiveWriter&,
-                                  game::DynamicVectorClass<ObjectClass*>&);
-template void SerializeObjectList(ArchiveReader&,
-                                  game::DynamicVectorClass<ObjectClass*>&);
+template void SerializeObjectList(ArchiveWriter&, std::vector<ObjectClass*>&);
+template void SerializeObjectList(ArchiveReader&, std::vector<ObjectClass*>&);
 
 }  // namespace ra

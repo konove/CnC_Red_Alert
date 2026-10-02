@@ -40,8 +40,10 @@
 #ifndef CNC_RED_ALERT_RA_AI_BASE_H_
 #define CNC_RED_ALERT_RA_AI_BASE_H_
 
-#include "game/core/vector.h"
-#include "game/core/vector_dynamic.h"
+#include <vector>
+
+#include "absl/base/attributes.h"
+#include "base/array.h"
 #include "ra/core/defines.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
@@ -92,7 +94,7 @@ class BaseClass {
   */
   void Init() {
     House = HOUSE_NONE;
-    Nodes.Clear();
+    Nodes.clear();
   }
 
   /*
@@ -120,21 +122,25 @@ class BaseClass {
   /*
   ** Returns a pointer to the requested node.
   */
-  BaseNodeClass* Get_Node(const BuildingClass* obj);
-  BaseNodeClass* Get_Node(int index) { return &Nodes.at(index); }
-  BaseNodeClass* Get_Node(CELL cell);
+  BaseNodeClass* Get_Node(const BuildingClass* obj)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  BaseNodeClass* Get_Node(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return &base::At(Nodes, index);
+  }
+  BaseNodeClass* Get_Node(CELL cell) ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   /*
   ** Returns a pointer to the next "hole" in the Nodes list.
   */
-  BaseNodeClass* Next_Buildable(StructType type = STRUCT_NONE);
+  BaseNodeClass* Next_Buildable(StructType type = STRUCT_NONE)
+      ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   /*
   ** This is the list of "nodes" that define the base.  Portions of this
   ** list can be pre-built by simply saving those buildings in the INI
   ** along with non-base buildings, so Is_Built will return true for them.
   */
-  game::DynamicVectorClass<BaseNodeClass> Nodes;
+  std::vector<BaseNodeClass> Nodes;
 
   /*
   ** This is the house this base belongs to.

@@ -46,6 +46,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <span>
@@ -59,6 +60,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "base/types.h"
 #include "engine/codec/block_codec.h"
@@ -85,7 +87,6 @@
 #include "engine/stream/tee_sink.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/carry.h"
@@ -164,27 +165,25 @@ static bool Rejected(const ArchiveReader& reader, std::string_view tag) {
 
 // Trigger lists load after the trigger heap, so targets can resolve directly.
 template <class Archive>
-static void SerializeTriggerList(
-    Archive& ar, game::DynamicVectorClass<TriggerClass*>& list) {
-  auto count = static_cast<int32_t>(list.Count());
+// Appending invalidates the elements, not the vector the reference names.
+// NOLINTBEGIN(clang-diagnostic-lifetime-safety-invalidation)
+static void SerializeTriggerList(Archive& ar,
+                                 std::vector<TriggerClass*>& list) {
+  // NOLINTEND(clang-diagnostic-lifetime-safety-invalidation)
+  auto count = static_cast<int32_t>(list.size());
   ar(count);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || count < 0 || count > TheObjectHeaps().trigger().Length()) {
       ar.Fail("invalid trigger list count");
       return;
     }
-    list.Clear();
-    // Clear() releases the storage and Add() grows it back ten slots at a
-    // time, copying every element already there each time. The count is known
-    // here, so take the storage in one step.
-    if (count > 0) {
-      list.Resize(count);
-    }
+    list.clear();
+    list.reserve(base::ToSize(count));
   }
   for (int i = 0; i < count; ++i) {
     TARGET target = kTargetNone;
     if constexpr (!Archive::kIsReading) {
-      target = list.at(i)->As_Target();
+      target = base::At(list, i)->As_Target();
     }
     ar(target);
     if constexpr (Archive::kIsReading) {
@@ -193,7 +192,7 @@ static void SerializeTriggerList(
         ar.Fail("invalid saved trigger target");
         return;
       }
-      list.Add(As_Trigger(target));
+      list.push_back(As_Trigger(target));
     }
   }
 }

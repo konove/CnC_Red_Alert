@@ -54,6 +54,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <iterator>
 #include <memory>
 #include <span>
 #include <string_view>  // IWYU pragma: keep - used by an DCHECK() below.
@@ -62,6 +63,7 @@
 #include "absl/log/check.h"
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/unaligned.h"
@@ -120,13 +122,8 @@ UDPInterfaceClass::UDPInterfaceClass() = default;
  * HISTORY: * 10/9/97 12:17PM ST : Created *
  *=============================================================================================*/
 UDPInterfaceClass::~UDPInterfaceClass() {
-  while (BroadcastAddresses.Count()) {
-    BroadcastAddresses.Delete(0);
-  }
-
-  while (LocalAddresses.Count() > 0) {
-    LocalAddresses.Delete(0);
-  }
+  BroadcastAddresses.clear();
+  LocalAddresses.clear();
 
   Close();
 }
@@ -150,7 +147,7 @@ void UDPInterfaceClass::Set_Broadcast_Address(const char* address) {
   DCHECK(std::string_view(ip_addr).size() <=
          std::string_view("xxx.xxx.xxx.xxx").size());
 
-  BroadcastAddresses.Add(inet_addr(ip_addr));
+  BroadcastAddresses.push_back(inet_addr(ip_addr));
 }
 
 /***********************************************************************************************
@@ -215,9 +212,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   /*
   ** Clear out any old local addresses from the local address list.
   */
-  while (LocalAddresses.Count() > 0) {
-    LocalAddresses.Delete(0);
-  }
+  LocalAddresses.clear();
 
   /*
   ** Add all local IP addresses to the list. This list will be used to discard
@@ -246,7 +241,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
                    static_cast<int>((address & 0xff000000) >> 24));
     absl::PrintF("%s", temp);
 
-    LocalAddresses.Add(address);
+    LocalAddresses.push_back(address);
   }
   freeaddrinfo(results);
 
@@ -281,7 +276,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
  *=============================================================================================*/
 void UDPInterfaceClass::Broadcast(std::span<const std::byte> buffer,
                                   int buffer_len) {
-  for (int i = 0; i < BroadcastAddresses.Count(); i++) {
+  for (int i = 0; i < std::ssize(BroadcastAddresses); i++) {
     /*
     ** Create a temporary holding area for the packet.
     */
@@ -305,7 +300,7 @@ void UDPInterfaceClass::Broadcast(std::span<const std::byte> buffer,
     base::FillBytes(base::ObjectBytes(packet->Address), 0,
                     sizeof(packet->Address));
     base::CopyBytes(base::ObjectBytes(packet->Address).subspan(4),
-                    base::ObjectBytes(BroadcastAddresses.at(i)), 4);
+                    base::ObjectBytes(base::At(BroadcastAddresses, i)), 4);
 
     /*
     ** Add it to our out list.
@@ -349,8 +344,8 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
         ** Make sure this packet didn't come from us. If it did then throw it
         *away.
         */
-        for (int i = 0; i < LocalAddresses.Count(); i++) {
-          if (LocalAddresses.at(i) == addr.sin_addr.s_addr) {
+        for (int i = 0; i < std::ssize(LocalAddresses); i++) {
+          if (base::At(LocalAddresses, i) == addr.sin_addr.s_addr) {
             return;
           }
         }

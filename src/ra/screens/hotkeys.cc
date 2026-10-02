@@ -30,7 +30,6 @@
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
@@ -168,13 +167,15 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   // If the "N" key is pressed, then select the next object.
   if (key != 0 && key == TheOptions().KeyNext) {
     if (action) {
-      obj = MapEditClass::Prev_Object(TheWorld().current_object().Count()
-                                          ? TheWorld().current_object().at(0)
-                                          : nullptr);
+      obj = MapEditClass::Prev_Object(
+          std::ssize(TheWorld().current_object())
+              ? base::At(TheWorld().current_object(), 0)
+              : nullptr);
     } else {
-      obj = MapEditClass::Next_Object(TheWorld().current_object().Count()
-                                          ? TheWorld().current_object().at(0)
-                                          : nullptr);
+      obj = MapEditClass::Next_Object(
+          std::ssize(TheWorld().current_object())
+              ? base::At(TheWorld().current_object(), 0)
+              : nullptr);
     }
     if (obj != nullptr) {
       Unselect_All();
@@ -186,13 +187,15 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   }
   if (key != 0 && key == TheOptions().KeyPrevious) {
     if (action) {
-      obj = MapEditClass::Next_Object(TheWorld().current_object().Count()
-                                          ? TheWorld().current_object().at(0)
-                                          : nullptr);
+      obj = MapEditClass::Next_Object(
+          std::ssize(TheWorld().current_object())
+              ? base::At(TheWorld().current_object(), 0)
+              : nullptr);
     } else {
-      obj = MapEditClass::Prev_Object(TheWorld().current_object().Count()
-                                          ? TheWorld().current_object().at(0)
-                                          : nullptr);
+      obj = MapEditClass::Prev_Object(
+          std::ssize(TheWorld().current_object())
+              ? base::At(TheWorld().current_object(), 0)
+              : nullptr);
     }
     if (obj != nullptr) {
       Unselect_All();
@@ -205,10 +208,10 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
 
   // All selected units will go into idle mode.
   if (key != 0 && key == TheOptions().KeyStop) {
-    if (TheWorld().current_object().Count()) {
-      for (int index = 0; index < TheWorld().current_object().Count();
+    if (std::ssize(TheWorld().current_object())) {
+      for (int index = 0; index < std::ssize(TheWorld().current_object());
            index++) {
-        const ObjectClass* tech = TheWorld().current_object().at(index);
+        const ObjectClass* tech = base::At(TheWorld().current_object(), index);
 
         if (tech != nullptr &&
             (tech->Can_Player_Move() ||
@@ -223,10 +226,10 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
 
   // All selected units will attempt to go into guard area mode.
   if (key != 0 && key == TheOptions().KeyGuard) {
-    if (TheWorld().current_object().Count()) {
-      for (int index = 0; index < TheWorld().current_object().Count();
+    if (std::ssize(TheWorld().current_object())) {
+      for (int index = 0; index < std::ssize(TheWorld().current_object());
            index++) {
-        const ObjectClass* tech = TheWorld().current_object().at(index);
+        const ObjectClass* tech = base::At(TheWorld().current_object(), index);
 
         if (tech != nullptr && tech->Can_Player_Move() &&
             tech->Can_Player_Fire()) {
@@ -240,10 +243,10 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
 
   // All selected units will attempt to scatter.
   if (key != 0 && key == TheOptions().KeyScatter) {
-    if (TheWorld().current_object().Count()) {
-      for (int index = 0; index < TheWorld().current_object().Count();
+    if (std::ssize(TheWorld().current_object())) {
+      for (int index = 0; index < std::ssize(TheWorld().current_object());
            index++) {
-        const ObjectClass* tech = TheWorld().current_object().at(index);
+        const ObjectClass* tech = base::At(TheWorld().current_object(), index);
 
         if (tech != nullptr && tech->Can_Player_Move()) {
           TheNetwork().out_list().Add(
@@ -258,7 +261,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   // objects are selected, then fall into the home case.
   if (key != 0 &&
       (key == TheOptions().KeyHome1 || key == TheOptions().KeyHome2)) {
-    if (TheWorld().current_object().Count()) {
+    if (std::ssize(TheWorld().current_object())) {
       TheMap().Center_Map();
       TheMap().Flag_To_Redraw(true);
       input = KN_NONE;
@@ -286,7 +289,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
         }
       }
     }
-    if (TheWorld().current_object().Count() == 0 && ThePlayer()->CurUnits) {
+    if (std::ssize(TheWorld().current_object()) == 0 && ThePlayer()->CurUnits) {
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
         UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
 
@@ -298,7 +301,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
         }
       }
     }
-    if (TheWorld().current_object().Count()) {
+    if (std::ssize(TheWorld().current_object())) {
       TheMap().Center_Map();
     } else {
       if (ThePlayer()->Center != 0) {
@@ -330,12 +333,12 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
   if (key != 0 && key == TheOptions().KeyAlliance) {
     if ((TheSession().Type != GAME_NORMAL ||
          TheDebugState().developer_mode()) &&
-        (TheWorld().current_object().Count() && !ThePlayer()->IsDefeated) &&
-        (TheWorld().current_object().at(0)->Owner() !=
+        (std::ssize(TheWorld().current_object()) && !ThePlayer()->IsDefeated) &&
+        (base::At(TheWorld().current_object(), 0)->Owner() !=
          ThePlayer()->Class->House)) {
       TheNetwork().out_list().Add(EventClass(
           EventClass::ALLY,
-          static_cast<int>(TheWorld().current_object().at(0)->Owner())));
+          static_cast<int>(base::At(TheWorld().current_object(), 0)->Owner())));
     }
 
     input = KN_NONE;

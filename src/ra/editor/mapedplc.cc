@@ -56,6 +56,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iterator>
 #include <span>
 
 #include "base/array.h"
@@ -68,7 +69,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
@@ -1006,9 +1006,9 @@ int MapEditClass::Place_Object() {
       //			node.Type = ((BuildingTypeClass
       //*)PendingObject)->Type; 			node.Cell =
       // Coord_Cell(PendingObjectPtr->Coord);
-      TheWorld().base().Nodes.Add(BaseNodeClass(
+      TheWorld().base().Nodes.emplace_back(
           dynamic_cast<const BuildingTypeClass*>(PendingObject)->Type,
-          Coord_Cell(PendingObjectPtr->Coord)));
+          Coord_Cell(PendingObjectPtr->Coord));
     }
 
     PendingObjectPtr = nullptr;
@@ -1752,7 +1752,7 @@ void MapEditClass::Build_Base_To(int percent) {
   /*
   ** Completely dismantle the base, so we start at a known point
   */
-  for (int i = 0; i < TheWorld().base().Nodes.Count(); i++) {
+  for (int i = 0; i < std::ssize(TheWorld().base().Nodes); i++) {
     if (TheWorld().base().Is_Built(i)) {
       obj = TheWorld().base().Get_Building(i);
       base::DeletePooled(obj);
@@ -1763,7 +1763,7 @@ void MapEditClass::Build_Base_To(int percent) {
   ** Compute number of buildings to build
   */
   const int num_buildings =
-      (static_cast<int>(TheWorld().base().Nodes.Count()) * percent) / 100;
+      (static_cast<int>(std::ssize(TheWorld().base().Nodes)) * percent) / 100;
 
   /*
   ** Build the base to the desired amount
@@ -1772,8 +1772,8 @@ void MapEditClass::Build_Base_To(int percent) {
     /*
     ** Get a ptr to the type of building to build, create one, and unlimbo it.
     */
-    const BuildingTypeClass* objtype =
-        &BuildingTypeClass::As_Reference(TheWorld().base().Nodes.at(i).Type);
+    const BuildingTypeClass* objtype = &BuildingTypeClass::As_Reference(
+        base::At(TheWorld().base().Nodes, i).Type);
     obj = dynamic_cast<BuildingClass*>(objtype->Create_One_Of(
         HouseClass::As_Pointer(TheWorld().base().House)));
 
@@ -1781,7 +1781,7 @@ void MapEditClass::Build_Base_To(int percent) {
     ** If unlimbo fails, error out
     */
     TheWorld().scenario_init()++;
-    if (!obj->Unlimbo(Cell_Coord(TheWorld().base().Nodes.at(i).Cell))) {
+    if (!obj->Unlimbo(Cell_Coord(base::At(TheWorld().base().Nodes, i).Cell))) {
       base::DeletePooled(obj);
       WWMessageBox().Process("Unable to build base!");
       TheWorld().scenario_init()--;

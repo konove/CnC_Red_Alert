@@ -53,15 +53,16 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 
 #include "absl/log/check.h"
+#include "base/algorithm.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "ra/ai/taction.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigtype.h"
@@ -184,20 +185,22 @@ TriggerClass::TriggerClass()
 TriggerClass::~TriggerClass() {
   if ((TheGameState().active() && Class.Is_Valid() &&
        base::Any(Class->Attaches_To() & ATTACH_GENERAL)) &&
-      (TheWorld().logic_trigger_id() >= TheWorld().logic_triggers().ID(this))) {
+      (TheWorld().logic_trigger_id() >=
+       base::IndexOf(TheWorld().logic_triggers(), this))) {
     TheWorld().logic_trigger_id()--;
     if (TheWorld().logic_trigger_id() < 0 &&
-        TheWorld().logic_triggers().Count() == 0) {
+        std::ssize(TheWorld().logic_triggers()) == 0) {
       TheWorld().logic_trigger_id() = 0;
     }
   }
 
   if ((TheGameState().active() && Class.Is_Valid() &&
        base::Any(Class->Attaches_To() & ATTACH_MAP)) &&
-      (TheWorld().map_trigger_id() >= TheWorld().map_triggers().ID(this))) {
+      (TheWorld().map_trigger_id() >=
+       base::IndexOf(TheWorld().map_triggers(), this))) {
     TheWorld().map_trigger_id()--;
     if (TheWorld().map_trigger_id() < 0 &&
-        TheWorld().map_triggers().Count() == 0) {
+        std::ssize(TheWorld().map_triggers()) == 0) {
       TheWorld().map_trigger_id() = 0;
     }
   }

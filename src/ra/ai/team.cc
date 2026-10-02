@@ -79,6 +79,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <iterator>
 #include <span>
 #include <utility>
 
@@ -89,7 +90,6 @@
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/teamtype.h"
@@ -511,12 +511,12 @@ void TeamClass::AI() {
         *should be sprung.
         */
         if (IsLeaveMap) {
-          for (int index = 0; index < TheWorld().logic_triggers().Count();
+          for (int index = 0; index < std::ssize(TheWorld().logic_triggers());
                index++) {
-            TriggerClass* trig = TheWorld().logic_triggers().at(index);
+            TriggerClass* trig = base::At(TheWorld().logic_triggers(), index);
             if (trig->Spring(TEVENT_LEAVES_MAP)) {
               index--;
-              if (TheWorld().logic_triggers().Count() == 0) {
+              if (std::ssize(TheWorld().logic_triggers()) == 0) {
                 break;
               }
             }
@@ -657,12 +657,12 @@ void TeamClass::AI() {
     *one that *	depends on this team leaving the map should be sprung.
     */
     if (IsLeaveMap) {
-      for (int index = 0; index < TheWorld().logic_triggers().Count();
+      for (int index = 0; index < std::ssize(TheWorld().logic_triggers());
            index++) {
-        TriggerClass* trig = TheWorld().logic_triggers().at(index);
+        TriggerClass* trig = base::At(TheWorld().logic_triggers(), index);
         if (trig->Spring(TEVENT_LEAVES_MAP)) {
           index--;
-          if (TheWorld().logic_triggers().Count() == 0) {
+          if (std::ssize(TheWorld().logic_triggers()) == 0) {
             break;
           }
         }

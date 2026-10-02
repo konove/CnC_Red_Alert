@@ -100,7 +100,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
-#include "game/core/vector_dynamic.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
@@ -1703,11 +1702,12 @@ bool RadarClass::RTacticalClass::Action(unsigned flags,
       **	If there is a currently selected object, then the action to
       *perform if *	the left mouse button were clicked must be determined.
       */
-      if (TheWorld().current_object().Count()) {
+      if (std::ssize(TheWorld().current_object())) {
         if (object) {
-          action = TheWorld().current_object().at(0)->What_Action(object);
+          action =
+              base::At(TheWorld().current_object(), 0)->What_Action(object);
         } else {
-          action = TheWorld().current_object().at(0)->What_Action(cell);
+          action = base::At(TheWorld().current_object(), 0)->What_Action(cell);
         }
 
         /*

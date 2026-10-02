@@ -493,7 +493,7 @@ template void FactoryClass::Serialize(ArchiveReader&);
 
 template <class Archive>
 void LayerClass::Serialize(Archive& ar) {
-  SerializeObjectList(ar, *this);
+  SerializeObjectList(ar, objects_);
 }
 template void LayerClass::Serialize(ArchiveWriter&);
 template void LayerClass::Serialize(ArchiveReader&);

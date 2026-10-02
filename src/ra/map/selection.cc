@@ -22,12 +22,12 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iterator>
 #include <span>
 #include <utility>
 
 #include "base/array.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
 #include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
@@ -54,8 +54,8 @@ namespace ra {
 // Unselect() removes the object from CurrentObject, so index 0 is always the
 // next one to drop and the count shrinks on every pass.
 void Unselect_All() {
-  while (TheWorld().current_object().Count()) {
-    TheWorld().current_object().at(0)->Unselect();
+  while (std::ssize(TheWorld().current_object())) {
+    base::At(TheWorld().current_object(), 0)->Unselect();
   }
 }
 
@@ -274,12 +274,12 @@ void Handle_Team(const int team, const int action) {
 
       // If a non team member is currently selected, then deselect all
       // objects before selecting this team.
-      if (TheWorld().current_object().Count() &&
-          (TheWorld().current_object().at(0)->Is_Foot() &&
-           std::cmp_not_equal(
-               dynamic_cast<FootClass*>(TheWorld().current_object().at(0))
-                   ->Group,
-               team))) {
+      if (std::ssize(TheWorld().current_object()) &&
+          (base::At(TheWorld().current_object(), 0)->Is_Foot() &&
+           std::cmp_not_equal(dynamic_cast<FootClass*>(
+                                  base::At(TheWorld().current_object(), 0))
+                                  ->Group,
+                              team))) {
         Unselect_All();
       }
 

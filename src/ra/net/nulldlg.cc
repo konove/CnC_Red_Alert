@@ -90,7 +90,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
-#include "game/core/vector_dynamic.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
@@ -3746,7 +3745,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                               .Full_Name()));
 #endif  // OLDWAY
           playerlist.Set_Item(0, item);
-          playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
+          base::At(playerlist.Colors, 0) = &ThePalettes().color_remaps().at(
               TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                   ? PCOLOR_REALLY_BLUE
                   : TheSession().ColorIdx);
@@ -3933,7 +3932,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                                   .Full_Name()));
 #endif  // OLDWAY
               playerlist.Set_Item(0, item);
-              playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
+              base::At(playerlist.Colors, 0) = &ThePalettes().color_remaps().at(
                   TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                       ? PCOLOR_REALLY_BLUE
                       : TheSession().ColorIdx);
@@ -3953,7 +3952,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                       HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
               playerlist.Set_Item(1, item);
-              playerlist.Colors.at(1) = &ThePalettes().color_remaps().at(
+              base::At(playerlist.Colors, 1) = &ThePalettes().color_remaps().at(
                   TheirColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                    : TheirColor);
 
@@ -5307,7 +5306,7 @@ int Com_Show_Scenario_Dialog() {
                 HouseTypeClass::As_Reference(TheSession().House).Full_Name()));
 #endif  // OLDWAY
         playerlist.Set_Item(0, item);
-        playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
+        base::At(playerlist.Colors, 0) = &ThePalettes().color_remaps().at(
             TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                 ? PCOLOR_REALLY_BLUE
                 : TheSession().ColorIdx);
@@ -5609,7 +5608,7 @@ int Com_Show_Scenario_Dialog() {
 
 #endif  // OLDWAY
             playerlist.Set_Item(0, item);
-            playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
+            base::At(playerlist.Colors, 0) = &ThePalettes().color_remaps().at(
                 TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                     ? PCOLOR_REALLY_BLUE
                     : TheSession().ColorIdx);
@@ -5629,7 +5628,7 @@ int Com_Show_Scenario_Dialog() {
                     HouseTypeClass::As_Reference(TheirHouse).Full_Name()));
 #endif  // OLDWAY
             playerlist.Set_Item(1, item);
-            playerlist.Colors.at(1) = &ThePalettes().color_remaps().at(
+            base::At(playerlist.Colors, 1) = &ThePalettes().color_remaps().at(
                 TheirColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : TheirColor);
 

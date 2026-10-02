@@ -102,7 +102,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/ui/input.h"
@@ -572,13 +571,13 @@ void Fill_In_Data() {
     DCHECK(tp != nullptr);
 
     if (base::Any(tp->Attaches_To() & ATTACH_MAP)) {
-      TheWorld().map_triggers().Add(Find_Or_Make(tp));
+      TheWorld().map_triggers().push_back(Find_Or_Make(tp));
     }
     if (base::Any(tp->Attaches_To() & ATTACH_GENERAL)) {
-      TheWorld().logic_triggers().Add(Find_Or_Make(tp));
+      TheWorld().logic_triggers().push_back(Find_Or_Make(tp));
     }
     if (base::Any(tp->Attaches_To() & ATTACH_HOUSE)) {
-      TheWorld().house_triggers().at(tp->House).Add(Find_Or_Make(tp));
+      TheWorld().house_triggers().at(tp->House).push_back(Find_Or_Make(tp));
     }
   }
 
@@ -734,11 +733,11 @@ void Clear_Scenario() {
   base::FillBytes(base::ObjectBytes(TheScenario().GlobalFlags), 0,
                   sizeof(TheScenario().GlobalFlags));
 
-  TheWorld().map_triggers().Clear();
-  TheWorld().logic_triggers().Clear();
+  TheWorld().map_triggers().clear();
+  TheWorld().logic_triggers().clear();
 
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
-    TheWorld().house_triggers().at(house).Clear();
+    TheWorld().house_triggers().at(house).clear();
   }
 
   /*
@@ -774,7 +773,7 @@ void Clear_Scenario() {
 
   TheWorld().base().Init();
 
-  TheWorld().current_object().Clear();
+  TheWorld().current_object().clear();
 
   for (int16_t& index : TheScenario().Waypoint) {
     index = -1;

@@ -6,19 +6,21 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <iterator>
 #include <span>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "base/algorithm.h"
+#include "base/array.h"
 #include "base/types.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/vector_dynamic.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
@@ -43,22 +45,24 @@ class TListClass final : public game::ControlClass {
   TListClass(TListClass&&) = delete;
   TListClass& operator=(TListClass&&) = delete;
   // Returns the indexed list entry through the checked backing vector.
-  [[nodiscard]] T at(int index) const { return List.at(index); }
+  [[nodiscard]] T at(int index) const { return base::At(List, index); }
   T operator[](int index) const { return at(index); }
-  T& at(int index) { return List.at(index); }
-  T& operator[](int index) { return at(index); }
+  T& at(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(List, index);
+  }
+  T& operator[](int index) ABSL_ATTRIBUTE_LIFETIME_BOUND { return at(index); }
 
   int Add_Item(T text);
   bool Add_Scroll_Bar();
   void Insert_Item(T item);
   void Bump(bool up);
-  [[nodiscard]] int Count() const { return static_cast<int>(List.Count()); }
+  [[nodiscard]] int Count() const { return static_cast<int>(std::ssize(List)); }
   [[nodiscard]] int Current_Index() const;
   T Current_Item() const;
   bool Draw_Me(PixelView& view, bool forced) override;
   int Step_Selected_Index(int step);
   void Flag_To_Redraw() override;
-  [[nodiscard]] T Get_Item(int index) const { return List.at(index); }
+  [[nodiscard]] T Get_Item(int index) const { return base::At(List, index); }
 
   void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
                     game::ControlClass& whom) override;
@@ -104,7 +108,7 @@ class TListClass final : public game::ControlClass {
   /*
   **	The actual list of text pointers is maintained by this list manager.
   */
-  game::DynamicVectorClass<T> List;
+  std::vector<T> List;
 
   /*
   **	This is the total pixel height of a standard line of text. This is
@@ -183,36 +187,36 @@ TListClass<T>::~TListClass() {
 template <class T>
 void TListClass<T>::Insert_Item(T item) {
   if (Current_Index() >= Count()) {
-    List.Add(item);
+    List.push_back(item);
   } else {
-    List.Add(item);
+    List.push_back(item);
 
     /*
     **	Move all trailing items upward.
     */
-    for (base::ssize index = List.Count() - 1; index >= Current_Index();
+    for (base::ssize index = std::ssize(List) - 1; index >= Current_Index();
          index--) {
-      List.at(index + 1) = List.at(index);
+      base::At(List, index + 1) = base::At(List, index);
     }
 
     /*
     **	Insert the new item into the location at the current index.
     */
-    List.at(Current_Index()) = item;
+    base::At(List, Current_Index()) = item;
   }
 }
 
 template <class T>
 int TListClass<T>::Add_Item(T text) {
   //	if (text) {
-  List.Add(text);
+  List.push_back(text);
   Flag_To_Redraw();
 
   /*
   **	Add scroll gadget if the list gets too large to display all of the items
   **	at the same time.
   */
-  if (List.Count() > LineCount) {
+  if (std::ssize(List) > LineCount) {
     Add_Scroll_Bar();
   }
 
@@ -220,22 +224,22 @@ int TListClass<T>::Add_Item(T text) {
   **	Tell the slider that there is one more entry in the list.
   */
   if (IsScrollActive) {
-    ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
+    ScrollGadget.Set_Maximum(static_cast<int>(std::ssize(List)));
   }
   //	}
-  return (static_cast<int>(List.Count()) - 1);
+  return (static_cast<int>(std::ssize(List)) - 1);
 }
 
 template <class T>
 void TListClass<T>::Remove_Index(int index) {
-  if (index >= 0 && index < List.Count()) {
-    List.Delete(index);
+  if (index >= 0 && index < std::ssize(List)) {
+    List.erase(List.begin() + index);
 
     /*
     **	If the list is now small enough to display completely within the list
     *box region, *	then delete the slider gadget (if they are present).
     */
-    if (List.Count() <= LineCount) {
+    if (std::ssize(List) <= LineCount) {
       Remove_Scroll_Bar();
     }
 
@@ -243,13 +247,13 @@ void TListClass<T>::Remove_Index(int index) {
     **	Tell the slider that there is one less entry in the list.
     */
     if (IsScrollActive) {
-      ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
+      ScrollGadget.Set_Maximum(static_cast<int>(std::ssize(List)));
     }
 
     /*
     ** If we just removed the selected entry, select the previous one
     */
-    if (SelectedIndex >= List.Count()) {
+    if (SelectedIndex >= std::ssize(List)) {
       SelectedIndex--;
       SelectedIndex = std::max(SelectedIndex, 0);
     }
@@ -257,7 +261,7 @@ void TListClass<T>::Remove_Index(int index) {
     /*
     ** If we just removed the top-displayed entry, step up one item
     */
-    if (CurrentTopIndex >= List.Count()) {
+    if (CurrentTopIndex >= std::ssize(List)) {
       CurrentTopIndex--;
       CurrentTopIndex = std::max(CurrentTopIndex, 0);
       if (IsScrollActive) {
@@ -269,7 +273,7 @@ void TListClass<T>::Remove_Index(int index) {
 
 template <class T>
 void TListClass<T>::Remove_Item(T text) {
-  Remove_Index(List.ID(text));
+  Remove_Index(base::IndexOf(List, text));
 }
 
 template <class T>
@@ -304,7 +308,7 @@ bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key,
     index = index / LineHeight;
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex =
-        std::min<int>(SelectedIndex, static_cast<int>(List.Count()) - 1);
+        std::min<int>(SelectedIndex, static_cast<int>(std::ssize(List)) - 1);
   }
   return game::ControlClass::Action(flags, key, x, y);
 }
@@ -320,17 +324,18 @@ bool TListClass<T>::Draw_Me(PixelView& view, bool forced) {
     /*
     **	Draw List.
     */
-    if (List.Count()) {
+    if (std::ssize(List)) {
       for (int index = 0; index < LineCount; index++) {
         const int line = CurrentTopIndex + index;
 
-        if (List.Count() > line) {
+        if (std::ssize(List) > line) {
           /*
           **	Prints the text and handles right edge clipping and tabs.
           */
-          List.at(line)->Draw_It(
-              view, line, X + 1, Y + (LineHeight * index) + 1, Width - 2,
-              LineHeight, (line == SelectedIndex), TextFlags);
+          base::At(List, line)
+              ->Draw_It(view, line, X + 1, Y + (LineHeight * index) + 1,
+                        Width - 2, LineHeight, (line == SelectedIndex),
+                        TextFlags);
           //					List[index].Draw_It(line, X+1,
           // Y+(LineHeight*index)+1, Width-2, LineHeight, (line ==
           // SelectedIndex), TextFlags);
@@ -364,10 +369,10 @@ void TListClass<T>::Step(bool up) {
 template <class T>
 T TListClass<T>::Current_Item() const {
   static T _temp;
-  if (List.Count() <= SelectedIndex) {
+  if (std::ssize(List) <= SelectedIndex) {
     return _temp;
   }
-  return List.at(SelectedIndex);
+  return base::At(List, SelectedIndex);
 }
 
 template <class T>
@@ -399,7 +404,8 @@ void TListClass<T>::Peer_To_Peer(unsigned flags,
 
 template <class T>
 bool TListClass<T>::Set_View_Index(int index) {
-  index = std::clamp<int>(index, 0, static_cast<int>(List.Count()) - LineCount);
+  index =
+      std::clamp<int>(index, 0, static_cast<int>(std::ssize(List)) - LineCount);
   if (index != CurrentTopIndex) {
     CurrentTopIndex = index;
     Flag_To_Redraw();
@@ -452,7 +458,7 @@ bool TListClass<T>::Add_Scroll_Bar() {
     **	Inform the slider of the size of the window and the current view
     *position.
     */
-    ScrollGadget.Set_Maximum(static_cast<int>(List.Count()));
+    ScrollGadget.Set_Maximum(static_cast<int>(std::ssize(List)));
     ScrollGadget.Set_Thumb_Size(LineCount);
     ScrollGadget.Set_Value(CurrentTopIndex);
 
@@ -555,7 +561,7 @@ game::GadgetClass* TListClass<T>::Remove() {
 
 template <class T>
 void TListClass<T>::Set_Selected_Index(int index) {
-  if (index >= 0 && index < List.Count()) {
+  if (index >= 0 && index < std::ssize(List)) {
     SelectedIndex = index;
     Flag_To_Redraw();
     if (SelectedIndex < CurrentTopIndex) {

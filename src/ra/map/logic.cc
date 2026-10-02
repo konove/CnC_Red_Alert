@@ -42,12 +42,13 @@
 #include "ra/map/logic.h"
 
 #include <cstdint>
+#include <iterator>
 
+#include "base/array.h"
 #include "base/fixed.h"
 #include "base/pooled.h"
 #include "engine/platform/timer.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
@@ -101,10 +102,10 @@ void LogicClass::AI() {
   **	Handle any general timer trigger events.
   */
   for (TheWorld().logic_trigger_id() = 0;
-       TheWorld().logic_trigger_id() < TheWorld().logic_triggers().Count();
+       TheWorld().logic_trigger_id() < std::ssize(TheWorld().logic_triggers());
        TheWorld().logic_trigger_id()++) {
     TriggerClass* trig =
-        TheWorld().logic_triggers().at(TheWorld().logic_trigger_id());
+        base::At(TheWorld().logic_triggers(), TheWorld().logic_trigger_id());
 
     /*
     **	Global changed trigger event might be triggered.
@@ -251,7 +252,9 @@ void LogicClass::AI() {
     **	If the object was destroyed in the process of performing its AI, then
     **	adjust the index so that no object gets skipped.
     */
-    if (obj != (*this).at(index)) {
+    // When the last object removes itself, `index` is past the end; the
+    // loop is over either way, so do not read there.
+    if (index >= Count() || obj != (*this).at(index)) {
       index--;
     }
   }
@@ -324,9 +327,11 @@ void LogicClass::Detach(TARGET target, bool /*unused*/) {
   **	Remove any triggers from the logic trigger list.
   */
   if (Is_Target_Trigger(target)) {
-    for (int index = 0; index < TheWorld().logic_triggers().Count(); index++) {
-      if (As_Trigger(target) == TheWorld().logic_triggers().at(index)) {
-        TheWorld().logic_triggers().Delete(index);
+    for (int index = 0; index < std::ssize(TheWorld().logic_triggers());
+         index++) {
+      if (As_Trigger(target) == base::At(TheWorld().logic_triggers(), index)) {
+        TheWorld().logic_triggers().erase(TheWorld().logic_triggers().begin() +
+                                          index);
         index--;
       }
     }

@@ -162,7 +162,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
-#include "game/core/vector_dynamic.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
@@ -2867,12 +2866,12 @@ static int Net_Join_Dialog() {
                     TheSession().Chat.at(i)->Chat.Color == PCOLOR_DIALOG_BLUE
                         ? PCOLOR_REALLY_BLUE
                         : TheSession().Chat.at(i)->Chat.Color) !=
-                    playerlist.Colors.at(i)) {
-              playerlist.Colors.at(i) = &ThePalettes().color_remaps().at(
+                    base::At(playerlist.Colors, i)) {
+              base::At(playerlist.Colors, i) = &ThePalettes().color_remaps().at(
                   TheSession().Chat.at(i)->Chat.Color);
-              if (playerlist.Colors.at(i) ==
+              if (base::At(playerlist.Colors, i) ==
                   &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)) {
-                playerlist.Colors.at(i) =
+                base::At(playerlist.Colors, i) =
                     &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE);
               }
               playerlist.Set_Item(i, TheSession().Chat.at(i)->Name);
@@ -2884,8 +2883,8 @@ static int Net_Join_Dialog() {
                                       playerlist.Get_Item(0)) ||
               &ThePalettes().color_remaps().at(
                   TheSession().Chat.at(0)->Chat.Color) !=
-                  playerlist.Colors.at(0)) {
-            playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
+                  base::At(playerlist.Colors, 0)) {
+            base::At(playerlist.Colors, 0) = &ThePalettes().color_remaps().at(
                 TheSession().Chat.at(0)->Chat.Color);
             playerlist.Set_Item(0, TheSession().Chat.at(0)->Name);
             playerlist.Flag_To_Redraw();
@@ -3591,12 +3590,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         TheSession().Players.at(i)->Player.Color =
             TheSession().GPacket.PlayerInfo.Color;
 
-        playerlist->Colors.at(i) = &ThePalettes().color_remaps().at(
+        base::At(playerlist->Colors, i) = &ThePalettes().color_remaps().at(
             TheSession().GPacket.PlayerInfo.Color);
 
-        if (playerlist->Colors.at(i) ==
+        if (base::At(playerlist->Colors, i) ==
             &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)) {
-          playerlist->Colors.at(i) =
+          base::At(playerlist->Colors, i) =
               &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE);
         }
 

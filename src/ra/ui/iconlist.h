@@ -40,7 +40,6 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "game/core/vector.h"
 #include "ra/ui/list.h"
 
 namespace ra {

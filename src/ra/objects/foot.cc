@@ -99,7 +99,6 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "engine/window/hardware_cursor.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/ui/input.h"
@@ -1480,9 +1479,10 @@ bool FootClass::Per_Cell_Process(PCPType why) {
       **	Check for zone entry trigger events.
       */
       for (TheWorld().map_trigger_id() = 0;
-           TheWorld().map_trigger_id() < TheWorld().map_triggers().Count();
+           TheWorld().map_trigger_id() < std::ssize(TheWorld().map_triggers());
            TheWorld().map_trigger_id()++) {
-        trigger = TheWorld().map_triggers().at(TheWorld().map_trigger_id());
+        trigger =
+            base::At(TheWorld().map_triggers(), TheWorld().map_trigger_id());
         if ((trigger->Class->Event1.Event == TEVENT_ENTERS_ZONE ||
              (trigger->Class->EventControl != MULTI_ONLY &&
               trigger->Class->Event2.Event == TEVENT_ENTERS_ZONE)) &&

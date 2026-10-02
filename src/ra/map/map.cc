@@ -89,7 +89,6 @@
 #include "engine/stream/byte_source.h"
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/region.h"
@@ -2197,9 +2196,11 @@ void MapClass::Detach(TARGET target, bool /*unused*/) {
   **	Remove this trigger from the map zone/line tracking list.
   */
   if (Is_Target_Trigger(target)) {
-    for (int index = 0; index < TheWorld().map_triggers().Count(); index++) {
-      if (TheWorld().map_triggers().at(index) == As_Trigger(target)) {
-        TheWorld().map_triggers().Delete(index);
+    for (int index = 0; index < std::ssize(TheWorld().map_triggers());
+         index++) {
+      if (base::At(TheWorld().map_triggers(), index) == As_Trigger(target)) {
+        TheWorld().map_triggers().erase(TheWorld().map_triggers().begin() +
+                                        index);
         break;
       }
     }

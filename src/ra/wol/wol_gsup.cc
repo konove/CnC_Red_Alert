@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -51,7 +52,6 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/vector_dynamic.h"
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
@@ -669,8 +669,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             //					debugprint( " ----------------
             // Adding scenario %s as CS\n", szScenarioNameShow );
             base::At(ar_szScenarios, static_cast<int>(SCENARIO_CS))
-                .Add(szScenarioNameShow);
-            base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_CS)).Add(i);
+                .push_back(szScenarioNameShow);
+            base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_CS))
+                .push_back(i);
           } else if (IsMissionAftermath(
                          TheSession().Scenarios.at(i)->Get_Filename())) {
             //					debugprint( " ----------------
@@ -680,22 +681,25 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME ||
                 !bSpecialAftermathScenario(pMMission->Description())) {
               base::At(ar_szScenarios, static_cast<int>(SCENARIO_AM))
-                  .Add(szScenarioNameShow);
-              base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_AM)).Add(i);
+                  .push_back(szScenarioNameShow);
+              base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_AM))
+                  .push_back(i);
             }
           } else {
             //					debugprint( " ----------------
             // Adding scenario %s as RA\n", szScenarioNameShow );
             base::At(ar_szScenarios, static_cast<int>(SCENARIO_RA))
-                .Add(szScenarioNameShow);
-            base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_RA)).Add(i);
+                .push_back(szScenarioNameShow);
+            base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_RA))
+                .push_back(i);
           }
         } else {
           //				debugprint( " ---------------- Adding
           // scenario %s as User\n", szScenarioNameShow );
           base::At(ar_szScenarios, static_cast<int>(SCENARIO_USER))
-              .Add(szScenarioNameShow);
-          base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_USER)).Add(i);
+              .push_back(szScenarioNameShow);
+          base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_USER))
+              .push_back(i);
         }
       }
 
@@ -1957,10 +1961,11 @@ void WOL_GameSetupDialog::ScenarioDisplayMode(SCENARIO_GAMEKIND ScenKind) {
   bool bFoundCurrentSelection = false;
   int iSelect = 0;  //	Only read when bFoundCurrentSelection is true.
   for (int i = 0;
-       i != base::At(ar_szScenarios, static_cast<int>(ScenKind)).Count(); i++) {
+       i != std::ssize(base::At(ar_szScenarios, static_cast<int>(ScenKind)));
+       i++) {
     //	Put ScenarioIndex in as extradata to list item.
     const int iScenIndex =
-        base::At(ar_szScenIndexes, static_cast<int>(ScenKind)).at(i);
+        base::At(base::At(ar_szScenIndexes, static_cast<int>(ScenKind)), i);
     if (iScenIndex == TheSession().Options.ScenarioIndex &&
         !bFoundCurrentSelection) {
       //	(Choose first line of what can be multiline description of

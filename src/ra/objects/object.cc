@@ -112,9 +112,12 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <span>
 
 #include "absl/log/check.h"
+#include "base/algorithm.h"
+#include "base/array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
@@ -124,7 +127,6 @@
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "ra/ai/tevent.h"
@@ -1062,7 +1064,7 @@ void ObjectClass::Unselect() {
   DCHECK(IsActive);
 
   if (IsSelected) {
-    TheWorld().current_object().Delete(this);
+    base::EraseFirst(TheWorld().current_object(), this);
     if (In_Which_Layer() == LAYER_GROUND) {
       Mark(MARK_OVERLAP_UP);
     }
@@ -1122,10 +1124,10 @@ bool ObjectClass::Select() {
   **	If selecting an object of a different house than the player's, make sure
   *that *	the entire selection list is cleared.
   */
-  if (TheWorld().current_object().Count() > 0) {
+  if (std::ssize(TheWorld().current_object()) > 0) {
     const HouseClass* tryhptr = HouseClass::As_Pointer(Owner());
-    const HouseClass* oldhptr =
-        HouseClass::As_Pointer(TheWorld().current_object().at(0)->Owner());
+    const HouseClass* oldhptr = HouseClass::As_Pointer(
+        base::At(TheWorld().current_object(), 0)->Owner());
     //		if (Owner() != CurrentObject[0]->Owner() ||
     // CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
     if (oldhptr->IsPlayerControl != tryhptr->IsPlayerControl ||
@@ -1137,9 +1139,10 @@ bool ObjectClass::Select() {
   // selects terrain, whose type is not a TechnoTypeClass.
   if (Is_Techno() &&
       dynamic_cast<const TechnoTypeClass&>(Class_Of()).IsLeader) {
-    TheWorld().current_object().Add_Head(this);
+    TheWorld().current_object().insert(TheWorld().current_object().begin(),
+                                       this);
   } else {
-    TheWorld().current_object().Add(this);
+    TheWorld().current_object().push_back(this);
   }
 
   if (In_Which_Layer() == LAYER_GROUND) {
@@ -1702,7 +1705,7 @@ bool ObjectClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Init() { TheWorld().current_object().Clear(); }
+void ObjectClass::Init() { TheWorld().current_object().clear(); }
 
 /***********************************************************************************************
  * ObjectClass::Revealed -- Reveals this object to the house specified. *

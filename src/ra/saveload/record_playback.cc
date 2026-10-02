@@ -22,9 +22,10 @@
 #include "ra/saveload/record_playback.h"
 
 #include <cstdint>
+#include <iterator>
 
+#include "base/array.h"
 #include "engine/stream/byte_stream.h"
-#include "game/core/vector_dynamic.h"
 #include "ra/core/defines.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/selection.h"
@@ -72,21 +73,21 @@ void Do_Record_Playback() {
     record->WriteObject(TheMap().DesiredTacticalCoord);
 
     // Save the current object list count
-    count = static_cast<int>(TheWorld().current_object().Count());
+    count = static_cast<int>(std::ssize(TheWorld().current_object()));
     record->WriteObject(count);
 
     // Save a CRC of the selected-object list.
     sum = 0;
     for (int i = 0; i < count; i++) {
-      ltgt =
-          static_cast<uint32_t>(TheWorld().current_object().at(i)->As_Target());
+      ltgt = static_cast<uint32_t>(
+          base::At(TheWorld().current_object(), i)->As_Target());
       sum += ltgt;
     }
     record->WriteObject(sum);
 
     // Save all selected objects.
     for (int i = 0; i < count; i++) {
-      tgt = TheWorld().current_object().at(i)->As_Target();
+      tgt = base::At(TheWorld().current_object(), i)->As_Target();
       record->WriteObject(tgt);
     }
 
@@ -115,9 +116,9 @@ void Do_Record_Playback() {
       uint32_t sum2 = 0;
       // Compute a CRC of the current object-selection list.
       sum = 0;
-      for (int i = 0; i < TheWorld().current_object().Count(); i++) {
+      for (int i = 0; i < std::ssize(TheWorld().current_object()); i++) {
         ltgt = static_cast<uint32_t>(
-            TheWorld().current_object().at(i)->As_Target());
+            base::At(TheWorld().current_object(), i)->As_Target());
         sum += ltgt;
       }
 

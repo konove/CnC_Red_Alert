@@ -137,7 +137,6 @@
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/facing.h"
@@ -1733,8 +1732,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
             TheWorld().base().Get_Node(this) == nullptr) {
           //				if (IsToRebuild && Class->IsBuildable &&
           // Base.House == House->Class->House && Base.Get_Node(this) == 0) {
-          TheWorld().base().Nodes.Add(
-              BaseNodeClass(Class->Type, Coord_Cell(Coord)));
+          TheWorld().base().Nodes.emplace_back(Class->Type, Coord_Cell(Coord));
         }
 
         /*

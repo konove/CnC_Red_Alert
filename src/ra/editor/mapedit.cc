@@ -65,6 +65,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <memory>
 #include <span>
 #include <string_view>
@@ -72,6 +73,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "base/algorithm.h"
 #include "base/array.h"
 #include "base/fixed.h"
 #include "base/numeric.h"
@@ -83,7 +85,6 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/facing.h"
 #include "game/ui/control.h"
@@ -651,8 +652,8 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     /*
     **	Unselect object & hide popup controls
     */
-    if (TheWorld().current_object().Count()) {
-      TheWorld().current_object().at(0)->Unselect();
+    if (std::ssize(TheWorld().current_object())) {
+      base::At(TheWorld().current_object(), 0)->Unselect();
       Popup_Controls();
     }
     Main_Menu();
@@ -678,8 +679,8 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         /*
         **	Unselect current object, hide popup controls
         */
-        if (TheWorld().current_object().Count()) {
-          TheWorld().current_object().at(0)->Unselect();
+        if (std::ssize(TheWorld().current_object())) {
+          base::At(TheWorld().current_object(), 0)->Unselect();
           Popup_Controls();
         }
 
@@ -1063,7 +1064,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
             **	Select an object or a cell
             **	Check for double-click
             */
-            if (TheWorld().current_object().Count() &&
+            if (std::ssize(TheWorld().current_object()) &&
                 ((engine::platform::SystemTicks() - LastClickTime) < 15)) {
             } else {
               /*
@@ -1103,8 +1104,8 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     case Shift(Alt(KN_DOWN)):
     case Shift(Alt(KN_LEFT)):
     case Shift(Alt(KN_RIGHT)):
-      if (TheWorld().current_object().Count()) {
-        TheWorld().current_object().at(0)->Move(KN_To_Facing(input));
+      if (std::ssize(TheWorld().current_object())) {
+        base::At(TheWorld().current_object(), 0)->Move(KN_To_Facing(input));
         Changed = true;
       }
       input = KN_NONE;
@@ -1118,31 +1119,32 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       /*
       **	Delete currently-selected object's trigger, or the object
       */
-      if (TheWorld().current_object().Count()) {
+      if (std::ssize(TheWorld().current_object())) {
         /*
         **	Delete trigger
         */
-        if (TheWorld().current_object().at(0)->Trigger.Is_Valid()) {
-          TheWorld().current_object().at(0)->Trigger = nullptr;
+        if (base::At(TheWorld().current_object(), 0)->Trigger.Is_Valid()) {
+          base::At(TheWorld().current_object(), 0)->Trigger = nullptr;
         } else {
           /*
           ** If the current object is part of the AI's Base, remove it
           ** from the Base's Node list.
           */
-          if (TheWorld().current_object().at(0)->What_Am_I() == RTTI_BUILDING) {
+          if (base::At(TheWorld().current_object(), 0)->What_Am_I() ==
+              RTTI_BUILDING) {
             const auto* building = dynamic_cast<const BuildingClass*>(
-                TheWorld().current_object().at(0));
+                base::At(TheWorld().current_object(), 0));
             if (TheWorld().base().Is_Node(building)) {
               BaseNodeClass* node = TheWorld().base().Get_Node(
                   building);  // for removing from an AI Base
-              TheWorld().base().Nodes.Delete(*node);
+              base::EraseFirst(TheWorld().base().Nodes, *node);
             }
           }
 
           /*
           **	Delete current object
           */
-          base::DeletePooled(TheWorld().current_object().at(0));
+          base::DeletePooled(base::At(TheWorld().current_object(), 0));
 
           /*
           **	Hide the popup controls
@@ -1200,7 +1202,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       /*
       **	If that house doesn't own this object, try to transfer it
       */
-      if ((TheWorld().current_object().at(0)->Owner() != house) &&
+      if ((base::At(TheWorld().current_object(), 0)->Owner() != house) &&
           Change_House(house)) {
         Changed = true;
       }
@@ -1243,9 +1245,10 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       // break;
 
     case engine::window::ButtonKey(kPopupSellable):
-      if (TheWorld().current_object().at(0)->What_Am_I() == RTTI_BUILDING) {
-        auto* building =
-            dynamic_cast<BuildingClass*>(TheWorld().current_object().at(0));
+      if (base::At(TheWorld().current_object(), 0)->What_Am_I() ==
+          RTTI_BUILDING) {
+        auto* building = dynamic_cast<BuildingClass*>(
+            base::At(TheWorld().current_object(), 0));
 
         if (building->Class->Level != -1) {
           //				if (building->Class->IsBuildable) {
@@ -1262,9 +1265,10 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       break;
 
     case engine::window::ButtonKey(kPopupRebuildable):
-      if (TheWorld().current_object().at(0)->What_Am_I() == RTTI_BUILDING) {
-        auto* building =
-            dynamic_cast<BuildingClass*>(TheWorld().current_object().at(0));
+      if (base::At(TheWorld().current_object(), 0)->What_Am_I() ==
+          RTTI_BUILDING) {
+        auto* building = dynamic_cast<BuildingClass*>(
+            base::At(TheWorld().current_object(), 0));
 
         if (building->Class->Level != -1) {
           //				if (building->Class->IsBuildable) {
@@ -1283,14 +1287,15 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     **	Object-Editing button: Mission
     */
     case engine::window::ButtonKey(kPopupMissionlist):
-      if (TheWorld().current_object().at(0)->Is_Techno()) {
+      if (base::At(TheWorld().current_object(), 0)->Is_Techno()) {
         /*
         **	Set new mission
         */
         const MissionType mission =
             MapEditMissions.at(base::ToSize(MissionList->Current_Index()));
-        if (TheWorld().current_object().at(0)->Get_Mission() != mission) {
-          dynamic_cast<TechnoClass*>(TheWorld().current_object().at(0))
+        if (base::At(TheWorld().current_object(), 0)->Get_Mission() !=
+            mission) {
+          dynamic_cast<TechnoClass*>(base::At(TheWorld().current_object(), 0))
               ->Set_Mission(mission);
           Changed = true;
           Buttons->Flag_List_To_Redraw();
@@ -1304,12 +1309,12 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     **	Object-Editing button: Health
     */
     case engine::window::ButtonKey(kPopupHealthgauge):
-      if (TheWorld().current_object().at(0)->Is_Techno()) {
+      if (base::At(TheWorld().current_object(), 0)->Is_Techno()) {
         /*
         **	Derive strength from current gauge reading
         */
         int strength =
-            TheWorld().current_object().at(0)->Class_Of().MaxStrength *
+            base::At(TheWorld().current_object(), 0)->Class_Of().MaxStrength *
             Fixed(HealthGauge->Get_Value(), 256);
         //				strength =
         // Fixed_To_Cardinal((unsigned)CurrentObject[0]->Class_Of().MaxStrength,
@@ -1325,8 +1330,8 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         /*
         **	Set new strength
         */
-        if (strength != TheWorld().current_object().at(0)->Strength) {
-          TheWorld().current_object().at(0)->Strength =
+        if (strength != base::At(TheWorld().current_object(), 0)->Strength) {
+          base::At(TheWorld().current_object(), 0)->Strength =
               static_cast<int16_t>(strength);
           TheScreen().hidden_view().Clear();
           Flag_To_Redraw(true);
@@ -1345,9 +1350,9 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     **	Object-Editing button: Facing
     */
     case engine::window::ButtonKey(kPopupFacingdial):
-      if (TheWorld().current_object().at(0)->Is_Techno()) {
-        auto* techno =
-            dynamic_cast<TechnoClass*>(TheWorld().current_object().at(0));
+      if (base::At(TheWorld().current_object(), 0)->Is_Techno()) {
+        auto* techno = dynamic_cast<TechnoClass*>(
+            base::At(TheWorld().current_object(), 0));
         if (FacingDial->direction() != techno->PrimaryFacing.Get()) {
           /*
           **	Set body's facing
@@ -1437,15 +1442,15 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
   /*
   **	Update the text labels
   */
-  if (forced && TheWorld().current_object().Count()) {
+  if (forced && std::ssize(TheWorld().current_object())) {
     /*
     **	Display the object's name & ID
     */
     const char* label =
-        Text_String(TheWorld().current_object().at(0)->Full_Name());
+        Text_String(base::At(TheWorld().current_object(), 0)->Full_Name());
     const char* tptr = label;
     absl::SNPrintF(buf, sizeof(buf), "%s (%d)", tptr,
-                   TheWorld().current_object().at(0)->As_Target());
+                   base::At(TheWorld().current_object(), 0)->As_Target());
 
     /*
     **	print the label

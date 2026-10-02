@@ -150,6 +150,7 @@
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
+#include "base/algorithm.h"
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/fixed.h"
@@ -162,7 +163,6 @@
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
 #include "game/core/heap.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/utracker.h"
@@ -492,7 +492,7 @@ HouseClass::HouseClass(HousesType house)
                  VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
 
   base::SafeCopy(IniName, Text_String(TXT_COMPUTER));  // Default computer name.
-  TheWorld().house_triggers().at(house).Clear();
+  TheWorld().house_triggers().at(house).clear();
   Make_Ally(house);
   Assign_Handicap(TheScenario().CDifficulty);
 
@@ -783,7 +783,7 @@ void HouseClass::Init() {
   TheObjectHeaps().house().Destroy_All();
 
   for (const HousesType index : magic_enum::enum_values<HousesType>()) {
-    TheWorld().house_triggers().at(index).Clear();
+    TheWorld().house_triggers().at(index).clear();
   }
 }
 
@@ -1118,8 +1118,10 @@ void HouseClass::AI() {
   **	for themselves if they actually need to be sprung or not.
   */
   for (int index = 0;
-       index < TheWorld().house_triggers().at(Class->House).Count(); index++) {
-    if (TheWorld().house_triggers().at(Class->House).at(index)->Spring() &&
+       index < std::ssize(TheWorld().house_triggers().at(Class->House));
+       index++) {
+    if (base::At(TheWorld().house_triggers().at(Class->House), index)
+            ->Spring() &&
         index > 0) {
       index--;
       continue;
@@ -1672,12 +1674,9 @@ void HouseClass::Attacked() {
     **	now.
     */
     for (int index = 0;
-         index < TheWorld().house_triggers().at(Class->House).Count();
+         index < std::ssize(TheWorld().house_triggers().at(Class->House));
          index++) {
-      TheWorld()
-          .house_triggers()
-          .at(Class->House)
-          .at(index)
+      base::At(TheWorld().house_triggers().at(Class->House), index)
           ->Spring(TEVENT_ATTACKED);
     }
   }
@@ -3087,7 +3086,8 @@ void HouseClass::Detach(TARGET target, bool /*unused*/) {
   if (Is_Target_Trigger(target)) {
     // The original indexed by the heap ID; the table is per house type, and
     // the two only agree because houses are created in type order.
-    TheWorld().house_triggers().at(Class->House).Delete(As_Trigger(target));
+    base::EraseFirst(TheWorld().house_triggers().at(Class->House),
+                     As_Trigger(target));
   }
 }
 
@@ -7587,10 +7587,10 @@ void HouseClass::Adjust_Drain(int adjust) {
  * HISTORY: * 10/11/1996 BWG : Created. *
  *=============================================================================================*/
 void HouseClass::Update_Spied_Power_Plants() {
-  const base::ssize count = TheWorld().current_object().Count();
+  const base::ssize count = std::ssize(TheWorld().current_object());
   if (count) {
     for (int index = 0; index < count; index++) {
-      ObjectClass* tech = TheWorld().current_object().at(index);
+      ObjectClass* tech = base::At(TheWorld().current_object(), index);
       if (tech && tech->What_Am_I() == RTTI_BUILDING) {
         auto* bldg = dynamic_cast<BuildingClass*>(tech);
         if (!bldg->IsOwnedByPlayer &&

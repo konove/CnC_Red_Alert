@@ -123,7 +123,6 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/strings/number_parse.h"
-#include "base/types.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/fading_table.h"
@@ -139,8 +138,6 @@
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
 #include "game/core/heap.h"
-#include "game/core/vector.h"
-#include "game/core/vector_dynamic.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/ui/gadget.h"
@@ -1980,7 +1977,7 @@ ObjectClass* DisplayClass::Next_Object(ObjectClass* object) {
   if (object == nullptr) {
     foundmatch = true;
   }
-  for (unsigned uindex = 0; uindex < Layer.at(LAYER_GROUND).Count(); uindex++) {
+  for (int uindex = 0; uindex < Layer.at(LAYER_GROUND).Count(); uindex++) {
     ObjectClass* obj = Layer.at(LAYER_GROUND).at(uindex);
 
     /*
@@ -2026,8 +2023,7 @@ ObjectClass* DisplayClass::Prev_Object(ObjectClass* object) {
   if (object == nullptr) {
     foundmatch = true;
   }
-  for (base::ssize uindex = Layer.at(LAYER_GROUND).Count() - 1; uindex >= 0;
-       uindex--) {
+  for (int uindex = Layer.at(LAYER_GROUND).Count() - 1; uindex >= 0; uindex--) {
     ObjectClass* obj = Layer.at(LAYER_GROUND).at(uindex);
 
     /*
@@ -2572,11 +2568,11 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     **	If there is a currently selected object, then the action to perform if
     **	the left mouse button were clicked must be determined.
     */
-    if (TheWorld().current_object().Count()) {
+    if (std::ssize(TheWorld().current_object())) {
       if (object != nullptr) {
-        action = TheWorld().current_object().at(0)->What_Action(object);
+        action = base::At(TheWorld().current_object(), 0)->What_Action(object);
       } else {
-        action = TheWorld().current_object().at(0)->What_Action(cell);
+        action = base::At(TheWorld().current_object(), 0)->What_Action(cell);
       }
 
     } else {
@@ -2883,8 +2879,9 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
         break;
 
       case ACTION_NOMOVE:
-        if (TheWorld().current_object().Count() &&
-            TheWorld().current_object().at(0)->What_Am_I() == RTTI_AIRCRAFT) {
+        if (std::ssize(TheWorld().current_object()) &&
+            base::At(TheWorld().current_object(), 0)->What_Am_I() ==
+                RTTI_AIRCRAFT) {
           Set_Default_Mouse(MOUSE_NO_MOVE, wsmall);
           break;
         }
@@ -2945,9 +2942,10 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
         break;
 
       case ACTION_ATTACK:
-        if (Target_Legal(target) && TheWorld().current_object().Count() == 1 &&
-            TheWorld().current_object().at(0)->Is_Techno() &&
-            dynamic_cast<TechnoClass*>(TheWorld().current_object().at(0))
+        if (Target_Legal(target) &&
+            std::ssize(TheWorld().current_object()) == 1 &&
+            base::At(TheWorld().current_object(), 0)->Is_Techno() &&
+            dynamic_cast<TechnoClass*>(base::At(TheWorld().current_object(), 0))
                 ->In_Range(target, 0)) {
           Set_Default_Mouse(MOUSE_STAY_ATTACK, wsmall);
           break;
@@ -3189,8 +3187,8 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
       **	Toggle the select state of the object.
       */
       if (action == ACTION_TOGGLE_SELECT) {
-        if (!object || !TheWorld().current_object().Count() ||
-            TheWorld().current_object().at(0)->Owner() !=
+        if (!object || !std::ssize(TheWorld().current_object()) ||
+            base::At(TheWorld().current_object(), 0)->Owner() !=
                 ThePlayer()->Class->House) {
           action = ACTION_SELECT;
         } else {
@@ -3232,15 +3230,16 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         TheWorld().form_max_speed() = game::MPH_LIGHT_SPEED;
 
         if ((action == ACTION_MOVE || action == ACTION_NOMOVE) &&
-            TheWorld().current_object().Count()) {
+            std::ssize(TheWorld().current_object())) {
           /*
           ** Scan all units.  If any are selected that shouldn't be, or aren't
           ** selected but should be, then this is not a formation move.
           */
           int group = 254;  // init to invalid group #
 
-          if (TheWorld().current_object().at(0)->Is_Foot()) {
-            group = dynamic_cast<FootClass*>(TheWorld().current_object().at(0))
+          if (base::At(TheWorld().current_object(), 0)->Is_Foot()) {
+            group = dynamic_cast<FootClass*>(
+                        base::At(TheWorld().current_object(), 0))
                         ->Group;
           }
 
@@ -3255,9 +3254,10 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           **	are all of the same team and have been assigned a particular
           *formation
           */
-          for (int index = 0; index < TheWorld().current_object().Count();
+          for (int index = 0; index < std::ssize(TheWorld().current_object());
                index++) {
-            const ObjectClass* tobject = TheWorld().current_object().at(index);
+            const ObjectClass* tobject =
+                base::At(TheWorld().current_object(), index);
 
             /*
             **	Only moveable (i.e., FootClass) objects can ever be in a
@@ -3336,9 +3336,9 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           }
         }
 
-        for (int index = 0; index < TheWorld().current_object().Count();
+        for (int index = 0; index < std::ssize(TheWorld().current_object());
              index++) {
-          ObjectClass* tobject = TheWorld().current_object().at(index);
+          ObjectClass* tobject = base::At(TheWorld().current_object(), index);
 
           if (object != nullptr) {
             tobject->Active_Click_With(tobject->What_Action(object), object);
@@ -3895,17 +3895,18 @@ void DisplayClass::Center_Map(COORDINATE center) {
   //	unsigned y = 0;
   bool centerit = false;
 
-  if (TheWorld().current_object().Count()) {
-    for (int index = 0; index < TheWorld().current_object().Count(); index++) {
+  if (std::ssize(TheWorld().current_object())) {
+    for (int index = 0; index < std::ssize(TheWorld().current_object());
+         index++) {
       const COORDINATE coord =
-          TheWorld().current_object().at(index)->Center_Coord();
+          base::At(TheWorld().current_object(), index)->Center_Coord();
 
       x += Coord_X(coord);
       y += Coord_Y(coord);
     }
 
-    x = static_cast<int>(x / TheWorld().current_object().Count());
-    y = static_cast<int>(y / TheWorld().current_object().Count());
+    x = static_cast<int>(x / std::ssize(TheWorld().current_object()));
+    y = static_cast<int>(y / std::ssize(TheWorld().current_object()));
     centerit = true;
   }
 

@@ -600,7 +600,7 @@ void ChronalVortexClass::Attack() {
   /*
   ** First scan - find any object directly above the vortex.
   */
-  for (unsigned i = 0; i < MouseClass::Layer.at(LAYER_GROUND).Count(); i++) {
+  for (int i = 0; i < MouseClass::Layer.at(LAYER_GROUND).Count(); i++) {
     ObjectClass* obj = MouseClass::Layer.at(LAYER_GROUND).at(i);
 
     if (obj->Is_Techno() && obj->Strength > 0) {

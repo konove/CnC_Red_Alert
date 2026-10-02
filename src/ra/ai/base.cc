@@ -55,8 +55,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 
 #include "absl/strings/str_format.h"
+#include "base/array.h"
+#include "base/numeric.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "base/types.h"
@@ -119,7 +122,7 @@ bool BaseNodeClass::operator!=(const BaseNodeClass& node) const {
  *=============================================================================================*/
 bool BaseNodeClass::operator>(const BaseNodeClass& /*unused*/) { return true; }
 
-BaseClass::~BaseClass() { Nodes.Clear(); }
+BaseClass::~BaseClass() { Nodes.clear(); }
 
 /***********************************************************************************************
  * BaseClass::Is_Built -- Tells if given item in the list has been built yet *
@@ -154,7 +157,7 @@ BuildingClass* BaseClass::Get_Building(int index) const {
   ** Check the location on the map where this building should be; if it's
   ** there, return a pointer to it.
   */
-  const auto& node = Nodes.at(index);
+  const auto& node = base::At(Nodes, index);
   const CELL target_cell = node.Cell;
 
   // Create a reference to the map cell to avoid repeated lookups.
@@ -233,10 +236,10 @@ bool BaseClass::Is_Node(const BuildingClass* obj) {
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
 BaseNodeClass* BaseClass::Get_Node(const BuildingClass* obj) {
-  for (int i = 0; i < Nodes.Count(); i++) {
-    if (obj->Class->Type == Nodes.at(i).Type &&
-        Coord_Cell(obj->Coord) == Nodes.at(i).Cell) {
-      return &Nodes.at(i);
+  for (int i = 0; i < std::ssize(Nodes); i++) {
+    if (obj->Class->Type == base::At(Nodes, i).Type &&
+        Coord_Cell(obj->Coord) == base::At(Nodes, i).Cell) {
+      return &base::At(Nodes, i);
     }
   }
   return nullptr;
@@ -258,9 +261,9 @@ BaseNodeClass* BaseClass::Get_Node(const BuildingClass* obj) {
  * HISTORY: * 03/12/1996 JLB : Created. *
  *=============================================================================================*/
 BaseNodeClass* BaseClass::Get_Node(CELL cell) {
-  for (int index = 0; index < Nodes.Count(); index++) {
-    if (cell == Nodes.at(index).Cell) {
-      return &Nodes.at(index);
+  for (int index = 0; index < std::ssize(Nodes); index++) {
+    if (cell == base::At(Nodes, index).Cell) {
+      return &base::At(Nodes, index);
     }
   }
   return nullptr;
@@ -287,21 +290,21 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
   ** Loop through all node entries, returning a pointer to the first
   ** un-built one that matches the requested type.
   */
-  for (int i = 0; i < Nodes.Count(); i++) {
+  for (int i = 0; i < std::ssize(Nodes); i++) {
     /*
     ** For STRUCT_NONE, return the first hole found
     */
     if (type == STRUCT_NONE) {
       if (!Is_Built(i)) {
-        return &Nodes.at(i);
+        return &base::At(Nodes, i);
       }
 
     } else {
       /*
       ** For a "real" building type, return the first hold for that type
       */
-      if (Nodes.at(i).Type == type && !Is_Built(i)) {
-        return &Nodes.at(i);
+      if (base::At(Nodes, i).Type == type && !Is_Built(i)) {
+        return &base::At(Nodes, i);
       }
     }
   }
@@ -369,7 +372,7 @@ void BaseClass::Read_INI(CCINIClass& ini) {
     /*
     ** Add this node to the Base's list
     */
-    Nodes.Add(node);
+    Nodes.push_back(node);
   }
 }
 
@@ -406,18 +409,19 @@ void BaseClass::Write_INI(CCINIClass& ini) {
     **	they must be read in the same order they were created, so "000" must be
     **	read first, etc.
     */
-    ini.Put_Int(INI_Name(), "Count", static_cast<int>(Nodes.Count()));
+    ini.Put_Int(INI_Name(), "Count", static_cast<int>(std::ssize(Nodes)));
 
     // Write each entry into the INI
-    for (base::ssize i = 0; i < Nodes.Count(); i++) {
+    for (base::ssize i = 0; i < std::ssize(Nodes); i++) {
       char buf[128];
       char uname[10];
 
       absl::SNPrintF(uname, sizeof(uname), "%03td", i);
 
-      absl::SNPrintF(buf, sizeof(buf), "%s,%d",
-                     BuildingTypeClass::As_Reference(Nodes.at(i).Type).IniName,
-                     Nodes.at(i).Cell);
+      absl::SNPrintF(
+          buf, sizeof(buf), "%s,%d",
+          BuildingTypeClass::As_Reference(base::At(Nodes, i).Type).IniName,
+          base::At(Nodes, i).Cell);
 
       ini.Put_String(INI_Name(), uname, buf);
     }
@@ -427,20 +431,15 @@ void BaseClass::Write_INI(CCINIClass& ini) {
 template <class Archive>
 void BaseClass::Serialize(Archive& ar) {
   ar(House);
-  auto count = static_cast<int32_t>(Nodes.Count());
+  auto count = static_cast<int32_t>(std::ssize(Nodes));
   ar(count);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || count < 0 || count > MAP_CELL_TOTAL) {
       ar.Fail("invalid base node count");
       return;
     }
-    Nodes.Clear();
-    // Clear() releases the storage and Add() grows it back ten slots at a
-    // time, copying every element already there each time. The count is known
-    // here, so take the storage in one step.
-    if (count > 0) {
-      Nodes.Resize(count);
-    }
+    Nodes.clear();
+    Nodes.reserve(base::ToSize(count));
     for (int i = 0; i < count; ++i) {
       BaseNodeClass node;
       ar(node.Type, node.Cell);
@@ -449,11 +448,11 @@ void BaseClass::Serialize(Archive& ar) {
         ar.Fail("invalid base node");
         return;
       }
-      Nodes.Add(node);
+      Nodes.push_back(node);
     }
   } else {
     for (int i = 0; i < count; ++i) {
-      ar(Nodes.at(i).Type, Nodes.at(i).Cell);
+      ar(base::At(Nodes, i).Type, base::At(Nodes, i).Cell);
     }
   }
 }

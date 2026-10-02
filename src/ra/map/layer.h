@@ -40,7 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_MAP_LAYER_H_
 #define CNC_RED_ALERT_RA_MAP_LAYER_H_
 
-#include "game/core/vector_dynamic.h"
+#include <vector>
+
+#include "base/array.h"
 
 class ArchiveReader;
 class ArchiveWriter;
@@ -49,7 +51,13 @@ namespace ra {
 
 class ObjectClass;
 
-class LayerClass : public game::DynamicVectorClass<ObjectClass*> {
+// One of the display's object layers (ground, air, top), or the logic
+// list: the objects in the order they are drawn or processed. A layer may be
+// kept roughly sorted for drawing; Sort() makes one bubble pass per call and
+// Sorted_Add() inserts before the first object that sorts after the new one.
+// Both orders are game state: they decide draw order and, for the logic list,
+// the order objects act in, which multiplayer games must agree on.
+class LayerClass {
  public:
   LayerClass() = default;
   virtual ~LayerClass();
@@ -62,17 +70,39 @@ class LayerClass : public game::DynamicVectorClass<ObjectClass*> {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  //-----------------------------------------------------------------
+  // Returns the number of objects in the layer.
+  [[nodiscard]] int Count() const { return static_cast<int>(objects_.size()); }
+
+  // Returns the object at `index`, which must be in [0, Count()).
+  [[nodiscard]] ObjectClass* at(int index) const {
+    return base::At(objects_, index);
+  }
+
+  // Returns the position of `object` in the layer, or -1.
+  [[nodiscard]] int ID(const ObjectClass* object) const;
+
+  // Removes `object`, keeping the others in order. Returns false if the layer
+  // does not hold it.
+  bool Delete(const ObjectClass* object);
+
+  // Empties the layer.
+  void Clear() { objects_.clear(); }
+
+  // Makes one bubble pass towards draw order.
   void Sort();
+
+  // Appends `object`, or with `sort` inserts it in draw order. Returns true.
   bool Submit(ObjectClass* object, bool sort = false);
+
+  // Inserts `object` before the first object that sorts after it. Returns
+  // true.
   bool Sorted_Add(ObjectClass* object);
 
   virtual void Init() { Clear(); }
   virtual void One_Time() {}
 
-  /*
-  **	File I/O.
-  */
+ private:
+  std::vector<ObjectClass*> objects_;
 };
 
 extern template void LayerClass::Serialize<ArchiveWriter>(ArchiveWriter&);

@@ -32,9 +32,9 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "absl/base/attributes.h"
-#include "game/core/vector_dynamic.h"
 #include "ra/net/session.h"
 #include "ra/ui/edit.h"
 #include "ra/ui/gauge.h"
@@ -333,12 +333,12 @@ class WOL_GameSetupDialog {
   SCENARIO_GAMEKIND ScenKindCurrent{
       SCENARIO_UNINITIALIZED};  //	Describes what gamekind of
                                 // scenarios we are viewing, if host.
-  game::DynamicVectorClass<const char*>
+  std::vector<const char*>
       ar_szScenarios[4];  //	Lists of scenarios, by SCENARIO_GAMEKIND.
   //	ar_szScenIndexes parallels ar_szScenarios, holds ScenarioIndex. It's
   // actually an int, but I'm using void* to avoid 	template instantiation
   // problems and the need to change defines.h.
-  game::DynamicVectorClass<int> ar_szScenIndexes[4];
+  std::vector<int> ar_szScenIndexes[4];
 
   //------------------------------------------------------------------------
   static constexpr int kButtonDisconnect = 100;
