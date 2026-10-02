@@ -595,15 +595,15 @@ Per stage and at the end of Part A:
 
 ## Progress
 
-| Step       | Status  | Commit                                                                 |
-| ---------- | ------- | ---------------------------------------------------------------------- |
-| A1         | Done    | f0498c21                                                               |
-| A2         | Done    | 6be50192                                                               |
-| A3         | Done    | b6502360, after 22f80cbc dropped the display.h includes A1 left unused |
-| B1         | Done    | f7d220ed                                                               |
-| B2 RA / TD | Done    | RA: 6b8676be, 9ede4443; TD: e910e349, 9ea20c02                         |
-| B3 RA / TD | RA done | RA: 85837eab, 24a549f5                                                 |
-| B4 RA / TD |         |                                                                        |
+| Step       | Status | Commit                                                                 |
+| ---------- | ------ | ---------------------------------------------------------------------- |
+| A1         | Done   | f0498c21                                                               |
+| A2         | Done   | 6be50192                                                               |
+| A3         | Done   | b6502360, after 22f80cbc dropped the display.h includes A1 left unused |
+| B1         | Done   | f7d220ed                                                               |
+| B2 RA / TD | Done   | RA: 6b8676be, 9ede4443; TD: e910e349, 9ea20c02                         |
+| B3 RA / TD | Done   | RA: 85837eab, 24a549f5; TD: bbe00c09, 66bccc4a                         |
+| B4 RA / TD |        |                                                                        |
 
 Part A notes:
 
@@ -736,3 +736,37 @@ Stage B3 (RA) notes:
   `Cell` class can replace it there (`target.h` must keep including only light headers, since
   `defines.h` exports it). `FromCellIndex` sign-extends a negative `CELL` into the 24-bit value and
   `cell_index()` truncates back; a `Cell` sentinel must keep that word.
+
+Stage B3 (TD) notes:
+
+- `td::Target` lives in `td/core/target.h`, exported by `defines.h`, with RA's member names where
+  the meaning matches. It wraps the 16-bit word (`packed()` is `uint16_t`, saved as 2 bytes);
+  `KindType` moved into the header, and `CELL` into the new `td/core/cell.h` (also exported by
+  `defines.h`) so the header needs no `defines.h`. Stage B4 can turn that alias into the `Cell`
+  class in place. `td/objects/target.h` is deleted; `target.cc` keeps the out-of-line members.
+- Factories: `Make(kind, value)` (was `Build_Target`), `FromPacked`, and `FromCellIndex(cell)` (was
+  `As_Target(CELL)`; TD has only the cell-index encoding, so it takes RA's name for that encoding,
+  and `CellClass::As_Target()` gives the same word). There is no `Of()`, no `is_valid()` and no
+  multi-kind member: TD never called the equivalents.
+- `Make()` does not mask the value, unlike RA's: `Build_Target` ORed the whole value over the kind,
+  so 4096 or more, or a negative value, changes the kind (`Make(KIND_UNIT, -1)` is `0xFFFF`,
+  `Make(KIND_UNIT, 4096)` is `Make(KIND_INFANTRY, 0)`). `target_test.cc` pins it. A team's
+  move/unload mission to an unset waypoint (-1) reaches it; listed in `TODO.md`. Every heap is far
+  below 4096 slots and the 64x64 map's cells are 0..4095, so objects and real cells fit.
+- Decoders: `AsObject()`/`AsTechno()` (live objects only), `AsAircraft()`/`AsBuilding()`/`AsUnit()`
+  (the heap slot), `AsCoordinate()`, `AsCell()`, `AsMovementCoordinate()`. TD had no slot-vs-live
+  member pair, so there are no `...InSlot()` decoders. The six free decoders with no callers
+  (`As_Animation`, `As_Bullet`, `As_Infantry`, `As_Team`, `As_TeamType`, `As_Trigger`) are gone.
+- Raw words go through `FromPacked(static_cast<uint16_t>(...))` and `packed()`: the radio `param`
+  (two `RADIO_MOVE_HERE` handlers now name it `where`), TMISSION_ATTACKTARCOM's argument,
+  `Create_Special_Reinforcement()`'s argument, the recording's selection sum, the editor's object
+  label, the per-frame smoke log and `SerializeObjectList()`'s duplicate bitset.
+- `EventClass` (24 bytes, now also `static_assert`ed trivially copyable) and `TeamClass` have
+  members named `Target`, so `event.h`, `team.h` and `team.cc` write `td::Target`.
+- `BuildingClass::Fire_Direction()` keeps `game::AsDirection(TarCom.packed())`, as RA does; the
+  `TODO.md` entry now covers both games.
+- The one remaining whole-word `TARGET` in `src/td` is the music theme name `"TARGET"` in
+  `assets/theme.cc`, an INI/file name, not the type.
+- For B4: `Target::FromCellIndex()` takes and `AsCell()` returns `CELL`, now declared in
+  `td/core/cell.h`; `FromCellIndex()` sign-extends a negative cell into the whole word, which a
+  `Cell` sentinel must keep.
