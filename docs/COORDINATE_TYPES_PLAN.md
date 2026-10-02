@@ -595,15 +595,15 @@ Per stage and at the end of Part A:
 
 ## Progress
 
-| Step       | Status | Commit                                                                 |
-| ---------- | ------ | ---------------------------------------------------------------------- |
-| A1         | Done   | f0498c21                                                               |
-| A2         | Done   | 6be50192                                                               |
-| A3         | Done   | b6502360, after 22f80cbc dropped the display.h includes A1 left unused |
-| B1         | Done   | f7d220ed                                                               |
-| B2 RA / TD | Done   | RA: 6b8676be, 9ede4443; TD: e910e349, 9ea20c02                         |
-| B3 RA / TD |        |                                                                        |
-| B4 RA / TD |        |                                                                        |
+| Step       | Status  | Commit                                                                 |
+| ---------- | ------- | ---------------------------------------------------------------------- |
+| A1         | Done    | f0498c21                                                               |
+| A2         | Done    | 6be50192                                                               |
+| A3         | Done    | b6502360, after 22f80cbc dropped the display.h includes A1 left unused |
+| B1         | Done    | f7d220ed                                                               |
+| B2 RA / TD | Done    | RA: 6b8676be, 9ede4443; TD: e910e349, 9ea20c02                         |
+| B3 RA / TD | RA done | RA: 85837eab, 24a549f5                                                 |
+| B4 RA / TD |         |                                                                        |
 
 Part A notes:
 
@@ -698,3 +698,41 @@ Stage B2 (TD) notes:
   `AircraftClass::Target_Coord()`/`Fire_Coord()`. A merged class could read unsigned like RA and
   give TD a signed accessor (or `static_cast<int16_t>` at those sites); offsets that are only added
   or negated (`Smooth_Turn`, the track tables) do not care.
+
+Stage B3 (RA) notes:
+
+- `ra::Target` lives in `ra/core/target.h`, exported by `defines.h`. It includes `coordinate.h`,
+  `packed.h` and the new `ra/core/rtti.h` (RTTIType, moved out of `defines.h`); `CELL` moved into
+  `packed.h`, which no longer includes `defines.h`. `ra/objects/target.h` is deleted;
+  `ra/objects/target.cc` holds the out-of-line members. The word is `int32_t`, as `TARGET` was, so
+  `packed()` prints, sums and compares exactly as the alias did.
+- Factories: `Make(kind, value)` (was `Build_Target`, `TargetClass(rtti, id)`), `FromPacked`,
+  `NoneWithAllValueBits()` (was `TargetClass()`, word `0x00FFFFFF`: true as a bool, not
+  `is_valid()`), `Of(const AbstractClass*/AbstractTypeClass*/CellClass*)` (null gives `Target{}`).
+- RTTI_CELL keeps both encodings: `FromCellIndex(cell)` (was `TargetClass(CELL)`, and what
+  `Of(const CellClass*)` gives), read by `cell_index()` and `AsMovementCoordinate()`; and the 12-bit
+  sub-cell spot `FromCell(cell)`/`FromCoordinate(coord)` (were the `As_Target` overloads, and what
+  `CellClass::As_Target()` gives), read by `AsCoordinate()` and `AsCell()`. The only `FromCellIndex`
+  producer is the construction yard's ARCHIVE event, whose word the MCV later reads as a sub-cell
+  spot (in `TODO.md`). `AsMovementCoordinate()` has no callers, as before.
+- Decoder pairs (free `As_X(TARGET)` against `xTargetClass::As_X()`): `As_Object` and `As_Techno`
+  differ (the free ones return live objects only, the members the heap slot whatever it holds, and
+  the member `As_Object` also covers smudges and overlays), so both survive as `AsObject()`/
+  `AsTechno()` and `AsObjectInSlot()`/`AsTechnoInSlot()`; `EventClass::Execute()` was the only user
+  of the members. The single-kind members (`As_Unit`, `As_Building`, ...) equal the free ones for
+  every slot holding its object and differ only by a `dynamic_cast` of a dead slot; the one caller
+  (`Execute()`'s PRIMARY, `As_Building`) has the old body inlined, the rest had no callers. The
+  member `As_Cell` (a `CellClass*` from the cell index) had no callers either. All are gone.
+- Raw words stay raw through `FromPacked`/`packed()`: the radio `param`, the TMISSION_ATTACKTARCOM
+  data value, the SyncBug INI value, the recording's selection CRC, the multiplayer CRC and its
+  dump, the per-frame log. `ResolveSavedObject()` takes a `Target`.
+- `EventClass` and `TeamClass` have members named `Target`, so their headers and `team.cc`/
+  `event.cc` write `ra::Target`. `EventClass` stays 32 bytes.
+- `BuildingClass::Fire_Direction()` returns `game::AsDirection(TarCom.packed())`, kept from
+  `48924849`, which had turned the original `Direction(TarCom)` into the low byte of the target
+  word; listed in `TODO.md`.
+- For B4: `Target::FromCellIndex`, `FromCell`, `cell_index()` and `AsCell()` take or return `CELL`
+  and `FromCell` uses `Cell_X`/`Cell_Y` from `packed.h`; `CELL` now lives in `packed.h`, so the
+  `Cell` class can replace it there (`target.h` must keep including only light headers, since
+  `defines.h` exports it). `FromCellIndex` sign-extends a negative `CELL` into the 24-bit value and
+  `cell_index()` truncates back; a `Cell` sentinel must keep that word.
