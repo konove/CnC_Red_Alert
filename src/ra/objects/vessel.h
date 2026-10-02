@@ -148,12 +148,12 @@ class VesselClass : public DriveClass {
                                    int32_t& param) override;
   void AI() override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
-  void Assign_Destination(TARGET target) override;
+  void Assign_Destination(Target target) override;
 
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source = nullptr,
                                bool forced = false) override;
-  [[nodiscard]] game::FireErrorType Can_Fire(TARGET target,
+  [[nodiscard]] game::FireErrorType Can_Fire(Target target,
                                              int which) const override;
 
   void Enter_Idle_Mode(bool initial = false) override;
@@ -161,9 +161,9 @@ class VesselClass : public DriveClass {
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
   void Active_Click_With(ActionType action, CELL cell) override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;
-  TARGET Greatest_Threat(ThreatType threat) override;  // const;
+  Target Greatest_Threat(ThreatType threat) override;  // const;
   [[nodiscard]] bool Is_Allowed_To_Recloak() const override;
-  BulletClass* Fire_At(TARGET target, int which = 0) override;
+  BulletClass* Fire_At(Target target, int which = 0) override;
   /*
   **	File I/O.
   */

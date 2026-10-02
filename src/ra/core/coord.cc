@@ -39,7 +39,7 @@
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/objects/target.h"
+#include "ra/core/target.h"
 
 namespace ra {
 
@@ -141,8 +141,8 @@ int Distance(const Coordinate coord1, const Coordinate coord2) {
   return diff2 + (diff1 / 2);
 }
 
-int Distance(const TARGET target1, const TARGET target2) {
-  return Distance(As_Coord(target1), As_Coord(target2));
+int Distance(const Target target1, const Target target2) {
+  return Distance(target1.AsCoordinate(), target2.AsCoordinate());
 }
 
 std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,

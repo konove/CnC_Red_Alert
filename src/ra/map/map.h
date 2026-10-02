@@ -108,7 +108,7 @@ class MapClass : public GScreenClass {
   bool Zone_Cell(CELL cell, int zone);
   int Zone_Span(CELL cell, int zone, MZoneType check);
   bool Destroy_Bridge_At(CELL cell);
-  void Detach(TARGET target, bool all = true);
+  void Detach(Target target, bool all = true);
   void Shroud_The_Map();
 
   int32_t Overpass();

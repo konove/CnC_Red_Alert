@@ -41,7 +41,7 @@ inline game::DirType Direction(CELL cell1, CELL cell2) {
 int Distance(Coordinate coord1, Coordinate coord2);
 
 // Returns the lepton distance between two targets. Both targets must be valid.
-int Distance(TARGET target1, TARGET target2);
+int Distance(Target target1, Target target2);
 
 // Returns a kRefreshEol-terminated list of cell offsets that an object of
 // `maxsize` pixels overlaps. Limited to maxsize <= 48 for the lookup path;

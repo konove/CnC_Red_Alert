@@ -96,7 +96,7 @@ class AbstractClass {
 
   [[nodiscard]] virtual const char* Name() const { return ""; }
   [[nodiscard]] virtual HousesType Owner() const { return HOUSE_NONE; }
-  [[nodiscard]] TARGET As_Target() const { return Build_Target(RTTI, ID); }
+  [[nodiscard]] Target As_Target() const { return Target::Make(RTTI, ID); }
   [[nodiscard]] RTTIType What_Am_I() const { return RTTI; }
 
   [[nodiscard]] virtual Coordinate Center_Coord() const { return Coord; }
@@ -108,14 +108,14 @@ class AbstractClass {
   [[nodiscard]] game::DirType Direction(const Coordinate coord) const {
     return ra::Direction(Center_Coord(), coord);
   }
-  [[nodiscard]] game::DirType Direction(TARGET target) const;
+  [[nodiscard]] game::DirType Direction(Target target) const;
   [[nodiscard]] game::DirType Direction(const CELL cell) const {
     return ra::Direction(Coord_Cell(Center_Coord()), cell);
   }
 
   // Returns distance in leptons to the target. For buildings, subtracts
   // the building's average radius so range checks measure to the edge.
-  [[nodiscard]] int Distance(TARGET target) const;
+  [[nodiscard]] int Distance(Target target) const;
   [[nodiscard]] int Distance(const Coordinate coord) const {
     return ra::Distance(Center_Coord(), coord);
   }

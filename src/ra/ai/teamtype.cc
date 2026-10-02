@@ -108,6 +108,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/data/ccini.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug.h"
@@ -115,7 +116,6 @@
 #include "ra/map/world.h"
 #include "ra/objects/house.h"
 #include "ra/objects/mission.h"
-#include "ra/objects/target.h"
 #include "ra/objects/type.h"
 #include "ra/startup/conquer.h"
 #include "ra/ui/checkbox.h"
@@ -1727,9 +1727,9 @@ const char* TeamMissionClass::Description(int index) const {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Detach(TARGET target, bool /*unused*/) {
-  if (Is_Target_TriggerType(target) && Trigger != nullptr &&
-      Trigger == As_TriggerType(target)) {
+void TeamTypeClass::Detach(Target target, bool /*unused*/) {
+  if (target.kind() == RTTI_TRIGGERTYPE && Trigger != nullptr &&
+      Trigger == target.AsTriggerType()) {
     Trigger = nullptr;
   }
 }

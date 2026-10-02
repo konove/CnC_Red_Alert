@@ -160,6 +160,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/data/ccini.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
@@ -179,7 +180,6 @@
 #include "ra/objects/cell.h"
 #include "ra/objects/foot.h"
 #include "ra/objects/infantry.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
@@ -2637,7 +2637,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
         if (shadow) {
           action = ACTION_NOMOVE;
         }
-        const ObjectClass* tobject = As_Object(ThePlayer()->UnitToTeleport);
+        const ObjectClass* tobject = ThePlayer()->UnitToTeleport.AsObject();
 
         /*
         **	Determine if the object can be teleported to the destination
@@ -2647,7 +2647,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
           const auto* uobject = dynamic_cast<const TechnoClass*>(tobject);
           if (!uobject->Can_Teleport_Here(cell)) {
             //					if (((UnitClass
-            //*)As_Object(PlayerPtr->UnitToTeleport))->Can_Enter_Cell(cell,
+            //*)PlayerPtr->UnitToTeleport.AsObject())->Can_Enter_Cell(cell,
             // FACING_NONE) != MOVE_OK) {
             action = ACTION_NOMOVE;
           }
@@ -2798,12 +2798,12 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
                                  ActionType action, bool wsmall) {
   IsTentative = false;
 
-  TARGET target = kTargetNone;
+  Target target = Target{};
   if (object != nullptr) {
     target = object->As_Target();
   } else {
     if (cell != -1) {
-      target = As_Target(cell);
+      target = Target::FromCell(cell);
     }
   }
 
@@ -2938,8 +2938,7 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
         break;
 
       case ACTION_ATTACK:
-        if (Target_Legal(target) &&
-            std::ssize(TheWorld().current_object()) == 1 &&
+        if (target && std::ssize(TheWorld().current_object()) == 1 &&
             base::At(TheWorld().current_object(), 0)->Is_Techno() &&
             dynamic_cast<TechnoClass*>(base::At(TheWorld().current_object(), 0))
                 ->In_Range(target, 0)) {
@@ -3365,14 +3364,14 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         if (object != nullptr && action == ACTION_REPAIR &&
             object->What_Am_I() == RTTI_BUILDING) {
           TheNetwork().out_list().Add(
-              EventClass(EventClass::REPAIR, TargetClass(object)));
+              EventClass(EventClass::REPAIR, Target::Of(object)));
         }
         if (action == ACTION_SELL_UNIT && object) {
           switch (object->What_Am_I()) {
             case RTTI_AIRCRAFT:
             case RTTI_UNIT:
               TheNetwork().out_list().Add(
-                  EventClass(EventClass::SELL, TargetClass(object)));
+                  EventClass(EventClass::SELL, Target::Of(object)));
               break;
 
             case RTTIType::RTTI_NONE:
@@ -3412,7 +3411,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         if (action == ACTION_SELL) {
           if (object) {
             TheNetwork().out_list().Add(
-                EventClass(EventClass::SELL, TargetClass(object)));
+                EventClass(EventClass::SELL, Target::Of(object)));
           } else {
             TheNetwork().out_list().Add(EventClass(EventClass::SELLCELL, cell));
             //						OutList.Add(EventClass(EventClass::SELL,

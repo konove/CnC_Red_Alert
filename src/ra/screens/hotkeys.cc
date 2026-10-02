@@ -39,6 +39,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug.h"
 #include "ra/debug/debug_state.h"
@@ -53,7 +54,6 @@
 #include "ra/objects/building.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
-#include "ra/objects/target.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
 #include "ra/screens/goptions.h"
@@ -218,7 +218,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
             (tech->Can_Player_Move() ||
              (tech->Can_Player_Fire() && tech->What_Am_I() != RTTI_BUILDING))) {
           TheNetwork().out_list().Add(
-              EventClass(EventClass::IDLE, TargetClass(tech)));
+              EventClass(EventClass::IDLE, Target::Of(tech)));
         }
       }
     }
@@ -235,7 +235,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
         if (tech != nullptr && tech->Can_Player_Move() &&
             tech->Can_Player_Fire()) {
           TheNetwork().out_list().Add(
-              EventClass(TargetClass(tech), MISSION_GUARD_AREA));
+              EventClass(Target::Of(tech), MISSION_GUARD_AREA));
         }
       }
     }
@@ -251,7 +251,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
 
         if (tech != nullptr && tech->Can_Player_Move()) {
           TheNetwork().out_list().Add(
-              EventClass(EventClass::SCATTER, TargetClass(tech)));
+              EventClass(EventClass::SCATTER, Target::Of(tech)));
         }
       }
     }

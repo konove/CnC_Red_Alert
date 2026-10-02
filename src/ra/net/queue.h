@@ -51,17 +51,17 @@
 #include <span>
 
 #include "ra/core/defines.h"
-#include "ra/objects/target.h"
+#include "ra/core/target.h"
 
 namespace ra {
 
-bool Queue_Target(TargetClass whom, TARGET target);
-bool Queue_Destination(TargetClass whom, TARGET target);
-bool Queue_Mission(TargetClass whom, MissionType mission);
-bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
-                   TARGET destination);
-bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
-                   TARGET destination, SpeedType speed, game::MPHType maxspeed);
+bool Queue_Target(Target whom, Target target);
+bool Queue_Destination(Target whom, Target target);
+bool Queue_Mission(Target whom, MissionType mission);
+bool Queue_Mission(Target whom, MissionType mission, Target target,
+                   Target destination);
+bool Queue_Mission(Target whom, MissionType mission, Target target,
+                   Target destination, SpeedType speed, game::MPHType maxspeed);
 bool Queue_Options();
 bool Queue_Exit();
 void Queue_AI();

@@ -18,7 +18,6 @@
 #include "ra/core/defines.h"
 #include "ra/core/packed.h"
 #include "ra/objects/abstract.h"
-#include "ra/objects/target.h"
 #include "ra/objects/type.h"
 
 namespace ra {
@@ -78,8 +77,8 @@ TEST(TargetTest, FromPackedKeepsTheWord) {
   EXPECT_EQ(target, Target::Make(RTTI_BUILDING, 0x123456));
 }
 
-// The default the old TargetClass gave: no kind, every value bit set. It is
-// not Target{}, so it reads true as a bool while is_valid() is false.
+// What a default-constructed target used to be: no kind, every value bit set.
+// It is not Target{}, so it reads true as a bool while is_valid() is false.
 TEST(TargetTest, NoneWithAllValueBitsIsTrueButNotValid) {
   const Target target = Target::NoneWithAllValueBits();
   EXPECT_EQ(static_cast<uint32_t>(target.packed()), 0x00FFFFFFU);
@@ -183,14 +182,13 @@ TEST(TargetTest, NullPointersAreNoTarget) {
 TEST(TargetTest, OfAnObjectIsItsKindAndHeapIndex) {
   const AbstractClass object(RTTI_UNIT, 7);
   EXPECT_EQ(Target::Of(&object), Target::Make(RTTI_UNIT, 7));
-  EXPECT_EQ(Target::FromPacked(object.As_Target()), Target::Make(RTTI_UNIT, 7));
+  EXPECT_EQ(object.As_Target(), Target::Make(RTTI_UNIT, 7));
 }
 
 TEST(TargetTest, OfATypeIsItsKindAndIndex) {
   const AbstractTypeClass type(RTTI_UNITTYPE, 3, 0, "TEST");
   EXPECT_EQ(Target::Of(&type), Target::Make(RTTI_UNITTYPE, 3));
-  EXPECT_EQ(Target::FromPacked(type.As_Target()),
-            Target::Make(RTTI_UNITTYPE, 3));
+  EXPECT_EQ(type.As_Target(), Target::Make(RTTI_UNITTYPE, 3));
 }
 
 TEST(TargetTest, SerializesTheWordLittleEndian) {
@@ -213,40 +211,6 @@ TEST(TargetTest, SerializesTheWordLittleEndian) {
   reader(read);
   EXPECT_EQ(std::string(reader.error()), "");
   EXPECT_EQ(read, written);
-}
-
-TEST(TargetClassTest, KindAndValuePackLikeBuildTarget) {
-  const TargetClass target(RTTI_UNIT, 5);
-  EXPECT_EQ(target.As_Target(), Build_Target(RTTI_UNIT, 5));
-  EXPECT_EQ(static_cast<RTTIType>(target), RTTI_UNIT);
-  EXPECT_EQ(target.Value(), 5U);
-  EXPECT_TRUE(target.Is_Valid());
-}
-
-TEST(TargetClassTest, CellTargetKeepsTwentyFourBits) {
-  const TargetClass target(static_cast<CELL>(-1));
-  EXPECT_EQ(static_cast<RTTIType>(target), RTTI_CELL);
-  EXPECT_EQ(target.Value(), 0xFFFFFFU);
-}
-
-TEST(TargetClassTest, DefaultIsInvalidWithAllValueBitsSet) {
-  const TargetClass target;
-  EXPECT_FALSE(target.Is_Valid());
-  EXPECT_EQ(static_cast<uint32_t>(target.As_Target()), 0x00FFFFFFU);
-}
-
-TEST(TargetClassTest, NullPointerIsTargetNone) {
-  const TargetClass target(static_cast<const AbstractClass*>(nullptr));
-  EXPECT_EQ(target.As_Target(), kTargetNone);
-  EXPECT_FALSE(target.Is_Valid());
-}
-
-TEST(TargetClassTest, RoundTripsAPackedTarget) {
-  const TARGET packed = Build_Target(RTTI_BUILDING, 0x123456);
-  const TargetClass target(packed);
-  EXPECT_EQ(target.As_TARGET(), packed);
-  EXPECT_TRUE(target == TargetClass(RTTI_BUILDING, 0x123456));
-  EXPECT_FALSE(target == TargetClass(RTTI_BUILDING, 0x123457));
 }
 
 }  // namespace

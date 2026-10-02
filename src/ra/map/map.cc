@@ -99,6 +99,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
+#include "ra/core/target.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/display.h"
@@ -107,7 +108,6 @@
 #include "ra/map/world.h"
 #include "ra/net/session.h"
 #include "ra/objects/anim.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/template.h"
 #include "ra/objects/tracker.h"
@@ -2030,7 +2030,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
             **	Any unit that is firing on the bridge at this location, will
             *stop *	firing because the bridge has been destroyed.
             */
-            Detach_This_From_All(As_Target(cell), true);
+            Detach_This_From_All(Target::FromCell(cell), true);
 
             ObjectClass* obj = bridge_cell->Cell_Occupier();
             while (obj != nullptr) {
@@ -2152,8 +2152,8 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
             if (ptr->TType == cellptr->TType ||
                 ptr->Land_Type() == LAND_RIVER ||
                 ptr->Land_Type() == LAND_WATER) {
-              Detach_This_From_All(As_Target(static_cast<CELL>(cell + tdata)),
-                                   true);
+              Detach_This_From_All(
+                  Target::FromCell(static_cast<CELL>(cell + tdata)), true);
 
               ObjectClass* obj = ptr->Cell_Occupier();
               while (obj != nullptr) {
@@ -2194,14 +2194,14 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
  *                                                                                             *
  * HISTORY: * 07/28/1996 JLB : Created. *
  *=============================================================================================*/
-void MapClass::Detach(TARGET target, bool /*unused*/) {
+void MapClass::Detach(Target target, bool /*unused*/) {
   /*
   **	Remove this trigger from the map zone/line tracking list.
   */
-  if (Is_Target_Trigger(target)) {
+  if (target.kind() == RTTI_TRIGGER) {
     for (int index = 0; index < std::ssize(TheWorld().map_triggers());
          index++) {
-      if (base::At(TheWorld().map_triggers(), index) == As_Trigger(target)) {
+      if (base::At(TheWorld().map_triggers(), index) == target.AsTrigger()) {
         TheWorld().map_triggers().erase(TheWorld().map_triggers().begin() +
                                         index);
         break;
@@ -2212,7 +2212,7 @@ void MapClass::Detach(TARGET target, bool /*unused*/) {
     **	Loop through all cells; remove any reference to this trigger
     */
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-      if ((*this).at(cell).Trigger == As_Trigger(target)) {
+      if ((*this).at(cell).Trigger == target.AsTrigger()) {
         (*this).at(cell).Trigger = nullptr;
       }
     }

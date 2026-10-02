@@ -50,10 +50,10 @@
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
+#include "ra/core/target.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
 #include "ra/objects/radio.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 
 class ArchiveReader;
@@ -206,15 +206,15 @@ class FootClass : public TechnoClass {
   **	This is the desired destination of the unit. The unit will attempt to
   *head *	toward this target (avoiding intervening obstacles).
   */
-  TARGET NavCom;
-  TARGET SuspendedNavCom;
+  Target NavCom;
+  Target SuspendedNavCom;
 
   /*
   **	A sequence of move destinations can be given to a unit. The sequence is
   **	stores as an array of movement targets. The list is terminated with a
-  **	kTargetNone.
+  **	Target{}.
   */
-  TARGET NavQueue[10]{};
+  Target NavQueue[10]{};
 
   /*
   **	This points to the team that "owns" this object. This pointer is used to
@@ -311,8 +311,8 @@ class FootClass : public TechnoClass {
         SpeedBias(1),
         XFormOffset(kNoFormationOffset),
         YFormOffset(kNoFormationOffset),
-        NavCom(kTargetNone),
-        SuspendedNavCom(kTargetNone),
+        NavCom(Target{}),
+        SuspendedNavCom(Target{}),
 
         Group(kNoGroup),
         Member(nullptr),
@@ -355,7 +355,7 @@ class FootClass : public TechnoClass {
   [[nodiscard]] Coordinate Head_To_Coord() const { return HeadToCoord; }
   virtual bool Start_Driver(Coordinate& headto);
   virtual bool Stop_Driver();
-  void Assign_Destination(TARGET target) override;
+  void Assign_Destination(Target target) override;
   [[nodiscard]] bool Is_Allowed_To_Leave_Map() const;
 
   /*
@@ -387,8 +387,8 @@ class FootClass : public TechnoClass {
   void AI() override;
   void Sell_Back(int control) override;
   virtual int Offload_Tiberium_Bail();
-  TARGET Greatest_Threat(ThreatType method) override;  // const;
-  void Detach(TARGET target, bool all) override;
+  Target Greatest_Threat(ThreatType method) override;  // const;
+  void Detach(Target target, bool all) override;
   void Detach_All(bool all = true) override;
   int Mission_Retreat() override;
   int Mission_Enter() override;
@@ -407,7 +407,7 @@ class FootClass : public TechnoClass {
   **	Movement and animation.
   */
   void Handle_Navigation_List();
-  void Queue_Navigation_List(TARGET target);
+  void Queue_Navigation_List(Target target);
   void Clear_Navigation_List();
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   virtual void Approach_Target();
@@ -415,13 +415,13 @@ class FootClass : public TechnoClass {
   [[nodiscard]] game::MoveType Can_Enter_Cell(
       CELL cell, game::FacingType from = game::FACING_NONE) const override;
   int Optimize_Moves(PathType* path, game::MoveType threshhold);
-  void Override_Mission(MissionType mission, TARGET tarcom,
-                        TARGET navcom) override;
+  void Override_Mission(MissionType mission, Target tarcom,
+                        Target navcom) override;
   bool Restore_Mission() override;
   [[nodiscard]] CELL Adjust_Dest(CELL cell) const;
 
   [[nodiscard]] CELL Safety_Point(CELL src, CELL dst, int start, int max) const;
-  int Rescue_Mission(TARGET tarcom);
+  int Rescue_Mission(Target tarcom);
 
  private:
   int Passable_Cell(CELL cell, game::FacingType face, int threat,

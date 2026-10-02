@@ -115,6 +115,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug_state.h"
@@ -140,7 +141,6 @@
 #include "ra/objects/object.h"
 #include "ra/objects/overlay.h"
 #include "ra/objects/smudge.h"
-#include "ra/objects/target.h"
 #include "ra/objects/template.h"
 #include "ra/objects/terrain.h"
 #include "ra/objects/type.h"
@@ -317,10 +317,10 @@ static void Dump_Packet_Too_Late_Stuff(const EventClass* event,
  * HISTORY:                                                                *
  *   09/21/1995 JLB : Created.                                             *
  *=========================================================================*/
-bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
-                   TARGET destination) {
+bool Queue_Mission(Target whom, MissionType mission, Target target,
+                   Target destination) {
   return TheNetwork().out_list().Add(
-      EventClass(whom, mission, TargetClass(target), TargetClass(destination)));
+      EventClass(whom, mission, target, destination));
 }
 
 /***********************************************************************************************
@@ -352,12 +352,11 @@ bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
-                   TARGET destination, SpeedType speed,
+bool Queue_Mission(Target whom, MissionType mission, Target target,
+                   Target destination, SpeedType speed,
                    game::MPHType maxspeed) {
   return TheNetwork().out_list().Add(
-      EventClass(whom, mission, TargetClass(target), TargetClass(destination),
-                 speed, maxspeed));
+      EventClass(whom, mission, target, destination, speed, maxspeed));
 }
 
 /***************************************************************************
@@ -593,7 +592,7 @@ static void Queue_AI_Normal() {
  * relevant to each type of event.  For instance, if 100 infantry guys 	* are
  * told to move to the same location, the command itself & the 		*
  * location will be included in the 1st movement command only; after
- *	* that, there will be a rep count then 99 infantry TARGET numbers,
+ *	* that, there will be a rep count then 99 infantry target words,
  *	* identifying all the infantry told to move.
  **
  * - The protocol also only sends packets out every 'n' frames.  This cuts *
@@ -2699,9 +2698,9 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
                     TheNetwork()
                         .out_list()
                         .First()
-                        .Data.MegaMission.Whom.As_TARGET()),
+                        .Data.MegaMission.Whom.packed()),
 
-                TheNetwork().out_list().First().Data.MegaMission.Whom.Value(),
+                TheNetwork().out_list().First().Data.MegaMission.Whom.value(),
                 MissionClass::Mission_Name(
                     TheNetwork().out_list().First().Data.MegaMission.Mission),
                 static_cast<unsigned int>(
@@ -2709,20 +2708,20 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
                     TheNetwork()
                         .out_list()
                         .First()
-                        .Data.MegaMission.Target.As_TARGET()),
+                        .Data.MegaMission.Target.packed()),
 
-                TheNetwork().out_list().First().Data.MegaMission.Target.Value(),
+                TheNetwork().out_list().First().Data.MegaMission.Target.value(),
                 static_cast<unsigned int>(
 
                     TheNetwork()
                         .out_list()
                         .First()
-                        .Data.MegaMission.Destination.As_TARGET()),
+                        .Data.MegaMission.Destination.packed()),
 
                 TheNetwork()
                     .out_list()
                     .First()
-                    .Data.MegaMission.Destination.Value());
+                    .Data.MegaMission.Destination.value());
           }
 
           datasize = sizeof(prevevent.Data.MegaMission.Whom);
@@ -3957,9 +3956,10 @@ static void Compute_Game_CRC() {
     Add_CRC(&GameCRC, static_cast<uint32_t>(
                           static_cast<int>(infp->Coord.packed()) +
                           static_cast<int>(infp->PrimaryFacing.Current())));
-    Add_CRC(&GameCRC, static_cast<uint32_t>(infp->Speed + infp->NavCom));
+    Add_CRC(&GameCRC,
+            static_cast<uint32_t>(infp->Speed + infp->NavCom.packed()));
     Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(infp->Mission) +
-                                            infp->TarCom));
+                                            infp->TarCom.packed()));
   }
 
   //------------------------------------------------------------------------
@@ -3981,10 +3981,11 @@ static void Compute_Game_CRC() {
     Add_CRC(&GameCRC, static_cast<uint32_t>(
                           static_cast<int>(vessp->Coord.packed()) +
                           static_cast<int>(vessp->PrimaryFacing.Current())));
-    Add_CRC(&GameCRC, static_cast<uint32_t>(vessp->Speed + vessp->NavCom));
+    Add_CRC(&GameCRC,
+            static_cast<uint32_t>(vessp->Speed + vessp->NavCom.packed()));
     Add_CRC(&GameCRC, static_cast<uint32_t>(vessp->Strength));
     Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(vessp->Mission) +
-                                            vessp->TarCom));
+                                            vessp->TarCom.packed()));
   }
 
   //------------------------------------------------------------------------
@@ -4141,18 +4142,20 @@ static void Print_CRCs(const EventClass* ev) {
                   static_cast<uint32_t>(
                       static_cast<int>(infp->Coord.packed()) +
                       static_cast<int>(infp->PrimaryFacing.Current())));
-          Add_CRC(&GameCRC, static_cast<uint32_t>(infp->Speed + infp->NavCom));
+          Add_CRC(&GameCRC,
+                  static_cast<uint32_t>(infp->Speed + infp->NavCom.packed()));
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(static_cast<int>(infp->Mission) +
-                                        infp->TarCom));
+                                        infp->TarCom.packed()));
           absl::FPrintF(fp,
                         "COORD:%x   Facing:%d   Mission:%d   Type:%d   Tgt:%x "
                         "Speed:%d NavCom:%x\n",
                         infp->Coord.packed(),
                         static_cast<int>(infp->PrimaryFacing.Current()),
                         infp->Get_Mission(), infp->Class->Type,
-                        static_cast<unsigned int>(infp->As_Target()),
-                        infp->Speed, static_cast<unsigned int>(infp->NavCom));
+                        static_cast<unsigned int>(infp->As_Target().packed()),
+                        infp->Speed,
+                        static_cast<unsigned int>(infp->NavCom.packed()));
         }
       }
     }
@@ -4183,7 +4186,7 @@ static void Print_CRCs(const EventClass* ev) {
               static_cast<int>(unitp->PrimaryFacing.Current()),
               static_cast<int>(unitp->SecondaryFacing.Current()),
               unitp->Get_Mission(), unitp->Class->Type,
-              static_cast<unsigned int>(unitp->As_Target()));
+              static_cast<unsigned int>(unitp->As_Target().packed()));
         }
       }
     }
@@ -4206,11 +4209,11 @@ static void Print_CRCs(const EventClass* ev) {
                       static_cast<int>(vesselp->Coord.packed()) +
                       static_cast<int>(vesselp->PrimaryFacing.Current())));
           Add_CRC(&GameCRC, static_cast<uint32_t>(vesselp->Speed +
-                                                  vesselp->NavCom));
+                                                  vesselp->NavCom.packed()));
           Add_CRC(&GameCRC, static_cast<uint32_t>(vesselp->Strength));
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(static_cast<int>(vesselp->Mission) +
-                                        vesselp->TarCom));
+                                        vesselp->TarCom.packed()));
           absl::FPrintF(
               fp,
               "COORD:%x   Facing:%d   Mission:%d   Strength:%d Type:%d   "
@@ -4218,7 +4221,7 @@ static void Print_CRCs(const EventClass* ev) {
               vesselp->Coord.packed(),
               static_cast<int>(vesselp->PrimaryFacing.Current()),
               vesselp->Get_Mission(), vesselp->Strength, vesselp->Class->Type,
-              static_cast<unsigned int>(vesselp->As_Target()));
+              static_cast<unsigned int>(vesselp->As_Target().packed()));
         }
       }
     }
@@ -4246,7 +4249,7 @@ static void Print_CRCs(const EventClass* ev) {
               bldgp->Coord.packed(),
               static_cast<int>(bldgp->PrimaryFacing.Current()),
               bldgp->Get_Mission(), bldgp->Class->Type,
-              static_cast<unsigned int>(bldgp->As_Target()));
+              static_cast<unsigned int>(bldgp->As_Target().packed()));
         }
       }
     }
@@ -4259,8 +4262,8 @@ static void Print_CRCs(const EventClass* ev) {
   for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
     auto* animp = TheObjectHeaps().anim().ActiveAt(i);
     absl::FPrintF(fp, "Target:%x OwnerHouse:%d Loops:%d\\n",
-                  static_cast<unsigned int>(animp->xObject), animp->OwnerHouse,
-                  animp->Loops);
+                  static_cast<unsigned int>(animp->xObject.packed()),
+                  animp->OwnerHouse, animp->Loops);
   }
 
   //------------------------------------------------------------------------

@@ -107,13 +107,13 @@ class AircraftClass : public FootClass, public FlyClass {
   int Mission_Guard() override;
   int Mission_Guard_Area() override;
 
-  void Assign_Destination(TARGET dest) override;
+  void Assign_Destination(Target dest) override;
   /*
   **	State machine support routines.
   */
   bool Process_Take_Off();
   bool Process_Landing();
-  int Process_Fly_To(bool slowdown, TARGET dest);
+  int Process_Fly_To(bool slowdown, Target dest);
 
   /*
   **	Query functions.
@@ -133,20 +133,20 @@ class AircraftClass : public FootClass, public FlyClass {
   game::DirType Desired_Load_Dir(ObjectClass* object,
                                  CELL& moveto) const override;
   [[nodiscard]] int Pip_Count() const override;
-  [[nodiscard]] TARGET Good_Fire_Location(TARGET target) const;
+  [[nodiscard]] Target Good_Fire_Location(Target target) const;
   [[nodiscard]] bool Cell_Seems_Ok(CELL cell, bool strict = false) const;
   [[nodiscard]] game::DirType Pose_Dir() const;
-  [[nodiscard]] TARGET Good_LZ() const;
+  [[nodiscard]] Target Good_LZ() const;
   [[nodiscard]] game::DirType Fire_Direction() const override;
-  [[nodiscard]] game::FireErrorType Can_Fire(TARGET target,
+  [[nodiscard]] game::FireErrorType Can_Fire(Target target,
                                              int which) const override;
 
   /*
   **	Landing zone support functionality.
   */
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
-  [[nodiscard]] bool Is_LZ_Clear(TARGET target) const;
-  [[nodiscard]] TARGET New_LZ(TARGET oldlz) const;
+  [[nodiscard]] bool Is_LZ_Clear(Target target) const;
+  [[nodiscard]] Target New_LZ(Target oldlz) const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
@@ -179,8 +179,8 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   void Active_Click_With(ActionType action, CELL cell) override;
-  void Player_Assign_Mission(MissionType mission, TARGET target = kTargetNone,
-                             TARGET destination = kTargetNone) override;
+  void Player_Assign_Mission(MissionType mission, Target target = Target{},
+                             Target destination = Target{}) override;
   void Response_Select() override;
   void Response_Move() override;
   void Response_Attack() override;
@@ -191,7 +191,7 @@ class AircraftClass : public FootClass, public FlyClass {
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source,
                                bool forced = false) override;
-  BulletClass* Fire_At(TARGET target, int which) override;
+  BulletClass* Fire_At(Target target, int which) override;
 
   /*
   **	AI.

@@ -47,9 +47,9 @@
 #include "base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/core/defines.h"
+#include "ra/core/target.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/house.h"
-#include "ra/objects/target.h"
 #include "ra/objects/type.h"
 
 class ArchiveReader;
@@ -179,7 +179,7 @@ class TeamTypeClass : public AbstractTypeClass {
   // NOLINTNEXTLINE(modernize-use-nodiscard)
   TeamClass* Create_One_Of();
   void Destroy_All_Of() const;
-  void Detach(TARGET target, bool all = true);
+  void Detach(Target target, bool all = true);
 
   /*
   **	Utility routines

@@ -109,7 +109,7 @@ class AbstractTypeClass {
   }
 
   [[nodiscard]] RTTIType What_Am_I() const { return RTTI; }
-  [[nodiscard]] TARGET As_Target() const { return Build_Target(RTTI, ID); }
+  [[nodiscard]] Target As_Target() const { return Target::Make(RTTI, ID); }
 
   // Adjusts a placement coordinate for this type. Derived classes override
   // to snap to cell boundaries or apply other type-specific rules.

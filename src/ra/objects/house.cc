@@ -185,6 +185,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
 #include "ra/data/rules.h"
@@ -210,7 +211,6 @@
 #include "ra/objects/infantry.h"
 #include "ra/objects/object.h"
 #include "ra/objects/super.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/tracker.h"
 #include "ra/objects/type.h"
@@ -896,8 +896,7 @@ void HouseClass::AI() {
     TechnoClass* techno = TheMap().at(FlagHome).Cell_Techno();
     if (techno != nullptr) {
       bool moving = false;
-      if (techno->Is_Foot() &&
-          Target_Legal(dynamic_cast<FootClass*>(techno)->NavCom)) {
+      if (techno->Is_Foot() && dynamic_cast<FootClass*>(techno)->NavCom) {
         moving = true;
       }
 
@@ -909,8 +908,7 @@ void HouseClass::AI() {
       **	If the techno doesn't have a valid NavCom, he's not moving,
       **	so blow him up.
       */
-      if (techno->Is_Foot() &&
-          Target_Legal(dynamic_cast<FootClass*>(techno)->NavCom)) {
+      if (techno->Is_Foot() && dynamic_cast<FootClass*>(techno)->NavCom) {
         moving = true;
       }
 
@@ -1028,12 +1026,12 @@ void HouseClass::AI() {
   **	If there is a flag associated with this house, then mark it to be
   **	redrawn.
   */
-  if (Target_Legal(FlagLocation)) {
-    UnitClass* unit = As_Unit(FlagLocation);
+  if (FlagLocation) {
+    UnitClass* unit = FlagLocation.AsUnit();
     if (unit) {
       unit->Mark(MARK_CHANGE);
     } else {
-      const CELL cell = As_Cell(FlagLocation);
+      const CELL cell = FlagLocation.AsCell();
       TheMap().at(cell).Redraw_Objects();
     }
   }
@@ -1397,7 +1395,7 @@ void HouseClass::Super_Weapon_Handler() {
           if (TheMap().IsTargettingMode == kSpcChrono2) {
             // Only a live chrono tank keeps its own targeting mode alive.
             const auto* unit =
-                dynamic_cast<UnitClass*>(As_Object(UnitToTeleport));
+                dynamic_cast<UnitClass*>(UnitToTeleport.AsObject());
             if (unit == nullptr || !unit->IsActive ||
                 *unit != UNIT_CHRONOTANK) {
               TheMap().IsTargettingMode = SPC_NONE;
@@ -2028,10 +2026,10 @@ void HouseClass::Make_Ally(HousesType house) {
 
         if (object != nullptr && object->Is_Techno() && !object->IsInLimbo &&
             object->Owner() == Class->House) {
-          const TARGET target = dynamic_cast<TechnoClass*>(object)->TarCom;
-          if ((Target_Legal(target) && As_Techno(target) != nullptr) &&
-              Is_Ally(As_Techno(target))) {
-            dynamic_cast<TechnoClass*>(object)->Assign_Target(kTargetNone);
+          const Target target = dynamic_cast<TechnoClass*>(object)->TarCom;
+          if ((target && target.AsTechno() != nullptr) &&
+              Is_Ally(target.AsTechno())) {
+            dynamic_cast<TechnoClass*>(object)->Assign_Target(Target{});
           }
         }
       }
@@ -2483,8 +2481,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
       if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_Ready()) {
         if (SuperWeapon.at(SPC_NUCLEAR_BOMB).Is_One_Time()) {
           auto* bullet = base::NewPooled<BulletClass>(
-              BULLET_NUKE_DOWN, As_Target(cell), nullptr, 200, WARHEAD_NUKE,
-              static_cast<int>(game::MPH_VERY_FAST));
+              BULLET_NUKE_DOWN, Target::FromCell(cell), nullptr, 200,
+              WARHEAD_NUKE, static_cast<int>(game::MPH_VERY_FAST));
           if (bullet) {
             const int celly = std::max(Cell_Y(cell) - 15, 1);
             const Coordinate start = Cell_Coord(XY_Cell(Cell_X(cell), celly));
@@ -2556,7 +2554,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
         }
 
         //				Create_Air_Reinforcement(this,
-        // AIRCRAFT_BADGER, 1, MISSION_HUNT, ra::As_Target(cell), kTargetNone,
+        // AIRCRAFT_BADGER, 1, MISSION_HUNT, Target::FromCell(cell), Target{},
         // INFANTRY_E1);
         if (this == ThePlayer()) {
           TheMap().IsTargettingMode = SPC_NONE;
@@ -2569,7 +2567,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
     case SPC_SPY_MISSION:
       if (SuperWeapon.at(SPC_SPY_MISSION).Is_Ready()) {
         Create_Air_Reinforcement(this, AIRCRAFT_U2, 1, MISSION_HUNT,
-                                 As_Target(cell), As_Target(cell));
+                                 Target::FromCell(cell),
+                                 Target::FromCell(cell));
         if (this == ThePlayer()) {
           TheMap().IsTargettingMode = SPC_NONE;
         }
@@ -2582,7 +2581,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
       if (SuperWeapon.at(SPC_PARA_BOMB).Is_Ready()) {
         Create_Air_Reinforcement(this, AIRCRAFT_BADGER,
                                  TheRules().BadgerBombCount, MISSION_HUNT,
-                                 As_Target(cell), kTargetNone);
+                                 Target::FromCell(cell), Target{});
         if (this == ThePlayer()) {
           TheMap().IsTargettingMode = SPC_NONE;
         }
@@ -2683,7 +2682,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
       break;
 
     case kSpcChrono2: {
-      auto* tech = dynamic_cast<TechnoClass*>(As_Object(UnitToTeleport));
+      auto* tech = dynamic_cast<TechnoClass*>(UnitToTeleport.AsObject());
       if (tech != nullptr && tech->IsActive && tech->Is_Foot() &&
           tech->What_Am_I() != RTTI_AIRCRAFT) {
         /*
@@ -2722,7 +2721,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
           PlaySoundEffectAt(VOC_CHRONO, drive.Coord);
         }
       }
-      UnitToTeleport = kTargetNone;
+      UnitToTeleport = Target{};
       if (this == ThePlayer()) {
         TheMap().IsTargettingMode = SPC_NONE;
       }
@@ -3074,18 +3073,18 @@ void HouseClass::Clobber_All() {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : commented *
  *=============================================================================================*/
-void HouseClass::Detach(TARGET target, bool /*unused*/) {
+void HouseClass::Detach(Target target, bool /*unused*/) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (ToCapture == target) {
-    ToCapture = kTargetNone;
+    ToCapture = Target{};
   }
 
-  if (Is_Target_Trigger(target)) {
+  if (target.kind() == RTTI_TRIGGER) {
     // The original indexed by the heap ID; the table is per house type, and
     // the two only agree because houses are created in type order.
     base::EraseFirst(TheWorld().house_triggers().at(Class->House),
-                     As_Trigger(target));
+                     target.AsTrigger());
   }
 }
 
@@ -3242,31 +3241,31 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(RTTIType objecttype,
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
+bool HouseClass::Flag_Remove(Target target, bool set_home) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   bool rc = false;
 
-  if (Target_Legal(target)) {
+  if (target) {
     /*
     **	Remove the flag from a unit
     */
-    UnitClass* object = As_Unit(target);
+    UnitClass* object = target.AsUnit();
     if (object) {
       rc = object->Flag_Remove();
       if (rc && FlagLocation == target) {
-        FlagLocation = kTargetNone;
+        FlagLocation = Target{};
       }
 
     } else {
       /*
       **	Remove the flag from a cell
       */
-      const CELL cell = As_Cell(target);
+      const CELL cell = target.AsCell();
       if (TheMap().In_Radar(cell)) {
         rc = TheMap().at(cell).Flag_Remove();
         if (rc && FlagLocation == target) {
-          FlagLocation = kTargetNone;
+          FlagLocation = Target{};
         }
       }
     }
@@ -3338,7 +3337,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
     **	mark that cell as this house's flag home cell.
     */
     if (rc) {
-      FlagLocation = As_Target(newcell);
+      FlagLocation = Target::FromCell(newcell);
 
       if (set_home || FlagHome == 0) {
         TheMap().at(newcell).Overlay = OVERLAY_FLAG_SPOT;
@@ -3429,7 +3428,7 @@ void HouseClass::MPlayer_Defeated() {
       Flag_Remove(FlagLocation, true);
     } else {
       if (FlagHome != 0) {
-        Flag_Remove(As_Target(FlagHome), true);
+        Flag_Remove(Target::FromCell(FlagHome), true);
       }
     }
   }
@@ -4053,7 +4052,7 @@ void HouseClass::Sell_Wall(CELL cell) {
           TheMap().at(cell).Recalc_Attributes();
           TheMap().at(cell).Redraw_Objects();
           TheMap().Radar_Pixel(cell);
-          Detach_This_From_All(As_Target(cell), true);
+          Detach_This_From_All(Target::FromCell(cell), true);
 
           if (optr.IsCrushable) {
             TheMap().Zone_Reset(kZoneFlagNormal);
@@ -4861,7 +4860,7 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
         */
         if (Percent_Chance(20) && u->Mission == MISSION_GUARD_AREA &&
             Which_Zone(u) != ZONE_NONE) {
-          u->ArchiveTarget = As_Target(Where_To_Go(u));
+          u->ArchiveTarget = Target::FromCell(Where_To_Go(u));
         }
       }
     }
@@ -4880,7 +4879,7 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
         */
         if (Percent_Chance(20) && i->Mission == MISSION_GUARD_AREA &&
             Which_Zone(i) != ZONE_NONE) {
-          i->ArchiveTarget = As_Target(Where_To_Go(i));
+          i->ArchiveTarget = Target::FromCell(Where_To_Go(i));
         }
       }
     }
@@ -6831,7 +6830,7 @@ CELL HouseClass::Where_To_Go(const FootClass* object) const {
  *                                                                                             *
  * HISTORY: * 10/12/1995 JLB : Created. *
  *=============================================================================================*/
-TARGET HouseClass::Find_Juicy_Target(Coordinate coord) const {
+Target HouseClass::Find_Juicy_Target(Coordinate coord) const {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   const UnitClass* best = nullptr;
@@ -6861,7 +6860,7 @@ TARGET HouseClass::Find_Juicy_Target(Coordinate coord) const {
   if (best) {
     return best->As_Target();
   }
-  return kTargetNone;
+  return Target{};
 }
 
 /***********************************************************************************************

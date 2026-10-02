@@ -72,7 +72,7 @@ class ChronalVortexClass {
   ChronalVortexClass(ChronalVortexClass&&) = delete;
   ChronalVortexClass& operator=(ChronalVortexClass&&) = delete;
 
-  void Detach(TARGET target);
+  void Detach(Target target);
 
   /*
   ** Makes the vortex appear at the specified coordinate.
@@ -239,7 +239,7 @@ class ChronalVortexClass {
   /*
   ** Ptr to object that the vortex is zapping
   */
-  TARGET TargetObject = kTargetNone;
+  Target TargetObject = Target{};
   //		ObjectClass		*TargetObject;
 
   /*

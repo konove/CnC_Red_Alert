@@ -156,7 +156,7 @@ class InfantryClass final : public FootClass {
   */
   static void Init();
 
-  void Assign_Destination(TARGET /*target*/) override;
+  void Assign_Destination(Target /*target*/) override;
 
   /*
   **	Query functions.
@@ -173,7 +173,7 @@ class InfantryClass final : public FootClass {
   bool Unlimbo(Coordinate coord, game::DirType facing) override;
   bool Paradrop(Coordinate coord) override;
   bool Limbo() override;
-  void Detach(TARGET target, bool all) override;
+  void Detach(Target target, bool all) override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -200,13 +200,13 @@ class InfantryClass final : public FootClass {
   */
   ActionType What_Action(ObjectClass* object) override;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
-  BulletClass* Fire_At(TARGET target, int which) override;
+  BulletClass* Fire_At(Target target, int which) override;
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source = nullptr,
                                bool forced = false) override;
-  [[nodiscard]] game::FireErrorType Can_Fire(TARGET target,
+  [[nodiscard]] game::FireErrorType Can_Fire(Target target,
                                              int which) const override;
-  void Assign_Target(TARGET /*target*/) override;
+  void Assign_Target(Target /*target*/) override;
   void Set_Occupy_Bit(Coordinate coord) {
     Set_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
   }
@@ -228,7 +228,7 @@ class InfantryClass final : public FootClass {
   */
   void AI() override;
   void Fear_AI();
-  TARGET Greatest_Threat(ThreatType threat) override;  // const;
+  Target Greatest_Threat(ThreatType threat) override;  // const;
   int Mission_Attack() override;
   bool Edge_Of_World_AI();
   void Firing_AI();

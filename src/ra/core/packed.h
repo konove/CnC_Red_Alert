@@ -1,10 +1,10 @@
-// The bit layouts of Red Alert's packed map and target words: CELL (7-bit X
-// and Y), the lepton word (cell byte over sub-cell byte) and TARGET (8-bit
-// RTTI kind over a 24-bit value), with the lepton/pixel conversions that share
-// the 16-bit lepton word and the conversions between CELL and Coordinate
-// (ra/core/coordinate.h, which holds the coordinate's own layout). A lepton
-// (256 to a cell) is a plain int everywhere else; these helpers wrap it to the
-// 16-bit word.
+// The bit layouts of Red Alert's packed map words: CELL (7-bit X and Y) and
+// the lepton word (cell byte over sub-cell byte), with the lepton/pixel
+// conversions that share the 16-bit lepton word and the conversions between
+// CELL and Coordinate (ra/core/coordinate.h, which holds the coordinate's own
+// layout). A lepton (256 to a cell) is a plain int everywhere else; these
+// helpers wrap it to the 16-bit word. The target word's layout is
+// ra::Target's (ra/core/target.h).
 
 #ifndef CNC_RED_ALERT_RA_CORE_PACKED_H_
 #define CNC_RED_ALERT_RA_CORE_PACKED_H_
@@ -13,18 +13,16 @@
 
 #include "game/core/display_constants.h"
 #include "ra/core/coordinate.h"
-#include "ra/core/defines.h"
 
 namespace ra {
+
+// A map coordinate with cell resolution, the cheaper index into the map than
+// a lepton-resolution Coordinate: Y * 128 + X. Negative values are sentinels.
+using CELL = int16_t;
 
 // Cell components are 7 bits each: X in the low bits, Y above it.
 inline constexpr unsigned kCellBits = 7;
 inline constexpr unsigned kCellMask = (1U << kCellBits) - 1;
-
-// A target's value fills the low 24 bits, its RTTI kind the 8 above.
-inline constexpr unsigned kTargetMantissaBits = 24;
-inline constexpr uint32_t kTargetMantissaMask =
-    (uint32_t{1} << kTargetMantissaBits) - 1;
 
 // Returns the sub-cell coordinate of a cell's center.
 constexpr Coordinate CellCenterFraction() noexcept {
@@ -108,25 +106,6 @@ constexpr CELL Coord_Cell(Coordinate coord) noexcept {
 constexpr Coordinate Cell_Coord(CELL cell) noexcept {
   return Coordinate::FromLeptons(Make_Lepton(Cell_X(cell), CELL_LEPTON_W / 2),
                                  Make_Lepton(Cell_Y(cell), CELL_LEPTON_H / 2));
-}
-
-// Packs an RTTI kind and a value into a target. The value keeps its low 24
-// bits, so -1 becomes 0xFFFFFF. RTTI_NONE with value 0 is kTargetNone.
-constexpr TARGET Build_Target(RTTIType kind, int value) noexcept {
-  return static_cast<TARGET>(
-      (static_cast<uint32_t>(kind) << kTargetMantissaBits) |
-      (static_cast<uint32_t>(value) & kTargetMantissaMask));
-}
-
-// Returns the kind of object a target refers to.
-constexpr RTTIType Target_Kind(TARGET target) noexcept {
-  return static_cast<RTTIType>(static_cast<uint32_t>(target) >>
-                               kTargetMantissaBits);
-}
-
-// Returns the target's value: a heap index, cell or coordinate by kind.
-constexpr int Target_Value(TARGET target) noexcept {
-  return static_cast<int>(static_cast<uint32_t>(target) & kTargetMantissaMask);
 }
 
 }  // namespace ra

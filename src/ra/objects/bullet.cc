@@ -80,6 +80,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
@@ -94,7 +95,6 @@
 #include "ra/objects/house.h"
 #include "ra/objects/infantry.h"
 #include "ra/objects/object.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
@@ -125,7 +125,7 @@ using engine::gfx::ShapeFlags;
  *   12/23/1994 JLB : Fixed scatter algorithm for non-homing projectiles. *
  *   12/31/1994 JLB : Removed range parameter (not needed). *
  *=============================================================================================*/
-BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass* payback,
+BulletClass::BulletClass(BulletType id, Target target, TechnoClass* payback,
                          int strength, WarheadType warhead, int speed)
     : ObjectClass(RTTI_BULLET, TheObjectHeaps().bullet().SlotIndexOf(this)),
       Class(TheTypeHeaps().bullet().ActiveAt(static_cast<int>(id))),
@@ -408,9 +408,8 @@ void BulletClass::AI() {
   *but *	they only do so every other game frame (improves game speed and
   *makes *	missiles not so deadly).
   */
-  if (game::CurrentFrame() % 2 != 0 && Class->ROT != 0 &&
-      Target_Legal(TarCom)) {
-    PrimaryFacing.Set_Desired(Direction256(Coord, As_Coord(TarCom)));
+  if (game::CurrentFrame() % 2 != 0 && Class->ROT != 0 && TarCom) {
+    PrimaryFacing.Set_Desired(Direction256(Coord, TarCom.AsCoordinate()));
   }
 
   /*
@@ -653,11 +652,11 @@ void BulletClass::Init() { TheObjectHeaps().bullet().FreeAll(); }
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::Detach(TARGET target, bool all) {
+void BulletClass::Detach(Target target, bool all) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().bullet(), this);
   DCHECK(IsActive);
 
-  const ObjectClass* obj = As_Object(target);
+  const ObjectClass* obj = target.AsObject();
   if ((Payback != nullptr && obj == Payback) &&
       (Payback->What_Am_I() != RTTI_INFANTRY ||
        !dynamic_cast<InfantryClass*>(Payback)->Class->IsDog))
@@ -670,7 +669,7 @@ void BulletClass::Detach(TARGET target, bool all) {
   }
 
   if (all && target == TarCom) {
-    TarCom = kTargetNone;
+    TarCom = Target{};
   }
 }
 
@@ -708,7 +707,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
   if (ObjectClass::Unlimbo(coord)) {
     MapEditClass::Remove(this, In_Which_Layer());
 
-    Coordinate tcoord = As_Coord(TarCom);
+    Coordinate tcoord = TarCom.AsCoordinate();
 
     /*
     **	Homing projectiles (missiles) do NOT override facing. They just fire in
@@ -725,7 +724,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
     *are fired at infantry. Indirect *	fire is inherently inaccurate.
     */
     if (IsInaccurate || Class->IsInaccurate ||
-        ((Is_Target_Cell(TarCom) || Is_Target_Infantry(TarCom)) &&
+        ((TarCom.kind() == RTTI_CELL || TarCom.kind() == RTTI_INFANTRY) &&
          (Warhead == WARHEAD_AP || Class->IsFueled))) {
       /*
       **	Inaccuracy for low velocity or homing projectiles manifests
@@ -794,7 +793,7 @@ bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
     **	Arm the fuse.
     */
     Arm_Fuse(Coord, tcoord, range,
-             As_Aircraft(TarCom) != nullptr ? 0 : Class->Arming);
+             TarCom.AsAircraft() != nullptr ? 0 : Class->Arming);
 
     /*
     **	Projectiles that make a ballistic flight to impact point must determine
@@ -968,7 +967,7 @@ bool BulletClass::Is_Forced_To_Explode(Coordinate& coord) const {
   /*
   **	Bullets are generally more effective when they are fired at aircraft.
   */
-  if (Class->IsAntiAircraft && As_Aircraft(TarCom) &&
+  if (Class->IsAntiAircraft && TarCom.AsAircraft() &&
       Distance(TarCom) < 0x0080) {
     return true;
   }
@@ -1011,8 +1010,8 @@ void BulletClass::Bullet_Explodes(bool forced) {
   /*
   **	Non-aircraft targets apply damage to the ground.
   */
-  if (!Is_Target_Aircraft(TarCom) ||
-      As_Aircraft(TarCom)->In_Which_Layer() == LAYER_GROUND) {
+  if (TarCom.kind() != RTTI_AIRCRAFT ||
+      TarCom.AsAircraft()->In_Which_Layer() == LAYER_GROUND) {
     Explosion_Damage(Coord, Strength, Payback, Warhead);
     if (!IsActive) {
       return;
@@ -1024,7 +1023,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
     **	damage affects the aircraft target.
     */
     if (Distance(TarCom) < 0x0080) {
-      AircraftClass* object = As_Aircraft(TarCom);
+      AircraftClass* object = TarCom.AsAircraft();
 
       int str = Strength;
       if (object) {
@@ -1047,8 +1046,8 @@ void BulletClass::Bullet_Explodes(bool forced) {
   */
   const CellClass* cellptr = &TheMap().at(Coord);
   LandType land = cellptr->Land_Type();
-  if (Is_Target_Aircraft(TarCom) &&
-      As_Aircraft(TarCom)->In_Which_Layer() == LAYER_TOP) {
+  if (TarCom.kind() == RTTI_AIRCRAFT &&
+      TarCom.AsAircraft()->In_Which_Layer() == LAYER_TOP) {
     land = LAND_NONE;
   }
 
@@ -1059,8 +1058,8 @@ void BulletClass::Bullet_Explodes(bool forced) {
   ** if its cell is the same as the center cell of the target ship.
   */
   if ((anim >= ANIM_WATER_EXP1 && anim <= ANIM_WATER_EXP3 &&
-       Is_Target_Vessel(TarCom)) &&
-      (Coord_Cell(Coord) == Coord_Cell(As_Vessel(TarCom)->Center_Coord()))) {
+       TarCom.kind() == RTTI_VESSEL) &&
+      (Coord_Cell(Coord) == Coord_Cell(TarCom.AsVessel()->Center_Coord()))) {
     anim = static_cast<AnimType>(
         static_cast<int>(ANIM_VEH_HIT1) +
         (static_cast<int>(anim) - static_cast<int>(ANIM_WATER_EXP1)));

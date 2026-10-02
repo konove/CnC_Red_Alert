@@ -124,6 +124,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
+#include "ra/core/target.h"
 #include "ra/data/rules.h"
 #include "ra/debug/debug_state.h"
 #include "ra/editor/mapedit.h"
@@ -142,7 +143,6 @@
 #include "ra/objects/object.h"
 #include "ra/objects/overlay.h"
 #include "ra/objects/super.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/terrain.h"
 #include "ra/objects/tracker.h"
@@ -1306,31 +1306,31 @@ void CellClass::Wall_Update() {
       if (newcell.Overlay == OVERLAY_BRICK_WALL && newcell.OverlayData == 48) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        Detach_This_From_All(ra::As_Target(newcell.Cell_Number()), true);
+        Detach_This_From_All(Target::FromCell(newcell.Cell_Number()), true);
       }
       if (newcell.Overlay == OVERLAY_SANDBAG_WALL &&
           newcell.OverlayData == 16) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        Detach_This_From_All(ra::As_Target(newcell.Cell_Number()), true);
+        Detach_This_From_All(Target::FromCell(newcell.Cell_Number()), true);
       }
       if (newcell.Overlay == OVERLAY_CYCLONE_WALL &&
           newcell.OverlayData == 32) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        Detach_This_From_All(ra::As_Target(newcell.Cell_Number()), true);
+        Detach_This_From_All(Target::FromCell(newcell.Cell_Number()), true);
       }
       if (newcell.Overlay == OVERLAY_FENCE &&
           (newcell.OverlayData == 16 || newcell.OverlayData == 32)) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        Detach_This_From_All(ra::As_Target(newcell.Cell_Number()), true);
+        Detach_This_From_All(Target::FromCell(newcell.Cell_Number()), true);
       }
       if (newcell.Overlay == OVERLAY_BARBWIRE_WALL &&
           newcell.OverlayData == 16) {
         newcell.Overlay = OVERLAY_NONE;
         newcell.OverlayData = 0;
-        Detach_This_From_All(ra::As_Target(newcell.Cell_Number()), true);
+        Detach_This_From_All(Target::FromCell(newcell.Cell_Number()), true);
       }
 
       newcell.Recalc_Attributes();

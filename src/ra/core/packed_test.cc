@@ -1,11 +1,10 @@
-// Pins the packed CELL, lepton and TARGET encodings and the CELL/Coordinate
+// Pins the packed CELL and lepton encodings and the CELL/Coordinate
 // conversions, including the truncation the original bit-fields performed on
 // out-of-range components. Coordinate's own layout is pinned by
-// coordinate_test.cc.
+// coordinate_test.cc, Target's by ra/objects/target_test.cc.
 
 #include "ra/core/packed.h"
 
-#include <cstdint>
 #include <type_traits>
 
 #include "gtest/gtest.h"
@@ -19,7 +18,6 @@ constexpr Coordinate kSample = Coordinate::FromPacked(0x12345678);
 // The packers are usable in constant expressions.
 static_assert(XY_Cell(5, 3) == 389);
 static_assert(Coord_Cell(kSample) == XY_Cell(0x56, 0x12));
-static_assert(Build_Target(RTTI_NONE, 0) == kTargetNone);
 
 // The type of a noexcept function returning R from Args.
 template <class R, class... Args>
@@ -97,21 +95,6 @@ TEST(PackedTest, LeptonPixelConversions) {
   EXPECT_EQ(Pixel_To_Lepton(-1), 0xFFF6);
   EXPECT_EQ(Pixel_To_Lepton(-24), 0xFF01);
   EXPECT_EQ(Pixel_To_Lepton(10000), 41131);
-}
-
-TEST(PackedTest, TargetPacksKindOverValue) {
-  const TARGET target = Build_Target(RTTI_CELL, 389);
-  EXPECT_EQ(static_cast<uint32_t>(target),
-            (static_cast<uint32_t>(RTTI_CELL) << 24) | 389U);
-  EXPECT_EQ(Target_Kind(target), RTTI_CELL);
-  EXPECT_EQ(Target_Value(target), 389);
-}
-
-TEST(PackedTest, TargetTruncatesNegativeValues) {
-  const TARGET target = Build_Target(RTTI_UNIT, -1);
-  EXPECT_EQ(Target_Kind(target), RTTI_UNIT);
-  EXPECT_EQ(Target_Value(target), 0xFFFFFF);
-  EXPECT_EQ(Build_Target(RTTI_NONE, 0), kTargetNone);
 }
 
 }  // namespace

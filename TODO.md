@@ -111,6 +111,21 @@
     corner, unforced; stage B2 (TD) kept that as `Scatter(Coordinate::FromPacked(1))`
   - `Scatter(Coordinate{}, true)` would scatter in a random direction and change play, so it needs
     its own commit and an xcheck reference update
+- Restore Red Alert's `BuildingClass::Fire_Direction()` for buildings without a turret
+  - The original returned `Direction(TarCom)`, the direction toward the target; `48924849` turned it
+    into `AsDirection(TarCom)`, the low byte of the target word (the target's heap index), and stage
+    B3 (RA) kept that as `game::AsDirection(TarCom.packed())` (`ra/objects/building.cc`)
+  - Fix: `return Direction(TarCom);`; it changes which way a defense without a turret fires, so it
+    needs its own commit and an xcheck reference update
+- Decide which RTTI_CELL encoding Red Alert's cell targets should use
+  - `Target::FromCellIndex()` stores the cell number, `FromCell()`/`FromCoordinate()` a 12-bit
+    sub-cell spot (`ra/core/target.h`), and nothing in the word says which; `AsCell()` and
+    `AsCoordinate()` read only the sub-cell form, `AsMovementCoordinate()` (no callers, like the
+    original `As_Movement_Coord()`) only the cell index
+  - A mismatch the original already had: the construction yard's ARCHIVE event sends
+    `FromCellIndex(cell)` (`ra/objects/building.cc`, `Active_Click_With()`), and the MCV it
+    undeploys into is sent to that word with `Assign_Destination()`, which reads it as a sub-cell
+    spot, so it heads for the wrong cell
 
 ## Refactoring
 

@@ -47,6 +47,7 @@
 #include "ra/ai/trigtype.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/logic.h"
 #include "ra/map/vortex.h"
@@ -57,7 +58,6 @@
 #include "ra/objects/bullet.h"
 #include "ra/objects/house.h"
 #include "ra/objects/infantry.h"
-#include "ra/objects/target.h"
 #include "ra/objects/unit.h"
 #include "ra/objects/vessel.h"
 
@@ -84,8 +84,8 @@ namespace ra {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-void Detach_This_From_All(TARGET target, bool all) {
-  if (Target_Legal(target)) {
+void Detach_This_From_All(Target target, bool all) {
+  if (target) {
     for (int index = 0; index < TheObjectHeaps().house().Count(); index++) {
       TheObjectHeaps().house().ActiveAt(index)->Detach(target, all);
     }
@@ -127,7 +127,7 @@ void Detach_This_From_All(TARGET target, bool all) {
     **	Removing a trigger type must also remove all triggers that are dependant
     **	upon that type.
     */
-    if (As_TriggerType(target) != nullptr) {
+    if (target.AsTriggerType() != nullptr) {
       for (int j = 0; j < TheObjectHeaps().trigger().Count(); j++) {
         const TriggerClass* tp = TheObjectHeaps().trigger().ActiveAt(j);
 

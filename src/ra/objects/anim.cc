@@ -82,6 +82,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
@@ -96,7 +97,6 @@
 #include "ra/objects/combat.h"
 #include "ra/objects/object.h"
 #include "ra/objects/smudge.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/screens/goptions.h"
@@ -159,7 +159,7 @@ void Shorten_Attached_Anims(const ObjectClass* obj) {
     for (int index = 0; index < TheObjectHeaps().anim().Count(); index++) {
       AnimClass& anim = *TheObjectHeaps().anim().ActiveAt(index);
 
-      if (As_Object(anim.xObject) == obj) {
+      if (anim.xObject.AsObject() == obj) {
         anim.Loops = 0;
       }
     }
@@ -186,8 +186,8 @@ Coordinate AnimClass::Sort_Y() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
-  if (xObject != kTargetNone) {
-    return As_Object(xObject)->Sort_Y() + Coordinate::FromLeptons(0, 1);
+  if (xObject != Target{}) {
+    return xObject.AsObject()->Sort_Y() + Coordinate::FromLeptons(0, 1);
   }
   if (*this == ANIM_MOVE_FLASH) {
     return Center_Coord() + XYP_Coord(0, -24);
@@ -221,8 +221,8 @@ Coordinate AnimClass::Center_Coord() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
-  if (xObject != kTargetNone) {
-    return Coord + As_Object(xObject)->Target_Coord();
+  if (xObject != Target{}) {
+    return Coord + xObject.AsObject()->Target_Coord();
   }
   return Coord;
 }
@@ -560,8 +560,8 @@ AnimClass::~AnimClass() {
     **	is the case, then inform the object that it is no longer attached to
     **	an animation.
     */
-    if (Target_Legal(xObject) && As_Object(xObject) != nullptr) {
-      ObjectClass* to = As_Object(xObject);
+    if (xObject && xObject.AsObject() != nullptr) {
+      ObjectClass* to = xObject.AsObject();
 
       /*
       **	Remove the object from the appropriate display list.
@@ -591,13 +591,13 @@ AnimClass::~AnimClass() {
         to->Mark(MARK_OVERLAP_DOWN);
       }
       Coord = to->Center_Coord() + Coord;
-      xObject = kTargetNone;
+      xObject = Target{};
     }
 
     Limbo();
   }
 
-  xObject = kTargetNone;
+  xObject = Target{};
   Class = nullptr;
   ID = -1;
 }
@@ -690,7 +690,7 @@ void AnimClass::AI() {
       **	damaging kind of animation, then do the damage to the other
       **	object.
       */
-      if (xObject != kTargetNone && Class->Damage > 0) {
+      if (xObject != Target{} && Class->Damage > 0) {
         Accum += Class->Damage;
 
         if (Accum >= 1) {
@@ -700,7 +700,7 @@ void AnimClass::AI() {
           */
           int damage = Accum.ToInt();
           Accum.Clear();
-          if (As_Object(xObject)->Take_Damage(damage, 0, WARHEAD_FIRE) ==
+          if (xObject.AsObject()->Take_Damage(damage, 0, WARHEAD_FIRE) ==
               game::RESULT_DESTROYED) {
             delete this;
             return;
@@ -829,7 +829,7 @@ LayerType AnimClass::In_Which_Layer() const {
     return LAYER_SURFACE;
   }
 
-  if (Target_Legal(xObject) || Class->IsGroundLayer) {
+  if (xObject || Class->IsGroundLayer) {
     return LAYER_GROUND;
   }
   return LAYER_AIR;
@@ -962,8 +962,8 @@ void AnimClass::Middle() {
       newanim = base::NewPooled<AnimClass>(
           ANIM_FIRE_SMALL, Center_Coord(), 0,
           static_cast<unsigned char>(Random_Pick(1, 2)));
-      if (newanim != nullptr && xObject != kTargetNone) {
-        newanim->Attach_To(As_Object(xObject));
+      if (newanim != nullptr && xObject != Target{}) {
+        newanim->Attach_To(xObject.AsObject());
       }
       break;
 
@@ -1068,13 +1068,13 @@ void AnimClass::Middle() {
  * HISTORY: * 06/30/1995 JLB : Created. * 07/02/1995 JLB : Detach is a precursor
  *to animation destruction.                          *
  *=============================================================================================*/
-void AnimClass::Detach(TARGET target, bool all) {
+void AnimClass::Detach(Target target, bool all) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   if (xObject == target && all) {
     MapEditClass::Remove(this, In_Which_Layer());
-    xObject = kTargetNone;
+    xObject = Target{};
     IsToDelete = true;
     Mark(MARK_UP);
   }

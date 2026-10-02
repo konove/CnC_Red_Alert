@@ -51,7 +51,9 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/coordinate.h"  // IWYU pragma: export
 #include "ra/core/jshell.h"
+#include "ra/core/packed.h"  // IWYU pragma: export
 #include "ra/core/rtti.h"  // IWYU pragma: export
+#include "ra/core/target.h"  // IWYU pragma: export
 
 namespace ra {
 
@@ -209,14 +211,9 @@ inline constexpr char kConfigFileName[] = "REDALERT.INI";
 // Set in either word of a Coordinate's packed() when it points off the map.
 inline constexpr uint32_t kHighCoordMask = 0x80008000;
 
-// A map coordinate with cell resolution, the cheaper index into the map than
-// a lepton-resolution Coordinate (ra/core/coordinate.h). Declared here so that
-// the map dimensions can carry it: a loop walking the map then has a counter
-// no narrower than its own bound.
-using CELL = int16_t;
-
-// Size of the map in cells. The brace initialization fails to compile if the
-// map ever outgrows a CELL.
+// Size of the map in cells, as CELLs (ra/core/packed.h) so that a loop
+// walking the map has a counter no narrower than its own bound. The brace
+// initialization fails to compile if the map ever outgrows a CELL.
 inline constexpr CELL MAP_CELL_W{128};
 inline constexpr CELL MAP_CELL_H{128};
 inline constexpr CELL MAP_CELL_TOTAL{MAP_CELL_W * MAP_CELL_H};
@@ -228,13 +225,6 @@ inline constexpr int16_t kRefreshEol = 32767;
 inline constexpr int16_t kRefreshSidebar = 32766;
 
 using WAYPOINT = int;
-
-// A reference to any game object, cell or coordinate: the RTTI kind in the
-// high 8 bits over a 24-bit value (ra/core/packed.h). RTTI_NONE with value 0
-// is kTargetNone, by design.
-using TARGET = int32_t;
-
-inline constexpr TARGET kTargetNone{};
 
 /*
 **	The map is broken down into regions of this specified dimensions.

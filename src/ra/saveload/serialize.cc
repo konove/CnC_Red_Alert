@@ -10,6 +10,7 @@
 #include "game/core/object_heap.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/objects/aircraft.h"
 #include "ra/objects/anim.h"
 #include "ra/objects/building.h"
@@ -20,7 +21,6 @@
 #include "ra/objects/overlay.h"
 #include "ra/objects/radio.h"
 #include "ra/objects/smudge.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/template.h"
 #include "ra/objects/terrain.h"
@@ -54,7 +54,7 @@ bool IsFootKind(RTTIType kind) {
          kind == RTTI_AIRCRAFT;
 }
 
-// Whether a TARGET of `kind` may be stored in a T*. Mirrors the RTTI tests
+// Whether a Target of `kind` may be stored in a T*. Mirrors the RTTI tests
 // ObjectClass::Is_Techno and Is_Foot make on live objects.
 template <class T>
 bool KindFits(RTTIType kind) {
@@ -69,12 +69,12 @@ bool KindFits(RTTIType kind) {
 
 }  // namespace
 
-ObjectClass* ResolveSavedObject(int32_t target, ArchiveReader& ar) {
-  if (target == kTargetNone) {
+ObjectClass* ResolveSavedObject(Target target, ArchiveReader& ar) {
+  if (target == Target{}) {
     return nullptr;
   }
-  const int index = Target_Value(target);
-  switch (Target_Kind(target)) {
+  const int index = target.value();
+  switch (target.kind()) {
     case RTTI_INFANTRY:
       return Slot(TheObjectHeaps().infantry(), index, ar);
     case RTTI_UNIT:
@@ -126,7 +126,7 @@ ObjectClass* ResolveSavedObject(int32_t target, ArchiveReader& ar) {
 
 template <class T>
 void ObjectPtr<T>::Serialize(ArchiveWriter& ar) {
-  TARGET target = kTargetNone;
+  Target target = Target{};
   if (ref_ != nullptr && ref_->IsActive) {
     target = ref_->As_Target();
   }
@@ -135,13 +135,13 @@ void ObjectPtr<T>::Serialize(ArchiveWriter& ar) {
 
 template <class T>
 void ObjectPtr<T>::Serialize(ArchiveReader& ar) {
-  TARGET target = kTargetNone;
+  Target target = Target{};
   ar(target);
   ref_ = nullptr;
-  if (target == kTargetNone) {
+  if (target == Target{}) {
     return;
   }
-  if (!KindFits<T>(Target_Kind(target))) {
+  if (!KindFits<T>(target.kind())) {
     ar.Fail("saved object target has the wrong kind for its field");
     return;
   }
@@ -156,18 +156,18 @@ template class ObjectPtr<TechnoClass>;
 template class ObjectPtr<FootClass>;
 
 void TechnoTypePtr::Serialize(ArchiveWriter& ar) {
-  TARGET target = ref_ != nullptr ? ref_->As_Target() : kTargetNone;
+  Target target = ref_ != nullptr ? ref_->As_Target() : Target{};
   ar(target);
 }
 
 void TechnoTypePtr::Serialize(ArchiveReader& ar) {
-  TARGET target = kTargetNone;
+  Target target = Target{};
   ar(target);
   ref_ = nullptr;
-  if (target == kTargetNone) {
+  if (target == Target{}) {
     return;
   }
-  ref_ = As_TechnoType(target);
+  ref_ = target.AsTechnoType();
   if (ref_ == nullptr) {
     ar.Fail("saved techno type target does not name a type");
   }

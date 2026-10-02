@@ -95,6 +95,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
+#include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
 #include "ra/data/rules.h"
@@ -107,7 +108,6 @@
 #include "ra/objects/foot.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
@@ -3719,7 +3719,7 @@ bool BuildingTypeClass::Flush_For_Placement(CELL cell,
         if (occupier != nullptr) {
           again = true;
           if (occupier->House->Is_Ally(house) && occupier->Is_Foot() &&
-              !Target_Legal(dynamic_cast<FootClass*>(occupier)->NavCom)) {
+              !dynamic_cast<FootClass*>(occupier)->NavCom) {
             TheMap().at(newcell).Incoming(Coordinate{}, true);
           } else {
             //						Base_Is_Attacked(occupier);

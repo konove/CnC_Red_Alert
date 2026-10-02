@@ -141,6 +141,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
 #include "ra/data/rules.h"
@@ -163,7 +164,6 @@
 #include "ra/objects/object.h"
 #include "ra/objects/overlay.h"
 #include "ra/objects/radio.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/objects/vessel.h"
@@ -496,7 +496,7 @@ void UnitClass::AI() {
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Rotation_AI() {
-  if (Target_Legal(TarCom) && !IsRotating) {
+  if (TarCom && !IsRotating) {
     const game::DirType dir = Direction(TarCom);
 
     if (Class->IsTurretEquipped) {
@@ -509,9 +509,8 @@ void UnitClass::Rotation_AI() {
       *Wheeled vehicles never rotate to face the *	target, since they
       *aren't maneuverable enough.
       */
-      if (Class->Speed == SPEED_TRACK /* || *this == UNIT_BIKE */ &&
-          !Target_Legal(NavCom) && !IsDriving &&
-          PrimaryFacing.Difference(dir)) {
+      if (Class->Speed == SPEED_TRACK /* || *this == UNIT_BIKE */ && !NavCom &&
+          !IsDriving && PrimaryFacing.Difference(dir)) {
         PrimaryFacing.Set_Desired(dir);
       }
     }
@@ -542,8 +541,8 @@ void UnitClass::Rotation_AI() {
           IsRotating = SecondaryFacing.Is_Rotating();
         }
       } else {
-        if (!IsTurretLockedDown && !Target_Legal(TarCom)) {
-          if (!Target_Legal(NavCom)) {
+        if (!IsTurretLockedDown && !TarCom) {
+          if (!NavCom) {
             SecondaryFacing.Set_Desired(PrimaryFacing.Current());
           } else {
             SecondaryFacing.Set_Desired(Direction(NavCom));
@@ -628,7 +627,7 @@ void UnitClass::Reload_AI() {
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
 void UnitClass::Firing_AI() {
-  if (Target_Legal(TarCom) && Class->PrimaryWeapon != nullptr) {
+  if (TarCom && Class->PrimaryWeapon != nullptr) {
     /*
     **	Determine which weapon can fire. First check for the primary weapon. If
     *that weapon *	cannot fire, then check any secondary weapon. If neither
@@ -650,7 +649,7 @@ void UnitClass::Firing_AI() {
 
       case game::FIRE_FACING:
         if (Class->IsLockTurret || Class->Type == UNIT_DEMOTRUCK) {
-          if (!Target_Legal(NavCom) && !IsDriving) {
+          if (!NavCom && !IsDriving) {
             PrimaryFacing.Set_Desired(Direction(TarCom));
             SecondaryFacing.Set_Desired(PrimaryFacing.Desired());
           }
@@ -710,7 +709,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
     **	Checks to see if this object is in need of service depot processing.
     */
     case RADIO_NEED_REPAIR:
-      if (!IsDriving && !Target_Legal(NavCom) && Health_Ratio() >= 1 &&
+      if (!IsDriving && !NavCom && Health_Ratio() >= 1 &&
           (*this != UNIT_MINELAYER || Ammo >= Class->MaxAmmo)) {
         return RADIO_NEGATIVE;
       }
@@ -773,7 +772,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
       **	If this transport is moving, then always abort the docking
       *request.
       */
-      if (IsDriving || Target_Legal(NavCom)) {
+      if (IsDriving || NavCom) {
         return RADIO_NEGATIVE;
       }
 
@@ -826,7 +825,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
           if (cell == 0) {
             Transmit_Message(RADIO_OVER_OUT, from);
           } else {
-            param = static_cast<int32_t>(ra::As_Target(cell));
+            param = Target::FromCell(cell).packed();
             Do_Turn(dir);
 
             /*
@@ -855,7 +854,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
                 RADIO_YEA_NOW_WHAT) {
               if ((*this != UNIT_APC && *this != UNIT_PHASE) ||
                   Is_Door_Open()) {
-                param = static_cast<int32_t>(As_Target());
+                param = As_Target().packed();
                 Transmit_Message(RADIO_TETHER);
                 if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
                     RADIO_ROGER) {
@@ -1348,12 +1347,12 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
   *contact since *	no radio coordination occurs on a just a simple movement
   *mission.
   */
-  if (Mission == MISSION_MOVE && !Target_Legal(NavCom)) {
+  if (Mission == MISSION_MOVE && !NavCom) {
     Transmit_Message(RADIO_OVER_OUT);
   }
 
   Handle_Navigation_List();
-  if (Target_Legal(NavCom)) {
+  if (NavCom) {
     order = MISSION_MOVE;
   } else {
     if (!Is_Weapon_Equipped()) {
@@ -1366,8 +1365,8 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
           } else {
             order = MISSION_GUARD;
           }
-          Assign_Target(kTargetNone);
-          Assign_Destination(kTargetNone);
+          Assign_Target(Target{});
+          Assign_Destination(Target{});
         } else {
           return;
         }
@@ -1380,8 +1379,8 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
             order = MISSION_UNLOAD;
           } else {
             order = MISSION_GUARD;
-            Assign_Target(kTargetNone);
-            Assign_Destination(kTargetNone);
+            Assign_Target(Target{});
+            Assign_Destination(Target{});
           }
         }
       }
@@ -1424,15 +1423,14 @@ bool UnitClass::Goto_Clear_Spot() {
   DCHECK(IsActive);
 
   Mark(MARK_UP);
-  if (!Target_Legal(NavCom) &&
-      BuildingTypeClass::As_Reference(STRUCT_CONST)
-          .Legal_Placement(
-              Adjacent_Cell(Coord_Cell(Center_Coord()), game::FACING_NW))) {
+  if (!NavCom && BuildingTypeClass::As_Reference(STRUCT_CONST)
+                     .Legal_Placement(Adjacent_Cell(Coord_Cell(Center_Coord()),
+                                                    game::FACING_NW))) {
     Mark(MARK_DOWN);
     return true;
   }
 
-  if (!Target_Legal(NavCom)) {
+  if (!NavCom) {
     /*
     **	This scan table is skewed to north scanning only. This should
     **	probably be converted to a more flexible method.
@@ -1462,7 +1460,7 @@ bool UnitClass::Goto_Clear_Spot() {
       const CELL check_cell = Adjacent_Cell(cell, game::FACING_NW);
       if (BuildingTypeClass::As_Reference(STRUCT_CONST)
               .Legal_Placement(check_cell)) {
-        Assign_Destination(ra::As_Target(cell));
+        Assign_Destination(Target::FromCell(cell));
         break;
       }
     }
@@ -1473,7 +1471,7 @@ bool UnitClass::Goto_Clear_Spot() {
   ** If we couldn't find a destination to go to, let's try random movement
   ** to see if that brings us to a better spot.
   */
-  if (!Target_Legal(NavCom) && !House->IsHuman) {
+  if (!NavCom && !House->IsHuman) {
     Scatter(Coordinate{});
   }
 
@@ -1504,7 +1502,7 @@ bool UnitClass::Try_To_Deploy() {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
-  if (!Target_Legal(NavCom) && !IsRotating) {
+  if (!NavCom && !IsRotating) {
     if (*this == UNIT_MCV) {
       /*
       **	Determine if it is legal to deploy at this location. If not,
@@ -1714,7 +1712,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
     TechnoClass* techno = Contact_With_Whom();
     if (Mission == MISSION_ENTER && techno &&
         Coord_Cell(Coord) == Coord_Cell(techno->Coord) &&
-        techno == As_Techno(NavCom)) {
+        techno == NavCom.AsTechno()) {
       if (Transmit_Message(RADIO_IM_IN) == RADIO_ATTACH) {
         Limbo();
         techno->Attach(this);
@@ -1728,20 +1726,19 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
     */
     if (IsTethered &&
         (Mission != MISSION_ENTER ||
-         (As_Techno(NavCom) != nullptr &&
-          Contact_With_Whom() != As_Techno(NavCom))) &&
+         (NavCom.AsTechno() != nullptr &&
+          Contact_With_Whom() != NavCom.AsTechno())) &&
         Mission != MISSION_UNLOAD) {
       /*
       **	Special hack check to make sure that even though it has moved
       *one *	cell, if it is still on the building (e.g., service depot), have
       **	it scatter again.
       */
-      if (TheMap().at(Coord).Cell_Building() != nullptr &&
-          !Target_Legal(NavCom)) {
+      if (TheMap().at(Coord).Cell_Building() != nullptr && !NavCom) {
         Scatter(Coordinate{}, true, true);
       } else {
         if (Transmit_Message(RADIO_UNLOADED) == RADIO_RUN_AWAY) {
-          if (!Target_Legal(NavCom)) {
+          if (!NavCom) {
             Scatter(Coordinate{}, true);
           } else {
             /*
@@ -1749,23 +1746,23 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
             **	onto a transport (or other situation) if the destination
             **	so indicates.
             */
-            TechnoClass* navcom_techno = As_Techno(NavCom);
+            TechnoClass* navcom_techno = NavCom.AsTechno();
             if (navcom_techno != nullptr) {
               Transmit_Message(RADIO_DOCKING, navcom_techno);
             }
           }
         } else {
           if (*this == UNIT_HARVESTER) {
-            if (Target_Legal(ArchiveTarget)) {
+            if (ArchiveTarget) {
               Assign_Mission(MISSION_HARVEST);
               Assign_Destination(ArchiveTarget);
-              ArchiveTarget = kTargetNone;
+              ArchiveTarget = Target{};
             } else {
               /*
               **	Since there is no place to go, move away to clear
               **	the pad for another harvester.
               */
-              if (!Target_Legal(NavCom)) {
+              if (!NavCom) {
                 Scatter(Coordinate{}, true);
               }
             }
@@ -1815,7 +1812,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
     /*
     **	Certain units require some setup time after they come to a halt.
     */
-    if ((!Target_Legal(NavCom) && Path[0] == game::FACING_NONE) &&
+    if ((!NavCom && Path[0] == game::FACING_NONE) &&
         Class->IsNoFireWhileMoving) {
       Arm.Set(Rearm_Delay(true) / 4);
     }
@@ -2265,7 +2262,7 @@ bool UnitClass::Goto_Tiberium(int rad) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
-  if (!Target_Legal(NavCom)) {
+  if (!NavCom) {
     const CELL center = Coord_Cell(Center_Coord());
     if (TheMap().at(center).Land_Type() == LAND_TIBERIUM) {
       return true;
@@ -2277,25 +2274,25 @@ bool UnitClass::Goto_Tiberium(int rad) {
       for (int x = -radius; x <= radius; x++) {
         CELL cell = center;
         if (Tiberium_Check(cell, x, -radius)) {
-          Assign_Destination(ra::As_Target(cell));
+          Assign_Destination(Target::FromCell(cell));
           return false;
         }
 
         cell = center;
         if (Tiberium_Check(cell, x, +radius)) {
-          Assign_Destination(ra::As_Target(cell));
+          Assign_Destination(Target::FromCell(cell));
           return false;
         }
 
         cell = center;
         if (Tiberium_Check(cell, -radius, x)) {
-          Assign_Destination(ra::As_Target(cell));
+          Assign_Destination(Target::FromCell(cell));
           return false;
         }
 
         cell = center;
         if (Tiberium_Check(cell, +radius, x)) {
-          Assign_Destination(ra::As_Target(cell));
+          Assign_Destination(Target::FromCell(cell));
           return false;
         }
       }
@@ -2330,7 +2327,7 @@ bool UnitClass::Harvesting() {
   /*
   **	Keep waiting if still heading toward a spot to harvest.
   */
-  if (Target_Legal(NavCom)) {
+  if (NavCom) {
     return true;
   }
 
@@ -2507,7 +2504,7 @@ int UnitClass::Mission_Unload() {
                                      newface);
                   TheWorld().scenario_init()--;
                   passenger->Assign_Mission(MISSION_MOVE);
-                  passenger->Assign_Destination(ra::As_Target(newcell));
+                  passenger->Assign_Destination(Target::FromCell(newcell));
                   placed = true;
                   break;
                 }
@@ -2590,7 +2587,7 @@ int UnitClass::Mission_Unload() {
                                      newface);
                   TheWorld().scenario_init()--;
                   passenger->Assign_Mission(MISSION_MOVE);
-                  passenger->Assign_Destination(ra::As_Target(newcell));
+                  passenger->Assign_Destination(Target::FromCell(newcell));
                   placed = true;
                   break;
                 }
@@ -2769,7 +2766,7 @@ int UnitClass::Mission_Unload() {
               crew->Unlimbo(Coord_Move(Coord, newface, 0x0080), newface);
               TheWorld().scenario_init()--;
               crew->Assign_Mission(MISSION_MOVE);
-              crew->Assign_Destination(ra::As_Target(newcell));
+              crew->Assign_Destination(Target::FromCell(newcell));
               break;
             }
           }
@@ -2798,7 +2795,7 @@ int UnitClass::Mission_Unload() {
 
       Strength = 1;             // assure destruction
       TheWorld().pending_time_quake() = true;  // trigger a time quake
-      TheWorld().time_quake_center() = ra::As_Target(Center_Coord());
+      TheWorld().time_quake_center() = Target::FromCoordinate(Center_Coord());
       break;
 
     case UNIT_CHRONOTANK:
@@ -2894,9 +2891,9 @@ int UnitClass::Mission_Harvest() {
       /*
       ** Look for ore where we last found some - mine the same patch
       */
-      if (Target_Legal(ArchiveTarget)) {
+      if (ArchiveTarget) {
         Assign_Destination(ArchiveTarget);
-        ArchiveTarget = 0;
+        ArchiveTarget = Target{};
       }
       IsHarvesting = false;
       if (Goto_Tiberium(TheRules().TiberiumLongScan / CELL_LEPTON_W)) {
@@ -2911,7 +2908,7 @@ int UnitClass::Mission_Harvest() {
        *Tiberium, then *	force it to go into guard mode. This will
        *prevent the harvester from repeatedly *	searching for Tiberium.
        */
-      if (!Target_Legal(NavCom)) {
+      if (!NavCom) {
         /*
         **	If the archive target is legal, then head there since it is
         *presumed *	that the archive target points to the last place it
@@ -2919,7 +2916,7 @@ int UnitClass::Mission_Harvest() {
         *stuck and can't find Tiberium just because *	it is greater than 32
         *squares away.
         */
-        if (Target_Legal(ArchiveTarget)) {
+        if (ArchiveTarget) {
           Assign_Destination(ArchiveTarget);
         } else {
           Status = kGoingtoidle;
@@ -2952,11 +2949,11 @@ int UnitClass::Mission_Harvest() {
         IsHarvesting = false;
         if (Tiberium_Load() == 1) {
           Status = kFindhome;
-          ArchiveTarget = ra::As_Target(Coord_Cell(Coord));
+          ArchiveTarget = Target::FromCell(Coord_Cell(Coord));
         } else {
           if (!Goto_Tiberium(TheRules().TiberiumShortScan / CELL_LEPTON_W) &&
-              !Target_Legal(NavCom)) {
-            ArchiveTarget = kTargetNone;
+              !NavCom) {
+            ArchiveTarget = Target{};
             Status = kFindhome;
           } else {
             Status = kHarvesting;
@@ -2972,7 +2969,7 @@ int UnitClass::Mission_Harvest() {
     **	Find and head to refinery.
     */
     case kFindhome:
-      if (!Target_Legal(NavCom)) {
+      if (!NavCom) {
         /*
         **	Find nearby refinery and head to it?
         */
@@ -2997,7 +2994,7 @@ int UnitClass::Mission_Harvest() {
           nearest = Find_Docking_Bay(STRUCT_REFINERY, false);
           TheWorld().scenario_init()--;
           if (nearest != nullptr) {
-            Assign_Destination(ra::As_Target(Nearby_Location(nearest)));
+            Assign_Destination(Target::FromCell(Nearby_Location(nearest)));
           }
         }
       }
@@ -3259,14 +3256,14 @@ game::MoveType UnitClass::Can_Enter_Cell(CELL cell,
 
       const bool is_moving =
           obj->Is_Foot() &&
-          (Target_Legal(dynamic_cast<FootClass*>(obj)->NavCom) ||
+          (dynamic_cast<FootClass*>(obj)->NavCom ||
            dynamic_cast<FootClass*>(obj)->PrimaryFacing.Is_Rotating() ||
            dynamic_cast<FootClass*>(obj)->IsDriving);
       //						(((FootClass
       //*)obj)->PrimaryFacing.Is_Rotating() || ((FootClass *)obj)->IsDriving);
       //						(((FootClass
       //*)obj)->IsRotating || ((FootClass *)obj)->IsDriving);
-      //						(Target_Legal(((FootClass
+      //						((((FootClass
       //*)obj)->NavCom) || ((FootClass *)obj)->IsDriving);
 
       if (House->Is_Ally(obj)) {
@@ -3726,7 +3723,7 @@ void UnitClass::Exit_Repair() {
     //		DirType	dir = Direction(cell);
 
     Assign_Mission(MISSION_MOVE);
-    Assign_Destination(ra::As_Target(cell));
+    Assign_Destination(Target::FromCell(cell));
   }
 }
 
@@ -4232,7 +4229,7 @@ bool UnitClass::Ok_To_Move(game::DirType dir) {
  * HISTORY: * 04/26/1994 JLB : Created. * 06/01/1994 JLB : Returns reason why it
  *can't fire.                                        *
  *=============================================================================================*/
-game::FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType UnitClass::Can_Fire(Target target, int which) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -4246,7 +4243,7 @@ game::FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
     /*
     **	If this unit cannot fire while moving, then bail.
     */
-    if (Class->IsNoFireWhileMoving && Target_Legal(NavCom)) {
+    if (Class->IsNoFireWhileMoving && NavCom) {
       return game::FIRE_MOVING;
     }
 
@@ -4301,7 +4298,7 @@ game::FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
  *                                                                                             *
  * HISTORY: * 04/26/1994 JLB : Created. *
  *=============================================================================================*/
-BulletClass* UnitClass::Fire_At(TARGET target, int which) {
+BulletClass* UnitClass::Fire_At(Target target, int which) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
   // An active unit always has its type, and every dereference below depends
@@ -4403,14 +4400,14 @@ void UnitClass::Approach_Target() {
   /*
   **	Only if there is a legal target should the approach check occur.
   */
-  if (!House->IsHuman && Target_Legal(TarCom) && !Target_Legal(NavCom)) {
+  if (!House->IsHuman && TarCom && !NavCom) {
     /*
     **	Special case:
     **	If this is for a unit that can crush infantry, and the target is
     **	infantry, AND the infantry is pretty darn close, then just try
     **	to drive over the infantry instead of firing on it.
     */
-    const TechnoClass* target = As_Techno(TarCom);
+    const TechnoClass* target = TarCom.AsTechno();
     if (Class->IsCrusher && Distance(TarCom) < TheRules().CrushDistance &&
         target && target->Class_Of().IsCrushable) {
       Assign_Destination(TarCom);
@@ -4512,7 +4509,7 @@ void UnitClass::Overrun_Square(CELL cell, bool threaten) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Assign_Destination(TARGET target) {
+void UnitClass::Assign_Destination(Target target) {
   DCHECK(IsActive);
 
   /*
@@ -4533,7 +4530,7 @@ void UnitClass::Assign_Destination(TARGET target) {
     Transmit_Message(RADIO_OVER_OUT);
   }
 
-  BuildingClass* b = As_Building(target);
+  BuildingClass* b = target.AsBuilding();
 
   /*
   **	Handle entry logic here.
@@ -4562,7 +4559,7 @@ void UnitClass::Assign_Destination(TARGET target) {
           *assigned by this routine.
           */
           if (*b != STRUCT_REPAIR) {
-            target = kTargetNone;
+            target = Target{};
           }
         } else {
           if (Transmit_Message(RADIO_DOCKING, b) != RADIO_ROGER) {
@@ -4573,11 +4570,11 @@ void UnitClass::Assign_Destination(TARGET target) {
           }
           if (*b != STRUCT_REPAIR) {
             ArchiveTarget = target;
-            //	target = kTargetNone;
+            //	target = Target{};
           }
         }
       } else {
-        TechnoClass* techno = As_Techno(target);
+        TechnoClass* techno = target.AsTechno();
         if (techno != nullptr) {
           /*
           **	Determine if the transport is already in radio contact. If so,
@@ -4618,7 +4615,7 @@ void UnitClass::Assign_Destination(TARGET target) {
       //			if (target != NULL) {
       ArchiveTarget = target;
       //			}
-      //			target = kTargetNone;
+      //			target = Target{};
     } else {
       /*
       **	Establish radio contact protocol. If the facility responds
@@ -4669,13 +4666,13 @@ void UnitClass::Assign_Destination(TARGET target) {
  * INPUT:   threat   -- The threat type to search for. *
  *                                                                                             *
  * OUTPUT:  Returns with a target value of the target that this unit should
- *pursue. If there   * is no suitable target, then kTargetNone is returned. *
+ *pursue. If there   * is no suitable target, then Target{} is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-TARGET UnitClass::Greatest_Threat(ThreatType threat)  // const
+Target UnitClass::Greatest_Threat(ThreatType threat)  // const
 {
   DCHECK(IsActive);
   if (Class->PrimaryWeapon != nullptr) {
@@ -4958,13 +4955,13 @@ void UnitClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
   }
   //	if (IsRotating) return;
 
-  if (Target_Legal(NavCom) && !nokidding) {
+  if (NavCom && !nokidding) {
     return;
   }
 
   if (!threat) {
-    Assign_Destination(
-        ra::As_Target(TheMap().Nearby_Location(Coord_Cell(Coord), Class->Speed)));
+    Assign_Destination(Target::FromCell(
+        TheMap().Nearby_Location(Coord_Cell(Coord), Class->Speed)));
   } else {
     DriveClass::Scatter(threat, forced, nokidding);
   }
@@ -5069,7 +5066,7 @@ int UnitClass::Mission_Guard_Area() {
   *doing anything. *	Such an APC should load up with infantry.
   */
   if (TheSession().Type != GAME_NORMAL &&
-      (*this == UNIT_APC || *this == UNIT_PHASE) && !Target_Legal(TarCom) &&
+      (*this == UNIT_APC || *this == UNIT_PHASE) && !TarCom &&
       !In_Radio_Contact() && House->Which_Zone(this) != ZONE_NONE &&
       !House->IsHuman) {
     int needed = Class->Max_Passengers() - How_Many();
@@ -5082,7 +5079,7 @@ int UnitClass::Mission_Guard_Area() {
 
       if (infantry != nullptr && infantry->IsActive && !infantry->IsInLimbo &&
           infantry->Strength > 0 && infantry->House == House &&
-          !Target_Legal(infantry->TarCom) && !Target_Legal(infantry->NavCom) &&
+          !infantry->TarCom && !infantry->NavCom &&
           Distance(infantry) < 7 * CELL_LEPTON_W &&
           (infantry->Mission == MISSION_GUARD ||
            infantry->Mission == MISSION_GUARD_AREA)) {

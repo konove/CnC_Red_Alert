@@ -105,6 +105,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/data/ccini.h"
 #include "ra/data/mission_id.h"
 #include "ra/data/rules.h"
@@ -128,7 +129,6 @@
 #include "ra/objects/object.h"
 #include "ra/objects/overlay.h"
 #include "ra/objects/smudge.h"
-#include "ra/objects/target.h"
 #include "ra/objects/template.h"
 #include "ra/objects/terrain.h"
 #include "ra/objects/type.h"
@@ -181,18 +181,18 @@ static void SerializeTriggerList(Archive& ar,
     list.reserve(base::ToSize(count));
   }
   for (int i = 0; i < count; ++i) {
-    TARGET target = kTargetNone;
+    Target target = Target{};
     if constexpr (!Archive::kIsReading) {
       target = base::At(list, i)->As_Target();
     }
     ar(target);
     if constexpr (Archive::kIsReading) {
-      if (!ar.ok() || !Is_Target_Trigger(target) ||
-          Target_Value(target) >= TheObjectHeaps().trigger().Capacity()) {
+      if (!ar.ok() || target.kind() != RTTI_TRIGGER ||
+          target.value() >= TheObjectHeaps().trigger().Capacity()) {
         ar.Fail("invalid saved trigger target");
         return;
       }
-      list.push_back(As_Trigger(target));
+      list.push_back(target.AsTrigger());
     }
   }
 }
@@ -440,7 +440,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
  *     DisplayClass::Save() invokes CellClass's Write() for every cell     *
  *     that needs to be saved.  A cell needs to be saved if it contains    *
  *     any special data at all, such as a TIcon, or an Occupier.           *
- *   The cell saves its own CellTrigger pointer, converted to a TARGET.    *
+ *   The cell saves its own CellTrigger pointer, converted to a Target.    *
  *                                                                         *
  * Saving game objects:                                                    *
  *   - Any object stored in an ArrayOf class needs to be saved.  The ArrayOf*

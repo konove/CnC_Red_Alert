@@ -81,6 +81,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug_state.h"
@@ -94,7 +95,6 @@
 #include "ra/objects/foot.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/objects/vessel.h"
@@ -206,7 +206,7 @@ EventClass::EventClass(SpecialClass data) : EventClass() {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, TargetClass target) : EventClass() {
+EventClass::EventClass(EventType type, ra::Target target) : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -281,13 +281,14 @@ EventClass::EventClass(EventType type, int val) : EventClass() {
  *                                                                                             *
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, TargetClass src, TargetClass dest) : EventClass() {
+EventClass::EventClass(EventType type, ra::Target src, ra::Target dest)
+    : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(game::CurrentFrame());
   Data.NavCom.Whom = src;
-  Data.NavCom.Where = TargetClass(dest);
+  Data.NavCom.Where = dest;
 }
 
 /***********************************************************************************************
@@ -337,8 +338,9 @@ EventClass::EventClass(AnimType anim, HousesType owner, Coordinate coord)
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
-                       TargetClass destination) : EventClass() {
+EventClass::EventClass(ra::Target src, MissionType mission, ra::Target target,
+                       ra::Target destination)
+    : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = MEGAMISSION;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -374,8 +376,8 @@ EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
-                       TargetClass destination, SpeedType speed,
+EventClass::EventClass(ra::Target src, MissionType mission, ra::Target target,
+                       ra::Target destination, SpeedType speed,
                        game::MPHType maxspeed)
     : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
@@ -384,8 +386,8 @@ EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
   Frame = static_cast<unsigned>(game::CurrentFrame());
   Data.MegaMission_F.Whom = src;
   Data.MegaMission_F.Mission = mission;
-  Data.MegaMission_F.Target = TargetClass(target);
-  Data.MegaMission_F.Destination = TargetClass(destination);
+  Data.MegaMission_F.Target = target;
+  Data.MegaMission_F.Destination = destination;
   Data.MegaMission_F.Speed = speed;
   Data.MegaMission_F.MaxSpeed = maxspeed;
 }
@@ -555,9 +557,9 @@ void EventClass::Execute() {
     **	Update the archive target for this building.
     */
     case ARCHIVE:
-      techno = Data.NavCom.Whom.As_Techno();
+      techno = Data.NavCom.Whom.AsTechnoInSlot();
       if (techno && techno->IsActive) {
-        techno->ArchiveTarget = Data.NavCom.Where.As_TARGET();
+        techno->ArchiveTarget = Data.NavCom.Where;
       }
       break;
 
@@ -614,7 +616,7 @@ void EventClass::Execute() {
     *by the *	player clicking the repair wrench on a building.
     */
     case REPAIR:
-      techno = Data.Target.Whom.As_Techno();
+      techno = Data.Target.Whom.AsTechnoInSlot();
       if (techno && techno->IsActive) {
         techno->Repair(-1);
       }
@@ -625,7 +627,7 @@ void EventClass::Execute() {
     *clicking the *	sell animating cursor over the building or unit.
     */
     case SELL:
-      techno = Data.Target.Whom.As_Techno();
+      techno = Data.Target.Whom.AsTechnoInSlot();
       if (techno && techno->IsActive &&
           techno->House == TheObjectHeaps().house().Slot(ID)) {
         if (techno->What_Am_I() == RTTI_BUILDING ||
@@ -634,8 +636,9 @@ void EventClass::Execute() {
           techno->Sell_Back(-1);
         }
       } else {
-        //				if (Is_Target_Cell(Data.Target.Whom)) {
-        //					Houses.Slot(ID)->Sell_Wall(As_Cell(Data.Target.Whom));
+        //				if (Data.Target.Whom.kind() ==
+        // RTTI_CELL) {
+        // Houses.Slot(ID)->Sell_Wall(Data.Target.Whom.AsCell());
         //				}
       }
       break;
@@ -703,7 +706,12 @@ void EventClass::Execute() {
     **	Toggles the primary factory state of the specified building.
     */
     case PRIMARY: {
-      BuildingClass* building = Data.Target.Whom.As_Building();
+      // The building in the slot, live or not, as the event's target named
+      // it; the IsActive test below drops a dead one.
+      BuildingClass* building =
+          Data.Target.Whom.kind() == RTTI_BUILDING
+              ? dynamic_cast<BuildingClass*>(Data.Target.Whom.AsTechnoInSlot())
+              : nullptr;
       if (building && building->IsActive) {
         building->Toggle_Primary();
       }
@@ -715,7 +723,7 @@ void EventClass::Execute() {
     **	and NavCom to the values specified.
     */
     case MEGAMISSION_F:
-      techno = Data.MegaMission_F.Whom.As_Techno();
+      techno = Data.MegaMission_F.Whom.AsTechnoInSlot();
       if (techno != nullptr && techno->IsActive && techno->Is_Foot()) {
         auto* foot_class = dynamic_cast<FootClass*>(techno);
         foot_class->IsFormationMove = true;
@@ -732,11 +740,11 @@ void EventClass::Execute() {
       if (TheDebugState().print_events()) {
         absl::PrintF(
             "Whom:%x Tgt:%x Dest:%x ",
-            static_cast<unsigned>(Data.MegaMission.Whom.As_TARGET()),
-            static_cast<unsigned>(Data.MegaMission.Target.As_TARGET()),
-            static_cast<unsigned>(Data.MegaMission.Destination.As_TARGET()));
+            static_cast<unsigned>(Data.MegaMission.Whom.packed()),
+            static_cast<unsigned>(Data.MegaMission.Target.packed()),
+            static_cast<unsigned>(Data.MegaMission.Destination.packed()));
       }
-      techno = Data.MegaMission.Whom.As_Techno();
+      techno = Data.MegaMission.Whom.AsTechnoInSlot();
       if (techno != nullptr && techno->IsActive && techno->Strength > 0 &&
           !techno->IsInLimbo) {
         /*
@@ -744,8 +752,8 @@ void EventClass::Execute() {
         *error with *	this object, such as it is dead, then bail.
         */
         ObjectClass* object = nullptr;
-        if (Data.MegaMission.Target.Is_Valid()) {
-          object = Data.MegaMission.Target.As_Object();
+        if (Data.MegaMission.Target.is_valid()) {
+          object = Data.MegaMission.Target.AsObjectInSlot();
           if (object != nullptr &&
               (!object->IsActive || object->Strength == 0 ||
                object->IsInLimbo)) {
@@ -759,8 +767,8 @@ void EventClass::Execute() {
         **	If the destination target is invalid because the object is dead,
         *then *	bail from processing this mega mission.
         */
-        if (Data.MegaMission.Destination.Is_Valid()) {
-          object = Data.MegaMission.Destination.As_Object();
+        if (Data.MegaMission.Destination.is_valid()) {
+          object = Data.MegaMission.Destination.AsObjectInSlot();
           if (object != nullptr &&
               (!object->IsActive || object->Strength == 0 ||
                object->IsInLimbo)) {
@@ -802,9 +810,9 @@ void EventClass::Execute() {
         techno->Assign_Mission(Data.MegaMission.Mission);
 
         if (techno->Is_Foot()) {
-          dynamic_cast<FootClass*>(techno)->SuspendedNavCom = kTargetNone;
+          dynamic_cast<FootClass*>(techno)->SuspendedNavCom = ra::Target{};
         }
-        techno->SuspendedTarCom = kTargetNone;
+        techno->SuspendedTarCom = ra::Target{};
 
         /*
         **	Guard area mode is handled with care. The specified target is
@@ -814,20 +822,19 @@ void EventClass::Execute() {
         */
         if (Data.MegaMission.Mission == MISSION_GUARD_AREA &&
             techno->Is_Foot()) {
-          techno->Assign_Target(kTargetNone);
-          techno->Assign_Destination(Data.MegaMission.Target.As_TARGET());
-          techno->ArchiveTarget = Data.MegaMission.Target.As_TARGET();
+          techno->Assign_Target(ra::Target{});
+          techno->Assign_Destination(Data.MegaMission.Target);
+          techno->ArchiveTarget = Data.MegaMission.Target;
         } else {
           if (q && techno->Is_Foot()) {
             dynamic_cast<FootClass*>(techno)->Queue_Navigation_List(
-                Data.MegaMission.Destination.As_TARGET());
+                Data.MegaMission.Destination);
           } else {
             if (techno->Is_Foot()) {
               dynamic_cast<FootClass*>(techno)->Clear_Navigation_List();
             }
-            techno->Assign_Target(Data.MegaMission.Target.As_TARGET());
-            techno->Assign_Destination(
-                Data.MegaMission.Destination.As_TARGET());
+            techno->Assign_Target(Data.MegaMission.Target);
+            techno->Assign_Destination(Data.MegaMission.Destination);
           }
         }
 
@@ -869,12 +876,12 @@ void EventClass::Execute() {
     **	Request that the unit/infantry/aircraft go into idle mode.
     */
     case IDLE:
-      techno = Data.Target.Whom.As_Techno();
+      techno = Data.Target.Whom.AsTechnoInSlot();
       if (techno != nullptr && techno->IsActive && !techno->IsInLimbo &&
           !techno->IsTethered && techno->What_Am_I() != RTTI_BUILDING) {
         techno->Transmit_Message(RADIO_OVER_OUT);
-        techno->Assign_Destination(kTargetNone);
-        techno->Assign_Target(kTargetNone);
+        techno->Assign_Destination(ra::Target{});
+        techno->Assign_Target(ra::Target{});
         techno->Enter_Idle_Mode();
         if (techno->Is_Foot()) {
           dynamic_cast<FootClass*>(techno)->Clear_Navigation_List();
@@ -887,7 +894,7 @@ void EventClass::Execute() {
     *location.
     */
     case SCATTER:
-      techno = Data.Target.Whom.As_Techno();
+      techno = Data.Target.Whom.AsTechnoInSlot();
       if (techno != nullptr && techno->Is_Foot() && techno->IsActive &&
           !techno->IsInLimbo && !techno->IsTethered) {
         dynamic_cast<FootClass*>(techno)->IsScattering = true;

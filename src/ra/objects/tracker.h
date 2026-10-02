@@ -5,7 +5,7 @@
 
 namespace ra {
 
-void Detach_This_From_All(TARGET target, bool all = true);
+void Detach_This_From_All(Target target, bool all = true);
 
 }  // namespace ra
 

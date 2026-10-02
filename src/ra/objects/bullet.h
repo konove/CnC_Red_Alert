@@ -91,7 +91,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
     return ptr;
   }
   void operator delete(void* ptr);
-  BulletClass(BulletType id, TARGET target,
+  BulletClass(BulletType id, Target target,
               TechnoClass* Payback ABSL_ATTRIBUTE_LIFETIME_BOUND, int strength,
               WarheadType warhead, int speed);
   ~BulletClass() override;
@@ -113,13 +113,13 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] LayerType In_Which_Layer() const override;
   [[nodiscard]] Coordinate Sort_Y() const override;
-  virtual void Assign_Target(TARGET target) { TarCom = target; }
+  virtual void Assign_Target(Target target) { TarCom = target; }
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  void Detach(TARGET target, bool all) override;
+  void Detach(Target target, bool all) override;
   void Draw_It(PixelView& view, int x, int y,
                WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
@@ -158,7 +158,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   **	This is the target of the projectile. It is especially significant for
   *those projectiles *	that home in on a target.
   */
-  TARGET TarCom = kTargetNone;
+  Target TarCom = Target{};
 
   /*
   **	The speed of this projectile.

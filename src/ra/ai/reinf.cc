@@ -690,7 +690,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
  * HISTORY: * 07/04/1995 JLB : Commented. *
  *=============================================================================================*/
 int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
-                             MissionType mission, TARGET tarcom, TARGET navcom,
+                             MissionType mission, Target tarcom, Target navcom,
                              InfantryType passenger) {
   DCHECK(house != nullptr);
   DCHECK(static_cast<unsigned>(air) < magic_enum::enum_count<AircraftType>());
@@ -768,14 +768,14 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
       /*
       ** If a navcom was specified then set it.
       */
-      if (navcom != kTargetNone) {
+      if (navcom != Target{}) {
         obj->Assign_Destination(navcom);
       }
 
       /*
       ** If a tarcom was specified then set it.
       */
-      if (tarcom != kTargetNone) {
+      if (tarcom != Target{}) {
         obj->Assign_Target(tarcom);
       }
 

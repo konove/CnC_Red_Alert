@@ -99,6 +99,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
+#include "ra/core/target.h"
 #include "ra/data/ccini.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug.h"
@@ -111,7 +112,6 @@
 #include "ra/objects/cell.h"
 #include "ra/objects/house.h"
 #include "ra/objects/mission.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
@@ -992,7 +992,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
               TheWorld().current_cell() ==
                   HouseClass::As_Pointer(house)->FlagHome) {
             HouseClass::As_Pointer(house)->Flag_Remove(
-                As_Target(TheWorld().current_cell()), true);
+                Target::FromCell(TheWorld().current_cell()), true);
           }
         }
 
@@ -1448,8 +1448,9 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
     const char* label =
         Text_String(base::At(TheWorld().current_object(), 0)->Full_Name());
     const char* tptr = label;
-    absl::SNPrintF(buf, sizeof(buf), "%s (%d)", tptr,
-                   base::At(TheWorld().current_object(), 0)->As_Target());
+    absl::SNPrintF(
+        buf, sizeof(buf), "%s (%d)", tptr,
+        base::At(TheWorld().current_object(), 0)->As_Target().packed());
 
     /*
     **	print the label

@@ -88,6 +88,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
@@ -100,7 +101,6 @@
 #include "ra/objects/infantry.h"
 #include "ra/objects/object.h"
 #include "ra/objects/super.h"
-#include "ra/objects/target.h"
 #include "ra/objects/tracker.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
@@ -261,11 +261,11 @@ void ActionChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
  *                                                                                             *
  * HISTORY: * 02/22/1996 JLB : Created. *
  *=============================================================================================*/
-void TActionClass::Detach(TARGET target) {
-  if (Is_Target_TeamType(target) && Team == As_TeamType(target)) {
+void TActionClass::Detach(Target target) {
+  if (target.kind() == RTTI_TEAMTYPE && Team == target.AsTeamType()) {
     Team = nullptr;
   }
-  if (Is_Target_TriggerType(target) && Trigger == As_TriggerType(target)) {
+  if (target.kind() == RTTI_TRIGGERTYPE && Trigger == target.AsTriggerType()) {
     Trigger = nullptr;
   }
 }

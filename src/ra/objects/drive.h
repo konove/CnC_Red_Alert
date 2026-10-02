@@ -131,7 +131,7 @@ class DriveClass : public FootClass {
   bool Limbo() override;
   void Do_Turn(game::DirType dir);
   virtual void Overrun_Square(CELL /*unused*/, bool /*unused*/ = true) {}
-  void Assign_Destination(TARGET target) override;
+  void Assign_Destination(Target target) override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   virtual bool Ok_To_Move(game::DirType /*unused*/);
   void AI() override;

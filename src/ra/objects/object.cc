@@ -139,6 +139,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/data/rules.h"
 #include "ra/debug/debug_state.h"
 #include "ra/editor/mapedit.h"
@@ -154,7 +155,6 @@
 #include "ra/objects/house.h"
 #include "ra/objects/infantry.h"
 #include "ra/objects/radio.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/tracker.h"
 #include "ra/objects/type.h"
@@ -1349,8 +1349,8 @@ bool ObjectClass::Unlimbo(Coordinate coord, game::DirType /*unused*/) {
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Detach(TARGET target, bool /*unused*/) {
-  if (Trigger != nullptr && Is_Target_Trigger(target) &&
+void ObjectClass::Detach(Target target, bool /*unused*/) {
+  if (Trigger != nullptr && target.kind() == RTTI_TRIGGER &&
       Trigger->As_Target() == target) {
     Attach_Trigger(nullptr);
   }
@@ -1546,10 +1546,9 @@ game::ResultType ObjectClass::Take_Damage(int& damage, int distance,
         Record_The_Kill(source);
         result = game::RESULT_DESTROYED;
         if (this->Is_Techno() &&
-            (this ==
-             As_Object(
-                 dynamic_cast<TechnoClass*>(this)->House->UnitToTeleport))) {
-          dynamic_cast<TechnoClass*>(this)->House->UnitToTeleport = 0;
+            (this == dynamic_cast<TechnoClass*>(this)
+                         ->House->UnitToTeleport.AsObject())) {
+          dynamic_cast<TechnoClass*>(this)->House->UnitToTeleport = Target{};
         }
 
         Detach_All();

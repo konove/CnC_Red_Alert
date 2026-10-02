@@ -89,7 +89,7 @@ class TriggerClass {
   */
   bool Spring(TEventType event = TEVENT_ANY, ObjectClass* object = nullptr,
               CELL cell = 0, bool forced = false);
-  void Detach(TARGET target, bool all = true) const;
+  void Detach(Target target, bool all = true) const;
 
   /*
   **	File I/O routines
@@ -101,7 +101,7 @@ class TriggerClass {
   /*
   **	Utility routines
   */
-  [[nodiscard]] TARGET As_Target() const;
+  [[nodiscard]] Target As_Target() const;
   [[nodiscard]] const char* Description() const;
   void Draw_It(PixelView& view, int /*unused*/, int x, int y, int width,
                int height, bool selected, TextPrintType flags) const;

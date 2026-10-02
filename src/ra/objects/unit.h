@@ -194,7 +194,7 @@ class UnitClass final : public DriveClass {
   [[nodiscard]] InfantryType Crew_Type() const override;
   [[nodiscard]] game::DirType Fire_Direction() const override;
   bool Ok_To_Move(game::DirType dir) override;
-  [[nodiscard]] game::FireErrorType Can_Fire(TARGET target,
+  [[nodiscard]] game::FireErrorType Can_Fire(Target target,
                                              int which) const override;
   [[nodiscard]] Fixed Tiberium_Load() const override;
 
@@ -234,7 +234,7 @@ class UnitClass final : public DriveClass {
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source = nullptr,
                                bool forced = false) override;
-  BulletClass* Fire_At(TARGET target, int which = 0) override;
+  BulletClass* Fire_At(Target target, int which = 0) override;
 
   /*
   **	Driver control support functions. These are used to control cell
@@ -245,7 +245,7 @@ class UnitClass final : public DriveClass {
   /*
   **	AI.
   */
-  TARGET Greatest_Threat(ThreatType threat) override;  // const;
+  Target Greatest_Threat(ThreatType threat) override;  // const;
   game::DirType Desired_Load_Dir(ObjectClass* passenger,
                                  CELL& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
@@ -270,7 +270,7 @@ class UnitClass final : public DriveClass {
   /*
   **	Movement and animation.
   */
-  void Assign_Destination(TARGET target) override;
+  void Assign_Destination(Target target) override;
   void Overrun_Square(CELL cell, bool threaten = true) override;
   void Approach_Target() override;
   void Enter_Idle_Mode(bool initial = false) override;

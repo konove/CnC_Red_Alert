@@ -145,7 +145,7 @@ struct TActionClass {
     Data.Value = -1;
   }
 
-  void Detach(TARGET target);
+  void Detach(Target target);
 
   // Saved-game support; defined in ioobj.cc. The union travels through its
   // widest member.

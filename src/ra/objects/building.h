@@ -209,7 +209,7 @@ class BuildingClass : public TechnoClass {
   /*
   **	This is the saboteur responsible for this building's destruction.
   */
-  TARGET WhomToRepay = kTargetNone;
+  Target WhomToRepay = Target{};
 
   /*
   **	This is a record of the last strength of the building. Every so often,
@@ -223,7 +223,7 @@ class BuildingClass : public TechnoClass {
   ** of this usage are the advanced tech center, which needs to know
   ** when the sputdoor animation has reached a certain stage.
   */
-  TARGET AnimToTrack = kTargetNone;
+  Target AnimToTrack = Target{};
 
   /*
   **	This is the countdown timer that regulates placement retry logic
@@ -259,7 +259,7 @@ class BuildingClass : public TechnoClass {
   */
   static void Init();
 
-  TARGET Target_Scan();
+  Target Target_Scan();
   [[nodiscard]] const BuildingTypeClass::AnimControlType* Fetch_Anim_Control()
       const {
     return &Class->Anims.at(BState);
@@ -302,7 +302,7 @@ class BuildingClass : public TechnoClass {
   /*
   **	Object entry and exit from the game system.
   */
-  void Detach(TARGET target, bool all) override;
+  void Detach(Target target, bool all) override;
   void Detach_All(bool all = true) override;
   virtual void Grand_Opening(bool captured = false);
   virtual void Update_Buildables();
@@ -334,9 +334,9 @@ class BuildingClass : public TechnoClass {
   **	Combat related.
   */
   void Death_Announcement(const TechnoClass* source = nullptr) const override;
-  [[nodiscard]] game::FireErrorType Can_Fire(TARGET /*target*/,
+  [[nodiscard]] game::FireErrorType Can_Fire(Target /*target*/,
                                              int which) const override;
-  TARGET Greatest_Threat(ThreatType threat) override;  // const;
+  Target Greatest_Threat(ThreatType threat) override;  // const;
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source = nullptr,
                                bool forced = false) override;
@@ -357,7 +357,7 @@ class BuildingClass : public TechnoClass {
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
-  void Assign_Target(TARGET target) override;
+  void Assign_Target(Target target) override;
   virtual bool Toggle_Primary();
   bool Flush_For_Placement(TechnoClass* techno, CELL cell);
 
@@ -387,7 +387,7 @@ class BuildingClass : public TechnoClass {
   void Serialize(Archive& ar);
 
  private:
-  void Drop_Debris(TARGET source = kTargetNone);
+  void Drop_Debris(Target source = Target{});
 
   static const base::EnumArray<game::BSizeType, Coordinate> CenterOffset;
 };

@@ -58,9 +58,9 @@
 #include "game/core/owned_vector.h"
 #include "ra/ai/special.h"
 #include "ra/core/defines.h"
+#include "ra/core/target.h"
 #include "ra/net/event.h"
 #include "ra/objects/object.h"
-#include "ra/objects/target.h"
 #include "ra/startup/version.h"
 #include "ra/ui/msglist.h"
 
@@ -740,7 +740,7 @@ class SessionClass {
   RTTIType TrapObjType{RTTI_NONE};  // type of object to trap
   TrapObjectType TrapObject{};  // ptr to object to trap (watch)
   Coordinate TrapCoord{};       // coord of object, 0 = ignore
-  TARGET TrapTarget{kTargetNone};  // Target # of object, 0 = ignore
+  Target TrapTarget{Target{}};  // Target # of object, 0 = ignore
   CellClass* TrapCell{nullptr};    // Ptr to cell to trap (watch)
   int32_t TrapPrintCRC{0};         // Frame # to print CRC state file
 

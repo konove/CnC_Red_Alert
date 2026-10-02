@@ -72,11 +72,11 @@
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/packed.h"
+#include "ra/core/target.h"
 #include "ra/map/world.h"
 #include "ra/objects/cell.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
-#include "ra/objects/target.h"
 #include "ra/objects/tracker.h"
 #include "ra/startup/game_state.h"
 #include "ra/ui/color_scheme.h"
@@ -435,16 +435,16 @@ void TriggerClass::operator delete(void* pointer) {
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  TARGET value *
+ * OUTPUT:  Target value *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-TARGET TriggerClass::As_Target() const {
+Target TriggerClass::As_Target() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().trigger(), this);
 
-  return Build_Target(RTTI_TRIGGER, ID);
+  return Target::Make(RTTI_TRIGGER, ID);
 }
 
 /***********************************************************************************************
@@ -503,10 +503,10 @@ TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerClass::Detach(TARGET target, bool /*unused*/) const {
-  if (Is_Target_TriggerType(target)) {
-    DCHECK(Class != As_TriggerType(target));
-    //		if (Class == As_TriggerType(target)) {
+void TriggerClass::Detach(Target target, bool /*unused*/) const {
+  if (target.kind() == RTTI_TRIGGERTYPE) {
+    DCHECK(Class != target.AsTriggerType());
+    //		if (Class == target.AsTriggerType()) {
     //			Class = NULL;
     //		}
   }

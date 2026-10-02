@@ -207,7 +207,7 @@ void TriggerTypeClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Detach(TARGET target, bool /*unused*/) {
+void TriggerTypeClass::Detach(Target target, bool /*unused*/) {
   Action1.Detach(target);
   Action2.Detach(target);
 }

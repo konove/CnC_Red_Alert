@@ -159,22 +159,22 @@ class TeamClass : public AbstractClass {
   **	center point is usually calculated as the average position of all the
   **	team members.
   */
-  TARGET Zone = kTargetNone;
+  ra::Target Zone = ra::Target{};
 
   /*
   **	This is the target value of the team member that is closest to the
   **	destination of the team. The implied location serves as the
   **	regroup point for the unit as it is moving.
   */
-  TARGET ClosestMember = kTargetNone;
+  ra::Target ClosestMember = ra::Target{};
 
   /*
   **	This is the target of the team. Typically, it is a unit or structure,
   *but *	for the case of teams with a movement mission, it might
   *represent a *	destination cell.
   */
-  TARGET MissionTarget = kTargetNone;
-  TARGET Target = kTargetNone;
+  ra::Target MissionTarget = ra::Target{};
+  ra::Target Target = ra::Target{};
 
   /*
   **	This is the total number of members in this team.
@@ -237,13 +237,13 @@ class TeamClass : public AbstractClass {
     IsUnderStrength = false;
   }
   bool Remove(FootClass* /*obj*/, int typeindex = -1);
-  void Detach(TARGET target, bool all);
+  void Detach(ra::Target target, bool all);
   void AI() override;
   void Took_Damage(FootClass* obj, game::ResultType result,
                    TechnoClass* source);
   bool Add(FootClass* /*obj*/);
   bool Can_Add(FootClass* obj, int& typeindex) const;
-  void Assign_Mission_Target(TARGET new_target);
+  void Assign_Mission_Target(ra::Target new_target);
   [[nodiscard]] bool Is_Leaving_Map() const;
   void Scan_Limit();
 
@@ -275,7 +275,7 @@ class TeamClass : public AbstractClass {
   void Coordinate_Move();
   bool Coordinate_Conscript(FootClass* unit);
   void Coordinate_Do();
-  void Calc_Center(TARGET& center, TARGET& close_member) const;
+  void Calc_Center(ra::Target& center, ra::Target& close_member) const;
   int Recruit(int typeindex);
   bool Is_A_Member(const void* who) const;
   bool Lagging_Units();

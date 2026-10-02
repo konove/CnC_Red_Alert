@@ -58,7 +58,7 @@ class LogicClass : public LayerClass {
   LogicClass& operator=(LogicClass&&) = delete;
 
   void AI();
-  static void Detach(TARGET target, bool all = true);
+  static void Detach(Target target, bool all = true);
 };
 
 }  // namespace ra

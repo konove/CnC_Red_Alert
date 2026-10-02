@@ -139,7 +139,7 @@ class World {
   bool& pending_time_quake() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return pending_time_quake_;
   }
-  TARGET& time_quake_center() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  Target& time_quake_center() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return time_quake_center_;
   }
 
@@ -220,7 +220,7 @@ class World {
 
   bool time_quake_ = false;
   bool pending_time_quake_ = false;
-  TARGET time_quake_center_{};
+  Target time_quake_center_{};
 
   int scenario_init_ = 0;
   uint32_t scenario_crc_ = 0;

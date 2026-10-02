@@ -116,7 +116,7 @@ class AnimClass final : public ObjectClass, public StageClass {
   void Draw_It(PixelView& view, int x, int y,
                WindowNumberType window) const override;
   void AI() override;
-  void Detach(TARGET target, bool all) override;
+  void Detach(Target target, bool all) override;
 
   /*
   **	File I/O.
@@ -130,7 +130,7 @@ class AnimClass final : public ObjectClass, public StageClass {
   *object. An *	animation that is attached will follow that object as it moves.
   *This is important *	for animations such as flames and smoke.
   */
-  TARGET xObject = kTargetNone;
+  Target xObject = Target{};
 
   /*
   **	If this animation has an owner, then it will be recorded here. An owner

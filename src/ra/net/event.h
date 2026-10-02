@@ -50,7 +50,7 @@
 #include "base/enum_array.h"
 #include "ra/ai/special.h"
 #include "ra/core/defines.h"
-#include "ra/objects/target.h"
+#include "ra/core/target.h"
 
 namespace ra {
 
@@ -149,7 +149,7 @@ class EventClass {
       CELL Cell;  // The cell to sell wall at.
     } SellCell;
     struct {
-      xTargetClass Whom;  // The object to apply the event to.
+      ra::Target Whom;  // The object to apply the event to.
     } Target;
     struct {
       AnimType What;     // The animation to create.
@@ -160,30 +160,30 @@ class EventClass {
       int Value;  // general-purpose data
     } General;
     struct {
-      xTargetClass Whom;         // Whom to apply mission to.
+      ra::Target Whom;           // Whom to apply mission to.
       MissionType Mission;       // What mission to apply.
-      xTargetClass Target;       // Target to assign.
-      xTargetClass Destination;  // Destination to assign.
+      ra::Target Target;         // Target to assign.
+      ra::Target Destination;    // Destination to assign.
     } MegaMission;
     struct {
-      xTargetClass Whom;         // Whom to apply mission to.
+      ra::Target Whom;           // Whom to apply mission to.
       MissionType Mission;       // What mission to apply.
-      xTargetClass Target;       // Target to assign.
-      xTargetClass Destination;  // Destination to assign.
+      ra::Target Target;         // Target to assign.
+      ra::Target Destination;    // Destination to assign.
       SpeedType Speed;           // Formation override speed.
       game::MPHType MaxSpeed;    // Formation override maximum speed.
     } MegaMission_F;
     struct {
-      xTargetClass Whom;    // Whom to apply mission to.
+      ra::Target Whom;      // Whom to apply mission to.
       MissionType Mission;  // What mission to apply.
     } Mission;
     struct {
-      xTargetClass Whom;   // Whom to apply movement change to.
-      xTargetClass Where;  // Where to set NavCom to.
+      ra::Target Whom;   // Whom to apply movement change to.
+      ra::Target Where;  // Where to set NavCom to.
     } NavCom;
     struct {
-      xTargetClass Whom;    // Whom to apply attack change to.
-      xTargetClass Target;  // What to set TarCom to.
+      ra::Target Whom;    // Whom to apply attack change to.
+      ra::Target Target;  // What to set TarCom to.
     } TarCom;
     struct {
       RTTIType Type;
@@ -255,17 +255,17 @@ class EventClass {
   // delegates here to clear IsExecuted and all unused payload bytes.
   EventClass() { base::FillBytes(base::ObjectBytes(*this), 0, sizeof(EventClass)); }
   explicit EventClass(SpecialClass data);
-  EventClass(EventType type, TargetClass target);
+  EventClass(EventType type, ra::Target target);
   explicit EventClass(EventType type);
   EventClass(EventType type, int val);
   EventClass(EventType type, CELL cell);
-  EventClass(EventType type, TargetClass src, TargetClass dest);
-  EventClass(TargetClass src, MissionType mission,
-             TargetClass target = kTargetNone,
-             TargetClass destination = kTargetNone);
+  EventClass(EventType type, ra::Target src, ra::Target dest);
+  EventClass(ra::Target src, MissionType mission,
+             ra::Target target = ra::Target{},
+             ra::Target destination = ra::Target{});
 
-  EventClass(TargetClass src, MissionType mission, TargetClass target,
-             TargetClass destination, SpeedType speed, game::MPHType maxspeed);
+  EventClass(ra::Target src, MissionType mission, ra::Target target,
+             ra::Target destination, SpeedType speed, game::MPHType maxspeed);
 
   EventClass(EventType type, RTTIType object, int id);
   EventClass(EventType type, RTTIType object, CELL cell);

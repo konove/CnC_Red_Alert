@@ -189,6 +189,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/data/ccini.h"
 #include "ra/data/rules.h"
 #include "ra/debug/debug_state.h"
@@ -210,7 +211,6 @@
 #include "ra/objects/infantry.h"
 #include "ra/objects/mission.h"
 #include "ra/objects/radio.h"
-#include "ra/objects/target.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
 #include "ra/objects/vessel.h"
@@ -447,8 +447,8 @@ bool TechnoClass::Can_Teleport_Here(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
-int TechnoClass::What_Weapon_Should_I_Use(TARGET target) const {
-  if (!Target_Legal(target)) {
+int TechnoClass::What_Weapon_Should_I_Use(Target target) const {
+  if (!target) {
     return 0;
   }
 
@@ -458,8 +458,8 @@ int TechnoClass::What_Weapon_Should_I_Use(TARGET target) const {
   *knows why?
   */
   game::ArmorType armor = game::ARMOR_WOOD;
-  if (Is_Target_Object(target)) {
-    armor = As_Object(target)->Class_Of().Armor;
+  if (target.is_object()) {
+    armor = target.AsObject()->Class_Of().Armor;
   }
 
   const TechnoTypeClass* ttype = Techno_Type_Class();
@@ -669,11 +669,11 @@ TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
       IdleTimer(0),
       IronCurtainCountDown(0),
       SpiedBy(0),
-      ArchiveTarget(kTargetNone),
+      ArchiveTarget(Target{}),
       House(HouseClass::As_Pointer(house)),
       Cloak(game::UNCLOAKED),
-      TarCom(kTargetNone),
-      SuspendedTarCom(kTargetNone),
+      TarCom(Target{}),
+      SuspendedTarCom(Target{}),
       PrimaryFacing(game::DIR_N),
       Arm(0),
       Ammo(-1),
@@ -948,7 +948,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
     */
     case RADIO_ATTACK_THIS:
       if (Techno_Type_Class()->PrimaryWeapon != nullptr) {
-        Assign_Target(static_cast<TARGET>(param));
+        Assign_Target(Target::FromPacked(param));
         Assign_Mission(MISSION_ATTACK);
         return RADIO_ROGER;
       }
@@ -1321,18 +1321,18 @@ bool TechnoClass::Unlimbo(Coordinate coord, game::DirType dir) {
  *                                                                                             *
  * HISTORY: * 11/14/1994 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::In_Range(TARGET target, int which) const {
+bool TechnoClass::In_Range(Target target, int which) const {
   DCHECK(IsActive);
 
-  if (IsLocked && Target_Legal(target)) {
+  if (IsLocked && target) {
     int range = Weapon_Range(which);
-    const BuildingClass* building = As_Building(target);
+    const BuildingClass* building = target.AsBuilding();
     if (building != nullptr) {
       range += (building->Class->Width() + building->Class->Height()) *
                (ICON_LEPTON_W / 4);
     }
 
-    if (ra::Distance(Fire_Coord(which), As_Coord(target)) <= range) {
+    if (ra::Distance(Fire_Coord(which), target.AsCoordinate()) <= range) {
       return true;
     }
   }
@@ -2108,7 +2108,7 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   **	As a convenience to the target scanning logic, don't consider any wall
   *to be *	a target if it isn't in range of the primary weapon.
   */
-  const int primary = What_Weapon_Should_I_Use(ra::As_Target(cell));
+  const int primary = What_Weapon_Should_I_Use(Target::FromCell(cell));
   if (!In_Range(Cell_Coord(cell), primary)) {
     return 0;
   }
@@ -2167,7 +2167,7 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
  *(see ThreatType)  * that are combined to form the target scan desired. *
  *                                                                                             *
  * OUTPUT:  Returns the target value of a suitable target. If no target was
- *found then the     * value kTargetNone is returned. *
+ *found then the     * value Target{} is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
@@ -2176,7 +2176,7 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
  *Takes into account the zone (if necessary).                              *
  *   05/30/1996 JLB : Tighter elimination mask checking. *
  *=============================================================================================*/
-TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
+Target TechnoClass::Greatest_Threat(ThreatType method)  // const
 {
   DCHECK(IsActive);
 
@@ -2422,7 +2422,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
         }
       }
       if (bestcell != -1) {
-        return ra::As_Target(bestcell);
+        return Target::FromCell(bestcell);
       }
     }
 
@@ -2482,7 +2482,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
   if (bestobject != nullptr) {
     return bestobject->As_Target();
   }
-  return kTargetNone;
+  return Target{};
 }
 
 /***********************************************************************************************
@@ -2582,9 +2582,9 @@ void TechnoClass::AI() {
   **	If for some strange reason, the computer is firing upon itself, then
   **	tell it not to.
   */
-  if (!House->IsHuman && As_Techno(TarCom) &&
-      As_Techno(TarCom)->House->Is_Ally(this)) {
-    Assign_Target(kTargetNone);
+  if (!House->IsHuman && TarCom.AsTechno() &&
+      TarCom.AsTechno()->House->Is_Ally(this)) {
+    Assign_Target(Target{});
   }
 
   /*
@@ -2592,12 +2592,12 @@ void TechnoClass::AI() {
   *to fire *	upon an object it can never hit (because it can't reach it),
   *then abort the tarcom
   */
-  if (What_Am_I() != RTTI_AIRCRAFT && Target_Legal(TarCom) &&
+  if (What_Am_I() != RTTI_AIRCRAFT && TarCom &&
       (!Is_Foot() || dynamic_cast<FootClass*>(this)->Team == nullptr) &&
-      (!Is_Foot() || !Is_In_Same_Zone(As_Cell(TarCom)))) {
+      (!Is_Foot() || !Is_In_Same_Zone(TarCom.AsCell()))) {
     const int primary = What_Weapon_Should_I_Use(TarCom);
     if (!In_Range(TarCom, primary)) {
-      Assign_Target(kTargetNone);
+      Assign_Target(Target{});
     }
   }
 
@@ -2808,7 +2808,7 @@ bool TechnoClass::Is_Ready_To_Cloak() const {
   **	If it seems like this object is about to fire on a target, then don't
   *begin *	cloaking either.
   */
-  if (Target_Legal(TarCom) && In_Range(TarCom)) {
+  if (TarCom && In_Range(TarCom)) {
     return false;
   }
 
@@ -2884,17 +2884,17 @@ bool TechnoClass::Select() {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
-game::FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType TechnoClass::Can_Fire(Target target, int which) const {
   DCHECK(IsActive);
 
   /*
   **	Don't allow firing if the target is illegal.
   */
-  if (!Target_Legal(target)) {
+  if (!target) {
     return game::FIRE_ILLEGAL;
   }
 
-  ObjectClass* object = As_Object(target);
+  ObjectClass* object = target.AsObject();
 
   /*
   **	If the object is completely cloaked, then you can't fire on it.
@@ -2941,7 +2941,7 @@ game::FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
       !weapon->Bullet->IsAntiGround) {
     return game::FIRE_CANT;
   }
-  if (Is_Target_Cell(target) && !weapon->Bullet->IsAntiGround) {
+  if (target.kind() == RTTI_CELL && !weapon->Bullet->IsAntiGround) {
     return game::FIRE_CANT;
   }
 
@@ -3001,8 +3001,8 @@ game::FireErrorType TechnoClass::Can_Fire(TARGET target, int which) const {
 void TechnoClass::Stun() {
   DCHECK(IsActive);
 
-  Assign_Target(kTargetNone);
-  Assign_Destination(kTargetNone);
+  Assign_Target(Target{});
+  Assign_Destination(Target{});
   Transmit_Message(RADIO_OVER_OUT);
   Detach_All();
   Unselect();
@@ -3023,29 +3023,29 @@ void TechnoClass::Stun() {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Assign_Target(TARGET target) {
+void TechnoClass::Assign_Target(Target target) {
   DCHECK(IsActive);
 
   if (target == TarCom) {
     return;
   }
 
-  if (!Target_Legal(target)) {
-    target = kTargetNone;
+  if (!target) {
+    target = Target{};
   } else {
     /*
     **	Prevent targeting of self.
     */
     if (target == As_Target()) {
-      target = ra::As_Target(Coord_Cell(Coord));
+      target = Target::FromCell(Coord_Cell(Coord));
     } else {
       /*
       **	Make sure that the target is not already dead.
       */
-      const ObjectClass* object = As_Object(target);
+      const ObjectClass* object = target.AsObject();
       if (object != nullptr &&
           (!static_cast<bool>(object->IsActive) || object->Strength == 0)) {
-        target = kTargetNone;
+        target = Target{};
       }
     }
   }
@@ -3116,7 +3116,7 @@ int TechnoClass::Rearm_Delay(bool second, int which) const {
  * HISTORY: * 09/30/1996 BWG : Created. * 09/30/1996 JLB : Uses standard
  *facing conversion and distance routines.                   *
  *=============================================================================================*/
-bool TechnoClass::Electric_Zap(TARGET target, int which,
+bool TechnoClass::Electric_Zap(Target target, int which,
                                Coordinate source_coord,
                                std::span<const unsigned char> remap) {
   int x = 0;
@@ -3130,7 +3130,7 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
   } else {
     source = Fire_Coord(which);
   }
-  Coordinate dest = As_Coord(target);
+  Coordinate dest = target.AsCoordinate();
   if (What_Am_I() == RTTI_BUILDING) {
     dynamic_cast<BuildingClass*>(this)->IsCharging = false;
   }
@@ -3241,7 +3241,7 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
  *fire inaccurate projectiles.                            * 02/22/1996 JLB :
  *Handles camera "weapon" case.                                            *
  *=============================================================================================*/
-BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
+BulletClass* TechnoClass::Fire_At(Target target, int which) {
   DCHECK(IsActive);
 
   game::DirType dir = game::DIR_N;  // The facing to impart upon the projectile.
@@ -3263,18 +3263,18 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   /*
   **	Perform a quick legality check to see if firing can occur.
   */
-  if (TheDebugState().map_editor_active() || !Target_Legal(target)) {
+  if (TheDebugState().map_editor_active() || !target) {
     return nullptr;
   }
 
   /*
   **	Fetch the target coordinate for the target specified.
   */
-  ObjectClass* object = As_Object(target);
+  ObjectClass* object = target.AsObject();
   if (object != nullptr) {
     target_coord = object->Target_Coord();
   } else {
-    target_coord = As_Coord(target);
+    target_coord = target.AsCoordinate();
   }
 
   /*
@@ -3311,7 +3311,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   *required. Only *	need to perform this check if the target is an aircraft.
   */
   int firespeed = static_cast<int>(weapon->MaxSpeed);
-  if (weapon->IsTurboBoosted && Is_Target_Aircraft(target)) {
+  if (weapon->IsTurboBoosted && target.kind() == RTTI_AIRCRAFT) {
     firespeed *= TheRules().TurboBoost;
   }
 
@@ -3473,7 +3473,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
         dynamic_cast<BuildingClass*>(this)->IsCharged = false;
       }
 
-      TechnoClass* tech = As_Techno(target);
+      TechnoClass* tech = target.AsTechno();
       if (tech != nullptr) {
         tech->Clicked_As_Target(4);
       }
@@ -3509,7 +3509,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
       if (TheSession().Type == GAME_NORMAL) {
         TheMap().Sight_From(Coord_Cell(Center_Coord()), 2, ThePlayer(), false);
       } else {
-        const ObjectClass* obj = As_Object(target);
+        const ObjectClass* obj = target.AsObject();
         if (obj != nullptr) {
           const HousesType tgt_owner = obj->Owner();
 
@@ -3549,8 +3549,8 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
  *                                                                                             *
  * HISTORY: * 05/22/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
-                                        TARGET destination) {
+void TechnoClass::Player_Assign_Mission(MissionType mission, Target target,
+                                        Target destination) {
   DCHECK(IsActive);
 
   if (TheGameState().allow_voice()) {
@@ -3562,7 +3562,7 @@ void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
   }
 
   if (TheWorld().form_move()) {
-    Queue_Mission(TargetClass(this), mission, target, destination,
+    Queue_Mission(Target::Of(this), mission, target, destination,
                   TheWorld().form_speed(), TheWorld().form_max_speed());
   } else {
     /*
@@ -3575,7 +3575,7 @@ void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
       mission = MISSION_QMOVE;
     }
 
-    Queue_Mission(TargetClass(this), mission, target, destination);
+    Queue_Mission(Target::Of(this), mission, target, destination);
   }
 }
 
@@ -3789,8 +3789,8 @@ ActionType TechnoClass::What_Action(CELL cell) const {
     if (optr == nullptr ||
         (optr->IsWall && (whead->IsWallDestroyer ||
                           (whead->IsWoodDestroyer && optr->IsWooden)))) {
-      const int primary = What_Weapon_Should_I_Use(ra::As_Target(cell));
-      if (Can_Player_Move() || In_Range(ra::As_Target(cell), primary)) {
+      const int primary = What_Weapon_Should_I_Use(Target::FromCell(cell));
+      if (Can_Player_Move() || In_Range(Target::FromCell(cell), primary)) {
         return ACTION_ATTACK;
       }
     }
@@ -3961,8 +3961,8 @@ int TechnoClass::Weapon_Range(int which) const {
  *                                                                         *
  *                                                                         *
  * INPUT:      MissionType mission - the mission we want to override       *
- *               TARGET      tarcom  - the new target we want to override  *
- *               TARGET      navcom  - the new navigation point to override*
+ *               Target      tarcom  - the new target we want to override  *
+ *               Target      navcom  - the new navigation point to override*
  *                                                                         *
  * OUTPUT:      none                                                       *
  *                                                                         *
@@ -3972,8 +3972,8 @@ int TechnoClass::Weapon_Range(int which) const {
  * HISTORY:                                                                *
  *   04/28/1995 PWG : Created.                                             *
  *=========================================================================*/
-void TechnoClass::Override_Mission(MissionType mission, TARGET tarcom,
-                                   TARGET navcom) {
+void TechnoClass::Override_Mission(MissionType mission, Target tarcom,
+                                   Target navcom) {
   DCHECK(IsActive);
 
   SuspendedTarCom = TarCom;
@@ -4194,8 +4194,8 @@ game::ResultType TechnoClass::Take_Damage(int& damage, int distance,
       }
 
       if (this ==
-          dynamic_cast<TechnoClass*>(As_Object(House->UnitToTeleport))) {
-        House->UnitToTeleport = 0;
+          dynamic_cast<TechnoClass*>(House->UnitToTeleport.AsObject())) {
+        House->UnitToTeleport = Target{};
         if (!TheScenario().IsFadingColor) {
           TheScenario().IsFadingBW = false;
           TheScenario().IsFadingColor = true;
@@ -4733,13 +4733,13 @@ std::span<const unsigned char> TechnoClass::Remap_Table() const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Detach(TARGET target, bool all) {
+void TechnoClass::Detach(Target target, bool all) {
   DCHECK(IsActive);
   RadioClass::Detach(target, all);
 
   if (SuspendedMission != MISSION_NONE && SuspendedTarCom == target) {
     SuspendedMission = MISSION_NONE;
-    SuspendedTarCom = kTargetNone;
+    SuspendedTarCom = Target{};
   }
 
   /*
@@ -4747,7 +4747,7 @@ void TechnoClass::Detach(TARGET target, bool all) {
   **	computer must be cleared.
   */
   if (TarCom == target) {
-    Assign_Target(kTargetNone);
+    Assign_Target(Target{});
     Restore_Mission();
   }
 
@@ -5391,7 +5391,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
     }
 
     auto current_val = Fixed(0);
-    const TechnoClass* tech = As_Techno(TarCom);
+    const TechnoClass* tech = TarCom.AsTechno();
     if (tech != nullptr) {
       primary = What_Weapon_Should_I_Use(tech->As_Target());
       weapon = primary == 0 ? source->Techno_Type_Class()->PrimaryWeapon
@@ -5641,10 +5641,10 @@ bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
   **	Determine that if there is an existing target it is still legal
   **	and within range.
   */
-  if (Target_Legal(TarCom) && base::Any(threat & THREAT_RANGE)) {
+  if (TarCom && base::Any(threat & THREAT_RANGE)) {
     const int primary = What_Weapon_Should_I_Use(TarCom);
     if (!In_Range(TarCom, primary)) {
-      Assign_Target(kTargetNone);
+      Assign_Target(Target{});
     }
   }
 
@@ -5652,14 +5652,14 @@ bool TechnoClass::Target_Something_Nearby(ThreatType threat) {
   **	If there is no target, then try to find one and assign it as
   **	the target for this unit.
   */
-  if (!Target_Legal(TarCom)) {
+  if (!TarCom) {
     Assign_Target(Greatest_Threat(threat));
   }
 
   /*
   **	Return with answer to question: Does this unit now have a target?
   */
-  return Target_Legal(TarCom);
+  return static_cast<bool>(TarCom);
 }
 
 /***********************************************************************************************
@@ -5721,7 +5721,7 @@ bool TechnoClass::Is_Ready_To_Random_Animate() const {
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Assign_Destination(TARGET /*unused*/) { DCHECK(IsActive); }
+void TechnoClass::Assign_Destination(Target /*unused*/) { DCHECK(IsActive); }
 
 /***********************************************************************************************
  * TechnoClass::Enter_Idle_Mode -- Object enters its default idle condition. *

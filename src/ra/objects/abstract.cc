@@ -23,21 +23,21 @@
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
+#include "ra/core/target.h"
 #include "ra/objects/building.h"
-#include "ra/objects/target.h"
 #include "ra/objects/type.h"
 
 namespace ra {
 
 AbstractClass::~AbstractClass() = default;
 
-game::DirType AbstractClass::Direction(const TARGET target) const {
-  return ra::Direction(Center_Coord(), As_Coord(target));
+game::DirType AbstractClass::Direction(const Target target) const {
+  return ra::Direction(Center_Coord(), target.AsCoordinate());
 }
 
-int AbstractClass::Distance(const TARGET target) const {
-  const BuildingClass* obj = As_Building(target);
-  int dist = Distance(As_Coord(target));
+int AbstractClass::Distance(const Target target) const {
+  const BuildingClass* obj = target.AsBuilding();
+  int dist = Distance(target.AsCoordinate());
 
   // Subtract the building's average radius so weapon range checks measure
   // to the building edge rather than the center coordinate.

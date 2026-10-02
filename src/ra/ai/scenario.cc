@@ -2901,7 +2901,7 @@ static void Create_Units(bool official) {
 
       if (obj != nullptr) {
         hptr->FlagHome = 0;
-        hptr->FlagLocation = 0;
+        hptr->FlagLocation = Target{};
         if (TheSpecial().IsCaptureTheFlag) {
           hptr->Flag_Attach(dynamic_cast<UnitClass*>(obj), true);
         }

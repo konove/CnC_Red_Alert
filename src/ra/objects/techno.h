@@ -212,7 +212,7 @@ class TechnoClass : public RadioClass,
   *also used by harvesters so that they know *	where to head back to after
   *unloading.
   */
-  TARGET ArchiveTarget;
+  Target ArchiveTarget;
 
   /*
   **	This is the house that the unit belongs to.
@@ -231,8 +231,8 @@ class TechnoClass : public RadioClass,
   *If this *	is a vehicle with a turret, then it may differ from its movement
   *destination.
   */
-  TARGET TarCom;
-  TARGET SuspendedTarCom;
+  Target TarCom;
+  Target SuspendedTarCom;
 
   /*
   **	This is the visible facing for the unit or building.
@@ -294,11 +294,11 @@ class TechnoClass : public RadioClass,
         IdleTimer(0),
         IronCurtainCountDown(0),
         SpiedBy(0),
-        ArchiveTarget(kTargetNone),
+        ArchiveTarget(Target{}),
         Cloak(game::UNCLOAKED),
         CloakDelay(0),
-        TarCom(kTargetNone),
-        SuspendedTarCom(kTargetNone),
+        TarCom(Target{}),
+        SuspendedTarCom(Target{}),
         PrimaryFacing(game::DIR_N),
         Arm(0),
         Ammo(-1),
@@ -334,7 +334,7 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] int Anti_Armor() const;
   [[nodiscard]] int Anti_Infantry() const;
   [[nodiscard]] int Time_To_Build() const;
-  [[nodiscard]] int What_Weapon_Should_I_Use(TARGET target) const;
+  [[nodiscard]] int What_Weapon_Should_I_Use(Target target) const;
   [[nodiscard]] ActionType What_Action(CELL cell) const override;
   ActionType What_Action(ObjectClass* object) override;
   virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly);
@@ -369,8 +369,8 @@ class TechnoClass : public RadioClass,
   virtual void Response_Move();
   virtual void Response_Attack();
   virtual void Player_Assign_Mission(MissionType mission,
-                                     TARGET target = kTargetNone,
-                                     TARGET destination = kTargetNone);
+                                     Target target = Target{},
+                                     Target destination = Target{});
 
   /*
   **	Combat related.
@@ -383,18 +383,18 @@ class TechnoClass : public RadioClass,
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);
   virtual void Stun();
   [[nodiscard]] bool In_Range(Coordinate coord, int which = 0) const override;
-  [[nodiscard]] virtual bool In_Range(TARGET target, int which = 0) const;
+  [[nodiscard]] virtual bool In_Range(Target target, int which = 0) const;
   virtual bool In_Range(const ObjectClass* target, int which = 0) const;
   virtual void Death_Announcement(
       const TechnoClass* source = nullptr) const = 0;
-  [[nodiscard]] virtual game::FireErrorType Can_Fire(TARGET target,
+  [[nodiscard]] virtual game::FireErrorType Can_Fire(Target target,
                                                      int which = 0) const;
-  virtual TARGET Greatest_Threat(ThreatType method);  // const;
-  virtual void Assign_Target(TARGET target);
-  void Override_Mission(MissionType mission, TARGET tarcom,
-                        TARGET navcom) override;
+  virtual Target Greatest_Threat(ThreatType method);  // const;
+  virtual void Assign_Target(Target target);
+  void Override_Mission(MissionType mission, Target tarcom,
+                        Target navcom) override;
   bool Restore_Mission() override;
-  virtual BulletClass* Fire_At(TARGET target, int which = 0);
+  virtual BulletClass* Fire_At(Target target, int which = 0);
   [[nodiscard]] int Weapon_Range(int which) const override;
   virtual bool Captured(HouseClass* newowner);
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
@@ -407,7 +407,7 @@ class TechnoClass : public RadioClass,
                        const TechnoClass* object, int& value,
                        int zone = -1) const;
   [[nodiscard]] int Evaluate_Just_Cell(CELL cell) const;
-  virtual bool Electric_Zap(TARGET target, int which,
+  virtual bool Electric_Zap(Target target, int which,
                             Coordinate source_coord = {},
                             std::span<const unsigned char> remap = {});
 
@@ -460,7 +460,7 @@ class TechnoClass : public RadioClass,
   */
   [[nodiscard]] virtual bool Is_Ready_To_Random_Animate() const;
   virtual bool Random_Animate() { return false; }
-  virtual void Assign_Destination(TARGET target);
+  virtual void Assign_Destination(Target target);
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   virtual void Enter_Idle_Mode(bool initial = false);
   void Look(bool incremental = false) override;
@@ -470,7 +470,7 @@ class TechnoClass : public RadioClass,
   */
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
-  void Detach(TARGET target, bool all) override;
+  void Detach(Target target, bool all) override;
 
   /*
   **	Facing translation tables that fix the flaw with 3D studio when

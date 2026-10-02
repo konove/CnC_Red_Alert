@@ -95,6 +95,7 @@
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
+#include "ra/core/target.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/display.h"
 #include "ra/map/layer.h"
@@ -103,7 +104,6 @@
 #include "ra/map/world.h"
 #include "ra/objects/building.h"
 #include "ra/objects/cell.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 
@@ -188,7 +188,7 @@ void ChronalVortexClass::Appear(Coordinate coordinate) {
   Animate = 0;
   StartShutdown = false;
   LastAttackFrame = static_cast<int>(game::CurrentFrame());
-  TargetObject = kTargetNone;
+  TargetObject = Target{};
   ZapFrame = 0;
   Hidden = false;
   StartHiding = false;
@@ -551,7 +551,7 @@ void ChronalVortexClass::Movement() {
 void ChronalVortexClass::Set_Target(ObjectClass* target) {
   if (Active) {
     ZapFrame = 0;
-    TargetObject = kTargetNone;
+    TargetObject = Target{};
     if (target != nullptr) {
       TargetObject = target->As_Target();
     }
@@ -615,7 +615,7 @@ void ChronalVortexClass::Attack() {
   /*
   ** If we found something to attack then just return
   */
-  if (!Target_Legal(TargetObject)) {
+  if (!TargetObject) {
     return;
   }
 
@@ -664,7 +664,7 @@ void ChronalVortexClass::Attack() {
  *=============================================================================================*/
 #define ZAP_COUNT 1
 void ChronalVortexClass::Zap_Target() {
-  if (!Hidden && Target_Legal(TargetObject) && ZapFrame < ZAP_COUNT) {
+  if (!Hidden && TargetObject && ZapFrame < ZAP_COUNT) {
     /*
     ** Get the center of the vortex.
     */
@@ -687,8 +687,8 @@ void ChronalVortexClass::Zap_Target() {
         base::NewPooled<BuildingClass>(STRUCT_TESLA, HOUSE_GOOD);
     if (temptech != nullptr) {
       temptech->Coord = here;
-      ObjectClass* obj = As_Object(TargetObject);
-      const TARGET target = As_Target(obj->Center_Coord());
+      ObjectClass* obj = TargetObject.AsObject();
+      const Target target = Target::FromCoordinate(obj->Center_Coord());
       PlaySoundEffectAt(VOC_TESLA_ZAP, obj->Center_Coord());
       temptech->Electric_Zap(target, 0, here, LightningRemap);
       base::DeletePooled(temptech);
@@ -707,7 +707,7 @@ void ChronalVortexClass::Zap_Target() {
         ZapFrame = 0;
         int damage = Damage;
         obj->Take_Damage(damage, TargetDistance, WARHEAD_TESLA, nullptr, true);
-        TargetObject = kTargetNone;
+        TargetObject = Target{};
       }
     }
 
@@ -1121,8 +1121,8 @@ void ChronalVortexClass::Build_Fading_Table(const PaletteClass& palette,
   }
 }
 
-void ChronalVortexClass::Detach(TARGET target) {
-  if (Target_Legal(target) && target == TargetObject) {
+void ChronalVortexClass::Detach(Target target) {
+  if (target && target == TargetObject) {
     Set_Target(nullptr);
   }
 }

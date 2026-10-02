@@ -3,7 +3,7 @@
 
 // Proxies that let a Serialize() field list include pointers to heap objects.
 //
-// A pointer is written as the object's TARGET (heap kind plus slot index) and
+// A pointer is written as the object's Target (heap kind plus slot index) and
 // resolved back to the slot's address on read. Slots have fixed addresses, so
 // a pointer to an object in a heap that loads later is still correct once
 // that heap has loaded; nothing dereferences it before then.
@@ -14,30 +14,30 @@
 //     ar(Balance, ObjectPtr(Object));
 //   }
 
-#include <cstdint>
 #include <vector>
 
 #include "absl/base/attributes.h"
 #include "engine/stream/archive.h"
+#include "ra/core/target.h"
 
 namespace ra {
 
 class ObjectClass;
 class TechnoTypeClass;
 
-// Saves an ordered list of object TARGETs. Read only after all object heaps.
+// Saves an ordered list of object Targets. Read only after all object heaps.
 template <class Archive>
 // Appending invalidates the elements, not the vector the reference names.
 // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-invalidation)
 void SerializeObjectList(Archive& ar, std::vector<ObjectClass*>& objects);
 
-// Resolves a saved TARGET to the raw heap slot it names, without looking at
-// the slot's contents. Returns nullptr for kTargetNone. Records an error on
+// Resolves a saved Target to the raw heap slot it names, without looking at
+// the slot's contents. Returns nullptr for Target{}. Records an error on
 // the reader and returns nullptr for a kind or index outside the heaps.
-ObjectClass* ResolveSavedObject(int32_t target, ArchiveReader& ar);
+ObjectClass* ResolveSavedObject(Target target, ArchiveReader& ar);
 
-// Serializes a pointer to a heap object of type T as a TARGET. T must derive
-// from ObjectClass. Inactive objects are written as kTargetNone.
+// Serializes a pointer to a heap object of type T as a Target. T must derive
+// from ObjectClass. Inactive objects are written as Target{}.
 template <class T>
 class ObjectPtr {
  public:
@@ -53,7 +53,7 @@ class ObjectPtr {
 template <class T>
 ObjectPtr(T*&) -> ObjectPtr<T>;
 
-// Serializes a pointer to a TechnoTypeClass as a TARGET. The type heaps are
+// Serializes a pointer to a TechnoTypeClass as a Target. The type heaps are
 // filled from the rules before a save is loaded, so the pointer is resolved
 // directly on read.
 class TechnoTypePtr {

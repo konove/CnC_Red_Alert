@@ -59,6 +59,7 @@
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/gscreen.h"
@@ -69,7 +70,6 @@
 #include "ra/objects/factory.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
-#include "ra/objects/target.h"
 #include "ra/objects/type.h"
 
 namespace ra {
@@ -322,14 +322,14 @@ void LogicClass::AI() {
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void LogicClass::Detach(TARGET target, bool /*unused*/) {
+void LogicClass::Detach(Target target, bool /*unused*/) {
   /*
   **	Remove any triggers from the logic trigger list.
   */
-  if (Is_Target_Trigger(target)) {
+  if (target.kind() == RTTI_TRIGGER) {
     for (int index = 0; index < std::ssize(TheWorld().logic_triggers());
          index++) {
-      if (As_Trigger(target) == base::At(TheWorld().logic_triggers(), index)) {
+      if (target.AsTrigger() == base::At(TheWorld().logic_triggers(), index)) {
         TheWorld().logic_triggers().erase(TheWorld().logic_triggers().begin() +
                                           index);
         index--;

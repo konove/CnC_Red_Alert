@@ -544,7 +544,7 @@ static void LogObjectPositions(const game::ObjectHeap<T>& objects,
               << std::string_view(object->Class->Name()) << " coord "
               << absl::StrFormat("%08x", object->Coord.packed()) << " mission "
               << magic_enum::enum_name(object->Mission) << " navcom "
-              << absl::StrFormat("%08x", object->NavCom);
+              << absl::StrFormat("%08x", object->NavCom.packed());
   }
 }
 
@@ -694,7 +694,7 @@ bool RunFrame() {
   TheWorld().logic().AI();
   TheWorld().time_quake() = false;
   if (!TheWorld().pending_time_quake()) {
-    TheWorld().time_quake_center() = 0;
+    TheWorld().time_quake_center() = Target{};
   }
 
   // Manage the inter-player message list.  If Manage() returns true, it

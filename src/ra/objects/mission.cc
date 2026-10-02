@@ -408,8 +408,8 @@ const char* MissionClass::Mission_Name(MissionType mission) {
  *                                                                                             *
  *                                                                                             *
  *                                                                                             *
- * INPUT:      MissionType mission - the mission we want to override * TARGET
- *tarcom  - the new target we want to override                      * TARGET
+ * INPUT:      MissionType mission - the mission we want to override * Target
+ *tarcom  - the new target we want to override                      * Target
  *navcom  - the new navigation point to override                    *
  *                                                                                             *
  * OUTPUT:      none *
@@ -419,8 +419,8 @@ const char* MissionClass::Mission_Name(MissionType mission) {
  *                                                                                             *
  * HISTORY: * 04/28/1995 PWG : Created. *
  *=============================================================================================*/
-void MissionClass::Override_Mission(MissionType mission, TARGET /*unused*/,
-                                    TARGET /*unused*/) {
+void MissionClass::Override_Mission(MissionType mission, Target /*unused*/,
+                                    Target /*unused*/) {
   DCHECK(IsActive);
 
   if (MissionQueue != MISSION_NONE) {

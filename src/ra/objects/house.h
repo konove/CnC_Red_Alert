@@ -56,10 +56,10 @@
 #include "ra/ai/region.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
+#include "ra/core/target.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 #include "ra/objects/super.h"
-#include "ra/objects/target.h"
 #include "ra/objects/type.h"
 
 class ArchiveReader;
@@ -527,7 +527,7 @@ class HouseClass {
   **	This target value specifies where the flag is located. It might be a
   *cell *	or it might be an object.
   */
-  TARGET FlagLocation = kTargetNone;
+  Target FlagLocation = Target{};
 
   /*
   ** This is the flag-home-cell for this house.  This is where we must bring
@@ -583,7 +583,7 @@ class HouseClass {
   *possible. *	Typically, this will be one of the buildings of this house that
   *has been *	captured and needs to be recaptured.
   */
-  TARGET ToCapture = kTargetNone;
+  Target ToCapture = Target{};
 
   /*
   ** This value shows who is spying on this house's radar facilities.
@@ -642,7 +642,7 @@ class HouseClass {
   ** For the moebius effect, this is a pointer to the unit that we
   ** selected to teleport.  Only one teleporter should be active per house.
   */
-  TARGET UnitToTeleport = 0;
+  Target UnitToTeleport = Target{};
 
   /*
   **	This elaborates the suggested objects to construct. When the specified
@@ -688,7 +688,7 @@ class HouseClass {
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
   [[nodiscard]] int Factory_Count(RTTIType rtti) const;
   DiffType Assign_Handicap(DiffType handicap);
-  [[nodiscard]] TARGET Find_Juicy_Target(Coordinate coord) const;
+  [[nodiscard]] Target Find_Juicy_Target(Coordinate coord) const;
   CELL Where_To_Go(const FootClass* object) const;
   [[nodiscard]] CELL Zone_Cell(ZoneType zone) const;
   [[nodiscard]] ZoneType Which_Zone(Coordinate coord) const;
@@ -707,7 +707,7 @@ class HouseClass {
   bool Place_Special_Blast(SpecialWeaponType id, CELL cell, Coordinate where);
   bool Flag_Attach(CELL cell, bool set_home = false);
   bool Flag_Attach(UnitClass* object, bool set_home = false);
-  bool Flag_Remove(TARGET target, bool set_home = false);
+  bool Flag_Remove(Target target, bool set_home = false);
   void Init_Data(PlayerColorType color, HousesType house, int credits);
   Coordinate Find_Build_Location(BuildingClass* building) const;
   [[nodiscard]] BuildingClass* Find_Building(StructType type,
@@ -842,7 +842,7 @@ class HouseClass {
   /*
   **	Special house actions.
   */
-  void Detach(TARGET target, bool all);
+  void Detach(Target target, bool all);
 
   /*
   **	This vector holds the recorded status of the map regions. It is through

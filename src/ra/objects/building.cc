@@ -152,6 +152,7 @@
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
 #include "ra/data/rules.h"
@@ -178,7 +179,6 @@
 #include "ra/objects/overlay.h"
 #include "ra/objects/radio.h"
 #include "ra/objects/smudge.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
@@ -554,17 +554,18 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
         switch (Class->Type) {
           case STRUCT_AIRSTRIP:
           case STRUCT_HELIPAD:
-            param = As_Target();
+            param = As_Target().packed();
             break;
 
           case STRUCT_REPAIR:
             Transmit_Message(RADIO_TETHER);
-            param = ra::As_Target(Coord_Cell(Center_Coord()));
+            param = Target::FromCell(Coord_Cell(Center_Coord())).packed();
             break;
 
           case STRUCT_REFINERY:
-            param = ra::As_Target(
-                Coord_Cell(Adjacent_Cell(Center_Coord(), game::DIR_S)));
+            param = Target::FromCell(
+                        Coord_Cell(Adjacent_Cell(Center_Coord(), game::DIR_S)))
+                        .packed();
             break;
           case StructType::STRUCT_NONE:
           case StructType::STRUCT_ADVANCED_TECH:
@@ -1387,7 +1388,7 @@ void BuildingClass::AI() {
   */
   if (IsGoingToBlow && CountDown.IsFinished()) {
     int damage = Strength;
-    Take_Damage(damage, 0, WARHEAD_FIRE, As_Techno(WhomToRepay), true);
+    Take_Damage(damage, 0, WARHEAD_FIRE, WhomToRepay.AsTechno(), true);
     if (!IsActive) {
       return;
     }
@@ -1862,32 +1863,36 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
           auto* bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              ra::As_Target(Adjacent_Cell(cellcenter, game::FACING_N)), nullptr,
-              200, WARHEAD_FIRE, static_cast<int>(game::MPH_MEDIUM_FAST));
+              Target::FromCell(Adjacent_Cell(cellcenter, game::FACING_N)),
+              nullptr, 200, WARHEAD_FIRE,
+              static_cast<int>(game::MPH_MEDIUM_FAST));
           if (bullet) {
             bullet->Unlimbo(center, game::DIR_N);
           }
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              ra::As_Target(Adjacent_Cell(cellcenter, game::FACING_E)), nullptr,
-              200, WARHEAD_FIRE, static_cast<int>(game::MPH_MEDIUM_FAST));
+              Target::FromCell(Adjacent_Cell(cellcenter, game::FACING_E)),
+              nullptr, 200, WARHEAD_FIRE,
+              static_cast<int>(game::MPH_MEDIUM_FAST));
           if (bullet) {
             bullet->Unlimbo(center, game::DIR_E);
           }
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              ra::As_Target(Adjacent_Cell(cellcenter, game::FACING_S)), nullptr,
-              200, WARHEAD_FIRE, static_cast<int>(game::MPH_MEDIUM_FAST));
+              Target::FromCell(Adjacent_Cell(cellcenter, game::FACING_S)),
+              nullptr, 200, WARHEAD_FIRE,
+              static_cast<int>(game::MPH_MEDIUM_FAST));
           if (bullet) {
             bullet->Unlimbo(center, game::DIR_S);
           }
 
           bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
-              ra::As_Target(Adjacent_Cell(cellcenter, game::FACING_W)), nullptr,
-              200, WARHEAD_FIRE, static_cast<int>(game::MPH_MEDIUM_FAST));
+              Target::FromCell(Adjacent_Cell(cellcenter, game::FACING_W)),
+              nullptr, 200, WARHEAD_FIRE,
+              static_cast<int>(game::MPH_MEDIUM_FAST));
           if (bullet) {
             bullet->Unlimbo(center, game::DIR_W);
           }
@@ -2000,7 +2005,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
       */
       if (*this != STRUCT_SAM && *this != STRUCT_AAGUN &&
           !House->Is_Ally(source) && Class->PrimaryWeapon != nullptr &&
-          (!Target_Legal(TarCom) || !In_Range(TarCom))) {
+          (!TarCom || !In_Range(TarCom))) {
         if (source->What_Am_I() != RTTI_AIRCRAFT &&
             (!House->IsHuman || TheRules().IsSmartDefense)) {
           Assign_Target(source->As_Target());
@@ -2157,7 +2162,7 @@ BuildingClass::~BuildingClass() {
  *normal infantry survivor possibility.                    * 07/16/1995 JLB :
  *Survival rate depends on if captured or sabotaged.                       *
  *=============================================================================================*/
-void BuildingClass::Drop_Debris(TARGET source) {
+void BuildingClass::Drop_Debris(Target source) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
@@ -2167,7 +2172,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
   CELL const cell = Coord_Cell(Coord);
   std::span<const int16_t> offset = Occupy_List();
   int odds = 2;
-  if (Target_Legal(WhomToRepay)) {
+  if (WhomToRepay) {
     odds -= 1;
   }
   if (IsCaptured) {
@@ -2200,7 +2205,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
             i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
             i->Scatter(Coordinate{}, true);
-            if (source != kTargetNone && !House->Is_Ally(As_Object(source))) {
+            if (source != Target{} && !House->Is_Ally(source.AsObject())) {
               i->Assign_Mission(MISSION_ATTACK);
               i->Assign_Target(source);
             } else {
@@ -2281,7 +2286,7 @@ void BuildingClass::Active_Click_With(ActionType action, ObjectClass* object) {
 
   if (action == ACTION_SELF && Class->Is_Factory()) {
     TheNetwork().out_list().Add(
-        EventClass(EventClass::PRIMARY, TargetClass(this)));
+        EventClass(EventClass::PRIMARY, Target::Of(this)));
   }
 }
 
@@ -2307,14 +2312,13 @@ void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
   DCHECK(IsActive);
 
   if (action == ACTION_ATTACK) {
-    Player_Assign_Mission(MISSION_ATTACK, ra::As_Target(cell));
+    Player_Assign_Mission(MISSION_ATTACK, Target::FromCell(cell));
   }
 
   if (action == ACTION_MOVE && *this == STRUCT_CONST) {
-    TheNetwork().out_list().Add(
-        EventClass(EventClass::ARCHIVE, TargetClass(this), TargetClass(cell)));
-    TheNetwork().out_list().Add(
-        EventClass(EventClass::SELL, TargetClass(this)));
+    TheNetwork().out_list().Add(EventClass(
+        EventClass::ARCHIVE, Target::Of(this), Target::FromCellIndex(cell)));
+    TheNetwork().out_list().Add(EventClass(EventClass::SELL, Target::Of(this)));
   }
 }
 
@@ -2335,12 +2339,12 @@ void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
  * HISTORY: * 05/28/1994 JLB : Created. * 11/02/1994 JLB : Checks for range
  *before assigning target.                                *
  *=============================================================================================*/
-void BuildingClass::Assign_Target(TARGET target) {
+void BuildingClass::Assign_Target(Target target) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (*this != STRUCT_SAM && *this != STRUCT_AAGUN && !In_Range(target, 0)) {
-    target = kTargetNone;
+    target = Target{};
   }
 
   TechnoClass::Assign_Target(target);
@@ -2441,7 +2445,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
           // BG
           // air->Assign_Destination(ra::As_Target(Nearby_Location(air)));
           /*BG*/ air->Assign_Destination(
-              ra::As_Target(air->Nearby_Location(this)));
+              Target::FromCell(air->Nearby_Location(this)));
           air->Assign_Mission(MISSION_MOVE);
           TheWorld().scenario_init()--;
           return 2;
@@ -2627,10 +2631,10 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
               **	When disembarking from a transport then guard an area
               *around the *	center of the base.
               */
-              base->Assign_Destination(ra::As_Target(cell));
+              base->Assign_Destination(Target::FromCell(cell));
               if (House->IQ >= TheRules().IQGuardArea) {
                 base->Assign_Mission(MISSION_GUARD_AREA);
-                base->ArchiveTarget = ra::As_Target(
+                base->ArchiveTarget = Target::FromCell(
                     House->Where_To_Go(dynamic_cast<FootClass*>(base)));
               }
 
@@ -2745,10 +2749,10 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
               **	When disembarking from a transport then guard an area
               *around the *	center of the base.
               */
-              base->Assign_Destination(ra::As_Target(cell));
+              base->Assign_Destination(Target::FromCell(cell));
               if (House->IQ >= TheRules().IQGuardArea) {
                 base->Assign_Mission(MISSION_GUARD_AREA);
-                base->ArchiveTarget = ra::As_Target(
+                base->ArchiveTarget = Target::FromCell(
                     House->Where_To_Go(dynamic_cast<FootClass*>(base)));
               }
               TheWorld().scenario_init()--;
@@ -3038,8 +3042,8 @@ bool BuildingClass::Limbo() {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 game::DirType BuildingClass::Turret_Facing() const {
-  if (!Class->IsTurretEquipped && Target_Legal(TarCom)) {
-    return ra::Direction(Center_Coord(), As_Coord(TarCom));
+  if (!Class->IsTurretEquipped && TarCom) {
+    return ra::Direction(Center_Coord(), TarCom.AsCoordinate());
   }
   return PrimaryFacing.Current();
 }
@@ -3055,13 +3059,13 @@ game::DirType BuildingClass::Turret_Facing() const {
  *THREAT_RANGE     * or THREAT_NORMAL. *
  *                                                                                             *
  * OUTPUT:  Returns with a suitable target. If none could be found, then
- *kTargetNone is        * returned instead. *
+ *Target{} is        * returned instead. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 01/01/1995 JLB : Created. *
  *=============================================================================================*/
-TARGET BuildingClass::Greatest_Threat(ThreatType threat)  // const
+Target BuildingClass::Greatest_Threat(ThreatType threat)  // const
 {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
@@ -3583,7 +3587,7 @@ Coordinate BuildingClass::Docking_Coord() const {
  *                                                                                             *
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
-game::FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType BuildingClass::Can_Fire(Target target, int which) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
@@ -3784,7 +3788,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     House->IsRecalcNeeded = true;
     newowner->IsRecalcNeeded = true;
     HouseClass* oldowner = House;
-    const TARGET tocap = As_Target();
+    const Target tocap = As_Target();
 
     IsCaptured = true;
     TechnoClass::Captured(newowner);
@@ -3793,7 +3797,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     oldowner->Recalc_Center();
     House->Recalc_Center();
     if (House->ToCapture == As_Target()) {
-      House->ToCapture = kTargetNone;
+      House->ToCapture = Target{};
     }
 
     SmudgeType bib = SMUDGE_NONE;
@@ -4001,7 +4005,7 @@ int BuildingClass::Mission_Guard() {
     /*
     **	If there is no target available, then search for one.
     */
-    if (!Target_Legal(TarCom)) {
+    if (!TarCom) {
       const ThreatType threat = THREAT_NORMAL;
       Assign_Target(Greatest_Threat(threat));
     }
@@ -4009,7 +4013,7 @@ int BuildingClass::Mission_Guard() {
     /*
     **	There is a valid target. Switch into attack mode right away.
     */
-    if (Target_Legal(TarCom)) {
+    if (TarCom) {
       Assign_Mission(MISSION_ATTACK);
       Commence();
       return 1;
@@ -4192,7 +4196,7 @@ int BuildingClass::Mission_Deconstruction() {
         **	members leaving is equal to the unrecovered cost of the building
         **	divided by 100 (the typical cost of a minigunner infantryman).
         */
-        if (!Target_Legal(ArchiveTarget) || !TheRules().IsMCVDeploy ||
+        if (!ArchiveTarget || !TheRules().IsMCVDeploy ||
             *this != STRUCT_CONST) {
           int count = How_Many_Survivors();
           bool engine = false;
@@ -4261,8 +4265,8 @@ int BuildingClass::Mission_Deconstruction() {
         **	Construction yards that deconstruct, really just revert back
         **	to an MCV.
         */
-        if (Target_Legal(ArchiveTarget) && *this == STRUCT_CONST &&
-            House->IsHuman && Strength > 0) {
+        if (ArchiveTarget && *this == STRUCT_CONST && House->IsHuman &&
+            Strength > 0) {
           TheWorld().scenario_init()++;
           auto* unit =
               base::NewPooled<UnitClass>(UNIT_MCV, House->Class->House);
@@ -4274,7 +4278,7 @@ int BuildingClass::Mission_Deconstruction() {
             */
             const Fixed ratio = Health_Ratio();
             const int money = Refund_Amount();
-            const TARGET arch = ArchiveTarget;
+            const Target arch = ArchiveTarget;
             const Coordinate place =
                 Adjacent_Cell(Coord, game::DIR_SE).Snapped();
 
@@ -4288,7 +4292,7 @@ int BuildingClass::Mission_Deconstruction() {
               **	Lift the move destination from the building and assign
               **	it to the unit.
               */
-              if (Target_Legal(arch)) {
+              if (arch) {
                 unit->Assign_Destination(arch);
                 unit->Assign_Mission(MISSION_MOVE);
               }
@@ -4372,9 +4376,9 @@ int BuildingClass::Mission_Attack() {
         if ((Class->IsPowered && House->Power_Fraction() < 1) || IsJammed) {
           return 1;
         }
-        if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
-            As_Aircraft(TarCom)->Height == 0) {
-          Assign_Target(kTargetNone);
+        if (!TarCom || TarCom.kind() != RTTI_AIRCRAFT ||
+            TarCom.AsAircraft()->Height == 0) {
+          Assign_Target(Target{});
           Status = kSamReady;
           Assign_Mission(MISSION_GUARD);
           Commence();
@@ -4394,15 +4398,15 @@ int BuildingClass::Mission_Attack() {
       **	The launcher is in the process of firing.
       */
       case kSamFiring:
-        if (!Target_Legal(TarCom) || !Is_Target_Aircraft(TarCom) ||
-            As_Aircraft(TarCom)->Height == 0) {
-          Assign_Target(kTargetNone);
+        if (!TarCom || TarCom.kind() != RTTI_AIRCRAFT ||
+            TarCom.AsAircraft()->Height == 0) {
+          Assign_Target(Target{});
           Status = kSamReady;
         } else {
           const game::FireErrorType error = Can_Fire(TarCom, 0);
           if (error == game::FIRE_ILLEGAL || error == game::FIRE_CANT ||
               error == game::FIRE_RANGE) {
-            Assign_Target(kTargetNone);
+            Assign_Target(Target{});
             Status = kSamReady;
           } else {
             if (error == game::FIRE_FACING) {
@@ -4425,8 +4429,8 @@ int BuildingClass::Mission_Attack() {
            Random_Pick(0, 2);
   }
 
-  if (!Target_Legal(TarCom)) {
-    Assign_Target(kTargetNone);
+  if (!TarCom) {
+    Assign_Target(Target{});
     Assign_Mission(MISSION_GUARD);
     Commence();
     return 1;
@@ -4439,7 +4443,7 @@ int BuildingClass::Mission_Attack() {
     case game::FIRE_CANT:
     case game::FIRE_RANGE:
     case game::FIRE_AMMO:
-      Assign_Target(kTargetNone);
+      Assign_Target(Target{});
       Assign_Mission(MISSION_GUARD);
       Commence();
       break;
@@ -4870,11 +4874,11 @@ int BuildingClass::Mission_Missile() {
       ** actually handles launching the missile into the air.
       */
       case kLaunchUp: {
-        const AnimClass* sput = As_Animation(AnimToTrack);
+        const AnimClass* sput = AnimToTrack.AsAnimation();
         if (sput && (sput->Fetch_Stage() >= 19)) {
           const CELL center = Coord_Cell(Center_Coord());
           const CELL cell = XY_Cell(Cell_X(center), 1);
-          const TARGET targ = ra::As_Target(cell);
+          const Target targ = Target::FromCell(cell);
 
           auto* bullet = base::NewPooled<BulletClass>(
               BULLET_GPS_SATELLITE, targ, this, 200, WARHEAD_FIRE,
@@ -4936,7 +4940,7 @@ int BuildingClass::Mission_Missile() {
       case kLaunchUp: {
         const CELL center = Coord_Cell(Center_Coord());
         const CELL cell = XY_Cell(Cell_X(center), 1);
-        const TARGET targ = ra::As_Target(cell);
+        const Target targ = Target::FromCell(cell);
         auto* bullet = base::NewPooled<BulletClass>(
             BULLET_NUKE_UP, targ, this, 200, WARHEAD_HE,
             static_cast<int>(game::MPH_VERY_FAST));
@@ -4965,7 +4969,7 @@ int BuildingClass::Mission_Missile() {
             return 6;
           }
           bullet = base::NewPooled<BulletClass>(
-              BULLET_NUKE_DOWN, ra::As_Target(House->NukeDest), this, 200,
+              BULLET_NUKE_DOWN, Target::FromCell(House->NukeDest), this, 200,
               WARHEAD_NUKE, static_cast<int>(game::MPH_VERY_FAST));
           if (bullet) {
             const int celly = std::max(Cell_Y(House->NukeDest) - 64, 1);
@@ -5161,7 +5165,7 @@ game::DirType BuildingClass::Fire_Direction() const {
   if (Class->IsTurretEquipped) {
     return PrimaryFacing.Current();
   }
-  return game::AsDirection(TarCom);
+  return game::AsDirection(TarCom.packed());
 }
 
 /***********************************************************************************************
@@ -5250,7 +5254,7 @@ int BuildingClass::Mission_Unload() {
 
             if (House->IQ >= TheRules().IQGuardArea) {
               unit->Assign_Mission(MISSION_GUARD_AREA);
-              unit->ArchiveTarget = ra::As_Target(House->Where_To_Go(unit));
+              unit->ArchiveTarget = Target::FromCell(House->Where_To_Go(unit));
             }
             unit->Force_Track(DriveClass::kOutOfWeaponFactory, coord);
             //						unit->Force_Track(DriveClass::kOutOfWeaponFactory,
@@ -5342,16 +5346,16 @@ int BuildingClass::Power_Output() const {
  *                                                                                             *
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Detach(TARGET target, bool all) {
+void BuildingClass::Detach(Target target, bool all) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   TechnoClass::Detach(target, all);
   if (target == WhomToRepay) {
-    WhomToRepay = kTargetNone;
+    WhomToRepay = Target{};
   }
   if (target == AnimToTrack) {
-    AnimToTrack = kTargetNone;
+    AnimToTrack = Target{};
   }
 }
 
@@ -6181,7 +6185,7 @@ void BuildingClass::Rotation_AI() {
 void BuildingClass::Charging_AI() {
   if (Class->PrimaryWeapon != nullptr && Class->PrimaryWeapon->IsElectric &&
       BState != game::BSTATE_CONSTRUCTION) {
-    if (Target_Legal(TarCom) && House->Power_Fraction() >= 1) {
+    if (TarCom && House->Power_Fraction() >= 1) {
       if (!IsCharged) {
         if (IsCharging) {
           //					if (stagechange) {
@@ -6333,9 +6337,8 @@ void BuildingClass::Animation_AI() {
       *last frame is replaced by the first frame of *	the loop.
       */
       if (Fetch_Stage() == ctrl->Start + ctrl->Count - 1 ||
-          (!Target_Legal(ArchiveTarget) /*Special.IsMCVDeploy*/ &&
-           *this == STRUCT_CONST && Mission == MISSION_DECONSTRUCTION &&
-           Fetch_Stage() == 42 - 19)) {
+          (!ArchiveTarget /*Special.IsMCVDeploy*/ && *this == STRUCT_CONST &&
+           Mission == MISSION_DECONSTRUCTION && Fetch_Stage() == 42 - 19)) {
         IsReadyToCommence = true;
       }
 

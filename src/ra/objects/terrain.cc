@@ -87,6 +87,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
 #include "ra/data/rules.h"
@@ -97,7 +98,6 @@
 #include "ra/objects/anim.h"
 #include "ra/objects/cell.h"
 #include "ra/objects/object.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/startup/game_state.h"
 
@@ -519,7 +519,7 @@ void TerrainClass::AI() {
 
   if (*this == TERRAIN_MINE &&
       game::CurrentFrame() % (TheRules().GrowthRate * kTicksPerMinute) == 0) {
-    TheMap().at(As_Cell(As_Target())).Spread_Tiberium(true);
+    TheMap().at(As_Target().AsCell()).Spread_Tiberium(true);
   }
   if (Graphic_Logic()) {
     Mark();

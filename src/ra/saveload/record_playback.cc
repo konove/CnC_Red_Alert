@@ -27,13 +27,13 @@
 #include "base/array.h"
 #include "engine/stream/byte_stream.h"
 #include "ra/core/defines.h"
+#include "ra/core/target.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/selection.h"
 #include "ra/map/world.h"
 #include "ra/net/session.h"
 #include "ra/objects/house.h"
 #include "ra/objects/object.h"
-#include "ra/objects/target.h"
 #include "ra/startup/game_state.h"
 
 namespace ra {
@@ -59,7 +59,7 @@ void ResetRecordedEvents() {
 
 void Do_Record_Playback() {
   int count = 0;
-  TARGET tgt = 0;
+  Target tgt = Target{};
   Coordinate coord{};
   uint32_t sum = 0;
   uint32_t ltgt = 0;
@@ -80,7 +80,7 @@ void Do_Record_Playback() {
     sum = 0;
     for (int i = 0; i < count; i++) {
       ltgt = static_cast<uint32_t>(
-          base::At(TheWorld().current_object(), i)->As_Target());
+          base::At(TheWorld().current_object(), i)->As_Target().packed());
       sum += ltgt;
     }
     record->WriteObject(sum);
@@ -118,7 +118,7 @@ void Do_Record_Playback() {
       sum = 0;
       for (int i = 0; i < std::ssize(TheWorld().current_object()); i++) {
         ltgt = static_cast<uint32_t>(
-            base::At(TheWorld().current_object(), i)->As_Target());
+            base::At(TheWorld().current_object(), i)->As_Target().packed());
         sum += ltgt;
       }
 
@@ -133,7 +133,7 @@ void Do_Record_Playback() {
 
       for (int i = 0; i < count; ++i) {
         if (record->ReadObject(tgt)) {
-          ObjectClass* obj = As_Object(tgt);
+          ObjectClass* obj = tgt.AsObject();
           if (obj != nullptr && sum2 != sum) {
             obj->Select();
             TheGameState().allow_voice() = false;

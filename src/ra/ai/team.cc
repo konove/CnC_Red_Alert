@@ -100,6 +100,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
@@ -112,7 +113,6 @@
 #include "ra/objects/house.h"
 #include "ra/objects/infantry.h"
 #include "ra/objects/mission.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
@@ -337,7 +337,8 @@ TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
   }
 
   if (Class->Origin != -1) {
-    Zone = ra::As_Target(base::At(TheScenario().Waypoint, Class->Origin));
+    Zone =
+        ra::Target::FromCell(base::At(TheScenario().Waypoint, Class->Origin));
   }
   Class->Number++;
 
@@ -362,7 +363,7 @@ TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
  * HISTORY:                                                                *
  *   05/16/1995 PWG : Created.                                             *
  *=========================================================================*/
-void TeamClass::Assign_Mission_Target(TARGET new_target) {
+void TeamClass::Assign_Mission_Target(ra::Target new_target) {
   DCHECK(IsActive);
   DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);
 
@@ -371,7 +372,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
   ** the old mission target and clear their Tarcom.
   */
   FootClass* unit = Member;
-  if (MissionTarget != kTargetNone) {
+  if (MissionTarget != ra::Target{}) {
     while (unit != nullptr) {
       const bool tar = unit->TarCom == MissionTarget;
       const bool nav = unit->NavCom == MissionTarget;
@@ -388,7 +389,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
         ** clear it, so that it will be reset by whatever happens next.
         */
         if (nav) {
-          unit->Assign_Destination(kTargetNone);
+          unit->Assign_Destination(ra::Target{});
         }
 
         /*
@@ -396,7 +397,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
         ** clear it, so that it will be reset by whatever happens next.
         */
         if (tar) {
-          unit->Assign_Target(kTargetNone);
+          unit->Assign_Target(ra::Target{});
         }
       }
       unit = unit->Member;
@@ -409,7 +410,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
   ** there is an override, allow the team to keep fighting the override but
   ** make sure they pick up on the new mission when they are ready.
   */
-  if (Target == MissionTarget || !Target_Legal(Target)) {
+  if (Target == MissionTarget || !Target) {
     MissionTarget = Target = new_target;
   } else {
     MissionTarget = new_target;
@@ -495,7 +496,7 @@ void TeamClass::AI() {
     } else {
       IsUnderStrength = true;
       IsFullStrength = false;
-      Zone = kTargetNone;
+      Zone = ra::Target{};
 
       /*
       **	A team that exists on the player's side is automatically
@@ -552,7 +553,7 @@ void TeamClass::AI() {
       ** factory then it should pick another structure that is friendly to
       ** its side.
       */
-      CELL dest = As_Cell(Zone);
+      CELL dest = Zone.AsCell();
       int max = 0x7FFFFFFF;
 
       for (int index = 0; index < TheObjectHeaps().building().Count();
@@ -562,16 +563,16 @@ void TeamClass::AI() {
         if (b != nullptr && !b->IsInLimbo && b->House == House &&
             b->Class->PrimaryWeapon == nullptr) {
           CELL cell = Coord_Cell(b->Center_Coord());
-          int dist = ra::Distance(b->Center_Coord(), As_Coord(Zone)) *
+          int dist = ra::Distance(b->Center_Coord(), Zone.AsCoordinate()) *
                      (MapEditClass::Cell_Threat(cell, House->Class->House) + 1);
 
           if (*b == STRUCT_REPAIR) {
             dist /= 2;
           }
           if (dist < max) {
-            cell = Fetch_A_Leader()->Safety_Point(As_Cell(Zone), cell, 2, 4);
+            cell = Fetch_A_Leader()->Safety_Point(Zone.AsCell(), cell, 2, 4);
             //						cell =
-            // Member->Safety_Point(As_Cell(Zone), cell, 2, 4);
+            // Member->Safety_Point(Zone.AsCell(), cell, 2, 4);
             if (cell != -1) {
               max = dist;
               dest = cell;
@@ -581,11 +582,11 @@ void TeamClass::AI() {
       }
 
       // Should calculate a regroup location.
-      Target = ra::As_Target(dest);
+      Target = ra::Target::FromCell(dest);
       Coordinate_Move();
       return;
     }
-    Zone = kTargetNone;
+    Zone = ra::Target{};
   }
 
   /*
@@ -624,8 +625,8 @@ void TeamClass::AI() {
   **	If the team is moving or if there is no center position for
   **	the team, then the center position must be recalculated.
   */
-  if (IsReforming || IsMoving || Zone == kTargetNone ||
-      ClosestMember == kTargetNone) {
+  if (IsReforming || IsMoving || Zone == ra::Target{} ||
+      ClosestMember == ra::Target{}) {
     Calc_Center(Zone, ClosestMember);
   }
 
@@ -685,11 +686,11 @@ void TeamClass::AI() {
           base::Suffix(Class->MissionList, CurrentMission).data();
 
       TimeOut.Set(mission->Data.Value * (kTicksPerMinute / 10));
-      Target = kTargetNone;
+      Target = ra::Target{};
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
           Assign_Mission_Target(
-              ra::As_Target(static_cast<CELL>(mission->Data.Value)));
+              ra::Target::FromCell(static_cast<CELL>(mission->Data.Value)));
           break;
 
         case TMISSION_MOVE:
@@ -705,8 +706,8 @@ void TeamClass::AI() {
                   movecell, leader->Techno_Type_Class()->Speed);
             }
 
-            Assign_Mission_Target(ra::As_Target(movecell));
-            Target = ra::As_Target(movecell);
+            Assign_Mission_Target(ra::Target::FromCell(movecell));
+            Target = ra::Target::FromCell(movecell);
           }
           break;
 
@@ -715,13 +716,13 @@ void TeamClass::AI() {
         case TMISSION_SPY:
           if (static_cast<unsigned>(mission->Data.Value) <
               ScenarioClass::kWaypointCount) {
-            Assign_Mission_Target(ra::As_Target(
+            Assign_Mission_Target(ra::Target::FromCell(
                 base::At(TheScenario().Waypoint, mission->Data.Value)));
           }
           break;
 
         case TMISSION_ATTACKTARCOM:
-          Assign_Mission_Target(mission->Data.Value);
+          Assign_Mission_Target(ra::Target::FromPacked(mission->Data.Value));
           break;
 
         case TMISSION_UNLOAD:
@@ -738,7 +739,7 @@ void TeamClass::AI() {
         case TeamMissionType::TMISSION_LOAD:
         case TeamMissionType::TMISSION_COUNT:
         default:
-          Assign_Mission_Target(kTargetNone);
+          Assign_Mission_Target(ra::Target{});
           break;
       }
     } else {
@@ -756,7 +757,7 @@ void TeamClass::AI() {
     ** has not, then the current target needs to be reset to the mission
     ** target.
     */
-    if (!Target_Legal(Target)) {
+    if (!Target) {
       Target = MissionTarget;
     }
 
@@ -820,8 +821,8 @@ void TeamClass::AI() {
         break;
 
       case TMISSION_ATT_WAYPT:
-        if (!Target_Legal(MissionTarget)) {
-          Assign_Mission_Target(kTargetNone);
+        if (!MissionTarget) {
+          Assign_Mission_Target(ra::Target{});
           IsNextMission = true;
         } else {
           Coordinate_Attack();
@@ -920,7 +921,7 @@ bool TeamClass::Add(FootClass* obj) {
 
   Total++;
   Risk += obj->Risk();
-  if (Zone == kTargetNone) {
+  if (Zone == ra::Target{}) {
     Calc_Center(Zone, ClosestMember);
   }
 
@@ -1116,8 +1117,8 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
       curr->Member = nullptr;
       curr->Team = nullptr;
       curr->SuspendedMission = MISSION_NONE;
-      curr->SuspendedNavCom = kTargetNone;
-      curr->SuspendedTarCom = kTargetNone;
+      curr->SuspendedNavCom = ra::Target{};
+      curr->SuspendedTarCom = ra::Target{};
       curr = temp;
       Total--;
       found = true;
@@ -1147,7 +1148,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   */
   if (!initiated && Member != nullptr) {
     Member->IsInitiated = true;
-    Zone = kTargetNone;
+    Zone = ra::Target{};
   }
 
   /*
@@ -1182,7 +1183,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
 int TeamClass::Recruit(int typeindex) {
   DCHECK(IsActive);
   DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);
-  Coordinate center = As_Coord(Zone);
+  Coordinate center = Zone.AsCoordinate();
 
   if (Class->Origin != -1) {
     center = Cell_Coord(base::At(TheScenario().Waypoint, Class->Origin));
@@ -1220,7 +1221,7 @@ int TeamClass::Recruit(int typeindex) {
         }
 
         if (best) {
-          best->Assign_Target(kTargetNone);
+          best->Assign_Target(ra::Target{});
           Add(best);
           added++;
         }
@@ -1244,7 +1245,7 @@ int TeamClass::Recruit(int typeindex) {
         }
 
         if (best) {
-          best->Assign_Target(kTargetNone);
+          best->Assign_Target(ra::Target{});
           Add(best);
           added++;
         }
@@ -1267,7 +1268,7 @@ int TeamClass::Recruit(int typeindex) {
           }
 
           if (best) {
-            best->Assign_Target(kTargetNone);
+            best->Assign_Target(ra::Target{});
             Add(best);
             added++;
 
@@ -1302,7 +1303,7 @@ int TeamClass::Recruit(int typeindex) {
           }
 
           if (best) {
-            best->Assign_Target(kTargetNone);
+            best->Assign_Target(ra::Target{});
             Add(best);
             added++;
 
@@ -1368,7 +1369,7 @@ int TeamClass::Recruit(int typeindex) {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Detach(TARGET target, bool /*unused*/) {
+void TeamClass::Detach(ra::Target target, bool /*unused*/) {
   DCHECK(IsActive);
   DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);
 
@@ -1378,10 +1379,10 @@ void TeamClass::Detach(TARGET target, bool /*unused*/) {
   **	where they may.
   */
   if (Target == target) {
-    Target = kTargetNone;
+    Target = ra::Target{};
   }
   if (MissionTarget == target) {
-    MissionTarget = kTargetNone;
+    MissionTarget = ra::Target{};
   }
   if (Trigger != nullptr && Trigger->As_Target() == target) {
     Trigger = nullptr;
@@ -1408,7 +1409,8 @@ void TeamClass::Detach(TARGET target, bool /*unused*/) {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
+void TeamClass::Calc_Center(ra::Target& center,
+                            ra::Target& close_member) const {
   DCHECK(IsActive);
   DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);
 
@@ -1416,8 +1418,8 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
   **	Presume there is no center. This will be confirmed in the following
   *scanning *	operation.
   */
-  close_member = kTargetNone;
-  center = kTargetNone;
+  close_member = ra::Target{};
+  center = ra::Target{};
 
   const FootClass* team_member = Member;  // Working team member pointer.
 
@@ -1562,19 +1564,19 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
       x /= quantity;
       y /= quantity;
       const Coordinate coord = Coordinate::FromLeptons(x, y);
-      center = ra::As_Target(coord);
+      center = ra::Target::FromCoordinate(coord);
 
       /*
       **	If the center location is impassable, then just pick the
       *location of
       ** one of the team members.
       */
-      if (closest->Can_Enter_Cell(As_Cell(center)) != game::MOVE_OK) {
+      if (closest->Can_Enter_Cell(center.AsCell()) != game::MOVE_OK) {
         //				if (Class->Origin != -1) {
         //					center =
         // ra::As_Target(Scen.Waypoint[Class->Origin]);
         //:} else {
-        center = ra::As_Target(Coord_Cell(closest->Center_Coord()));
+        center = ra::Target::FromCell(Coord_Cell(closest->Center_Coord()));
         //				}
       }
     }
@@ -1584,7 +1586,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     **	that will be used as the regroup point.
     */
     if (closest != nullptr) {
-      close_member = ra::As_Target(Coord_Cell(closest->Center_Coord()));
+      close_member = ra::Target::FromCell(Coord_Cell(closest->Center_Coord()));
     }
   }
 }
@@ -1634,13 +1636,13 @@ void TeamClass::Took_Damage(FootClass* /*unused*/, game::ResultType result,
           *well. There is *	no point in endlessly shuffling between targets
           *that have firepower.
           */
-          if (Target_Legal(Target)) {
-            const TechnoClass* techno = As_Techno(Target);
+          if (Target) {
+            const TechnoClass* techno = Target.AsTechno();
 
             if ((techno &&
                  dynamic_cast<const TechnoTypeClass&>(techno->Class_Of())
                          .PrimaryWeapon != nullptr) &&
-                techno->In_Range(As_Coord(Zone), 0)) {
+                techno->In_Range(Zone.AsCoordinate(), 0)) {
               return;
             }
           }
@@ -1681,7 +1683,7 @@ void TeamClass::Coordinate_Attack() {
   DCHECK(IsActive);
   DCHECK_HEAP_SLOT(TheObjectHeaps().team(), this);
 
-  if (!Target_Legal(Target)) {
+  if (!Target) {
     Target = MissionTarget;
   }
 
@@ -1692,9 +1694,9 @@ void TeamClass::Coordinate_Attack() {
   *team *	can "attack" an empty cell and this is perfectly ok (paratrooper
   *drop and parabombs *	are prime examples).
   */
-  if (Is_Target_Cell(Target) && Member != nullptr &&
+  if (Target.kind() == RTTI_CELL && Member != nullptr &&
       Fetch_A_Leader()->What_Am_I() != RTTI_AIRCRAFT) {
-    const CellClass* cellptr = &TheMap().at(As_Cell(Target));
+    const CellClass* cellptr = &TheMap().at(Target.AsCell());
     const TemplateType tt = cellptr->TType;
     if (cellptr->Cell_Object()) {
       Target = cellptr->Cell_Object()->As_Target();
@@ -1710,13 +1712,14 @@ void TeamClass::Coordinate_Attack() {
         if (unit->What_Am_I() != RTTI_UNIT ||
             *dynamic_cast<UnitClass*>(unit) != UNIT_CHRONOTANK ||
             mission->Mission != TMISSION_SPY) {
-          Target = 0;  // invalidize the target so it'll go to next mission.
+          // Clear the target so the team goes on to its next mission.
+          Target = ra::Target{};
         }
       }
     }
   }
 
-  if (!Target_Legal(Target)) {
+  if (!Target) {
     IsNextMission = true;
 
   } else {
@@ -1738,12 +1741,12 @@ void TeamClass::Coordinate_Attack() {
               unit->What_Am_I() == RTTI_UNIT &&
               *dynamic_cast<UnitClass*>(unit) == UNIT_CHRONOTANK) {
             auto* tank = dynamic_cast<UnitClass*>(unit);
-            tank->Teleport_To(As_Cell(Target));
+            tank->Teleport_To(Target.AsCell());
             tank->MoebiusCountDown.Set(TheRules().ChronoTankDuration *
                                        kTicksPerMinute);
             TheScenario().Do_BW_Fade();
             PlaySoundEffectAt(VOC_CHRONOTANK1, unit->Coord);
-            tank->Assign_Target(kTargetNone);
+            tank->Assign_Target(ra::Target{});
             tank->Assign_Mission(MISSION_GUARD);
           } else {
             if (unit->Mission != MISSION_ATTACK &&
@@ -1751,8 +1754,8 @@ void TeamClass::Coordinate_Attack() {
                 unit->Mission != MISSION_CAPTURE) {
               unit->Transmit_Message(RADIO_OVER_OUT);
               unit->Assign_Mission(MISSION_ATTACK);
-              unit->Assign_Target(kTargetNone);
-              unit->Assign_Destination(kTargetNone);
+              unit->Assign_Target(ra::Target{});
+              unit->Assign_Destination(ra::Target{});
             }
           }
         }
@@ -1796,11 +1799,10 @@ bool TeamClass::Coordinate_Regroup() {
 
     if (Is_It_Playing(unit)) {
       if (unit->Distance(Zone) > TheRules().StrayDistance &&
-          (unit->Mission != MISSION_GUARD_AREA ||
-           !Target_Legal(unit->TarCom))) {
-        if (!Target_Legal(unit->NavCom)) {
+          (unit->Mission != MISSION_GUARD_AREA || !unit->TarCom)) {
+        if (!unit->NavCom) {
           // TCTCTC
-          //				if (!Target_Legal(unit->NavCom) ||
+          //				if (!unit->NavCom ||
           // ra::Distance(unit->NavCom, Zone) > Rule.StrayDistance) {
           unit->Assign_Mission(MISSION_MOVE);
           unit->Assign_Destination(Zone);
@@ -1808,8 +1810,8 @@ bool TeamClass::Coordinate_Regroup() {
           retval = false;
           if (!unit->IsFormationMove) {
             unit->Assign_Mission(MISSION_MOVE);
-            const CELL dest = unit->Adjust_Dest(As_Cell(Zone));
-            unit->Assign_Destination(ra::As_Target(dest));
+            const CELL dest = unit->Adjust_Dest(Zone.AsCell());
+            unit->Assign_Destination(ra::Target::FromCell(dest));
           } else {
             retval = true;  // formations are always considered regrouped.
           }
@@ -1820,7 +1822,7 @@ bool TeamClass::Coordinate_Regroup() {
         */
         if (unit->Mission != MISSION_GUARD_AREA) {
           unit->Assign_Mission(MISSION_GUARD);
-          unit->Assign_Destination(kTargetNone);
+          unit->Assign_Destination(ra::Target{});
         }
       }
     }
@@ -1863,7 +1865,7 @@ void TeamClass::Coordinate_Do() {
     Coordinate_Conscript(unit);
 
     if (Is_It_Playing(unit)) {
-      if (!Target_Legal(unit->TarCom) && !Target_Legal(unit->NavCom) &&
+      if (!unit->TarCom && !unit->NavCom &&
           unit->Distance(Zone) > TheRules().StrayDistance * 2) {
         /*
         **	Only if the unit isn't already heading to regroup with the team,
@@ -1872,19 +1874,18 @@ void TeamClass::Coordinate_Do() {
         unit->Assign_Mission(MISSION_MOVE);
         unit->Assign_Destination(Zone);
         unit->Assign_Mission(MISSION_MOVE);
-        const CELL dest = unit->Adjust_Dest(As_Cell(Zone));
-        unit->Assign_Destination(ra::As_Target(dest));
+        const CELL dest = unit->Adjust_Dest(Zone.AsCell());
+        unit->Assign_Destination(ra::Target::FromCell(dest));
 
       } else {
         /*
         **	The team is regrouping, so just sit here and wait.
         */
-        if (!Target_Legal(unit->TarCom) && !Target_Legal(unit->NavCom) &&
-            unit->Mission != do_mission) {
-          unit->ArchiveTarget = kTargetNone;
+        if (!unit->TarCom && !unit->NavCom && unit->Mission != do_mission) {
+          unit->ArchiveTarget = ra::Target{};
           unit->Assign_Mission(do_mission);
-          unit->Assign_Target(kTargetNone);
-          unit->Assign_Destination(kTargetNone);
+          unit->Assign_Target(ra::Target{});
+          unit->Assign_Destination(ra::Target{});
         }
       }
     }
@@ -1915,11 +1916,11 @@ void TeamClass::Coordinate_Move() {
   bool finished = true;
   bool found = false;
 
-  if (!Target_Legal(Target)) {
+  if (!Target) {
     Target = MissionTarget;
   }
 
-  if (Target_Legal(Target)) {
+  if (Target) {
     if (!Lagging_Units()) {
       while (unit != nullptr) {
         /*
@@ -1945,19 +1946,18 @@ void TeamClass::Coordinate_Move() {
           }
           if (unit->What_Am_I() == RTTI_INFANTRY &&
               dynamic_cast<const InfantryClass*>(unit)->Class->IsDog) {
-            if (Target_Legal(unit->TarCom)) {
+            if (unit->TarCom) {
               stray = unit->Techno_Type_Class()->ThreatRange;
             }
-            if (Target_Legal(unit->TarCom) &&
-                unit->Distance(unit->TarCom) > stray) {
-              unit->Assign_Target(kTargetNone);
+            if (unit->TarCom && unit->Distance(unit->TarCom) > stray) {
+              unit->Assign_Target(ra::Target{});
             }
           }
           found = true;
 
           int dist = unit->Distance(Target);
           if (unit->IsFormationMove &&
-              (ra::As_Target(Coord_Cell(unit->Coord)) != unit->NavCom)) {
+              (ra::Target::FromCell(Coord_Cell(unit->Coord)) != unit->NavCom)) {
             dist =
                 TheRules().StrayDistance + 1;  // formation moves must be exact.
           }
@@ -1967,7 +1967,7 @@ void TeamClass::Coordinate_Move() {
                //						(unit->In_Which_Layer()
                //== LAYER_TOP &&
                unit->Height > 0 &&
-               Coord_Cell(unit->Center_Coord()) != As_Cell(Target) &&
+               Coord_Cell(unit->Center_Coord()) != Target.AsCell() &&
                !dynamic_cast<AircraftClass*>(unit)->Class->IsFixedWing &&
                base::At(Class->MissionList, CurrentMission + 1).Mission !=
                    TMISSION_MOVE)) {
@@ -1982,13 +1982,13 @@ void TeamClass::Coordinate_Move() {
               ** Check if this destination should be adjusted for
               ** a formation move
               */
-              if (Is_Target_Cell(Target) && unit->IsFormationMove) {
-                const CELL newcell = unit->Adjust_Dest(As_Cell(Target));
+              if (Target.kind() == RTTI_CELL && unit->IsFormationMove) {
+                const CELL newcell = unit->Adjust_Dest(Target.AsCell());
                 if (Coord_Cell(unit->Coord) != newcell) {
-                  unit->Assign_Destination(ra::As_Target(newcell));
+                  unit->Assign_Destination(ra::Target::FromCell(newcell));
                 } else {
                   unit->Assign_Mission(MISSION_GUARD);
-                  unit->Assign_Destination(kTargetNone);
+                  unit->Assign_Destination(ra::Target{});
                   wasform = true;
                 }
               } else {
@@ -2002,9 +2002,8 @@ void TeamClass::Coordinate_Move() {
 
           } else {
             if (unit->Mission == MISSION_MOVE &&
-                (!Target_Legal(unit->NavCom) ||
-                 Distance(unit->NavCom) < CELL_LEPTON_W)) {
-              unit->Assign_Destination(kTargetNone);
+                (!unit->NavCom || Distance(unit->NavCom) < CELL_LEPTON_W)) {
+              unit->Assign_Destination(ra::Target{});
               unit->Enter_Idle_Mode();
             }
           }
@@ -2017,7 +2016,7 @@ void TeamClass::Coordinate_Move() {
           **	start on the next mission even when all members aren't yet
           **	in their proper spot.
           */
-          if (Target_Legal(unit->NavCom)) {
+          if (unit->NavCom) {
             finished = false;
           }
         }
@@ -2104,8 +2103,8 @@ bool TeamClass::Lagging_Units() {
       */
       if (unit->Distance(ClosestMember) > stray) {
         // TCTCTC
-        if (!Target_Legal(unit->NavCom)) {
-          //				if (!Target_Legal(unit->NavCom) ||
+        if (!unit->NavCom) {
+          //				if (!unit->NavCom ||
           // ra::Distance(unit->NavCom, ClosestMember) > Rule.StrayDistance) {
           unit->Assign_Mission(MISSION_MOVE);
           unit->Assign_Destination(ClosestMember);
@@ -2119,7 +2118,7 @@ bool TeamClass::Lagging_Units() {
         */
         if (unit->Mission != MISSION_GUARD) {
           unit->Assign_Mission(MISSION_GUARD);
-          unit->Assign_Destination(kTargetNone);
+          unit->Assign_Destination(ra::Target{});
         }
       }
     }
@@ -2185,8 +2184,8 @@ int TeamClass::TMission_Unload() {
         */
         if (TheMap().at(unit->Center_Coord()).Cell_Building() == nullptr &&
             unit->Mission != MISSION_UNLOAD) {
-          unit->Assign_Destination(kTargetNone);
-          unit->Assign_Target(kTargetNone);
+          unit->Assign_Destination(ra::Target{});
+          unit->Assign_Target(ra::Target{});
           unit->Assign_Mission(MISSION_UNLOAD);
           finished = false;
         }
@@ -2278,7 +2277,7 @@ int TeamClass::TMission_Load() {
     if (Is_It_Playing(unit) && unit != trans) {
       if (unit->Mission != MISSION_ENTER) {
         unit->Assign_Mission(MISSION_ENTER);
-        unit->Assign_Target(kTargetNone);
+        unit->Assign_Target(ra::Target{});
         unit->Assign_Destination(trans->As_Target());
         finished = false;
         break;
@@ -2316,9 +2315,9 @@ bool TeamClass::Coordinate_Conscript(FootClass* unit) {
 
   if (Is_It_Breathing(unit) && !unit->IsInitiated) {
     if (unit->Distance(Zone) > TheRules().StrayDistance) {
-      if (!Target_Legal(unit->NavCom)) {
+      if (!unit->NavCom) {
         unit->Assign_Mission(MISSION_MOVE);
-        unit->Assign_Target(kTargetNone);
+        unit->Assign_Target(ra::Target{});
         unit->IsFormationMove = false;
         unit->Assign_Destination(Zone);
       }
@@ -2477,10 +2476,10 @@ bool TeamClass::Has_Entered_Map() const {
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::Scan_Limit() {
-  Assign_Mission_Target(kTargetNone);
+  Assign_Mission_Target(ra::Target{});
   FootClass* foot = Member;
   while (foot != nullptr) {
-    foot->Assign_Target(kTargetNone);
+    foot->Assign_Target(ra::Target{});
     foot->IsScanLimited = true;
     foot = foot->Member;
   }
@@ -2715,7 +2714,7 @@ int TeamClass::TMission_Formation() {
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
 int TeamClass::TMission_Attack() {
-  if (!Target_Legal(MissionTarget) && Member != nullptr) {
+  if (!MissionTarget && Member != nullptr) {
     const TeamMissionClass* mission =
         base::Suffix(Class->MissionList, CurrentMission).data();
 
@@ -2775,7 +2774,7 @@ int TeamClass::TMission_Attack() {
       default:
         break;
     }
-    if (!Target_Legal(MissionTarget)) {
+    if (!MissionTarget) {
       IsNextMission = true;
     }
   }
@@ -2801,8 +2800,8 @@ int TeamClass::TMission_Attack() {
  * HISTORY: * 08/06/1996 JLB : Created. *
  *=============================================================================================*/
 int TeamClass::TMission_Spy() {
-  if (Is_Target_Cell(MissionTarget)) {
-    const CELL cell = As_Cell(MissionTarget);
+  if (MissionTarget.kind() == RTTI_CELL) {
+    const CELL cell = MissionTarget.AsCell();
     const CellClass* cellptr = &TheMap().at(cell);
     const ObjectClass* bldg = cellptr->Cell_Building();
     if (bldg != nullptr) {
@@ -2823,14 +2822,14 @@ int TeamClass::TMission_Spy() {
         if (!finished) {
           Coordinate_Attack();
         } else {
-          Assign_Mission_Target(kTargetNone);
+          Assign_Mission_Target(ra::Target{});
           IsNextMission = true;
         }
       }
     }
   } else {
-    if (!Target_Legal(MissionTarget)) {
-      Assign_Mission_Target(kTargetNone);
+    if (!MissionTarget) {
+      Assign_Mission_Target(ra::Target{});
       IsNextMission = true;
     } else {
       Coordinate_Attack();
@@ -2961,13 +2960,13 @@ int TeamClass::TMission_Patrol() {
   **	Reassign the movement destination if the target has been prematurely
   **	cleared (probably because the object has been destroyed).
   */
-  if (!Target_Legal(Target)) {
+  if (!Target) {
     const TeamMissionClass* mission =
         base::Suffix(Class->MissionList, CurrentMission).data();
     if (static_cast<unsigned>(mission->Data.Value) <
         ScenarioClass::kWaypointCount) {
-      Assign_Mission_Target(
-          ra::As_Target(base::At(TheScenario().Waypoint, mission->Data.Value)));
+      Assign_Mission_Target(ra::Target::FromCell(
+          base::At(TheScenario().Waypoint, mission->Data.Value)));
     }
   }
 
@@ -2977,13 +2976,13 @@ int TeamClass::TMission_Patrol() {
   if (game::CurrentFrame() % (TheRules().PatrolTime * kTicksPerMinute) == 0) {
     FootClass* leader = Fetch_A_Leader();
     if (leader != nullptr) {
-      const TARGET target =
+      const ra::Target target =
           leader->Greatest_Threat(THREAT_NORMAL | THREAT_RANGE);
 
-      if (Target_Legal(target)) {
+      if (target) {
         Assign_Mission_Target(target);
       } else {
-        Assign_Mission_Target(kTargetNone);
+        Assign_Mission_Target(ra::Target{});
       }
     }
   }
@@ -2992,7 +2991,7 @@ int TeamClass::TMission_Patrol() {
   **	If the mission target looks like it should be attacked, then do so,
   *otherwise *	treat it as a movement destination.
   */
-  if (Is_Target_Object(Target)) {
+  if (Target.is_object()) {
     Coordinate_Attack();
   } else {
     Coordinate_Move();
@@ -3014,8 +3013,8 @@ int TeamClass::TMission_Deploy() {
       if (unit->What_Am_I() == RTTI_UNIT &&
           *dynamic_cast<UnitClass*>(unit) == UNIT_MCV) {
         if (unit->Mission != MISSION_UNLOAD) {
-          unit->Assign_Destination(kTargetNone);
-          unit->Assign_Target(kTargetNone);
+          unit->Assign_Destination(ra::Target{});
+          unit->Assign_Target(ra::Target{});
           unit->Assign_Mission(MISSION_UNLOAD);
           finished = false;
         }
@@ -3032,8 +3031,8 @@ int TeamClass::TMission_Deploy() {
         */
         if (!TheMap().at(unit->Center_Coord()).Cell_Building() &&
             unit->Mission != MISSION_UNLOAD) {
-          unit->Assign_Destination(kTargetNone);
-          unit->Assign_Target(kTargetNone);
+          unit->Assign_Destination(ra::Target{});
+          unit->Assign_Target(ra::Target{});
           unit->Assign_Mission(MISSION_UNLOAD);
           finished = false;
         }

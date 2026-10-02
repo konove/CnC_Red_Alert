@@ -158,7 +158,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   /*
   **	Utility routines
   */
-  void Detach(TARGET target, bool all = true);
+  void Detach(Target target, bool all = true);
   [[nodiscard]] AttachType Attaches_To() const;
   static TriggerTypeClass* From_Name(const char* name);
   bool Edit();

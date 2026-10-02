@@ -48,9 +48,9 @@
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/core/defines.h"
+#include "ra/core/target.h"
 #include "ra/objects/foot.h"
 #include "ra/objects/object.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/unit.h"
 
@@ -58,6 +58,8 @@ class ArchiveReader;
 class ArchiveWriter;
 
 namespace ra {
+
+class TerrainClass;
 
 /****************************************************************************
 **	Each cell on the map is controlled by the following structure.
@@ -261,7 +263,9 @@ class CellClass {
   [[nodiscard]] ObjectClass* Cell_Object(int x = 0, int y = 0) const;
   [[nodiscard]] ObjectClass* Cell_Occupier() const { return OccupierPtr; }
   [[nodiscard]] ObjectClass* Fetch_Occupier() const;
-  [[nodiscard]] TARGET As_Target() const { return ra::As_Target(Cell_Number()); }
+  [[nodiscard]] Target As_Target() const {
+    return Target::FromCell(Cell_Number());
+  }
   [[nodiscard]] TechnoClass* Cell_Techno(int x = 0, int y = 0) const;
   [[nodiscard]] TerrainClass* Cell_Terrain() const;
   [[nodiscard]] UnitClass* Cell_Unit() const;

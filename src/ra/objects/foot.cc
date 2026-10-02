@@ -113,6 +113,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/jshell.h"
+#include "ra/core/target.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
@@ -124,7 +125,6 @@
 #include "ra/objects/mission.h"
 #include "ra/objects/object.h"
 #include "ra/objects/radio.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
@@ -165,8 +165,8 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
       SpeedBias(1),
       XFormOffset(kNoFormationOffset),
       YFormOffset(kNoFormationOffset),
-      NavCom(kTargetNone),
-      SuspendedNavCom(kTargetNone),
+      NavCom(Target{}),
+      SuspendedNavCom(Target{}),
       Group(kNoGroup),
       Member(nullptr),
       PathThreshhold(game::MOVE_CLOAK),
@@ -178,7 +178,7 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
       HeadToCoord() {
   Path[0] = game::FACING_NONE;
   for (int index = 0; index < std::ssize(NavQueue); index++) {
-    base::At(NavQueue, index) = kTargetNone;
+    base::At(NavQueue, index) = Target{};
   }
 }
 
@@ -297,8 +297,8 @@ bool FootClass::Basic_Path() {
 
   Path[0] = game::FACING_NONE;
 
-  if (Target_Legal(NavCom)) {
-    CELL cell = As_Cell(NavCom);
+  if (NavCom) {
+    CELL cell = NavCom.AsCell();
 
     /*
     **	When the navigation computer is set to a location that is impassible,
@@ -449,13 +449,13 @@ bool FootClass::Basic_Path() {
 int FootClass::Mission_Move() {
   DCHECK(IsActive);
 
-  if (!Target_Legal(NavCom) && !IsDriving && MissionQueue == MISSION_NONE) {
+  if (!NavCom && !IsDriving && MissionQueue == MISSION_NONE) {
     Enter_Idle_Mode();
     return 1;
   }
-  //	if (!Target_Legal(TarCom) && !House->IsPlayerControl && !House->IsHuman)
+  //	if (!TarCom && !House->IsPlayerControl && !House->IsHuman)
   //{
-  if (!Target_Legal(TarCom) && !House->IsPlayerControl && !House->IsHuman &&
+  if (!TarCom && !House->IsPlayerControl && !House->IsHuman &&
       (Team == nullptr || !Team->Class->IsSuicide)) {
     Target_Something_Nearby(THREAT_RANGE);
   }
@@ -487,13 +487,13 @@ int FootClass::Mission_Capture() {
   **	If there is a valid TarCom but the NavCom isn't set, then set the NavCom
   *accordingly.
   */
-  if (Is_Target_Building(TarCom) && !Target_Legal(NavCom) &&
+  if (TarCom.kind() == RTTI_BUILDING && !NavCom &&
       What_Am_I() == RTTI_INFANTRY &&
       dynamic_cast<InfantryClass*>(this)->Class->IsBomber) {
     Assign_Destination(TarCom);
   }
 
-  if (!Target_Legal(NavCom) /*&& !In_Radio_Contact()*/) {
+  if (!NavCom /*&& !In_Radio_Contact()*/) {
     Enter_Idle_Mode();
     if (TheMap().at(Center_Coord()).Cell_Building()) {
       Scatter(Coordinate{}, true);
@@ -521,7 +521,7 @@ int FootClass::Mission_Capture() {
  *=============================================================================================*/
 int FootClass::Mission_Attack() {
   DCHECK(IsActive);
-  if (Target_Legal(TarCom)) {
+  if (TarCom) {
     Approach_Target();
   } else {
     Enter_Idle_Mode();
@@ -577,7 +577,7 @@ int FootClass::Mission_Guard() {
     **	If this is a bomber type infantry and the current target is a building,
     *then go into *	sabotage mode if not already.
     */
-    if (!House->IsHuman && Is_Target_Building(TarCom) &&
+    if (!House->IsHuman && TarCom.kind() == RTTI_BUILDING &&
         dynamic_cast<InfantryClass*>(this)->Class->IsBomber &&
         Mission != MISSION_SABOTAGE) {
       Assign_Mission(MISSION_SABOTAGE);
@@ -653,7 +653,7 @@ int FootClass::Mission_Hunt() {
     } else {
       if (What_Am_I() == RTTI_INFANTRY &&
           dynamic_cast<InfantryClass*>(this)->Class->IsBomber &&
-          Is_Target_Building(TarCom)) {
+          TarCom.kind() == RTTI_BUILDING) {
         Assign_Destination(TarCom);
         Assign_Mission(MISSION_SABOTAGE);
       } else {
@@ -784,7 +784,7 @@ Coordinate FootClass::Sort_Y() const {
 void FootClass::Stun() {
   DCHECK(IsActive);
 
-  Assign_Destination(kTargetNone);
+  Assign_Destination(Target{});
   Path[0] = game::FACING_NONE;
   Stop_Driver();
   TechnoClass::Stun();
@@ -816,7 +816,7 @@ void FootClass::Approach_Target() {
   **	Determine that if there is an existing target it is still legal
   **	and within range.
   */
-  if (Target_Legal(TarCom)) {
+  if (TarCom) {
     const int primary = What_Weapon_Should_I_Use(TarCom);
 
     /*
@@ -825,8 +825,8 @@ void FootClass::Approach_Target() {
     int maxrange = Weapon_Range(primary);
     //		int maxrange = max(Weapon_Range(0), Weapon_Range(1));
 
-    if (!Target_Legal(NavCom) && (!In_Range(TarCom, primary) || !IsLocked)) {
-      //		if (!Target_Legal(NavCom) && (Distance(TarCom) >
+    if (!NavCom && (!In_Range(TarCom, primary) || !IsLocked)) {
+      //		if (!NavCom && (Distance(TarCom) >
       // maxrange || !IsLocked)) {
 
       /*
@@ -834,7 +834,7 @@ void FootClass::Approach_Target() {
       ** max range so that people can stand far away from the buildings and
       ** hit them.
       */
-      const BuildingClass* obj = As_Building(TarCom);
+      const BuildingClass* obj = TarCom.AsBuilding();
       if (obj) {
         maxrange += (obj->Class->Width() + obj->Class->Height()) * (0x100 / 4);
       }
@@ -846,7 +846,7 @@ void FootClass::Approach_Target() {
       maxrange -= 0x00B7;
       maxrange = std::max(maxrange, 0);
 
-      const Coordinate tcoord = As_Coord(TarCom);
+      const Coordinate tcoord = TarCom.AsCoordinate();
       Coordinate trycoord{};
       const CELL tcell = Coord_Cell(tcoord);
       CELL trycell = tcell;
@@ -893,13 +893,13 @@ void FootClass::Approach_Target() {
       *it. *	Otherwise, head toward the enemy unit directly.
       */
       if (found) {
-        Assign_Destination(ra::As_Target(trycell));
+        Assign_Destination(Target::FromCell(trycell));
       } else {
         trycell = TheMap().Nearby_Location(
             trycell, Techno_Type_Class()->Speed,
             TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone),
             Techno_Type_Class()->MZone);
-        Assign_Destination(ra::As_Target(trycell));
+        Assign_Destination(Target::FromCell(trycell));
         //				Assign_Destination(TarCom);
       }
     }
@@ -936,8 +936,8 @@ int FootClass::Mission_Guard_Area() {
   /*
   **	Ensure that the archive target is valid.
   */
-  if (!Target_Legal(ArchiveTarget)) {
-    ArchiveTarget = ra::As_Target(Coord);
+  if (!ArchiveTarget) {
+    ArchiveTarget = Target::FromCoordinate(Coord);
   }
 
   /*
@@ -945,7 +945,7 @@ int FootClass::Mission_Guard_Area() {
   *then go into *	sabotage mode if not already.
   */
   if (!House->IsHuman && What_Am_I() == RTTI_INFANTRY &&
-      Is_Target_Building(TarCom) &&
+      TarCom.kind() == RTTI_BUILDING &&
       dynamic_cast<InfantryClass*>(this)->Class->IsBomber &&
       Mission != MISSION_SABOTAGE) {
     Assign_Mission(MISSION_SABOTAGE);
@@ -958,18 +958,17 @@ int FootClass::Mission_Guard_Area() {
   */
   const int maxrange = Threat_Range(1) / 2;
 
-  if (!IsFiring && !Target_Legal(NavCom) &&
-      Distance(ArchiveTarget) > maxrange) {
-    Assign_Target(kTargetNone);
+  if (!IsFiring && !NavCom && Distance(ArchiveTarget) > maxrange) {
+    Assign_Target(Target{});
     Assign_Destination(ArchiveTarget);
   }
 
-  if (!Target_Legal(TarCom)) {
+  if (!TarCom) {
     const Coordinate old = Coord;
-    Coord = As_Coord(ArchiveTarget);
+    Coord = ArchiveTarget.AsCoordinate();
     Target_Something_Nearby(THREAT_AREA);
     Coord = old;
-    if (Target_Legal(TarCom)) {
+    if (TarCom) {
       return 1;
     }
     Random_Animate();
@@ -1067,9 +1066,9 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
       *is taken.
       */
       //			bool tweap = false;
-      //			if (As_Techno(TarCom)) {
+      //			if (TarCom.AsTechno()) {
       //				tweap =
-      //(As_Techno(TarCom)->Techno_Type_Class()->PrimaryWeapon != nullptr);
+      //(TarCom.AsTechno()->Techno_Type_Class()->PrimaryWeapon != nullptr);
       //			}
 
       /*
@@ -1101,8 +1100,7 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
         **	Simple retaliation cannot occur because the source of the damage
         **	is too far away. If scatter logic is enabled, then scatter now.
         */
-        if (!Target_Legal(TarCom) && !Target_Legal(NavCom) &&
-            TheRules().IsScatter) {
+        if (!TarCom && !NavCom && TheRules().IsScatter) {
           Scatter(Coordinate{}, true);
         }
 
@@ -1111,9 +1109,8 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
         **	If this object isn't doing anything important, then scatter.
         */
         if ((TheRules().mission_control().at(Mission).IsScatter &&
-             !IsTethered && !IsDriving && !Target_Legal(TarCom) &&
-             !Target_Legal(NavCom) && What_Am_I() != RTTI_AIRCRAFT &&
-             What_Am_I() != RTTI_VESSEL) &&
+             !IsTethered && !IsDriving && !TarCom && !NavCom &&
+             What_Am_I() != RTTI_AIRCRAFT && What_Am_I() != RTTI_VESSEL) &&
             (!House->IsHuman || TheRules().IsScatter)) {
           Scatter(Coordinate{}, true);
         }
@@ -1149,7 +1146,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
         if (What_Am_I() == RTTI_INFANTRY &&
             dynamic_cast<InfantryClass*>(this)->Class->IsBomber &&
             object->What_Am_I() == RTTI_BUILDING && !House->Is_Ally(object)) {
-          Player_Assign_Mission(MISSION_SABOTAGE, kTargetNone,
+          Player_Assign_Mission(MISSION_SABOTAGE, Target{},
                                 object->As_Target());
         } else {
           Player_Assign_Mission(MISSION_GUARD_AREA, object->As_Target());
@@ -1169,28 +1166,26 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
 
     case ACTION_ENTER:
       if (Can_Player_Move() && object && object->Is_Techno() /*&& !((RadioClass *)object)->In_Radio_Contact()*/) {
-        Player_Assign_Mission(MISSION_ENTER, kTargetNone, object->As_Target());
+        Player_Assign_Mission(MISSION_ENTER, Target{}, object->As_Target());
       }
       break;
 
     case ACTION_CAPTURE:
       if (Can_Player_Move()) {
-        Player_Assign_Mission(MISSION_CAPTURE, kTargetNone,
-                              object->As_Target());
+        Player_Assign_Mission(MISSION_CAPTURE, Target{}, object->As_Target());
       }
       break;
 
     case ACTION_SABOTAGE:
       if (Can_Player_Move()) {
-        Player_Assign_Mission(MISSION_SABOTAGE, kTargetNone,
-                              object->As_Target());
+        Player_Assign_Mission(MISSION_SABOTAGE, Target{}, object->As_Target());
       }
       break;
 
     case ACTION_NOMOVE:
     case ACTION_MOVE:
       if (Can_Player_Move()) {
-        TARGET targ = object->As_Target();
+        Target targ = object->As_Target();
 
         /*
         **	If the destination object is not the same zone, then pick a
@@ -1202,7 +1197,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
                 TheMap()
                     .at(object->Center_Coord())
                     .Zones.at(Techno_Type_Class()->MZone)) {
-          targ = ra::As_Target(TheMap().Nearby_Location(
+          targ = Target::FromCell(TheMap().Nearby_Location(
               Coord_Cell(object->Center_Coord()), Techno_Type_Class()->Speed,
               TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone),
               Techno_Type_Class()->MZone));
@@ -1210,7 +1205,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
 
         // No target, only a destination.
         // NOLINTNEXTLINE(readability-suspicious-call-argument)
-        Player_Assign_Mission(MISSION_MOVE, kTargetNone, targ);
+        Player_Assign_Mission(MISSION_MOVE, Target{}, targ);
       }
       break;
 
@@ -1266,7 +1261,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
   action = What_Action(cell);
   switch (action) {
     case ACTION_HARVEST:
-      Player_Assign_Mission(MISSION_HARVEST, kTargetNone, ra::As_Target(cell));
+      Player_Assign_Mission(MISSION_HARVEST, Target{}, Target::FromCell(cell));
       break;
 
     case ACTION_MOVE:
@@ -1289,7 +1284,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
         ** off the edge of the map.
         */
         const CellClass* cellptr =
-            &TheMap().at(As_Cell(ra::As_Target(Center_Coord())));
+            &TheMap().at(Target::FromCoordinate(Center_Coord()).AsCell());
         if (What_Am_I() != RTTI_AIRCRAFT) {
           if (Can_Enter_Cell(Coord_Cell(Center_Coord())) == game::MOVE_OK) {
             cell = TheMap().Nearby_Location(
@@ -1301,12 +1296,12 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
           }
         }
 
-        Player_Assign_Mission(MISSION_MOVE, kTargetNone, ra::As_Target(cell));
+        Player_Assign_Mission(MISSION_MOVE, Target{}, Target::FromCell(cell));
       }
       break;
 
     case ACTION_ATTACK:
-      Player_Assign_Mission(MISSION_ATTACK, ra::As_Target(cell));
+      Player_Assign_Mission(MISSION_ATTACK, Target::FromCell(cell));
       break;
 
     /*
@@ -1314,12 +1309,13 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
     */
     case ACTION_CAPTURE:
       if (Can_Player_Move()) {
-        Player_Assign_Mission(MISSION_CAPTURE, kTargetNone, ra::As_Target(cell));
+        Player_Assign_Mission(MISSION_CAPTURE, Target{},
+                              Target::FromCell(cell));
       }
       break;
 
     case ACTION_SABOTAGE:
-      Player_Assign_Mission(MISSION_SABOTAGE, kTargetNone, ra::As_Target(cell));
+      Player_Assign_Mission(MISSION_SABOTAGE, Target{}, Target::FromCell(cell));
       break;
     case ActionType::ACTION_NONE:
     case ActionType::ACTION_ENTER:
@@ -1409,12 +1405,11 @@ bool FootClass::Per_Cell_Process(PCPType why) {
     **	Shorten the path if the target is now within weapon range of this
     **	unit and this unit is on an attack type mission.
     */
-    if (Target_Legal(TarCom) &&
-        (What_Am_I() != RTTI_INFANTRY ||
-         !dynamic_cast<InfantryClass*>(this)->Class->IsDog)) {
+    if (TarCom && (What_Am_I() != RTTI_INFANTRY ||
+                   !dynamic_cast<InfantryClass*>(this)->Class->IsDog)) {
       const int primary = What_Weapon_Should_I_Use(TarCom);
       bool inrange = In_Range(TarCom, primary);
-      const TechnoClass* techno = As_Techno(TarCom);
+      const TechnoClass* techno = TarCom.AsTechno();
       if (techno != nullptr && techno->Is_Foot()) {
         inrange = In_Range(
             dynamic_cast<const FootClass*>(techno)->Likely_Coord(), primary);
@@ -1423,7 +1418,7 @@ bool FootClass::Per_Cell_Process(PCPType why) {
       if ((Mission == MISSION_RESCUE || Mission == MISSION_GUARD_AREA ||
            Mission == MISSION_ATTACK || Mission == MISSION_HUNT) &&
           inrange) {
-        Assign_Destination(kTargetNone);
+        Assign_Destination(Target{});
         Path[0] = game::FACING_NONE;
       }
     }
@@ -1513,8 +1508,8 @@ bool FootClass::Per_Cell_Process(PCPType why) {
  *                                                                         *
  *                                                                         *
  * INPUT:		MissionType mission - the mission we want to override *
- *					TARGET	   tarcom  - the new target we
- *want to override		* TARGET		navcom  - the new
+ *					Target	   tarcom  - the new target we
+ *want to override		* Target		navcom  - the new
  *navigation point to override	*
  *                                                                         *
  * OUTPUT:		none *
@@ -1526,8 +1521,8 @@ bool FootClass::Per_Cell_Process(PCPType why) {
  * HISTORY:                                                                *
  *   04/28/1995 PWG : Created.                                             *
  *=========================================================================*/
-void FootClass::Override_Mission(MissionType mission, TARGET tarcom,
-                                 TARGET navcom) {
+void FootClass::Override_Mission(MissionType mission, Target tarcom,
+                                 Target navcom) {
   DCHECK(IsActive);
 
   SuspendedNavCom = NavCom;
@@ -1603,7 +1598,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     *repair *	is possible.
     */
     case RADIO_REPAIR:
-      if (Target_Legal(NavCom)) {
+      if (NavCom) {
         return RADIO_NEGATIVE;
       }
       break;
@@ -1615,7 +1610,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     */
     case RADIO_RUN_AWAY:
       if (In_Radio_Contact() && (NavCom == Contact_With_Whom()->As_Target())) {
-        Assign_Destination(kTargetNone);
+        Assign_Destination(Target{});
       }
 
       if (Mission == MISSION_SLEEP) {
@@ -1625,7 +1620,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
       if (Mission == MISSION_ENTER) {
         Assign_Mission(MISSION_GUARD);
       }
-      if (!IsRotating && !Target_Legal(NavCom)) {
+      if (!IsRotating && !NavCom) {
         Scatter(Coordinate{}, true, true);
       }
       break;
@@ -1635,8 +1630,8 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     *motion, *	then it doesn't need further movement instructions.
     */
     case RADIO_NEED_TO_MOVE:
-      param = static_cast<int32_t>(NavCom);
-      if (!Target_Legal(NavCom)) {
+      param = NavCom.packed();
+      if (!NavCom) {
         return RADIO_ROGER;
       }
       return RADIO_NEGATIVE;
@@ -1646,14 +1641,14 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     **	for complex loading and unloading missions.
     */
     case RADIO_MOVE_HERE:
-      if (NavCom != static_cast<TARGET>(param)) {
-        if (ra::As_Target(Coord_Cell(Coord)) == static_cast<TARGET>(param)) {
+      if (NavCom != Target::FromPacked(param)) {
+        if (Target::FromCell(Coord_Cell(Coord)) == Target::FromPacked(param)) {
           return RADIO_YEA_NOW_WHAT;
         }
         if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
           Assign_Mission(MISSION_MOVE);
         }
-        Assign_Destination(static_cast<TARGET>(param));
+        Assign_Destination(Target::FromPacked(param));
         Shorten_Mission_Timer();
       }
       return RADIO_ROGER;
@@ -1730,7 +1725,7 @@ int FootClass::Mission_Enter() {
   */
   TechnoClass* contact = Contact_With_Whom();
   if (contact == nullptr) {
-    contact = As_Techno(ArchiveTarget);
+    contact = ArchiveTarget.AsTechno();
   }
 
   /*
@@ -1775,7 +1770,7 @@ int FootClass::Mission_Enter() {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Assign_Destination(TARGET target) {
+void FootClass::Assign_Destination(Target target) {
   DCHECK(IsActive);
 
   NavCom = target;
@@ -1833,14 +1828,14 @@ void FootClass::Detach_All(bool all) {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-int FootClass::Rescue_Mission(TARGET tarcom) {
+int FootClass::Rescue_Mission(Target tarcom) {
   DCHECK(IsActive);
 
   /*
   **	If the target specified is not legal, then it cannot be attacked. Always
   *return *	zero in this case.
   */
-  if (!Target_Legal(tarcom)) {
+  if (!tarcom) {
     return 0;
   }
 
@@ -1857,8 +1852,8 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   ** If the unit is currently attacking a target that has a weapon then we
   ** cannot abandon it as it will destroy us if we return to base.
   */
-  if (Target_Legal(TarCom)) {
-    const TechnoClass* techno = As_Techno(TarCom);
+  if (TarCom) {
+    const TechnoClass* techno = TarCom.AsTechno();
     if (techno != nullptr && techno->Is_Weapon_Equipped()) {
       return 0;
     }
@@ -1935,14 +1930,14 @@ void FootClass::Death_Announcement(const TechnoClass* /*source*/) const {
  *a target.      *
  *                                                                                             *
  * OUTPUT:  Returns with the best target to attack. If there is no target that
- *qualifies, then * kTargetNone is returned. *
+ *qualifies, then * Target{} is returned. *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. * 07/10/1996 JLB : Handles scan range
  *limitation.                                           *
  *=============================================================================================*/
-TARGET FootClass::Greatest_Threat(ThreatType method)  // const
+Target FootClass::Greatest_Threat(ThreatType method)  // const
 {
   DCHECK(IsActive);
 
@@ -1958,7 +1953,7 @@ TARGET FootClass::Greatest_Threat(ThreatType method)  // const
   **	If this object can cloak, then it won't select a target automatically.
   */
   if (House->IsHuman && IsCloakable && Mission == MISSION_GUARD) {
-    return kTargetNone;
+    return Target{};
   }
 
   if (!base::Any(method & (THREAT_INFANTRY | THREAT_VEHICLES |
@@ -1975,13 +1970,13 @@ TARGET FootClass::Greatest_Threat(ThreatType method)  // const
   /*
   **	Perform the search for the target.
   */
-  const TARGET target = TechnoClass::Greatest_Threat(method);
+  const Target target = TechnoClass::Greatest_Threat(method);
 
   /*
   **	If no target could be located and this object is under scan range
   **	restrictions, then this restriction must be lifted now.
   */
-  if (IsScanLimited && target == kTargetNone) {
+  if (IsScanLimited && target == Target{}) {
     IsScanLimited = false;
   }
 
@@ -2010,17 +2005,17 @@ TARGET FootClass::Greatest_Threat(ThreatType method)  // const
  * HISTORY: * 07/18/1995 JLB : Created. * 07/24/1996 JLB : Removes target from
  *NavQueue list.                                       *
  *=============================================================================================*/
-void FootClass::Detach(TARGET target, bool all) {
+void FootClass::Detach(Target target, bool all) {
   DCHECK(IsActive);
 
   TechnoClass::Detach(target, all);
 
   if (ArchiveTarget == target) {
-    ArchiveTarget = kTargetNone;
+    ArchiveTarget = Target{};
   }
 
   if (SuspendedNavCom == target) {
-    SuspendedNavCom = kTargetNone;
+    SuspendedNavCom = Target{};
     SuspendedMission = MISSION_NONE;
   }
 
@@ -2029,7 +2024,7 @@ void FootClass::Detach(TARGET target, bool all) {
   *navigation *	computer must be cleared.
   */
   if (NavCom == target) {
-    NavCom = kTargetNone;
+    NavCom = Target{};
     Path[0] = game::FACING_NONE;
     Restore_Mission();
   }
@@ -2039,7 +2034,7 @@ void FootClass::Detach(TARGET target, bool all) {
   */
   for (int index = 0; index < std::ssize(NavQueue); index++) {
     if (base::At(NavQueue, index) == target) {
-      base::At(NavQueue, index) = kTargetNone;
+      base::At(NavQueue, index) = Target{};
       if (index < std::ssize(NavQueue) - 1) {
         base::MoveBytes(std::as_writable_bytes(base::Suffix(NavQueue, index)),
                 std::as_bytes(base::Suffix(NavQueue, index + 1)),
@@ -2290,20 +2285,20 @@ void FootClass::Handle_Navigation_List() {
   **	The navigation queue only needs to be processed if there is
   **	currently no navigation target for this object.
   */
-  if (!Target_Legal(NavCom)) {
-    const TARGET target = NavQueue[0];
+  if (!NavCom) {
+    const Target target = NavQueue[0];
 
     /*
     **	Check to see if the navigation queue even exists and
     **	has at least one valid entry. If it does, then process it by
     **	assigning the object's NavCom to the first entry on the list.
     */
-    if (Target_Legal(target)) {
+    if (target) {
       Assign_Destination(target);
       base::MoveBytes(std::as_writable_bytes(base::Suffix(NavQueue, 0)),
                       std::as_bytes(base::Suffix(NavQueue, 1)),
                       sizeof(NavQueue) - sizeof(NavQueue[0]));
-      base::At(NavQueue, std::ssize(NavQueue) - 1) = kTargetNone;
+      base::At(NavQueue, std::ssize(NavQueue) - 1) = Target{};
 
       /*
       **	If the navigation queue is to loop (indefinately), then append
@@ -2311,7 +2306,7 @@ void FootClass::Handle_Navigation_List() {
       */
       if (IsNavQueueLoop) {
         for (int index = 0; index < std::ssize(NavQueue); index++) {
-          if (base::At(NavQueue, index) == kTargetNone) {
+          if (base::At(NavQueue, index) == Target{}) {
             base::At(NavQueue, index) = target;
             break;
           }
@@ -2342,11 +2337,11 @@ void FootClass::Handle_Navigation_List() {
  *                                                                                             *
  * HISTORY: * 07/18/1996 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Queue_Navigation_List(TARGET target) {
-  if (Target_Legal(target)) {
+void FootClass::Queue_Navigation_List(Target target) {
+  if (target) {
     int count = 0;
     for (count = 0; count < std::ssize(NavQueue); count++) {
-      if (!Target_Legal(base::At(NavQueue, count))) {
+      if (!base::At(NavQueue, count)) {
         break;
       }
     }
@@ -2371,7 +2366,7 @@ void FootClass::Queue_Navigation_List(TARGET target) {
     **	If this object isn't doing anything, then start acting on the
     **	navigation queue now.
     */
-    if (!Target_Legal(NavCom) && Mission == MISSION_GUARD) {
+    if (!NavCom && Mission == MISSION_GUARD) {
       Enter_Idle_Mode();
     }
   }
@@ -2396,7 +2391,7 @@ void FootClass::Queue_Navigation_List(TARGET target) {
  *=============================================================================================*/
 void FootClass::Clear_Navigation_List() {
   for (int index = 0; index < std::ssize(NavQueue); index++) {
-    base::At(NavQueue, index) = kTargetNone;
+    base::At(NavQueue, index) = Target{};
   }
 }
 
@@ -2564,7 +2559,7 @@ int FootClass::Mission_Retreat() {
     **	Find a suitable edge to travel to and then assign destination there.
     */
     case kFindEdge:
-      if (Target_Legal(NavCom)) {
+      if (NavCom) {
         Status = kTravelling;
       } else {
         CELL cell = 0;
@@ -2591,7 +2586,7 @@ int FootClass::Mission_Retreat() {
 
         DCHECK(cell == 0);  // An edge cell must be found!
 
-        Assign_Destination(ra::As_Target(cell));
+        Assign_Destination(Target::FromCell(cell));
         Status = kTravelling;
       }
       break;
@@ -2600,7 +2595,7 @@ int FootClass::Mission_Retreat() {
     **	While travelling, monitor that all is proceeding according to plan.
     */
     case kTravelling:
-      if (!Target_Legal(NavCom)) {
+      if (!NavCom) {
         Status = kFindEdge;
       }
       break;

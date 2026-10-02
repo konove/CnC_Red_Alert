@@ -100,6 +100,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
 #include "ra/data/rules.h"
@@ -117,7 +118,6 @@
 #include "ra/objects/mission.h"
 #include "ra/objects/object.h"
 #include "ra/objects/radio.h"
-#include "ra/objects/target.h"
 #include "ra/objects/techno.h"
 #include "ra/objects/type.h"
 #include "ra/objects/unit.h"
@@ -1003,7 +1003,7 @@ game::ResultType VesselClass::Take_Damage(int& damage, int distance,
  *                                                                                             *
  * HISTORY: * 05/13/1996 JLB : Created. *
  *=============================================================================================*/
-game::FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
+game::FireErrorType VesselClass::Can_Fire(Target target, int which) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
@@ -1029,13 +1029,14 @@ game::FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     **	Ensure that a torpedo will never be fired upon a non naval target.
     ** Unless that non-naval target is a naval building (sub pen/ship yard)
     */
-    bool isseatarget = Is_Target_Vessel(target);
+    bool isseatarget = target.kind() == RTTI_VESSEL;
     bool isbridgetarget = false;
     if (weapon->Bullet->IsSubSurface) {
-      isbridgetarget = Is_Target_Cell(target);  // enable shooting at bridges
+      isbridgetarget =
+          target.kind() == RTTI_CELL;  // enable shooting at bridges
       isseatarget |= isbridgetarget;
     }
-    const BuildingClass* bldg = As_Building(target);
+    const BuildingClass* bldg = target.AsBuilding();
     if (bldg != nullptr && bldg->Class->Speed == SPEED_FLOAT) {
       isseatarget = true;
     }
@@ -1044,7 +1045,7 @@ game::FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
         Direction(target);  // The facing to impart upon the projectile.
 
     if (weapon->Bullet->IsSubSurface) {
-      if (!isseatarget && Is_Target_Object(target)) {
+      if (!isseatarget && target.is_object()) {
         return game::FIRE_CANT;
       }
 
@@ -1052,7 +1053,7 @@ game::FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       ** If it's a torpedo, let's check line-of-sight to make sure that
       ** there's only water squares between us and the target.
       */
-      const ObjectClass* obj = As_Object(target);
+      const ObjectClass* obj = target.AsObject();
       Coordinate coord = Center_Coord();
       if (obj != nullptr) {
         int totaldist = ra::Distance(coord, obj->Center_Coord());
@@ -1082,16 +1083,16 @@ game::FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
       if (!isseatarget) {
         return game::FIRE_CANT;
       }
-      if (Is_Target_Vessel(target) && *As_Vessel(target) != VESSEL_SS &&
-          *As_Vessel(target) != VESSEL_MISSILESUB) {
-        if (!Is_Target_Vessel(target) || !weapon->Bullet->IsSubSurface) {
+      if (target.kind() == RTTI_VESSEL && *target.AsVessel() != VESSEL_SS &&
+          *target.AsVessel() != VESSEL_MISSILESUB) {
+        if (target.kind() != RTTI_VESSEL || !weapon->Bullet->IsSubSurface) {
           return game::FIRE_CANT;
         }
       }
     } else {
-      if (Is_Target_Vessel(target) &&
-          (*As_Vessel(target) == VESSEL_SS ||
-           *As_Vessel(target) == VESSEL_MISSILESUB)) {
+      if (target.kind() == RTTI_VESSEL &&
+          (*target.AsVessel() == VESSEL_SS ||
+           *target.AsVessel() == VESSEL_MISSILESUB)) {
         return game::FIRE_CANT;
       }
     }
@@ -1099,7 +1100,7 @@ game::FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     /*
     **	If this unit cannot fire while moving, then bail.
     */
-    if (!Class->IsTurretEquipped && Target_Legal(NavCom)) {
+    if (!Class->IsTurretEquipped && NavCom) {
       return game::FIRE_MOVING;
     }
 
@@ -1204,7 +1205,7 @@ void VesselClass::Init() { TheObjectHeaps().vessel().FreeAll(); }
  *                                                                                             *
  * HISTORY: * 05/13/1996 JLB : Created. *
  *=============================================================================================*/
-TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
+Target VesselClass::Greatest_Threat(ThreatType threat)  // const
 {
   if (*this == VESSEL_SS) {
     threat = threat & static_cast<ThreatType>(THREAT_RANGE | THREAT_AREA);
@@ -1235,7 +1236,7 @@ TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
     }
   }
   if (*this == VESSEL_CARRIER) {
-    return kTargetNone;
+    return Target{};
   }
   return FootClass::Greatest_Threat(threat);
 }
@@ -1268,12 +1269,12 @@ void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
   *contact since *	no radio coordination occurs on a just a simple movement
   *mission.
   */
-  if (Mission == MISSION_MOVE && !Target_Legal(NavCom)) {
+  if (Mission == MISSION_MOVE && !NavCom) {
     Transmit_Message(RADIO_OVER_OUT);
   }
 
   Handle_Navigation_List();
-  if (Target_Legal(NavCom)) {
+  if (NavCom) {
     order = MISSION_MOVE;
   } else {
     if (Class->PrimaryWeapon == nullptr) {
@@ -1282,8 +1283,8 @@ void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
         order = MISSION_UNLOAD;
       } else {
         order = MISSION_GUARD;
-        Assign_Target(kTargetNone);
-        Assign_Destination(kTargetNone);
+        Assign_Target(Target{});
+        Assign_Destination(Target{});
       }
 
     } else {
@@ -1383,7 +1384,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
       **	If this transport is moving, then always abort the docking
       *request.
       */
-      if (IsDriving || Target_Legal(NavCom)) {
+      if (IsDriving || NavCom) {
         return RADIO_NEGATIVE;
       }
 
@@ -1407,7 +1408,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         **	Establish contact and let the loading process proceed normally.
         */
         if (!In_Radio_Contact()) {
-          param = kTargetNone;
+          param = Target{}.packed();
           Transmit_Message(RADIO_HELLO, from);
           Transmit_Message(RADIO_MOVE_HERE, param);
           return RADIO_ROGER;
@@ -1444,7 +1445,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
           if (cell == 0) {
             Transmit_Message(RADIO_OVER_OUT, from);
           } else {
-            param = static_cast<int32_t>(ra::As_Target(cell));
+            param = Target::FromCell(cell).packed();
 
             /*
             **	If it is now facing the correct direction, then open the
@@ -1463,7 +1464,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
             if ((Transmit_Message(RADIO_MOVE_HERE, param, from) ==
                  RADIO_YEA_NOW_WHAT) &&
                 Is_Door_Open()) {
-              param = static_cast<int32_t>(As_Target());
+              param = As_Target().packed();
               Transmit_Message(RADIO_TETHER);
               if (Transmit_Message(RADIO_MOVE_HERE, param, from) !=
                   RADIO_ROGER) {
@@ -1491,7 +1492,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
           Transmit_Message(RADIO_HELLO, from);
         }
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER) {
-          param = As_Target();
+          param = As_Target().packed();
           if (Transmit_Message(RADIO_MOVE_HERE, param) == RADIO_YEA_NOW_WHAT) {
             Transmit_Message(RADIO_TETHER);
           }
@@ -1767,7 +1768,7 @@ int VesselClass::Mission_Unload() {
                     Coord_Move(Coord, newface, CELL_LEPTON_W / 2), newface);
                 TheWorld().scenario_init()--;
                 passenger->Assign_Mission(MISSION_MOVE);
-                passenger->Assign_Destination(ra::As_Target(newcell));
+                passenger->Assign_Destination(Target::FromCell(newcell));
                 passenger->Commence();
                 Transmit_Message(RADIO_HELLO, passenger);
                 Transmit_Message(RADIO_TETHER, passenger);
@@ -1842,7 +1843,7 @@ int VesselClass::Mission_Unload() {
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Assign_Destination(TARGET target) {
+void VesselClass::Assign_Destination(Target target) {
   DCHECK(IsActive);
 
   /*
@@ -1861,7 +1862,7 @@ void VesselClass::Assign_Destination(TARGET target) {
   if (In_Radio_Contact() && Class->Max_Passengers() > 0 &&
       (Contact_With_Whom()->Is_Infantry() ||
        Contact_With_Whom()->What_Am_I() == RTTI_UNIT)) {
-    int32_t param = kTargetNone;
+    int32_t param = Target{}.packed();
     Transmit_Message(
         RADIO_MOVE_HERE,
         param);  // should stop objects heading toward this transport.
@@ -1903,7 +1904,7 @@ int VesselClass::Mission_Retreat() {
   switch (Status) {
     case kPickRetreatPoint:
       IsALoaner = true;
-      if (!Target_Legal(NavCom)) {
+      if (!NavCom) {
         //				CELL cell =
         // Map.Calculated_Cell(House->Control.Edge, (Team.Is_Valid()) ?
         // Team->Class->Origin : -1, -1, Class->Speed);
@@ -1913,13 +1914,13 @@ int VesselClass::Mission_Retreat() {
         if (Team != nullptr) {
           Team->Remove(this);
         }
-        Assign_Destination(ra::As_Target(cell));
+        Assign_Destination(Target::FromCell(cell));
       }
       Status = kTravel;
       return 1;
 
     case kTravel:
-      if (!Target_Legal(NavCom)) {
+      if (!NavCom) {
         Status = kPickRetreatPoint;
       }
       break;
@@ -2158,7 +2159,7 @@ ActionType VesselClass::What_Action(CELL cell) const {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselClass::Rotation_AI() {
-  if (Target_Legal(TarCom) && !IsRotating) {
+  if (TarCom && !IsRotating) {
     const game::DirType dir = Direction(TarCom);
 
     if (Class->IsTurretEquipped) {
@@ -2199,7 +2200,7 @@ void VesselClass::Rotation_AI() {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselClass::Combat_AI() {
-  if (Target_Legal(TarCom) && Is_Weapon_Equipped()) {
+  if (TarCom && Is_Weapon_Equipped()) {
     /*
     **	Determine which weapon can fire. First check for the primary weapon. If
     *that weapon *	cannot fire, then check any secondary weapon. If neither
@@ -2328,7 +2329,7 @@ void VesselClass::Repair_AI() {
  *                                                                                             *
  * HISTORY: * 04/26/1994 JLB : Created. *
  *=============================================================================================*/
-BulletClass* VesselClass::Fire_At(TARGET target, int which) {
+BulletClass* VesselClass::Fire_At(Target target, int which) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
@@ -2344,7 +2345,7 @@ BulletClass* VesselClass::Fire_At(TARGET target, int which) {
       passenger->Commence();
       // If we've launched our last aircraft, discontinue attacking.
       if (!How_Many()) {
-        Assign_Target(kTargetNone);
+        Assign_Target(Target{});
       }
     }
   } else {

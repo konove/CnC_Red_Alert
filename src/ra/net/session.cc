@@ -741,7 +741,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
     TrapCoord = Coordinate::FromPacked(base::ParseHexOr<uint32_t>(buf, 0));
 
     ini.Get_String("SyncBug", "Target", "0", buf, 80);
-    TrapTarget = static_cast<TARGET>(base::ParseHexOr<uint32_t>(buf, 0));
+    TrapTarget = Target::FromPacked(
+        static_cast<int32_t>(base::ParseHexOr<uint32_t>(buf, 0)));
 
     ini.Get_String("SyncBug", "Cell", "0", buf, 80);
     CELL const cell = base::ParseIntegerOr<CELL>(buf, 0);
