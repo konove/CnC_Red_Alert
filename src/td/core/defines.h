@@ -222,11 +222,12 @@ number of meta-cells will be a subset of the cell width.
 // #define	MAP_CELL_Y_MASK			((~(~0 << MAP_CELL_MAX_Y_BITS))
 // << MAP_CELL_MAX_Y_BITS)
 
-// Size of the map in cells. The brace initialization fails to compile if the
-// map ever outgrows a CELL.
-inline constexpr CELL MAP_CELL_W{1U << MAP_CELL_MAX_X_BITS};
-inline constexpr CELL MAP_CELL_H{1U << MAP_CELL_MAX_Y_BITS};
-inline constexpr CELL MAP_CELL_TOTAL{MAP_CELL_W * MAP_CELL_H};
+// Size of the map in cells: a width, a height and a count, not cells.
+inline constexpr int MAP_CELL_W{1U << MAP_CELL_MAX_X_BITS};
+inline constexpr int MAP_CELL_H{1U << MAP_CELL_MAX_Y_BITS};
+inline constexpr int MAP_CELL_TOTAL = MAP_CELL_W * MAP_CELL_H;
+// Every cell index must fit the 16-bit cell word (td/core/cell.h).
+static_assert(MAP_CELL_TOTAL <= INT16_MAX);
 
 #define REFRESH_EOL 32767  // This number ends a refresh/occupy offset list.
 #define REFRESH_SIDEBAR \
