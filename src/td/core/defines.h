@@ -1628,6 +1628,22 @@ inline constexpr int kWeaponCount = static_cast<int>(WEAPON_COUNT);
 #define FONT6 "6point.fnt"
 #define FONT8 "8point.fnt"
 
+// The fonts the game prints with. The low four bits of a TextPrintType
+// select one; docs/TEXT_PRINT_SPLIT_PLAN.md moves that choice into a FontType
+// parameter. The names say what the font looks like, not what it is used for.
+enum class FontType {
+  k3Point,
+  k6Point,
+  k6PointGradient,
+  k8Point,
+  kGreen12,
+  kGreen12Gradient,
+  kLed,    // Seven-segment digits, for the credits counter.
+  kMap,    // The fat font of the map selection screen.
+  kScore,  // The font of the score screen.
+  kVcr,    // The font of the movie playback controls.
+};
+
 /**********************************************************************
 **	These are the control flags for Fancy_Text_Print function.
 */
@@ -1642,7 +1658,7 @@ enum class CNC_FLAG_ENUM TextPrintType {
   TPF_MAP = 0x0007,           // Use 6 point gradient font.
   TPF_GREEN12 = 0x0008,       // Use green tab font
   TPF_GREEN12_GRAD = 0x0009,  // Use graduated green tab font
-  TPF_LASTSHADOW = 0x0000,    // Use previous font palette.
+  TPF_NONE = 0x0000,          // No style flags.
   TPF_NOSHADOW = 0x0010,      // Don't have any shadow.
   TPF_DROPSHADOW = 0x0020,    //	Use a simple drop shadow.
   TPF_FULLSHADOW = 0x0040,    // Use a full outline shadow.

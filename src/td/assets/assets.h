@@ -10,26 +10,11 @@
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
 #include "base/installed.h"
+#include "td/core/defines.h"
 
 class MixArchive;
 
 namespace td {
-
-// The fonts the game prints with. Fancy_Text_Print() picks one from the
-// TextPrintType it is given; the names say what the font looks like, not
-// what it is used for.
-enum class FontType {
-  k3Point,
-  k6Point,
-  k6PointGradient,
-  k8Point,
-  kGreen12,
-  kGreen12Gradient,
-  kLed,    // Seven-segment digits, for the credits counter.
-  kMap,    // The fat font of the map selection screen.
-  kScore,  // The font of the score screen.
-  kVcr,    // The font of the movie playback controls.
-};
 
 // The data that is loaded once, from the game files, and read for the rest of
 // the process: the fonts, the string table and the speech buffer. Game owns
@@ -68,6 +53,12 @@ class Assets {
   // Returns the named font, or an empty span before LoadFonts().
   [[nodiscard]] std::span<const std::byte> font(FontType type) const {
     return fonts_.at(type);
+  }
+
+  // Installs `font` as the font `type` names; for tests, which cannot
+  // LoadFonts() without the archives.
+  void set_font(FontType type, std::span<const std::byte> font) {
+    fonts_.at(type) = font;
   }
 
   // The game's text table, which Text_String() serves.

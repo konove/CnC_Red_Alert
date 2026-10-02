@@ -66,6 +66,14 @@ add_gtest(
 target_compile_definitions(td_archive_roundtrip_test PRIVATE TD_NO_ENTRY_POINT=1)
 apply_dotenv_settings(td_archive_roundtrip_test)
 
+add_gtest(
+    NAME td_text_style_test
+    SOURCES ui/text_style_test.cc startup/startup.cc
+    LIBS td_engine absl::core_headers
+)
+target_compile_definitions(td_text_style_test PRIVATE TD_NO_ENTRY_POINT=1)
+apply_dotenv_settings(td_text_style_test)
+
 # The serializers' value tests. They derive from and construct AbstractClass,
 # FlyClass and StageClass, whose vtables live with their out-of-line
 # destructors in the engine, so the test links the engine without its entry
