@@ -43,6 +43,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
+#include "base/enum_step.h"
 #include "td/core/defines.h"
 #include "td/objects/house.h"
 #include "td/objects/type.h"
@@ -291,5 +292,8 @@ extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TeamTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace td
+
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::TeamMissionType> = true;
 
 #endif  // CNC_RED_ALERT_TD_AI_TEAMTYPE_H_

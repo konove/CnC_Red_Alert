@@ -72,7 +72,6 @@
 #include "td/ai/special.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"

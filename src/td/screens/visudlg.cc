@@ -53,7 +53,6 @@
 #include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/net/session.h"
 #include "td/screens/goptions.h"
 #include "td/startup/conquer.h"

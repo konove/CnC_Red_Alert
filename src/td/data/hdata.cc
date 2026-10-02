@@ -52,7 +52,6 @@
 #include "base/strings/safe_string.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/objects/type.h"
 #include "td/startup/conquer.h"
 

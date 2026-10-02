@@ -72,7 +72,6 @@
 #include "base/enum_array.h"
 #include "engine/platform/timer.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/objects/object.h"
 
 namespace td {

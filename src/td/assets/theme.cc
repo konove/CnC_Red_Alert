@@ -64,7 +64,6 @@
 #include "engine/file/game_file.h"
 #include "td/ai/special.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/core/rand.h"
 #include "td/data/text.h"
 #include "td/debug/debug_state.h"

@@ -88,7 +88,6 @@
 #include "td/ai/teamtype.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/data/profile.h"
 #include "td/editor/mapedit.h"

@@ -130,7 +130,6 @@
 #include "td/core/config.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
-#include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
@@ -858,9 +857,8 @@ bool ObjectClass::Render(PixelView& view, bool forced) {
 
           if (foot->Head_To_Coord() &&
               base::At(foot->Path, 0) != game::FACING_NONE) {
-            Cell cell = Adjacent_Cell(
-                Cell::Containing(foot->Head_To_Coord()),
-                base::At(foot->Path, 0) + game::FACING_S & game::FACING_NW);
+            Cell cell = Adjacent_Cell(Cell::Containing(foot->Head_To_Coord()),
+                                      base::At(foot->Path, 0) + game::FACING_S);
             TheMap().Coord_To_Pixel(cell.Center(), oldx, oldy);
             for (const auto& index : foot->Path) {
               if (index == game::FACING_NONE) {

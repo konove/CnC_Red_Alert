@@ -121,7 +121,6 @@
 #include "td/core/coord.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
-#include "td/core/jshell.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
 #include "td/editor/mapedit.h"

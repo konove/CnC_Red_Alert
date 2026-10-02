@@ -159,7 +159,6 @@
 #include "td/core/coord.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
-#include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
 #include "td/data/profile.h"

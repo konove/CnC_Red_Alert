@@ -69,7 +69,6 @@
 #include "td/assets/window_rect.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/objects/house.h"

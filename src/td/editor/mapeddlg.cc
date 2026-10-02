@@ -89,7 +89,6 @@
 #include "td/assets/screen.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/data/ini.h"
 #include "td/data/profile.h"

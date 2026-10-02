@@ -47,6 +47,8 @@
 
 #include "base/attributes.h"
 #include "base/enum_array.h"
+#include "base/enum_step.h"  // IWYU pragma: export
+#include "base/flags.h"      // IWYU pragma: export
 #include "base/numeric.h"
 #include "engine/gfx/wwstd.h"
 #include "game/sim/direction.h"
@@ -336,6 +338,13 @@ enum class CNC_FLAG_ENUM ThreatType {
   THREAT_CAPTURE = 0x0200,    // Consider capturable buildings only?
 };
 using enum ThreatType;
+
+}  // namespace td
+
+template <>
+inline constexpr bool base::kIsFlagEnum<td::ThreatType> = true;
+
+namespace td {
 
 #define THREAT_GROUND (THREAT_VEHICLES | THREAT_BUILDINGS | THREAT_INFANTRY)
 
@@ -1646,6 +1655,13 @@ enum class CNC_FLAG_ENUM TextPrintType {
 };
 using enum TextPrintType;
 
+}  // namespace td
+
+template <>
+inline constexpr bool base::kIsFlagEnum<td::TextPrintType> = true;
+
+namespace td {
+
 /**********************************************************************
 **	These control the maximum number of objects in the game. Make sure that
 *these *	maximums never exceed the maximum value for the "ID" element in
@@ -2471,5 +2487,41 @@ inline constexpr int kOptionCount = static_cast<int>(OPTION_COUNT);
 #define size_of(typ, id) sizeof(std::declval<typ>().id)
 
 }  // namespace td
+
+// Enums that loops walk with ++ and --.
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::HousesType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::UnitType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::InfantryType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::ThemeType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::StructType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::LayerType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::AircraftType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::TerrainType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::TemplateType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::SmudgeType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::OverlayType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::TheaterType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::SourceType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::ScenarioVarType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::MissionType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::BulletType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<td::AnimType> = true;
 
 #endif  // CNC_RED_ALERT_TD_CORE_DEFINES_H_

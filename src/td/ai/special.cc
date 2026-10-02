@@ -53,7 +53,6 @@
 #include "game/ui/input.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/net/event.h"

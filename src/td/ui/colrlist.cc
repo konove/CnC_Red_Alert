@@ -72,7 +72,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/data/text.h"
 #include "td/startup/conquer.h"
 #include "td/ui/dialog.h"

@@ -62,46 +62,6 @@ class ByteStream;
 
 namespace td {
 
-/*
-**	These templates allow enumeration types to have simple bitwise
-**	arithmatic performed. The operators must be instatiated for the
-**	enumerated types desired.
-*/
-template <class T>
-T operator++(T& a) {
-  a = static_cast<T>(static_cast<int>(a) + 1);
-  return a;
-}
-template <class T>
-T operator++(T& a, int) {
-  T aa = a;
-  a = static_cast<T>(static_cast<int>(a) + 1);
-  return aa;
-}
-template <class T>
-T operator--(T& a) {
-  a = static_cast<T>(static_cast<int>(a) - 1);
-  return a;
-}
-template <class T>
-T operator--(T& a, int) {
-  T aa = a;
-  a = static_cast<T>(static_cast<int>(a) - 1);
-  return aa;
-}
-template <class T>
-constexpr T operator|(T t1, T t2) noexcept {
-  return static_cast<T>(static_cast<unsigned>(t1) | static_cast<unsigned>(t2));
-}
-template <class T>
-T operator&(T t1, T t2) {
-  return static_cast<T>(static_cast<unsigned>(t1) & static_cast<unsigned>(t2));
-}
-template <class T>
-T operator~(T t1) {
-  return static_cast<T>(~static_cast<unsigned>(t1));
-}
-
 // Bit indices must refer to the supplied word span.
 inline void Set_Bit(std::span<uint32_t> array, int bit, int value) {
   CHECK_GE(bit, 0);

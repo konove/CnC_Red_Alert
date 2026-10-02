@@ -68,7 +68,6 @@
 #include "game/sim/enums.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/editor/mapedit.h"
 #include "td/map/mouse.h"
 #include "td/map/world.h"

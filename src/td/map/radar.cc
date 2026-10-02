@@ -106,7 +106,6 @@
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
-#include "td/core/jshell.h"
 #include "td/core/support.h"
 #include "td/data/text.h"
 #include "td/debug/debug_state.h"

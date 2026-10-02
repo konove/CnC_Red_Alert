@@ -74,7 +74,6 @@
 #include "td/ai/teamtype.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"

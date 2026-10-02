@@ -86,7 +86,6 @@
 #include "td/ai/special.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/core/rand.h"
 #include "td/core/randomstate.h"
 #include "td/data/ini.h"

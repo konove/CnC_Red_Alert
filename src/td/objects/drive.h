@@ -41,6 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_OBJECTS_DRIVE_H_
 #define CNC_RED_ALERT_TD_OBJECTS_DRIVE_H_
 
+#include "base/attributes.h"
+#include "base/flags.h"
 #include "td/core/defines.h"
 #include "td/objects/foot.h"
 #include "td/objects/type.h"
@@ -148,12 +150,11 @@ class DriveClass : public FootClass {
   static constexpr int kOutOfWeaponFactory =
       66;  // Track to leave weapons factory.
 
- private:
   /****************************************************************************
   **	Smooth turning tracks are controlled by this structure and these
   **	processing bits.
   */
-  enum class TrackControlType {
+  enum class CNC_FLAG_ENUM TrackControlType {
     F_ = 0x00,   // No translation necessary?
     F_T = 0x01,  // Transpose X and Y components?
     F_X = 0x02,  // Reverse X component sign?
@@ -163,6 +164,7 @@ class DriveClass : public FootClass {
   using enum TrackControlType;
   // #define	F_S	0x10	// Is this a 90 degree turn?
 
+ private:
   struct TurnTrackType {
     int Track;              // Which track to use.
     int StartTrack;         // Track when starting from stand-still.
@@ -227,5 +229,9 @@ extern template void DriveClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void DriveClass::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace td
+
+template <>
+inline constexpr bool base::kIsFlagEnum<td::DriveClass::TrackControlType> =
+    true;
 
 #endif  // CNC_RED_ALERT_TD_OBJECTS_DRIVE_H_

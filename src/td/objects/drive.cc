@@ -91,7 +91,6 @@
 #include "td/core/const.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"
-#include "td/core/jshell.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
 #include "td/objects/building.h"

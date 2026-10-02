@@ -77,7 +77,6 @@
 #include "td/assets/palettes.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/data/text.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
