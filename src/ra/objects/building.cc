@@ -2126,9 +2126,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
  *=============================================================================================*/
 BuildingClass::~BuildingClass() {
   if (TheGameState().active() && Class) {
-    if (House) {
-      House->Tracking_Remove(this);
-    }
+    House->Tracking_Remove(this);
     BuildingClass::Limbo();
   }
   Class = nullptr;

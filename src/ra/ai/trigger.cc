@@ -205,8 +205,8 @@ TriggerClass::~TriggerClass() {
     }
   }
 
-  if (TheGameState().active() && Class->House != HOUSE_NONE &&
-      Class->Action1.Action == TACTION_ALLOWWIN) {
+  if (TheGameState().active() && Class.Is_Valid() &&
+      Class->House != HOUSE_NONE && Class->Action1.Action == TACTION_ALLOWWIN) {
     if (HouseClass::As_Pointer(Class->House)->Blockage) {
       HouseClass::As_Pointer(Class->House)->Blockage--;
     }
