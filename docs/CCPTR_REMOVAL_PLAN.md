@@ -2,7 +2,7 @@
 
 Written 2026-10-01 against `main` at 2d6ef8ed.
 
-**Status: not started.**
+**Status: in progress.** Step 1 done.
 
 ## Context
 
@@ -115,28 +115,17 @@ commit.
 
 ### Step 1: slot lookup and the save wrapper
 
-- [ ] `game::TFixedIHeapClass<T>::SlotAt(int index)` in `game/core/heap.h`: returns `Raw_Ptr(index)`
-      for `0 <= index < Length()`, `nullptr` otherwise (including -1). Test it in
-      `game/core/heap_test.cc`: the -1, in-range, past-the-end and empty-slot cases.
-- [ ] `HeapSlotPtr<T>` in `ra/saveload/serialize.h`, next to `ObjectPtr`:
-  ```cpp
-  // Serializes a pointer to an object in a fixed heap as its slot index
-  // (int32, -1 for null): the encoding CCPtr used, so saves stay compatible.
-  // A loaded index outside the heap records an error and reads as nullptr.
-  // Example: ar(HeapSlotPtr(Trigger, TheObjectHeaps().trigger()));
-  template <class T>
-  class HeapSlotPtr {
-   public:
-    HeapSlotPtr(T*& ref ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                game::TFixedIHeapClass<std::remove_const_t<T>>& heap
-                    ABSL_ATTRIBUTE_LIFETIME_BOUND);
-    ...
-  };
-  ```
-  Write: `ref_ != nullptr ? heap_.ID(ref_) : -1`. Read: `heap_.SlotAt(id)`, and `ar.Fail` when
-  `id != -1` and that is `nullptr`. The heap is passed explicitly, so there are no statics to bind.
-- [ ] Round-trip test in `ra/saveload/` (null, a live slot, an out-of-range index failing the
-      reader). It must write the same bytes as `CCPtr::Serialize` for the same object.
+- [x] `game::TFixedIHeapClass<T>::SlotAt(int index)` in `game/core/heap.h`: returns `Raw_Ptr(index)`
+      for `0 <= index < Length()`, `nullptr` otherwise (including -1). Tested in
+      `game/core/heap_test.cc`.
+- [x] `game::HeapSlotPtr<T>` in `game/core/heap_slot_ptr.h` (not `ra/saveload/serialize.h`: it needs
+      nothing from Red Alert, so it sits beside the heap and is tested without `ra_engine`). Write:
+      `heap_.ID(ref_)`, or -1 for null. Read: `heap_.SlotAt(id)`, and `ar.Fail` when `id != -1` and
+      that is `nullptr`. The heap is passed explicitly, so there are no statics to bind:
+      `ar(HeapSlotPtr(Trigger, TheObjectHeaps().trigger()))`. T may be const.
+- [x] `game/core/heap_slot_ptr_test.cc`: null is `FF FF FF FF`, slot 2 is `02 00 00 00` (the
+      little-endian int32 `CCPtr::Serialize` wrote), const pointers, an empty slot reading as its
+      address, and indices past the end or below -1 failing the reader.
 
 ### Step 2: type pointers
 
@@ -228,5 +217,6 @@ Before step 1, build the pre-plan binary and keep it as the reference.
 
 ## Progress
 
-| Step | Commit | Notes |
-| ---- | ------ | ----- |
+| Step | Commit        | Notes                                                                           |
+| ---- | ------------- | ------------------------------------------------------------------------------- |
+| 1    | (this commit) | `SlotAt` and `game::HeapSlotPtr` with tests; the wrapper moved to `game/core/`. |

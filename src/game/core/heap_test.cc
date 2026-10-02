@@ -130,6 +130,18 @@ TEST(HeapTest, AllocateAfterFreeAllReusesSlotZeroZeroed) {
   EXPECT_EQ(heap.Count(), 1);
 }
 
+TEST(HeapTest, SlotAtNamesEverySlotAndNothingOutside) {
+  TFixedIHeapClass<Widget> heap;
+  heap.Set_Heap(3);
+  const Widget* live = Allocate(heap, 7);
+
+  EXPECT_EQ(heap.SlotAt(0), live);
+  // An empty slot still has its address: the object created there later.
+  EXPECT_EQ(heap.SlotAt(2), heap.Raw_Ptr(2));
+  EXPECT_EQ(heap.SlotAt(-1), nullptr);
+  EXPECT_EQ(heap.SlotAt(3), nullptr);
+}
+
 TEST(HeapDiagnosticsTest, OwnsOnlySlotStartsInsideTheBuffer) {
   TFixedIHeapClass<Widget> heap;
   heap.Set_Heap(4);

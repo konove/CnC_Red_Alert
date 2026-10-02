@@ -258,6 +258,16 @@ class TFixedIHeapClass : public FixedIHeapClass {
     return static_cast<T*>(base::At(ActivePointers, index));
   }
   T* Raw_Ptr(int index) { return static_cast<T*>((*this).at(index)); }
+  // Returns slot `index` whether or not it holds an object, or nullptr when
+  // `index` is outside [0, Length()), -1 included. A scenario or a saved game
+  // names an object by its slot before the object is created or loaded; the
+  // address is the object's once it is, as long as the heap keeps its size.
+  T* SlotAt(int index) {
+    if (index < 0 || index >= Length()) {
+      return nullptr;
+    }
+    return Raw_Ptr(index);
+  }
 
  private:
   // Lets Validate() check that each object's cached ID still names the slot
