@@ -44,7 +44,6 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/objects/object.h"
 #include "ra/objects/type.h"
@@ -65,7 +64,7 @@ class TemplateClass : public ObjectClass {
   /*
   **	This is a pointer to the template object's class.
   */
-  CCPtr<TemplateTypeClass> Class;
+  const TemplateTypeClass* Class = nullptr;
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   TemplateClass() = default;

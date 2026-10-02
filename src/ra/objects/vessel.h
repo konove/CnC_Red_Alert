@@ -50,7 +50,6 @@
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
 #include "game/sim/facing.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
@@ -72,7 +71,7 @@ class VesselClass : public DriveClass {
   **	This points to the controling static characteristic data associated with
   **	this vessel.
   */
-  CCPtr<VesselTypeClass> Class;
+  const VesselTypeClass* Class = nullptr;
 
   /*
   ** Has this sea vessel been told to move to a shipyard?  If so, then

@@ -44,7 +44,6 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
@@ -67,7 +66,7 @@ class SmudgeClass : public ObjectClass {
   /*
   **	This is a pointer to the template object's class.
   */
-  CCPtr<SmudgeTypeClass> Class;
+  const SmudgeTypeClass* Class = nullptr;
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   SmudgeClass() = default;

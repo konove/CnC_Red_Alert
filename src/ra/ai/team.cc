@@ -1260,11 +1260,10 @@ int TeamClass::Recruit(int typeindex) {
           const int d = unit->Distance(center);
 
           if (unit->House == House &&
-              unit->Class == base::At(Class->Members, typeindex).Class) {
-            if ((d < bestdist || bestdist == -1) && Can_Add(unit, typeindex)) {
-              best = unit;
-              bestdist = d;
-            }
+              unit->Class == base::At(Class->Members, typeindex).Class &&
+              (d < bestdist || bestdist == -1) && Can_Add(unit, typeindex)) {
+            best = unit;
+            bestdist = d;
           }
 
           if (best) {
@@ -1296,12 +1295,10 @@ int TeamClass::Recruit(int typeindex) {
           const int d = vessel->Distance(center);
 
           if (vessel->House == House &&
-              vessel->Class == base::At(Class->Members, typeindex).Class) {
-            if ((d < bestdist || bestdist == -1) &&
-                Can_Add(vessel, typeindex)) {
-              best = vessel;
-              bestdist = d;
-            }
+              vessel->Class == base::At(Class->Members, typeindex).Class &&
+              (d < bestdist || bestdist == -1) && Can_Add(vessel, typeindex)) {
+            best = vessel;
+            bestdist = d;
           }
 
           if (best) {

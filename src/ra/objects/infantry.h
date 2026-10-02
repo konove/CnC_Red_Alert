@@ -50,7 +50,6 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
@@ -69,7 +68,7 @@ namespace ra {
 
 class InfantryClass final : public FootClass {
  public:
-  CCPtr<InfantryTypeClass> Class;
+  const InfantryTypeClass* Class = nullptr;
 
   /*
   **	If the infantry is undergoing some choreographed animation sequence,

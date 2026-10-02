@@ -50,7 +50,6 @@
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
 #include "game/sim/facing.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
@@ -78,7 +77,7 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	This is a pointer to the class control structure for the aircraft.
   */
-  CCPtr<AircraftTypeClass> Class;
+  const AircraftTypeClass* Class = nullptr;
 
   //-----------------------------------------------------------------------------
   void* operator new(std::size_t /*unused*/) noexcept;

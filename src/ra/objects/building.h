@@ -82,7 +82,7 @@ class BuildingClass : public TechnoClass {
   **	This points to the control data that gives this building its
   *characteristics.
   */
-  CCPtr<BuildingTypeClass> Class;
+  const BuildingTypeClass* Class = nullptr;
 
   /*
   **	If this building is in the process of producing something, then this

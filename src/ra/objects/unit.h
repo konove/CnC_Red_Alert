@@ -51,7 +51,6 @@
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
 #include "game/sim/facing.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
@@ -78,7 +77,7 @@ class UnitClass final : public DriveClass {
   **	This points to the static control data that gives 'this' unit its
   *characteristics.
   */
-  CCPtr<UnitTypeClass> Class;
+  const UnitTypeClass* Class = nullptr;
 
   /*
   **	This records the house flag that this object is currently carrying.

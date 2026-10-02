@@ -54,7 +54,6 @@
 #include "game/core/heap.h"
 #include "game/sim/utracker.h"
 #include "ra/ai/region.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
@@ -159,7 +158,7 @@ class HouseClass {
   **	Pointer to the HouseTypeClass that this house is "owned" by.
   **	All constant data for a house type is stored in that class.
   */
-  CCPtr<HouseTypeClass> Class;
+  const HouseTypeClass* Class = nullptr;
 
   /*
   **	This is the handicap (difficulty level) assigned to this house.

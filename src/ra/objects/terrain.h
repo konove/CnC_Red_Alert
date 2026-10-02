@@ -45,7 +45,6 @@
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/sim/direction.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
 #include "ra/data/ccini.h"
@@ -69,7 +68,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   **	This points to the constant terrain data (for this type) that gives this
   **	terrain object its character.
   */
-  CCPtr<TerrainTypeClass> Class;
+  const TerrainTypeClass* Class = nullptr;
 
   /*
   **	Constructor for terrain object class.

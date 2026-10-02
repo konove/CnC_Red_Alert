@@ -48,7 +48,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "game/sim/direction.h"
 #include "game/sim/facing.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/objects/fly.h"
 #include "ra/objects/fuse.h"
@@ -67,7 +66,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   *attributes *	for this bullet is located in the BulletTypeClass pointed to by
   *this variable.
   */
-  CCPtr<BulletTypeClass> Class;
+  const BulletTypeClass* Class = nullptr;
 
  private:
   /*

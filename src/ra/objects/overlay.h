@@ -44,7 +44,6 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
@@ -66,7 +65,7 @@ class OverlayClass : public ObjectClass {
   /*
   **	This is a pointer to the overlay object's class.
   */
-  CCPtr<OverlayTypeClass> Class;
+  const OverlayTypeClass* Class = nullptr;
 
   // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
   OverlayClass() = default;

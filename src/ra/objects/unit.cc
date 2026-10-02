@@ -278,7 +278,7 @@ void UnitClass::operator delete(void* ptr) {
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass::~UnitClass() {
-  if (TheGameState().active() && Class.Is_Valid()) {
+  if (TheGameState().active() && Class != nullptr) {
     /*
     **	Remove this member from any team it may be associated with. This must
     *occur at the *	top most level of the inheritance hierarchy because it
@@ -4242,11 +4242,8 @@ game::FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
   const game::FireErrorType fire = DriveClass::Can_Fire(target, which);
 
   if (fire == game::FIRE_OK) {
-    // Bind the type once: CCPtr's operator-> has an unset branch that the
-    // static analyzer otherwise follows into a null dereference here.
-    const UnitTypeClass& type = *Class;
     const WeaponTypeClass* weapon =
-        which == 0 ? type.PrimaryWeapon : type.SecondaryWeapon;
+        which == 0 ? Class->PrimaryWeapon : Class->SecondaryWeapon;
 
     /*
     **	If this unit cannot fire while moving, then bail.
@@ -4311,7 +4308,7 @@ BulletClass* UnitClass::Fire_At(TARGET target, int which) {
   DCHECK(IsActive);
   // An active unit always has its type, and every dereference below depends
   // on it, so this one is checked in every build.
-  CHECK(Class.Is_Valid());
+  CHECK_NE(Class, nullptr);
 
   BulletClass* bullet = nullptr;
   const WeaponTypeClass* weap =

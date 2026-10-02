@@ -245,7 +245,7 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
 InfantryClass::~InfantryClass() {
-  if (TheGameState().active() && Class.Is_Valid()) {
+  if (TheGameState().active() && Class != nullptr) {
     /*
     **	Remove this member from any team it may be associated with. This must
     *occur at the *	top most level of the inheritance hierarchy because it

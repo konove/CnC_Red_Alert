@@ -47,7 +47,6 @@
 #include "absl/base/attributes.h"
 #include "base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/objects/object.h"
 #include "ra/objects/stage.h"
@@ -67,7 +66,7 @@ class AnimClass final : public ObjectClass, public StageClass {
   /*
   **	This points to the type of animation object this is.
   */
-  CCPtr<AnimTypeClass> Class;
+  AnimTypeClass* Class = nullptr;
 
  public:
   AnimClass(AnimType animnum, COORDINATE coord, int timedelay = 0,

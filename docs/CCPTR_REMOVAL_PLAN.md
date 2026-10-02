@@ -2,7 +2,7 @@
 
 Written 2026-10-01 against `main` at 2d6ef8ed.
 
-**Status: in progress.** Step 1 done.
+**Status: in progress.** Steps 1 and 2 done.
 
 ## Context
 
@@ -131,17 +131,18 @@ commit.
 
 The 12 `Class` members in the first group of the table.
 
-- [ ] Change each to `const XTypeClass* Class = nullptr;`. `AnimClass::Class` stays non-const.
-- [ ] Serialize with `HeapSlotPtr(Class, TheTypeHeaps().<kind>())` in `saveload/ioobj.cc`.
-- [ ] Fix what the compiler reports: `Class.Is_Valid()` becomes `Class != nullptr`, and
-      `static_cast<XTypeClass*>(Class)` unwraps go away. Functions that took a non-const type
-      through `Class` either take `const` or show a real write. List any real write under Findings.
-- [ ] In `unit.cc:4245`, drop the `CCPtr` comment. Keep the reference binding only if the analyzer
-      still needs it.
-
-This is the largest step, since `Class->` appears in most object files. The fixes are mechanical and
-compiler-driven, so they can be split across forked agents by disjoint file groups (memory:
-parallel-forks-for-mechanical-sweeps).
+- [x] Change each to `const XTypeClass* Class = nullptr;`. `AnimClass::Class` stays non-const.
+- [x] Serialize with `game::HeapSlotPtr(Class, TheTypeHeaps().<kind>())` in `saveload/ioobj.cc`.
+- [x] Fix what the compiler reports. It was much less than expected: making 11 of the 12 members
+      `const` broke nothing, so no code wrote through them, and no `static_cast` unwrapped a type
+      pointer. Five `Class.Is_Valid()` calls (`~InfantryClass`, `~UnitClass`, `~VesselClass`,
+      `UnitClass::Fire_At`, `VesselClass::Fire_At`) became `!= nullptr` / `CHECK_NE`.
+- [x] `unit.cc` reads `Class->PrimaryWeapon` directly again: with a plain pointer the analyzer has
+      no null branch to follow, in shallow mode or deep.
+- [x] `readability-redundant-nested-if` now sees the unit and vessel recruiting loops in
+      `TeamClass::Recruit` (`ai/team.cc`) as plain comparisons and asked for their ifs to be merged.
+      (Separately, those loops add `best` inside the loop rather than after it; that is legacy
+      behaviour, left alone.)
 
 ### Step 3: saved object pointers
 
@@ -191,9 +192,11 @@ Before step 1, build the pre-plan binary and keep it as the reference.
 
 - **Every step:** `cmake --build build --parallel 22`, `ctest`, `tools/strict_tu.py` on the touched
   files, and a full strict build before the commit.
-- **Steps 2–4:** `tools/ra_saveload_smoke.sh <binary>` with every fixture, and `--load-fixture`. The
-  fixture save was written by an older binary, so it shows the format did not change. Run `--team` a
-  few times, since it exercises `TeamClass`'s `House`/`Class`/`Trigger`.
+- **Steps 2–4:** `tools/ra_saveload_smoke.sh <binary>` on SCG01EA and SCU05EA, and `--load-fixture`.
+  The fixture save was written by an older binary, so it shows the format did not change. Also
+  cross-load: save SCU05EA at frame 60 with each binary, load it with the other, and compare the
+  unit and vessel positions to frame 120 with a continuous run. (Save files cannot be compared byte
+  for byte: two runs of the same binary already differ.)
 - **Steps 2–4:** headless logic logs, old against new, 600 frames on RA SCU05EA (line-identical
   old-vs-old). SCG10EA is also useful, ignoring its known aircraft noise. Run the old binary twice
   first to measure the noise (memory: headless-logic-diffs).
@@ -217,6 +220,7 @@ Before step 1, build the pre-plan binary and keep it as the reference.
 
 ## Progress
 
-| Step | Commit        | Notes                                                                           |
-| ---- | ------------- | ------------------------------------------------------------------------------- |
-| 1    | (this commit) | `SlotAt` and `game::HeapSlotPtr` with tests; the wrapper moved to `game/core/`. |
+| Step | Commit        | Notes                                                                                                                                                                  |
+| ---- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | d8309a79      | `SlotAt` and `game::HeapSlotPtr` with tests; the wrapper moved to `game/core/`.                                                                                        |
+| 2    | (this commit) | Type pointers. Logic logs: SCU05EA line-identical, SCG10EA aircraft noise only (138 lines vs 100 old-vs-old). Smoke tests, `--load-fixture` and both cross-loads pass. |

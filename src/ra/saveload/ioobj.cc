@@ -37,12 +37,14 @@
  */
 #include <cstdint>
 
+#include "game/core/heap_slot_ptr.h"
 #include "game/sim/door.h"
 #include "game/sim/flasher.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
+#include "ra/core/type_heaps.h"
 #include "ra/map/layer.h"
 #include "ra/objects/abstract.h"
 #include "ra/objects/aircraft.h"
@@ -169,8 +171,9 @@ void BulletClass::Serialize(Archive& ar) {
   bool is_inaccurate = IsInaccurate;
   bool is_to_animate = IsToAnimate;
   bool is_locked = IsLocked;
-  ar(Class, ObjectPtr(Payback), PrimaryFacing, is_inaccurate, is_to_animate,
-     is_locked, TarCom, MaxSpeed, Warhead);
+  ar(game::HeapSlotPtr(Class, TheTypeHeaps().bullet()), ObjectPtr(Payback),
+     PrimaryFacing, is_inaccurate, is_to_animate, is_locked, TarCom, MaxSpeed,
+     Warhead);
   IsInaccurate = is_inaccurate;
   IsToAnimate = is_to_animate;
   IsLocked = is_locked;
@@ -204,7 +207,7 @@ template void ObjectClass::Serialize(ArchiveReader&);
 template <class Archive>
 void TemplateClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
-  ar(Class);
+  ar(game::HeapSlotPtr(Class, TheTypeHeaps().tmplate()));
 }
 template void TemplateClass::Serialize(ArchiveWriter&);
 template void TemplateClass::Serialize(ArchiveReader&);
@@ -212,7 +215,7 @@ template void TemplateClass::Serialize(ArchiveReader&);
 template <class Archive>
 void OverlayClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
-  ar(Class);
+  ar(game::HeapSlotPtr(Class, TheTypeHeaps().overlay()));
 }
 template void OverlayClass::Serialize(ArchiveWriter&);
 template void OverlayClass::Serialize(ArchiveReader&);
@@ -220,7 +223,7 @@ template void OverlayClass::Serialize(ArchiveReader&);
 template <class Archive>
 void SmudgeClass::Serialize(Archive& ar) {
   ObjectClass::Serialize(ar);
-  ar(Class);
+  ar(game::HeapSlotPtr(Class, TheTypeHeaps().smudge()));
 }
 template void SmudgeClass::Serialize(ArchiveWriter&);
 template void SmudgeClass::Serialize(ArchiveReader&);
@@ -232,8 +235,8 @@ void AnimClass::Serialize(Archive& ar) {
   bool is_to_delete = IsToDelete;
   bool is_brand_new = IsBrandNew;
   bool is_invisible = IsInvisible;
-  ar(Class, xObject, OwnerHouse, Loops, is_to_delete, is_brand_new,
-     is_invisible, Delay, Accum);
+  ar(game::HeapSlotPtr(Class, TheTypeHeaps().anim()), xObject, OwnerHouse,
+     Loops, is_to_delete, is_brand_new, is_invisible, Delay, Accum);
   IsToDelete = is_to_delete;
   IsBrandNew = is_brand_new;
   IsInvisible = is_invisible;
@@ -247,7 +250,8 @@ void TerrainClass::Serialize(Archive& ar) {
   StageClass::Serialize(ar);
   bool is_on_fire = IsOnFire;
   bool is_crumbling = IsCrumbling;
-  ar(Class, is_on_fire, is_crumbling);
+  ar(game::HeapSlotPtr(Class, TheTypeHeaps().terrain()), is_on_fire,
+     is_crumbling);
   IsOnFire = is_on_fire;
   IsCrumbling = is_crumbling;
 }
@@ -330,11 +334,12 @@ void BuildingClass::Serialize(Archive& ar) {
   bool is_jammed = IsJammed;
   bool has_fired = HasFired;
   bool has_opened = HasOpened;
-  ar(Class, Factory, ActLike, is_to_rebuild, is_to_repair, is_allowed_to_sell,
-     is_ready_to_commence, is_repairing, is_wrench_visible, is_going_to_blow,
-     is_survivorless, is_charging, is_charged, is_captured, is_jamming,
-     is_jammed, has_fired, has_opened, CountDown, BState, QueueBState,
-     WhoLastHurtMe, WhomToRepay, LastStrength, AnimToTrack, PlacementDelay);
+  ar(game::HeapSlotPtr(Class, TheTypeHeaps().building()), Factory, ActLike,
+     is_to_rebuild, is_to_repair, is_allowed_to_sell, is_ready_to_commence,
+     is_repairing, is_wrench_visible, is_going_to_blow, is_survivorless,
+     is_charging, is_charged, is_captured, is_jamming, is_jammed, has_fired,
+     has_opened, CountDown, BState, QueueBState, WhoLastHurtMe, WhomToRepay,
+     LastStrength, AnimToTrack, PlacementDelay);
   IsToRebuild = is_to_rebuild;
   IsToRepair = is_to_repair;
   IsAllowedToSell = is_allowed_to_sell;
@@ -399,8 +404,8 @@ void InfantryClass::Serialize(Archive& ar) {
   bool is_prone = IsProne;
   bool is_zone_cheat = IsZoneCheat;
   bool was_selected = WasSelected;
-  ar(Class, Doing, Comment, is_technician, is_stoked, is_prone, is_zone_cheat,
-     was_selected, Fear);
+  ar(game::HeapSlotPtr(Class, TheTypeHeaps().infantry()), Doing, Comment,
+     is_technician, is_stoked, is_prone, is_zone_cheat, was_selected, Fear);
   IsTechnician = is_technician;
   IsStoked = is_stoked;
   IsProne = is_prone;
@@ -418,8 +423,9 @@ void AircraftClass::Serialize(Archive& ar) {
   bool is_taking_off = IsTakingOff;
   bool is_homing = IsHoming;
   bool is_hovering = IsHovering;
-  ar(Class, SecondaryFacing, Passenger, is_landing, is_taking_off, is_homing,
-     is_hovering, Jitter, SightTimer, AttacksRemaining);
+  ar(game::HeapSlotPtr(Class, TheTypeHeaps().aircraft()), SecondaryFacing,
+     Passenger, is_landing, is_taking_off, is_homing, is_hovering, Jitter,
+     SightTimer, AttacksRemaining);
   IsLanding = is_landing;
   IsTakingOff = is_taking_off;
   IsHoming = is_homing;
@@ -453,8 +459,9 @@ void UnitClass::Serialize(Archive& ar) {
   uint8_t gold = Gold;
   uint8_t gems = Gems;
   bool is_to_scatter = IsToScatter;
-  ar(Class, Flagged, is_dumping, gold, gems, is_to_scatter, Tiberium,
-     ShroudBits, ShroudCenter, Reload, SecondaryFacing);
+  ar(game::HeapSlotPtr(Class, TheTypeHeaps().unit()), Flagged, is_dumping, gold,
+     gems, is_to_scatter, Tiberium, ShroudBits, ShroudCenter, Reload,
+     SecondaryFacing);
   IsDumping = is_dumping;
   Gold = gold;
   Gems = gems;
@@ -468,8 +475,8 @@ void VesselClass::Serialize(Archive& ar) {
   DriveClass::Serialize(ar);
   bool is_to_self_repair = IsToSelfRepair;
   bool is_self_repairing = IsSelfRepairing;
-  ar(Class, is_to_self_repair, is_self_repairing, DoorShutCountDown,
-     PulseCountDown, SecondaryFacing);
+  ar(game::HeapSlotPtr(Class, TheTypeHeaps().vessel()), is_to_self_repair,
+     is_self_repairing, DoorShutCountDown, PulseCountDown, SecondaryFacing);
   IsToSelfRepair = is_to_self_repair;
   IsSelfRepairing = is_self_repairing;
 }
@@ -525,9 +532,14 @@ void HouseClass::Serialize(Archive& ar) {
   bool is_giver_upper = IsGiverUpper;
   bool is_paranoid = IsParanoid;
   bool is_to_look = IsToLook;
-  ar(RTTI, ID, Class, Difficulty, FirepowerBias, GroundspeedBias, AirspeedBias,
-     ArmorBias, ROFBias, CostBias, BuildSpeedBias, RepairDelay, BuildDelay,
-     Control, ActLike, is_active, is_human, is_player_control, is_started, is_alerted, is_base_building, is_discovered, is_maxed_out, is_defeated, is_to_die, is_to_win, is_to_lose, is_civ_evacuated, is_recalc_needed, is_visionary, is_tiberium_short, is_spied, is_thieved, did_repair, is_gps_active, is_built_something, is_resigner, is_giver_upper, is_paranoid, is_to_look);
+  ar(RTTI, ID, game::HeapSlotPtr(Class, TheTypeHeaps().house()), Difficulty,
+     FirepowerBias, GroundspeedBias, AirspeedBias, ArmorBias, ROFBias, CostBias,
+     BuildSpeedBias, RepairDelay, BuildDelay, Control, ActLike, is_active,
+     is_human, is_player_control, is_started, is_alerted, is_base_building,
+     is_discovered, is_maxed_out, is_defeated, is_to_die, is_to_win, is_to_lose,
+     is_civ_evacuated, is_recalc_needed, is_visionary, is_tiberium_short,
+     is_spied, is_thieved, did_repair, is_gps_active, is_built_something,
+     is_resigner, is_giver_upper, is_paranoid, is_to_look);
   ar(IQ, State, SuperWeapon, JustBuiltStructure, JustBuiltInfantry,
      JustBuiltUnit, JustBuiltAircraft, JustBuiltVessel, Blockage, RepairTimer,
      AlertTime, BorrowedTime, BScan, ActiveBScan, OldBScan, UScan, ActiveUScan,

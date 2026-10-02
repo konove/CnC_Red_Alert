@@ -195,7 +195,7 @@ VesselClass::VesselClass(VesselType classid, HousesType house)
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
 VesselClass::~VesselClass() {
-  if (TheGameState().active() && Class.Is_Valid()) {
+  if (TheGameState().active() && Class != nullptr) {
     /*
     **	Remove this member from any team it may be associated with. This must
     *occur at the *	top most level of the inheritance hierarchy because it
@@ -1020,7 +1020,7 @@ game::FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
     // An active vessel always has its type, and TechnoClass::Can_Fire returns
     // FIRE_CANT when the selected weapon is absent, so reaching FIRE_OK or
     // FIRE_CLOAKED guarantees both exist.
-    CHECK(Class.Is_Valid());
+    CHECK_NE(Class, nullptr);
     const WeaponTypeClass* weapon =
         which == 0 ? Class->PrimaryWeapon : Class->SecondaryWeapon;
     CHECK(weapon != nullptr);
