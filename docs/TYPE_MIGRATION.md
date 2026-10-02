@@ -226,11 +226,13 @@ where the language already converts: an enumerator in integer arithmetic (`HOUSE
 
 The following should **not** be changed during type migration:
 
-- **Game typedefs already using fixed-width types** (defined in each game's `defines.h`). Their
-  width and signedness are game-specific units; change them only as a separate task:
-  - `COORDINATE` (`uint32_t`)
-  - `CELL` (`int16_t`)
-  - `TARGET` (`int32_t` in RA, `uint16_t` in TD)
+- **The data members of the map and target word classes** (`ra/core/` and `td/core/`). Their width
+  and signedness are game-specific units, because `EventClass`'s union is sent over the network as
+  raw bytes and saves write each member at its own width. The `static_assert`s next to each class
+  and next to `EventClass` pin the layout; change it only as a separate task:
+  - `Coordinate::packed_` (`uint32_t`, 4 bytes in both games)
+  - `Target::word_` (`int32_t`, 4 bytes, in RA; `uint16_t`, 2 bytes, in TD)
+  - `Cell::value_` (`int16_t`, 2 bytes in both games)
 
 - **Enums with explicit underlying types**:
   - `enum EventType : uint8_t`
@@ -245,9 +247,6 @@ The following should **not** be changed during type migration:
 
 - **External API signatures**: SDL2 functions, system calls, POSIX APIs. Match whatever the API
   expects.
-
-- **Bitfield unions already correct**: `TARGET_COMPOSITE`, `COORD_COMPOSITE`, and similar packed
-  unions.
 
 - **Code in `wwflat32/`**: Legacy code, not actively compiled.
 

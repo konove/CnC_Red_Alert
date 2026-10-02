@@ -595,15 +595,82 @@ Per stage and at the end of Part A:
 
 ## Progress
 
-| Step       | Status | Commit                                                                       |
-| ---------- | ------ | ---------------------------------------------------------------------------- |
-| A1         | Done   | f0498c21                                                                     |
-| A2         | Done   | 6be50192                                                                     |
-| A3         | Done   | b6502360, after 22f80cbc dropped the display.h includes A1 left unused       |
-| B1         | Done   | f7d220ed                                                                     |
-| B2 RA / TD | Done   | RA: 6b8676be, 9ede4443; TD: e910e349, 9ea20c02                               |
-| B3 RA / TD | Done   | RA: 85837eab, 24a549f5; TD: bbe00c09, 66bccc4a                               |
-| B4 RA / TD | Done   | RA: c5d9f5b0, ae075469, 76248993, e1bcab3a; TD: 778ab311, bac355dc, d1c5e58d |
+| Step        | Status | Commit                                                                       |
+| ----------- | ------ | ---------------------------------------------------------------------------- |
+| A1          | Done   | f0498c21                                                                     |
+| A2          | Done   | 6be50192                                                                     |
+| A3          | Done   | b6502360, after 22f80cbc dropped the display.h includes A1 left unused       |
+| B1          | Done   | f7d220ed                                                                     |
+| B2 RA / TD  | Done   | RA: 6b8676be, 9ede4443; TD: e910e349, 9ea20c02                               |
+| B3 RA / TD  | Done   | RA: 85837eab, 24a549f5; TD: bbe00c09, 66bccc4a                               |
+| B4 RA / TD  | Done   | RA: c5d9f5b0, ae075469, 76248993, e1bcab3a; TD: 778ab311, bac355dc, d1c5e58d |
+| Final fixes | Done   | d1401111, 261c50a0, then the commit that wrote this row                      |
+
+"Done" covers everything but one check. The per-stage two-instance multiplayer game (Global
+constraints, Verification) was never run: each stage instead `static_assert`ed the layout of every
+type in `EventClass`'s union and `sizeof(EventClass)`, and `xcheck.sh` compared each game's
+per-frame log against a reference binary built before Part B. **A manual two-instance network game
+in each game, exchanging move, attack, sell, place and special-weapon events, is still open.**
+
+## Final state
+
+This section describes the tree after Part B; the stage notes below are chronological and some of
+their details were superseded by later stages.
+
+**Where the types live.** Each game has three classes in its `core/` folder, all exported by its
+`defines.h`, all trivially copyable, trivially default constructible and standard layout:
+
+| Class        | RA header / word                | TD header / word                | Replaced                                                                                       |
+| ------------ | ------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `Coordinate` | `ra/core/coordinate.h`, 4 bytes | `td/core/coordinate.h`, 4 bytes | `COORDINATE` and the `Coord_*`/`XY_Coord` helpers                                              |
+| `Target`     | `ra/core/target.h`, 4 bytes     | `td/core/target.h`, 2 bytes     | `TARGET`, `xTargetClass`/`TargetClass`, `Build_Target`, the `As_*` decoders                    |
+| `Cell`       | `ra/core/cell.h`, 2 bytes       | `td/core/cell.h`, 2 bytes       | `CELL`, `XY_Cell`, `Cell_X`/`Cell_Y`, `Coord_Cell` (`Containing()`), `Cell_Coord` (`Center()`) |
+
+The out-of-line `Target` members are in `ra/objects/target.cc` and `td/objects/target.cc`. RA's
+`LEPTON` became plain `int` (TD always used `int`). The `*_COMPOSITE` unions are gone (Part A). Each
+class serializes its word at the old width and `static_assert`s its size; `EventClass` is pinned at
+32 bytes in RA and 24 in TD. No save version changed.
+
+**Named values.** `Coordinate{}` is the zero coordinate ("no coordinate", `!coord`);
+`Coordinate::NoPosition()` is the separate all-ones sentinel of unplaced objects and smudges;
+`Coordinate::CellCenterOffset()` is half a cell on each axis (0x00800080). `Cell{}` is cell 0;
+`Cell::None()` (-1) is "no cell". `Target{}` is "no target". Each game's `kHighCoordMask`
+(`defines.h`) flags an off-map coordinate word.
+
+**Deliberate RA/TD differences.** Each game keeps its own original arithmetic:
+
+- `Coordinate::x()`/`y()` read each word unsigned in RA (0..65535), signed in TD (-32768..32767);
+  `Midpoint()` averages the unsigned words in both. `kHighCoordMask` is 0x80008000 in RA (128-cell
+  map) and 0xC000C000 in TD (64 cells).
+- `Target` is RA's `int32_t` word (8-bit RTTI kind over a 24-bit value; `Make()` masks the value)
+  and TD's `uint16_t` word (4-bit kind over 12 bits; `Make()` does not mask). Only RA has the second
+  RTTI_CELL encoding (`FromCell()`/`FromCoordinate()`, a sub-cell spot, beside `FromCellIndex()`),
+  `Of()`, `is_valid()`, `NoneWithAllValueBits()` and the `...InSlot()` decoders.
+- `Cell` packs 7 bits per axis in RA and masks every component; TD packs 6 and masks only `x()`:
+  `FromXY()` ORs Y over an unmasked X, `y()` is every bit above X (a sentinel reads as a row of
+  millions), and `Containing()` ORs the whole 8-bit X cell byte.
+
+**What `ra/core/packed.h` still holds.** Only RA's 16-bit lepton word: `Lepton_Cell()`,
+`Lepton_Fraction()`, `Make_Lepton()`, `Cell_To_Lepton()`, `Lepton_To_Cell()`, `Lepton_To_Pixel()`
+and `Pixel_To_Lepton()`, pinned by `packed_test.cc`. TD's lepton and pixel helpers stay in
+`td/core/inline.h`.
+
+**Tests.** `ra_packed_test` (`packed_test.cc`, `coordinate_test.cc`, `cell_test.cc`) and
+`ra_game_test` (`objects/target_test.cc`); `td_coord_inline_test` (`coord_inline_test.cc`,
+`coordinate_test.cc`, `cell_test.cc`) and `td_game_test` (`core/target_test.cc`).
+
+**Open items.**
+
+- The manual two-instance network game in each game (above).
+- Whether `ra::Coordinate` and `td::Coordinate` merge into `game::Coordinate`: only the signed
+  `x()`/`y()` reading differs (see the Stage B2 (TD) notes and `TODO.md`).
+- The suspected bugs Part B found and kept, each in `TODO.md`'s Bugs section: RA lepton distances
+  wrapping at 16 bits, TD's `Scatter(true)` calls, both games' `Fire_Direction()`, TD's unmasked
+  `Target::Make()`, RA's two RTTI_CELL encodings, RA's `Destroy_Bridge_At()` detach loop, the PLACE
+  event's `int` constructor, TD's `Nearby_Location()` box scan, TD's unmasked `Cell::y()` and
+  `Cell::Containing()`, and TD's four carrying coordinate adds.
+
+## Stage notes
 
 Part A notes:
 

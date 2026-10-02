@@ -168,6 +168,21 @@
     `MapClass::Cell_Distance()` in play, but nothing guards them
   - Masking changes results only for sentinels and off-map cells; do it in its own commit with a
     test, after checking every caller
+- Decide whether Tiberian Dawn's `Cell::Containing()` should mask the X cell byte to 6 bits
+  - `Containing()` (was `Coord_Cell()`, `td/core/cell.h`) shifts the Y cell byte over the whole
+    8-bit X cell byte and ORs them, as the original assembly did, so an X cell of 64 or more (a
+    coordinate off the right edge) sets Y bits: X cell 64 of row 0 reads as cell (0, 1). Red Alert's
+    `Containing()` masks each byte to 7 bits instead. `cell_test.cc` pins TD's result
+  - Only four places test a coordinate against `kHighCoordMask` before using it; the 224
+    `Containing()` call sites otherwise trust it to be on the map. Masking changes the cell an
+    off-map coordinate names, so do it in its own commit with a test and an xcheck run
+- Decide whether Tiberian Dawn's carrying coordinate adds should become component adds
+  - Four sites add an integer to the packed word, so X can carry into Y, and stage B2 (TD) kept them
+    as `Coordinate::FromPacked(c.packed() + n)`: `ai/reinf.cc` (`Docking_Coord() + 2`, read for its
+    Y cell) and the `-MOBILETEST` fixture in `startup/init.cc` (`+ 0x200`, `+ 0x600`, `+ 0x800`).
+    `+ Coordinate::FromLeptons(n, 0)` wraps within X instead
+  - The two differ only when X is within `n` leptons of 0x10000, which no on-map coordinate is, so
+    the change is safe in play but alters the off-map results; do it in its own commit
 
 ## Refactoring
 
@@ -392,6 +407,19 @@
     `Reset()`
 - Consider renaming `ra/core/heap_instances.cc` to `object_heap_instances.cc`
   - It holds the explicit `ObjectHeap<T>` instantiations; its name predates the class name
+- Decide whether `ra::Coordinate` and `td::Coordinate` merge into `game::Coordinate`
+  - Stage B2 of `docs/COORDINATE_TYPES_PLAN.md` deferred it. The two classes
+    (`ra/core/coordinate.h`, `td/core/coordinate.h`) have the same packed layout and members; only
+    `x()`/`y()` differ: TD reads each 16-bit word signed (-32768..32767), RA unsigned (0..65535).
+    They disagree only for words of 0x8000 or more, which no on-map position has in either game, so
+    only wrapped negative offsets and positions just off the top or left edge see the difference
+  - TD's sign-sensitive readers: `Distance()`, the `Direction*()` helpers,
+    `DisplayClass::Push_Onto_TacMap()`/`Select_These()`/`Coord_To_Pixel()`, `Coord_Move()` and the
+    aircraft altitude offset in `AircraftClass::Target_Coord()`/`Fire_Coord()`. A merged class can
+    read unsigned like RA and give TD a signed accessor (or `static_cast<int16_t>` at those sites);
+    offsets that are only added or negated (`Smooth_Turn`, the track tables) do not care
+  - The off-map mask (`kHighCoordMask`, 0x80008000 in RA, 0xC000C000 in TD) depends on the map size
+    and stays per game
 
 ## Testing
 

@@ -57,10 +57,13 @@ indices, loop bounds, health, damage, speed, distance and timers become signed -
 code does not rely on unsigned wraparound (frame counters, modular arithmetic); if it does, keep it
 unsigned.
 
-Leave `LEPTON`, `COORDINATE`, `CELL`, `TARGET`, enums with explicit underlying types, and code
-already on fixed-width types alone. On lines you change, replace C-style integer casts:
-`int32_t{value}` for a conversion that must not narrow, `static_cast<int32_t>(value)` when narrowing
-is intended. Add `#include <cstdint>` where fixed-width types appear.
+Leave the data members of `Coordinate` (`packed_`), `Target` (`word_`) and `Cell` (`value_`) in
+`ra/core/` and `td/core/` at their widths (RA 4/4/2 bytes, TD 4/2/2): `EventClass`'s union is sent
+as raw bytes and saves write those widths, and the `static_assert`s next to each class and
+`EventClass` pin them. Leave enums with explicit underlying types, and code already on fixed-width
+types, alone too. On lines you change, replace C-style integer casts: `int32_t{value}` for a
+conversion that must not narrow, `static_cast<int32_t>(value)` when narrowing is intended. Add
+`#include <cstdint>` where fixed-width types appear.
 
 ## 2. Strings
 
