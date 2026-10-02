@@ -44,12 +44,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
-#include <string_view>
 #include <vector>
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
-#include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/array.h"
@@ -144,66 +142,6 @@ inline int First_False_Bit(std::span<const uint32_t> array) {
     off += 32;
   }
   return -1;
-}
-
-template <class T>
-void Bubble_Sort(std::span<T> array, int count) {
-  if (count > 1) {
-    bool swapflag = false;
-
-    do {
-      swapflag = false;
-      for (int index = 0; index < count - 1; index++) {
-        if (array[index] > array[index + 1]) {
-          const auto temp = array[index];
-          array[index] = array[index + 1];
-          array[index + 1] = temp;
-          swapflag = true;
-        }
-      }
-    } while (swapflag);
-  }
-}
-
-template <class T>
-void PBubble_Sort(T& array, int count) {
-  if (count > 1) {
-    bool swapflag = false;
-
-    do {
-      swapflag = false;
-      for (int index = 0; index < count - 1; index++) {
-        if (*array.at(index) > *array.at(index + 1)) {
-          const auto temp = array.at(index);
-          array.at(index) = array.at(index + 1);
-          array.at(index + 1) = temp;
-          swapflag = true;
-        }
-      }
-    } while (swapflag);
-  }
-}
-
-template <class T>
-void PNBubble_Sort(T& array, int count) {
-  if (count > 1) {
-    bool swapflag = false;
-
-    do {
-      swapflag = false;
-      for (int index = 0; index < count - 1; index++) {
-        if (std::ranges::lexicographical_compare(
-                std::string_view(array.at(index + 1)->Name()),
-                std::string_view(array.at(index)->Name()), {},
-                absl::ascii_tolower, absl::ascii_tolower)) {
-          const auto temp = array.at(index);
-          array.at(index) = array.at(index + 1);
-          array.at(index + 1) = temp;
-          swapflag = true;
-        }
-      }
-    } while (swapflag);
-  }
 }
 
 struct TLucentType {

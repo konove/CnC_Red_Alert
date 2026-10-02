@@ -63,6 +63,13 @@ class TListClass final : public game::ControlClass {
   int Step_Selected_Index(int step);
   void Flag_To_Redraw() override;
   [[nodiscard]] T Get_Item(int index) const { return base::At(List, index); }
+  // Orders the entries by `less`; equal entries keep the order they were
+  // added in.
+  template <class Compare>
+  void Sort(Compare less) {
+    std::ranges::stable_sort(List, less);
+    Flag_To_Redraw();
+  }
 
   void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
                     game::ControlClass& whom) override;

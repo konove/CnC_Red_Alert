@@ -141,6 +141,11 @@ class TDropListClass : public EditClass {
   T operator[](int index) const { return at(index); }
   T& at(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND { return List.at(index); }
   T& operator[](int index) ABSL_ATTRIBUTE_LIFETIME_BOUND { return at(index); }
+  // Orders the entries by `less`, as TListClass::Sort.
+  template <class Compare>
+  void Sort(Compare less) {
+    List.Sort(less);
+  }
 
   // As DropListClass's: each returns the head of the chain.
   game::LinkClass& Add(game::LinkClass& object)

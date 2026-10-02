@@ -369,8 +369,11 @@ bool TriggerTypeClass::Edit() {
     event2list.Add_Item(&EventChoices.at(event));
   }
 
-  PBubble_Sort(event1list, event1list.Count());
-  PBubble_Sort(event2list, event2list.Count());
+  const auto by_description = [](const auto* left, const auto* right) {
+    return *left < *right;
+  };
+  event1list.Sort(by_description);
+  event2list.Sort(by_description);
 
   if (Event1.Event == TEVENT_NONE) {
     Event1.Event = TEVENT_NONE;
@@ -399,8 +402,8 @@ bool TriggerTypeClass::Edit() {
     action2list.Add_Item(&ActionChoices.at(action));
   }
 
-  PBubble_Sort(action1list, action1list.Count());
-  PBubble_Sort(action2list, action2list.Count());
+  action1list.Sort(by_description);
+  action2list.Sort(by_description);
 
   if (Action1.Action == TACTION_NONE) {
     Action1.Action = TACTION_NONE;

@@ -39,8 +39,11 @@
  *   MapEditClass::Team_Members -- user picks makeup of a team             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include <algorithm>
 #include <cstdint>
+#include <string_view>
 
+#include "absl/strings/ascii.h"
 #include "base/array.h"
 #include "base/pooled.h"
 #include "engine/file/mix_archive.h"
@@ -282,7 +285,11 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     teamlist.Add_Item(TheObjectHeaps().team_type().ActiveAt(index));
   }
 
-  PNBubble_Sort(teamlist, teamlist.Count());
+  teamlist.Sort([](const TeamTypeClass* left, const TeamTypeClass* right) {
+    return std::ranges::lexicographical_compare(
+        std::string_view(left->Name()), std::string_view(right->Name()), {},
+        absl::ascii_tolower, absl::ascii_tolower);
+  });
 
   if (!CurTeam || !CurTeam->IsActive) {
     CurTeam = nullptr;

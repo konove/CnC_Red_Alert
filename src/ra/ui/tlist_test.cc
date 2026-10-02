@@ -1,4 +1,4 @@
-// Tests TListClass's item list: insertion at the selected row.
+// Tests TListClass's item list: insertion at the selected row and sorting.
 
 #include "ra/ui/tlist.h"
 
@@ -55,6 +55,26 @@ TEST_F(TListClassTest, InsertItemIntoAnEmptyListAppends) {
 
   ASSERT_EQ(list_.Count(), 1);
   EXPECT_EQ(list_.Get_Item(0), &a_);
+}
+
+// The editors sort by name ignoring case, so names can tie; tied entries stay
+// in the order they were added.
+TEST_F(TListClassTest, SortKeepsEqualItemsInInsertionOrder) {
+  Item tied{1};
+  list_.Add_Item(&c_);
+  list_.Add_Item(&a_);
+  list_.Add_Item(&b_);
+  list_.Add_Item(&tied);
+
+  list_.Sort([](const Item* left, const Item* right) {
+    return left->value < right->value;
+  });
+
+  ASSERT_EQ(list_.Count(), 4);
+  EXPECT_EQ(list_.Get_Item(0), &a_);
+  EXPECT_EQ(list_.Get_Item(1), &tied);
+  EXPECT_EQ(list_.Get_Item(2), &b_);
+  EXPECT_EQ(list_.Get_Item(3), &c_);
 }
 
 }  // namespace

@@ -51,8 +51,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <string_view>
 #include <utility>
 
+#include "absl/strings/ascii.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/enum_array.h"
@@ -2694,7 +2696,12 @@ int MapEditClass::Load_Scenario() {
       triggerlist.Add_Item(TheObjectHeaps().trigger_type().ActiveAt(i));
     }
 
-    PNBubble_Sort(triggerlist, triggerlist.Count());
+    triggerlist.Sort(
+        [](const TriggerTypeClass* left, const TriggerTypeClass* right) {
+          return std::ranges::lexicographical_compare(
+              std::string_view(left->Name()), std::string_view(right->Name()),
+              {}, absl::ascii_tolower, absl::ascii_tolower);
+        });
 
     if (CurTrigger) {
       triggerlist.Set_Selected_Index(CurTrigger);
