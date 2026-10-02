@@ -1,4 +1,5 @@
-// Bounds-checked access to fixed arrays and spans without changing storage.
+// Bounds-checked access to fixed arrays, spans and vectors without changing
+// storage.
 
 #ifndef CNC_RED_ALERT_BASE_ARRAY_H_
 #define CNC_RED_ALERT_BASE_ARRAY_H_
@@ -7,6 +8,7 @@
 #include <cstddef>
 #include <span>
 #include <utility>
+#include <vector>
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
@@ -37,6 +39,27 @@ template <class T, std::size_t N>
 constexpr T& At(T (&array ABSL_ATTRIBUTE_LIFETIME_BOUND)[N],
                 std::integral auto index) {
   return base::At(std::span(array), index);
+}
+
+// Returns an element of a vector, taking the signed index the game code counts
+// in. Negative and past-the-end indices fail in every build mode.
+//
+// Example:
+//   std::vector<ObjectClass*> objects = ...;
+//   ObjectClass* first = base::At(objects, 0);
+template <class T, class Allocator>
+// Clang 23 cannot trace the reference through libstdc++ span operations.
+// NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+constexpr T& At(std::vector<T, Allocator>& vector ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                std::integral auto index) {
+  return base::At(std::span(vector), index);
+}
+template <class T, class Allocator>
+constexpr const T& At(
+    // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
+    const std::vector<T, Allocator>& vector ABSL_ATTRIBUTE_LIFETIME_BOUND,
+    std::integral auto index) {
+  return base::At(std::span(vector), index);
 }
 
 // Returns the tail starting at index. Unlike At, this accepts the array's

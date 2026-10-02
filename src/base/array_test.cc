@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <span>
+#include <vector>
 
 #include "gtest/gtest.h"
 
@@ -84,6 +85,23 @@ TEST(ArrayDeathTest, SpanRejectsNegativeEndEmptyAndOversizedIndices) {
   EXPECT_DEATH((void)base::At(view.subspan(1, 0), 0), "Check failed");
   EXPECT_DEATH((void)base::At(view, static_cast<std::size_t>(-1)),
                "Check failed");
+  // NOLINTEND(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+}
+
+TEST(ArrayTest, VectorAccessReturnsTheStoredElement) {
+  std::vector<int> values = {2, 4, 6};
+  base::At(values, 1) = 5;
+  EXPECT_EQ(values.at(1), 5);
+  const std::vector<int>& view = values;
+  EXPECT_EQ(&base::At(view, 2), &values.at(2));
+}
+
+TEST(ArrayDeathTest, VectorRejectsNegativeAndPastTheEndIndices) {
+  const std::vector<int> values = {2, 4};
+  // GoogleTest's death-test macro formats subprocess diagnostics with libc.
+  // NOLINTBEGIN(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
+  EXPECT_DEATH((void)base::At(values, -1), "Check failed");
+  EXPECT_DEATH((void)base::At(values, 2), "Check failed");
   // NOLINTEND(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
 }
 
