@@ -595,15 +595,15 @@ Per stage and at the end of Part A:
 
 ## Progress
 
-| Step       | Status | Commit                                                                    |
-| ---------- | ------ | ------------------------------------------------------------------------- |
-| A1         | Done   | f0498c21                                                                  |
-| A2         | Done   | 6be50192                                                                  |
-| A3         | Done   | this commit, after 22f80cbc dropped the display.h includes A1 left unused |
-| B1         |        |                                                                           |
-| B2 RA / TD |        |                                                                           |
-| B3 RA / TD |        |                                                                           |
-| B4 RA / TD |        |                                                                           |
+| Step       | Status | Commit                                                                 |
+| ---------- | ------ | ---------------------------------------------------------------------- |
+| A1         | Done   | f0498c21                                                               |
+| A2         | Done   | 6be50192                                                               |
+| A3         | Done   | b6502360, after 22f80cbc dropped the display.h includes A1 left unused |
+| B1         | Done   | f7d220ed                                                               |
+| B2 RA / TD |        |                                                                        |
+| B3 RA / TD |        |                                                                        |
+| B4 RA / TD |        |                                                                        |
 
 Part A notes:
 
@@ -616,3 +616,25 @@ Part A notes:
   `kTargetExponentBits` is gone.
 - `TargetClass()` leaves value bits `0xFFFFFF` (not `kTargetNone`), while a null pointer gives
   `kTargetNone`; `target_test.cc` pins both.
+
+Stage B1 notes:
+
+- Leptons are `int`; the 16-bit word exists only in `packed.h`. `XY_Coord()`, `Lepton_Cell()`,
+  `Lepton_Fraction()` and `Lepton_To_Cell()` keep the low 16 bits of their `int` arguments;
+  `Coord_X()`/`Coord_Y()` return 0..65535, the contract B2's `x()`/`y()` inherit.
+  `Lepton_To_Pixel()` still reads its argument as a signed 16-bit word (0xFFFF is -1).
+- `Lepton_To_Pixel()` and `Pixel_To_Lepton()` moved from `inline.h` to `packed.h` (constexpr) so
+  `ra_packed_test` can pin them.
+- Wraps kept explicitly with `static_cast<uint16_t>`: the vortex drift in
+  `ChronalVortexClass::Movement()` (was `LEPTON x += XDir`), the spillage rectangle edges in
+  `Coord_Spillage_List()`, `TacLeptonWidth`/`TacLeptonHeight` in `Update_View_Dimensions()`, and the
+  parameters of `Wide_Area_Damage()`, `Constrained_Look()` and `Get_Lepton()`/`Put_Lepton()`.
+  `Get_Lepton()`'s result needs none: an 8.8 `Fixed` times 256 is its raw 16-bit word.
+- No lepton field is serialized; no save-format change.
+- `static_assert(sizeof(EventClass) == 32)` now sits after RA's `EventClass` (`ra/net/event.h`).
+- Four `static_cast<unsigned>(offset) <= view size` comparisons in `display.cc` now cast the size to
+  `unsigned` explicitly (clang no longer proves the `int` non-negative).
+- Latent wraps reachable only from oversized INI values or a 6144-pixel view are in `TODO.md`
+  ("Decide whether Red Alert's lepton distances should still wrap at 16 bits").
+- `xcheck.sh` changes into a temp dir before running the candidate, so pass it an absolute path
+  (`"$PWD/build/src/ra/rasdl"`); a relative one gives "FAIL: empty log".
