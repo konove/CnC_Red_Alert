@@ -181,7 +181,9 @@ void MapEditClass::Select_Next() {
   ----------------------- Get next object on the map -----------------------
   */
   ObjectClass* obj =
-      MapEditClass::Next_Object(base::At(TheWorld().current_object(), 0));
+      MapEditClass::Next_Object(TheWorld().current_object().empty()
+                                    ? nullptr
+                                    : base::At(TheWorld().current_object(), 0));
 
   if (obj) {
     /*
@@ -205,6 +207,11 @@ void MapEditClass::Select_Next() {
   -------------------------- Show pop-up controls --------------------------
   */
   Popup_Controls();
+
+  // Nothing on the map can be selected, so there is nothing to scroll to.
+  if (TheWorld().current_object().empty()) {
+    return;
+  }
 
   /*
   ---------------- Make sure object is shown on the screen -----------------
