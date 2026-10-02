@@ -111,7 +111,7 @@ apply_language_setting(ra_game_test)
 
 add_gtest(
     NAME ra_drop_test
-    SOURCES ui/drop_test.cc startup/startup.cc
+    SOURCES ui/drop_test.cc ui/tlist_test.cc startup/startup.cc
     LIBS ra_engine absl::core_headers
 )
 target_compile_definitions(ra_drop_test PRIVATE RA_NO_ENTRY_POINT=1)

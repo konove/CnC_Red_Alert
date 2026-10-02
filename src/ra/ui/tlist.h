@@ -58,7 +58,7 @@ class TListClass final : public game::ControlClass {
   void Bump(bool up);
   [[nodiscard]] int Count() const { return static_cast<int>(std::ssize(List)); }
   [[nodiscard]] int Current_Index() const;
-  T Current_Item() const;
+  [[nodiscard]] T Current_Item() const;
   bool Draw_Me(PixelView& view, bool forced) override;
   int Step_Selected_Index(int step);
   void Flag_To_Redraw() override;
@@ -189,20 +189,7 @@ void TListClass<T>::Insert_Item(T item) {
   if (Current_Index() >= Count()) {
     List.push_back(item);
   } else {
-    List.push_back(item);
-
-    /*
-    **	Move all trailing items upward.
-    */
-    for (base::ssize index = std::ssize(List) - 1; index >= Current_Index();
-         index--) {
-      base::At(List, index + 1) = base::At(List, index);
-    }
-
-    /*
-    **	Insert the new item into the location at the current index.
-    */
-    base::At(List, Current_Index()) = item;
+    List.insert(List.begin() + Current_Index(), item);
   }
 }
 
