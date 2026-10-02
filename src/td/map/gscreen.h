@@ -59,19 +59,18 @@ namespace td {
 
 class GScreenClass {
  public:
-  // Returns the cell numbered `cell`, which must be in [0, Length()).
-  CellClass& at(base::ssize cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return base::At(cells_, cell);
+  // Returns the cell `cell`, whose index() must be in [0, Length()).
+  CellClass& at(Cell cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(cells_, cell.index());
   }
-  CellClass& operator[](base::ssize cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  CellClass& operator[](Cell cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(cell);
   }
-  [[nodiscard]] const CellClass& at(base::ssize cell) const
+  [[nodiscard]] const CellClass& at(Cell cell) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return base::At(cells_, cell);
+    return base::At(cells_, cell.index());
   }
-  const CellClass& operator[](base::ssize cell) const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  const CellClass& operator[](Cell cell) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(cell);
   }
 
@@ -192,7 +191,7 @@ class GScreenClass {
   static std::unique_ptr<PixelBuffer> ShadowPage;
 
  protected:
-  // The map's cells, indexed by CELL.
+  // The map's cells, indexed by Cell.
   std::vector<CellClass> cells_;
 };
 

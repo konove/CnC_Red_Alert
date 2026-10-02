@@ -74,7 +74,7 @@ class TemplateClass : public ObjectClass {
   }
   void operator delete(void* ptr);
   TemplateClass() { IsActive = true; }
-  explicit TemplateClass(TemplateType type, CELL pos = -1);
+  explicit TemplateClass(TemplateType type, Cell pos = Cell::None());
   ~TemplateClass() override {
     if (TheGameState().active()) {
       TemplateClass::Limbo();
@@ -97,7 +97,7 @@ class TemplateClass : public ObjectClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  int Icon_Number(CELL cell);
+  int Icon_Number(Cell cell);
 
   /*
   **	Object entry and exit from the game system.

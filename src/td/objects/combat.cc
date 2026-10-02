@@ -164,8 +164,8 @@ void Explosion_Damage(Coordinate coord, int strength, TechnoClass* source,
   const WarheadTypeClass* whead = &Warheads.at(warhead);
   const int range =
       ICON_LEPTON_W + (ICON_LEPTON_W >> 1);  // Damage effect radius.
-  CELL const cell = Coord_Cell(coord);       // Cell number under explosion.
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+  const Cell cell = Cell::Containing(coord);  // Cell number under explosion.
+  if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return;
   }
   //	if (!Map.In_Radar(cell)) return;

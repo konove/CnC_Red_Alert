@@ -78,15 +78,15 @@ class MapClass : public GScreenClass {
   */
   [[nodiscard]] ObjectClass* Close_Object(Coordinate coord) const;
   virtual void Detach(ObjectClass* /*unused*/) {}
-  static int Cell_Region(CELL cell);
-  static int Cell_Threat(CELL cell, HousesType house);
-  static int Cell_Distance(CELL cell1, CELL cell2);
-  [[nodiscard]] bool In_Radar(CELL cell) const;
-  void Sight_From(CELL cell, int sightrange, bool incremental = false);
-  void Place_Down(CELL cell, ObjectClass* object);
-  void Pick_Up(CELL cell, ObjectClass* object);
-  void Overlap_Down(CELL cell, ObjectClass* object);
-  void Overlap_Up(CELL cell, ObjectClass* object);
+  static int Cell_Region(Cell cell);
+  static int Cell_Threat(Cell cell, HousesType house);
+  static int Cell_Distance(Cell cell1, Cell cell2);
+  [[nodiscard]] bool In_Radar(Cell cell) const;
+  void Sight_From(Cell cell, int sightrange, bool incremental = false);
+  void Place_Down(Cell cell, ObjectClass* object);
+  void Pick_Up(Cell cell, ObjectClass* object);
+  void Overlap_Down(Cell cell, ObjectClass* object);
+  void Overlap_Up(Cell cell, ObjectClass* object);
   static bool Read_Binary(const char* root, uint32_t* crc);
   static bool Write_Binary(const char* root);
   bool Place_Random_Crate();
@@ -139,20 +139,20 @@ class MapClass : public GScreenClass {
   /*
   **	Tiberium growth potiential cells are recorded here.
   */
-  CELL TiberiumGrowth[50]{};
+  Cell TiberiumGrowth[50]{};
   int TiberiumGrowthCount = 0;
 
   /*
   **	List of cells that are full enough strength that they could spread
   **	Tiberium to adjacent cells.
   */
-  CELL TiberiumSpread[50]{};
+  Cell TiberiumSpread[50]{};
   int TiberiumSpreadCount = 0;
 
   /*
   **	This is the current cell number in the incremental map scan process.
   */
-  CELL TiberiumScan = 0;
+  Cell TiberiumScan{};
 
   /*
   **	If the Tiberium map scan is processing forward, then this flag
@@ -164,7 +164,7 @@ class MapClass : public GScreenClass {
   static constexpr int kScanAmount = MAP_CELL_TOTAL;
 };
 
-int Terrain_Cost(CELL cell, game::FacingType facing);
+int Terrain_Cost(Cell cell, game::FacingType facing);
 int Coord_Spillage_Number(Coordinate coord, int maxsize);
 
 extern template void MapClass::Serialize<ArchiveWriter>(ArchiveWriter&);

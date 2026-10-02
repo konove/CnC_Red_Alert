@@ -118,7 +118,6 @@
 #include "td/assets/screen.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/data/text.h"
@@ -492,7 +491,7 @@ bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
+void SidebarClass::Refresh_Cells(Cell cell, std::span<const int16_t> list) {
   if (list.front() == REFRESH_SIDEBAR) {
     IsSidebarToRedraw = true;
     base::At(Column, 0).IsToRedraw = true;
@@ -826,13 +825,13 @@ void SidebarClass::AI(engine::window::InputEvent& event, int x, int y) {
       */
       if (IsRadarActive) {
         if (Is_Zoomed() || TheSession().type() == GAME_NORMAL) {
-          Zoom_Mode(Coord_Cell(TacticalCoord));
+          Zoom_Mode(Cell::Containing(TacticalCoord));
         } else {
           if (!Is_Player_Names()) {
             Player_Names(true);
           } else {
             Player_Names(false);
-            Zoom_Mode(Coord_Cell(TacticalCoord));
+            Zoom_Mode(Cell::Containing(TacticalCoord));
           }
         }
       } else {

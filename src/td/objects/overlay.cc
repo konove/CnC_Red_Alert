@@ -49,6 +49,7 @@
 
 #include "td/objects/overlay.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -184,11 +185,11 @@ void OverlayClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
+OverlayClass::OverlayClass(OverlayType type, Cell pos, HousesType house)
     : Class(&OverlayTypeClass::As_Reference(type)) {
-  if (pos != -1) {
+  if (pos != Cell::None()) {
     ToOwn = house;
-    Unlimbo(Cell_Coord(pos));
+    Unlimbo(pos.Center());
     ToOwn = HOUSE_NONE;
   }
 }
@@ -214,7 +215,7 @@ OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
 bool OverlayClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
-    const CELL cell = Coord_Cell(Coord);
+    const Cell cell = Cell::Containing(Coord);
     CellClass* cellptr = &TheMap().at(cell);
 
     /*
@@ -282,7 +283,7 @@ bool OverlayClass::Mark(MarkType mark) {
             cellptr->Tiberium_Adjust();
           } else {
             if (*this == OVERLAY_CONCRETE) {
-              CELL newcell = 0;
+              Cell newcell{};
 
               /*
               **	Smudges go away when concrete is laid down.
@@ -295,7 +296,7 @@ bool OverlayClass::Mark(MarkType mark) {
               **	Possibly add concrete to adjacent cells depending on
               *whether this *	concrete is in an odd or even row.
               */
-              if (Cell_X(cell) % 2 != 0) {
+              if (cell.x() % 2 != 0) {
                 newcell = Adjacent_Cell(cellptr->Cell_Number(), game::FACING_W);
               } else {
                 newcell = Adjacent_Cell(cellptr->Cell_Number(), game::FACING_E);
@@ -357,7 +358,8 @@ void OverlayClass::Read_INI(char* buffer) {
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
   while (*tbuffer != '\0') {
-    CELL const cell = base::ParseIntegerOr<CELL>(tbuffer, 0);
+    const Cell cell =
+        Cell::FromIndex(base::ParseIntegerOr<int16_t>(tbuffer, 0));
     WWGetPrivateProfileString(
         INI_Name(), tbuffer, nullptr,
         std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
@@ -371,7 +373,8 @@ void OverlayClass::Read_INI(char* buffer) {
     if ((classid != OVERLAY_NONE &&
          (TheSession().type() == GAME_NORMAL ||
           !OverlayTypeClass::As_Reference(classid).IsCrate)) &&
-        (cell >= MAP_CELL_W && cell <= MAP_CELL_TOTAL - MAP_CELL_W))
+        (cell.index() >= MAP_CELL_W &&
+         cell.index() <= MAP_CELL_TOTAL - MAP_CELL_W))
     /*
     **	Don't allow placement of overlays on the top or bottom rows of
     **	the map.
@@ -421,7 +424,7 @@ void OverlayClass::Write_INI(std::string& buffer) {
   **	Write the unit data out.
   */
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-    const CellClass* cellptr = &TheMap().at(index);
+    const CellClass* cellptr = &TheMap().at(Cell::FromIndex(index));
 
     if (cellptr->Overlay != OVERLAY_NONE) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);

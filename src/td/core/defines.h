@@ -2108,13 +2108,13 @@ struct GroundType {
 **	Find_Path returns with a pointer to this structure.
 */
 struct PathType {
-  CELL Start = 0;                 // Starting cell number.
+  Cell Start{};                   // Starting cell number.
   int Cost = 0;                   // Accumulated terrain cost.
   int Length = 0;                 // Command string length.
   std::span<game::FacingType> Command;  // Pointer to command string.
   std::span<uint32_t> Overlap;    // Overlap bitmap, see td/map/path_overlap.h.
-  CELL LastOverlap = 0;           // stores position of last overlap
-  CELL LastFixup = 0;             // stores position of last overlap
+  Cell LastOverlap{};             // stores position of last overlap
+  Cell LastFixup{};               // stores position of last overlap
 };
 
 /**********************************************************************

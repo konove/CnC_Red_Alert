@@ -369,7 +369,7 @@ class HouseClass {
   ** This is the flag-home-cell for this house.  This is where we must bring
   ** another house's flag back to, to defeat that house.
   */
-  CELL FlagHome = 0;
+  Cell FlagHome{};
 
   /*
   ** For multiplayer games, each house instance has a remap table; the table
@@ -427,16 +427,16 @@ class HouseClass {
   game::ProdFailType Begin_Production(RTTIType type, int id);
   game::ProdFailType Suspend_Production(RTTIType type);
   game::ProdFailType Abandon_Production(RTTIType type);
-  bool Place_Object(RTTIType type, CELL cell);
+  bool Place_Object(RTTIType type, Cell cell);
   bool Manual_Place(BuildingClass* builder, BuildingClass* object);
   void Special_Weapon_AI(SpecialWeaponType id);
-  bool Place_Special_Blast(SpecialWeaponType id, CELL cell);
-  bool Flag_Attach(CELL cell, bool set_home = false);
+  bool Place_Special_Blast(SpecialWeaponType id, Cell cell);
+  bool Flag_Attach(Cell cell, bool set_home = false);
   bool Flag_Attach(UnitClass* object, bool set_home = false);
   bool Flag_Remove(Target target, bool set_home = false);
   void Init_Data(PlayerColorType color, HousesType house, int credits);
 
-  void Sell_Wall(CELL cell);
+  void Sell_Wall(Cell cell);
   bool Flag_To_Die();
   bool Flag_To_Win();
   bool Flag_To_Lose();
@@ -558,7 +558,7 @@ class HouseClass {
   **	This count down timer class decrements and then changes
   ** the Atomic Bomb state.
   */
-  CELL NukeDest = 0;
+  Cell NukeDest{};
 
   /*
   ** This routine completely removes this house & all its objects from the game.

@@ -168,7 +168,6 @@
 #include "td/core/const.h"
 #include "td/core/coord.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
@@ -399,7 +398,7 @@ HouseClass::HouseClass(HousesType house)
   ActLike = Class->House;
   Allies = 0;
   AScan = 0;
-  NukeDest = 0;
+  NukeDest = Cell{};
   BlitzTime.Set(0);
   BlitzTime.Stop();
   BScan = 0;
@@ -413,7 +412,7 @@ HouseClass::HouseClass(HousesType house)
   DamageTime.Set(kDamageDelay);
   Drain = 0;
   Edge = SOURCE_NORTH;
-  FlagHome = 0;
+  FlagHome = Cell{};
   FlagLocation = Target{};
   HarvestedCredits = 0;
   TheWorld().house_triggers().at(house).clear();
@@ -955,7 +954,7 @@ void HouseClass::AI() {
     *refuse, *	blow them up.
     */
     if (TheSpecial().IsCaptureTheFlag && TheSession().type() != GAME_NORMAL &&
-        FlagHome) {
+        FlagHome.index() != 0) {
       TechnoClass* techno = TheMap().at(FlagHome).Cell_Techno();
       if (techno) {
         bool moving = false;
@@ -1013,7 +1012,7 @@ void HouseClass::AI() {
         }
 
         if (obj) {
-          CELL const cell = XY_Cell(
+          const Cell cell = Cell::FromXY(
               TheMap().MapCellX + Random_Pick(0, TheMap().MapCellWidth - 1),
               TheMap().MapCellY + Random_Pick(0, TheMap().MapCellHeight - 1));
           if (!Scan_Place_Object(obj, cell)) {
@@ -1111,7 +1110,7 @@ void HouseClass::AI() {
     if (unit) {
       unit->Mark(MARK_CHANGE);
     } else {
-      const CELL cell = FlagLocation.AsCell();
+      const Cell cell = FlagLocation.AsCell();
       TheMap().at(cell).Redraw_Objects();
     }
   }
@@ -2467,7 +2466,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
   }
 
   if (bestptr) {
-    const CELL cell = Coord_Cell(bestptr->Center_Coord());
+    const Cell cell = Cell::Containing(bestptr->Center_Coord());
     Place_Special_Blast(id, cell);
   }
 }
@@ -2492,7 +2491,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
  *effect for nuclear bomb.                                   * 07/28/1995 JLB :
  *Revamped to use super weapon class controller.                           *
  *=============================================================================================*/
-bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
+bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell) {
   Validate();
   BuildingClass* launchsite = nullptr;
   AnimClass* anim = nullptr;
@@ -2500,7 +2499,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
   switch (id) {
     case SPC_ION_CANNON:
       if (IonCannon.Is_Ready()) {
-        anim = base::NewPooled<AnimClass>(ANIM_ION_CANNON, Cell_Coord(cell));
+        anim = base::NewPooled<AnimClass>(ANIM_ION_CANNON, cell.Center());
         if (anim) {
           anim->Owner = Class->House;
         }
@@ -2519,7 +2518,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         **	Scatter the nuclear bomb impact point into an adjacent cell.
         */
         for (;;) {
-          CELL newcell =
+          Cell newcell =
               Adjacent_Cell(cell, Random_Pick(game::FACING_N, game::FACING_NW));
           if (TheMap().In_Radar(newcell)) {
             cell = newcell;
@@ -2564,7 +2563,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           */
           auto* bullet = base::NewPooled<BulletClass>(BULLET_NUKE_DOWN);
           if (bullet) {
-            const Coordinate start = Cell_Coord(XY_Cell(Cell_X(cell), 0));
+            const Coordinate start = Cell::FromXY(cell.x(), 0).Center();
             bullet->Assign_Target(Target::FromCellIndex(cell));
             bullet->Payback = nullptr;
             bullet->Strength = 1;
@@ -2629,7 +2628,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Place_Object(RTTIType type, CELL cell) {
+bool HouseClass::Place_Object(RTTIType type, Cell cell) {
   Validate();
   TechnoClass* tech = nullptr;
   FactoryClass* factory = nullptr;
@@ -2694,7 +2693,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
   if (factory && factory->Has_Completed()) {
     tech = factory->Get_Object();
 
-    if (cell == -1) {
+    if (cell == Cell::None()) {
       TechnoClass* pending = factory->Get_Object();
       if (pending) {
         TechnoClass* builder = pending->Who_Can_Build_Me(false, false);
@@ -2728,7 +2727,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
           *building is *	placed by way of a remote event.
           */
           builder->Transmit_Message(RADIO_HELLO, tech);
-          if (tech->Unlimbo(Cell_Coord(cell))) {
+          if (tech->Unlimbo(cell.Center())) {
             factory->Completed();
             Abandon_Production(type);
 
@@ -2795,7 +2794,7 @@ bool HouseClass::Manual_Place(BuildingClass* builder, BuildingClass* object) {
     TheMap().PendingHouse = Class->House;
 
     TheMap().Set_Cursor_Shape(object->Occupy_List(true));
-    TheMap().Set_Cursor_Pos(Coord_Cell(builder->Coord));
+    TheMap().Set_Cursor_Pos(Cell::Containing(builder->Coord));
     builder->Mark(MARK_CHANGE);
     return true;
   }
@@ -3607,7 +3606,7 @@ bool HouseClass::Flag_Remove(Target target, bool set_home) {
       /*
       **	Remove the flag from a cell
       */
-      const CELL cell = target.AsCell();
+      const Cell cell = target.AsCell();
       if (TheMap().In_Radar(cell)) {
         rc = TheMap().at(cell).Flag_Remove();
         if (rc && FlagLocation == target) {
@@ -3620,10 +3619,10 @@ bool HouseClass::Flag_Remove(Target target, bool set_home) {
     **	Handle the flag home cell:
     **	If 'set_home' is set, clear the home value & the cell's overlay
     */
-    if (set_home && FlagHome) {
+    if (set_home && FlagHome.index() != 0) {
       TheMap().at(FlagHome).Overlay = OVERLAY_NONE;
       TheMap().Flag_Cell(FlagHome);
-      FlagHome = 0;
+      FlagHome = Cell{};
     }
 
     return rc;
@@ -3650,7 +3649,7 @@ bool HouseClass::Flag_Remove(Target target, bool set_home) {
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
+bool HouseClass::Flag_Attach(Cell cell, bool set_home) {
   Validate();
   game::FacingType rot = game::FACING_NONE;
 
@@ -3674,7 +3673,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
     **	Attach the flag to the cell specified. If it can't be placed, then pick
     **	a nearby cell where it can be placed.
     */
-    CELL newcell = cell;
+    Cell newcell = cell;
     bool rc = TheMap().at(newcell).Flag_Place(Class->House);
     if (!rc) {
       /*
@@ -3691,9 +3690,9 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
           rot = Random_Pick(game::FACING_N, game::FACING_NW);
           for (game::FacingType fcounter = game::FACING_N;
                fcounter <= game::FACING_NW; fcounter++) {
-            newcell =
-                Coord_Cell(Coord_Move(Cell_Coord(cell), game::Facing_Dir(rot),
-                                      static_cast<uint16_t>(dist * 256)));
+            newcell = Cell::Containing(
+                Coord_Move(cell.Center(), game::Facing_Dir(rot),
+                           static_cast<uint16_t>(dist * 256)));
             if (TheMap().In_Radar(newcell) &&
                 TheMap().at(newcell).Flag_Place(Class->House)) {
               dist = 32;
@@ -3712,9 +3711,9 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
           rot = Random_Pick(game::FACING_N, game::FACING_NW);
           for (game::FacingType fcounter = game::FACING_NW;
                fcounter >= game::FACING_N; fcounter--) {
-            newcell =
-                Coord_Cell(Coord_Move(Cell_Coord(cell), game::Facing_Dir(rot),
-                                      static_cast<uint16_t>(dist * 256)));
+            newcell = Cell::Containing(
+                Coord_Move(cell.Center(), game::Facing_Dir(rot),
+                           static_cast<uint16_t>(dist * 256)));
             if (TheMap().In_Radar(newcell) &&
                 TheMap().at(newcell).Flag_Place(Class->House)) {
               dist = 32;
@@ -3738,7 +3737,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
     if (rc) {
       FlagLocation = Target::FromCellIndex(newcell);
 
-      if (set_home || FlagHome == 0) {
+      if (set_home || FlagHome.index() == 0) {
         TheMap().at(newcell).Overlay = OVERLAY_FLAG_SPOT;
         FlagHome = newcell;
       }
@@ -3818,7 +3817,7 @@ void HouseClass::MPlayer_Defeated() {
     if (FlagLocation) {
       Flag_Remove(FlagLocation, true);
     } else {
-      if (FlagHome) {
+      if (FlagHome.index() != 0) {
         Flag_Remove(Target::FromCellIndex(FlagHome), true);
       }
     }
@@ -4435,9 +4434,9 @@ bool HouseClass::Has_Nuke_Device() const {
  *                                                                                             *
  * HISTORY: * 08/05/1995 JLB : Created. *
  *=============================================================================================*/
-void HouseClass::Sell_Wall(CELL cell) {
+void HouseClass::Sell_Wall(Cell cell) {
   Validate();
-  if (static_cast<unsigned>(cell) > 0) {
+  if (static_cast<unsigned>(cell.index()) > 0) {
     const OverlayType overlay = TheMap().at(cell).Overlay;
 
     if (overlay != OVERLAY_NONE && TheMap().at(cell).Owner == Class->House) {

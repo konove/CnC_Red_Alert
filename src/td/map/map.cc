@@ -71,7 +71,6 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/pooled.h"
-#include "base/types.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/tile.h"
@@ -465,7 +464,7 @@ void MapClass::One_Time() {
 void MapClass::Init_Clear() {
   GScreenClass::Init_Clear();
   Init_Cells();
-  TiberiumScan = 0;
+  TiberiumScan = Cell{};
   IsForwardScan = true;
   TiberiumGrowthCount = 0;
   TiberiumSpreadCount = 0;
@@ -531,8 +530,8 @@ void MapClass::Init_Cells() {
   Alloc_Cells();
 #else
   // Reset all cells to their default initial state.
-  for (base::ssize index = 0; index < MAP_CELL_TOTAL; index++) {
-    TheMap().at(index).Reset();
+  for (int index = 0; index < MAP_CELL_TOTAL; index++) {
+    TheMap().at(Cell::FromIndex(index)).Reset();
   }
 #endif
 }
@@ -587,8 +586,7 @@ void MapClass::Set_Map_Dimensions(int x, int y, int w, int h) {
  *table and incremental flag.                         * 05/18/1994 JLB :
  *Converted to member function.                                            *
  *=============================================================================================*/
-void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
-
+void MapClass::Sight_From(Cell cell, int sightrange, bool incremental) {
   /*
   **	Units that are off-map cannot sight.
   */
@@ -602,7 +600,7 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
   /*
   **	Determine logical cell coordinate for center scan point.
   */
-  const int xx = Cell_X(cell);  // Center cell X coordinate (bounds checking).
+  const int xx = cell.x();  // Center cell X coordinate (bounds checking).
 
   /*
   **	Incremental scans only scan the outer rings. Full scans
@@ -620,18 +618,18 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
   **	Process all offsets required for the desired scan.
   */
   while (count--) {
-    CELL const newcell = static_cast<CELL>(
-        cell + base::ConsumeFront(ptr));  // New cell with offset.
+    const Cell newcell =
+        cell.Offset(base::ConsumeFront(ptr));  // New cell with offset.
 
     /*
     **	Determine if the map edge has been wrapped. If so,
     **	then don't process the cell.
     */
-    if (static_cast<unsigned>(newcell) >= MAP_CELL_TOTAL) {
+    if (static_cast<unsigned>(newcell.index()) >= MAP_CELL_TOTAL) {
       continue;
     }
     int xdiff =
-        Cell_X(newcell) - xx;  // New cell's X coordinate distance from center.
+        newcell.x() - xx;  // New cell's X coordinate distance from center.
     xdiff = std::abs(xdiff);
     if (xdiff > sightrange) {
       continue;
@@ -670,9 +668,9 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
  * HISTORY: * 04/29/1994 JLB : Created. * 04/30/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-int MapClass::Cell_Distance(CELL cell1, CELL cell2) {
-  int x = Cell_X(cell1) - Cell_X(cell2);
-  int y = Cell_Y(cell1) - Cell_Y(cell2);  // Difference on X and Y axis.
+int MapClass::Cell_Distance(Cell cell1, Cell cell2) {
+  int x = cell1.x() - cell2.x();
+  int y = cell1.y() - cell2.y();  // Difference on X and Y axis.
 
   if (x < 0) {
     x = -x;
@@ -705,13 +703,13 @@ int MapClass::Cell_Distance(CELL cell1, CELL cell2) {
  *function.                                            * 05/01/1994 JLB :
  *Speeded up.                                                              *
  *=============================================================================================*/
-bool MapClass::In_Radar(CELL cell) const {
-  if (cell < 0 || cell >= MAP_CELL_TOTAL) {
+bool MapClass::In_Radar(Cell cell) const {
+  if (cell.index() < 0 || cell.index() >= MAP_CELL_TOTAL) {
     return false;
   }
-  return static_cast<unsigned>(Cell_X(cell) - MapCellX) <
+  return static_cast<unsigned>(cell.x() - MapCellX) <
              static_cast<unsigned>(MapCellWidth) &&
-         static_cast<unsigned>(Cell_Y(cell) - MapCellY) <
+         static_cast<unsigned>(cell.y() - MapCellY) <
              static_cast<unsigned>(MapCellHeight);
 }
 
@@ -734,15 +732,15 @@ bool MapClass::In_Radar(CELL cell) const {
  *                                                                                             *
  * HISTORY: * 07/31/1994 JLB : Created. *
  *=============================================================================================*/
-void MapClass::Place_Down(CELL cell, ObjectClass* object) {
+void MapClass::Place_Down(Cell cell, ObjectClass* object) {
   if (!object) {
     return;
   }
 
   std::span<const int16_t> list = object->Occupy_List();
   while (list.front() != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
-    if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
+    const Cell newcell = cell.Offset(base::ConsumeFront(list));
+    if (static_cast<unsigned>(newcell.index()) < MAP_CELL_TOTAL) {
       (*this).at(newcell).Occupy_Down(object);
       (*this).at(newcell).Recalc_Attributes();
       (*this).at(newcell).Redraw_Objects();
@@ -751,8 +749,8 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
 
   list = object->Overlap_List();
   while (list.front() != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
-    if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
+    const Cell newcell = cell.Offset(base::ConsumeFront(list));
+    if (static_cast<unsigned>(newcell.index()) < MAP_CELL_TOTAL) {
       (*this).at(newcell).Overlap_Down(object);
       (*this).at(newcell).Redraw_Objects();
     }
@@ -777,15 +775,15 @@ void MapClass::Place_Down(CELL cell, ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 07/31/1994 JLB : Created. *
  *=============================================================================================*/
-void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
+void MapClass::Pick_Up(Cell cell, ObjectClass* object) {
   if (!object) {
     return;
   }
 
   std::span<const int16_t> list = object->Occupy_List();
   while (list.front() != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
-    if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
+    const Cell newcell = cell.Offset(base::ConsumeFront(list));
+    if (static_cast<unsigned>(newcell.index()) < MAP_CELL_TOTAL) {
       (*this).at(newcell).Occupy_Up(object);
       (*this).at(newcell).Recalc_Attributes();
       (*this).at(newcell).Redraw_Objects();
@@ -794,8 +792,8 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
 
   list = object->Overlap_List();
   while (list.front() != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
-    if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
+    const Cell newcell = cell.Offset(base::ConsumeFront(list));
+    if (static_cast<unsigned>(newcell.index()) < MAP_CELL_TOTAL) {
       (*this).at(newcell).Overlap_Up(object);
       (*this).at(newcell).Redraw_Objects();
     }
@@ -820,15 +818,15 @@ void MapClass::Pick_Up(CELL cell, ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 07/12/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
+void MapClass::Overlap_Down(Cell cell, ObjectClass* object) {
   if (!object) {
     return;
   }
 
   std::span<const int16_t> list = object->Overlap_List();
   while (list.front() != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
-    if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
+    const Cell newcell = cell.Offset(base::ConsumeFront(list));
+    if (static_cast<unsigned>(newcell.index()) < MAP_CELL_TOTAL) {
       (*this).at(newcell).Overlap_Down(object);
       (*this).at(newcell).Redraw_Objects();
     }
@@ -852,15 +850,15 @@ void MapClass::Overlap_Down(CELL cell, ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 07/12/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Overlap_Up(CELL cell, ObjectClass* object) {
+void MapClass::Overlap_Up(Cell cell, ObjectClass* object) {
   if (!object) {
     return;
   }
 
   std::span<const int16_t> list = object->Overlap_List();
   while (list.front() != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
-    if (static_cast<unsigned>(newcell) < MAP_CELL_TOTAL) {
+    const Cell newcell = cell.Offset(base::ConsumeFront(list));
+    if (static_cast<unsigned>(newcell.index()) < MAP_CELL_TOTAL) {
       (*this).at(newcell).Overlap_Up(object);
       (*this).at(newcell).Redraw_Objects();
     }
@@ -895,7 +893,8 @@ int32_t MapClass::Overpass() {
   for (int y = 0; y < MapCellHeight - 1; y++) {
     for (int x = 0; x < MapCellWidth; x++) {
       value += (*this)
-                   .at(((MapCellY + y) * MAP_CELL_W) + (MapCellX + x))
+                   .at(Cell::FromIndex(((MapCellY + y) * MAP_CELL_W) +
+                                       (MapCellX + x)))
                    .Tiberium_Adjust(true);
     }
   }
@@ -941,7 +940,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
   **	Loop through all cells.
   */
   for (i = 0; i < MAP_CELL_TOTAL; i++) {
-    CellClass* cellptr = &TheMap().at(static_cast<CELL>(i));
+    CellClass* cellptr = &TheMap().at(Cell::FromIndex(i));
     struct {
       TemplateType TType;   // Template type.
       unsigned char TIcon;  // Template icon number.
@@ -1020,14 +1019,14 @@ bool MapClass::Write_Binary(const char* root) {
     /*
     **	Save TType.
     */
-    if (!file->WriteObject(TheMap().at(i).TType)) {
+    if (!file->WriteObject(TheMap().at(Cell::FromIndex(i)).TType)) {
       return false;
     }
 
     /*
     **	Save TIcon.
     */
-    if (!file->WriteObject(TheMap().at(i).TIcon)) {
+    if (!file->WriteObject(TheMap().at(Cell::FromIndex(i)).TIcon)) {
       return false;
     }
   }
@@ -1064,10 +1063,10 @@ void MapClass::Logic() {
   */
   int subcount = 30;
   int index = 0;
-  for (index = TiberiumScan; index < MAP_CELL_TOTAL; index++) {
-    CELL cell = static_cast<CELL>(index);
+  for (index = TiberiumScan.index(); index < MAP_CELL_TOTAL; index++) {
+    Cell cell = Cell::FromIndex(index);
     if (!IsForwardScan) {
-      cell = static_cast<CELL>(MAP_CELL_TOTAL - 1 - index);
+      cell = Cell::FromIndex(MAP_CELL_TOTAL - 1 - index);
     }
     const CellClass* ptr = &(*this).at(cell);
 
@@ -1106,14 +1105,14 @@ void MapClass::Logic() {
       break;
     }
   }
-  TiberiumScan = static_cast<CELL>(index);
+  TiberiumScan = Cell::FromIndex(index);
 
-  if (TiberiumScan >= MAP_CELL_TOTAL) {
+  if (TiberiumScan.index() >= MAP_CELL_TOTAL) {
     int tries = 1;
     if (TheSpecial().IsTFast || TheSession().type() != GAME_NORMAL) {
       tries = 2;
     }
-    TiberiumScan = 0;
+    TiberiumScan = Cell{};
     IsForwardScan = !static_cast<bool>(IsForwardScan);
 
     /*
@@ -1121,7 +1120,7 @@ void MapClass::Logic() {
     */
     if (TiberiumGrowthCount) {
       for (int i = 0; i < tries; i++) {
-        const CELL cell =
+        const Cell cell =
             base::At(TiberiumGrowth, Random_Pick(0, TiberiumGrowthCount - 1));
         CellClass* newcell = &(*this).at(cell);
         if (newcell->Land_Type() == LAND_TIBERIUM &&
@@ -1137,7 +1136,7 @@ void MapClass::Logic() {
     */
     if (TiberiumSpreadCount) {
       for (int i = 0; i < tries; i++) {
-        const CELL cell =
+        const Cell cell =
             base::At(TiberiumSpread, Random_Pick(0, TiberiumSpreadCount - 1));
 
         /*
@@ -1193,15 +1192,15 @@ void MapClass::Logic() {
  *                                                                                             *
  * HISTORY: * 03/15/1995 JLB : Created. *
  *=============================================================================================*/
-int MapClass::Cell_Region(CELL cell) {
-  return (Cell_X(cell) / REGION_WIDTH) + 1 +
-         (((Cell_Y(cell) / REGION_HEIGHT) + 1) * MAP_REGION_WIDTH);
+int MapClass::Cell_Region(Cell cell) {
+  return (cell.x() / REGION_WIDTH) + 1 +
+         (((cell.y() / REGION_HEIGHT) + 1) * MAP_REGION_WIDTH);
 }
 
 /***************************************************************************
  * MapClass::Cell_Threat -- Gets a houses threat value for a cell          *
  *                                                                         *
- * INPUT:   CELL        cell    - the cell number to check                 *
+ * INPUT:   Cell        cell    - the cell number to check                 *
  *            HouseType house   - the house to check                       *
  *                                                                         *
  * OUTPUT:                                                                 *
@@ -1211,7 +1210,7 @@ int MapClass::Cell_Region(CELL cell) {
  * HISTORY:                                                                *
  *   04/25/1995 PWG : Created.                                             *
  *=========================================================================*/
-int MapClass::Cell_Threat(CELL cell, HousesType house) {
+int MapClass::Cell_Threat(Cell cell, HousesType house) {
   int threat =
       base::At(HouseClass::As_Pointer(house)->Regions,
                MapEditClass::Cell_Region(TheMap().at(cell).Cell_Number()))
@@ -1243,7 +1242,7 @@ bool MapClass::Place_Random_Crate() {
   for (int index = 0; index < 100; index++) {
     const int x = Random_Pick(0, MapCellWidth - 1);
     const int y = Random_Pick(0, MapCellHeight - 1);
-    const CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
+    const Cell cell = Cell::FromXY(MapCellX + x, MapCellY + y);
 
     CellClass* ptr = &(*this).at(cell);
     if (ptr->Is_Generally_Clear() && ptr->Overlay == OVERLAY_NONE) {
@@ -1283,7 +1282,8 @@ bool MapClass::Validate() {
   Check every cell on the map, even those that aren't displayed,
   in the hopes of detecting a memory trasher.
   ------------------------------------------------------------------------*/
-  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+  for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+    const Cell cell = Cell::FromIndex(cell_index);
     /*.....................................................................
     Validate Template & Icon data
     .....................................................................*/
@@ -1340,8 +1340,9 @@ bool MapClass::Validate() {
     Validate Occupier
     .....................................................................*/
     ObjectClass* obj = (*this).at(cell).Cell_Occupier();
-    if (obj && (obj->IsInLimbo ||
-                static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)) {
+    if (obj &&
+        (obj->IsInLimbo || static_cast<unsigned int>(
+                               Cell::Containing(obj->Coord).index()) > 4095)) {
       return false;
     }
 
@@ -1351,7 +1352,8 @@ bool MapClass::Validate() {
     for (auto& Overlapper : (*this).at(cell).Overlappers) {
       obj = Overlapper;
       if (obj && (obj->IsInLimbo ||
-                  static_cast<unsigned int>(Coord_Cell(obj->Coord)) > 4095)) {
+                  static_cast<unsigned int>(
+                      Cell::Containing(obj->Coord).index()) > 4095)) {
         return false;
       }
     }
@@ -1381,7 +1383,7 @@ bool MapClass::Validate() {
 ObjectClass* MapClass::Close_Object(Coordinate coord) const {
   ObjectClass* object = nullptr;
   int distance = 0;
-  const CELL cell = Coord_Cell(coord);
+  const Cell cell = Cell::Containing(coord);
 
   /*
   **	Scan through current and adjacent cells, looking for the
@@ -1401,7 +1403,7 @@ ObjectClass* MapClass::Close_Object(Coordinate coord) const {
     **	Examine the cell for close object. Make sure that the cell actually is a
     **	legal one.
     */
-    const CELL newcell = static_cast<CELL>(cell + _offset);
+    const Cell newcell = cell.Offset(_offset);
     if (In_Radar(newcell)) {
       /*
       **	Search through all objects that occupy this cell and then
@@ -1418,7 +1420,7 @@ ObjectClass* MapClass::Close_Object(Coordinate coord) const {
             dynamic_cast<TechnoClass*>(o)->Cloak != game::CLOAKED) {
           int d = -1;
           if (o->What_Am_I() == RTTI_BUILDING) {
-            d = Distance(coord, Cell_Coord(newcell));
+            d = Distance(coord, newcell.Center());
             if (d > 0x00B5) {
               d = -1;
             }

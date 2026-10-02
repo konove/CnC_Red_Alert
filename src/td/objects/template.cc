@@ -55,6 +55,7 @@
 #include "td/objects/template.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -74,7 +75,6 @@
 #include "game/core/object_heap.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/data/profile.h"
 #include "td/editor/mapedit.h"
@@ -135,8 +135,8 @@ void TemplateClass::Read_INI(char* buffer) {
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
   while (*tbuffer != '\0') {
-    CELL const cell =
-        base::ParseIntegerOr<CELL>(tbuffer, 0);  // Cell of building.
+    const Cell cell = Cell::FromIndex(
+        base::ParseIntegerOr<int16_t>(tbuffer, 0));  // Cell of building.
     WWGetPrivateProfileString(
         INI_Name(), tbuffer, nullptr,
         std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
@@ -188,7 +188,7 @@ void TemplateClass::Write_INI(std::string& buffer) {
   **	Find all templates and write them to the file.
   */
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass* ptr = &TheMap().at(index);
+    CellClass* ptr = &TheMap().at(Cell::FromIndex(index));
     if (ptr->TType != TEMPLATE_NONE && ptr->TIcon == 0) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(buf, sizeof(buf), "%s",
@@ -278,8 +278,7 @@ bool TemplateClass::Mark(MarkType mark) {
 
     for (int y = 0; std::cmp_less(y, Class->Height); y++) {
       for (int x = 0; std::cmp_less(x, Class->Width); x++) {
-        const CELL cell =
-            static_cast<CELL>(Coord_Cell(Coord) + (y * MAP_CELL_W) + x);
+        const Cell cell = Cell::Containing(Coord).Offset((y * MAP_CELL_W) + x);
         if (TheMap().In_Radar(cell)) {
           CellClass* cellptr = &TheMap().at(cell);
           const int number = (y * Class->Width) + x;
@@ -399,10 +398,10 @@ void TemplateClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-TemplateClass::TemplateClass(TemplateType type, CELL pos)
+TemplateClass::TemplateClass(TemplateType type, Cell pos)
     : Class(&TemplateTypeClass::As_Reference(type)) {
-  if (pos != -1) {
-    Unlimbo(Cell_Coord(pos));
+  if (pos != Cell::None()) {
+    Unlimbo(pos.Center());
   }
 }
 

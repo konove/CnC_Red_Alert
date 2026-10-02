@@ -84,7 +84,7 @@ void CellClass::Serialize(Archive& ar) {
       ar.Fail("invalid saved cell attributes");
     }
   }
-  auto& trigger = base::At(TheWorld().cell_triggers(), Cell_Number());
+  auto& trigger = base::At(TheWorld().cell_triggers(), Cell_Number().index());
   if (IsTrigger) {
     ar(TriggerPtr(trigger));
     if constexpr (Archive::kIsReading) {
@@ -110,20 +110,20 @@ void MapClass::Serialize(Archive& ar) {
         MapCellHeight > MAP_CELL_H || MapCellX > MAP_CELL_W - MapCellWidth ||
         MapCellY > MAP_CELL_H - MapCellHeight || TiberiumGrowthCount < 0 ||
         TiberiumGrowthCount > 50 || TiberiumSpreadCount < 0 ||
-        TiberiumSpreadCount > 50 || TiberiumScan < 0 ||
-        TiberiumScan >= MAP_CELL_TOTAL) {
+        TiberiumSpreadCount > 50 || TiberiumScan.index() < 0 ||
+        TiberiumScan.index() >= MAP_CELL_TOTAL) {
       ar.Fail("invalid map dimensions or tiberium scan state");
       return;
     }
     IsForwardScan = forward;
-    std::ranges::fill(TiberiumGrowth, 0);
-    std::ranges::fill(TiberiumSpread, 0);
+    std::ranges::fill(TiberiumGrowth, Cell{});
+    std::ranges::fill(TiberiumSpread, Cell{});
   }
   for (int i = 0; i < TiberiumGrowthCount; ++i) {
     ar(base::At(TiberiumGrowth, i));
     if constexpr (Archive::kIsReading) {
-      if (base::At(TiberiumGrowth, i) < 0 ||
-          base::At(TiberiumGrowth, i) >= MAP_CELL_TOTAL) {
+      if (base::At(TiberiumGrowth, i).index() < 0 ||
+          base::At(TiberiumGrowth, i).index() >= MAP_CELL_TOTAL) {
         ar.Fail("invalid tiberium growth cell");
       }
     }
@@ -131,8 +131,8 @@ void MapClass::Serialize(Archive& ar) {
   for (int i = 0; i < TiberiumSpreadCount; ++i) {
     ar(base::At(TiberiumSpread, i));
     if constexpr (Archive::kIsReading) {
-      if (base::At(TiberiumSpread, i) < 0 ||
-          base::At(TiberiumSpread, i) >= MAP_CELL_TOTAL) {
+      if (base::At(TiberiumSpread, i).index() < 0 ||
+          base::At(TiberiumSpread, i).index() >= MAP_CELL_TOTAL) {
         ar.Fail("invalid tiberium spread cell");
       }
     }
@@ -247,7 +247,7 @@ void RadarClass::ResetTransientUiState() {
   SpecialRadarFrame = 0;
   RadarAnimFrame = IsRadarActive ? kRadarActivatedFrame : 0;
   PixelPtr = 0;
-  std::ranges::fill(PixelStack, 0);
+  std::ranges::fill(PixelStack, Cell{});
 }
 
 void PowerClass::ResetTransientUiState() {
@@ -326,8 +326,8 @@ void MouseClass::Serialize(Archive& ar) {
     SmudgeTypeClass::Init(Theater);
     // Init_Cells clears TotalValue, so it must precede the member reads.
     Init_Cells();
-    for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
-      base::At(TheWorld().cell_triggers(), cell) = nullptr;
+    for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+      base::At(TheWorld().cell_triggers(), cell_index) = nullptr;
     }
   }
   SidebarClass::Serialize(ar);
@@ -340,7 +340,8 @@ void MouseClass::Serialize(Archive& ar) {
   ar.Section(FourCC("MCEL"));
   int32_t count = 0;
   if constexpr (!Archive::kIsReading) {
-    for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
+    for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+      const Cell cell = Cell::FromIndex(cell_index);
       if ((*this).at(cell).Should_Save()) {
         ++count;
       }
@@ -352,11 +353,11 @@ void MouseClass::Serialize(Archive& ar) {
       ar.Fail("invalid saved cell count");
       return;
     }
-    CELL previous = -1;
+    Cell previous = Cell::None();
     for (int i = 0; i < count; ++i) {
-      CELL cell = 0;
+      Cell cell{};
       ar(cell);
-      if (!ar.ok() || cell <= previous || cell >= MAP_CELL_TOTAL) {
+      if (!ar.ok() || cell <= previous || cell.index() >= MAP_CELL_TOTAL) {
         ar.Fail("invalid or duplicate saved cell index");
         return;
       }
@@ -368,7 +369,8 @@ void MouseClass::Serialize(Archive& ar) {
     }
     TheWorld().last_theater() = Theater;
   } else {
-    for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
+    for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+      Cell cell = Cell::FromIndex(cell_index);  // ar() takes a mutable field.
       if ((*this).at(cell).Should_Save()) {
         ar(cell, (*this).at(cell));
       }

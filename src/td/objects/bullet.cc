@@ -257,10 +257,10 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
     case BulletType::BULLET_COUNT:
     default:
       if (Altitude) {
-        static CELL _list[10];
+        static int16_t _list[10];
         std::span<const int16_t> ptr = Coord_Spillage_List(Coord, 5);
         int index = 0;
-        const CELL cell1 = Coord_Cell(Coord);
+        const Cell cell1 = Cell::Containing(Coord);
 
         while (base::At(ptr, base::ToSize(index)) != REFRESH_EOL) {
           base::At(_list, index) = base::At(ptr, base::ToSize(index));
@@ -269,11 +269,11 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
 
         Coordinate coord = Coordinate::FromLeptons(0, Altitude);
         coord = Coord - coord;
-        const CELL cell2 = Coord_Cell(coord);
+        const Cell cell2 = Cell::Containing(coord);
         ptr = Coord_Spillage_List(coord, 5);
         while (ptr.front() != REFRESH_EOL) {
-          base::At(_list, index++) =
-              static_cast<CELL>(base::ConsumeFront(ptr) + (cell2 - cell1));
+          base::At(_list, index++) = static_cast<int16_t>(
+              base::ConsumeFront(ptr) + (cell2.index() - cell1.index()));
         }
         base::At(_list, index) = REFRESH_EOL;
         return _list;
@@ -301,7 +301,7 @@ bool BulletClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark)) {
     if (!Class->IsInvisible) {
-      TheMap().Refresh_Cells(Coord_Cell(Coord), Occupy_List());
+      TheMap().Refresh_Cells(Cell::Containing(Coord), Occupy_List());
     }
     return true;
   }
@@ -406,11 +406,11 @@ void BulletClass::AI() {
       Mark();
       //			IsLocked = true;
       if (!Class->IsHigh) {
-        const CellClass* cellptr = &TheMap().at(Coord_Cell(coord));
+        const CellClass* cellptr = &TheMap().at(Cell::Containing(coord));
         if (cellptr->Overlay != OVERLAY_NONE &&
             OverlayTypeClass::As_Reference(cellptr->Overlay).IsHigh) {
           forced = true;
-          Coord = coord = Cell_Coord(Coord_Cell(coord));
+          Coord = coord = Cell::Containing(coord).Center();
         }
       }
 

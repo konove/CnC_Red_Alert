@@ -76,7 +76,6 @@
 #include "td/ai/trigger.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/editor/mapedit.h"
 #include "td/map/world.h"
@@ -994,7 +993,7 @@ void MapEditClass::Start_Placement() {
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
 int MapEditClass::Place_Object() {
-  CELL template_cell = 0;    // cell being checked for template
+  Cell template_cell{};      // cell being checked for template
   Coordinate obj_coord{};    // coord of occupier object
   BaseNodeClass node;        // for adding to an AI Base
 
@@ -1016,8 +1015,7 @@ int MapEditClass::Place_Object() {
       /*
       ................. Check this cell for an occupier ..................
       */
-      template_cell =
-          static_cast<CELL>((ZoneCell + ZoneOffset) + occupy.front());
+      template_cell = ZoneCell.Offset(ZoneOffset + occupy.front());
       if ((*this).at(template_cell).Cell_Occupier()) {
         ObjectClass* occupier =
             (*this).at(template_cell).Cell_Occupier();  // occupying object
@@ -1042,14 +1040,15 @@ int MapEditClass::Place_Object() {
         (*this).at(template_cell).TType =
             dynamic_cast<const TemplateTypeClass*>(PendingObject)->Type;
         (*this).at(template_cell).TIcon = static_cast<unsigned char>(
-            Cell_X(occupy.front()) +
-            (Cell_Y(occupy.front()) *
+            Cell::FromIndex(occupy.front()).x() +
+            (Cell::FromIndex(occupy.front()).y() *
              dynamic_cast<const TemplateTypeClass*>(PendingObject)->Width));
         (*this).at(template_cell).Recalc_Attributes();
         /*
         ................ Try to put the object back down ................
         */
-        if (occupier->Can_Enter_Cell(Coord_Cell(obj_coord)) != game::MOVE_OK) {
+        if (occupier->Can_Enter_Cell(Cell::Containing(obj_coord)) !=
+            game::MOVE_OK) {
           okflag = false;
         }
 
@@ -1072,7 +1071,7 @@ int MapEditClass::Place_Object() {
     ......... If it's still OK after ALL THAT, place the template .........
     */
     if (okflag) {
-      if (PendingObjectPtr->Unlimbo(Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)))) {
+      if (PendingObjectPtr->Unlimbo(ZoneCell.Offset(ZoneOffset).Center())) {
         /*...............................................................
         Loop through all cells occupied by this template, and clear the
         smudge & overlay.
@@ -1082,8 +1081,7 @@ int MapEditClass::Place_Object() {
           /*
           ............... Get cell for this occupy item ................
           */
-          template_cell =
-              static_cast<CELL>((ZoneCell + ZoneOffset) + occupy.front());
+          template_cell = ZoneCell.Offset(ZoneOffset + occupy.front());
 
           /*
           ................... Clear smudge & overlay ...................
@@ -1158,8 +1156,8 @@ int MapEditClass::Place_Object() {
     */
     if (PendingObjectPtr->Unlimbo(obj_coord)) {
       dynamic_cast<InfantryClass*>(PendingObjectPtr)->Set_Occupy_Bit(obj_coord);
-      //			Map[Coord_Cell(obj_coord)].Flag.Composite |=
-      //				(1 << CellClass::Spot_Index(obj_coord));
+      //			Map[Cell::Containing(obj_coord)].Flag.Composite
+      //|= 				(1 << CellClass::Spot_Index(obj_coord));
       PendingObjectPtr = nullptr;
       PendingObject = nullptr;
       PendingHouse = HOUSE_NONE;
@@ -1175,7 +1173,7 @@ int MapEditClass::Place_Object() {
   /*------------------------------------------------------------------------
   Placing an object
   ------------------------------------------------------------------------*/
-  if (PendingObjectPtr->Unlimbo(Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)))) {
+  if (PendingObjectPtr->Unlimbo(ZoneCell.Offset(ZoneOffset).Center())) {
     /*
     ** Update the Tiberium computation if we're placing an overlay
     */
@@ -1839,7 +1837,7 @@ void MapEditClass::Place_Trigger(int x, int y) {
   /*
   ............................ Get cell for x,y ............................
   */
-  CELL const cell = Click_Cell_Calc(x, y);  // Cell that was selected.
+  const Cell cell = Click_Cell_Calc(x, y);  // Cell that was selected.
 
   /*
   ............... Convert x,y to offset from cell upper-left ...............
@@ -1863,7 +1861,7 @@ void MapEditClass::Place_Trigger(int x, int y) {
     */
     if (CurTrigger->Event <= EVENT_OBJECTFIRST) {
       TheMap().at(cell).IsTrigger = true;
-      base::At(TheWorld().cell_triggers(), cell) = CurTrigger;
+      base::At(TheWorld().cell_triggers(), cell.index()) = CurTrigger;
     }
   }
 

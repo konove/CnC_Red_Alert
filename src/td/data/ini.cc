@@ -124,12 +124,12 @@ static int carry_over_cap;
 static void Assign_Houses();
 static void Remove_AI_Players();
 static void Create_Units();
-static void Sort_Cells(std::span<CELL> cells, int numcells,
-                       std::span<CELL> outcells);
-static int Furthest_Cell(std::span<const CELL> ref_cells, int num_ref_cells,
-                         std::span<const CELL> test_cells, int num_test_cells);
-static CELL Clip_Scatter(CELL cell, int maxdist);
-static CELL Clip_Move(CELL cell, game::FacingType facing, int dist);
+static void Sort_Cells(std::span<Cell> cells, int numcells,
+                       std::span<Cell> outcells);
+static int Furthest_Cell(std::span<const Cell> ref_cells, int num_ref_cells,
+                         std::span<const Cell> test_cells, int num_test_cells);
+static Cell Clip_Scatter(Cell cell, int maxdist);
+static Cell Clip_Move(Cell cell, game::FacingType facing, int dist);
 
 /***********************************************************************************************
  * Set_Scenario_Name -- Creates the INI scenario name string. *
@@ -1020,11 +1020,11 @@ static void Create_Units() {
   static int num_infantry[kNumInfantryCategories];  // # of each type of
                                                     // infantry to create
 
-  CELL waypts[26];
-  CELL sorted_waypts[26];
+  Cell waypts[26];
+  Cell sorted_waypts[26];
 
-  CELL centroid = 0;  // centroid of this house's stuff
-  CELL centerpt = 0;  // centroid for a category of objects, as a CELL
+  Cell centroid{};  // centroid of this house's stuff
+  Cell centerpt{};  // centroid for a category of objects, as a Cell
 
   int u_limit = 0;   // last allowable index of units for this BuildLevel
   int i_limit = 0;   // last allowable index of infantry for this BuildLevel
@@ -1108,7 +1108,7 @@ static void Create_Units() {
   First, copy all valid waytpoints into my 'waypts' array
   ........................................................................*/
   for (int i = 0; i < 26; i++) {
-    if (base::At(TheWorld().waypoint(), i) != -1) {
+    if (base::At(TheWorld().waypoint(), i) != Cell::None()) {
       base::At(waypts, num_waypts) = base::At(TheWorld().waypoint(), i);
       num_waypts++;
     }
@@ -1143,9 +1143,9 @@ static void Create_Units() {
     int try_count = 0;  // # times we've tried to select a centroid
     while (true) {
       j = GameRandomRange(0, TheSession().max_players() - 1);
-      if (base::At(sorted_waypts, j) != -1) {
+      if (base::At(sorted_waypts, j) != Cell::None()) {
         centroid = base::At(sorted_waypts, j);
-        base::At(sorted_waypts, j) = -1;
+        base::At(sorted_waypts, j) = Cell::None();
         break;
       }
       try_count++;
@@ -1156,7 +1156,7 @@ static void Create_Units() {
       ..................................................................*/
       if (try_count > 200) {
         while (true) {
-          centroid = static_cast<CELL>(GameRandomRange(0, MAP_CELL_TOTAL - 1));
+          centroid = Cell::FromIndex(GameRandomRange(0, MAP_CELL_TOTAL - 1));
           if (TheMap().In_Radar(centroid)) {
             break;
           }
@@ -1178,14 +1178,14 @@ static void Create_Units() {
       if (hptr->IsHuman) {
         scaleval = 1;
         obj = base::NewPooled<UnitClass>(UNIT_MCV, h);
-        if ((!obj->Unlimbo(Cell_Coord(centroid), game::DIR_N)) &&
+        if ((!obj->Unlimbo(centroid.Center(), game::DIR_N)) &&
             (!Scan_Place_Object(obj, centroid))) {
           base::DeletePooled(obj);
           obj = nullptr;
         }
 
         if (obj) {
-          hptr->FlagHome = 0;
+          hptr->FlagHome = Cell{};
           hptr->FlagLocation = Target{};
           if (TheSpecial().IsCaptureTheFlag) {
             hptr->Flag_Attach(dynamic_cast<UnitClass*>(obj), true);
@@ -1205,13 +1205,13 @@ static void Create_Units() {
 
         if (TheSpecial().IsCaptureTheFlag) {
           obj = base::NewPooled<UnitClass>(UNIT_MHQ, h);
-          if ((!obj->Unlimbo(Cell_Coord(centroid), game::DIR_N)) &&
+          if ((!obj->Unlimbo(centroid.Center(), game::DIR_N)) &&
               (!Scan_Place_Object(obj, centroid))) {
             base::DeletePooled(obj);
             obj = nullptr;
           }
 
-          hptr->FlagHome = 0;  // turn house's flag off
+          hptr->FlagHome = Cell{};  // turn house's flag off
           hptr->FlagLocation = Target{};
         }
       }
@@ -1223,8 +1223,8 @@ static void Create_Units() {
       scaleval = 1;
       if (TheSpecial().IsCaptureTheFlag) {
         obj = base::NewPooled<UnitClass>(UNIT_MHQ, h);
-        obj->Unlimbo(Cell_Coord(centroid), game::DIR_N);
-        hptr->FlagHome = 0;  // turn house's flag off
+        obj->Unlimbo(centroid.Center(), game::DIR_N);
+        hptr->FlagHome = Cell{};  // turn house's flag off
         hptr->FlagLocation = Target{};
       }
     }
@@ -1342,7 +1342,7 @@ static void Create_Units() {
  *                                                                                             *
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
-bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
+bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
   TechnoClass* techno = nullptr;
 
   /*------------------------------------------------------------------------
@@ -1352,7 +1352,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
     techno = TheMap().at(cell).Cell_Techno();
     if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                      obj->What_Am_I() == RTTI_INFANTRY)) &&
-        obj->Unlimbo(Cell_Coord(cell), game::DIR_N)) {
+        obj->Unlimbo(cell.Center(), game::DIR_N)) {
       return true;
     }
   }
@@ -1384,7 +1384,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
         /*...............................................................
         Pick a coordinate along this directional axis
         ...............................................................*/
-        CELL newcell = Clip_Move(cell, rot, dist);
+        Cell newcell = Clip_Move(cell, rot, dist);
 
         /*...............................................................
         If this is our second try at this distance, add a random scatter
@@ -1411,7 +1411,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
           techno = TheMap().at(newcell).Cell_Techno();
           if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                            obj->What_Am_I() == RTTI_INFANTRY)) &&
-              obj->Unlimbo(Cell_Coord(newcell), game::DIR_N)) {
+              obj->Unlimbo(newcell.Center(), game::DIR_N)) {
             return true;
           }
         }
@@ -1439,8 +1439,8 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
  *                                                                                             *
  * HISTORY: * 07/19/1995 BRR : Created. *
  *=============================================================================================*/
-static void Sort_Cells(std::span<CELL> cells, int numcells,
-                       std::span<CELL> outcells) {
+static void Sort_Cells(std::span<Cell> cells, int numcells,
+                       std::span<Cell> outcells) {
   CHECK_GE(numcells, 0);
   CHECK_LE(base::ToSize(numcells), cells.size());
   CHECK_LE(base::ToSize(numcells), outcells.size());
@@ -1494,8 +1494,8 @@ static void Sort_Cells(std::span<CELL> cells, int numcells,
  *                                                                                             *
  * HISTORY: * 07/19/1995 BRR : Created. *
  *=============================================================================================*/
-static int Furthest_Cell(std::span<const CELL> ref_cells, int num_ref_cells,
-                         std::span<const CELL> test_cells, int num_test_cells) {
+static int Furthest_Cell(std::span<const Cell> ref_cells, int num_ref_cells,
+                         std::span<const Cell> test_cells, int num_test_cells) {
   /*------------------------------------------------------------------------
   Initialize
   ------------------------------------------------------------------------*/
@@ -1542,13 +1542,12 @@ static int Furthest_Cell(std::span<const CELL> ref_cells, int num_ref_cells,
  *                                                                                             *
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
-static CELL Clip_Scatter(CELL cell, int maxdist) {
-
+static Cell Clip_Scatter(Cell cell, int maxdist) {
   /*------------------------------------------------------------------------
   Get X & Y coords of given starting cell
   ------------------------------------------------------------------------*/
-  int x = Cell_X(cell);
-  int y = Cell_Y(cell);
+  int x = cell.x();
+  int y = cell.y();
 
   /*------------------------------------------------------------------------
   Compute our x & y limits
@@ -1582,7 +1581,7 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
     y = std::max(y, ymin);
   }
 
-  return XY_Cell(x, y);
+  return Cell::FromXY(x, y);
 }
 
 /***********************************************************************************************
@@ -1597,12 +1596,12 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
  *                                                                                             *
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
-static CELL Clip_Move(CELL cell, game::FacingType facing, int dist) {
+static Cell Clip_Move(Cell cell, game::FacingType facing, int dist) {
   /*------------------------------------------------------------------------
   Get X & Y coords of given starting cell
   ------------------------------------------------------------------------*/
-  int x = Cell_X(cell);
-  int y = Cell_Y(cell);
+  int x = cell.x();
+  int y = cell.y();
 
   /*------------------------------------------------------------------------
   Compute our x & y limits
@@ -1661,7 +1660,7 @@ static CELL Clip_Move(CELL cell, game::FacingType facing, int dist) {
   ------------------------------------------------------------------------*/
   x = std::clamp(x, xmin, xmax);
   y = std::clamp(y, ymin, ymax);
-  return XY_Cell(x, y);
+  return Cell::FromXY(x, y);
 }
 
 }  // namespace td

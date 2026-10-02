@@ -675,7 +675,7 @@ void InfantryClass::Draw_It(PixelView& view, int x, int y,
  *=============================================================================================*/
 void InfantryClass::Per_Cell_Process(bool center) {
   Validate();
-  CellClass* cellptr = &TheMap().at(Coord_Cell(Coord));
+  CellClass* cellptr = &TheMap().at(Cell::Containing(Coord));
 
   /*
   **	If the infantry unit is entering a cell that contains the building it is
@@ -691,7 +691,7 @@ void InfantryClass::Per_Cell_Process(bool center) {
     // #ifdef NEVER
     if (!NavCom) {
       Enter_Idle_Mode();
-      if (TheMap().at(Coord_Cell(Coord)).Cell_Building()) {
+      if (TheMap().at(Cell::Containing(Coord)).Cell_Building()) {
         Scatter(Coordinate{}, true);
       }
     }
@@ -704,7 +704,7 @@ void InfantryClass::Per_Cell_Process(bool center) {
   */
   TechnoClass* techno = Contact_With_Whom();
   if (center && Mission == MISSION_ENTER && techno &&
-      Coord_Cell(Coord) == Coord_Cell(techno->Coord) &&
+      Cell::Containing(Coord) == Cell::Containing(techno->Coord) &&
       techno == NavCom.AsTechno()) {
     if (Transmit_Message(RADIO_IM_IN) == RADIO_ATTACH) {
       Limbo();
@@ -877,7 +877,7 @@ void InfantryClass::Look(bool incremental) {
     const int sight = Class->SightRange;  // Number of cells to sight.
 
     if (sight) {
-      TheMap().Sight_From(Coord_Cell(Coord), sight, incremental);
+      TheMap().Sight_From(Cell::Containing(Coord), sight, incremental);
     }
   }
 }
@@ -1031,7 +1031,7 @@ void InfantryClass::AI() {
   **	guard or other static mission mode.
   */
   if (!Team && Mission == MISSION_GUARD &&
-      !TheMap().In_Radar(Coord_Cell(Coord))) {
+      !TheMap().In_Radar(Cell::Containing(Coord))) {
     Stun();
     delete this;
     return;
@@ -1329,7 +1329,7 @@ void InfantryClass::AI() {
         **	again.
         */
         if (base::At(Path, 0) != game::FACING_NONE &&
-            Can_Enter_Cell(Adjacent_Cell(Coord_Cell(Center_Coord()),
+            Can_Enter_Cell(Adjacent_Cell(Cell::Containing(Center_Coord()),
                                          base::At(Path, 0))) != game::MOVE_OK) {
           base::At(Path, 0) = game::FACING_NONE;
         }
@@ -1383,7 +1383,7 @@ void InfantryClass::AI() {
         **	current location and the next location in the path.
         */
         Coordinate acoord = Adjacent_Cell(Coord, base::At(Path, 0));
-        const CELL acell = Coord_Cell(acoord);
+        const Cell acell = Cell::Containing(acoord);
 
         if (Can_Enter_Cell(acell) != game::MOVE_OK) {
           if ((Mission == MISSION_MOVE || Mission == MISSION_ENTER) &&
@@ -1455,7 +1455,7 @@ void InfantryClass::AI() {
           return;
         }
 
-        if (Coord_Cell(Coord) == NavCom.AsCell()) {
+        if (Cell::Containing(Coord) == NavCom.AsCell()) {
           NavCom = Target{};
           if (Mission == MISSION_MOVE) {
             Enter_Idle_Mode();
@@ -1502,7 +1502,7 @@ void InfantryClass::AI() {
  * InfantryClass::Blocking_Object -- Determines how a object blocks an inf *
  *                                                                         *
  * INPUT:		TechnoClass * pointer to object that is blocking unit *
- *					CELL			  the cell the
+ *					Cell			  the cell the
  *unit is being blocked in			*
  *                                                                         *
  * OUTPUT:		MoveBitType the way that the object is blocking the unit
@@ -1512,7 +1512,7 @@ void InfantryClass::AI() {
  *   06/08/1995 PWG : Created.                                             *
  *=========================================================================*/
 MoveBitType InfantryClass::Blocking_Object(const TechnoClass* techno,
-                                           CELL cell) const {
+                                           Cell cell) const {
   Validate();
   bool inf = (techno->What_Am_I() == RTTI_INFANTRY);
   bool unit = (techno->What_Am_I() == RTTI_UNIT) || inf;
@@ -1592,12 +1592,12 @@ MoveBitType InfantryClass::Blocking_Object(const TechnoClass* techno,
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 game::MoveType InfantryClass::Can_Enter_Cell(
-    CELL cell, game::FacingType /*unused*/) const {
+    Cell cell, game::FacingType /*unused*/) const {
   Validate();
   /*
   ** If we are moving into an illegal cell, then we can't do that.
   */
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+  if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return game::MOVE_NO;
   }
 
@@ -2142,7 +2142,7 @@ void InfantryClass::Scatter(Coordinate threat, bool forced) {
     for (const game::FacingType face :
          magic_enum::enum_values<game::FacingType>()) {
       const game::FacingType newface = toface + face;
-      CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+      const Cell newcell = Adjacent_Cell(Cell::Containing(Coord), newface);
 
       if (TheMap().In_Radar(newcell) &&
           Can_Enter_Cell(newcell) == game::MOVE_OK) {
@@ -2331,13 +2331,13 @@ bool InfantryClass::Start_Driver(Coordinate& headto) {
   **	Convert the head to coordinate to a legal sub-position location.
   */
   headto = TheMap()
-               .at(Coord_Cell(headto))
+               .at(Cell::Containing(headto))
                .Closest_Free_Spot(
                    Coord_Move(headto, Direction(headto) + game::DIR_S, 0x007C));
-  if (!headto && Can_Enter_Cell(Coord_Cell(old)) == game::MOVE_OK) {
+  if (!headto && Can_Enter_Cell(Cell::Containing(old)) == game::MOVE_OK) {
     headto =
         TheMap()
-            .at(Coord_Cell(old))
+            .at(Cell::Containing(old))
             .Closest_Free_Spot(
                 Coord_Move(old, Direction(headto) + game::DIR_S, 0x0080), true);
   }
@@ -2511,7 +2511,7 @@ bool InfantryClass::Unlimbo(Coordinate coord, game::DirType facing) {
   **	Make sure that the infantry start in a legal position on the map.
   */
   coord = TheMap()
-              .at(Coord_Cell(coord))
+              .at(Cell::Containing(coord))
               .Closest_Free_Spot(coord, TheWorld().scenario_init() != 0);
   if (!coord) {
     return false;
@@ -3130,7 +3130,8 @@ void InfantryClass::Read_INI(char* buffer) {
           **	4th token: cell #.
           */
           Coordinate coord =
-              Cell_Coord(base::ParseIntegerOr<CELL>(tokens.Next(), 0));
+              Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), 0))
+                  .Center();
 
           /*
           **	5th token: cell sub-location.
@@ -3221,7 +3222,7 @@ void InfantryClass::Write_INI(std::string& buffer) {
       absl::SNPrintF(
           buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%d,%s",
           infantry->House->Class->IniName, infantry->Class->IniName,
-          infantry->Health_Ratio(), Coord_Cell(infantry->Coord),
+          infantry->Health_Ratio(), Cell::Containing(infantry->Coord).index(),
           CellClass::Spot_Index(infantry->Coord),
           Mission_Name(infantry->Mission == MISSION_NONE
                            ? infantry->MissionQueue
@@ -3319,7 +3320,7 @@ int InfantryClass::Made_A_Kill() {
 /***********************************************************************************************
  * InfantryClass::Set_Occupy_Bit -- Sets the occupy bit cell and bit pos *
  *                                                                                             *
- * INPUT:      CELL      - the cell we are setting the bit in *
+ * INPUT:      Cell      - the cell we are setting the bit in *
  *                                                                                             *
  *               int      - the spot index we are setting the bit for *
  *                                                                                             *
@@ -3327,7 +3328,7 @@ int InfantryClass::Made_A_Kill() {
  *                                                                                             *
  * HISTORY: * 06/08/1995 PWG : Created. *
  *=============================================================================================*/
-void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
+void InfantryClass::Set_Occupy_Bit(Cell cell, int spot_index) {
   Validate();
   /*
   ** Set the occupy postion for the spot that we passed in
@@ -3354,7 +3355,7 @@ void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
  *=========================================================================*/
 // Not const: changes the cell's infantry occupancy.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
+void InfantryClass::Clear_Occupy_Bit(Cell cell, int spot_index) {
   Validate();
   /*
   ** Clear the occupy bit for the infantry in that cell
@@ -3429,7 +3430,7 @@ RTTIType InfantryClass::What_Am_I() const {
   return RTTI_INFANTRY;
 }
 
-ActionType InfantryClass::What_Action(CELL cell) const {
+ActionType InfantryClass::What_Action(Cell cell) const {
   Validate();
   return FootClass::What_Action(cell);
 }

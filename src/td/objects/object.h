@@ -162,7 +162,7 @@ class ObjectClass : public AbstractClass {
   **	Query functions.
   */
   virtual ActionType What_Action(ObjectClass* /*unused*/);
-  [[nodiscard]] virtual ActionType What_Action(CELL /*unused*/) const;
+  [[nodiscard]] virtual ActionType What_Action(Cell /*unused*/) const;
   [[nodiscard]] virtual LayerType In_Which_Layer() const;
   [[nodiscard]] virtual bool Is_Infantry() const;
   [[nodiscard]] virtual bool Is_Techno() const;
@@ -221,7 +221,7 @@ class ObjectClass : public AbstractClass {
   */
   virtual void Active_Click_With(ActionType /*unused*/,
                                  ObjectClass* /*unused*/);
-  virtual void Active_Click_With(ActionType /*unused*/, CELL /*unused*/);
+  virtual void Active_Click_With(ActionType /*unused*/, Cell /*unused*/);
   virtual void Clicked_As_Target(int /*unused*/ = 7);
   virtual bool Select();
   virtual void Unselect();

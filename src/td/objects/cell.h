@@ -218,7 +218,7 @@ class CellClass {
   [[nodiscard]] Coordinate Closest_Free_Spot(Coordinate coord,
                                              bool any = false) const;
   [[nodiscard]] Coordinate Free_Spot() const {
-    return Closest_Free_Spot(Cell_Coord());
+    return Closest_Free_Spot(Center_Coord());
   }
   [[nodiscard]] bool Is_Generally_Clear() const;
   [[nodiscard]] Target As_Target() const {
@@ -233,9 +233,9 @@ class CellClass {
   // Returns the cell-index delta from this cell to its neighbour in direction
   // `face`, or 0 when `face` is invalid or the neighbour lies off the map.
   [[nodiscard]] int Adjacent_Offset(game::FacingType face) const;
-  [[nodiscard]] Coordinate Cell_Coord() const;
+  [[nodiscard]] Coordinate Center_Coord() const;
   [[nodiscard]] int Cell_Color(bool override = false) const;
-  [[nodiscard]] CELL Cell_Number() const;
+  [[nodiscard]] Cell Cell_Number() const;
   [[nodiscard]] LandType Land_Type() const { return Land; }
   [[nodiscard]] ObjectClass* Cell_Find_Object(RTTIType rtti) const;
   [[nodiscard]] ObjectClass* Cell_Object(int x = 0, int y = 0) const;

@@ -403,7 +403,7 @@ ActionType ObjectClass::What_Action(ObjectClass* /*unused*/) {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType ObjectClass::What_Action(CELL /*unused*/) const {
+ActionType ObjectClass::What_Action(Cell /*unused*/) const {
   return ACTION_NONE;
 }
 
@@ -564,7 +564,7 @@ void ObjectClass::Hidden() {}
 void ObjectClass::Look(bool /*unused*/) {}
 void ObjectClass::Active_Click_With(ActionType /*unused*/,
                                     ObjectClass* /*unused*/) {}
-void ObjectClass::Active_Click_With(ActionType /*unused*/, CELL /*unused*/) {}
+void ObjectClass::Active_Click_With(ActionType /*unused*/, Cell /*unused*/) {}
 void ObjectClass::Clicked_As_Target(int /*unused*/) {}
 bool ObjectClass::In_Range(Coordinate /*unused*/, int /*unused*/) const {
   return false;
@@ -688,7 +688,7 @@ void ObjectClass::Sell_Back(int /*unused*/) {}
 void ObjectClass::Move(game::FacingType facing) {
   Mark(MARK_UP);
   const Coordinate coord = Adjacent_Cell(Coord, facing);
-  if (Can_Enter_Cell(Coord_Cell(coord)) == game::MOVE_OK) {
+  if (Can_Enter_Cell(Cell::Containing(coord)) == game::MOVE_OK) {
     Coord = coord;
   }
   Mark(MARK_DOWN);
@@ -858,16 +858,16 @@ bool ObjectClass::Render(PixelView& view, bool forced) {
 
           if (foot->Head_To_Coord() &&
               base::At(foot->Path, 0) != game::FACING_NONE) {
-            CELL cell = Adjacent_Cell(
-                Coord_Cell(foot->Head_To_Coord()),
+            Cell cell = Adjacent_Cell(
+                Cell::Containing(foot->Head_To_Coord()),
                 base::At(foot->Path, 0) + game::FACING_S & game::FACING_NW);
-            TheMap().Coord_To_Pixel(Cell_Coord(cell), oldx, oldy);
+            TheMap().Coord_To_Pixel(cell.Center(), oldx, oldy);
             for (const auto& index : foot->Path) {
               if (index == game::FACING_NONE) {
                 break;
               }
               cell = Adjacent_Cell(cell, index);
-              if (TheMap().Coord_To_Pixel(Cell_Coord(cell), x, y)) {
+              if (TheMap().Coord_To_Pixel(cell.Center(), x, y)) {
                 view.DrawLine(oldx, 8 + oldy, x, 8 + y, kBlack);
               }
               oldx = x;
@@ -1071,7 +1071,8 @@ bool ObjectClass::Limbo() {
 bool ObjectClass::Unlimbo(Coordinate coord, game::DirType /*unused*/) {
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
-       Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == game::MOVE_OK)) {
+       Can_Enter_Cell(Cell::Containing(coord), game::FACING_NONE) ==
+           game::MOVE_OK)) {
     IsInLimbo = false;
     IsToDisplay = false;
     Coord = Class_Of().Coord_Fixup(coord);
@@ -1339,7 +1340,7 @@ game::ResultType ObjectClass::Take_Damage(int& damage, int distance,
  *=============================================================================================*/
 bool ObjectClass::Mark(MarkType mark) {
   TechnoClass* tech = nullptr;
-  CELL cell = 0;
+  Cell cell{};
   int threat = 0;
   HousesType house = HOUSE_NONE;
 
@@ -1364,13 +1365,13 @@ bool ObjectClass::Mark(MarkType mark) {
     ** Handle adding or removing the object in the cells' overlap lists
     */
     if ((mark == MARK_OVERLAP_UP) && (static_cast<bool>(IsDown))) {
-      TheMap().Overlap_Up(Coord_Cell(Coord), this);
+      TheMap().Overlap_Up(Cell::Containing(Coord), this);
       Mark_For_Redraw();
       return true;
     }
 
     if ((mark == MARK_OVERLAP_DOWN) && (static_cast<bool>(IsDown))) {
-      TheMap().Overlap_Down(Coord_Cell(Coord), this);
+      TheMap().Overlap_Down(Cell::Containing(Coord), this);
       Mark_For_Redraw();
       return true;
     }
@@ -1383,7 +1384,7 @@ bool ObjectClass::Mark(MarkType mark) {
       tech = dynamic_cast<TechnoClass*>(this);
       threat = tech->Risk();
       house = tech->Owner();
-      cell = Coord_Cell(Coord);
+      cell = Cell::Containing(Coord);
     } else {
       tech = nullptr;
     }

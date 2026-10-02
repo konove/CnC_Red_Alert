@@ -84,34 +84,34 @@ class RadarClass : public DisplayClass {
   void One_Time() override;    // One-time inits
   void Init_Clear() override;  // Clears all to known state
 
-  bool Map_Cell(CELL cell, HouseClass* house) override;
-  CELL Click_Cell_Calc(int x, int y) override;
+  bool Map_Cell(Cell cell, HouseClass* house) override;
+  Cell Click_Cell_Calc(int x, int y) override;
   void AI(engine::window::InputEvent& event, int x, int y) override;
   void Draw_It(PixelView& view, bool forced = false) override;
-  void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
+  void Refresh_Cells(Cell cell, std::span<const int16_t> list) override;
   void Set_Map_Dimensions(int x, int y, int w, int h) override;
   //		virtual void Set_Tactical_Position(int x, int y, int leptonx=0,
-  // int leptony=0); 		virtual void Set_Tactical_Position(CELL cell);
+  // int leptony=0); 		virtual void Set_Tactical_Position(Cell cell);
   void Set_Tactical_Position(Coordinate coord) override;
-  void Zoom_Mode(CELL cell);
+  void Zoom_Mode(Cell cell);
   int Click_In_Radar(int& x, int& y, bool change = false) const;
   void Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x, int& y) const;
 
-  void Set_Radar_Position(CELL cell);
-  [[nodiscard]] CELL Radar_Position() const;
+  void Set_Radar_Position(Cell cell);
+  [[nodiscard]] Cell Radar_Position() const;
   bool Radar_Activate(int control);
-  void Plot_Radar_Pixel(PixelView& view, CELL cell);
-  void Radar_Pixel(CELL cell);
+  void Plot_Radar_Pixel(PixelView& view, Cell cell);
+  void Radar_Pixel(Cell cell);
   void Coord_To_Radar_Pixel(Coordinate coord, int& x, int& y);
-  void Cursor_Cell(PixelView& view, CELL cell, bool value);
+  void Cursor_Cell(PixelView& view, Cell cell, bool value);
   void Mark_Radar(PixelView& view, int x1, int y1, int x2, int y2, bool value,
                   int barlen);
   void Radar_Cursor(PixelView& view, bool forced = false);
-  void Render_Terrain(PixelView& view, CELL cell, int x, int y, int size) const;
-  [[nodiscard]] bool Cell_On_Radar(CELL cell) const;
-  void Render_Infantry(PixelView& view, CELL cell, int x, int y,
+  void Render_Terrain(PixelView& view, Cell cell, int x, int y, int size) const;
+  [[nodiscard]] bool Cell_On_Radar(Cell cell) const;
+  void Render_Infantry(PixelView& view, Cell cell, int x, int y,
                        int size) const;
-  void Render_Overlay(PixelView& view, CELL cell, int x, int y, int size);
+  void Render_Overlay(PixelView& view, Cell cell, int x, int y, int size);
   void Radar_Anim(PixelView& view);
   [[nodiscard]] bool Is_Radar_Active() const { return IsRadarActive; }
   [[nodiscard]] bool Is_Radar_Existing() const { return DoesRadarExist; }
@@ -229,7 +229,7 @@ class RadarClass : public DisplayClass {
   int PixelPtr{0};
   int ZoomFactor = 0;
   static constexpr int kPixelstack = 200;
-  CELL PixelStack[kPixelstack]{};
+  Cell PixelStack[kPixelstack]{};
 };
 
 extern template void RadarClass::Serialize<ArchiveWriter>(ArchiveWriter&);

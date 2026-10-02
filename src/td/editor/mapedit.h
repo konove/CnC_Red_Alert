@@ -307,7 +307,7 @@ class MapEditClass : public MouseClass {
   Variables for grabbing/moving objects
   .....................................................................*/
   ObjectClass* GrabbedObject{nullptr};  // object "grabbed" with mouse
-  CELL GrabOffset = 0;          // offset to grabbed obj's upper-left
+  int16_t GrabOffset = 0;               // offset to grabbed obj's upper-left
   int64_t LastClickTime = 0;  // time of last LMOUSE click
 
   /*.....................................................................

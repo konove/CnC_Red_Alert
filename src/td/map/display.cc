@@ -548,21 +548,22 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
     const int height = ((FontMaxHeight(font) * lines) + 23) / 24 * 24;
 
     if (x <= right) {
-      CELL ul = Click_Cell_Calc(x, y - 1);
-      const CELL lr = Click_Cell_Calc(
+      Cell ul = Click_Cell_Calc(x, y - 1);
+      const Cell lr = Click_Cell_Calc(
           x + len - 1, Bound(y + height, TacPixelY,
                              TheScreen().visible_view().height() - 1));
 
-      if (ul == -1) {
+      if (ul == Cell::None()) {
         ul = Click_Cell_Calc(x, y);
       }
       //			if (lr == -1) lr = Click_Cell_Calc(x+len, y);
 
-      if (ul != -1 && lr != -1) {
-        for (int yy = Cell_Y(ul); yy <= Cell_Y(lr); yy++) {
-          for (int xx = Cell_X(ul); xx <= Cell_X(lr); xx++) {
-            base::ConsumeFront(ptr) = static_cast<int16_t>(
-                XY_Cell(xx, yy) - Coord_Cell(TacticalCoord));
+      if (ul != Cell::None() && lr != Cell::None()) {
+        for (int yy = ul.y(); yy <= lr.y(); yy++) {
+          for (int xx = ul.x(); xx <= lr.x(); xx++) {
+            base::ConsumeFront(ptr) =
+                static_cast<int16_t>(Cell::FromXY(xx, yy).index() -
+                                     Cell::Containing(TacticalCoord).index());
           }
         }
       }
@@ -663,7 +664,7 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
  *=============================================================================================*/
 void DisplayClass::Set_Cursor_Shape(std::span<const int16_t> list) {
   if (!CursorSize.empty()) {
-    Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), false);
+    Cursor_Mark(ZoneCell.Offset(ZoneOffset), false);
   }
 
   ZoneOffset = 0;
@@ -680,7 +681,7 @@ void DisplayClass::Set_Cursor_Shape(std::span<const int16_t> list) {
     CursorSize = _list;
     Get_Occupy_Dimensions(w, h, CursorSize);
     ZoneOffset = static_cast<int16_t>(-((h / 2 * MAP_CELL_W) + (w / 2)));
-    Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), true);
+    Cursor_Mark(ZoneCell.Offset(ZoneOffset), true);
   } else {
     CursorSize = {};
   }
@@ -730,12 +731,11 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
   */
   std::span<const int16_t> ptr = CursorSize;
   while (ptr.front() != REFRESH_EOL) {
-    const CELL cell =
-        static_cast<CELL>(ZoneCell + ZoneOffset + base::ConsumeFront(ptr));
+    const Cell cell = ZoneCell.Offset(ZoneOffset + base::ConsumeFront(ptr));
 
     for (const game::FacingType facing :
          magic_enum::enum_values<game::FacingType>()) {
-      const CELL newcell = Adjacent_Cell(cell, facing);
+      const Cell newcell = Adjacent_Cell(cell, facing);
 
       if (!In_Radar(cell)) {
         return false;
@@ -782,18 +782,21 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
  *position is -1, then follow mouse.                                    *
  *   02/28/1995 JLB : Forces placement cursor to fit on map. *
  *=============================================================================================*/
-CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
-  CELL prevpos = 0;  // Last position of cursor (for jump-back reasons).
+Cell DisplayClass::Set_Cursor_Pos(Cell pos) {
+  // Last position of cursor (for jump-back reasons). Every path returns it:
+  // nothing below changes ZoneCell before the final assignment, and the early
+  // return for an unmoved cursor had pos == ZoneCell (-Wnrvo wants one named
+  // result).
+  const Cell prevpos = ZoneCell;
 
   /*
   **	Follow the mouse position if no cell number is provided.
   */
-  if (pos == -1) {
+  if (pos == Cell::None()) {
     pos = Click_Cell_Calc(game::TheMouse().x(), game::TheMouse().y());
   }
 
   if (CursorSize.empty()) {
-    prevpos = ZoneCell;
     ZoneCell = pos;
     return prevpos;
   }
@@ -806,8 +809,8 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   int h = 0;
   Get_Occupy_Dimensions(w, h, CursorSize);
 
-  int x = static_cast<CELL>(Cell_X(static_cast<CELL>(pos + ZoneOffset)));
-  int y = static_cast<CELL>(Cell_Y(static_cast<CELL>(pos + ZoneOffset)));
+  int x = pos.Offset(ZoneOffset).x();
+  int y = static_cast<int16_t>(pos.Offset(ZoneOffset).y());
 
   x = std::clamp<int>(
       x, TacticalCoord.cell_x(),
@@ -815,17 +818,15 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
   y = std::clamp<int>(
       y, TacticalCoord.cell_y(),
       TacticalCoord.cell_y() + Lepton_To_Cell(TacLeptonHeight) - h);
-  pos = static_cast<CELL>(XY_Cell(x, y) - ZoneOffset);
+  pos = Cell::FromXY(x, y).Offset(-ZoneOffset);
 
   /*
   ** This checks to see if NO animation or drawing is to occur and, if so,
   **	exits.
   */
   if (pos == ZoneCell) {
-    return pos;
+    return prevpos;
   }
-
-  prevpos = ZoneCell;
 
   /*
   **	If the cursor is visible, then handle the graphic update.
@@ -835,15 +836,15 @@ CELL DisplayClass::Set_Cursor_Pos(CELL pos) {
     /*
     ** Erase the old cursor (if it exists) AND the cursor is moving.
     */
-    if (pos != ZoneCell && ZoneCell != -1) {
-      Cursor_Mark(static_cast<CELL>(ZoneCell + ZoneOffset), false);
+    if (pos != ZoneCell && ZoneCell != Cell::None()) {
+      Cursor_Mark(ZoneCell.Offset(ZoneOffset), false);
     }
 
     /*
     ** Render the cursor (could just be animation).
     */
-    if (pos != -1) {
-      Cursor_Mark(static_cast<CELL>(pos + ZoneOffset), true);
+    if (pos != Cell::None()) {
+      Cursor_Mark(pos.Offset(ZoneOffset), true);
     }
   }
   ZoneCell = pos;
@@ -881,9 +882,9 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h,
     */
     while (list.front() != REFRESH_EOL) {
       /*
-      ** Compute x & y coords of the current cell offset.  We can't use Cell_X()
-      ** & Cell_Y(), because they use shifts to compute the values, and if the
-      ** offset is negative we'll get a bogus coordinate!
+      ** Compute x & y coords of the current cell offset.  We can't use
+      ** Cell's x() & y(), because they use shifts to compute the values, and
+      ** if the offset is negative we'll get a bogus coordinate!
       */
       const int x = list.front() % MAP_CELL_W;
       const int y = list.front() / MAP_CELL_H;
@@ -919,10 +920,10 @@ void DisplayClass::Get_Occupy_Dimensions(int& w, int& h,
  * HISTORY: * 09/04/1991 JLB : Created. * 06/02/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-void DisplayClass::Cursor_Mark(CELL pos, bool on) {
+void DisplayClass::Cursor_Mark(Cell pos, bool on) {
   CellClass* cellptr = nullptr;
 
-  if (pos == -1) {
+  if (pos == Cell::None()) {
     return;
   }
 
@@ -932,7 +933,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   */
   std::span<const int16_t> ptr = CursorSize;
   while (ptr.front() != REFRESH_EOL) {
-    const CELL cell = static_cast<CELL>(pos + base::ConsumeFront(ptr));
+    const Cell cell = pos.Offset(base::ConsumeFront(ptr));
     if (In_Radar(cell)) {
       cellptr = &(*this).at(cell);
       cellptr->Redraw_Objects();
@@ -947,7 +948,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
   if (PendingObjectPtr) {
     ptr = PendingObjectPtr->Overlap_List();
     while (ptr.front() != REFRESH_EOL) {
-      const CELL cell = static_cast<CELL>(pos + base::ConsumeFront(ptr));
+      const Cell cell = pos.Offset(base::ConsumeFront(ptr));
       if (In_Radar(cell)) {
         cellptr = &(*this).at(cell);
         cellptr->Redraw_Objects();
@@ -983,8 +984,8 @@ void DisplayClass::AI(engine::window::InputEvent& event, int x, int y) {
       (game::TheMouse().x() < TacPixelX || game::TheMouse().y() < TacPixelY ||
        game::TheMouse().x() >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
        game::TheMouse().y() >= TacPixelY + Lepton_To_Pixel(TacLeptonHeight))) {
-    Mouse_Left_Release(-1, game::TheMouse().x(), game::TheMouse().y(), nullptr,
-                       ACTION_NONE);
+    Mouse_Left_Release(Cell::None(), game::TheMouse().x(), game::TheMouse().y(),
+                       nullptr, ACTION_NONE);
   }
 
   MapClass::AI(event, x, y);
@@ -1059,7 +1060,7 @@ void DisplayClass::Remove(ObjectClass* object, LayerType layer) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-CELL DisplayClass::Click_Cell_Calc(int x, int y) {
+Cell DisplayClass::Click_Cell_Calc(int x, int y) {
   x -= TacPixelX;
   x = Pixel_To_Lepton(x);
   y -= TacPixelY;
@@ -1071,9 +1072,9 @@ CELL DisplayClass::Click_Cell_Calc(int x, int y) {
         Pixel_To_Lepton(Lepton_To_Pixel(TacticalCoord.x())),
         Pixel_To_Lepton(Lepton_To_Pixel(TacticalCoord.y())));
 
-    return Coord_Cell(tcoord + Coordinate::FromLeptons(x, y));
+    return Cell::Containing(tcoord + Coordinate::FromLeptons(x, y));
   }
-  return -1;
+  return Cell::None();
 }
 
 /***********************************************************************************************
@@ -1141,8 +1142,8 @@ void DisplayClass::Read_INI(char* buffer) {
   for (int i = 0; i < kWayptCount; i++) {
     absl::SNPrintF(buf, sizeof(buf), "%d", i);
     base::At(TheWorld().waypoint(), i) =
-        static_cast<CELL>(WWGetPrivateProfileInt("Waypoints", buf, -1, buffer));
-    if (base::At(TheWorld().waypoint(), i) != -1) {
+        Cell::FromIndex(WWGetPrivateProfileInt("Waypoints", buf, -1, buffer));
+    if (base::At(TheWorld().waypoint(), i) != Cell::None()) {
       (*this).at(base::At(TheWorld().waypoint(), i)).IsWaypoint = true;
     }
   }
@@ -1151,11 +1152,12 @@ void DisplayClass::Read_INI(char* buffer) {
   **	Set the starting position (do this after Init(), which clears the cells'
   **	IsWaypoint flags).
   */
-  if (base::At(TheWorld().waypoint(), kWayptHome) == -1) {
-    base::At(TheWorld().waypoint(), kWayptHome) = XY_Cell(MapCellX, MapCellY);
+  if (base::At(TheWorld().waypoint(), kWayptHome) == Cell::None()) {
+    base::At(TheWorld().waypoint(), kWayptHome) =
+        Cell::FromXY(MapCellX, MapCellY);
   }
   Set_Tactical_Position(
-      Cell_Coord(base::At(TheWorld().waypoint(), kWayptHome)).Whole());
+      base::At(TheWorld().waypoint(), kWayptHome).Center().Whole());
   base::At(TheWorld().views(), 0) = base::At(TheWorld().views(), 1) =
       base::At(TheWorld().views(), 2) = base::At(TheWorld().views(), 3) =
           base::At(TheWorld().waypoint(), kWayptHome);
@@ -1189,14 +1191,15 @@ void DisplayClass::Read_INI(char* buffer) {
     **	Get cell # from entry name.
     */
     const int cell = base::ParseIntegerOr<int>(tbuffer, 0);
-    if (cell > 0 && cell < MAP_CELL_TOTAL && !(*this).at(cell).IsTrigger) {
+    if (cell > 0 && cell < MAP_CELL_TOTAL &&
+        !(*this).at(Cell::FromIndex(cell)).IsTrigger) {
       /*
       **	Assign trigger pointer using trigger name.
       */
       base::At(TheWorld().cell_triggers(), cell) =
           TriggerClass::As_Pointer(buf);
       if (base::At(TheWorld().cell_triggers(), cell)) {
-        (*this).at(cell).IsTrigger = true;
+        (*this).at(Cell::FromIndex(cell)).IsTrigger = true;
         if (base::At(TheWorld().cell_triggers(), cell)) {
           base::At(TheWorld().cell_triggers(), cell)->AttachCount++;
         }
@@ -1243,8 +1246,8 @@ void DisplayClass::Write_INI(std::string& buffer) {
   */
   for (int i = 0; i < kWayptCount; i++) {
     absl::SNPrintF(entry, sizeof(entry), "%d", i);
-    WWWritePrivateProfileInt("Waypoints", entry,
-                             base::At(TheWorld().waypoint(), i), buffer);
+    WWWritePrivateProfileInt(
+        "Waypoints", entry, base::At(TheWorld().waypoint(), i).index(), buffer);
   }
 
   /*
@@ -1255,17 +1258,19 @@ void DisplayClass::Write_INI(std::string& buffer) {
   /*
   **	Save the cell's triggers.
   */
-  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+  for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+    const Cell cell = Cell::FromIndex(cell_index);
     if ((*this).at(cell).IsTrigger) {
       /*
       **	Get cell trigger pointer.
       */
-      const TriggerClass* trig = base::At(TheWorld().cell_triggers(), cell);
+      const TriggerClass* trig =
+          base::At(TheWorld().cell_triggers(), cell_index);
 
       /*
       **	Generate entry name.
       */
-      absl::SNPrintF(entry, sizeof(entry), "%d", cell);
+      absl::SNPrintF(entry, sizeof(entry), "%d", cell.index());
 
       /*
       **	Save entry.
@@ -1419,12 +1424,12 @@ bool DisplayClass::Scroll_Map(game::DirType facing, int& distance,
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. * 08/01/1994 JLB : Simplified. *
  *=============================================================================================*/
-void DisplayClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
+void DisplayClass::Refresh_Cells(Cell cell, std::span<const int16_t> list) {
   if (list.front() == REFRESH_SIDEBAR) {
     list = list.subspan(1);
   }
   while (list.front() != REFRESH_EOL) {
-    const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
+    const Cell newcell = cell.Offset(base::ConsumeFront(list));
     if (In_Radar(newcell)) {
       (*this).at(newcell).Redraw_Objects();
     }
@@ -1449,7 +1454,7 @@ void DisplayClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
  *shadow icon method.                                     * 04/30/1994 JLB :
  *Converted to member function.                                            *
  *=============================================================================================*/
-int DisplayClass::Cell_Shadow(CELL cell) {
+int DisplayClass::Cell_Shadow(Cell cell) {
   int value = -1;
   static const int CardShadow[16] = {-2, 0, 1,  2,  3, -1, 4,  -1,
                                      5,  6, -1, -1, 7, -1, -1, -1};
@@ -1461,33 +1466,33 @@ int DisplayClass::Cell_Shadow(CELL cell) {
   **	problem of accessing cells off the top or bottom of the map and into
   **	who-knows-what memory.
   */
-  if (static_cast<unsigned>(Cell_Y(cell) - 1) >= MAP_CELL_H - 2) {
+  if (static_cast<unsigned>(cell.y() - 1) >= MAP_CELL_H - 2) {
     return -2;
   }
 
-  const bool rightedge = Cell_X(cell) == MAP_CELL_W - 1;
+  const bool rightedge = cell.x() == MAP_CELL_W - 1;
 
-  int cell_index = cell;
-  if (!(*this).at(static_cast<CELL>(cell_index)).IsMapped) {
+  int cell_index = cell.index();
+  if (!(*this).at(Cell::FromIndex(cell_index)).IsMapped) {
     /*
     **	Check the cardinal directions first. This will either result
     **	in a solution or the flag to check the diagonals.
     */
     uint32_t index = 0;
     cell_index--;
-    if ((*this).at(static_cast<CELL>(cell_index)).IsMapped) {
+    if ((*this).at(Cell::FromIndex(cell_index)).IsMapped) {
       index |= 0x08;
     }
     cell_index += MAP_CELL_W + 1;
-    if ((*this).at(static_cast<CELL>(cell_index)).IsMapped) {
+    if ((*this).at(Cell::FromIndex(cell_index)).IsMapped) {
       index |= 0x04;
     }
     cell_index -= MAP_CELL_W - 1;
-    if ((*this).at(static_cast<CELL>(cell_index)).IsMapped) {
+    if ((*this).at(Cell::FromIndex(cell_index)).IsMapped) {
       index |= 0x02;
     }
     cell_index -= MAP_CELL_W + 1;
-    if ((*this).at(static_cast<CELL>(cell_index)).IsMapped) {
+    if ((*this).at(Cell::FromIndex(cell_index)).IsMapped) {
       index |= 0x01;
     }
     value = base::At(CardShadow, index);
@@ -1499,19 +1504,19 @@ int DisplayClass::Cell_Shadow(CELL cell) {
     if (value == -2) {
       index = 0;
       cell_index--;
-      if ((*this).at(static_cast<CELL>(cell_index)).IsMapped) {
+      if ((*this).at(Cell::FromIndex(cell_index)).IsMapped) {
         index |= 0x08;
       }
       cell_index += static_cast<base::ssize>(MAP_CELL_W) * 2;
-      if ((*this).at(static_cast<CELL>(cell_index)).IsMapped) {
+      if ((*this).at(Cell::FromIndex(cell_index)).IsMapped) {
         index |= 0x04;
       }
       cell_index += 2;
-      if (!rightedge && (*this).at(static_cast<CELL>(cell_index)).IsMapped) {
+      if (!rightedge && (*this).at(Cell::FromIndex(cell_index)).IsMapped) {
         index |= 0x02;
       }
       cell_index -= static_cast<base::ssize>(MAP_CELL_W) * 2;
-      if ((*this).at(static_cast<CELL>(cell_index)).IsMapped) {
+      if ((*this).at(Cell::FromIndex(cell_index)).IsMapped) {
         index |= 0x01;
       }
       value = base::At(DiagShadow, index);
@@ -1543,8 +1548,8 @@ int DisplayClass::Cell_Shadow(CELL cell) {
  *function.                                            * 05/24/1994 JLB : Takes
  *pointer to HouseClass.                                             *
  *=============================================================================================*/
-bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
-  if (house != ThePlayer() || cell >= static_cast<CELL>(Size)) {
+bool DisplayClass::Map_Cell(Cell cell, HouseClass* house) {
+  if (house != ThePlayer() || cell >= Cell::FromIndex(Size)) {
     return false;
   }
 
@@ -1571,10 +1576,10 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
   */
   for (const game::FacingType dir :
        magic_enum::enum_values<game::FacingType>()) {
-    CELL const c = Adjacent_Cell(cell, dir);
+    const Cell c = Adjacent_Cell(cell, dir);
 
     // don't crash
-    if (c < 0 || c >= Size) {
+    if (c.index() < 0 || c.index() >= Size) {
       continue;
     }
 
@@ -1725,7 +1730,7 @@ bool DisplayClass::Push_Onto_TacMap(Coordinate& source,
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
-ObjectClass* DisplayClass::Cell_Object(CELL cell, int x, int y) {
+ObjectClass* DisplayClass::Cell_Object(Cell cell, int x, int y) {
   return (*this).at(cell).Cell_Object(x, y);
 }
 
@@ -1752,7 +1757,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
     // The map moved under the mouse: move the placement cursor to the cell
     // now under it, as moving the mouse would.
     if (moved) {
-      Set_Cursor_Pos(-1);
+      Set_Cursor_Pos(Cell::None());
     }
   }
 
@@ -1783,7 +1788,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
     // the cell's center.
     if (TheDebugState().map_editor_active() && PendingObjectPtr) {
       PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
-          Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)));
+          ZoneCell.Offset(ZoneOffset).Center());
       PendingObjectPtr->Render(view, true);
     }
   }
@@ -1853,8 +1858,8 @@ void DisplayClass::Redraw_Icons(PixelView& view, int draw_flags) {
     for (int x = -TacticalCoord.sub_x(); x <= TacLeptonWidth;
          x += CELL_LEPTON_W) {
       Coordinate coord = TacticalCoord + Coordinate::FromLeptons(x, y);
-      const CELL cell = Coord_Cell(coord);
-      coord = Cell_Coord(cell).Whole();
+      const Cell cell = Cell::Containing(coord);
+      coord = cell.Center().Whole();
 
       /*
       **	Only cells flagged to be redraw are examined.
@@ -1864,7 +1869,7 @@ void DisplayClass::Redraw_Icons(PixelView& view, int draw_flags) {
         int ypixel = 0;
 
         if (Coord_To_Pixel(coord, xpixel, ypixel)) {
-          const CellClass* cellptr = &(*this).at(Coord_Cell(coord));
+          const CellClass* cellptr = &(*this).at(Cell::Containing(coord));
 
           /*
           **	If there is a portion of the underlying icon that could be
@@ -1910,8 +1915,8 @@ void DisplayClass::Redraw_Shadow(PixelView& view) {
       for (int x = -TacticalCoord.sub_x(); x <= TacLeptonWidth;
            x += CELL_LEPTON_W) {
         Coordinate coord = TacticalCoord + Coordinate::FromLeptons(x, y);
-        const CELL cell = Coord_Cell(coord);
-        coord = Cell_Coord(cell).Whole();
+        const Cell cell = Cell::Containing(coord);
+        coord = cell.Center().Whole();
 
         /*
         **	Only cells flagged to be redraw are examined.
@@ -1921,7 +1926,7 @@ void DisplayClass::Redraw_Shadow(PixelView& view) {
           int ypixel = 0;
 
           if (Coord_To_Pixel(coord, xpixel, ypixel)) {
-            const CellClass* cellptr = &(*this).at(Coord_Cell(coord));
+            const CellClass* cellptr = &(*this).at(Cell::Containing(coord));
 
             if ((!cellptr->IsMapped) && cellptr->IsVisible) {
               const int shadow = Cell_Shadow(cell);
@@ -1960,8 +1965,8 @@ void DisplayClass::Redraw_Shadow_Rects(PixelView& view) {
       for (int x = -TacticalCoord.sub_x(); x <= TacLeptonWidth;
            x += CELL_LEPTON_W) {
         Coordinate coord = TacticalCoord + Coordinate::FromLeptons(x, y);
-        const CELL cell = Coord_Cell(coord);
-        coord = Cell_Coord(cell).Whole();
+        const Cell cell = Cell::Containing(coord);
+        coord = cell.Center().Whole();
 
         /*
         **	Only cells flagged to be redraw are examined.
@@ -1971,7 +1976,7 @@ void DisplayClass::Redraw_Shadow_Rects(PixelView& view) {
           int ypixel = 0;
 
           if (Coord_To_Pixel(coord, xpixel, ypixel)) {
-            const CellClass* cellptr = &(*this).at(Coord_Cell(coord));
+            const CellClass* cellptr = &(*this).at(Cell::Containing(coord));
 
             if ((!cellptr->IsMapped) && (!cellptr->IsVisible)) {
               int ww = CELL_PIXEL_W;
@@ -2142,10 +2147,10 @@ Coordinate DisplayClass::Pixel_To_Coord(int x, int y) const {
  * HISTORY: * 10/07/1992 JLB : Created. * 04/11/1994 JLB : Revamped. *
  *   05/18/1994 JLB : Converted to member function. *
  *=============================================================================================*/
-CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
-  CELL cell = 0;  // Working cell number.
+Cell DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
+  Cell cell{};  // Working cell number.
 
-  while (cell == 0) {
+  while (cell.index() == 0) {
     int x = 0;
     int y = 0;
     int index = 0;
@@ -2161,16 +2166,17 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
       case SOURCE_SHIPPING:
         for (y = 0; y < MapCellHeight; y++) {
           for (x = 0; x < MapCellWidth; x++) {
-            if ((*this).at(XY_Cell(MapCellX + x, MapCellY + y)).Land_Type() !=
-                LAND_WATER) {
+            if ((*this)
+                    .at(Cell::FromXY(MapCellX + x, MapCellY + y))
+                    .Land_Type() != LAND_WATER) {
               break;
             }
           }
           if (x == MapCellWidth) {
-            return XY_Cell(MapCellX + MapCellWidth, MapCellY + y);
+            return Cell::FromXY(MapCellX + MapCellWidth, MapCellY + y);
           }
         }
-        return 0;
+        return Cell{};
 
       /*
       **	Select a map edge.
@@ -2178,59 +2184,60 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
       case SOURCE_NORTH:
         index = Random_Pick(1, MapCellWidth);
         for (x = 0; x < MapCellWidth; x++) {
-          cell = XY_Cell(MapCellX + ((x + index) % MapCellWidth), MapCellY - 1);
+          cell = Cell::FromXY(MapCellX + ((x + index) % MapCellWidth),
+                              MapCellY - 1);
           if ((*this).at(cell).Is_Generally_Clear() &&
-              (*this).at(cell + MAP_CELL_W).Is_Generally_Clear()) {
+              (*this).at(cell.Offset(MAP_CELL_W)).Is_Generally_Clear()) {
             break;
           }
         }
         if (x == MapCellWidth) {
-          return 0;
+          return Cell{};
         }
         break;
 
       case SOURCE_EAST:
         index = Random_Pick(1, MapCellHeight);
         for (y = 0; y < MapCellHeight; y++) {
-          cell = XY_Cell(MapCellX + MapCellWidth,
-                         MapCellY + ((y + index) % MapCellHeight));
+          cell = Cell::FromXY(MapCellX + MapCellWidth,
+                              MapCellY + ((y + index) % MapCellHeight));
           if ((*this).at(cell).Is_Generally_Clear() &&
-              (*this).at(cell - 1).Is_Generally_Clear()) {
+              (*this).at(cell.Offset(-1)).Is_Generally_Clear()) {
             break;
           }
         }
         if (y == MapCellHeight) {
-          return 0;
+          return Cell{};
         }
         break;
 
       case SOURCE_SOUTH:
         index = Random_Pick(1, MapCellWidth);
         for (x = 0; x < MapCellWidth; x++) {
-          cell = XY_Cell(MapCellX + ((x + index) % MapCellWidth),
-                         MapCellY + MapCellHeight);
+          cell = Cell::FromXY(MapCellX + ((x + index) % MapCellWidth),
+                              MapCellY + MapCellHeight);
           if ((*this).at(cell).Is_Generally_Clear() &&
-              (*this).at(cell - MAP_CELL_W).Is_Generally_Clear()) {
+              (*this).at(cell.Offset(-MAP_CELL_W)).Is_Generally_Clear()) {
             break;
           }
         }
         if (x == MapCellWidth) {
-          return 0;
+          return Cell{};
         }
         break;
 
       case SOURCE_WEST:
         index = Random_Pick(1, MapCellHeight);
         for (y = 0; y < MapCellHeight; y++) {
-          cell =
-              XY_Cell(MapCellX - 1, MapCellY + ((y + index) % MapCellHeight));
+          cell = Cell::FromXY(MapCellX - 1,
+                              MapCellY + ((y + index) % MapCellHeight));
           if ((*this).at(cell).Is_Generally_Clear() &&
-              (*this).at(cell + 1).Is_Generally_Clear()) {
+              (*this).at(cell.Offset(1)).Is_Generally_Clear()) {
             break;
           }
         }
         if (y == MapCellHeight) {
-          return 0;
+          return Cell{};
         }
         break;
 
@@ -2239,14 +2246,13 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
       */
       case SOURCE_AIR:
         cell = base::At(TheWorld().waypoint(), kWayptReinf);
-        if (cell < 1) {
-          cell = Coord_Cell(TacticalCoord);
-          return cell;
+        if (cell.index() < 1) {
+          return Cell::Containing(TacticalCoord);
         }
         if ((*this).at(cell).Cell_Techno()) {
           for (int radius = 1; radius < 7; radius++) {
-            const CELL newcell =
-                Coord_Cell(Coord_Scatter(Cell_Coord(cell), radius * 256, true));
+            const Cell newcell = Cell::Containing(
+                Coord_Scatter(cell.Center(), radius * 256, true));
             if (In_Radar(newcell) && !(*this).at(newcell).Cell_Techno()) {
               cell = newcell;
               break;
@@ -2260,12 +2266,13 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
       *defined *	by the current tactical map position.
       */
       case SOURCE_VISIBLE:
-        cell = XY_Cell(TacticalCoord.cell_x() +
-                           Random_Pick(0, Lepton_To_Cell(TacLeptonWidth) - 1),
-                       TacticalCoord.cell_y() +
-                           Random_Pick(0, Lepton_To_Cell(TacLeptonHeight) - 1));
+        cell = Cell::FromXY(
+            TacticalCoord.cell_x() +
+                Random_Pick(0, Lepton_To_Cell(TacLeptonWidth) - 1),
+            TacticalCoord.cell_y() +
+                Random_Pick(0, Lepton_To_Cell(TacLeptonHeight) - 1));
         if (house == ThePlayer()->Class->House && !In_Radar(cell)) {
-          cell = 0;
+          cell = Cell{};
         }
         break;
 
@@ -2275,31 +2282,31 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
       */
       case SOURCE_ENEMYBASE:
       case SOURCE_HOMEBASE:
-        return 0;
+        return Cell{};
 
       /*
       **	Find an unoccupied beach cell.
       */
       case SOURCE_BEACH: {
-        CELL cells[MAP_CELL_W] = {};
-        CELL alternate[MAP_CELL_W] = {};
+        Cell cells[MAP_CELL_W] = {};
+        Cell alternate[MAP_CELL_W] = {};
         int counter = 0;
 
         for (x = 0; x < MapCellWidth; x++) {
-          CELL newcell = 0;
+          Cell newcell{};
 
           if ((*this)
-                  .at(XY_Cell(x + MapCellX, MapCellHeight + MapCellY))
+                  .at(Cell::FromXY(x + MapCellX, MapCellHeight + MapCellY))
                   .Land_Type() != LAND_WATER) {
             continue;
           }
           if ((*this)
-                  .at(XY_Cell(x + MapCellX, MapCellHeight + MapCellY - 1))
+                  .at(Cell::FromXY(x + MapCellX, MapCellHeight + MapCellY - 1))
                   .Land_Type() != LAND_WATER) {
             continue;
           }
           for (y = MapCellHeight; y >= 0; y--) {
-            newcell = XY_Cell(x + MapCellX, y + MapCellY);
+            newcell = Cell::FromXY(x + MapCellX, y + MapCellY);
             if ((*this).at(newcell).Cell_Techno()) {
               break;
             }
@@ -2311,10 +2318,10 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
           if ((land == LAND_BEACH || land == LAND_CLEAR || land == LAND_ROAD) &&
               !(*this).at(newcell).Cell_Techno() &&
               !(*this).at(newcell).Cell_Terrain() &&
-              !(*this).at(newcell - MAP_CELL_W).Cell_Techno() &&
-              !(*this).at(newcell - MAP_CELL_W).Cell_Terrain() &&
-              !(*this).at(newcell - (MAP_CELL_W * 2)).Cell_Terrain() &&
-              !(*this).at(newcell - (MAP_CELL_W * 2)).Cell_Techno()) {
+              !(*this).at(newcell.Offset(-MAP_CELL_W)).Cell_Techno() &&
+              !(*this).at(newcell.Offset(-MAP_CELL_W)).Cell_Terrain() &&
+              !(*this).at(newcell.Offset(-(MAP_CELL_W * 2))).Cell_Terrain() &&
+              !(*this).at(newcell.Offset(-(MAP_CELL_W * 2))).Cell_Techno()) {
             base::At(cells, counter++) = newcell;
             if (counter >= std::ssize(cells)) {
               break;
@@ -2328,15 +2335,13 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
         */
         int counter2 = 0;
         for (int j = 1; j < counter - 1; j++) {
-          if (Cell_X(base::At(cells, j - 1)) + 1 ==
-                  Cell_X(base::At(cells, j)) &&
-              Cell_X(base::At(cells, j + 1)) - 1 ==
-                  Cell_X(base::At(cells, j))) {
+          if (base::At(cells, j - 1).x() + 1 == base::At(cells, j).x() &&
+              base::At(cells, j + 1).x() - 1 == base::At(cells, j).x()) {
             base::At(alternate, counter2++) = base::At(cells, j);
           }
         }
 
-        CELL scan_cell = 0;
+        Cell scan_cell{};
         if (counter2) {
           if (counter2 < 4) {
             scan_cell = base::At(alternate, counter2 - 1);
@@ -2352,34 +2357,36 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
             }
           }
         }
-        if (scan_cell && (TheMap().Theater == THEATER_DESERT)) {
-          scan_cell += MAP_CELL_W;
+        if (scan_cell.index() != 0 && (TheMap().Theater == THEATER_DESERT)) {
+          scan_cell = scan_cell.Offset(MAP_CELL_W);
         }
 
         return scan_cell;
       }
 
       case SOURCE_OCEAN:
-        cell = XY_Cell(Random_Pick(0, MapCellWidth - 2) + MapCellX,
-                       MapCellHeight + MapCellY);
+        cell = Cell::FromXY(Random_Pick(0, MapCellWidth - 2) + MapCellX,
+                            MapCellHeight + MapCellY);
         break;
 
       case SourceType::SOURCE_NONE:
       case SourceType::SOURCE_COUNT:
       default:
-        return 0;
+        return Cell{};
     }
 
     /*
     **	The selected edge cell must be unoccupied and if this is for
     **	the player, then it must be on an accessible map cell.
     */
-    cell = static_cast<CELL>(static_cast<uint32_t>(cell) & 0x0FFFU);
-    if (cell && (*this).at(cell).Cell_Techno()) {
-      cell = 0;
+    cell = Cell::FromIndex(
+        static_cast<int>(static_cast<uint32_t>(cell.index()) & 0x0FFFU));
+    if (cell.index() != 0 && (*this).at(cell).Cell_Techno()) {
+      cell = Cell{};
     }
   }
-  return cell;
+  // A prvalue, since the other returns are (-Wnrvo).
+  return Cell::FromIndex(cell.index());
 }
 
 /***********************************************************************************************
@@ -2405,7 +2412,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, HousesType house) {
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void DisplayClass::Select_These(Coordinate coord1, Coordinate coord2) {
   const Coordinate tcoord =
-      TacticalCoord;  // Cell_Coord(TacticalCell) & 0xFF00FF00L;
+      TacticalCoord;  // TacticalCell.Center() & 0xFF00FF00L;
 
   coord1 = tcoord + coord1;
   coord2 = tcoord + coord2;
@@ -2493,17 +2500,17 @@ void DisplayClass::Refresh_Band() {
       y2 = temp;
     }
 
-    CELL cell = 0;
+    Cell cell{};
     for (int y = y1; y <= y2 + CELL_PIXEL_H; y += CELL_PIXEL_H) {
       cell = Click_Cell_Calc(
           x1, Bound(y, 0, TacPixelY + Lepton_To_Pixel(TacLeptonHeight)));
-      if (cell != -1) {
+      if (cell != Cell::None()) {
         (*this).at(cell).Redraw_Objects();
       }
 
       cell = Click_Cell_Calc(
           x2, Bound(y, 0, TacPixelY + Lepton_To_Pixel(TacLeptonHeight)));
-      if (cell != -1) {
+      if (cell != Cell::None()) {
         (*this).at(cell).Redraw_Objects();
       }
     }
@@ -2511,13 +2518,13 @@ void DisplayClass::Refresh_Band() {
     for (int x = x1; x <= x2 + CELL_PIXEL_W; x += CELL_PIXEL_W) {
       cell = Click_Cell_Calc(
           Bound(x, 0, TacPixelX + Lepton_To_Pixel(TacLeptonWidth)), y1);
-      if (cell != -1) {
+      if (cell != Cell::None()) {
         (*this).at(cell).Redraw_Objects();
       }
 
       cell = Click_Cell_Calc(
           Bound(x, 0, TacPixelX + Lepton_To_Pixel(TacLeptonWidth)), y2);
-      if (cell != -1) {
+      if (cell != Cell::None()) {
         (*this).at(cell).Redraw_Objects();
       }
     }
@@ -2558,8 +2565,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     edge = x == 0 || y == 199 || x == 319;
   }
   const Coordinate coord = TheMap().Pixel_To_Coord(x, y);
-  const CELL cell = Coord_Cell(coord);
-  //	CELL cell = Map.Click_Cell_Calc(x, y);
+  const Cell cell = Cell::Containing(coord);
+  //	Cell cell = Map.Click_Cell_Calc(x, y);
   if (coord) {
     const bool shadow =
         !TheMap().at(cell).IsVisible && !TheDebugState().unshroud();
@@ -3047,7 +3054,7 @@ void DisplayClass::Mouse_Left_Up(bool shadow, ObjectClass* object,
  * HISTORY: * 02/24/1995 JLB : Created. * 03/27/1995 JLB : Handles sell and
  *repair actions.                                         *
  *=============================================================================================*/
-void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
+void DisplayClass::Mouse_Left_Release(Cell cell, int x, int y,
                                       ObjectClass* object, ActionType action,
                                       bool wwsmall) {
   if (PendingObjectPtr) {
@@ -3055,8 +3062,11 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
     **	Try to place the pending object onto the map.
     */
     if (ProximityCheck) {
-      TheNetwork().out_list().Add(EventClass(
-          EventClass::PLACE, PendingObjectPtr->What_Am_I(), cell + ZoneOffset));
+      // An int, as in the original: it picks the (type, object, id)
+      // constructor, so the cell rides in Specific.ID's low half.
+      TheNetwork().out_list().Add(EventClass(EventClass::PLACE,
+                                             PendingObjectPtr->What_Am_I(),
+                                             cell.index() + ZoneOffset));
     } else {
       Speak(VOX_DEPLOY);
     }
@@ -3410,9 +3420,10 @@ void DisplayClass::Compute_Start_Pos() {
   /*
   **	Set our TacticalCell
   */
-  Set_Tactical_Position(Cell_Coord(XY_Cell(static_cast<int>(x), static_cast<int>(y))));
-  for (int16_t& View : TheWorld().views()) {
-    View = Coord_Cell(TacticalCoord);
+  Set_Tactical_Position(
+      Cell::FromXY(static_cast<int>(x), static_cast<int>(y)).Center());
+  for (Cell& View : TheWorld().views()) {
+    View = Cell::Containing(TacticalCoord);
   }
 }
 
@@ -3521,8 +3532,8 @@ void DisplayClass::Repair_Mode_Control(int control) {
  * HISTORY: * 04/30/1994 JLB : Created. * 04/30/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-bool DisplayClass::In_View(CELL cell) const {
-  const Coordinate coord = Cell_Coord(cell).Whole();
+bool DisplayClass::In_View(Cell cell) const {
+  const Coordinate coord = cell.Center().Whole();
   const Coordinate tcoord = TacticalCoord.Whole();
 
   if (static_cast<unsigned>(coord.x() - tcoord.x()) >
@@ -3538,11 +3549,11 @@ bool DisplayClass::In_View(CELL cell) const {
 #ifdef OBSOLETE
   int fudgex = TacticalCoord.sub_x() ? -1 : 0;
   int fudgey = TacticalCoord.sub_y() ? -1 : 0;
-  const int dx = Cell_X(cell) - TacticalCoord.cell_x();
+  const int dx = cell.x() - TacticalCoord.cell_x();
   if (dx < 0 || dx > Lepton_To_Cell(TacLeptonWidth) + fudgex) {
     return (false);
   }
-  const int dy = Cell_Y(cell) - TacticalCoord.cell_y();
+  const int dy = cell.y() - TacticalCoord.cell_y();
   if (dy < 0 || dy > Lepton_To_Cell(TacLeptonHeight) + fudgey) {
     return (false);
   }
@@ -3552,10 +3563,10 @@ bool DisplayClass::In_View(CELL cell) const {
 #ifdef OBSOLETE
   cell -= TacticalCell;
 
-  if (Cell_X(cell) >= TacWidth + (TacPartialX ? 1 : 0)) {
+  if (cell.x() >= TacWidth + (TacPartialX ? 1 : 0)) {
     return (false);
   }
-  if (Cell_Y(cell) >= TacHeight + (TacPartialY ? 1 : 0)) {
+  if (cell.y() >= TacHeight + (TacPartialY ? 1 : 0)) {
     return (false);
   }
   return (true);
@@ -3566,7 +3577,7 @@ Coordinate DisplayClass::Closest_Free_Spot(Coordinate coord, bool any) const {
   if ((coord.packed() & 0xC000C000U) != 0) {
     return Coordinate::FromLeptons(0x80, 0x80);
   }
-  return (*this).at(Coord_Cell(coord)).Closest_Free_Spot(coord, any);
+  return (*this).at(Cell::Containing(coord)).Closest_Free_Spot(coord, any);
 }
 
 bool DisplayClass::Is_Spot_Free(Coordinate coord) const {
@@ -3574,7 +3585,7 @@ bool DisplayClass::Is_Spot_Free(Coordinate coord) const {
     return true;
   }
   return (*this)
-      .at(Coord_Cell(coord))
+      .at(Cell::Containing(coord))
       .Is_Spot_Free(CellClass::Spot_Index(coord));
 }
 
@@ -3614,10 +3625,10 @@ void DisplayClass::Center_Map() {
                                                   y - (TacLeptonHeight / 2)));
   }
 }
-void DisplayClass::Flag_Cell(CELL cell) {
+void DisplayClass::Flag_Cell(Cell cell) {
   Flag_To_Redraw(false);
   IsDisplayToRedraw = true;
-  CellRedraw.at(base::ToSize(cell)) = true;
+  CellRedraw.at(base::ToSize(cell.index())) = true;
 }
 
 }  // namespace td

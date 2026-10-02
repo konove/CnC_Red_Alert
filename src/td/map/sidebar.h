@@ -101,7 +101,7 @@ class SidebarClass : public PowerClass {
 
   void AI(engine::window::InputEvent& event, int x, int y) override;
   void Draw_It(PixelView& view, bool complete) override;
-  void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
+  void Refresh_Cells(Cell cell, std::span<const int16_t> list) override;
 
   bool Abandon_Production(RTTIType type, int factory);
   bool Activate(int control);

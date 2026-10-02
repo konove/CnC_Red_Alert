@@ -142,15 +142,32 @@
     below and right of the bridge and leaves the bridge's own cells attached. The damage loop next
     to it uses `cell.Offset(x)` correctly
   - Fix: `cell.Offset(x)`; it changes which objects lose their target, so it needs its own commit
-    and an xcheck reference update. Check TD's `Destroy_Bridge_At()` for the same pattern
-- Send Red Alert's PLACE event through its own constructor
-  - `DisplayClass::Mouse_Left_Release()` (`ra/map/display.cc`) passes `cell.index() + ZoneOffset`,
-    an `int`, so the event is built by `EventClass(type, RTTIType, int id)`, which fills
-    `Data.Specific.ID`; the PLACE handler reads `Data.Place.Cell`, the low half of that int on a
-    little-endian machine. It works, but the high half (0 or 0xFFFF) also crosses the wire, and a
-    big-endian peer would read 0
+    and an xcheck reference update. Tiberian Dawn has no `Destroy_Bridge_At()`
+- Send both games' PLACE event through its own constructor
+  - `DisplayClass::Mouse_Left_Release()` (`ra/map/display.cc`, `td/map/display.cc`) passes
+    `cell.index() + ZoneOffset`, an `int`, so the event is built by
+    `EventClass(type, RTTIType, int id)`, which fills `Data.Specific.ID`; the PLACE handler reads
+    `Data.Place.Cell`, the low half of that int on a little-endian machine. It works, but the high
+    half (0 or 0xFFFF) also crosses the wire, and a big-endian peer would read 0
   - Fix: `EventClass(EventClass::PLACE, ..., cell.Offset(ZoneOffset))`; it changes two bytes of the
     packet (not the game), so do it together with any other event-format change
+- Scan the right cells in Tiberian Dawn's `TechnoClass::Nearby_Location()`
+  - The box scan (`td/objects/techno.cc`) adds `Cell::FromXY(x, -radius).index()` to the center
+    cell, but TD's `FromXY()` (was `XY_Cell()`) does not mask its components: for a negative X the
+    sign bits cover Y, so the offset is just X, and the scan of the box's left half visits cells on
+    the center row instead of the top and bottom rows (and the column scan's `FromXY(-radius, y)`
+    likewise visits `-radius` only). Red Alert's `Nearby_Location()` searches another way and is not
+    affected
+  - Fix: offset by `(dy * MAP_CELL_W) + dx` for each box cell (dx, dy); it changes where aircraft
+    and units are sent, so it needs its own commit and an xcheck reference update
+- Decide whether Tiberian Dawn's `Cell::y()` should mask to 6 bits
+  - `y()` (was `Cell_Y()`, `td/core/cell.h`) is every bit above X of the sign-extended word, so a
+    sentinel reads as a row of millions: `Cell::None().y()` is 67108863, and `None().Center()` is
+    0xFF803F80 (cell 63, 255), where Red Alert reads 127 and (127, 127). Stage B4 (TD) found no path
+    that hands a sentinel to `y()`, `Center()`, `Distance()`, `Direction()` or
+    `MapClass::Cell_Distance()` in play, but nothing guards them
+  - Masking changes results only for sentinels and off-map cells; do it in its own commit with a
+    test, after checking every caller
 
 ## Refactoring
 

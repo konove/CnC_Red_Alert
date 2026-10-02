@@ -846,7 +846,7 @@ TechnoClass::TechnoClass(HousesType house)
  *Checks for an processes any trigger in cell.                             *
  *=============================================================================================*/
 void TechnoClass::Per_Cell_Process(bool /*unused*/) {
-  const CELL cell = Coord_Cell(Center_Coord());
+  const Cell cell = Cell::Containing(Center_Coord());
 
   /*
   **	When enemy units enter the proper map area from off map, they are
@@ -1022,7 +1022,7 @@ bool TechnoClass::Unlimbo(Coordinate coord, game::DirType dir) {
     Enter_Idle_Mode(true);
     Commence();
 
-    IsLocked = TheMap().In_Radar(Coord_Cell(coord));
+    IsLocked = TheMap().In_Radar(Cell::Containing(coord));
     return true;
   }
   return false;
@@ -1398,7 +1398,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
+bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, Cell cell,
                                 int range, const TechnoClass** object,
                                 int& value) const {
   *object = nullptr;
@@ -1407,7 +1407,7 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
   /*
   **	If the cell is not on the legal map, then always ignore it.
   */
-  if (cell < 0 || cell >= MAP_CELL_TOTAL) {
+  if (cell.index() < 0 || cell.index() >= MAP_CELL_TOTAL) {
     return false;
   }
   if (!TheMap().In_Radar(cell)) {
@@ -1505,8 +1505,8 @@ Target TechnoClass::Greatest_Threat(ThreatType method) const {
       crange = std::max(Weapon_Range(0), Weapon_Range(1)) / ICON_LEPTON_W;
       crange++;
     }
-    const CELL cell = Coord_Cell(Fire_Coord(0));
-    //		CELL cell = Coord_Cell(Center_Coord());
+    const Cell cell = Cell::Containing(Fire_Coord(0));
+    //		Cell cell = Cell::Containing(Center_Coord());
 
     /*
     **	If aircraft are a legal target, then scan through all of them at this
@@ -1548,26 +1548,25 @@ Target TechnoClass::Greatest_Threat(ThreatType method) const {
       **	Scan the top and bottom rows of the "box".
       */
       for (int x = -radius; x <= radius; x++) {
-        CELL newcell = 0;
+        Cell newcell{};
 
-        if (Cell_X(cell) + x < TheMap().MapCellX) {
+        if (cell.x() + x < TheMap().MapCellX) {
           continue;
         }
-        if (Cell_X(cell) + x >= TheMap().MapCellX + TheMap().MapCellWidth) {
+        if (cell.x() + x >= TheMap().MapCellX + TheMap().MapCellWidth) {
           continue;
         }
 
-        if (Cell_Y(cell) - radius >= TheMap().MapCellY) {
-          newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) - radius);
+        if (cell.y() - radius >= TheMap().MapCellY) {
+          newcell = Cell::FromXY(cell.x() + x, cell.y() - radius);
           if (Evaluate_Cell(method, mask, newcell, range, &object, value) &&
               (bestval < value)) {
             bestobject = object;
           }
         }
 
-        if (Cell_Y(cell) + radius <
-            TheMap().MapCellY + TheMap().MapCellHeight) {
-          newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) + radius);
+        if (cell.y() + radius < TheMap().MapCellY + TheMap().MapCellHeight) {
+          newcell = Cell::FromXY(cell.x() + x, cell.y() + radius);
           if (Evaluate_Cell(method, mask, newcell, range, &object, value) &&
               (bestval < value)) {
             bestobject = object;
@@ -1579,25 +1578,25 @@ Target TechnoClass::Greatest_Threat(ThreatType method) const {
       **	Scan the left and right columns of the "box".
       */
       for (int y = -(radius - 1); y < radius; y++) {
-        CELL newcell = 0;
+        Cell newcell{};
 
-        if (Cell_Y(cell) + y < TheMap().MapCellY) {
+        if (cell.y() + y < TheMap().MapCellY) {
           continue;
         }
-        if (Cell_Y(cell) + y >= TheMap().MapCellY + TheMap().MapCellHeight) {
+        if (cell.y() + y >= TheMap().MapCellY + TheMap().MapCellHeight) {
           continue;
         }
 
-        if (Cell_X(cell) - radius >= TheMap().MapCellX) {
-          newcell = XY_Cell(Cell_X(cell) - radius, Cell_Y(cell) + y);
+        if (cell.x() - radius >= TheMap().MapCellX) {
+          newcell = Cell::FromXY(cell.x() - radius, cell.y() + y);
           if (Evaluate_Cell(method, mask, newcell, range, &object, value) &&
               (bestval < value)) {
             bestobject = object;
           }
         }
 
-        if (Cell_X(cell) + radius < TheMap().MapCellX + TheMap().MapCellWidth) {
-          newcell = XY_Cell(Cell_X(cell) + radius, Cell_Y(cell) + y);
+        if (cell.x() + radius < TheMap().MapCellX + TheMap().MapCellWidth) {
+          newcell = Cell::FromXY(cell.x() + radius, cell.y() + y);
           if (Evaluate_Cell(method, mask, newcell, range, &object, value) &&
               (bestval < value)) {
             bestobject = object;
@@ -2028,7 +2027,7 @@ void TechnoClass::Assign_Target(Target target) {
     **	Prevent targeting of self.
     */
     if (target == As_Target()) {
-      target = Target::FromCellIndex(Coord_Cell(Coord));
+      target = Target::FromCellIndex(Cell::Containing(Coord));
     } else {
       /*
       **	Make sure that the target is not already dead.
@@ -2302,16 +2301,16 @@ BulletClass* TechnoClass::Fire_At(Target target, int which) {
     ** local player.
     */
     if ((!IsOwnedByPlayer && !IsDiscoveredByPlayer) ||
-        !TheMap().at(Coord_Cell(Center_Coord())).IsMapped) {
+        !TheMap().at(Cell::Containing(Center_Coord())).IsMapped) {
       if (TheSession().type() == GAME_NORMAL) {
-        TheMap().Sight_From(Coord_Cell(Center_Coord()), 1, false);
+        TheMap().Sight_From(Cell::Containing(Center_Coord()), 1, false);
       } else {
         const ObjectClass* obj = target.AsObject();
         if (obj) {
           const HousesType tgt_owner = obj->Owner();
 
           if (ThePlayer()->Class->House == tgt_owner) {
-            TheMap().Sight_From(Coord_Cell(Center_Coord()), 1, false);
+            TheMap().Sight_From(Cell::Containing(Center_Coord()), 1, false);
           }
         }
       }
@@ -2460,7 +2459,7 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
  * HISTORY: * 01/19/1995 JLB : Created. * 07/10/1995 JLB : Force fire for
  *buildings is explicitely disabled.                        *
  *=============================================================================================*/
-ActionType TechnoClass::What_Action(CELL cell) const {
+ActionType TechnoClass::What_Action(Cell cell) const {
   const CellClass* cellptr = &TheMap().at(cell);
   const OverlayTypeClass* optr = nullptr;
 
@@ -3062,25 +3061,25 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
  *                                                                                             *
  * HISTORY: * 07/06/1995 JLB : Created. *
  *=============================================================================================*/
-CELL TechnoClass::Nearby_Location(const TechnoClass* /*unused*/) const {
+Cell TechnoClass::Nearby_Location(const TechnoClass* /*unused*/) const {
   /*
   **	Radiate outward from the object's location, looking for the best
   **	target.
   */
-  CELL best = 0;
-  const CELL cell = Coord_Cell(Center_Coord());
+  Cell best{};
+  const Cell cell = Cell::Containing(Center_Coord());
   for (int radius = 0; radius < MAP_CELL_W / 2; radius++) {
     /*
     **	Scan the top and bottom rows of the "box".
     */
     for (int x = -radius; x <= radius; x++) {
-      CELL newcell = static_cast<CELL>(cell + XY_Cell(x, -radius));
+      Cell newcell = cell.Offset(Cell::FromXY(x, -radius).index());
       if (TheMap().In_Radar(newcell) &&
           TheMap().at(newcell).Is_Generally_Clear()) {
         best = newcell;
       }
 
-      newcell = static_cast<CELL>(cell + XY_Cell(x, radius));
+      newcell = cell.Offset(Cell::FromXY(x, radius).index());
       if (TheMap().In_Radar(newcell) &&
           TheMap().at(newcell).Is_Generally_Clear()) {
         best = newcell;
@@ -3091,20 +3090,20 @@ CELL TechnoClass::Nearby_Location(const TechnoClass* /*unused*/) const {
     **	Scan the left and right columns of the "box".
     */
     for (int y = -(radius - 1); y < radius; y++) {
-      CELL newcell = static_cast<CELL>(cell + XY_Cell(-radius, y));
+      Cell newcell = cell.Offset(Cell::FromXY(-radius, y).index());
       if (TheMap().In_Radar(newcell) &&
           TheMap().at(newcell).Is_Generally_Clear()) {
         best = newcell;
       }
 
-      newcell = static_cast<CELL>(cell + XY_Cell(radius, y));
+      newcell = cell.Offset(Cell::FromXY(radius, y).index());
       if (TheMap().In_Radar(newcell) &&
           TheMap().at(newcell).Is_Generally_Clear()) {
         best = newcell;
       }
     }
 
-    if (best) {
+    if (best.index() != 0) {
       break;
     }
   }
@@ -3815,8 +3814,8 @@ int TechnoClass::Tiberium_Load() const { return 0x0000; }
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 game::DirType TechnoClass::Desired_Load_Dir(ObjectClass* /*unused*/,
-                                            CELL& moveto) const {
-  moveto = 0;
+                                            Cell& moveto) const {
+  moveto = Cell{};
   return game::DIR_N;
 }
 
@@ -4203,8 +4202,8 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
  *                                                                                             *
  * HISTORY: * 08/12/1995 JLB : Created. *
  *=============================================================================================*/
-CELL TechnoClass::Find_Exit_Cell(const TechnoClass* /*unused*/) const {
-  return Coord_Cell(Docking_Coord());
+Cell TechnoClass::Find_Exit_Cell(const TechnoClass* /*unused*/) const {
+  return Cell::Containing(Docking_Coord());
 }
 
 /***********************************************************************************************

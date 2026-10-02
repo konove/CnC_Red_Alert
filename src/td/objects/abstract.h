@@ -105,15 +105,15 @@ class AbstractClass {
     return td::Direction(Center_Coord(), coord);
   }
   [[nodiscard]] game::DirType Direction(Target target) const;
-  [[nodiscard]] game::DirType Direction(CELL cell) const {
-    return td::Direction(Coord_Cell(Center_Coord()), cell);
+  [[nodiscard]] game::DirType Direction(Cell cell) const {
+    return td::Direction(Cell::Containing(Center_Coord()), cell);
   }
   [[nodiscard]] int Distance(Target target) const;
   [[nodiscard]] int Distance(Coordinate coord) const {
     return td::Distance(Center_Coord(), coord);
   }
-  [[nodiscard]] int Distance(CELL cell) const {
-    return td::Distance(Coord_Cell(Center_Coord()), cell);
+  [[nodiscard]] int Distance(Cell cell) const {
+    return td::Distance(Cell::Containing(Center_Coord()), cell);
   }
   int Distance(const AbstractClass* object) const {
     return td::Distance(Center_Coord(), object->Target_Coord());
@@ -123,7 +123,7 @@ class AbstractClass {
   **	Object entry and exit from the game system.
   */
   [[nodiscard]] virtual game::MoveType Can_Enter_Cell(
-      CELL /*unused*/, game::FacingType /*unused*/ = game::FACING_NONE) const {
+      Cell /*unused*/, game::FacingType /*unused*/ = game::FACING_NONE) const {
     return game::MOVE_OK;
   }
 

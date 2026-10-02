@@ -109,7 +109,7 @@ ImpactType FlyClass::Physics(Coordinate& coord, game::DirType facing) {
       **	this.
       */
       if ((newcoord.packed() & 0xC000C000U) !=
-          0 /*|| !Map.In_Radar(Coord_Cell(newcoord))*/) {
+          0 /*|| !Map.In_Radar(Cell::Containing(newcoord))*/) {
         coord = old;
         return IMPACT_EDGE;
       }

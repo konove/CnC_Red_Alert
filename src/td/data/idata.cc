@@ -72,7 +72,6 @@
 #include "td/ai/special.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/debug/debug_state.h"
@@ -1669,11 +1668,10 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
+bool InfantryTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* i = base::NewPooled<InfantryClass>(Type, house);
   if (i) {
-    const Coordinate coord =
-        TheMap().at(cell).Closest_Free_Spot(Cell_Coord(cell));
+    const Coordinate coord = TheMap().at(cell).Closest_Free_Spot(cell.Center());
     if (coord) {
       return i->Unlimbo(coord, game::DIR_E);
     }

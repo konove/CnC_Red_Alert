@@ -554,7 +554,7 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
 void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
   engine::window::KeyNumber& input = event.key;
   int rc = 0;
-  CELL cell = 0;
+  Cell cell{};
   int found = 0;      // for removing a waypoint label
   int waypt_idx = 0;  // for labelling a waypoint
   HousesType house = HOUSE_NONE;
@@ -644,7 +644,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       game::TheMouse().y() >= TacPixelY &&
       game::TheMouse().y() <= TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
     cell = Click_Cell_Calc(game::TheMouse().x(), game::TheMouse().y());
-    if (cell != -1) {
+    if (cell != Cell::None()) {
       Set_Cursor_Pos(cell);
       if (PendingObject) {
         Flag_To_Redraw(true);
@@ -861,7 +861,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         */
         TheWorld().scenario_init()++;
         Set_Tactical_Position(
-            Cell_Coord(base::At(TheWorld().waypoint(), kWayptHome)));
+            base::At(TheWorld().waypoint(), kWayptHome).Center());
         TheWorld().scenario_init()--;
 
         /*
@@ -884,7 +884,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       */
       cell = base::At(TheWorld().waypoint(), kWayptHome);
 
-      if (cell != -1) {
+      if (cell != Cell::None()) {
         found = 0;
         for (int i = 0; i < kWayptCount; i++) {
           if (i != kWayptHome && base::At(TheWorld().waypoint(), i) == cell) {
@@ -901,9 +901,10 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       /*
       ** Now set the new Home cell
       */
-      base::At(TheWorld().waypoint(), kWayptHome) = Coord_Cell(TacticalCoord);
-      (*this).at(Coord_Cell(TacticalCoord)).IsWaypoint = true;
-      Flag_Cell(Coord_Cell(TacticalCoord));
+      base::At(TheWorld().waypoint(), kWayptHome) =
+          Cell::Containing(TacticalCoord);
+      (*this).at(Cell::Containing(TacticalCoord)).IsWaypoint = true;
+      Flag_Cell(Cell::Containing(TacticalCoord));
       Changed = true;
       input = KN_NONE;
       break;
@@ -913,7 +914,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     the Reinf. Cell to the same as the Home Cell (for display purposes.)
     ---------------------------------------------------------------------*/
     case Shift(KN_R):
-      if (TheWorld().current_cell() == 0 ||
+      if (TheWorld().current_cell().index() == 0 ||
           TheWorld().current_cell() ==
               base::At(TheWorld().waypoint(), kWayptHome)) {
         break;
@@ -925,7 +926,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       */
       cell = base::At(TheWorld().waypoint(), kWayptReinf);
 
-      if (cell != -1) {
+      if (cell != Cell::None()) {
         found = 0;
         for (int i = 0; i < kWayptCount; i++) {
           if (i != kWayptReinf && base::At(TheWorld().waypoint(), i) == cell) {
@@ -977,7 +978,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     case Alt(KN_X):
     case Alt(KN_Y):
     case Alt(KN_Z):
-      if (TheWorld().current_cell() != 0) {
+      if (TheWorld().current_cell().index() != 0) {
         // Key numbers are SDL scancodes, which run from A to Z and from 1 to 9
         // in order, whatever the keyboard layout types.
         waypt_idx = KeyCode(input) - KN_A;
@@ -985,7 +986,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         Unflag cell for this waypoint if there is one
         ...............................................................*/
         cell = base::At(TheWorld().waypoint(), waypt_idx);
-        if (cell != -1) {
+        if (cell != Cell::None()) {
           if (base::At(TheWorld().waypoint(), kWayptHome) != cell &&
               base::At(TheWorld().waypoint(), kWayptReinf) != cell) {
             (*this).at(cell).IsWaypoint = false;
@@ -1010,7 +1011,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       /*------------------------------------------------------------------
       If there's a current cell, place the flag & waypoint there.
       ------------------------------------------------------------------*/
-      if (TheWorld().current_cell() != 0) {
+      if (TheWorld().current_cell().index() != 0) {
         waypt_idx = KeyCode(input) - KN_1;
         house =
             static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + waypt_idx);
@@ -1044,14 +1045,14 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     ALT-Space: Remove a waypoint designation
     ---------------------------------------------------------------------*/
     case Alt(KN_SPACE):
-      if (TheWorld().current_cell() != 0) {
+      if (TheWorld().current_cell().index() != 0) {
         /*...............................................................
         Loop through letter waypoints; if this cell is one of them,
         clear that waypoint.
         ...............................................................*/
         for (int i = 0; i < 26; i++) {
           if (base::At(TheWorld().waypoint(), i) == TheWorld().current_cell()) {
-            base::At(TheWorld().waypoint(), i) = -1;
+            base::At(TheWorld().waypoint(), i) = Cell::None();
           }
         }
 
@@ -1141,7 +1142,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
               ................ Single-click: select object .................
               */
               if (Select_Object(event.x, event.y) == 0) {
-                TheWorld().current_cell() = 0;
+                TheWorld().current_cell() = Cell{};
                 Grab_Object();
               } else {
                 /*
@@ -1231,11 +1232,11 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         /*
         ................. Remove trigger from current cell .................
         */
-        if (TheWorld().current_cell() &&
+        if (TheWorld().current_cell().index() != 0 &&
             (*this).at(TheWorld().current_cell()).IsTrigger) {
           (*this).at(TheWorld().current_cell()).IsTrigger = false;
-          base::At(TheWorld().cell_triggers(), TheWorld().current_cell()) =
-              nullptr;
+          base::At(TheWorld().cell_triggers(),
+                   TheWorld().current_cell().index()) = nullptr;
           /*
           ...................... Force a redraw ........................
           */
@@ -1494,7 +1495,7 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
 bool MapEditClass::Mouse_Moved() {
   static int old_mx = 0;
   static int old_my = 0;
-  static CELL old_zonecell = 0;
+  static Cell old_zonecell{};
   const ObjectTypeClass* objtype = nullptr;
   bool retcode = false;
 

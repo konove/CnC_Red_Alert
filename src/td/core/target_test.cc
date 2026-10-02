@@ -17,13 +17,12 @@
 #include "gtest/gtest.h"
 #include "td/core/cell.h"
 #include "td/core/coordinate.h"
-#include "td/core/inline.h"
 
 namespace td {
 namespace {
 
 // The cell at X 5, Y 3.
-constexpr CELL kCell = (3 * 64) + 5;
+constexpr Cell kCell = Cell::FromXY(5, 3);
 
 // The factories and accessors are usable in constant expressions.
 static_assert(Target::Make(KIND_NONE, 0) == Target{});
@@ -109,22 +108,22 @@ TEST(TargetTest, FromCellIndexHoldsTheCellIndex) {
   const Target target = Target::FromCellIndex(kCell);
   EXPECT_EQ(target, Target::Make(KIND_CELL, 197));
   EXPECT_EQ(target.packed(), 0x10C5);
-  EXPECT_EQ(target.value(), kCell);
-  EXPECT_EQ(target.AsCoordinate(), Cell_Coord(kCell));
+  EXPECT_EQ(target.value(), kCell.index());
+  EXPECT_EQ(target.AsCoordinate(), kCell.Center());
   EXPECT_EQ(target.AsCoordinate().packed(), 0x03800580U);
-  EXPECT_EQ(target.AsMovementCoordinate(), Cell_Coord(kCell));
+  EXPECT_EQ(target.AsMovementCoordinate(), kCell.Center());
   EXPECT_EQ(target.AsCell(), kCell);
 }
 
 // The cell is not masked either: cell -1 fills the whole word.
 TEST(TargetTest, FromCellIndexOfANegativeCellFillsTheWord) {
-  EXPECT_EQ(Target::FromCellIndex(static_cast<CELL>(-1)).packed(), 0xFFFF);
+  EXPECT_EQ(Target::FromCellIndex(Cell::None()).packed(), 0xFFFF);
 }
 
 TEST(TargetTest, NoTargetDecodesToNothing) {
   EXPECT_EQ(Target{}.AsCoordinate(), Coordinate{});
   EXPECT_EQ(Target{}.AsMovementCoordinate(), Coordinate{});
-  EXPECT_EQ(Target{}.AsCell(), Coord_Cell(Coordinate{}));
+  EXPECT_EQ(Target{}.AsCell(), Cell::Containing(Coordinate{}));
   EXPECT_EQ(Target{}.AsObject(), nullptr);
   EXPECT_EQ(Target{}.AsTechno(), nullptr);
   EXPECT_EQ(Target{}.AsAircraft(), nullptr);

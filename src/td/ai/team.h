@@ -152,8 +152,8 @@ class TeamClass : public AbstractClass {
   **	center point is usually calculated as the average position of all the
   **	team members.
   */
-  CELL Center = 0;
-  CELL ObjectiveCenter = 0;
+  Cell Center{};
+  Cell ObjectiveCenter{};
 
   /*
   **	This is the target of the team. Typically, it is a unit or structure,
@@ -253,7 +253,7 @@ class TeamClass : public AbstractClass {
   void Coordinate_Move();
   void Coordinate_Conscript(FootClass* unit);
   //		void Control(FootClass *, bool initial=false);
-  void Calc_Center(CELL& center, CELL& obj_center) const;
+  void Calc_Center(Cell& center, Cell& obj_center) const;
   int Recruit(int typeindex);
   bool Is_A_Member(const void* who) const;
   bool Lagging_Units();

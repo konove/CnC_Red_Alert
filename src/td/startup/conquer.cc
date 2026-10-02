@@ -129,7 +129,6 @@
 #include "td/core/config.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/core/randomstate.h"
@@ -2862,10 +2861,11 @@ void Handle_View(int view, int action) {
       sizeof(TheWorld().views()) / sizeof(base::At(TheWorld().views(), 0))) {
     if (action == 0) {
       TheMap().Set_Tactical_Position(
-          Cell_Coord(base::At(TheWorld().views(), view)).Whole());
+          base::At(TheWorld().views(), view).Center().Whole());
       TheMap().Flag_To_Redraw(true);
     } else {
-      base::At(TheWorld().views(), view) = Coord_Cell(TheMap().TacticalCoord);
+      base::At(TheWorld().views(), view) =
+          Cell::Containing(TheMap().TacticalCoord);
     }
   }
 }

@@ -339,14 +339,14 @@ static base::EnumArray<VocType, SoundEffectEntry, kVocCount> SoundEffectName = {
  *dramatically when off screen.                         *
  *=============================================================================================*/
 void Sound_Effect(VocType voc, Coordinate coord, int variation) {
-  CELL cell_pos = 0;
+  Cell cell_pos{};
 
   if (!TheOptions().Volume || voc == VOC_NONE || !TheGameState().sound_on() ||
       !engine::audio::TheAudio().is_open()) {
     return;
   }
   if (coord) {
-    cell_pos = Coord_Cell(coord);
+    cell_pos = Cell::Containing(coord);
   }
 
   int distance = 0xFF;
@@ -359,7 +359,8 @@ void Sound_Effect(VocType voc, Coordinate coord, int variation) {
         TheMap().TacticalCoord +
         Coordinate::FromLeptons(TheMap().TacLeptonWidth / 2,
                                 TheMap().TacLeptonHeight / 2);
-    distance = MapEditClass::Cell_Distance(cell_pos, Coord_Cell(view_center));
+    distance =
+        MapEditClass::Cell_Distance(cell_pos, Cell::Containing(view_center));
     distance = std::min<int>(distance, MAP_CELL_W);
     distance = base::CardinalToFixed(MAP_CELL_W, distance);
     distance = std::min(distance, 0xFF);
@@ -368,7 +369,7 @@ void Sound_Effect(VocType voc, Coordinate coord, int variation) {
     distance /= 2;
     distance = std::max(distance, 25);
 
-    pan_value = Cell_X(cell_pos);
+    pan_value = cell_pos.x();
     pan_value -= TheMap().TacticalCoord.cell_x() +
                  (Lepton_To_Cell(TheMap().TacLeptonWidth) / 2);
     if (std::abs(pan_value) > Lepton_To_Cell(TheMap().TacLeptonWidth / 2)) {

@@ -3,7 +3,6 @@
 #include "game/sim/direction.h"
 #include "gtest/gtest.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/map/world.h"
 #include "td/objects/cell.h"
 
@@ -28,7 +27,7 @@ class TdAdjacentCellTest : public testing::Test {
   static void TearDownTestSuite() { TheMap().Free_Cells(); }
 
   static const CellClass& Cell(int x, int y) {
-    return TheMap().at(XY_Cell(x, y));
+    return TheMap().at(Cell::FromXY(x, y));
   }
 };
 
@@ -53,13 +52,13 @@ TEST_F(TdAdjacentCellTest, StepOffTopOfArrayReturnsSelf) {
 }
 
 TEST_F(TdAdjacentCellTest, StepOffBottomOfArrayReturnsSelf) {
-  const CellClass& last = TheMap().at(static_cast<CELL>(MAP_CELL_TOTAL - 1));
+  const CellClass& last = TheMap().at(Cell::FromIndex(MAP_CELL_TOTAL - 1));
   EXPECT_EQ(&last.Adjacent_Cell(game::FACING_S), &last);
   EXPECT_EQ(&last.Adjacent_Cell(game::FACING_SE), &last);
   EXPECT_EQ(&last.Adjacent_Cell(game::FACING_SW), &last);
   EXPECT_EQ(&last.Adjacent_Cell(game::FACING_E), &last);
   EXPECT_EQ(&last.Adjacent_Cell(game::FACING_W),
-            &TheMap().at(static_cast<CELL>(MAP_CELL_TOTAL - 2)));
+            &TheMap().at(Cell::FromIndex(MAP_CELL_TOTAL - 2)));
 }
 
 TEST_F(TdAdjacentCellTest, FirstCellStepWestReturnsSelf) {

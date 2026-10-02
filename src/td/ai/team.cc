@@ -323,7 +323,7 @@ void TeamClass::AI() {
     } else {
       IsUnderStrength = true;
       IsFullStrength = false;
-      Center = 0;
+      Center = Cell{};
 
       /*
       **	A team that exists on the player's side is automatically
@@ -362,7 +362,7 @@ void TeamClass::AI() {
       ** factory then it should pick another structure that is friendly to
       ** its side.
       */
-      CELL dest = Center;
+      Cell dest = Center;
       int max = 0x7FFFFFFF;
 
       for (int index = 0; index < TheObjectHeaps().building().Count();
@@ -371,7 +371,7 @@ void TeamClass::AI() {
 
         if (b && !b->IsInLimbo && b->House == House &&
             b->Class->Primary == WEAPON_NONE) {
-          CELL cell = Coord_Cell(b->Center_Coord());
+          Cell cell = Cell::Containing(b->Center_Coord());
           int dist = MapEditClass::Cell_Distance(cell, Center) *
                      (MapEditClass::Cell_Threat(cell, House->Class->House) + 1);
 
@@ -380,7 +380,7 @@ void TeamClass::AI() {
           }
           if (dist < max) {
             cell = Member->Safety_Point(Center, cell, 2, 4);
-            if (cell != -1) {
+            if (cell != Cell::None()) {
               max = dist;
               dest = cell;
             }
@@ -393,7 +393,7 @@ void TeamClass::AI() {
       Coordinate_Move();
       return;
     }
-    Center = 0;
+    Center = Cell{};
   }
 
   /*
@@ -432,7 +432,7 @@ void TeamClass::AI() {
   **	If the team is moving or if there is no center position for
   **	the team, then the center position must be recalculated.
   */
-  if (IsReforming || IsMoving || Center == 0) {
+  if (IsReforming || IsMoving || Center.index() == 0) {
     Calc_Center(Center, ObjectiveCenter);
   }
 
@@ -475,7 +475,7 @@ void TeamClass::AI() {
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
           Assign_Mission_Target(
-              td::Target::FromCellIndex(static_cast<CELL>(mission->Argument)));
+              td::Target::FromCellIndex(Cell::FromIndex(mission->Argument)));
           break;
 
         case TMISSION_MOVE:
@@ -746,7 +746,7 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   obj->Team = this;
   Total++;
   Risk += obj->Risk();
-  if (!Center) {
+  if (Center.index() == 0) {
     Calc_Center(Center, ObjectiveCenter);
   }
 
@@ -857,7 +857,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
   */
   if (!initiated && Member) {
     Member->IsInitiated = true;
-    Center = 0;
+    Center = Cell{};
   }
 
   /*
@@ -1030,26 +1030,26 @@ td::Target TeamClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Calc_Center(CELL& center, CELL& obj_center) const {
+void TeamClass::Calc_Center(Cell& center, Cell& obj_center) const {
   Validate();
   int32_t x = 0;
   int32_t y = 0;
   int dist = 0x7FFFFFFF;
   int quantity = 0;
 
-  obj_center = 0;
-  center = 0;
+  obj_center = Cell{};
+  center = Cell{};
 
   FootClass* unit = Member;
   while (unit) {
     if (unit->IsInitiated && !unit->IsInLimbo) {
-      const CELL c = Coord_Cell(unit->Center_Coord());
+      const Cell c = Cell::Containing(unit->Center_Coord());
       if (unit->Distance(Target) < dist) {
         dist = unit->Distance(Target);
         obj_center = c;
       }
-      x += Cell_X(c);
-      y += Cell_Y(c);
+      x += c.x();
+      y += c.y();
       quantity++;
     }
     unit = unit->Member;
@@ -1057,7 +1057,7 @@ void TeamClass::Calc_Center(CELL& center, CELL& obj_center) const {
   if (quantity) {
     x /= quantity;
     y /= quantity;
-    const CELL cell = XY_Cell(static_cast<int>(x), static_cast<int>(y));
+    const Cell cell = Cell::FromXY(static_cast<int>(x), static_cast<int>(y));
     center = cell;
   }
 }
@@ -1104,7 +1104,7 @@ void TeamClass::Took_Damage(FootClass* /*unused*/, game::ResultType result,
           if ((techno &&
                dynamic_cast<const TechnoTypeClass&>(techno->Class_Of())
                        .Primary != WEAPON_NONE) &&
-              techno->In_Range(Cell_Coord(Center), 0)) {
+              techno->In_Range(Center.Center(), 0)) {
             return;
           }
         }

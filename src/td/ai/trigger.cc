@@ -88,7 +88,6 @@
 #include "td/ai/teamtype.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/data/profile.h"
@@ -542,8 +541,8 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
       break;
 
     case ACTION_DZ:
-      base::NewPooled<AnimClass>(
-          ANIM_LZ_SMOKE, Cell_Coord(base::At(TheWorld().waypoint(), 25)));
+      base::NewPooled<AnimClass>(ANIM_LZ_SMOKE,
+                                 base::At(TheWorld().waypoint(), 25).Center());
       break;
 
     case ACTION_NONE:
@@ -624,7 +623,7 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
  *                                                                                             *
  * HISTORY: * 12/06/1994 BR : Created. *
  *=============================================================================================*/
-bool TriggerClass::Spring(EventType event, CELL cell) {
+bool TriggerClass::Spring(EventType event, Cell cell) {
   Validate();
   /*
   **	If this is not the event for this trigger, just return.
@@ -730,8 +729,8 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
       break;
 
     case ACTION_DZ:
-      base::NewPooled<AnimClass>(
-          ANIM_LZ_SMOKE, Cell_Coord(base::At(TheWorld().waypoint(), 25)));
+      base::NewPooled<AnimClass>(ANIM_LZ_SMOKE,
+                                 base::At(TheWorld().waypoint(), 25).Center());
       break;
 
     case ACTION_NONE:
@@ -929,8 +928,8 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
       break;
 
     case ACTION_DZ:
-      base::NewPooled<AnimClass>(
-          ANIM_LZ_SMOKE, Cell_Coord(base::At(TheWorld().waypoint(), 25)));
+      base::NewPooled<AnimClass>(ANIM_LZ_SMOKE,
+                                 base::At(TheWorld().waypoint(), 25).Center());
       break;
 
     case ACTION_WIN:
@@ -1006,11 +1005,12 @@ bool TriggerClass::Remove() {
   /*
   **	Loop through all cells; remove any reference to this trigger
   */
-  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+  for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+    const Cell cell = Cell::FromIndex(cell_index);
     if (TheMap().at(cell).IsTrigger &&
-        (base::At(TheWorld().cell_triggers(), cell) == this)) {
+        (base::At(TheWorld().cell_triggers(), cell_index) == this)) {
       TheMap().at(cell).IsTrigger = false;
-      base::At(TheWorld().cell_triggers(), cell) = nullptr;
+      base::At(TheWorld().cell_triggers(), cell_index) = nullptr;
     }
   }
 

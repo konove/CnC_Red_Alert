@@ -528,13 +528,13 @@ static void Serialize_Misc_Values(Archive& ar) {
          TheWorld().scen_var() != SCEN_VAR_LOSE)) {
       ar.Fail("invalid saved scenario direction or variant");
     }
-    for (const CELL cell : TheWorld().waypoint()) {
-      if (cell < -1 || cell >= MAP_CELL_TOTAL) {
+    for (const Cell cell : TheWorld().waypoint()) {
+      if (cell.index() < -1 || cell.index() >= MAP_CELL_TOTAL) {
         ar.Fail("invalid saved waypoint");
       }
     }
-    for (const CELL cell : TheWorld().views()) {
-      if (cell < -1 || cell >= MAP_CELL_TOTAL) {
+    for (const Cell cell : TheWorld().views()) {
+      if (cell.index() < -1 || cell.index() >= MAP_CELL_TOTAL) {
         ar.Fail("invalid saved view");
       }
     }

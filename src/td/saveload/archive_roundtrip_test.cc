@@ -23,7 +23,6 @@
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/debug/debug_state.h"
 #include "td/editor/mapedit.h"
@@ -195,16 +194,20 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
     e.Data.Specific.Type = RTTI_UNITTYPE;
     e.Data.Specific.ID = 2;
   }, EventClass::PRODUCE, RTTI_UNITTYPE, 2);
-  check([](EventClass& e) {
-    e.Type = EventClass::PLACE;
-    e.Data.Place.Type = RTTI_BUILDINGTYPE;
-    e.Data.Place.Cell = CELL{100};
-  }, EventClass::PLACE, RTTI_BUILDINGTYPE, CELL{100});
-  check([](EventClass& e) {
-    e.Type = EventClass::SPECIAL_PLACE;
-    e.Data.Special.ID = 2;
-    e.Data.Special.Cell = CELL{100};
-  }, EventClass::SPECIAL_PLACE, 2, CELL{100});
+  check(
+      [](EventClass& e) {
+        e.Type = EventClass::PLACE;
+        e.Data.Place.Type = RTTI_BUILDINGTYPE;
+        e.Data.Place.Cell = Cell::FromIndex(100);
+      },
+      EventClass::PLACE, RTTI_BUILDINGTYPE, Cell::FromIndex(100));
+  check(
+      [](EventClass& e) {
+        e.Type = EventClass::SPECIAL_PLACE;
+        e.Data.Special.ID = 2;
+        e.Data.Special.Cell = Cell::FromIndex(100);
+      },
+      EventClass::SPECIAL_PLACE, 2, Cell::FromIndex(100));
   check([](EventClass& e) {
     e.Type = EventClass::ANIMATION;
     e.Data.Anim.What = ANIM_FIRE_SMALL;
@@ -221,7 +224,7 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
 TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferences) {
   auto* unit = base::NewPooled<UnitClass>(UNIT_LTANK, HOUSE_GOOD);
   auto* trigger = base::NewPooled<TriggerClass>();
-  auto& cell = TheMap().at(100);
+  auto& cell = TheMap().at(Cell::FromIndex(100));
   cell.Reset();
   cell.IsPlot = cell.IsCursorHere = cell.IsWaypoint = true;
   cell.IsRadarCursor = cell.IsFlagged = cell.IsTrigger = true;
@@ -323,9 +326,9 @@ TEST_F(TdArchiveRoundTripTest, HouseRestoresEconomyFlagsTimersAndTypeIdentity) {
 
 TEST_F(TdArchiveRoundTripTest, UnitRestoresBaseFieldsReferencesTimersAndPathTail) {
   auto* unit = base::NewPooled<UnitClass>(UNIT_LTANK, HOUSE_GOOD);
-  unit->Coord = Cell_Coord(1000);
+  unit->Coord = Cell::FromIndex(1000).Center();
   unit->Strength = 123;
-  unit->NavCom = Target::FromCellIndex(CELL{1200});
+  unit->NavCom = Target::FromCellIndex(Cell::FromIndex(1200));
   unit->Flagged = HOUSE_BAD;
   unit->Reload.Set(87);
   unit->Path[0] = game::FACING_E;
@@ -356,7 +359,7 @@ TEST_F(TdArchiveRoundTripTest, TruncatedCellHouseAndUnitRecordsFail) {
     object.Serialize(reader);
     EXPECT_FALSE(reader.ok());
   };
-  check(TheMap().at(200));
+  check(TheMap().at(Cell::FromIndex(200)));
   check(*ThePlayer());
   auto* unit = base::NewPooled<UnitClass>(UNIT_LTANK, HOUSE_GOOD);
   check(*unit);

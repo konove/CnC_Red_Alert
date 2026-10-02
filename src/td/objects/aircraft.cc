@@ -543,11 +543,12 @@ void AircraftClass::Read_INI(char* buffer) {
           */
           const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
           const Coordinate coord =
-              Cell_Coord(base::ParseIntegerOr<CELL>(tokens.Next(), 0));
+              Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), 0))
+                  .Center();
           const auto dir = static_cast<game::DirType>(
               base::ParseIntegerOr<int>(tokens.Next(), 0));
 
-          if (!TheMap().In_Radar(Coord_Cell(coord))) {
+          if (!TheMap().In_Radar(Cell::Containing(coord))) {
             base::DeletePooled(air);
           } else {
             air->Strength = static_cast<int16_t>(
@@ -609,7 +610,8 @@ void AircraftClass::Write_INI(std::string& buffer) {
       absl::SNPrintF(uname, 10, "%03d", index);
       absl::SNPrintF(buf, 128, "%s,%s,%d,%u,%d,%s", unit->House->Class->IniName,
                      unit->Class->IniName, unit->Health_Ratio(),
-                     Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
+                     Cell::Containing(unit->Coord).index(),
+                     unit->PrimaryFacing.Current(),
                      Mission_Name(unit->Mission));
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
     }
@@ -778,7 +780,7 @@ void AircraftClass::AI() {
   **	Perform sighting every so often as controlled by the sight timer.
   */
   if (IsOwnedByPlayer && Class->SightRange && SightTimer.IsFinished()) {
-    TheMap().Sight_From(Coord_Cell(Coord), Class->SightRange, false);
+    TheMap().Sight_From(Cell::Containing(Coord), Class->SightRange, false);
     SightTimer.Set(kTicksPerSecond);
   }
 
@@ -827,7 +829,7 @@ void AircraftClass::AI() {
       */
       bool ok = true;
       if ((In_Which_Layer() == LAYER_GROUND) &&
-          (!Is_LZ_Clear(Target::FromCellIndex(Coord_Cell(Coord))))) {
+          (!Is_LZ_Clear(Target::FromCellIndex(Cell::Containing(Coord))))) {
         IsTakingOff = true;
         Altitude++;
         ok = false;
@@ -849,13 +851,13 @@ void AircraftClass::AI() {
         if (In_Which_Layer() == LAYER_GROUND) {
           Assign_Destination(Target{});  // Clear the navcom.
           Transmit_Message(RADIO_TETHER);
-          TheMap().Place_Down(Coord_Cell(Coord), this);
+          TheMap().Place_Down(Cell::Containing(Coord), this);
           if (IsOwnedByPlayer) {
-            TheMap().Sight_From(Coord_Cell(Coord), 1, false);
+            TheMap().Sight_From(Cell::Containing(Coord), 1, false);
           }
         } else {
           Transmit_Message(RADIO_UNTETHER);
-          TheMap().Pick_Up(Coord_Cell(Coord), this);
+          TheMap().Pick_Up(Cell::Containing(Coord), this);
 
           /*
           **	If the navigation computer is not attached to the object this
@@ -876,7 +878,7 @@ void AircraftClass::AI() {
   *view. *	This ensures that it will be rendered even if there is nothing
   *else that flagged *	the map to be redrawn.
   */
-  if (TheMap().In_View(Coord_Cell(Coord))) {
+  if (TheMap().In_View(Cell::Containing(Coord))) {
     TheMap().Flag_To_Redraw(false);
     TheMap().IsDisplayToRedraw = true;
   }
@@ -887,7 +889,7 @@ void AircraftClass::AI() {
   *completed its mission. A transport *	helicopter that has already delivered
   *reinforcements is a good example of this.
   */
-  if (!TheMap().In_Radar(Coord_Cell(Coord))) {
+  if (!TheMap().In_Radar(Cell::Containing(Coord))) {
     if (Mission == MISSION_RETREAT) {
       // Check to see if there are any civilians aboard. If so, then flag the
       // house that the civilian evacuation trigger event has been fulfilled.
@@ -959,8 +961,8 @@ void AircraftClass::AI() {
 bool AircraftClass::Mark(MarkType mark) {
   Validate();
   if (FootClass::Mark(mark)) {
-    TheMap().Refresh_Cells(Coord_Cell(Coord), Occupy_List());
-    TheMap().Refresh_Cells(Coord_Cell(Coord), Overlap_List());
+    TheMap().Refresh_Cells(Cell::Containing(Coord), Occupy_List());
+    TheMap().Refresh_Cells(Cell::Containing(Coord), Overlap_List());
     return true;
   }
   return false;
@@ -1124,10 +1126,10 @@ int AircraftClass::Mission_Unload() {
             FootClass* unit = Detach_Object();
 
             if (unit) {
-              const CELL cell = Contact_With_Whom()->Find_Exit_Cell(unit);
-              if (cell) {
+              const Cell cell = Contact_With_Whom()->Find_Exit_Cell(unit);
+              if (cell.index() != 0) {
                 TheWorld().scenario_init()++;
-                if (!unit->Unlimbo(Cell_Coord(cell))) {
+                if (!unit->Unlimbo(cell.Center())) {
                   Attach(unit);
                 } else {
                   /*
@@ -1242,7 +1244,7 @@ int AircraftClass::Mission_Unload() {
             **	First thing is to lift the transport off of the map so that the
             *unlimbo *	process for the passengers is more likely to succeed.
             */
-            TheMap().Pick_Up(Coord_Cell(Coord), this);
+            TheMap().Pick_Up(Cell::Containing(Coord), this);
 
             if (!Exit_Object(unit)) {
               base::DeletePooled(unit);
@@ -1251,7 +1253,7 @@ int AircraftClass::Mission_Unload() {
             /*
             **	Restore the transport back down on the map.
             */
-            TheMap().Place_Down(Coord_Cell(Coord), this);
+            TheMap().Place_Down(Cell::Containing(Coord), this);
 
             if (!Is_Something_Attached()) {
               Enter_Idle_Mode();
@@ -1277,7 +1279,7 @@ int AircraftClass::Mission_Unload() {
             **	Break off radio contact with the helipad it is taking off from.
             */
             if (In_Radio_Contact() &&
-                TheMap().at(Coord_Cell(Coord)).Cell_Building() ==
+                TheMap().at(Cell::Containing(Coord)).Cell_Building() ==
                     Contact_With_Whom()) {
               Transmit_Message(RADIO_OVER_OUT);
             }
@@ -1317,7 +1319,7 @@ bool AircraftClass::Is_LZ_Clear(Target target) const {
   if (!target) {
     return false;
   }
-  const CELL cell = target.AsCell();
+  const Cell cell = target.AsCell();
   if (!TheMap().In_Radar(cell)) {
     return false;
   }
@@ -1489,7 +1491,7 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   static const base::EnumArray<game::FacingType, game::FacingType> _toface = {
       game::FACING_S,  game::FACING_SW, game::FACING_SE, game::FACING_NW,
       game::FACING_NE, game::FACING_N,  game::FACING_W,  game::FACING_E};
-  CELL cell = 0;
+  Cell cell{};
 
   /*
   **	Find a free cell to drop the unit off at.
@@ -1498,7 +1500,7 @@ int AircraftClass::Exit_Object(TechnoClass* unit) {
   for (const game::FacingType candidate :
        magic_enum::enum_values<game::FacingType>()) {
     face = candidate;
-    cell = Adjacent_Cell(Coord_Cell(Coord), _toface.at(face));
+    cell = Adjacent_Cell(Cell::Containing(Coord), _toface.at(face));
     if (unit->Can_Enter_Cell(cell) == game::MOVE_OK) {
       break;
     }
@@ -1736,7 +1738,7 @@ int AircraftClass::Mission_Move() {
           *that this *	helicopter is taking off from.
           */
           if (In_Radio_Contact() &&
-              TheMap().at(Coord_Cell(Coord)).Cell_Building() ==
+              TheMap().at(Cell::Containing(Coord)).Cell_Building() ==
                   Contact_With_Whom()) {
             Transmit_Message(RADIO_OVER_OUT);
           }
@@ -1830,7 +1832,8 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
     } else {
 #ifdef NEVER
       if (In_Radio_Contact() &&
-          Contact_With_Whom() == TheMap()[Coord_Cell(Coord)].Cell_Techno()) {
+          Contact_With_Whom() ==
+              TheMap()[Cell::Containing(Coord)].Cell_Techno()) {
         Transmit_Message(RADIO_IM_IN);
       }
 #endif
@@ -2015,7 +2018,7 @@ void AircraftClass::Active_Click_With(ActionType action, ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Active_Click_With(ActionType action, CELL cell) {
+void AircraftClass::Active_Click_With(ActionType action, Cell cell) {
   Validate();
 #ifdef NEVER
   switch (action) {
@@ -2120,7 +2123,7 @@ ActionType AircraftClass::What_Action(ObjectClass* target) {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType AircraftClass::What_Action(CELL cell) const {
+ActionType AircraftClass::What_Action(Cell cell) const {
   Validate();
   ActionType action = FootClass::What_Action(cell);
 
@@ -2230,7 +2233,7 @@ int AircraftClass::Mission_Attack() {
           **	Break off radio contact with the helipad it is taking off from.
           */
           if (In_Radio_Contact() &&
-              TheMap().at(Coord_Cell(Coord)).Cell_Building() ==
+              TheMap().at(Cell::Containing(Coord)).Cell_Building() ==
                   Contact_With_Whom()) {
             Transmit_Message(RADIO_OVER_OUT);
           }
@@ -2416,7 +2419,7 @@ Target AircraftClass::New_LZ(Target oldlz) const {
     for (int radius = 0; radius < 16; radius++) {
       const game::FacingType modifier =
           Random_Pick(game::FACING_N, game::FACING_NW);
-      CELL lastcell = -1;
+      Cell lastcell = Cell::None();
 
       /*
       **	Perform a radius scan out from the original center location. Try
@@ -2424,7 +2427,7 @@ Target AircraftClass::New_LZ(Target oldlz) const {
       */
       for (const game::FacingType facing :
            magic_enum::enum_values<game::FacingType>()) {
-        const CELL newcell = Coord_Cell(
+        const Cell newcell = Cell::Containing(
             Coord_Move(coord, game::Facing_Dir(facing + modifier),
                        static_cast<uint16_t>(radius * ICON_LEPTON_W)));
         if (TheMap().In_Radar(newcell)) {
@@ -2584,14 +2587,14 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
           *out a good *	spot and tell it to go.
           */
           if (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER) {
-            CELL cell = 0;
+            Cell cell{};
             Desired_Load_Dir(from, cell);
 
             /*
             **	If no adjacent free cells are detected, then passenger loading
             **	cannot occur. Break radio contact.
             */
-            if (cell == 0) {
+            if (cell.index() == 0) {
               Transmit_Message(RADIO_OVER_OUT, from);
             } else {
               param = Target::FromCellIndex(cell).packed();
@@ -2688,21 +2691,21 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
  *adjacent cells.                                     *
  *=============================================================================================*/
 game::DirType AircraftClass::Desired_Load_Dir(ObjectClass* object,
-                                              CELL& moveto) const {
+                                              Cell& moveto) const {
   Validate();
-  const CELL center = Coord_Cell(Center_Coord());
+  const Cell center = Cell::Containing(Center_Coord());
   for (int sweep = static_cast<int>(game::FACING_N);
        sweep < static_cast<int>(game::FACING_S); sweep++) {
     moveto = Adjacent_Cell(center, game::FACING_S + sweep);
     if (TheMap().In_Radar(moveto) &&
-        (Coord_Cell(object->Center_Coord()) == moveto ||
+        (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Generally_Clear())) {
       return game::DIR_N;
     }
 
     moveto = Adjacent_Cell(center, game::FACING_S - sweep);
     if (TheMap().In_Radar(moveto) &&
-        (Coord_Cell(object->Center_Coord()) == moveto ||
+        (Cell::Containing(object->Center_Coord()) == moveto ||
          TheMap().at(moveto).Is_Generally_Clear())) {
       return game::DIR_N;
     }
@@ -2811,7 +2814,7 @@ bool AircraftClass::Process_Landing() {
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
 game::MoveType AircraftClass::Can_Enter_Cell(
-    CELL cell, game::FacingType /*unused*/) const {
+    Cell cell, game::FacingType /*unused*/) const {
   Validate();
   if (!TheMap().In_Radar(cell)) {
     return game::MOVE_NO;
@@ -2858,8 +2861,8 @@ Target AircraftClass::Good_Fire_Location(Target target) const {
   if (target) {
     const int range = Weapon_Range(0);
     const Coordinate tcoord = target.AsCoordinate();
-    CELL bestcell = 0;
-    CELL best2cell = 0;
+    Cell bestcell{};
+    Cell best2cell{};
     int bestval = -1;
     int best2val = -1;
 
@@ -2867,7 +2870,7 @@ Target AircraftClass::Good_Fire_Location(Target target) const {
       for (int face = 0; face < 255; face += 16) {
         const Coordinate newcoord = Coord_Move(tcoord, game::AsDirection(face),
                                                static_cast<uint16_t>(r));
-        const CELL newcell = Coord_Cell(newcoord);
+        const Cell newcell = Cell::Containing(newcoord);
 
         if (TheMap().In_Radar(newcell) &&
             (TheSession().type() != GAME_NORMAL ||
@@ -2926,7 +2929,7 @@ Target AircraftClass::Good_Fire_Location(Target target) const {
  *                                                                                             *
  * HISTORY: * 06/19/1995 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
+bool AircraftClass::Cell_Seems_Ok(Cell cell, bool strict) const {
   Validate();
   /*
   **	Make sure that no other aircraft are heading to the selected location.
@@ -2936,7 +2939,7 @@ bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
   for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
     const AircraftClass* air = TheObjectHeaps().aircraft().ActiveAt(index);
     if ((air && (strict || air != this) && !air->IsInLimbo) &&
-        (Coord_Cell(air->Coord) == cell || air->NavCom == astarget)) {
+        (Cell::Containing(air->Coord) == cell || air->NavCom == astarget)) {
       return false;
     }
   }
@@ -3017,7 +3020,7 @@ int AircraftClass::Mission_Enter() {
         *that this *	helicopter is taking off from.
         */
         if (In_Radio_Contact() &&
-            TheMap().at(Coord_Cell(Coord)).Cell_Building() ==
+            TheMap().at(Cell::Containing(Coord)).Cell_Building() ==
                 Contact_With_Whom()) {
           Transmit_Message(RADIO_OVER_OUT);
         }
@@ -3155,7 +3158,7 @@ Target AircraftClass::Good_LZ() const {
   **	Scan through all of the buildings and try to land near
   **	the helipad (if there is one) or the nearest friendly building.
   */
-  CELL bestcell = 0;
+  Cell bestcell{};
   int bestdist = -1;
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
     const BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
@@ -3167,7 +3170,7 @@ Target AircraftClass::Good_LZ() const {
       }
       if (bestdist == -1 || dist < bestdist) {
         bestdist = dist;
-        bestcell = Coord_Cell(building->Center_Coord());
+        bestcell = Cell::Containing(building->Center_Coord());
       }
     }
   }
@@ -3182,7 +3185,7 @@ Target AircraftClass::Good_LZ() const {
   /*
   **	No good location was found. Just try to land here.
   */
-  return Target::FromCellIndex(Coord_Cell(Coord));
+  return Target::FromCellIndex(Cell::Containing(Coord));
 }
 
 /***********************************************************************************************
@@ -3371,7 +3374,7 @@ int AircraftClass::Mission_Guard() {
     }
 
     if (Class->Primary == WEAPON_NONE) {
-      Assign_Destination(Target::FromCellIndex(Coord_Cell(Coord)));
+      Assign_Destination(Target::FromCellIndex(Cell::Containing(Coord)));
       Assign_Mission(MISSION_MOVE);
     } else {
       Enter_Idle_Mode();

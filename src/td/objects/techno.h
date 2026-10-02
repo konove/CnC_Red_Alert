@@ -223,7 +223,7 @@ class TechnoClass : public RadioClass,
   **	Query functions.
   */
   [[nodiscard]] virtual int Refund_Amount() const;
-  virtual CELL Find_Exit_Cell(const TechnoClass* techno) const;
+  virtual Cell Find_Exit_Cell(const TechnoClass* techno) const;
   [[nodiscard]] virtual BuildingClass* Find_Docking_Bay(StructType b,
                                                         bool friendly);
   [[nodiscard]] virtual int Threat_Range(int control) const;
@@ -231,7 +231,7 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] const TechnoTypeClass* Techno_Type_Class() const {
     return dynamic_cast<const TechnoTypeClass*>(&Class_Of());
   }
-  CELL Nearby_Location(const TechnoClass* from = nullptr) const;
+  Cell Nearby_Location(const TechnoClass* from = nullptr) const;
   [[nodiscard]] int Get_Ownable() const override;
   [[nodiscard]] bool Can_Player_Fire() const override;
   [[nodiscard]] bool Can_Player_Move() const override;
@@ -243,10 +243,10 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] int Value() const override;
   [[nodiscard]] virtual int Rearm_Delay(bool second = true) const;
   ActionType What_Action(ObjectClass* object) override;
-  [[nodiscard]] ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] ActionType What_Action(Cell cell) const override;
   [[nodiscard]] virtual int Tiberium_Load() const;
   virtual game::DirType Desired_Load_Dir(ObjectClass* /*unused*/,
-                                         CELL& moveto) const;
+                                         Cell& moveto) const;
   [[nodiscard]] virtual int Pip_Count() const;
   [[nodiscard]] virtual game::DirType Fire_Direction() const;
 
@@ -288,7 +288,7 @@ class TechnoClass : public RadioClass,
   virtual bool Captured(HouseClass* newowner);
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source) override;
-  bool Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell, int range,
+  bool Evaluate_Cell(ThreatType method, uint32_t mask, Cell cell, int range,
                      const TechnoClass** object, int& value) const;
   bool Evaluate_Object(ThreatType method, uint32_t mask, int range,
                        const TechnoClass* object, int& value) const;

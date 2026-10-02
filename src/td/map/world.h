@@ -48,7 +48,7 @@ class World {
   // spell the same thing longer.
   // Zeroes the home waypoint, which MapEditClass's constructor did while
   // the waypoints were a global it could reach.
-  World() : score_() { waypoint_[kWayptHome] = 0; }
+  World() : score_() { waypoint_[kWayptHome] = Cell{}; }
   ~World() = default;
 
   World(const World&) = delete;
@@ -146,7 +146,7 @@ class World {
   int& scenario_init() ABSL_ATTRIBUTE_LIFETIME_BOUND { return scenario_init_; }
 
   // The cell the map editor is working on.
-  CELL& current_cell() ABSL_ATTRIBUTE_LIFETIME_BOUND { return current_cell_; }
+  Cell& current_cell() ABSL_ATTRIBUTE_LIFETIME_BOUND { return current_cell_; }
 
   // The briefing and the movies the scenario names, and the theme that
   // plays between missions.
@@ -183,8 +183,8 @@ class World {
   base::EnumArray<HousesType, std::vector<TriggerClass*>, kHouseCount>
       house_triggers_;
 
-  CELL waypoint_[kWayptCount]{};
-  CELL views_[kViewCount]{};
+  Cell waypoint_[kWayptCount]{};
+  Cell views_[kViewCount]{};
 
   int scenario_ = 0;
   ScenarioPlayerType scen_player_{};
@@ -206,7 +206,7 @@ class World {
   int build_level_ = 3;
   HousesType whom_{};
   int scenario_init_ = 0;
-  CELL current_cell_ = 0;
+  Cell current_cell_{};
 
   char briefing_text_[512]{};
   char intro_movie_[engine::platform::kMaxFname + engine::platform::kMaxExt]{};

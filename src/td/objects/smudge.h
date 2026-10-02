@@ -111,7 +111,7 @@ class SmudgeClass : public ObjectClass {
   void Draw_It(PixelView& /*view*/, int /*x*/, int /*y*/,
                WindowNumberType /*unused*/) override {}
 
-  void Disown(CELL cell);
+  void Disown(Cell cell);
 
   /*
   **	Dee-buggin' support.

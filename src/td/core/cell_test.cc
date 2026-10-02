@@ -1,7 +1,7 @@
 // Pins Cell against the golden values coord_inline_test.cc used for the free
 // cell helpers it replaced: the unmasked 6-bit packing, the unmasked Y read of
 // a sentinel, the 16-bit wrap of Offset() and the conversions to and from
-// Coordinate, including Coord_Cell's whole-byte OR of the X cell.
+// Coordinate, including Containing()'s whole-byte OR of the X cell.
 
 #include "td/core/cell.h"
 

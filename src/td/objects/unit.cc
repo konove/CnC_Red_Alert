@@ -372,7 +372,7 @@ void UnitClass::AI() {
   **	guard or other static mission mode.
   */
   if (!Team && Mission == MISSION_GUARD &&
-      !TheMap().In_Radar(Coord_Cell(Coord))) {
+      !TheMap().In_Radar(Cell::Containing(Coord))) {
     Stun();
     delete this;
     return;
@@ -414,7 +414,7 @@ void UnitClass::AI() {
     Mark(MARK_CHANGE);
   }
   if (*this == UNIT_VICE &&
-      TheMap().at(Coord_Cell(Coord)).Land_Type() == LAND_TIBERIUM &&
+      TheMap().at(Cell::Containing(Coord)).Land_Type() == LAND_TIBERIUM &&
       Health_Ratio() < 0x0100 && game::CurrentFrame() % 16 == 0) {
     Strength++;
     Mark(MARK_CHANGE);
@@ -613,14 +613,14 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
         */
         if ((!IsDriving && !IsRotating && !IsTethered) &&
             (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER)) {
-          CELL cell = 0;
+          Cell cell{};
           const game::DirType dir = Desired_Load_Dir(from, cell);
 
           /*
           **	If no adjacent free cells are detected, then passenger loading
           **	cannot occur. Break radio contact.
           */
-          if (cell == 0) {
+          if (cell.index() == 0) {
             Transmit_Message(RADIO_OVER_OUT, from);
           } else {
             param = Target::FromCellIndex(cell).packed();
@@ -1201,7 +1201,7 @@ void UnitClass::Active_Click_With(ActionType action, ObjectClass* object) {
   TarComClass::Active_Click_With(action, object);
 }
 
-void UnitClass::Active_Click_With(ActionType action, CELL cell) {
+void UnitClass::Active_Click_With(ActionType action, Cell cell) {
   TarComClass::Active_Click_With(action, cell);
 }
 
@@ -1242,7 +1242,7 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
     if (Class->IsToHarvest) {
       if (!In_Radio_Contact() && Mission != MISSION_HARVEST) {
         if (initial || !House->IsHuman ||
-            TheMap().at(Coord_Cell(Coord)).Land_Type() == LAND_TIBERIUM) {
+            TheMap().at(Cell::Containing(Coord)).Land_Type() == LAND_TIBERIUM) {
           order = MISSION_HARVEST;
         } else {
           order = MISSION_GUARD;
@@ -1306,7 +1306,7 @@ void UnitClass::Find_LZ() {
 
   if (*this == UNIT_HOVER) {
     if (!IsRotating && Is_Something_Attached() && !NavCom) {
-      CELL const cell = TheMap().Calculated_Cell(
+      const Cell cell = TheMap().Calculated_Cell(
           SOURCE_BEACH, House->Class->House);  // Map exit cell number.
       Assign_Destination(Target::FromCellIndex(cell));
     }
@@ -1350,7 +1350,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
     **	Only unload if the hovercraft has reached the beach.
     */
     if (!NavCom) {
-      CELL const cell = Coord_Cell(Adjacent_Cell(
+      const Cell cell = Cell::Containing(Adjacent_Cell(
           Coord,
           game::Dir_Facing(PrimaryFacing.Current())));  // Cell to unload to.
 
@@ -1459,7 +1459,7 @@ bool UnitClass::Goto_Clear_Spot() {
   Validate();
   Mark(MARK_UP);
   if (!NavCom && BuildingTypeClass::As_Reference(STRUCT_CONST)
-                     .Legal_Placement(Coord_Cell(Coord))) {
+                     .Legal_Placement(Cell::Containing(Coord))) {
     Mark(MARK_DOWN);
     return true;
   }
@@ -1478,8 +1478,7 @@ bool UnitClass::Goto_Clear_Spot() {
 
     std::span<int> ptr = _offsets;
     while (!ptr.empty() && ptr.front()) {
-      const CELL cell =
-          static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(ptr));
+      const Cell cell = Cell::Containing(Coord).Offset(base::ConsumeFront(ptr));
 
       if (BuildingTypeClass::As_Reference(STRUCT_CONST).Legal_Placement(cell)) {
         Assign_Destination(Target::FromCellIndex(cell));
@@ -1522,7 +1521,7 @@ bool UnitClass::Try_To_Deploy() {
       */
       Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
-               .Legal_Placement(Coord_Cell(
+               .Legal_Placement(Cell::Containing(
                    Adjacent_Cell(Center_Coord(), game::FACING_NW)))) {
         if (ThePlayer() == House) {
           Speak(VOX_DEPLOY);
@@ -1614,7 +1613,7 @@ bool UnitClass::Try_To_Deploy() {
  *=============================================================================================*/
 void UnitClass::Per_Cell_Process(bool center) {
   Validate();
-  const CELL cell = Coord_Cell(Coord);
+  const Cell cell = Cell::Containing(Coord);
   HousesType house = HOUSE_NONE;
 
   /*
@@ -1739,7 +1738,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   if (center && !IsRepairing) {
     BuildingClass* b = NavCom.AsBuilding();
     if (b && *b == STRUCT_REPAIR && Coord == b->Center_Coord()) {
-      NavCom = 0;
+      NavCom = Target{};
       IsRepairing = true;
       Transmit_Message(RADIO_REPAIR_BEGIN_ANIM);
     }
@@ -1766,18 +1765,17 @@ void UnitClass::Per_Cell_Process(bool center) {
   if (center && IsALoaner && !TheMap().In_Radar(cell)) {
     if (IsReturning || !Is_Something_Attached()) {
       if (*this == UNIT_GUNBOAT) {
-        const CELL current_cell = Coord_Cell(Coord);
-        if (Cell_X(current_cell) <= TheMap().MapCellX) {
+        const Cell current_cell = Cell::Containing(Coord);
+        if (current_cell.x() <= TheMap().MapCellX) {
           Assign_Mission(MISSION_HUNT);
-          Assign_Destination(Target::FromCellIndex(
-              XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth,
-                      Cell_Y(current_cell))));
+          Assign_Destination(Target::FromCellIndex(Cell::FromXY(
+              TheMap().MapCellX + TheMap().MapCellWidth, current_cell.y())));
           Set_Speed(255);
           PrimaryFacing = game::DIR_E;
         } else {
           Assign_Mission(MISSION_HUNT);
           Assign_Destination(Target::FromCellIndex(
-              XY_Cell(TheMap().MapCellX - 1, Cell_Y(current_cell))));
+              Cell::FromXY(TheMap().MapCellX - 1, current_cell.y())));
           Set_Speed(255);
           PrimaryFacing = game::DIR_W;
         }
@@ -1815,7 +1813,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   /*
   **	Check to see if crushing of any unfortunate infantry is warranted.
   */
-  Overrun_Square(Coord_Cell(Coord), false);
+  Overrun_Square(Cell::Containing(Coord), false);
 
   /*
   **	The unit performs looking around at this time. If the
@@ -1867,7 +1865,7 @@ void UnitClass::Per_Cell_Process(bool center) {
     **	attack the unit.
     */
     if (!IsOwnedByPlayer && Flagged == ThePlayer()->Class->House) {
-      TheMap().Sight_From(Coord_Cell(Coord), Class->SightRange, true);
+      TheMap().Sight_From(Cell::Containing(Coord), Class->SightRange, true);
     }
 
     /*
@@ -2167,26 +2165,26 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
+bool UnitClass::Tiberium_Check(Cell& center, int x, int y) {
   Validate();
   /*
   **	If the specified offset from the origin will cause it
   **	to spill past the map edge, then abort this cell check.
   */
-  if (Cell_X(center) + x < TheMap().MapCellX) {
+  if (center.x() + x < TheMap().MapCellX) {
     return false;
   }
-  if (Cell_X(center) + x >= TheMap().MapCellX + TheMap().MapCellWidth) {
+  if (center.x() + x >= TheMap().MapCellX + TheMap().MapCellWidth) {
     return false;
   }
-  if (Cell_Y(center) + y < TheMap().MapCellY) {
+  if (center.y() + y < TheMap().MapCellY) {
     return false;
   }
-  if (Cell_Y(center) + y >= TheMap().MapCellY + TheMap().MapCellHeight) {
+  if (center.y() + y >= TheMap().MapCellY + TheMap().MapCellHeight) {
     return false;
   }
 
-  center = XY_Cell(Cell_X(center) + x, Cell_Y(center) + y);
+  center = Cell::FromXY(center.x() + x, center.y() + y);
 
   return (TheSession().type() != GAME_NORMAL || !IsOwnedByPlayer ||
           TheMap().at(center).IsVisible) &&
@@ -2197,7 +2195,7 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
 bool UnitClass::Goto_Tiberium() {
   Validate();
   if (!NavCom) {
-    const CELL center = Coord_Cell(Center_Coord());
+    const Cell center = Cell::Containing(Center_Coord());
     if (TheMap().at(center).Land_Type() == LAND_TIBERIUM) {
       return true;
     }
@@ -2206,7 +2204,7 @@ bool UnitClass::Goto_Tiberium() {
      */
     for (int radius = 1; radius < 32; radius++) {
       for (int x = -radius; x <= radius; x++) {
-        CELL cell = center;
+        Cell cell = center;
         if (Tiberium_Check(cell, x, -radius)) {
           Assign_Destination(Target::FromCellIndex(cell));
           return false;
@@ -2253,7 +2251,7 @@ bool UnitClass::Goto_Tiberium() {
  *=============================================================================================*/
 bool UnitClass::Harvesting() {
   Validate();
-  const CELL cell = Coord_Cell(Coord);
+  const Cell cell = Cell::Containing(Coord);
   CellClass* ptr = &TheMap().at(cell);
 
   /*
@@ -2313,14 +2311,14 @@ int UnitClass::Mission_Unload() {
   constexpr int kUnloading = 3;
   constexpr int kClosingDoor = 4;
   game::DirType dir = game::DIR_N;
-  CELL cell = 0;
+  Cell cell{};
 
   switch (Class->Type) {
     case UNIT_APC:
       switch (Status) {
         case kInitialCheck:
           dir = Desired_Load_Dir(nullptr, cell);
-          if (How_Many() && cell != 0) {
+          if (How_Many() && cell.index() != 0) {
             Do_Turn(dir);
             Status = kManeuvering;
             return 1;
@@ -2359,7 +2357,8 @@ int UnitClass::Mission_Unload() {
               for (const game::FacingType face :
                    magic_enum::enum_values<game::FacingType>()) {
                 const game::DirType newface = toface + static_cast<int>(face);
-                const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+                const Cell newcell =
+                    Adjacent_Cell(Cell::Containing(Coord), newface);
 
                 if (passenger->Can_Enter_Cell(newcell) == game::MOVE_OK) {
                   TheWorld().scenario_init()++;
@@ -2542,7 +2541,7 @@ int UnitClass::Mission_Harvest() {
         IsHarvesting = false;
         if (Tiberium_Load() == 0x0100) {
           Status = kFindhome;
-          ArchiveTarget = Target::FromCellIndex(Coord_Cell(Coord));
+          ArchiveTarget = Target::FromCellIndex(Cell::Containing(Coord));
         } else {
           if (!Goto_Tiberium() && !NavCom) {
             ArchiveTarget = Target{};
@@ -2650,12 +2649,12 @@ int UnitClass::Mission_Hunt() {
     if (*this == UNIT_GUNBOAT) {
       if (!NavCom) {
         if (PrimaryFacing == game::DIR_W) {
-          Assign_Destination(Target::FromCellIndex(
-              XY_Cell(TheMap().MapCellX - 1, Cell_Y(Coord_Cell(Coord)))));
+          Assign_Destination(Target::FromCellIndex(Cell::FromXY(
+              TheMap().MapCellX - 1, Cell::Containing(Coord).y())));
         } else {
           Assign_Destination(Target::FromCellIndex(
-              XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth,
-                      Cell_Y(Coord_Cell(Coord)))));
+              Cell::FromXY(TheMap().MapCellX + TheMap().MapCellWidth,
+                           Cell::Containing(Coord).y())));
         }
         Set_Speed(255);
       }
@@ -2698,7 +2697,7 @@ void UnitClass::Look(bool incremental) {
     const int sight = Class->SightRange;
 
     if (sight) {
-      TheMap().Sight_From(Coord_Cell(Coord), sight,
+      TheMap().Sight_From(Cell::Containing(Coord), sight,
                           *this == UNIT_GUNBOAT ? false : incremental);
     }
   }
@@ -2752,14 +2751,14 @@ std::span<const int16_t> UnitClass::Overlap_List() const {
  *                                                                                             *
  * INPUT:      TechnoClass * pointer to object that is blocking unit *
  *                                                                                             *
- *               CELL           the cell the unit is being blocked in *
+ *               Cell           the cell the unit is being blocked in *
  *                                                                                             *
  * OUTPUT:      MoveBitType the way that the object is blocking the unit *
  *                                                                                             *
  * HISTORY: * 06/08/1995 PWG : Created. *
  *=============================================================================================*/
 MoveBitType UnitClass::Blocking_Object(const TechnoClass* techno,
-                                       CELL cell) const {
+                                       Cell cell) const {
   Validate();
   /*
   ** There are some extra checks we need to make if the techno is a unit
@@ -2871,12 +2870,12 @@ MoveBitType UnitClass::Blocking_Object(const TechnoClass* techno,
  *function.                                            * 07/04/1995 JLB :
  *Allowed to drive on building trying to enter it.                         *
  *=============================================================================================*/
-game::MoveType UnitClass::Can_Enter_Cell(CELL cell,
+game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
                                          game::FacingType /*unused*/) const {
   Validate();
   const CellClass* cellptr = &TheMap().at(cell);
 
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+  if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return game::MOVE_NO;
   }
 
@@ -3170,7 +3169,7 @@ void UnitClass::Scatter(Coordinate threat, bool forced) {
       for (const game::FacingType face :
            magic_enum::enum_values<game::FacingType>()) {
         const game::FacingType newface = toface + face;
-        CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+        const Cell newcell = Adjacent_Cell(Cell::Containing(Coord), newface);
 
         if (TheMap().In_Radar(newcell) &&
             Can_Enter_Cell(newcell) == game::MOVE_OK) {
@@ -3431,7 +3430,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
     } else {
       Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
-               .Legal_Placement(Coord_Cell(
+               .Legal_Placement(Cell::Containing(
                    Adjacent_Cell(Center_Coord(), game::FACING_NW)))) {
         action = ACTION_NONE;
       }
@@ -3465,7 +3464,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
   return action;
 }
 
-ActionType UnitClass::What_Action(CELL cell) const {
+ActionType UnitClass::What_Action(Cell cell) const {
   Validate();
   const ActionType action = TarComClass::What_Action(cell);
   if (action == ACTION_MOVE && TheMap().at(cell).Land_Type() == LAND_TIBERIUM &&
@@ -3545,7 +3544,8 @@ void UnitClass::Read_INI(char* buffer) {
           */
           const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
           const Coordinate coord =
-              Cell_Coord(base::ParseIntegerOr<CELL>(tokens.Next(), 0));
+              Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), 0))
+                  .Center();
           const auto dir = static_cast<game::DirType>(
               base::ParseIntegerOr<int>(tokens.Next(), 0));
           const MissionType mission = Mission_From_Name(tokens.Next(",\n\r"));
@@ -3574,8 +3574,8 @@ void UnitClass::Read_INI(char* buffer) {
               unit->PrimaryFacing.Set_Current(game::DIR_W);
               unit->Assign_Mission(MISSION_HUNT);
               unit->Commence();
-              unit->Assign_Destination(Target::FromCellIndex(XY_Cell(
-                  TheMap().MapCellX - 1, Cell_Y(Coord_Cell(unit->Coord)))));
+              unit->Assign_Destination(Target::FromCellIndex(Cell::FromXY(
+                  TheMap().MapCellX - 1, Cell::Containing(unit->Coord).y())));
             }
 
           } else {
@@ -3637,7 +3637,8 @@ void UnitClass::Write_INI(std::string& buffer) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",
                      unit->House->Class->IniName, unit->Class->IniName,
-                     unit->Health_Ratio(), Coord_Cell(unit->Coord),
+                     unit->Health_Ratio(),
+                     Cell::Containing(unit->Coord).index(),
                      unit->PrimaryFacing.Current(), Mission_Name(unit->Mission),
                      unit->Trigger ? unit->Trigger->Get_Name() : "None");
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
@@ -3664,8 +3665,7 @@ void UnitClass::Exit_Repair() {
       XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
-  CELL cell = static_cast<CELL>(
-      Coord_Cell(Coord) +
+  Cell cell = Cell::Containing(Coord).Offset(
       ExitRepair.at(game::Dir_Facing(PrimaryFacing.Current())));
   if (Can_Enter_Cell(cell) == game::MOVE_OK) {
     found = true;
@@ -3673,7 +3673,7 @@ void UnitClass::Exit_Repair() {
 
   if (!found) {
     for (const int16_t i : ExitRepair) {
-      cell = static_cast<CELL>(Coord_Cell(Coord) + i);
+      cell = Cell::Containing(Coord).Offset(i);
       if (Can_Enter_Cell(cell) == game::MOVE_OK) {
         found = true;
         break;
@@ -3787,7 +3787,7 @@ int UnitClass::Mission_Move() {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
-                                          CELL& moveto) const {
+                                          Cell& moveto) const {
   Validate();
   /*
   **	Determine the ideal facing that provides the least resistance. This
@@ -3805,7 +3805,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   for (const game::FacingType face :
        magic_enum::enum_values<game::FacingType>()) {
     int value = 0;
-    const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
+    const Cell cellnum = Adjacent_Cell(Cell::Containing(Coord), face);
 
     /*
     **	Base the initial value of the potential cell according to whether the
@@ -3815,7 +3815,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     */
     if (passenger) {
       value = passenger->Can_Enter_Cell(cellnum) == game::MOVE_OK ||
-                      Coord_Cell(passenger->Coord) == cellnum
+                      Cell::Containing(passenger->Coord) == cellnum
                   ? 128
                   : -128;
     } else {
@@ -3859,14 +3859,14 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   /*
   **	If a suitable direction was found, then return with the direction value.
   */
-  moveto = 0;
+  moveto = Cell{};
   if (bestval > 0) {
     static const base::EnumArray<game::FacingType, game::DirType>
         _desired_to_actual = {game::DIR_S,  game::DIR_SW, game::DIR_NW,
                               game::DIR_NW, game::DIR_NE, game::DIR_NE,
                               game::DIR_NE, game::DIR_SE};
 
-    moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
+    moveto = Adjacent_Cell(Cell::Containing(Coord), bestdir);
     return _desired_to_actual.at(bestdir);
   }
   return game::DIR_S;
@@ -3962,7 +3962,7 @@ bool UnitClass::Flag_Remove() {
 void UnitClass::Stun() {
   Validate();
   if (Flagged != HOUSE_NONE) {
-    HouseClass::As_Pointer(Flagged)->Flag_Attach(Coord_Cell(Coord));
+    HouseClass::As_Pointer(Flagged)->Flag_Attach(Cell::Containing(Coord));
   }
   TarComClass::Stun();
 }

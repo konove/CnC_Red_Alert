@@ -204,7 +204,7 @@ class InfantryClass final : public FootClass {
   */
   int Made_A_Kill() override;
   ActionType What_Action(ObjectClass* object) override;
-  ActionType What_Action(CELL cell) const override;
+  ActionType What_Action(Cell cell) const override;
   void Assign_Mission(MissionType order) override;
   BulletClass* Fire_At(Target target, int which) override;
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
@@ -216,13 +216,13 @@ class InfantryClass final : public FootClass {
                                    int32_t& param) override;
   int Rearm_Delay(bool second) const override;
   void Set_Occupy_Bit(Coordinate coord) {
-    Set_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
+    Set_Occupy_Bit(Cell::Containing(coord), CellClass::Spot_Index(coord));
   }
-  void Set_Occupy_Bit(CELL cell, int spot_index);
+  void Set_Occupy_Bit(Cell cell, int spot_index);
   void Clear_Occupy_Bit(Coordinate coord) {
-    Clear_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
+    Clear_Occupy_Bit(Cell::Containing(coord), CellClass::Spot_Index(coord));
   }
-  void Clear_Occupy_Bit(CELL cell, int spot_index);
+  void Clear_Occupy_Bit(Cell cell, int spot_index);
 
   /*
   **	Driver control support functions. These are used to control cell
@@ -251,7 +251,7 @@ class InfantryClass final : public FootClass {
   bool Do_Action(DoType todo, bool force = false);
   void Random_Animate() override;
   game::MoveType Can_Enter_Cell(
-      CELL /*cell*/ /*unused*/,
+      Cell /*cell*/ /*unused*/,
       game::FacingType /*unused*/ = game::FACING_NONE) const override;
   void Per_Cell_Process(bool center) override;
   void Enter_Idle_Mode(bool initial = false) override;

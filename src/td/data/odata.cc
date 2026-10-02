@@ -826,7 +826,7 @@ void OverlayTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-bool OverlayTypeClass::Create_And_Place(CELL cell,
+bool OverlayTypeClass::Create_And_Place(Cell cell,
                                         HousesType /*unused*/) const {
   return base::NewPooled<OverlayClass>(Type, cell) != nullptr;
 }

@@ -110,7 +110,6 @@
 #include "td/assets/theme.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/core/randomstate.h"
@@ -1575,10 +1574,10 @@ bool Select_Game(bool fade) {
       TheWorld().base().Nodes.clear();
       BaseNodeClass node;
       node.Type = STRUCT_POWER;
-      node.Coord = Cell_Coord(1000);
+      node.Coord = Cell::FromIndex(1000).Center();
       TheWorld().base().Nodes.push_back(node);
       node.Type = STRUCT_REFINERY;
-      node.Coord = Cell_Coord(1200);
+      node.Coord = Cell::FromIndex(1200).Center();
       TheWorld().base().Nodes.push_back(node);
       TheWorld().current_object().clear();
       if (TheObjectHeaps().unit().Count() < 2) {
@@ -1588,14 +1587,15 @@ bool Select_Game(bool fade) {
           TheObjectHeaps().unit().ActiveAt(1));
       TheWorld().current_object().push_back(
           TheObjectHeaps().unit().ActiveAt(0));
-      base::At(TheWorld().waypoint(), 20) = 1234;
+      base::At(TheWorld().waypoint(), 20) = Cell::FromIndex(1234);
       TheWorld().carry_over_money() = 13579;
       TheWorld().carry_over_percent() = 42;
-      base::At(TheWorld().views(), 3) = 2345;
+      base::At(TheWorld().views(), 3) = Cell::FromIndex(2345);
       TheWorld().end_count_down() = 700;
     }
     if (TheStartupOptions().map_test) {
-      for (CELL cell = 0; cell < 16; ++cell) {
+      for (int cell_index = 0; cell_index < 16; ++cell_index) {
+        const Cell cell = Cell::FromIndex(cell_index);
         if (TheMap().In_Radar(cell)) {
           LOG(ERROR) << "-MAPTEST: fixture cells must be outside the playable map";
           return false;
@@ -1603,31 +1603,33 @@ bool Select_Game(bool fade) {
         TheMap().at(cell).Reset();
       }
       // Isolate fields formerly omitted by the sparse-cell predicate.
-      TheMap().at(0).IsPlot = true;
-      TheMap().at(1).IsCursorHere = true;
-      TheMap().at(2).IsWaypoint = true;
-      TheMap().at(3).IsRadarCursor = true;
-      TheMap().at(4).IsFlagged = true;
-      TheMap().at(5).TIcon = 7;
-      TheMap().at(6).OverlayData = 3;
-      TheMap().at(7).SmudgeData = 2;
-      TheMap().at(8).Owner = HOUSE_GOOD;
-      TheMap().at(9).InfType = HOUSE_BAD;
-      TheMap().at(10).Overlay = OVERLAY_BRICK_WALL;
-      TheMap().at(10).Recalc_Attributes();
-      TheMap().at(10).Overlay = OVERLAY_NONE;
+      TheMap().at(Cell::FromIndex(0)).IsPlot = true;
+      TheMap().at(Cell::FromIndex(1)).IsCursorHere = true;
+      TheMap().at(Cell::FromIndex(2)).IsWaypoint = true;
+      TheMap().at(Cell::FromIndex(3)).IsRadarCursor = true;
+      TheMap().at(Cell::FromIndex(4)).IsFlagged = true;
+      TheMap().at(Cell::FromIndex(5)).TIcon = 7;
+      TheMap().at(Cell::FromIndex(6)).OverlayData = 3;
+      TheMap().at(Cell::FromIndex(7)).SmudgeData = 2;
+      TheMap().at(Cell::FromIndex(8)).Owner = HOUSE_GOOD;
+      TheMap().at(Cell::FromIndex(9)).InfType = HOUSE_BAD;
+      TheMap().at(Cell::FromIndex(10)).Overlay = OVERLAY_BRICK_WALL;
+      TheMap().at(Cell::FromIndex(10)).Recalc_Attributes();
+      TheMap().at(Cell::FromIndex(10)).Overlay = OVERLAY_NONE;
       auto* trigger = base::NewPooled<TriggerClass>();
       if (!trigger || TheObjectHeaps().unit().Count() == 0) {
         return false;
       }
       trigger->AttachCount = 2;
-      TheMap().at(11).IsTrigger = TheMap().at(12).IsTrigger = true;
+      TheMap().at(Cell::FromIndex(11)).IsTrigger =
+          TheMap().at(Cell::FromIndex(12)).IsTrigger = true;
       base::At(TheWorld().cell_triggers(), 11) =
           base::At(TheWorld().cell_triggers(), 12) = trigger;
-      TheMap().at(13).OccupierPtr = TheObjectHeaps().unit().ActiveAt(0);
-      base::At(TheMap().at(14).Overlappers, 2) =
+      TheMap().at(Cell::FromIndex(13)).OccupierPtr =
           TheObjectHeaps().unit().ActiveAt(0);
-      TheMap().at(15).Flag.Composite = 2;
+      base::At(TheMap().at(Cell::FromIndex(14)).Overlappers, 2) =
+          TheObjectHeaps().unit().ActiveAt(0);
+      TheMap().at(Cell::FromIndex(15)).Flag.Composite = 2;
       TheMap().TotalValue = static_cast<int64_t>(uint64_t{1} << 35);
       auto* pending = base::NewPooled<BuildingClass>(STRUCT_POWER,
                                                      ThePlayer()->Class->House);
@@ -1689,12 +1691,12 @@ bool Select_Game(bool fade) {
       plane->SecondaryFacing = game::DIR_N;
       bool launched = false;
       if (TheObjectHeaps().unit().Count() != 0) {
-        const CELL start =
-            Coord_Cell(TheObjectHeaps().unit().ActiveAt(0)->Coord);
+        const Cell start =
+            Cell::Containing(TheObjectHeaps().unit().ActiveAt(0)->Coord);
         for (int offset = 1; offset <= 16; ++offset) {
-          const CELL cell = static_cast<CELL>(start + offset);
-          if (cell < MAP_CELL_TOTAL && TheMap().In_Radar(cell) &&
-              plane->Unlimbo(Cell_Coord(cell), game::DIR_E)) {
+          const Cell cell = start.Offset(offset);
+          if (cell.index() < MAP_CELL_TOTAL && TheMap().In_Radar(cell) &&
+              plane->Unlimbo(cell.Center(), game::DIR_E)) {
             launched = true;
             break;
           }
@@ -1704,8 +1706,8 @@ bool Select_Game(bool fade) {
         LOG(ERROR) << "-MOBILETEST: could not launch aircraft";
         return false;
       }
-      plane->Assign_Destination(Target::FromCellIndex(
-          Coord_Cell(Coordinate::FromPacked(plane->Coord.packed() + 0x800))));
+      plane->Assign_Destination(Target::FromCellIndex(Cell::Containing(
+          Coordinate::FromPacked(plane->Coord.packed() + 0x800))));
       plane->Assign_Mission(MISSION_MOVE);
       plane->Set_Speed(123);
     }
@@ -1817,7 +1819,8 @@ bool Select_Game(bool fade) {
         return false;
       }
       missile->Payback = owner;
-      missile->Assign_Target(Target::FromCellIndex(Coord_Cell(destination)));
+      missile->Assign_Target(
+          Target::FromCellIndex(Cell::Containing(destination)));
       if (!missile->Unlimbo(owner->Coord, game::DIR_E)) {
         LOG(ERROR) << "-WORLDTEST: could not launch missile";
         return false;

@@ -413,7 +413,7 @@ void AnimClass::Draw_It(PixelView& view, int x, int y,
 bool AnimClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark)) {
-    TheMap().Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
+    TheMap().Refresh_Cells(Cell::Containing(Center_Coord()), Overlap_List());
     ObjectClass::Mark(mark);
     return true;
   }
@@ -757,7 +757,7 @@ AnimClass::AnimClass(AnimType animnum, Coordinate coord, int timedelay,
   **	Drop zone smoke always reveals the map around itself.
   */
   if (*this == ANIM_LZ_SMOKE) {
-    TheMap().Sight_From(Coord_Cell(coord), 4, false);
+    TheMap().Sight_From(Cell::Containing(coord), 4, false);
   }
 
   /*
@@ -862,7 +862,7 @@ void AnimClass::AI() {
   **	occur behind other ground objects) always cause the cell to be redrawn.
   */
   if (!Delay && Class->IsGroundLayer) {
-    TheMap().Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
+    TheMap().Refresh_Cells(Cell::Containing(Center_Coord()), Overlap_List());
   }
 
   /*
@@ -870,7 +870,7 @@ void AnimClass::AI() {
   **	causes the smoke marker to vanish.
   */
   if (Class->Type == ANIM_LZ_SMOKE &&
-      TheMap().at(Coord_Cell(Center_Coord())).Cell_Building()) {
+      TheMap().at(Cell::Containing(Center_Coord())).Cell_Building()) {
     IsToDelete = true;
   }
 
@@ -1065,7 +1065,7 @@ LayerType AnimClass::In_Which_Layer() const {
  *=============================================================================================*/
 void AnimClass::Start() {
   Validate();
-  const CELL cell = Coord_Cell(Coord);
+  const Cell cell = Cell::Containing(Coord);
 
   Mark();
 
@@ -1114,7 +1114,7 @@ void AnimClass::Start() {
  *=============================================================================================*/
 void AnimClass::Middle() {
   Validate();
-  const CELL cell = Coord_Cell(Center_Coord());
+  const Cell cell = Cell::Containing(Center_Coord());
   CellClass* cellptr = &TheMap().at(cell);
 
   if (Class->Type == ANIM_ATOM_BLAST) {
@@ -1153,8 +1153,8 @@ void AnimClass::Middle() {
     }
     for (int x = -radius; x <= radius; x++) {
       for (int y = -radius; y <= radius; y++) {
-        const int xpos = Cell_X(cell) + x;
-        const int ypos = Cell_Y(cell) + y;
+        const int xpos = cell.x() + x;
+        const int ypos = cell.y() + y;
 
         /*
         **	If the potential damage cell is outside of the map bounds,
@@ -1167,15 +1167,15 @@ void AnimClass::Middle() {
         if (static_cast<unsigned>(ypos) > MAP_CELL_H) {
           continue;
         }
-        const CELL tcell = XY_Cell(xpos, ypos);
+        const Cell tcell = Cell::FromXY(xpos, ypos);
         if (!TheMap().In_Radar(tcell)) {
           continue;
         }
 
         const int damage = rawdamage / ((std::abs(radius) / 2) + 1);
-        Explosion_Damage(Cell_Coord(tcell), damage, building, WARHEAD_FIRE);
+        Explosion_Damage(tcell.Center(), damage, building, WARHEAD_FIRE);
         base::NewPooled<SmudgeClass>(
-            Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6), Cell_Coord(tcell));
+            Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6), tcell.Center());
       }
     }
     ShakeScreen(3);
@@ -1230,18 +1230,18 @@ void AnimClass::Middle() {
 
     c2 = TheMap().Closest_Free_Spot(c2, true);
     if ((c3 && Random_Pick(0, 1) == 1) &&
-        (!TheMap().at(Coord_Cell(c3)).Cell_Terrain())) {
+        (!TheMap().at(Cell::Containing(c3)).Cell_Terrain())) {
       base::NewPooled<AnimClass>(ANIM_FIRE_SMALL, c3, 0, 2);
     }
 
     if ((c2 && Random_Pick(0, 1) == 1) &&
-        (!TheMap().at(Coord_Cell(c2)).Cell_Terrain())) {
+        (!TheMap().at(Cell::Containing(c2)).Cell_Terrain())) {
       base::NewPooled<AnimClass>(ANIM_FIRE_SMALL, c2, 0, 2);
     }
 
     base::NewPooled<SmudgeClass>(SMUDGE_SCORCH1, c2);
     if ((c3 && Random_Pick(0, 1) == 1) &&
-        (!TheMap().at(Coord_Cell(c3)).Cell_Terrain())) {
+        (!TheMap().at(Cell::Containing(c3)).Cell_Terrain())) {
       base::NewPooled<AnimClass>(ANIM_SMOKE_M, c3);
     }
   }

@@ -239,7 +239,7 @@ void RadarClass::Init_Clear() {
   */
   if (MapCellWidth || MapCellHeight) {
     IsZoomed = false;
-    Zoom_Mode(Coord_Cell(TheMap().TacticalCoord));
+    Zoom_Mode(Cell::Containing(TheMap().TacticalCoord));
   }
 }
 
@@ -429,7 +429,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
           **	Render all pixels in the "to redraw" stack.
           */
           for (int index = 0; index < PixelPtr; index++) {
-            const CELL cell = base::At(PixelStack, index);
+            const Cell cell = base::At(PixelStack, index);
             if (Cell_On_Radar(cell)) {
               (*this).at(cell).IsPlot = false;
               Plot_Radar_Pixel(view, cell);
@@ -447,7 +447,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
 
             for (int y = 0; y < MapCellHeight; y++) {
               for (int x = 0; x < MapCellWidth; x++) {
-                const CELL cell = XY_Cell(MapCellX + x, MapCellY + y);
+                const Cell cell = Cell::FromXY(MapCellX + x, MapCellY + y);
                 if (Cell_On_Radar(cell) && (*this).at(cell).IsPlot) {
                   base::At(PixelStack, PixelPtr++) = cell;
                   IsRadarToRedraw = true;
@@ -484,7 +484,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
         ** Draw the entire radar map.
         */
         for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-          Plot_Radar_Pixel(view, static_cast<CELL>(index));
+          Plot_Radar_Pixel(view, Cell::FromIndex(index));
         }
         Radar_Cursor(view, true);
         FullRedraw = false;
@@ -528,7 +528,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
  * HISTORY:                                                                *
  *   04/12/1995 PWG : Created.                                             *
  *=========================================================================*/
-void RadarClass::Render_Terrain(PixelView& view, CELL cell, int x, int y,
+void RadarClass::Render_Terrain(PixelView& view, Cell cell, int x, int y,
                                 int size) const {
   TerrainClass* list[4];
   int listidx = 0;
@@ -619,7 +619,7 @@ void RadarClass::Render_Terrain(PixelView& view, CELL cell, int x, int y,
  *                                                                                             *
  * HISTORY: * 08/17/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Render_Infantry(PixelView& view, CELL cell, int x, int y,
+void RadarClass::Render_Infantry(PixelView& view, Cell cell, int x, int y,
                                  int size) const {
   int xoff = 0;
   int yoff = 0;
@@ -696,7 +696,7 @@ void RadarClass::Render_Infantry(PixelView& view, CELL cell, int x, int y,
  * HISTORY:                                                                *
  *   04/18/1995 PWG : Created.                                             *
  *=========================================================================*/
-void RadarClass::Render_Overlay(PixelView& view, CELL cell, int x, int y,
+void RadarClass::Render_Overlay(PixelView& view, Cell cell, int x, int y,
                                 int size) {
   const OverlayType overlay = (*this).at(cell).Overlay;
   if (overlay != OVERLAY_NONE) {
@@ -729,7 +729,7 @@ void RadarClass::Render_Overlay(PixelView& view, CELL cell, int x, int y,
  * HISTORY:                                                                *
  *   05/29/1995 PWG : Created.                                             *
  *=========================================================================*/
-void RadarClass::Zoom_Mode(CELL cell) {
+void RadarClass::Zoom_Mode(Cell cell) {
   int map_c_width = 0;
   int map_c_height = 0;
   /*
@@ -823,15 +823,15 @@ void RadarClass::Zoom_Mode(CELL cell) {
  *Revamped.                                                                *
  *   04/17/1995 PWG : Created. * 04/18/1995 PWG : Created. *
  *=============================================================================================*/
-void RadarClass::Plot_Radar_Pixel(PixelView& view, CELL cell) {
-  if (cell == -1) {
-    cell = 1;
+void RadarClass::Plot_Radar_Pixel(PixelView& view, Cell cell) {
+  if (cell == Cell::None()) {
+    cell = Cell::FromIndex(1);
   }
 
   /*
   **	Perform any clipping on the cell coordinate.
   */
-  if (!IsRadarActive || static_cast<unsigned>(cell) > MAP_CELL_TOTAL) {
+  if (!IsRadarActive || static_cast<unsigned>(cell.index()) > MAP_CELL_TOTAL) {
     return;
   }
 
@@ -843,8 +843,8 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, CELL cell) {
   ** If we are zoomed in then calculate the pixel based off of the portion
   ** of the map the radar is viewing.
   */
-  int x = Cell_X(cell) - RadarX;
-  int y = Cell_Y(cell) - RadarY;  // Coordinate of cell location.
+  int x = cell.x() - RadarX;
+  int y = cell.y() - RadarY;  // Coordinate of cell location.
 
   if (view.Lock()) {
     const CellClass* cellptr = &(*this).at(cell);
@@ -937,7 +937,7 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, CELL cell) {
  * HISTORY: * 07/12/1992 JLB : Created. * 05/08/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-void RadarClass::Radar_Pixel(CELL cell) {
+void RadarClass::Radar_Pixel(Cell cell) {
   if (IsRadarActive && TheMap().IsSidebarActive && Cell_On_Radar(cell)) {
     IsRadarToRedraw = true;
     (*this).at(cell).IsPlot = true;
@@ -1019,14 +1019,14 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) const {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-CELL RadarClass::Click_Cell_Calc(int x, int y) {
+Cell RadarClass::Click_Cell_Calc(int x, int y) {
   const int result = Click_In_Radar(x, y, true);
   switch (result) {
     case 1:
-      return XY_Cell(x, y);
+      return Cell::FromXY(x, y);
 
     case -1:
-      return -1;
+      return Cell::None();
     default:
       break;
   }
@@ -1048,7 +1048,7 @@ CELL RadarClass::Click_Cell_Calc(int x, int y) {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool RadarClass::Map_Cell(CELL cell, HouseClass* house) {
+bool RadarClass::Map_Cell(Cell cell, HouseClass* house) {
   if (DisplayClass::Map_Cell(cell, house)) {
     Radar_Pixel(cell);
     return true;
@@ -1056,7 +1056,7 @@ bool RadarClass::Map_Cell(CELL cell, HouseClass* house) {
   return false;
 }
 
-void RadarClass::Cursor_Cell(PixelView& view, CELL cell, bool value) {
+void RadarClass::Cursor_Cell(PixelView& view, Cell cell, bool value) {
   const bool temp = (*this).at(cell).IsRadarCursor;
 
   /*
@@ -1102,27 +1102,27 @@ void RadarClass::Mark_Radar(PixelView& view, int x1, int y1, int x2, int y2,
     ** Do Horizontal action to upper and lower left corners.
     */
     int x = x1 + lp;
-    Cursor_Cell(view, XY_Cell(x, y1), value);
-    Cursor_Cell(view, XY_Cell(x, y2), value);
+    Cursor_Cell(view, Cell::FromXY(x, y1), value);
+    Cursor_Cell(view, Cell::FromXY(x, y2), value);
     /*
     ** Do Horizontal Action to upper and lower right corners
     */
     x = x2 - lp;
-    Cursor_Cell(view, XY_Cell(x, y1), value);
-    Cursor_Cell(view, XY_Cell(x, y2), value);
+    Cursor_Cell(view, Cell::FromXY(x, y1), value);
+    Cursor_Cell(view, Cell::FromXY(x, y2), value);
     /*
     ** Do Vertical Action to left and right upper corners
     */
     int y = y1 + lp;
-    Cursor_Cell(view, XY_Cell(x1, y), value);
-    Cursor_Cell(view, XY_Cell(x2, y), value);
+    Cursor_Cell(view, Cell::FromXY(x1, y), value);
+    Cursor_Cell(view, Cell::FromXY(x2, y), value);
 
     /*
     ** Do Vertical action to left and right lower corners.
     */
     y = y2 - lp;
-    Cursor_Cell(view, XY_Cell(x1, y), value);
-    Cursor_Cell(view, XY_Cell(x2, y), value);
+    Cursor_Cell(view, Cell::FromXY(x1, y), value);
+    Cursor_Cell(view, Cell::FromXY(x2, y), value);
   }
 }
 
@@ -1178,9 +1178,9 @@ void RadarClass::Radar_Cursor(PixelView& view, bool forced) {
   ** figure out these function calls as we will need to call them multiple
   *times.
   */
-  const int tac_cell = Coord_Cell(TacticalCoord);
-  const int tac_cell_x = static_cast<CELL>(Cell_X(static_cast<CELL>(tac_cell)));
-  const int tac_cell_y = static_cast<CELL>(Cell_Y(static_cast<CELL>(tac_cell)));
+  const int tac_cell = Cell::Containing(TacticalCoord).index();
+  const int tac_cell_x = Cell::FromIndex(tac_cell).x();
+  const int tac_cell_y = static_cast<int16_t>(Cell::FromIndex(tac_cell).y());
   const int barlen = 6;
   /*
   ** If the current tactical cell is invalid or we haven't moved and we are not
@@ -1202,10 +1202,9 @@ void RadarClass::Radar_Cursor(PixelView& view, bool forced) {
     *pixel coordinates back
     ** to the cells that need to be redraw.
     **/
-    const int last_cell_x =
-        static_cast<CELL>(Cell_X(static_cast<CELL>(_last_pos)));
+    const int last_cell_x = Cell::FromIndex(_last_pos).x();
     const int last_cell_y =
-        static_cast<CELL>(Cell_Y(static_cast<CELL>(_last_pos)));
+        static_cast<int16_t>(Cell::FromIndex(_last_pos).y());
 
     Cell_XY_To_Radar_Pixel(last_cell_x, last_cell_y, x1, y1);
     Cell_XY_To_Radar_Pixel(last_cell_x + Lepton_To_Cell(TacLeptonWidth),
@@ -1434,9 +1433,9 @@ bool RadarClass::TacticalClass::Action(unsigned flags,
   const int result = TheMap().Click_In_Radar(x, y, false);
 
   if (result == 1) {
-    CELL cell = TheMap().RadarClass::Click_Cell_Calc(
+    Cell cell = TheMap().RadarClass::Click_Cell_Calc(
         x, y);  // cell num click happened over
-    if (cell != -1 && TheMap().In_Radar(cell)) {
+    if (cell != Cell::None() && TheMap().In_Radar(cell)) {
       const bool shadow =
           !TheMap().at(cell).IsVisible &&
           !TheDebugState().unshroud();  // is the cell in shadow or not
@@ -1539,16 +1538,16 @@ bool RadarClass::TacticalClass::Action(unsigned flags,
 
         if (flags & kLeftPress) {
           cell = TheMap().RadarClass::Click_Cell_Calc(x, y);
-          if (cell != -1) {
-            int cell_x = Cell_X(cell);
-            int cell_y = Cell_Y(cell);
+          if (cell != Cell::None()) {
+            int cell_x = cell.x();
+            int cell_y = cell.y();
             cell_x -= Lepton_To_Cell(TheMap().TacLeptonWidth) / 2;
             cell_x = std::max(cell_x, TheMap().MapCellX);
             cell_y -= Lepton_To_Cell(TheMap().TacLeptonHeight) / 2;
             cell_y = std::max(cell_y, TheMap().MapCellY);
-            cell = XY_Cell(cell_x, cell_y);
-            TheMap().Set_Tactical_Position(Cell_Coord(cell));
-            cell = Coord_Cell(TheMap().DesiredTacticalCoord);
+            cell = Cell::FromXY(cell_x, cell_y);
+            TheMap().Set_Tactical_Position(cell.Center());
+            cell = Cell::Containing(TheMap().DesiredTacticalCoord);
             TheMap().IsDisplayToRedraw = true;
             TheMap().Flag_To_Redraw(true);
             TheMap().SpecialRadarFrame = 4;
@@ -1593,7 +1592,7 @@ bool RadarClass::TacticalClass::Action(unsigned flags,
  *                                                                                             *
  * HISTORY: * 01/01/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
+void RadarClass::Refresh_Cells(Cell cell, std::span<const int16_t> list) {
   if (list.front() == REFRESH_SIDEBAR) {
     IsRadarToRedraw = true;
     Flag_To_Redraw(false);
@@ -1616,13 +1615,13 @@ void RadarClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Set_Radar_Position(CELL cell) {
+void RadarClass::Set_Radar_Position(Cell cell) {
   int oldx = 0;
   int oldy = 0;
 
   if (ZoomFactor != 1) {
-    oldx = Cell_X(cell) - MapCellX;
-    oldy = Cell_Y(cell) - MapCellY;
+    oldx = cell.x() - MapCellX;
+    oldy = cell.y() - MapCellY;
   } else {
     oldx = 0;
     oldy = 0;
@@ -1633,7 +1632,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
 
   const int newx = oldx + MapCellX;
   const int newy = oldy + MapCellY;
-  const int newcell = XY_Cell(newx, newy);
+  const int newcell = Cell::FromXY(newx, newy).index();
 
   if (RadarCell != newcell) {
     bool forced = false;
@@ -1641,9 +1640,9 @@ void RadarClass::Set_Radar_Position(CELL cell) {
     const int ymod = newy;
 
     const int radx =
-        static_cast<CELL>(Cell_X(static_cast<CELL>(RadarCell)) - xmod);
+        static_cast<int16_t>(Cell::FromIndex(RadarCell).x() - xmod);
     const int rady =
-        static_cast<CELL>(Cell_Y(static_cast<CELL>(RadarCell)) - ymod);
+        static_cast<int16_t>(Cell::FromIndex(RadarCell).y() - ymod);
 
     RadarX = newx;
     RadarY = newy;
@@ -1689,7 +1688,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           }
           for (int x = min; x < max; x++) {
             for (int y = 0; y < RadarCellHeight; y++) {
-              Radar_Pixel(XY_Cell(newx + x, newy + y));
+              Radar_Pixel(Cell::FromXY(newx + x, newy + y));
             }
           }
         }
@@ -1705,7 +1704,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           }
           for (int y = min; y < max; y++) {
             for (int x = 0; x < RadarCellWidth; x++) {
-              Radar_Pixel(XY_Cell(newx + x, newy + y));
+              Radar_Pixel(Cell::FromXY(newx + x, newy + y));
             }
           }
         }
@@ -1738,7 +1737,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-CELL RadarClass::Radar_Position() const { return static_cast<CELL>(RadarCell); }
+Cell RadarClass::Radar_Position() const { return Cell::FromIndex(RadarCell); }
 
 /***********************************************************************************************
  * RadarClass::Set_Map_Dimensions -- Sets the tactical map dimensions. *
@@ -1758,7 +1757,7 @@ CELL RadarClass::Radar_Position() const { return static_cast<CELL>(RadarCell); }
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void RadarClass::Set_Map_Dimensions(int x, int y, int w, int h) {
-  Set_Radar_Position(XY_Cell(x, y));
+  Set_Radar_Position(Cell::FromXY(x, y));
   DisplayClass::Set_Map_Dimensions(x, y, w, h);
 }
 
@@ -1780,7 +1779,7 @@ void RadarClass::Set_Map_Dimensions(int x, int y, int w, int h) {
  *=============================================================================================*/
 void RadarClass::Set_Tactical_Position(Coordinate coord) {
   DisplayClass::Set_Tactical_Position(coord);
-  Set_Radar_Position(Coord_Cell(DesiredTacticalCoord));
+  Set_Radar_Position(Cell::Containing(DesiredTacticalCoord));
 }
 
 /***********************************************************************************************
@@ -1798,20 +1797,20 @@ void RadarClass::Set_Tactical_Position(Coordinate coord) {
  *                                                                                             *
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
-bool RadarClass::Cell_On_Radar(CELL cell) const {
-  if (static_cast<unsigned>(cell) > MAP_CELL_TOTAL) {
+bool RadarClass::Cell_On_Radar(Cell cell) const {
+  if (static_cast<unsigned>(cell.index()) > MAP_CELL_TOTAL) {
     return false;
   }
 
-  const int x = Cell_X(cell) - RadarX;
-  const int y = Cell_Y(cell) - RadarY;
+  const int x = cell.x() - RadarX;
+  const int y = cell.y() - RadarY;
   return static_cast<unsigned>(x) < static_cast<unsigned>(RadarCellWidth) &&
          static_cast<unsigned>(y) < static_cast<unsigned>(RadarCellHeight);
 
   //	if (!IsZoomed) {
   //		return(true);
   //	}
-  //	return(!(((Cell_X(cell) - RadarX) > RadarCellWidth) || ((Cell_Y(cell) -
+  //	return(!(((cell.x() - RadarX) > RadarCellWidth) || ((cell.y() -
   // RadarY) > RadarCellHeight)));
 }
 

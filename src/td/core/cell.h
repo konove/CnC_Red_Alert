@@ -13,10 +13,6 @@
 
 namespace td {
 
-// A map coordinate with cell resolution: y * 64 + x, 6 bits per axis.
-// Negative values are sentinels.
-using CELL = int16_t;
-
 // A map cell, packed as y * 64 + x (6 bits per axis) in a signed 16-bit word.
 // index() is that word, the index into the map's cell array. Negative values
 // are sentinels ("no cell"); None() is the usual one. The REFRESH_EOL-

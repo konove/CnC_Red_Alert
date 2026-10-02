@@ -275,7 +275,7 @@ void DriveClass::Approach_Target() {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void DriveClass::Overrun_Square(CELL cell, bool threaten) {
+void DriveClass::Overrun_Square(Cell cell, bool threaten) {
   CellClass* cellptr = &TheMap().at(cell);
 
   if (Class->IsCrusher) {
@@ -312,7 +312,8 @@ void DriveClass::Overrun_Square(CELL cell, bool threaten) {
           object->Mark(MARK_UP);
           object->Limbo();
           base::DeletePooled(object);
-          base::NewPooled<OverlayClass>(OVERLAY_SQUISH, Coord_Cell(Coord));
+          base::NewPooled<OverlayClass>(OVERLAY_SQUISH,
+                                        Cell::Containing(Coord));
 
           object = next;
         } else {
@@ -372,7 +373,7 @@ DriveClass::DriveClass(UnitType classid, HousesType house)
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void DriveClass::Exit_Map() {
-  CELL cell = 0;  // Map exit cell number.
+  Cell cell{};  // Map exit cell number.
 
   if (*this == UNIT_HOVER && !NavCom) {
     /*
@@ -380,11 +381,11 @@ void DriveClass::Exit_Map() {
     *if *	there is any blocking object, just wait so to try again later.
     */
     Mark(MARK_UP);
-    for (int x = Cell_X(Coord_Cell(Center_Coord())) - 1;
-         x <= Cell_X(Coord_Cell(Center_Coord())) + 1; x++) {
-      for (int y = Cell_Y(Coord_Cell(Center_Coord())) + 1;
+    for (int x = Cell::Containing(Center_Coord()).x() - 1;
+         x <= Cell::Containing(Center_Coord()).x() + 1; x++) {
+      for (int y = Cell::Containing(Center_Coord()).y() + 1;
            y < TheMap().MapCellY + TheMap().MapCellHeight; y++) {
-        cell = XY_Cell(x, y);
+        cell = Cell::FromXY(x, y);
         if (TheMap().at(cell).Cell_Techno()) {
           Mark(MARK_DOWN);
           return;
@@ -397,8 +398,8 @@ void DriveClass::Exit_Map() {
     **	A clear path to the map edge exists. Assign it as the navigation
     *computer *	destination and let the transport move.
     */
-    cell = XY_Cell(Cell_X(Coord_Cell(Coord)),
-                   TheMap().MapCellY + TheMap().MapCellHeight);
+    cell = Cell::FromXY(Cell::Containing(Coord).x(),
+                        TheMap().MapCellY + TheMap().MapCellHeight);
     IsReturning = true;
     Assign_Destination(Target::FromCellIndex(cell));
   }
@@ -547,8 +548,8 @@ void DriveClass::Assign_Destination(Target target) {
         **	Last check to make sure that the loading square is free from
         *permanent *	occupation (such as a building).
         */
-        const CELL cell =
-            static_cast<CELL>(Coord_Cell(b->Center_Coord()) + (MAP_CELL_W - 1));
+        const Cell cell =
+            Cell::Containing(b->Center_Coord()).Offset(MAP_CELL_W - 1);
         if (Ground.at(TheMap().at(cell).Land_Type()).Cost.at(Class->Speed)) {
           if (Transmit_Message(RADIO_DOCKING) == RADIO_ROGER) {
             FootClass::Assign_Destination(target);
@@ -692,7 +693,7 @@ bool DriveClass::While_Moving() {
 
             c = Adjacent_Cell(c, nextface);
 
-            switch (Can_Enter_Cell(Coord_Cell(c), nextface)) {
+            switch (Can_Enter_Cell(Cell::Containing(c), nextface)) {
               case game::MOVE_OK:
                 IsOnShortTrack = false;  // Shouldn't be necessary, but...
                 TrackNumber = tnum;
@@ -720,14 +721,14 @@ bool DriveClass::While_Moving() {
                 break;
 
               case game::MOVE_CLOAK:
-                TheMap().at(Coord_Cell(c)).Shimmer();
+                TheMap().at(Cell::Containing(c)).Shimmer();
                 break;
 
               case game::MOVE_TEMP:
                 if (*this == UNIT_HARVESTER || !House->IsHuman) {
                   const bool old = TheSpecial().IsScatter;
                   TheSpecial().IsScatter = true;
-                  TheMap().at(Coord_Cell(c)).Incoming(Coordinate{}, true);
+                  TheMap().at(Cell::Containing(c)).Incoming(Coordinate{}, true);
                   TheSpecial().IsScatter = old;
                 }
                 break;
@@ -792,7 +793,7 @@ bool DriveClass::While_Moving() {
  *Distinguishes between center and near-center conditions.                 *
  *=============================================================================================*/
 void DriveClass::Per_Cell_Process(bool center) {
-  const CELL cell = Coord_Cell(Coord);
+  const Cell cell = Cell::Containing(Coord);
 
   /*
   **	Check to see if it has reached its destination. If so, then clear the
@@ -844,7 +845,7 @@ void DriveClass::Per_Cell_Process(bool center) {
 bool DriveClass::Start_Of_Move() {
   int facediff = 0;     // Difference between current and desired facing.
   int speed = 0;        // Speed of unit.
-  CELL destcell = 0;    // Cell of destination.
+  Cell destcell{};      // Cell of destination.
   Coordinate dest{};    // Destination coordinate.
 
   game::FacingType facing =
@@ -915,8 +916,8 @@ bool DriveClass::Start_Of_Move() {
         *destination is *	blocked by a friendly temporary blockage, then
         *cause that blockage *	to scatter.
         */
-        const CELL cell =
-            Adjacent_Cell(Coord_Cell(Center_Coord()), PrimaryFacing.Current());
+        const Cell cell = Adjacent_Cell(Cell::Containing(Center_Coord()),
+                                        PrimaryFacing.Current());
         if (TheMap().In_Radar(cell) &&
             (Can_Enter_Cell(cell) == game::MOVE_TEMP)) {
           CellClass* cellptr = &TheMap().at(cell);
@@ -950,8 +951,8 @@ bool DriveClass::Start_Of_Move() {
     **	blocked by a friendly temporary blockage, then cause that blockage
     **	to scatter.
     */
-    const CELL cell =
-        Adjacent_Cell(Coord_Cell(Center_Coord()), base::At(Path, 0));
+    const Cell cell =
+        Adjacent_Cell(Cell::Containing(Center_Coord()), base::At(Path, 0));
     if (TheMap().In_Radar(cell) && (Can_Enter_Cell(cell) == game::MOVE_TEMP)) {
       CellClass* cellptr = &TheMap().at(cell);
       const TechnoClass* blockage = cellptr->Cell_Techno();
@@ -1007,7 +1008,7 @@ bool DriveClass::Start_Of_Move() {
    **	reason), then abort the path list and set the speed to zero. The
    ** next time this routine is called, a new path will be generated.
    */
-  destcell = Coord_Cell(dest);
+  destcell = Cell::Containing(dest);
   Mark(MARK_UP);
   game::MoveType cando = Can_Enter_Cell(destcell, facing);
   Mark(MARK_DOWN);
@@ -1110,7 +1111,7 @@ bool DriveClass::Start_Of_Move() {
     TrackNumber = -1;
     dest = {};
   } else {
-    Overrun_Square(Coord_Cell(dest), true);
+    Overrun_Square(Cell::Containing(dest), true);
 
     /*
     **	Determine which track to use (based on recorded path).
@@ -1139,7 +1140,7 @@ bool DriveClass::Start_Of_Move() {
         cando = game::MOVE_NO;
       } else {
         dest = Adjacent_Cell(dest, nextface);
-        destcell = Coord_Cell(dest);
+        destcell = Cell::Containing(dest);
         cando = Can_Enter_Cell(destcell);
       }
 
@@ -1394,8 +1395,8 @@ void DriveClass::Fixup_Path(PathType* path) {
   const auto ptr2 = ptr;  // Copy of new path list pointer.
 
   bool ok = true;  // Presume adjustment is all ok.
-  CELL cell =
-      Coord_Cell(Coord);  // Working cell value.              // Starting cell.
+  Cell cell = Cell::Containing(
+      Coord);  // Working cell value.              // Starting cell.
   game::FacingType nextpath =
       game::Dir_Facing(PrimaryFacing);  // Next path value.  // Starting path.
   for (int index = 0; index < counter; index++) {
@@ -1410,7 +1411,7 @@ void DriveClass::Fixup_Path(PathType* path) {
     }
     base::At(stage, index) = nextpath;
     cell = Adjacent_Cell(cell, nextpath);
-    // cell = Coord_Cell(Adjacent_Cell(Cell_Coord(cell), nextpath));
+    // cell = Cell::Containing(Adjacent_Cell(cell.Center(), nextpath));
 
     /*
     **	If it can't enter this cell, then abort the path
@@ -1432,7 +1433,7 @@ void DriveClass::Fixup_Path(PathType* path) {
     ptr = ptr2;  // Pointer to path adjust list.
     facediff = -facediff;
     ok = true;                             // Presume adjustment is all ok.
-    cell = Coord_Cell(Coord);              // Starting cell.
+    cell = Cell::Containing(Coord);        // Starting cell.
     nextpath = game::Dir_Facing(PrimaryFacing);  // Starting path.
     for (int index = 0; index < counter; index++) {
       /*
@@ -1445,7 +1446,7 @@ void DriveClass::Fixup_Path(PathType* path) {
         nextpath = nextpath - base::ConsumeFront(ptr);
       }
       base::At(stage, index) = nextpath;
-      cell = Coord_Cell(Adjacent_Cell(Cell_Coord(cell), nextpath));
+      cell = Cell::Containing(Adjacent_Cell(cell.Center(), nextpath));
 
       /*
       **	If it can't enter this cell, then abort the path
@@ -1525,7 +1526,7 @@ void DriveClass::Lay_Track() {
     return;
   }
 
-  Icon_Install(Coord_Cell(Coord), _trackdirs[Facing_To_8(BodyFacing)]);
+  Icon_Install(Cell::Containing(Coord), _trackdirs[Facing_To_8(BodyFacing)]);
 #endif
 }
 
@@ -1565,12 +1566,12 @@ void DriveClass::Mark_Track(Coordinate headto, MarkType type) {
           if (TrackIndex < cellidx && cellidx != -1) {
             const Coordinate offset =
                 Smooth_Turn(base::At(ptr, base::ToSize(cellidx)).Offset, &dir);
-            TheMap().at(Coord_Cell(offset)).Flag.Occupy.Vehicle = value;
+            TheMap().at(Cell::Containing(offset)).Flag.Occupy.Vehicle = value;
           }
         }
       }
     }
-    TheMap().at(Coord_Cell(headto)).Flag.Occupy.Vehicle = value;
+    TheMap().at(Cell::Containing(headto)).Flag.Occupy.Vehicle = value;
   }
 }
 

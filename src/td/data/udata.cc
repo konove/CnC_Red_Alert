@@ -72,7 +72,6 @@
 #include "game/sim/enums.h"
 #include "td/ai/special.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
@@ -1554,10 +1553,10 @@ void UnitTypeClass::Init(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
+bool UnitTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* unit = base::NewPooled<UnitClass>(Type, house);
   if (unit) {
-    return unit->Unlimbo(Cell_Coord(cell),
+    return unit->Unlimbo(cell.Center(),
                          Random_Pick(game::DIR_N, kMaxRandomDirection));
   }
   return false;

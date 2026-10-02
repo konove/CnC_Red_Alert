@@ -773,7 +773,7 @@ void TerrainTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-bool TerrainTypeClass::Create_And_Place(CELL cell,
+bool TerrainTypeClass::Create_And_Place(Cell cell,
                                         HousesType /*unused*/) const {
   return base::NewPooled<TerrainClass>(Type, cell) != nullptr;
 }

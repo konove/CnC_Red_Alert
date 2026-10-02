@@ -49,7 +49,6 @@
 #include "game/core/object_heap.h"
 #include "td/core/cell.h"
 #include "td/core/coordinate.h"
-#include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/objects/aircraft.h"
 #include "td/objects/anim.h"  // IWYU pragma: keep
@@ -138,13 +137,13 @@ UnitClass* Target::AsUnit() const {
   return kind() == KIND_UNIT ? TheObjectHeaps().unit().Slot(value()) : nullptr;
 }
 
-CELL Target::AsCell() const { return Coord_Cell(AsCoordinate()); }
+Cell Target::AsCell() const { return Cell::Containing(AsCoordinate()); }
 
 Coordinate Target::AsCoordinate() const {
   if (*this) {
     // A cell target's value is the cell index.
     if (kind() == KIND_CELL) {
-      return Cell_Coord(static_cast<CELL>(value()));
+      return Cell::FromIndex(value()).Center();
     }
     const ObjectClass* obj = AsObject();
     if (obj) {
@@ -158,7 +157,7 @@ Coordinate Target::AsMovementCoordinate() const {
   if (*this) {
     // A cell target's value is the cell index.
     if (kind() == KIND_CELL) {
-      return Cell_Coord(static_cast<CELL>(value()));
+      return Cell::FromIndex(value()).Center();
     }
     const ObjectClass* obj = AsObject();
     if (obj) {

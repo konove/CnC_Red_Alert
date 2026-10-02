@@ -66,7 +66,6 @@
 #include "game/sim/enums.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/jshell.h"
 #include "td/map/world.h"
 #include "td/objects/house.h"
@@ -380,8 +379,8 @@ void SmudgeTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType /*unused*/) const {
-  return base::NewPooled<SmudgeClass>(Type, Cell_Coord(cell)) != nullptr;
+bool SmudgeTypeClass::Create_And_Place(Cell cell, HousesType /*unused*/) const {
+  return base::NewPooled<SmudgeClass>(Type, cell.Center()) != nullptr;
 }
 
 /***********************************************************************************************

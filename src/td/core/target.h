@@ -72,16 +72,16 @@ class Target {
   }
 
   // A cell target: the cell index itself as the value, unmasked like
-  // Make(), so cell -1 is the word 0xFFFF.
-  static constexpr Target FromCellIndex(CELL cell) noexcept {
-    return Make(KIND_CELL, cell);
+  // Make(), so Cell::None() is the word 0xFFFF.
+  static constexpr Target FromCellIndex(Cell cell) noexcept {
+    return Make(KIND_CELL, cell.index());
   }
 
   // Returns the packed word, as saved, sent and logged.
   [[nodiscard]] constexpr uint16_t packed() const noexcept { return word_; }
 
-  // Returns the kind: the word's high 4 bits, which may be 13..15 for a word
-  // no factory but Make() with an oversized value produces.
+  // Returns the kind: the word's high 4 bits, which may be 13..15, naming no
+  // kind, for a word from FromPacked() or from Make() with an oversized value.
   [[nodiscard]] constexpr KindType kind() const noexcept {
     return static_cast<KindType>(static_cast<unsigned>(word_) >> kValueBits);
   }
@@ -125,7 +125,7 @@ class Target {
   [[nodiscard]] Coordinate AsCoordinate() const;
 
   // Returns the cell AsCoordinate() lies in.
-  [[nodiscard]] CELL AsCell() const;
+  [[nodiscard]] Cell AsCell() const;
 
   // Returns where a unit moving to this target heads: the center of the cell
   // for a cell target, the object's Docking_Coord() for an object.

@@ -50,6 +50,7 @@
 #include "td/objects/smudge.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -65,7 +66,6 @@
 #include "game/core/object_heap.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/data/profile.h"
 #include "td/editor/mapedit.h"
@@ -215,11 +215,11 @@ void SmudgeClass::Init() { TheObjectHeaps().smudge().FreeAll(); }
 bool SmudgeClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
-    const CELL origin = Coord_Cell(Coord);
+    const Cell origin = Cell::Containing(Coord);
 
     for (int w = 0; w < Class->Width; w++) {
       for (int h = 0; h < Class->Height; h++) {
-        const CELL newcell = static_cast<CELL>(origin + w + (h * MAP_CELL_W));
+        const Cell newcell = origin.Offset(w + (h * MAP_CELL_W));
         if (TheMap().In_Radar(newcell)) {
           CellClass* cell = &TheMap().at(newcell);
 
@@ -310,12 +310,13 @@ void SmudgeClass::Read_INI(char* buffer) {
       const char* ptr = tokens.Next();
       if (ptr) {
         int data = 0;
-        const CELL cell = base::ParseIntegerOr<CELL>(ptr, 0);
+        const Cell cell =
+            Cell::FromIndex(base::ParseIntegerOr<int16_t>(ptr, 0));
         ptr = tokens.Next();
         if (ptr) {
           data = base::ParseIntegerOr<int>(ptr, 0);
         }
-        base::NewPooled<SmudgeClass>(smudge, Cell_Coord(cell));
+        base::NewPooled<SmudgeClass>(smudge, cell.Center());
         if (TheMap().at(cell).Smudge == smudge && data) {
           TheMap().at(cell).SmudgeData = static_cast<unsigned char>(data);
         }
@@ -362,8 +363,8 @@ void SmudgeClass::Write_INI(std::string& buffer) {
   /*
   **	Find all templates and write them to the file.
   */
-  for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass* ptr = &TheMap().at(index);
+  for (int index = 0; index < MAP_CELL_TOTAL; index++) {
+    CellClass* ptr = &TheMap().at(Cell::FromIndex(index));
     if (ptr->Smudge != SMUDGE_NONE) {
       const SmudgeTypeClass* stype =
           &SmudgeTypeClass::As_Reference(ptr->Smudge);
@@ -394,12 +395,12 @@ void SmudgeClass::Write_INI(std::string& buffer) {
  *                                                                                             *
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
-void SmudgeClass::Disown(CELL cell) {
+void SmudgeClass::Disown(Cell cell) {
   Validate();
   if (Class->IsBib) {
     for (int w = 0; w < Class->Width; w++) {
       for (int h = 0; h < Class->Height; h++) {
-        CellClass& cellptr = TheMap().at(cell + w + (h * MAP_CELL_W));
+        CellClass& cellptr = TheMap().at(cell.Offset(w + (h * MAP_CELL_W)));
 
         if (cellptr.Overlay == OVERLAY_NONE ||
             !OverlayTypeClass::As_Reference(cellptr.Overlay).IsWall) {

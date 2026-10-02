@@ -40,7 +40,7 @@
  *-- Constructor for cell objects.                                     *
  *   CellClass::Cell_Building -- Return with building at specified cell. *
  *   CellClass::Cell_Color   -- Determine what radar color to use for this cell.
- ** CellClass::Cell_Coord -- Returns the coordinate of this cell. *
+ ** CellClass::Center_Coord -- Returns the coordinate of this cell. *
  *   CellClass::Cell_Find_Object -- Returns ptr to RTTI type occupying cell *
  *   CellClass::Cell_Infantry -- Returns with pointer of first infantry unit. *
  *   CellClass::Cell_Object -- Returns with clickable object in cell. *
@@ -158,7 +158,7 @@ using engine::gfx::ShapeFlags;
  *=============================================================================================*/
 int CellClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Cell_Number();
+    const int num = Cell_Number().index();
     if (num < 0 || num > 4095) {
       Validate_Error("CELL");
     }
@@ -383,7 +383,7 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
  *=============================================================================================*/
 void CellClass::Redraw_Objects(bool forced) {
   Validate();
-  const CELL cell = Cell_Number();
+  const Cell cell = Cell_Number();
 
   if (TheMap().In_View(cell) &&
       (forced || !MapEditClass::Is_Cell_Flagged(cell))) {
@@ -694,7 +694,7 @@ void CellClass::Occupy_Up(ObjectClass* object) {
       Flag.Occupy.Vehicle = false;
 #ifdef NEVER
       int x, y;
-      if (TheMap().Coord_To_Pixel(Cell_Coord(), x, y)) {
+      if (TheMap().Coord_To_Pixel(Center_Coord(), x, y)) {
         TheScreen().visible_view().PutPixel(x, y, kBlue);
       }
 #endif
@@ -919,7 +919,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
   Validate();
   const TemplateTypeClass* ttype = nullptr;
   int icon = 0;  // The icon number to use from the template set.
-  const CELL cell = Cell_Number();
+  const Cell cell = Cell_Number();
   std::span<const uint8_t> remap;
   const TemplateTypeClass* tptr = nullptr;
   const TriggerClass* trig = nullptr;
@@ -948,7 +948,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
     Fancy_Text_Print(
         view, "%d\r%2X%c\r%02X.%02X",
         TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
-        kWhite, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_CENTER, cell,
+        kWhite, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_CENTER, cell.index(),
         Flag.Composite, Cell_Occupier() ? '*' : ' ', Overlay, OverlayData);
   } else {
     if (!draw_type || draw_type == CELL_BLIT_ONLY) {
@@ -1130,12 +1130,10 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
                 tptr = dynamic_cast<const TemplateTypeClass*>(
                     TheMap().PendingObject);
                 if (!tptr->Get_Image_Data().empty()) {
-                  icon = Cell_X(cell) -
-                         Cell_X(static_cast<CELL>(TheMap().ZoneCell +
-                                                  TheMap().ZoneOffset)) +
-                         ((Cell_Y(cell) -
-                           Cell_Y(static_cast<CELL>(TheMap().ZoneCell +
-                                                    TheMap().ZoneOffset))) *
+                  icon = cell.x() -
+                         TheMap().ZoneCell.Offset(TheMap().ZoneOffset).x() +
+                         ((cell.y() -
+                           TheMap().ZoneCell.Offset(TheMap().ZoneOffset).y()) *
                           tptr->Width);
                   view.DrawStamp(tptr->Get_Image_Data(), icon, x, y, {},
                                  WindowRect(WINDOW_TACTICAL));
@@ -1255,7 +1253,7 @@ void CellClass::Concrete_Calc() {
   /*
   **	Determine if the even or odd row logic is necessary.
   */
-  isodd = Cell_Number() % 2 != 0;
+  isodd = Cell_Number().index() % 2 != 0;
 
   /*
   **	Fetch correct pointer depending on whether this is for an
@@ -1517,7 +1515,7 @@ void CellClass::Wall_Update() {
 }
 
 /***********************************************************************************************
- * CellClass::Cell_Coord -- Returns the coordinate of this cell. *
+ * CellClass::Center_Coord -- Returns the coordinate of this cell. *
  *                                                                                             *
  *    This support function will determine the coordinate of this cell and
  *return it.          *
@@ -1530,9 +1528,9 @@ void CellClass::Wall_Update() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-Coordinate CellClass::Cell_Coord() const {
+Coordinate CellClass::Center_Coord() const {
   Validate();
-  return td::Cell_Coord(Cell_Number());
+  return Cell_Number().Center();
 }
 
 /***********************************************************************************************
@@ -1638,7 +1636,7 @@ bool CellClass::Reduce_Wall(int damage) {
 TriggerClass* CellClass::Get_Trigger() const {
   Validate();
   if (IsTrigger) {
-    return base::At(TheWorld().cell_triggers(), Cell_Number());
+    return base::At(TheWorld().cell_triggers(), Cell_Number().index());
   }
   return nullptr;
 }
@@ -1792,7 +1790,7 @@ Coordinate CellClass::Closest_Free_Spot(Coordinate coord, bool any) const {
 int CellClass::Clear_Icon() const {
   Validate();
   // Two bits of the X cell and two of the Y cell pick one of 16 icons.
-  return (Cell_X(Cell_Number()) % 4) + ((Cell_Y(Cell_Number()) % 4) * 4);
+  return (Cell_Number().x() % 4) + ((Cell_Number().y() % 4) * 4);
 }
 
 /***********************************************************************************************
@@ -1852,7 +1850,7 @@ int CellClass::Adjacent_Offset(game::FacingType face) const {
   // The original formed the pointer first and tested its cell number against
   // 0xF000. Check the index instead: pointer arithmetic that leaves the cell
   // array is undefined even if the result is never dereferenced.
-  const int adjacent = Cell_Number() + AdjacentCell.at(face);
+  const int adjacent = Cell_Number().index() + AdjacentCell.at(face);
   if (adjacent < 0 || adjacent >= MAP_CELL_TOTAL) {
     return 0;
   }
@@ -2005,7 +2003,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     if (steel) {
       if (object->Owner() == HOUSE_BAD) {
         object->House->Add_Nuke_Piece();
-        base::NewPooled<AnimClass>(ANIM_CRATE_EMPULSE, Cell_Coord());
+        base::NewPooled<AnimClass>(ANIM_CRATE_EMPULSE, Center_Coord());
       }
 
     } else {
@@ -2095,7 +2093,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	Give the player money.
         */
         case kMoney:
-          base::NewPooled<AnimClass>(ANIM_CRATE_DOLLAR, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_DOLLAR, Center_Coord());
           if (TheSession().type() == GAME_NORMAL) {
             HouseClass::As_Pointer(object->Owner())->Refund_Money(2000);
           } else {
@@ -2108,9 +2106,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	Shroud the world in blackness.
         */
         case kDarkness:
-          base::NewPooled<AnimClass>(ANIM_CRATE_EMPULSE, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_EMPULSE, Center_Coord());
           if (object->House == ThePlayer()) {
-            for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+            for (int cell_index = 0; cell_index < MAP_CELL_TOTAL;
+                 ++cell_index) {
+              const Cell cell = Cell::FromIndex(cell_index);
               CellClass* cellptr = &TheMap().at(cell);
               if (cellptr->IsMapped || cellptr->IsVisible) {
                 cellptr->Redraw_Objects();
@@ -2136,10 +2136,12 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	Reveal the entire map.
         */
         case kReveal:
-          base::NewPooled<AnimClass>(ANIM_CRATE_EMPULSE, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_EMPULSE, Center_Coord());
           object->House->IsVisionary = true;
           if (object->House == ThePlayer()) {
-            for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+            for (int cell_index = 0; cell_index < MAP_CELL_TOTAL;
+                 ++cell_index) {
+              const Cell cell = Cell::FromIndex(cell_index);
               TheMap().Map_Cell(cell, ThePlayer());
             }
           }
@@ -2190,7 +2192,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           auto* new_unit =
               dynamic_cast<UnitClass*>(utp->Create_One_Of(object->House));
           if (new_unit) {
-            if (new_unit->Unlimbo(Cell_Coord())) {
+            if (new_unit->Unlimbo(Center_Coord())) {
               return false;
             }
             base::DeletePooled(new_unit);
@@ -2219,21 +2221,21 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	Sometimes an explosion of great magnitude occurs.
         */
         case kNuke:
-          base::NewPooled<AnimClass>(ANIM_ATOM_BLAST, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_ATOM_BLAST, Center_Coord());
           break;
 
         /*
         **	Sometimes an explosion of great magnitude occurs.
         */
         case kIon:
-          base::NewPooled<AnimClass>(ANIM_ION_CANNON, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_ION_CANNON, Center_Coord());
           break;
 
         /*
         **	A nuclear missile was discovered. Add it to the sidebar.
         */
         case kNukeMissile:
-          base::NewPooled<AnimClass>(ANIM_CRATE_MISSILE, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_MISSILE, Center_Coord());
           if (object->House->NukeStrike.Enable(true) &&
               object->IsOwnedByPlayer) {
             TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
@@ -2246,7 +2248,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	A one time ion blast was discovered. Add it to the sidebar.
         */
         case kIonBlast:
-          base::NewPooled<AnimClass>(ANIM_CRATE_EARTH, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_EARTH, Center_Coord());
           if (object->House->IonCannon.Enable(true) &&
               object->IsOwnedByPlayer) {
             TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_ION_CANNON));
@@ -2259,7 +2261,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	A one time air strike can be called int. Add it to the sidebar.
         */
         case kAirStrike:
-          base::NewPooled<AnimClass>(ANIM_CRATE_DEVIATOR, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_DEVIATOR, Center_Coord());
           if (object->House->AirStrike.Enable(true) &&
               object->IsOwnedByPlayer) {
             TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
@@ -2276,7 +2278,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           object->Take_Damage(damage, 0, WARHEAD_HE);
           for (int index = 0; index < 5; index++) {
             const Coordinate blast_coord =
-                Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
+                Coord_Scatter(Center_Coord(), Random_Pick(0, 0x0200));
             base::NewPooled<AnimClass>(ANIM_FBALL1, blast_coord);
             damage = 400;
             Explosion_Damage(blast_coord, damage, nullptr, WARHEAD_HE);
@@ -2287,7 +2289,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	A napalm blast is triggered.
         */
         case kNapalm:
-          coord = Coordinate::Midpoint(Cell_Coord(), object->Center_Coord());
+          coord = Coordinate::Midpoint(Center_Coord(), object->Center_Coord());
           base::NewPooled<AnimClass>(ANIM_NAPALM3, coord);
           damage = 600;
           Explosion_Damage(coord, damage, nullptr, WARHEAD_FIRE);
@@ -2299,7 +2301,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         case kVisceroid:
           unit = base::NewPooled<UnitClass>(UNIT_VICE, HOUSE_JP);
           if (unit) {
-            if (unit->Unlimbo(Cell_Coord())) {
+            if (unit->Unlimbo(Center_Coord())) {
               return false;
             }
             base::DeletePooled(unit);
@@ -2311,13 +2313,13 @@ bool CellClass::Goodie_Check(FootClass* object) {
         *cloak.
         */
         case kCloak:
-          base::NewPooled<AnimClass>(ANIM_CRATE_STEALTH, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_STEALTH, Center_Coord());
           for (int index = 0;
                index < MouseClass::Layer.at(LAYER_GROUND).Count(); index++) {
             ObjectClass* obj = MouseClass::Layer.at(LAYER_GROUND).at(index);
 
             if (obj && obj->Is_Techno() &&
-                Distance(Cell_Coord(), obj->Center_Coord()) < 0x0300) {
+                Distance(Center_Coord(), obj->Center_Coord()) < 0x0300) {
               dynamic_cast<TechnoClass*>(obj)->IsCloakable = true;
             }
           }
@@ -2327,7 +2329,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	All of the player's objects heal up.
         */
         case kHealBase:
-          base::NewPooled<AnimClass>(ANIM_CRATE_INVUN, Cell_Coord());
+          base::NewPooled<AnimClass>(ANIM_CRATE_INVUN, Center_Coord());
           for (int index = 0; index < TheWorld().logic().Count(); index++) {
             ObjectClass* obj = TheWorld().logic().at(index);
 
@@ -2472,18 +2474,18 @@ ObjectClass* CellClass::Cell_Occupier() const {
  *                                                                                             *
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
-CELL CellClass::Cell_Number() const {
-  return static_cast<CELL>(TheMap().ID(this));
+Cell CellClass::Cell_Number() const {
+  return Cell::FromIndex(static_cast<int>(TheMap().ID(this)));
 }
 
 CellClass& CellClass::Adjacent_Cell(game::FacingType face) {
   const int offset = Adjacent_Offset(face);
-  return offset == 0 ? *this : TheMap().at(Cell_Number() + offset);
+  return offset == 0 ? *this : TheMap().at(Cell_Number().Offset(offset));
 }
 
 const CellClass& CellClass::Adjacent_Cell(game::FacingType face) const {
   const int offset = Adjacent_Offset(face);
-  return offset == 0 ? *this : TheMap().at(Cell_Number() + offset);
+  return offset == 0 ? *this : TheMap().at(Cell_Number().Offset(offset));
 }
 
 }  // namespace td

@@ -3868,10 +3868,10 @@ void BuildingTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-bool BuildingTypeClass::Create_And_Place(CELL cell, HousesType house) const {
+bool BuildingTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* ptr = base::NewPooled<BuildingClass>(Type, house);
   if (ptr) {
-    return ptr->Unlimbo(Cell_Coord(cell), game::DIR_N);
+    return ptr->Unlimbo(cell.Center(), game::DIR_N);
   }
   return false;
 }
@@ -3953,10 +3953,10 @@ void BuildingTypeClass::Init_Anim(game::BStateType state, int start, int count,
  *   06/07/1994 JLB : Handles concrete special check. * 06/21/1994 JLB :
  *Converted to building type class member function.                        *
  *=============================================================================================*/
-bool BuildingTypeClass::Legal_Placement(CELL pos) const {
+bool BuildingTypeClass::Legal_Placement(Cell pos) const {
   std::span<const int16_t> offset{};  // Pointer to cell offset list.
 
-  if (pos == -1) {
+  if (pos == Cell::None()) {
     return false;
   }
 
@@ -3971,7 +3971,7 @@ bool BuildingTypeClass::Legal_Placement(CELL pos) const {
   if (Type == STRUCT_CONCRETE_NOD || Type == STRUCT_CONCRETE_GDI) {
     offset = Occupy_List();
     while (offset.front() != REFRESH_EOL) {
-      if (!TheMap().Cell_Template(pos + (CELL)base::ConsumeFront(offset))) {
+      if (!TheMap().Cell_Template(pos.Offset(base::ConsumeFront(offset)))) {
         return (true);
       }
     }
@@ -3991,7 +3991,7 @@ bool BuildingTypeClass::Legal_Placement(CELL pos) const {
   */
   offset = Occupy_List(true);
   while (offset.front() != REFRESH_EOL) {
-    const CELL cell = static_cast<CELL>(pos + base::ConsumeFront(offset));
+    const Cell cell = pos.Offset(base::ConsumeFront(offset));
     if (!TheMap().In_Radar(cell)) {
       return false;
     }
@@ -4168,7 +4168,7 @@ const BuildingTypeClass& BuildingTypeClass::As_Reference(StructType type) {
  *=============================================================================================*/
 std::span<const int16_t> BuildingTypeClass::Occupy_List(bool placement) const {
   SmudgeType bib = SMUDGE_NONE;
-  CELL cell = 0;
+  Cell cell{};
 
   if ((placement && Bib_And_Offset(bib, cell)) ||
       (TheSpecial().IsRoad &&
@@ -4179,7 +4179,7 @@ std::span<const int16_t> BuildingTypeClass::Occupy_List(bool placement) const {
     */
     if (TheSpecial().IsRoad && *this == STRUCT_BARRACKS) {
       bib = SMUDGE_BIB3;
-      cell = 0;
+      cell = Cell{};
     }
 
     /*
@@ -4188,7 +4188,7 @@ std::span<const int16_t> BuildingTypeClass::Occupy_List(bool placement) const {
     */
     if (TheSpecial().IsRoad && *this == STRUCT_REFINERY) {
       bib = SMUDGE_BIB2;
-      cell = MAP_CELL_W;
+      cell = Cell::FromIndex(MAP_CELL_W);
     }
 
     const SmudgeTypeClass& smudge = SmudgeTypeClass::As_Reference(bib);
@@ -4201,7 +4201,7 @@ std::span<const int16_t> BuildingTypeClass::Occupy_List(bool placement) const {
     std::span<const int16_t> src = smudge.Occupy_List();
     while (src.front() != REFRESH_EOL) {
       base::ConsumeFront(dest) =
-          static_cast<int16_t>(base::ConsumeFront(src) + cell);
+          static_cast<int16_t>(base::ConsumeFront(src) + cell.index());
     }
 
     /*
@@ -4349,7 +4349,7 @@ int BuildingTypeClass::Repair_Step() const { return kRepairStep; }
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
+bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, Cell& cell) const {
   bib = SMUDGE_NONE;
 
   if (IsBibbed && !TheSpecial().IsRoad) {
@@ -4374,7 +4374,7 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
     **	of the building art itself.
     */
     if (bib != SMUDGE_NONE) {
-      cell = static_cast<CELL>(cell + ((Height() - 1) * MAP_CELL_W));
+      cell = cell.Offset((Height() - 1) * MAP_CELL_W);
     }
   }
   return bib != SMUDGE_NONE;

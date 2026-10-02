@@ -360,7 +360,8 @@ EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass() {
+EventClass::EventClass(EventType type, RTTIType object, Cell cell)
+    : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -387,7 +388,7 @@ EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass(
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
+EventClass::EventClass(EventType type, int id, Cell cell) : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.

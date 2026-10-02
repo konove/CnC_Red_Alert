@@ -75,7 +75,6 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/data/profile.h"
 #include "td/map/world.h"
 #include "td/objects/building.h"
@@ -274,7 +273,7 @@ BuildingClass* BaseClass::Get_Building(int index) {
   ** Check the location on the map where this building should be; if it's
   ** there, return a pointer to it.
   */
-  const CELL cell = Coord_Cell(base::At(Nodes, index).Coord);
+  const Cell cell = Cell::Containing(base::At(Nodes, index).Coord);
 
   base::At(obj, 0) = TheMap().at(cell).Cell_Building();
   base::At(obj, 1) = base::At(TheMap().at(cell).Overlappers, 0);

@@ -261,7 +261,7 @@ class FootClass : public TechnoClass {
   **	User I/O.
   */
   void Active_Click_With(ActionType action, ObjectClass* object) override;
-  void Active_Click_With(ActionType action, CELL cell) override;
+  void Active_Click_With(ActionType action, Cell cell) override;
 
   /*
   **	Combat related.
@@ -297,7 +297,7 @@ class FootClass : public TechnoClass {
   virtual void Fixup_Path(PathType* /*unused*/) {}
   virtual void Set_Speed(int speed);
   game::MoveType Can_Enter_Cell(
-      CELL /*unused*/,
+      Cell /*unused*/,
       game::FacingType /*unused*/ = game::FACING_NONE) const override;
   int Optimize_Moves(PathType* path, game::MoveType threshhold);
   void Override_Mission(MissionType mission, Target tarcom,
@@ -308,22 +308,22 @@ class FootClass : public TechnoClass {
   **	File I/O.
   */
 
-  CELL Safety_Point(CELL src, CELL dst, int start, int max) const;
+  Cell Safety_Point(Cell src, Cell dst, int start, int max) const;
   int Rescue_Mission(Target tarcom);
 
  private:
-  int Passable_Cell(CELL cell, game::FacingType face, int threat,
+  int Passable_Cell(Cell cell, game::FacingType face, int threat,
                     game::MoveType threshhold);
-  PathType* Find_Path(CELL dest, std::span<game::FacingType> final_moves,
+  PathType* Find_Path(Cell dest, std::span<game::FacingType> final_moves,
                       int maxlen, game::MoveType threshhold);
-  void Debug_Draw_Map(const char* txt, CELL start, CELL dest, bool pause) const;
+  void Debug_Draw_Map(const char* txt, Cell start, Cell dest, bool pause) const;
   static void Debug_Draw_Path(PathType* path);
-  bool Follow_Edge(CELL start, CELL target, PathType* path,
+  bool Follow_Edge(Cell start, Cell target, PathType* path,
                    game::FacingType search, game::FacingType olddir, int threat,
                    int threat_stage, int max_cells, game::MoveType threshhold);
-  bool Register_Cell(PathType* path, CELL cell, game::FacingType dir, int cost,
+  bool Register_Cell(PathType* path, Cell cell, game::FacingType dir, int cost,
                      game::MoveType threshhold);
-  bool Unravel_Loop(PathType* path, CELL& cell, game::FacingType& dir, int sx,
+  bool Unravel_Loop(PathType* path, Cell& cell, game::FacingType& dir, int sx,
                     int sy, int dx, int dy, game::MoveType threshhold);
 
   /*

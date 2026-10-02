@@ -83,7 +83,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
     IsActive = true;
     Strength = 0;
   }
-  explicit TerrainClass(TerrainType type, CELL cell = -1);
+  explicit TerrainClass(TerrainType type, Cell cell = Cell::None());
   ~TerrainClass() override;
   TerrainClass(const TerrainClass&) = delete;
   TerrainClass& operator=(const TerrainClass&) = delete;
@@ -122,7 +122,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   bool Unlimbo(Coordinate coord, game::DirType dir = game::DIR_N) override;
   bool Limbo() override;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      CELL cell, game::FacingType facing = game::FACING_NONE) const override;
+      Cell cell, game::FacingType facing = game::FACING_NONE) const override;
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -130,7 +130,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   */
   void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
-  std::span<const uint8_t> Radar_Icon(CELL cell);
+  std::span<const uint8_t> Radar_Icon(Cell cell);
 
   /*
   **	User I/O.

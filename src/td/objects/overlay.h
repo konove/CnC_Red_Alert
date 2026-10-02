@@ -74,7 +74,7 @@ class OverlayClass : public ObjectClass {
   }
   void operator delete(void* ptr);
   OverlayClass() { IsActive = true; }
-  explicit OverlayClass(OverlayType type, CELL pos = -1,
+  explicit OverlayClass(OverlayType type, Cell pos = Cell::None(),
                         HousesType /*house*/ = HOUSE_NONE);
   ~OverlayClass() override {
     if (TheGameState().active()) {

@@ -102,7 +102,7 @@ class UnitClass final : public TarComClass {
   bool Goto_Clear_Spot();
   bool Try_To_Deploy();
 
-  bool Tiberium_Check(CELL& center, int x, int y);
+  bool Tiberium_Check(Cell& center, int x, int y);
   bool Flag_Attach(HousesType house);
   bool Flag_Remove();
   void Find_LZ();
@@ -144,10 +144,10 @@ class UnitClass final : public TarComClass {
   /*
   **	User I/O.
   */
-  ActionType What_Action(CELL cell) const override;
+  ActionType What_Action(Cell cell) const override;
   ActionType What_Action(ObjectClass* object) override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;
-  void Active_Click_With(ActionType action, CELL cell) override;
+  void Active_Click_With(ActionType action, Cell cell) override;
   void Response_Select() override;
   void Response_Move() override;
   void Response_Attack() override;
@@ -172,7 +172,7 @@ class UnitClass final : public TarComClass {
   **	AI.
   */
   game::DirType Desired_Load_Dir(ObjectClass* passenger,
-                                 CELL& moveto) const override;
+                                 Cell& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
@@ -193,11 +193,11 @@ class UnitClass final : public TarComClass {
   */
   void Enter_Idle_Mode(bool initial = false) override;
   game::MoveType Can_Enter_Cell(
-      CELL cell, game::FacingType facing = game::FACING_NONE) const override;
+      Cell cell, game::FacingType facing = game::FACING_NONE) const override;
   void Per_Cell_Process(bool center) override;
   void Scatter(Coordinate threat, bool forced = false) override;
   void Exit_Repair();
-  //		MoveType Blocking_Object(TechnoClass const *techno, CELL cell)
+  //		MoveType Blocking_Object(TechnoClass const *techno, Cell cell)
   // const;
 
   /*

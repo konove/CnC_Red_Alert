@@ -213,12 +213,12 @@ class BuildingClass final : public TechnoClass {
   /*
   **	Query functions.
   */
-  CELL Find_Exit_Cell(const TechnoClass* techno) const override;
+  Cell Find_Exit_Cell(const TechnoClass* techno) const override;
   [[nodiscard]] InfantryType Crew_Type() const override;
   [[nodiscard]] int Pip_Count() const override;
   [[nodiscard]] bool Can_Player_Move() const override { return false; }
   ActionType What_Action(ObjectClass* object) override;
-  [[nodiscard]] ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] ActionType What_Action(Cell cell) const override;
   [[nodiscard]] bool Can_Demolish() const override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
@@ -247,12 +247,12 @@ class BuildingClass final : public TechnoClass {
   void Grand_Opening(bool captured = false);
   void Update_Buildables();
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      CELL cell,
+      Cell cell,
       game::FacingType /*unused*/ = game::FACING_NONE) const override;
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
   bool Limbo() override;
-  bool Passes_Proximity_Check(CELL homecell);
+  bool Passes_Proximity_Check(Cell homecell);
 
   /*
   **	Display and rendering support functionality. Supports imagery and how
@@ -270,7 +270,7 @@ class BuildingClass final : public TechnoClass {
   **	User I/O.
   */
   void Active_Click_With(ActionType action, ObjectClass* object) override;
-  void Active_Click_With(ActionType action, CELL cell) override;
+  void Active_Click_With(ActionType action, Cell cell) override;
 
   /*
   **	Combat related.
@@ -296,7 +296,7 @@ class BuildingClass final : public TechnoClass {
   void AI() override;
   void Assign_Target(Target target) override;
   bool Toggle_Primary();
-  bool Flush_For_Placement(TechnoClass* techno, CELL cell);
+  bool Flush_For_Placement(TechnoClass* techno, Cell cell);
 
   int Mission_Unload() override;
   int Mission_Repair() override;

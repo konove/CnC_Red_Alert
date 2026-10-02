@@ -296,7 +296,7 @@ void FootClass::Set_Speed(int speed) {
  *=============================================================================================*/
 bool FootClass::Mark(MarkType mark) {
   if (TechnoClass::Mark(mark)) {
-    const CELL cell = Coord_Cell(Coord);
+    const Cell cell = Cell::Containing(Coord);
 
     /*
     **	Inform the map of the refresh, occupation, and overlap
@@ -342,7 +342,7 @@ bool FootClass::Mark(MarkType mark) {
  *=============================================================================================*/
 bool FootClass::Basic_Path() {
   PathType* path = nullptr;  // Pointer to path control structure.
-  CELL cell = 0;
+  Cell cell{};
   const bool skip_path = false;
 
   base::At(Path, 0) = game::FACING_NONE;
@@ -359,10 +359,11 @@ bool FootClass::Basic_Path() {
     if (Can_Enter_Cell(cell) == game::MOVE_NO && Distance(NavCom) > 0x0300) {
       static const int _faceadjust[8] = {0, 1, -1, 2, -2, 3, -3, 4};
       const auto f2 = static_cast<game::FacingType>(
-          static_cast<unsigned>(td::Direction(cell, Coord_Cell(Coord))) >> 5);
+          static_cast<unsigned>(td::Direction(cell, Cell::Containing(Coord))) >>
+          5);
 
       for (const int index : _faceadjust) {
-        CELL const cell2 =
+        const Cell cell2 =
             Adjacent_Cell(cell, game::AsFacing(static_cast<int>(f2) + index));
         if (Can_Enter_Cell(cell2, game::FACING_NONE) <= game::MOVE_CLOAK) {
           cell = cell2;
@@ -374,14 +375,15 @@ bool FootClass::Basic_Path() {
 
 #ifdef SPECIAL
     if (What_Am_I() == RTTI_INFANTRY) {
-      CELL mycell = Coord_Cell(Center_Coord());
+      Cell mycell = Cell::Containing(Center_Coord());
       //			Mark(MARK_UP);
       ObjectClass* obj = TheMap()[mycell].Cell_Occupier();
       while (obj) {
         if (obj != this && obj->What_Am_I() == RTTI_INFANTRY) {
           auto* inf = dynamic_cast<InfantryClass*>(obj);
           if (inf->NavCom == NavCom && inf->Path[0] != game::FACING_NONE) {
-            if (Coord_Cell(inf->Head_To_Coord()) == Coord_Cell(inf->Coord)) {
+            if (Cell::Containing(inf->Head_To_Coord()) ==
+                Cell::Containing(inf->Coord)) {
               base::CopyBytes(std::as_writable_bytes(std::span(Path)),
                               std::as_bytes(std::span(inf->Path).subspan(1)),
                               sizeof(Path) - sizeof(Path[0]));
@@ -517,7 +519,7 @@ bool FootClass::Basic_Path() {
     ** up trying to move into the MOVE_TEMP using the normal movement
     ** retry logic.
     */
-    CELL cell = Adjacent_Cell(Coord_Cell(Coord), Path[0]);
+    Cell cell = Adjacent_Cell(Cell::Containing(Coord), Path[0]);
     if (Can_Enter_Cell(cell, game::FACING_NONE) == MOVEF_TEMP) {
       Path[0] = game::FACING_NONE;
     }
@@ -585,7 +587,7 @@ int FootClass::Mission_Move() {
 int FootClass::Mission_Capture() {
   if (!NavCom && !In_Radio_Contact()) {
     Enter_Idle_Mode();
-    if (TheMap().at(Coord_Cell(Center_Coord())).Cell_Building()) {
+    if (TheMap().at(Cell::Containing(Center_Coord())).Cell_Building()) {
       Scatter(Coordinate{}, true);
     }
   }
@@ -782,7 +784,7 @@ bool FootClass::Start_Driver(Coordinate& headto) {
     /*
     **	Check for crate goodie finder here.
     */
-    if (TheMap().at(Coord_Cell(headto)).Goodie_Check(this)) {
+    if (TheMap().at(Cell::Containing(headto)).Goodie_Check(this)) {
       return true;
     }
 
@@ -905,8 +907,8 @@ void FootClass::Approach_Target() {
 
       const Coordinate tcoord = TarCom.AsCoordinate();
       Coordinate trycoord{};
-      const CELL tcell = Coord_Cell(tcoord);
-      CELL trycell = tcell;
+      const Cell tcell = Cell::Containing(tcoord);
+      Cell trycell = tcell;
       const game::DirType dir = Direction256(tcoord, Center_Coord());
       bool found = false;
 
@@ -926,7 +928,7 @@ void FootClass::Approach_Target() {
               Coord_Move(tcoord, dir + _angle, static_cast<uint16_t>(range));
 
           if (td::Distance(trycoord, tcoord) < range) {
-            trycell = Coord_Cell(trycoord);
+            trycell = Cell::Containing(trycoord);
             if (Can_Enter_Cell(trycell) <= game::MOVE_CLOAK &&
                 TheMap().In_Radar(trycell)) {
               found = true;
@@ -981,7 +983,7 @@ int FootClass::Mission_Guard_Area() {
   **	Ensure that the archive target is valid.
   */
   if (!ArchiveTarget) {
-    ArchiveTarget = Target::FromCellIndex(Coord_Cell(Coord));
+    ArchiveTarget = Target::FromCellIndex(Cell::Containing(Coord));
   }
 
   /*
@@ -1306,7 +1308,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Active_Click_With(ActionType action, CELL cell) {
+void FootClass::Active_Click_With(ActionType action, Cell cell) {
   switch (action) {
     case ACTION_HARVEST:
       Player_Assign_Mission(MISSION_HARVEST, Target{},
@@ -1389,7 +1391,7 @@ void FootClass::Per_Cell_Process(bool center) {
   if (Cloak == game::CLOAKED) {
     for (const game::FacingType face :
          magic_enum::enum_values<game::FacingType>()) {
-      const CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
+      const Cell cell = Adjacent_Cell(Cell::Containing(Coord), face);
 
       if (TheMap().In_Radar(cell)) {
         const TechnoClass* techno = TheMap().at(cell).Cell_Techno();
@@ -1428,9 +1430,9 @@ void FootClass::Per_Cell_Process(bool center) {
   /*
   **	Trigger event associated with the player entering the cell.
   */
-  TriggerClass* trigger = TheMap().at(Coord_Cell(Coord)).Get_Trigger();
+  TriggerClass* trigger = TheMap().at(Cell::Containing(Coord)).Get_Trigger();
   if (Cloak != game::CLOAKED && trigger && trigger->House == Owner()) {
-    trigger->Spring(EVENT_PLAYER_ENTERED, Coord_Cell(Coord));
+    trigger->Spring(EVENT_PLAYER_ENTERED, Cell::Containing(Coord));
   }
   //	}
 
@@ -1550,7 +1552,7 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
       // The radio parameter carries the target word in its low 16 bits.
       const Target where = Target::FromPacked(static_cast<uint16_t>(param));
       if (NavCom != where) {
-        if (Target::FromCellIndex(Coord_Cell(Coord)) == where) {
+        if (Target::FromCellIndex(Cell::Containing(Coord)) == where) {
           return RADIO_YEA_NOW_WHAT;
         }
         if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
@@ -1982,7 +1984,7 @@ int FootClass::Offload_Tiberium_Bail() { return 0; }
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-game::MoveType FootClass::Can_Enter_Cell(CELL /*unused*/,
+game::MoveType FootClass::Can_Enter_Cell(Cell /*unused*/,
                                          game::FacingType /*unused*/) const {
   return game::MOVE_OK;
 }

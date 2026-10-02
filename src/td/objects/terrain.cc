@@ -97,7 +97,6 @@
 #include "td/ai/trigger.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/object_heaps.h"
 #include "td/core/rand.h"
 #include "td/data/profile.h"
@@ -314,10 +313,10 @@ void TerrainClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
-TerrainClass::TerrainClass(TerrainType type, CELL cell)
+TerrainClass::TerrainClass(TerrainType type, Cell cell)
     : Class(&TerrainTypeClass::As_Reference(type)) {
   Strength = Class->MaxStrength;
-  if ((cell != -1) && (!Unlimbo(Cell_Coord(cell)))) {
+  if ((cell != Cell::None()) && (!Unlimbo(cell.Center()))) {
     delete this;
   }
 
@@ -345,7 +344,7 @@ bool TerrainClass::Mark(MarkType mark) {
   if (ObjectClass::Mark(mark)) {
     const std::span<const int16_t> overlap = Class->Overlap_List();
     const std::span<const int16_t> occupy = Class->Occupy_List();
-    const CELL cell = Coord_Cell(Coord);
+    const Cell cell = Cell::Containing(Coord);
 
     switch (mark) {
       case MARK_UP:
@@ -454,11 +453,11 @@ void TerrainClass::Init() { TheObjectHeaps().terrain().FreeAll(); }
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. * 01/01/1995 JLB : Actually works now. *
  *=============================================================================================*/
-game::MoveType TerrainClass::Can_Enter_Cell(CELL cell,
+game::MoveType TerrainClass::Can_Enter_Cell(Cell cell,
                                             game::FacingType /*unused*/) const {
   Validate();
 
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+  if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return game::MOVE_NO;
   }
 
@@ -466,7 +465,7 @@ game::MoveType TerrainClass::Can_Enter_Cell(CELL cell,
       Occupy_List();  // Pointer to cell offset list.
   while (offset.front() != REFRESH_EOL) {
     if (!TheMap()
-             .at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
+             .at(cell.Offset(base::ConsumeFront(offset)))
              .Is_Generally_Clear()) {
       return game::MOVE_NO;
     }
@@ -687,7 +686,7 @@ void TerrainClass::Start_To_Crumble() {
 bool TerrainClass::Limbo() {
   Validate();
   if (!IsInLimbo) {
-    const CELL cell = Coord_Cell(Coord);
+    const Cell cell = Cell::Containing(Coord);
     TheMap().at(cell).Flag.Occupy.Monolith = false;
   }
   return ObjectClass::Limbo();
@@ -743,7 +742,7 @@ Coordinate TerrainClass::Center_Coord() const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-std::span<const uint8_t> TerrainClass::Radar_Icon(CELL cell) {
+std::span<const uint8_t> TerrainClass::Radar_Icon(Cell cell) {
   Validate();
   const auto icons = Class->Get_Radar_Data();
   if (icons.size() < 2) {
@@ -751,9 +750,9 @@ std::span<const uint8_t> TerrainClass::Radar_Icon(CELL cell) {
   }
   const int width = base::At(icons, 0);
   const int height = base::At(icons, 1);
-  const CELL basecell = Coord_Cell(Coord);
-  const int ydiff = Cell_Y(cell) - Cell_Y(basecell);
-  const int xdiff = Cell_X(cell) - Cell_X(basecell);
+  const Cell basecell = Cell::Containing(Coord);
+  const int ydiff = cell.y() - basecell.y();
+  const int xdiff = cell.x() - basecell.x();
   if (xdiff < 0 || ydiff < 0 || xdiff >= width || ydiff >= height) {
     return {};
   }
@@ -789,7 +788,8 @@ void TerrainClass::Read_INI(char* buffer) {
 
   WWGetPrivateProfileString(INI_Name(), nullptr, nullptr, key_cursor, buffer);
   while (*tbuffer != '\0') {
-    CELL const cell = base::ParseIntegerOr<CELL>(tbuffer, 0);
+    const Cell cell =
+        Cell::FromIndex(base::ParseIntegerOr<int16_t>(tbuffer, 0));
     WWGetPrivateProfileString(
         INI_Name(), tbuffer, nullptr,
         std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
@@ -850,7 +850,8 @@ void TerrainClass::Write_INI(std::string& buffer) {
   for (int index = 0; index < TheObjectHeaps().terrain().Count(); index++) {
     TerrainClass* terrain = TheObjectHeaps().terrain().ActiveAt(index);
     if (!terrain->IsInLimbo && terrain->IsActive) {
-      absl::SNPrintF(uname, sizeof(uname), "%d", Coord_Cell(terrain->Coord));
+      absl::SNPrintF(uname, sizeof(uname), "%d",
+                     Cell::Containing(terrain->Coord).index());
       absl::SNPrintF(buf, sizeof(buf), "%s,%s", terrain->Class->IniName,
                      terrain->Trigger ? terrain->Trigger->Get_Name() : "None");
       WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);

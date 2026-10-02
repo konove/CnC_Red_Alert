@@ -171,11 +171,11 @@ class EventClass {
     } Specific;
     struct {
       RTTIType Type;
-      CELL Cell;
+      td::Cell Cell;
     } Place;
     struct {
       int ID;
-      CELL Cell;
+      td::Cell Cell;
     } Special;
     /*
     ** This structure is used for FRAMEINFO, FRAMESYNC, and RESPONSE_TIME
@@ -232,8 +232,8 @@ class EventClass {
              td::Target target = td::Target{},
              td::Target destination = td::Target{});
   EventClass(EventType type, RTTIType object, int id);
-  EventClass(EventType type, RTTIType object, CELL cell);
-  EventClass(EventType type, int id, CELL cell);
+  EventClass(EventType type, RTTIType object, Cell cell);
+  EventClass(EventType type, int id, Cell cell);
   EventClass(AnimType anim, HousesType owner, Coordinate coord);
 
   // Process the event.
