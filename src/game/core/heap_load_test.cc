@@ -57,25 +57,26 @@ bool LoadHeap(ObjectHeap<T>& heap, const std::array<uint8_t, 256>& bytes,
 
 TEST(HeapLoadTest, FieldObjectsPreserveSparseSlots) {
   ObjectHeap<FieldObject> source;
-  source.Set_Heap(4);
-  auto* first = std::construct_at(source.Alloc());
-  auto* hole = std::construct_at(source.Alloc());
-  auto* last = std::construct_at(source.Alloc());
+  source.Reset(4);
+  auto* first = std::construct_at(source.Allocate());
+  auto* hole = std::construct_at(source.Allocate());
+  auto* last = std::construct_at(source.Allocate());
   first->value = 123;
   last->value = -456;
   last->flag = true;
   source.Free(hole);
   ObjectHeap<FieldObject> loaded;
-  loaded.Set_Heap(4);
+  loaded.Reset(4);
   // count + 2 x (index + value + flag)
   ASSERT_TRUE(LoadHeap(loaded, SaveHeap(source), 22));
   ASSERT_EQ(loaded.Count(), 2);
-  EXPECT_EQ(loaded.ID(loaded.Ptr(0)), 0);
-  EXPECT_EQ(loaded.ID(loaded.Ptr(1)), 2);
-  EXPECT_EQ(loaded.Ptr(0)->value, 123);
-  EXPECT_EQ(loaded.Ptr(1)->value, -456);
-  EXPECT_TRUE(loaded.Ptr(1)->flag);
-  EXPECT_EQ(loaded.ID(loaded.Alloc()), 1);  // The saved hole remains reusable.
+  EXPECT_EQ(loaded.SlotIndexOf(loaded.ActiveAt(0)), 0);
+  EXPECT_EQ(loaded.SlotIndexOf(loaded.ActiveAt(1)), 2);
+  EXPECT_EQ(loaded.ActiveAt(0)->value, 123);
+  EXPECT_EQ(loaded.ActiveAt(1)->value, -456);
+  EXPECT_TRUE(loaded.ActiveAt(1)->flag);
+  EXPECT_EQ(loaded.SlotIndexOf(loaded.Allocate()),
+            1);  // The saved hole remains reusable.
 }
 
 TEST(HeapLoadTest, RejectsNegativeCountsAndOutOfRangeSlots) {
@@ -87,7 +88,7 @@ TEST(HeapLoadTest, RejectsNegativeCountsAndOutOfRangeSlots) {
     int32_t index = 2;
     writer(count, index);
     ObjectHeap<FieldObject> heap;
-    heap.Set_Heap(2);
+    heap.Reset(2);
     EXPECT_FALSE(LoadHeap(heap, bytes));
     EXPECT_EQ(heap.Count(), 0);
   }
@@ -102,10 +103,10 @@ TEST(HeapLoadTest, RejectsDuplicateSlotsAndTruncatedFields) {
   FieldObject value;
   writer(count, index, value, index, value);
   ObjectHeap<FieldObject> heap;
-  heap.Set_Heap(2);
+  heap.Reset(2);
   EXPECT_FALSE(LoadHeap(heap, bytes));
   EXPECT_EQ(heap.Count(), 1);
-  heap.Free_All();
+  heap.FreeAll();
   EXPECT_FALSE(LoadHeap(heap, bytes, 12));  // First object's bool is missing.
 }
 
@@ -116,7 +117,7 @@ TEST(HeapLoadTest, RejectsOversizedCountsAndTruncatedHeaders) {
   int32_t count = 3;
   writer(count);
   ObjectHeap<FieldObject> heap;
-  heap.Set_Heap(2);
+  heap.Reset(2);
   EXPECT_FALSE(LoadHeap(heap, bytes));
   EXPECT_FALSE(LoadHeap(heap, bytes, 3));
   EXPECT_EQ(heap.Count(), 0);
@@ -124,8 +125,8 @@ TEST(HeapLoadTest, RejectsOversizedCountsAndTruncatedHeaders) {
 
 TEST(HeapLoadTest, SaveReportsASinkThatFills) {
   ObjectHeap<FieldObject> heap;
-  heap.Set_Heap(2);
-  std::construct_at(heap.Alloc());
+  heap.Reset(2);
+  std::construct_at(heap.Allocate());
   // Room for the count and the slot index, not for the object's fields.
   std::array<uint8_t, 8> bytes{};
   SpanSink sink(std::as_writable_bytes(std::span(bytes)));
@@ -135,12 +136,12 @@ TEST(HeapLoadTest, SaveReportsASinkThatFills) {
 
 TEST(HeapLoadTest, EmptyHeapRoundTripsWithoutObjects) {
   ObjectHeap<FieldObject> source;
-  source.Set_Heap(2);
+  source.Reset(2);
   ObjectHeap<FieldObject> loaded;
-  loaded.Set_Heap(2);
+  loaded.Reset(2);
   EXPECT_TRUE(LoadHeap(loaded, SaveHeap(source), 4));
   EXPECT_EQ(loaded.Count(), 0);
-  EXPECT_EQ(loaded.ID(loaded.Alloc()), 0);
+  EXPECT_EQ(loaded.SlotIndexOf(loaded.Allocate()), 0);
 }
 
 }  // namespace
@@ -151,12 +152,12 @@ TEST(HeapLoadTest, EmptyHeapRoundTripsWithoutObjects) {
 // unlimbo a live-object read instead of a harmless one.
 TEST(HeapLoadTest, FreedSlotIsHandedToTheNextAllocation) {
   ObjectHeap<FieldObject> heap;
-  heap.Set_Heap(2);
-  auto* first = std::construct_at(heap.Alloc());
+  heap.Reset(2);
+  auto* first = std::construct_at(heap.Allocate());
   first->value = 4242;
   heap.Free(first);
 
-  auto* second = std::construct_at(heap.Alloc());
+  auto* second = std::construct_at(heap.Allocate());
   second->value = -7;
 
   EXPECT_EQ(second, first);
@@ -180,28 +181,28 @@ class DestructorCounter {
 
 TEST(HeapLoadTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
   ObjectHeap<DestructorCounter> heap;
-  heap.Set_Heap(3);
+  heap.Reset(3);
   int destroyed = 0;
-  std::construct_at(heap.Alloc(), destroyed);
-  std::construct_at(heap.Alloc(), destroyed);
+  std::construct_at(heap.Allocate(), destroyed);
+  std::construct_at(heap.Allocate(), destroyed);
 
-  heap.Destroy_All();
+  heap.DestroyAll();
 
   EXPECT_EQ(destroyed, 2);
   EXPECT_EQ(heap.Count(), 0);
-  EXPECT_EQ(heap.Avail(), 3);
+  EXPECT_EQ(heap.FreeCount(), 3);
 }
 
 TEST(HeapLoadTest, AllocationQueryRejectsHolesAndOutOfRangeSlots) {
   ObjectHeap<FieldObject> heap;
-  heap.Set_Heap(3);
-  auto* object = std::construct_at(heap.Alloc());
-  EXPECT_TRUE(heap.Is_Allocated(0));
-  EXPECT_FALSE(heap.Is_Allocated(1));
-  EXPECT_FALSE(heap.Is_Allocated(-1));
-  EXPECT_FALSE(heap.Is_Allocated(3));
+  heap.Reset(3);
+  auto* object = std::construct_at(heap.Allocate());
+  EXPECT_TRUE(heap.IsAllocated(0));
+  EXPECT_FALSE(heap.IsAllocated(1));
+  EXPECT_FALSE(heap.IsAllocated(-1));
+  EXPECT_FALSE(heap.IsAllocated(3));
   heap.Free(object);
-  EXPECT_FALSE(heap.Is_Allocated(0));
+  EXPECT_FALSE(heap.IsAllocated(0));
 }
 
 }  // namespace game

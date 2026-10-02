@@ -37,11 +37,11 @@ class RecordingSink : public ByteSink {
 
 class HeapSlotPtrTest : public ::testing::Test {
  protected:
-  HeapSlotPtrTest() { heap_.Set_Heap(4); }
+  HeapSlotPtrTest() { heap_.Reset(4); }
 
   Part* Allocate() {
-    Part* part = std::construct_at(heap_.Alloc());
-    part->ID = heap_.ID(part);
+    Part* part = std::construct_at(heap_.Allocate());
+    part->ID = heap_.SlotIndexOf(part);
     return part;
   }
 
@@ -109,7 +109,7 @@ TEST_F(HeapSlotPtrTest, ConstPointerRoundTrips) {
 TEST_F(HeapSlotPtrTest, EmptySlotReadsAsItsAddress) {
   Part* read = nullptr;
   EXPECT_EQ(Read({3, 0, 0, 0}, read), "");
-  EXPECT_EQ(read, heap_.Raw_Ptr(3));
+  EXPECT_EQ(read, heap_.Slot(3));
 }
 
 TEST_F(HeapSlotPtrTest, IndexOutsideTheHeapFails) {

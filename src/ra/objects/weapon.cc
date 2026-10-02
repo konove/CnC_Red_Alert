@@ -86,7 +86,7 @@ namespace ra {
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 WeaponTypeClass::WeaponTypeClass(const char* name)
-    : ID(TheTypeHeaps().weapon().ID(this)), IniName(name) {}
+    : ID(TheTypeHeaps().weapon().SlotIndexOf(this)), IniName(name) {}
 
 /***********************************************************************************************
  * WeaponTypeClass::~WeaponTypeClass -- Destructor for weapon type class
@@ -126,7 +126,7 @@ WeaponTypeClass::~WeaponTypeClass() {
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 void* WeaponTypeClass::operator new(std::size_t /*unused*/) noexcept {
-  return TheTypeHeaps().weapon().Alloc();
+  return TheTypeHeaps().weapon().Allocate();
 }
 
 /***********************************************************************************************
@@ -169,9 +169,9 @@ void WeaponTypeClass::operator delete(void* pointer) {
  *=============================================================================================*/
 WeaponTypeClass* WeaponTypeClass::As_Pointer(WeaponType weapon) {
   if (weapon != WEAPON_NONE) {
-    return TheTypeHeaps().weapon().Ptr(static_cast<int>(weapon));
+    return TheTypeHeaps().weapon().ActiveAt(static_cast<int>(weapon));
     //		for (int index = 0; index < Weapons.Count(); index++) {
-    //			WeaponTypeClass * ptr = Weapons.Ptr(index);
+    //			WeaponTypeClass * ptr = Weapons.ActiveAt(index);
     //			if (ptr->ID == weapon) {
     //				return(ptr);
     //			}
@@ -256,9 +256,10 @@ WeaponType Weapon_From_Name(const char* name) {
   }
 
   for (int index = 0; index < TheTypeHeaps().weapon().Count(); index++) {
-    if (absl::EqualsIgnoreCase(TheTypeHeaps().weapon().Ptr(index)->Name(),
+    if (absl::EqualsIgnoreCase(TheTypeHeaps().weapon().ActiveAt(index)->Name(),
                                name)) {
-      return static_cast<WeaponType>(TheTypeHeaps().weapon().Ptr(index)->ID);
+      return static_cast<WeaponType>(
+          TheTypeHeaps().weapon().ActiveAt(index)->ID);
     }
   }
 

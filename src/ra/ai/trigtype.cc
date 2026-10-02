@@ -137,8 +137,8 @@ static constexpr bool Is_Font(const TextPrintType flags,
  *=============================================================================================*/
 TriggerTypeClass::TriggerTypeClass()
     : AbstractTypeClass(RTTI_TRIGGERTYPE,
-                        TheObjectHeaps().trigger_type().ID(this), TXT_NONE,
-                        "x") {}
+                        TheObjectHeaps().trigger_type().SlotIndexOf(this),
+                        TXT_NONE, "x") {}
 
 TriggerTypeClass::~TriggerTypeClass() = default;
 
@@ -578,10 +578,10 @@ bool TriggerTypeClass::Edit() {
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    ttype1list.Add_Item(TheObjectHeaps().team_type().Ptr(index)->IniName);
-    ttype2list.Add_Item(TheObjectHeaps().team_type().Ptr(index)->IniName);
-    ttype3list.Add_Item(TheObjectHeaps().team_type().Ptr(index)->IniName);
-    ttype4list.Add_Item(TheObjectHeaps().team_type().Ptr(index)->IniName);
+    ttype1list.Add_Item(TheObjectHeaps().team_type().ActiveAt(index)->IniName);
+    ttype2list.Add_Item(TheObjectHeaps().team_type().ActiveAt(index)->IniName);
+    ttype3list.Add_Item(TheObjectHeaps().team_type().ActiveAt(index)->IniName);
+    ttype4list.Add_Item(TheObjectHeaps().team_type().ActiveAt(index)->IniName);
   }
 
   if (Event1.Team != nullptr) {
@@ -621,8 +621,10 @@ bool TriggerTypeClass::Edit() {
 
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
-    trtype1list.Add_Item(TheObjectHeaps().trigger_type().Ptr(index)->IniName);
-    trtype2list.Add_Item(TheObjectHeaps().trigger_type().Ptr(index)->IniName);
+    trtype1list.Add_Item(
+        TheObjectHeaps().trigger_type().ActiveAt(index)->IniName);
+    trtype2list.Add_Item(
+        TheObjectHeaps().trigger_type().ActiveAt(index)->IniName);
   }
 
   if (Action1.Trigger != nullptr) {
@@ -2066,7 +2068,7 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
     for (int trig_index = 0;
          trig_index < TheObjectHeaps().trigger_type().Count(); trig_index++) {
       TriggerTypeClass* indexed_trigger =
-          TheObjectHeaps().trigger_type().Ptr(trig_index);
+          TheObjectHeaps().trigger_type().ActiveAt(trig_index);
 
       for (TActionClass* action :
            {&indexed_trigger->Action1, &indexed_trigger->Action2}) {
@@ -2150,7 +2152,7 @@ void TriggerTypeClass::Write_INI(CCINIClass& ini) {
        index++) {
     //	for (int index = TriggerTypes.Count()-1; index >= 0; index--) {
     std::string buf;
-    TriggerTypeClass* trigger = TheObjectHeaps().trigger_type().Ptr(index);
+    TriggerTypeClass* trigger = TheObjectHeaps().trigger_type().ActiveAt(index);
 
     trigger->Build_INI_Entry(buf);
     ini.Put_String(INI_Name(), trigger->IniName, buf.c_str());
@@ -2272,7 +2274,7 @@ void TriggerTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerTypeClass::Init() { TheObjectHeaps().trigger_type().Free_All(); }
+void TriggerTypeClass::Init() { TheObjectHeaps().trigger_type().FreeAll(); }
 
 /***********************************************************************************************
  * TriggerTypeClass::From_Name -- Convert an ASCII name into a trigger type
@@ -2298,8 +2300,8 @@ TriggerTypeClass* TriggerTypeClass::From_Name(const char* name) {
     for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
          index++) {
       if (absl::EqualsIgnoreCase(
-              TheObjectHeaps().trigger_type().Ptr(index)->Name(), name)) {
-        return TheObjectHeaps().trigger_type().Ptr(index);
+              TheObjectHeaps().trigger_type().ActiveAt(index)->Name(), name)) {
+        return TheObjectHeaps().trigger_type().ActiveAt(index);
       }
     }
   }

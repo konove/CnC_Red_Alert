@@ -1907,7 +1907,7 @@ BuildingClass* InfantryTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
   BuildingClass* anybuilding = nullptr;
 
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-    BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+    BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
 
     if (building && !building->IsInLimbo &&
         building->House->Class->House == house &&

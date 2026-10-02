@@ -122,7 +122,7 @@ unsigned char TeamClass::Success[kTeamTypeMax];
  *=============================================================================================*/
 int TeamClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().team().ID(this);
+    const int num = TheObjectHeaps().team().SlotIndexOf(this);
     if (num < 0 || num >= kTeamMax) {
       Validate_Error("TEAM");
     }
@@ -147,7 +147,7 @@ int TeamClass::Validate() const {
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::Init() {
-  TheObjectHeaps().team().Free_All();
+  TheObjectHeaps().team().FreeAll();
   base::FillBytes(base::ObjectBytes(Number), 0, sizeof(Number));
   base::FillBytes(base::ObjectBytes(Success), 0, sizeof(Success));
 }
@@ -169,13 +169,13 @@ void TeamClass::operator delete(void* ptr) {
 
 TeamClass::~TeamClass() {
   if (TheGameState().active() && Class) {
-    base::At(Number, TheObjectHeaps().team_type().ID(Class))--;
+    base::At(Number, TheObjectHeaps().team_type().SlotIndexOf(Class))--;
     while (Member) {
       Remove(Member);
     }
 
     if (Class->IsTransient &&
-        !base::At(Number, TheObjectHeaps().team_type().ID(Class))) {
+        !base::At(Number, TheObjectHeaps().team_type().SlotIndexOf(Class))) {
       base::DeletePooled(Class);
     }
   }
@@ -185,7 +185,7 @@ TeamClass::TeamClass(const TeamTypeClass* type, HouseClass* owner)
     : TeamClass() {
   Class = type;
   House = owner;
-  base::At(Number, TheObjectHeaps().team_type().ID(Class))++;
+  base::At(Number, TheObjectHeaps().team_type().SlotIndexOf(Class))++;
 }
 
 /***************************************************************************
@@ -368,7 +368,7 @@ void TeamClass::AI() {
 
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
-        const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+        const BuildingClass* b = TheObjectHeaps().building().ActiveAt(index);
 
         if (b && !b->IsInLimbo && b->House == House &&
             b->Class->Primary == WEAPON_NONE) {
@@ -905,7 +905,7 @@ int TeamClass::Recruit(int typeindex) {
     if (base::At(Class->Class, typeindex)->What_Am_I() == RTTI_INFANTRYTYPE) {
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
            index++) {
-        InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+        InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
 
         if ((infantry->House == House &&
              infantry->Class == base::At(Class->Class, typeindex)) &&
@@ -926,7 +926,7 @@ int TeamClass::Recruit(int typeindex) {
 
     if (base::At(Class->Class, typeindex)->What_Am_I() == RTTI_UNITTYPE) {
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-        UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+        UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
 
         if ((unit->House == House &&
              unit->Class == base::At(Class->Class, typeindex)) &&
@@ -1010,7 +1010,7 @@ void TeamClass::Detach(TARGET target, bool /*unused*/) {
  *=============================================================================================*/
 TARGET TeamClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TEAM, TheObjectHeaps().team().ID(this));
+  return Build_Target(KIND_TEAM, TheObjectHeaps().team().SlotIndexOf(this));
 }
 
 /***********************************************************************************************
@@ -1477,7 +1477,7 @@ bool TeamClass::Is_A_Member(const void* who) const {
  *=========================================================================*/
 void TeamClass::Suspend_Teams(int priority) {
   for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
-    TeamClass* team = TheObjectHeaps().team().Ptr(index);
+    TeamClass* team = TheObjectHeaps().team().ActiveAt(index);
 
     /*
     **	If a team is below the "survival priority level", then it gets

@@ -303,7 +303,7 @@ AircraftTypeClass::AircraftTypeClass(
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* AircraftTypeClass::operator new(std::size_t /*unused*/) noexcept {
-  return TheTypeHeaps().aircraft().Alloc();
+  return TheTypeHeaps().aircraft().Allocate();
 }
 
 /***********************************************************************************************
@@ -617,7 +617,7 @@ void AircraftTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 AircraftTypeClass& AircraftTypeClass::As_Reference(AircraftType aircraft) {
-  return *TheTypeHeaps().aircraft().Ptr(static_cast<int>(aircraft));
+  return *TheTypeHeaps().aircraft().ActiveAt(static_cast<int>(aircraft));
 }
 
 }  // namespace ra

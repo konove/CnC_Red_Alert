@@ -19,7 +19,7 @@ namespace ra {
 // everything else reaches it through TheTypeHeaps().
 //
 // Example:
-//   return TheTypeHeaps().building().Alloc();
+//   return TheTypeHeaps().building().Allocate();
 class TypeHeaps {
  public:
   TypeHeaps() = default;

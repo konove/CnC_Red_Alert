@@ -539,7 +539,7 @@ template <typename T>
 static void LogObjectPositions(const game::ObjectHeap<T>& objects,
                                const std::string_view kind) {
   for (int index = 0; index < objects.Count(); index++) {
-    const T* object = objects.Ptr(index);
+    const T* object = objects.ActiveAt(index);
     LOG(INFO) << "frame " << game::CurrentFrame() << " " << kind << " "
               << std::string_view(object->Class->Name()) << " coord "
               << absl::StrFormat("%08x", object->Coord) << " mission "

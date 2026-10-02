@@ -1553,7 +1553,8 @@ static void Send_FrameSync(engine::net::ConnManClass* net, int cmd_count) {
     packet.Frame =
         static_cast<unsigned>(game::CurrentFrame() + TheSession().max_ahead());
   }
-  packet.ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
+  packet.ID =
+      static_cast<unsigned>(TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
   packet.MPlayerID = TheSession().local_id();
   packet.Data.FrameInfo.CRC = TheWorld().scenario_crc();
   packet.Data.FrameInfo.CommandCount = static_cast<uint16_t>(cmd_count);
@@ -1853,7 +1854,7 @@ static RetcodeType Process_Serial_Packet(
   base::CopyBytes(
       base::ObjectBytes(event_storage), multi_packet_buf,
       offsetof(EventClass, Data) + sizeof(event_storage.Data.FrameInfo));
-  if (event->ID == TheObjectHeaps().house().ID(ThePlayer())) {
+  if (event->ID == TheObjectHeaps().house().SlotIndexOf(ThePlayer())) {
     return RC_HUNG_UP;
   }
 
@@ -2209,7 +2210,8 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   //........................................................................
   // Fill in the rest of the event
   //........................................................................
-  finfo->ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
+  finfo->ID =
+      static_cast<unsigned>(TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
   finfo->MPlayerID = TheSession().local_id();
   finfo->Data.FrameInfo.CRC = GameCRC;
   finfo->Data.FrameInfo.CommandCount = static_cast<uint16_t>(num_cmds);
@@ -2314,8 +2316,8 @@ int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
     //.....................................................................
     // Set the event's ID
     //.....................................................................
-    TheNetwork().out_list().First().ID =
-        static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
+    TheNetwork().out_list().First().ID = static_cast<unsigned>(
+        TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
     TheNetwork().out_list().First().MPlayerID = TheSession().local_id();
 
     //.....................................................................
@@ -2508,8 +2510,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     //.....................................................................
     // Set the event's ID
     //.....................................................................
-    TheNetwork().out_list().First().ID =
-        static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
+    TheNetwork().out_list().First().ID = static_cast<unsigned>(
+        TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
     TheNetwork().out_list().First().MPlayerID = TheSession().local_id();
 
     //.....................................................................
@@ -3185,7 +3187,7 @@ static int Execute_DoList(
           }
 
           if (TheNetwork().do_list().at(j).ID ==
-              TheObjectHeaps().house().ID(ThePlayer())) {
+              TheObjectHeaps().house().SlotIndexOf(ThePlayer())) {
             TheNetwork().do_list().at(j).Execute();
           } else if (TheNetwork().do_list().at(j).Type == EventClass::EXIT) {
             //............................................................
@@ -3547,7 +3549,7 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
     auto* infp =
-        static_cast<InfantryClass*>(TheObjectHeaps().infantry().Active_Ptr(i));
+        static_cast<InfantryClass*>(TheObjectHeaps().infantry().ActiveSlot(i));
     Add_CRC(&GameCRC, CrcBits(static_cast<int>(infp->Coord) +
                               static_cast<int>(infp->PrimaryFacing.Current())));
   }
@@ -3557,7 +3559,7 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
     auto* unitp =
-        static_cast<UnitClass*>(TheObjectHeaps().unit().Active_Ptr(i));
+        static_cast<UnitClass*>(TheObjectHeaps().unit().ActiveSlot(i));
     Add_CRC(&GameCRC,
             CrcBits(static_cast<int>(unitp->Coord) +
                     static_cast<int>(unitp->PrimaryFacing.Current()) +
@@ -3569,7 +3571,7 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
     auto* bldgp =
-        static_cast<BuildingClass*>(TheObjectHeaps().building().Active_Ptr(i));
+        static_cast<BuildingClass*>(TheObjectHeaps().building().ActiveSlot(i));
     Add_CRC(&GameCRC,
             CrcBits(static_cast<int>(bldgp->Coord) +
                     static_cast<int>(bldgp->PrimaryFacing.Current())));
@@ -3707,7 +3709,7 @@ void Print_CRCs(EventClass* /*ev*/) {
         "-------------------- MULTI1 INFANTRY -------------------\n");
     for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
       infp = static_cast<InfantryClass*>(
-          TheObjectHeaps().infantry().Active_Ptr(i));
+          TheObjectHeaps().infantry().ActiveSlot(i));
       if (infp->Owner() == HOUSE_MULTI1) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(infp->Coord) +
@@ -3730,7 +3732,7 @@ void Print_CRCs(EventClass* /*ev*/) {
         "-------------------- MULTI2 INFANTRY -------------------\n");
     for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
       infp = static_cast<InfantryClass*>(
-          TheObjectHeaps().infantry().Active_Ptr(i));
+          TheObjectHeaps().infantry().ActiveSlot(i));
       if (infp->Owner() == HOUSE_MULTI2) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(infp->Coord) +
@@ -3753,7 +3755,7 @@ void Print_CRCs(EventClass* /*ev*/) {
         "-------------------- MULTI3 INFANTRY -------------------\n");
     for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
       infp = static_cast<InfantryClass*>(
-          TheObjectHeaps().infantry().Active_Ptr(i));
+          TheObjectHeaps().infantry().ActiveSlot(i));
       if (infp->Owner() == HOUSE_MULTI3) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(infp->Coord) +
@@ -3776,7 +3778,7 @@ void Print_CRCs(EventClass* /*ev*/) {
         "-------------------- MULTI4 INFANTRY -------------------\n");
     for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
       infp = static_cast<InfantryClass*>(
-          TheObjectHeaps().infantry().Active_Ptr(i));
+          TheObjectHeaps().infantry().ActiveSlot(i));
       if (infp->Owner() == HOUSE_MULTI4) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(infp->Coord) +
@@ -3799,7 +3801,7 @@ void Print_CRCs(EventClass* /*ev*/) {
         "-------------------- MULTI5 INFANTRY -------------------\n");
     for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
       infp = static_cast<InfantryClass*>(
-          TheObjectHeaps().infantry().Active_Ptr(i));
+          TheObjectHeaps().infantry().ActiveSlot(i));
       if (infp->Owner() == HOUSE_MULTI5) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(infp->Coord) +
@@ -3822,7 +3824,7 @@ void Print_CRCs(EventClass* /*ev*/) {
         "-------------------- MULTI6 INFANTRY -------------------\n");
     for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
       infp = static_cast<InfantryClass*>(
-          TheObjectHeaps().infantry().Active_Ptr(i));
+          TheObjectHeaps().infantry().ActiveSlot(i));
       if (infp->Owner() == HOUSE_MULTI6) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(infp->Coord) +
@@ -3844,7 +3846,7 @@ void Print_CRCs(EventClass* /*ev*/) {
     out << absl::StrFormat(
         "-------------------- MULTI1 UNITS -------------------\n");
     for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-      unitp = static_cast<UnitClass*>(TheObjectHeaps().unit().Active_Ptr(i));
+      unitp = static_cast<UnitClass*>(TheObjectHeaps().unit().ActiveSlot(i));
       if (unitp->Owner() == HOUSE_MULTI1) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(unitp->Coord) +
@@ -3867,7 +3869,7 @@ void Print_CRCs(EventClass* /*ev*/) {
     out << absl::StrFormat(
         "-------------------- MULTI2 UNITS -------------------\n");
     for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-      unitp = static_cast<UnitClass*>(TheObjectHeaps().unit().Active_Ptr(i));
+      unitp = static_cast<UnitClass*>(TheObjectHeaps().unit().ActiveSlot(i));
       if (unitp->Owner() == HOUSE_MULTI2) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(unitp->Coord) +
@@ -3890,7 +3892,7 @@ void Print_CRCs(EventClass* /*ev*/) {
     out << absl::StrFormat(
         "-------------------- MULTI3 UNITS -------------------\n");
     for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-      unitp = static_cast<UnitClass*>(TheObjectHeaps().unit().Active_Ptr(i));
+      unitp = static_cast<UnitClass*>(TheObjectHeaps().unit().ActiveSlot(i));
       if (unitp->Owner() == HOUSE_MULTI3) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(unitp->Coord) +
@@ -3913,7 +3915,7 @@ void Print_CRCs(EventClass* /*ev*/) {
     out << absl::StrFormat(
         "-------------------- MULTI4 UNITS -------------------\n");
     for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-      unitp = static_cast<UnitClass*>(TheObjectHeaps().unit().Active_Ptr(i));
+      unitp = static_cast<UnitClass*>(TheObjectHeaps().unit().ActiveSlot(i));
       if (unitp->Owner() == HOUSE_MULTI4) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(unitp->Coord) +
@@ -3936,7 +3938,7 @@ void Print_CRCs(EventClass* /*ev*/) {
     out << absl::StrFormat(
         "-------------------- MULTI5 UNITS -------------------\n");
     for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-      unitp = static_cast<UnitClass*>(TheObjectHeaps().unit().Active_Ptr(i));
+      unitp = static_cast<UnitClass*>(TheObjectHeaps().unit().ActiveSlot(i));
       if (unitp->Owner() == HOUSE_MULTI5) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(unitp->Coord) +
@@ -3959,7 +3961,7 @@ void Print_CRCs(EventClass* /*ev*/) {
     out << absl::StrFormat(
         "-------------------- MULTI6 UNITS -------------------\n");
     for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-      unitp = static_cast<UnitClass*>(TheObjectHeaps().unit().Active_Ptr(i));
+      unitp = static_cast<UnitClass*>(TheObjectHeaps().unit().ActiveSlot(i));
       if (unitp->Owner() == HOUSE_MULTI6) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(unitp->Coord) +
@@ -3983,7 +3985,7 @@ void Print_CRCs(EventClass* /*ev*/) {
         "-------------------- MULTI1 BUILDINGS -------------------\n");
     for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
       bldgp = static_cast<BuildingClass*>(
-          TheObjectHeaps().building().Active_Ptr(i));
+          TheObjectHeaps().building().ActiveSlot(i));
       if (bldgp->Owner() == HOUSE_MULTI1) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(bldgp->Coord) +
@@ -4006,7 +4008,7 @@ void Print_CRCs(EventClass* /*ev*/) {
         "-------------------- MULTI2 BUILDINGS -------------------\n");
     for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
       bldgp = static_cast<BuildingClass*>(
-          TheObjectHeaps().building().Active_Ptr(i));
+          TheObjectHeaps().building().ActiveSlot(i));
       if (bldgp->Owner() == HOUSE_MULTI2) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(bldgp->Coord) +
@@ -4029,7 +4031,7 @@ void Print_CRCs(EventClass* /*ev*/) {
         "-------------------- MULTI3 BUILDINGS -------------------\n");
     for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
       bldgp = static_cast<BuildingClass*>(
-          TheObjectHeaps().building().Active_Ptr(i));
+          TheObjectHeaps().building().ActiveSlot(i));
       if (bldgp->Owner() == HOUSE_MULTI3) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(bldgp->Coord) +
@@ -4052,7 +4054,7 @@ void Print_CRCs(EventClass* /*ev*/) {
         "-------------------- MULTI4 BUILDINGS -------------------\n");
     for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
       bldgp = static_cast<BuildingClass*>(
-          TheObjectHeaps().building().Active_Ptr(i));
+          TheObjectHeaps().building().ActiveSlot(i));
       if (bldgp->Owner() == HOUSE_MULTI4) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(bldgp->Coord) +
@@ -4075,7 +4077,7 @@ void Print_CRCs(EventClass* /*ev*/) {
         "-------------------- MULTI5 BUILDINGS -------------------\n");
     for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
       bldgp = static_cast<BuildingClass*>(
-          TheObjectHeaps().building().Active_Ptr(i));
+          TheObjectHeaps().building().ActiveSlot(i));
       if (bldgp->Owner() == HOUSE_MULTI5) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(bldgp->Coord) +
@@ -4098,7 +4100,7 @@ void Print_CRCs(EventClass* /*ev*/) {
         "-------------------- MULTI6 BUILDINGS -------------------\n");
     for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
       bldgp = static_cast<BuildingClass*>(
-          TheObjectHeaps().building().Active_Ptr(i));
+          TheObjectHeaps().building().ActiveSlot(i));
       if (bldgp->Owner() == HOUSE_MULTI6) {
         Add_CRC(&GameCRC,
                 CrcBits(static_cast<int>(bldgp->Coord) +

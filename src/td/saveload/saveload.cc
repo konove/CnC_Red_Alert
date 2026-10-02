@@ -385,13 +385,14 @@ bool Load_Game(int id) {
     count = 0;
   }
   for (int j = 0; j < TheObjectHeaps().team().Count(); ++j) {
-    ++base::At(TeamClass::Number, TheObjectHeaps().team_type().ID(
-                                      TheObjectHeaps().team().Ptr(j)->Class));
+    ++base::At(TeamClass::Number,
+               TheObjectHeaps().team_type().SlotIndexOf(
+                   TheObjectHeaps().team().ActiveAt(j)->Class));
   }
 
   // add triggers
   for (int j = 0; j < TheObjectHeaps().trigger().Count(); j++) {
-    TriggerClass* trig = TheObjectHeaps().trigger().Ptr(j);
+    TriggerClass* trig = TheObjectHeaps().trigger().ActiveAt(j);
     if (trig->House != HOUSE_NONE) {
       TheWorld().house_triggers().at(trig->House).push_back(trig);
     }
@@ -497,7 +498,7 @@ static void Serialize_Misc_Values(Archive& ar) {
   if constexpr (Archive::kIsReading) {
     bool player_loaded = false;
     for (int32_t i = 0; i < TheObjectHeaps().house().Count(); ++i) {
-      player_loaded |= ThePlayer() == TheObjectHeaps().house().Ptr(i);
+      player_loaded |= ThePlayer() == TheObjectHeaps().house().ActiveAt(i);
     }
     if (!ar.ok() || !player_loaded) {
       ar.Fail("invalid saved player house");

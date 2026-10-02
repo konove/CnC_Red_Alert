@@ -80,7 +80,7 @@ namespace ra {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::Init() { TheObjectHeaps().tmplate().Free_All(); }
+void TemplateClass::Init() { TheObjectHeaps().tmplate().FreeAll(); }
 
 /***********************************************************************************************
  * TemplateClass::Mark -- Lifts or drops a template object. *
@@ -238,8 +238,8 @@ void TemplateClass::operator delete(void* ptr) {
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
 TemplateClass::TemplateClass(TemplateType type, CELL pos)
-    : ObjectClass(RTTI_TEMPLATE, TheObjectHeaps().tmplate().ID(this)),
-      Class(TheTypeHeaps().tmplate().Ptr(static_cast<int>(type))) {
+    : ObjectClass(RTTI_TEMPLATE, TheObjectHeaps().tmplate().SlotIndexOf(this)),
+      Class(TheTypeHeaps().tmplate().ActiveAt(static_cast<int>(type))) {
   if (pos != -1) {
     Unlimbo(Cell_Coord(pos));
   }

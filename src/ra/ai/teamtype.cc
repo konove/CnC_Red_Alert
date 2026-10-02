@@ -213,7 +213,8 @@ base::EnumArray<TeamMissionType, const char*, static_cast<int>(TMISSION_COUNT)>
  *   11/22/1995 JLB : Uses initializer constructor method.                 *
  *=========================================================================*/
 TeamTypeClass::TeamTypeClass()
-    : AbstractTypeClass(RTTI_TEAMTYPE, TheObjectHeaps().team_type().ID(this),
+    : AbstractTypeClass(RTTI_TEAMTYPE,
+                        TheObjectHeaps().team_type().SlotIndexOf(this),
                         TXT_NONE, "") {}
 
 TeamTypeClass::~TeamTypeClass() = default;
@@ -230,7 +231,7 @@ TeamTypeClass::~TeamTypeClass() = default;
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-void TeamTypeClass::Init() { TheObjectHeaps().team_type().Free_All(); }
+void TeamTypeClass::Init() { TheObjectHeaps().team_type().FreeAll(); }
 
 /***************************************************************************
  * TeamTypeClass::As_Pointer -- gets ptr for team type with given name     *
@@ -251,8 +252,8 @@ TeamTypeClass* TeamTypeClass::As_Pointer(const char* name) {
   if (name) {
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
       if (absl::EqualsIgnoreCase(
-              name, TheObjectHeaps().team_type().Ptr(index)->IniName)) {
-        return TheObjectHeaps().team_type().Ptr(index);
+              name, TheObjectHeaps().team_type().ActiveAt(index)->IniName)) {
+        return TheObjectHeaps().team_type().ActiveAt(index);
       }
     }
   }
@@ -391,7 +392,7 @@ TeamClass* TeamTypeClass::Create_One_Of() {
  *=============================================================================================*/
 void TeamTypeClass::Destroy_All_Of() const {
   for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
-    const TeamClass* team = TheObjectHeaps().team().Ptr(index);
+    const TeamClass* team = TheObjectHeaps().team().ActiveAt(index);
 
     if (team->Class == this) {
       base::DeletePooled(team);
@@ -444,7 +445,7 @@ TeamTypeClass* TeamTypeClass::Suggested_New_Team(
   int choicecount = 0;
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    TeamTypeClass* ttype = TheObjectHeaps().team_type().Ptr(index);
+    TeamTypeClass* ttype = TheObjectHeaps().team_type().ActiveAt(index);
 
     DCHECK(ttype != nullptr);
 
@@ -491,8 +492,8 @@ TeamTypeClass* TeamTypeClass::From_Name(const char* name) {
   if (name) {
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
       if (absl::EqualsIgnoreCase(
-              name, TheObjectHeaps().team_type().Ptr(index)->IniName)) {
-        return TheObjectHeaps().team_type().Ptr(index);
+              name, TheObjectHeaps().team_type().ActiveAt(index)->IniName)) {
+        return TheObjectHeaps().team_type().ActiveAt(index);
       }
     }
   }
@@ -799,7 +800,8 @@ bool TeamTypeClass::Edit() {
   triggerbtn.Add_Item("<NONE>");
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
-    triggerbtn.Add_Item(TheObjectHeaps().trigger_type().Ptr(index)->IniName);
+    triggerbtn.Add_Item(
+        TheObjectHeaps().trigger_type().ActiveAt(index)->IniName);
   }
   if (Trigger != nullptr) {
     triggerbtn.Set_Selected_Index(Trigger->Name());
@@ -1450,7 +1452,7 @@ bool TeamTypeClass::Edit() {
         House = HousesType(housebtn.Current_Index());
         Trigger = nullptr;
         if (triggerbtn.Current_Index() > 0) {
-          Trigger = TheObjectHeaps().trigger_type().Ptr(
+          Trigger = TheObjectHeaps().trigger_type().ActiveAt(
               triggerbtn.Current_Index() - 1);
         }
 
@@ -1838,7 +1840,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
 
   switch (TheWorld().new_ini_format()) {
     default:
-      Trigger = TheObjectHeaps().trigger_type().SlotAt(
+      Trigger = TheObjectHeaps().trigger_type().SlotOrNull(
           base::ParseIntegerOr<int>(tokens.Next(), 0));
       break;
 
@@ -1934,7 +1936,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
     /*
     **	Fetch the trigger ID.
     */
-    Trigger = TheObjectHeaps().trigger_type().SlotAt(
+    Trigger = TheObjectHeaps().trigger_type().SlotOrNull(
         base::ParseIntegerOr<int>(tokens.Next(), 0));
   }
 }
@@ -1964,7 +1966,7 @@ void TeamTypeClass::Write_INI(CCINIClass& ini) {
   */
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
     //	for (int index = TeamTypes.Count()-1; index >= 0; index--) {
-    TeamTypeClass* team = TheObjectHeaps().team_type().Ptr(index);
+    TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
     std::string buf;
     team->Build_INI_Entry(buf);
     ini.Put_String(INI_Name(), team->IniName, buf.c_str());
@@ -2004,7 +2006,7 @@ void TeamTypeClass::Build_INI_Entry(std::string& buf) {
   */
   absl::StrAppendFormat(&buf, "%d,%d,%d,%d,%d,%d,%d", House, code,
                         RecruitPriority, InitNum, MaxAllowed, Origin,
-                        TheObjectHeaps().trigger_type().Logical_ID(Trigger));
+                        TheObjectHeaps().trigger_type().PositionOf(Trigger));
 
   /*
   **	For every class in the team, record the class's name & desired count

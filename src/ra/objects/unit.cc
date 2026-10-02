@@ -232,7 +232,7 @@ static void Recoil_Adjust(game::DirType dir, int& x, int& y) {
  *new.                                               *
  *=============================================================================================*/
 void* UnitClass::operator new(std::size_t /*unused*/) noexcept {
-  void* ptr = TheObjectHeaps().unit().Alloc();
+  void* ptr = TheObjectHeaps().unit().Allocate();
   if (ptr != nullptr) {
     static_cast<UnitClass*>(ptr)->IsActive = true;
   }
@@ -320,8 +320,8 @@ UnitClass::~UnitClass() {
  * HISTORY: * 04/21/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass::UnitClass(UnitType classid, HousesType house)
-    : DriveClass(RTTI_UNIT, TheObjectHeaps().unit().ID(this), house),
-      Class(TheTypeHeaps().unit().Ptr(static_cast<int>(classid))),
+    : DriveClass(RTTI_UNIT, TheObjectHeaps().unit().SlotIndexOf(this), house),
+      Class(TheTypeHeaps().unit().ActiveAt(static_cast<int>(classid))),
       SecondaryFacing(PrimaryFacing) {
   Reload.Set(0);
   House->Tracking_Add(this);
@@ -3424,7 +3424,7 @@ game::MoveType UnitClass::Can_Enter_Cell(CELL cell,
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Init() { TheObjectHeaps().unit().Free_All(); }
+void UnitClass::Init() { TheObjectHeaps().unit().FreeAll(); }
 
 /***********************************************************************************************
  * UnitClass::Start_Driver -- Starts driving and reserves destination cell. *
@@ -4802,7 +4802,7 @@ void UnitClass::Write_INI(CCINIClass& ini) {
   **	Write the unit data out.
   */
   for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-    const UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+    const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
     if (unit != nullptr && !unit->IsInLimbo && unit->IsActive) {
       char uname[10];
       char buf[128];
@@ -5079,7 +5079,7 @@ int UnitClass::Mission_Guard_Area() {
         break;
       }
 
-      InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+      InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
 
       if (infantry != nullptr && infantry->IsActive && !infantry->IsInLimbo &&
           infantry->Strength > 0 && infantry->House == House &&

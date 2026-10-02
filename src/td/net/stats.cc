@@ -488,7 +488,7 @@ void Send_Statistics_Packet() {
         ** Number of units remaining to player
         */
         for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-          const UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+          const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
           if (unit->House == player) {
             player->UnitTotals->Increment_Unit_Total(
                 static_cast<int>(unit->Class->Type));
@@ -498,7 +498,7 @@ void Send_Statistics_Packet() {
         for (int index = 0; index < TheObjectHeaps().infantry().Count();
              index++) {
           const InfantryClass* infantry =
-              TheObjectHeaps().infantry().Ptr(index);
+              TheObjectHeaps().infantry().ActiveAt(index);
           if (infantry->House == player && !infantry->Class->IsCivilian) {
             player->InfantryTotals->Increment_Unit_Total(
                 static_cast<int>(infantry->Class->Type));
@@ -508,7 +508,7 @@ void Send_Statistics_Packet() {
         for (int index = 0; index < TheObjectHeaps().aircraft().Count();
              index++) {
           const AircraftClass* aircraft =
-              TheObjectHeaps().aircraft().Ptr(index);
+              TheObjectHeaps().aircraft().ActiveAt(index);
           if (aircraft->House == player &&
               aircraft->Class->Type != AIRCRAFT_CARGO) {
             player->AircraftTotals->Increment_Unit_Total(
@@ -519,7 +519,7 @@ void Send_Statistics_Packet() {
         for (int index = 0; index < TheObjectHeaps().building().Count();
              index++) {
           const BuildingClass* building =
-              TheObjectHeaps().building().Ptr(index);
+              TheObjectHeaps().building().ActiveAt(index);
           if (building->House == player) {
             player->BuildingTotals->Increment_Unit_Total(
                 static_cast<int>(building->Class->Type));

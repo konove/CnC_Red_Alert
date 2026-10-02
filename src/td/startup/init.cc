@@ -193,35 +193,35 @@ bool Init_Game() {
   **	Initialize the game object heaps.
   */
   DLOG(INFO) << "C&C95 - About to enter Units.Set_Heap";
-  TheObjectHeaps().unit().Set_Heap(kUnitMax);
+  TheObjectHeaps().unit().Reset(kUnitMax);
   DLOG(INFO) << "C&C95 - About to enter Factories.Set_Heap";
-  TheObjectHeaps().factory().Set_Heap(kFactoryMax);
+  TheObjectHeaps().factory().Reset(kFactoryMax);
   DLOG(INFO) << "C&C95 - About to enter Terrains.Set_Heap";
-  TheObjectHeaps().terrain().Set_Heap(kTerrainMax);
+  TheObjectHeaps().terrain().Reset(kTerrainMax);
   DLOG(INFO) << "C&C95 - About to enter Templates.Set_Heap";
-  TheObjectHeaps().tmplate().Set_Heap(kTemplateMax);
+  TheObjectHeaps().tmplate().Reset(kTemplateMax);
   DLOG(INFO) << "C&C95 - About to enter Smudges.Set_Heap";
-  TheObjectHeaps().smudge().Set_Heap(kSmudgeMax);
+  TheObjectHeaps().smudge().Reset(kSmudgeMax);
   DLOG(INFO) << "C&C95 - About to enter Overlays.Set_Heap";
-  TheObjectHeaps().overlay().Set_Heap(kOverlayMax);
+  TheObjectHeaps().overlay().Reset(kOverlayMax);
   DLOG(INFO) << "C&C95 - About to enter Infantry.Set_Heap";
-  TheObjectHeaps().infantry().Set_Heap(kInfantryMax);
+  TheObjectHeaps().infantry().Reset(kInfantryMax);
   DLOG(INFO) << "C&C95 - About to enter Bullets.Set_Heap";
-  TheObjectHeaps().bullet().Set_Heap(kBulletMax);
+  TheObjectHeaps().bullet().Reset(kBulletMax);
   DLOG(INFO) << "C&C95 - About to enter Buildings.Set_Heap";
-  TheObjectHeaps().building().Set_Heap(kBuildingMax);
+  TheObjectHeaps().building().Reset(kBuildingMax);
   DLOG(INFO) << "C&C95 - About to enter Anims.Set_Heap";
-  TheObjectHeaps().anim().Set_Heap(kAnimMax);
+  TheObjectHeaps().anim().Reset(kAnimMax);
   DLOG(INFO) << "C&C95 - About to enter Aircraft.Set_Heap";
-  TheObjectHeaps().aircraft().Set_Heap(kAircraftMax);
+  TheObjectHeaps().aircraft().Reset(kAircraftMax);
   DLOG(INFO) << "C&C95 - About to enter Triggers.Set_Heap";
-  TheObjectHeaps().trigger().Set_Heap(kTriggerMax);
+  TheObjectHeaps().trigger().Reset(kTriggerMax);
   DLOG(INFO) << "C&C95 - About to enter TeamTypes.Set_Heap";
-  TheObjectHeaps().team_type().Set_Heap(kTeamTypeMax);
+  TheObjectHeaps().team_type().Reset(kTeamTypeMax);
   DLOG(INFO) << "C&C95 - About to enter Teams.Set_Heap";
-  TheObjectHeaps().team().Set_Heap(kTeamMax);
+  TheObjectHeaps().team().Reset(kTeamMax);
   DLOG(INFO) << "C&C95 - About to enter Houses.Set_Heap";
-  TheObjectHeaps().house().Set_Heap(kHouseMax);
+  TheObjectHeaps().house().Reset(kHouseMax);
 
   /*
   **	Initialize all the waypoints to invalid values.
@@ -585,24 +585,24 @@ void Uninit_Game() {
   SearchPaths::Clear();
   MixArchive::Free_All();
 
-  TheObjectHeaps().unit().Set_Heap(0);
-  TheObjectHeaps().factory().Set_Heap(0);
-  TheObjectHeaps().terrain().Set_Heap(0);
-  TheObjectHeaps().tmplate().Set_Heap(0);
-  TheObjectHeaps().smudge().Set_Heap(0);
-  TheObjectHeaps().overlay().Set_Heap(0);
-  TheObjectHeaps().infantry().Set_Heap(0);
-  TheObjectHeaps().bullet().Set_Heap(0);
-  TheObjectHeaps().building().Set_Heap(0);
-  TheObjectHeaps().anim().Set_Heap(0);
-  TheObjectHeaps().aircraft().Set_Heap(0);
-  TheObjectHeaps().trigger().Set_Heap(0);
-  TheObjectHeaps().team_type().Set_Heap(0);
-  TheObjectHeaps().team().Set_Heap(0);
-  // Set_Heap() drops the objects without destroying them, and the houses own
+  TheObjectHeaps().unit().Reset(0);
+  TheObjectHeaps().factory().Reset(0);
+  TheObjectHeaps().terrain().Reset(0);
+  TheObjectHeaps().tmplate().Reset(0);
+  TheObjectHeaps().smudge().Reset(0);
+  TheObjectHeaps().overlay().Reset(0);
+  TheObjectHeaps().infantry().Reset(0);
+  TheObjectHeaps().bullet().Reset(0);
+  TheObjectHeaps().building().Reset(0);
+  TheObjectHeaps().anim().Reset(0);
+  TheObjectHeaps().aircraft().Reset(0);
+  TheObjectHeaps().trigger().Reset(0);
+  TheObjectHeaps().team_type().Reset(0);
+  TheObjectHeaps().team().Reset(0);
+  // Reset() drops the objects without destroying them, and the houses own
   // their unit trackers.
-  TheObjectHeaps().house().Destroy_All();
-  TheObjectHeaps().house().Set_Heap(0);
+  TheObjectHeaps().house().DestroyAll();
+  TheObjectHeaps().house().Reset(0);
 }
 
 extern int ShowCommand;
@@ -1585,8 +1585,10 @@ bool Select_Game(bool fade) {
       if (TheObjectHeaps().unit().Count() < 2) {
         return false;
       }
-      TheWorld().current_object().push_back(TheObjectHeaps().unit().Ptr(1));
-      TheWorld().current_object().push_back(TheObjectHeaps().unit().Ptr(0));
+      TheWorld().current_object().push_back(
+          TheObjectHeaps().unit().ActiveAt(1));
+      TheWorld().current_object().push_back(
+          TheObjectHeaps().unit().ActiveAt(0));
       base::At(TheWorld().waypoint(), 20) = 1234;
       TheWorld().carry_over_money() = 13579;
       TheWorld().carry_over_percent() = 42;
@@ -1623,8 +1625,9 @@ bool Select_Game(bool fade) {
       TheMap().at(11).IsTrigger = TheMap().at(12).IsTrigger = true;
       base::At(TheWorld().cell_triggers(), 11) =
           base::At(TheWorld().cell_triggers(), 12) = trigger;
-      TheMap().at(13).OccupierPtr = TheObjectHeaps().unit().Ptr(0);
-      base::At(TheMap().at(14).Overlappers, 2) = TheObjectHeaps().unit().Ptr(0);
+      TheMap().at(13).OccupierPtr = TheObjectHeaps().unit().ActiveAt(0);
+      base::At(TheMap().at(14).Overlappers, 2) =
+          TheObjectHeaps().unit().ActiveAt(0);
       TheMap().at(15).Flag.Composite = 2;
       TheMap().TotalValue = static_cast<int64_t>(uint64_t{1} << 35);
       auto* pending = base::NewPooled<BuildingClass>(STRUCT_POWER,
@@ -1687,7 +1690,8 @@ bool Select_Game(bool fade) {
       plane->SecondaryFacing = game::DIR_N;
       bool launched = false;
       if (TheObjectHeaps().unit().Count() != 0) {
-        const CELL start = Coord_Cell(TheObjectHeaps().unit().Ptr(0)->Coord);
+        const CELL start =
+            Coord_Cell(TheObjectHeaps().unit().ActiveAt(0)->Coord);
         for (int offset = 1; offset <= 16; ++offset) {
           const CELL cell = static_cast<CELL>(start + offset);
           if (cell < MAP_CELL_TOTAL && TheMap().In_Radar(cell) &&
@@ -1773,7 +1777,7 @@ bool Select_Game(bool fade) {
         LOG(ERROR) << "-WORLDTEST: scenario needs a unit";
         return false;
       }
-      UnitClass* owner = TheObjectHeaps().unit().Ptr(0);
+      UnitClass* owner = TheObjectHeaps().unit().ActiveAt(0);
       // Keep normally short-lived placement objects in limbo across the save.
       auto* ground = base::NewPooled<TemplateClass>(TEMPLATE_CLEAR1);
       auto* overlay = base::NewPooled<OverlayClass>(OVERLAY_CONCRETE);
@@ -1824,9 +1828,9 @@ bool Select_Game(bool fade) {
     if (TheStartupOptions().team_test) {
       UnitClass* member = nullptr;
       for (int i = 0; i < TheObjectHeaps().unit().Count(); ++i) {
-        if (TheObjectHeaps().unit().Ptr(i)->House == ThePlayer() &&
-            !TheObjectHeaps().unit().Ptr(i)->IsInLimbo) {
-          member = TheObjectHeaps().unit().Ptr(i);
+        if (TheObjectHeaps().unit().ActiveAt(i)->House == ThePlayer() &&
+            !TheObjectHeaps().unit().ActiveAt(i)->IsInLimbo) {
+          member = TheObjectHeaps().unit().ActiveAt(i);
           break;
         }
       }

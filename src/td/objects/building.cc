@@ -260,7 +260,7 @@ const base::EnumArray<game::BSizeType, COORDINATE> BuildingClass::CenterOffset =
  *=============================================================================================*/
 int BuildingClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().building().ID(this);
+    const int num = TheObjectHeaps().building().SlotIndexOf(this);
     if (num < 0 || num >= kBuildingMax) {
       Validate_Error("BUILDING");
     }
@@ -2357,7 +2357,7 @@ void BuildingClass::Assign_Target(TARGET target) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Init() { TheObjectHeaps().building().Free_All(); }
+void BuildingClass::Init() { TheObjectHeaps().building().FreeAll(); }
 
 /***********************************************************************************************
  * BuildingClass::Exit_Object -- Initiates an object to leave the building. *
@@ -2886,21 +2886,21 @@ bool BuildingClass::Limbo() {
       if (housep->AircraftFactory != -1 &&
           Class->ToBuild == RTTI_AIRCRAFTTYPE) {
         bld_type = RTTI_AIRCRAFTTYPE;
-        factory = TheObjectHeaps().factory().Raw_Ptr(housep->AircraftFactory);
+        factory = TheObjectHeaps().factory().Slot(housep->AircraftFactory);
       }
       if (housep->InfantryFactory != -1 &&
           Class->ToBuild == RTTI_INFANTRYTYPE) {
         bld_type = RTTI_INFANTRYTYPE;
-        factory = TheObjectHeaps().factory().Raw_Ptr(housep->InfantryFactory);
+        factory = TheObjectHeaps().factory().Slot(housep->InfantryFactory);
       }
       if (housep->UnitFactory != -1 && Class->ToBuild == RTTI_UNITTYPE) {
         bld_type = RTTI_UNITTYPE;
-        factory = TheObjectHeaps().factory().Raw_Ptr(housep->UnitFactory);
+        factory = TheObjectHeaps().factory().Slot(housep->UnitFactory);
       }
       if (housep->BuildingFactory != -1 &&
           Class->ToBuild == RTTI_BUILDINGTYPE) {
         bld_type = RTTI_BUILDINGTYPE;
-        factory = TheObjectHeaps().factory().Raw_Ptr(housep->BuildingFactory);
+        factory = TheObjectHeaps().factory().Slot(housep->BuildingFactory);
       }
       if (housep->SpecialFactory != -1 && Class->ToBuild == RTTI_SPECIAL) {
         bld_type = RTTI_SPECIAL;
@@ -3605,7 +3605,7 @@ void BuildingClass::Write_INI(std::string& buffer) {
   **	Write the data out.
   */
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-    BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+    BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
     if (!building->IsInLimbo) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(
@@ -3635,7 +3635,8 @@ void BuildingClass::Write_INI(std::string& buffer) {
  *=============================================================================================*/
 TARGET BuildingClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_BUILDING, TheObjectHeaps().building().ID(this));
+  return Build_Target(KIND_BUILDING,
+                      TheObjectHeaps().building().SlotIndexOf(this));
 }
 
 /***********************************************************************************************
@@ -3753,7 +3754,7 @@ bool BuildingClass::Toggle_Primary() {
     IsLeader = false;
   } else {
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-      BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+      BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
 
       if (!building->IsInLimbo && building->Owner() == Owner() &&
           building->Class->ToBuild == Class->ToBuild) {
@@ -5509,7 +5510,7 @@ void BuildingClass::Detach_All(bool all) {
     */
     const FactoryClass* factory = nullptr;
     if (fnum != -1) {
-      factory = TheObjectHeaps().factory().Raw_Ptr(fnum);
+      factory = TheObjectHeaps().factory().Slot(fnum);
     }
 
     /*

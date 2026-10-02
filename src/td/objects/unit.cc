@@ -213,7 +213,7 @@ using engine::gfx::ShapeFlags;
  *=============================================================================================*/
 int UnitClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().unit().ID(this);
+    const int num = TheObjectHeaps().unit().SlotIndexOf(this);
     if (num < 0 || num >= kUnitMax) {
       Validate_Error("UNIT");
     }
@@ -312,7 +312,7 @@ static void Turret_Adjust(game::DirType dir, int& x, int& y) {
  *=============================================================================================*/
 TARGET UnitClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_UNIT, TheObjectHeaps().unit().ID(this));
+  return Build_Target(KIND_UNIT, TheObjectHeaps().unit().SlotIndexOf(this));
 }
 
 /***********************************************************************************************
@@ -3115,7 +3115,7 @@ game::MoveType UnitClass::Can_Enter_Cell(CELL cell,
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Init() { TheObjectHeaps().unit().Free_All(); }
+void UnitClass::Init() { TheObjectHeaps().unit().FreeAll(); }
 
 /***********************************************************************************************
  * UnitClass::Target_Coord -- The coordinate to use when targeting this unit. *
@@ -3315,7 +3315,7 @@ void UnitClass::Response_Select() {
   }
 
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0, -(TheObjectHeaps().unit().ID(this) + 1));
+    Sound_Effect(response, 0, -(TheObjectHeaps().unit().SlotIndexOf(this) + 1));
   }
 }
 
@@ -3349,7 +3349,7 @@ void UnitClass::Response_Move() {
   }
 
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0, -(TheObjectHeaps().unit().ID(this) + 1));
+    Sound_Effect(response, 0, -(TheObjectHeaps().unit().SlotIndexOf(this) + 1));
   }
 }
 
@@ -3383,7 +3383,7 @@ void UnitClass::Response_Attack() {
   }
 
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0, -(TheObjectHeaps().unit().ID(this) + 1));
+    Sound_Effect(response, 0, -(TheObjectHeaps().unit().SlotIndexOf(this) + 1));
   }
 }
 
@@ -3633,7 +3633,7 @@ void UnitClass::Write_INI(std::string& buffer) {
   **	Write the unit data out.
   */
   for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+    UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
     if (!unit->IsInLimbo && unit->IsActive) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",

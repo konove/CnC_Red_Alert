@@ -157,7 +157,7 @@ AnimType Anim_From_Name(const char* name) {
 void Shorten_Attached_Anims(const ObjectClass* obj) {
   if (obj != nullptr) {
     for (int index = 0; index < TheObjectHeaps().anim().Count(); index++) {
-      AnimClass& anim = *TheObjectHeaps().anim().Ptr(index);
+      AnimClass& anim = *TheObjectHeaps().anim().ActiveAt(index);
 
       if (As_Object(anim.xObject) == obj) {
         anim.Loops = 0;
@@ -421,7 +421,7 @@ std::span<const int16_t> AnimClass::Occupy_List(bool /*placement*/) const {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::Init() { TheObjectHeaps().anim().Free_All(); }
+void AnimClass::Init() { TheObjectHeaps().anim().FreeAll(); }
 
 /***********************************************************************************************
  * AnimClass::new -- Allocates an anim object from the pool. *
@@ -492,8 +492,8 @@ void AnimClass::operator delete(void* ptr) {
  *=============================================================================================*/
 AnimClass::AnimClass(AnimType animnum, COORDINATE coord, int timedelay,
                      int loop)
-    : ObjectClass(RTTI_ANIM, TheObjectHeaps().anim().ID(this)),
-      Class(TheTypeHeaps().anim().Ptr(static_cast<int>(animnum))),
+    : ObjectClass(RTTI_ANIM, TheObjectHeaps().anim().SlotIndexOf(this)),
+      Class(TheTypeHeaps().anim().ActiveAt(static_cast<int>(animnum))),
       Delay(timedelay) {
   if (Class->Stages == -1) {
     Class->Stages = engine::gfx::KeyframeFrameCount(Class->Get_Image_Data());
@@ -575,8 +575,8 @@ AnimClass::~AnimClass() {
       */
       int index = 0;
       for (index = 0; index < TheObjectHeaps().anim().Count(); index++) {
-        if (TheObjectHeaps().anim().Ptr(index) != this &&
-            TheObjectHeaps().anim().Ptr(index)->xObject == xObject) {
+        if (TheObjectHeaps().anim().ActiveAt(index) != this &&
+            TheObjectHeaps().anim().ActiveAt(index)->xObject == xObject) {
           break;
         }
       }

@@ -228,7 +228,7 @@ static inline bool Is_It_Playing(const FootClass* object) {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Init() { TheObjectHeaps().team().Free_All(); }
+void TeamClass::Init() { TheObjectHeaps().team().FreeAll(); }
 
 /***********************************************************************************************
  * TeamClass::operator new -- Allocates a team object. *
@@ -325,7 +325,7 @@ TeamClass::~TeamClass() {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
-    : AbstractClass(RTTI_TEAM, TheObjectHeaps().team().ID(this)),
+    : AbstractClass(RTTI_TEAM, TheObjectHeaps().team().SlotIndexOf(this)),
       Class(type),
       House(owner) {
   DCHECK(Class);
@@ -557,7 +557,7 @@ void TeamClass::AI() {
 
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
-        const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+        const BuildingClass* b = TheObjectHeaps().building().ActiveAt(index);
 
         if (b != nullptr && !b->IsInLimbo && b->House == House &&
             b->Class->PrimaryWeapon == nullptr) {
@@ -1209,7 +1209,7 @@ int TeamClass::Recruit(int typeindex) {
 
         for (int index = 0; index < TheObjectHeaps().infantry().Count();
              index++) {
-          InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+          InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
           const int d = infantry->Distance(center);
 
           if ((d < bestdist || bestdist == -1) &&
@@ -1233,7 +1233,7 @@ int TeamClass::Recruit(int typeindex) {
 
         for (int index = 0; index < TheObjectHeaps().aircraft().Count();
              index++) {
-          AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(index);
+          AircraftClass* aircraft = TheObjectHeaps().aircraft().ActiveAt(index);
           const int d = aircraft->Distance(center);
 
           if ((d < bestdist || bestdist == -1) &&
@@ -1256,7 +1256,7 @@ int TeamClass::Recruit(int typeindex) {
         int bestdist = -1;
 
         for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-          UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+          UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
           const int d = unit->Distance(center);
 
           if (unit->House == House &&
@@ -1291,7 +1291,7 @@ int TeamClass::Recruit(int typeindex) {
 
         for (int index = 0; index < TheObjectHeaps().vessel().Count();
              index++) {
-          VesselClass* vessel = TheObjectHeaps().vessel().Ptr(index);
+          VesselClass* vessel = TheObjectHeaps().vessel().ActiveAt(index);
           const int d = vessel->Distance(center);
 
           if (vessel->House == House &&
@@ -1454,7 +1454,8 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     */
     for (int unit_index = 0; unit_index < TheObjectHeaps().unit().Count();
          unit_index++) {
-      const FootClass* trial_unit = TheObjectHeaps().unit().Ptr(unit_index);
+      const FootClass* trial_unit =
+          TheObjectHeaps().unit().ActiveAt(unit_index);
 
       if (Is_It_Breathing(trial_unit) && trial_unit->House->Is_Ally(House) &&
           trial_unit->Team != this) {
@@ -1474,7 +1475,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
          infantry_index < TheObjectHeaps().infantry().Count();
          infantry_index++) {
       const FootClass* trial_infantry =
-          TheObjectHeaps().infantry().Ptr(infantry_index);
+          TheObjectHeaps().infantry().ActiveAt(infantry_index);
 
       if (Is_It_Breathing(trial_infantry) &&
           trial_infantry->House->Is_Ally(House) &&
@@ -1494,7 +1495,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     for (int vessel_index = 0; vessel_index < TheObjectHeaps().vessel().Count();
          vessel_index++) {
       const FootClass* trial_vessel =
-          TheObjectHeaps().vessel().Ptr(vessel_index);
+          TheObjectHeaps().vessel().ActiveAt(vessel_index);
 
       if (Is_It_Breathing(trial_vessel) &&
           trial_vessel->House->Is_Ally(House) && trial_vessel->Team != this) {
@@ -2374,7 +2375,7 @@ bool TeamClass::Is_A_Member(const void* who) const {
  *=========================================================================*/
 void TeamClass::Suspend_Teams(int priority, const HouseClass* house) {
   for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
-    TeamClass* team = TheObjectHeaps().team().Ptr(index);
+    TeamClass* team = TheObjectHeaps().team().ActiveAt(index);
 
     /*
     **	If a team is below the "survival priority level", then it gets

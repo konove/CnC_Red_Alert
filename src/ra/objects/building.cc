@@ -1432,7 +1432,7 @@ void BuildingClass::AI() {
       game::CurrentFrame() % kTicksPerSecond == 0) {
     IsJammed = false;
     for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-      const UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
+      const UnitClass* obj = TheObjectHeaps().unit().ActiveAt(index);
       if (obj != nullptr && !obj->IsInLimbo && !obj->House->Is_Ally(House) &&
           obj->Class->IsJammer && Distance(obj) <= TheRules().RadarJamRadius) {
         IsJammed = true;
@@ -1838,7 +1838,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
         if (*this == STRUCT_SHIP_YARD || *this == STRUCT_SUB_PEN) {
           for (int index = 0; index < TheObjectHeaps().vessel().Count();
                index++) {
-            VesselClass* obj = TheObjectHeaps().vessel().Ptr(index);
+            VesselClass* obj = TheObjectHeaps().vessel().ActiveAt(index);
             if ((obj && !obj->IsInLimbo && obj->House == House) &&
                 obj->IsSelfRepairing &&
                 (ra::Distance(Center_Coord(), obj->Center_Coord()) < 0x0200)) {
@@ -2086,8 +2086,9 @@ void BuildingClass::operator delete(void* ptr) {
  *to match expected value.                            *
  *=============================================================================================*/
 BuildingClass::BuildingClass(StructType type, HousesType house)
-    : TechnoClass(RTTI_BUILDING, TheObjectHeaps().building().ID(this), house),
-      Class(TheTypeHeaps().building().Ptr(static_cast<int>(type))),
+    : TechnoClass(RTTI_BUILDING, TheObjectHeaps().building().SlotIndexOf(this),
+                  house),
+      Class(TheTypeHeaps().building().ActiveAt(static_cast<int>(type))),
       ActLike(House->ActLike),
       WhoLastHurtMe(house) {
   House->Tracking_Add(this);
@@ -2355,7 +2356,7 @@ void BuildingClass::Assign_Target(TARGET target) {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingClass::Init() { TheObjectHeaps().building().Free_All(); }
+void BuildingClass::Init() { TheObjectHeaps().building().FreeAll(); }
 
 /***********************************************************************************************
  * BuildingClass::Exit_Object -- Initiates an object to leave the building. *
@@ -2575,7 +2576,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
           if (Mission == MISSION_UNLOAD) {
             for (int index = 0; index < TheObjectHeaps().building().Count();
                  index++) {
-              BuildingClass* bldg = TheObjectHeaps().building().Ptr(index);
+              BuildingClass* bldg = TheObjectHeaps().building().ActiveAt(index);
               if (bldg->Owner() == Owner() && *bldg == STRUCT_WEAP &&
                   bldg != this && bldg->Mission == MISSION_GUARD &&
                   !bldg->Factory) {
@@ -3347,7 +3348,7 @@ ActionType BuildingClass::What_Action(ObjectClass* object) {
             for (int index = 0; index < TheObjectHeaps().building().Count();
                  index++) {
               const BuildingClass* bldg =
-                  TheObjectHeaps().building().Ptr(index);
+                  TheObjectHeaps().building().ActiveAt(index);
               if (bldg != this && bldg->Owner() == Owner() &&
                   *bldg == STRUCT_KENNEL) {
                 action = ACTION_SELF;
@@ -3358,7 +3359,7 @@ ActionType BuildingClass::What_Action(ObjectClass* object) {
             for (int index = 0; index < TheObjectHeaps().building().Count();
                  index++) {
               const BuildingClass* bldg =
-                  TheObjectHeaps().building().Ptr(index);
+                  TheObjectHeaps().building().ActiveAt(index);
               if (bldg != this && bldg->Owner() == Owner() &&
                   bldg->Class->ToBuild == RTTI_INFANTRYTYPE &&
                   *bldg != STRUCT_KENNEL) {
@@ -3646,7 +3647,7 @@ bool BuildingClass::Toggle_Primary() {
     IsLeader = false;
   } else {
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-      BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+      BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
 
       if (!building->IsInLimbo && building->Owner() == Owner() &&
           building->Class->ToBuild == Class->ToBuild) {
@@ -4165,7 +4166,7 @@ int BuildingClass::Mission_Deconstruction() {
       if (*this == STRUCT_SHIP_YARD || *this == STRUCT_SUB_PEN) {
         for (int index = 0; index < TheObjectHeaps().vessel().Count();
              index++) {
-          VesselClass* obj = TheObjectHeaps().vessel().Ptr(index);
+          VesselClass* obj = TheObjectHeaps().vessel().ActiveAt(index);
           if ((obj && !obj->IsInLimbo && obj->House == House) &&
               obj->IsSelfRepairing &&
               (ra::Distance(Center_Coord(), obj->Center_Coord()) < 0x0200)) {
@@ -5756,7 +5757,7 @@ CELL BuildingClass::Check_Point(CheckPointType cp) const {
 void BuildingClass::Update_Radar_Spied() {
   House->RadarSpied = 0;
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-    const BuildingClass* obj = TheObjectHeaps().building().Ptr(index);
+    const BuildingClass* obj = TheObjectHeaps().building().ActiveAt(index);
     if (obj && !obj->IsInLimbo && obj->House == House) {
       if (*obj == STRUCT_RADAR /* || *obj == STRUCT_EYE */) {
         House->RadarSpied |= obj->SpiedBy;
@@ -5906,7 +5907,7 @@ void BuildingClass::Write_INI(CCINIClass& ini) {
   **	Write the data out.
   */
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-    const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+    const BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
     if (!building->IsInLimbo) {
       char uname[10];
       char buf[127];
@@ -6573,7 +6574,7 @@ void BuildingClass::Remove_Gap_Effect() {
   }
   // and rejam any overlapping buildings' fields
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-    BuildingClass* obj = TheObjectHeaps().building().Ptr(index);
+    BuildingClass* obj = TheObjectHeaps().building().ActiveAt(index);
     if (obj && !obj->IsInLimbo && obj->House == House && *obj == STRUCT_GAP &&
         obj != this) {
       obj->IsJamming = false;

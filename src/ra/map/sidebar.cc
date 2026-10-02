@@ -1486,7 +1486,7 @@ bool SidebarClass::StripClass::AI(engine::window::KeyNumber& input,
       const int factoryid = base::At(Buildables, index).Factory;
 
       if (factoryid != -1) {
-        FactoryClass* factory = TheObjectHeaps().factory().Raw_Ptr(factoryid);
+        FactoryClass* factory = TheObjectHeaps().factory().Slot(factoryid);
 
         if (factory && factory->Has_Changed()) {
           redraw = true;
@@ -1668,7 +1668,7 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
             shapefile = obj->Get_Cameo_Data();
             shapenum = 0;
             if (base::At(Buildables, index).Factory != -1) {
-              factory = TheObjectHeaps().factory().Raw_Ptr(
+              factory = TheObjectHeaps().factory().Slot(
                   base::At(Buildables, index).Factory);
               production = true;
               completed = factory->Has_Completed();
@@ -1985,7 +1985,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
     }
 
     if (fnumber != -1) {
-      factory = TheObjectHeaps().factory().Raw_Ptr(fnumber);
+      factory = TheObjectHeaps().factory().Slot(fnumber);
     }
 
   } else {
@@ -2292,7 +2292,7 @@ bool SidebarClass::StripClass::Abandon_Production(int factory) {
   bool abandon = false;
   for (int index = 0; index < BuildableCount; index++) {
     if (base::At(Buildables, index).Factory == factory) {
-      TheObjectHeaps().factory().Raw_Ptr(factory)->Abandon();
+      TheObjectHeaps().factory().Slot(factory)->Abandon();
       base::At(Buildables, index).Factory = -1;
       abandon = true;
     } else {

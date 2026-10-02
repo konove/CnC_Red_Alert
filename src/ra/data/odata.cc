@@ -571,7 +571,7 @@ OverlayTypeClass::OverlayTypeClass(OverlayType iconset, const char* ininame,
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* OverlayTypeClass::operator new(std::size_t /*unused*/) noexcept {
-  return TheTypeHeaps().overlay().Alloc();
+  return TheTypeHeaps().overlay().Allocate();
 }
 
 /***********************************************************************************************
@@ -916,7 +916,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 OverlayTypeClass& OverlayTypeClass::As_Reference(OverlayType type) {
-  return *TheTypeHeaps().overlay().Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().overlay().ActiveAt(static_cast<int>(type));
 }
 
 /***********************************************************************************************

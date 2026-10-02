@@ -32,30 +32,30 @@ class HeapSlotPtr {
  public:
   using Heap = ObjectHeap<std::remove_const_t<T>>;
 
-  HeapSlotPtr(T*& ref ABSL_ATTRIBUTE_LIFETIME_BOUND,
+  HeapSlotPtr(T*& pointer ABSL_ATTRIBUTE_LIFETIME_BOUND,
               Heap& heap ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : ref_(ref), heap_(heap) {}
+      : pointer_(pointer), heap_(heap) {}
 
   template <class Archive>
   void Serialize(Archive& ar) {
-    int32_t id = -1;
+    int32_t slot_index = -1;
     if constexpr (!Archive::kIsReading) {
-      if (ref_ != nullptr) {
-        DCHECK(heap_.Owns(ref_)) << heap_.Describe(ref_);
-        id = heap_.ID(ref_);
+      if (pointer_ != nullptr) {
+        DCHECK(heap_.Owns(pointer_)) << heap_.Describe(pointer_);
+        slot_index = heap_.SlotIndexOf(pointer_);
       }
     }
-    ar(id);
+    ar(slot_index);
     if constexpr (Archive::kIsReading) {
-      ref_ = heap_.SlotAt(id);
-      if (ref_ == nullptr && id != -1) {
+      pointer_ = heap_.SlotOrNull(slot_index);
+      if (pointer_ == nullptr && slot_index != -1) {
         ar.Fail("saved slot index outside its heap");
       }
     }
   }
 
  private:
-  T*& ref_;
+  T*& pointer_;
   Heap& heap_;
 };
 

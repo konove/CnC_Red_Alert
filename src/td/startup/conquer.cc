@@ -651,7 +651,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     */
     case KN_H:
       for (index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-        UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+        UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
 
         if (unit && !unit->IsInLimbo && unit->House == ThePlayer() &&
             *unit == UNIT_MCV) {
@@ -661,7 +661,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
         }
       }
       for (index = 0; index < TheObjectHeaps().building().Count(); index++) {
-        BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+        BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
 
         if (building && !building->IsInLimbo &&
             building->House == ThePlayer() && *building == STRUCT_CONST) {
@@ -1812,17 +1812,18 @@ bool Main_Loop() {
   // Record mobile-object state and optionally save before ending a smoke run.
   if (TheStartupOptions().quit_at_frame >= 0) {
     for (int index = 0; index < TheObjectHeaps().unit().Count(); ++index) {
-      const UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+      const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
       LOG(INFO) << "frame " << game::CurrentFrame() << " unit "
                 << unit->Class->IniName << " coord " << unit->Coord
                 << " mission " << static_cast<int>(unit->Mission) << " navcom "
                 << unit->NavCom;
     }
     for (int index = 0; index < TheObjectHeaps().infantry().Count(); ++index) {
-      const InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+      const InfantryClass* infantry =
+          TheObjectHeaps().infantry().ActiveAt(index);
       LOG(INFO) << "frame " << game::CurrentFrame() << " infantry "
-                << TheObjectHeaps().infantry().ID(infantry) << " coord "
-                << infantry->Coord << " mission "
+                << TheObjectHeaps().infantry().SlotIndexOf(infantry)
+                << " coord " << infantry->Coord << " mission "
                 << static_cast<int>(infantry->Mission) << " navcom "
                 << infantry->NavCom;
     }
@@ -1844,9 +1845,10 @@ bool Main_Loop() {
           }
         } sink;
         ArchiveWriter writer(sink);
-        heap.Ptr(index)->Serialize(writer);
+        heap.ActiveAt(index)->Serialize(writer);
         LOG(INFO) << "frame " << game::CurrentFrame() << " " << kind << " "
-                  << heap.ID(heap.Ptr(index)) << " fields " << sink.fields;
+                  << heap.SlotIndexOf(heap.ActiveAt(index)) << " fields "
+                  << sink.fields;
       }
     };
     log_heap(TheObjectHeaps().factory(), "factory");
@@ -1908,8 +1910,8 @@ bool Main_Loop() {
     }
 
     for (int i = 0; i < TheObjectHeaps().team_type().Count(); ++i) {
-      const int id =
-          TheObjectHeaps().team_type().ID(TheObjectHeaps().team_type().Ptr(i));
+      const int id = TheObjectHeaps().team_type().SlotIndexOf(
+          TheObjectHeaps().team_type().ActiveAt(i));
       LOG(INFO) << "frame " << game::CurrentFrame() << " teamcount " << id
                 << " " << static_cast<int>(base::At(TeamClass::Number, id));
     }
@@ -2490,10 +2492,11 @@ void Trap_Object() {
   switch (TheDebugState().trap_object_type()) {
     case RTTI_AIRCRAFT:
       for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
-        if (TheObjectHeaps().aircraft().Ptr(i)->Coord ==
+        if (TheObjectHeaps().aircraft().ActiveAt(i)->Coord ==
                 TheDebugState().trap_coord() ||
-            TheObjectHeaps().aircraft().Ptr(i) == TheDebugState().trap_this()) {
-          trap_object.Ptr.Aircraft = TheObjectHeaps().aircraft().Ptr(i);
+            TheObjectHeaps().aircraft().ActiveAt(i) ==
+                TheDebugState().trap_this()) {
+          trap_object.Ptr.Aircraft = TheObjectHeaps().aircraft().ActiveAt(i);
           break;
         }
       }
@@ -2501,10 +2504,11 @@ void Trap_Object() {
 
     case RTTI_ANIM:
       for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
-        if (TheObjectHeaps().anim().Ptr(i)->Coord ==
+        if (TheObjectHeaps().anim().ActiveAt(i)->Coord ==
                 TheDebugState().trap_coord() ||
-            TheObjectHeaps().anim().Ptr(i) == TheDebugState().trap_this()) {
-          trap_object.Ptr.Anim = TheObjectHeaps().anim().Ptr(i);
+            TheObjectHeaps().anim().ActiveAt(i) ==
+                TheDebugState().trap_this()) {
+          trap_object.Ptr.Anim = TheObjectHeaps().anim().ActiveAt(i);
           break;
         }
       }
@@ -2512,10 +2516,11 @@ void Trap_Object() {
 
     case RTTI_BUILDING:
       for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
-        if (TheObjectHeaps().building().Ptr(i)->Coord ==
+        if (TheObjectHeaps().building().ActiveAt(i)->Coord ==
                 TheDebugState().trap_coord() ||
-            TheObjectHeaps().building().Ptr(i) == TheDebugState().trap_this()) {
-          trap_object.Ptr.Building = TheObjectHeaps().building().Ptr(i);
+            TheObjectHeaps().building().ActiveAt(i) ==
+                TheDebugState().trap_this()) {
+          trap_object.Ptr.Building = TheObjectHeaps().building().ActiveAt(i);
           break;
         }
       }
@@ -2523,10 +2528,11 @@ void Trap_Object() {
 
     case RTTI_BULLET:
       for (int i = 0; i < TheObjectHeaps().bullet().Count(); i++) {
-        if (TheObjectHeaps().bullet().Ptr(i)->Coord ==
+        if (TheObjectHeaps().bullet().ActiveAt(i)->Coord ==
                 TheDebugState().trap_coord() ||
-            TheObjectHeaps().bullet().Ptr(i) == TheDebugState().trap_this()) {
-          trap_object.Ptr.Bullet = TheObjectHeaps().bullet().Ptr(i);
+            TheObjectHeaps().bullet().ActiveAt(i) ==
+                TheDebugState().trap_this()) {
+          trap_object.Ptr.Bullet = TheObjectHeaps().bullet().ActiveAt(i);
           break;
         }
       }
@@ -2534,10 +2540,11 @@ void Trap_Object() {
 
     case RTTI_INFANTRY:
       for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
-        if (TheObjectHeaps().infantry().Ptr(i)->Coord ==
+        if (TheObjectHeaps().infantry().ActiveAt(i)->Coord ==
                 TheDebugState().trap_coord() ||
-            TheObjectHeaps().infantry().Ptr(i) == TheDebugState().trap_this()) {
-          trap_object.Ptr.Infantry = TheObjectHeaps().infantry().Ptr(i);
+            TheObjectHeaps().infantry().ActiveAt(i) ==
+                TheDebugState().trap_this()) {
+          trap_object.Ptr.Infantry = TheObjectHeaps().infantry().ActiveAt(i);
           break;
         }
       }
@@ -2545,10 +2552,11 @@ void Trap_Object() {
 
     case RTTI_UNIT:
       for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-        if (TheObjectHeaps().unit().Ptr(i)->Coord ==
+        if (TheObjectHeaps().unit().ActiveAt(i)->Coord ==
                 TheDebugState().trap_coord() ||
-            TheObjectHeaps().unit().Ptr(i) == TheDebugState().trap_this()) {
-          trap_object.Ptr.Unit = TheObjectHeaps().unit().Ptr(i);
+            TheObjectHeaps().unit().ActiveAt(i) ==
+                TheDebugState().trap_this()) {
+          trap_object.Ptr.Unit = TheObjectHeaps().unit().ActiveAt(i);
           break;
         }
       }
@@ -2559,59 +2567,58 @@ void Trap_Object() {
     */
     case RTTI_NONE:
       for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
-        if (TheObjectHeaps().aircraft().Raw_Ptr(i)->Coord ==
+        if (TheObjectHeaps().aircraft().Slot(i)->Coord ==
                 TheDebugState().trap_coord() ||
-            TheObjectHeaps().aircraft().Raw_Ptr(i) ==
+            TheObjectHeaps().aircraft().Slot(i) ==
                 TheDebugState().trap_this()) {
-          trap_object.Ptr.Aircraft = TheObjectHeaps().aircraft().Raw_Ptr(i);
+          trap_object.Ptr.Aircraft = TheObjectHeaps().aircraft().Slot(i);
           TheDebugState().trap_object_type() = RTTI_AIRCRAFT;
           return;
         }
       }
       for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
-        if (TheObjectHeaps().anim().Raw_Ptr(i)->Coord ==
+        if (TheObjectHeaps().anim().Slot(i)->Coord ==
                 TheDebugState().trap_coord() ||
-            TheObjectHeaps().anim().Raw_Ptr(i) == TheDebugState().trap_this()) {
-          trap_object.Ptr.Anim = TheObjectHeaps().anim().Raw_Ptr(i);
+            TheObjectHeaps().anim().Slot(i) == TheDebugState().trap_this()) {
+          trap_object.Ptr.Anim = TheObjectHeaps().anim().Slot(i);
           TheDebugState().trap_object_type() = RTTI_ANIM;
           return;
         }
       }
       for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
-        if (TheObjectHeaps().building().Raw_Ptr(i)->Coord ==
+        if (TheObjectHeaps().building().Slot(i)->Coord ==
                 TheDebugState().trap_coord() ||
-            TheObjectHeaps().building().Raw_Ptr(i) ==
+            TheObjectHeaps().building().Slot(i) ==
                 TheDebugState().trap_this()) {
-          trap_object.Ptr.Building = TheObjectHeaps().building().Raw_Ptr(i);
+          trap_object.Ptr.Building = TheObjectHeaps().building().Slot(i);
           TheDebugState().trap_object_type() = RTTI_BUILDING;
           return;
         }
       }
       for (int i = 0; i < TheObjectHeaps().bullet().Count(); i++) {
-        if (TheObjectHeaps().bullet().Raw_Ptr(i)->Coord ==
+        if (TheObjectHeaps().bullet().Slot(i)->Coord ==
                 TheDebugState().trap_coord() ||
-            TheObjectHeaps().bullet().Raw_Ptr(i) ==
-                TheDebugState().trap_this()) {
-          trap_object.Ptr.Bullet = TheObjectHeaps().bullet().Raw_Ptr(i);
+            TheObjectHeaps().bullet().Slot(i) == TheDebugState().trap_this()) {
+          trap_object.Ptr.Bullet = TheObjectHeaps().bullet().Slot(i);
           TheDebugState().trap_object_type() = RTTI_BULLET;
           return;
         }
       }
       for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
-        if (TheObjectHeaps().infantry().Raw_Ptr(i)->Coord ==
+        if (TheObjectHeaps().infantry().Slot(i)->Coord ==
                 TheDebugState().trap_coord() ||
-            TheObjectHeaps().infantry().Raw_Ptr(i) ==
+            TheObjectHeaps().infantry().Slot(i) ==
                 TheDebugState().trap_this()) {
-          trap_object.Ptr.Infantry = TheObjectHeaps().infantry().Raw_Ptr(i);
+          trap_object.Ptr.Infantry = TheObjectHeaps().infantry().Slot(i);
           TheDebugState().trap_object_type() = RTTI_INFANTRY;
           return;
         }
       }
       for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-        if (TheObjectHeaps().unit().Raw_Ptr(i)->Coord ==
+        if (TheObjectHeaps().unit().Slot(i)->Coord ==
                 TheDebugState().trap_coord() ||
-            TheObjectHeaps().unit().Raw_Ptr(i) == TheDebugState().trap_this()) {
-          trap_object.Ptr.Unit = TheObjectHeaps().unit().Raw_Ptr(i);
+            TheObjectHeaps().unit().Slot(i) == TheDebugState().trap_this()) {
+          trap_object.Ptr.Unit = TheObjectHeaps().unit().Slot(i);
           TheDebugState().trap_object_type() = RTTI_UNIT;
           return;
         }
@@ -2715,7 +2722,7 @@ void Handle_Team(int team, int action) {
         }
       }
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-        UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
+        UnitClass* obj = TheObjectHeaps().unit().ActiveAt(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
@@ -2725,7 +2732,7 @@ void Handle_Team(int team, int action) {
       }
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
            index++) {
-        InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
+        InfantryClass* obj = TheObjectHeaps().infantry().ActiveAt(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
@@ -2735,7 +2742,7 @@ void Handle_Team(int team, int action) {
       }
       for (int index = 0; index < TheObjectHeaps().aircraft().Count();
            index++) {
-        AircraftClass* obj = TheObjectHeaps().aircraft().Ptr(index);
+        AircraftClass* obj = TheObjectHeaps().aircraft().ActiveAt(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
@@ -2758,7 +2765,7 @@ void Handle_Team(int team, int action) {
     */
     case 1:
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-        UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
+        UnitClass* obj = TheObjectHeaps().unit().ActiveAt(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
@@ -2768,7 +2775,7 @@ void Handle_Team(int team, int action) {
       }
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
            index++) {
-        InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
+        InfantryClass* obj = TheObjectHeaps().infantry().ActiveAt(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
@@ -2778,7 +2785,7 @@ void Handle_Team(int team, int action) {
       }
       for (int index = 0; index < TheObjectHeaps().aircraft().Count();
            index++) {
-        AircraftClass* obj = TheObjectHeaps().aircraft().Ptr(index);
+        AircraftClass* obj = TheObjectHeaps().aircraft().ActiveAt(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
@@ -2793,7 +2800,7 @@ void Handle_Team(int team, int action) {
     */
     case 2:
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-        UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
+        UnitClass* obj = TheObjectHeaps().unit().ActiveAt(index);
         if (obj && !obj->IsInLimbo && obj->House == ThePlayer()) {
           if (std::cmp_equal(obj->Group, team)) {
             obj->Group = 0xFF;  // No team.
@@ -2805,7 +2812,7 @@ void Handle_Team(int team, int action) {
       }
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
            index++) {
-        InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
+        InfantryClass* obj = TheObjectHeaps().infantry().ActiveAt(index);
         if (obj && !obj->IsInLimbo && obj->House == ThePlayer()) {
           if (std::cmp_equal(obj->Group, team)) {
             obj->Group = 0xFF;  // No team.
@@ -2817,7 +2824,7 @@ void Handle_Team(int team, int action) {
       }
       for (int index = 0; index < TheObjectHeaps().aircraft().Count();
            index++) {
-        AircraftClass* obj = TheObjectHeaps().aircraft().Ptr(index);
+        AircraftClass* obj = TheObjectHeaps().aircraft().ActiveAt(index);
         if (obj && !obj->IsInLimbo && obj->House == ThePlayer()) {
           if (std::cmp_equal(obj->Group, team)) {
             obj->Group = 0xFF;  // No team.

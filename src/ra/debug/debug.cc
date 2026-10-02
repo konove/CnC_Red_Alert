@@ -183,7 +183,7 @@ void Debug_Key(unsigned input) {
           TheMap().Recalc();
           for (int index = 0; index < TheObjectHeaps().building().Count();
                index++) {
-            TheObjectHeaps().building().Ptr(index)->Update_Buildables();
+            TheObjectHeaps().building().ActiveAt(index)->Update_Buildables();
           }
         }
         break;

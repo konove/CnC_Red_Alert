@@ -1150,25 +1150,25 @@ void ObjectClass::Detach_All(bool all) {
 void ObjectClass::Detach_This_From_All(TARGET target, bool all) {
   if (Target_Legal(target)) {
     for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
-      TheObjectHeaps().team().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().team().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-      TheObjectHeaps().unit().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().unit().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
-      TheObjectHeaps().infantry().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().infantry().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
-      TheObjectHeaps().aircraft().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().aircraft().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-      TheObjectHeaps().building().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().building().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().bullet().Count(); index++) {
-      TheObjectHeaps().bullet().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().bullet().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().anim().Count(); index++) {
-      TheObjectHeaps().anim().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().anim().ActiveAt(index)->Detach(target, all);
     }
   }
 }

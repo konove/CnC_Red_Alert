@@ -113,7 +113,7 @@ using engine::gfx::ShapeFlags;
  *=============================================================================================*/
 int BulletClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().bullet().ID(this);
+    const int num = TheObjectHeaps().bullet().SlotIndexOf(this);
     if (num < 0 || num >= kBulletMax) {
       Validate_Error("BULLET");
     }
@@ -591,7 +591,7 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::Init() { TheObjectHeaps().bullet().Free_All(); }
+void BulletClass::Init() { TheObjectHeaps().bullet().FreeAll(); }
 
 /***********************************************************************************************
  * BulletClass::Detach -- Removes specified target from this bullet's targeting
@@ -803,7 +803,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
  *=============================================================================================*/
 TARGET BulletClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_BULLET, TheObjectHeaps().bullet().ID(this));
+  return Build_Target(KIND_BULLET, TheObjectHeaps().bullet().SlotIndexOf(this));
 }
 
 }  // namespace td

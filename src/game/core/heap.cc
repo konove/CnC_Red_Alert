@@ -36,169 +36,170 @@
 
 namespace game {
 
-bool ObjectHeapBase::Set_Heap(int count) {
-  if (Size <= 0 || count < 0) {
+bool ObjectHeapBase::Reset(int capacity) {
+  if (slot_size_ <= 0 || capacity < 0) {
     Clear();
     return false;
   }
 
-  // Keep the storage when the slot count is unchanged; see the declaration.
-  if (count != TotalCount || storage_ == nullptr) {
+  // Keep the storage when the capacity is unchanged; see the declaration.
+  if (capacity != TotalCount || storage_ == nullptr) {
     Clear();
-    if (count == 0) {
+    if (capacity == 0) {
       return true;
     }
-    const auto extent = base::ToSize(count * Size);
+    const auto extent = base::ToSize(capacity * slot_size_);
     storage_ = std::make_unique_for_overwrite<std::byte[]>(extent);
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    Buffer = std::span<std::byte>(storage_.get(), extent);
-    TotalCount = count;
+    slots_ = std::span<std::byte>(storage_.get(), extent);
+    TotalCount = capacity;
   }
 
   ActiveCount = 0;
-  FreeFlag.assign(base::ToSize(count), false);
-  ActivePointers.clear();
+  in_use_.assign(base::ToSize(capacity), false);
+  active_.clear();
   // Reserving the whole heap up front means allocating during a game never
   // reallocates the list.
-  ActivePointers.reserve(base::ToSize(count));
+  active_.reserve(base::ToSize(capacity));
   return true;
 }
 
-void* ObjectHeapBase::Allocate() {
+void* ObjectHeapBase::AllocateSlot() {
   // Full: skip the scan, which could only fail.
   if (ActiveCount >= TotalCount) {
     return nullptr;
   }
-  const auto index = static_cast<int>(base::first_false(FreeFlag));
-  if (index == -1) {
+  const auto slot_index = static_cast<int>(base::first_false(in_use_));
+  if (slot_index == -1) {
     return nullptr;
   }
   ActiveCount++;
-  FreeFlag.at(base::ToSize(index)) = true;
-  void* const pointer = (*this).at(index);
-  ActivePointers.push_back(pointer);
-  base::FillBytes(
-      Buffer.subspan(base::ToSize(index * Size), base::ToSize(Size)), 0, Size);
+  in_use_.at(base::ToSize(slot_index)) = true;
+  void* const pointer = (*this).at(slot_index);
+  active_.push_back(pointer);
+  base::FillBytes(slots_.subspan(base::ToSize(slot_index * slot_size_),
+                                 base::ToSize(slot_size_)),
+                  0, slot_size_);
   return pointer;
 }
 
 bool ObjectHeapBase::Free(void* pointer) {
-  // ID() alone would round a pointer into the middle of a slot down to that
-  // slot, free it, and leave the in-use list holding it.
+  // SlotIndexOf() alone would round a pointer into the middle of a slot down to
+  // that slot, free it, and leave the in-use list holding it.
   if (ActiveCount == 0 || !Owns(pointer)) {
     return false;
   }
-  const int index = ID(pointer);
-  if (!FreeFlag.at(base::ToSize(index))) {
+  const int slot_index = SlotIndexOf(pointer);
+  if (!in_use_.at(base::ToSize(slot_index))) {
     return false;
   }
   ActiveCount--;
-  FreeFlag.at(base::ToSize(index)) = false;
-  base::EraseFirst(ActivePointers, pointer);
+  in_use_.at(base::ToSize(slot_index)) = false;
+  base::EraseFirst(active_, pointer);
   return true;
 }
 
 // Truncates toward zero, so a pointer just below the buffer also reads as
 // slot 0; callers that cannot trust the pointer ask Owns() first.
-int ObjectHeapBase::ID(const void* pointer) const {
-  if (pointer && Size) {
+int ObjectHeapBase::SlotIndexOf(const void* pointer) const {
+  if (pointer && slot_size_) {
     return static_cast<int>(
-        (static_cast<const std::byte*>(pointer) - Buffer.data()) / Size);
+        (static_cast<const std::byte*>(pointer) - slots_.data()) / slot_size_);
   }
   return -1;
 }
 
 // Ordering pointers into different objects is only defined through
 // std::less, which is why the comparison does not simply use `<`.
-base::ssize ObjectHeapBase::Offset_Of(const void* pointer) const {
-  if (pointer == nullptr || Buffer.empty()) {
+base::ssize ObjectHeapBase::OffsetOf(const void* pointer) const {
+  if (pointer == nullptr || slots_.empty()) {
     return -1;
   }
   const auto* address = static_cast<const std::byte*>(pointer);
   const std::less<> before;
-  if (before(address, Buffer.data()) ||
-      !before(address, Buffer.subspan(Buffer.size()).data())) {
+  if (before(address, slots_.data()) ||
+      !before(address, slots_.subspan(slots_.size()).data())) {
     return -1;
   }
-  return address - Buffer.data();
+  return address - slots_.data();
 }
 
 bool ObjectHeapBase::Owns(const void* pointer) const {
-  const base::ssize offset = Offset_Of(pointer);
-  return Size > 0 && offset >= 0 && offset % Size == 0;
+  const base::ssize offset = OffsetOf(pointer);
+  return slot_size_ > 0 && offset >= 0 && offset % slot_size_ == 0;
 }
 
 std::string ObjectHeapBase::Describe(const void* pointer) const {
   std::string description = absl::StrFormat(
       "heap=%p slots=%d/%d size=%d buffer=[%p,%p) ptr=%p", this, ActiveCount,
-      TotalCount, Size, static_cast<const void*>(Buffer.data()),
+      TotalCount, slot_size_, static_cast<const void*>(slots_.data()),
       static_cast<const void*>(
-          Buffer.empty() ? nullptr : Buffer.subspan(Buffer.size()).data()),
+          slots_.empty() ? nullptr : slots_.subspan(slots_.size()).data()),
       pointer);
 
-  const base::ssize offset = Offset_Of(pointer);
-  if (Buffer.empty()) {
+  const base::ssize offset = OffsetOf(pointer);
+  if (slots_.empty()) {
     absl::StrAppend(&description, " (heap has no buffer)");
   } else if (pointer != nullptr && offset < 0) {
     absl::StrAppend(&description, " (outside the buffer)");
   } else if (pointer != nullptr) {
-    const auto slot = static_cast<int>(offset / Size);
-    const auto slack = static_cast<int>(offset % Size);
+    const auto slot = static_cast<int>(offset / slot_size_);
+    const auto slack = static_cast<int>(offset % slot_size_);
     absl::StrAppend(&description, " slot=", slot);
     if (slack != 0) {
       absl::StrAppend(&description, " (", slack, " bytes past the boundary)");
     } else {
       absl::StrAppend(&description,
-                      FreeFlag.at(base::ToSize(slot)) ? " taken" : " FREE");
+                      in_use_.at(base::ToSize(slot)) ? " taken" : " FREE");
     }
   }
   return absl::StrCat(description,
-                      " listed=", Logical_ID(pointer) >= 0 ? "yes" : "no");
+                      " listed=", PositionOf(pointer) >= 0 ? "yes" : "no");
 }
 
 void ObjectHeapBase::Clear() {
-  Buffer = {};
+  slots_ = {};
   storage_.reset();
   ActiveCount = 0;
   TotalCount = 0;
-  FreeFlag.clear();
-  ActivePointers.clear();
+  in_use_.clear();
+  active_.clear();
 }
 
-void ObjectHeapBase::Free_All() {
-  ActivePointers.clear();
+void ObjectHeapBase::FreeAll() {
+  active_.clear();
   ActiveCount = 0;
-  FreeFlag.assign(FreeFlag.size(), false);
+  in_use_.assign(in_use_.size(), false);
 }
 
-int ObjectHeapBase::Logical_ID(const void* pointer) const {
+int ObjectHeapBase::PositionOf(const void* pointer) const {
   if (pointer == nullptr) {
     return -1;
   }
-  return static_cast<int>(base::IndexOf(ActivePointers, pointer));
+  return static_cast<int>(base::IndexOf(active_, pointer));
 }
 
 std::string ObjectHeapBase::Validate() const {
-  if (std::ssize(ActivePointers) != ActiveCount) {
-    return absl::StrCat("ActivePointers holds ", ActivePointers.size(), " of ",
+  if (std::ssize(active_) != ActiveCount) {
+    return absl::StrCat("the in-use list holds ", active_.size(), " of ",
                         ActiveCount, " active objects");
   }
 
-  for (int index = 0; index < ActiveCount; index++) {
-    const void* pointer = Active_Ptr(index);
+  for (int position = 0; position < ActiveCount; position++) {
+    const void* pointer = ActiveSlot(position);
     if (!Owns(pointer)) {
-      return absl::StrCat("active pointer ", index,
+      return absl::StrCat("active pointer ", position,
                           " is not a slot: ", Describe(pointer));
     }
-    if (!FreeFlag.at(base::ToSize(ID(pointer)))) {
-      return absl::StrCat("active pointer ", index,
+    if (!in_use_.at(base::ToSize(SlotIndexOf(pointer)))) {
+      return absl::StrCat("active pointer ", position,
                           " was freed: ", Describe(pointer));
     }
     // Only now is the pointer known to be a live slot whose ID field can be
     // read.
-    if (slot_id_ != nullptr) {
-      const int cached = slot_id_(pointer);
-      if (ID(pointer) != cached) {
+    if (read_slot_id_ != nullptr) {
+      const int cached = read_slot_id_(pointer);
+      if (SlotIndexOf(pointer) != cached) {
         return absl::StrCat("stale ID ", cached, ": ", Describe(pointer));
       }
     }

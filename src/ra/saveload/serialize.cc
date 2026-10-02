@@ -37,11 +37,11 @@ namespace {
 // IsActive flag: the object there may not have been loaded yet.
 template <class T>
 ObjectClass* Slot(game::ObjectHeap<T>& heap, int index, ArchiveReader& ar) {
-  if (index < 0 || index >= heap.Length()) {
+  if (index < 0 || index >= heap.Capacity()) {
     ar.Fail("saved object index outside its heap");
     return nullptr;
   }
-  return heap.Raw_Ptr(index);
+  return heap.Slot(index);
 }
 
 bool IsTechnoKind(RTTIType kind) {
@@ -178,17 +178,17 @@ void SerializeObjectList(Archive& ar, std::vector<ObjectClass*>& objects) {
   auto count = static_cast<int32_t>(objects.size());
   ar(count);
   if constexpr (Archive::kIsReading) {
-    const int capacity = TheObjectHeaps().aircraft().Length() +
-                         TheObjectHeaps().anim().Length() +
-                         TheObjectHeaps().building().Length() +
-                         TheObjectHeaps().bullet().Length() +
-                         TheObjectHeaps().infantry().Length() +
-                         TheObjectHeaps().overlay().Length() +
-                         TheObjectHeaps().smudge().Length() +
-                         TheObjectHeaps().tmplate().Length() +
-                         TheObjectHeaps().terrain().Length() +
-                         TheObjectHeaps().unit().Length() +
-                         TheObjectHeaps().vessel().Length();
+    const int capacity = TheObjectHeaps().aircraft().Capacity() +
+                         TheObjectHeaps().anim().Capacity() +
+                         TheObjectHeaps().building().Capacity() +
+                         TheObjectHeaps().bullet().Capacity() +
+                         TheObjectHeaps().infantry().Capacity() +
+                         TheObjectHeaps().overlay().Capacity() +
+                         TheObjectHeaps().smudge().Capacity() +
+                         TheObjectHeaps().tmplate().Capacity() +
+                         TheObjectHeaps().terrain().Capacity() +
+                         TheObjectHeaps().unit().Capacity() +
+                         TheObjectHeaps().vessel().Capacity();
     if (!ar.ok() || count < 0 || count > capacity) {
       ar.Fail("invalid saved object list count");
       return;

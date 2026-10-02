@@ -246,7 +246,7 @@ const base::EnumArray<DoType, DoStruct, kDoCount>
  *=============================================================================================*/
 int InfantryClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().infantry().ID(this);
+    const int num = TheObjectHeaps().infantry().SlotIndexOf(this);
     if (num < 0 || num >= kInfantryMax) {
       Validate_Error("INFANTRY");
     }
@@ -833,7 +833,8 @@ void InfantryClass::Detach(TARGET target, bool all) {
  *=============================================================================================*/
 TARGET InfantryClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_INFANTRY, TheObjectHeaps().infantry().ID(this));
+  return Build_Target(KIND_INFANTRY,
+                      TheObjectHeaps().infantry().SlotIndexOf(this));
 }
 
 /***********************************************************************************************
@@ -851,7 +852,7 @@ TARGET InfantryClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Init() { TheObjectHeaps().infantry().Free_All(); }
+void InfantryClass::Init() { TheObjectHeaps().infantry().FreeAll(); }
 
 /***********************************************************************************************
  * InfantryClass::Look -- The infantry performs a look operation. *
@@ -2689,7 +2690,8 @@ void InfantryClass::Response_Select() {
     }
   }
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0, TheObjectHeaps().infantry().ID(this) + 1);
+    Sound_Effect(response, 0,
+                 TheObjectHeaps().infantry().SlotIndexOf(this) + 1);
   }
 }
 
@@ -2747,7 +2749,8 @@ void InfantryClass::Response_Move() {
     }
   }
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0, TheObjectHeaps().infantry().ID(this) + 1);
+    Sound_Effect(response, 0,
+                 TheObjectHeaps().infantry().SlotIndexOf(this) + 1);
   }
 }
 
@@ -2798,7 +2801,8 @@ void InfantryClass::Response_Attack() {
   }
 
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0, TheObjectHeaps().infantry().ID(this) + 1);
+    Sound_Effect(response, 0,
+                 TheObjectHeaps().infantry().SlotIndexOf(this) + 1);
   }
 }
 
@@ -3216,7 +3220,7 @@ void InfantryClass::Write_INI(std::string& buffer) {
   **	Write the infantry data out.
   */
   for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
-    InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+    InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
     if (!infantry->IsInLimbo) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(

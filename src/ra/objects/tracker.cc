@@ -87,34 +87,34 @@ namespace ra {
 void Detach_This_From_All(TARGET target, bool all) {
   if (Target_Legal(target)) {
     for (int index = 0; index < TheObjectHeaps().house().Count(); index++) {
-      TheObjectHeaps().house().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().house().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
-      TheObjectHeaps().team().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().team().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-      TheObjectHeaps().team_type().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().team_type().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-      TheObjectHeaps().unit().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().unit().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
-      TheObjectHeaps().vessel().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().vessel().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
-      TheObjectHeaps().aircraft().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().aircraft().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-      TheObjectHeaps().building().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().building().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().bullet().Count(); index++) {
-      TheObjectHeaps().bullet().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().bullet().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
-      TheObjectHeaps().infantry().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().infantry().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().anim().Count(); index++) {
-      TheObjectHeaps().anim().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().anim().ActiveAt(index)->Detach(target, all);
     }
 
     TheMap().Detach(target, all);
@@ -129,7 +129,7 @@ void Detach_This_From_All(TARGET target, bool all) {
     */
     if (As_TriggerType(target) != nullptr) {
       for (int j = 0; j < TheObjectHeaps().trigger().Count(); j++) {
-        const TriggerClass* tp = TheObjectHeaps().trigger().Ptr(j);
+        const TriggerClass* tp = TheObjectHeaps().trigger().ActiveAt(j);
 
         if (tp->Class->As_Target() == target) {
           Detach_This_From_All(tp->As_Target());
@@ -140,11 +140,11 @@ void Detach_This_From_All(TARGET target, bool all) {
     }
 
     for (int index = 0; index < TheObjectHeaps().trigger().Count(); index++) {
-      TheObjectHeaps().trigger().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().trigger().ActiveAt(index)->Detach(target, all);
     }
     for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
          index++) {
-      TheObjectHeaps().trigger_type().Ptr(index)->Detach(target, all);
+      TheObjectHeaps().trigger_type().ActiveAt(index)->Detach(target, all);
     }
   }
 }

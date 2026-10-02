@@ -565,12 +565,12 @@ void EventClass::Execute() {
     */
     case ALLY: {
       const HouseClass* house =
-          TheObjectHeaps().house().Raw_Ptr(Data.General.Value);
-      if (TheObjectHeaps().house().Raw_Ptr(ID)->Is_Ally(house)) {
-        TheObjectHeaps().house().Raw_Ptr(ID)->Make_Enemy(
+          TheObjectHeaps().house().Slot(Data.General.Value);
+      if (TheObjectHeaps().house().Slot(ID)->Is_Ally(house)) {
+        TheObjectHeaps().house().Slot(ID)->Make_Enemy(
             static_cast<HousesType>(Data.General.Value));
       } else {
-        TheObjectHeaps().house().Raw_Ptr(ID)->Make_Ally(
+        TheObjectHeaps().house().Slot(ID)->Make_Ally(
             static_cast<HousesType>(Data.General.Value));
       }
     } break;
@@ -580,7 +580,7 @@ void EventClass::Execute() {
     *multiplayer mode.
     */
     case DESTRUCT:
-      TheObjectHeaps().house().Raw_Ptr(ID)->Flag_To_Die();
+      TheObjectHeaps().house().Slot(ID)->Flag_To_Die();
       break;
 
     /*
@@ -591,7 +591,7 @@ void EventClass::Execute() {
     */
     case SPECIAL: {
       TheSpecial() = Data.Options.Data;
-      const HouseClass* house = TheObjectHeaps().house().Raw_Ptr(ID);
+      const HouseClass* house = TheObjectHeaps().house().Slot(ID);
 
       // The format string comes from the localized string table, so verify the
       // translation still takes exactly one %s before using it.
@@ -626,7 +626,7 @@ void EventClass::Execute() {
     case SELL:
       techno = Data.Target.Whom.As_Techno();
       if (techno && techno->IsActive &&
-          techno->House == TheObjectHeaps().house().Raw_Ptr(ID)) {
+          techno->House == TheObjectHeaps().house().Slot(ID)) {
         if (techno->What_Am_I() == RTTI_BUILDING ||
             (techno->What_Am_I() == RTTI_UNIT &&
              TheMap().at(techno->Center_Coord()).Cell_Building() != nullptr)) {
@@ -634,7 +634,7 @@ void EventClass::Execute() {
         }
       } else {
         //				if (Is_Target_Cell(Data.Target.Whom)) {
-        //					Houses.Raw_Ptr(ID)->Sell_Wall(As_Cell(Data.Target.Whom));
+        //					Houses.Slot(ID)->Sell_Wall(As_Cell(Data.Target.Whom));
         //				}
       }
       break;
@@ -644,7 +644,7 @@ void EventClass::Execute() {
     */
     case SELLCELL:
       //			cell = Data.SellCell.Cell;
-      TheObjectHeaps().house().Raw_Ptr(ID)->Sell_Wall(Data.SellCell.Cell);
+      TheObjectHeaps().house().Slot(ID)->Sell_Wall(Data.SellCell.Cell);
       break;
 
     /*
@@ -667,8 +667,8 @@ void EventClass::Execute() {
     *determine the *	exact factory and real object pointer to use.
     */
     case PLACE:
-      TheObjectHeaps().house().Raw_Ptr(ID)->Place_Object(Data.Place.Type,
-                                                         Data.Place.Cell);
+      TheObjectHeaps().house().Slot(ID)->Place_Object(Data.Place.Type,
+                                                      Data.Place.Cell);
       break;
 
     /*
@@ -677,8 +677,8 @@ void EventClass::Execute() {
     *and *	what factory to use.
     */
     case PRODUCE:
-      TheObjectHeaps().house().Raw_Ptr(ID)->Begin_Production(Data.Specific.Type,
-                                                             Data.Specific.ID);
+      TheObjectHeaps().house().Slot(ID)->Begin_Production(Data.Specific.Type,
+                                                          Data.Specific.ID);
       break;
 
     /*
@@ -686,8 +686,7 @@ void EventClass::Execute() {
     *the *	object type, the factory can be inferred.
     */
     case SUSPEND:
-      TheObjectHeaps().house().Raw_Ptr(ID)->Suspend_Production(
-          Data.Specific.Type);
+      TheObjectHeaps().house().Slot(ID)->Suspend_Production(Data.Specific.Type);
       break;
 
     /*
@@ -696,8 +695,7 @@ void EventClass::Execute() {
     *be inferred.
     */
     case ABANDON:
-      TheObjectHeaps().house().Raw_Ptr(ID)->Abandon_Production(
-          Data.Specific.Type);
+      TheObjectHeaps().house().Slot(ID)->Abandon_Production(Data.Specific.Type);
       break;
 
     /*
@@ -901,7 +899,7 @@ void EventClass::Execute() {
     ** care of it.
     */
     case SPECIAL_PLACE:
-      TheObjectHeaps().house().Raw_Ptr(ID)->Place_Special_Blast(
+      TheObjectHeaps().house().Slot(ID)->Place_Special_Blast(
           static_cast<SpecialWeaponType>(Data.Special.ID), Data.Special.Cell,
           Data.Special.Where);
       break;

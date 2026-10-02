@@ -190,7 +190,7 @@ static bool Need_To_Take(const AircraftClass* air) {
     *loaners.
     */
     for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
-      const AircraftClass* airptr = TheObjectHeaps().aircraft().Ptr(index);
+      const AircraftClass* airptr = TheObjectHeaps().aircraft().ActiveAt(index);
       if ((*airptr == AIRCRAFT_YAK || *airptr == AIRCRAFT_MIG) &&
           airptr->IsOwnedByPlayer && !airptr->IsALoaner && airptr != air) {
         deficit -= 1;

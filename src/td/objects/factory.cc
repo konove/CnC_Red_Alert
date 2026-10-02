@@ -99,7 +99,7 @@ namespace td {
 
 int FactoryClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().factory().ID(this);
+    const int num = TheObjectHeaps().factory().SlotIndexOf(this);
     if (num < 0 || num >= kFactoryMax) {
       Validate_Error("FACTORY");
     }
@@ -160,7 +160,7 @@ FactoryClass::~FactoryClass() {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void FactoryClass::Init() { TheObjectHeaps().factory().Free_All(); }
+void FactoryClass::Init() { TheObjectHeaps().factory().FreeAll(); }
 
 /***********************************************************************************************
  * FactoryClass::operator new -- Allocates a factory object from the free

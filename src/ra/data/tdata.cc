@@ -402,7 +402,7 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, uint32_t theater,
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 void* TerrainTypeClass::operator new(std::size_t /*unused*/) noexcept {
-  return TheTypeHeaps().terrain().Alloc();
+  return TheTypeHeaps().terrain().Allocate();
 }
 
 /***********************************************************************************************
@@ -729,7 +729,7 @@ std::span<const int16_t> TerrainTypeClass::Overlap_List() const {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 TerrainTypeClass& TerrainTypeClass::As_Reference(TerrainType type) {
-  return *TheTypeHeaps().terrain().Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().terrain().ActiveAt(static_cast<int>(type));
 }
 
 COORDINATE TerrainTypeClass::Coord_Fixup(COORDINATE coord) const {

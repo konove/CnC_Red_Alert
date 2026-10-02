@@ -318,7 +318,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
 void* HouseTypeClass::operator new(std::size_t /*unused*/) noexcept {
-  return TheTypeHeaps().house().Alloc();
+  return TheTypeHeaps().house().Allocate();
 }
 
 /***********************************************************************************************
@@ -440,7 +440,7 @@ void HouseTypeClass::One_Time() {}
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
-  return *TheTypeHeaps().house().Ptr(static_cast<int>(house));
+  return *TheTypeHeaps().house().ActiveAt(static_cast<int>(house));
 }
 
 /***********************************************************************************************

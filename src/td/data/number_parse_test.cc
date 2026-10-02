@@ -28,8 +28,8 @@ TEST(TdNumberParseTest, InvalidProfileNumbersKeepTheDefault) {
 // allocate them there rather than on the stack.
 class TdTeamTypeParseTest : public testing::Test {
  protected:
-  static void SetUpTestSuite() { TheObjectHeaps().team_type().Set_Heap(4); }
-  static void TearDownTestSuite() { TheObjectHeaps().team_type().Set_Heap(0); }
+  static void SetUpTestSuite() { TheObjectHeaps().team_type().Reset(4); }
+  static void TearDownTestSuite() { TheObjectHeaps().team_type().Reset(0); }
 };
 
 TEST_F(TdTeamTypeParseTest, RejectsInvalidTeamClassAndMissionCounts) {

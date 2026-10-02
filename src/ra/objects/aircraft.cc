@@ -303,8 +303,9 @@ void AircraftClass::operator delete(void* ptr) {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 AircraftClass::AircraftClass(AircraftType classid, HousesType house)
-    : FootClass(RTTI_AIRCRAFT, TheObjectHeaps().aircraft().ID(this), house),
-      Class(TheTypeHeaps().aircraft().Ptr(static_cast<int>(classid))),
+    : FootClass(RTTI_AIRCRAFT, TheObjectHeaps().aircraft().SlotIndexOf(this),
+                house),
+      Class(TheTypeHeaps().aircraft().ActiveAt(static_cast<int>(classid))),
       SecondaryFacing(PrimaryFacing) {
   /*
   **	For two shooters, clear out the second shot flag -- it will be set the
@@ -1142,7 +1143,7 @@ std::span<const int16_t> AircraftClass::Overlap_List(bool redraw) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Init() { TheObjectHeaps().aircraft().Free_All(); }
+void AircraftClass::Init() { TheObjectHeaps().aircraft().FreeAll(); }
 
 /***********************************************************************************************
  * AircraftClass::Mission_Unload -- Handles unloading cargo. *
@@ -1760,7 +1761,7 @@ int AircraftClass::Mission_Move() {
               }
               for (int index = 0; index < TheObjectHeaps().vessel().Count();
                    index++) {
-                VesselClass* ship = TheObjectHeaps().vessel().Ptr(index);
+                VesselClass* ship = TheObjectHeaps().vessel().ActiveAt(index);
                 if (ship != nullptr && *ship == VESSEL_CARRIER &&
                     !ship->IsInLimbo && ship->IsActive &&
                     ship->House == House &&
@@ -2078,7 +2079,7 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
               }
               for (int index = 0; index < TheObjectHeaps().vessel().Count();
                    index++) {
-                VesselClass* ship = TheObjectHeaps().vessel().Ptr(index);
+                VesselClass* ship = TheObjectHeaps().vessel().ActiveAt(index);
                 if (ship != nullptr && *ship == VESSEL_CARRIER &&
                     !ship->IsInLimbo && ship->IsActive &&
                     ship->House == House && ship->How_Many() < ship->Class->Max_Passengers() /* && !ship->In_Radio_Contact()*/) {
@@ -3290,7 +3291,7 @@ bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
   */
   const TARGET astarget = ra::As_Target(cell);
   for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
-    const AircraftClass* air = TheObjectHeaps().aircraft().Ptr(index);
+    const AircraftClass* air = TheObjectHeaps().aircraft().ActiveAt(index);
     if ((air && (strict || air != this) && !air->IsInLimbo) &&
         (Coord_Cell(air->Coord) == cell || air->NavCom == astarget)) {
       return false;
@@ -3625,7 +3626,7 @@ TARGET AircraftClass::Good_LZ() const {
   CELL bestcell = 0;
   int bestdist = -1;
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-    const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+    const BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
 
     if (building && !building->IsInLimbo && building->House == House) {
       int dist = Distance(building);
@@ -3867,7 +3868,7 @@ int AircraftClass::Mission_Guard() {
         dist = Distance(dock);
       }
       for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
-        VesselClass* ship = TheObjectHeaps().vessel().Ptr(index);
+        VesselClass* ship = TheObjectHeaps().vessel().ActiveAt(index);
         if (ship != nullptr && *ship == VESSEL_CARRIER && !ship->IsInLimbo &&
             ship->IsActive && ship->House == House &&
             ship->How_Many() < ship->Class->Max_Passengers()) {

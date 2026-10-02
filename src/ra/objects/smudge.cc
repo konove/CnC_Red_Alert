@@ -138,8 +138,8 @@ void SmudgeClass::operator delete(void* ptr) {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
-    : ObjectClass(RTTI_SMUDGE, TheObjectHeaps().smudge().ID(this)),
-      Class(TheTypeHeaps().smudge().Ptr(static_cast<int>(type))) {
+    : ObjectClass(RTTI_SMUDGE, TheObjectHeaps().smudge().SlotIndexOf(this)),
+      Class(TheTypeHeaps().smudge().ActiveAt(static_cast<int>(type))) {
   if (pos != ~0U) {
     ToOwn = house;
     if (!Unlimbo(pos)) {
@@ -164,7 +164,7 @@ SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void SmudgeClass::Init() { TheObjectHeaps().smudge().Free_All(); }
+void SmudgeClass::Init() { TheObjectHeaps().smudge().FreeAll(); }
 
 /***********************************************************************************************
  * SmudgeClass::Mark -- Marks a smudge down on the map. *

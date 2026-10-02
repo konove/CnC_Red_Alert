@@ -288,8 +288,8 @@ Fixed HouseClass::Tiberium_Fraction() const {
 HouseClass* HouseClass::As_Pointer(HousesType house) {
   if (house != HOUSE_NONE) {
     for (int index = 0; index < TheObjectHeaps().house().Count(); index++) {
-      if (TheObjectHeaps().house().Ptr(index)->Class->House == house) {
-        return TheObjectHeaps().house().Ptr(index);
+      if (TheObjectHeaps().house().ActiveAt(index)->Class->House == house) {
+        return TheObjectHeaps().house().ActiveAt(index);
       }
     }
   }
@@ -312,7 +312,7 @@ HouseClass* HouseClass::As_Pointer(HousesType house) {
  * HISTORY: * 12/09/1994 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::One_Time() {
-  BuildChoice.Set_Heap(magic_enum::enum_count<StructType>());
+  BuildChoice.Reset(magic_enum::enum_count<StructType>());
 }
 
 /***********************************************************************************************
@@ -451,8 +451,8 @@ void HouseClass::operator delete(void* ptr) {
 #define VOX_NOT_READY VOX_NONE
 HouseClass::HouseClass(HousesType house)
     : RTTI(RTTI_HOUSE),
-      ID(TheObjectHeaps().house().ID(this)),
-      Class(TheTypeHeaps().house().Ptr(static_cast<int>(house))),
+      ID(TheObjectHeaps().house().SlotIndexOf(this)),
+      Class(TheTypeHeaps().house().ActiveAt(static_cast<int>(house))),
       Difficulty(TheScenario().CDifficulty),
       ActLike(Class->House),
       IQ(Control.IQ),
@@ -552,7 +552,7 @@ void HouseClass::Init_Trackers() {
 
 HouseClass::HouseClass()
     : RTTI(RTTI_HOUSE),
-      ID(TheObjectHeaps().house().ID(this)),
+      ID(TheObjectHeaps().house().SlotIndexOf(this)),
       Difficulty(DIFF_NORMAL),
       ActLike(HOUSE_NONE),
 
@@ -780,7 +780,7 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
 void HouseClass::Init() {
   // Destroyed rather than just freed: an Internet game's houses own their
   // unit trackers.
-  TheObjectHeaps().house().Destroy_All();
+  TheObjectHeaps().house().DestroyAll();
 
   for (const HousesType index : magic_enum::enum_values<HousesType>()) {
     TheWorld().house_triggers().at(index).clear();
@@ -953,7 +953,7 @@ void HouseClass::AI() {
     if (Power_Fraction() < 1) {
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
-        BuildingClass& b = *TheObjectHeaps().building().Ptr(index);
+        BuildingClass& b = *TheObjectHeaps().building().ActiveAt(index);
 
         // BG: Only damage buildings that require power, to keep the
         //     land mines from blowing up under low-power conditions
@@ -1086,7 +1086,7 @@ void HouseClass::AI() {
               //	Do the ping.
               for (int index = 0; index < TheObjectHeaps().vessel().Count();
                    index++) {
-                VesselClass* sub = TheObjectHeaps().vessel().Ptr(index);
+                VesselClass* sub = TheObjectHeaps().vessel().ActiveAt(index);
                 if (*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) {
                   sub->PulseCountDown.Set(static_cast<int64_t>(15) *
                                           kTicksPerSecond);
@@ -1145,7 +1145,8 @@ void HouseClass::AI() {
     } else {
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
-        const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+        const BuildingClass* building =
+            TheObjectHeaps().building().ActiveAt(index);
         if (building != nullptr && !building->IsInLimbo &&
             building->House == ThePlayer()) {
           if (*building == STRUCT_RADAR /* || *building == STRUCT_EYE */) {
@@ -1218,7 +1219,7 @@ void HouseClass::AI() {
     *construction *	lists. Update the buildable options accordingly.
     */
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-      BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+      BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
       if ((building && building->Strength > 0 &&
            building->Owner() == Class->House &&
            building->Mission != MISSION_DECONSTRUCTION &&
@@ -1330,7 +1331,7 @@ void HouseClass::Super_Weapon_Handler() {
         IsRecalcNeeded = true;
         for (int index = 0; index < TheObjectHeaps().building().Count();
              index++) {
-          BuildingClass* bldg = TheObjectHeaps().building().Ptr(index);
+          BuildingClass* bldg = TheObjectHeaps().building().ActiveAt(index);
           if (*bldg == STRUCT_ADVANCED_TECH && bldg->House == this) {
             bldg->HasFired = true;
             bldg->Assign_Mission(MISSION_MISSILE);
@@ -1350,7 +1351,7 @@ void HouseClass::Super_Weapon_Handler() {
       bool canfire = false;
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
-        const BuildingClass* bldg = TheObjectHeaps().building().Ptr(index);
+        const BuildingClass* bldg = TheObjectHeaps().building().ActiveAt(index);
         if (*bldg == STRUCT_ADVANCED_TECH && bldg->House == this &&
             !bldg->IsInLimbo) {
           if (!bldg->HasFired) {
@@ -1490,7 +1491,7 @@ void HouseClass::Super_Weapon_Handler() {
     bool present = false;
     bool powered = false;
     for (int q = 0; q < TheObjectHeaps().building().Count() && !powered; q++) {
-      const BuildingClass* bldg = TheObjectHeaps().building().Ptr(q);
+      const BuildingClass* bldg = TheObjectHeaps().building().ActiveAt(q);
       if (*bldg == STRUCT_SUB_PEN &&
           bldg->House->Class->House != Class->House && bldg->SpiedBy & usspy) {
         present = true;
@@ -1889,7 +1890,7 @@ void HouseClass::Silo_Redraw_Check(int64_t oldtib, int64_t oldcap) {
 
   if (oldratio != newratio) {
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-      BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+      BuildingClass* b = TheObjectHeaps().building().ActiveAt(index);
       if (b && !b->IsInLimbo && b->House == this && *b == STRUCT_STORAGE) {
         b->Mark(MARK_CHANGE);
       }
@@ -2042,7 +2043,7 @@ void HouseClass::Make_Ally(HousesType house) {
       if (TheRules().IsAllyReveal && house == ThePlayer()->Class->House) {
         for (int index = 0; index < TheObjectHeaps().building().Count();
              index++) {
-          const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+          const BuildingClass* b = TheObjectHeaps().building().ActiveAt(index);
 
           if (b && !b->IsInLimbo && b->House == this) {
             TheMap().Sight_From(Coord_Cell(b->Center_Coord()),
@@ -2412,7 +2413,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
   int best = -1;
 
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-    BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+    BuildingClass* b = TheObjectHeaps().building().ActiveAt(index);
 
     /*
     ** If the building is valid, not in limbo, not in the process of
@@ -2469,7 +2470,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
         IsRecalcNeeded = true;
         for (int index = 0; index < TheObjectHeaps().vessel().Count();
              index++) {
-          VesselClass* sub = TheObjectHeaps().vessel().Ptr(index);
+          VesselClass* sub = TheObjectHeaps().vessel().ActiveAt(index);
           if (*sub == VESSEL_SS || *sub == VESSEL_MISSILESUB) {
             sub->PulseCountDown.Set(static_cast<int64_t>(15) * kTicksPerSecond);
             sub->Do_Uncloak();
@@ -3005,50 +3006,50 @@ void HouseClass::Clobber_All() {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
-    if (TheObjectHeaps().aircraft().Ptr(i)->House == this) {
-      base::DeletePooled(TheObjectHeaps().aircraft().Ptr(i));
+    if (TheObjectHeaps().aircraft().ActiveAt(i)->House == this) {
+      base::DeletePooled(TheObjectHeaps().aircraft().ActiveAt(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-    if (TheObjectHeaps().unit().Ptr(i)->House == this) {
-      base::DeletePooled(TheObjectHeaps().unit().Ptr(i));
+    if (TheObjectHeaps().unit().ActiveAt(i)->House == this) {
+      base::DeletePooled(TheObjectHeaps().unit().ActiveAt(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
-    if (TheObjectHeaps().vessel().Ptr(i)->House == this) {
-      base::DeletePooled(TheObjectHeaps().vessel().Ptr(i));
+    if (TheObjectHeaps().vessel().ActiveAt(i)->House == this) {
+      base::DeletePooled(TheObjectHeaps().vessel().ActiveAt(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
-    if (TheObjectHeaps().infantry().Ptr(i)->House == this) {
-      base::DeletePooled(TheObjectHeaps().infantry().Ptr(i));
+    if (TheObjectHeaps().infantry().ActiveAt(i)->House == this) {
+      base::DeletePooled(TheObjectHeaps().infantry().ActiveAt(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
-    if (TheObjectHeaps().building().Ptr(i)->House == this) {
-      base::DeletePooled(TheObjectHeaps().building().Ptr(i));
+    if (TheObjectHeaps().building().ActiveAt(i)->House == this) {
+      base::DeletePooled(TheObjectHeaps().building().ActiveAt(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
-    if (TheObjectHeaps().team_type().Ptr(i)->House == Class->House) {
-      base::DeletePooled(TheObjectHeaps().team_type().Ptr(i));
+    if (TheObjectHeaps().team_type().ActiveAt(i)->House == Class->House) {
+      base::DeletePooled(TheObjectHeaps().team_type().ActiveAt(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
-    if (TheObjectHeaps().trigger().Ptr(i)->Class->House == Class->House) {
-      base::DeletePooled(TheObjectHeaps().trigger().Ptr(i));
+    if (TheObjectHeaps().trigger().ActiveAt(i)->Class->House == Class->House) {
+      base::DeletePooled(TheObjectHeaps().trigger().ActiveAt(i));
       i--;
     }
   }
   for (int i = 0; i < TheObjectHeaps().trigger_type().Count(); i++) {
-    if (TheObjectHeaps().trigger_type().Ptr(i)->House == Class->House) {
-      base::DeletePooled(TheObjectHeaps().trigger_type().Ptr(i));
+    if (TheObjectHeaps().trigger_type().ActiveAt(i)->House == Class->House) {
+      base::DeletePooled(TheObjectHeaps().trigger_type().ActiveAt(i));
       i--;
     }
   }
@@ -3728,9 +3729,9 @@ void HouseClass::Blowup_All() {
   *on the *	object; it will also damage anything around it.
   */
   for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-    if (TheObjectHeaps().unit().Ptr(i)->House == this &&
-        !TheObjectHeaps().unit().Ptr(i)->IsInLimbo) {
-      UnitClass* uptr = TheObjectHeaps().unit().Ptr(i);
+    if (TheObjectHeaps().unit().ActiveAt(i)->House == this &&
+        !TheObjectHeaps().unit().ActiveAt(i)->IsInLimbo) {
+      UnitClass* uptr = TheObjectHeaps().unit().ActiveAt(i);
 
       /*
       **	Some units can't be killed with one shot, so keep damaging them
@@ -3739,7 +3740,7 @@ void HouseClass::Blowup_All() {
       **	its pointer will be removed from the active pointer list.
       */
       count = 0;
-      while (TheObjectHeaps().unit().Ptr(i) == uptr && uptr->Strength) {
+      while (TheObjectHeaps().unit().ActiveAt(i) == uptr && uptr->Strength) {
         damage = uptr->Strength;
         uptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
         count++;
@@ -3756,9 +3757,9 @@ void HouseClass::Blowup_All() {
   **	Destroy all aircraft owned by this house.
   */
   for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
-    if (TheObjectHeaps().aircraft().Ptr(i)->House == this &&
-        !TheObjectHeaps().aircraft().Ptr(i)->IsInLimbo) {
-      AircraftClass* aptr = TheObjectHeaps().aircraft().Ptr(i);
+    if (TheObjectHeaps().aircraft().ActiveAt(i)->House == this &&
+        !TheObjectHeaps().aircraft().ActiveAt(i)->IsInLimbo) {
+      AircraftClass* aptr = TheObjectHeaps().aircraft().ActiveAt(i);
 
       damage = aptr->Strength;
       aptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
@@ -3772,9 +3773,9 @@ void HouseClass::Blowup_All() {
   **	Destroy all vessels owned by this house.
   */
   for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
-    if (TheObjectHeaps().vessel().Ptr(i)->House == this &&
-        !TheObjectHeaps().vessel().Ptr(i)->IsInLimbo) {
-      VesselClass* vptr = TheObjectHeaps().vessel().Ptr(i);
+    if (TheObjectHeaps().vessel().ActiveAt(i)->House == this &&
+        !TheObjectHeaps().vessel().ActiveAt(i)->IsInLimbo) {
+      VesselClass* vptr = TheObjectHeaps().vessel().ActiveAt(i);
 
       damage = vptr->Strength;
       vptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
@@ -3789,12 +3790,13 @@ void HouseClass::Blowup_All() {
   **	and begin a countdown, so don't decrement 'i' when it's destroyed.
   */
   for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
-    if (TheObjectHeaps().building().Ptr(i)->House == this &&
-        !TheObjectHeaps().building().Ptr(i)->IsInLimbo) {
-      BuildingClass* bptr = TheObjectHeaps().building().Ptr(i);
+    if (TheObjectHeaps().building().ActiveAt(i)->House == this &&
+        !TheObjectHeaps().building().ActiveAt(i)->IsInLimbo) {
+      BuildingClass* bptr = TheObjectHeaps().building().ActiveAt(i);
 
       count = 0;
-      while (TheObjectHeaps().building().Ptr(i) == bptr && bptr->Strength) {
+      while (TheObjectHeaps().building().ActiveAt(i) == bptr &&
+             bptr->Strength) {
         damage = bptr->Strength;
         bptr->Take_Damage(damage, 0, WARHEAD_HE, nullptr, true);
         count++;
@@ -3813,12 +3815,13 @@ void HouseClass::Blowup_All() {
   **	anims aren't all synchronized.
   */
   for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
-    if (TheObjectHeaps().infantry().Ptr(i)->House == this &&
-        !TheObjectHeaps().infantry().Ptr(i)->IsInLimbo) {
-      InfantryClass* iptr = TheObjectHeaps().infantry().Ptr(i);
+    if (TheObjectHeaps().infantry().ActiveAt(i)->House == this &&
+        !TheObjectHeaps().infantry().ActiveAt(i)->IsInLimbo) {
+      InfantryClass* iptr = TheObjectHeaps().infantry().ActiveAt(i);
 
       count = 0;
-      while (TheObjectHeaps().infantry().Ptr(i) == iptr && iptr->Strength) {
+      while (TheObjectHeaps().infantry().ActiveAt(i) == iptr &&
+             iptr->Strength) {
         damage = iptr->Strength;
         const WarheadType warhead = Random_Pick(WARHEAD_SA, WARHEAD_FIRE);
         iptr->Take_Damage(damage, 0, warhead, nullptr, true);
@@ -4122,7 +4125,7 @@ BuildingClass* HouseClass::Find_Building(StructType type, ZoneType zone) const {
     **	Search for a suitable launch site for this missile.
     */
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-      BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+      BuildingClass* b = TheObjectHeaps().building().ActiveAt(index);
       if (b && !b->IsInLimbo && b->House == this && *b == type) {
         if (zone == ZONE_NONE || Which_Zone(b) == zone) {
           return b;
@@ -4303,7 +4306,7 @@ void HouseClass::Recalc_Center() {
     int count = 0;
 
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-      const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+      const BuildingClass* b = TheObjectHeaps().building().ActiveAt(index);
 
       if (b != nullptr && !b->IsInLimbo && b->House == this &&
           b->Strength > 0) {
@@ -4345,7 +4348,7 @@ void HouseClass::Recalc_Center() {
 
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
-        const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+        const BuildingClass* b = TheObjectHeaps().building().ActiveAt(index);
 
         if (b != nullptr && !b->IsInLimbo && b->House == this &&
             b->Strength > 0) {
@@ -4359,7 +4362,7 @@ void HouseClass::Recalc_Center() {
       */
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
-        const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+        const BuildingClass* b = TheObjectHeaps().building().ActiveAt(index);
 
         if (b != nullptr && !b->IsInLimbo && b->House == this &&
             b->Strength > 0) {
@@ -4837,7 +4840,7 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
       !Percent_Chance(33);
   const bool forced = CurBuildings == 0;
   for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
-    AircraftClass* a = TheObjectHeaps().aircraft().Ptr(index);
+    AircraftClass* a = TheObjectHeaps().aircraft().ActiveAt(index);
 
     if ((a != nullptr && !a->IsInLimbo && a->House == this &&
          a->Strength > 0) &&
@@ -4847,7 +4850,7 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
     }
   }
   for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-    UnitClass* u = TheObjectHeaps().unit().Ptr(index);
+    UnitClass* u = TheObjectHeaps().unit().ActiveAt(index);
 
     if (u != nullptr && !u->IsInLimbo && u->House == this && u->Strength > 0) {
       if (!shuffle && u->Is_Weapon_Equipped() &&
@@ -4866,7 +4869,7 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
     }
   }
   for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
-    InfantryClass* i = TheObjectHeaps().infantry().Ptr(index);
+    InfantryClass* i = TheObjectHeaps().infantry().ActiveAt(index);
 
     if (i != nullptr && !i->IsInLimbo && i->House == this && i->Strength > 0) {
       if (!shuffle && (i->Is_Weapon_Equipped() || *i == INFANTRY_RENOVATOR) &&
@@ -5133,7 +5136,7 @@ int HouseClass::AI_Building() {
     // TCTC -- Should multiply the largest player base by some rational number.
     //		if (CurBuildings >= quant) return(kTicksPerSecond);
 
-    BuildChoice.Free_All();
+    BuildChoice.FreeAll();
     BuildChoiceClass* choiceptr = nullptr;
     const int money = static_cast<int>(Available_Money());
     const bool hasincome = BQuantity.at(STRUCT_REFINERY) > 0 &&
@@ -5152,7 +5155,7 @@ int HouseClass::AI_Building() {
     b = &BuildingTypeClass::As_Reference(STRUCT_ADVANCED_POWER);
     if (Can_Build(b, ActLike) && Power <= Drain + TheRules().PowerSurplus &&
         b->Cost_Of() < money) {
-      choiceptr = BuildChoice.Alloc();
+      choiceptr = BuildChoice.Allocate();
       if (choiceptr != nullptr) {
         *choiceptr = BuildChoiceClass(
             BQuantity.at(STRUCT_REFINERY) == 0 ? URGENCY_LOW : URGENCY_MEDIUM,
@@ -5162,7 +5165,7 @@ int HouseClass::AI_Building() {
       b = &BuildingTypeClass::As_Reference(STRUCT_POWER);
       if (Can_Build(b, ActLike) && Power <= Drain + TheRules().PowerSurplus &&
           b->Cost_Of() < money) {
-        choiceptr = BuildChoice.Alloc();
+        choiceptr = BuildChoice.Allocate();
         if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(
               BQuantity.at(STRUCT_REFINERY) == 0 ? URGENCY_LOW : URGENCY_MEDIUM,
@@ -5181,7 +5184,7 @@ int HouseClass::AI_Building() {
         current < TheRules().RefineryLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
       if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
-        choiceptr = BuildChoice.Alloc();
+        choiceptr = BuildChoice.Allocate();
         if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(BQuantity.at(STRUCT_REFINERY) == 0
                                             ? URGENCY_HIGH
@@ -5201,7 +5204,7 @@ int HouseClass::AI_Building() {
         current < TheRules().BarracksLimit && (money > 300 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_BARRACKS);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-        choiceptr = BuildChoice.Alloc();
+        choiceptr = BuildChoice.Allocate();
         if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(
               current > 0 ? URGENCY_LOW : URGENCY_MEDIUM, b->Type);
@@ -5209,7 +5212,7 @@ int HouseClass::AI_Building() {
       } else {
         b = &BuildingTypeClass::As_Reference(STRUCT_TENT);
         if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-          choiceptr = BuildChoice.Alloc();
+          choiceptr = BuildChoice.Allocate();
           if (choiceptr != nullptr) {
             *choiceptr = BuildChoiceClass(
                 current > 0 ? URGENCY_LOW : URGENCY_MEDIUM, b->Type);
@@ -5225,7 +5228,7 @@ int HouseClass::AI_Building() {
     if (current < 1 && (money > 300 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_KENNEL);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-        choiceptr = BuildChoice.Alloc();
+        choiceptr = BuildChoice.Allocate();
         if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
         }
@@ -5239,7 +5242,7 @@ int HouseClass::AI_Building() {
     if (current < 1 && Power_Fraction() >= 1 && hasincome) {
       b = &BuildingTypeClass::As_Reference(STRUCT_GAP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-        choiceptr = BuildChoice.Alloc();
+        choiceptr = BuildChoice.Allocate();
         if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
         }
@@ -5256,7 +5259,7 @@ int HouseClass::AI_Building() {
         current < TheRules().WarLimit && (money > 2000 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-        choiceptr = BuildChoice.Alloc();
+        choiceptr = BuildChoice.Allocate();
         if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(
               current > 0 ? URGENCY_LOW : URGENCY_MEDIUM, b->Type);
@@ -5274,7 +5277,7 @@ int HouseClass::AI_Building() {
         current < TheRules().DefenseLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_FLAME_TURRET);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-        choiceptr = BuildChoice.Alloc();
+        choiceptr = BuildChoice.Allocate();
         if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
         }
@@ -5282,7 +5285,7 @@ int HouseClass::AI_Building() {
         if (Percent_Chance(50)) {
           b = &BuildingTypeClass::As_Reference(STRUCT_PILLBOX);
           if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-            choiceptr = BuildChoice.Alloc();
+            choiceptr = BuildChoice.Allocate();
             if (choiceptr != nullptr) {
               *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
             }
@@ -5290,7 +5293,7 @@ int HouseClass::AI_Building() {
         } else {
           b = &BuildingTypeClass::As_Reference(STRUCT_TURRET);
           if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-            choiceptr = BuildChoice.Alloc();
+            choiceptr = BuildChoice.Allocate();
             if (choiceptr != nullptr) {
               *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
             }
@@ -5330,7 +5333,7 @@ int HouseClass::AI_Building() {
         if (BQuantity.at(STRUCT_RADAR) == 0) {
           b = &BuildingTypeClass::As_Reference(STRUCT_RADAR);
           if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-            choiceptr = BuildChoice.Alloc();
+            choiceptr = BuildChoice.Allocate();
             if (choiceptr != nullptr) {
               *choiceptr = BuildChoiceClass(URGENCY_HIGH, b->Type);
             }
@@ -5339,7 +5342,7 @@ int HouseClass::AI_Building() {
 
         b = &BuildingTypeClass::As_Reference(STRUCT_SAM);
         if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-          choiceptr = BuildChoice.Alloc();
+          choiceptr = BuildChoice.Allocate();
           if (choiceptr != nullptr) {
             *choiceptr = BuildChoiceClass(
                 current < threat_quantity ? URGENCY_HIGH : URGENCY_MEDIUM,
@@ -5348,7 +5351,7 @@ int HouseClass::AI_Building() {
         } else {
           b = &BuildingTypeClass::As_Reference(STRUCT_AAGUN);
           if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-            choiceptr = BuildChoice.Alloc();
+            choiceptr = BuildChoice.Allocate();
             if (choiceptr != nullptr) {
               *choiceptr = BuildChoiceClass(
                   current < threat_quantity ? URGENCY_HIGH : URGENCY_MEDIUM,
@@ -5369,7 +5372,7 @@ int HouseClass::AI_Building() {
       b = &BuildingTypeClass::As_Reference(STRUCT_TESLA);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
           Power_Fraction() >= 1) {
-        choiceptr = BuildChoice.Alloc();
+        choiceptr = BuildChoice.Allocate();
         if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
         }
@@ -5385,7 +5388,7 @@ int HouseClass::AI_Building() {
       b = &BuildingTypeClass::As_Reference(STRUCT_ADVANCED_TECH);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
           Power_Fraction() >= 1) {
-        choiceptr = BuildChoice.Alloc();
+        choiceptr = BuildChoice.Allocate();
         if (choiceptr != nullptr) {
           *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
         }
@@ -5393,7 +5396,7 @@ int HouseClass::AI_Building() {
         b = &BuildingTypeClass::As_Reference(STRUCT_SOVIET_TECH);
         if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
             Power_Fraction() >= 1) {
-          choiceptr = BuildChoice.Alloc();
+          choiceptr = BuildChoice.Allocate();
           if (choiceptr != nullptr) {
             *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
           }
@@ -5410,7 +5413,7 @@ int HouseClass::AI_Building() {
         current < TheRules().HelipadLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-        choiceptr = BuildChoice.Alloc();
+        choiceptr = BuildChoice.Allocate();
         if (choiceptr != nullptr) {
           int threat_quantity = 0;
           if (enemy != nullptr) {
@@ -5433,7 +5436,7 @@ int HouseClass::AI_Building() {
         current < TheRules().AirstripLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
-        choiceptr = BuildChoice.Alloc();
+        choiceptr = BuildChoice.Allocate();
         if (choiceptr != nullptr) {
           int threat_quantity = 0;
           if (enemy != nullptr) {
@@ -5455,7 +5458,7 @@ int HouseClass::AI_Building() {
     if (current == 0) {
       b = &BuildingTypeClass::As_Reference(STRUCT_REPAIR);
       if (Can_Build(b, ActLike) && b->Cost_Of() < money) {
-        choiceptr = BuildChoice.Alloc();
+        choiceptr = BuildChoice.Allocate();
         if (choiceptr) {
           *choiceptr = BuildChoiceClass(URGENCY_MEDIUM, b->Type);
         }
@@ -5469,13 +5472,13 @@ int HouseClass::AI_Building() {
     UrgencyType best = URGENCY_NONE;
     int bestindex = 0;
     for (int index = 0; index < BuildChoice.Count(); index++) {
-      if (BuildChoice.Ptr(index)->Urgency > best) {
+      if (BuildChoice.ActiveAt(index)->Urgency > best) {
         bestindex = index;
-        best = BuildChoice.Ptr(index)->Urgency;
+        best = BuildChoice.ActiveAt(index)->Urgency;
       }
     }
     if (best != URGENCY_NONE) {
-      BuildStructure = BuildChoice.Ptr(bestindex)->Structure;
+      BuildStructure = BuildChoice.ActiveAt(bestindex)->Structure;
     }
   }
 
@@ -5529,7 +5532,7 @@ int HouseClass::AI_Unit() {
     *be *	twice the number required to fill all teams.
     */
     for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
-      const TeamClass* tptr = TheObjectHeaps().team().Ptr(index);
+      const TeamClass* tptr = TheObjectHeaps().team().ActiveAt(index);
       if (tptr != nullptr) {
         const TeamTypeClass* team = tptr->Class;
         if (((team->IsReinforcable && !tptr->IsFullStrength) ||
@@ -5553,7 +5556,7 @@ int HouseClass::AI_Unit() {
     *team active *	of that type.
     */
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-      const TeamTypeClass* team = TheObjectHeaps().team_type().Ptr(index);
+      const TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
       if (team != nullptr && team->House == Class->House && team->IsPrebuilt &&
           (!team->IsAutocreate || IsAlerted)) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
@@ -5576,7 +5579,7 @@ int HouseClass::AI_Unit() {
     **	in play.
     */
     for (int uindex = 0; uindex < TheObjectHeaps().unit().Count(); uindex++) {
-      const UnitClass* unit = TheObjectHeaps().unit().Ptr(uindex);
+      const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(uindex);
       if (unit != nullptr && unit->Is_Recruitable(this) &&
           counter.at(unit->Class->Type) > 0) {
         counter.at(unit->Class->Type)--;
@@ -5675,7 +5678,7 @@ int HouseClass::AI_Vessel() {
     *be *	twice the number required to fill all teams.
     */
     for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
-      const TeamClass* tptr = TheObjectHeaps().team().Ptr(index);
+      const TeamClass* tptr = TheObjectHeaps().team().ActiveAt(index);
       if (tptr) {
         const TeamTypeClass* team = tptr->Class;
 
@@ -5701,7 +5704,7 @@ int HouseClass::AI_Vessel() {
     *team active *	of that type.
     */
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-      const TeamTypeClass* team = TheObjectHeaps().team_type().Ptr(index);
+      const TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
       if (team && (team->House == Class->House && team->IsPrebuilt &&
                    (!team->IsAutocreate || IsAlerted))) {
         for (int subindex = 0; subindex < team->ClassCount; subindex++) {
@@ -5724,7 +5727,7 @@ int HouseClass::AI_Vessel() {
     **	in play.
     */
     for (int vindex = 0; vindex < TheObjectHeaps().vessel().Count(); vindex++) {
-      const VesselClass* unit = TheObjectHeaps().vessel().Ptr(vindex);
+      const VesselClass* unit = TheObjectHeaps().vessel().ActiveAt(vindex);
       if (unit != nullptr && unit->Is_Recruitable(this) &&
           counter.at(unit->Class->Type) > 0) {
         counter.at(unit->Class->Type)--;
@@ -5801,7 +5804,7 @@ int HouseClass::AI_Infantry() {
     *be *	twice the number required to fill all teams.
     */
     for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
-      const TeamClass* tptr = TheObjectHeaps().team().Ptr(index);
+      const TeamClass* tptr = TheObjectHeaps().team().ActiveAt(index);
       if (tptr != nullptr) {
         const TeamTypeClass* team = tptr->Class;
 
@@ -5829,7 +5832,7 @@ int HouseClass::AI_Infantry() {
     *team active *	of that type.
     */
     for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-      const TeamTypeClass* team = TheObjectHeaps().team_type().Ptr(index);
+      const TeamTypeClass* team = TheObjectHeaps().team_type().ActiveAt(index);
       if ((team != nullptr) &&
           (team->House == Class->House && team->IsPrebuilt &&
            (!team->IsAutocreate || IsAlerted))) {
@@ -5857,7 +5860,8 @@ int HouseClass::AI_Infantry() {
     */
     for (int uindex = 0; uindex < TheObjectHeaps().infantry().Count();
          uindex++) {
-      const InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(uindex);
+      const InfantryClass* infantry =
+          TheObjectHeaps().infantry().ActiveAt(uindex);
       if (infantry != nullptr && infantry->Is_Recruitable(this) &&
           counter.at(infantry->Class->Type) > 0) {
         counter.at(infantry->Class->Type)--;
@@ -6647,7 +6651,7 @@ void HouseClass::Recalc_Attributes() {
   **	old existing values.
   */
   for (int index = 0; index < TheObjectHeaps().house().Count(); index++) {
-    HouseClass* house = TheObjectHeaps().house().Ptr(index);
+    HouseClass* house = TheObjectHeaps().house().ActiveAt(index);
 
     if (house != nullptr) {
       house->BScan = 0;
@@ -6668,7 +6672,7 @@ void HouseClass::Recalc_Attributes() {
   *appropriate scan *	bits will be set for the owner house.
   */
   for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-    const UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+    const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
     unit->House->UScan |= ScanBit(static_cast<int>(unit->Class->Type));
     if ((unit->IsLocked &&
          (TheSession().Type != GAME_NORMAL || !unit->House->IsHuman ||
@@ -6678,7 +6682,7 @@ void HouseClass::Recalc_Attributes() {
     }
   }
   for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
-    const InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+    const InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
     infantry->House->IScan |= ScanBit(static_cast<int>(infantry->Class->Type));
     if ((infantry->IsLocked &&
          (TheSession().Type != GAME_NORMAL || !infantry->House->IsHuman ||
@@ -6691,7 +6695,7 @@ void HouseClass::Recalc_Attributes() {
     }
   }
   for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
-    const AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(index);
+    const AircraftClass* aircraft = TheObjectHeaps().aircraft().ActiveAt(index);
     aircraft->House->AScan |= ScanBit(static_cast<int>(aircraft->Class->Type));
     if ((aircraft->IsLocked &&
          (TheSession().Type != GAME_NORMAL || !aircraft->House->IsHuman ||
@@ -6704,7 +6708,7 @@ void HouseClass::Recalc_Attributes() {
     }
   }
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-    const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+    const BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
     if (static_cast<int>(building->Class->Type) < 32) {
       building->House->BScan |=
           ScanBit(static_cast<int>(building->Class->Type));
@@ -6720,7 +6724,7 @@ void HouseClass::Recalc_Attributes() {
     }
   }
   for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
-    const VesselClass* vessel = TheObjectHeaps().vessel().Ptr(index);
+    const VesselClass* vessel = TheObjectHeaps().vessel().ActiveAt(index);
     vessel->House->VScan |= ScanBit(static_cast<int>(vessel->Class->Type));
     if ((vessel->IsLocked &&
          (TheSession().Type != GAME_NORMAL || !vessel->House->IsHuman ||
@@ -6836,7 +6840,7 @@ TARGET HouseClass::Find_Juicy_Target(COORDINATE coord) const {
   int value = 0;
 
   for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+    UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
 
     if (unit && !unit->IsInLimbo && !Is_Ally(unit) &&
         unit->House->Which_Zone(unit) == ZONE_NONE) {
@@ -6961,7 +6965,7 @@ FactoryClass* HouseClass::Fetch_Factory(RTTIType rtti) const {
   **	null is returned.
   */
   if (factory_index != -1) {
-    return TheObjectHeaps().factory().Raw_Ptr(factory_index);
+    return TheObjectHeaps().factory().Slot(factory_index);
   }
   return nullptr;
 }
@@ -7320,7 +7324,7 @@ bool HouseClass::Is_Hack_Prevented(RTTIType rtti, int value) const {
 bool HouseClass::Fire_Sale() {
   if (CurBuildings > 0) {
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-      BuildingClass* b = TheObjectHeaps().building().Ptr(index);
+      BuildingClass* b = TheObjectHeaps().building().ActiveAt(index);
 
       if (b != nullptr && !b->IsInLimbo && b->House == this &&
           b->Strength > 0) {
@@ -7350,7 +7354,7 @@ bool HouseClass::Fire_Sale() {
  *=============================================================================================*/
 void HouseClass::Do_All_To_Hunt() const {
   for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+    UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
 
     if (unit->House == this && unit->IsDown && !unit->IsInLimbo) {
       if (unit->Team) {
@@ -7361,7 +7365,7 @@ void HouseClass::Do_All_To_Hunt() const {
   }
 
   for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
-    InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+    InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
 
     if (infantry->House == this && infantry->IsDown && !infantry->IsInLimbo) {
       if (infantry->Team) {
@@ -7372,7 +7376,7 @@ void HouseClass::Do_All_To_Hunt() const {
   }
 
   for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
-    VesselClass* vessel = TheObjectHeaps().vessel().Ptr(index);
+    VesselClass* vessel = TheObjectHeaps().vessel().ActiveAt(index);
 
     if (vessel->House == this && vessel->IsDown && !vessel->IsInLimbo) {
       if (vessel->Team) {
@@ -7383,7 +7387,7 @@ void HouseClass::Do_All_To_Hunt() const {
   }
 
   for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
-    AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(index);
+    AircraftClass* aircraft = TheObjectHeaps().aircraft().ActiveAt(index);
 
     if (aircraft->House == this && aircraft->IsDown && !aircraft->IsInLimbo) {
       if (aircraft->Team) {

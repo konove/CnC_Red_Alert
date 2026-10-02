@@ -1001,7 +1001,7 @@ InfantryTypeClass::InfantryTypeClass(
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 void* InfantryTypeClass::operator new(std::size_t /*unused*/) noexcept {
-  return TheTypeHeaps().infantry().Alloc();
+  return TheTypeHeaps().infantry().Allocate();
 }
 
 /***********************************************************************************************
@@ -1318,7 +1318,7 @@ int InfantryTypeClass::Full_Name() const {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 InfantryTypeClass& InfantryTypeClass::As_Reference(InfantryType type) {
-  return *TheTypeHeaps().infantry().Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().infantry().ActiveAt(static_cast<int>(type));
 }
 
 /***********************************************************************************************

@@ -386,7 +386,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       */
       case TEVENT_LEAVES_MAP:
         for (index = 0; index < TheObjectHeaps().team().Count(); index++) {
-          const TeamClass* ptr = TheObjectHeaps().team().Ptr(index);
+          const TeamClass* ptr = TheObjectHeaps().team().ActiveAt(index);
           if (ptr->Class == Team && ptr->Is_Empty() && ptr->IsLeaveMap) {
             //					if (ptr->Class == Team &&
             // ptr->House == hptr && ptr->Is_Empty() && ptr->IsLeaveMap) {
@@ -648,7 +648,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
 void TEventClass::Build_INI_Entry(std::string& buffer) const {
   buffer +=
       std::format("{},{},{}", std::to_underlying(Event),
-                  TheObjectHeaps().team_type().Logical_ID(Team), Data.Value);
+                  TheObjectHeaps().team_type().PositionOf(Team), Data.Value);
 }
 
 /***********************************************************************************************
@@ -671,7 +671,7 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
     default:
       Event =
           static_cast<TEventType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-      Team = TheObjectHeaps().team_type().SlotAt(
+      Team = TheObjectHeaps().team_type().SlotOrNull(
           base::ParseIntegerOr<int>(tokens.Next(), 0));
       Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
@@ -688,7 +688,7 @@ void TEventClass::Read_INI(base::Tokenizer& tokens) {
       Data.Value = -1;
       if (token) {
         if (Event_Needs(Event) == NEED_TEAM) {
-          Team = TheObjectHeaps().team_type().Raw_Ptr(
+          Team = TheObjectHeaps().team_type().Slot(
               base::ParseIntegerOr<int>(token, 0));
         } else {
           Data.Value = base::ParseIntegerOr<int>(token, 0);

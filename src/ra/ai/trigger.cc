@@ -159,14 +159,14 @@ void TriggerClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
  *=============================================================================================*/
 TriggerClass::TriggerClass(TriggerTypeClass* trigtype)
     : RTTI(RTTI_TRIGGER),
-      ID(TheObjectHeaps().trigger().ID(this)),
+      ID(TheObjectHeaps().trigger().SlotIndexOf(this)),
       Class(trigtype) {
   Class->Event1.Reset(Event1);
   Class->Event2.Reset(Event2);
 }
 
 TriggerClass::TriggerClass()
-    : RTTI(RTTI_TRIGGER), ID(TheObjectHeaps().trigger().ID(this)) {}
+    : RTTI(RTTI_TRIGGER), ID(TheObjectHeaps().trigger().SlotIndexOf(this)) {}
 
 /***********************************************************************************************
  * TriggerClass::~TriggerClass -- Destructor for trigger objects. *
@@ -227,7 +227,7 @@ TriggerClass::~TriggerClass() {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Init() { TheObjectHeaps().trigger().Free_All(); }
+void TriggerClass::Init() { TheObjectHeaps().trigger().FreeAll(); }
 
 /***********************************************************************************************
  * TriggerClass::Spring -- Spring the trigger (possibly). *
@@ -472,8 +472,8 @@ TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
   }
 
   for (int index = 0; index < TheObjectHeaps().trigger().Count(); index++) {
-    if (trigtype == TheObjectHeaps().trigger().Ptr(index)->Class) {
-      return TheObjectHeaps().trigger().Ptr(index);
+    if (trigtype == TheObjectHeaps().trigger().ActiveAt(index)->Class) {
+      return TheObjectHeaps().trigger().ActiveAt(index);
     }
   }
 

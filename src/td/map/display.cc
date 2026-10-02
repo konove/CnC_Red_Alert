@@ -3352,7 +3352,7 @@ void DisplayClass::Compute_Start_Pos() {
   int32_t y = 0;
   int32_t num = 0;
   for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
-    const InfantryClass* infp = TheObjectHeaps().infantry().Ptr(i);
+    const InfantryClass* infp = TheObjectHeaps().infantry().ActiveAt(i);
     if (!infp->IsInLimbo && infp->House == ThePlayer()) {
       x += static_cast<int32_t>(Coord_XCell(infp->Coord));
       y += static_cast<int32_t>(Coord_YCell(infp->Coord));
@@ -3361,7 +3361,7 @@ void DisplayClass::Compute_Start_Pos() {
   }
 
   for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-    const UnitClass* unitp = TheObjectHeaps().unit().Ptr(i);
+    const UnitClass* unitp = TheObjectHeaps().unit().ActiveAt(i);
     if (!unitp->IsInLimbo && unitp->House == ThePlayer()) {
       x += static_cast<int32_t>(Coord_XCell(unitp->Coord));
       y += static_cast<int32_t>(Coord_YCell(unitp->Coord));
@@ -3370,7 +3370,7 @@ void DisplayClass::Compute_Start_Pos() {
   }
 
   for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
-    const BuildingClass* bldgp = TheObjectHeaps().building().Ptr(i);
+    const BuildingClass* bldgp = TheObjectHeaps().building().ActiveAt(i);
     if (!bldgp->IsInLimbo && bldgp->House == ThePlayer()) {
       x += static_cast<int32_t>(Coord_XCell(bldgp->Coord)) * 16;
       y += static_cast<int32_t>(Coord_YCell(bldgp->Coord)) * 16;

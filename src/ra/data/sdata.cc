@@ -216,7 +216,7 @@ SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, const char* ininame,
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* SmudgeTypeClass::operator new(std::size_t /*unused*/) noexcept {
-  return TheTypeHeaps().smudge().Alloc();
+  return TheTypeHeaps().smudge().Allocate();
 }
 
 /***********************************************************************************************
@@ -519,7 +519,7 @@ void SmudgeTypeClass::One_Time() {}
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 SmudgeTypeClass& SmudgeTypeClass::As_Reference(SmudgeType type) {
-  return *TheTypeHeaps().smudge().Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().smudge().ActiveAt(static_cast<int>(type));
 }
 
 }  // namespace ra

@@ -172,7 +172,8 @@ static void SerializeTriggerList(Archive& ar,
   auto count = static_cast<int32_t>(list.size());
   ar(count);
   if constexpr (Archive::kIsReading) {
-    if (!ar.ok() || count < 0 || count > TheObjectHeaps().trigger().Length()) {
+    if (!ar.ok() || count < 0 ||
+        count > TheObjectHeaps().trigger().Capacity()) {
       ar.Fail("invalid trigger list count");
       return;
     }
@@ -187,7 +188,7 @@ static void SerializeTriggerList(Archive& ar,
     ar(target);
     if constexpr (Archive::kIsReading) {
       if (!ar.ok() || !Is_Target_Trigger(target) ||
-          Target_Value(target) >= TheObjectHeaps().trigger().Length()) {
+          Target_Value(target) >= TheObjectHeaps().trigger().Capacity()) {
         ar.Fail("invalid saved trigger target");
         return;
       }

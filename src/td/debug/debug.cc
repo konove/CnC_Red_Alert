@@ -224,7 +224,7 @@ void Debug_Key(unsigned input) {
           TheMap().Recalc();
           for (int index = 0; index < TheObjectHeaps().building().Count();
                index++) {
-            TheObjectHeaps().building().Ptr(index)->Update_Buildables();
+            TheObjectHeaps().building().ActiveAt(index)->Update_Buildables();
           }
         }
         break;
@@ -294,7 +294,7 @@ void Debug_Key(unsigned input) {
 
       case KN_D:
         if (TheObjectHeaps().team().Count() > 0) {
-          base::DeletePooled(TheObjectHeaps().team().Ptr(0));
+          base::DeletePooled(TheObjectHeaps().team().ActiveAt(0));
         }
         break;
 

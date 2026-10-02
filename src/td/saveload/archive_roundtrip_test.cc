@@ -97,11 +97,11 @@ class TdArchiveRoundTripTest : public testing::Test {
         std::make_unique<base::Installed<DebugState>::Scope>(debug_state_);
     TheGameState().active() = false;
     game::TheGameClock().set_frame(100);
-    TheObjectHeaps().house().Set_Heap(8);
-    TheObjectHeaps().unit().Set_Heap(8);
-    TheObjectHeaps().trigger().Set_Heap(8);
-    TheObjectHeaps().factory().Set_Heap(8);
-    TheObjectHeaps().team().Set_Heap(8);
+    TheObjectHeaps().house().Reset(8);
+    TheObjectHeaps().unit().Reset(8);
+    TheObjectHeaps().trigger().Reset(8);
+    TheObjectHeaps().factory().Reset(8);
+    TheObjectHeaps().team().Reset(8);
     TheMap().Replace_Cells(MAP_CELL_TOTAL);
     TheWorld().cell_triggers().resize(MAP_CELL_TOTAL);
     TheMap().Init_Cells();
@@ -111,10 +111,10 @@ class TdArchiveRoundTripTest : public testing::Test {
     TheMap().Init_Cells();
     TheWorld().cell_triggers().clear();
     while (TheObjectHeaps().unit().Count() != 0) {
-      base::DeletePooled(TheObjectHeaps().unit().Ptr(0));
+      base::DeletePooled(TheObjectHeaps().unit().ActiveAt(0));
     }
     while (TheObjectHeaps().trigger().Count() != 0) {
-      base::DeletePooled(TheObjectHeaps().trigger().Ptr(0));
+      base::DeletePooled(TheObjectHeaps().trigger().ActiveAt(0));
     }
     base::DeletePooled(ThePlayer());
     ThePlayer() = nullptr;
@@ -146,8 +146,8 @@ TEST_F(TdArchiveRoundTripTest, TriggerIniPreserves64BitDataAndRejectsOverflow) {
 TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireBytes) {
   const auto check = [](auto configure, auto... args) {
     EventClass expected;
-    expected.ID =
-        static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
+    expected.ID = static_cast<unsigned>(
+        TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
     expected.Frame = static_cast<unsigned>(game::CurrentFrame());
     configure(expected);
     alignas(EventClass) std::array<unsigned char, sizeof(EventClass)> storage{};

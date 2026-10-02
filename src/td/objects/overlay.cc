@@ -97,7 +97,7 @@ HousesType OverlayClass::ToOwn = HOUSE_NONE;
  *=============================================================================================*/
 int OverlayClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().overlay().ID(this);
+    const int num = TheObjectHeaps().overlay().SlotIndexOf(this);
     if (num < 0 || num >= kOverlayMax) {
       Validate_Error("OVERLAY");
     }
@@ -122,7 +122,7 @@ int OverlayClass::Validate() const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void OverlayClass::Init() {
-  TheObjectHeaps().overlay().Free_All();
+  TheObjectHeaps().overlay().FreeAll();
   ToOwn = HOUSE_NONE;
 }
 

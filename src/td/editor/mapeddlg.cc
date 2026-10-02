@@ -2295,22 +2295,22 @@ int MapEditClass::Select_Trigger() {
     // trigtext[i] = (char *)HidPage.buffer()->Get_Buffer() + 60 *
     // i;
     const std::span<char> trigger_text(trigtext.at(base::ToSize(i)));
-    absl::SNPrintF(
-        trigger_text.data(), trigger_text.size(), "%s\t%s\t%s\t",
-        TheObjectHeaps().trigger().Ptr(i)->Get_Name(),
-        TriggerClass::Name_From_Event(TheObjectHeaps().trigger().Ptr(i)->Event),
-        TriggerClass::Name_From_Action(
-            TheObjectHeaps().trigger().Ptr(i)->Action));
+    absl::SNPrintF(trigger_text.data(), trigger_text.size(), "%s\t%s\t%s\t",
+                   TheObjectHeaps().trigger().ActiveAt(i)->Get_Name(),
+                   TriggerClass::Name_From_Event(
+                       TheObjectHeaps().trigger().ActiveAt(i)->Event),
+                   TriggerClass::Name_From_Action(
+                       TheObjectHeaps().trigger().ActiveAt(i)->Action));
 
     /*
     ......................... Add on the house ID .........................
     */
     if (TriggerClass::Event_Need_House(
-            TheObjectHeaps().trigger().Ptr(i)->Event)) {
-      if (TheObjectHeaps().trigger().Ptr(i)->House != HOUSE_NONE) {
+            TheObjectHeaps().trigger().ActiveAt(i)->Event)) {
+      if (TheObjectHeaps().trigger().ActiveAt(i)->House != HOUSE_NONE) {
         base::SafeAppend(trigger_text,
                          HouseTypeClass::As_Reference(
-                             TheObjectHeaps().trigger().Ptr(i)->House)
+                             TheObjectHeaps().trigger().ActiveAt(i)->House)
                              .Suffix);
       } else {
         base::SafeAppend(trigger_text, "!!!");
@@ -2324,10 +2324,10 @@ int MapEditClass::Select_Trigger() {
     */
     base::SafeAppend(trigger_text, "\t");
     if (TriggerClass::Action_Need_Team(
-            TheObjectHeaps().trigger().Ptr(i)->Action)) {
-      if (TheObjectHeaps().trigger().Ptr(i)->Team) {
+            TheObjectHeaps().trigger().ActiveAt(i)->Action)) {
+      if (TheObjectHeaps().trigger().ActiveAt(i)->Team) {
         base::SafeAppend(trigger_text,
-                         TheObjectHeaps().trigger().Ptr(i)->Team->IniName);
+                         TheObjectHeaps().trigger().ActiveAt(i)->Team->IniName);
       } else {
         base::SafeAppend(trigger_text, "!!!");
       }
@@ -2336,7 +2336,7 @@ int MapEditClass::Select_Trigger() {
     /*
     ................. Set def_idx if this is CurTrigger ...................
     */
-    if (TheObjectHeaps().trigger().Ptr(i) == CurTrigger) {
+    if (TheObjectHeaps().trigger().ActiveAt(i) == CurTrigger) {
       def_idx = i;
     }
   }
@@ -2356,7 +2356,7 @@ int MapEditClass::Select_Trigger() {
     CurTrigger = nullptr;
   } else {
     if (!CurTrigger) {
-      CurTrigger = TheObjectHeaps().trigger().Ptr(def_idx);
+      CurTrigger = TheObjectHeaps().trigger().ActiveAt(def_idx);
     }
   }
 
@@ -2429,7 +2429,7 @@ int MapEditClass::Select_Trigger() {
       case engine::window::ButtonKey(kTriggerList):
         def_idx = triggerlist.Current_Index();
         if (def_idx < TheObjectHeaps().trigger().Count()) {
-          CurTrigger = TheObjectHeaps().trigger().Ptr(def_idx);
+          CurTrigger = TheObjectHeaps().trigger().ActiveAt(def_idx);
         }
         break;
 

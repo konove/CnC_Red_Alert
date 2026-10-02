@@ -254,8 +254,8 @@ void TerrainClass::operator delete(void* ptr) {
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
 TerrainClass::TerrainClass(TerrainType type, CELL cell)
-    : ObjectClass(RTTI_TERRAIN, TheObjectHeaps().terrain().ID(this)),
-      Class(TheTypeHeaps().terrain().Ptr(static_cast<int>(type))) {
+    : ObjectClass(RTTI_TERRAIN, TheObjectHeaps().terrain().SlotIndexOf(this)),
+      Class(TheTypeHeaps().terrain().ActiveAt(static_cast<int>(type))) {
   Strength = Class->MaxStrength;
   if ((cell != -1) && (!Unlimbo(Cell_Coord(cell)))) {
     delete this;
@@ -381,7 +381,7 @@ void TerrainClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Init() { TheObjectHeaps().terrain().Free_All(); }
+void TerrainClass::Init() { TheObjectHeaps().terrain().FreeAll(); }
 
 /***********************************************************************************************
  * TerrainClass::Can_Enter_Cell -- Determines if the terrain object can exist in
@@ -771,7 +771,7 @@ void TerrainClass::Write_INI(CCINIClass& ini) {
   **	Write the terrain data out.
   */
   for (int index = 0; index < TheObjectHeaps().terrain().Count(); index++) {
-    TerrainClass* terrain = TheObjectHeaps().terrain().Ptr(index);
+    TerrainClass* terrain = TheObjectHeaps().terrain().ActiveAt(index);
     if (terrain != nullptr && !terrain->IsInLimbo && terrain->IsActive) {
       char uname[10];
       absl::SNPrintF(uname, sizeof(uname), "%d", Coord_Cell(terrain->Coord));

@@ -162,7 +162,7 @@ static const char* ActionText[static_cast<int>(TriggerClass::ACTION_COUNT) +
  *=============================================================================================*/
 int TriggerClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().trigger().ID(this);
+    const int num = TheObjectHeaps().trigger().SlotIndexOf(this);
     if (num < 0 || num >= kTriggerMax) {
       Validate_Error("TRIGGER");
     }
@@ -392,7 +392,7 @@ TriggerClass::~TriggerClass() {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Init() { TheObjectHeaps().trigger().Free_All(); }
+void TriggerClass::Init() { TheObjectHeaps().trigger().FreeAll(); }
 
 /***********************************************************************************************
  * TriggerClass::Spring -- Trigger processing routine *
@@ -692,7 +692,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
 
     case ACTION_AUTOCREATE:
       for (int index = 0; index < TheObjectHeaps().house().Count(); index++) {
-        TheObjectHeaps().house().Ptr(index)->IsAlerted = true;
+        TheObjectHeaps().house().ActiveAt(index)->IsAlerted = true;
       }
       break;
 
@@ -1019,23 +1019,23 @@ bool TriggerClass::Remove() {
   **	Loop through all objects, removing any reference to this trigger
   */
   for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
-    if (TheObjectHeaps().infantry().Ptr(index)->Trigger == this) {
-      TheObjectHeaps().infantry().Ptr(index)->Trigger = nullptr;
+    if (TheObjectHeaps().infantry().ActiveAt(index)->Trigger == this) {
+      TheObjectHeaps().infantry().ActiveAt(index)->Trigger = nullptr;
     }
   }
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-    if (TheObjectHeaps().building().Ptr(index)->Trigger == this) {
-      TheObjectHeaps().building().Ptr(index)->Trigger = nullptr;
+    if (TheObjectHeaps().building().ActiveAt(index)->Trigger == this) {
+      TheObjectHeaps().building().ActiveAt(index)->Trigger = nullptr;
     }
   }
   for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-    if (TheObjectHeaps().unit().Ptr(index)->Trigger == this) {
-      TheObjectHeaps().unit().Ptr(index)->Trigger = nullptr;
+    if (TheObjectHeaps().unit().ActiveAt(index)->Trigger == this) {
+      TheObjectHeaps().unit().ActiveAt(index)->Trigger = nullptr;
     }
   }
   for (int index = 0; index < TheObjectHeaps().terrain().Count(); index++) {
-    if (TheObjectHeaps().terrain().Ptr(index)->Trigger == this) {
-      TheObjectHeaps().terrain().Ptr(index)->Trigger = nullptr;
+    if (TheObjectHeaps().terrain().ActiveAt(index)->Trigger == this) {
+      TheObjectHeaps().terrain().ActiveAt(index)->Trigger = nullptr;
     }
   }
 
@@ -1254,7 +1254,7 @@ void TriggerClass::Write_INI(std::string& buffer, bool refresh) {
     /*
     **	Get ptr to next active trigger.
     */
-    TriggerClass* trigger = TheObjectHeaps().trigger().Ptr(index);
+    TriggerClass* trigger = TheObjectHeaps().trigger().ActiveAt(index);
 
     /*
     **	Generate INI entry.
@@ -1300,7 +1300,7 @@ TriggerClass* TriggerClass::As_Pointer(const char* name) {
   }
 
   for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
-    TriggerClass* trigger = TheObjectHeaps().trigger().Ptr(i);
+    TriggerClass* trigger = TheObjectHeaps().trigger().ActiveAt(i);
 
     if (absl::EqualsIgnoreCase(name, trigger->Name)) {
       return trigger;
@@ -1444,7 +1444,8 @@ const char* TriggerClass::Name_From_Action(ActionType action) {
  *=============================================================================================*/
 TARGET TriggerClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TRIGGER, TheObjectHeaps().trigger().ID(this));
+  return Build_Target(KIND_TRIGGER,
+                      TheObjectHeaps().trigger().SlotIndexOf(this));
 }
 
 /***********************************************************************************************
@@ -1464,7 +1465,7 @@ TARGET TriggerClass::As_Target() const {
  *=============================================================================================*/
 static void Do_All_To_Hunt() {
   for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+    UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
 
     if (!unit->House->IsHuman && unit->IsDown && !unit->IsInLimbo) {
       if (unit->Team) {
@@ -1475,7 +1476,7 @@ static void Do_All_To_Hunt() {
   }
 
   for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
-    InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+    InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
 
     if (!infantry->House->IsHuman && infantry->IsDown && !infantry->IsInLimbo) {
       if (infantry->Team) {

@@ -95,7 +95,7 @@ HousesType SmudgeClass::ToOwn = HOUSE_NONE;
  *=============================================================================================*/
 int SmudgeClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().smudge().ID(this);
+    const int num = TheObjectHeaps().smudge().SlotIndexOf(this);
     if (num < 0 || num >= kSmudgeMax) {
       Validate_Error("SMUDGE");
     }
@@ -194,7 +194,7 @@ SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void SmudgeClass::Init() { TheObjectHeaps().smudge().Free_All(); }
+void SmudgeClass::Init() { TheObjectHeaps().smudge().FreeAll(); }
 
 /***********************************************************************************************
  * SmudgeClass::Mark -- Marks a smudge down on the map. *

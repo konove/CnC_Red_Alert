@@ -170,7 +170,7 @@ void LogicClass::AI() {
   **	Team AI is processed.
   */
   for (int index = 0; index < TheObjectHeaps().team().Count(); ++index) {
-    TheObjectHeaps().team().Ptr(index)->AI();
+    TheObjectHeaps().team().ActiveAt(index)->AI();
   }
 
   /*
@@ -269,7 +269,7 @@ void LogicClass::AI() {
   **	Factory processing is performed.
   */
   for (int index = 0; index < TheObjectHeaps().factory().Count(); index++) {
-    TheObjectHeaps().factory().Ptr(index)->AI();
+    TheObjectHeaps().factory().ActiveAt(index)->AI();
   }
 
   /*

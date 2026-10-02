@@ -280,18 +280,18 @@ bool Init_Game() {
   *allocated as a consequence *	of processing the rules.ini file, but that is a
   *bit beyond the capabilities of *	the rule parser routine (currently).
   */
-  TheTypeHeaps().house().Set_Heap(magic_enum::enum_count<HousesType>());
-  TheTypeHeaps().building().Set_Heap(magic_enum::enum_count<StructType>());
-  TheTypeHeaps().aircraft().Set_Heap(magic_enum::enum_count<AircraftType>());
-  TheTypeHeaps().infantry().Set_Heap(magic_enum::enum_count<InfantryType>());
-  TheTypeHeaps().bullet().Set_Heap(magic_enum::enum_count<BulletType>());
-  TheTypeHeaps().anim().Set_Heap(magic_enum::enum_count<AnimType>());
-  TheTypeHeaps().unit().Set_Heap(magic_enum::enum_count<UnitType>());
-  TheTypeHeaps().vessel().Set_Heap(magic_enum::enum_count<VesselType>());
-  TheTypeHeaps().tmplate().Set_Heap(magic_enum::enum_count<TemplateType>());
-  TheTypeHeaps().terrain().Set_Heap(magic_enum::enum_count<TerrainType>());
-  TheTypeHeaps().overlay().Set_Heap(magic_enum::enum_count<OverlayType>());
-  TheTypeHeaps().smudge().Set_Heap(magic_enum::enum_count<SmudgeType>());
+  TheTypeHeaps().house().Reset(magic_enum::enum_count<HousesType>());
+  TheTypeHeaps().building().Reset(magic_enum::enum_count<StructType>());
+  TheTypeHeaps().aircraft().Reset(magic_enum::enum_count<AircraftType>());
+  TheTypeHeaps().infantry().Reset(magic_enum::enum_count<InfantryType>());
+  TheTypeHeaps().bullet().Reset(magic_enum::enum_count<BulletType>());
+  TheTypeHeaps().anim().Reset(magic_enum::enum_count<AnimType>());
+  TheTypeHeaps().unit().Reset(magic_enum::enum_count<UnitType>());
+  TheTypeHeaps().vessel().Reset(magic_enum::enum_count<VesselType>());
+  TheTypeHeaps().tmplate().Reset(magic_enum::enum_count<TemplateType>());
+  TheTypeHeaps().terrain().Reset(magic_enum::enum_count<TerrainType>());
+  TheTypeHeaps().overlay().Reset(magic_enum::enum_count<OverlayType>());
+  TheTypeHeaps().smudge().Reset(magic_enum::enum_count<SmudgeType>());
 
   HouseTypeClass::Init_Heap();
   BuildingTypeClass::Init_Heap();
@@ -1860,24 +1860,24 @@ static void Init_Heaps() {
   /*
   **	Initialize the game object heaps.
   */
-  TheObjectHeaps().vessel().Set_Heap(TheRules().VesselMax);
-  TheObjectHeaps().unit().Set_Heap(TheRules().UnitMax);
-  TheObjectHeaps().factory().Set_Heap(TheRules().FactoryMax);
-  TheObjectHeaps().terrain().Set_Heap(TheRules().TerrainMax);
-  TheObjectHeaps().tmplate().Set_Heap(TheRules().TemplateMax);
-  TheObjectHeaps().smudge().Set_Heap(TheRules().SmudgeMax);
-  TheObjectHeaps().overlay().Set_Heap(TheRules().OverlayMax);
-  TheObjectHeaps().infantry().Set_Heap(TheRules().InfantryMax);
-  TheObjectHeaps().bullet().Set_Heap(TheRules().BulletMax);
-  TheObjectHeaps().building().Set_Heap(TheRules().BuildingMax);
-  TheObjectHeaps().anim().Set_Heap(TheRules().AnimMax);
-  TheObjectHeaps().aircraft().Set_Heap(TheRules().AircraftMax);
-  TheObjectHeaps().trigger().Set_Heap(TheRules().TriggerMax);
-  TheObjectHeaps().team_type().Set_Heap(TheRules().TeamTypeMax);
-  TheObjectHeaps().team().Set_Heap(TheRules().TeamMax);
-  TheObjectHeaps().house().Set_Heap(kHouseMax);
-  TheObjectHeaps().trigger_type().Set_Heap(TheRules().TrigTypeMax);
-  //	Weapons.Set_Heap(Rule.WeaponMax);
+  TheObjectHeaps().vessel().Reset(TheRules().VesselMax);
+  TheObjectHeaps().unit().Reset(TheRules().UnitMax);
+  TheObjectHeaps().factory().Reset(TheRules().FactoryMax);
+  TheObjectHeaps().terrain().Reset(TheRules().TerrainMax);
+  TheObjectHeaps().tmplate().Reset(TheRules().TemplateMax);
+  TheObjectHeaps().smudge().Reset(TheRules().SmudgeMax);
+  TheObjectHeaps().overlay().Reset(TheRules().OverlayMax);
+  TheObjectHeaps().infantry().Reset(TheRules().InfantryMax);
+  TheObjectHeaps().bullet().Reset(TheRules().BulletMax);
+  TheObjectHeaps().building().Reset(TheRules().BuildingMax);
+  TheObjectHeaps().anim().Reset(TheRules().AnimMax);
+  TheObjectHeaps().aircraft().Reset(TheRules().AircraftMax);
+  TheObjectHeaps().trigger().Reset(TheRules().TriggerMax);
+  TheObjectHeaps().team_type().Reset(TheRules().TeamTypeMax);
+  TheObjectHeaps().team().Reset(TheRules().TeamMax);
+  TheObjectHeaps().house().Reset(kHouseMax);
+  TheObjectHeaps().trigger_type().Reset(TheRules().TrigTypeMax);
+  //	Weapons.Reset(Rule.WeaponMax);
 
   // An object caches the slot index it was built in, so it is only ever valid
   // against the heaps that were installed at the time. Recording which

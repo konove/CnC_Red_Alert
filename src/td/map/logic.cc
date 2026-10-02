@@ -94,7 +94,7 @@ void LogicClass::AI() {
   **	Team AI is processed.
   */
   for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
-    TheObjectHeaps().team().Ptr(index)->AI();
+    TheObjectHeaps().team().ActiveAt(index)->AI();
   }
 
   //	Heap_Dump_Check( "After Team AI" );
@@ -126,7 +126,7 @@ void LogicClass::AI() {
   *appropriate scan *	bits will be set for the owner house.
   */
   for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-    const UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+    const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
     if (unit->IsLocked &&
         (TheSession().type() != GAME_NORMAL || !unit->House->IsHuman ||
          unit->IsDiscoveredByPlayer)) {
@@ -138,7 +138,7 @@ void LogicClass::AI() {
     }
   }
   for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
-    const InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+    const InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
     if (infantry->IsLocked &&
         (TheSession().type() != GAME_NORMAL || !infantry->House->IsHuman ||
          infantry->IsDiscoveredByPlayer)) {
@@ -151,7 +151,7 @@ void LogicClass::AI() {
     }
   }
   for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
-    const AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(index);
+    const AircraftClass* aircraft = TheObjectHeaps().aircraft().ActiveAt(index);
     if (aircraft->IsLocked &&
         (TheSession().type() != GAME_NORMAL || !aircraft->House->IsHuman ||
          aircraft->IsDiscoveredByPlayer)) {
@@ -164,7 +164,7 @@ void LogicClass::AI() {
     }
   }
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-    const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+    const BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
     if (building->IsLocked &&
         (TheSession().type() != GAME_NORMAL || !building->House->IsHuman ||
          building->IsDiscoveredByPlayer)) {
@@ -190,7 +190,7 @@ void LogicClass::AI() {
   **	Factory processing is performed.
   */
   for (int index = 0; index < TheObjectHeaps().factory().Count(); index++) {
-    TheObjectHeaps().factory().Ptr(index)->AI();
+    TheObjectHeaps().factory().ActiveAt(index)->AI();
   }
 
   //	Heap_Dump_Check( "After Factory AI" );

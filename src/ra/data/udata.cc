@@ -896,7 +896,7 @@ UnitTypeClass::UnitTypeClass(
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* UnitTypeClass::operator new(std::size_t /*unused*/) noexcept {
-  return TheTypeHeaps().unit().Alloc();
+  return TheTypeHeaps().unit().Allocate();
 }
 
 /***********************************************************************************************
@@ -1178,7 +1178,7 @@ ObjectClass* UnitTypeClass::Create_One_Of(HouseClass* house) const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 UnitTypeClass& UnitTypeClass::As_Reference(UnitType type) {
-  return *TheTypeHeaps().unit().Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().unit().ActiveAt(static_cast<int>(type));
 }
 
 /***********************************************************************************************

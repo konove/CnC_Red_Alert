@@ -2685,7 +2685,7 @@ int MapEditClass::Load_Scenario() {
     **	Fill in the list box
     */
     for (int i = 0; i < TheObjectHeaps().trigger_type().Count(); i++) {
-      triggerlist.Add_Item(TheObjectHeaps().trigger_type().Ptr(i));
+      triggerlist.Add_Item(TheObjectHeaps().trigger_type().ActiveAt(i));
     }
 
     PNBubble_Sort(triggerlist, triggerlist.Count());

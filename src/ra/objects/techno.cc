@@ -2275,7 +2275,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
     if (base::Any(method & THREAT_AIR)) {
       for (int index = 0; index < TheObjectHeaps().aircraft().Count();
            index++) {
-        const TechnoClass* object = TheObjectHeaps().aircraft().Ptr(index);
+        const TechnoClass* object = TheObjectHeaps().aircraft().ActiveAt(index);
 
         int value = 0;
         if ((object->In_Which_Layer() != LAYER_GROUND &&
@@ -2435,7 +2435,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
     if (mask & base::Bit<uint32_t>(RTTI_AIRCRAFT)) {
       for (int index = 0; index < TheObjectHeaps().aircraft().Count();
            index++) {
-        const TechnoClass* object = TheObjectHeaps().aircraft().Ptr(index);
+        const TechnoClass* object = TheObjectHeaps().aircraft().ActiveAt(index);
 
         int value = 0;
         if (Evaluate_Object(method, mask, -1, object, value) &&
@@ -5043,7 +5043,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   */
   for (int index = 0;
        index < TheObjectHeaps().infantry().Count() && desired > 0; index++) {
-    InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+    InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
     if (infantry != nullptr && infantry->Owner() == Owner()) {
       /*
       **	Never recruit sticky guard units to defend a base.
@@ -5137,7 +5137,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   */
   for (int index = 0; index < TheObjectHeaps().unit().Count() && desired > 0;
        index++) {
-    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+    UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
     if (unit != nullptr && unit->Owner() == Owner()) {
       /*
       **	Never recruit sticky guard units to defend a base.
@@ -5980,7 +5980,8 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
     if (dynamic_cast<const BuildingClass*>(this)->Class->Capacity) {
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
-        const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+        const BuildingClass* building =
+            TheObjectHeaps().building().ActiveAt(index);
         if (building->House == House && building->Class->Capacity) {
           spiedby |= building->SpiedBy &
                      base::Bit<uint32_t>(ThePlayer()->Class->House);
@@ -6070,7 +6071,7 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
     *specification *	and is willing to dock with this object.
     */
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-      BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+      BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
 
       /*
       **	Check to see if the building qualifies (preliminary scan).

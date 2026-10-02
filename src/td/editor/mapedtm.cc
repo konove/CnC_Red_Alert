@@ -331,23 +331,25 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ........................ Fill in name & house .........................
     */
-    base::SafeCopy(team_name, TheObjectHeaps().team_type().Ptr(i)->IniName);
+    base::SafeCopy(team_name,
+                   TheObjectHeaps().team_type().ActiveAt(i)->IniName);
     base::SafeAppend(team_name, "\t");
-    base::SafeAppend(team_name, HouseTypeClass::As_Reference(
-                                    TheObjectHeaps().team_type().Ptr(i)->House)
-                                    .Suffix);
+    base::SafeAppend(team_name,
+                     HouseTypeClass::As_Reference(
+                         TheObjectHeaps().team_type().ActiveAt(i)->House)
+                         .Suffix);
     base::SafeAppend(team_name, "\t");
 
     /*
     ................ Fill in class & count for all classes ................
     */
     for (int j = 0;
-         std::cmp_less(j, TheObjectHeaps().team_type().Ptr(i)->ClassCount);
+         std::cmp_less(j, TheObjectHeaps().team_type().ActiveAt(i)->ClassCount);
          j++) {
       absl::SNPrintF(
           txt, sizeof(txt), "%s:%d",
-          base::At(TheObjectHeaps().team_type().Ptr(i)->Class, j)->IniName,
-          base::At(TheObjectHeaps().team_type().Ptr(i)->DesiredNum, j));
+          base::At(TheObjectHeaps().team_type().ActiveAt(i)->Class, j)->IniName,
+          base::At(TheObjectHeaps().team_type().ActiveAt(i)->DesiredNum, j));
 
       /*..................................................................
       Add entry if there's room; break otherwise
@@ -370,7 +372,7 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     .................. Set def_idx if this is CurTeam .....................
     */
-    if (TheObjectHeaps().team_type().Ptr(i) == CurTeam) {
+    if (TheObjectHeaps().team_type().ActiveAt(i) == CurTeam) {
       def_idx = i;
     }
 
@@ -387,7 +389,7 @@ int MapEditClass::Select_Team(const char* caption) {
     CurTeam = nullptr;
   } else {
     if (!CurTeam) {
-      CurTeam = TheObjectHeaps().team_type().Ptr(def_idx);
+      CurTeam = TheObjectHeaps().team_type().ActiveAt(def_idx);
     }
   }
 
@@ -459,7 +461,7 @@ int MapEditClass::Select_Team(const char* caption) {
       case engine::window::ButtonKey(kTeamList):
         def_idx = teamlist.Current_Index();
         if (def_idx < TheObjectHeaps().team_type().Count()) {
-          CurTeam = TheObjectHeaps().team_type().Ptr(def_idx);
+          CurTeam = TheObjectHeaps().team_type().ActiveAt(def_idx);
         }
         break;
 

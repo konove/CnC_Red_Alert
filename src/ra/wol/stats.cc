@@ -697,7 +697,7 @@ void Send_Statistics_Packet() {
       ** Number of units remaining to player
       */
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-        const UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+        const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
         if (player == unit->House) {
           player->UnitTotals->Increment_Unit_Total(
               static_cast<int>(unit->Class->Type));
@@ -706,7 +706,8 @@ void Send_Statistics_Packet() {
 
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
            index++) {
-        const InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+        const InfantryClass* infantry =
+            TheObjectHeaps().infantry().ActiveAt(index);
         if (player == infantry->House && !infantry->Class->IsCivilian) {
           player->InfantryTotals->Increment_Unit_Total(
               static_cast<int>(infantry->Class->Type));
@@ -715,7 +716,8 @@ void Send_Statistics_Packet() {
 
       for (int index = 0; index < TheObjectHeaps().aircraft().Count();
            index++) {
-        const AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(index);
+        const AircraftClass* aircraft =
+            TheObjectHeaps().aircraft().ActiveAt(index);
         if (player == aircraft->House) {  // &&	aircraft->Class->Type !=
                                           // AIRCRAFT_CARGO){
           player->AircraftTotals->Increment_Unit_Total(
@@ -725,7 +727,8 @@ void Send_Statistics_Packet() {
 
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
-        const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+        const BuildingClass* building =
+            TheObjectHeaps().building().ActiveAt(index);
         if (player == building->House) {
           player->BuildingTotals->Increment_Unit_Total(
               static_cast<int>(building->Class->Type));
@@ -733,7 +736,7 @@ void Send_Statistics_Packet() {
       }
 
       for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
-        const VesselClass* vessel = TheObjectHeaps().vessel().Ptr(index);
+        const VesselClass* vessel = TheObjectHeaps().vessel().ActiveAt(index);
         if (player == vessel->House) {
           player->VesselTotals->Increment_Unit_Total(
               static_cast<int>(vessel->Class->Type));

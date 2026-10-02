@@ -93,7 +93,7 @@ HousesType OverlayClass::ToOwn = HOUSE_NONE;
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void OverlayClass::Init() { TheObjectHeaps().overlay().Free_All(); }
+void OverlayClass::Init() { TheObjectHeaps().overlay().FreeAll(); }
 
 /***********************************************************************************************
  * OverlayClass::new -- Allocates a overlay object from pool *
@@ -154,8 +154,8 @@ void OverlayClass::operator delete(void* ptr) {
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
 OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
-    : ObjectClass(RTTI_OVERLAY, TheObjectHeaps().overlay().ID(this)),
-      Class(TheTypeHeaps().overlay().Ptr(static_cast<int>(type))) {
+    : ObjectClass(RTTI_OVERLAY, TheObjectHeaps().overlay().SlotIndexOf(this)),
+      Class(TheTypeHeaps().overlay().ActiveAt(static_cast<int>(type))) {
   if (pos != -1) {
     ToOwn = house;
     Unlimbo(Cell_Coord(pos));
@@ -317,7 +317,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
             for (int index = 0; index < TheObjectHeaps().building().Count();
                  index++) {
               const BuildingClass* building =
-                  TheObjectHeaps().building().Ptr(index);
+                  TheObjectHeaps().building().ActiveAt(index);
               const int newdist =
                   ra::Distance(building->Center_Coord(), Cell_Coord(cell));
               if (newdist < distance) {
@@ -359,7 +359,8 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
           HousesType owner = HOUSE_NONE;
           int distance = 0x7FFFFFFF;
           for (int j = 0; j < TheObjectHeaps().building().Count(); j++) {
-            const BuildingClass* building = TheObjectHeaps().building().Ptr(j);
+            const BuildingClass* building =
+                TheObjectHeaps().building().ActiveAt(j);
             const int newdist =
                 ra::Distance(building->Center_Coord(), Cell_Coord(cell));
             if (newdist < distance) {

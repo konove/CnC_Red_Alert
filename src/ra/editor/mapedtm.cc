@@ -279,7 +279,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   **	Fill in team names
   */
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
-    teamlist.Add_Item(TheObjectHeaps().team_type().Ptr(index));
+    teamlist.Add_Item(TheObjectHeaps().team_type().ActiveAt(index));
   }
 
   PNBubble_Sort(teamlist, teamlist.Count());

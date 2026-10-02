@@ -2917,7 +2917,7 @@ BuildingTypeClass::BuildingTypeClass(
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void* BuildingTypeClass::operator new(std::size_t /*unused*/) noexcept {
-  return TheTypeHeaps().building().Alloc();
+  return TheTypeHeaps().building().Allocate();
 }
 
 /***********************************************************************************************
@@ -3434,7 +3434,7 @@ void BuildingTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 BuildingTypeClass& BuildingTypeClass::As_Reference(StructType type) {
-  return *TheTypeHeaps().building().Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().building().ActiveAt(static_cast<int>(type));
 }
 
 /***********************************************************************************************

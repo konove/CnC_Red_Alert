@@ -209,8 +209,9 @@ const base::EnumArray<DoType, DoStruct> InfantryClass::MasterDoControls = {{
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 InfantryClass::InfantryClass(InfantryType classid, HousesType house)
-    : FootClass(RTTI_INFANTRY, TheObjectHeaps().infantry().ID(this), house),
-      Class(TheTypeHeaps().infantry().Ptr(static_cast<int>(classid))) {
+    : FootClass(RTTI_INFANTRY, TheObjectHeaps().infantry().SlotIndexOf(this),
+                house),
+      Class(TheTypeHeaps().infantry().ActiveAt(static_cast<int>(classid))) {
   House->Tracking_Add(this);
   IsCloakable = Class->IsCloakable;
   /*
@@ -846,7 +847,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
       base::DeletePooled(bldng);
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
            index++) {
-        InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
+        InfantryClass* obj = TheObjectHeaps().infantry().ActiveAt(index);
         if (obj != nullptr && !obj->IsInLimbo) {
           const int dist = ra::Distance(obj->Coord, blcoord);
           if (dist <= 0xC0) {
@@ -932,7 +933,7 @@ void InfantryClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Init() { TheObjectHeaps().infantry().Free_All(); }
+void InfantryClass::Init() { TheObjectHeaps().infantry().FreeAll(); }
 
 /***********************************************************************************************
  * InfantryClass::Assign_Destination -- Gives the infantry a movement
@@ -3422,7 +3423,7 @@ void InfantryClass::Write_INI(CCINIClass& ini) {
   **	Write the infantry data out.
   */
   for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
-    const InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+    const InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
     if (!infantry->IsInLimbo) {
       char uname[10];
       char buf[128];

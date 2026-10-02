@@ -271,7 +271,7 @@ void Fill_In_Data() {
   TheWorld().scenario_init()++;
 
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-    TheObjectHeaps().building().Ptr(index)->Update_Buildables();
+    TheObjectHeaps().building().ActiveAt(index)->Update_Buildables();
   }
 
   TheMap().Flag_To_Redraw(true);
@@ -545,7 +545,7 @@ void Do_Win() {
   if (TheWorld().sabotaged_type() != STRUCT_NONE &&
       TheWorld().scenario() == 7 && ThePlayer()->Class->House == HOUSE_GOOD) {
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-      BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+      BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
 
       if (building && !building->IsInLimbo && building->House != ThePlayer() &&
           building->Class->Type == TheWorld().sabotaged_type()) {

@@ -1517,7 +1517,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     if (base::Any(method & THREAT_AIR)) {
       for (int index = 0; index < TheObjectHeaps().aircraft().Count();
            index++) {
-        const TechnoClass* object = TheObjectHeaps().aircraft().Ptr(index);
+        const TechnoClass* object = TheObjectHeaps().aircraft().ActiveAt(index);
 
         int value = 0;
         if (Evaluate_Object(method, mask, range, object, value) &&
@@ -1627,7 +1627,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     *bullets and animations *	than aircraft.
     */
     for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
-      const TechnoClass* object = TheObjectHeaps().aircraft().Ptr(index);
+      const TechnoClass* object = TheObjectHeaps().aircraft().ActiveAt(index);
 
       int value = 0;
       if (Evaluate_Object(method, mask, -1, object, value) &&
@@ -3572,7 +3572,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   */
   for (int index = 0;
        index < TheObjectHeaps().infantry().Count() && desired > 0; index++) {
-    InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
+    InfantryClass* infantry = TheObjectHeaps().infantry().ActiveAt(index);
     if (infantry && infantry->Owner() == Owner()) {
       /*
       **	Never recruite sticky guard units to defend a base.
@@ -3635,7 +3635,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   */
   for (int index = 0; index < TheObjectHeaps().unit().Count() && desired > 0;
        index++) {
-    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+    UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
     if (unit && unit->Owner() == Owner()) {
       /*
       **	Never recruite sticky guard units to defend a base.
@@ -4162,7 +4162,7 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
     *specification *	and is willing to dock with this object.
     */
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-      BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+      BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
 
       /*
       **	Check to see if the building qualifies (preliminary scan).

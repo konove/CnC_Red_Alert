@@ -226,7 +226,7 @@ VesselClass* xTargetClass::As_Vessel() const {
  *=============================================================================================*/
 TriggerClass* As_Trigger(TARGET target) {
   return Is_Target_Trigger(target)
-             ? TheObjectHeaps().trigger().Raw_Ptr(Target_Value(target))
+             ? TheObjectHeaps().trigger().Slot(Target_Value(target))
              : nullptr;
 }
 
@@ -247,7 +247,7 @@ TriggerClass* As_Trigger(TARGET target) {
  *=============================================================================================*/
 TeamClass* As_Team(TARGET target) {
   return Is_Target_Team(target)
-             ? TheObjectHeaps().team().Raw_Ptr(Target_Value(target))
+             ? TheObjectHeaps().team().Slot(Target_Value(target))
              : nullptr;
 }
 
@@ -269,7 +269,7 @@ TeamClass* As_Team(TARGET target) {
  *=============================================================================================*/
 TeamTypeClass* As_TeamType(TARGET target) {
   return Is_Target_TeamType(target)
-             ? TheObjectHeaps().team_type().Raw_Ptr(Target_Value(target))
+             ? TheObjectHeaps().team_type().Slot(Target_Value(target))
              : nullptr;
 }
 
@@ -292,7 +292,7 @@ TeamTypeClass* As_TeamType(TARGET target) {
  *=============================================================================================*/
 AnimClass* As_Animation(TARGET target) {
   return Is_Target_Animation(target)
-             ? TheObjectHeaps().anim().Raw_Ptr(Target_Value(target))
+             ? TheObjectHeaps().anim().Slot(Target_Value(target))
              : nullptr;
 }
 
@@ -313,7 +313,7 @@ AnimClass* As_Animation(TARGET target) {
  *=============================================================================================*/
 BulletClass* As_Bullet(TARGET target) {
   return Is_Target_Bullet(target)
-             ? TheObjectHeaps().bullet().Raw_Ptr(Target_Value(target))
+             ? TheObjectHeaps().bullet().Slot(Target_Value(target))
              : nullptr;
 }
 
@@ -335,7 +335,7 @@ BulletClass* As_Bullet(TARGET target) {
  *=============================================================================================*/
 AircraftClass* As_Aircraft(TARGET target) {
   return Is_Target_Aircraft(target)
-             ? TheObjectHeaps().aircraft().Raw_Ptr(Target_Value(target))
+             ? TheObjectHeaps().aircraft().Slot(Target_Value(target))
              : nullptr;
 }
 
@@ -387,35 +387,35 @@ ObjectClass* As_Object(TARGET target) {
   ObjectClass* object = nullptr;
   switch (Target_Kind(target)) {
     case RTTI_INFANTRY:
-      object = TheObjectHeaps().infantry().Raw_Ptr(val);
+      object = TheObjectHeaps().infantry().Slot(val);
       break;
 
     case RTTI_UNIT:
-      object = TheObjectHeaps().unit().Raw_Ptr(val);
+      object = TheObjectHeaps().unit().Slot(val);
       break;
 
     case RTTI_VESSEL:
-      object = TheObjectHeaps().vessel().Raw_Ptr(val);
+      object = TheObjectHeaps().vessel().Slot(val);
       break;
 
     case RTTI_BUILDING:
-      object = TheObjectHeaps().building().Raw_Ptr(val);
+      object = TheObjectHeaps().building().Slot(val);
       break;
 
     case RTTI_AIRCRAFT:
-      object = TheObjectHeaps().aircraft().Raw_Ptr(val);
+      object = TheObjectHeaps().aircraft().Slot(val);
       break;
 
     case RTTI_TERRAIN:
-      object = TheObjectHeaps().terrain().Raw_Ptr(val);
+      object = TheObjectHeaps().terrain().Slot(val);
       break;
 
     case RTTI_BULLET:
-      object = TheObjectHeaps().bullet().Raw_Ptr(val);
+      object = TheObjectHeaps().bullet().Slot(val);
       break;
 
     case RTTI_ANIM:
-      object = TheObjectHeaps().anim().Raw_Ptr(val);
+      object = TheObjectHeaps().anim().Slot(val);
       break;
 
     case RTTIType::RTTI_NONE:
@@ -477,7 +477,7 @@ ObjectClass* As_Object(TARGET target) {
  *=============================================================================================*/
 UnitClass* As_Unit(TARGET target) {
   return Is_Target_Unit(target)
-             ? TheObjectHeaps().unit().Raw_Ptr(Target_Value(target))
+             ? TheObjectHeaps().unit().Slot(Target_Value(target))
              : nullptr;
 }
 
@@ -499,7 +499,7 @@ UnitClass* As_Unit(TARGET target) {
  *=============================================================================================*/
 VesselClass* As_Vessel(TARGET target) {
   return Is_Target_Vessel(target)
-             ? TheObjectHeaps().vessel().Raw_Ptr(Target_Value(target))
+             ? TheObjectHeaps().vessel().Slot(Target_Value(target))
              : nullptr;
 }
 
@@ -521,7 +521,7 @@ VesselClass* As_Vessel(TARGET target) {
  *=============================================================================================*/
 InfantryClass* As_Infantry(TARGET target) {
   return Is_Target_Infantry(target)
-             ? TheObjectHeaps().infantry().Raw_Ptr(Target_Value(target))
+             ? TheObjectHeaps().infantry().Slot(Target_Value(target))
              : nullptr;
 }
 
@@ -542,7 +542,7 @@ InfantryClass* As_Infantry(TARGET target) {
  *=============================================================================================*/
 BuildingClass* As_Building(TARGET target) {
   return Is_Target_Building(target)
-             ? TheObjectHeaps().building().Raw_Ptr(Target_Value(target))
+             ? TheObjectHeaps().building().Slot(Target_Value(target))
              : nullptr;
 }
 
@@ -672,37 +672,37 @@ AbstractClass* xTargetClass::As_Abstract() const {
   const int value = static_cast<int>(Value());
   switch (static_cast<RTTIType>(*this)) {
     case RTTI_TEAM:
-      return TheObjectHeaps().team().Raw_Ptr(value);
+      return TheObjectHeaps().team().Slot(value);
 
     case RTTI_BULLET:
-      return TheObjectHeaps().bullet().Raw_Ptr(value);
+      return TheObjectHeaps().bullet().Slot(value);
 
     case RTTI_OVERLAY:
-      return TheObjectHeaps().overlay().Raw_Ptr(value);
+      return TheObjectHeaps().overlay().Slot(value);
 
     case RTTI_SMUDGE:
-      return TheObjectHeaps().smudge().Raw_Ptr(value);
+      return TheObjectHeaps().smudge().Slot(value);
 
     case RTTI_UNIT:
-      return TheObjectHeaps().unit().Raw_Ptr(value);
+      return TheObjectHeaps().unit().Slot(value);
 
     case RTTI_VESSEL:
-      return TheObjectHeaps().vessel().Raw_Ptr(value);
+      return TheObjectHeaps().vessel().Slot(value);
 
     case RTTI_BUILDING:
-      return TheObjectHeaps().building().Raw_Ptr(value);
+      return TheObjectHeaps().building().Slot(value);
 
     case RTTI_INFANTRY:
-      return TheObjectHeaps().infantry().Raw_Ptr(value);
+      return TheObjectHeaps().infantry().Slot(value);
 
     case RTTI_AIRCRAFT:
-      return TheObjectHeaps().aircraft().Raw_Ptr(value);
+      return TheObjectHeaps().aircraft().Slot(value);
 
     case RTTI_TERRAIN:
-      return TheObjectHeaps().terrain().Raw_Ptr(value);
+      return TheObjectHeaps().terrain().Slot(value);
 
     case RTTI_ANIM:
-      return TheObjectHeaps().anim().Raw_Ptr(value);
+      return TheObjectHeaps().anim().Slot(value);
 
     case RTTIType::RTTI_NONE:
     case RTTIType::RTTI_AIRCRAFTTYPE:
@@ -735,10 +735,10 @@ AbstractTypeClass* xTargetClass::As_TypeClass() const {
   const int value = static_cast<int>(Value());
   switch (static_cast<RTTIType>(*this)) {
     case RTTI_TEAMTYPE:
-      return TheObjectHeaps().team_type().Raw_Ptr(value);
+      return TheObjectHeaps().team_type().Slot(value);
 
     case RTTI_TRIGGERTYPE:
-      return TheObjectHeaps().trigger_type().Raw_Ptr(value);
+      return TheObjectHeaps().trigger_type().Slot(value);
 
     case RTTI_BULLETTYPE:
       return &BulletTypeClass::As_Reference(static_cast<BulletType>(value));
@@ -818,19 +818,19 @@ TechnoClass* xTargetClass::As_Techno() const {
   const int value = static_cast<int>(Value());
   switch (static_cast<RTTIType>(*this)) {
     case RTTI_UNIT:
-      return TheObjectHeaps().unit().Raw_Ptr(value);
+      return TheObjectHeaps().unit().Slot(value);
 
     case RTTI_VESSEL:
-      return TheObjectHeaps().vessel().Raw_Ptr(value);
+      return TheObjectHeaps().vessel().Slot(value);
 
     case RTTI_BUILDING:
-      return TheObjectHeaps().building().Raw_Ptr(value);
+      return TheObjectHeaps().building().Slot(value);
 
     case RTTI_INFANTRY:
-      return TheObjectHeaps().infantry().Raw_Ptr(value);
+      return TheObjectHeaps().infantry().Slot(value);
 
     case RTTI_AIRCRAFT:
-      return TheObjectHeaps().aircraft().Raw_Ptr(value);
+      return TheObjectHeaps().aircraft().Slot(value);
 
     case RTTIType::RTTI_NONE:
     case RTTIType::RTTI_AIRCRAFTTYPE:
@@ -869,34 +869,34 @@ ObjectClass* xTargetClass::As_Object() const {
   const int value = static_cast<int>(Value());
   switch (static_cast<RTTIType>(*this)) {
     case RTTI_TERRAIN:
-      return TheObjectHeaps().terrain().Raw_Ptr(value);
+      return TheObjectHeaps().terrain().Slot(value);
 
     case RTTI_SMUDGE:
-      return TheObjectHeaps().smudge().Raw_Ptr(value);
+      return TheObjectHeaps().smudge().Slot(value);
 
     case RTTI_OVERLAY:
-      return TheObjectHeaps().overlay().Raw_Ptr(value);
+      return TheObjectHeaps().overlay().Slot(value);
 
     case RTTI_BULLET:
-      return TheObjectHeaps().bullet().Raw_Ptr(value);
+      return TheObjectHeaps().bullet().Slot(value);
 
     case RTTI_ANIM:
-      return TheObjectHeaps().anim().Raw_Ptr(value);
+      return TheObjectHeaps().anim().Slot(value);
 
     case RTTI_UNIT:
-      return TheObjectHeaps().unit().Raw_Ptr(value);
+      return TheObjectHeaps().unit().Slot(value);
 
     case RTTI_VESSEL:
-      return TheObjectHeaps().vessel().Raw_Ptr(value);
+      return TheObjectHeaps().vessel().Slot(value);
 
     case RTTI_BUILDING:
-      return TheObjectHeaps().building().Raw_Ptr(value);
+      return TheObjectHeaps().building().Slot(value);
 
     case RTTI_INFANTRY:
-      return TheObjectHeaps().infantry().Raw_Ptr(value);
+      return TheObjectHeaps().infantry().Slot(value);
 
     case RTTI_AIRCRAFT:
-      return TheObjectHeaps().aircraft().Raw_Ptr(value);
+      return TheObjectHeaps().aircraft().Slot(value);
 
     case RTTIType::RTTI_NONE:
     case RTTIType::RTTI_AIRCRAFTTYPE:
@@ -1054,7 +1054,7 @@ const TechnoTypeClass* As_TechnoType(TARGET target) {
  *=============================================================================================*/
 TriggerTypeClass* As_TriggerType(TARGET target) {
   if (Target_Kind(target) == RTTI_TRIGGERTYPE) {
-    return TheObjectHeaps().trigger_type().Raw_Ptr(Target_Value(target));
+    return TheObjectHeaps().trigger_type().Slot(Target_Value(target));
   }
   return nullptr;
 }

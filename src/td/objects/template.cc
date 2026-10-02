@@ -103,7 +103,7 @@ namespace td {
  *=============================================================================================*/
 int TemplateClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().tmplate().ID(this);
+    const int num = TheObjectHeaps().tmplate().SlotIndexOf(this);
     if (num < 0 || num >= kTemplateMax) {
       Validate_Error("TEMPLATE");
     }
@@ -235,7 +235,8 @@ void TemplateClass::Write_INI(std::string& buffer) {
  *=============================================================================================*/
 TARGET TemplateClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TEMPLATE, TheObjectHeaps().tmplate().ID(this));
+  return Build_Target(KIND_TEMPLATE,
+                      TheObjectHeaps().tmplate().SlotIndexOf(this));
 }
 
 /***********************************************************************************************
@@ -252,7 +253,7 @@ TARGET TemplateClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::Init() { TheObjectHeaps().tmplate().Free_All(); }
+void TemplateClass::Init() { TheObjectHeaps().tmplate().FreeAll(); }
 
 /***********************************************************************************************
  * TemplateClass::Mark -- Lifts or drops a template object. *

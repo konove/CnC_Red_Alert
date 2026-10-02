@@ -139,7 +139,7 @@ using engine::gfx::ShapeFlags;
  *=============================================================================================*/
 int TerrainClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().terrain().ID(this);
+    const int num = TheObjectHeaps().terrain().SlotIndexOf(this);
     if (num < 0 || num >= kTerrainMax) {
       Validate_Error("TERRAIN");
     }
@@ -252,7 +252,8 @@ game::ResultType TerrainClass::Take_Damage(int& damage, int distance,
  *=============================================================================================*/
 TARGET TerrainClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TERRAIN, TheObjectHeaps().terrain().ID(this));
+  return Build_Target(KIND_TERRAIN,
+                      TheObjectHeaps().terrain().SlotIndexOf(this));
 }
 
 /***********************************************************************************************
@@ -436,7 +437,7 @@ void TerrainClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Init() { TheObjectHeaps().terrain().Free_All(); }
+void TerrainClass::Init() { TheObjectHeaps().terrain().FreeAll(); }
 
 /***********************************************************************************************
  * TerrainClass::Can_Enter_Cell -- Determines if the terrain object can exist in
@@ -849,7 +850,7 @@ void TerrainClass::Write_INI(std::string& buffer) {
   **	Write the terrain data out.
   */
   for (int index = 0; index < TheObjectHeaps().terrain().Count(); index++) {
-    TerrainClass* terrain = TheObjectHeaps().terrain().Ptr(index);
+    TerrainClass* terrain = TheObjectHeaps().terrain().ActiveAt(index);
     if (!terrain->IsInLimbo && terrain->IsActive) {
       absl::SNPrintF(uname, sizeof(uname), "%d", Coord_Cell(terrain->Coord));
       absl::SNPrintF(buf, sizeof(buf), "%s,%s", terrain->Class->IniName,

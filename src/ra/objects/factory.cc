@@ -92,7 +92,8 @@ namespace ra {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-FactoryClass::FactoryClass() : ID(TheObjectHeaps().factory().ID(this)) {}
+FactoryClass::FactoryClass()
+    : ID(TheObjectHeaps().factory().SlotIndexOf(this)) {}
 
 /***********************************************************************************************
  * FactoryClass::~FactoryClass -- Default destructor for factory objects. *
@@ -130,7 +131,7 @@ FactoryClass::~FactoryClass() {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void FactoryClass::Init() { TheObjectHeaps().factory().Free_All(); }
+void FactoryClass::Init() { TheObjectHeaps().factory().FreeAll(); }
 
 /***********************************************************************************************
  * FactoryClass::operator new -- Allocates a factory object from the free

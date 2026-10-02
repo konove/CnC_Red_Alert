@@ -122,7 +122,7 @@ using engine::gfx::ShapeFlags;
  *=============================================================================================*/
 int AnimClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TheObjectHeaps().anim().ID(this);
+    const int num = TheObjectHeaps().anim().SlotIndexOf(this);
     if (num < 0 || num >= kAnimMax) {
       Validate_Error("ANIM");
     }
@@ -155,7 +155,7 @@ int AnimClass::Validate() const {
 void Shorten_Attached_Anims(const ObjectClass* obj) {
   if (obj) {
     for (int index = 0; index < TheObjectHeaps().anim().Count(); index++) {
-      AnimClass& anim = *TheObjectHeaps().anim().Ptr(index);
+      AnimClass& anim = *TheObjectHeaps().anim().ActiveAt(index);
 
       if (anim.Object == obj) {
         anim.Loops = 0;
@@ -670,7 +670,7 @@ std::span<const int16_t> AnimClass::Occupy_List(bool /*placement*/) const {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::Init() { TheObjectHeaps().anim().Free_All(); }
+void AnimClass::Init() { TheObjectHeaps().anim().FreeAll(); }
 
 /***********************************************************************************************
  * AnimClass::new -- Allocates an anim object from the pool. *
@@ -820,7 +820,7 @@ AnimClass::~AnimClass() {
       */
       int index = 0;
       for (index = 0; index < TheObjectHeaps().anim().Count(); index++) {
-        if (TheObjectHeaps().anim().Ptr(index)->Object == to) {
+        if (TheObjectHeaps().anim().ActiveAt(index)->Object == to) {
           break;
         }
       }
@@ -1407,7 +1407,8 @@ void AnimClass::Middle() {
  *=============================================================================================*/
 TARGET AnimClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_ANIMATION, TheObjectHeaps().anim().ID(this));
+  return Build_Target(KIND_ANIMATION,
+                      TheObjectHeaps().anim().SlotIndexOf(this));
 }
 
 /***************************************************************************

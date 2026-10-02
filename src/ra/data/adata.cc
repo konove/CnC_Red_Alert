@@ -2043,7 +2043,7 @@ AnimTypeClass::~AnimTypeClass() = default;
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* AnimTypeClass::operator new(std::size_t /*unused*/) noexcept {
-  return TheTypeHeaps().anim().Alloc();
+  return TheTypeHeaps().anim().Allocate();
 }
 
 /***********************************************************************************************
@@ -2269,7 +2269,7 @@ const char* Anim_Name(AnimType anim) {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 AnimTypeClass& AnimTypeClass::As_Reference(AnimType type) {
-  return *TheTypeHeaps().anim().Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().anim().ActiveAt(static_cast<int>(type));
 }
 
 }  // namespace ra

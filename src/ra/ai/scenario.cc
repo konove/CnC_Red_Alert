@@ -319,7 +319,7 @@ bool ScenarioClass::Set_Global_To(int global, bool value) {
       *elapsed time event associated, it *	will be reset at this time.
       */
       for (int index = 0; index < TheObjectHeaps().trigger().Count(); index++) {
-        TriggerClass* tp = TheObjectHeaps().trigger().Ptr(index);
+        TriggerClass* tp = TheObjectHeaps().trigger().ActiveAt(index);
         if ((tp->Class->Event1.Event == TEVENT_GLOBAL_SET ||
              tp->Class->Event1.Event == TEVENT_GLOBAL_CLEAR) &&
             tp->Class->Event1.Data.Value == global) {
@@ -530,7 +530,7 @@ void Fill_In_Data() {
   TheWorld().scenario_init()++;
 
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
-    TheObjectHeaps().building().Ptr(index)->Update_Buildables();
+    TheObjectHeaps().building().ActiveAt(index)->Update_Buildables();
   }
 
   TheMap().Flag_To_Redraw(true);
@@ -565,7 +565,7 @@ void Fill_In_Data() {
   */
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
-    TriggerTypeClass* tp = TheObjectHeaps().trigger_type().Ptr(index);
+    TriggerTypeClass* tp = TheObjectHeaps().trigger_type().ActiveAt(index);
 
     DCHECK(tp != nullptr);
 
@@ -626,7 +626,8 @@ void Fill_In_Data() {
   */
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
        index++) {
-    const TriggerTypeClass* tp = TheObjectHeaps().trigger_type().Ptr(index);
+    const TriggerTypeClass* tp =
+        TheObjectHeaps().trigger_type().ActiveAt(index);
     if (tp->Action1.Action == TACTION_ALLOWWIN ||
         (tp->ActionControl != MULTI_ONLY &&
          tp->Action2.Action == TACTION_ALLOWWIN)) {
@@ -951,7 +952,8 @@ void Do_Win() {
     for (int building_index = 0;
          building_index < TheObjectHeaps().building().Count();
          building_index++) {
-      BuildingClass* building = TheObjectHeaps().building().Ptr(building_index);
+      BuildingClass* building =
+          TheObjectHeaps().building().ActiveAt(building_index);
 
       if (building && !building->IsInLimbo && building->Strength > 0) {
         TheWorld().carryover().emplace_back(building);
@@ -959,7 +961,7 @@ void Do_Win() {
     }
     for (int unit_index = 0; unit_index < TheObjectHeaps().unit().Count();
          unit_index++) {
-      UnitClass* unit = TheObjectHeaps().unit().Ptr(unit_index);
+      UnitClass* unit = TheObjectHeaps().unit().ActiveAt(unit_index);
 
       if (unit && !unit->IsInLimbo && unit->Strength > 0) {
         TheWorld().carryover().emplace_back(unit);
@@ -968,7 +970,8 @@ void Do_Win() {
     for (int infantry_index = 0;
          infantry_index < TheObjectHeaps().infantry().Count();
          infantry_index++) {
-      InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(infantry_index);
+      InfantryClass* infantry =
+          TheObjectHeaps().infantry().ActiveAt(infantry_index);
 
       if (infantry && !infantry->IsInLimbo && infantry->Strength > 0) {
         TheWorld().carryover().emplace_back(infantry);
@@ -976,7 +979,7 @@ void Do_Win() {
     }
     for (int vessel_index = 0; vessel_index < TheObjectHeaps().vessel().Count();
          vessel_index++) {
-      VesselClass* vessel = TheObjectHeaps().vessel().Ptr(vessel_index);
+      VesselClass* vessel = TheObjectHeaps().vessel().ActiveAt(vessel_index);
 
       if (vessel && !vessel->IsInLimbo && vessel->Strength > 0) {
         TheWorld().carryover().emplace_back(vessel);
@@ -1861,8 +1864,8 @@ void DropIfUnfilled(T*& ref, game::ObjectHeap<T>& heap, std::string_view owner,
   if (ref == nullptr) {
     return;
   }
-  const int slot = heap.ID(ref);
-  if (!heap.Is_Allocated(slot)) {
+  const int slot = heap.SlotIndexOf(ref);
+  if (!heap.IsAllocated(slot)) {
     DLOG(WARNING) << owner << ": " << field << " names slot " << slot
                   << ", which the scenario never filled";
     ref = nullptr;
@@ -1877,12 +1880,12 @@ void DropUnfilledTypeReferences() {
   auto& team_types = TheObjectHeaps().team_type();
   auto& trigger_types = TheObjectHeaps().trigger_type();
   for (int i = 0; i < team_types.Count(); i++) {
-    TeamTypeClass& team_type = *team_types.Ptr(i);
+    TeamTypeClass& team_type = *team_types.ActiveAt(i);
     DropIfUnfilled(team_type.Trigger, trigger_types, team_type.Name(),
                    "trigger");
   }
   for (int i = 0; i < trigger_types.Count(); i++) {
-    TriggerTypeClass& trigger_type = *trigger_types.Ptr(i);
+    TriggerTypeClass& trigger_type = *trigger_types.ActiveAt(i);
     for (TEventClass* event : {&trigger_type.Event1, &trigger_type.Event2}) {
       DropIfUnfilled(event->Team, team_types, trigger_type.Name(),
                      "event team");

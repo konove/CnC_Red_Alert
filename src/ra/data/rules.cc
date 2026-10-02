@@ -557,7 +557,7 @@ bool RulesClass::Heap_Maximums(CCINIClass& ini) {
   **	Any heaps that use the maximums that were just loaded, must
   **	be initialized as necessary.
   */
-  TheTypeHeaps().warhead().Set_Heap(WarheadMax);
+  TheTypeHeaps().warhead().Reset(WarheadMax);
   new WarheadTypeClass("SA");
   new WarheadTypeClass("HE");
   new WarheadTypeClass("AP");
@@ -568,7 +568,7 @@ bool RulesClass::Heap_Maximums(CCINIClass& ini) {
   new WarheadTypeClass("Nuke");
   new WarheadTypeClass("Mechanical");
 
-  TheTypeHeaps().weapon().Set_Heap(WeaponMax);
+  TheTypeHeaps().weapon().Reset(WeaponMax);
   new WeaponTypeClass("Colt45");
   new WeaponTypeClass("ZSU-23");
   new WeaponTypeClass("Vulcan");
@@ -876,35 +876,35 @@ bool RulesClass::Objects(CCINIClass& ini) {
   **	Fetch the game object values from the rules file.
   */
   for (int index = 0; index < TheTypeHeaps().warhead().Count(); index++) {
-    TheTypeHeaps().warhead().Ptr(index)->Read_INI(ini);
+    TheTypeHeaps().warhead().ActiveAt(index)->Read_INI(ini);
   }
 
   for (int proj = 0; proj < TheTypeHeaps().bullet().Count(); proj++) {
-    TheTypeHeaps().bullet().Ptr(proj)->Read_INI(ini);
+    TheTypeHeaps().bullet().ActiveAt(proj)->Read_INI(ini);
   }
 
   for (int windex = 0; windex < TheTypeHeaps().weapon().Count(); windex++) {
-    TheTypeHeaps().weapon().Ptr(windex)->Read_INI(ini);
+    TheTypeHeaps().weapon().ActiveAt(windex)->Read_INI(ini);
   }
 
   for (int uindex = 0; uindex < TheTypeHeaps().unit().Count(); uindex++) {
-    TheTypeHeaps().unit().Ptr(uindex)->Read_INI(ini);
+    TheTypeHeaps().unit().ActiveAt(uindex)->Read_INI(ini);
   }
 
   for (int iindex = 0; iindex < TheTypeHeaps().infantry().Count(); iindex++) {
-    TheTypeHeaps().infantry().Ptr(iindex)->Read_INI(ini);
+    TheTypeHeaps().infantry().ActiveAt(iindex)->Read_INI(ini);
   }
 
   for (int vindex = 0; vindex < TheTypeHeaps().vessel().Count(); vindex++) {
-    TheTypeHeaps().vessel().Ptr(vindex)->Read_INI(ini);
+    TheTypeHeaps().vessel().ActiveAt(vindex)->Read_INI(ini);
   }
 
   for (int aindex = 0; aindex < TheTypeHeaps().aircraft().Count(); aindex++) {
-    TheTypeHeaps().aircraft().Ptr(aindex)->Read_INI(ini);
+    TheTypeHeaps().aircraft().ActiveAt(aindex)->Read_INI(ini);
   }
 
   for (int bindex = 0; bindex < TheTypeHeaps().building().Count(); bindex++) {
-    TheTypeHeaps().building().Ptr(bindex)->Read_INI(ini);
+    TheTypeHeaps().building().ActiveAt(bindex)->Read_INI(ini);
   }
 
   /*

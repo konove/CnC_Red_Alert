@@ -35,15 +35,15 @@ namespace {
 template <class T>
 ObjectClass* Slot(game::ObjectHeap<T>& heap, int index, ArchiveReader& ar,
                   bool active_only) {
-  if (index < 0 || index >= heap.Length()) {
+  if (index < 0 || index >= heap.Capacity()) {
     ar.Fail("saved object index outside its heap");
     return nullptr;
   }
-  if (active_only && !heap.Is_Allocated(index)) {
+  if (active_only && !heap.IsAllocated(index)) {
     ar.Fail("saved object list references an unallocated slot");
     return nullptr;
   }
-  return heap.Raw_Ptr(index);
+  return heap.Slot(index);
 }
 
 template <class T>
@@ -161,18 +161,19 @@ void TeamTypePtr<T>::Serialize(ArchiveReader& ar) {
     return;
   }
   if (Target_Kind(target) != KIND_TEAMTYPE ||
-      Target_Value(target) >= TheObjectHeaps().team_type().Length()) {
+      Target_Value(target) >= TheObjectHeaps().team_type().Capacity()) {
     ar.Fail("invalid saved team type target");
     return;
   }
-  ref_ = TheObjectHeaps().team_type().Raw_Ptr(Target_Value(target));
+  ref_ = TheObjectHeaps().team_type().Slot(Target_Value(target));
 }
 
 template class TeamTypePtr<TeamTypeClass>;
 template class TeamTypePtr<const TeamTypeClass>;
 
 void HousePtr::Serialize(ArchiveWriter& ar) {
-  int32_t index = ref_ == nullptr ? -1 : TheObjectHeaps().house().ID(ref_);
+  int32_t index =
+      ref_ == nullptr ? -1 : TheObjectHeaps().house().SlotIndexOf(ref_);
   ar(index);
 }
 void HousePtr::Serialize(ArchiveReader& ar) {
@@ -182,11 +183,11 @@ void HousePtr::Serialize(ArchiveReader& ar) {
   if (!ar.ok() || index == -1) {
     return;
   }
-  if (index < 0 || index >= TheObjectHeaps().house().Length()) {
+  if (index < 0 || index >= TheObjectHeaps().house().Capacity()) {
     ar.Fail("invalid saved house slot");
     return;
   }
-  ref_ = TheObjectHeaps().house().Raw_Ptr(index);
+  ref_ = TheObjectHeaps().house().Slot(index);
 }
 
 void TechnoTypePtr::Serialize(ArchiveWriter& ar) {
@@ -306,11 +307,11 @@ void TriggerPtr::Serialize(ArchiveReader& ar) {
     return;
   }
   if (Target_Kind(target) != KIND_TRIGGER ||
-      Target_Value(target) >= TheObjectHeaps().trigger().Length()) {
+      Target_Value(target) >= TheObjectHeaps().trigger().Capacity()) {
     ar.Fail("invalid saved trigger target");
     return;
   }
-  ref_ = TheObjectHeaps().trigger().Raw_Ptr(Target_Value(target));
+  ref_ = TheObjectHeaps().trigger().Slot(Target_Value(target));
 }
 
 template <class Archive>

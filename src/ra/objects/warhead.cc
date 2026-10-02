@@ -78,7 +78,7 @@ namespace ra {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 WarheadTypeClass::WarheadTypeClass(const char* name)
-    : ID(TheTypeHeaps().warhead().ID(this)), IniName(name) {
+    : ID(TheTypeHeaps().warhead().SlotIndexOf(this)), IniName(name) {
   for (const game::ArmorType armor :
        magic_enum::enum_values<game::ArmorType>()) {
     Modifier.at(armor) = Fixed(1);
@@ -103,7 +103,7 @@ WarheadTypeClass::WarheadTypeClass(const char* name)
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 void* WarheadTypeClass::operator new(std::size_t /*unused*/) noexcept {
-  return TheTypeHeaps().warhead().Alloc();
+  return TheTypeHeaps().warhead().Allocate();
 }
 
 /***********************************************************************************************
@@ -143,7 +143,7 @@ void WarheadTypeClass::operator delete(void* pointer) {
  *=============================================================================================*/
 WarheadTypeClass* WarheadTypeClass::As_Pointer(WarheadType warhead) {
   if (warhead != WARHEAD_NONE) {
-    return TheTypeHeaps().warhead().Ptr(static_cast<int>(warhead));
+    return TheTypeHeaps().warhead().ActiveAt(static_cast<int>(warhead));
   }
   return nullptr;
 }

@@ -276,7 +276,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     if (ThePlayer()->CurBuildings) {
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
-        BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+        BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
 
         if (building != nullptr && !building->IsInLimbo &&
             building->House == ThePlayer() && *building == STRUCT_CONST) {
@@ -290,7 +290,7 @@ void Keyboard_Process(engine::window::KeyNumber& input) {
     }
     if (std::ssize(TheWorld().current_object()) == 0 && ThePlayer()->CurUnits) {
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
-        UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
+        UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
 
         if (unit != nullptr && !unit->IsInLimbo && unit->House == ThePlayer() &&
             *unit == UNIT_MCV) {

@@ -4035,7 +4035,7 @@ BuildingClass* BuildingTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
                                                    HousesType house) const {
   for (int index = TheObjectHeaps().building().Count() - 1; index >= 0;
        index--) {
-    BuildingClass* building = TheObjectHeaps().building().Ptr(index);
+    BuildingClass* building = TheObjectHeaps().building().ActiveAt(index);
 
     if (building && !building->IsInLimbo &&
         building->House->Class->House == house &&

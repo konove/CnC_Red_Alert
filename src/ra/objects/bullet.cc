@@ -127,8 +127,8 @@ using engine::gfx::ShapeFlags;
  *=============================================================================================*/
 BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass* payback,
                          int strength, WarheadType warhead, int speed)
-    : ObjectClass(RTTI_BULLET, TheObjectHeaps().bullet().ID(this)),
-      Class(TheTypeHeaps().bullet().Ptr(static_cast<int>(id))),
+    : ObjectClass(RTTI_BULLET, TheObjectHeaps().bullet().SlotIndexOf(this)),
+      Class(TheTypeHeaps().bullet().ActiveAt(static_cast<int>(id))),
       Payback(payback),
       PrimaryFacing(game::DIR_N),
       TarCom(target),
@@ -631,7 +631,7 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::Init() { TheObjectHeaps().bullet().Free_All(); }
+void BulletClass::Init() { TheObjectHeaps().bullet().FreeAll(); }
 
 /***********************************************************************************************
  * BulletClass::Detach -- Removes specified target from this bullet's targeting

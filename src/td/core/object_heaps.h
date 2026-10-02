@@ -38,7 +38,7 @@ class ObjectHeaps {
   // the houses own their unit trackers, so they are destroyed here. The units'
   // and buildings' destructors reach into the game through its globals, so
   // they stay unrun.
-  ~ObjectHeaps() { house_.Destroy_All(); }
+  ~ObjectHeaps() { house_.DestroyAll(); }
 
   ObjectHeaps(const ObjectHeaps&) = delete;
   ObjectHeaps& operator=(const ObjectHeaps&) = delete;

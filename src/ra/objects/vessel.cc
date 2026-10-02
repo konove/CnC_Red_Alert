@@ -144,8 +144,9 @@ namespace ra {
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
 VesselClass::VesselClass(VesselType classid, HousesType house)
-    : DriveClass(RTTI_VESSEL, TheObjectHeaps().vessel().ID(this), house),
-      Class(TheTypeHeaps().vessel().Ptr(static_cast<int>(classid))),
+    : DriveClass(RTTI_VESSEL, TheObjectHeaps().vessel().SlotIndexOf(this),
+                 house),
+      Class(TheTypeHeaps().vessel().ActiveAt(static_cast<int>(classid))),
       SecondaryFacing(PrimaryFacing) {
   House->Tracking_Add(this);
 
@@ -236,7 +237,7 @@ VesselClass::~VesselClass() {
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
 void* VesselClass::operator new(std::size_t /*unused*/) noexcept {
-  void* ptr = TheObjectHeaps().vessel().Alloc();
+  void* ptr = TheObjectHeaps().vessel().Allocate();
   if (ptr != nullptr) {
     static_cast<VesselClass*>(ptr)->IsActive = true;
   }
@@ -1188,7 +1189,7 @@ COORDINATE VesselClass::Fire_Coord(int which) const {
  *                                                                                             *
  * HISTORY: * 05/13/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Init() { TheObjectHeaps().vessel().Free_All(); }
+void VesselClass::Init() { TheObjectHeaps().vessel().FreeAll(); }
 
 /***********************************************************************************************
  * VesselClass::Greatest_Threat -- Determines the greatest threat (best target)
@@ -2065,7 +2066,7 @@ void VesselClass::Write_INI(CCINIClass& ini) {
   **	Write the vessel data out.
   */
   for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
-    const VesselClass* vessel = TheObjectHeaps().vessel().Ptr(index);
+    const VesselClass* vessel = TheObjectHeaps().vessel().ActiveAt(index);
     if (vessel != nullptr && !vessel->IsInLimbo && vessel->IsActive) {
       char uname[10];
       char buf[128];

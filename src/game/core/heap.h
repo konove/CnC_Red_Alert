@@ -55,22 +55,22 @@ namespace game {
 //
 // Example:
 //   ObjectHeapBase heap(sizeof(Widget));
-//   heap.Set_Heap(100);              // room for 100 widgets
-//   void* slot = heap.Allocate();    // zero-filled; nullptr when full
+//   heap.Reset(100);                   // room for 100 widgets
+//   void* slot = heap.AllocateSlot();  // zero-filled; nullptr when full
 //   heap.Free(slot);
 class ObjectHeapBase {
  public:
   // Reads the slot index an object caches in its own `ID` field.
   using SlotIdReader = int (*)(const void* object);
 
-  // `size` is the size of one slot. slot_id is nullptr for objects that cache
-  // no slot index; Validate() then checks the heap's own bookkeeping only.
-  // clang's lifetime analysis reads slot_id as borrowed storage, but a
-  // function pointer outlives any heap.
+  // `slot_size` is the size of one slot in bytes. `read_slot_id` is nullptr
+  // for objects that cache no slot index; Validate() then checks the heap's
+  // own bookkeeping only. clang's lifetime analysis reads `read_slot_id` as
+  // borrowed storage, but a function pointer outlives any heap.
   // NOLINTBEGIN(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
-  explicit ObjectHeapBase(base::ssize size,
-                          SlotIdReader slot_id = nullptr) noexcept
-      : Size(size), slot_id_(slot_id) {}
+  explicit ObjectHeapBase(base::ssize slot_size,
+                          SlotIdReader read_slot_id = nullptr) noexcept
+      : slot_size_(slot_size), read_slot_id_(read_slot_id) {}
   // NOLINTEND(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
   ~ObjectHeapBase() = default;
   ObjectHeapBase(const ObjectHeapBase&) = delete;
@@ -81,30 +81,31 @@ class ObjectHeapBase {
   // Returns the number of slots in use.
   [[nodiscard]] int Count() const { return ActiveCount; }
   // Returns the number of slots.
-  [[nodiscard]] int Length() const { return TotalCount; }
+  [[nodiscard]] int Capacity() const { return TotalCount; }
   // Returns the number of free slots.
-  [[nodiscard]] int Avail() const { return TotalCount - ActiveCount; }
+  [[nodiscard]] int FreeCount() const { return TotalCount - ActiveCount; }
 
   // Returns the slot index of `pointer`, or -1 for nullptr. Any other pointer
   // gives a number, so use Owns() first when `pointer` may not be a slot.
-  [[nodiscard]] int ID(const void* pointer) const;
+  [[nodiscard]] int SlotIndexOf(const void* pointer) const;
 
-  // Whether slot `index` holds an allocated object; false for a free slot
-  // or an index outside the heap.
-  [[nodiscard]] bool Is_Allocated(int index) const {
-    return index >= 0 && index < TotalCount && FreeFlag.at(base::ToSize(index));
+  // Whether slot `slot_index` holds an allocated object; false for a free
+  // slot or an index outside the heap.
+  [[nodiscard]] bool IsAllocated(int slot_index) const {
+    return slot_index >= 0 && slot_index < TotalCount &&
+           in_use_.at(base::ToSize(slot_index));
   }
 
-  // Makes room for `count` objects and frees every slot. Returns false for a
-  // negative count or a heap whose slot size is not positive. A count of 0
-  // leaves the heap without storage. Called again with the same count, it
-  // keeps the storage where it is, because rule loading re-sizes the type
-  // heaps while pointers into them are still held.
-  bool Set_Heap(int count);
+  // Makes room for `capacity` objects and frees every slot. Returns false for
+  // a negative capacity or a heap whose slot size is not positive. A capacity
+  // of 0 leaves the heap without storage. Called again with the same
+  // capacity, it keeps the storage where it is, because rule loading re-sizes
+  // the type heaps while pointers into them are still held.
+  bool Reset(int capacity);
 
   // Returns a zero-filled free slot, the lowest-numbered one, and appends it
   // to the in-use list. Returns nullptr when every slot is taken.
-  void* Allocate();
+  void* AllocateSlot();
 
   // Releases the storage; the heap holds no slots afterwards.
   void Clear();
@@ -117,14 +118,14 @@ class ObjectHeapBase {
   bool Free(void* pointer);
 
   // Frees every slot without running destructors.
-  void Free_All();
+  void FreeAll();
 
   // How far into the buffer `pointer` lies, or -1 when it lies outside it.
-  [[nodiscard]] base::ssize Offset_Of(const void* pointer) const;
+  [[nodiscard]] base::ssize OffsetOf(const void* pointer) const;
 
-  // Whether `pointer` is the start of one of this heap's slots. ID() cannot
-  // answer that: it subtracts and divides whatever it is handed, so a pointer
-  // from somewhere else still comes back as a plausible index.
+  // Whether `pointer` is the start of one of this heap's slots. SlotIndexOf()
+  // cannot answer that: it subtracts and divides whatever it is handed, so a
+  // pointer from somewhere else still comes back as a plausible index.
   [[nodiscard]] bool Owns(const void* pointer) const;
 
   // Everything known about the slot `pointer` claims to be, for the DCHECKs
@@ -141,39 +142,39 @@ class ObjectHeapBase {
   // the once-a-frame -CHECKHEAPS sweep, not for the inner loop.
   [[nodiscard]] std::string Validate() const;
 
-  // Returns a storage slot; index must be in [0, Length()).
+  // Returns a storage slot; index must be in [0, Capacity()).
   void* at(int index) {
     CHECK_GE(index, 0);
     CHECK_LT(index, TotalCount);
-    return Buffer.subspan(base::ToSize(index * Size)).data();
+    return slots_.subspan(base::ToSize(index * slot_size_)).data();
   }
   void* operator[](int index) { return at(index); }
   [[nodiscard]] const void* at(int index) const {
     CHECK_GE(index, 0);
     CHECK_LT(index, TotalCount);
-    return Buffer.subspan(base::ToSize(index * Size)).data();
+    return slots_.subspan(base::ToSize(index * slot_size_)).data();
   }
   const void* operator[](int index) const { return at(index); }
 
   // Returns the position of `pointer` in the in-use list, or -1 when the list
   // does not hold it. Scenario INI files number team and trigger types this
   // way.
-  [[nodiscard]] int Logical_ID(const void* pointer) const;
-  // The same for slot `id`, which must be in [0, Length()).
-  [[nodiscard]] int Logical_ID(int id) const {
-    return Logical_ID((*this).at(id));
+  [[nodiscard]] int PositionOf(const void* pointer) const;
+  // The same for slot `slot_index`, which must be in [0, Capacity()).
+  [[nodiscard]] int PositionOf(int slot_index) const {
+    return PositionOf((*this).at(slot_index));
   }
 
-  // Returns the object at position `index` of the in-use list, which must be
-  // in [0, Count()).
-  void* Active_Ptr(int index) { return base::At(ActivePointers, index); }
-  [[nodiscard]] const void* Active_Ptr(int index) const {
-    return base::At(ActivePointers, index);
+  // Returns the object at `position` of the in-use list, which must be in
+  // [0, Count()).
+  void* ActiveSlot(int position) { return base::At(active_, position); }
+  [[nodiscard]] const void* ActiveSlot(int position) const {
+    return base::At(active_, position);
   }
 
  protected:
   // Size of one slot in bytes.
-  base::ssize Size;
+  base::ssize slot_size_;
 
   // Number of slots in the buffer.
   int TotalCount{0};
@@ -182,20 +183,20 @@ class ObjectHeapBase {
   int ActiveCount{0};
 
   // The slots, viewing storage_; empty when the heap has none.
-  std::span<std::byte> Buffer;
+  std::span<std::byte> slots_;
 
-  // Whether each slot is in use: true means taken, despite the name.
-  std::vector<bool> FreeFlag;
+  // Whether each slot is in use.
+  std::vector<bool> in_use_;
 
   // The slots in use, in the order they were allocated.
-  std::vector<void*> ActivePointers;
+  std::vector<void*> active_;
 
  private:
-  // The allocation Buffer views. operator new[] aligns it for any type up to
+  // The allocation slots_ views. operator new[] aligns it for any type up to
   // __STDCPP_DEFAULT_NEW_ALIGNMENT__, which ObjectHeap checks.
   std::unique_ptr<std::byte[]> storage_;
 
-  SlotIdReader slot_id_;  // nullptr when the objects cache no slot index.
+  SlotIdReader read_slot_id_;  // nullptr when the objects cache no slot index.
 };
 
 // Whether T caches its own slot index in a public `ID` field, the way
@@ -218,8 +219,9 @@ concept HasHeapId = requires(const T& object) {
 template <class T>
 class ObjectHeap : public ObjectHeapBase {
  public:
-  static_assert(alignof(T) <= __STDCPP_DEFAULT_NEW_ALIGNMENT__,
-                "the slots are carved from new char[], which aligns no more");
+  static_assert(
+      alignof(T) <= __STDCPP_DEFAULT_NEW_ALIGNMENT__,
+      "the slots are carved from new std::byte[], which aligns no more");
 
   ObjectHeap() noexcept
       : ObjectHeapBase(base::ssize{sizeof(T)}, SlotIdReaderFor()) {}
@@ -230,29 +232,29 @@ class ObjectHeap : public ObjectHeapBase {
   ObjectHeap& operator=(ObjectHeap&&) = delete;
 
   using ObjectHeapBase::Free;
-  using ObjectHeapBase::ID;
-  using ObjectHeapBase::Logical_ID;
+  using ObjectHeapBase::PositionOf;
+  using ObjectHeapBase::SlotIndexOf;
 
-  [[nodiscard]] int ID(const T* pointer) const {
-    return ObjectHeapBase::ID(pointer);
+  [[nodiscard]] int SlotIndexOf(const T* pointer) const {
+    return ObjectHeapBase::SlotIndexOf(pointer);
   }
-  [[nodiscard]] int Logical_ID(const T* pointer) const {
-    return ObjectHeapBase::Logical_ID(pointer);
+  [[nodiscard]] int PositionOf(const T* pointer) const {
+    return ObjectHeapBase::PositionOf(pointer);
   }
 
-  // Allocate() as a T*. The slot holds zero bytes, not a T: the caller
+  // AllocateSlot() as a T*. The slot holds zero bytes, not a T: the caller
   // constructs the object there, which is what each class's operator new is
   // for. Returns nullptr when the heap is full.
-  T* Alloc() { return static_cast<T*>(ObjectHeapBase::Allocate()); }
+  T* Allocate() { return static_cast<T*>(ObjectHeapBase::AllocateSlot()); }
   // Runs the destructor of every active object, then frees every slot.
-  // Free_All() alone hands the slots back without destroying what is in
+  // FreeAll() alone hands the slots back without destroying what is in
   // them, which leaks whatever the objects own; this is for objects whose
   // destructors only release memory, not ones that act on the game.
-  void Destroy_All() {
+  void DestroyAll() {
     for (int i = 0; i < Count(); i++) {
-      std::destroy_at(Ptr(i));
+      std::destroy_at(ActiveAt(i));
     }
-    Free_All();
+    FreeAll();
   }
   bool Free(T* pointer) { return ObjectHeapBase::Free(pointer); }
   // Writes the active count, then each object's slot index and contents.
@@ -264,22 +266,22 @@ class ObjectHeap : public ObjectHeapBase {
   // reader.error(); the heap is then partially populated.
   bool Load(ArchiveReader& reader)
     requires Serializable<T>;
-  // Active_Ptr() as a T*: the object at position `index` of the in-use list.
-  [[nodiscard]] T* Ptr(int index) const {
-    return static_cast<T*>(base::At(ActivePointers, index));
+  // ActiveSlot() as a T*: the object at `position` of the in-use list.
+  [[nodiscard]] T* ActiveAt(int position) const {
+    return static_cast<T*>(base::At(active_, position));
   }
-  // Slot `index` as a T*, whether or not it holds an object; `index` must be
-  // in [0, Length()).
-  T* Raw_Ptr(int index) { return static_cast<T*>((*this).at(index)); }
-  // Returns slot `index` whether or not it holds an object, or nullptr when
-  // `index` is outside [0, Length()), -1 included. A scenario or a saved game
-  // names an object by its slot before the object is created or loaded; the
-  // address is the object's once it is, as long as the heap keeps its size.
-  T* SlotAt(int index) {
-    if (index < 0 || index >= Length()) {
+  // Slot `slot_index` as a T*, whether or not it holds an object;
+  // `slot_index` must be in [0, Capacity()).
+  T* Slot(int slot_index) { return static_cast<T*>((*this).at(slot_index)); }
+  // Slot() for any index: nullptr when `slot_index` is outside
+  // [0, Capacity()), -1 included. A scenario or a saved game names an object
+  // by its slot before the object is created or loaded; the address is the
+  // object's once it is, as long as the heap keeps its size.
+  T* SlotOrNull(int slot_index) {
+    if (slot_index < 0 || slot_index >= Capacity()) {
       return nullptr;
     }
-    return Raw_Ptr(index);
+    return Slot(slot_index);
   }
 
  private:
@@ -306,9 +308,9 @@ bool ObjectHeap<T>::Save(ArchiveWriter& writer) const
   for (int i = 0; i < ActiveCount; i++) {
     // The slot index goes first so the object lands in the same slot on
     // load, which keeps TARGET values valid across the round trip.
-    int32_t idx = ID(Ptr(i));
-    writer(idx);
-    Ptr(i)->Serialize(writer);
+    int32_t slot_index = SlotIndexOf(ActiveAt(i));
+    writer(slot_index);
+    ActiveAt(i)->Serialize(writer);
   }
   return writer.ok();
 }
@@ -328,24 +330,25 @@ bool ObjectHeap<T>::Load(ArchiveReader& reader)
   }
 
   for (int i = 0; i < count; i++) {
-    int32_t idx = 0;
-    reader(idx);
+    int32_t slot_index = 0;
+    reader(slot_index);
     if (!reader.ok()) {
       return false;
     }
     // A slot named twice would be activated twice and listed twice.
-    if (idx < 0 || idx >= TotalCount || FreeFlag.at(base::ToSize(idx))) {
+    if (slot_index < 0 || slot_index >= TotalCount ||
+        in_use_.at(base::ToSize(slot_index))) {
       reader.Fail("invalid heap slot");
       return false;
     }
 
-    T* ptr = static_cast<T*>((*this).at(idx));
-    FreeFlag.at(base::ToSize(idx)) = true;
+    T* object = static_cast<T*>((*this).at(slot_index));
+    in_use_.at(base::ToSize(slot_index)) = true;
     ActiveCount++;
-    ActivePointers.push_back(ptr);
+    active_.push_back(object);
 
-    new (ptr) T();
-    ptr->Serialize(reader);
+    new (object) T();
+    object->Serialize(reader);
     if (!reader.ok()) {
       return false;
     }
@@ -361,13 +364,15 @@ bool ObjectHeap<T>::Load(ArchiveReader& reader)
 //
 // Example:
 //   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
-#define DCHECK_HEAP_SLOT(heap, object) \
-  DCHECK_EQ((heap).ID(object), int{(object)->ID}) << (heap).Describe(object)
+#define DCHECK_HEAP_SLOT(heap, object)                     \
+  DCHECK_EQ((heap).SlotIndexOf(object), int{(object)->ID}) \
+      << (heap).Describe(object)
 
 // CHECK_HEAP_SLOT is the same test kept in a release build, for the heaps
 // whose corruption the game cannot survive.
-#define CHECK_HEAP_SLOT(heap, object) \
-  CHECK_EQ((heap).ID(object), int{(object)->ID}) << (heap).Describe(object)
+#define CHECK_HEAP_SLOT(heap, object)                     \
+  CHECK_EQ((heap).SlotIndexOf(object), int{(object)->ID}) \
+      << (heap).Describe(object)
 
 }  // namespace game
 

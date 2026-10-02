@@ -194,7 +194,7 @@ void SidebarClass::StripClass::Serialize(Archive& ar) {
     ar(item.BuildableID, item.BuildableType, item.Factory);
     if constexpr (Archive::kIsReading) {
       if (item.Factory < -1 ||
-          item.Factory >= TheObjectHeaps().factory().Length() ||
+          item.Factory >= TheObjectHeaps().factory().Capacity() ||
           item.BuildableID < 0 || item.BuildableType <= RTTI_NONE ||
           item.BuildableType > RTTI_SPECIAL) {
         ar.Fail("invalid sidebar buildable");

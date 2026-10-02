@@ -79,8 +79,9 @@ namespace ra {
  *values.                                             *
  *=============================================================================================*/
 BulletTypeClass::BulletTypeClass(const char* name) noexcept
-    : ObjectTypeClass(RTTI_BULLETTYPE, TheTypeHeaps().bullet().ID(this), true,
-                      true, false, false, true, true, false, TXT_NONE, name),
+    : ObjectTypeClass(RTTI_BULLETTYPE,
+                      TheTypeHeaps().bullet().SlotIndexOf(this), true, true,
+                      false, false, true, true, false, TXT_NONE, name),
 
       Type(static_cast<BulletType>(ID)) {}
 
@@ -101,7 +102,7 @@ BulletTypeClass::BulletTypeClass(const char* name) noexcept
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void* BulletTypeClass::operator new(std::size_t /*unused*/) noexcept {
-  return TheTypeHeaps().bullet().Alloc();
+  return TheTypeHeaps().bullet().Allocate();
 }
 
 /***********************************************************************************************
@@ -214,7 +215,7 @@ void BulletTypeClass::One_Time() {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 BulletTypeClass& BulletTypeClass::As_Reference(BulletType type) {
-  return *TheTypeHeaps().bullet().Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().bullet().ActiveAt(static_cast<int>(type));
 }
 
 /***********************************************************************************************

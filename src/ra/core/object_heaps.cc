@@ -15,7 +15,7 @@ ObjectHeaps::~ObjectHeaps() {
   // the houses own their unit trackers. The units' and buildings'
   // destructors reach into the game through its globals, so they stay
   // unrun.
-  house_.Destroy_All();
+  house_.DestroyAll();
 }
 
 std::string ObjectHeaps::Validate() const {

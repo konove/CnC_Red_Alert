@@ -290,8 +290,8 @@ void TActionClass::Detach(TARGET target) {
  *=============================================================================================*/
 void TActionClass::Build_INI_Entry(std::string& buffer) const {
   buffer += std::format("{},{},{},{}", std::to_underlying(Action),
-                        TheObjectHeaps().team_type().Logical_ID(Team),
-                        TheObjectHeaps().trigger_type().Logical_ID(Trigger),
+                        TheObjectHeaps().team_type().PositionOf(Team),
+                        TheObjectHeaps().trigger_type().PositionOf(Trigger),
                         Data.Value);
 }
 
@@ -316,9 +316,9 @@ void TActionClass::Read_INI(base::Tokenizer& tokens) {
     default: {
       Action =
           static_cast<TActionType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
-      Team = TheObjectHeaps().team_type().SlotAt(
+      Team = TheObjectHeaps().team_type().SlotOrNull(
           base::ParseIntegerOr<int>(tokens.Next(), 0));
-      Trigger = TheObjectHeaps().trigger_type().SlotAt(
+      Trigger = TheObjectHeaps().trigger_type().SlotOrNull(
           base::ParseIntegerOr<int>(tokens.Next(), 0));
       Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
@@ -399,7 +399,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
   HouseClass* hptr = HouseClass::As_Pointer(house);
   TriggerClass* trig = nullptr;
   if (id != -1) {
-    trig = TheObjectHeaps().trigger().Raw_Ptr(id);
+    trig = TheObjectHeaps().trigger().Slot(id);
   }
   bool success = true;
   //	TeamTypeClass * ttype = Team;
@@ -432,7 +432,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     case TACTION_LAUNCH_NUKES: {
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
-        BuildingClass* bldg = TheObjectHeaps().building().Ptr(index);
+        BuildingClass* bldg = TheObjectHeaps().building().ActiveAt(index);
         if (*bldg == STRUCT_MSLO) {
           bldg->Assign_Mission(MISSION_MISSILE);
         }
@@ -630,10 +630,10 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       if (Trigger != nullptr) {
         for (int index = 0; index < TheObjectHeaps().trigger().Count();
              index++) {
-          if (TheObjectHeaps().trigger().Ptr(index)->Class == Trigger) {
+          if (TheObjectHeaps().trigger().ActiveAt(index)->Class == Trigger) {
             Detach_This_From_All(
-                TheObjectHeaps().trigger().Ptr(index)->As_Target());
-            base::DeletePooled(TheObjectHeaps().trigger().Ptr(index));
+                TheObjectHeaps().trigger().ActiveAt(index)->As_Target());
+            base::DeletePooled(TheObjectHeaps().trigger().ActiveAt(index));
             index--;
           }
         }
@@ -773,7 +773,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       if (trig) {
         for (int u_index = 0; u_index < TheObjectHeaps().unit().Count();
              u_index++) {
-          UnitClass* unit = TheObjectHeaps().unit().Ptr(u_index);
+          UnitClass* unit = TheObjectHeaps().unit().ActiveAt(u_index);
 
           if (unit && unit->Trigger == trig) {
             unit->Trigger = nullptr;
@@ -784,7 +784,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
 
         for (int i_index = 0; i_index < TheObjectHeaps().infantry().Count();
              i_index++) {
-          InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(i_index);
+          InfantryClass* infantry =
+              TheObjectHeaps().infantry().ActiveAt(i_index);
 
           if (infantry && infantry->Trigger == trig) {
             infantry->Trigger = nullptr;
@@ -795,7 +796,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
 
         for (int a_index = 0; a_index < TheObjectHeaps().aircraft().Count();
              a_index++) {
-          AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(a_index);
+          AircraftClass* aircraft =
+              TheObjectHeaps().aircraft().ActiveAt(a_index);
 
           if (aircraft && aircraft->Trigger == trig) {
             aircraft->Trigger = nullptr;
@@ -806,7 +808,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
 
         for (int b_index = 0; b_index < TheObjectHeaps().building().Count();
              b_index++) {
-          BuildingClass* building = TheObjectHeaps().building().Ptr(b_index);
+          BuildingClass* building =
+              TheObjectHeaps().building().ActiveAt(b_index);
 
           if (building && building->Trigger == trig) {
             building->Trigger = nullptr;

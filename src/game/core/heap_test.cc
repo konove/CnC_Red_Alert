@@ -56,25 +56,25 @@ class RecordingSink : public ByteSink {
 // Constructs a Widget in the heap's next slot and records its slot index the
 // way game objects do.
 Widget* Allocate(ObjectHeap<Widget>& heap, int32_t value) {
-  auto* w = std::construct_at(heap.Alloc());
-  w->ID = heap.ID(w);
-  w->value = value;
-  return w;
+  auto* widget = std::construct_at(heap.Allocate());
+  widget->ID = heap.SlotIndexOf(widget);
+  widget->value = value;
+  return widget;
 }
 
 std::vector<uint8_t> Save(const ObjectHeap<Widget>& heap) {
-  RecordingSink pipe;
-  ArchiveWriter writer(pipe);
+  RecordingSink sink;
+  ArchiveWriter writer(sink);
   EXPECT_TRUE(heap.Save(writer));
-  return pipe.bytes;
+  return sink.bytes;
 }
 
 // Loads `bytes` into `heap` and returns the reader's error, empty on success.
 // Also checks that Load's result agrees with the reader.
 std::string LoadError(ObjectHeap<Widget>& heap,
                       const std::vector<uint8_t>& bytes) {
-  SpanSource straw(std::as_bytes(std::span(bytes)));
-  ArchiveReader reader(straw);
+  SpanSource source(std::as_bytes(std::span(bytes)));
+  ArchiveReader reader(source);
   const bool loaded = heap.Load(reader);
   EXPECT_EQ(loaded, reader.ok());
   return std::string(reader.error());
@@ -86,7 +86,7 @@ bool Load(ObjectHeap<Widget>& heap, const std::vector<uint8_t>& bytes) {
 
 TEST(HeapTest, FreeKeepsTheOrderOfTheOthers) {
   ObjectHeap<Widget> heap;
-  heap.Set_Heap(4);
+  heap.Reset(4);
   Widget* first = Allocate(heap, 1);
   Widget* second = Allocate(heap, 2);
   Widget* third = Allocate(heap, 3);
@@ -94,13 +94,13 @@ TEST(HeapTest, FreeKeepsTheOrderOfTheOthers) {
   heap.Free(second);
 
   ASSERT_EQ(heap.Count(), 2);
-  EXPECT_EQ(heap.Ptr(0), first);
-  EXPECT_EQ(heap.Ptr(1), third);
+  EXPECT_EQ(heap.ActiveAt(0), first);
+  EXPECT_EQ(heap.ActiveAt(1), third);
 }
 
 TEST(HeapTest, FreeReportsWhetherItFreedAnything) {
   ObjectHeap<Widget> heap;
-  heap.Set_Heap(4);
+  heap.Reset(4);
   Widget* widget = Allocate(heap, 1);
 
   EXPECT_TRUE(heap.Free(widget));
@@ -109,15 +109,15 @@ TEST(HeapTest, FreeReportsWhetherItFreedAnything) {
 }
 
 // A pointer that is not the start of a slot names no object, even though
-// ID() turns it into a plausible slot index.
+// SlotIndexOf() turns it into a plausible slot index.
 TEST(HeapTest, FreeRejectsAPointerThatIsNotASlot) {
   ObjectHeap<Widget> heap;
-  heap.Set_Heap(4);
+  heap.Reset(4);
   Widget* widget = Allocate(heap, 1);
 
   EXPECT_FALSE(heap.Free(&widget->value));
   EXPECT_EQ(heap.Count(), 1);
-  EXPECT_TRUE(heap.Is_Allocated(0));
+  EXPECT_TRUE(heap.IsAllocated(0));
   EXPECT_EQ(heap.Validate(), "");
 }
 
@@ -125,46 +125,46 @@ TEST(HeapTest, FreeRejectsAPointerThatIsNotASlot) {
 // still point into them, so the storage must stay where it is.
 TEST(HeapTest, SetHeapWithTheSameCountKeepsTheStorage) {
   ObjectHeap<Widget> heap;
-  heap.Set_Heap(4);
+  heap.Reset(4);
   Allocate(heap, 1);
-  const Widget* slot_zero = heap.Raw_Ptr(0);
+  const Widget* slot_zero = heap.Slot(0);
 
-  heap.Set_Heap(4);
+  heap.Reset(4);
 
-  EXPECT_EQ(heap.Raw_Ptr(0), slot_zero);
+  EXPECT_EQ(heap.Slot(0), slot_zero);
   EXPECT_EQ(heap.Count(), 0);
-  EXPECT_EQ(heap.Avail(), 4);
+  EXPECT_EQ(heap.FreeCount(), 4);
 }
 
 TEST(HeapTest, AllocateAfterFreeAllReusesSlotZeroZeroed) {
   ObjectHeap<Widget> heap;
-  heap.Set_Heap(4);
+  heap.Reset(4);
   Allocate(heap, 7);
   Allocate(heap, 8);
 
-  heap.Free_All();
-  const Widget* again = heap.Alloc();
+  heap.FreeAll();
+  const Widget* again = heap.Allocate();
 
-  EXPECT_EQ(heap.ID(again), 0);
+  EXPECT_EQ(heap.SlotIndexOf(again), 0);
   EXPECT_EQ(again->value, 0);
   EXPECT_EQ(heap.Count(), 1);
 }
 
 TEST(HeapTest, SlotAtNamesEverySlotAndNothingOutside) {
   ObjectHeap<Widget> heap;
-  heap.Set_Heap(3);
+  heap.Reset(3);
   const Widget* live = Allocate(heap, 7);
 
-  EXPECT_EQ(heap.SlotAt(0), live);
+  EXPECT_EQ(heap.SlotOrNull(0), live);
   // An empty slot still has its address: the object created there later.
-  EXPECT_EQ(heap.SlotAt(2), heap.Raw_Ptr(2));
-  EXPECT_EQ(heap.SlotAt(-1), nullptr);
-  EXPECT_EQ(heap.SlotAt(3), nullptr);
+  EXPECT_EQ(heap.SlotOrNull(2), heap.Slot(2));
+  EXPECT_EQ(heap.SlotOrNull(-1), nullptr);
+  EXPECT_EQ(heap.SlotOrNull(3), nullptr);
 }
 
 TEST(HeapDiagnosticsTest, OwnsOnlySlotStartsInsideTheBuffer) {
   ObjectHeap<Widget> heap;
-  heap.Set_Heap(4);
+  heap.Reset(4);
   const Widget* first = Allocate(heap, 1);
   const Widget* second = Allocate(heap, 2);
 
@@ -172,7 +172,7 @@ TEST(HeapDiagnosticsTest, OwnsOnlySlotStartsInsideTheBuffer) {
   EXPECT_TRUE(heap.Owns(second));
   // Inside the buffer, but not where a slot begins.
   EXPECT_FALSE(heap.Owns(&first->value));
-  // ID() happily turns both of these into plausible-looking indices.
+  // SlotIndexOf() happily turns both of these into plausible-looking indices.
   const Widget stack_widget;
   EXPECT_FALSE(heap.Owns(&stack_widget));
   EXPECT_FALSE(heap.Owns(nullptr));
@@ -180,7 +180,7 @@ TEST(HeapDiagnosticsTest, OwnsOnlySlotStartsInsideTheBuffer) {
 
 TEST(HeapDiagnosticsTest, DescribeTellsTheWaysAPointerCanBeWrong) {
   ObjectHeap<Widget> heap;
-  heap.Set_Heap(4);
+  heap.Reset(4);
   const Widget* live = Allocate(heap, 1);
   Widget* freed = Allocate(heap, 2);
   heap.Free(freed);
@@ -202,7 +202,7 @@ TEST(HeapDiagnosticsTest, DescribeTellsTheWaysAPointerCanBeWrong) {
 
 TEST(HeapDiagnosticsTest, ValidateReportsAStaleId) {
   ObjectHeap<Widget> heap;
-  heap.Set_Heap(4);
+  heap.Reset(4);
   Allocate(heap, 1);
   Widget* second = Allocate(heap, 2);
   EXPECT_EQ(heap.Validate(), "");
@@ -214,7 +214,7 @@ TEST(HeapDiagnosticsTest, ValidateReportsAStaleId) {
 
 TEST(HeapSerializeTest, SparseSlotsRoundTripIntoTheSameSlots) {
   ObjectHeap<Widget> source;
-  source.Set_Heap(8);
+  source.Reset(8);
   const Widget* a = Allocate(source, 10);
   Widget* b = Allocate(source, 20);
   Widget* c = Allocate(source, 30);
@@ -227,72 +227,72 @@ TEST(HeapSerializeTest, SparseSlotsRoundTripIntoTheSameSlots) {
   EXPECT_EQ(bytes.size(), 4U + (2 * (4 + 4 + 4 + 1)));
 
   ObjectHeap<Widget> loaded;
-  loaded.Set_Heap(8);
+  loaded.Reset(8);
   ASSERT_TRUE(Load(loaded, bytes));
   EXPECT_EQ(loaded.Count(), 2);
-  EXPECT_EQ(loaded.ID(loaded.Ptr(0)), source.ID(a));
-  EXPECT_EQ(loaded.ID(loaded.Ptr(1)), source.ID(c));
-  EXPECT_EQ(loaded.Ptr(0)->value, 10);
-  EXPECT_EQ(loaded.Ptr(1)->value, 30);
-  EXPECT_TRUE(loaded.Ptr(1)->flag);
-  EXPECT_EQ(loaded.Ptr(1)->ID, loaded.ID(loaded.Ptr(1)));
-  EXPECT_EQ(loaded.Avail(), 6);
+  EXPECT_EQ(loaded.SlotIndexOf(loaded.ActiveAt(0)), source.SlotIndexOf(a));
+  EXPECT_EQ(loaded.SlotIndexOf(loaded.ActiveAt(1)), source.SlotIndexOf(c));
+  EXPECT_EQ(loaded.ActiveAt(0)->value, 10);
+  EXPECT_EQ(loaded.ActiveAt(1)->value, 30);
+  EXPECT_TRUE(loaded.ActiveAt(1)->flag);
+  EXPECT_EQ(loaded.ActiveAt(1)->ID, loaded.SlotIndexOf(loaded.ActiveAt(1)));
+  EXPECT_EQ(loaded.FreeCount(), 6);
 }
 
 TEST(HeapSerializeTest, EmptyHeapRoundTrips) {
   ObjectHeap<Widget> source;
-  source.Set_Heap(4);
+  source.Reset(4);
   const std::vector<uint8_t> bytes = Save(source);
   EXPECT_EQ(bytes.size(), 4U);
 
   ObjectHeap<Widget> loaded;
-  loaded.Set_Heap(4);
+  loaded.Reset(4);
   EXPECT_TRUE(Load(loaded, bytes));
   EXPECT_EQ(loaded.Count(), 0);
 }
 
 TEST(HeapSerializeTest, TruncatedStreamFails) {
   ObjectHeap<Widget> source;
-  source.Set_Heap(4);
+  source.Reset(4);
   Allocate(source, 1);
   std::vector<uint8_t> bytes = Save(source);
   bytes.resize(bytes.size() - 1);
 
   ObjectHeap<Widget> loaded;
-  loaded.Set_Heap(4);
+  loaded.Reset(4);
   EXPECT_FALSE(Load(loaded, bytes));
 }
 
 TEST(HeapSerializeTest, CountBeyondCapacityFails) {
   ObjectHeap<Widget> source;
-  source.Set_Heap(8);
+  source.Reset(8);
   for (int i = 0; i < 6; i++) {
     Allocate(source, i);
   }
   const std::vector<uint8_t> bytes = Save(source);
 
   ObjectHeap<Widget> smaller;
-  smaller.Set_Heap(4);
+  smaller.Reset(4);
   EXPECT_EQ(LoadError(smaller, bytes), "invalid saved heap count");
 }
 
 TEST(HeapSerializeTest, SlotIndexOutOfRangeFails) {
   ObjectHeap<Widget> source;
-  source.Set_Heap(8);
-  const Widget* w = Allocate(source, 1);
-  EXPECT_EQ(source.ID(w), 0);
+  source.Reset(8);
+  const Widget* widget = Allocate(source, 1);
+  EXPECT_EQ(source.SlotIndexOf(widget), 0);
   std::vector<uint8_t> bytes = Save(source);
   bytes.at(4) = 0x7F;  // slot index low byte: 127 is past an 8-slot heap
 
   ObjectHeap<Widget> loaded;
-  loaded.Set_Heap(8);
+  loaded.Reset(8);
   EXPECT_EQ(LoadError(loaded, bytes), "invalid heap slot");
   EXPECT_EQ(loaded.Count(), 0);
 }
 
 TEST(HeapSerializeTest, SlotNamedTwiceFails) {
   ObjectHeap<Widget> source;
-  source.Set_Heap(8);
+  source.Reset(8);
   Allocate(source, 1);
   Allocate(source, 2);
   std::vector<uint8_t> bytes = Save(source);
@@ -301,7 +301,7 @@ TEST(HeapSerializeTest, SlotNamedTwiceFails) {
   bytes.at(4 + 13) = 0;
 
   ObjectHeap<Widget> loaded;
-  loaded.Set_Heap(8);
+  loaded.Reset(8);
   EXPECT_EQ(LoadError(loaded, bytes), "invalid heap slot");
   EXPECT_EQ(loaded.Count(), 1);
 }
@@ -327,16 +327,16 @@ class DestructorCounter {
 
 TEST(HeapDestroyTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
   ObjectHeap<DestructorCounter> heap;
-  heap.Set_Heap(3);
+  heap.Reset(3);
   int destroyed = 0;
-  std::construct_at(heap.Alloc(), destroyed);
-  std::construct_at(heap.Alloc(), destroyed);
+  std::construct_at(heap.Allocate(), destroyed);
+  std::construct_at(heap.Allocate(), destroyed);
 
-  heap.Destroy_All();
+  heap.DestroyAll();
 
   EXPECT_EQ(destroyed, 2);
   EXPECT_EQ(heap.Count(), 0);
-  EXPECT_EQ(heap.Avail(), 3);
+  EXPECT_EQ(heap.FreeCount(), 3);
 }
 
 }  // namespace
