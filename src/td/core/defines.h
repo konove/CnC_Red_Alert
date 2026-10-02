@@ -1628,9 +1628,9 @@ inline constexpr int kWeaponCount = static_cast<int>(WEAPON_COUNT);
 #define FONT6 "6point.fnt"
 #define FONT8 "8point.fnt"
 
-// The fonts the game prints with. The low four bits of a TextPrintType
-// select one; docs/TEXT_PRINT_SPLIT_PLAN.md moves that choice into a FontType
-// parameter. The names say what the font looks like, not what it is used for.
+// The fonts the game prints with. Fancy_Text_Print() and the text widgets
+// take one beside their TextPrintType flags. The names say what the font looks
+// like, not what it is used for.
 enum class FontType {
   k3Point,
   k6Point,
@@ -1644,20 +1644,9 @@ enum class FontType {
   kVcr,    // The font of the movie playback controls.
 };
 
-/**********************************************************************
-**	These are the control flags for Fancy_Text_Print function.
-*/
+// The style flags of Fancy_Text_Print(): shadow, justification and colour.
+// The font is a separate FontType.
 enum class CNC_FLAG_ENUM TextPrintType {
-  TPF_LASTPOINT = 0x0000,     // Use previous font point value.
-  TPF_6POINT = 0x0001,        // Use 6 point font.
-  TPF_8POINT = 0x0002,        // Use 8 point font.
-  TPF_3POINT = 0x0003,        // Use 3 point font.
-  TPF_LED = 0x0004,           // Use LED font.
-  TPF_VCR = 0x0005,           // Use VCR font.
-  TPF_6PT_GRAD = 0x0006,      // Use 6 point gradient font.
-  TPF_MAP = 0x0007,           // Use 6 point gradient font.
-  TPF_GREEN12 = 0x0008,       // Use green tab font
-  TPF_GREEN12_GRAD = 0x0009,  // Use graduated green tab font
   TPF_NONE = 0x0000,          // No style flags.
   TPF_NOSHADOW = 0x0010,      // Don't have any shadow.
   TPF_DROPSHADOW = 0x0020,    //	Use a simple drop shadow.

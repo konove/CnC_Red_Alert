@@ -73,11 +73,6 @@ FontStyle TextFontStyle(FontType font, TextPrintType flags);
 TextStyle TextStyleFor(FontType font, TextPrintType flags, int fore = kTBlack,
                        int back = kTBlack);
 
-// Transitional, deleted by docs/TEXT_PRINT_SPLIT_PLAN.md Task 8: the font a
-// combined TextPrintType selects (none selects the 8-point font) and its flags
-// without the font bits.
-FontType FontOf(TextPrintType combined);
-TextPrintType StyleOf(TextPrintType combined);
 
 // Whether the packed flags of the old TextPrintType tested true for
 // `flags & TPF_6PT_GRAD` (6) with `font`: the list, colour list and button

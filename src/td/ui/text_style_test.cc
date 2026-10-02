@@ -109,7 +109,7 @@ class TextStyleTest : public testing::Test {
                            FontName(style.font_style.font.data()),
                            style.font_style.x_spacing,
                            style.font_style.y_spacing, style.forecolor,
-                           base::Bits(style.flag) & ~0xFU, palette);
+                           base::Bits(style.flag), palette);
   }
 
   std::string Table() {
@@ -156,13 +156,6 @@ TEST_F(TextStyleTest, ThreePointFontDropsTheShadowsItHasNoRoomFor) {
       TextStyleFor(FontType::k3Point, TPF_FULLSHADOW | TPF_CENTER, 5, kBack);
   EXPECT_FALSE(base::Any(style.flag & TPF_FULLSHADOW));
   EXPECT_TRUE(base::Any(style.flag & TPF_CENTER));
-}
-
-TEST(FontOfTest, MapsTheLegacyFontBits) {
-  EXPECT_EQ(FontOf(TPF_LASTPOINT | TPF_CENTER), FontType::k8Point);
-  EXPECT_EQ(FontOf(TPF_GREEN12_GRAD | TPF_CENTER), FontType::kGreen12Gradient);
-  EXPECT_EQ(StyleOf(TPF_6PT_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL),
-            TPF_CENTER | TPF_USE_GRAD_PAL);
 }
 
 TEST(HasGradientFontBitsTest, MatchesWhatTheLegacyMaskMatched) {
