@@ -62,7 +62,7 @@ Widget* Allocate(ObjectHeap<Widget>& heap, int32_t value) {
   return widget;
 }
 
-std::vector<uint8_t> Save(const ObjectHeap<Widget>& heap) {
+std::vector<uint8_t> Save(ObjectHeap<Widget>& heap) {
   RecordingSink sink;
   ArchiveWriter writer(sink);
   EXPECT_TRUE(heap.Save(writer));
@@ -305,10 +305,6 @@ TEST(HeapSerializeTest, SlotNamedTwiceFails) {
   EXPECT_EQ(LoadError(loaded, bytes), "invalid heap slot");
   EXPECT_EQ(loaded.Count(), 1);
 }
-
-}  // namespace
-
-namespace {
 
 // Counts how many times its destructor has run.
 class DestructorCounter {

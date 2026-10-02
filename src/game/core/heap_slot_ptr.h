@@ -59,6 +59,8 @@ class HeapSlotPtr {
   Heap& heap_;
 };
 
+// The implicit guide would deduce the same T; spelling one out is what tells
+// -Wctad-maybe-unsupported that callers are meant to rely on deduction.
 template <class T>
 HeapSlotPtr(T*&, ObjectHeap<std::remove_const_t<T>>&) -> HeapSlotPtr<T>;
 

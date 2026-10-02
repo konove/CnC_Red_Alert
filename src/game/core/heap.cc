@@ -22,7 +22,6 @@
 
 #include <cstddef>
 #include <functional>
-#include <iterator>
 #include <memory>
 #include <span>
 #include <string>
@@ -37,14 +36,16 @@
 namespace game {
 
 bool ObjectHeapBase::Reset(int capacity) {
-  if (slot_size_ <= 0 || capacity < 0) {
-    Clear();
-    return false;
-  }
-
   // Keep the storage when the capacity is unchanged; see the declaration.
-  if (capacity != TotalCount || storage_ == nullptr) {
-    Clear();
+  if (slot_size_ <= 0 || capacity < 0 || capacity != Capacity() ||
+      storage_ == nullptr) {
+    slots_ = {};
+    storage_.reset();
+    in_use_.clear();
+    active_.clear();
+    if (slot_size_ <= 0 || capacity < 0) {
+      return false;
+    }
     if (capacity == 0) {
       return true;
     }
@@ -52,10 +53,8 @@ bool ObjectHeapBase::Reset(int capacity) {
     storage_ = std::make_unique_for_overwrite<std::byte[]>(extent);
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     slots_ = std::span<std::byte>(storage_.get(), extent);
-    TotalCount = capacity;
   }
 
-  ActiveCount = 0;
   in_use_.assign(base::ToSize(capacity), false);
   active_.clear();
   // Reserving the whole heap up front means allocating during a game never
@@ -65,35 +64,38 @@ bool ObjectHeapBase::Reset(int capacity) {
 }
 
 void* ObjectHeapBase::AllocateSlot() {
-  // Full: skip the scan, which could only fail.
-  if (ActiveCount >= TotalCount) {
-    return nullptr;
-  }
   const auto slot_index = static_cast<int>(base::first_false(in_use_));
   if (slot_index == -1) {
     return nullptr;
   }
-  ActiveCount++;
-  in_use_.at(base::ToSize(slot_index)) = true;
-  void* const pointer = (*this).at(slot_index);
-  active_.push_back(pointer);
+  void* const pointer = ClaimSlot(slot_index);
   base::FillBytes(slots_.subspan(base::ToSize(slot_index * slot_size_),
                                  base::ToSize(slot_size_)),
                   0, slot_size_);
   return pointer;
 }
 
+void* ObjectHeapBase::ClaimSlot(int slot_index) {
+  if (slot_index < 0 || slot_index >= Capacity() ||
+      in_use_.at(base::ToSize(slot_index))) {
+    return nullptr;
+  }
+  in_use_.at(base::ToSize(slot_index)) = true;
+  void* const pointer = at(slot_index);
+  active_.push_back(pointer);
+  return pointer;
+}
+
 bool ObjectHeapBase::Free(void* pointer) {
-  // SlotIndexOf() alone would round a pointer into the middle of a slot down to
-  // that slot, free it, and leave the in-use list holding it.
-  if (ActiveCount == 0 || !Owns(pointer)) {
+  // SlotIndexOf() alone would round a pointer into the middle of a slot down
+  // to that slot, free it, and leave the in-use list holding it.
+  if (!Owns(pointer)) {
     return false;
   }
   const int slot_index = SlotIndexOf(pointer);
   if (!in_use_.at(base::ToSize(slot_index))) {
     return false;
   }
-  ActiveCount--;
   in_use_.at(base::ToSize(slot_index)) = false;
   base::EraseFirst(active_, pointer);
   return true;
@@ -131,8 +133,8 @@ bool ObjectHeapBase::Owns(const void* pointer) const {
 
 std::string ObjectHeapBase::Describe(const void* pointer) const {
   std::string description = absl::StrFormat(
-      "heap=%p slots=%d/%d size=%d buffer=[%p,%p) ptr=%p", this, ActiveCount,
-      TotalCount, slot_size_, static_cast<const void*>(slots_.data()),
+      "heap=%p slots=%d/%d size=%d buffer=[%p,%p) ptr=%p", this, Count(),
+      Capacity(), slot_size_, static_cast<const void*>(slots_.data()),
       static_cast<const void*>(
           slots_.empty() ? nullptr : slots_.subspan(slots_.size()).data()),
       pointer);
@@ -157,18 +159,8 @@ std::string ObjectHeapBase::Describe(const void* pointer) const {
                       " listed=", PositionOf(pointer) >= 0 ? "yes" : "no");
 }
 
-void ObjectHeapBase::Clear() {
-  slots_ = {};
-  storage_.reset();
-  ActiveCount = 0;
-  TotalCount = 0;
-  in_use_.clear();
-  active_.clear();
-}
-
 void ObjectHeapBase::FreeAll() {
   active_.clear();
-  ActiveCount = 0;
   in_use_.assign(in_use_.size(), false);
 }
 
@@ -180,12 +172,7 @@ int ObjectHeapBase::PositionOf(const void* pointer) const {
 }
 
 std::string ObjectHeapBase::Validate() const {
-  if (std::ssize(active_) != ActiveCount) {
-    return absl::StrCat("the in-use list holds ", active_.size(), " of ",
-                        ActiveCount, " active objects");
-  }
-
-  for (int position = 0; position < ActiveCount; position++) {
+  for (int position = 0; position < Count(); position++) {
     const void* pointer = ActiveSlot(position);
     if (!Owns(pointer)) {
       return absl::StrCat("active pointer ", position,
