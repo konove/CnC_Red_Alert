@@ -2131,7 +2131,7 @@ BuildingClass::~BuildingClass() {
   }
   Class = nullptr;
 
-  delete static_cast<FactoryClass*>(Factory);
+  delete Factory;
   Factory = nullptr;
   ID = -1;
 }
@@ -3665,7 +3665,7 @@ bool BuildingClass::Toggle_Primary() {
       }
     }
     IsLeader = true;
-    if (static_cast<HouseClass*>(House) == ThePlayer()) {
+    if (House == ThePlayer()) {
       Speak(VOX_PRIMARY_SELECTED);
     }
   }
@@ -3764,7 +3764,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     **	Abort any computer production in progress.
     */
     if (Factory) {
-      delete static_cast<FactoryClass*>(Factory);
+      delete Factory;
       Factory = nullptr;
     }
 
@@ -5509,7 +5509,7 @@ void BuildingClass::Detach_All(bool all) {
   */
   if (Factory) {
     Factory->Abandon();
-    delete static_cast<FactoryClass*>(Factory);
+    delete Factory;
     Factory = nullptr;
   }
 
@@ -5918,7 +5918,7 @@ void BuildingClass::Write_INI(CCINIClass& ini) {
           building->House->Class->IniName, building->Class->IniName,
           building->Health_Ratio() * 256, Coord_Cell(building->Coord),
           building->PrimaryFacing.Current(),
-          building->Trigger.Is_Valid() ? building->Trigger->Class->IniName
+          building->Trigger != nullptr ? building->Trigger->Class->IniName
                                        : "None",
           building->IsAllowedToSell, building->IsToRebuild);
       ini.Put_String(INI_Name(), uname, buf);
@@ -5974,7 +5974,7 @@ void BuildingClass::Factory_AI() {
   *buildings have *	production attached to the building itself. The player
   *uses the sidebar interface for *	all production control.
   */
-  if (Factory.Is_Valid() && Factory->Has_Completed() &&
+  if (Factory != nullptr && Factory->Has_Completed() &&
       PlacementDelay.IsFinished()) {
     TechnoClass* product = Factory->Get_Object();
     //		FactoryClass * fact = Factory;
@@ -5987,7 +5987,7 @@ void BuildingClass::Factory_AI() {
       */
       case 0:
         Factory->Abandon();
-        delete static_cast<FactoryClass*>(Factory);
+        delete Factory;
         Factory = nullptr;
         break;
 
@@ -6068,7 +6068,7 @@ void BuildingClass::Factory_AI() {
         //				fact->Completed();
         Factory->Completed();
         //				delete fact;
-        delete static_cast<FactoryClass*>(Factory);
+        delete Factory;
         Factory = nullptr;
         break;
 
@@ -6087,14 +6087,14 @@ void BuildingClass::Factory_AI() {
     **	Buildings that produce other objects have special factory logic handled
     *here.
     */
-    if (Factory.Is_Valid()) {
+    if (Factory != nullptr) {
       /*
       **	If production has halted, then just abort production and make
       *the *	funds available for something else.
       */
       if (PlacementDelay.IsFinished() && !Factory->Is_Building()) {
         Factory->Abandon();
-        delete static_cast<FactoryClass*>(Factory);
+        delete Factory;
         Factory = nullptr;
       }
 
@@ -6115,9 +6115,9 @@ void BuildingClass::Factory_AI() {
         */
         if (techno != nullptr) {
           Factory = base::NewPooled<FactoryClass>();
-          if (Factory.Is_Valid()) {
+          if (Factory != nullptr) {
             if (!Factory->Set(*techno, *House)) {
-              delete static_cast<FactoryClass*>(Factory);
+              delete Factory;
               Factory = nullptr;
             } else {
               House->Production_Begun(Factory->Get_Object());
@@ -6253,9 +6253,8 @@ void BuildingClass::Repair_AI() {
     } else {
       if ((TheSession().Type != GAME_NORMAL || IsAllowedToSell) &&
           IsTickedOff && House->Control.TechLevel >= TheRules().IQSellBack &&
-          Random_Pick(0, 50) < House->Control.TechLevel &&
-          !Trigger.Is_Valid() && *this != STRUCT_CONST &&
-          Health_Ratio() < TheRules().ConditionRed) {
+          Random_Pick(0, 50) < House->Control.TechLevel && Trigger == nullptr &&
+          *this != STRUCT_CONST && Health_Ratio() < TheRules().ConditionRed) {
         Sell_Back(1);
       }
     }

@@ -44,6 +44,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "game/core/heap.h"
 #include "ra/core/defines.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"

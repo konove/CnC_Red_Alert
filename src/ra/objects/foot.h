@@ -48,7 +48,6 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/objects/house.h"
@@ -223,7 +222,7 @@ class FootClass : public TechnoClass {
   *An *	example would be if this object were to be destroyed, it would inform
   *the *	team of this fact by using this pointer.
   */
-  CCPtr<TeamClass> Team;
+  TeamClass* Team = nullptr;
 
   /*
   **	If this object is part of a pseudo-team that the player is managing,
@@ -315,7 +314,6 @@ class FootClass : public TechnoClass {
         NavCom(kTargetNone),
         SuspendedNavCom(kTargetNone),
 
-        Team(nullptr),
         Group(kNoGroup),
         Member(nullptr),
 

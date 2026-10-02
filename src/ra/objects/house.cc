@@ -2044,8 +2044,7 @@ void HouseClass::Make_Ally(HousesType house) {
              index++) {
           const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
 
-          if (b && !b->IsInLimbo &&
-              static_cast<HouseClass*>(b->House) == this) {
+          if (b && !b->IsInLimbo && b->House == this) {
             TheMap().Sight_From(Coord_Cell(b->Center_Coord()),
                                 b->Class->SightRange, ThePlayer(), false);
           }
@@ -4306,8 +4305,8 @@ void HouseClass::Recalc_Center() {
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
       const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
 
-      if (b != nullptr && !b->IsInLimbo &&
-          static_cast<HouseClass*>(b->House) == this && b->Strength > 0) {
+      if (b != nullptr && !b->IsInLimbo && b->House == this &&
+          b->Strength > 0) {
         /*
         **	Give more "weight" to buildings that cost more. The presumption
         *is that cheap *	buildings don't affect the base disposition as
@@ -4348,8 +4347,8 @@ void HouseClass::Recalc_Center() {
            index++) {
         const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
 
-        if (b != nullptr && !b->IsInLimbo &&
-            static_cast<HouseClass*>(b->House) == this && b->Strength > 0) {
+        if (b != nullptr && !b->IsInLimbo && b->House == this &&
+            b->Strength > 0) {
           radius += Distance(Center, b->Center_Coord());
         }
       }
@@ -4362,8 +4361,8 @@ void HouseClass::Recalc_Center() {
            index++) {
         const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
 
-        if (b != nullptr && !b->IsInLimbo &&
-            static_cast<HouseClass*>(b->House) == this && b->Strength > 0) {
+        if (b != nullptr && !b->IsInLimbo && b->House == this &&
+            b->Strength > 0) {
           const ZoneType z = Which_Zone(b);
 
           if (z != ZONE_NONE) {

@@ -288,7 +288,7 @@ void TeamClass::operator delete(void* ptr) {
  *trigger still attached to objects.                      *
  *=============================================================================================*/
 TeamClass::~TeamClass() {
-  if (TheGameState().active() && Class.Is_Valid()) {
+  if (TheGameState().active() && Class != nullptr) {
     while (Member != nullptr) {
       Remove(Member);
     }
@@ -300,9 +300,9 @@ TeamClass::~TeamClass() {
     *Only player reinforcement *	members that broke off of the team
     *earlier will have this occur.
     */
-    if (Trigger.Is_Valid()) {
+    if (Trigger != nullptr) {
       if (Trigger->AttachCount == 0) {
-        base::DeletePooled(static_cast<TriggerClass*>(Trigger));
+        base::DeletePooled(Trigger);
       }
       Trigger = nullptr;
     }
@@ -897,7 +897,7 @@ bool TeamClass::Add(FootClass* obj) {
   **	All is ok to add the object to the team, but if the object is already
   *part of *	another team, then it must be removed from that team first.
   */
-  if (obj->Team.Is_Valid()) {
+  if (obj->Team != nullptr) {
     obj->Team->Remove(obj);
   }
 
@@ -914,7 +914,7 @@ bool TeamClass::Add(FootClass* obj) {
   **	If a common trigger is designated for this team type, then attach the
   **	trigger to this team member.
   */
-  if (Trigger.Is_Valid()) {
+  if (Trigger != nullptr) {
     obj->Attach_Trigger(Trigger);
   }
 
@@ -988,7 +988,7 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   **	is permitted to leave the other team in order to join this one. If not,
   **	then no further processing is allowed -- bail.
   */
-  if (obj->Team.Is_Valid() &&
+  if (obj->Team != nullptr &&
       obj->Team->Class->RecruitPriority >= Class->RecruitPriority) {
     return false;
   }
@@ -1383,7 +1383,7 @@ void TeamClass::Detach(TARGET target, bool /*unused*/) {
   if (MissionTarget == target) {
     MissionTarget = kTargetNone;
   }
-  if (Trigger.Is_Valid() && Trigger->As_Target() == target) {
+  if (Trigger != nullptr && Trigger->As_Target() == target) {
     Trigger = nullptr;
   }
 }

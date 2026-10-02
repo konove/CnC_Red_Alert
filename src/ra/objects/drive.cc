@@ -947,7 +947,7 @@ bool DriveClass::Start_Of_Move() {
       */
       if (!Target_Legal(NavCom) && Target_Legal(TarCom) && !In_Range(TarCom)) {
         IsScanLimited = true;
-        if (Team.Is_Valid()) {
+        if (Team != nullptr) {
           Team->Scan_Limit();
         }
         Assign_Target(kTargetNone);

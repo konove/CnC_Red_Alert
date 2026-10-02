@@ -4138,7 +4138,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
     TriggerTypeClass* tp = ini.Get_TriggerType("CellTriggers", cellentry);
     const CELL cell = base::ParseIntegerOr<CELL>(cellentry, 0);
 
-    if (tp != nullptr && !(*this).at(cell).Trigger.Is_Valid()) {
+    if (tp != nullptr && (*this).at(cell).Trigger == nullptr) {
       TriggerClass* tt = Find_Or_Make(tp);
       if (tt) {
         tt->AttachCount++;
@@ -4208,7 +4208,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   static const char* const CELLTRIG = "CellTriggers";
   ini.Clear(CELLTRIG);
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    if ((*this).at(cell).Trigger.Is_Valid()) {
+    if ((*this).at(cell).Trigger != nullptr) {
       const TriggerClass* tp = (*this).at(cell).Trigger;
       if (tp != nullptr) {
         /*

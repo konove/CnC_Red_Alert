@@ -201,7 +201,7 @@ VesselClass::~VesselClass() {
     *occur at the *	top most level of the inheritance hierarchy because it
     *may call virtual functions.
     */
-    if (Team.Is_Valid()) {
+    if (Team != nullptr) {
       Team->Remove(this);
       Team = nullptr;
     }
@@ -1296,7 +1296,7 @@ void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
         return;
       }
 
-      if (House->IsHuman || Team.Is_Valid()) {
+      if (House->IsHuman || Team != nullptr) {
         order = MISSION_GUARD;
       } else {
         if (House->IQ < TheRules().IQGuardArea) {
@@ -1910,9 +1910,9 @@ int VesselClass::Mission_Retreat() {
         // Map.Calculated_Cell(House->Control.Edge, (Team.Is_Valid()) ?
         // Team->Class->Origin : -1, -1, Class->Speed);
         const CELL cell = TheMap().Calculated_Cell(
-            House->Control.Edge, Team.Is_Valid() ? Team->Class->Origin : -1,
+            House->Control.Edge, Team != nullptr ? Team->Class->Origin : -1,
             Coord_Cell(Center_Coord()), Class->Speed);
-        if (Team.Is_Valid()) {
+        if (Team != nullptr) {
           Team->Remove(this);
         }
         Assign_Destination(ra::As_Target(cell));
@@ -2076,7 +2076,7 @@ void VesselClass::Write_INI(CCINIClass& ini) {
           vessel->House->Class->IniName, vessel->Class->IniName,
           vessel->Health_Ratio() * 256, Coord_Cell(vessel->Coord),
           vessel->PrimaryFacing.Current(), Mission_Name(vessel->Mission),
-          vessel->Trigger.Is_Valid() ? vessel->Trigger->Class->IniName
+          vessel->Trigger != nullptr ? vessel->Trigger->Class->IniName
                                      : "None");
       ini.Put_String(INI_Name(), uname, buf);
     }
@@ -2265,7 +2265,7 @@ void VesselClass::Combat_AI() {
  *=============================================================================================*/
 bool VesselClass::Edge_Of_World_AI() {
   if (!IsDriving && !TheMap().In_Radar(Coord_Cell(Coord)) && IsLocked) {
-    if (Team.Is_Valid()) {
+    if (Team != nullptr) {
       Team->IsLeaveMap = true;
     }
     Stun();

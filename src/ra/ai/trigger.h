@@ -47,7 +47,6 @@
 #include "game/core/heap.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigtype.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/objects/object.h"
 
@@ -61,7 +60,7 @@ class TriggerClass {
   RTTIType RTTI;
   int ID;
 
-  CCPtr<TriggerTypeClass> Class;
+  TriggerTypeClass* Class = nullptr;
 
   /*
   **	Record of the "already sprung" flag for the events.
@@ -72,7 +71,8 @@ class TriggerClass {
   /*
   **	Constructor/Destructor
   */
-  explicit TriggerClass(TriggerTypeClass* trigtype);
+  explicit TriggerClass(
+      TriggerTypeClass* trigtype ABSL_ATTRIBUTE_LIFETIME_BOUND);
   ~TriggerClass();
   TriggerClass(const TriggerClass&) = delete;
   TriggerClass& operator=(const TriggerClass&) = delete;

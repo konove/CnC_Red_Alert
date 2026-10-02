@@ -251,7 +251,7 @@ InfantryClass::~InfantryClass() {
     *occur at the *	top most level of the inheritance hierarchy because it
     *may call virtual functions.
     */
-    if (Team.Is_Valid()) {
+    if (Team != nullptr) {
       Team->Remove(this);
       Team = nullptr;
     }
@@ -648,7 +648,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
             }
             if (tech->Health_Ratio() <= TheRules().EngineerCaptureLevel &&
                 iscapturable) {
-              if (tech->Trigger.Is_Valid()) {
+              if (tech->Trigger != nullptr) {
                 tech->Trigger->Spring(TEVENT_PLAYER_ENTERED, this);
               }
               tech->House->IsThieved = true;
@@ -664,14 +664,14 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
           }
 
         } else {
-          if (*this != INFANTRY_SPY && tech->Trigger.Is_Valid()) {
+          if (*this != INFANTRY_SPY && tech->Trigger != nullptr) {
             tech->Trigger->Spring(TEVENT_PLAYER_ENTERED, this);
           }
 
           if (*this == INFANTRY_SPY) {
             const auto housespy = base::Bit<uint32_t>(House->Class->House);
 
-            if (tech->Trigger.Is_Valid()) {
+            if (tech->Trigger != nullptr) {
               tech->Trigger->Spring(TEVENT_SPIED, this);
             }
 
@@ -1624,14 +1624,14 @@ void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
       }
 
       if (Class->IsDog) {
-        if (House->IsHuman || Team.Is_Valid()) {
+        if (House->IsHuman || Team != nullptr) {
           order = MISSION_GUARD;
         } else {
           order = MISSION_GUARD_AREA;
           ArchiveTarget = ra::As_Target(Coord_Cell(Center_Coord()));
         }
       } else {
-        if (House->IsHuman || Team.Is_Valid()) {
+        if (House->IsHuman || Team != nullptr) {
           order = MISSION_GUARD;
         } else {
           if (House->IQ < TheRules().IQGuardArea) {
@@ -1825,7 +1825,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   **	flag has not been enabled that allows infantry scatter.
   */
   if (!TheRules().IsScatter && !nokidding && House->IsHuman && !forced &&
-      !Team.Is_Valid()) {
+      Team == nullptr) {
     return;
   }
 
@@ -3437,7 +3437,7 @@ void InfantryClass::Write_INI(CCINIClass& ini) {
                            ? infantry->MissionQueue
                            : infantry->Mission),
           infantry->PrimaryFacing.Current(),
-          infantry->Trigger.Is_Valid() ? infantry->Trigger->Class->IniName
+          infantry->Trigger != nullptr ? infantry->Trigger->Class->IniName
                                        : "None");
       ini.Put_String(INI_Name(), uname, buf);
     }
@@ -3525,11 +3525,11 @@ bool InfantryClass::Edge_Of_World_AI() {
   **	Delete this unit if it finds itself off the edge of the map and it is in
   **	guard or other static mission mode.
   */
-  if (Team.Is_Valid() && IsLocked) {
+  if (Team != nullptr && IsLocked) {
     Team->IsLeaveMap = true;
   }
 
-  if (!Team.Is_Valid() && Mission == MISSION_GUARD &&
+  if (Team == nullptr && Mission == MISSION_GUARD &&
       !TheMap().In_Radar(Coord_Cell(Coord))) {
     Stun();
     delete this;

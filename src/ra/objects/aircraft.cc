@@ -732,7 +732,7 @@ int AircraftClass::Mission_Hunt() {
           Status = kTakeOff;
           return 1;
         }
-        if (!Team.Is_Valid()) {
+        if (Team == nullptr) {
           if (TheSession().Type != GAME_NORMAL) {
             Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
           }
@@ -744,7 +744,7 @@ int AircraftClass::Mission_Hunt() {
           **	If there is no target, then this aircraft should just do its
           *normal thing.
           */
-          if (!Target_Legal(TarCom) && !Team.Is_Valid()) {
+          if (!Target_Legal(TarCom) && Team == nullptr) {
             Enter_Idle_Mode();
           }
         }
@@ -893,7 +893,7 @@ int AircraftClass::Mission_Hunt() {
       case kRegroup:
         if (Ammo == 0) {
           AttacksRemaining = 0;
-          if (Team.Is_Valid()) {
+          if (Team != nullptr) {
             Team->Remove(this);
           }
           Enter_Idle_Mode();
@@ -910,7 +910,7 @@ int AircraftClass::Mission_Hunt() {
             Assign_Mission(MISSION_RETREAT);
             Commence();
           } else {
-            if (!Team.Is_Valid()) {
+            if (Team == nullptr) {
               Enter_Idle_Mode();
             }
           }
@@ -1194,7 +1194,7 @@ int AircraftClass::Mission_Unload() {
             Assign_Destination(New_LZ(
                 ra::As_Target(base::At(TheScenario().Waypoint,
                                      ScenarioClass::kReinforcementWaypoint))));
-            if (Team.Is_Valid()) {
+            if (Team != nullptr) {
               Team->Assign_Mission_Target(NavCom);
             }
           }
@@ -1541,7 +1541,7 @@ int AircraftClass::Paradrop_Cargo() {
       */
       PlaySoundEffectAt(VOC_CHUTE1, Coord);
 
-      if (Team.Is_Valid()) {
+      if (Team != nullptr) {
         Team->Remove(passenger);
         if (passenger->House->IsHuman) {
           Assign_Mission(MISSION_GUARD);
@@ -1802,7 +1802,7 @@ int AircraftClass::Mission_Move() {
             Assign_Mission(mission);
             Commence();
           } else {
-            if (!Team.Is_Valid()) {
+            if (Team == nullptr) {
               Enter_Idle_Mode();
             }
           }
@@ -1831,7 +1831,7 @@ int AircraftClass::Mission_Move() {
       } else {
         if (!Is_LZ_Clear(NavCom) || !Cell_Seems_Ok(As_Cell(NavCom))) {
           Assign_Destination(New_LZ(NavCom));
-          if (Team.Is_Valid()) {
+          if (Team != nullptr) {
             Team->Assign_Mission_Target(NavCom);
           }
         } else {
@@ -1889,7 +1889,7 @@ int AircraftClass::Mission_Move() {
 
       } else {
         Assign_Destination(New_LZ(NavCom));
-        if (Team.Is_Valid()) {
+        if (Team != nullptr) {
           Team->Assign_Mission_Target(NavCom);
         }
         if (!Target_Legal(NavCom)) {
@@ -1904,7 +1904,7 @@ int AircraftClass::Mission_Move() {
     case kLand:
       if (IsTakingOff) {
         Assign_Destination(New_LZ(NavCom));
-        if (Team.Is_Valid()) {
+        if (Team != nullptr) {
           Team->Assign_Mission_Target(NavCom);
         }
         Status = kTakeOff;
@@ -1960,11 +1960,11 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
       *from *	the team it is attached to.
       */
       if (((IsALoaner && House->IsHuman) || (!House->IsHuman && !Ammo)) &&
-          (Team.Is_Valid() && Team->Has_Entered_Map())) {
+          (Team != nullptr && Team->Has_Entered_Map())) {
         Team->Remove(this);
       }
 
-      if (Team.Is_Valid()) {
+      if (Team != nullptr) {
         return;
       }
 
@@ -2008,7 +2008,7 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
           *passengers, *	don't unload when landing. Wait for specific
           *instructions from the *	controlling team.
           */
-          if (Team.Is_Valid()) {
+          if (Team != nullptr) {
             //					if (Team.Is_Valid() &&
             //! House->IsHuman) {
             mission = MISSION_GUARD;
@@ -2042,7 +2042,7 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
         *from *	the team it is attached to.
         */
         if (((IsALoaner && House->IsHuman) || (!House->IsHuman && !Ammo)) &&
-            (Team.Is_Valid() && Team->Has_Entered_Map())) {
+            (Team != nullptr && Team->Has_Entered_Map())) {
           Team->Remove(this);
         }
 
@@ -2057,12 +2057,12 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
             **	If it can fight, then give it fighting orders.
             */
             if (Ammo == 0) {
-              if (Team.Is_Valid()) {
+              if (Team != nullptr) {
                 Team->Remove(this);
               }
               mission = MISSION_RETREAT;
             } else {
-              if (!Team.Is_Valid()) {
+              if (Team == nullptr) {
                 mission = MISSION_HUNT;
               }
             }
@@ -3153,15 +3153,14 @@ game::MoveType AircraftClass::Can_Enter_Cell(CELL cell,
 
   const ObjectClass* occupier = cellptr->Cell_Occupier();
 
-  if (occupier == nullptr || !occupier->Is_Techno() ||
-      dynamic_cast<const TechnoClass*>(occupier)->House->Is_Ally(House) ||
-      (dynamic_cast<const TechnoClass*>(occupier)->Cloak != game::CLOAKED &&
-       TheWorld().scenario_init() == 0 &&
-       (occupier->What_Am_I() != RTTI_BUILDING ||
-        !dynamic_cast<const BuildingClass*>(occupier)->Class->IsInvisible))) {
-    if (!cellptr->Is_Clear_To_Move(SPEED_TRACK, false, false)) {
-      return game::MOVE_NO;
-    }
+  if ((occupier == nullptr || !occupier->Is_Techno() ||
+       dynamic_cast<const TechnoClass*>(occupier)->House->Is_Ally(House) ||
+       (dynamic_cast<const TechnoClass*>(occupier)->Cloak != game::CLOAKED &&
+        TheWorld().scenario_init() == 0 &&
+        (occupier->What_Am_I() != RTTI_BUILDING ||
+         !dynamic_cast<const BuildingClass*>(occupier)->Class->IsInvisible))) &&
+      !cellptr->Is_Clear_To_Move(SPEED_TRACK, false, false)) {
+    return game::MOVE_NO;
   }
 
   if (TheSession().Type == GAME_NORMAL && IsOwnedByPlayer &&
@@ -3826,7 +3825,7 @@ int AircraftClass::Mission_Guard() {
       Assign_Destination(ra::As_Target(Coord_Cell(Coord)));
       Assign_Mission(MISSION_MOVE);
     } else {
-      if (!Team.Is_Valid()) {
+      if (Team == nullptr) {
         Enter_Idle_Mode();
       }
     }
@@ -3950,7 +3949,7 @@ int AircraftClass::Mission_Guard_Area() {
   DCHECK(IsActive);
 
   if (Height == kFlightLevel) {
-    if (!Team.Is_Valid()) {
+    if (Team == nullptr) {
       Enter_Idle_Mode();
     }
     return 1;
@@ -4289,7 +4288,7 @@ bool AircraftClass::Edge_Of_World_AI() {
           obj->House->IsCivEvacuated = true;
         }
 
-        if (obj->Team.Is_Valid()) {
+        if (obj->Team != nullptr) {
           obj->Team->IsLeaveMap = true;
         }
 
@@ -4304,7 +4303,7 @@ bool AircraftClass::Edge_Of_World_AI() {
 #endif
         base::DeletePooled(obj);
       }
-      if (Team.Is_Valid()) {
+      if (Team != nullptr) {
         Team->IsLeaveMap = true;
       }
       Stun();

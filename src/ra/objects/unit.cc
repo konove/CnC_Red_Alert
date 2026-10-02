@@ -284,7 +284,7 @@ UnitClass::~UnitClass() {
     *occur at the *	top most level of the inheritance hierarchy because it
     *may call virtual functions.
     */
-    if (Team.Is_Valid()) {
+    if (Team != nullptr) {
       Team->Remove(this);
       Team = nullptr;
     }
@@ -575,7 +575,7 @@ void UnitClass::Rotation_AI() {
 bool UnitClass::Edge_Of_World_AI() {
   if (Mission == MISSION_GUARD && !TheMap().In_Radar(Coord_Cell(Coord)) &&
       IsLocked) {
-    if (Team.Is_Valid()) {
+    if (Team != nullptr) {
       Team->IsLeaveMap = true;
     }
     Stun();
@@ -1153,7 +1153,7 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
     **	Try to crush anyone that fires on this unit if possible. The harvester
     **	typically is the only one that will qualify here.
     */
-    if (!Team.Is_Valid() && source != nullptr && !IsTethered &&
+    if (Team == nullptr && source != nullptr && !IsTethered &&
         !House->Is_Ally(source) &&
         (!House->IsHuman || TheRules().IsAutoCrush)) {
       /*
@@ -1375,7 +1375,7 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
         }
       } else {
         if (IsALoaner && Class->Max_Passengers() > 0 &&
-            Is_Something_Attached() && !Team.Is_Valid()) {
+            Is_Something_Attached() && Team == nullptr) {
           order = MISSION_UNLOAD;
         } else {
           if (*this == UNIT_MAD && Mission == MISSION_UNLOAD) {
@@ -1395,7 +1395,7 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
         return;
       }
 
-      if (House->IQ < TheRules().IQGuardArea || Team.Is_Valid()) {
+      if (House->IQ < TheRules().IQGuardArea || Team != nullptr) {
         order = MISSION_GUARD;
       } else {
         order = MISSION_GUARD_AREA;
@@ -4814,7 +4814,7 @@ void UnitClass::Write_INI(CCINIClass& ini) {
           unit->Class->IniName, unit->Health_Ratio() * 256,
           Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
           Mission_Name(unit->Mission),
-          unit->Trigger.Is_Valid() ? unit->Trigger->Class->IniName : "None");
+          unit->Trigger != nullptr ? unit->Trigger->Class->IniName : "None");
       ini.Put_String(INI_Name(), uname, buf);
     }
   }

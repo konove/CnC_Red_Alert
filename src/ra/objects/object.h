@@ -47,7 +47,6 @@
 #include "base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "game/sim/direction.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/objects/abstract.h"
@@ -137,7 +136,7 @@ class ObjectClass : public AbstractClass {
   ** Every object can be assigned a trigger; the same trigger can be assigned
   ** to multiple objects.
   */
-  CCPtr<TriggerClass> Trigger;
+  TriggerClass* Trigger = nullptr;
 
   /*
   **	This is the current strength of this object.
@@ -166,7 +165,6 @@ class ObjectClass : public AbstractClass {
         IsFalling(false),
         Riser(0),
         Next(nullptr),
-        Trigger(nullptr),
         Strength(255) {}
 
  public:

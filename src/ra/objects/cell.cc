@@ -172,10 +172,7 @@ using engine::gfx::ShapeFlags;
  * HISTORY: * 08/09/1994 JLB : Created. * 02/20/1996 JLB : Uses initializer
  *list.                                                   *
  *=============================================================================================*/
-CellClass::CellClass()
-    : ID(static_cast<int16_t>(TheMap().ID(this))),
-
-      Trigger(nullptr) {
+CellClass::CellClass() : ID(static_cast<int16_t>(TheMap().ID(this))) {
   for (const MZoneType zone : magic_enum::enum_values<MZoneType>()) {
     Zones.at(zone) = 0;
   }
@@ -1061,7 +1058,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
         /*
         **	Draw the cell's Trigger mnemonic, if it has a trigger
         */
-        if (Trigger.Is_Valid()) {
+        if (Trigger != nullptr) {
           Fancy_Text_Print(view, Trigger->Class->IniName,
                            x + TheMap().TacPixelX, y + TheMap().TacPixelY,
                            &ThePalettes().color_remaps().at(PCOLOR_RED),

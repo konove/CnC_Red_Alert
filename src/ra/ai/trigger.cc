@@ -183,7 +183,7 @@ TriggerClass::TriggerClass()
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 TriggerClass::~TriggerClass() {
-  if ((TheGameState().active() && Class.Is_Valid() &&
+  if ((TheGameState().active() && Class != nullptr &&
        base::Any(Class->Attaches_To() & ATTACH_GENERAL)) &&
       (TheWorld().logic_trigger_id() >=
        base::IndexOf(TheWorld().logic_triggers(), this))) {
@@ -194,7 +194,7 @@ TriggerClass::~TriggerClass() {
     }
   }
 
-  if ((TheGameState().active() && Class.Is_Valid() &&
+  if ((TheGameState().active() && Class != nullptr &&
        base::Any(Class->Attaches_To() & ATTACH_MAP)) &&
       (TheWorld().map_trigger_id() >=
        base::IndexOf(TheWorld().map_triggers(), this))) {
@@ -205,7 +205,7 @@ TriggerClass::~TriggerClass() {
     }
   }
 
-  if (TheGameState().active() && Class.Is_Valid() &&
+  if (TheGameState().active() && Class != nullptr &&
       Class->House != HOUSE_NONE && Class->Action1.Action == TACTION_ALLOWWIN) {
     if (HouseClass::As_Pointer(Class->House)->Blockage) {
       HouseClass::As_Pointer(Class->House)->Blockage--;
@@ -504,7 +504,7 @@ TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
  *=============================================================================================*/
 void TriggerClass::Detach(TARGET target, bool /*unused*/) const {
   if (Is_Target_TriggerType(target)) {
-    DCHECK(static_cast<TriggerTypeClass*>(Class) != As_TriggerType(target));
+    DCHECK(Class != As_TriggerType(target));
     //		if (Class == As_TriggerType(target)) {
     //			Class = NULL;
     //		}

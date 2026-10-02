@@ -834,7 +834,7 @@ bool TechnoClass::Revealed(HouseClass* house) {
         **	If there is a trigger event associated with this object, then
         *process *	it for discovery purposes.
         */
-        if (!TheWorld().scenario_init() && Trigger.Is_Valid()) {
+        if (!TheWorld().scenario_init() && Trigger != nullptr) {
           Trigger->Spring(TEVENT_DISCOVERED, this);
         }
 
@@ -1697,7 +1697,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	if the building is not aggressive. That is, unless it is part of a team.
   *A team *	is allowed to pick any target it so chooses.
   */
-  if ((!Is_Foot() || !dynamic_cast<const FootClass*>(this)->Team.Is_Valid()) &&
+  if ((!Is_Foot() || dynamic_cast<const FootClass*>(this)->Team == nullptr) &&
       (House->IsHuman ||
        (House->IsPlayerControl && TheSession().Type == GAME_NORMAL)) &&
       otype == RTTI_BUILDING && tclass->PrimaryWeapon == nullptr) {
@@ -2593,7 +2593,7 @@ void TechnoClass::AI() {
   *then abort the tarcom
   */
   if (What_Am_I() != RTTI_AIRCRAFT && Target_Legal(TarCom) &&
-      (!Is_Foot() || !dynamic_cast<FootClass*>(this)->Team.Is_Valid()) &&
+      (!Is_Foot() || dynamic_cast<FootClass*>(this)->Team == nullptr) &&
       (!Is_Foot() || !Is_In_Same_Zone(As_Cell(TarCom)))) {
     const int primary = What_Weapon_Should_I_Use(TarCom);
     if (!In_Range(TarCom, primary)) {
@@ -4053,7 +4053,7 @@ bool TechnoClass::Captured(HouseClass* newowner) {
     *destroy as a loss. This *	order is necessary because the object is
     *recorded as a kill as well.
     */
-    if (Trigger.Is_Valid()) {
+    if (Trigger != nullptr) {
       Trigger->Spring(TEVENT_PLAYER_ENTERED, this);
     }
 
@@ -4260,15 +4260,15 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
   /*
   **	Handle any trigger event associated with this object.
   */
-  if (Trigger.Is_Valid() && source) {
+  if (Trigger != nullptr && source) {
     Trigger->Spring(TEVENT_ATTACKED, this);
   }
 
-  if (Trigger.Is_Valid() && source) {
+  if (Trigger != nullptr && source) {
     Trigger->Spring(TEVENT_DISCOVERED, this);
   }
 
-  if (Trigger.Is_Valid()) {
+  if (Trigger != nullptr) {
     Trigger->Spring(TEVENT_DESTROYED, this);
   }
 
@@ -5371,7 +5371,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   **	If this object is part of a team that prevents retaliation then don't
   *allow retaliation.
   */
-  if (Is_Foot() && dynamic_cast<const FootClass*>(this)->Team.Is_Valid() &&
+  if (Is_Foot() && dynamic_cast<const FootClass*>(this)->Team != nullptr &&
       dynamic_cast<const FootClass*>(this)->Team->Class->IsSuicide) {
     return false;
   }

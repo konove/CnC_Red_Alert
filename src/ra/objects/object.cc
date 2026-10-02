@@ -200,7 +200,6 @@ ObjectClass::ObjectClass(RTTIType rtti, int id)
       IsFalling(false),
       Riser(0),
       Next(nullptr),
-      Trigger(nullptr),
       Strength(255) {}
 
 // Limbo() is what takes an object out of the layers, and the derived
@@ -1194,7 +1193,7 @@ bool ObjectClass::Render(PixelView& view, bool forced)  // const
         **	Draw the trigger attached to the object. Draw_It is window-
         **	relative, so add the window's x-coord to 'x'.
         */
-        if (TheDebugState().map_editor_active() && Trigger.Is_Valid()) {
+        if (TheDebugState().map_editor_active() && Trigger != nullptr) {
           Fancy_Text_Print(view, Trigger->Class->IniName,
                            x + static_cast<int>(WinX), y,
                            &ThePalettes().color_remaps().at(PCOLOR_RED),
@@ -1352,7 +1351,7 @@ bool ObjectClass::Unlimbo(COORDINATE coord, game::DirType /*unused*/) {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 void ObjectClass::Detach(TARGET target, bool /*unused*/) {
-  if (Trigger.Is_Valid() && Is_Target_Trigger(target) &&
+  if (Trigger != nullptr && Is_Target_Trigger(target) &&
       Trigger->As_Target() == target) {
     Attach_Trigger(nullptr);
   }
@@ -1568,7 +1567,7 @@ game::ResultType ObjectClass::Take_Damage(int& damage, int distance,
     /*
     **	Handle any trigger event associated with this object.
     */
-    if (source && Trigger.Is_Valid() && result != game::RESULT_DESTROYED) {
+    if (source && Trigger != nullptr && result != game::RESULT_DESTROYED) {
       Trigger->Spring(TEVENT_ATTACKED, this);
     }
 
@@ -1789,7 +1788,7 @@ bool ObjectClass::Paradrop(COORDINATE coord) {
  * HISTORY: * 05/06/1996 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Attach_Trigger(TriggerClass* trigger) {
-  if (Trigger.Is_Valid()) {
+  if (Trigger != nullptr) {
     TriggerClass* tptr = Trigger;
     tptr->AttachCount--;
     Trigger = nullptr;

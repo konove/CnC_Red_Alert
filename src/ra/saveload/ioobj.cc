@@ -44,6 +44,7 @@
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
+#include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
 #include "ra/map/layer.h"
 #include "ra/objects/abstract.h"
@@ -122,11 +123,14 @@ void TeamClass::Serialize(Archive& ar) {
   bool is_next_mission = IsNextMission;
   bool is_leave_map = IsLeaveMap;
   bool suspended = Suspended;
-  ar(Class, House, is_forced_active, is_has_been, is_full_strength,
-     is_under_strength, is_reforming, is_lagging, is_altered, just_altered,
-     is_moving, is_next_mission, is_leave_map, suspended, Zone, ClosestMember,
-     MissionTarget, Target, Total, Risk, Formation, SuspendTimer, Trigger,
-     CurrentMission, TimeOut, ObjectPtr(Member), Quantity);
+  ar(game::HeapSlotPtr(Class, TheObjectHeaps().team_type()),
+     game::HeapSlotPtr(House, TheObjectHeaps().house()), is_forced_active,
+     is_has_been, is_full_strength, is_under_strength, is_reforming, is_lagging,
+     is_altered, just_altered, is_moving, is_next_mission, is_leave_map,
+     suspended, Zone, ClosestMember, MissionTarget, Target, Total, Risk,
+     Formation, SuspendTimer,
+     game::HeapSlotPtr(Trigger, TheObjectHeaps().trigger()), CurrentMission,
+     TimeOut, ObjectPtr(Member), Quantity);
   IsForcedActive = is_forced_active;
   IsHasBeen = is_has_been;
   IsFullStrength = is_full_strength;
@@ -146,7 +150,8 @@ template void TeamClass::Serialize(ArchiveReader&);
 template <class Archive>
 void TriggerClass::Serialize(Archive& ar) {
   bool is_active = IsActive;
-  ar(RTTI, ID, Class, Event1, Event2, is_active, AttachCount, Cell);
+  ar(RTTI, ID, game::HeapSlotPtr(Class, TheObjectHeaps().trigger_type()),
+     Event1, Event2, is_active, AttachCount, Cell);
   IsActive = is_active;
 }
 template void TriggerClass::Serialize(ArchiveWriter&);
@@ -192,7 +197,8 @@ void ObjectClass::Serialize(Archive& ar) {
   bool is_anim_attached = IsAnimAttached;
   bool is_falling = IsFalling;
   ar(is_down, is_to_damage, is_to_display, is_in_limbo, is_selected,
-     is_anim_attached, is_falling, Riser, ObjectPtr(Next), Trigger, Strength);
+     is_anim_attached, is_falling, Riser, ObjectPtr(Next),
+     game::HeapSlotPtr(Trigger, TheObjectHeaps().trigger()), Strength);
   IsDown = is_down;
   IsToDamage = is_to_damage;
   IsToDisplay = is_to_display;
@@ -297,8 +303,9 @@ void TechnoClass::Serialize(Archive& ar) {
      is_locked, is_in_recoil_state, is_tethered, is_owned_by_player,
      is_discovered_by_player, is_discovered_by_computer, is_a_lemon,
      is_second_shot, ArmorBias, FirepowerBias, IdleTimer, IronCurtainCountDown,
-     SpiedBy, ArchiveTarget, House, Cloak, CloakingDevice, CloakDelay, TarCom,
-     SuspendedTarCom, PrimaryFacing, Arm, Ammo, PurchasePrice);
+     SpiedBy, ArchiveTarget, game::HeapSlotPtr(House, TheObjectHeaps().house()),
+     Cloak, CloakingDevice, CloakDelay, TarCom, SuspendedTarCom, PrimaryFacing,
+     Arm, Ammo, PurchasePrice);
   IsUseless = is_useless;
   IsTickedOff = is_ticked_off;
   IsCloakable = is_cloakable;
@@ -334,7 +341,8 @@ void BuildingClass::Serialize(Archive& ar) {
   bool is_jammed = IsJammed;
   bool has_fired = HasFired;
   bool has_opened = HasOpened;
-  ar(game::HeapSlotPtr(Class, TheTypeHeaps().building()), Factory, ActLike,
+  ar(game::HeapSlotPtr(Class, TheTypeHeaps().building()),
+     game::HeapSlotPtr(Factory, TheObjectHeaps().factory()), ActLike,
      is_to_rebuild, is_to_repair, is_allowed_to_sell, is_ready_to_commence,
      is_repairing, is_wrench_visible, is_going_to_blow, is_survivorless,
      is_charging, is_charged, is_captured, is_jamming, is_jammed, has_fired,
@@ -377,9 +385,10 @@ void FootClass::Serialize(Archive& ar) {
   ar(is_scan_limited, is_initiated, is_new_nav_com, is_planning_to_look,
      is_deploying, is_firing, is_rotating, is_driving, is_unloading,
      is_formation_move, is_nav_queue_loop, is_scattering, Speed, SpeedBias,
-     XFormOffset, YFormOffset, NavCom, SuspendedNavCom, NavQueue, Team, Group,
-     ObjectPtr(Member), Path, PathThreshhold, PathDelay, TryTryAgain,
-     BaseAttackTimer, FormationSpeed, FormationMaxSpeed, HeadToCoord);
+     XFormOffset, YFormOffset, NavCom, SuspendedNavCom, NavQueue,
+     game::HeapSlotPtr(Team, TheObjectHeaps().team()), Group, ObjectPtr(Member),
+     Path, PathThreshhold, PathDelay, TryTryAgain, BaseAttackTimer,
+     FormationSpeed, FormationMaxSpeed, HeadToCoord);
   IsScanLimited = is_scan_limited;
   IsInitiated = is_initiated;
   IsNewNavCom = is_new_nav_com;
@@ -490,7 +499,8 @@ void FactoryClass::Serialize(Archive& ar) {
   bool is_suspended = IsSuspended;
   bool is_different = IsDifferent;
   ar(RTTI, ID, is_active, is_suspended, is_different, Balance, OriginalBalance,
-     ObjectPtr(Object), SpecialItem, House);
+     ObjectPtr(Object), SpecialItem,
+     game::HeapSlotPtr(House, TheObjectHeaps().house()));
   IsActive = is_active;
   IsSuspended = is_suspended;
   IsDifferent = is_different;

@@ -43,7 +43,6 @@
 #include <cstddef>
 
 #include "absl/base/attributes.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/objects/object.h"
 #include "ra/objects/stage.h"
@@ -160,7 +159,7 @@ class FactoryClass : private StageClass {
   ** The house pointer will point to whichever house it is being done
   ** for.
   */
-  CCPtr<HouseClass> House;
+  HouseClass* House = nullptr;
 };
 
 extern template void FactoryClass::Serialize<ArchiveWriter>(ArchiveWriter&);

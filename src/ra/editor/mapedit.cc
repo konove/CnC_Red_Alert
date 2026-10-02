@@ -1123,7 +1123,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         /*
         **	Delete trigger
         */
-        if (base::At(TheWorld().current_object(), 0)->Trigger.Is_Valid()) {
+        if (base::At(TheWorld().current_object(), 0)->Trigger != nullptr) {
           base::At(TheWorld().current_object(), 0)->Trigger = nullptr;
         } else {
           /*
@@ -1163,7 +1163,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         **	Remove trigger from current cell
         */
         if (TheWorld().current_cell() &&
-            (*this).at(TheWorld().current_cell()).Trigger.Is_Valid()) {
+            (*this).at(TheWorld().current_cell()).Trigger != nullptr) {
           (*this).at(TheWorld().current_cell()).Trigger = nullptr;
           //						CellTriggers[CurrentCell]
           //= NULL;

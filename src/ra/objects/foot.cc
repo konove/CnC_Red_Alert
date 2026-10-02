@@ -167,7 +167,6 @@ FootClass::FootClass(RTTIType rtti, int id, HousesType house)
       YFormOffset(kNoFormationOffset),
       NavCom(kTargetNone),
       SuspendedNavCom(kTargetNone),
-      Team(nullptr),
       Group(kNoGroup),
       Member(nullptr),
       PathThreshhold(game::MOVE_CLOAK),
@@ -307,7 +306,7 @@ bool FootClass::Basic_Path() {
     *that instead. *	EXCEPT when that cell is very close -- then just bail.
     */
     const int dist = Distance(NavCom);
-    const int checkdist = Team.Is_Valid() ? TheRules().StrayDistance
+    const int checkdist = Team != nullptr ? TheRules().StrayDistance
                                           : TheRules().CloseEnoughDistance;
     if (Can_Enter_Cell(cell) > game::MOVE_CLOAK && dist > checkdist) {
       const CELL cell2 = TheMap().Nearby_Location(
@@ -457,7 +456,7 @@ int FootClass::Mission_Move() {
   //	if (!Target_Legal(TarCom) && !House->IsPlayerControl && !House->IsHuman)
   //{
   if (!Target_Legal(TarCom) && !House->IsPlayerControl && !House->IsHuman &&
-      (!Team.Is_Valid() || !Team->Class->IsSuicide)) {
+      (Team == nullptr || !Team->Class->IsSuicide)) {
     Target_Something_Nearby(THREAT_RANGE);
   }
   return TheRules().mission_control().at(Mission).Normal_Delay() +
@@ -1870,7 +1869,7 @@ int FootClass::Rescue_Mission(TARGET tarcom) {
   ** something, or is not very effective, then it will be of no help
   ** at all.
   */
-  if (Team.Is_Valid() || Mission == MISSION_HARVEST || !Risk()) {
+  if (Team != nullptr || Mission == MISSION_HARVEST || !Risk()) {
     return 0;
   }
 
@@ -2432,7 +2431,7 @@ bool FootClass::Is_Allowed_To_Leave_Map() const {
   *it special permision.
   */
   if (!IsALoaner && Mission != MISSION_RETREAT &&
-      (!Team.Is_Valid() || !Team->Is_Leaving_Map())) {
+      (Team == nullptr || !Team->Is_Leaving_Map())) {
     return false;
   }
 
@@ -2476,7 +2475,7 @@ bool FootClass::Is_Recruitable(const HouseClass* house) const {
   **	If it is already part of another team, then it is not available for
   **	general recruitment.
   */
-  if (Team.Is_Valid()) {
+  if (Team != nullptr) {
     return false;
   }
 
@@ -2574,7 +2573,7 @@ int FootClass::Mission_Retreat() {
         **	If this is part of a team, then pick the edge where the team as
         *likely *	entered from.
         */
-        if (Team.Is_Valid() && Team->Class->Origin != -1) {
+        if (Team != nullptr && Team->Class->Origin != -1) {
           cell = TheMap().Calculated_Cell(
               House->Control.Edge, Team->Class->Origin,
               Coord_Cell(Center_Coord()), Techno_Type_Class()->Speed);

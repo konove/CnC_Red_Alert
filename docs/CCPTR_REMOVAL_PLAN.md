@@ -2,7 +2,7 @@
 
 Written 2026-10-01 against `main` at 2d6ef8ed.
 
-**Status: in progress.** Steps 1 and 2 done.
+**Status: in progress.** Steps 1–3 done.
 
 ## Context
 
@@ -148,12 +148,23 @@ The 12 `Class` members in the first group of the table.
 
 The 10 members in the second group of the table.
 
-- [ ] Change each to `XClass* Member = nullptr;` (non-const: houses, factories, teams and triggers
-      are game state).
-- [ ] Serialize with `HeapSlotPtr(Member, TheObjectHeaps().<kind>())`.
-- [ ] `delete static_cast<FactoryClass*>(Factory)` becomes `delete Factory`, and likewise
-      `base::DeletePooled(static_cast<TriggerClass*>(Trigger))`, the
-      `static_cast<HouseClass*>(House) == ThePlayer()` comparisons and the rest of the 14 unwraps.
+- [x] Change each to `XClass* Member = nullptr;` (non-const: houses, factories, teams and triggers
+      are game state). The constructor init lists' `House(nullptr)`, `Team(nullptr)` and
+      `Trigger(nullptr)` entries went (`modernize-use-default-member-init`), and the `TeamClass` and
+      `TriggerClass` constructors' pointer parameters are now `ABSL_ATTRIBUTE_LIFETIME_BOUND`.
+- [x] Serialize with `game::HeapSlotPtr(Member, TheObjectHeaps().<kind>())` (`ioobj.cc`, and
+      `CellClass::Trigger` in `iomap.cc`).
+- [x] The 14 unwrapping casts went. 79 `X.Is_Valid()` calls became `!= nullptr` / `== nullptr`
+      (rewritten by script at the lines GCC reported).
+- [x] Five headers (`anim.h`, `bullet.h`, `overlay.h`, `smudge.h`, `template.h`) had reached
+      `game/core/heap.h` only through `ccptr.h` and now include it.
+- [x] With plain pointers the analyzer saw three null checks that the code next to them contradicts,
+      which `CCPtr::operator->` had hidden. They were fixed in a commit of their own, ahead of the
+      conversion: the `House &&` before the crate check in
+      `InfantryClass`/`UnitClass::Can_Enter_Cell`, the `if (House)` in `~BuildingClass` (the other
+      destructors and `Limbo()` don't check), and the missing `Class` check in the last branch of
+      `~TriggerClass`.
+- [x] `readability-redundant-nested-if` merged one more if, in `AircraftClass::Can_Enter_Cell`.
 
 ### Step 4: INI-parsed pointers
 
@@ -220,7 +231,8 @@ Before step 1, build the pre-plan binary and keep it as the reference.
 
 ## Progress
 
-| Step | Commit        | Notes                                                                                                                                                                  |
-| ---- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | d8309a79      | `SlotAt` and `game::HeapSlotPtr` with tests; the wrapper moved to `game/core/`.                                                                                        |
-| 2    | (this commit) | Type pointers. Logic logs: SCU05EA line-identical, SCG10EA aircraft noise only (138 lines vs 100 old-vs-old). Smoke tests, `--load-fixture` and both cross-loads pass. |
+| Step | Commit                  | Notes                                                                                                                                                                                                                                     |
+| ---- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | d8309a79                | `SlotAt` and `game::HeapSlotPtr` with tests; the wrapper moved to `game/core/`.                                                                                                                                                           |
+| 2    | 21376614                | Type pointers. Logic logs: SCU05EA line-identical, SCG10EA aircraft noise only (138 lines vs 100 old-vs-old). Smoke tests, `--load-fixture` and both cross-loads pass.                                                                    |
+| 3    | 4f6e08e4, (this commit) | Saved object pointers, and the null-check fixes first. Deep analyzer over all 191 RA sources clean. SCU05EA line-identical; SCG10EA aircraft only (204 lines; old-vs-old reaches 472). Smoke, `--load-fixture` and both cross-loads pass. |

@@ -47,7 +47,6 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/objects/foot.h"
 #include "ra/objects/object.h"
@@ -144,7 +143,7 @@ class CellClass {
   **	This is the trigger ID for any trigger that might be attached to
   **	this cell.
   */
-  CCPtr<TriggerClass> Trigger;
+  TriggerClass* Trigger = nullptr;
 
   /*
   **	This contains the icon number and set to use for the base

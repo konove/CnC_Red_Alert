@@ -53,7 +53,6 @@
 #include "game/sim/direction.h"
 #include "game/sim/facing.h"
 #include "game/sim/flasher.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/objects/bullet.h"
@@ -218,7 +217,7 @@ class TechnoClass : public RadioClass,
   /*
   **	This is the house that the unit belongs to.
   */
-  CCPtr<HouseClass> House;
+  HouseClass* House = nullptr;
 
   /*
   **	This records the current cloak state for this vehicle.
@@ -296,7 +295,6 @@ class TechnoClass : public RadioClass,
         IronCurtainCountDown(0),
         SpiedBy(0),
         ArchiveTarget(kTargetNone),
-        House(nullptr),
         Cloak(game::UNCLOAKED),
         CloakDelay(0),
         TarCom(kTargetNone),

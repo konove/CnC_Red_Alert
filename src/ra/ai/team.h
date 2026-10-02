@@ -46,7 +46,6 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "ra/ai/teamtype.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/objects/abstract.h"
@@ -70,12 +69,12 @@ class TeamClass : public AbstractClass {
   /*
   **	This specifies the type of team this is.
   */
-  CCPtr<TeamTypeClass> Class;
+  TeamTypeClass* Class = nullptr;
 
   /*
   **	This specifies the owner of this team.
   */
-  CCPtr<HouseClass> House;
+  HouseClass* House = nullptr;
 
   /*
   **	This flag forces the team into active state regardless of whether it
@@ -203,10 +202,11 @@ class TeamClass : public AbstractClass {
   **	If there is a trigger that should be attached to every member of this
   *team, then *	it is pointed to by this.
   */
-  CCPtr<TriggerClass> Trigger;
+  TriggerClass* Trigger = nullptr;
 
   //------------------------------------------------------------
-  explicit TeamClass(TeamTypeClass* type, HouseClass* owner = nullptr);
+  explicit TeamClass(TeamTypeClass* type ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                     HouseClass* owner ABSL_ATTRIBUTE_LIFETIME_BOUND = nullptr);
   ~TeamClass() override;
   TeamClass(const TeamClass&) = delete;
   TeamClass& operator=(const TeamClass&) = delete;

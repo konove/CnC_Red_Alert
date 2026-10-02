@@ -50,7 +50,6 @@
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/data/ccini.h"
@@ -88,7 +87,7 @@ class BuildingClass : public TechnoClass {
   **	If this building is in the process of producing something, then this
   **	will point to the factory manager.
   */
-  CCPtr<FactoryClass> Factory;
+  FactoryClass* Factory = nullptr;
 
   /*
   **	This is the house that originally owned this factory. Objects buildable

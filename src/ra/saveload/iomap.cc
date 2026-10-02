@@ -28,9 +28,10 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "engine/stream/archive.h"
+#include "game/core/heap_slot_ptr.h"
 #include "ra/ai/scenario.h"
-#include "ra/core/ccptr.h"
 #include "ra/core/defines.h"
+#include "ra/core/object_heaps.h"
 #include "ra/data/text_ids.h"
 #include "ra/map/credits.h"
 #include "ra/map/display.h"
@@ -62,11 +63,10 @@ bool CellClass::Should_Save() const {
   }
   return IsPlot || IsCursorHere || IsMapped || IsVisible || IsWaypoint ||
          IsRadarCursor || IsFlagged || IsToShroud || Jammed != 0 ||
-         Trigger.Is_Valid() || TType != TEMPLATE_NONE || TIcon != 0 ||
-         Overlay != OVERLAY_NONE || OverlayData != 0 ||
-         Smudge != SMUDGE_NONE || SmudgeData != 0 || Owner != HOUSE_NONE ||
-         InfType != HOUSE_NONE || OccupierPtr != nullptr ||
-         Flag.Composite != 0 || Land != LAND_CLEAR;
+         Trigger != nullptr || TType != TEMPLATE_NONE || TIcon != 0 ||
+         Overlay != OVERLAY_NONE || OverlayData != 0 || Smudge != SMUDGE_NONE ||
+         SmudgeData != 0 || Owner != HOUSE_NONE || InfType != HOUSE_NONE ||
+         OccupierPtr != nullptr || Flag.Composite != 0 || Land != LAND_CLEAR;
 }
 
 template <class Archive>
@@ -80,8 +80,9 @@ void CellClass::Serialize(Archive& ar) {
   flags |= IsRadarCursor ? 0x20U : 0U;
   flags |= IsFlagged ? 0x40U : 0U;
   flags |= IsToShroud ? 0x80U : 0U;
-  ar(flags, Jammed, Trigger, TType, TIcon, Overlay, OverlayData, Smudge,
-     SmudgeData, Owner, InfType, ObjectPtr(OccupierPtr));
+  ar(flags, Jammed, game::HeapSlotPtr(Trigger, TheObjectHeaps().trigger()),
+     TType, TIcon, Overlay, OverlayData, Smudge, SmudgeData, Owner, InfType,
+     ObjectPtr(OccupierPtr));
   if constexpr (Archive::kIsReading) {
     IsPlot = (flags & 1) != 0;
     IsCursorHere = (flags & 2) != 0;
