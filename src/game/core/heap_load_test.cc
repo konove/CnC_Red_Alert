@@ -1,3 +1,6 @@
+// Tests loading a heap from a fixed-size buffer: sparse slots, the ways a
+// stream can be malformed, and slot reuse.
+
 #include "game/core/heap.h"
 
 #include <array>
@@ -31,6 +34,7 @@ struct InheritedOnly : FieldObject {
 static_assert(Serializable<FieldObject>);
 static_assert(!Serializable<InheritedOnly>);
 
+// Saves `heap` into a zero-padded 256-byte buffer.
 template <class T>
 std::array<uint8_t, 256> SaveHeap(TFixedIHeapClass<T>& heap) {
   std::array<uint8_t, 256> bytes{};
@@ -40,6 +44,8 @@ std::array<uint8_t, 256> SaveHeap(TFixedIHeapClass<T>& heap) {
   return bytes;
 }
 
+// Loads the first `length` bytes of `bytes` into `heap`; returns whether Load
+// succeeded.
 template <class T>
 bool LoadHeap(TFixedIHeapClass<T>& heap, const std::array<uint8_t, 256>& bytes,
               int length = 256) {
@@ -61,6 +67,7 @@ TEST(HeapLoadTest, FieldObjectsPreserveSparseSlots) {
   source.Free(hole);
   TFixedIHeapClass<FieldObject> loaded;
   loaded.Set_Heap(4);
+  // count + 2 x (index + value + flag)
   ASSERT_TRUE(LoadHeap(loaded, SaveHeap(source), 22));
   ASSERT_EQ(loaded.Count(), 2);
   EXPECT_EQ(loaded.ID(loaded.Ptr(0)), 0);

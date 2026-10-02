@@ -109,7 +109,12 @@ class FixedIHeapClass {
 
   // Frees the slot `pointer` names and removes it from the in-use list,
   // keeping the others in order. Returns false, doing nothing, when `pointer`
-  // is null, outside the heap or already free. Does not run a destructor.
+  // is null, outside the heap or already free. Does not run a destructor; an
+  // object's operator delete calls this once its destructor has run.
+  // TODO: a pointer inside a slot but not at its start, or less than one slot
+  // below the buffer, is not rejected: ID() truncates it to a slot index, the
+  // slot is freed, and the in-use list keeps the slot because it holds no such
+  // pointer.
   bool Free(void* pointer);
 
   // Frees every slot without running destructors.
@@ -130,10 +135,11 @@ class FixedIHeapClass {
   // live slot the in-use list does not hold.
   [[nodiscard]] std::string Describe(const void* pointer) const;
 
-  // Describes the first disagreement between the in-use list, the free
-  // flags, the slot buffer and the slot index each object caches, or "" when
-  // the heap is sound. Walks every active pointer, so it is for the
-  // once-a-frame -CHECKHEAPS sweep, not for the inner loop.
+  // Describes the first sign of corruption, or returns "" when there is none:
+  // an in-use list whose length is not the active count, or a listed pointer
+  // that is not a slot, names a free slot, or names a slot other than the one
+  // its object's cached ID gives. Walks every active pointer, so it is for
+  // the once-a-frame -CHECKHEAPS sweep, not for the inner loop.
   [[nodiscard]] std::string Validate() const;
 
   // Returns a storage slot; index must be in [0, Length()).
@@ -151,8 +157,10 @@ class FixedIHeapClass {
   const void* operator[](int index) const { return at(index); }
 
   // Returns the position of `pointer` in the in-use list, or -1 when the list
-  // does not hold it.
+  // does not hold it. Scenario INI files number team and trigger types this
+  // way.
   [[nodiscard]] int Logical_ID(const void* pointer) const;
+  // The same for slot `id`, which must be in [0, Length()).
   [[nodiscard]] int Logical_ID(int id) const {
     return Logical_ID((*this).at(id));
   }
@@ -177,7 +185,7 @@ class FixedIHeapClass {
   // The slots, viewing storage_; empty when the heap has none.
   std::span<char> Buffer;
 
-  // Whether each slot is in use (true) or free.
+  // Whether each slot is in use: true means taken, despite the name.
   std::vector<bool> FreeFlag;
 
   // The slots in use, in the order they were allocated.
@@ -200,9 +208,8 @@ concept HasHeapId = requires(const T& object) {
   { object.ID } -> std::convertible_to<int>;
 };
 
-// Type-safe wrapper around FixedIHeapClass with automatic type conversion.
-// Provides type-safe access to iterable heap functionality plus serialization
-// support. All type conversions are compile-time with zero runtime overhead.
+// FixedIHeapClass typed for T: it hands out T* rather than void*, can run the
+// destructors of what it holds, and saves and loads its objects.
 //
 // Save and Load exist only for element types with field-wise Serialize().
 // A Serializable T needs a default constructor reachable from this class
@@ -233,6 +240,9 @@ class TFixedIHeapClass : public FixedIHeapClass {
     return FixedIHeapClass::Logical_ID(pointer);
   }
 
+  // Allocate() as a T*. The slot holds zero bytes, not a T: the caller
+  // constructs the object there, which is what each class's operator new is
+  // for. Returns nullptr when the heap is full.
   T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
   // Runs the destructor of every active object, then frees every slot.
   // Free_All() alone hands the slots back without destroying what is in
@@ -246,16 +256,22 @@ class TFixedIHeapClass : public FixedIHeapClass {
   }
   bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   // Writes the active count, then each object's slot index and contents.
+  // TODO: always returns true, so a sink that fails partway reads as a
+  // successful save until the caller next checks writer.ok(); Load reports
+  // the same failure on the reader.
   bool Save(ArchiveWriter& writer) const
     requires Serializable<T>;
-  // Reads what Save wrote back into the same slots. Returns false on a
-  // malformed stream, with the reason in reader.error(); the heap is then
-  // partially populated.
+  // Reads what Save wrote back into the same slots of an empty heap sized
+  // for them. Returns false on a malformed stream, with the reason in
+  // reader.error(); the heap is then partially populated.
   bool Load(ArchiveReader& reader)
     requires Serializable<T>;
+  // Active_Ptr() as a T*: the object at position `index` of the in-use list.
   [[nodiscard]] T* Ptr(int index) const {
     return static_cast<T*>(base::At(ActivePointers, index));
   }
+  // Slot `index` as a T*, whether or not it holds an object; `index` must be
+  // in [0, Length()).
   T* Raw_Ptr(int index) { return static_cast<T*>((*this).at(index)); }
   // Returns slot `index` whether or not it holds an object, or nullptr when
   // `index` is outside [0, Length()), -1 included. A scenario or a saved game

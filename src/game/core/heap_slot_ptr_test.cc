@@ -1,3 +1,5 @@
+// Tests HeapSlotPtr's encoding of a heap pointer as a slot index.
+
 #include "game/core/heap_slot_ptr.h"
 
 #include <cstddef>
@@ -21,6 +23,7 @@ struct Part {
   int32_t ID = -1;
 };
 
+// Collects everything written to it, so a test can inspect the saved bytes.
 class RecordingSink : public ByteSink {
  public:
   bool Write(std::span<const std::byte> data) override {

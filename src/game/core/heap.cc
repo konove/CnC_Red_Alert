@@ -42,7 +42,7 @@ bool FixedIHeapClass::Set_Heap(int count) {
     return false;
   }
 
-  // Keep the storage when the size is unchanged; see the declaration.
+  // Keep the storage when the slot count is unchanged; see the declaration.
   if (count != TotalCount || storage_ == nullptr) {
     Clear();
     if (count == 0) {
@@ -65,6 +65,7 @@ bool FixedIHeapClass::Set_Heap(int count) {
 }
 
 void* FixedIHeapClass::Allocate() {
+  // Full: skip the scan, which could only fail.
   if (ActiveCount >= TotalCount) {
     return nullptr;
   }

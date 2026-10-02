@@ -1,3 +1,6 @@
+// Tests the object pool: allocation order, slot reuse, the diagnostics, and
+// saving and loading a heap.
+
 #include "game/core/heap.h"
 
 #include <cstddef>
@@ -38,6 +41,7 @@ struct Gadget : Widget {
 };
 static_assert(!Serializable<Gadget>);
 
+// Collects everything written to it, so a test can inspect the saved bytes.
 class RecordingSink : public ByteSink {
  public:
   bool Write(std::span<const std::byte> data) override {
@@ -49,6 +53,8 @@ class RecordingSink : public ByteSink {
   std::vector<uint8_t> bytes;
 };
 
+// Constructs a Widget in the heap's next slot and records its slot index the
+// way game objects do.
 Widget* Allocate(TFixedIHeapClass<Widget>& heap, int32_t value) {
   auto* w = std::construct_at(heap.Alloc());
   w->ID = heap.ID(w);
@@ -64,6 +70,7 @@ std::vector<uint8_t> Save(const TFixedIHeapClass<Widget>& heap) {
 }
 
 // Loads `bytes` into `heap` and returns the reader's error, empty on success.
+// Also checks that Load's result agrees with the reader.
 std::string LoadError(TFixedIHeapClass<Widget>& heap,
                       const std::vector<uint8_t>& bytes) {
   SpanSource straw(std::as_bytes(std::span(bytes)));
@@ -276,7 +283,9 @@ TEST(HeapSerializeTest, SlotNamedTwiceFails) {
   Allocate(source, 1);
   Allocate(source, 2);
   std::vector<uint8_t> bytes = Save(source);
-  bytes.at(4 + 13) = 0;  // second object's slot index: 1 -> 0
+  // Past the count and the first 13-byte record: the second object's slot
+  // index, 1 -> 0.
+  bytes.at(4 + 13) = 0;
 
   TFixedIHeapClass<Widget> loaded;
   loaded.Set_Heap(8);
