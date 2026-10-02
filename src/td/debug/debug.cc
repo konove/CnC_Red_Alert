@@ -293,7 +293,7 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_D:
-        if (TheObjectHeaps().team().Ptr(0)) {
+        if (TheObjectHeaps().team().Count() > 0) {
           base::DeletePooled(TheObjectHeaps().team().Ptr(0));
         }
         break;
