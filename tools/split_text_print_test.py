@@ -64,6 +64,18 @@ class RewriteTest(unittest.TestCase):
         self.assertEqual(out, src.replace("TPF_6POINT)", "FontType::k6Point, TPF_NONE)"))
         self.assertEqual(notes, [])
 
+    def test_make_unique(self):
+        out, _ = rewrite("auto b = std::make_unique<TextButtonClass>(1, t, TPF_EFNT | TPF_CENTER, 2, 3);",
+                         callees=("TextButtonClass",))
+        self.assertEqual(out, "auto b = std::make_unique<TextButtonClass>(1, t, FontType::kEditor, TPF_CENTER, 2, 3);")
+
+    def test_already_split_calls_are_left_alone(self):
+        src = ("Fancy_Text_Print(v, t, x, y, &c, 0, FontType::kEditor, TPF_NONE);\n"
+               "Fancy_Text_Print(v, t, x, y, &c, 0, kTextFont, kTextFlags | TPF_RIGHT);")
+        out, notes = rewrite(src)
+        self.assertEqual(out, src)
+        self.assertEqual(notes, [])
+
     def test_td_fonts(self):
         out, _ = rewrite("Fancy_Text_Print(t, x, y, 5, 0, TPF_GREEN12_GRAD | TPF_FULLSHADOW);", game="td")
         self.assertEqual(out, "Fancy_Text_Print(t, x, y, 5, 0, FontType::kGreen12Gradient, TPF_FULLSHADOW);")

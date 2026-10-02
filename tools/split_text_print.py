@@ -47,6 +47,7 @@ STYLE = {"TPF_NONE", "TPF_NOSHADOW", "TPF_DROPSHADOW", "TPF_FULLSHADOW",
 
 CAST = re.compile(r"static_cast\s*<\s*TextPrintType\s*>")
 SIMPLE = re.compile(r"^[\s\w|()]*$")
+SPLIT = re.compile(r"\bFontType::|\bk\w*Font\b")
 
 
 def skip_literal(text, i):
@@ -146,7 +147,7 @@ def split_arg(arg, game):
 
 def rewrite_text(text, game, callees, path):
     names = "|".join(sorted(map(re.escape, callees), key=len, reverse=True))
-    call = re.compile(r"\b(?:" + names + r")\b(?:\s*<[^<>;()]*>)?(?:\s*[*&]?\s*[A-Za-z_]\w*)?\s*([({])")
+    call = re.compile(r"\b(?:" + names + r")\b(?:\s*<[^<>;()]*>)?(?:\s*>|\s*[*&]?\s*[A-Za-z_]\w*)?\s*([({])")
     # Calls are found in the code alone, so a commented-out call is skipped;
     # the offsets are the same in both texts.
     code = code_only(text)
@@ -158,6 +159,8 @@ def rewrite_text(text, game, callees, path):
         if parsed is None:
             continue
         close, args = parsed
+        if SPLIT.search(code[match.end(1):close]):
+            continue  # Already split.
         out.append(text[pos:match.end(1)])
         cursor = match.end(1)
         for start, end in args:
