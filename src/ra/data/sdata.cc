@@ -66,7 +66,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "game/core/display_constants.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/const.h"

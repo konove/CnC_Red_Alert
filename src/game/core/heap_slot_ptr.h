@@ -9,7 +9,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 
 namespace game {
 

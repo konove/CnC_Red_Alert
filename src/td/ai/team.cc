@@ -69,7 +69,7 @@
 #include "base/pooled.h"
 #include "engine/platform/timer.h"
 #include "game/core/display_constants.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "td/ai/teamtype.h"
 #include "td/core/config.h"

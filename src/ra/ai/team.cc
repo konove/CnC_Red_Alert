@@ -89,7 +89,7 @@
 #include "base/pooled.h"
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/teamtype.h"

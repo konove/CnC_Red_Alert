@@ -62,7 +62,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "ra/ai/taction.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigtype.h"

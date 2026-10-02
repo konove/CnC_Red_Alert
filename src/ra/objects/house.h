@@ -51,7 +51,7 @@
 #include "base/fixed.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/utracker.h"
 #include "ra/ai/region.h"
 #include "ra/core/defines.h"

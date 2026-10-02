@@ -70,7 +70,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/reinf.h"

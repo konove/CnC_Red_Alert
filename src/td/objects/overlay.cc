@@ -61,7 +61,7 @@
 #include "base/pooled.h"
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "td/ai/special.h"
 #include "td/core/config.h"

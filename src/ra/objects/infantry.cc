@@ -115,7 +115,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/window/keyboard.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/facing.h"

@@ -48,7 +48,7 @@
 #include <cstring>
 
 #include "base/strings/tokenizer.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/defines.h"

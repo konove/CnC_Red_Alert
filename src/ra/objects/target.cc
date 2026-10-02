@@ -66,7 +66,7 @@
 #include <cstdint>
 
 #include "absl/log/check.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"

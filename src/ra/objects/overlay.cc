@@ -58,7 +58,7 @@
 #include "engine/codec/lcw_source.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"

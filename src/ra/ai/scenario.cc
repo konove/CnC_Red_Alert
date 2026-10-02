@@ -101,7 +101,7 @@
 #include "engine/platform/timer.h"
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/ui/input.h"

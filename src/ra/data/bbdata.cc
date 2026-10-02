@@ -51,7 +51,7 @@
 
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.

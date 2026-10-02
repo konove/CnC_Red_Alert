@@ -82,7 +82,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/platform/timer.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "td/ai/reinf.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"

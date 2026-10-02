@@ -53,7 +53,7 @@
 #include "absl/log/check.h"
 #include "base/array.h"
 #include "engine/gfx/tile.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"

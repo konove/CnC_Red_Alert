@@ -13,7 +13,7 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/span_source.h"
 #include "engine/stream/vector_sink.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "gtest/gtest.h"
 
 namespace game {

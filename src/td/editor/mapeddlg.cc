@@ -76,7 +76,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/display_constants.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "game/ui/control.h"
 #include "game/ui/input.h"

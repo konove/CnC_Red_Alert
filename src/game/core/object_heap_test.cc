@@ -2,7 +2,7 @@
 // saving and loading a heap, including the ways a saved stream can be
 // malformed.
 
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 
 #include <array>
 #include <cstddef>

@@ -150,7 +150,7 @@
 #include "engine/net/ipxmgr.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "game/sim/facing.h"

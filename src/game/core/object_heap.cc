@@ -18,7 +18,7 @@
 
 // File: the fixed-slot object pool.
 
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 
 #include <algorithm>
 #include <cstddef>

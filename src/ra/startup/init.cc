@@ -112,7 +112,7 @@
 #include "engine/stream/stream_source.h"
 #include "engine/window/hardware_cursor.h"
 #include "game/core/game_clock.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/ui/input.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/scenario.h"

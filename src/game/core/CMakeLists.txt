@@ -30,7 +30,7 @@ target_link_libraries(game_core
 include(Testing)
 add_gtest(
         NAME game_core_test
-        SOURCES heap_slot_ptr_test.cc heap_test.cc owned_vector_test.cc
+        SOURCES heap_slot_ptr_test.cc object_heap_test.cc owned_vector_test.cc
             path_overlap_test.cc queue_test.cc
         LIBS game_core
 )

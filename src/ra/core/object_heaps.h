@@ -7,7 +7,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"

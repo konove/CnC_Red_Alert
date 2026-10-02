@@ -110,7 +110,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/window/keyboard.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/ui/control.h"
 #include "game/ui/gadget.h"
 #include "td/assets/assets.h"

@@ -85,7 +85,7 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets/installation.h"
 #include "ra/assets/palettes.h"

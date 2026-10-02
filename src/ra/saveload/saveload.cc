@@ -86,7 +86,7 @@
 #include "engine/stream/stream_source.h"
 #include "engine/stream/tee_sink.h"
 #include "game/core/game_clock.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ai/base.h"
 #include "ra/ai/carry.h"

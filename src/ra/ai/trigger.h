@@ -44,7 +44,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "ra/ai/tevent.h"
 #include "ra/ai/trigtype.h"
 #include "ra/core/defines.h"

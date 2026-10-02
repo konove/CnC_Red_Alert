@@ -46,7 +46,7 @@
 
 #include "base/array.h"
 #include "engine/stream/archive.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/crew.h"
 #include "game/sim/direction.h"
 #include "game/sim/door.h"

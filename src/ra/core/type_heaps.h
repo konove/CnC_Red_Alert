@@ -5,7 +5,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "ra/objects/type.h"
 #include "ra/objects/warhead.h"
 #include "ra/objects/weapon.h"

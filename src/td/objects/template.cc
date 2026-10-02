@@ -71,7 +71,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/tile.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
 #include "td/core/inline.h"

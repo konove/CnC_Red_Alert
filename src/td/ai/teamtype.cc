@@ -72,7 +72,7 @@
 #include "base/strings/number_parse.h"
 #include "base/strings/safe_string.h"
 #include "base/strings/tokenizer.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "td/ai/team.h"
 #include "td/ai/trigger.h"
 #include "td/core/config.h"

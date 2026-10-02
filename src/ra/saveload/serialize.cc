@@ -7,7 +7,7 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "engine/stream/archive.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "ra/core/defines.h"
 #include "ra/core/object_heaps.h"
 #include "ra/objects/aircraft.h"

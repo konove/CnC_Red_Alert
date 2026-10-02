@@ -63,7 +63,7 @@
 #include "base/enum_array.h"
 #include "base/pooled.h"
 #include "game/core/game_clock.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "td/ai/special.h"
 #include "td/ai/team.h"
 #include "td/assets/audio.h"

@@ -100,7 +100,7 @@
 #include "engine/window/hardware_cursor.h"
 #include "engine/window/keyboard.h"
 #include "game/core/game_clock.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/ui/input.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"

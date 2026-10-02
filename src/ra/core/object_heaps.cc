@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "absl/strings/str_cat.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 
 namespace ra {
 

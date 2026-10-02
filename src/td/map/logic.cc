@@ -42,7 +42,7 @@
 #include "td/map/logic.h"
 
 #include "engine/platform/timer.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "td/ai/team.h"
 #include "td/core/defines.h"
 #include "td/core/jshell.h"

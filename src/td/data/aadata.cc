@@ -32,7 +32,7 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "td/core/const.h"
 #include "td/core/defines.h"

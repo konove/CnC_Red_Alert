@@ -27,7 +27,7 @@
 #include <utility>
 
 #include "base/array.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"

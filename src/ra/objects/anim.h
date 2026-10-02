@@ -47,7 +47,7 @@
 #include "absl/base/attributes.h"
 #include "base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "ra/core/defines.h"
 #include "ra/objects/object.h"
 #include "ra/objects/stage.h"

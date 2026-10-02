@@ -16,7 +16,7 @@
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
 #include "game/core/game_clock.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "gtest/gtest.h"
 #include "td/ai/special.h"

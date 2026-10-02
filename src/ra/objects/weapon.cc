@@ -53,7 +53,7 @@
 #include <cstddef>
 
 #include "absl/strings/match.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/const.h"

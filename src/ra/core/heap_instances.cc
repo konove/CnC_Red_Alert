@@ -1,9 +1,9 @@
 // Explicit instantiations of ObjectHeap for every game object heap.
 //
-// Kept apart from heap.cc so the heap itself links without the game classes,
-// which lets heap_test.cc exercise it with a small local element type.
+// Kept apart from game/core/object_heap.cc so the heap links without the game
+// classes, which lets object_heap_test.cc exercise it with a local type.
 
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"

@@ -40,7 +40,7 @@
 #include "ra/objects/tracker.h"
 
 #include "base/pooled.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"

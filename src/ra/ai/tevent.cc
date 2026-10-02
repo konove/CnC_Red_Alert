@@ -63,7 +63,7 @@
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "ra/ai/scenario.h"
 #include "ra/ai/team.h"
 #include "ra/ai/teamtype.h"

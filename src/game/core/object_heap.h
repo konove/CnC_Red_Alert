@@ -18,8 +18,8 @@
 
 // File: the fixed-slot object pools that game objects are allocated from.
 
-#ifndef CNC_RED_ALERT_GAME_CORE_HEAP_H_
-#define CNC_RED_ALERT_GAME_CORE_HEAP_H_
+#ifndef CNC_RED_ALERT_GAME_CORE_OBJECT_HEAP_H_
+#define CNC_RED_ALERT_GAME_CORE_OBJECT_HEAP_H_
 
 #include <concepts>
 #include <cstddef>
@@ -172,8 +172,8 @@ class ObjectHeapBase {
 
 // Whether T caches its own slot index in a public `ID` field, the way
 // everything descended from AbstractClass does. Spelled as a requirement
-// rather than `std::derived_from<AbstractClass>` so that heap.h stays below
-// the game's object hierarchy.
+// rather than `std::derived_from<AbstractClass>` so that object_heap.h stays
+// below the game's object hierarchy.
 template <class T>
 concept HasHeapId = requires(const T& object) {
   { object.ID } -> std::convertible_to<int>;
@@ -373,4 +373,4 @@ bool ObjectHeap<T>::Load(ArchiveReader& reader)
 
 }  // namespace game
 
-#endif  // CNC_RED_ALERT_GAME_CORE_HEAP_H_
+#endif  // CNC_RED_ALERT_GAME_CORE_OBJECT_HEAP_H_

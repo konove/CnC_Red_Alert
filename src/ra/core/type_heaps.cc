@@ -2,7 +2,7 @@
 
 #include "ra/core/type_heaps.h"
 
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 
 namespace ra {
 

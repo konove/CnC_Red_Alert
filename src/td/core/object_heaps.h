@@ -5,7 +5,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "td/ai/team.h"
 #include "td/ai/teamtype.h"
 #include "td/ai/trigger.h"

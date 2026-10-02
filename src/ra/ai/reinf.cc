@@ -50,7 +50,7 @@
 #include "base/array.h"
 #include "base/pooled.h"
 #include "base/strings/safe_string.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"

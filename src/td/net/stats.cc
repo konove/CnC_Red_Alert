@@ -60,7 +60,7 @@
 #include "engine/net/packet.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/utracker.h"
 #include "td/ai/special.h"
 #include "td/core/defines.h"

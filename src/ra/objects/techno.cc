@@ -168,7 +168,7 @@
 #include "engine/window/wait_ticks.h"
 #include "game/core/display_constants.h"
 #include "game/core/game_clock.h"
-#include "game/core/heap.h"
+#include "game/core/object_heap.h"
 #include "game/sim/direction.h"
 #include "game/sim/door.h"
 #include "game/sim/enums.h"
