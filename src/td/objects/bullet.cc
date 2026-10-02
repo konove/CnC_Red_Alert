@@ -268,8 +268,8 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
           index++;
         }
 
-        COORDINATE coord = XY_Coord(0, Altitude);
-        coord = Coord_Sub(Coord, coord);
+        Coordinate coord = Coordinate::FromLeptons(0, Altitude);
+        coord = Coord - coord;
         const CELL cell2 = Coord_Cell(coord);
         ptr = Coord_Spillage_List(coord, 5);
         while (ptr.front() != REFRESH_EOL) {
@@ -368,7 +368,7 @@ void BulletClass::AI() {
   **	Move the projectile forward according to its speed
   **	and direction.
   */
-  COORDINATE coord = Coord;
+  Coordinate coord = Coord;
   if (Class->IsFlameEquipped) {
     if (IsToAnimate) {
       base::NewPooled<AnimClass>(ANIM_SMOKE_PUFF, coord, 1);
@@ -645,7 +645,7 @@ void BulletClass::Detach(TARGET target, bool all) {
  *                                                                                             *
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
-bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
+bool BulletClass::Unlimbo(Coordinate coord, game::DirType dir) {
   Validate();
   /*
   **	Try to unlimbo the bullet as far as the base class is concerned. Use the
@@ -653,7 +653,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
   *This allows a bullet *	to be setup prior to being launched.
   */
   if (ObjectClass::Unlimbo(coord)) {
-    COORDINATE tcoord = As_Coord(TarCom);
+    Coordinate tcoord = As_Coord(TarCom);
 
     /*
     **	Homing projectiles (missiles) do NOT override facing. They just fire in

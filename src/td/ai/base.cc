@@ -187,7 +187,7 @@ void BaseClass::Read_INI(char* buffer) {
     if (!coordinate) {
       continue;
     }
-    node.Coord = *coordinate;
+    node.Coord = Coordinate::FromPacked(*coordinate);
 
     /*
     ** Add this node to the Base's list
@@ -236,7 +236,7 @@ void BaseClass::Write_INI(std::string& buffer) {
     absl::SNPrintF(
         buf, sizeof(buf), "%s,%d",
         BuildingTypeClass::As_Reference(base::At(Nodes, i).Type).IniName,
-        static_cast<int>(base::At(Nodes, i).Coord));
+        static_cast<int>(base::At(Nodes, i).Coord.packed()));
 
     WWWritePrivateProfileString(INI_Name(), uname, buf, buffer);
   }

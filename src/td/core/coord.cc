@@ -62,7 +62,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "td/core/const.h"
 #include "td/core/defines.h"
-#include "td/core/inline.h"
 #include "td/core/rand.h"
 
 namespace td {
@@ -91,7 +90,7 @@ namespace td {
  *   06/03/1994 JLB : Converted to general purpose spillage functionality. *
  *   01/07/1995 JLB : Manually calculates spillage list for large objects. *
  *=============================================================================================*/
-std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize) {
+std::span<const int16_t> Coord_Spillage_List(Coordinate coord, int maxsize) {
   static const int16_t
       MoveSpillage[magic_enum::enum_count<game::FacingType>() + 1][5] = {
           {0, -MAP_CELL_W, REFRESH_EOL, 0, 0},                   // N
@@ -147,8 +146,8 @@ std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize) {
   if (maxsize > ICON_PIXEL_W) {
     maxsize = std::min(maxsize, ICON_PIXEL_W * 2) / 2;
 
-    x = base::FixedToCardinal(ICON_PIXEL_W, Coord_XLepton(coord));
-    y = base::FixedToCardinal(ICON_PIXEL_H, Coord_YLepton(coord));
+    x = base::FixedToCardinal(ICON_PIXEL_W, coord.sub_x());
+    y = base::FixedToCardinal(ICON_PIXEL_H, coord.sub_y());
     const int left = x - maxsize;
     const int right = x + maxsize;
     const int top = y - maxsize;
@@ -188,8 +187,8 @@ std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize) {
   */
   const int posval = base::At(Pixel2Lepton, (ICON_PIXEL_W - maxsize) / 2);
 
-  x = Coord_XLepton(coord) - 0x0080;
-  y = Coord_YLepton(coord) - 0x0080;
+  x = coord.sub_x() - 0x0080;
+  y = coord.sub_y() - 0x0080;
   // The north/south and east/west bits are set with "else if" so that opposing
   // pairs can never both be set. That keeps index away from the -1 entries in
   // _SpillTable, which stand for combinations that cannot occur.
@@ -226,13 +225,13 @@ std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE Coord_Move(COORDINATE start, game::DirType dir, uint16_t distance) {
-  auto x = static_cast<int16_t>(Coord_X(start));
-  auto y = static_cast<int16_t>(Coord_Y(start));
+Coordinate Coord_Move(Coordinate start, game::DirType dir, uint16_t distance) {
+  auto x = static_cast<int16_t>(start.x());
+  auto y = static_cast<int16_t>(start.y());
 
   base::MovePoint(x, y, static_cast<uint8_t>(dir),
                   static_cast<int16_t>(distance));
-  return XY_Coord(x, y);
+  return Coordinate::FromLeptons(x, y);
 }
 
 /***********************************************************************************************
@@ -257,17 +256,17 @@ COORDINATE Coord_Move(COORDINATE start, game::DirType dir, uint16_t distance) {
  *                                                                                             *
  * HISTORY: * 02/01/1992 JLB : Created. * 05/13/1992 JLB : Only uses Random(). *
  *=============================================================================================*/
-COORDINATE Coord_Scatter(COORDINATE coord, int distance, bool lock) {
-  COORDINATE newcoord =
+Coordinate Coord_Scatter(Coordinate coord, int distance, bool lock) {
+  Coordinate newcoord =
       Coord_Move(coord, Random_Pick(game::DIR_N, kMaxRandomDirection),
                  static_cast<uint16_t>(distance));
 
-  if (newcoord & 0xC000C000L) {
+  if ((newcoord.packed() & 0xC000C000U) != 0) {
     newcoord = coord;
   }
 
   if (lock) {
-    newcoord = Coord_Snap(newcoord);
+    newcoord = newcoord.Snapped();
   }
 
   return newcoord;

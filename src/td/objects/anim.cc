@@ -180,16 +180,16 @@ void Shorten_Attached_Anims(const ObjectClass* obj) {
  * HISTORY: * 10/17/1994 JLB : Created. * 12/15/1994 JLB : Handles flat anims
  *(infantry decay anims).                               *
  *=============================================================================================*/
-COORDINATE AnimClass::Sort_Y() const {
+Coordinate AnimClass::Sort_Y() const {
   Validate();
   if (Object && Object->IsActive) {
-    return Coord_Add(Object->Sort_Y(), 0x00010000L);
+    return Object->Sort_Y() + Coordinate::FromLeptons(0, 1);
   }
   if (*this == ANIM_MOVE_FLASH) {
-    return Coord_Add(Center_Coord(), Pixel_Offset_Coord(0, -24));
+    return Center_Coord() + Pixel_Offset_Coord(0, -24);
   }
   if (*this == ANIM_LZ_SMOKE) {
-    return Coord_Add(Center_Coord(), Pixel_Offset_Coord(0, 14));
+    return Center_Coord() + Pixel_Offset_Coord(0, 14);
   }
   return Coord;
 }
@@ -212,10 +212,10 @@ COORDINATE AnimClass::Sort_Y() const {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE AnimClass::Center_Coord() const {
+Coordinate AnimClass::Center_Coord() const {
   Validate();
   if (Object) {
-    return Coord_Add(Coord, Object->Center_Coord());
+    return Coord + Object->Center_Coord();
   }
   return Coord;
 }
@@ -739,7 +739,7 @@ void AnimClass::operator delete(void* ptr) {
  * HISTORY: * 05/31/1994 JLB : Created. * 08/03/1994 JLB : Added a delayed
  *affect parameter.                                        *
  *=============================================================================================*/
-AnimClass::AnimClass(AnimType animnum, COORDINATE coord, int timedelay,
+AnimClass::AnimClass(AnimType animnum, Coordinate coord, int timedelay,
                      int loop, bool alt)
     : Class(&AnimTypeClass::As_Reference(animnum)) {
   if (Class->IsNormalized) {
@@ -1020,7 +1020,7 @@ void AnimClass::Attach_To(ObjectClass* obj) {
   MapEditClass::Remove(this, In_Which_Layer());
   Object = obj;
   MapEditClass::Submit(this, In_Which_Layer());
-  Coord = Coord_Sub(Coord, obj->Center_Coord());
+  Coord = Coord - obj->Center_Coord();
 }
 
 /***********************************************************************************************
@@ -1216,12 +1216,12 @@ void AnimClass::Middle() {
   *they leave fire *	shards in unusual positions as well.
   */
   if (Class->IsFlameThrower) {
-    COORDINATE c2 = Coord_Move(
+    Coordinate c2 = Coord_Move(
         Center_Coord(),
         game::Facing_Dir(static_cast<game::FacingType>(
             static_cast<int>(Class->Type) - static_cast<int>(ANIM_FLAME_N))),
         0x00E0);
-    const COORDINATE c3 = TheMap().Closest_Free_Spot(
+    const Coordinate c3 = TheMap().Closest_Free_Spot(
         Coord_Move(Center_Coord(),
                    game::Facing_Dir(static_cast<game::FacingType>(
                        static_cast<int>(Class->Type) -
@@ -1421,7 +1421,7 @@ TARGET AnimClass::As_Target() const {
  * HISTORY:                                                                *
  *   05/17/1995 PWG : Created.                                             *
  *=========================================================================*/
-COORDINATE AnimClass::Adjust_Coord(COORDINATE coord) {
+Coordinate AnimClass::Adjust_Coord(Coordinate coord) {
   Validate();
   int x = 0;
   int y = 0;
@@ -1432,8 +1432,8 @@ COORDINATE AnimClass::Adjust_Coord(COORDINATE coord) {
   } else {
     return coord;
   }
-  const COORDINATE addval = XYPixel_Coord(x, y);
-  coord = Coord_Add(coord, addval);
+  const Coordinate addval = XYPixel_Coord(x, y);
+  coord = coord + addval;
   return coord;
 }
 

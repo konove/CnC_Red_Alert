@@ -65,7 +65,7 @@ AbstractTypeClass::AbstractTypeClass(const int name, const char* ini) noexcept
 }
 
 RTTIType AbstractTypeClass::What_Am_I() const { return RTTI_ABSTRACTTYPE; }
-COORDINATE AbstractTypeClass::Coord_Fixup(const COORDINATE coord) const {
+Coordinate AbstractTypeClass::Coord_Fixup(const Coordinate coord) const {
   return coord;
 }
 int AbstractTypeClass::Full_Name() const { return Name; }

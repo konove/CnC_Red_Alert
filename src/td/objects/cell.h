@@ -210,13 +210,13 @@ class CellClass {
   // in front, so the stale entry is not reported again.
   [[nodiscard]] ObjectClass* Cell_Occupier();
   [[nodiscard]] ObjectClass* Cell_Occupier() const;
-  static int Spot_Index(COORDINATE coord);
+  static int Spot_Index(Coordinate coord);
   [[nodiscard]] bool Is_Spot_Free(int spot_index) const {
     return (Flag.Composite & base::Bit<uint8_t>(spot_index)) == 0;
   }
-  [[nodiscard]] COORDINATE Closest_Free_Spot(COORDINATE coord,
+  [[nodiscard]] Coordinate Closest_Free_Spot(Coordinate coord,
                                              bool any = false) const;
-  [[nodiscard]] COORDINATE Free_Spot() const {
+  [[nodiscard]] Coordinate Free_Spot() const {
     return Closest_Free_Spot(Cell_Coord());
   }
   [[nodiscard]] bool Is_Generally_Clear() const;
@@ -230,7 +230,7 @@ class CellClass {
   // Returns the cell-index delta from this cell to its neighbour in direction
   // `face`, or 0 when `face` is invalid or the neighbour lies off the map.
   [[nodiscard]] int Adjacent_Offset(game::FacingType face) const;
-  [[nodiscard]] COORDINATE Cell_Coord() const;
+  [[nodiscard]] Coordinate Cell_Coord() const;
   [[nodiscard]] int Cell_Color(bool override = false) const;
   [[nodiscard]] CELL Cell_Number() const;
   [[nodiscard]] LandType Land_Type() const { return Land; }
@@ -279,7 +279,7 @@ class CellClass {
   void Recalc_Attributes();
   int Reduce_Tiberium(int levels);
   bool Reduce_Wall(int damage);
-  void Incoming(COORDINATE threat = 0, bool forced = false);
+  void Incoming(Coordinate threat = {}, bool forced = false);
   void Adjust_Threat(HousesType house, int threat_value);
 
   int operator!=(const CellClass& /*unused*/) const { return 0; }

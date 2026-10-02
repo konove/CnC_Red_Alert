@@ -341,7 +341,7 @@ std::span<const std::byte> ObjectTypeClass::Get_Cameo_Data() const {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass::ObjectClass() {
-  Coord = 0xFFFFFFFFL;  // Some bogus illegal value.
+  Coord = Coordinate::FromPacked(0xFFFFFFFFU);  // Some bogus illegal value.
 }
 
 /***********************************************************************************************
@@ -551,13 +551,13 @@ bool ObjectClass::Can_Player_Move() const { return false; }
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE ObjectClass::Target_Coord() const { return Center_Coord(); }
+Coordinate ObjectClass::Target_Coord() const { return Center_Coord(); }
 
-COORDINATE ObjectClass::Center_Coord() const { return Coord; }
-COORDINATE ObjectClass::Render_Coord() const { return Center_Coord(); }
-COORDINATE ObjectClass::Docking_Coord() const { return Center_Coord(); }
-COORDINATE ObjectClass::Sort_Y() const { return Coord; }
-COORDINATE ObjectClass::Fire_Coord(int /*unused*/) const { return Coord; }
+Coordinate ObjectClass::Center_Coord() const { return Coord; }
+Coordinate ObjectClass::Render_Coord() const { return Center_Coord(); }
+Coordinate ObjectClass::Docking_Coord() const { return Center_Coord(); }
+Coordinate ObjectClass::Sort_Y() const { return Coord; }
+Coordinate ObjectClass::Fire_Coord(int /*unused*/) const { return Coord; }
 void ObjectClass::Record_The_Kill(TechnoClass* /*unused*/) {}
 void ObjectClass::Do_Shimmer() {}
 int ObjectClass::Exit_Object(TechnoClass* /*unused*/) { return 0; }
@@ -567,12 +567,12 @@ void ObjectClass::Active_Click_With(ActionType /*unused*/,
                                     ObjectClass* /*unused*/) {}
 void ObjectClass::Active_Click_With(ActionType /*unused*/, CELL /*unused*/) {}
 void ObjectClass::Clicked_As_Target(int /*unused*/) {}
-bool ObjectClass::In_Range(COORDINATE /*unused*/, int /*unused*/) const {
+bool ObjectClass::In_Range(Coordinate /*unused*/, int /*unused*/) const {
   return false;
 }
 int ObjectClass::Weapon_Range(int /*unused*/) const { return 0x0000; }
 TARGET ObjectClass::As_Target() const { return kTargetNone; }
-void ObjectClass::Scatter(COORDINATE /*unused*/, bool /*unused*/) {}
+void ObjectClass::Scatter(Coordinate /*unused*/, bool /*unused*/) {}
 bool ObjectClass::Catch_Fire() { return false; }
 
 /***********************************************************************************************
@@ -688,7 +688,7 @@ void ObjectClass::Sell_Back(int /*unused*/) {}
  *=============================================================================================*/
 void ObjectClass::Move(game::FacingType facing) {
   Mark(MARK_UP);
-  COORDINATE const coord = Adjacent_Cell(Coord, facing);
+  const Coordinate coord = Adjacent_Cell(Coord, facing);
   if (Can_Enter_Cell(Coord_Cell(coord)) == game::MOVE_OK) {
     Coord = coord;
   }
@@ -813,7 +813,7 @@ bool ObjectClass::Select() {
 bool ObjectClass::Render(PixelView& view, bool forced) {
   int x = 0;
   int y = 0;
-  const COORDINATE coord = Render_Coord();
+  const Coordinate coord = Render_Coord();
 
   if (TheDebugState().map_editor_active() || TheDebugState().unshroud() ||
       ((forced || IsToDisplay) && IsDown && !IsInLimbo)) {
@@ -1069,7 +1069,7 @@ bool ObjectClass::Limbo() {
  * HISTORY: * 09/24/1994 JLB : Created. * 12/23/1994 JLB : Sets object strength.
  **
  *=============================================================================================*/
-bool ObjectClass::Unlimbo(COORDINATE coord, game::DirType /*unused*/) {
+bool ObjectClass::Unlimbo(Coordinate coord, game::DirType /*unused*/) {
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
        Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == game::MOVE_OK)) {

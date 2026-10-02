@@ -123,12 +123,12 @@ class UnitClass final : public TarComClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  COORDINATE Sort_Y() const override;
+  Coordinate Sort_Y() const override;
 
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+  bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
   bool Limbo() override;
 
@@ -155,7 +155,7 @@ class UnitClass final : public TarComClass {
   /*
   **	Combat related.
   */
-  COORDINATE Target_Coord() const override;
+  Coordinate Target_Coord() const override;
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source = nullptr) override;
   TARGET As_Target() const override;
@@ -166,7 +166,7 @@ class UnitClass final : public TarComClass {
   **	occupation flags and driver instructions.
   */
   bool Stop_Driver() override;
-  bool Start_Driver(COORDINATE& headto) override;
+  bool Start_Driver(Coordinate& headto) override;
 
   /*
   **	AI.
@@ -195,7 +195,7 @@ class UnitClass final : public TarComClass {
   game::MoveType Can_Enter_Cell(
       CELL cell, game::FacingType facing = game::FACING_NONE) const override;
   void Per_Cell_Process(bool center) override;
-  void Scatter(COORDINATE threat, bool forced = false) override;
+  void Scatter(Coordinate threat, bool forced = false) override;
   void Exit_Repair();
   //		MoveType Blocking_Object(TechnoClass const *techno, CELL cell)
   // const;

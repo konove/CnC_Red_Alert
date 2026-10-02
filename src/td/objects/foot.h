@@ -235,15 +235,15 @@ class FootClass : public TechnoClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  COORDINATE Sort_Y() const override;
-  virtual COORDINATE Likely_Coord() const;
+  Coordinate Sort_Y() const override;
+  virtual Coordinate Likely_Coord() const;
 
   /*
   **	Driver control support functions. These are used to control cell
   **	occupation flags and driver instructions.
   */
-  COORDINATE Head_To_Coord() const { return HeadToCoord; }
-  virtual bool Start_Driver(COORDINATE& headto);
+  Coordinate Head_To_Coord() const { return HeadToCoord; }
+  virtual bool Start_Driver(Coordinate& headto);
   virtual bool Stop_Driver();
   void Assign_Destination(TARGET target) override;
 
@@ -251,7 +251,7 @@ class FootClass : public TechnoClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+  bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
   bool Limbo() override;
   bool Mark(MarkType mark) override;
@@ -332,7 +332,7 @@ class FootClass : public TechnoClass {
   **	is reached, then the next location in the path list becomes the
   **	next HeadTo coordinate.
   */
-  COORDINATE HeadToCoord;
+  Coordinate HeadToCoord;
 };
 
 extern template void FootClass::Serialize<ArchiveWriter>(ArchiveWriter&);

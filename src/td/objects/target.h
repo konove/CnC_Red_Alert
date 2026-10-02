@@ -157,7 +157,7 @@ class TargetClass {
   BuildingClass* As_Building();
   bool Legal();
   CELL As_Cell();
-  COORDINATE As_Coord();
+  Coordinate As_Coord();
   int Distance(TechnoClass* base);
   static int As_Target(UnitClass* unit);
   static int As_Target(BuildingClass* building);
@@ -179,13 +179,13 @@ class TargetClass {
 };
 #endif
 
-COORDINATE As_Movement_Coord(TARGET target);
+Coordinate As_Movement_Coord(TARGET target);
 AircraftClass* As_Aircraft(TARGET target);
 AnimClass* As_Animation(TARGET target);
 BuildingClass* As_Building(TARGET target);
 BulletClass* As_Bullet(TARGET target);
 CELL As_Cell(TARGET target);
-COORDINATE As_Coord(TARGET target);
+Coordinate As_Coord(TARGET target);
 InfantryClass* As_Infantry(TARGET target);
 TeamClass* As_Team(TARGET target);
 TeamTypeClass* As_TeamType(TARGET target);

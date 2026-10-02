@@ -229,7 +229,7 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
   *cell. This is *	actually the lower significant bits (leptons) of a
   *regular coordinate value.
   */
-  COORDINATE const click = XY_Coord(
+  const Coordinate click = Coordinate::FromLeptons(
       Pixel_To_Lepton(x),
       Pixel_To_Lepton(y));  // Coordinate of click relative to cell corner.
 
@@ -237,9 +237,9 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
     ObjectClass* object = Cell_Occupier();
     while (object) {
       if (object->Is_Techno()) {
-        COORDINATE const coord =
-            object->Center_Coord() &
-            0x00FF00FFL;  // Coordinate relative to cell corner.
+        const Coordinate coord =
+            object->Center_Coord()
+                .Fraction();  // Coordinate relative to cell corner.
         const int32_t dist = Distance(coord, click);
         if (!close || dist < distance) {
           close = dynamic_cast<TechnoClass*>(object);
@@ -1531,7 +1531,7 @@ void CellClass::Wall_Update() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE CellClass::Cell_Coord() const {
+Coordinate CellClass::Cell_Coord() const {
   Validate();
   return td::Cell_Coord(Cell_Number());
 }
@@ -1656,15 +1656,14 @@ TriggerClass* CellClass::Get_Trigger() const {
  * HISTORY: * 11/21/1994 BR : Created. * 12/10/1994 JLB : Uses alternate
  *sub-position algorithm.                                   *
  *=============================================================================================*/
-int CellClass::Spot_Index(COORDINATE coord) {
-  const COORDINATE rel =
-      coord & 0x00FF00FFL;  // Sub coordinate value within cell.
+int CellClass::Spot_Index(Coordinate coord) {
+  const Coordinate rel = coord.Fraction();  // Sub coordinate value within cell.
 
   /*
   **	If the coordinate is close enough to the center of the cell, then return
   **	the center position index.
   */
-  if (Distance(rel, 0x00800080L) < 60) {
+  if (Distance(rel, Coordinate::FromLeptons(0x80, 0x80)) < 60) {
     return 0;
   }
 
@@ -1675,10 +1674,10 @@ int CellClass::Spot_Index(COORDINATE coord) {
   *organized *	from left to right, top to bottom.
   */
   int index = 0;
-  if (Coord_X(rel) > 0x80) {
+  if (rel.x() > 0x80) {
     index += 1;
   }
-  if (Coord_Y(rel) > 0x80) {
+  if (rel.y() > 0x80) {
     index += 2;
   }
   return index + 1;
@@ -1706,7 +1705,7 @@ int CellClass::Spot_Index(COORDINATE coord) {
  *stopping positions.                                * 12/21/1994 JLB : Adds a
  *mix-up factor if center location is occupied.                     *
  *=============================================================================================*/
-COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
+Coordinate CellClass::Closest_Free_Spot(Coordinate coord, bool any) const {
   Validate();
   const int spot_index = Spot_Index(coord);
 
@@ -1730,13 +1729,13 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
       {3, 4, 1, 2},
       {4, 1, 2, 3},
   };
-  coord &= 0xFF00FF00L;
+  coord = coord.Whole();
 
   /*
   **	Cells occupied by buildings or vehicles don't have any free spots.
   */
   if (!any && (Flag.Occupy.Vehicle || Flag.Occupy.Monolith)) {
-    return 0;
+    return {};
   }
 
   /*
@@ -1744,7 +1743,7 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
   *or not, *	then just return with the stopping coordinate value.
   */
   if (any || Is_Spot_Free(spot_index)) {
-    return Coord_Add(coord, base::At(StoppingCoordAbs, spot_index));
+    return coord + base::At(StoppingCoordAbs, spot_index);
   }
 
   /*
@@ -1762,14 +1761,14 @@ COORDINATE CellClass::Closest_Free_Spot(COORDINATE coord, bool any) const {
     const int pos = base::ConsumeFront(sequence);
 
     if (Is_Spot_Free(pos)) {
-      return Coord_Add(coord, base::At(StoppingCoordAbs, pos));
+      return coord + base::At(StoppingCoordAbs, pos);
     }
   }
 
   /*
   **	No free spot could be found so return a NULL coordinate.
   */
-  return 0x00000000L;
+  return {};
 }
 
 /***********************************************************************************************
@@ -1817,7 +1816,7 @@ int CellClass::Clear_Icon() const {
  *=============================================================================================*/
 // Not const: scatters the units in the cell.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-void CellClass::Incoming(COORDINATE threat, bool forced) {
+void CellClass::Incoming(Coordinate threat, bool forced) {
   Validate();
   ObjectClass* object = nullptr;
 
@@ -1994,7 +1993,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
   if (object && Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(Overlay).IsCrate) {
     const bool steel = Overlay == OVERLAY_STEEL_CRATE;
-    COORDINATE coord = 0;  // Temporary working coordinate value.
+    Coordinate coord{};  // Temporary working coordinate value.
 
     /*
     **	A triggered crate is automatically destroyed regardless of who or how
@@ -2277,7 +2276,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           damage = 400;
           object->Take_Damage(damage, 0, WARHEAD_HE);
           for (int index = 0; index < 5; index++) {
-            const COORDINATE blast_coord =
+            const Coordinate blast_coord =
                 Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
             base::NewPooled<AnimClass>(ANIM_FBALL1, blast_coord);
             damage = 400;
@@ -2289,7 +2288,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	A napalm blast is triggered.
         */
         case kNapalm:
-          coord = Coord_Mid(Cell_Coord(), object->Center_Coord());
+          coord = Coordinate::Midpoint(Cell_Coord(), object->Center_Coord());
           base::NewPooled<AnimClass>(ANIM_NAPALM3, coord);
           damage = 600;
           Explosion_Damage(coord, damage, nullptr, WARHEAD_FIRE);

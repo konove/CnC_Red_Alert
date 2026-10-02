@@ -3593,7 +3593,7 @@ const base::EnumArray<StructType, const BuildingTypeClass*, kStructCount>
  * HISTORY: * 07/29/1994 JLB : Created. *
  *=============================================================================================*/
 BuildingTypeClass::BuildingTypeClass(
-    StructType type, int name, const char* ininame, COORDINATE exitpoint,
+    StructType type, int name, const char* ininame, Coordinate exitpoint,
     unsigned char level, uint64_t pre, bool is_scanner, bool is_regulated,
     bool is_bibbed, bool is_nominal, bool is_wall, bool is_factory,
     bool is_captureable, bool is_flammable, bool is_simpledamage,

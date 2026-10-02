@@ -634,8 +634,8 @@ void RadarClass::Render_Infantry(PixelView& view, CELL cell, int x, int y,
           // int divisor = 255 / ZoomFactor;
           const int divisor = 86;
           if (ZoomFactor >= 3) {
-            xoff = Coord_XLepton(obj->Coord) / divisor;
-            yoff = Coord_YLepton(obj->Coord) / divisor;
+            xoff = obj->Coord.sub_x() / divisor;
+            yoff = obj->Coord.sub_y() / divisor;
             if (ZoomFactor >= 6) {
               xoff *= 2;
               yoff *= 2;
@@ -1778,7 +1778,7 @@ void RadarClass::Set_Map_Dimensions(int x, int y, int w, int h) {
  *                                                                                             *
  * HISTORY: * 08/17/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Set_Tactical_Position(COORDINATE coord) {
+void RadarClass::Set_Tactical_Position(Coordinate coord) {
   DisplayClass::Set_Tactical_Position(coord);
   Set_Radar_Position(Coord_Cell(DesiredTacticalCoord));
 }

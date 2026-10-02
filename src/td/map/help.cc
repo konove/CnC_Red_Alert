@@ -401,7 +401,7 @@ bool HelpClass::Scroll_Map(game::DirType facing, int& distance, bool really) {
  *=============================================================================================*/
 void HelpClass::Set_Cost(int cost) { Cost = cost; }
 
-void HelpClass::Set_Tactical_Position(COORDINATE coord) {
+void HelpClass::Set_Tactical_Position(Coordinate coord) {
   if (TacticalCoord != coord) {
     Help_Text(TXT_NONE);
   }

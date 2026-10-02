@@ -102,7 +102,7 @@ class DebugState {
   RTTIType& trap_object_type() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return trap_object_type_;
   }
-  COORDINATE& trap_coord() ABSL_ATTRIBUTE_LIFETIME_BOUND { return trap_coord_; }
+  Coordinate& trap_coord() ABSL_ATTRIBUTE_LIFETIME_BOUND { return trap_coord_; }
   void*& trap_this() ABSL_ATTRIBUTE_LIFETIME_BOUND { return trap_this_; }
   int& trap_check_heap() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return trap_check_heap_;
@@ -126,7 +126,7 @@ class DebugState {
   // 0x7fffffff means "never", which is what the INI file defaults to.
   int64_t trap_frame_ = 0x7fffffff;
   RTTIType trap_object_type_ = RTTI_NONE;
-  COORDINATE trap_coord_ = 0;
+  Coordinate trap_coord_{};
   void* trap_this_ = nullptr;
   int trap_check_heap_ = 0;
 };

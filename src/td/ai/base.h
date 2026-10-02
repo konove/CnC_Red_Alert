@@ -67,7 +67,7 @@ class BaseNodeClass {
   bool operator>(const BaseNodeClass& node);
 
   StructType Type = STRUCT_NONE;
-  COORDINATE Coord = 0;
+  Coordinate Coord{};
 };
 
 /****************************************************************************

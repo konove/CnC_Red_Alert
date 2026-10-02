@@ -403,8 +403,10 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
           const BuildingClass* building =
               thisone->Find_Docking_Bay(STRUCT_AIRSTRIP, false);
           if (building) {
-            newcell = XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth,
-                              Coord_YCell(building->Docking_Coord() + 2));
+            newcell = XY_Cell(
+                TheMap().MapCellX + TheMap().MapCellWidth,
+                Coordinate::FromPacked(building->Docking_Coord().packed() + 2)
+                    .cell_y());
           }
         }
         thisone->Next = nullptr;

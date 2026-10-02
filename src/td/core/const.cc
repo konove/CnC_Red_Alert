@@ -58,12 +58,12 @@ const base::EnumArray<SourceType, const char*, kSourceCount> SourceName = {
 **	of the legal positions that an object in a cell may stop at. Only
 *infantry *	are allowed to stop at other than the center of the cell.
 */
-const COORDINATE StoppingCoordAbs[5] = {
-    0x00800080L,  // center
-    0x00400040L,  // upper left
-    0x004000C0L,  // upper right
-    0x00C00040L,  // lower left
-    0x00C000C0L   // lower right
+const Coordinate StoppingCoordAbs[5] = {
+    Coordinate::FromLeptons(0x80, 0x80),  // center
+    Coordinate::FromLeptons(0x40, 0x40),  // upper left
+    Coordinate::FromLeptons(0xC0, 0x40),  // upper right
+    Coordinate::FromLeptons(0x40, 0xC0),  // lower left
+    Coordinate::FromLeptons(0xC0, 0xC0)   // lower right
 };
 
 /***************************************************************************
@@ -223,9 +223,17 @@ const base::EnumArray<game::FacingType, CELL> AdjacentCell = {
     -(MAP_CELL_W + 1)   // North West
 };
 
-const base::EnumArray<game::FacingType, COORDINATE> AdjacentCoord = {
-    0xFF000000L, 0xFF000100L, 0x00000100L, 0x01000100L,
-    0x01000000L, 0x0100FF00L, 0x0000FF00L, 0xFF00FF00L};
+// The lepton offset of the adjacent cell in each direction. Negative
+// components wrap to their 16-bit words, which operator+ undoes.
+const base::EnumArray<game::FacingType, Coordinate> AdjacentCoord = {
+    Coordinate::FromLeptons(0, -0x100),        // North
+    Coordinate::FromLeptons(0x100, -0x100),    // North East
+    Coordinate::FromLeptons(0x100, 0),         // East
+    Coordinate::FromLeptons(0x100, 0x100),     // South East
+    Coordinate::FromLeptons(0, 0x100),         // South
+    Coordinate::FromLeptons(-0x100, 0x100),    // South West
+    Coordinate::FromLeptons(-0x100, 0),        // West
+    Coordinate::FromLeptons(-0x100, -0x100)};  // North West
 
 /***************************************************************************
 **	These are the movement costs (in ticks at fastest speed) to enter each

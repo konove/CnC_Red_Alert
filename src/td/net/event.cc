@@ -269,7 +269,8 @@ EventClass::EventClass(EventType type, TARGET src, TARGET dest) : EventClass() {
  *                                                                                             *
  * HISTORY: * 05/19/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) : EventClass() {
+EventClass::EventClass(AnimType anim, HousesType owner, Coordinate coord)
+    : EventClass() {
   ID = static_cast<unsigned>(TheObjectHeaps().house().SlotIndexOf(ThePlayer()));
   Type = ANIMATION;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -695,7 +696,7 @@ void EventClass::Execute() {
       techno = As_Techno(Data.Target.Whom);
       if (techno && techno->IsActive && !techno->IsInLimbo &&
           !techno->IsTethered) {
-        techno->Scatter(0, true);
+        techno->Scatter(Coordinate{}, true);
       }
       break;
 

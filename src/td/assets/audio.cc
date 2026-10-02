@@ -338,7 +338,7 @@ static base::EnumArray<VocType, SoundEffectEntry, kVocCount> SoundEffectName = {
  * HISTORY: * 11/12/1994 JLB : Created. * 01/05/1995 JLB : Reduces sound more
  *dramatically when off screen.                         *
  *=============================================================================================*/
-void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
+void Sound_Effect(VocType voc, Coordinate coord, int variation) {
   CELL cell_pos = 0;
 
   if (!TheOptions().Volume || voc == VOC_NONE || !TheGameState().sound_on() ||
@@ -355,9 +355,10 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
     // Measured from the centre of the view: TacticalCoord is its upper-left
     // corner, which would make sounds below and right of the screen quieter
     // than those as far above and left.
-    const COORDINATE view_center = Coord_Add(
-        TheMap().TacticalCoord,
-        XY_Coord(TheMap().TacLeptonWidth / 2, TheMap().TacLeptonHeight / 2));
+    const Coordinate view_center =
+        TheMap().TacticalCoord +
+        Coordinate::FromLeptons(TheMap().TacLeptonWidth / 2,
+                                TheMap().TacLeptonHeight / 2);
     distance = MapEditClass::Cell_Distance(cell_pos, Coord_Cell(view_center));
     distance = std::min<int>(distance, MAP_CELL_W);
     distance = base::CardinalToFixed(MAP_CELL_W, distance);
@@ -368,7 +369,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
     distance = std::max(distance, 25);
 
     pan_value = Cell_X(cell_pos);
-    pan_value -= Coord_XCell(TheMap().TacticalCoord) +
+    pan_value -= TheMap().TacticalCoord.cell_x() +
                  (Lepton_To_Cell(TheMap().TacLeptonWidth) / 2);
     if (std::abs(pan_value) > Lepton_To_Cell(TheMap().TacLeptonWidth / 2)) {
       pan_value *= 0x8000;

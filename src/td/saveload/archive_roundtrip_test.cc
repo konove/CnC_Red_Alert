@@ -203,8 +203,8 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
     e.Type = EventClass::ANIMATION;
     e.Data.Anim.What = ANIM_FIRE_SMALL;
     e.Data.Anim.Owner = HOUSE_GOOD;
-    e.Data.Anim.Where = COORDINATE{100};
-  }, ANIM_FIRE_SMALL, HOUSE_GOOD, COORDINATE{100});
+    e.Data.Anim.Where = Coordinate::FromPacked(100);
+  }, ANIM_FIRE_SMALL, HOUSE_GOOD, Coordinate::FromPacked(100));
   SpecialClass options{};
   check([&options](EventClass& e) {
     e.Type = EventClass::SPECIAL;

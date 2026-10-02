@@ -392,9 +392,9 @@ void Debug_Key(unsigned input) {
             weapon = Weapons.at(ttype.Primary).Range;
           }
           PixelView& view = TheScreen().visible_view();
-          const COORDINATE center =
+          const Coordinate center =
               base::At(TheWorld().current_object(), 0)->Center_Coord();
-          const COORDINATE center2 =
+          const Coordinate center2 =
               base::At(TheWorld().current_object(), 0)->Fire_Coord(0);
 
           for (int r = 0; r < 255; r += 10) {

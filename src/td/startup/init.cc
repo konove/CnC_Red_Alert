@@ -1705,7 +1705,8 @@ bool Select_Game(bool fade) {
         LOG(ERROR) << "-MOBILETEST: could not launch aircraft";
         return false;
       }
-      plane->Assign_Destination(td::As_Target(Coord_Cell(plane->Coord + 0x800)));
+      plane->Assign_Destination(td::As_Target(
+          Coord_Cell(Coordinate::FromPacked(plane->Coord.packed() + 0x800))));
       plane->Assign_Mission(MISSION_MOVE);
       plane->Set_Speed(123);
     }
@@ -1806,10 +1807,13 @@ bool Select_Game(bool fade) {
       bullet->PrimaryFacing.Set(game::DIR_NE);
       bullet->PrimaryFacing = game::DIR_SE;
       bullet->Fly_Speed(127, game::MPH_FAST);
-      bullet->Arm_Fuse(owner->Coord, owner->Coord + 0x200, 95, 5);
+      bullet->Arm_Fuse(owner->Coord,
+                       Coordinate::FromPacked(owner->Coord.packed() + 0x200),
+                       95, 5);
       bullet->Assign_Target(owner->As_Target());
       auto* missile = base::NewPooled<BulletClass>(BULLET_SSM);
-      const COORDINATE destination = owner->Coord + 0x600;
+      const Coordinate destination =
+          Coordinate::FromPacked(owner->Coord.packed() + 0x600);
       if (missile == nullptr) {
         return false;
       }

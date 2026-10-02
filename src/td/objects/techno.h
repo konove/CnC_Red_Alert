@@ -271,7 +271,7 @@ class TechnoClass : public RadioClass,
   void Record_The_Kill(TechnoClass* source) override;
   virtual bool Target_Something_Nearby(ThreatType threat = THREAT_NORMAL);
   virtual void Stun();
-  [[nodiscard]] bool In_Range(COORDINATE coord, int which = 0) const override;
+  [[nodiscard]] bool In_Range(Coordinate coord, int which = 0) const override;
   [[nodiscard]] virtual bool In_Range(TARGET target, int which = 0) const;
   virtual bool In_Range(const ObjectClass* target, int which = 0) const;
   virtual void Death_Announcement(
@@ -331,14 +331,14 @@ class TechnoClass : public RadioClass,
   */
   virtual void Random_Animate();
   virtual void Assign_Destination(TARGET target);
-  void Scatter(COORDINATE source = 0, bool forced = false) override;
+  void Scatter(Coordinate source = {}, bool forced = false) override;
   virtual void Per_Cell_Process(bool /*unused*/);
   virtual void Enter_Idle_Mode(bool initial = false);
 
   /*
   **	Map entry and exit logic.
   */
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+  bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
   void Detach(TARGET target, bool all) override;
 

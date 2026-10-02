@@ -174,7 +174,7 @@ FootClass::FootClass()
       Team(nullptr),
       Member(nullptr),
       TryTryAgain(kPathRetry),
-      HeadToCoord(0) {
+      HeadToCoord() {
   for (auto& facing : Path) {
     facing = game::FACING_NONE;
   }
@@ -239,7 +239,7 @@ FootClass::FootClass(HousesType house)
       Group(kNoGroup),
       Member(nullptr),
       TryTryAgain(kPathRetry),
-      HeadToCoord(0L) {
+      HeadToCoord() {
   for (auto& facing : Path) {
     facing = game::FACING_NONE;
   }
@@ -587,7 +587,7 @@ int FootClass::Mission_Capture() {
   if (!Target_Legal(NavCom) && !In_Radio_Contact()) {
     Enter_Idle_Mode();
     if (TheMap().at(Coord_Cell(Center_Coord())).Cell_Building()) {
-      Scatter(0, true);
+      Scatter(Coordinate{}, true);
     }
   }
   return kTicksPerSecond - 2;
@@ -749,7 +749,7 @@ int FootClass::Mission_Timed_Hunt() {
  *=============================================================================================*/
 bool FootClass::Stop_Driver() {
   if (HeadToCoord) {
-    HeadToCoord = 0;
+    HeadToCoord = {};
     Set_Speed(0);
     IsDriving = false;
     return true;
@@ -774,7 +774,7 @@ bool FootClass::Stop_Driver() {
  * HISTORY: * 10/17/1994 JLB : Created. * 12/12/1994 JLB : Uses simple spot
  *index finder.                                           *
  *=============================================================================================*/
-bool FootClass::Start_Driver(COORDINATE& headto) {
+bool FootClass::Start_Driver(Coordinate& headto) {
   Stop_Driver();
   if (headto) {
     HeadToCoord = headto;
@@ -787,7 +787,7 @@ bool FootClass::Start_Driver(COORDINATE& headto) {
       return true;
     }
 
-    HeadToCoord = 0;
+    HeadToCoord = {};
     IsDriving = false;
   }
   return false;
@@ -811,15 +811,15 @@ bool FootClass::Start_Driver(COORDINATE& headto) {
  * HISTORY: * 10/17/1994 JLB : Created. * 11/04/1994 JLB : Sort value is
  *different when unloading from aircraft.                    *
  *=============================================================================================*/
-COORDINATE FootClass::Sort_Y() const {
+Coordinate FootClass::Sort_Y() const {
   if (IsUnloading) {
-    return Coord_Add(Coord, 0x01000000L);
+    return Coord + Coordinate::FromLeptons(0, 0x100);
   }
   if (In_Radio_Contact() && IsTethered &&
       Contact_With_Whom()->What_Am_I() == RTTI_UNIT) {
-    return Coord_Add(Coord, 0x01000000L);
+    return Coord + Coordinate::FromLeptons(0, 0x100);
   }
-  return Coord_Add(Coord, 0x00300000L);
+  return Coord + Coordinate::FromLeptons(0, 0x30);
 }
 
 /***********************************************************************************************
@@ -904,8 +904,8 @@ void FootClass::Approach_Target() {
 #endif
       maxrange = std::max(maxrange, 0);
 
-      const COORDINATE tcoord = As_Coord(TarCom);
-      COORDINATE trycoord = 0;
+      const Coordinate tcoord = As_Coord(TarCom);
+      Coordinate trycoord{};
       const CELL tcell = Coord_Cell(tcoord);
       CELL trycell = tcell;
       const game::DirType dir = Direction256(tcoord, Center_Coord());
@@ -998,7 +998,7 @@ int FootClass::Mission_Guard_Area() {
   }
 
   if (!Target_Legal(TarCom)) {
-    const COORDINATE old = Coord;
+    const Coordinate old = Coord;
     Coord = As_Coord(ArchiveTarget);
     Target_Something_Nearby(THREAT_AREA);
     Coord = old;
@@ -1029,7 +1029,7 @@ int FootClass::Mission_Guard_Area() {
  *                                                                                             *
  * HISTORY: * 12/23/1994 JLB : Created. *
  *=============================================================================================*/
-bool FootClass::Unlimbo(COORDINATE coord, game::DirType dir) {
+bool FootClass::Unlimbo(Coordinate coord, game::DirType dir) {
   /*
   **	Try to unlimbo the unit.
   */
@@ -1196,7 +1196,7 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
             **	is too far away. If scatter logic is enabled, then scatter now.
             */
             if (TheSpecial().IsScatter) {
-              Scatter(0, true);
+              Scatter(Coordinate{}, true);
             }
           }
         }
@@ -1206,7 +1206,7 @@ game::ResultType FootClass::Take_Damage(int& damage, int distance,
         */
         if (!IsDriving && !Target_Legal(TarCom) && !Target_Legal(NavCom) &&
             TheSpecial().IsScatter && What_Am_I() != RTTI_AIRCRAFT) {
-          Scatter(0, true);
+          Scatter(Coordinate{}, true);
         }
       }
     }
@@ -1319,7 +1319,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
 
     case ACTION_MOVE:
       if (TheGameState().allow_voice()) {
-        const COORDINATE coord =
+        const Coordinate coord =
             TheMap().Pixel_To_Coord(game::TheMouse().x(), game::TheMouse().y());
         TheNetwork().out_list().Add(
             EventClass(ANIM_MOVE_FLASH, ThePlayer()->Class->House, coord));
@@ -2086,7 +2086,7 @@ void FootClass::Sell_Back(int control) {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE FootClass::Likely_Coord() const {
+Coordinate FootClass::Likely_Coord() const {
   if (Head_To_Coord()) {
     return Head_To_Coord();
   }

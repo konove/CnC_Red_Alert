@@ -758,7 +758,8 @@ void Read_MultiPlayer_Settings() {
     WWGetPrivateProfileString(
         "SyncBug", "Coord", "0",
         std::span(buf).first(static_cast<std::size_t>(80)), buffer);
-    TheDebugState().trap_coord() = base::ParseHexOr<uint32_t>(buf, 0);
+    TheDebugState().trap_coord() =
+        Coordinate::FromPacked(base::ParseHexOr<uint32_t>(buf, 0));
 
     WWGetPrivateProfileString(
         "SyncBug", "this", "0",

@@ -91,7 +91,7 @@ FuseClass::FuseClass() = default;
  *                                                                                             *
  * HISTORY: * 04/24/1994 JLB : Created. *
  *=============================================================================================*/
-void FuseClass::Arm_Fuse(COORDINATE location, COORDINATE target, int timeto,
+void FuseClass::Arm_Fuse(Coordinate location, Coordinate target, int timeto,
                          int arming) {
   timeto = std::max(timeto, arming);
   Timer = static_cast<unsigned char>(std::min(timeto, 0xFF));
@@ -115,8 +115,7 @@ void FuseClass::Arm_Fuse(COORDINATE location, COORDINATE target, int timeto,
  *                                                                                             *
  * HISTORY: * 04/24/1994 JLB : Created. *
  *=============================================================================================*/
-bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
-
+bool FuseClass::Fuse_Checkup(Coordinate newlocation) {
   /*
   **	Always decrement the fuse timer.
   */

@@ -73,13 +73,13 @@ namespace td {
 
 FlyClass::~FlyClass() = default;
 
-ImpactType FlyClass::Physics(COORDINATE& coord, game::DirType facing) {
+ImpactType FlyClass::Physics(Coordinate& coord, game::DirType facing) {
   if (SpeedAdd != game::MPH_IMMOBILE) {
     int actual = static_cast<int>(SpeedAdd) + SpeedAccum;
     const std::div_t result = std::div(actual, PIXEL_LEPTON_W);
     SpeedAccum = result.rem;
     actual -= result.rem;
-    const COORDINATE old = coord;
+    const Coordinate old = coord;
 
     /*
     **	If movement occurred that is at least one
@@ -87,7 +87,7 @@ ImpactType FlyClass::Physics(COORDINATE& coord, game::DirType facing) {
     **	check for edge of world collision.
     */
     if (result.quot) {
-      COORDINATE const newcoord =
+      const Coordinate newcoord =
           Coord_Move(coord, facing,
                      static_cast<uint16_t>(actual));  // New working coordinate.
 
@@ -108,7 +108,8 @@ ImpactType FlyClass::Physics(COORDINATE& coord, game::DirType facing) {
       **	If the new coordinate is off the edge of the world, then report
       **	this.
       */
-      if (newcoord & 0xC000C000L /*|| !Map.In_Radar(Coord_Cell(newcoord))*/) {
+      if ((newcoord.packed() & 0xC000C000U) !=
+          0 /*|| !Map.In_Radar(Coord_Cell(newcoord))*/) {
         coord = old;
         return IMPACT_EDGE;
       }

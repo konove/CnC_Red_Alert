@@ -186,6 +186,16 @@ TEST(TdCoordinateTest, MidpointAveragesUnsignedWords) {
   }
 }
 
+// The order is the packed word's: Y first, then X, both unsigned (so a word
+// TD's y() reads as negative still sorts after a positive one).
+TEST(TdCoordinateTest, OrdersByPackedWord) {
+  EXPECT_LT(Coordinate::FromLeptons(0xFFFF, 1), Coordinate::FromLeptons(0, 2));
+  EXPECT_LT(Coordinate::FromLeptons(1, 2), Coordinate::FromLeptons(2, 2));
+  EXPECT_GT(Coordinate::FromLeptons(0, 0x8000), Coordinate::FromLeptons(0, 1));
+  EXPECT_GT(Coordinate::FromLeptons(-1, 0), Coordinate::FromLeptons(1, 0));
+  EXPECT_LE(kSample, kSample);
+}
+
 TEST(TdCoordinateTest, ExplicitBoolIsNonZero) {
   EXPECT_FALSE(static_cast<bool>(Coordinate{}));
   EXPECT_TRUE(static_cast<bool>(Coordinate::FromLeptons(1, 0)));

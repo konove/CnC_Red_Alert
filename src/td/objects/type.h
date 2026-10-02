@@ -263,7 +263,7 @@ class AbstractTypeClass {
 
   [[nodiscard]] virtual RTTIType What_Am_I() const;
 
-  [[nodiscard]] virtual COORDINATE Coord_Fixup(COORDINATE coord) const;
+  [[nodiscard]] virtual Coordinate Coord_Fixup(Coordinate coord) const;
   [[nodiscard]] virtual int Full_Name() const;
   void Set_Name(const char* buf) { base::SafeCopy(IniName, buf); }
   [[nodiscard]] virtual uint16_t Get_Ownable() const;
@@ -656,7 +656,7 @@ class BuildingTypeClass : public TechnoTypeClass {
     * door. The unit will then travel on to a clear *	terrain area and enter
     * normal game processing.
     */
-    COORDINATE ExitPoint;
+    Coordinate ExitPoint;
 
     /*
     **	When determine which cell to head toward when exiting a building, use
@@ -733,7 +733,7 @@ class BuildingTypeClass : public TechnoTypeClass {
     **	This is the building type explicit constructor.
     */
     BuildingTypeClass(
-        StructType type, int name, const char* ininame, COORDINATE exitpoint,
+        StructType type, int name, const char* ininame, Coordinate exitpoint,
         unsigned char level, uint64_t pre, bool is_scanner, bool is_regulated,
         bool is_bibbed, bool is_nominal, bool is_wall, bool is_factory,
         bool is_captureable, bool is_flammable, bool is_simpledamage,
@@ -767,8 +767,8 @@ class BuildingTypeClass : public TechnoTypeClass {
 
   [[nodiscard]] int Cost_Of() const override;
   [[nodiscard]] int Full_Name() const override;
-  [[nodiscard]] COORDINATE Coord_Fixup(COORDINATE coord) const override {
-    return coord & 0xFF00FF00L;
+  [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override {
+    return coord.Whole();
   }
   [[nodiscard]] int Max_Pips() const override;
   void Dimensions(int& width, int& height) const override;
@@ -1329,7 +1329,7 @@ class TerrainTypeClass : public ObjectTypeClass {
   **	position of the terrain object lies. For trees, this would be the base
   *of *	the trunk. This is used for sorting purposes.
   */
-  COORDINATE CenterBase;
+  Coordinate CenterBase;
 
   /*
   **	This is the bitfield control that tells which theater this terrain
@@ -1340,7 +1340,7 @@ class TerrainTypeClass : public ObjectTypeClass {
 
   //----------------------------------------------------------------
   TerrainTypeClass(
-      TerrainType terrain, int theater, COORDINATE centerbase, bool is_spawn,
+      TerrainType terrain, int theater, Coordinate centerbase, bool is_spawn,
       bool is_destroyable, bool is_transformable, bool is_flammable,
       bool is_crushable, bool is_selectable, bool is_legal_target,
       bool is_insignificant, bool is_immune, const char* ininame, int fullname,
@@ -1357,8 +1357,8 @@ class TerrainTypeClass : public ObjectTypeClass {
   static void One_Time() {}
   static void Prep_For_Add();
 
-  [[nodiscard]] COORDINATE Coord_Fixup(COORDINATE coord) const override {
-    return coord & 0xFF00FF00L;
+  [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override {
+    return coord.Whole();
   }
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
@@ -1436,8 +1436,8 @@ class TemplateTypeClass : public ObjectTypeClass {
   static void One_Time();
   static void Prep_For_Add();
 
-  [[nodiscard]] COORDINATE Coord_Fixup(COORDINATE coord) const override {
-    return coord & 0xFF00FF00L;
+  [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override {
+    return coord.Whole();
   }
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
@@ -1832,8 +1832,8 @@ class OverlayTypeClass : public ObjectTypeClass {
   static void One_Time();
   static void Prep_For_Add();
 
-  [[nodiscard]] COORDINATE Coord_Fixup(COORDINATE coord) const override {
-    return coord & 0xFF00FF00L;
+  [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override {
+    return coord.Whole();
   }
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)

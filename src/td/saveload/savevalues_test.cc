@@ -205,15 +205,16 @@ TEST(TdSaveValuesTest, FlashCountCannotOverflowItsBitfield) {
 
 TEST(TdSaveValuesTest, FusePreservesArmingAndProximityState) {
   FuseClass fuse;
-  fuse.Arm_Fuse(0, 0x00400000, 12, 3);
-  EXPECT_FALSE(fuse.Fuse_Checkup(0x00100000));
+  fuse.Arm_Fuse(Coordinate{}, Coordinate::FromLeptons(0, 0x40), 12, 3);
+  EXPECT_FALSE(fuse.Fuse_Checkup(Coordinate::FromLeptons(0, 0x10)));
   FuseClass loaded;
   const auto bytes = Save(fuse);
   Restore(loaded, bytes);
   EXPECT_EQ(Save(loaded), bytes);
   EXPECT_EQ(loaded.Fuse_Target(), fuse.Fuse_Target());
   for (int frame = 0; frame < 12; ++frame) {
-    EXPECT_EQ(loaded.Fuse_Checkup(0x00200000), fuse.Fuse_Checkup(0x00200000));
+    EXPECT_EQ(loaded.Fuse_Checkup(Coordinate::FromLeptons(0, 0x20)),
+              fuse.Fuse_Checkup(Coordinate::FromLeptons(0, 0x20)));
     EXPECT_EQ(loaded.Timer, fuse.Timer);
   }
 }
@@ -304,7 +305,7 @@ TEST(TdSaveValuesTest,
     ActiveObject() { IsActive = true; }
   };
   ActiveObject value;
-  value.Coord = 0x12345678;
+  value.Coord = Coordinate::FromPacked(0x12345678);
   ActiveObject loaded;
   Restore(loaded, Save(value));
   EXPECT_EQ(loaded.Coord, value.Coord);

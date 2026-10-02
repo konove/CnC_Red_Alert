@@ -8,7 +8,7 @@ namespace td {
 
 int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor,
                   int distance);
-void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
+void Explosion_Damage(Coordinate coord, int strength, TechnoClass* source,
                       WarheadType warhead);
 
 }  // namespace td

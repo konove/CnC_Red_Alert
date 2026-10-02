@@ -8,10 +8,9 @@
 
 namespace td {
 
-COORDINATE Coord_Move(COORDINATE start, game::DirType dir, uint16_t distance);
-COORDINATE Coord_Scatter(COORDINATE coord, int distance,
-                         bool lock = false);
-std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize);
+Coordinate Coord_Move(Coordinate start, game::DirType dir, uint16_t distance);
+Coordinate Coord_Scatter(Coordinate coord, int distance, bool lock = false);
+std::span<const int16_t> Coord_Spillage_List(Coordinate coord, int maxsize);
 
 }  // namespace td
 

@@ -229,14 +229,17 @@ constexpr int kSamLowering = 7;  // Launcher is lowering into the ground.
 /***************************************************************************
 **	Center of building offset table.
 */
-const base::EnumArray<game::BSizeType, COORDINATE> BuildingClass::CenterOffset =
+const base::EnumArray<game::BSizeType, Coordinate> BuildingClass::CenterOffset =
     {
-        0x00800080L, 0x008000FFL, 0x00FF0080L, 0x00FF00FFL,
-        0x018000FFL, 0x00FF0180L, 0x01800180L,
-
-        0x00FF0200L,
-
-        0x02800280L,
+        Coordinate::FromLeptons(0x0080, 0x0080),  // 1x1
+        Coordinate::FromLeptons(0x00FF, 0x0080),  // 2x1
+        Coordinate::FromLeptons(0x0080, 0x00FF),  // 1x2
+        Coordinate::FromLeptons(0x00FF, 0x00FF),  // 2x2
+        Coordinate::FromLeptons(0x00FF, 0x0180),  // 2x3
+        Coordinate::FromLeptons(0x0180, 0x00FF),  // 3x2
+        Coordinate::FromLeptons(0x0180, 0x0180),  // 3x3
+        Coordinate::FromLeptons(0x0200, 0x00FF),  // 4x2
+        Coordinate::FromLeptons(0x0280, 0x0280),  // 5x5
 };
 
 /*
@@ -548,7 +551,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
           Transmit_Message(RADIO_TETHER);
           if (*this == STRUCT_REFINERY &&
               Transmit_Message(RADIO_BACKUP_NOW, from) != RADIO_ROGER) {
-            from->Scatter(0, true);
+            from->Scatter(Coordinate{}, true);
           }
         }
       }
@@ -1081,8 +1084,8 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
           int y = 0;
           int x1 = 0;
           int y1 = 0;
-          COORDINATE source = Fire_Coord(which);
-          COORDINATE dest = As_Coord(target);
+          Coordinate source = Fire_Coord(which);
+          Coordinate dest = As_Coord(target);
           IsCharging = false;
           IsCharged = false;
           Set_Stage(0);
@@ -1540,7 +1543,7 @@ void BuildingClass::AI() {
  *Handles wall placement.                                                  *
  *   06/18/1995 JLB : Checks for wall legality before placing down. *
  *=============================================================================================*/
-bool BuildingClass::Unlimbo(COORDINATE coord, game::DirType dir) {
+bool BuildingClass::Unlimbo(Coordinate coord, game::DirType dir) {
   Validate();
 #ifdef OBSOLETE
   if (*this == STRUCT_ROAD) {
@@ -1875,7 +1878,8 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
       case game::RESULT_HALF:
         if (*this == STRUCT_PUMP) {
           auto* anim = base::NewPooled<AnimClass>(
-              ANIM_OILFIELD_BURN, Coord_Add(Coord, 0x00400130L), 1);
+              ANIM_OILFIELD_BURN,
+              Coord + Coordinate::FromLeptons(0x0130, 0x0040), 1);
           if (anim) {
             anim->Attach_To(this);
           }
@@ -2176,7 +2180,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
       i->Strength = static_cast<int16_t>(
           Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
       TheWorld().scenario_init()--;
-      i->Scatter(0, true);
+      i->Scatter(Coordinate{}, true);
       TheWorld().scenario_init()++;
       i->Assign_Mission(MISSION_GUARD_AREA);
     } else {
@@ -2216,7 +2220,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
           if (i->Unlimbo(Cell_Coord(newcell), game::DIR_N)) {
             i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
-            i->Scatter(0, true);
+            i->Scatter(Coordinate{}, true);
             if (source != kTargetNone && !House->Is_Ally(As_Object(source))) {
               i->Assign_Mission(MISSION_ATTACK);
               i->Assign_Target(source);
@@ -2517,8 +2521,9 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
 
             cell = Adjacent_Cell(cell, game::FACING_SW);
             TheWorld().scenario_init()++;
-            if (unit->Unlimbo(Coord_Add(unit->Coord, 0x00550060L),
-                              game::DIR_SW_X2)) {
+            if (unit->Unlimbo(
+                    unit->Coord + Coordinate::FromLeptons(0x0060, 0x0055),
+                    game::DIR_SW_X2)) {
               unit->PrimaryFacing = game::DIR_SW_X2;
               Transmit_Message(RADIO_HELLO, unit);
               Transmit_Message(RADIO_TETHER);
@@ -2530,7 +2535,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
           } else {
             base->  // The original passed `true` as the threat coordinate; that
                     // value (1) is kept.
-                Scatter(static_cast<COORDINATE>(1));
+                Scatter(Coordinate::FromPacked(1));
           }
           break;
 
@@ -2545,11 +2550,11 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
 
         case STRUCT_WEAP:
           TheWorld().scenario_init()++;
-          if (base->Unlimbo(Coord_Add(Coord, Class->ExitPoint), game::DIR_SW)) {
+          if (base->Unlimbo(Coord + Class->ExitPoint, game::DIR_SW)) {
             //						base->Assign_Mission(MISSION_MOVE);
             //						base->Assign_Destination(td::As_Target(As_Cell(Coord)+MAP_CELL_W*2));
             base->Mark(MARK_UP);
-            base->Coord = Coord_Add(Coord, Class->ExitPoint);
+            base->Coord = Coord + Class->ExitPoint;
             base->Mark(MARK_DOWN);
             Transmit_Message(RADIO_HELLO, base);
             Transmit_Message(RADIO_TETHER);
@@ -2585,7 +2590,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
 
           if (found) {
             const game::DirType dir = Direction(cell);
-            const COORDINATE start = Coord_Add(Coord, Class->ExitPoint);
+            const Coordinate start = Coord + Class->ExitPoint;
 
             TheWorld().scenario_init()++;
             if (base->Unlimbo(start, dir)) {
@@ -2956,9 +2961,9 @@ bool BuildingClass::Limbo() {
  *                                                                                             *
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BuildingClass::Fire_Coord(int /*unused*/) const {
+Coordinate BuildingClass::Fire_Coord(int /*unused*/) const {
   Validate();
-  COORDINATE coord = Center_Coord();  // Center of firing building.
+  Coordinate coord = Center_Coord();  // Center of firing building.
 
   /*
   **	Make adjustments to the firing coordinate to account for turret
@@ -3654,18 +3659,18 @@ TARGET BuildingClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE BuildingClass::Center_Coord() const {
+Coordinate BuildingClass::Center_Coord() const {
   Validate();
-  return Coord_Add(Coord, CenterOffset.at(Class->Size));
+  return Coord + CenterOffset.at(Class->Size);
 }
 
-COORDINATE BuildingClass::Docking_Coord() const {
+Coordinate BuildingClass::Docking_Coord() const {
   Validate();
   if (*this == STRUCT_HELIPAD) {
-    return Coord_Add(Coord, Pixel_Offset_Coord(24, 18));
+    return Coord + Pixel_Offset_Coord(24, 18);
   }
   if (*this == STRUCT_AIRSTRIP) {
-    return Coord_Add(Coord, Pixel_Offset_Coord(18, 30));
+    return Coord + Pixel_Offset_Coord(18, 30);
   }
   return TechnoClass::Docking_Coord();
 }
@@ -4008,7 +4013,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
  * HISTORY: * 05/23/1995 JLB : Created. * 06/19/1995 JLB : Handles buildings
  *that come with bibs built-in.                          *
  *=============================================================================================*/
-COORDINATE BuildingClass::Sort_Y() const {
+Coordinate BuildingClass::Sort_Y() const {
   Validate();
   if (*this == STRUCT_REPAIR) {
     return Coord;
@@ -4019,7 +4024,7 @@ COORDINATE BuildingClass::Sort_Y() const {
   if (*this == STRUCT_REFINERY) {
     return Center_Coord();
   }
-  return Coord_Add(Center_Coord(), XY_Coord(0, Class->Height() * 256 / 3));
+  return Center_Coord() + Coordinate::FromLeptons(0, Class->Height() * 256 / 3);
 }
 
 /***********************************************************************************************
@@ -4290,8 +4295,7 @@ int BuildingClass::Mission_Deconstruction() {
                 base::NewPooled<InfantryClass>(typ, House->Class->House);
             if (infantry) {
               TheWorld().scenario_init()++;
-              COORDINATE coord =
-                  Coord_Add(Center_Coord(), Pixel_Offset_Coord(0, -12));
+              Coordinate coord = Center_Coord() + Pixel_Offset_Coord(0, -12);
               coord = TheMap()
                           .at(Coord_Cell(coord))
                           .Closest_Free_Spot(coord, false);
@@ -4301,7 +4305,7 @@ int BuildingClass::Mission_Deconstruction() {
                   infantry->IsTechnician = true;
                 }
                 TheWorld().scenario_init()--;
-                infantry->Scatter(0, true);
+                infantry->Scatter(Coordinate{}, true);
                 TheWorld().scenario_init()++;
                 infantry->Assign_Mission(MISSION_GUARD_AREA);
               } else {
@@ -4348,7 +4352,7 @@ int BuildingClass::Mission_Deconstruction() {
 
             delete this;
 
-            if (unit->Unlimbo(Coord_Snap(Adjacent_Cell(Coord, game::DIR_SE)),
+            if (unit->Unlimbo(Adjacent_Cell(Coord, game::DIR_SE).Snapped(),
                               game::DIR_SW)) {
               unit->Strength = static_cast<int16_t>(
                   base::FixedToCardinal(unit->Class_Of().MaxStrength, ratio));
@@ -4648,7 +4652,7 @@ int BuildingClass::Mission_Harvest() {
         TheSpecial().IsScatter = true;
         TheMap()
             .at(Adjacent_Cell(Coord_Cell(Center_Coord()), game::DIR_SW))
-            .Incoming(0, true);
+            .Incoming(Coordinate{}, true);
         TheSpecial().IsScatter = old;
 
         FootClass* techno = Attached_Object();
@@ -4904,7 +4908,7 @@ int BuildingClass::Mission_Missile() {
       case kLaunchUp: {
         auto* bullet = base::NewPooled<BulletClass>(BULLET_NUKE_UP);
         if (bullet) {
-          const COORDINATE launch =
+          const Coordinate launch =
               Coord_Move(Center_Coord(), game::AsDirection(1), 0x1A0);
           bullet->Assign_Target(kTargetNone);
           bullet->Payback = nullptr;
@@ -4937,7 +4941,7 @@ int BuildingClass::Mission_Missile() {
         auto* bullet = base::NewPooled<BulletClass>(BULLET_NUKE_DOWN);
         if (bullet) {
           //						Theme.Queue_Song(THEME_NONE);
-          const COORDINATE start =
+          const Coordinate start =
               Cell_Coord(XY_Cell(Cell_X(House->NukeDest), 1));
           bullet->Assign_Target(td::As_Target(House->NukeDest));
           bullet->Payback = nullptr;
@@ -5565,7 +5569,7 @@ bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
         if (occupier) {
           again = true;
           if (occupier->House->Is_Ally(this)) {
-            TheMap().at(newcell).Incoming(0, true);
+            TheMap().at(newcell).Incoming(Coordinate{}, true);
           } else {
             Base_Is_Attacked(occupier);
           }

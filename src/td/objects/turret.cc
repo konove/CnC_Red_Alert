@@ -308,8 +308,8 @@ game::FireErrorType TurretClass::Can_Fire(TARGET target, int which) const {
  *                                                                                             *
  * HISTORY: * 12/28/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE TurretClass::Fire_Coord(int which) const {
-  COORDINATE coord = Center_Coord();
+Coordinate TurretClass::Fire_Coord(int which) const {
+  Coordinate coord = Center_Coord();
   int dist = 0;
   int lateral = 0;
   game::DirType dir = PrimaryFacing.Current();
@@ -415,7 +415,7 @@ COORDINATE TurretClass::Fire_Coord(int which) const {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-bool TurretClass::Unlimbo(COORDINATE coord, game::DirType dir) {
+bool TurretClass::Unlimbo(Coordinate coord, game::DirType dir) {
   if (DriveClass::Unlimbo(coord, dir)) {
     SecondaryFacing = dir;
     return true;

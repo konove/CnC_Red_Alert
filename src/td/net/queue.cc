@@ -3549,7 +3549,7 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
     auto* infp = TheObjectHeaps().infantry().ActiveAt(i);
-    Add_CRC(&GameCRC, CrcBits(static_cast<int>(infp->Coord) +
+    Add_CRC(&GameCRC, CrcBits(static_cast<int>(infp->Coord.packed()) +
                               static_cast<int>(infp->PrimaryFacing.Current())));
   }
 
@@ -3559,7 +3559,7 @@ static void Compute_Game_CRC() {
   for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
     auto* unitp = TheObjectHeaps().unit().ActiveAt(i);
     Add_CRC(&GameCRC,
-            CrcBits(static_cast<int>(unitp->Coord) +
+            CrcBits(static_cast<int>(unitp->Coord.packed()) +
                     static_cast<int>(unitp->PrimaryFacing.Current()) +
                     static_cast<int>(unitp->SecondaryFacing.Current())));
   }
@@ -3570,7 +3570,7 @@ static void Compute_Game_CRC() {
   for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
     auto* bldgp = TheObjectHeaps().building().ActiveAt(i);
     Add_CRC(&GameCRC,
-            CrcBits(static_cast<int>(bldgp->Coord) +
+            CrcBits(static_cast<int>(bldgp->Coord.packed()) +
                     static_cast<int>(bldgp->PrimaryFacing.Current())));
   }
 
@@ -3708,10 +3708,10 @@ void Print_CRCs(EventClass* /*ev*/) {
       infp = TheObjectHeaps().infantry().ActiveAt(i);
       if (infp->Owner() == HOUSE_MULTI1) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(infp->Coord) +
+                CrcBits(static_cast<int>(infp->Coord.packed()) +
                         static_cast<int>(infp->PrimaryFacing.Current())));
         out << absl::StrFormat("COORD:%x   Facing:%d   Mission:%d   Type:%d\n",
-                               infp->Coord,
+                               infp->Coord.packed(),
                                static_cast<int>(infp->PrimaryFacing.Current()),
                                infp->Get_Mission(), infp->Class->Type);
       }
@@ -3730,10 +3730,10 @@ void Print_CRCs(EventClass* /*ev*/) {
       infp = TheObjectHeaps().infantry().ActiveAt(i);
       if (infp->Owner() == HOUSE_MULTI2) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(infp->Coord) +
+                CrcBits(static_cast<int>(infp->Coord.packed()) +
                         static_cast<int>(infp->PrimaryFacing.Current())));
         out << absl::StrFormat("COORD:%x   Facing:%d   Mission:%d   Type:%d\n",
-                               infp->Coord,
+                               infp->Coord.packed(),
                                static_cast<int>(infp->PrimaryFacing.Current()),
                                infp->Get_Mission(), infp->Class->Type);
       }
@@ -3752,10 +3752,10 @@ void Print_CRCs(EventClass* /*ev*/) {
       infp = TheObjectHeaps().infantry().ActiveAt(i);
       if (infp->Owner() == HOUSE_MULTI3) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(infp->Coord) +
+                CrcBits(static_cast<int>(infp->Coord.packed()) +
                         static_cast<int>(infp->PrimaryFacing.Current())));
         out << absl::StrFormat("COORD:%x   Facing:%d   Mission:%d   Type:%d\n",
-                               infp->Coord,
+                               infp->Coord.packed(),
                                static_cast<int>(infp->PrimaryFacing.Current()),
                                infp->Get_Mission(), infp->Class->Type);
       }
@@ -3774,10 +3774,10 @@ void Print_CRCs(EventClass* /*ev*/) {
       infp = TheObjectHeaps().infantry().ActiveAt(i);
       if (infp->Owner() == HOUSE_MULTI4) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(infp->Coord) +
+                CrcBits(static_cast<int>(infp->Coord.packed()) +
                         static_cast<int>(infp->PrimaryFacing.Current())));
         out << absl::StrFormat("COORD:%x   Facing:%d   Mission:%d   Type:%d\n",
-                               infp->Coord,
+                               infp->Coord.packed(),
                                static_cast<int>(infp->PrimaryFacing.Current()),
                                infp->Get_Mission(), infp->Class->Type);
       }
@@ -3796,10 +3796,10 @@ void Print_CRCs(EventClass* /*ev*/) {
       infp = TheObjectHeaps().infantry().ActiveAt(i);
       if (infp->Owner() == HOUSE_MULTI5) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(infp->Coord) +
+                CrcBits(static_cast<int>(infp->Coord.packed()) +
                         static_cast<int>(infp->PrimaryFacing.Current())));
         out << absl::StrFormat("COORD:%x   Facing:%d   Mission:%d   Type:%d\n",
-                               infp->Coord,
+                               infp->Coord.packed(),
                                static_cast<int>(infp->PrimaryFacing.Current()),
                                infp->Get_Mission(), infp->Class->Type);
       }
@@ -3818,10 +3818,10 @@ void Print_CRCs(EventClass* /*ev*/) {
       infp = TheObjectHeaps().infantry().ActiveAt(i);
       if (infp->Owner() == HOUSE_MULTI6) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(infp->Coord) +
+                CrcBits(static_cast<int>(infp->Coord.packed()) +
                         static_cast<int>(infp->PrimaryFacing.Current())));
         out << absl::StrFormat("COORD:%x   Facing:%d   Mission:%d   Type:%d\n",
-                               infp->Coord,
+                               infp->Coord.packed(),
                                static_cast<int>(infp->PrimaryFacing.Current()),
                                infp->Get_Mission(), infp->Class->Type);
       }
@@ -3840,11 +3840,12 @@ void Print_CRCs(EventClass* /*ev*/) {
       unitp = TheObjectHeaps().unit().ActiveAt(i);
       if (unitp->Owner() == HOUSE_MULTI1) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(unitp->Coord) +
+                CrcBits(static_cast<int>(unitp->Coord.packed()) +
                         static_cast<int>(unitp->PrimaryFacing.Current())));
         out << absl::StrFormat(
             "COORD:%x   Facing:%d   Facing2:%d   Mission:%d   Type:%d\n",
-            unitp->Coord, static_cast<int>(unitp->PrimaryFacing.Current()),
+            unitp->Coord.packed(),
+            static_cast<int>(unitp->PrimaryFacing.Current()),
             static_cast<int>(unitp->SecondaryFacing.Current()),
             unitp->Get_Mission(), unitp->Class->Type);
       }
@@ -3863,11 +3864,12 @@ void Print_CRCs(EventClass* /*ev*/) {
       unitp = TheObjectHeaps().unit().ActiveAt(i);
       if (unitp->Owner() == HOUSE_MULTI2) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(unitp->Coord) +
+                CrcBits(static_cast<int>(unitp->Coord.packed()) +
                         static_cast<int>(unitp->PrimaryFacing.Current())));
         out << absl::StrFormat(
             "COORD:%x   Facing:%d   Facing2:%d   Mission:%d   Type:%d\n",
-            unitp->Coord, static_cast<int>(unitp->PrimaryFacing.Current()),
+            unitp->Coord.packed(),
+            static_cast<int>(unitp->PrimaryFacing.Current()),
             static_cast<int>(unitp->SecondaryFacing.Current()),
             unitp->Get_Mission(), unitp->Class->Type);
       }
@@ -3886,11 +3888,12 @@ void Print_CRCs(EventClass* /*ev*/) {
       unitp = TheObjectHeaps().unit().ActiveAt(i);
       if (unitp->Owner() == HOUSE_MULTI3) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(unitp->Coord) +
+                CrcBits(static_cast<int>(unitp->Coord.packed()) +
                         static_cast<int>(unitp->PrimaryFacing.Current())));
         out << absl::StrFormat(
             "COORD:%x   Facing:%d   Facing2:%d   Mission:%d   Type:%d\n",
-            unitp->Coord, static_cast<int>(unitp->PrimaryFacing.Current()),
+            unitp->Coord.packed(),
+            static_cast<int>(unitp->PrimaryFacing.Current()),
             static_cast<int>(unitp->SecondaryFacing.Current()),
             unitp->Get_Mission(), unitp->Class->Type);
       }
@@ -3909,11 +3912,12 @@ void Print_CRCs(EventClass* /*ev*/) {
       unitp = TheObjectHeaps().unit().ActiveAt(i);
       if (unitp->Owner() == HOUSE_MULTI4) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(unitp->Coord) +
+                CrcBits(static_cast<int>(unitp->Coord.packed()) +
                         static_cast<int>(unitp->PrimaryFacing.Current())));
         out << absl::StrFormat(
             "COORD:%x   Facing:%d   Facing2:%d   Mission:%d   Type:%d\n",
-            unitp->Coord, static_cast<int>(unitp->PrimaryFacing.Current()),
+            unitp->Coord.packed(),
+            static_cast<int>(unitp->PrimaryFacing.Current()),
             static_cast<int>(unitp->SecondaryFacing.Current()),
             unitp->Get_Mission(), unitp->Class->Type);
       }
@@ -3932,11 +3936,12 @@ void Print_CRCs(EventClass* /*ev*/) {
       unitp = TheObjectHeaps().unit().ActiveAt(i);
       if (unitp->Owner() == HOUSE_MULTI5) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(unitp->Coord) +
+                CrcBits(static_cast<int>(unitp->Coord.packed()) +
                         static_cast<int>(unitp->PrimaryFacing.Current())));
         out << absl::StrFormat(
             "COORD:%x   Facing:%d   Facing2:%d   Mission:%d   Type:%d\n",
-            unitp->Coord, static_cast<int>(unitp->PrimaryFacing.Current()),
+            unitp->Coord.packed(),
+            static_cast<int>(unitp->PrimaryFacing.Current()),
             static_cast<int>(unitp->SecondaryFacing.Current()),
             unitp->Get_Mission(), unitp->Class->Type);
       }
@@ -3955,11 +3960,12 @@ void Print_CRCs(EventClass* /*ev*/) {
       unitp = TheObjectHeaps().unit().ActiveAt(i);
       if (unitp->Owner() == HOUSE_MULTI6) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(unitp->Coord) +
+                CrcBits(static_cast<int>(unitp->Coord.packed()) +
                         static_cast<int>(unitp->PrimaryFacing.Current())));
         out << absl::StrFormat(
             "COORD:%x   Facing:%d   Facing2:%d   Mission:%d   Type:%d\n",
-            unitp->Coord, static_cast<int>(unitp->PrimaryFacing.Current()),
+            unitp->Coord.packed(),
+            static_cast<int>(unitp->PrimaryFacing.Current()),
             static_cast<int>(unitp->SecondaryFacing.Current()),
             unitp->Get_Mission(), unitp->Class->Type);
       }
@@ -3978,10 +3984,10 @@ void Print_CRCs(EventClass* /*ev*/) {
       bldgp = TheObjectHeaps().building().ActiveAt(i);
       if (bldgp->Owner() == HOUSE_MULTI1) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(bldgp->Coord) +
+                CrcBits(static_cast<int>(bldgp->Coord.packed()) +
                         static_cast<int>(bldgp->PrimaryFacing.Current())));
         out << absl::StrFormat("COORD:%x   Facing:%d   Mission:%d   Type:%d\n",
-                               bldgp->Coord,
+                               bldgp->Coord.packed(),
                                static_cast<int>(bldgp->PrimaryFacing.Current()),
                                bldgp->Get_Mission(), bldgp->Class->Type);
       }
@@ -4000,10 +4006,10 @@ void Print_CRCs(EventClass* /*ev*/) {
       bldgp = TheObjectHeaps().building().ActiveAt(i);
       if (bldgp->Owner() == HOUSE_MULTI2) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(bldgp->Coord) +
+                CrcBits(static_cast<int>(bldgp->Coord.packed()) +
                         static_cast<int>(bldgp->PrimaryFacing.Current())));
         out << absl::StrFormat("COORD:%x   Facing:%d   Mission:%d   Type:%d\n",
-                               bldgp->Coord,
+                               bldgp->Coord.packed(),
                                static_cast<int>(bldgp->PrimaryFacing.Current()),
                                bldgp->Get_Mission(), bldgp->Class->Type);
       }
@@ -4022,10 +4028,10 @@ void Print_CRCs(EventClass* /*ev*/) {
       bldgp = TheObjectHeaps().building().ActiveAt(i);
       if (bldgp->Owner() == HOUSE_MULTI3) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(bldgp->Coord) +
+                CrcBits(static_cast<int>(bldgp->Coord.packed()) +
                         static_cast<int>(bldgp->PrimaryFacing.Current())));
         out << absl::StrFormat("COORD:%x   Facing:%d   Mission:%d   Type:%d\n",
-                               bldgp->Coord,
+                               bldgp->Coord.packed(),
                                static_cast<int>(bldgp->PrimaryFacing.Current()),
                                bldgp->Get_Mission(), bldgp->Class->Type);
       }
@@ -4044,10 +4050,10 @@ void Print_CRCs(EventClass* /*ev*/) {
       bldgp = TheObjectHeaps().building().ActiveAt(i);
       if (bldgp->Owner() == HOUSE_MULTI4) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(bldgp->Coord) +
+                CrcBits(static_cast<int>(bldgp->Coord.packed()) +
                         static_cast<int>(bldgp->PrimaryFacing.Current())));
         out << absl::StrFormat("COORD:%x   Facing:%d   Mission:%d   Type:%d\n",
-                               bldgp->Coord,
+                               bldgp->Coord.packed(),
                                static_cast<int>(bldgp->PrimaryFacing.Current()),
                                bldgp->Get_Mission(), bldgp->Class->Type);
       }
@@ -4066,10 +4072,10 @@ void Print_CRCs(EventClass* /*ev*/) {
       bldgp = TheObjectHeaps().building().ActiveAt(i);
       if (bldgp->Owner() == HOUSE_MULTI5) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(bldgp->Coord) +
+                CrcBits(static_cast<int>(bldgp->Coord.packed()) +
                         static_cast<int>(bldgp->PrimaryFacing.Current())));
         out << absl::StrFormat("COORD:%x   Facing:%d   Mission:%d   Type:%d\n",
-                               bldgp->Coord,
+                               bldgp->Coord.packed(),
                                static_cast<int>(bldgp->PrimaryFacing.Current()),
                                bldgp->Get_Mission(), bldgp->Class->Type);
       }
@@ -4088,10 +4094,10 @@ void Print_CRCs(EventClass* /*ev*/) {
       bldgp = TheObjectHeaps().building().ActiveAt(i);
       if (bldgp->Owner() == HOUSE_MULTI6) {
         Add_CRC(&GameCRC,
-                CrcBits(static_cast<int>(bldgp->Coord) +
+                CrcBits(static_cast<int>(bldgp->Coord.packed()) +
                         static_cast<int>(bldgp->PrimaryFacing.Current())));
         out << absl::StrFormat("COORD:%x   Facing:%d   Mission:%d   Type:%d\n",
-                               bldgp->Coord,
+                               bldgp->Coord.packed(),
                                static_cast<int>(bldgp->PrimaryFacing.Current()),
                                bldgp->Get_Mission(), bldgp->Class->Type);
       }

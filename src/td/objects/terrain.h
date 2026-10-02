@@ -109,17 +109,17 @@ class TerrainClass final : public ObjectClass, public StageClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  [[nodiscard]] COORDINATE Center_Coord() const override;
-  [[nodiscard]] COORDINATE Render_Coord() const override { return Coord; }
-  [[nodiscard]] COORDINATE Sort_Y() const override {
-    return Coord_Add(Coord, Class->CenterBase);
+  [[nodiscard]] Coordinate Center_Coord() const override;
+  [[nodiscard]] Coordinate Render_Coord() const override { return Coord; }
+  [[nodiscard]] Coordinate Sort_Y() const override {
+    return Coord + Class->CenterBase;
   }
-  [[nodiscard]] COORDINATE Target_Coord() const override { return Sort_Y(); }
+  [[nodiscard]] Coordinate Target_Coord() const override { return Sort_Y(); }
 
   /*
   **	Object entry and exit from the game system.
   */
-  bool Unlimbo(COORDINATE coord, game::DirType dir = game::DIR_N) override;
+  bool Unlimbo(Coordinate coord, game::DirType dir = game::DIR_N) override;
   bool Limbo() override;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
       CELL cell, game::FacingType facing = game::FACING_NONE) const override;

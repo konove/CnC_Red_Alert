@@ -151,7 +151,7 @@ int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor,
  *   06/20/1994 JLB : Uses object pointers to distribute damage. * 06/20/1994
  *JLB : Source is a pointer. *
  *=============================================================================================*/
-void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
+void Explosion_Damage(Coordinate coord, int strength, TechnoClass* source,
                       WarheadType warhead) {
   ObjectClass* object = nullptr;  // Working object pointer.
   ObjectClass* objects[32];  // Maximum number of objects that can be damaged.

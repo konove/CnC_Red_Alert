@@ -440,7 +440,7 @@ CELL As_Cell(TARGET target) { return Coord_Cell(As_Coord(target)); }
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. * 11/16/1994 JLB : Simplified. *
  *=============================================================================================*/
-COORDINATE As_Coord(TARGET target) {
+Coordinate As_Coord(TARGET target) {
   if (Target_Legal(target)) {
     /*
     **	Cell target values are handled as a special case. The value of the
@@ -464,7 +464,7 @@ COORDINATE As_Coord(TARGET target) {
   /*
   **	An unrecognized target value results in a null coordinate value.
   */
-  return 0x00000000L;
+  return {};
 }
 
 /***********************************************************************************************
@@ -483,7 +483,7 @@ COORDINATE As_Coord(TARGET target) {
  *                                                                                             *
  * HISTORY: * 08/27/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE As_Movement_Coord(TARGET target) {
+Coordinate As_Movement_Coord(TARGET target) {
   if (Target_Legal(target)) {
     /*
     **	Cell target values are handled as a special case. The value of the
@@ -507,7 +507,7 @@ COORDINATE As_Movement_Coord(TARGET target) {
   /*
   **	An unrecognized target value results in a null coordinate value.
   */
-  return 0x00000000L;
+  return {};
 }
 
 }  // namespace td

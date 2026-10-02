@@ -1017,7 +1017,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 11/14/1994 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::Unlimbo(COORDINATE coord, game::DirType dir) {
+bool TechnoClass::Unlimbo(Coordinate coord, game::DirType dir) {
   if (RadioClass::Unlimbo(coord, dir)) {
     PrimaryFacing = dir;
     Enter_Idle_Mode(true);
@@ -1117,7 +1117,7 @@ bool TechnoClass::In_Range(const ObjectClass* target, int which) const {
  *                                                                                             *
  * HISTORY: * 03/16/1995 JLB : Created. *
  *=============================================================================================*/
-bool TechnoClass::In_Range(COORDINATE coord, int which) const {
+bool TechnoClass::In_Range(Coordinate coord, int which) const {
   return IsLocked &&
          td::Distance(Fire_Coord(which), coord) <= Weapon_Range(which);
 }
@@ -1810,7 +1810,7 @@ void TechnoClass::AI() {
               *possible so *	that it will be much harder to locate.
               */
               if (What_Am_I() == RTTI_UNIT && !House->IsHuman) {
-                Scatter(0, true);
+                Scatter(Coordinate{}, true);
               }
               break;
             case game::VisualType::VISUAL_NORMAL:
@@ -2095,7 +2095,7 @@ int TechnoClass::Rearm_Delay(bool second) const {
  *=============================================================================================*/
 BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   game::DirType dir = game::DIR_N;  // The facing to impart upon the projectile.
-  COORDINATE target_coord = 0;  // Coordinate of the target.
+  Coordinate target_coord{};        // Coordinate of the target.
   const TechnoTypeClass& tclass = *Techno_Type_Class();
   const WeaponTypeClass* weapon =
       which == 0 ? &Weapons.at(tclass.Primary) : &Weapons.at(tclass.Secondary);
@@ -2122,7 +2122,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   /*
   **	Get the location where the projectile should appear.
   */
-  COORDINATE fire_coord = Fire_Coord(which);  // Coordinate of firing position.
+  Coordinate fire_coord = Fire_Coord(which);  // Coordinate of firing position.
 
   /*
   **	If the projectile is a homing type (such as a missile), then it will
@@ -4030,7 +4030,7 @@ void TechnoClass::Assign_Destination(TARGET /*unused*/) {}
  *                                                                                             *
  * HISTORY: * 07/24/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Scatter(COORDINATE /*unused*/, bool /*unused*/) {}
+void TechnoClass::Scatter(Coordinate /*unused*/, bool /*unused*/) {}
 
 /***********************************************************************************************
  * TechnoClass::Enter_Idle_Mode -- Object enters its default idle condition. *

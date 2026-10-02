@@ -1814,7 +1814,7 @@ bool Main_Loop() {
     for (int index = 0; index < TheObjectHeaps().unit().Count(); ++index) {
       const UnitClass* unit = TheObjectHeaps().unit().ActiveAt(index);
       LOG(INFO) << "frame " << game::CurrentFrame() << " unit "
-                << unit->Class->IniName << " coord " << unit->Coord
+                << unit->Class->IniName << " coord " << unit->Coord.packed()
                 << " mission " << static_cast<int>(unit->Mission) << " navcom "
                 << unit->NavCom;
     }
@@ -1823,7 +1823,7 @@ bool Main_Loop() {
           TheObjectHeaps().infantry().ActiveAt(index);
       LOG(INFO) << "frame " << game::CurrentFrame() << " infantry "
                 << TheObjectHeaps().infantry().SlotIndexOf(infantry)
-                << " coord " << infantry->Coord << " mission "
+                << " coord " << infantry->Coord.packed() << " mission "
                 << static_cast<int>(infantry->Mission) << " navcom "
                 << infantry->NavCom;
     }
@@ -2863,7 +2863,7 @@ void Handle_View(int view, int action) {
       sizeof(TheWorld().views()) / sizeof(base::At(TheWorld().views(), 0))) {
     if (action == 0) {
       TheMap().Set_Tactical_Position(
-          Cell_Coord(base::At(TheWorld().views(), view)) & 0xFF00FF00L);
+          Cell_Coord(base::At(TheWorld().views(), view)).Whole());
       TheMap().Flag_To_Redraw(true);
     } else {
       base::At(TheWorld().views(), view) = Coord_Cell(TheMap().TacticalCoord);
@@ -3121,7 +3121,7 @@ void Validate_Error(const char* name) {
 static void Do_Record_Playback() {
   int count = 0;
   TARGET tgt = 0;
-  COORDINATE coord = 0;
+  Coordinate coord{};
   uint32_t sum = 0;
   uint32_t sum2 = 0;
   uint32_t ltgt = 0;

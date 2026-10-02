@@ -76,7 +76,7 @@ class MapClass : public GScreenClass {
   *with the cell
   ** as it relates to the map - not what the cell contains.
   */
-  [[nodiscard]] ObjectClass* Close_Object(COORDINATE coord) const;
+  [[nodiscard]] ObjectClass* Close_Object(Coordinate coord) const;
   virtual void Detach(ObjectClass* /*unused*/) {}
   static int Cell_Region(CELL cell);
   static int Cell_Threat(CELL cell, HousesType house);
@@ -165,7 +165,7 @@ class MapClass : public GScreenClass {
 };
 
 int Terrain_Cost(CELL cell, game::FacingType facing);
-int Coord_Spillage_Number(COORDINATE coord, int maxsize);
+int Coord_Spillage_Number(Coordinate coord, int maxsize);
 
 extern template void MapClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void MapClass::Serialize<ArchiveReader>(ArchiveReader&);

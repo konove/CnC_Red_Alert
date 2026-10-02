@@ -52,7 +52,7 @@ class AbstractClass {
   **	The coordinate location of the unit. For vehicles, this is the center
   **	point. For buildings, it is the upper left corner.
   */
-  COORDINATE Coord{0L};
+  Coordinate Coord{};
 
   /*
   **	The actual object ram-space is located in arrays in the data segment.
@@ -91,8 +91,8 @@ class AbstractClass {
   /*
   **	Coordinate query support functions.
   */
-  [[nodiscard]] virtual COORDINATE Center_Coord() const { return Coord; }
-  [[nodiscard]] virtual COORDINATE Target_Coord() const { return Coord; }
+  [[nodiscard]] virtual Coordinate Center_Coord() const { return Coord; }
+  [[nodiscard]] virtual Coordinate Target_Coord() const { return Coord; }
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
@@ -101,7 +101,7 @@ class AbstractClass {
   game::DirType Direction(const AbstractClass* object) const {
     return td::Direction(Center_Coord(), object->Target_Coord());
   }
-  [[nodiscard]] game::DirType Direction(COORDINATE coord) const {
+  [[nodiscard]] game::DirType Direction(Coordinate coord) const {
     return td::Direction(Center_Coord(), coord);
   }
   [[nodiscard]] game::DirType Direction(TARGET target) const;
@@ -109,7 +109,7 @@ class AbstractClass {
     return td::Direction(Coord_Cell(Center_Coord()), cell);
   }
   [[nodiscard]] int Distance(TARGET target) const;
-  [[nodiscard]] int Distance(COORDINATE coord) const {
+  [[nodiscard]] int Distance(Coordinate coord) const {
     return td::Distance(Center_Coord(), coord);
   }
   [[nodiscard]] int Distance(CELL cell) const {

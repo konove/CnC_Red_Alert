@@ -625,7 +625,7 @@ const base::EnumArray<TerrainType, const TerrainTypeClass*, kTerrainCount>
  * HISTORY: * 07/19/1994 JLB : Created. *
  *=============================================================================================*/
 TerrainTypeClass::TerrainTypeClass(
-    TerrainType terrain, int theater, COORDINATE centerbase, bool is_spawn,
+    TerrainType terrain, int theater, Coordinate centerbase, bool is_spawn,
     bool is_destroyable, bool is_transformable, bool is_flammable,
     bool is_crushable, bool is_selectable, bool is_legal_target,
     bool is_insignificant, bool is_immune, const char* ininame, int fullname,

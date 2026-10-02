@@ -528,7 +528,7 @@ game::ResultType InfantryClass::Take_Damage(int& damage, int distance,
   **	When infantry gets hit, it gets scared.
   */
   if (res != game::RESULT_DESTROYED) {
-    const COORDINATE c4 = source ? source->Coord : 0;
+    const Coordinate c4 = source ? source->Coord : Coordinate{};
     if (source) {
       Scatter(c4);
     }
@@ -693,7 +693,7 @@ void InfantryClass::Per_Cell_Process(bool center) {
     if (!Target_Legal(NavCom)) {
       Enter_Idle_Mode();
       if (TheMap().at(Coord_Cell(Coord)).Cell_Building()) {
-        Scatter(0, true);
+        Scatter(Coordinate{}, true);
       }
     }
     // #endif
@@ -762,7 +762,7 @@ void InfantryClass::Per_Cell_Process(bool center) {
     **	in order to make room for more.
     */
     if ((cellptr->Flag.Composite & 0x01F) == 0x01F) {
-      cellptr->Incoming(0, true);
+      cellptr->Incoming(Coordinate{}, true);
     }
   }
 
@@ -1093,7 +1093,7 @@ void InfantryClass::AI() {
       !Target_Legal(NavCom)) {
     // The original passed `true` as the threat coordinate; that value (1) is
     // kept.
-    Scatter(static_cast<COORDINATE>(1));
+    Scatter(Coordinate::FromPacked(1));
   }
 
   /*
@@ -1137,7 +1137,7 @@ void InfantryClass::AI() {
           }
         } else {
           if (Is_Target_Infantry(TarCom) && (Distance(TarCom) <= 0x80) &&
-              (Coord_Y(Coord) == Coord_Y(object->Coord))) {
+              (Coord.y() == object->Coord.y())) {
             // Too close to shoot, so start hand-to-hand combat
             if (Establish_Contact(dynamic_cast<TechnoClass*>(object))) {
               if (Transmit_Message(RADIO_PREPARE_TO_BOX) == RADIO_ROGER) {
@@ -1386,7 +1386,7 @@ void InfantryClass::AI() {
         **	Determine the coordinate to head to based on the infantry's
         **	current location and the next location in the path.
         */
-        COORDINATE acoord = Adjacent_Cell(Coord, base::At(Path, 0));
+        Coordinate acoord = Adjacent_Cell(Coord, base::At(Path, 0));
         const CELL acell = Coord_Cell(acoord);
 
         if (Can_Enter_Cell(acell) != game::MOVE_OK) {
@@ -1982,7 +1982,7 @@ void InfantryClass::Random_Animate() {
     *shout!"
     */
     if (Class->IsFraidyCat && !House->IsHuman && Fear > FEAR_ANXIOUS) {
-      Scatter(0, true);
+      Scatter(Coordinate{}, true);
       return;
     }
 
@@ -2065,7 +2065,7 @@ void InfantryClass::Random_Animate() {
       case 8:
       case 9:
         if (!House->IsHuman && Class->IsFraidyCat) {
-          Scatter(0, true);
+          Scatter(Coordinate{}, true);
         }
         break;
       default:
@@ -2092,7 +2092,7 @@ void InfantryClass::Random_Animate() {
  * HISTORY: * 09/24/1994 JLB : Created. * 12/12/1994 JLB : Flame thrower
  *infantry always scatter.                                   *
  *=============================================================================================*/
-void InfantryClass::Scatter(COORDINATE threat, bool forced) {
+void InfantryClass::Scatter(Coordinate threat, bool forced) {
   Validate();
 
   /*
@@ -2132,11 +2132,11 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
       toface = game::Dir_Facing(Direction8(threat, Coord));
       toface = toface + (Random_Pick(0, 4) - 2);
     } else {
-      const COORDINATE coord = Coord & 0x00FF00FFL;
+      const Coordinate coord = Coord.Fraction();
 
-      if (coord != 0x00800080L) {
-        toface = game::Dir_Facing(game::Desired_Facing8(
-            0x0080, 0x0080, Coord_X(coord), Coord_Y(coord)));
+      if (coord != Coordinate::FromLeptons(0x80, 0x80)) {
+        toface = game::Dir_Facing(
+            game::Desired_Facing8(0x0080, 0x0080, coord.x(), coord.y()));
       } else {
         toface = game::Dir_Facing(PrimaryFacing.Current());
       }
@@ -2327,9 +2327,9 @@ bool InfantryClass::Stop_Driver() {
  *closest spot possible.                                  * 05/15/1995 JLB :
  *Uses closest spot if moving onto transport.                              *
  *=============================================================================================*/
-bool InfantryClass::Start_Driver(COORDINATE& headto) {
+bool InfantryClass::Start_Driver(Coordinate& headto) {
   Validate();
-  const COORDINATE old = headto;
+  const Coordinate old = headto;
 
   /*
   **	Convert the head to coordinate to a legal sub-position location.
@@ -2509,7 +2509,7 @@ BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryClass::Unlimbo(COORDINATE coord, game::DirType facing) {
+bool InfantryClass::Unlimbo(Coordinate coord, game::DirType facing) {
   Validate();
   /*
   **	Make sure that the infantry start in a legal position on the map.
@@ -2517,7 +2517,7 @@ bool InfantryClass::Unlimbo(COORDINATE coord, game::DirType facing) {
   coord = TheMap()
               .at(Coord_Cell(coord))
               .Closest_Free_Spot(coord, TheWorld().scenario_init() != 0);
-  if (coord == 0) {
+  if (!coord) {
     return false;
   }
 
@@ -2690,7 +2690,7 @@ void InfantryClass::Response_Select() {
     }
   }
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0,
+    Sound_Effect(response, Coordinate{},
                  TheObjectHeaps().infantry().SlotIndexOf(this) + 1);
   }
 }
@@ -2749,7 +2749,7 @@ void InfantryClass::Response_Move() {
     }
   }
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0,
+    Sound_Effect(response, Coordinate{},
                  TheObjectHeaps().infantry().SlotIndexOf(this) + 1);
   }
 }
@@ -2801,7 +2801,7 @@ void InfantryClass::Response_Attack() {
   }
 
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0,
+    Sound_Effect(response, Coordinate{},
                  TheObjectHeaps().infantry().SlotIndexOf(this) + 1);
   }
 }
@@ -2824,12 +2824,12 @@ void InfantryClass::Response_Attack() {
  *                                                                                             *
  * HISTORY: * 01/04/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE InfantryClass::Fire_Coord(int /*unused*/) const {
+Coordinate InfantryClass::Fire_Coord(int /*unused*/) const {
   Validate();
   if (Class->Type == INFANTRY_E4) {
     return Coord;  // special case for flame thrower guy
   }
-  return Coord_Add(Coord, Pixel_Offset_Coord(0, -5));
+  return Coord + Pixel_Offset_Coord(0, -5);
 }
 
 /***************************************************************************
@@ -3133,17 +3133,16 @@ void InfantryClass::Read_INI(char* buffer) {
           /*
           **	4th token: cell #.
           */
-          COORDINATE coord =
+          Coordinate coord =
               Cell_Coord(base::ParseIntegerOr<CELL>(tokens.Next(), 0));
 
           /*
           **	5th token: cell sub-location.
           */
-          coord = Coord_Add(
-              coord & 0xFF00FF00L,
-              base::At(StoppingCoordAbs, std::clamp(base::ParseIntegerOr<int>(
-                                                        tokens.Next(","), 0),
-                                                    0, 4)));
+          coord = coord.Whole() + base::At(StoppingCoordAbs,
+                                           std::clamp(base::ParseIntegerOr<int>(
+                                                          tokens.Next(","), 0),
+                                                      0, 4));
 
           /*
           **	Fetch the mission and facing.

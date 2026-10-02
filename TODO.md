@@ -104,6 +104,13 @@
 - Check the heap `Save()` results in Red Alert's save game
   - `ra/saveload/saveload.cc` (~281-340) ignores every `ObjectHeap<T>::Save()` result, which is
     `writer.ok()` since `90064ddd`; Tiberian Dawn's `saveload.cc` stops at the first false
+- Decide whether Tiberian Dawn's `Scatter(true)` calls meant "forced"
+  - The original passed `true` where `Scatter()` takes the threat coordinate, so `UnitClass`
+    (`td/objects/unit.cc:1676`), `InfantryClass` (`infantry.cc:1096`) and the refinery's harvester
+    (`building.cc:2538`) scatter away from the coordinate `FromPacked(1)`, near the map's top-left
+    corner, unforced; stage B2 (TD) kept that as `Scatter(Coordinate::FromPacked(1))`
+  - `Scatter(Coordinate{}, true)` would scatter in a random direction and change play, so it needs
+    its own commit and an xcheck reference update
 
 ## Refactoring
 

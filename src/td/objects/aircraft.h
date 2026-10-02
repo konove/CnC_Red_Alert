@@ -107,12 +107,12 @@ class AircraftClass : public FootClass, public FlyClass {
   TARGET New_LZ(TARGET oldlz) const;
 
   // Coordinate inquiry functions. These are used for both display and
-  COORDINATE Sort_Y() const override;
-  COORDINATE Fire_Coord(int which) const override;
-  COORDINATE Target_Coord() const override;
+  Coordinate Sort_Y() const override;
+  Coordinate Fire_Coord(int which) const override;
+  Coordinate Target_Coord() const override;
 
   // Object entry and exit from the game system.
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+  bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
 
   /*
@@ -149,7 +149,7 @@ class AircraftClass : public FootClass, public FlyClass {
   void Enter_Idle_Mode(bool initial = false) override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
-  void Scatter(COORDINATE threat, bool forced = false) override;
+  void Scatter(Coordinate threat, bool forced = false) override;
 
   /*
   **	File I/O.

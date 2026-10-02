@@ -178,18 +178,18 @@ class ObjectClass : public AbstractClass {
   **	Coordinate inquiry functions. These are used for both display and
   **	combat purposes.
   */
-  [[nodiscard]] virtual COORDINATE Docking_Coord() const;
-  [[nodiscard]] COORDINATE Target_Coord() const override;
-  [[nodiscard]] COORDINATE Center_Coord() const override;
-  [[nodiscard]] virtual COORDINATE Render_Coord() const;
-  [[nodiscard]] virtual COORDINATE Sort_Y() const;
-  [[nodiscard]] virtual COORDINATE Fire_Coord(int /*unused*/) const;
+  [[nodiscard]] virtual Coordinate Docking_Coord() const;
+  [[nodiscard]] Coordinate Target_Coord() const override;
+  [[nodiscard]] Coordinate Center_Coord() const override;
+  [[nodiscard]] virtual Coordinate Render_Coord() const;
+  [[nodiscard]] virtual Coordinate Sort_Y() const;
+  [[nodiscard]] virtual Coordinate Fire_Coord(int /*unused*/) const;
 
   /*
   **	Object entry and exit from the game system.
   */
   virtual bool Limbo();
-  virtual bool Unlimbo(COORDINATE /*coord*/,
+  virtual bool Unlimbo(Coordinate /*coord*/,
                        game::DirType facing = game::DIR_N);
   virtual void Detach(TARGET /*unused*/, bool /*unused*/) {}
   virtual void Detach_All(bool all = true);
@@ -229,14 +229,14 @@ class ObjectClass : public AbstractClass {
   /*
   **	Combat related.
   */
-  [[nodiscard]] virtual bool In_Range(COORDINATE /*unused*/,
+  [[nodiscard]] virtual bool In_Range(Coordinate /*unused*/,
                                       int /*unused*/ = 0) const;
   [[nodiscard]] virtual int Weapon_Range(int /*unused*/ = 0) const;
   virtual game::ResultType Take_Damage(int& damage, int distance,
                                        WarheadType warhead,
                                        TechnoClass* source = nullptr);
   [[nodiscard]] virtual TARGET As_Target() const;
-  virtual void Scatter(COORDINATE /*unused*/, bool /*unused*/ = false);
+  virtual void Scatter(Coordinate /*unused*/, bool /*unused*/ = false);
   virtual bool Catch_Fire();
   virtual void Fire_Out();
   [[nodiscard]] virtual int Value() const;

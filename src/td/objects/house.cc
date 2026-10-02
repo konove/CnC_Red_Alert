@@ -960,7 +960,7 @@ void HouseClass::AI() {
       TechnoClass* techno = TheMap().at(FlagHome).Cell_Techno();
       if (techno) {
         bool moving = false;
-        techno->Scatter(0, true);
+        techno->Scatter(Coordinate{}, true);
 
         /*
         **	If the techno doesn't have a valid NavCom, he's not moving,
@@ -2566,7 +2566,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           */
           auto* bullet = base::NewPooled<BulletClass>(BULLET_NUKE_DOWN);
           if (bullet) {
-            const COORDINATE start = Cell_Coord(XY_Cell(Cell_X(cell), 0));
+            const Coordinate start = Cell_Coord(XY_Cell(Cell_X(cell), 0));
             bullet->Assign_Target(As_Target(cell));
             bullet->Payback = nullptr;
             bullet->Strength = 1;

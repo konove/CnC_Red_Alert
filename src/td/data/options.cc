@@ -90,7 +90,6 @@
 #include "td/core/jshell.h"
 #include "td/data/profile.h"
 #include "td/net/session.h"
-#include "td/startup/conquer.h"
 #include "td/startup/game_state.h"
 
 namespace td {
@@ -218,7 +217,7 @@ void OptionsClass::Set_Sound_Volume(int volume, bool feedback) {
   volume = Bound(volume, 0, 255);
   Volume = static_cast<unsigned char>(volume);
   if (feedback) {
-    Sound_Effect(VOC_BLEEPY3, TXT_NONE);
+    Sound_Effect(VOC_BLEEPY3);
   }
 }
 

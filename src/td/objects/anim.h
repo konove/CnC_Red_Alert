@@ -71,7 +71,7 @@ class AnimClass final : public ObjectClass, private StageClass {
   }
   void operator delete(void* ptr);
   AnimClass() { IsActive = true; }
-  AnimClass(AnimType animnum, COORDINATE coord, int timedelay = 0, int loop = 1,
+  AnimClass(AnimType animnum, Coordinate coord, int timedelay = 0, int loop = 1,
             bool alt = false);
   ~AnimClass() override;
   AnimClass(const AnimClass&) = delete;
@@ -91,13 +91,13 @@ class AnimClass final : public ObjectClass, private StageClass {
   void Attach_To(ObjectClass* obj);
   void Make_Invisible() { IsInvisible = true; }
 
-  [[nodiscard]] static bool Can_Place_Here(COORDINATE /*unused*/) {
+  [[nodiscard]] static bool Can_Place_Here(Coordinate /*unused*/) {
     return true;
   }
   bool Mark(MarkType mark = MARK_CHANGE) override;
   bool Render(PixelView& view, bool forced) override;
-  [[nodiscard]] COORDINATE Center_Coord() const override;
-  [[nodiscard]] COORDINATE Sort_Y() const override;
+  [[nodiscard]] Coordinate Center_Coord() const override;
+  [[nodiscard]] Coordinate Sort_Y() const override;
   [[nodiscard]] LayerType In_Which_Layer() const override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
@@ -153,7 +153,7 @@ class AnimClass final : public ObjectClass, private StageClass {
   ** Define a function to make adjustments for where special animations
   ** are going to render.
   */
-  COORDINATE Adjust_Coord(COORDINATE coord);
+  Coordinate Adjust_Coord(Coordinate coord);
 
   /*
   **	Delete this animation at the next opportunity. This is flagged when the

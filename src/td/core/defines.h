@@ -52,6 +52,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "td/ai/special.h"
+#include "td/core/coordinate.h"  // IWYU pragma: export
 
 namespace td {
 
@@ -220,7 +221,7 @@ number of meta-cells will be a subset of the cell width.
 // << MAP_CELL_MAX_Y_BITS)
 
 // A map coordinate with cell resolution. Declared here rather than alongside
-// COORDINATE below so that the map dimensions can carry it: a loop walking the
+// TARGET below so that the map dimensions can carry it: a loop walking the
 // map then has a counter no narrower than its own bound.
 using CELL = int16_t;
 
@@ -1415,11 +1416,10 @@ inline constexpr int kRadioCount = static_cast<int>(RADIO_COUNT);
 
 /****************************************************************************
 **	These are custom C&C specific types. The CELL (declared above, with the
-**	map dimensions) is used for map coordinates with cell resolution. The
-**	COORD type is used for map coordinates that have a lepton resolution.
+**	map dimensions) is used for map coordinates with cell resolution.
+**	Coordinate (td/core/coordinate.h) is used for map coordinates that have
+**	a lepton resolution.
 */
-using COORDINATE = uint32_t;
-
 using TARGET = uint16_t;
 inline constexpr TARGET kTargetNone{};
 

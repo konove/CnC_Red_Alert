@@ -44,15 +44,15 @@ template <std::integral T>
 /*
 **	Inline miscellaneous functions.
 */
-// Packs a pixel offset into a COORDINATE, truncating each component to whole
+// Packs a pixel offset into a Coordinate, truncating each component to whole
 // leptons (XYP_Coord rounds instead). Negative offsets wrap in their 16-bit
 // component, as the packed sum always did.
-constexpr COORDINATE Pixel_Offset_Coord(int x, int y) noexcept {
+constexpr Coordinate Pixel_Offset_Coord(int x, int y) noexcept {
   const auto x_lepton =
       static_cast<uint32_t>((x * ICON_LEPTON_W) / CELL_PIXEL_W);
   const auto y_lepton =
       static_cast<uint32_t>((y * ICON_LEPTON_H) / CELL_PIXEL_H);
-  return static_cast<COORDINATE>((y_lepton << 16) + x_lepton);
+  return Coordinate::FromPacked((y_lepton << 16) + x_lepton);
 }
 inline int Cell_To_Lepton(int cell) { return cell * 256; }
 inline int Lepton_To_Cell(int lepton) {
@@ -62,90 +62,46 @@ inline CELL XY_Cell(int x, int y) {
   return static_cast<CELL>(static_cast<unsigned>(y) << 6 |
                            static_cast<unsigned>(x));
 }
-inline COORDINATE XY_Coord(int x, int y) {
-  return static_cast<COORDINATE>(
-      MakeLong(static_cast<uint16_t>(y), static_cast<uint16_t>(x)));
-}
-inline int Coord_X(COORDINATE coord) {
-  return static_cast<int16_t>(LowWord(coord));
-}
-inline int Coord_Y(COORDINATE coord) {
-  return static_cast<int16_t>(HighWord(coord));
-}
 inline int Cell_X(CELL cell) {
   return static_cast<int>(static_cast<unsigned>(cell) & 0x3F);
 }
 inline int Cell_Y(CELL cell) {
   return static_cast<int>(static_cast<unsigned>(cell) >> 6);
 }
-// A COORDINATE packs, from the low byte up: X lepton, X cell, Y lepton, Y cell.
-inline CELL Coord_XLepton(COORDINATE coord) {
-  return static_cast<uint8_t>(coord);
-}
-inline CELL Coord_YLepton(COORDINATE coord) {
-  return static_cast<uint8_t>(coord >> 16);
-}
-// inline COORD CellXY_Coord(unsigned x, unsigned y) {return
-// (COORD)(MAKE_LONG(y<<8, x<<8));}
-inline COORDINATE Coord_Add(COORDINATE a, COORDINATE b) {
-  // Components wrap modulo 2^16, exactly as the packed sum always did.
-  return static_cast<COORDINATE>(
-      MakeLong(static_cast<uint16_t>(Coord_Y(a) + Coord_Y(b)),
-               static_cast<uint16_t>(Coord_X(a) + Coord_X(b))));
-}
-inline COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) {
-  return static_cast<COORDINATE>(
-      MakeLong(static_cast<uint16_t>(Coord_Y(coord1) - Coord_Y(coord2)),
-               static_cast<uint16_t>(Coord_X(coord1) - Coord_X(coord2))));
-}
-inline COORDINATE Coord_Snap(COORDINATE coord) {
-  return static_cast<COORDINATE>(MakeLong((HighWord(coord) & 0xFF00U) | 0x80U,
-                                          (LowWord(coord) & 0xFF00U) | 0x80U));
-}
-inline COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) {
-  return static_cast<COORDINATE>(
-      MakeLong((HighWord(coord1) + HighWord(coord2)) / 2,
-               (LowWord(coord1) + LowWord(coord2)) / 2));
-}
 // The coordinate of the cell's center: each component is the cell index in
 // the high byte and the lepton offset 0x80 in the low byte.
-inline COORDINATE Cell_Coord(CELL cell) {
-  return static_cast<COORDINATE>(
-      MakeLong(static_cast<uint16_t>((Cell_Y(cell) * 256) + 0x80),
-               static_cast<uint16_t>((Cell_X(cell) * 256) + 0x80)));
+inline Coordinate Cell_Coord(CELL cell) {
+  return Coordinate::FromLeptons((Cell_X(cell) * 256) + 0x80,
+                                 (Cell_Y(cell) * 256) + 0x80);
 }
-inline COORDINATE XYPixel_Coord(int x, int y) {
-  return static_cast<COORDINATE>(
-      MakeLong(static_cast<uint16_t>(y * ICON_LEPTON_H /
-                                     ICON_PIXEL_H) /*+LEPTON_OFFSET_Y*/,
-               static_cast<uint16_t>(x * ICON_LEPTON_W /
-                                     ICON_PIXEL_W) /*+LEPTON_OFFSET_X*/));
+inline Coordinate XYPixel_Coord(int x, int y) {
+  return Coordinate::FromLeptons(x * ICON_LEPTON_W / ICON_PIXEL_W,
+                                 y * ICON_LEPTON_H / ICON_PIXEL_H);
 }
-inline game::DirType Direction256(COORDINATE coord1, COORDINATE coord2) {
-  return game::Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
-                                 Coord_X(coord2), Coord_Y(coord2));
+inline game::DirType Direction256(Coordinate coord1, Coordinate coord2) {
+  return game::Desired_Facing256(coord1.x(), coord1.y(), coord2.x(),
+                                 coord2.y());
 }
-inline game::DirType Direction(COORDINATE coord1, COORDINATE coord2) {
-  return game::Desired_Facing256(Coord_X(coord1), Coord_Y(coord1),
-                                 Coord_X(coord2), Coord_Y(coord2));
+inline game::DirType Direction(Coordinate coord1, Coordinate coord2) {
+  return game::Desired_Facing256(coord1.x(), coord1.y(), coord2.x(),
+                                 coord2.y());
 }
-inline game::DirType Direction8(COORDINATE coord1, COORDINATE coord2) {
-  return game::Desired_Facing8(Coord_X(coord1), Coord_Y(coord1),
-                               Coord_X(coord2), Coord_Y(coord2));
+inline game::DirType Direction8(Coordinate coord1, Coordinate coord2) {
+  return game::Desired_Facing8(coord1.x(), coord1.y(), coord2.x(), coord2.y());
 }
 inline game::DirType Direction(CELL cell1, CELL cell2) {
   return game::Desired_Facing8(Cell_X(cell1), Cell_Y(cell1), Cell_X(cell2),
                                Cell_Y(cell2));
 }
-inline COORDINATE Adjacent_Cell(COORDINATE coord, game::FacingType dir) {
-  return Coord_Snap(Coord_Add(
-      AdjacentCoord.at(game::AsFacing(static_cast<int>(dir))), coord));
+inline Coordinate Adjacent_Cell(Coordinate coord, game::FacingType dir) {
+  return (AdjacentCoord.at(game::AsFacing(static_cast<int>(dir))) + coord)
+      .Snapped();
 }
-inline COORDINATE Adjacent_Cell(COORDINATE coord, game::DirType dir) {
+inline Coordinate Adjacent_Cell(Coordinate coord, game::DirType dir) {
   return Adjacent_Cell(coord, game::Dir_Facing(dir));
 }
 inline CELL Adjacent_Cell(CELL cell, game::FacingType dir) {
-  // Masked like the COORDINATE overload above, so that FACING_NONE (-1) does
+  // Masked like the Coordinate overload above, so that FACING_NONE (-1) does
   // not index before the start of the table.
   return static_cast<CELL>(
       cell + AdjacentCell.at(game::AsFacing(static_cast<int>(dir))));
@@ -159,24 +115,18 @@ inline int Lepton_To_Pixel(int lepton) {
 inline int Pixel_To_Lepton(int pixel) {
   return ((pixel * ICON_LEPTON_W) + (ICON_PIXEL_W / 2)) / ICON_PIXEL_W;
 }
-inline COORDINATE XYP_Coord(int x, int y) {
-  return XY_Coord(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
+inline Coordinate XYP_Coord(int x, int y) {
+  return Coordinate::FromLeptons(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
 }
 
-inline CELL Coord_XCell(COORDINATE coord) {
-  return static_cast<uint8_t>(coord >> 8);
-}
-inline CELL Coord_YCell(COORDINATE coord) {
-  return static_cast<uint8_t>(coord >> 24);
-}
-[[nodiscard]] constexpr CELL Coord_Cell(const COORDINATE coord) noexcept {
+[[nodiscard]] constexpr CELL Coord_Cell(const Coordinate coord) noexcept {
   // Capture the 'High Word' processing:
   // ((coord >> 16) & 0xFF00) clears the 'AL' equivalent (bits 23-16).
   // Then we shift that right by 2.
-  const uint32_t processed_high = (coord >> 16 & 0xFF00) >> 2;
+  const uint32_t processed_high = (coord.packed() >> 16 & 0xFF00) >> 2;
 
   // Capture 'BH' (bits 15-8 of original)
-  const uint8_t original_mid_byte = coord >> 8 & 0xFF;
+  const uint8_t original_mid_byte = coord.packed() >> 8 & 0xFF;
 
   // Combine them.
   // Note: The 'OR' only affects the bottom 8 bits because 'original_mid_byte'
@@ -201,12 +151,12 @@ inline CELL Coord_YCell(COORDINATE coord) {
  *                                                                                             *
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
-inline int Distance(COORDINATE coord1, COORDINATE coord2) {
-  int diff1 = Coord_Y(coord1) - Coord_Y(coord2);
+inline int Distance(Coordinate coord1, Coordinate coord2) {
+  int diff1 = coord1.y() - coord2.y();
   if (diff1 < 0) {
     diff1 = -diff1;
   }
-  int diff2 = Coord_X(coord1) - Coord_X(coord2);
+  int diff2 = coord1.x() - coord2.x();
   if (diff2 < 0) {
     diff2 = -diff2;
   }

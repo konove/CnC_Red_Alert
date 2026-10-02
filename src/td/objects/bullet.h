@@ -114,7 +114,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   static void Init();
 
   virtual void Assign_Target(TARGET target) { TarCom = target; }
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+  bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
   [[nodiscard]] LayerType In_Which_Layer() const override { return LAYER_TOP; }
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {

@@ -330,12 +330,12 @@ TARGET UnitClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE UnitClass::Sort_Y() const {
+Coordinate UnitClass::Sort_Y() const {
   Validate();
   if (IsTethered && *this == UNIT_HOVER) {
-    return Coord_Add(Coord, 0xFF800000L);
+    return Coord + Coordinate::FromLeptons(0, -0x80);
   }
-  return Coord_Add(Coord, 0x00800000L);
+  return Coord + Coordinate::FromLeptons(0, 0x80);
 }
 
 /***********************************************************************************************
@@ -729,7 +729,7 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
  *                                                                                             *
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Unlimbo(COORDINATE coord, game::DirType dir) {
+bool UnitClass::Unlimbo(Coordinate coord, game::DirType dir) {
   Validate();
   /*
   **	All units must start out facing one of the 8 major directions.
@@ -892,7 +892,7 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
           if (i->Unlimbo(Coord, game::DIR_N)) {
             i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength) / 2));
-            i->Scatter(0, true);
+            i->Scatter(Coordinate{}, true);
             if (!House->IsHuman) {
               i->Assign_Mission(MISSION_HUNT);
             } else {
@@ -923,7 +923,7 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
             //					object->Strength =
             // Random_Pick(5,
             //(int)((InfantryClass*)object)->Class->MaxStrength/2);
-            object->Scatter(0, true);
+            object->Scatter(Coordinate{}, true);
             if (select) {
               object->Select();
             }
@@ -957,8 +957,8 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
     if (Health_Ratio() < 0x0080 && !IsAnimAttached && *this != UNIT_VICE &&
         *this != UNIT_STEG && *this != UNIT_TREX && *this != UNIT_TRIC &&
         *this != UNIT_RAPT) {
-      auto* anim = base::NewPooled<AnimClass>(
-          ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
+      auto* anim =
+          base::NewPooled<AnimClass>(ANIM_SMOKE_M, Coord + XYP_Coord(0, -8));
       if (anim) {
         anim->Attach_To(this);
       }
@@ -970,8 +970,7 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
     if (res == game::RESULT_HALF) {
       if (*this == UNIT_GUNBOAT) {
         auto* anim = base::NewPooled<AnimClass>(
-            ANIM_ON_FIRE_MED,
-            Coord_Add(Coord, XYP_Coord(Random_Pick(0, 16) - 8, -2)));
+            ANIM_ON_FIRE_MED, Coord + XYP_Coord(Random_Pick(0, 16) - 8, -2));
         if (anim) {
           anim->Attach_To(this);
         }
@@ -1380,8 +1379,7 @@ bool UnitClass::Unload_Hovercraft_Process() {
             *direction.
             */
             TheWorld().scenario_init()++;
-            if (u->Unlimbo(Coord_Add(Coord & 0xFF00FF00L,
-                                     base::At(StoppingCoordAbs, count)),
+            if (u->Unlimbo(Coord.Whole() + base::At(StoppingCoordAbs, count),
                            game::DIR_N)) {
               u->Assign_Mission(MISSION_MOVE);
               u->NavCom = td::As_Target(cell);
@@ -1675,7 +1673,7 @@ void UnitClass::Per_Cell_Process(bool center) {
       default:
         // The original passed `true` as the threat coordinate; that value (1)
         // is kept.
-        Scatter(static_cast<COORDINATE>(1));
+        Scatter(Coordinate::FromPacked(1));
         break;
     }
   }
@@ -1687,7 +1685,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   if (IsTethered && center && Mission != MISSION_ENTER) {
     if (Transmit_Message(RADIO_UNLOADED) == RADIO_RUN_AWAY) {
       if (!Target_Legal(NavCom)) {
-        Scatter(0, true);
+        Scatter(Coordinate{}, true);
       }
     } else {
       if (*this == UNIT_HARVESTER) {
@@ -1701,7 +1699,7 @@ void UnitClass::Per_Cell_Process(bool center) {
           **	the pad for another harvester.
           */
           if (!Target_Legal(NavCom)) {
-            Scatter(0, true);
+            Scatter(Coordinate{}, true);
           }
         }
       }
@@ -1727,7 +1725,7 @@ void UnitClass::Per_Cell_Process(bool center) {
           **	Since there is no place to go, move away to clear
           **	the pad for another harvester.
           */
-          Scatter(0, true);
+          Scatter(Coordinate{}, true);
         }
       }
     }
@@ -2124,8 +2122,8 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
         int y1 = 0;
 
         if (TheMap().Coord_To_Pixel(
-                Coord_Add(Coord_Add(Coord, 0xFF80FF80L),
-                          base::At(StoppingCoordAbs, counter++)),
+                (Coord + Coordinate::FromLeptons(-0x80, -0x80)) +
+                    base::At(StoppingCoordAbs, counter++),
                 x1, y1)) {
           u->Draw_It(view, x1, y1, WINDOW_TACTICAL);
         }
@@ -3132,7 +3130,7 @@ void UnitClass::Init() { TheObjectHeaps().unit().FreeAll(); }
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE UnitClass::Target_Coord() const {
+Coordinate UnitClass::Target_Coord() const {
   Validate();
   //	if (*this == UNIT_GUNBOAT) {
   //		return(Coord_Move(Coord, PrimaryFacing.Current(), 0x0080));
@@ -3157,7 +3155,7 @@ COORDINATE UnitClass::Target_Coord() const {
  *                                                                                             *
  * HISTORY: * 09/25/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Scatter(COORDINATE threat, bool forced) {
+void UnitClass::Scatter(Coordinate threat, bool forced) {
   Validate();
   if (*this != UNIT_GUNBOAT && *this != UNIT_HOVER) {
     if ((!Target_Legal(TarCom) && !Target_Legal(NavCom)) || forced ||
@@ -3254,7 +3252,7 @@ bool UnitClass::Stop_Driver() {
  *                                                                                             *
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Start_Driver(COORDINATE& headto) {
+bool UnitClass::Start_Driver(Coordinate& headto) {
   Validate();
   if (TarComClass::Start_Driver(headto)) {
     Mark_Track(headto, MARK_DOWN);
@@ -3315,7 +3313,8 @@ void UnitClass::Response_Select() {
   }
 
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0, -(TheObjectHeaps().unit().SlotIndexOf(this) + 1));
+    Sound_Effect(response, Coordinate{},
+                 -(TheObjectHeaps().unit().SlotIndexOf(this) + 1));
   }
 }
 
@@ -3349,7 +3348,8 @@ void UnitClass::Response_Move() {
   }
 
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0, -(TheObjectHeaps().unit().SlotIndexOf(this) + 1));
+    Sound_Effect(response, Coordinate{},
+                 -(TheObjectHeaps().unit().SlotIndexOf(this) + 1));
   }
 }
 
@@ -3383,7 +3383,8 @@ void UnitClass::Response_Attack() {
   }
 
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0, -(TheObjectHeaps().unit().SlotIndexOf(this) + 1));
+    Sound_Effect(response, Coordinate{},
+                 -(TheObjectHeaps().unit().SlotIndexOf(this) + 1));
   }
 }
 
@@ -3545,7 +3546,7 @@ void UnitClass::Read_INI(char* buffer) {
           **	Read the raw data.
           */
           const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
-          const COORDINATE coord =
+          const Coordinate coord =
               Cell_Coord(base::ParseIntegerOr<CELL>(tokens.Next(), 0));
           const auto dir = static_cast<game::DirType>(
               base::ParseIntegerOr<int>(tokens.Next(), 0));

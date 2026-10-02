@@ -334,7 +334,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-bool AircraftClass::Unlimbo(COORDINATE coord, game::DirType dir) {
+bool AircraftClass::Unlimbo(Coordinate coord, game::DirType dir) {
   Validate();
   if (FootClass::Unlimbo(coord, dir)) {
     /*
@@ -543,7 +543,7 @@ void AircraftClass::Read_INI(char* buffer) {
           **	Read the raw data.
           */
           const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
-          COORDINATE const coord =
+          const Coordinate coord =
               Cell_Coord(base::ParseIntegerOr<CELL>(tokens.Next(), 0));
           const auto dir = static_cast<game::DirType>(
               base::ParseIntegerOr<int>(tokens.Next(), 0));
@@ -804,7 +804,7 @@ void AircraftClass::AI() {
              As_Techno(NavCom) == Contact_With_Whom()) &&
             (In_Radio_Contact() &&
              Transmit_Message(RADIO_IM_IN) != RADIO_ROGER)) {
-          Scatter(0, true);
+          Scatter(Coordinate{}, true);
         }
       }
     }
@@ -1141,7 +1141,7 @@ int AircraftClass::Mission_Unload() {
                   }
                   unit->IsALoaner = false;
                   unit->IsLocked = true;
-                  unit->Scatter(0, true);
+                  unit->Scatter(Coordinate{}, true);
                 }
                 TheWorld().scenario_init()--;
 
@@ -1390,9 +1390,9 @@ LayerType AircraftClass::In_Which_Layer() const {
  *                                                                                             *
  * HISTORY: * 11/02/1994 JLB : Created. *
  *=============================================================================================*/
-COORDINATE AircraftClass::Sort_Y() const {
+Coordinate AircraftClass::Sort_Y() const {
   Validate();
-  return Coord_Add(Coord, 0x00800000L);
+  return Coord + Coordinate::FromLeptons(0, 0x80);
 }
 
 /***********************************************************************************************
@@ -1686,7 +1686,7 @@ int AircraftClass::Mission_Move() {
 
           if (unit) {
             TheWorld().scenario_init()++;
-            if (!unit->Unlimbo(Coord_Snap(Contact_With_Whom()->Coord))) {
+            if (!unit->Unlimbo(Contact_With_Whom()->Coord.Snapped())) {
               Attach(unit);
             }
             TheWorld().scenario_init()--;
@@ -1920,7 +1920,7 @@ void AircraftClass::Enter_Idle_Mode(bool /*initial*/) {
  *=============================================================================================*/
 int AircraftClass::Process_Fly_To(bool slowdown) {
   Validate();
-  COORDINATE coord = 0;
+  Coordinate coord{};
   if (Is_Target_Building(NavCom)) {
     coord = As_Building(NavCom)->Docking_Coord();
   } else {
@@ -2410,7 +2410,7 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
   Validate();
   if (Target_Legal(oldlz) &&
       (!Is_LZ_Clear(oldlz) || !Cell_Seems_Ok(As_Cell(oldlz)))) {
-    const COORDINATE coord = As_Coord(oldlz);
+    const Coordinate coord = As_Coord(oldlz);
 
     /*
     **	Scan outward in a series of concentric rings up to certain distance
@@ -2460,15 +2460,14 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
  *                                                                                             *
  * HISTORY: * 06/15/1995 JLB : Created. *
  *=============================================================================================*/
-COORDINATE AircraftClass::Fire_Coord(int /*unused*/) const {
+Coordinate AircraftClass::Fire_Coord(int /*unused*/) const {
   Validate();
-  return Coord_Move(Coord_Add(XYP_Coord(0, -Altitude), Coord), SecondaryFacing,
-                    0x040);
+  return Coord_Move(XYP_Coord(0, -Altitude) + Coord, SecondaryFacing, 0x040);
 }
 
-COORDINATE AircraftClass::Target_Coord() const {
+Coordinate AircraftClass::Target_Coord() const {
   Validate();
-  return Coord_Add(XYP_Coord(0, -Altitude), Coord);
+  return XYP_Coord(0, -Altitude) + Coord;
 }
 
 /***********************************************************************************************
@@ -2517,7 +2516,7 @@ RadioMessageType AircraftClass::Receive_Message(RadioClass* from,
         IsLanding = false;
         IsTakingOff = true;
       }
-      Scatter(0, true);
+      Scatter(Coordinate{}, true);
       break;
 
     /*
@@ -2859,7 +2858,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
   Validate();
   if (Target_Legal(target)) {
     const int range = Weapon_Range(0);
-    const COORDINATE tcoord = As_Coord(target);
+    const Coordinate tcoord = As_Coord(target);
     CELL bestcell = 0;
     CELL best2cell = 0;
     int bestval = -1;
@@ -2867,7 +2866,7 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
 
     for (int r = range - 0x0180; r > 0x0180; r -= 0x0100) {
       for (int face = 0; face < 255; face += 16) {
-        const COORDINATE newcoord = Coord_Move(tcoord, game::AsDirection(face),
+        const Coordinate newcoord = Coord_Move(tcoord, game::AsDirection(face),
                                                static_cast<uint16_t>(r));
         const CELL newcell = Coord_Cell(newcoord);
 
@@ -3274,7 +3273,7 @@ AircraftClass::~AircraftClass() {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Scatter(COORDINATE /*source*/, bool /*forced*/) {
+void AircraftClass::Scatter(Coordinate /*source*/, bool /*forced*/) {
   Validate();
   if (IsLanding || Altitude == 0) {
     IsLanding = false;
@@ -3448,7 +3447,7 @@ int AircraftClass::Mission_Guard() {
   *around *	and looking for a free helipad.
   */
   if (Altitude == 0 && !In_Radio_Contact()) {
-    Scatter(0, true);
+    Scatter(Coordinate{}, true);
     return kTicksPerSecond * 3;
   }
 
@@ -3482,7 +3481,7 @@ int AircraftClass::Mission_Guard_Area() {
   }
 
   if (Altitude == 0 && !In_Radio_Contact()) {
-    Scatter(0, true);
+    Scatter(Coordinate{}, true);
     return kTicksPerSecond * 3;
   }
 
@@ -3516,7 +3515,7 @@ void AircraftClass::Response_Attack() {
                                           sizeof(base::At(_response, 0))) -
                              1));
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0,
+    Sound_Effect(response, Coordinate{},
                  -(TheObjectHeaps().aircraft().SlotIndexOf(this) + 1));
   }
 }
@@ -3544,7 +3543,7 @@ void AircraftClass::Response_Move() {
                                           sizeof(base::At(_response, 0))) -
                              1));
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0,
+    Sound_Effect(response, Coordinate{},
                  -(TheObjectHeaps().aircraft().SlotIndexOf(this) + 1));
   }
 }
@@ -3572,7 +3571,7 @@ void AircraftClass::Response_Select() {
                                           sizeof(base::At(_response, 0))) -
                              1));
   if (TheGameState().allow_voice()) {
-    Sound_Effect(response, 0,
+    Sound_Effect(response, Coordinate{},
                  -(TheObjectHeaps().aircraft().SlotIndexOf(this) + 1));
   }
 }

@@ -3,6 +3,7 @@
 #ifndef CNC_RED_ALERT_TD_CORE_COORDINATE_H_
 #define CNC_RED_ALERT_TD_CORE_COORDINATE_H_
 
+#include <compare>
 #include <cstdint>
 #include <type_traits>
 
@@ -113,6 +114,13 @@ class Coordinate {
 
   // Coordinates are equal when their packed words are.
   friend constexpr bool operator==(Coordinate, Coordinate) noexcept = default;
+
+  // Orders by the packed word: by Y, then by X, both unsigned. The display
+  // sorts objects back to front by this order (ObjectClass::Sort_Y()).
+  friend constexpr std::strong_ordering operator<=>(Coordinate a,
+                                                    Coordinate b) noexcept {
+    return a.packed_ <=> b.packed_;
+  }
 
   // Saves and loads the packed word, 4 bytes little-endian.
   template <class Archive>

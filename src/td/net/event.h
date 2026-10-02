@@ -141,7 +141,7 @@ class EventClass {
     struct {
       AnimType What;     // The animation to create.
       HousesType Owner;  // The owner of the animation (when it matters).
-      COORDINATE Where;  // The location to place the animation.
+      Coordinate Where;  // The location to place the animation.
     } Anim;
     struct {
       int Value;  // general-purpose data
@@ -232,7 +232,7 @@ class EventClass {
   EventClass(EventType type, RTTIType object, int id);
   EventClass(EventType type, RTTIType object, CELL cell);
   EventClass(EventType type, int id, CELL cell);
-  EventClass(AnimType anim, HousesType owner, COORDINATE coord);
+  EventClass(AnimType anim, HousesType owner, Coordinate coord);
 
   // Process the event.
   void Execute();
@@ -242,6 +242,9 @@ class EventClass {
   static base::EnumArray<EventType, const char*, static_cast<int>(LAST_EVENT)>
       EventNames;
 };
+
+// Events cross the wire as raw bytes, so their size is part of the protocol.
+static_assert(sizeof(EventClass) == 24);
 
 }  // namespace td
 

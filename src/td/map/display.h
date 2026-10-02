@@ -84,7 +84,7 @@ class DisplayClass : public MapClass {
   **	upper left hand corner. These should not be altered directly. Use
   **	the Set_Tactical_Position function instead.
   */
-  COORDINATE TacticalCoord{0};
+  Coordinate TacticalCoord{};
 
   /*
   **	The dimensions (in cells) of the visible window onto the game map. This
@@ -186,12 +186,12 @@ class DisplayClass : public MapClass {
   /*
   **	Tactical map only functionality.
   */
-  virtual void Set_Tactical_Position(COORDINATE coord);
+  virtual void Set_Tactical_Position(Coordinate coord);
   void Refresh_Band();
-  void Select_These(COORDINATE coord1, COORDINATE coord2);
-  [[nodiscard]] COORDINATE Pixel_To_Coord(int x, int y) const;
-  bool Coord_To_Pixel(COORDINATE coord, int& x, int& y) const;
-  bool Push_Onto_TacMap(COORDINATE& source, COORDINATE& dest) const;
+  void Select_These(Coordinate coord1, Coordinate coord2);
+  [[nodiscard]] Coordinate Pixel_To_Coord(int x, int y) const;
+  bool Coord_To_Pixel(Coordinate coord, int& x, int& y) const;
+  bool Push_Onto_TacMap(Coordinate& source, Coordinate& dest) const;
   static void Remove(ObjectClass* object, LayerType layer);
   static void Submit(ObjectClass* object, LayerType layer);
   CELL Calculated_Cell(SourceType dir, HousesType house);
@@ -203,8 +203,8 @@ class DisplayClass : public MapClass {
   int Cell_Shadow(CELL cell);
   std::span<const int16_t> Text_Overlap_List(const char* text, int x, int y,
                                              int lines = 1);
-  [[nodiscard]] bool Is_Spot_Free(COORDINATE coord) const;
-  [[nodiscard]] COORDINATE Closest_Free_Spot(COORDINATE coord,
+  [[nodiscard]] bool Is_Spot_Free(Coordinate coord) const;
+  [[nodiscard]] Coordinate Closest_Free_Spot(Coordinate coord,
                                              bool any = false) const;
   void Sell_Mode_Control(int control);
   void Repair_Mode_Control(int control);
@@ -243,7 +243,7 @@ class DisplayClass : public MapClass {
   **	This is the coordinate that the tactical map should be in at next
   *available opportunity.
   */
-  COORDINATE DesiredTacticalCoord = 0;
+  Coordinate DesiredTacticalCoord{};
 
   /*
   **	If something in the tactical map is to be redrawn, this flag is set to

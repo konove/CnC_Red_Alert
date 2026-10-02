@@ -71,7 +71,7 @@ class TurretClass : public DriveClass {
   */
   game::FacingClass SecondaryFacing;
 
-  bool Unlimbo(COORDINATE /*coord*/ /*unused*/,
+  bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
 
   /*
@@ -89,7 +89,7 @@ class TurretClass : public DriveClass {
   game::FireErrorType Can_Fire(TARGET target, int which) const override;
   bool Ok_To_Move(game::DirType dir) override;
   void AI() override;
-  COORDINATE Fire_Coord(int which) const override;
+  Coordinate Fire_Coord(int which) const override;
 
  protected:
   TurretClass(UnitType classid, HousesType house);

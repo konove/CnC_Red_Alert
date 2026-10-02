@@ -995,7 +995,7 @@ void MapEditClass::Start_Placement() {
  *=========================================================================*/
 int MapEditClass::Place_Object() {
   CELL template_cell = 0;    // cell being checked for template
-  COORDINATE obj_coord = 0;  // coord of occupier object
+  Coordinate obj_coord{};    // coord of occupier object
   BaseNodeClass node;        // for adding to an AI Base
 
   /*------------------------------------------------------------------------
@@ -1142,13 +1142,13 @@ int MapEditClass::Place_Object() {
       obj_coord = Closest_Free_Spot(
           Pixel_To_Coord(game::TheMouse().x(), game::TheMouse().y()));
     } else {
-      obj_coord = 0;
+      obj_coord = {};
     }
 
     /*
     ................ No free spots; don't place the object ................
     */
-    if (obj_coord == 0) {
+    if (!obj_coord) {
       // ScenarioInit--;
       return (-1);
     }

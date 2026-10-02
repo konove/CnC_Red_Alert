@@ -1378,7 +1378,7 @@ bool MapClass::Validate() {
  *                                                                                             *
  * HISTORY: * 08/20/1995 JLB : Created. *
  *=============================================================================================*/
-ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
+ObjectClass* MapClass::Close_Object(Coordinate coord) const {
   ObjectClass* object = nullptr;
   int distance = 0;
   const CELL cell = Coord_Cell(coord);
