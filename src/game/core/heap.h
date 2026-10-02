@@ -109,12 +109,9 @@ class FixedIHeapClass {
 
   // Frees the slot `pointer` names and removes it from the in-use list,
   // keeping the others in order. Returns false, doing nothing, when `pointer`
-  // is null, outside the heap or already free. Does not run a destructor; an
-  // object's operator delete calls this once its destructor has run.
-  // TODO: a pointer inside a slot but not at its start, or less than one slot
-  // below the buffer, is not rejected: ID() truncates it to a slot index, the
-  // slot is freed, and the in-use list keeps the slot because it holds no such
-  // pointer.
+  // is not the start of one of the heap's slots (null included) or the slot
+  // is already free. Does not run a destructor; an object's operator delete
+  // calls this once its destructor has run.
   bool Free(void* pointer);
 
   // Frees every slot without running destructors.

@@ -85,11 +85,13 @@ void* FixedIHeapClass::Allocate() {
 }
 
 bool FixedIHeapClass::Free(void* pointer) {
-  if (pointer == nullptr || ActiveCount == 0) {
+  // ID() alone would round a pointer into the middle of a slot down to that
+  // slot, free it, and leave the in-use list holding it.
+  if (ActiveCount == 0 || !Owns(pointer)) {
     return false;
   }
   const int index = ID(pointer);
-  if (index < 0 || index >= TotalCount || !FreeFlag.at(base::ToSize(index))) {
+  if (!FreeFlag.at(base::ToSize(index))) {
     return false;
   }
   ActiveCount--;

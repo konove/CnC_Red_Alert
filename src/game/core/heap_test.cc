@@ -108,6 +108,19 @@ TEST(HeapTest, FreeReportsWhetherItFreedAnything) {
   EXPECT_EQ(heap.Count(), 0);
 }
 
+// A pointer that is not the start of a slot names no object, even though
+// ID() turns it into a plausible slot index.
+TEST(HeapTest, FreeRejectsAPointerThatIsNotASlot) {
+  TFixedIHeapClass<Widget> heap;
+  heap.Set_Heap(4);
+  Widget* widget = Allocate(heap, 1);
+
+  EXPECT_FALSE(heap.Free(&widget->value));
+  EXPECT_EQ(heap.Count(), 1);
+  EXPECT_TRUE(heap.Is_Allocated(0));
+  EXPECT_EQ(heap.Validate(), "");
+}
+
 // Rule loading sizes the type heaps again with the same count while objects
 // still point into them, so the storage must stay where it is.
 TEST(HeapTest, SetHeapWithTheSameCountKeepsTheStorage) {
