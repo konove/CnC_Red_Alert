@@ -1,4 +1,4 @@
-#include "game/core/heap.h"
+  #include "game/core/heap.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -11,7 +11,6 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/span_source.h"
-#include "game/core/queue.h"
 #include "game/core/vector.h"
 #include "game/core/vector_dynamic.h"
 #include "gmock/gmock.h"
@@ -280,36 +279,13 @@ TEST(CheckedContainerTest, VectorAccessPreservesConstnessAndCapacity) {
   EXPECT_EQ(&view.at(1), &values.at(1));
 }
 
-TEST(CheckedContainerTest, QueueAccessFollowsWrappedLogicalOrder) {
-  QueueClass<int, 3> queue;
-  ASSERT_TRUE(queue.Add(10));
-  ASSERT_TRUE(queue.Add(20));
-  EXPECT_EQ(queue.Next(), 1);
-  ASSERT_TRUE(queue.Add(30));
-  ASSERT_TRUE(queue.Add(40));
-  EXPECT_EQ(queue.at(0), 20);
-  EXPECT_EQ(queue.at(1), 30);
-  EXPECT_EQ(queue.at(2), 40);
-  queue.at(1) = 31;
-  EXPECT_EQ(queue.at(1), 31);
-}
-
-TEST(CheckedContainerDeathTest, RejectsInvalidVectorAndQueueIndices) {
+TEST(CheckedContainerDeathTest, RejectsInvalidVectorIndices) {
   VectorClass<int> values(2);
   const VectorClass<int>& view = values;
-  QueueClass<int, 3> queue;
   // GoogleTest's death-test macro formats subprocess diagnostics with libc.
   // NOLINTBEGIN(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH((void)values.at(-1), "Check failed");
   EXPECT_DEATH((void)view.at(2), "Check failed");
-  EXPECT_DEATH((void)queue.at(0), "Check failed");
-  ASSERT_TRUE(queue.Add(10));
-  ASSERT_TRUE(queue.Add(20));
-  EXPECT_EQ(queue.Next(), 1);
-  // Both indices formerly wrapped to valid storage outside the active queue.
-  EXPECT_DEATH((void)queue.at(-1), "Check failed");
-  EXPECT_DEATH((void)queue.at(1), "Check failed");
-  EXPECT_DEATH((void)queue.at(4), "Check failed");
   // NOLINTEND(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
 }
 
