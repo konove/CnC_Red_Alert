@@ -595,15 +595,15 @@ Per stage and at the end of Part A:
 
 ## Progress
 
-| Step       | Status  | Commit                                                                 |
-| ---------- | ------- | ---------------------------------------------------------------------- |
-| A1         | Done    | f0498c21                                                               |
-| A2         | Done    | 6be50192                                                               |
-| A3         | Done    | b6502360, after 22f80cbc dropped the display.h includes A1 left unused |
-| B1         | Done    | f7d220ed                                                               |
-| B2 RA / TD | RA done | RA: 6b8676be, 9ede4443                                                 |
-| B3 RA / TD |         |                                                                        |
-| B4 RA / TD |         |                                                                        |
+| Step       | Status | Commit                                                                 |
+| ---------- | ------ | ---------------------------------------------------------------------- |
+| A1         | Done   | f0498c21                                                               |
+| A2         | Done   | 6be50192                                                               |
+| A3         | Done   | b6502360, after 22f80cbc dropped the display.h includes A1 left unused |
+| B1         | Done   | f7d220ed                                                               |
+| B2 RA / TD | Done   | RA: 6b8676be, 9ede4443; TD: e910e349, 9ea20c02                         |
+| B3 RA / TD |        |                                                                        |
+| B4 RA / TD |        |                                                                        |
 
 Part A notes:
 
@@ -660,3 +660,41 @@ Stage B2 (RA) notes:
   only prvalues (`-Wnrvo` fires for a class type where it did not for `uint32_t`).
 - `DisplayClass::Closest_Free_Spot()` answers an off-map coordinate with `CellCenterFraction()`, the
   center of cell (0, 0); that is the original behaviour, kept.
+
+Stage B2 (TD) notes:
+
+- `td::Coordinate` lives in `td/core/coordinate.h`, exported by `defines.h`, with RA's member names
+  and the same packed layout. The one difference: `x()`/`y()` read each word signed (-32768..32767),
+  as TD's `Coord_X`/`Coord_Y` did, where RA reads 0..65535. `Midpoint()` averages the unsigned words
+  in both games. `cell_x()`/`cell_y()`/`sub_x()`/`sub_y()` return `int` (the old TD helpers returned
+  `CELL`); no caller stored them in a `CELL`.
+- `Coord_Cell(Coordinate)` and `Cell_Coord(CELL)` stay free functions in `td/core/inline.h` for B4;
+  `coord_inline_test.cc` pins them, including `Coord_Cell` ORing the whole 8-bit X cell byte into
+  the Y bits for an X cell of 64 or more. `coordinate_test.cc` (same target) holds the member tests,
+  with the byte-poke comparisons the deleted helpers had.
+- TD has no `CellCenterFraction()`; the cell-center offset is `Coordinate::FromLeptons(0x80, 0x80)`
+  at its three uses. The `0xC000C000` off-map test (four sites) reads `packed()`, as RA's
+  `kHighCoordMask` does.
+- Four raw integer adds on a packed coordinate carried from X into Y; they are kept exact as
+  `Coordinate::FromPacked(c.packed() + n)`: `ai/reinf.cc` (`Docking_Coord() + 2`, read for its Y
+  cell) and the `-MOBILETEST` fixture in `startup/init.cc` (`+ 0x200`, `0x600`, `0x800`). On the map
+  they equal `+ FromLeptons(n, 0)`.
+- `Scatter(true)` in the original passes 1 as the threat coordinate (three sites); kept as
+  `Scatter(Coordinate::FromPacked(1))` and listed in `TODO.md`.
+  `Sound_Effect(VOC_BLEEPY3, TXT_NONE)` passed the text constant 0 as the coordinate; it is now
+  `Sound_Effect(VOC_BLEEPY3)`, the same call.
+- `operator<=>` orders by `packed()`, as in RA (`ObjectClass::operator<`/`>` and `radar.cc` compare
+  `Sort_Y()`).
+- `EventClass` is 24 bytes in TD (pinned next to the class).
+- `xcheck.sh` now runs TD's reference from `ref/td/` (next to RA's MIX files it loaded RA's
+  `SCORES.MIX` and crashed) and copies the TD candidate to a fresh directory: the `CONQUER.INI` the
+  smoke scripts leave in `build/src/td` changes the game speed and so the logged animation rates.
+- Merging the two classes into `game::Coordinate` looks feasible. Only the `x()`/`y()` reading
+  differs, and only for words of 0x8000 or more, which no on-map position has in either game (TD's
+  map is 64 cells, 0x4000 leptons). TD's sign-sensitive readers are the ones that compare, divide or
+  convert a coordinate that may sit just off the top or left edge: `Distance()`, the `Direction*()`
+  helpers, `DisplayClass::Push_Onto_TacMap()`/`Select_These()`/`Coord_To_Pixel()`, `Coord_Move()`
+  (which casts to `int16_t` anyway) and the aircraft altitude offset in
+  `AircraftClass::Target_Coord()`/`Fire_Coord()`. A merged class could read unsigned like RA and
+  give TD a signed accessor (or `static_cast<int16_t>` at those sites); offsets that are only added
+  or negated (`Smooth_Turn`, the track tables) do not care.
