@@ -709,7 +709,7 @@ std::span<const unsigned char> TerrainClass::Radar_Icon(CELL cell) {
  * HISTORY: * 02/07/1996 JLB : Created. *
  *=============================================================================================*/
 COORDINATE TerrainClass::Target_Coord() const {
-  return Coord_Add(XY_Coord(0, static_cast<LEPTON>(-Height)), Sort_Y());
+  return Coord_Add(XY_Coord(0, -Height), Sort_Y());
 }
 
 /***********************************************************************************************

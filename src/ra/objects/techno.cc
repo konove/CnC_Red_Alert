@@ -4190,8 +4190,7 @@ game::ResultType TechnoClass::Take_Damage(int& damage, int distance,
             Center_Coord());
         const int radius = explosion_damage * TheRules().ExplosionSpread;
         //				int radius = damage/2;
-        Wide_Area_Damage(Center_Coord(), static_cast<LEPTON>(radius), explosion_damage,
-                         source, wh);
+        Wide_Area_Damage(Center_Coord(), radius, explosion_damage, source, wh);
       }
 
       if (this ==
@@ -4631,7 +4630,7 @@ void TechnoClass::Techno_Draw_Object(PixelView& view,
       shadow = MouseClass::UnitShadowAir;
     }
 
-    y -= Lepton_To_Pixel(static_cast<LEPTON>(Height));
+    y -= Lepton_To_Pixel(Height);
 
     // If they're viewing a spy, and the spy belongs to some other house, make
     // it look like an infantryman from our house
@@ -6222,7 +6221,7 @@ int TechnoClass::Anti_Armor() const {
     const WeaponTypeClass* weapon = Techno_Type_Class()->PrimaryWeapon;
     const BulletTypeClass* bullet = weapon->Bullet;
     const WarheadTypeClass* warhead = weapon->WarheadPtr;
-    const int mrange = std::min(static_cast<int>(weapon->Range), 0x0400);
+    const int mrange = std::min(weapon->Range, 0x0400);
 
     int value = weapon->Attack * warhead->Modifier.at(game::ARMOR_STEEL) *
                 mrange * warhead->SpreadFactor / weapon->ROF;
@@ -6266,7 +6265,7 @@ int TechnoClass::Anti_Infantry() const {
     const WeaponTypeClass* weapon = Techno_Type_Class()->PrimaryWeapon;
     const BulletTypeClass* bullet = weapon->Bullet;
     const WarheadTypeClass* warhead = weapon->WarheadPtr;
-    const int mrange = std::min(static_cast<int>(weapon->Range), 0x0400);
+    const int mrange = std::min(weapon->Range, 0x0400);
 
     int value = weapon->Attack * warhead->Modifier.at(game::ARMOR_NONE) *
                 mrange * warhead->SpreadFactor / weapon->ROF;

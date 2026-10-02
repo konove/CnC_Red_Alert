@@ -322,11 +322,12 @@ static inline int Scale_To_256(int val) {
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-LEPTON CCINIClass::Get_Lepton(const char* section, const char* entry,
-                              LEPTON defvalue) const {
-  const Fixed result =
-      Get_Fixed(section, entry, Fixed(defvalue, CELL_LEPTON_W));
-  return static_cast<LEPTON>(result * CELL_LEPTON_W);
+int CCINIClass::Get_Lepton(const char* section, const char* entry,
+                           int defvalue) const {
+  const Fixed result = Get_Fixed(
+      section, entry, Fixed(static_cast<uint16_t>(defvalue), CELL_LEPTON_W));
+  // An 8.8 Fixed times 256 is its raw 16-bit word, so this is 0..65535.
+  return result * CELL_LEPTON_W;
 }
 
 /***********************************************************************************************
@@ -347,9 +348,9 @@ LEPTON CCINIClass::Get_Lepton(const char* section, const char* entry,
  *                                                                                             *
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
-bool CCINIClass::Put_Lepton(const char* section, const char* entry,
-                            LEPTON value) {
-  return Put_Fixed(section, entry, Fixed(value, CELL_LEPTON_W));
+bool CCINIClass::Put_Lepton(const char* section, const char* entry, int value) {
+  return Put_Fixed(section, entry,
+                   Fixed(static_cast<uint16_t>(value), CELL_LEPTON_W));
 }
 
 /***********************************************************************************************

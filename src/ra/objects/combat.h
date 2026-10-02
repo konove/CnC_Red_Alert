@@ -11,7 +11,9 @@ int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor,
 void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
                       WarheadType warhead);
 AnimType Combat_Anim(int damage, WarheadType warhead, LandType land);
-void Wide_Area_Damage(COORDINATE coord, LEPTON radius, int damage,
+// Damages every cell within `radius` leptons of `coord`, scaled down with the
+// distance from the center. `radius` keeps its low 16 bits.
+void Wide_Area_Damage(COORDINATE coord, int radius, int damage,
                       TechnoClass* source, WarheadType warhead);
 
 }  // namespace ra

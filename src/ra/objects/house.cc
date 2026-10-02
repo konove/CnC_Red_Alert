@@ -2594,8 +2594,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
     case SPC_IRON_CURTAIN:
       if (SuperWeapon.at(SPC_IRON_CURTAIN).Is_Ready()) {
         TechnoClass* tech = TheMap().at(cell).Cell_Techno(
-            Lepton_To_Pixel(static_cast<LEPTON>(Coord_XLepton(where))),
-            Lepton_To_Pixel(static_cast<LEPTON>(Coord_YLepton(where))));
+            Lepton_To_Pixel(Coord_XLepton(where)),
+            Lepton_To_Pixel(Coord_YLepton(where)));
         if (tech) {
           switch (tech->What_Am_I()) {
             case RTTI_UNIT:
@@ -2656,8 +2656,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
     case SPC_CHRONOSPHERE:
       if (SuperWeapon.at(SPC_CHRONOSPHERE).Is_Ready()) {
         TechnoClass* tech = TheMap().at(cell).Cell_Techno(
-            Lepton_To_Pixel(static_cast<LEPTON>(Coord_XLepton(where))),
-            Lepton_To_Pixel(static_cast<LEPTON>(Coord_YLepton(where))));
+            Lepton_To_Pixel(Coord_XLepton(where)),
+            Lepton_To_Pixel(Coord_YLepton(where)));
         if (tech && Is_Ally(tech)) {
           if (tech->What_Am_I() == RTTI_UNIT ||
               tech->What_Am_I() == RTTI_INFANTRY ||
@@ -4335,7 +4335,7 @@ void HouseClass::Recalc_Center() {
       x /= count;
       y /= count;
 
-      Center = XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
+      Center = XY_Coord(x, y);
     }
 
     /*

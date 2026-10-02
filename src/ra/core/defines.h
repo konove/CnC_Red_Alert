@@ -265,11 +265,6 @@ inline constexpr int16_t kRefreshEol = 32767;
 // This number flags that sidebar needs refreshing.
 inline constexpr int16_t kRefreshSidebar = 32766;
 
-// A distance or position along one axis, in leptons (256 to a cell). The
-// high byte is the cell and the low byte the position within it; the
-// helpers in ra/core/packed.h take the two apart.
-using LEPTON = uint16_t;
-
 // A map position with lepton resolution: the X lepton word in the low 16
 // bits, the Y word in the high 16. CELL (declared above with the map
 // dimensions) is the cheaper cell-resolution index into the map.

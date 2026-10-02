@@ -473,7 +473,7 @@ class TechnoTypeClass : public ObjectTypeClass {
   **	longest weapon range the object has. If the value is zero, then the
   **	weapon range is used.
   */
-  LEPTON ThreatRange{0};
+  int ThreatRange{0};
 
   /*
   **	If this is a transporter object (e.g., hovercraft, chinook, APC), then

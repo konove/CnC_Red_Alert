@@ -534,7 +534,7 @@ bool ObjectClass::Can_Player_Move() const {
 COORDINATE ObjectClass::Target_Coord() const {
   DCHECK(IsActive);
 
-  return Coord_Add(XY_Coord(0, static_cast<LEPTON>(-Height)), Center_Coord());
+  return Coord_Add(XY_Coord(0, -Height), Center_Coord());
   //	return(Center_Coord());
 }
 

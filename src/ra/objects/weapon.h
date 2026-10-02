@@ -161,7 +161,7 @@ class WeaponTypeClass {
   **	projectile will travel. Objects outside of this range will not be fired
   **	upon (in normal circumstances).
   */
-  LEPTON Range{0};
+  int Range{0};
 
   /*
   **	This is the typical sound generated when firing.

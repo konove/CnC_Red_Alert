@@ -92,6 +92,15 @@
     while the type heaps have no holes, which holds after a fresh INI load; a type deleted in the
     scenario editor leaves one. The original game had the same pairing. Either write `SlotIndexOf()`
     or check that the editor saves its types in slot order
+- Decide whether Red Alert's lepton distances should still wrap at 16 bits
+  - Leptons became `int` in stage B1 of `docs/COORDINATE_TYPES_PLAN.md`, which kept every old
+    `uint16_t` wrap explicitly. Three of them turn a large value into a small one:
+    `Wide_Area_Damage()` (`ra/objects/combat.cc`) wraps a radius of 256 cells or more (an exploding
+    unit's `MaxStrength` times `ExplosionSpread`), `Constrained_Look()` (`ra/map/display.cc`) a
+    `GapRadius=` of 256 cells or more, and `Update_View_Dimensions()` a tactical view 6144 pixels
+    wide; `Lepton_To_Pixel()` (`ra/core/packed.h`) also reads 128 cells or more as negative
+  - None is reachable with the shipped rules and today's screen sizes; dropping a wrap changes
+    behaviour, so do it in its own commit with a test
 - Check the heap `Save()` results in Red Alert's save game
   - `ra/saveload/saveload.cc` (~281-340) ignores every `ObjectHeap<T>::Save()` result, which is
     `writer.ok()` since `90064ddd`; Tiberian Dawn's `saveload.cc` stops at the first false

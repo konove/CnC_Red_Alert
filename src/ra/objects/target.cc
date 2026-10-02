@@ -574,7 +574,7 @@ COORDINATE As_Coord(TARGET target) {
 
       const int x = static_cast<int>((v & 0x0FFFU) * 16) + 0x0008;
       const int y = static_cast<int>(((v >> 12U) & 0x0FFFU) * 16) + 0x0008;
-      return XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
+      return XY_Coord(x, y);
     }
 
     /*
@@ -947,8 +947,8 @@ TARGET As_Target(CELL cell) {
  * HISTORY: * 03/05/1996 JLB : Created. *
  *=============================================================================================*/
 TARGET As_Target(COORDINATE coord) {
-  const uint32_t x = Coord_X(coord) / 16;
-  const uint32_t y = Coord_Y(coord) / 16;
+  const auto x = static_cast<uint32_t>(Coord_X(coord) / 16);
+  const auto y = static_cast<uint32_t>(Coord_Y(coord) / 16);
 
   return Build_Target(RTTI_CELL, static_cast<int>(y << 12U | x));
 }

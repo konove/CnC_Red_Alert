@@ -3844,7 +3844,7 @@ void InfantryClass::Movement_AI() {
         **	toward the unit. Shorten the precalculated path to be no longer
         **	than the distance to the target.
         */
-        const int d = Lepton_To_Cell(static_cast<LEPTON>(Distance(NavCom)));
+        const int d = Lepton_To_Cell(Distance(NavCom));
         if (d < kConquerPathMax) {
           base::At(Path, d) = game::FACING_NONE;
         }

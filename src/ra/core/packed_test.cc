@@ -1,9 +1,10 @@
-// Pins the packed CELL, LEPTON, COORDINATE and TARGET encodings, including the
+// Pins the packed CELL, lepton, COORDINATE and TARGET encodings, including the
 // truncation the original bit-fields performed on out-of-range components.
 
 #include "ra/core/packed.h"
 
 #include <cstdint>
+#include <type_traits>
 
 #include "gtest/gtest.h"
 #include "ra/core/defines.h"
@@ -17,6 +18,24 @@ constexpr COORDINATE kSample = 0x12345678;
 static_assert(XY_Cell(5, 3) == 389);
 static_assert(Coord_Cell(kSample) == XY_Cell(0x56, 0x12));
 static_assert(Build_Target(RTTI_NONE, 0) == kTargetNone);
+
+// The type of a noexcept function returning R from Args.
+template <class R, class... Args>
+using NoexceptFn = R(Args...) noexcept;
+
+// Leptons are plain ints at the interface; the 16-bit word exists only inside
+// the packers, which wrap what they are given.
+static_assert(
+    std::is_same_v<decltype(XY_Coord), NoexceptFn<COORDINATE, int, int>>);
+static_assert(std::is_same_v<decltype(Coord_X), NoexceptFn<int, COORDINATE>>);
+static_assert(std::is_same_v<decltype(Coord_Y), NoexceptFn<int, COORDINATE>>);
+static_assert(std::is_same_v<decltype(Lepton_Cell), NoexceptFn<int, int>>);
+static_assert(std::is_same_v<decltype(Lepton_Fraction), NoexceptFn<int, int>>);
+static_assert(std::is_same_v<decltype(Make_Lepton), NoexceptFn<int, int, int>>);
+static_assert(std::is_same_v<decltype(Cell_To_Lepton), NoexceptFn<int, int>>);
+static_assert(std::is_same_v<decltype(Lepton_To_Cell), NoexceptFn<int, int>>);
+static_assert(std::is_same_v<decltype(Lepton_To_Pixel), NoexceptFn<int, int>>);
+static_assert(std::is_same_v<decltype(Pixel_To_Lepton), NoexceptFn<int, int>>);
 
 TEST(PackedTest, CellPacksSevenBitsPerAxis) {
   EXPECT_EQ(XY_Cell(5, 3), (3 * 128) + 5);
@@ -74,6 +93,44 @@ TEST(PackedTest, LeptonCellConversions) {
   EXPECT_EQ(Lepton_To_Cell(0x017F), 1);
   EXPECT_EQ(Lepton_To_Cell(0x0180), 2);
   EXPECT_EQ(Lepton_To_Cell(0xFF80), 256);
+}
+
+// Leptons are 16-bit words wherever they are packed: out-of-range components
+// wrap on the way in, and every component read back is in 0..65535.
+TEST(PackedTest, CoordinateComponentsWrapAtSixteenBits) {
+  EXPECT_EQ(XY_Coord(-1, 0x10000), XY_Coord(0xFFFF, 0));
+  EXPECT_EQ(XY_Coord(0x12345, -0x10000), XY_Coord(0x2345, 0));
+  EXPECT_EQ(Coord_X(0xFFFFFFFFU), 0xFFFF);
+  EXPECT_EQ(Coord_Y(0xFFFFFFFFU), 0xFFFF);
+  EXPECT_GE(Coord_X(0xFFFFFFFFU), 0);
+  EXPECT_GE(Coord_Y(0xFFFFFFFFU), 0);
+}
+
+TEST(PackedTest, LeptonBytesWrapAtSixteenBits) {
+  EXPECT_EQ(Lepton_Cell(-1), 0xFF);
+  EXPECT_EQ(Lepton_Fraction(-1), 0xFF);
+  EXPECT_EQ(Lepton_Cell(0x10200), 2);
+  EXPECT_EQ(Make_Lepton(-1, 300), 0xFF2C);
+  EXPECT_EQ(Cell_To_Lepton(-1), 0xFF00);
+  // -1 lepton is the word 0xFFFF: 255 cells and a fraction that rounds up.
+  EXPECT_EQ(Lepton_To_Cell(-1), 256);
+  EXPECT_EQ(Lepton_To_Cell(0x10180), 2);
+}
+
+TEST(PackedTest, LeptonPixelConversions) {
+  EXPECT_EQ(Lepton_To_Pixel(0x0100), 24);
+  EXPECT_EQ(Lepton_To_Pixel(0x10100), 24);
+  // The word is read as signed: 0xFFFF is -1 lepton, 0xFE00 is -512.
+  EXPECT_EQ(Lepton_To_Pixel(0xFFFF), 0);
+  EXPECT_EQ(Lepton_To_Pixel(-1), 0);
+  EXPECT_EQ(Lepton_To_Pixel(0xFE00), -47);
+  EXPECT_EQ(Lepton_To_Pixel(-512), -47);
+  EXPECT_EQ(Lepton_To_Pixel(0x8000), -3071);
+  EXPECT_EQ(Pixel_To_Lepton(24), 0x0100);
+  // Negative and oversized pixel counts wrap to a 16-bit word.
+  EXPECT_EQ(Pixel_To_Lepton(-1), 0xFFF6);
+  EXPECT_EQ(Pixel_To_Lepton(-24), 0xFF01);
+  EXPECT_EQ(Pixel_To_Lepton(10000), 41131);
 }
 
 TEST(PackedTest, TargetPacksKindOverValue) {

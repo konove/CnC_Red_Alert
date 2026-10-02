@@ -1561,8 +1561,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     if (quantity) {
       x /= quantity;
       y /= quantity;
-      const COORDINATE coord =
-          XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
+      const COORDINATE coord = XY_Coord(x, y);
       center = ra::As_Target(coord);
 
       /*

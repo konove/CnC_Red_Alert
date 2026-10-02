@@ -173,8 +173,8 @@ void ChronalVortexClass::Appear(COORDINATE coordinate) {
   x -= 32;
   y -= 32;
 
-  const LEPTON lx = Pixel_To_Lepton(x);
-  const LEPTON ly = Pixel_To_Lepton(y);
+  const int lx = Pixel_To_Lepton(x);
+  const int ly = Pixel_To_Lepton(y);
 
   Position = XY_Coord(lx, ly);
 
@@ -456,11 +456,10 @@ void ChronalVortexClass::Movement() {
   /*
   ** Update the vortex position by applying the x and y direction variables
   */
-  LEPTON x = Coord_X(Position);
-  LEPTON y = Coord_Y(Position);
-
-  x += XDir;
-  y += YDir;
+  // Each component is a 16-bit lepton word: drifting past the world's left or
+  // top edge wraps to a huge position, as it always has.
+  const int x = static_cast<uint16_t>(Coord_X(Position) + XDir);
+  const int y = static_cast<uint16_t>(Coord_Y(Position) + YDir);
 
   Position = XY_Coord(x, y);
 
@@ -588,8 +587,8 @@ void ChronalVortexClass::Attack() {
   x += 32;
   y += 12;
 
-  const LEPTON lx = Pixel_To_Lepton(x);
-  const LEPTON ly = Pixel_To_Lepton(y);
+  const int lx = Pixel_To_Lepton(x);
+  const int ly = Pixel_To_Lepton(y);
 
   const COORDINATE here = XY_Coord(lx, ly);
 
@@ -675,8 +674,8 @@ void ChronalVortexClass::Zap_Target() {
     x += 32;
     y += 12;
 
-    const LEPTON lx = Pixel_To_Lepton(x);
-    const LEPTON ly = Pixel_To_Lepton(y);
+    const int lx = Pixel_To_Lepton(x);
+    const int ly = Pixel_To_Lepton(y);
 
     const COORDINATE here = XY_Coord(lx, ly);
 
@@ -932,8 +931,7 @@ void ChronalVortexClass::Render(PixelView& view) {
       */
       // Coord_Whole(Position);
       const COORDINATE render_pos =
-          XY_Coord(static_cast<LEPTON>(xc * CELL_LEPTON_W),
-                   static_cast<LEPTON>(yc * CELL_LEPTON_H));
+          XY_Coord(xc * CELL_LEPTON_W, yc * CELL_LEPTON_H);
 
       const int xtac =
           Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(TheMap().TacticalCoord)));
@@ -955,10 +953,9 @@ void ChronalVortexClass::Render(PixelView& view) {
       // Blit the freshly drawn cells and vortex into place on the hid page.
       // The whole of RenderBuffer goes across; Blit clips it to the tactical
       // view and advances the source by whatever came off the top and left.
-      RenderBuffer.view().BlitTo(target, 0, 0,
-                                 Lepton_To_Pixel(static_cast<LEPTON>(xoff)),
-                                 Lepton_To_Pixel(static_cast<LEPTON>(yoff)),
-                                 RenderBuffer.width(), RenderBuffer.height());
+      RenderBuffer.view().BlitTo(target, 0, 0, Lepton_To_Pixel(xoff),
+                                 Lepton_To_Pixel(yoff), RenderBuffer.width(),
+                                 RenderBuffer.height());
     }
   }
 }

@@ -1,6 +1,9 @@
 // The bit layouts of Red Alert's packed map and target words: CELL (7-bit X
-// and Y), LEPTON (cell byte over sub-cell byte), COORDINATE (X lepton word
-// low, Y lepton word high) and TARGET (8-bit RTTI kind over a 24-bit value).
+// and Y), the lepton word (cell byte over sub-cell byte), COORDINATE (X lepton
+// word low, Y lepton word high) and TARGET (8-bit RTTI kind over a 24-bit
+// value), with the lepton/pixel conversions that share the 16-bit lepton word.
+// A lepton (256 to a cell) is a plain int everywhere else; these helpers
+// wrap it to the 16-bit word.
 
 #ifndef CNC_RED_ALERT_RA_CORE_PACKED_H_
 #define CNC_RED_ALERT_RA_CORE_PACKED_H_
@@ -21,9 +24,11 @@ inline constexpr unsigned kTargetMantissaBits = 24;
 inline constexpr uint32_t kTargetMantissaMask =
     (uint32_t{1} << kTargetMantissaBits) - 1;
 
-// Combines X and Y lepton components into a coordinate.
-constexpr COORDINATE XY_Coord(LEPTON x, LEPTON y) noexcept {
-  return (COORDINATE{y} << 16U) | x;
+// Combines X and Y lepton components into a coordinate. Each keeps its low 16
+// bits, so a negative component becomes its two's complement word.
+constexpr COORDINATE XY_Coord(int x, int y) noexcept {
+  return (COORDINATE{static_cast<uint16_t>(y)} << 16U) |
+         static_cast<uint16_t>(x);
 }
 
 // Returns the sub-cell coordinate of a cell's center.
@@ -31,27 +36,32 @@ constexpr COORDINATE CellCenterFraction() noexcept {
   return XY_Coord(CELL_LEPTON_W / 2, CELL_LEPTON_H / 2);
 }
 
-// Returns the X lepton component of a coordinate.
-constexpr LEPTON Coord_X(COORDINATE coord) noexcept {
-  return static_cast<LEPTON>(coord);
+// Returns the X lepton component of a coordinate, in 0..65535.
+constexpr int Coord_X(COORDINATE coord) noexcept {
+  return static_cast<uint16_t>(coord);
 }
 
-// Returns the Y lepton component of a coordinate.
-constexpr LEPTON Coord_Y(COORDINATE coord) noexcept {
-  return static_cast<LEPTON>(coord >> 16U);
+// Returns the Y lepton component of a coordinate, in 0..65535.
+constexpr int Coord_Y(COORDINATE coord) noexcept {
+  return static_cast<uint16_t>(coord >> 16U);
 }
 
-// Returns the cell byte of a lepton word: whole cells.
-constexpr int Lepton_Cell(LEPTON lepton) noexcept { return lepton >> 8U; }
+// Returns the cell byte of a lepton word: whole cells. The lepton keeps its
+// low 16 bits, so -1 is the word 0xFFFF.
+constexpr int Lepton_Cell(int lepton) noexcept {
+  return static_cast<uint16_t>(lepton) >> 8U;
+}
 
 // Returns the sub-cell byte of a lepton word: the position within the cell.
-constexpr int Lepton_Fraction(LEPTON lepton) noexcept { return lepton & 0xFFU; }
+constexpr int Lepton_Fraction(int lepton) noexcept {
+  return static_cast<uint16_t>(lepton) & 0xFFU;
+}
 
-// Builds a lepton word from a cell and a position within it. Each keeps its
-// low 8 bits.
-constexpr LEPTON Make_Lepton(int cell, int fraction) noexcept {
-  return static_cast<LEPTON>(((static_cast<unsigned>(cell) & 0xFFU) << 8U) |
-                             (static_cast<unsigned>(fraction) & 0xFFU));
+// Builds a lepton word, in 0..65535, from a cell and a position within it.
+// Each keeps its low 8 bits.
+constexpr int Make_Lepton(int cell, int fraction) noexcept {
+  return static_cast<int>(((static_cast<unsigned>(cell) & 0xFFU) << 8U) |
+                          (static_cast<unsigned>(fraction) & 0xFFU));
 }
 
 // Returns the X cell component of a coordinate.
@@ -74,14 +84,31 @@ constexpr CELL XY_Cell(int x, int y) noexcept {
 
 // Converts a distance in cells to leptons. Only the low 8 bits of the cell
 // count fit.
-constexpr LEPTON Cell_To_Lepton(int cell_distance) noexcept {
+constexpr int Cell_To_Lepton(int cell_distance) noexcept {
   return Make_Lepton(cell_distance, 0);
 }
 
-// Converts a distance in leptons to the nearest whole number of cells.
-constexpr int Lepton_To_Cell(LEPTON lepton_distance) noexcept {
+// Converts a distance in leptons to the nearest whole number of cells. The
+// distance keeps its low 16 bits, so -1 is 0xFFFF and rounds to 256 cells.
+constexpr int Lepton_To_Cell(int lepton_distance) noexcept {
   return Lepton_Cell(lepton_distance) +
          (Lepton_Fraction(lepton_distance) >= CELL_LEPTON_W / 2 ? 1 : 0);
+}
+
+// Converts a lepton distance to the nearest whole number of pixels. The
+// distance keeps its low 16 bits, read as signed, so 0xFFFF is -1 lepton.
+// Precision is lost: a value converted to pixels and back usually differs.
+constexpr int Lepton_To_Pixel(int lepton) noexcept {
+  return ((static_cast<int>(static_cast<int16_t>(lepton)) * ICON_PIXEL_W) +
+          (ICON_LEPTON_W / 2)) /
+         ICON_LEPTON_W;
+}
+
+// Converts a pixel distance to the nearest lepton distance, as a 16-bit
+// lepton word in 0..65535: a negative pixel count wraps.
+constexpr int Pixel_To_Lepton(int pixel) noexcept {
+  return static_cast<uint16_t>(((pixel * ICON_LEPTON_W) + (ICON_PIXEL_W / 2)) /
+                               ICON_PIXEL_W);
 }
 
 // Returns the X component of a cell.
@@ -136,20 +163,19 @@ constexpr COORDINATE Coord_Whole(COORDINATE coord) noexcept {
 // Adds two coordinates component by component; each component wraps at 16
 // bits, so a coordinate can carry a negative offset.
 constexpr COORDINATE Coord_Add(COORDINATE a, COORDINATE b) noexcept {
-  return XY_Coord(static_cast<LEPTON>(Coord_X(a) + Coord_X(b)),
-                  static_cast<LEPTON>(Coord_Y(a) + Coord_Y(b)));
+  return XY_Coord(Coord_X(a) + Coord_X(b), Coord_Y(a) + Coord_Y(b));
 }
 
 // Subtracts coord2 from coord1 component by component, wrapping at 16 bits.
 constexpr COORDINATE Coord_Sub(COORDINATE coord1, COORDINATE coord2) noexcept {
-  return XY_Coord(static_cast<LEPTON>(Coord_X(coord1) - Coord_X(coord2)),
-                  static_cast<LEPTON>(Coord_Y(coord1) - Coord_Y(coord2)));
+  return XY_Coord(Coord_X(coord1) - Coord_X(coord2),
+                  Coord_Y(coord1) - Coord_Y(coord2));
 }
 
 // Returns the midpoint of two coordinates, averaging the unsigned components.
 constexpr COORDINATE Coord_Mid(COORDINATE coord1, COORDINATE coord2) noexcept {
-  return XY_Coord(static_cast<LEPTON>((Coord_X(coord1) + Coord_X(coord2)) / 2),
-                  static_cast<LEPTON>((Coord_Y(coord1) + Coord_Y(coord2)) / 2));
+  return XY_Coord((Coord_X(coord1) + Coord_X(coord2)) / 2,
+                  (Coord_Y(coord1) + Coord_Y(coord2)) / 2);
 }
 
 // Packs an RTTI kind and a value into a target. The value keeps its low 24

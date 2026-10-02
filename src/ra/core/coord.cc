@@ -52,18 +52,20 @@ std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
   }
 
   const CELL origin_cell = Coord_Cell(coord);
-  const LEPTON x = Coord_X(coord);
-  const LEPTON y = Coord_Y(coord);
+  const int x = Coord_X(coord);
+  const int y = Coord_Y(coord);
 
-  // Convert the rect from coord-relative to absolute world leptons.
-  const auto left = static_cast<LEPTON>(
-      static_cast<int>(x) + static_cast<int16_t>(Pixel_To_Lepton(rect.X)));
-  const auto top = static_cast<LEPTON>(
-      static_cast<int>(y) + static_cast<int16_t>(Pixel_To_Lepton(rect.Y)));
-  const auto right =
-      static_cast<LEPTON>(left + Pixel_To_Lepton(rect.Width - 1));
-  const auto bottom =
-      static_cast<LEPTON>(top + Pixel_To_Lepton(rect.Height - 1));
+  // Convert the rect from coord-relative to absolute world leptons. Each edge
+  // is a 16-bit lepton word, so a rect reaching past the world's left or top
+  // edge wraps, as it always has.
+  const int left =
+      static_cast<uint16_t>(x + static_cast<int16_t>(Pixel_To_Lepton(rect.X)));
+  const int top =
+      static_cast<uint16_t>(y + static_cast<int16_t>(Pixel_To_Lepton(rect.Y)));
+  const int right =
+      static_cast<uint16_t>(left + Pixel_To_Lepton(rect.Width - 1));
+  const int bottom =
+      static_cast<uint16_t>(top + Pixel_To_Lepton(rect.Height - 1));
 
   const int cell_left = Lepton_Cell(left);
   const int cell_right = Lepton_Cell(right);
@@ -100,7 +102,7 @@ COORDINATE Coord_Move(const COORDINATE start, const game::DirType facing,
   auto y = static_cast<int16_t>(Coord_Y(start));
   base::MovePoint(x, y, static_cast<uint8_t>(facing),
                   static_cast<int16_t>(distance));
-  return XY_Coord(static_cast<LEPTON>(x), static_cast<LEPTON>(y));
+  return XY_Coord(x, y);
 }
 
 COORDINATE Coord_Scatter(const COORDINATE coord, const int distance,

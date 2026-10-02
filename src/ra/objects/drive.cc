@@ -487,8 +487,7 @@ COORDINATE DriveClass::Smooth_Turn(COORDINATE adj, game::DirType& dir) {
 
   dir = workdir;
 
-  return XY_Coord(static_cast<LEPTON>(Coord_X(Head_To_Coord()) + x),
-                  static_cast<LEPTON>(Coord_Y(Head_To_Coord()) + y));
+  return XY_Coord(Coord_X(Head_To_Coord()) + x, Coord_Y(Head_To_Coord()) + y);
 }
 
 /***********************************************************************************************
@@ -859,7 +858,7 @@ bool DriveClass::Start_Of_Move() {
   if (facing != game::FACING_NONE &&
       (Is_Target_Vessel(NavCom) || Is_Target_Unit(NavCom) ||
        Is_Target_Infantry(NavCom))) {
-    const int dist = Lepton_To_Cell(static_cast<LEPTON>(Distance(NavCom)));
+    const int dist = Lepton_To_Cell(Distance(NavCom));
     if (dist < std::ssize(Path)) {
       base::At(Path, dist) = game::FACING_NONE;
       facing = base::At(Path, 0);  // Maybe needed.

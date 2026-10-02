@@ -315,10 +315,9 @@ void PlaySoundEffectAt(const VocType voc, const COORDINATE coord,
     // Measured from the centre of the view: TacticalCoord is its upper-left
     // corner, which would make sounds below and right of the screen quieter
     // than those as far above and left.
-    const COORDINATE view_center =
-        Coord_Add(TheMap().TacticalCoord,
-                  XY_Coord(static_cast<LEPTON>(TheMap().TacLeptonWidth / 2),
-                           static_cast<LEPTON>(TheMap().TacLeptonHeight / 2)));
+    const COORDINATE view_center = Coord_Add(
+        TheMap().TacticalCoord,
+        XY_Coord(TheMap().TacLeptonWidth / 2, TheMap().TacLeptonHeight / 2));
     const int distance_cells = Distance(coord, view_center) / CELL_LEPTON_W;
     auto fade = Fixed(distance_cells, 128 + 64);
     fade.SaturateBelow(1);

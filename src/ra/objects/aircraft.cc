@@ -544,8 +544,7 @@ void AircraftClass::Draw_It(PixelView& view, int x, int y,
   /*
   **	This draws any overlay graphics on the aircraft.
   */
-  FootClass::Draw_It(view, x, y - Lepton_To_Pixel(static_cast<LEPTON>(Height)),
-                     window);
+  FootClass::Draw_It(view, x, y - Lepton_To_Pixel(Height), window);
 }
 
 /***********************************************************************************************
@@ -588,8 +587,7 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
     **	Dual rotors offset along flight axis.
     */
     auto xx = static_cast<int16_t>(x);
-    auto yy =
-        static_cast<int16_t>(y - Lepton_To_Pixel(static_cast<LEPTON>(Height)));
+    auto yy = static_cast<int16_t>(y - Lepton_To_Pixel(Height));
     const game::FacingType face = game::Dir_Facing(SecondaryFacing);
     base::MovePoint(xx, yy, static_cast<uint8_t>(SecondaryFacing.Current()),
                     static_cast<int16_t>(_stretch.at(face)));
@@ -607,8 +605,8 @@ void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
     **	Single rotor centered about shape.
     */
     CC_Draw_Shape(view, AircraftTypeClass::RRotorData, shapenum, x,
-                  y - Lepton_To_Pixel(static_cast<LEPTON>(Height)) - 2, window,
-                  flags, {}, DisplayClass::UnitShadow);
+                  y - Lepton_To_Pixel(Height) - 2, window, flags, {},
+                  DisplayClass::UnitShadow);
   }
 }
 

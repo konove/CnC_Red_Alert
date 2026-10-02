@@ -593,13 +593,13 @@ void BulletClass::Draw_It(PixelView& view, int x, int y,
     if (Class->IsParachuted) {
       CC_Draw_Shape(
           view, AnimTypeClass::As_Reference(ANIM_PARA_BOMB).Get_Image_Data(), 1,
-          x + Lepton_To_Pixel(static_cast<LEPTON>(Height / 2)), y + 10, window,
+          x + Lepton_To_Pixel(Height / 2), y + 10, window,
           ShapeFlags::kShadow | ShapeFlags::kCentered);
     } else {
       CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
                     ShapeFlags::kShadow | ShapeFlags::kCentered);
     }
-    y -= Lepton_To_Pixel(static_cast<LEPTON>(Height));
+    y -= Lepton_To_Pixel(Height);
   }
 
   /*
@@ -735,8 +735,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
       */
       if (/*Class->ROT != 0 ||*/ Class->IsArcing) {
         int scatterdist = (ra::Distance(coord, tcoord) / 16) - 0x0040;
-        scatterdist =
-            std::min(scatterdist, static_cast<int>(TheRules().HomingScatter));
+        scatterdist = std::min(scatterdist, TheRules().HomingScatter);
         scatterdist = std::max(scatterdist, 0);
 
         dir =
@@ -744,8 +743,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, game::DirType dir) {
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
         int scatterdist = (ra::Distance(coord, tcoord) / 16) - 0x0040;
-        scatterdist = std::min(scatterdist,
-                               static_cast<int>(TheRules().BallisticScatter));
+        scatterdist = std::min(scatterdist, TheRules().BallisticScatter);
         scatterdist = std::max(scatterdist, 0);
         tcoord = Coord_Move(tcoord, dir,
                             static_cast<uint16_t>(Random_Pick(0, scatterdist)));
@@ -855,7 +853,7 @@ COORDINATE BulletClass::Target_Coord() const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().bullet(), this);
   DCHECK(IsActive);
 
-  return Coord_Add(XY_Coord(0, static_cast<LEPTON>(-Height)), Coord);
+  return Coord_Add(XY_Coord(0, -Height), Coord);
 }
 
 /***********************************************************************************************

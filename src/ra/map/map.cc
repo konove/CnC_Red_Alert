@@ -734,9 +734,8 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
 
   //	PlayerPtr->IsToLook = true;
   if (!house->IsPlayerControl) {
-    MapEditClass::Constrained_Look(
-        Cell_Coord(cell),
-        static_cast<LEPTON>(TheRules().GapShroudRadius * CELL_LEPTON_W));
+    MapEditClass::Constrained_Look(Cell_Coord(cell),
+                                   TheRules().GapShroudRadius * CELL_LEPTON_W);
   }
 
 }

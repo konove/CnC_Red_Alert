@@ -332,7 +332,7 @@ class RulesClass {
   /*
   **	Controls the Chronal vortex characteristics.
   */
-  LEPTON VortexRange{10 * CELL_LEPTON_W};
+  int VortexRange{10 * CELL_LEPTON_W};
   game::MPHType VortexSpeed{static_cast<game::MPHType>(10)};
   int VortexDamage{200};
   Fixed VortexChance;
@@ -351,7 +351,7 @@ class RulesClass {
   **	weapons will supress firing on enemies if they are in close proximity
   **	to allied buildings.
   */
-  LEPTON SupressRadius{CELL_LEPTON_W};
+  int SupressRadius{CELL_LEPTON_W};
 
   /*
   **	This is the tech level that para infantry are granted free to the owner
@@ -455,7 +455,7 @@ class RulesClass {
   /*
   **	Landing zone maximum alternate zone scan radius.
   */
-  LEPTON LZScanRadius{16 * CELL_LEPTON_W};
+  int LZScanRadius{16 * CELL_LEPTON_W};
 
   /*
   **	Multiplayer default settings.
@@ -472,7 +472,7 @@ class RulesClass {
   /*
   **	Drop zone reveal radius.
   */
-  LEPTON DropZoneRadius{4 * CELL_LEPTON_W};
+  int DropZoneRadius{4 * CELL_LEPTON_W};
 
   /*
   **	This is the delay that multiplayer messages will remain on the screen.
@@ -750,7 +750,7 @@ class RulesClass {
   /*
   **	Mobile radar jammer radius of effect.
   */
-  LEPTON RadarJamRadius{10 * CELL_LEPTON_W};
+  int RadarJamRadius{10 * CELL_LEPTON_W};
 
   /*
   **	The speed at which a projectile that travels at or slower will cause
@@ -838,13 +838,13 @@ class RulesClass {
   *consider *	the object to have gotten "close enough" to the destination to
   *stop.
   */
-  LEPTON CloseEnoughDistance{0x0280};
+  int CloseEnoughDistance{0x0280};
 
   /*
   **	Stray distance to group team members within. The larger the distance,
   **	the looser the teams will move.
   */
-  LEPTON StrayDistance{0x0200};
+  int StrayDistance{0x0200};
 
   /*
   **	If a vehicle is closer than this range to a target that it can crush
@@ -852,19 +852,19 @@ class RulesClass {
   **	upon it. The larger the value, the greater the 'bigfoot crush syndrome'
   *is *	has.
   */
-  LEPTON CrushDistance{0x0180};
+  int CrushDistance{0x0180};
 
   /*
   **	For area effect crate bonus items will affect all objects within this
   *radius.
   */
-  LEPTON CrateRadius{0x0280};
+  int CrateRadius{0x0280};
 
   /*
   **	Maximum scatter distances for homing and non-homing projectiles.
   */
-  LEPTON HomingScatter{0x0200};
-  LEPTON BallisticScatter{0x0100};
+  int HomingScatter{0x0200};
+  int BallisticScatter{0x0100};
 
   /*
   **	This is the refund percentage when selling off buildings and units
@@ -943,8 +943,8 @@ class RulesClass {
   *used when finding a Tiberium *	field to harvest. Keep these ranges as
   *small as possible.
   */
-  LEPTON TiberiumShortScan{0x0600};
-  LEPTON TiberiumLongScan{0x2000};
+  int TiberiumShortScan{0x0600};
+  int TiberiumLongScan{0x2000};
 
   /*
   **	The Aftermath tunables. These have no entry in RULES.INI: the

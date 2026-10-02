@@ -1135,8 +1135,7 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
     rawdamage = TheRules().AtomDamage / 5;
   }
 
-  Wide_Area_Damage(Cell_Coord(cell),
-                   static_cast<LEPTON>(radius * CELL_LEPTON_W), rawdamage,
+  Wide_Area_Damage(Cell_Coord(cell), radius * CELL_LEPTON_W, rawdamage,
                    building, WARHEAD_FIRE);
   Shake_The_Screen(3);
   if (TheSession().Type == GAME_NORMAL) {

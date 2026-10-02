@@ -228,7 +228,6 @@ The following should **not** be changed during type migration:
 
 - **Game typedefs already using fixed-width types** (defined in each game's `defines.h`). Their
   width and signedness are game-specific units; change them only as a separate task:
-  - `LEPTON` (`uint16_t`)
   - `COORDINATE` (`uint32_t`)
   - `CELL` (`int16_t`)
   - `TARGET` (`int32_t` in RA, `uint16_t` in TD)

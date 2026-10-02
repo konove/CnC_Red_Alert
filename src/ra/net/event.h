@@ -297,6 +297,9 @@ class EventClass {
       EventNames;
 };
 
+// Events cross the wire as raw bytes, so their size is part of the protocol.
+static_assert(sizeof(EventClass) == 32);
+
 }  // namespace ra
 
 #endif  // CNC_RED_ALERT_RA_NET_EVENT_H_

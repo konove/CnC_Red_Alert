@@ -70,8 +70,8 @@ class DisplayClass : public MapClass {
   **	The dimensions (in cells) of the visible window onto the game map. This
   *tactical *	map is how the player interacts and views the game world.
   */
-  LEPTON TacLeptonWidth{0};
-  LEPTON TacLeptonHeight{0};
+  int TacLeptonWidth{0};
+  int TacLeptonHeight{0};
 
   /*
   **	These layer control elements are used to group the displayable objects
@@ -141,7 +141,10 @@ class DisplayClass : public MapClass {
   **	Added functionality.
   */
   static void All_To_Look(bool units_only = false);
-  static void Constrained_Look(COORDINATE center, LEPTON distance);
+  // Has the player's units (and allied buildings, if allies reveal) that are
+  // within their sight range plus `distance` leptons of `center` look around.
+  // `distance` keeps its low 16 bits.
+  static void Constrained_Look(COORDINATE center, int distance);
   void Shroud_Cell(CELL cell /*KO, bool shadeit = false*/);
   void Encroach_Shadow();
   void Center_Map(COORDINATE center = 0L);

@@ -3888,8 +3888,7 @@ COORDINATE BuildingClass::Sort_Y() const {
     return Coord_Move(Center_Coord(), game::DIR_N, CELL_LEPTON_H);
   }
 
-  return Coord_Add(Center_Coord(),
-                   XY_Coord(0, static_cast<LEPTON>(Class->Height() * 256 / 3)));
+  return Coord_Add(Center_Coord(), XY_Coord(0, Class->Height() * 256 / 3));
 }
 
 /***********************************************************************************************

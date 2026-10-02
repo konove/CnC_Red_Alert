@@ -81,8 +81,9 @@ class CCINIClass : public INIClass {
                             BulletType defvalue) const;
   HousesType Get_HousesType(const char* section, const char* entry,
                             HousesType defvalue) const;
-  LEPTON Get_Lepton(const char* section, const char* entry,
-                    LEPTON defvalue) const;
+  // Returns the entry, written in cells ("1.5"), as leptons in 0..65535, or
+  // `defvalue` when it is missing. Both keep their low 16 bits.
+  int Get_Lepton(const char* section, const char* entry, int defvalue) const;
   game::MPHType Get_MPHType(const char* section, const char* entry,
                             game::MPHType defvalue) const;
   OverlayType Get_OverlayType(const char* section, const char* entry,
@@ -117,7 +118,7 @@ class CCINIClass : public INIClass {
                      game::ArmorType value);
   bool Put_BulletType(const char* section, const char* entry, BulletType value);
   bool Put_HousesType(const char* section, const char* entry, HousesType value);
-  bool Put_Lepton(const char* section, const char* entry, LEPTON value);
+  bool Put_Lepton(const char* section, const char* entry, int value);
   bool Put_MPHType(const char* section, const char* entry, game::MPHType value);
   bool Put_VQType(const char* section, const char* entry, VQType value);
   bool Put_OverlayType(const char* section, const char* entry,

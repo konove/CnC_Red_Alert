@@ -112,49 +112,6 @@ inline RandomClass& LocalRandom() {
 }
 
 /***********************************************************************************************
- * Lepton_To_Pixel -- Convert a lepton value into pixel value. *
- *                                                                                             *
- *    Use this routine to convert the specified lepton value into it's pixel
- *corresponding     * value. The pixel value returned will be the closest pixel
- *value to the lepton value. It  * will round up or down as necessary. *
- *                                                                                             *
- * INPUT:   lepton   -- The lepton value to convert into a pixel value. *
- *                                                                                             *
- * OUTPUT:  Returns with the lepton value rounded to the nearest pixel
- *component.              *
- *                                                                                             *
- * WARNINGS:   Precision is not maintained by this routine. Thus, if a value is
- *converted to   * pixel and then back to leptons, the value will probably not
- *be the same.        *
- *                                                                                             *
- * HISTORY: * 08/21/1996 JLB : Created. *
- *=============================================================================================*/
-inline int Lepton_To_Pixel(LEPTON lepton) {
-  return ((static_cast<int>(static_cast<int16_t>(lepton)) * ICON_PIXEL_W) +
-          (ICON_LEPTON_W / 2)) /
-         ICON_LEPTON_W;
-}
-
-/***********************************************************************************************
- * Pixel_To_Lepton -- Convert pixel value into lepton equivalent. *
- *                                                                                             *
- *    This routine will take the specified pixel value and convert it into
- *lepton value.       *
- *                                                                                             *
- * INPUT:   pixel -- The pixel value to convert. *
- *                                                                                             *
- * OUTPUT:  Returns with the lepton equivalent of the pixel value specified. *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 08/21/1996 JLB : Created. *
- *=============================================================================================*/
-inline LEPTON Pixel_To_Lepton(int pixel) {
-  return static_cast<LEPTON>(((pixel * ICON_LEPTON_W) + (ICON_PIXEL_W / 2)) /
-                             ICON_PIXEL_W);
-}
-
-/***********************************************************************************************
  * XYP_COORD -- Convert pixel components into a coordinate value. *
  *                                                                                             *
  *    This routine will take the specified pixel components and convert and

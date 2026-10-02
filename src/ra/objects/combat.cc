@@ -43,6 +43,7 @@
 #include "ra/objects/combat.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <iterator>
 
 #include "base/array.h"
@@ -448,9 +449,12 @@ AnimType Combat_Anim(int damage, WarheadType warhead, LandType land) {
  *                                                                                             *
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
-void Wide_Area_Damage(COORDINATE coord, LEPTON radius, int rawdamage,
+void Wide_Area_Damage(COORDINATE coord, int radius, int rawdamage,
                       TechnoClass* source, WarheadType warhead) {
-  const int cell_radius = (radius + CELL_LEPTON_W - 1) / CELL_LEPTON_W;
+  // The radius was a 16-bit lepton word; an exploding unit's strength times
+  // the explosion spread still wraps the way it always did.
+  const int cell_radius =
+      (static_cast<uint16_t>(radius) + CELL_LEPTON_W - 1) / CELL_LEPTON_W;
   const CELL cell = Coord_Cell(coord);
 
   for (int x = -cell_radius; x <= cell_radius; x++) {
@@ -475,10 +479,8 @@ void Wide_Area_Damage(COORDINATE coord, LEPTON radius, int rawdamage,
       }
 
       const int dist_from_center =
-          Distance(XY_Coord(static_cast<LEPTON>(x + cell_radius),
-                            static_cast<LEPTON>(y + cell_radius)),
-                   XY_Coord(static_cast<LEPTON>(cell_radius),
-                            static_cast<LEPTON>(cell_radius)));
+          Distance(XY_Coord(x + cell_radius, y + cell_radius),
+                   XY_Coord(cell_radius, cell_radius));
       const int damage =
           rawdamage * Fixed(cell_radius, dist_from_center).Invert();
       Explosion_Damage(Cell_Coord(tcell), damage, source, warhead);
