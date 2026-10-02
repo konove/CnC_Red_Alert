@@ -48,6 +48,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <algorithm>
 #include <cstdint>
 #include <filesystem>
 #include <span>
@@ -1422,8 +1423,8 @@ void TemplateTypeClass::Display(PixelView& view, int x, int y,
                                 HousesType /*unused*/) const {
   unsigned char map[13 * 8];
 
-  const int w = Bound(Width, 1, 13);
-  const int h = Bound(Height, 1, 8);
+  const int w = std::clamp(static_cast<int>(Width), 1, 13);
+  const int h = std::clamp(static_cast<int>(Height), 1, 8);
   const bool scale = (w > 3 || h > 3);  // Should the template be half sized?
   if (scale) {
     x -= (w / 2) * (ICON_PIXEL_W / 2);

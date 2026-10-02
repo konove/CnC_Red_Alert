@@ -138,7 +138,7 @@ void DriveClass::Do_Turn(game::DirType dir) {
       // the shift floors negative differences as the original did.
       // NOLINTNEXTLINE(bugprone-signed-bitwise)
       int facediff = PrimaryFacing.Difference(dir) >> 5;
-      facediff = Bound(facediff, -2, 2);
+      facediff = std::clamp(facediff, -2, 2);
       if (facediff) {
         const game::FacingType face =
             game::Dir_Facing(PrimaryFacing);  // Current facing (ordinal value).

@@ -41,6 +41,7 @@
 
 #include "td/objects/combat.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <iterator>
 
@@ -111,7 +112,7 @@ int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor,
     //		if (distance < 0x0010) damage *= 2;			//
     // Double damage for direct hits.
     distance /= static_cast<int>(base::Bit<uint32_t>(whead->SpreadFactor));
-    distance = Bound(distance, 0, 16);
+    distance = std::clamp(distance, 0, 16);
     damage /= static_cast<int>(base::Bit<uint32_t>(distance));
   }
 

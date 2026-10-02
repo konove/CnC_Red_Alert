@@ -41,7 +41,6 @@
 #ifndef CNC_RED_ALERT_TD_CORE_JSHELL_H_
 #define CNC_RED_ALERT_TD_CORE_JSHELL_H_
 
-#include <algorithm>
 #include <bit>
 #include <cstddef>
 #include <cstdint>
@@ -144,10 +143,6 @@ inline int First_False_Bit(std::span<const uint32_t> array) {
     off += 32;
   }
   return -1;
-}
-
-inline int Bound(int original, int minval, int maxval) {
-  return std::clamp(original, minval, maxval);
 }
 
 // Prints `format` with `args`, checked at compile time, to stderr, then

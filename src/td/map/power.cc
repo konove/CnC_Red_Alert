@@ -51,6 +51,7 @@
 */
 #include "td/map/power.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -65,7 +66,6 @@
 #include "game/ui/gadget.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/editor/mapedit.h"
 #include "td/map/radar.h"
 #include "td/map/world.h"
@@ -198,8 +198,8 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
           DrainHeight == DesiredDrainHeight
               ? DrainHeight + (base::At(_modtable, DrainBounce) * DrainDir)
               : DrainHeight;
-      power_height = Bound(power_height, 0, PowHeight - 2);
-      drain_height = Bound(drain_height, 0, PowHeight - 2);
+      power_height = std::clamp(power_height, 0, PowHeight - 2);
+      drain_height = std::clamp(drain_height, 0, PowHeight - 2);
 
       /*
       ** Create a clip region to draw the unfilled section of the bar
@@ -433,7 +433,7 @@ int PowerClass::Power_Height(int value) const {
                        kPowerStepLevel);
   }
 
-  retval = Bound(retval, 0, PowHeight - 2);
+  retval = std::clamp(retval, 0, PowHeight - 2);
   return retval;
 }
 

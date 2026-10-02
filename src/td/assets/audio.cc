@@ -375,7 +375,7 @@ void Sound_Effect(VocType voc, Coordinate coord, int variation) {
     if (std::abs(pan_value) > Lepton_To_Cell(TheMap().TacLeptonWidth / 2)) {
       pan_value *= 0x8000;
       pan_value /= MAP_CELL_W / 4;
-      pan_value = Bound(pan_value, -0x7FFF, 0x7FFF);
+      pan_value = std::clamp(pan_value, -0x7FFF, 0x7FFF);
       //			pan_value  = std::max((int)pan_value,
       //(int)-0x7FFF); 			pan_value  = std::min((int)pan_value,
       // 0x7FFF);

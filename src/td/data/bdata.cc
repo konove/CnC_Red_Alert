@@ -4396,7 +4396,9 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, Cell& cell) const {
  *                                                                                             *
  * HISTORY: * 06/29/1995 JLB : Created. *
  *=============================================================================================*/
-int BuildingTypeClass::Max_Pips() const { return Bound(Capacity / 100, 0, 10); }
+int BuildingTypeClass::Max_Pips() const {
+  return std::clamp(Capacity / 100, 0, 10);
+}
 
 /***********************************************************************************************
  * BuildingTypeClass::Full_Name -- Fetches the full name text number. *

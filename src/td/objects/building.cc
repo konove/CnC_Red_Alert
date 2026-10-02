@@ -775,7 +775,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
             // Fixed_To_Cardinal(4, Cardinal_To_Fixed(House->Capacity,
             // House->Tiberium));
 
-            shapenum += Bound(level, 0, 4);
+            shapenum += std::clamp(level, 0, 4);
             if (Health_Ratio() < 0x0080) {
               shapenum += 5;
             }
@@ -4282,7 +4282,7 @@ int BuildingClass::Mission_Deconstruction() {
           }
           int count = (Class->Raw_Cost() + (divisor - 1)) / divisor;
           bool engine = false;
-          count = Bound(count, 1, 5);
+          count = std::clamp(count, 1, 5);
 
           while (count) {
             /*
@@ -4795,7 +4795,7 @@ int BuildingClass::Mission_Repair() {
             Status = kIdle;
 #ifdef OBSOLETE
           } else {
-            int time = Bound(
+            int time = std::clamp(
                 base::FixedToCardinal(kTicksPerSecond, House->Power_Fraction()),
                 0, kTicksPerSecond);
             time = (kTicksPerSecond + (kTicksPerSecond / 2)) - time;
@@ -4844,7 +4844,7 @@ int BuildingClass::Mission_Repair() {
             Contact_With_Whom()->Assign_Mission(MISSION_GUARD);
             return 1;
           }
-          int time = Bound(
+          int time = std::clamp(
               base::FixedToCardinal(kTicksPerSecond, House->Power_Fraction()),
               0, kTicksPerSecond);
           time = (kTicksPerSecond * 3) - time;

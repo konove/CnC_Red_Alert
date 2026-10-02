@@ -54,7 +54,6 @@
 #include "td/ai/special.h"
 #include "td/assets/screen.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/map/help.h"
 #include "td/screens/goptions.h"
 
@@ -184,7 +183,7 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
         **	Increase the scroll rate if the mouse button is held down.
         */
         if (engine::window::IsRightButtonDown()) {
-          rate = Bound(
+          rate = std::clamp(
               rate + 1, 4,
               static_cast<int>(sizeof(_rate) / sizeof(base::At(_rate, 0))) - 1);
         }
@@ -200,7 +199,7 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
 
         // Inertia and the scroll rate option both feed into rate without any
         // guarantee they land inside _rate, so clamp before indexing.
-        rate = Bound(rate, 0, static_cast<int>(std::ssize(_rate)) - 1);
+        rate = std::clamp(rate, 0, static_cast<int>(std::ssize(_rate)) - 1);
 
         int distance = base::At(_rate, rate) / 2;
 

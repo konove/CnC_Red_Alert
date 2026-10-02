@@ -948,7 +948,7 @@ void TechnoClass::Draw_It(PixelView& view, int x, int y,
       int pwidth = base::FixedToCardinal(
           width - 2, ratio);  // Pixel width of bar interior.
 
-      pwidth = Bound(pwidth, 1, width - 2);
+      pwidth = std::clamp(pwidth, 1, width - 2);
 
       int color = kLtGreen;  // The color to give the interior of the bargraph.
       if (ratio < 0x7F) {
@@ -3485,7 +3485,7 @@ int TechnoClass::Threat_Range(int control) const {
 
   int range = std::max(Weapon_Range(0), Weapon_Range(1));
   range *= 2;
-  range = Bound(range, 0x0000, 0x0A00);
+  range = std::clamp(range, 0x0000, 0x0A00);
   return range;
 }
 

@@ -84,7 +84,6 @@
 #include "game/core/object_heap.h"
 #include "td/core/config.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/core/object_heaps.h"
 #include "td/debug/debug_state.h"
 #include "td/map/world.h"
@@ -529,11 +528,11 @@ bool FactoryClass::Start() {
     }
 
     int frac = Get_House()->Power_Fraction();
-    frac = Bound(frac, 0x0010, 0x0100);
+    frac = std::clamp(frac, 0x0010, 0x0100);
     int rate = time * 256 / frac;
 
     rate /= kStepCount;
-    rate = Bound(rate, 1, 255);
+    rate = std::clamp(rate, 1, 255);
 
     Set_Rate(static_cast<unsigned char>(rate));
     IsSuspended = false;

@@ -2588,9 +2588,9 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell) {
       if (AirStrike.Is_Ready()) {
         int strike = 1;
         if (TheSession().type() == GAME_NORMAL) {
-          strike = Bound(TheWorld().build_level() / 3, 1, 3);
+          strike = std::clamp(TheWorld().build_level() / 3, 1, 3);
         } else {
-          strike = Bound(TheSession().unit_count() / 5, 1, 3);
+          strike = std::clamp(TheSession().unit_count() / 5, 1, 3);
         }
         Create_Air_Reinforcement(this, AIRCRAFT_A10, strike, MISSION_HUNT,
                                  Target::FromCellIndex(cell), Target{});

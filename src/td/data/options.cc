@@ -67,6 +67,7 @@
 
 #include "td/data/options.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 #include <optional>
@@ -87,7 +88,6 @@
 #include "td/assets/palette.h"
 #include "td/assets/palettes.h"
 #include "td/core/defines.h"
-#include "td/core/jshell.h"
 #include "td/data/profile.h"
 #include "td/net/session.h"
 #include "td/startup/game_state.h"
@@ -191,7 +191,7 @@ void OptionsClass::Set_Repeat(int on) { IsScoreRepeat = on != 0; }
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Score_Volume(int volume) {
-  volume = Bound(volume, 0, 255);
+  volume = std::clamp(volume, 0, 255);
   ScoreVolume = static_cast<unsigned char>(volume);
   engine::audio::TheAudio().SetScoreVolume(ScoreVolume);
 }
@@ -214,7 +214,7 @@ void OptionsClass::Set_Score_Volume(int volume) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void OptionsClass::Set_Sound_Volume(int volume, bool feedback) {
-  volume = Bound(volume, 0, 255);
+  volume = std::clamp(volume, 0, 255);
   Volume = static_cast<unsigned char>(volume);
   if (feedback) {
     Sound_Effect(VOC_BLEEPY3);
@@ -430,16 +430,16 @@ void OptionsClass::Adjust_Palette(const engine::gfx::Palette& oldpal,
       */
 
       int temp = hsv.value() * brightness / 0x80;  // Brightness
-      temp = Bound(temp, 0, 0xFF);
+      temp = std::clamp(temp, 0, 0xFF);
       int v = temp;
       temp = ((v - 0x80) * contrast / 0x80) + 0x80;  // Contrast
-      temp = Bound(temp, 0, 0xFF);
+      temp = std::clamp(temp, 0, 0xFF);
       v = temp;
       temp = hsv.saturation() * color / 0x80;  // Color
-      temp = Bound(temp, 0, 0xFF);
+      temp = std::clamp(temp, 0, 0xFF);
       const int s = temp;
       temp = hsv.hue() * tint / 0x80;  // Tint
-      temp = Bound(temp, 0, 0xFF);
+      temp = std::clamp(temp, 0, 0xFF);
       const int h = temp;
       newpal.at(index) = engine::gfx::HsvColor(static_cast<uint8_t>(h),
                                                static_cast<uint8_t>(s),

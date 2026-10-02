@@ -3799,7 +3799,7 @@ static int Net_New_Dialog() {
     Detect editing of the credits buffer, transmit new values to players
     ---------------------------------------------------------------------*/
     if (base::ParseIntegerOr<int>(credbuf, 0) != old_cred) {
-      old_cred = Bound(base::ParseIntegerOr<int>(credbuf, 0), 0, 9999);
+      old_cred = std::clamp(base::ParseIntegerOr<int>(credbuf, 0), 0, 9999);
       TheSession().credits() = old_cred;
       transmit = 1;
       absl::SNPrintF(credbuf, sizeof(credbuf), "%d", TheSession().credits());
