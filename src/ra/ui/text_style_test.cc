@@ -109,13 +109,11 @@ class TextStyleTest : public testing::Test {
     for (const uint8_t entry : style.font_style.palette) {
       absl::StrAppendFormat(&palette, "%02x", entry);
     }
-    // Only the style bits: before Task 7 the returned flags still carry the
-    // font index.
     return absl::StrFormat("font=%s x=%d y=%d fore=%d flags=%#x pal=%s",
                            FontName(style.font_style.font.data()),
                            style.font_style.x_spacing,
                            style.font_style.y_spacing, style.forecolor,
-                           base::Bits(style.flag) & ~0xFU, palette);
+                           base::Bits(style.flag), palette);
   }
 
   std::string Table() {
@@ -161,14 +159,6 @@ TEST_F(TextStyleTest, ThreePointFontDropsTheShadowsItHasNoRoomFor) {
       FontType::k3Point, TPF_FULLSHADOW | TPF_CENTER, &remap_, kBack);
   EXPECT_FALSE(base::Any(style.flag & TPF_FULLSHADOW));
   EXPECT_TRUE(base::Any(style.flag & TPF_CENTER));
-}
-
-TEST(FontOfTest, MapsTheLegacyFontBits) {
-  EXPECT_EQ(FontOf(TPF_LASTPOINT | TPF_CENTER), FontType::k8Point);
-  EXPECT_EQ(FontOf(TPF_6PT_GRAD | TPF_NOSHADOW), FontType::k6PointGradient);
-  EXPECT_EQ(FontOf(TPF_EFNT), FontType::kEditor);
-  EXPECT_EQ(StyleOf(TPF_EFNT | TPF_CENTER | TPF_USE_GRAD_PAL),
-            TPF_CENTER | TPF_USE_GRAD_PAL);
 }
 
 TEST(HasGradientFontBitsTest, MatchesWhatTheLegacyMaskMatched) {

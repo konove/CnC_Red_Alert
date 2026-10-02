@@ -59,7 +59,6 @@
 #include <string>
 #include <string_view>
 
-#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/array.h"
@@ -408,23 +407,6 @@ TextPrintType SupportedTextFlags(const FontType font,
 
 }  // namespace
 
-FontType FontOf(const TextPrintType combined) {
-  // Indexed by the low four bits; 0 (TPF_LASTPOINT) and the unused values
-  // fall back to the 8-point font, as TextFontStyle() always did.
-  static constexpr std::array<FontType, 16> kFontOfBits = {
-      FontType::k8Point,         FontType::k6Point, FontType::k8Point,
-      FontType::k3Point,         FontType::kLed,    FontType::kVcr,
-      FontType::k6PointGradient, FontType::kMap,    FontType::kMetal12,
-      FontType::kEditor,         FontType::kType,   FontType::kScore,
-      FontType::k8Point,         FontType::k8Point, FontType::k8Point,
-      FontType::k8Point};
-  return kFontOfBits.at(base::Bits(combined) & 0xFU);
-}
-
-TextPrintType StyleOf(const TextPrintType combined) {
-  return combined & ~static_cast<TextPrintType>(0xFU);
-}
-
 bool HasGradientFontBits(const FontType font) {
   switch (font) {
     case FontType::k8Point:
@@ -445,7 +427,6 @@ bool HasGradientFontBits(const FontType font) {
 }
 
 FontStyle TextFontStyle(const FontType font, TextPrintType flags) {
-  DCHECK_EQ(base::Bits(flags) & 0xFU, 0U) << "a font index in the style flags";
   flags = SupportedTextFlags(font, flags);
   int xspace = 1;
   int yspace = 0;
@@ -519,7 +500,6 @@ FontStyle TextFontStyle(const FontType font, TextPrintType flags) {
 
 TextStyle TextStyleFor(const FontType font, TextPrintType flags,
                        RemapControlType* fore, const int back) {
-  DCHECK_EQ(base::Bits(flags) & 0xFU, 0U) << "a font index in the style flags";
   flags = SupportedTextFlags(font, flags);
   unsigned char fontpalette[16];  // Working font palette array.
 
@@ -619,18 +599,7 @@ TextStyle TextStyleFor(const FontType font, TextPrintType flags,
       base::At(fontpalette, 3) = kBlack;
       break;
 
-    case TextPrintType::TPF_LASTPOINT:
-    case TextPrintType::TPF_6POINT:
-    case TextPrintType::TPF_8POINT:
-    case TextPrintType::TPF_3POINT:
-    case TextPrintType::TPF_LED:
-    case TextPrintType::TPF_VCR:
-    case TextPrintType::TPF_6PT_GRAD:
-    case TextPrintType::TPF_MAP:
-    case TextPrintType::TPF_METAL12:
-    case TextPrintType::TPF_EFNT:
-    case TextPrintType::TPF_TYPE:
-    case TextPrintType::TPF_SCORE:
+    case TextPrintType::TPF_NONE:
     case TextPrintType::TPF_CENTER:
     case TextPrintType::TPF_RIGHT:
     case TextPrintType::TPF_MEDIUM_COLOR:
@@ -668,18 +637,7 @@ void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
         x -= StringPixelWidth(style.font_style, text);
         break;
 
-      case TextPrintType::TPF_LASTPOINT:
-      case TextPrintType::TPF_6POINT:
-      case TextPrintType::TPF_8POINT:
-      case TextPrintType::TPF_3POINT:
-      case TextPrintType::TPF_LED:
-      case TextPrintType::TPF_VCR:
-      case TextPrintType::TPF_6PT_GRAD:
-      case TextPrintType::TPF_MAP:
-      case TextPrintType::TPF_METAL12:
-      case TextPrintType::TPF_EFNT:
-      case TextPrintType::TPF_TYPE:
-      case TextPrintType::TPF_SCORE:
+      case TextPrintType::TPF_NONE:
       case TextPrintType::TPF_NOSHADOW:
       case TextPrintType::TPF_DROPSHADOW:
       case TextPrintType::TPF_FULLSHADOW:
