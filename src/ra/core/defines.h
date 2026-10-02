@@ -315,7 +315,7 @@ using WAYPOINT = int;
 */
 using TARGET = int32_t;
 
-inline constexpr int kTargetMantissaBits = 24;  // Bits of value precision.
+inline constexpr unsigned kTargetMantissaBits = 24;  // Bits of value precision.
 inline constexpr int kTargetExponentBits = 8;
 union TARGET_COMPOSITE {
   TARGET Target;
@@ -325,15 +325,6 @@ union TARGET_COMPOSITE {
   } Sub;
 };
 static_assert(sizeof(TARGET_COMPOSITE) == sizeof(TARGET));
-
-inline TARGET Build_Target(const RTTIType kind, const int value) {
-  TARGET_COMPOSITE target{};
-
-  target.Target = 0;
-  target.Sub.Exponent = static_cast<unsigned>(kind);
-  target.Sub.Mantissa = static_cast<unsigned>(value);
-  return target.Target;
-}
 
 inline constexpr TARGET kTargetNone{};
 

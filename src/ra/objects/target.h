@@ -40,7 +40,6 @@
 #ifndef CNC_RED_ALERT_RA_OBJECTS_TARGET_H_
 #define CNC_RED_ALERT_RA_OBJECTS_TARGET_H_
 
-#include <bit>
 #include <cstdint>
 
 #include "base/numeric.h"

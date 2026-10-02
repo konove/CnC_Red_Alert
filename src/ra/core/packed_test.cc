@@ -13,6 +13,11 @@ namespace {
 
 constexpr COORDINATE kSample = 0x12345678;
 
+// The packers are usable in constant expressions.
+static_assert(XY_Cell(5, 3) == 389);
+static_assert(Coord_Cell(kSample) == XY_Cell(0x56, 0x12));
+static_assert(Build_Target(RTTI_NONE, 0) == kTargetNone);
+
 TEST(PackedTest, CellPacksSevenBitsPerAxis) {
   EXPECT_EQ(XY_Cell(5, 3), (3 * 128) + 5);
   EXPECT_EQ(Cell_X(XY_Cell(5, 3)), 5);

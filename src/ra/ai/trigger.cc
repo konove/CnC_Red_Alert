@@ -71,6 +71,7 @@
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
+#include "ra/core/packed.h"
 #include "ra/map/world.h"
 #include "ra/objects/cell.h"
 #include "ra/objects/house.h"

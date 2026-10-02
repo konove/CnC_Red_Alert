@@ -82,7 +82,6 @@
 #ifndef CNC_RED_ALERT_RA_CORE_INLINE_H_
 #define CNC_RED_ALERT_RA_CORE_INLINE_H_
 
-#include <bit>
 #include <cstdint>
 #include <cstdlib>
 #include <iterator>
@@ -195,11 +194,7 @@ inline COORDINATE XYP_COORD(int x, int y) noexcept {
  * HISTORY: * 08/23/1996 JLB : Created. *
  *=============================================================================================*/
 inline COORDINATE XYP_Coord(int x, int y) {
-  COORD_COMPOSITE coord{};
-
-  coord.Sub.X.Raw = Pixel_To_Lepton(x);
-  coord.Sub.Y.Raw = Pixel_To_Lepton(y);
-  return coord.Coord;
+  return XY_Coord(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
 }
 
 /***********************************************************************************************

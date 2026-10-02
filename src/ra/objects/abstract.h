@@ -43,6 +43,7 @@
 #include "game/sim/direction.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
+#include "ra/core/packed.h"
 
 namespace ra {
 

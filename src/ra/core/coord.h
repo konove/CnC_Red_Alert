@@ -2,7 +2,6 @@
 #define CNC_RED_ALERT_RA_CORE_COORD_H_
 
 #include <algorithm>
-#include <bit>
 #include <cstdint>
 #include <span>
 
@@ -34,9 +33,8 @@ game::DirType Direction8(COORDINATE coord1, COORDINATE coord2);
 
 // Calculates the DirType from one cell to another (8-direction accuracy).
 inline game::DirType Direction(CELL cell1, CELL cell2) {
-  const auto from = std::bit_cast<CELL_COMPOSITE>(cell1);
-  const auto to = std::bit_cast<CELL_COMPOSITE>(cell2);
-  return game::Desired_Facing8(from.Sub.X, from.Sub.Y, to.Sub.X, to.Sub.Y);
+  return game::Desired_Facing8(Cell_X(cell1), Cell_Y(cell1), Cell_X(cell2),
+                               Cell_Y(cell2));
 }
 
 // Returns the lepton distance between two coordinates using the "Dragon

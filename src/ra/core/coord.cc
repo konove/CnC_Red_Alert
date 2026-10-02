@@ -56,21 +56,19 @@ std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
   const LEPTON y = Coord_Y(coord);
 
   // Convert the rect from coord-relative to absolute world leptons.
-  LEPTON_COMPOSITE left{};
-  LEPTON_COMPOSITE top{};
-  LEPTON_COMPOSITE right{};
-  LEPTON_COMPOSITE bottom{};
-  left.Raw = static_cast<LEPTON>(static_cast<int>(x) +
-                                 static_cast<int16_t>(Pixel_To_Lepton(rect.X)));
-  top.Raw = static_cast<LEPTON>(static_cast<int>(y) +
-                                static_cast<int16_t>(Pixel_To_Lepton(rect.Y)));
-  right.Raw = left.Raw + Pixel_To_Lepton(rect.Width - 1);
-  bottom.Raw = top.Raw + Pixel_To_Lepton(rect.Height - 1);
+  const auto left = static_cast<LEPTON>(
+      static_cast<int>(x) + static_cast<int16_t>(Pixel_To_Lepton(rect.X)));
+  const auto top = static_cast<LEPTON>(
+      static_cast<int>(y) + static_cast<int16_t>(Pixel_To_Lepton(rect.Y)));
+  const auto right =
+      static_cast<LEPTON>(left + Pixel_To_Lepton(rect.Width - 1));
+  const auto bottom =
+      static_cast<LEPTON>(top + Pixel_To_Lepton(rect.Height - 1));
 
-  const int cell_left = left.Sub.Cell;
-  const int cell_right = right.Sub.Cell;
-  const int cell_top = top.Sub.Cell;
-  const int cell_bottom = bottom.Sub.Cell;
+  const int cell_left = Lepton_Cell(left);
+  const int cell_right = Lepton_Cell(right);
+  const int cell_top = Lepton_Cell(top);
+  const int cell_bottom = Lepton_Cell(bottom);
 
   int count = 0;
   static int16_t offsets[128];

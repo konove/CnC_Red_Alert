@@ -58,6 +58,7 @@
 #include "engine/platform/platform.h"
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
+#include "ra/core/packed.h"
 #include "ra/data/ccini.h"
 #include "ra/objects/object.h"
 
