@@ -1,18 +1,18 @@
 // Tests loading a heap from a fixed-size buffer: sparse slots, the ways a
 // stream can be malformed, and slot reuse.
 
-#include "game/core/heap.h"
-
 #include <array>
-#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
+#include "game/core/heap.h"
 #include "gtest/gtest.h"
 
 namespace game {
@@ -48,11 +48,11 @@ std::array<uint8_t, 256> SaveHeap(TFixedIHeapClass<T>& heap) {
 // succeeded.
 template <class T>
 bool LoadHeap(TFixedIHeapClass<T>& heap, const std::array<uint8_t, 256>& bytes,
-              int length = 256) {
+              base::ssize length = 256) {
   SpanSource source(
-      std::as_bytes(std::span(bytes).first(static_cast<std::size_t>(length))));
+      std::as_bytes(std::span(bytes).first(base::ToSize(length))));
   ArchiveReader reader(source);
-  return heap.Load(reader) != 0;
+  return heap.Load(reader);
 }
 
 TEST(HeapLoadTest, FieldObjectsPreserveSparseSlots) {

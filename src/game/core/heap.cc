@@ -20,7 +20,7 @@
 
 #include "game/core/heap.h"
 
-#include <cstdint>
+#include <cstddef>
 #include <functional>
 #include <iterator>
 #include <memory>
@@ -48,10 +48,10 @@ bool FixedIHeapClass::Set_Heap(int count) {
     if (count == 0) {
       return true;
     }
-    const auto extent = base::ToSize(int64_t{count} * Size);
-    storage_ = std::make_unique_for_overwrite<char[]>(extent);
+    const auto extent = base::ToSize(count * Size);
+    storage_ = std::make_unique_for_overwrite<std::byte[]>(extent);
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    Buffer = std::span<char>(storage_.get(), extent);
+    Buffer = std::span<std::byte>(storage_.get(), extent);
     TotalCount = count;
   }
 
@@ -78,9 +78,7 @@ void* FixedIHeapClass::Allocate() {
   void* const pointer = (*this).at(index);
   ActivePointers.push_back(pointer);
   base::FillBytes(
-      std::as_writable_bytes(Buffer.subspan(
-          base::ToSize(index) * base::ToSize(Size), base::ToSize(Size))),
-      0, Size);
+      Buffer.subspan(base::ToSize(index * Size), base::ToSize(Size)), 0, Size);
   return pointer;
 }
 
@@ -105,7 +103,7 @@ bool FixedIHeapClass::Free(void* pointer) {
 int FixedIHeapClass::ID(const void* pointer) const {
   if (pointer && Size) {
     return static_cast<int>(
-        (static_cast<const char*>(pointer) - Buffer.data()) / Size);
+        (static_cast<const std::byte*>(pointer) - Buffer.data()) / Size);
   }
   return -1;
 }
@@ -116,7 +114,7 @@ base::ssize FixedIHeapClass::Offset_Of(const void* pointer) const {
   if (pointer == nullptr || Buffer.empty()) {
     return -1;
   }
-  const char* address = static_cast<const char*>(pointer);
+  const auto* address = static_cast<const std::byte*>(pointer);
   const std::less<> before;
   if (before(address, Buffer.data()) ||
       !before(address, Buffer.subspan(Buffer.size()).data())) {

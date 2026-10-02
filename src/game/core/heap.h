@@ -67,9 +67,11 @@ class FixedIHeapClass {
   // no slot index; Validate() then checks the heap's own bookkeeping only.
   // clang's lifetime analysis reads slot_id as borrowed storage, but a
   // function pointer outlives any heap.
-  // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
-  explicit FixedIHeapClass(int size, SlotIdReader slot_id = nullptr) noexcept
+  // NOLINTBEGIN(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
+  explicit FixedIHeapClass(base::ssize size,
+                           SlotIdReader slot_id = nullptr) noexcept
       : Size(size), slot_id_(slot_id) {}
+  // NOLINTEND(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
   ~FixedIHeapClass() = default;
   FixedIHeapClass(const FixedIHeapClass&) = delete;
   FixedIHeapClass& operator=(const FixedIHeapClass&) = delete;
@@ -143,13 +145,13 @@ class FixedIHeapClass {
   void* at(int index) {
     CHECK_GE(index, 0);
     CHECK_LT(index, TotalCount);
-    return Buffer.subspan(base::ToSize(int64_t{index} * Size)).data();
+    return Buffer.subspan(base::ToSize(index * Size)).data();
   }
   void* operator[](int index) { return at(index); }
   [[nodiscard]] const void* at(int index) const {
     CHECK_GE(index, 0);
     CHECK_LT(index, TotalCount);
-    return Buffer.subspan(base::ToSize(int64_t{index} * Size)).data();
+    return Buffer.subspan(base::ToSize(index * Size)).data();
   }
   const void* operator[](int index) const { return at(index); }
 
@@ -171,7 +173,7 @@ class FixedIHeapClass {
 
  protected:
   // Size of one slot in bytes.
-  int Size;
+  base::ssize Size;
 
   // Number of slots in the buffer.
   int TotalCount{0};
@@ -180,7 +182,7 @@ class FixedIHeapClass {
   int ActiveCount{0};
 
   // The slots, viewing storage_; empty when the heap has none.
-  std::span<char> Buffer;
+  std::span<std::byte> Buffer;
 
   // Whether each slot is in use: true means taken, despite the name.
   std::vector<bool> FreeFlag;
@@ -191,7 +193,7 @@ class FixedIHeapClass {
  private:
   // The allocation Buffer views. operator new[] aligns it for any type up to
   // __STDCPP_DEFAULT_NEW_ALIGNMENT__, which TFixedIHeapClass checks.
-  std::unique_ptr<char[]> storage_;
+  std::unique_ptr<std::byte[]> storage_;
 
   SlotIdReader slot_id_;  // nullptr when the objects cache no slot index.
 };
@@ -219,7 +221,8 @@ class TFixedIHeapClass : public FixedIHeapClass {
   static_assert(alignof(T) <= __STDCPP_DEFAULT_NEW_ALIGNMENT__,
                 "the slots are carved from new char[], which aligns no more");
 
-  TFixedIHeapClass() noexcept : FixedIHeapClass(sizeof(T), SlotIdReaderFor()) {}
+  TFixedIHeapClass() noexcept
+      : FixedIHeapClass(base::ssize{sizeof(T)}, SlotIdReaderFor()) {}
   ~TFixedIHeapClass() = default;
   TFixedIHeapClass(const TFixedIHeapClass&) = delete;
   TFixedIHeapClass& operator=(const TFixedIHeapClass&) = delete;
