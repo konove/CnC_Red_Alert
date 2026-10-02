@@ -9,7 +9,7 @@
 // attribute under -Werror=attributes, so the macro is empty there.
 //
 // Example:
-//   enum CNC_FLAG_ENUM TextPrintType { TPF_8POINT = 1, TPF_CENTER = 2 };
+//   enum CNC_FLAG_ENUM TextPrintType { TPF_NOSHADOW = 16, TPF_RIGHT = 512 };
 #if __has_cpp_attribute(clang::flag_enum)
 #define CNC_FLAG_ENUM [[clang::flag_enum]]
 #else

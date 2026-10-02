@@ -1171,20 +1171,45 @@ It fails to compile until Step 2.
 
 ## Progress
 
-| Task | Status | Commit  |
-| ---- | ------ | ------- |
-| 1    | done   | a3ebfc7 |
-| 2    | done   | 0ee07f6 |
-| 3    | done   | (this)  |
-| 4    |        |         |
-| 5    |        |         |
-| 6    |        |         |
-| 7    |        |         |
-| 8    |        |         |
-| 9    |        |         |
+| Task | Status                        | Commit             |
+| ---- | ----------------------------- | ------------------ |
+| 1    | done                          | a3ebfc78           |
+| 2    | done                          | 0ee07f6c           |
+| 3    | done                          | 2cfb954f, 72f7e347 |
+| 4    | done                          | 1f4faee9           |
+| 5    | done                          | dacdc9f4           |
+| 6    | done                          | 0319fa23           |
+| 7    | done                          | 80d59a19           |
+| 8    | done                          | b3c590d3           |
+| 9    | done except the display check | (this)             |
 
 Task 3 dry run of the printer callees: RA 36 files (232 lines) rewritten, 7 arguments reported; TD
-29 files (226 lines), 7 reported. Golden fingerprints: RA `0xAC8A29F9D28546BC` (1,080 lines), TD
-`0x780934A45B2F86E3` (2,700 lines).
+29 files (226 lines), 7 reported.
 
 ## Outcome
+
+Done 2026-10-02 in `a3ebfc78..b3c590d3` plus this close-out. Both games' printers and text widgets
+take `(FontType font, TextPrintType flags)`; `TextPrintType` holds only shadow, justification and
+colour flags, so a font passed as a flag no longer compiles.
+
+- **Sites.** `tools/split_text_print.py` split about 236 RA and 229 TD printer arguments and the
+  literal widget constructions (106 files in Task 6); the hand edits were the stored combined
+  values, routed through the transitional `FontOf()`/`StyleOf()` (63 RA and 32 TD calls in Tasks 4
+  and 5) and then replaced by each widget's own `TextFont` in Task 6.
+- **No-font prints.** The plan assumed `TPF_LASTPOINT` (no font bits) behaved as
+  `FontType::k8Point`. It did not: it picked the 8-point font without the 8-point spacing (x +1/y 0
+  against x −1/y −4). A probe over every printer and widget call in both games found no call that
+  passed no font, so the golden tests dropped those rows (90 RA, 270 TD) and re-pinned after a
+  byte-for-byte diff of the remaining rows: RA `0xEE606E09CAAC3CFB` (990 rows), TD
+  `0xAA5A97411D67096` (2,430 rows). Both held unchanged through Tasks 6-8.
+- **The `& TPF_6PT_GRAD` quirk.** Nine widget and skin sites tested `TextFlags & TPF_6PT_GRAD`,
+  which is 6 and so matched every font index with bit 1 or 2 set (RA: 8-point, 3-point, LED, VCR,
+  gradient, map, typewriter, score; TD: the first six). `HasGradientFontBits()` keeps exactly that
+  set, so Tiberian Dawn's buttons and both games' colour and music lists draw as before. Whether the
+  original authors meant only the gradient font is open.
+- **Rewriter lessons.** Matching calls in raw text swallowed code after a commented-out call; the
+  tool now matches in comment- and literal-blanked text. It also needed `make_unique<Widget>(` and
+  idempotence (skip calls already passing a `FontType`).
+
+Open: the display check of Task 9 Step 2 (RA main menu, options, sidebar tooltips, map editor
+trigger/team dialogs, score screen; TD main menu, map selection, score screen) on a real display.
