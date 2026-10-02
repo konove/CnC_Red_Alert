@@ -41,10 +41,12 @@
 #define CNC_RED_ALERT_RA_MAP_MAP_H_
 
 #include <cstdint>
+#include <vector>
 
+#include "absl/base/attributes.h"
+#include "base/array.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
-#include "game/core/vector.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/map/gscreen.h"
@@ -135,24 +137,42 @@ class MapClass : public GScreenClass {
   int64_t TotalValue = 0;
 
   // Resolves a coordinate or cell ID through the checked cell array.
-  CellClass& at(COORDINATE coord) { return Array.at(Coord_Cell(coord)); }
-  CellClass& operator[](COORDINATE coord) { return at(coord); }
-  CellClass& at(CELL cell) { return Array.at(cell); }
-  CellClass& operator[](CELL cell) { return at(cell); }
-  [[nodiscard]] const CellClass& at(COORDINATE coord) const {
-    return Array.at(Coord_Cell(coord));
+  CellClass& at(COORDINATE coord) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(cells_, Coord_Cell(coord));
   }
-  const CellClass& operator[](COORDINATE coord) const { return at(coord); }
-  [[nodiscard]] const CellClass& at(CELL cell) const { return Array.at(cell); }
-  const CellClass& operator[](CELL cell) const { return at(cell); }
-  int ID(const CellClass* ptr) { return static_cast<int>(Array.ID(ptr)); }
-  int ID(const CellClass& ptr) { return static_cast<int>(Array.ID(ptr)); }
+  CellClass& operator[](COORDINATE coord) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return at(coord);
+  }
+  CellClass& at(CELL cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(cells_, cell);
+  }
+  CellClass& operator[](CELL cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return at(cell);
+  }
+  [[nodiscard]] const CellClass& at(COORDINATE coord) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(cells_, Coord_Cell(coord));
+  }
+  const CellClass& operator[](COORDINATE coord) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return at(coord);
+  }
+  [[nodiscard]] const CellClass& at(CELL cell) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(cells_, cell);
+  }
+  const CellClass& operator[](CELL cell) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return at(cell);
+  }
+  // Returns the number of the cell `cell` points to, which must be one of
+  // this map's cells.
+  [[nodiscard]] int ID(const CellClass* cell) const {
+    return static_cast<int>(cell - cells_.data());
+  }
 
  protected:
-  /*
-  **	This is the array of cell objects.
-  */
-  game::VectorClass<CellClass> Array;
+  // The map's cells, indexed by CELL.
+  std::vector<CellClass> cells_;
 
   /*
   **	These are the size dimensions of the underlying array of cell objects.

@@ -1464,7 +1464,7 @@ int DisplayClass::Cell_Shadow(CELL cell) const {
     const auto unmapped = [this, cell](int delta) {
       const int neighbor = static_cast<int>(cell) + delta;
       return neighbor < 0 || neighbor >= MAP_CELL_TOTAL ||
-             !Array.at(neighbor).IsMapped;
+             !base::At(cells_, neighbor).IsMapped;
     };
     if (unmapped(-MAP_CELL_W - 1)) {
       index |= 0x40;

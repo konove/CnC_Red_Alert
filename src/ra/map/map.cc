@@ -75,6 +75,7 @@
 #include <iterator>
 #include <new>
 #include <span>
+#include <vector>
 
 #include "base/array.h"
 #include "base/buffer.h"
@@ -499,7 +500,11 @@ void MapClass::Init_Clear() {
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Alloc_Cells() { Array.Resize(Size); }
+// A new vector rather than resize(): a cell cannot be moved, since its ID is
+// its position in the array. Init_Cells() rebuilds every cell afterwards.
+void MapClass::Alloc_Cells() {
+  cells_ = std::vector<CellClass>(base::ToSize(Size));
+}
 
 /***********************************************************************************************
  * MapClass::Free_Cells -- frees the cell array *
@@ -514,7 +519,7 @@ void MapClass::Alloc_Cells() { Array.Resize(Size); }
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Free_Cells() { Array.Clear(); }
+void MapClass::Free_Cells() { cells_.clear(); }
 
 /***********************************************************************************************
  * MapClass::Init_Cells -- Initializes the cell array to a fresh state. *
@@ -535,7 +540,7 @@ void MapClass::Free_Cells() { Array.Clear(); }
 void MapClass::Init_Cells() {
   TotalValue = 0;
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-    new (&Array.at(index)) CellClass;
+    new (&base::At(cells_, index)) CellClass;
   }
 }
 
@@ -1091,11 +1096,11 @@ bool MapClass::Write_Binary(ByteSink& pipe) {
   LcwSink comp(CodecMode::kCompress, pipe);
 
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
-    comp.WriteObject(Array.at(i).TType);
+    comp.WriteObject(base::At(cells_, i).TType);
   }
 
   for (int i = 0; i < MAP_CELL_TOTAL; i++) {
-    comp.WriteObject(Array.at(i).TIcon);
+    comp.WriteObject(base::At(cells_, i).TIcon);
   }
 
   return comp.Finish();
@@ -1122,11 +1127,11 @@ bool MapClass::Read_Binary(ByteSource& straw) {
   switch (TheWorld().new_ini_format()) {
     default:
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        decomp.ReadObject(Array.at(cell).TType);
+        decomp.ReadObject(base::At(cells_, cell).TType);
       }
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        decomp.ReadObject(Array.at(cell).TIcon);
-        Array.at(cell).Recalc_Attributes();
+        decomp.ReadObject(base::At(cells_, cell).TIcon);
+        base::At(cells_, cell).Recalc_Attributes();
       }
       break;
 
@@ -1134,9 +1139,9 @@ bool MapClass::Read_Binary(ByteSource& straw) {
     case 1:
     case 2:
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        decomp.ReadObject(Array.at(cell).TType);
-        decomp.ReadObject(Array.at(cell).TIcon);
-        Array.at(cell).Recalc_Attributes();
+        decomp.ReadObject(base::At(cells_, cell).TType);
+        decomp.ReadObject(base::At(cells_, cell).TIcon);
+        base::At(cells_, cell).Recalc_Attributes();
       }
       break;
   }
@@ -1558,7 +1563,7 @@ ObjectClass* MapClass::Close_Object(COORDINATE coord) const {
       **	find the closest object. Check against any previously found
       *object *	to ensure that it is actually closer.
       */
-      ObjectClass* o = Array.at(newcell).Cell_Occupier();
+      ObjectClass* o = base::At(cells_, newcell).Cell_Occupier();
       while (o != nullptr) {
         /*
         **	Special case check to ignore cloaked object if not owned by the
@@ -1620,16 +1625,16 @@ bool MapClass::Zone_Reset(uint32_t method) {
   */
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
     if (method & kZoneFlagNormal) {
-      Array.at(index).Zones.at(MZONE_NORMAL) = 0;
+      base::At(cells_, index).Zones.at(MZONE_NORMAL) = 0;
     }
     if (method & kZoneFlagCrusher) {
-      Array.at(index).Zones.at(MZONE_CRUSHER) = 0;
+      base::At(cells_, index).Zones.at(MZONE_CRUSHER) = 0;
     }
     if (method & kZoneFlagDestroyer) {
-      Array.at(index).Zones.at(MZONE_DESTROYER) = 0;
+      base::At(cells_, index).Zones.at(MZONE_DESTROYER) = 0;
     }
     if (method & kZoneFlagWater) {
-      Array.at(index).Zones.at(MZONE_WATER) = 0;
+      base::At(cells_, index).Zones.at(MZONE_WATER) = 0;
     }
   }
 
@@ -2236,12 +2241,12 @@ int MapClass::Intact_Bridge_Count() const {
   */
   int count = 0;
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    const TemplateType bridge_type = Array.at(cell).TType;
+    const TemplateType bridge_type = base::At(cells_, cell).TType;
     if ((bridge_type == TEMPLATE_BRIDGE1 || bridge_type == TEMPLATE_BRIDGE1H ||
          bridge_type == TEMPLATE_BRIDGE2 || bridge_type == TEMPLATE_BRIDGE2H ||
          bridge_type == TEMPLATE_BRIDGE_1A ||
          bridge_type == TEMPLATE_BRIDGE_1B) &&
-        Array.at(cell).TIcon == 6) {
+        base::At(cells_, cell).TIcon == 6) {
       count++;
     }
   }
