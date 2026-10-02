@@ -200,7 +200,7 @@ apply_language_setting(ra_search_test)
 
 add_gtest(
     NAME ra_packed_test
-    SOURCES core/packed_test.cc core/coordinate_test.cc
+    SOURCES core/packed_test.cc core/coordinate_test.cc core/cell_test.cc
     LIBS base engine_stream game_core absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_packed_test)
