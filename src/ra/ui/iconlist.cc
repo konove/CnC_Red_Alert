@@ -191,7 +191,7 @@ int IconListClass::Add_Item(
       int iHeight = 0;
       if (TextFlags == TPF_TYPE) {
         // The typewriter font wraps with its letters two pixels closer.
-        FontStyle font = TextFontStyle(TPF_TYPE);
+        FontStyle font = TextFontStyle(FontType::kType, TPF_NONE);
         font.x_spacing = -2;
 
         const int iWidthToClipAt =
@@ -207,8 +207,9 @@ int IconListClass::Add_Item(
             IsScrollActive ? Width : Width - UpGadget.Width;
         //	This call will place '\r's in the string where line breaks
         // should occur.
-        Format_Window_String_New(TextFontStyle(TextFlags), text, iWidthToClipAt,
-                                 iWidthMax, iHeight, szText, 50);
+        Format_Window_String_New(
+            TextFontStyle(FontOf(TextFlags), StyleOf(TextFlags)), text,
+            iWidthToClipAt, iWidthMax, iHeight, szText, 50);
       }
 
       //	Each break character causes a line to be added to list.
@@ -449,10 +450,10 @@ void IconListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     if (!Tabs.empty()) {
       const int tab[] = {Tabs.front() - (xText - x)};
       Conquer_Clip_Text_Print(view, Get_Item(index), xText, y, pRemap, kTBlack,
-                              flags, width, tab);
+                              FontOf(flags), StyleOf(flags), width, tab);
     } else {
       Conquer_Clip_Text_Print(view, Get_Item(index), xText, y, pRemap, kTBlack,
-                              flags, width, {});
+                              FontOf(flags), StyleOf(flags), width, {});
     }
   }
 

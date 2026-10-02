@@ -837,7 +837,8 @@ void Do_Win() {
     TheMap().Render();
     Fancy_Text_Print(view, TXT_SCENARIO_WON, x, 180,
                      &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
-                     TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
+                     FontType::kVcr,
+                     TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
     speech_timer.Set(int64_t{kTimerSecond} * 3);
     while (IsSpeaking()) {
     }
@@ -1052,7 +1053,8 @@ void Do_Lose() {
   PixelView& view = TheScreen().visible_view();
   Fancy_Text_Print(view, TXT_SCENARIO_LOST, x, 180,
                    &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
-                   TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
+                   FontType::kVcr,
+                   TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   speech_timer.Set(int64_t{kTimerSecond} * 3);
   while (IsSpeaking()) {
   }
@@ -1141,9 +1143,9 @@ void Do_Draw() {
   **	Announce win to player.
   */
   PixelView& view = TheScreen().visible_view();
-  Fancy_Text_Print(view, TXT_WOL_DRAW, x, 180,
-                   &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
-                   TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
+  Fancy_Text_Print(
+      view, TXT_WOL_DRAW, x, 180, &ThePalettes().color_remaps().at(PCOLOR_RED),
+      kTBlack, FontType::kVcr, TPF_CENTER | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   speech_timer.Set(int64_t{kTimerSecond} * 3);
   while (IsSpeaking()) {
   }
@@ -1327,7 +1329,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   PixelView& view = TheScreen().visible_view();
   // The buttons and the page of text are both laid out in this font.
-  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
+  const FontStyle font =
+      TextFontStyle(FontType::k6PointGradient, TPF_USE_GRAD_PAL);
   /*
   **	Examine the optional button parameters. Fetch the width and starting
   **	characters for each.
@@ -1458,7 +1461,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   // last (each measures itself in kTpfButton), recoloured through _scorepal.
   // That is not the style the page was wrapped in: it sets letters a pixel
   // closer and lines two pixels closer.
-  FontStyle typed = TextFontStyle(kTpfButton);
+  FontStyle typed = TextFontStyle(kButtonFont, kButtonFlags);
   std::ranges::copy(_scorepal, typed.palette.begin());
   int xprint = x + 20;
   int yprint = y + 25;

@@ -334,7 +334,8 @@ void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
   }
 
   Conquer_Clip_Text_Print(view, buffer, x + 100, y, scheme, kTBlack,
-                          flags & ~TPF_CENTER, width, Tabs);
+                          FontOf(flags & ~TPF_CENTER),
+                          StyleOf(flags & ~TPF_CENTER), width, Tabs);
 }
 
 bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this

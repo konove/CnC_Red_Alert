@@ -112,7 +112,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   }
 
   PixelView& view = TheScreen().visible_view();
-  const FontStyle font = TextFontStyle(kTpfText);
+  const FontStyle font = TextFontStyle(kTextFont, kTextFlags);
 
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -150,7 +150,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   int width = 0;
   int height = 0;
   const int lines = Format_Window_String(font, buffer, 510, width, height);
-  TextPrintType tpf = kTpfText;
+  TextPrintType tpf = kTextFlags;
 
   width = std::max(width, 180);
   width += 80;
@@ -237,7 +237,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Draw the body of the message.
   */
   Fancy_Text_Print(view, buffer, printx, y + 40, Get_Color_Scheme(), kTBlack,
-                   tpf);
+                   kTextFont, tpf);
 
   /*
   **	Redraw the buttons.
@@ -266,7 +266,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         **	Draw the body of the message.
         */
         Fancy_Text_Print(view, buffer, printx, y + 40, Get_Color_Scheme(),
-                         kTBlack, tpf);
+                         kTBlack, kTextFont, tpf);
 
         /*
         **	Redraw the buttons.

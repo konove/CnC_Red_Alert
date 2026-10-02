@@ -675,7 +675,8 @@ int MapEditClass::Team_Members(HousesType house) {
           Fancy_Text_Print(view, base::At(teamclass, curclass)->Full_Name(),
                            kDialogX + (kDialogW / 2), msg_y,
                            &ThePalettes().color_remaps().at(PCOLOR_BROWN),
-                           kTBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
+                           kTBlack, FontType::kEditor,
+                           TPF_CENTER | TPF_NOSHADOW);
         }
       }
 
@@ -753,7 +754,7 @@ int MapEditClass::Team_Members(HousesType house) {
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(view, base::At(teamclass, curclass)->Full_Name(),
                              kDialogX + (kDialogW / 2), msg_y, scheme, kTBlack,
-                             TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
+                             FontType::kEditor, TPF_CENTER | TPF_NOSHADOW);
           }
 
           /*
@@ -917,7 +918,7 @@ void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
                house);
   if (quant > 0) {
     Fancy_Text_Print(view, "%d", x + 1, y + 1, scheme, kTBlack,
-                     TPF_8POINT | TPF_DROPSHADOW, quant);
+                     FontType::k8Point, TPF_DROPSHADOW, quant);
     //		Fancy_Text_Print("%d", x+1, y+kPictureH-8, scheme, TBLACK,
     // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_DROPSHADOW, quant);
   }

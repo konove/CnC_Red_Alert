@@ -2090,6 +2090,14 @@ inline constexpr TextPrintType kTpfButton =
 inline constexpr auto kTpfEButton = TPF_CENTER | TPF_EFNT | TPF_NOSHADOW;
 inline constexpr auto kTpfText = TPF_6PT_GRAD | TPF_NOSHADOW;
 
+// Standard button, editor button and dialog text: font and style flags.
+inline constexpr FontType kButtonFont = FontType::k6PointGradient;
+inline constexpr TextPrintType kButtonFlags = TPF_CENTER | TPF_NOSHADOW;
+inline constexpr FontType kEButtonFont = FontType::kEditor;
+inline constexpr TextPrintType kEButtonFlags = TPF_CENTER | TPF_NOSHADOW;
+inline constexpr FontType kTextFont = FontType::k6PointGradient;
+inline constexpr TextPrintType kTextFlags = TPF_NOSHADOW;
+
 /**********************************************************************
 **	These control the maximum number of objects in the game. Make sure that
 *these *	maximums never exceed the maximum value for the "ID" element in

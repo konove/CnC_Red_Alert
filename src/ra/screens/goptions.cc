@@ -337,8 +337,8 @@ void GameOptionsClass::Process() {
       Fancy_Text_Print(
           view, "%s\rV%s", OptionX + OptionWidth - 50,
           OptionY + OptionHeight - (TheSession().Type == GAME_NORMAL ? 64 : 48),
-          Get_Color_Scheme(), kTBlack, TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT,
-          TheScenario().ScenarioName, Version_Name());
+          Get_Color_Scheme(), kTBlack, FontType::kEditor,
+          TPF_NOSHADOW | TPF_RIGHT, TheScenario().ScenarioName, Version_Name());
 
       buttons->Draw_All(view);
       TabClass::Hilite_Tab(view, 0);

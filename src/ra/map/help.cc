@@ -275,9 +275,9 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
   forced = false;  // TCTCTCTC
   if ((Text != TXT_NONE && (forced || CountDownTimer.IsFinished())) &&
       view.Lock()) {
-    Plain_Text_Print(view, Text, DrawX, DrawY, Color, kBlack,
-                     TPF_MAP | TPF_NOSHADOW);
-    const FontStyle font = TextFontStyle(TPF_MAP | TPF_NOSHADOW);
+    Plain_Text_Print(view, Text, DrawX, DrawY, Color, kBlack, FontType::kMap,
+                     TPF_NOSHADOW);
+    const FontStyle font = TextFontStyle(FontType::kMap, TPF_NOSHADOW);
     const int font_height = FontMaxHeight(font);
     view.DrawRect(DrawX - 1, DrawY - 1, DrawX + Width + 1, DrawY + font_height,
                   static_cast<unsigned char>(Color));
@@ -288,7 +288,7 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
       const int width = StringPixelWidth(font, buffer);
 
       Plain_Text_Print(view, buffer, DrawX, DrawY + font_height, Color, kBlack,
-                       TPF_MAP | TPF_NOSHADOW);
+                       FontType::kMap, TPF_NOSHADOW);
       view.DrawRect(DrawX - 1, DrawY + font_height, DrawX + width + 1,
                     DrawY + font_height + font_height - 1,
                     static_cast<unsigned char>(Color));
@@ -319,7 +319,7 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
 void HelpClass::Set_Text(int text) {
   if (text != TXT_NONE) {
     Text = text;
-    Width = StringPixelWidth(TextFontStyle(TPF_MAP | TPF_NOSHADOW),
+    Width = StringPixelWidth(TextFontStyle(FontType::kMap, TPF_NOSHADOW),
                              Text_String(Text));
     if (IsRight) {
       DrawX = X - Width;

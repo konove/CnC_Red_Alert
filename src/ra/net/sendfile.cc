@@ -276,9 +276,10 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   // rather than the shared string table.
   std::string info_string(Text_String(TXT_RECEIVING_SCENARIO));
 
-  Format_Window_String(TextFontStyle(TPF_CENTER | TPF_6PT_GRAD |
-                                     TPF_USE_GRAD_PAL | TPF_NOSHADOW),
-                       std::span(info_string), view.height(), width, height);
+  Format_Window_String(
+      TextFontStyle(FontType::k6PointGradient,
+                    TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW),
+      std::span(info_string), view.height(), width, height);
 
   /*
   ** Button Enumerations
@@ -385,7 +386,8 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
         Fancy_Text_Print(view, info_string.c_str(), d_dialog_cx - (width / 2),
                          d_dialog_y + 50, Get_Color_Scheme(), kTBlack,
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                         FontType::k6PointGradient,
+                         TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         game::TheMouse().Show();
       }
@@ -540,9 +542,10 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   engine::platform::Timer<engine::platform::SystemTickSource>
       response_timer;  // timeout timer for waiting for responses
 
-  Format_Window_String(TextFontStyle(TPF_CENTER | TPF_6PT_GRAD |
-                                     TPF_USE_GRAD_PAL | TPF_NOSHADOW),
-                       std::span(info_string), view.height(), width, height);
+  Format_Window_String(
+      TextFontStyle(FontType::k6PointGradient,
+                    TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW),
+      std::span(info_string), view.height(), width, height);
 
   /*
   ** Button Enumerations
@@ -684,8 +687,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
         Fancy_Text_Print(view, info_string.c_str(), d_dialog_cx - (width / 2),
                          d_dialog_y + (25 * factor), Get_Color_Scheme(),
-                         kTBlack,
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                         kTBlack, FontType::k6PointGradient,
+                         TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         game::TheMouse().Show();
       }

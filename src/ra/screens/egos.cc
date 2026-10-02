@@ -203,7 +203,7 @@ bool EgoClass::Scroll(int distance) {
 void EgoClass::Render(PixelView& view) const {
   if (YPos < view.height() && YPos > -16) {
     Fancy_Text_Print(view, Text.c_str(), XPos, YPos, Get_Color_Scheme(),
-                     kTBlack, Flags);
+                     kTBlack, FontOf(Flags), StyleOf(Flags));
   }
 }
 
@@ -221,7 +221,8 @@ void EgoClass::Render(PixelView& view) const {
  * HISTORY: * 9/9/96 11:58PM ST : Created *
  *=============================================================================================*/
 void EgoClass::Wipe(PixelView& view, PixelBuffer* background) const {
-  const int width = StringPixelWidth(TextFontStyle(Flags), Text.c_str());
+  const int width = StringPixelWidth(
+      TextFontStyle(FontOf(Flags), StyleOf(Flags)), Text.c_str());
   int x = XPos;
 
   if (base::Any(Flags & TPF_RIGHT)) {

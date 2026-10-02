@@ -1192,10 +1192,10 @@ bool ObjectClass::Render(PixelView& view, bool forced)  // const
         **	relative, so add the window's x-coord to 'x'.
         */
         if (TheDebugState().map_editor_active() && Trigger != nullptr) {
-          Fancy_Text_Print(view, Trigger->Class->IniName,
-                           x + static_cast<int>(WinX), y,
-                           &ThePalettes().color_remaps().at(PCOLOR_RED),
-                           kTBlack, TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
+          Fancy_Text_Print(
+              view, Trigger->Class->IniName, x + static_cast<int>(WinX), y,
+              &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
+              FontType::k6Point, TPF_CENTER | TPF_NOSHADOW);
         }
       }
 

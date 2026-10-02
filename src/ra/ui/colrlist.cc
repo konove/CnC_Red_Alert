@@ -221,8 +221,8 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
   */
   if (!selected) {
     Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                            base::At(Colors, index), kTBlack, TextFlags, width,
-                            Tabs);
+                            base::At(Colors, index), kTBlack, FontOf(TextFlags),
+                            StyleOf(TextFlags), width, Tabs);
     return;
   }
 
@@ -240,9 +240,9 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	NONE: Just print the string in its native color
     */
     case SELECT_NORMAL:
-      Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                              base::At(Colors, index), kTBlack, TextFlags,
-                              width, Tabs);
+      Conquer_Clip_Text_Print(
+          view, Get_Item(index), x, y, base::At(Colors, index), kTBlack,
+          FontOf(TextFlags), StyleOf(TextFlags), width, Tabs);
       break;
 
     /*
@@ -252,10 +252,13 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     case SELECT_HIGHLIGHT:
       if (base::Any(TextFlags & TPF_6PT_GRAD)) {
         Conquer_Clip_Text_Print(view, Get_Item(index), x, y, color, kTBlack,
-                                TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
+                                FontOf(TextFlags | TPF_BRIGHT_COLOR),
+                                StyleOf(TextFlags | TPF_BRIGHT_COLOR), width,
+                                Tabs);
       } else {
         Conquer_Clip_Text_Print(view, Get_Item(index), x, y, color, kTBlack,
-                                TextFlags, width, Tabs);
+                                FontOf(TextFlags), StyleOf(TextFlags), width,
+                                Tabs);
       }
       break;
 
@@ -264,9 +267,9 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     */
     case SELECT_BOX:
       view.DrawRect(x, y, x + width - 2, y + LineHeight - 2, color->Color);
-      Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                              base::At(Colors, index), kTBlack, TextFlags,
-                              width, Tabs);
+      Conquer_Clip_Text_Print(
+          view, Get_Item(index), x, y, base::At(Colors, index), kTBlack,
+          FontOf(TextFlags), StyleOf(TextFlags), width, Tabs);
       break;
 
     /*
@@ -275,14 +278,15 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     case SELECT_BAR:
       if (base::Any(TextFlags & TPF_6PT_GRAD)) {
         view.FillRect(x, y, x + width - 1, y + LineHeight - 1, color->Color);
-        Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                                base::At(Colors, index), kTBlack,
-                                TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
+        Conquer_Clip_Text_Print(
+            view, Get_Item(index), x, y, base::At(Colors, index), kTBlack,
+            FontOf(TextFlags | TPF_BRIGHT_COLOR),
+            StyleOf(TextFlags | TPF_BRIGHT_COLOR), width, Tabs);
       } else {
         view.FillRect(x, y, x + width - 2, y + LineHeight - 2, color->Color);
-        Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                                base::At(Colors, index), kTBlack, TextFlags,
-                                width, Tabs);
+        Conquer_Clip_Text_Print(
+            view, Get_Item(index), x, y, base::At(Colors, index), kTBlack,
+            FontOf(TextFlags), StyleOf(TextFlags), width, Tabs);
       }
       break;
 

@@ -259,9 +259,9 @@ void VisualControlsClass::Process() {
       for (int i = 0; i < std::ssize(_titles); i++) {
         Fancy_Text_Print(view, SliderTitle(base::At(_titles, i)), slider_x - 16,
                          text_y + (i * slider_y_spacing), Get_Color_Scheme(),
-                         kTBlack,
-                         kTpfText | TPF_RIGHT |
-                             (curbutton == i ? TPF_BRIGHT_COLOR : kTpfText));
+                         kTBlack, kTextFont,
+                         kTextFlags | TPF_RIGHT |
+                             (curbutton == i ? TPF_BRIGHT_COLOR : kTextFlags));
       }
       optionsbtn.Draw_All(view);
       game::TheMouse().Show();

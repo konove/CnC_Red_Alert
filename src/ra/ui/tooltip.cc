@@ -71,7 +71,7 @@ ToolTipClass::ToolTipClass(game::GadgetClass* gadget, const char* szText,
   }
 
                               // call, for god's sake.
-  wShow = StringPixelWidth(TextFontStyle(TPF_TYPE), szTip) + 2;
+  wShow = StringPixelWidth(TextFontStyle(FontType::kType, TPF_NONE), szTip) + 2;
   hShow = 11;
 
   if (!bIconList) {
@@ -163,7 +163,9 @@ void ToolTipClass::Show(PixelView& view) {
         return;
       }
                                    // call, for god's sake.
-      wShowUse = StringPixelWidth(TextFontStyle(TPF_TYPE), szTipUse) + 2;
+      wShowUse =
+          StringPixelWidth(TextFontStyle(FontType::kType, TPF_NONE), szTipUse) +
+          2;
       if (bRightAlign) {
         xShowUse -= wShowUse;
       }
@@ -183,8 +185,7 @@ void ToolTipClass::Show(PixelView& view) {
     // Get_Color_Scheme(), ColorRemaps[ PCOLOR_BROWN ].Color,
     // TPF_TYPE ); //TPF_DROPSHADOW );
     Simple_Text_Print(view, szTipUse, xShowUse, yShowUse, Get_Color_Scheme(),
-                      kBlack,
-                      TPF_TYPE);  // TPF_DROPSHADOW );
+                      kBlack, FontType::kType, TPF_NONE);  // TPF_DROPSHADOW );
     Draw_Box(view, xShowUse, yShowUse, wShowUse, hShow, BOXSTYLE_BOX, false);
     game::TheMouse().Show();
     bShowing = true;

@@ -255,8 +255,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
 
   PixelView& view = TheScreen().visible_view();
 
-  const int lines = Format_Window_String(TextFontStyle(kTpfText), buffer,
-                                         view.height(), width, height);
+  const int lines = Format_Window_String(TextFontStyle(kTextFont, kTextFlags),
+                                         buffer, view.height(), width, height);
 
   width = std::max(width, 180);
   width += 80;
@@ -278,10 +278,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
 
   if (lines == 1) {
     Fancy_Text_Print(view, buffer, x + (width / 2), y + 25, Get_Color_Scheme(),
-                     kTBlack, kTpfText | TPF_CENTER);
+                     kTBlack, kTextFont, kTextFlags | TPF_CENTER);
   } else {
     Fancy_Text_Print(view, buffer, x + 40, y + 25, Get_Color_Scheme(), kTBlack,
-                     kTpfText);
+                     kTextFont, kTextFlags);
   }
 
   game::TheMouse().Show();
@@ -486,7 +486,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
 
   PixelView& view = TheScreen().visible_view();
 
-  const FontStyle font = TextFontStyle(kTpfText);
+  const FontStyle font = TextFontStyle(kTextFont, kTextFlags);
   Format_Window_String(font, std::span(buffer), view.height(), width, height);
 
   const int text_width = width;
@@ -522,7 +522,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   Draw_Caption(view, TXT_NONE, x, y, width);
 
   Fancy_Text_Print(view, buffer.c_str(), (view.width() / 2) - (text_width / 2),
-                   y + 50, Get_Color_Scheme(), kTBlack, kTpfText);
+                   y + 50, Get_Color_Scheme(), kTBlack, kTextFont, kTextFlags);
 
   Commands->Draw_All(view);
   game::TheMouse().Show();
@@ -671,7 +671,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
   PixelView& view = TheScreen().visible_view();
 
-  const FontStyle font = TextFontStyle(kTpfText);
+  const FontStyle font = TextFontStyle(kTextFont, kTextFlags);
   Format_Window_String(font, text_buffer, view.height(), width, height);
 
   int text_width = width;
@@ -740,7 +740,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
         Fancy_Text_Print(view, text_buffer,
                          (view.width() / 2) - (text_width / 2), y + 50,
-                         Get_Color_Scheme(), kTBlack, kTpfText);
+                         Get_Color_Scheme(), kTBlack, kTextFont, kTextFlags);
 
         Commands->Draw_All(view);
       }

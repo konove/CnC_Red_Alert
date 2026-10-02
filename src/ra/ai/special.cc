@@ -204,7 +204,8 @@ void Special_Dialog(bool simple) {
       for (const auto& _option : _options) {
         Fancy_Text_Print(view, _option.Description, _option.Button->X + 20,
                          _option.Button->Y, Get_Color_Scheme(), kTBlack,
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                         FontType::k6PointGradient,
+                         TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All(view);
       game::TheMouse().Show();
@@ -300,33 +301,35 @@ void PWEditClass::Draw_Text(PixelView& view, const char* text) {
   base::FillBytes(base::ObjectBytes(buffer), '*',
                   std::min(std::string_view(text).size(), sizeof(buffer) - 1));
 
-  const FontStyle font = TextFontStyle(TextFlags);
+  const FontStyle font = TextFontStyle(FontOf(TextFlags), StyleOf(TextFlags));
   if (font.font.data().data() ==
       TheAssets().font(FontType::k6PointGradient).data()) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
     Conquer_Clip_Text_Print(view, buffer, X + 1, Y + 1, Color, kTBlack,
-                            TextFlags | flags, Width - 2);
+                            FontOf(TextFlags | flags),
+                            StyleOf(TextFlags | flags), Width - 2);
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
       Conquer_Clip_Text_Print(view, "_", X + 1 + StringPixelWidth(font, buffer),
-                              Y + 1, Color, kTBlack, TextFlags | flags);
+                              Y + 1, Color, kTBlack, FontOf(TextFlags | flags),
+                              StyleOf(TextFlags | flags));
     }
   } else {
     Conquer_Clip_Text_Print(
         view, buffer, X + 1, Y + 1,
         Has_Focus() ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-        kTBlack, TextFlags, Width - 2);
+        kTBlack, FontOf(TextFlags), StyleOf(TextFlags), Width - 2);
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
       Conquer_Clip_Text_Print(
           view, "_", X + 1 + StringPixelWidth(font, buffer), Y + 1,
           &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE), kTBlack,
-          TextFlags);
+          FontOf(TextFlags), StyleOf(TextFlags));
     }
   }
 }
@@ -369,7 +372,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Build the button list.
   */
-  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  const FontStyle font = TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW);
   const int bheight = FontLineHeight(font) + 4;  // button width and height
   const int bwidth =
       std::max(StringPixelWidth(font, Text_String(btext)) + 16, 30 * 2);
@@ -422,7 +425,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Draw the body of the message box.
   */
   Fancy_Text_Print(view, buffer, x + 40, y + 50, Get_Color_Scheme(), kTBlack,
-                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                   FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
   **	Redraw the buttons.
@@ -511,8 +514,8 @@ int Fetch_Difficulty(bool amath) {
   PixelView& view = TheScreen().visible_view();
   int width = 0;
   int height = 0;
-  Format_Window_String(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW), buffer,
-                       w - 120, width, height);
+  Format_Window_String(TextFontStyle(FontType::k6PointGradient, TPF_NOSHADOW),
+                       buffer, w - 120, width, height);
 
   /*
   **	Create the OK button.
@@ -556,20 +559,20 @@ int Fetch_Difficulty(bool amath) {
       // 15*2, Get_Color_Scheme(), TBLACK,
       // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_NOSHADOW);
       Fancy_Text_Print(view, buffer, x + 40, y + 30, Get_Color_Scheme(),
-                       kTBlack, TPF_6PT_GRAD | TPF_NOSHADOW);
+                       kTBlack, FontType::k6PointGradient, TPF_NOSHADOW);
 
       /*
       **	Display the descripton of the slider range.
       */
       Fancy_Text_Print(view, TXT_HARD, slider.X + slider.Width, slider.Y - 18,
-                       Get_Color_Scheme(), kTBlack,
-                       TPF_RIGHT | TPF_6PT_GRAD | TPF_DROPSHADOW);
+                       Get_Color_Scheme(), kTBlack, FontType::k6PointGradient,
+                       TPF_RIGHT | TPF_DROPSHADOW);
       Fancy_Text_Print(view, TXT_EASY, slider.X, slider.Y - 18,
-                       Get_Color_Scheme(), kTBlack,
-                       TPF_6PT_GRAD | TPF_DROPSHADOW);
+                       Get_Color_Scheme(), kTBlack, FontType::k6PointGradient,
+                       TPF_DROPSHADOW);
       Fancy_Text_Print(view, TXT_NORMAL, slider.X + (slider.Width / 2),
                        slider.Y - 18, Get_Color_Scheme(), kTBlack,
-                       TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
+                       FontType::k6PointGradient, TPF_CENTER | TPF_DROPSHADOW);
 
       /*
       **	Redraw the buttons.

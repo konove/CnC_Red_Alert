@@ -1134,16 +1134,16 @@ bool TriggerTypeClass::Edit() {
       **	Draw the captions
       */
       Fancy_Text_Print(view, "Trigger Event:", event1list.X, event1list.Y - 7,
-                       scheme, kTBlack, TPF_EFNT | TPF_NOSHADOW);
+                       scheme, kTBlack, FontType::kEditor, TPF_NOSHADOW);
       Fancy_Text_Print(view, "Action to Perform:", action1list.X,
-                       action1list.Y - 7, scheme, kTBlack,
-                       TPF_EFNT | TPF_NOSHADOW);
+                       action1list.Y - 7, scheme, kTBlack, FontType::kEditor,
+                       TPF_NOSHADOW);
       Fancy_Text_Print(view, "House:", housebtn.X, housebtn.Y - 7, scheme,
-                       kTBlack, TPF_EFNT | TPF_NOSHADOW);
+                       kTBlack, FontType::kEditor, TPF_NOSHADOW);
       Fancy_Text_Print(view, "Name:", name_edt.X, name_edt.Y - 7, scheme,
-                       kTBlack, TPF_EFNT | TPF_NOSHADOW);
+                       kTBlack, FontType::kEditor, TPF_NOSHADOW);
       Fancy_Text_Print(view, "Persistence:", persbtn.X, persbtn.Y - 7, scheme,
-                       kTBlack, TPF_EFNT | TPF_NOSHADOW);
+                       kTBlack, FontType::kEditor, TPF_NOSHADOW);
 
       if (eventflag == 3) {
         view.DrawLine(event1list.X - 1, event1list.Y + 3, event1list.X - 4,
@@ -2249,14 +2249,14 @@ void TriggerTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
         }
       }
 
-      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, flags,
-                              width, _tabs);
+      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack,
+                              FontOf(flags), StyleOf(flags), width, _tabs);
     } else {
       Conquer_Clip_Text_Print(
           view, Description(), x, y,
           (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-          kTBlack, flags, width, _tabs);
+          kTBlack, FontOf(flags), StyleOf(flags), width, _tabs);
     }
   }
 }

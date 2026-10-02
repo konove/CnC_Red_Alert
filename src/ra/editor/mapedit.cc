@@ -1423,7 +1423,7 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
   **	Display the total value of all Tiberium on the map.
   */
   Fancy_Text_Print(view, "Tiberium=%ld   ", 0, 0, Get_Color_Scheme(), kBlack,
-                   TPF_EFNT | TPF_NOSHADOW, TotalValue);
+                   FontType::kEditor, TPF_NOSHADOW, TotalValue);
 
   /*
   **	If there are no object controls displayed, just invoke parent's Redraw
@@ -1457,7 +1457,7 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
     */
     Fancy_Text_Print(view, buf, 160, 0,
                      &ThePalettes().color_remaps().at(PCOLOR_BROWN), kTBlack,
-                     TPF_CENTER | TPF_NOSHADOW | TPF_EFNT);
+                     FontType::kEditor, TPF_CENTER | TPF_NOSHADOW);
   }
 }
 

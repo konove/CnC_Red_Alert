@@ -86,8 +86,9 @@ using enum engine::window::KeyNumber;
 
 namespace {
 
-// The flags every menu item prints with.
-constexpr TextPrintType kMenuTextFlags = TPF_8POINT | TPF_DROPSHADOW;
+// The font and flags every menu item prints with.
+constexpr FontType kMenuTextFont = FontType::k8Point;
+constexpr TextPrintType kMenuTextFlags = TPF_DROPSHADOW;
 
 }  // namespace
 
@@ -166,11 +167,11 @@ static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
                        int nfgc, int hfgc, int bgc) {
   for (int loop = 0; loop < 3; loop++) {
     game::TheMouse().Hide();
-    Plain_Text_Print(view, text, xpix, ypix, hfgc, bgc,
-                     TPF_8POINT | TPF_DROPSHADOW);
+    Plain_Text_Print(view, text, xpix, ypix, hfgc, bgc, FontType::k8Point,
+                     TPF_DROPSHADOW);
     engine::window::WaitTicks(2);
-    Plain_Text_Print(view, text, xpix, ypix, nfgc, bgc,
-                     TPF_8POINT | TPF_DROPSHADOW);
+    Plain_Text_Print(view, text, xpix, ypix, nfgc, bgc, FontType::k8Point,
+                     TPF_DROPSHADOW);
     game::TheMouse().Show();
     engine::window::WaitTicks(2);
   }
@@ -224,9 +225,10 @@ void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
   const int item = Select_To_Entry(base::At(menuptr, kMselected), field, index);
   const int num = base::At(menuptr, kItemshigh);
 
-  Plain_Text_Print(view, 0, 0, 0, kTBlack, kTBlack,
-                   TPF_8POINT | TPF_DROPSHADOW);
-  const int item_height = FontMaxHeight(TextFontStyle(kMenuTextFlags));
+  Plain_Text_Print(view, 0, 0, 0, kTBlack, kTBlack, FontType::k8Point,
+                   TPF_DROPSHADOW);
+  const int item_height =
+      FontMaxHeight(TextFontStyle(kMenuTextFont, kMenuTextFlags));
   game::TheMouse().Hide();
   for (int lp = 0; lp < num; lp++) {
     const int idx = Select_To_Entry(lp, field, index);
@@ -234,7 +236,7 @@ void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
     Plain_Text_Print(
         view, base::At(text, base::ToSize(idx)), menux, drawy,
         base::At(menuptr, idx == item && MenuUpdate ? kHilite : kNormcol),
-        kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+        kTBlack, FontType::k8Point, TPF_DROPSHADOW);
     //		if ((idx==item) && (MenuUpdate ))
     //			Text_Print(text[base::ToSize(idx)], menux, drawy,
     //menuptr[kHilite],
@@ -260,8 +262,8 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   int newitem = item =
       base::At(menuptr, kMselected) % (maxitem + 1); /* find selected */
   int select = -1;                            /* no selection made		*/
-  // The menu's items print in kMenuTextFlags; see Setup_Menu().
-  const FontStyle font = TextFontStyle(kMenuTextFlags);
+  // The menu's items print in kMenuTextFont; see Setup_Menu().
+  const FontStyle font = TextFontStyle(kMenuTextFont, kMenuTextFlags);
   const int menuskip =
       FontMaxHeight(font) + MenuSkip;         /* calc new font height	*/
   const int halfskip = MenuSkip / 2;          /* adjustment for menus	*/
@@ -383,11 +385,11 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
     Plain_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     normcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+                     normcol, kTBlack, FontType::k8Point, TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
     Plain_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
-                     litcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+                     litcol, kTBlack, FontType::k8Point, TPF_DROPSHADOW);
     game::TheMouse().Show(); /* resurrect the mouse	*/
   }
 
@@ -451,7 +453,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   **	Determine the width of the menu by finding the length of the
   **	longest menu entry.
   */
-  const FontStyle font = TextFontStyle(kMenuTextFlags);
+  const FontStyle font = TextFontStyle(kMenuTextFont, kMenuTextFlags);
   int length = 0;  // The width of the menu (in pixels).
   for (const char* text : strings) {
     length = std::max(length, StringPixelWidth(font, text));
@@ -712,7 +714,7 @@ int Main_Menu(int32_t /*unused*/) {
       commands->Draw_All(hidden);
       Fancy_Text_Print(hidden, "V%s", d_dialog_x + d_dialog_w - 36,
                        d_dialog_y + d_dialog_h - 10, Get_Color_Scheme(),
-                       kTBlack, TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT,
+                       kTBlack, FontType::kEditor, TPF_NOSHADOW | TPF_RIGHT,
                        Version_Name());
 
       /*

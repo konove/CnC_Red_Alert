@@ -350,7 +350,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   //------------------------------------------------------------------------
 
   int print_this_pass = 0;
-  const FontStyle font = TextFontStyle(style);
+  const FontStyle font = TextFontStyle(FontOf(style), StyleOf(style));
   int wid = StringPixelWidth(font, message);
   if (wid >= Width - 8) {
     //------------------------------------------------------------------------
@@ -632,7 +632,8 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     // We need to trim the message if there is no room to draw it
     //---------------------------------------------------------------------
     std::vector<char> concat_test(base::ToSize(MaxChars + 1));
-    const FontStyle font = TextFontStyle(tlabel->Style);
+    const FontStyle font =
+        TextFontStyle(FontOf(tlabel->Style), StyleOf(tlabel->Style));
     const int name_width = StringPixelWidth(font, tlabel->Text) -
                            StringPixelWidth(font, msg.data());
 
@@ -1072,7 +1073,9 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
             *screen edit box.
             */
             const int width =
-                StringPixelWidth(TextFontStyle(EditLabel->Style), EditBuf);
+                StringPixelWidth(TextFontStyle(FontOf(EditLabel->Style),
+                                               StyleOf(EditLabel->Style)),
+                                 EditBuf);
             if (width >= Width - 10) {
               overflowed = true;
               EditCurPos--;
@@ -1139,9 +1142,12 @@ void MessageListClass::Draw(PixelView& view) {
       txt[0] = CursorChar;
       Fancy_Text_Print(
           view, txt,
-          EditLabel->X + StringPixelWidth(TextFontStyle(EditLabel->Style),
-                                          EditLabel->Text),
-          EditLabel->Y, EditLabel->Color, kTBlack, EditLabel->Style);
+          EditLabel->X +
+              StringPixelWidth(TextFontStyle(FontOf(EditLabel->Style),
+                                             StyleOf(EditLabel->Style)),
+                               EditLabel->Text),
+          EditLabel->Y, EditLabel->Color, kTBlack, FontOf(EditLabel->Style),
+          StyleOf(EditLabel->Style));
     }
 
     if (TheScreen().IsVisible(&view)) {

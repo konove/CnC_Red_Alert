@@ -114,7 +114,7 @@ const char* SimpleEditDlgClass::Show() {
   */
 
   // The prompts print in kTpfText; see the Fancy_Text_Print() calls below.
-  const FontStyle font = TextFontStyle(kTpfText);
+  const FontStyle font = TextFontStyle(kTextFont, kTextFlags);
   const int d_prompt_w = StringPixelWidth(font, szPrompt.c_str());
   const int d_prompt_x = d_dialog_x + x_margin;
   const int d_prompt_y = !szTitle.empty() ? (d_dialog_y + (3 * d_gap_y) + 20)
@@ -236,10 +236,10 @@ const char* SimpleEditDlgClass::Show() {
       **	Redraw the buttons.
       */
       Fancy_Text_Print(view, szPrompt.c_str(), d_prompt_x, d_prompt_y,
-                       Get_Color_Scheme(), kTBlack, kTpfText);
+                       Get_Color_Scheme(), kTBlack, kTextFont, kTextFlags);
       if (!szPrompt2.empty()) {
         Fancy_Text_Print(view, szPrompt2.c_str(), d_prompt2_x, d_prompt2_y,
-                         Get_Color_Scheme(), kTBlack, kTpfText);
+                         Get_Color_Scheme(), kTBlack, kTextFont, kTextFlags);
       }
       commands->Flag_List_To_Redraw();
       game::TheMouse().Show();

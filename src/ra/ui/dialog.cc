@@ -51,6 +51,7 @@
 #include "ra/ui/dialog.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
@@ -58,10 +59,12 @@
 #include <string>
 #include <string_view>
 
+#include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/strings/format.h"
 #include "base/strings/safe_string.h"
@@ -397,76 +400,73 @@ namespace {
 constexpr TextPrintType kShadowsTooBigFor3Point =
     TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_NOSHADOW;
 
-// Returns flag without the shadows its font cannot draw.
-TextPrintType SupportedTextFlags(const TextPrintType flag) {
-  const TextPrintType point = flag & static_cast<TextPrintType>(0x000F);
-  return point == TPF_3POINT ? flag & ~kShadowsTooBigFor3Point : flag;
+// Returns flags without the shadows `font` cannot draw.
+TextPrintType SupportedTextFlags(const FontType font,
+                                 const TextPrintType flags) {
+  return font == FontType::k3Point ? flags & ~kShadowsTooBigFor3Point : flags;
 }
 
 }  // namespace
 
-FontStyle TextFontStyle(TextPrintType flag) {
-  flag = SupportedTextFlags(flag);
+FontType FontOf(const TextPrintType combined) {
+  // Indexed by the low four bits; 0 (TPF_LASTPOINT) and the unused values
+  // fall back to the 8-point font, as TextFontStyle() always did.
+  static constexpr std::array<FontType, 16> kFontOfBits = {
+      FontType::k8Point,         FontType::k6Point, FontType::k8Point,
+      FontType::k3Point,         FontType::kLed,    FontType::kVcr,
+      FontType::k6PointGradient, FontType::kMap,    FontType::kMetal12,
+      FontType::kEditor,         FontType::kType,   FontType::kScore,
+      FontType::k8Point,         FontType::k8Point, FontType::k8Point,
+      FontType::k8Point};
+  return kFontOfBits.at(base::Bits(combined) & 0xFU);
+}
+
+TextPrintType StyleOf(const TextPrintType combined) {
+  return combined & ~static_cast<TextPrintType>(0xFU);
+}
+
+FontStyle TextFontStyle(const FontType font, TextPrintType flags) {
+  DCHECK_EQ(base::Bits(flags) & 0xFU, 0U) << "a font index in the style flags";
+  flags = SupportedTextFlags(font, flags);
   int xspace = 1;
   int yspace = 0;
-  std::span<const std::byte> font = {};
 
-  const Assets& assets = TheAssets();
-  const TextPrintType point = flag & static_cast<TextPrintType>(0x000F);
-  switch (point) {
-    case TPF_SCORE:
-      font = assets.font(FontType::kScore);
+  switch (font) {
+    case FontType::kScore:
+    case FontType::kVcr:
+    case FontType::kMetal12:
+    default:
+      // The font's own spacing.
       break;
 
-    case TPF_METAL12:
-      font = assets.font(FontType::kMetal12);
-      // xspace += 1;
-      break;
-
-    case TPF_MAP:
-      font = assets.font(FontType::kMap);
+    case FontType::kMap:
+    case FontType::k6PointGradient:
+    case FontType::k6Point:
       xspace -= 1;
       break;
 
-    case TPF_VCR:
-      font = assets.font(FontType::kVcr);
-      break;
-
-    case TPF_6PT_GRAD:
-      font = assets.font(FontType::k6PointGradient);
-      xspace -= 1;
-      break;
-
-    case TPF_3POINT:
+    case FontType::k3Point:
       xspace += 1;
-      font = assets.font(FontType::k3Point);
       break;
 
-    case TPF_6POINT:
-      font = assets.font(FontType::k6Point);
-      xspace -= 1;
-      break;
-
-    case TPF_EFNT:
-      font = assets.font(FontType::kEditor);
+    case FontType::kEditor:
       yspace += 1;
       xspace -= 1;
       xspace -= 1;
       break;
 
-    case TPF_8POINT:
-      font = assets.font(FontType::k8Point);
+    case FontType::k8Point:
+      // Also what a print without a font got: the original kept whichever
+      // font printed last, and 8-point is the font Assets starts with.
       xspace -= 2;
       yspace -= 4;
       break;
 
-    case TPF_LED:
+    case FontType::kLed:
       xspace -= 4;
-      font = assets.font(FontType::kLed);
       break;
 
-    case TPF_TYPE:
-      font = assets.font(FontType::kType);
+    case FontType::kType:
       xspace -= 1;
 
       if constexpr (config::kWolapiEnabled) {
@@ -479,28 +479,12 @@ FontStyle TextFontStyle(TextPrintType flag) {
       }
 
       break;
-
-    case TextPrintType::TPF_LASTPOINT:
-    case TextPrintType::TPF_NOSHADOW:
-    case TextPrintType::TPF_DROPSHADOW:
-    case TextPrintType::TPF_FULLSHADOW:
-    case TextPrintType::TPF_LIGHTSHADOW:
-    case TextPrintType::TPF_CENTER:
-    case TextPrintType::TPF_RIGHT:
-    case TextPrintType::TPF_MEDIUM_COLOR:
-    case TextPrintType::TPF_BRIGHT_COLOR:
-    case TextPrintType::TPF_USE_GRAD_PAL:
-    default:
-      // No point size. The original kept whichever font printed last; no
-      // caller relies on that, and 8-point is the font Assets starts with.
-      font = assets.font(FontType::k8Point);
-      break;
   }
 
   // Any one shadow flag takes a pixel off the letter spacing, and
   // TPF_NOSHADOW two off the line spacing too.
-  const TextPrintType shadow =
-      flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_LIGHTSHADOW);
+  const TextPrintType shadow = flags & (TPF_NOSHADOW | TPF_DROPSHADOW |
+                                        TPF_FULLSHADOW | TPF_LIGHTSHADOW);
   if (shadow == TPF_NOSHADOW) {
     xspace -= 1;
     yspace -= 2;
@@ -509,12 +493,15 @@ FontStyle TextFontStyle(TextPrintType flag) {
     xspace -= 1;
   }
 
-  return {.font = FontView(font), .x_spacing = xspace, .y_spacing = yspace};
+  return {.font = FontView(TheAssets().font(font)),
+          .x_spacing = xspace,
+          .y_spacing = yspace};
 }
 
-TextStyle TextStyleFor(TextPrintType flag, RemapControlType* fore,
-                       const int back) {
-  flag = SupportedTextFlags(flag);
+TextStyle TextStyleFor(const FontType font, TextPrintType flags,
+                       RemapControlType* fore, const int back) {
+  DCHECK_EQ(base::Bits(flags) & 0xFU, 0U) << "a font index in the style flags";
+  flags = SupportedTextFlags(font, flags);
   unsigned char fontpalette[16];  // Working font palette array.
 
   if (fore == nullptr) {
@@ -532,18 +519,18 @@ TextStyle TextStyleFor(TextPrintType flag, RemapControlType* fore,
   /*
   **	A gradient font always requires special fixups for the palette
   */
-  const TextPrintType point = flag & static_cast<TextPrintType>(0x000F);
-  if (point == TPF_VCR || point == TPF_6PT_GRAD || point == TPF_METAL12 ||
-      point == TPF_EFNT || point == TPF_TYPE) {
+  if (font == FontType::kVcr || font == FontType::k6PointGradient ||
+      font == FontType::kMetal12 || font == FontType::kEditor ||
+      font == FontType::kType) {
     /*
     ** If a gradient palette is specified, copy the remap table directly,
     *otherwise *	use the foreground color as the entire font remap color.
     */
-    if (base::Any(flag & TPF_USE_GRAD_PAL)) {
+    if (base::Any(flags & TPF_USE_GRAD_PAL)) {
       base::CopyBytes(base::ObjectBytes(fontpalette),
                       base::ObjectBytes(fore->FontRemap), 16);
       forecolor = fore->Color;
-      if (point == TPF_TYPE) {
+      if (font == FontType::kType) {
         forecolor = base::At(fontpalette, 1);
       }
     } else {
@@ -556,7 +543,7 @@ TextStyle TextStyleFor(TextPrintType flag, RemapControlType* fore,
     ** Medium color: set all font colors to a medium value.  This flag
     ** overrides any gradient effects.
     */
-    if (base::Any(flag & TPF_MEDIUM_COLOR)) {
+    if (base::Any(flags & TPF_MEDIUM_COLOR)) {
       forecolor = fore->Color;
       base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
                       fore->Color, 12);
@@ -566,7 +553,7 @@ TextStyle TextStyleFor(TextPrintType flag, RemapControlType* fore,
     ** Bright color: set all font colors to a bright value.  This flag
     ** overrides any gradient effects.
     */
-    if (base::Any(flag & TPF_BRIGHT_COLOR)) {
+    if (base::Any(flags & TPF_BRIGHT_COLOR)) {
       forecolor = fore->Bright;
       base::FillBytes(std::as_writable_bytes(base::Suffix(fontpalette, 4)),
                       fore->BrightColor, 12);
@@ -575,8 +562,8 @@ TextStyle TextStyleFor(TextPrintType flag, RemapControlType* fore,
 
   // Set the glyph palette's shadow colours from the shadow flags.
   const TextPrintType shadow =
-      flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW |
-              TPF_LIGHTSHADOW);  // Requested shadow value.
+      flags & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW |
+               TPF_LIGHTSHADOW);  // Requested shadow value.
   switch (shadow) {
     /*
     **	The text is rendered plain.
@@ -633,19 +620,20 @@ TextStyle TextStyleFor(TextPrintType flag, RemapControlType* fore,
     default:
       break;
   }
-  if (point != TPF_TYPE) {
+  if (font != FontType::kType) {
     base::At(fontpalette, 0) = static_cast<unsigned char>(back);
     base::At(fontpalette, 1) = fore->Color;
   }
 
-  FontStyle font_style = TextFontStyle(flag);
+  FontStyle font_style = TextFontStyle(font, flags);
   std::ranges::copy(fontpalette, font_style.palette.begin());
-  return {.flag = flag, .forecolor = forecolor, .font_style = font_style};
+  return {.flag = flags, .forecolor = forecolor, .font_style = font_style};
 }
 
 void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
-                       RemapControlType* fore, int back, TextPrintType flag) {
-  const TextStyle style = TextStyleFor(flag, fore, back);
+                       RemapControlType* fore, int back, const FontType font,
+                       TextPrintType flag) {
+  const TextStyle style = TextStyleFor(font, flag, fore, back);
   flag = style.flag;
 
   /*
@@ -716,10 +704,11 @@ void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
  *=============================================================================================*/
 void Fancy_Text_Print(PixelView& view, const int text, const int x, const int y,
                       RemapControlType* fore, const int back,
-                      const TextPrintType flag,
+                      const FontType font, const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
   if (text != TXT_NONE) {
-    Fancy_Text_Print(view, Text_String(text), x, y, fore, back, flag, args);
+    Fancy_Text_Print(view, Text_String(text), x, y, fore, back, font, flag,
+                     args);
   }
 }
 
@@ -751,11 +740,11 @@ void Fancy_Text_Print(PixelView& view, const int text, const int x, const int y,
  *=============================================================================================*/
 void Fancy_Text_Print(PixelView& view, const char* text, const int x,
                       const int y, RemapControlType* fore, const int back,
-                      const TextPrintType flag,
+                      const FontType font, const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
   if (text) {
     const std::string formatted = base::FormatRuntime(text, args);
-    Simple_Text_Print(view, formatted.c_str(), x, y, fore, back, flag);
+    Simple_Text_Print(view, formatted.c_str(), x, y, fore, back, font, flag);
   }
 }
 
@@ -790,14 +779,14 @@ void Fancy_Text_Print(PixelView& view, const char* text, const int x,
  *=============================================================================================*/
 void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
                              RemapControlType* fore, int back,
-                             TextPrintType flag, int width,
+                             const FontType font, TextPrintType flag, int width,
                              std::span<const int> tabs) {
   if (text == nullptr) {
     return;
   }
   char buffer[512];
   base::SafeCopy(buffer, text);
-  const FontStyle font = TextFontStyle(flag);
+  const FontStyle style = TextFontStyle(font, flag);
   std::span<char> source(buffer);
   int offset = 0;
   while (offset < width && !source.empty() && source.front() != '\0') {
@@ -807,7 +796,7 @@ void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
     int line_width = 0;
     size_t visible = 0;
     while (visible < count) {
-      const int next = CharPixelWidth(font, base::At(source, visible));
+      const int next = CharPixelWidth(style, base::At(source, visible));
       if (offset + line_width + next >= width) {
         break;
       }
@@ -815,7 +804,8 @@ void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
       ++visible;
     }
     base::At(source, visible) = '\0';
-    Simple_Text_Print(view, source.data(), x + offset, y, fore, back, flag);
+    Simple_Text_Print(view, source.data(), x + offset, y, fore, back, font,
+                      flag);
     offset += line_width;
     if (visible < count || tab == std::string_view::npos) {
       break;
@@ -883,11 +873,12 @@ RemapControlType Plain_Scheme(const int fore) {
  *   01/05/1996 BRR : Created.                                             *
  *=========================================================================*/
 void Plain_Text_Print(PixelView& view, const int text, const int x, const int y,
-                      const int fore, const int back, const TextPrintType flag,
+                      const int fore, const int back, const FontType font,
+                      const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
   RemapControlType scheme = Plain_Scheme(fore);
 
-  Fancy_Text_Print(view, text, x, y, &scheme, back, flag, args);
+  Fancy_Text_Print(view, text, x, y, &scheme, back, font, flag, args);
 }
 
 /***************************************************************************
@@ -917,11 +908,11 @@ void Plain_Text_Print(PixelView& view, const int text, const int x, const int y,
  *=========================================================================*/
 void Plain_Text_Print(PixelView& view, const char* text, const int x,
                       const int y, const int fore, const int back,
-                      const TextPrintType flag,
+                      const FontType font, const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
   RemapControlType scheme = Plain_Scheme(fore);
 
-  Fancy_Text_Print(view, text, x, y, &scheme, back, flag, args);
+  Fancy_Text_Print(view, text, x, y, &scheme, back, font, flag, args);
 }
 
 /***********************************************************************************************
@@ -954,12 +945,12 @@ void Draw_Caption(PixelView& view, const char* text, int x, int y, int w) {
   if (text != nullptr && *text != '\0') {
     if (TheDebugState().map_editor_active()) {
       Fancy_Text_Print(view, text, (w / 2) + x, 4 + y, Get_Color_Scheme(),
-                       kTBlack,
-                       TPF_CENTER | TPF_EFNT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+                       kTBlack, FontType::kEditor,
+                       TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     } else {
       Fancy_Text_Print(view, text, (w / 2) + x, 16 + y, Get_Color_Scheme(),
-                       kTBlack, TPF_CENTER | kTpfText);
-      const FontStyle font = TextFontStyle(TPF_CENTER | kTpfText);
+                       kTBlack, kTextFont, TPF_CENTER | kTextFlags);
+      const FontStyle font = TextFontStyle(kTextFont, TPF_CENTER | kTextFlags);
       const int length = StringPixelWidth(font, text);
       view.DrawLine(x + (w / 2) - (length / 2), y + FontLineHeight(font) + 16,
                     x + (w / 2) + (length / 2), y + FontLineHeight(font) + 16,

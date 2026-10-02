@@ -94,7 +94,8 @@ StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
   Set_Text(text);
 
   if (w == -1 || h == -1) {
-    const FontStyle font = TextFontStyle(PrintFlags);
+    const FontStyle font =
+        TextFontStyle(FontOf(PrintFlags), StyleOf(PrintFlags));
     if (w == -1) {
       Width = StringPixelWidth(font, String.c_str());
     }
@@ -237,7 +238,8 @@ void StaticButtonClass::Draw_Text(PixelView& view, const char* text) {
       x += Width - 1;
     }
 
-    Fancy_Text_Print(view, text, x, Y, Get_Color_Scheme(), kTBlack, PrintFlags);
+    Fancy_Text_Print(view, text, x, Y, Get_Color_Scheme(), kTBlack,
+                     FontOf(PrintFlags), StyleOf(PrintFlags));
   }
 }
 

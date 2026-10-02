@@ -255,7 +255,7 @@ ScenarioVarType ChooseMissionVariant() {
 
   PixelView& view = TheScreen().visible_view();
   Fancy_Text_Print(view, TXT_STAND_BY, 320, 380, Get_Color_Scheme(), kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
+                   FontType::k6PointGradient, TPF_CENTER | TPF_DROPSHADOW);
   TheTheme().Fade_Out();
 
   return base::At(kChoiceVariants, choice);

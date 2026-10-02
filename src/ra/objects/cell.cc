@@ -977,13 +977,13 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
                   TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
                   TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
                   static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
-    Fancy_Text_Print(
-        view, "%02X%02X\r%d%d%d\r%d %d",
-        TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
-        &ThePalettes().grey_scheme(), kTBlack,
-        TPF_EFNT | TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW, cell.y(),
-        cell.x(), Zones.at(MZONE_NORMAL), Zones.at(MZONE_CRUSHER),
-        Zones.at(MZONE_DESTROYER), Overlay, OverlayData);
+    Fancy_Text_Print(view, "%02X%02X\r%d%d%d\r%d %d",
+                     TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1),
+                     TheMap().TacPixelY + y, &ThePalettes().grey_scheme(),
+                     kTBlack, FontType::kEditor,
+                     TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW, cell.y(),
+                     cell.x(), Zones.at(MZONE_NORMAL), Zones.at(MZONE_CRUSHER),
+                     Zones.at(MZONE_DESTROYER), Overlay, OverlayData);
   } else {
     if constexpr (config::kScenarioEditorEnabled) {
       /*
@@ -1060,7 +1060,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
           Fancy_Text_Print(view, Trigger->Class->IniName,
                            x + TheMap().TacPixelX, y + TheMap().TacPixelY,
                            &ThePalettes().color_remaps().at(PCOLOR_RED),
-                           kTBlack, TPF_EFNT | TPF_FULLSHADOW);
+                           kTBlack, FontType::kEditor, TPF_FULLSHADOW);
         }
 
         /*
@@ -1078,11 +1078,11 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
                 base::At(waypt, 1) = static_cast<char>('A' + (i % 26));
                 base::At(waypt, 2) = 0;
               }
-              Fancy_Text_Print(view, waypt,
-                               TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
-                               TheMap().TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
-                               &ThePalettes().color_remaps().at(PCOLOR_RED),
-                               kTBlack, TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
+              Fancy_Text_Print(
+                  view, waypt, TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
+                  TheMap().TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
+                  &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
+                  FontType::kEditor, TPF_CENTER | TPF_FULLSHADOW);
               break;
             }
           }
@@ -1091,7 +1091,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
             Fancy_Text_Print(view, "Home", TheMap().TacPixelX + x,
                              TheMap().TacPixelY + y + (CELL_PIXEL_H)-7,
                              &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                             kTBlack, TPF_EFNT | TPF_FULLSHADOW);
+                             kTBlack, FontType::kEditor, TPF_FULLSHADOW);
           }
           if (base::At(TheScenario().Waypoint,
                        ScenarioClass::kReinforcementWaypoint) ==
@@ -1099,7 +1099,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
             Fancy_Text_Print(view, "Reinf", TheMap().TacPixelX + x,
                              TheMap().TacPixelY + y + (CELL_PIXEL_H)-7,
                              &ThePalettes().color_remaps().at(PCOLOR_GREY),
-                             kTBlack, TPF_EFNT | TPF_FULLSHADOW);
+                             kTBlack, FontType::kEditor, TPF_FULLSHADOW);
           }
         }
       }

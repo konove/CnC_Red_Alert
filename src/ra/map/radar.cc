@@ -568,7 +568,7 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
                 HouseTypeClass::As_Reference(ThePlayer()->ActLike).Full_Name()),
             RadX + (RadWidth / 2), RadY + RadHeight - 20,
             &ThePalettes().color_remaps().at(ThePlayer()->RemapColor), kTBlack,
-            TPF_CENTER | kTpfText | TPF_DROPSHADOW);
+            kTextFont, TPF_CENTER | kTextFlags | TPF_DROPSHADOW);
       }
 
       MouseClass::Repair.Draw_Me(view, true);
@@ -2170,14 +2170,15 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
 
   Fancy_Text_Print(view, TXT_SPY_INFO, RadX + RadOffX + 12, y,
                    &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
+                   FontType::k6PointGradient, TPF_NOSHADOW);
   y += 14;
 
   HouseClass* ptr = HouseClass::As_Pointer(SpyingOn);
   if (ptr && ptr->RadarSpied & base::Bit<uint32_t>(ThePlayer()->Class->House)) {
     const PlayerColorType c_idx = ptr->RemapColor;
     RemapControlType* color = &ThePalettes().color_remaps().at(c_idx);
-    const TextPrintType style = TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW;
+    const FontType font = FontType::k6PointGradient;
+    const TextPrintType style = TPF_USE_GRAD_PAL | TPF_NOSHADOW;
 
     /*
     ** Print house's name below 'spy report'
@@ -2192,7 +2193,8 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
         txt[9] = '.';
         txt[10] = '\0';
       }
-      Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, style);
+      Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, font,
+                       style);
     } else {
       base::SafeCopy(txt, "________");
     }
@@ -2200,30 +2202,33 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
 
     Fancy_Text_Print(view, TXT_BUILDNGS, RadX + RadOffX + 12, y,
                      &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
-                     TPF_6PT_GRAD | TPF_NOSHADOW);
+                     FontType::k6PointGradient, TPF_NOSHADOW);
     y += 12 + 1;
 
     // count & print buildings
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurBuildings);
-    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, style);
+    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, font,
+                     style);
     y += 12 + 1;
 
     Fancy_Text_Print(view, TXT_UNITS, RadX + RadOffX + 12, y,
                      &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
-                     TPF_6PT_GRAD | TPF_NOSHADOW);
+                     FontType::k6PointGradient, TPF_NOSHADOW);
     y += 12 + 1;
     // count & print units
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurUnits);
-    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, style);
+    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, font,
+                     style);
     y += 12 + 1;
 
     Fancy_Text_Print(view, TXT_INFANTRY, RadX + RadOffX + 12, y,
                      &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
-                     TPF_6PT_GRAD | TPF_NOSHADOW);
+                     FontType::k6PointGradient, TPF_NOSHADOW);
     y += 12 + 1;
     // count & print infantry
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurInfantry);
-    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, style);
+    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, font,
+                     style);
     return true;
   }
   return false;
@@ -2259,10 +2264,10 @@ void RadarClass::Draw_Names(PixelView& view) const {
 
   Fancy_Text_Print(view, TXT_NAME_COLON, RadX + RadOffX, y,
                    &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
+                   FontType::k6PointGradient, TPF_NOSHADOW);
   Fancy_Text_Print(view, TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
                    &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
-                   TPF_RIGHT | TPF_6PT_GRAD | TPF_NOSHADOW);
+                   FontType::k6PointGradient, TPF_RIGHT | TPF_NOSHADOW);
   y += 12 + 1;
 
   view.DrawLine(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y, kLtGrey);
@@ -2289,8 +2294,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
       color = &ThePalettes().color_remaps().at(c_idx);
     }
     const TextPrintType style =
-        ptr->IsDefeated ? TPF_6PT_GRAD | TPF_NOSHADOW
-                        : TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW;
+        ptr->IsDefeated ? TPF_NOSHADOW : TPF_USE_GRAD_PAL | TPF_NOSHADOW;
 
     /*
     **	Initialize our message
@@ -2311,7 +2315,8 @@ void RadarClass::Draw_Names(PixelView& view) const {
       txt[9] = '.';
       txt[10] = '\0';
     }
-    Fancy_Text_Print(view, txt, RadX + RadOffX, y, color, kTBlack, style);
+    Fancy_Text_Print(view, txt, RadX + RadOffX, y, color, kTBlack,
+                     FontType::k6PointGradient, style);
 
     int kills = 0;
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
@@ -2320,7 +2325,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
     }
     absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
     Fancy_Text_Print(view, txt, RadX + RadOffX + RadIWidth - 2, y, color,
-                     kTBlack, style | TPF_RIGHT);
+                     kTBlack, FontType::k6PointGradient, style | TPF_RIGHT);
 
     y += 12 + 1;
   }

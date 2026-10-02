@@ -278,34 +278,35 @@ void GameControlsClass::Process() {
       /*
       **	Label the game speed slider
       */
-      TextPrintType style = kTpfText;
+      TextPrintType style = kTextFlags;
       if (curbutton == kButtonSpeed - kButtonFirst) {
         style = style | TPF_BRIGHT_COLOR;
       }
       Fancy_Text_Print(view, TXT_SPEED, d_speed_x, d_speed_y - d_txt6_h, scheme,
-                       kTBlack, style);
+                       kTBlack, kTextFont, style);
 
       Fancy_Text_Print(view, TXT_SLOWER, d_speed_x, d_speed_y + d_speed_h + 2,
-                       scheme, kTBlack, kTpfText);
+                       scheme, kTBlack, kTextFont, kTextFlags);
       Fancy_Text_Print(view, TXT_FASTER, d_speed_x + d_speed_w,
-                       d_speed_y + d_speed_h + 2, scheme, kTBlack,
-                       kTpfText | TPF_RIGHT);
+                       d_speed_y + d_speed_h + 2, scheme, kTBlack, kTextFont,
+                       kTextFlags | TPF_RIGHT);
 
       /*
       **	Label the scroll rate slider
       */
-      style = kTpfText;
+      style = kTextFlags;
       if (curbutton == kButtonScrollrate - kButtonFirst) {
         style = style | TPF_BRIGHT_COLOR;
       }
       Fancy_Text_Print(view, TXT_SCROLLRATE, d_scroll_x, d_scroll_y - d_txt6_h,
-                       scheme, kTBlack, style);
+                       scheme, kTBlack, kTextFont, style);
 
       Fancy_Text_Print(view, TXT_SLOWER, d_scroll_x,
-                       d_scroll_y + d_scroll_h + 2, scheme, kTBlack, kTpfText);
+                       d_scroll_y + d_scroll_h + 2, scheme, kTBlack, kTextFont,
+                       kTextFlags);
       Fancy_Text_Print(view, TXT_FASTER, d_scroll_x + d_scroll_w,
-                       d_scroll_y + d_scroll_h + 2, scheme, kTBlack,
-                       kTpfText | TPF_RIGHT);
+                       d_scroll_y + d_scroll_h + 2, scheme, kTBlack, kTextFont,
+                       kTextFlags | TPF_RIGHT);
 
       commands->Draw_All(view);
 

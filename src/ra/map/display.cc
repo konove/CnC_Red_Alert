@@ -542,8 +542,9 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
   if (text != nullptr) {
     std::span<int16_t> ptr(_list);
     // The text is help text, which HelpClass prints in TPF_MAP | TPF_NOSHADOW.
-    int len = StringPixelWidth(TextFontStyle(TPF_MAP | TPF_NOSHADOW), text) +
-              CELL_PIXEL_W;
+    int len =
+        StringPixelWidth(TextFontStyle(FontType::kMap, TPF_NOSHADOW), text) +
+        CELL_PIXEL_W;
     const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth);
 
     /*
