@@ -420,6 +420,43 @@
     offsets that are only added or negated (`Smooth_Turn`, the track tables) do not care
   - The off-map mask (`kHighCoordMask`, 0x80008000 in RA, 0xC000C000 in TD) depends on the map size
     and stays per game
+- Fix the commented-out code that `docs/COORDINATE_TYPES_PLAN.md` rewrote into forms that would not
+  compile
+  - `ra/net/event.cc` (~546 `Cell cell = 0;`, ~763 and ~778 call the removed `Invalidate()`; its
+    equivalent is `= Target::NoneWithAllValueBits()`), `ra/objects/overlay.cc` (~401, a `Cell` loop
+    counter), and the `#ifdef OBSOLETE` block in TD's `DisplayClass::In_View()` (`td/map/display.cc`
+    ~3564, `cell -= TacticalCell;`). Convert them or delete them with `/remove-dead-code`
+  - Restore comments clang-format reflowed during the plan: `ra/net/event.cc` (~639-641, a split
+    `if (... ==` / `// RTTI_CELL) {`), `td/editor/mapedplc.cc` (~1159-1160, the `Flag.Composite |=`
+    line) and `ra/core/const.h` (~130, a stray `*infantry *` block)
+- Rename the lepton-word helpers in `ra/core/packed.h` to the Google scheme
+  - `Lepton_Cell()`, `Lepton_Fraction()` and `Make_Lepton()` were new in Part A of
+    `docs/COORDINATE_TYPES_PLAN.md` but took the legacy `Underscore_Pascal` names of their
+    neighbours; `/rename-google-style` on `packed.h`. While there, decide whether `packed.h` should
+    stay re-exported (`// IWYU pragma: export`) by `ra/core/defines.h`, `coord.h` and `inline.h` or
+    be included directly by its callers
+- Update the EA function index at the top of `ra/core/inline.h`
+  - It still lists `Cell_Coord`, `Cell_To_Lepton`, `Coord_Add` and the other helpers that moved to
+    `ra/core/packed.h` or became `Coordinate`/`Cell` members; `/update-comments`
+- Give the unused `Target`/`Cell` accessors callers or delete them
+  - Red Alert: `Target::NoneWithAllValueBits()` (no callers), `Target::AsMovementCoordinate()` (no
+    callers) and `Target::cell_index()` (only for `AsMovementCoordinate()`), all in
+    `ra/core/target.h`; `Cell::is_none()` in both games has no production callers, since every site
+    compares against `Cell::None()`
+  - Settle them together with the RTTI_CELL encoding entry under Bugs
+- Make the coordinate-type code read the same in both games
+  - TD's `Target` decoders repeat `Cell::FromIndex(value())` (`td/objects/target.cc` ~146, ~160)
+    where RA has `cell_index()`; RA's radio handlers call `Target::FromPacked(param)` up to four
+    times (`ra/objects/aircraft.cc` ~2814-2824, `ra/objects/foot.cc` ~1650-1658) where TD names it
+    once (`where`)
+  - `ra/core/defines.h` (~213) writes `kHighCoordMask` as `0x80008000` without TD's `U` suffix
+  - TD's `Coordinate::XWord()`/`YWord()` (`td/core/coordinate.h`) share one comment;
+    `td/objects/unit.cc` (~2118) keeps parentheses left from a nested `Coord_Add()`
+  - The `Cell` class comment's example (`ra/core/cell.h` ~29-30) uses `MAP_CELL_W`, which the header
+    neither declares nor includes
+- Consider making `RadarClass::RadarCell` a `Cell` in both games
+  - It is still `int`, so three sites per game wrap it in `Cell::FromIndex()`; check its saved width
+    first
 
 ## Testing
 
@@ -460,6 +497,17 @@
     the new one; both decide draw and logic order, and only the 600-frame headless logic logs cover
     them now. Test a partly sorted layer: one `Sort()` pass, then where `Sorted_Add()` lands
 
+- Play a two-instance network game in each game to check `docs/COORDINATE_TYPES_PLAN.md`
+  - The plan changed what `EventClass` packets carry (`Coordinate`, `Target`, `Cell` instead of
+    integers) and never ran a real network game; `static_assert`s pin the packet sizes (RA 32, TD 24
+    bytes) and `xcheck.sh` matched single-player logs, but nothing exchanged packets. Cover move,
+    attack, sell, place (buildings and RA's Chronosphere/Iron Curtain targets) and repair
+- Line up the coordinate-type tests between the games
+  - RA's `target_test.cc` lives in `ra/objects/`, TD's in `td/core/`; TD's suites are `TdCellTest`
+    and `TdCoordinateTest` but plain `TargetTest`; the ctest targets `ra_packed_test` and
+    `td_coord_inline_test` now mostly hold the `Cell` and `Coordinate` tests, so their names mislead
+  - `ra/core/cell_test.cc` repeats the four layout `static_assert`s that `ra/core/cell.h` already
+    has
 - Check Red Alert's scenario editor team-type and trigger-type lists on a real display
   - They hold plain pointers since `6f1cc3a2` (`ra/editor/mapedtm.cc`, `ra/editor/mapeddlg.cc`);
     check that both lists are sorted by name, the current entry is selected, and edit and delete
@@ -498,8 +546,18 @@
 - Decide when to delete the C++ LCW reference
   - `engine/codec/lcw_reference_test_util.cc` exists only for `LcwDifferentialTest` and `lcw_bench`;
     once the Rust kernels have shipped without a report, both can go
+- Decide whether the strict build's `-Wnrvo` earns its keep
+  - On the 2- and 4-byte trivially copyable `Coordinate`, `Target` and `Cell` it forced odd code:
+    `return Cell::FromIndex(cell.index());` (`td/map/display.cc` ~2389) and restructured
+    `Set_Cursor_Pos()` and `Calculated_Cell()` in both games, `BuildingClass::Target_Coord()` and
+    `VesselClass::Fire_Coord()` in RA. Copy elision buys nothing for such types; either disable the
+    warning or accept the shapes
 - Note that commit `6475411a` (the object pool collapse) describes two things wrongly
   - Its message calls the in-use list private (it is protected; `TFixedIHeapClass::Ptr()` and
     `Load()` use it) and says "TD's house loader" for what is `TeamClass::Serialize()`'s house check
     in `td/saveload/ioobj.cc`. It cannot be amended without rewriting history; record it in
     `docs/GAME_CONTAINERS_PLAN.md` if anyone needs the correction
+- Note the commit-history slips from `docs/COORDINATE_TYPES_PLAN.md`
+  - `f0498c21` (Part A, step 1) fails the strict build on its own (four `display.h` includes it left
+    unused; `22f80cbc` fixes them), and `f7d220ed` says "117 uses in 27 files" for what was 117
+    lines in 29 files. Neither can be amended without rewriting history
