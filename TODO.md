@@ -55,6 +55,28 @@
     were written would drop such a frame instead. Only malformed data reaches it (the keyframe.h
     comment documents it). Found by the `ra/2keyfram.cc` `/modernize-file` run
     (`dfc0fa2b..193f2624`)
+- Find why Tiberian Dawn's simulation depends on the build directory
+  - The same source (2d8a614a) built in a scratch worktree logs a different
+    `tdsdl -NOMOVIES -SEED1 -NEWGAMESCG01EA -QUITFRAME600` run than when built in `build/`: 22,384
+    differing lines, starting at frame 2 in an anim's serialized fields. Every `build/` binary
+    agrees with every other, and old-vs-old runs of one binary match, so it is not run-to-run noise
+  - Smells of an uninitialized read whose garbage depends on the binary's layout or paths; until it
+    is found, TD logic diffs only prove anything between binaries built in the same directory
+    (`docs/GAME_CONTAINERS_PLAN.md`)
+- Check whether joining a Tiberian Dawn internet game can index past the scenario list
+  - The `Get_Connected()` branch of `td/net/netdlg.cc` (~2635) sets `scenario_index()` to the host's
+    scenario file number rather than a list index, and ~1197 indexes `scenario_files()` with it.
+    With files numbered from 1, the last map is one past the end: that used to read a null spare
+    slot of the old vector and now aborts in `base::At`
+  - First confirm the WChat/winsock path is reachable in this port
+- Guard Red Alert's WWChat player color write in `ra/net/netdlg.cc` (~2880-2890)
+  - It sets `playerlist.Colors.at(0)` without checking that the list has a row; the branch looks
+    unreachable in this port, so verify that or add the guard
+- Guard the map editor's popup handlers against an empty selection
+  - `ra/editor/mapedit.cc` (~1205-1360) and the same handlers in `td/editor/mapedit.cc` read
+    `current_object()[0]` unguarded; they run only while the popups are up, which needs a selection,
+    but if the selection empties with the popups still showing the read now aborts instead of using
+    a stale pointer
 
 ## Refactoring
 
@@ -229,6 +251,22 @@
     no-argument `SaturateBelowOne()` would each do; `Saturate()` is likewise only called with 1
 - Delete the commented-out `UNIT_BUILD_BIAS` defines at `ra/objects/techno.cc:699-702` (and the
   `// UNIT_BUILD_BIAS;` at `:714`)
+- Use `base::At` for the last two `current_object().at(0)` calls
+  - `td/editor/mapedsel.cc` (~349, receiver split across lines, so the scripted rewrite missed it)
+    and `ra/editor/mapedsel.cc` (~372) compile against `std::vector::at`; both are guarded by an
+    earlier empty-selection return, so this is consistency only
+- Stop `LayerClass::Delete(const ObjectClass*)` accepting a literal 0
+  - `layer.Delete(0)` would compile as `Delete(nullptr)` now the index overload is gone; a deleted
+    `Delete(int)` overload in `ra/map/layer.h` and `td/map/layer.h` would reject it
+- Rename the object pool to Google style with `/rename-google-style`
+  - `FixedIHeapClass`/`TFixedIHeapClass` (`game/core/heap.h`) keep their legacy names, as do
+    `Set_Heap`, `Ptr`, `Raw_Ptr`, `Active_Ptr`, `Logical_ID` and the PascalCase members; e.g.
+    `ObjectPool`. Left out of `docs/GAME_CONTAINERS_PLAN.md` to keep its diff mechanical
+- Move `LayerClass` to `game/`
+  - `ra/map/layer.*` and `td/map/layer.*` are identical apart from headers, and since
+    `docs/GAME_CONTAINERS_PLAN.md` the class holds a `std::vector<ObjectClass*>` instead of
+    inheriting a game-specific vector; it needs `ObjectClass`'s ordering operators, so it would be a
+    template over the object type or take a comparator
 
 ## Testing
 
@@ -264,6 +302,10 @@
   - About 20 tests each spend five lines checking `whole()` and `fraction()`; one `{text, raw}`
     table checked with `EXPECT_EQ(Fixed::FromString(text), Fixed(raw, 256))` saves about 150 lines.
     Raised by `/simplify` in the `base/fixed` `/modernize-file` run (`4e995aa2..8fd12531`)
+- Unit-test `LayerClass`'s ordering
+  - `Sort()` is one bubble pass and `Sorted_Add()` inserts before the first object that sorts after
+    the new one; both decide draw and logic order, and only the 600-frame headless logic logs cover
+    them now. Test a partly sorted layer: one `Sort()` pass, then where `Sorted_Add()` lands
 
 ## Debugging
 
@@ -287,3 +329,8 @@
 - Decide when to delete the C++ LCW reference
   - `engine/codec/lcw_reference_test_util.cc` exists only for `LcwDifferentialTest` and `lcw_bench`;
     once the Rust kernels have shipped without a report, both can go
+- Note that commit `6475411a` (the object pool collapse) describes two things wrongly
+  - Its message calls the in-use list private (it is protected; `TFixedIHeapClass::Ptr()` and
+    `Load()` use it) and says "TD's house loader" for what is `TeamClass::Serialize()`'s house check
+    in `td/saveload/ioobj.cc`. It cannot be amended without rewriting history; record it in
+    `docs/GAME_CONTAINERS_PLAN.md` if anyone needs the correction
