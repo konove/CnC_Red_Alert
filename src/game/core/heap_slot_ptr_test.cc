@@ -25,7 +25,7 @@ struct Part {
 };
 
 // `values` as bytes, for spelling out an expected encoding.
-std::vector<std::byte> Bytes(std::initializer_list<uint8_t> values) {
+std::vector<std::byte> Bytes(const std::initializer_list<uint8_t> values) {
   std::vector<std::byte> bytes;
   for (const uint8_t value : values) {
     bytes.push_back(std::byte{value});
@@ -58,7 +58,7 @@ class HeapSlotPtrTest : public ::testing::Test {
   // Reads `bytes` into `pointer` and returns the reader's error, empty on
   // success.
   template <class T>
-  std::string Read(std::span<const std::byte> bytes, T*& pointer) {
+  std::string Read(const std::span<const std::byte> bytes, T*& pointer) {
     SpanSource source(bytes);
     // The call operator is non-const; misc-const-correctness misses the call
     // because its argument is template-dependent.

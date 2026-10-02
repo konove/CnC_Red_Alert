@@ -179,7 +179,7 @@ TEST(HeapDiagnosticsTest, OwnsOnlySlotStartsInsideTheBuffer) {
   // Inside the buffer, but not where a slot begins.
   EXPECT_FALSE(heap.Owns(&first->value));
   // SlotIndexOf() happily turns both of these into plausible-looking indices.
-  const Widget stack_widget;
+  constexpr Widget stack_widget;
   EXPECT_FALSE(heap.Owns(&stack_widget));
   EXPECT_FALSE(heap.Owns(nullptr));
 }
@@ -198,7 +198,7 @@ TEST(HeapDiagnosticsTest, DescribeTellsTheWaysAPointerCanBeWrong) {
   EXPECT_THAT(heap.Describe(&live->value),
               testing::HasSubstr("bytes past the boundary"));
 
-  const Widget stack_widget;
+  constexpr Widget stack_widget;
   EXPECT_THAT(heap.Describe(&stack_widget),
               testing::HasSubstr("outside the buffer"));
 

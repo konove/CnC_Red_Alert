@@ -53,7 +53,7 @@ namespace game {
 class ObjectHeapBase {
  public:
   // `slot_size` is the size of one slot in bytes, and must be positive.
-  explicit ObjectHeapBase(base::ssize slot_size) : slot_size_(slot_size) {
+  explicit ObjectHeapBase(const base::ssize slot_size) : slot_size_(slot_size) {
     CHECK_GT(slot_size, 0);
   }
   ~ObjectHeapBase() = default;
@@ -85,7 +85,7 @@ class ObjectHeapBase {
 
   // Whether slot `slot_index` holds an allocated object; false for a free
   // slot or an index outside the heap.
-  [[nodiscard]] bool IsAllocated(int slot_index) const {
+  [[nodiscard]] bool IsAllocated(const int slot_index) const {
     return slot_index >= 0 && slot_index < Capacity() &&
            in_use_.at(base::ToSize(slot_index));
   }
@@ -134,17 +134,17 @@ class ObjectHeapBase {
   [[nodiscard]] int PositionOf(const void* pointer) const;
 
   // Returns slot `slot_index`, which must be in [0, Capacity()).
-  void* at(int slot_index) { return SlotBytes(slot_index).data(); }
+  void* at(const int slot_index) { return SlotBytes(slot_index).data(); }
 
   // Returns the object at `position` of the in-use list, which must be in
   // [0, Count()).
-  [[nodiscard]] void* ActiveSlot(int position) const {
+  [[nodiscard]] void* ActiveSlot(const int position) const {
     return base::At(active_, position);
   }
 
  private:
   // The bytes of slot `slot_index`, which must be in [0, Capacity()).
-  std::span<std::byte> SlotBytes(int slot_index) {
+  std::span<std::byte> SlotBytes(const int slot_index) {
     CHECK_GE(slot_index, 0);
     CHECK_LT(slot_index, Capacity());
     return std::span(slots_).subspan(base::ToSize(slot_index * slot_size_),
@@ -263,18 +263,20 @@ class ObjectHeap : private ObjectHeapBase {
 
   // The object at `position` of the in-use list, which must be in
   // [0, Count()).
-  T* ActiveAt(int position) { return static_cast<T*>(ActiveSlot(position)); }
-  [[nodiscard]] const T* ActiveAt(int position) const {
+  T* ActiveAt(const int position) {
+    return static_cast<T*>(ActiveSlot(position));
+  }
+  [[nodiscard]] const T* ActiveAt(const int position) const {
     return static_cast<const T*>(ActiveSlot(position));
   }
   // Slot `slot_index` as a T*, whether or not it holds an object;
   // `slot_index` must be in [0, Capacity()).
-  T* Slot(int slot_index) { return static_cast<T*>(at(slot_index)); }
+  T* Slot(const int slot_index) { return static_cast<T*>(at(slot_index)); }
   // Slot() for any index: nullptr when `slot_index` is outside
   // [0, Capacity()), -1 included. A scenario or a saved game names an object
   // by its slot before the object is created or loaded; the address is the
   // object's once it is, as long as the heap keeps its size.
-  T* SlotOrNull(int slot_index) {
+  T* SlotOrNull(const int slot_index) {
     if (slot_index < 0 || slot_index >= Capacity()) {
       return nullptr;
     }

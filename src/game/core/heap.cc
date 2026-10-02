@@ -35,7 +35,7 @@
 
 namespace game {
 
-bool ObjectHeapBase::Reset(int capacity) {
+bool ObjectHeapBase::Reset(const int capacity) {
   if (capacity < 0) {
     Reset(0);
     return false;
@@ -66,7 +66,7 @@ void* ObjectHeapBase::AllocateSlot() {
   return ClaimSlot(slot_index);
 }
 
-void* ObjectHeapBase::ClaimSlot(int slot_index) {
+void* ObjectHeapBase::ClaimSlot(const int slot_index) {
   if (slot_index < 0 || slot_index >= Capacity() ||
       in_use_.at(base::ToSize(slot_index))) {
     return nullptr;
@@ -103,7 +103,7 @@ base::ssize ObjectHeapBase::OffsetOf(const void* pointer) const {
   }
   const auto* address = static_cast<const std::byte*>(pointer);
   const std::span<const std::byte> slots(slots_);
-  const std::less<> before;
+  constexpr std::less<> before;
   if (before(address, slots.data()) ||
       !before(address, slots.subspan(slots.size()).data())) {
     return -1;
