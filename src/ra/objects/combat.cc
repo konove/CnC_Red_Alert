@@ -140,7 +140,7 @@ int Modify_Damage(int damage, WarheadType warhead, game::ArmorType armor,
     } else {
       distance /= whead->SpreadFactor * (PIXEL_LEPTON_W / 2);
     }
-    distance = Bound(distance, 0, 16);
+    distance = std::clamp(distance, 0, 16);
     if (distance) {
       damage = damage / distance;
     }

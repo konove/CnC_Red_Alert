@@ -258,7 +258,7 @@ void CreditClass::AI(bool forced) {
     adder /= 8;
     //		adder >>= 4;
     //		adder >>= 5;
-    adder = Bound(adder, 1, 71 + 72);
+    adder = std::clamp(adder, 1, 71 + 72);
     if (Current > Credits) {
       adder = -adder;
     }

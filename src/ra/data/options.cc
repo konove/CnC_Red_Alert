@@ -69,6 +69,7 @@
 
 #include "ra/data/options.h"
 
+#include <algorithm>
 #include <cstdint>
 
 #include "base/array.h"
@@ -84,7 +85,6 @@
 #include "ra/assets/palettes.h"
 #include "ra/assets/theme.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/data/ini.h"
 #include "ra/net/session.h"
 
@@ -504,16 +504,16 @@ void OptionsClass::Adjust_Palette(const PaletteClass& oldpal,
       *to the *	percentage indicated.
       */
       int temp = hsv.value() * (brightness * 256) / 0x80;  // Brightness
-      temp = Bound(temp, 0, 0xFF);
+      temp = std::clamp(temp, 0, 0xFF);
       int v = temp;
       temp = ((v - 0x80) * (contrast * 256) / 0x80) + 0x80;  // Contrast
-      temp = Bound(temp, 0, 0xFF);
+      temp = std::clamp(temp, 0, 0xFF);
       v = temp;
       temp = hsv.saturation() * (color * 256) / 0x80;  // Color
-      temp = Bound(temp, 0, 0xFF);
+      temp = std::clamp(temp, 0, 0xFF);
       const int s = temp;
       temp = hsv.hue() * (tint * 256) / 0x80;  // Tint
-      temp = Bound(temp, 0, 0xFF);
+      temp = std::clamp(temp, 0, 0xFF);
       const int h = temp;
 
       /*

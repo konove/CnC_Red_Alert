@@ -40,7 +40,6 @@
 #ifndef CNC_RED_ALERT_RA_CORE_JSHELL_H_
 #define CNC_RED_ALERT_RA_CORE_JSHELL_H_
 
-#include <algorithm>
 #include <bit>
 #include <cstddef>
 #include <cstdint>
@@ -102,18 +101,6 @@ T operator&(T t1, T t2) {
 template <class T>
 T operator~(T t1) {
   return static_cast<T>(~static_cast<uint32_t>(t1));
-}
-
-// TODO(konove): Replace with std::clamp
-template <class T>
-T Bound(T original, T minval, T maxval) {
-  if (original < minval) {
-    return minval;
-  }
-  if (original > maxval) {
-    return maxval;
-  }
-  return original;
 }
 
 // Bit indices must refer to the supplied word span.

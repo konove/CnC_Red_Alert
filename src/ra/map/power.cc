@@ -48,6 +48,7 @@
 
 #include "ra/map/power.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -203,8 +204,8 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
           DrainHeight == DesiredDrainHeight
               ? DrainHeight + (base::At(_modtable, DrainBounce) * DrainDir)
               : DrainHeight;
-      power_height = Bound(power_height, 0, kPowerHeight - 2);
-      drain_height = Bound(drain_height, 0, kPowerHeight - 2);
+      power_height = std::clamp(power_height, 0, kPowerHeight - 2);
+      drain_height = std::clamp(drain_height, 0, kPowerHeight - 2);
 
       /*
       **	Draw the power output graphic on top of the power bar framework.
@@ -411,7 +412,7 @@ int PowerClass::Power_Height(int value) {
                        kPowerStepLevel);
   }
 
-  retval = Bound(retval, 0, kPowerHeight - 2);
+  retval = std::clamp(retval, 0, kPowerHeight - 2);
   return retval;
 }
 

@@ -2158,7 +2158,7 @@ int AircraftClass::Process_Fly_To(bool slowdown, Target dest) {
 
   if (slowdown) {
     int speed = std::min(distance, 0x0300);
-    speed = Bound(speed / 3, 0x0020, 0x00FF);
+    speed = std::clamp(speed / 3, 0x0020, 0x00FF);
     if (Speed != speed) {
       Set_Speed(speed);
     }
@@ -2524,7 +2524,7 @@ int AircraftClass::Mission_Attack() {
           **	the direction of travel.
           */
           int diff = SecondaryFacing.Difference(Direction(NavCom));
-          diff = Bound(diff, -128, 128);
+          diff = std::clamp(diff, -128, 128);
           PrimaryFacing = static_cast<game::DirType>(
               static_cast<int>(SecondaryFacing.Current()) + diff);
         }

@@ -2260,10 +2260,10 @@ Cell FootClass::Adjust_Dest(Cell cell) const {
     const int xdest = cell.x();
     const int ydest = cell.y();
 
-    const int newx = Bound(XFormOffset + xdest, TheMap().MapCellX,
-                           TheMap().MapCellX + TheMap().MapCellWidth - 1);
-    const int newy = Bound(YFormOffset + ydest, TheMap().MapCellY,
-                           TheMap().MapCellY + TheMap().MapCellHeight - 1);
+    const int newx = std::clamp(XFormOffset + xdest, TheMap().MapCellX,
+                                TheMap().MapCellX + TheMap().MapCellWidth - 1);
+    const int newy = std::clamp(YFormOffset + ydest, TheMap().MapCellY,
+                                TheMap().MapCellY + TheMap().MapCellHeight - 1);
 
     cell = Cell::FromXY(newx, newy);
   }

@@ -69,6 +69,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
@@ -94,7 +95,6 @@
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
@@ -3629,7 +3629,7 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, Cell& cell) const {
  *=============================================================================================*/
 int BuildingTypeClass::Max_Pips() const {
   const int maxpips = Width() * ICON_PIXEL_W / 4;
-  return Bound(Capacity / 100, 0, maxpips);
+  return std::clamp(Capacity / 100, 0, maxpips);
 }
 
 /***********************************************************************************************

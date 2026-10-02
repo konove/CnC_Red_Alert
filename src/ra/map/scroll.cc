@@ -52,7 +52,6 @@
 #include "game/sim/direction.h"
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/debug/debug_state.h"
 #include "ra/map/help.h"
 #include "ra/screens/goptions.h"
@@ -179,8 +178,9 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
         **	Increase the scroll rate if the mouse button is held down.
         */
         if (engine::window::IsRightButtonDown()) {
-          rate = Bound(rate + 1, 4,
-                       static_cast<int>(sizeof(_rate) / sizeof(_rate[0])) - 1);
+          rate = std::clamp(
+              rate + 1, 4,
+              static_cast<int>(sizeof(_rate) / sizeof(_rate[0])) - 1);
         }
 
         /*
@@ -192,7 +192,7 @@ void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
 
         // Inertia and the scroll rate option both feed into rate without any
         // guarantee they land inside _rate, so clamp before indexing.
-        rate = Bound(rate, 0, static_cast<int>(std::ssize(_rate)) - 1);
+        rate = std::clamp(rate, 0, static_cast<int>(std::ssize(_rate)) - 1);
 
         int distance = base::At(_rate, rate) / 2;
 

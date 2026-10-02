@@ -52,6 +52,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
@@ -72,7 +73,6 @@
 #include "ra/assets/window_rect.h"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
@@ -2076,8 +2076,8 @@ void TemplateTypeClass::Init(TheaterType theater) {
 void TemplateTypeClass::Display(PixelView& view, int x, int y,
                                 WindowNumberType window,
                                 HousesType /*unused*/) const {
-  const int w = Bound(static_cast<int>(Width), 1, 13);
-  const int h = Bound(static_cast<int>(Height), 1, 8);
+  const int w = std::clamp(static_cast<int>(Width), 1, 13);
+  const int h = std::clamp(static_cast<int>(Height), 1, 8);
   const bool scale = (w > 3 || h > 3);  // Should the template be half sized?
   if (scale) {
     x -= (w * ICON_PIXEL_W) / 4;
