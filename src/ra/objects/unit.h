@@ -120,7 +120,7 @@ class UnitClass final : public DriveClass {
   ** This is the center coordinate for the mobile gap generator, as to
   ** what cells should be revealed (according to ShroudBits)
   */
-  CELL ShroudCenter = 0;
+  Cell ShroudCenter{};
 
   /*
   **	This is the timer that controls the reload rate. The MSAM rocket
@@ -170,7 +170,7 @@ class UnitClass final : public DriveClass {
   void Scatter(Coordinate threat, bool forced = false,
                bool nokidding = false) override;
 
-  bool Tiberium_Check(CELL& center, int x, int y);
+  bool Tiberium_Check(Cell& center, int x, int y);
   bool Flag_Attach(HousesType house);
   bool Flag_Remove();
   bool Goto_Tiberium(int radius);
@@ -223,10 +223,10 @@ class UnitClass final : public DriveClass {
   /*
   **	User I/O.
   */
-  [[nodiscard]] ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] ActionType What_Action(Cell cell) const override;
   ActionType What_Action(ObjectClass* object) override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;
-  void Active_Click_With(ActionType action, CELL cell) override;
+  void Active_Click_With(ActionType action, Cell cell) override;
 
   /*
   **	Combat related.
@@ -247,7 +247,7 @@ class UnitClass final : public DriveClass {
   */
   Target Greatest_Threat(ThreatType threat) override;  // const;
   game::DirType Desired_Load_Dir(ObjectClass* passenger,
-                                 CELL& moveto) const override;
+                                 Cell& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
@@ -271,11 +271,11 @@ class UnitClass final : public DriveClass {
   **	Movement and animation.
   */
   void Assign_Destination(Target target) override;
-  void Overrun_Square(CELL cell, bool threaten = true) override;
+  void Overrun_Square(Cell cell, bool threaten = true) override;
   void Approach_Target() override;
   void Enter_Idle_Mode(bool initial = false) override;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      CELL cell, game::FacingType facing = game::FACING_NONE) const override;
+      Cell cell, game::FacingType facing = game::FACING_NONE) const override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   void Exit_Repair();
   void Shroud_Regen();

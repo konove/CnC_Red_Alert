@@ -124,17 +124,17 @@ class AircraftClass : public FootClass, public FlyClass {
   }
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      CELL cell, game::FacingType facing = game::FACING_NONE) const override;
+      Cell cell, game::FacingType facing = game::FACING_NONE) const override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
   ActionType What_Action(ObjectClass* target) override;
-  [[nodiscard]] ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] ActionType What_Action(Cell cell) const override;
   game::DirType Desired_Load_Dir(ObjectClass* object,
-                                 CELL& moveto) const override;
+                                 Cell& moveto) const override;
   [[nodiscard]] int Pip_Count() const override;
   [[nodiscard]] Target Good_Fire_Location(Target target) const;
-  [[nodiscard]] bool Cell_Seems_Ok(CELL cell, bool strict = false) const;
+  [[nodiscard]] bool Cell_Seems_Ok(Cell cell, bool strict = false) const;
   [[nodiscard]] game::DirType Pose_Dir() const;
   [[nodiscard]] Target Good_LZ() const;
   [[nodiscard]] game::DirType Fire_Direction() const override;
@@ -178,7 +178,7 @@ class AircraftClass : public FootClass, public FlyClass {
   **	User I/O.
   */
   void Active_Click_With(ActionType action, ObjectClass* object) override;
-  void Active_Click_With(ActionType action, CELL cell) override;
+  void Active_Click_With(ActionType action, Cell cell) override;
   void Player_Assign_Mission(MissionType mission, Target target = Target{},
                              Target destination = Target{}) override;
   void Response_Select() override;

@@ -559,12 +559,12 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
 
           case STRUCT_REPAIR:
             Transmit_Message(RADIO_TETHER);
-            param = Target::FromCell(Coord_Cell(Center_Coord())).packed();
+            param = Target::FromCell(Cell::Containing(Center_Coord())).packed();
             break;
 
           case STRUCT_REFINERY:
-            param = Target::FromCell(
-                        Coord_Cell(Adjacent_Cell(Center_Coord(), game::DIR_S)))
+            param = Target::FromCell(Cell::Containing(Adjacent_Cell(
+                                         Center_Coord(), game::DIR_S)))
                         .packed();
             break;
           case StructType::STRUCT_NONE:
@@ -1056,7 +1056,7 @@ bool BuildingClass::Mark(MarkType mark) {
 
   if (TechnoClass::Mark(mark)) {
     const std::span<const int16_t> occupy = Occupy_List();
-    CELL cell = Coord_Cell(Coord);
+    Cell cell = Cell::Containing(Coord);
     SmudgeType bib = SMUDGE_NONE;
 
     switch (mark) {
@@ -1204,10 +1204,10 @@ bool BuildingClass::Mark(MarkType mark) {
             **	Determine if a bib is required for this building. If one is,
             *then *	create and place it.
             */
-            CELL newcell = cell;
+            Cell newcell = cell;
             if (Class->Bib_And_Offset(bib, newcell)) {
               base::NewPooled<SmudgeClass>(
-                  bib, Cell_Coord(newcell),
+                  bib, newcell.Center(),
                   Class->IsBase ? House->Class->House : HOUSE_NONE);
             }
 
@@ -1416,14 +1416,14 @@ void BuildingClass::AI() {
 
     if (!IsJamming) {
       if (House->Power_Fraction() >= 1) {
-        MapEditClass::Jam_From(Coord_Cell(Center_Coord()),
+        MapEditClass::Jam_From(Cell::Containing(Center_Coord()),
                                TheRules().GapShroudRadius, House);
         IsJamming = true;
       }
     } else {
       if (House->Power_Fraction() < 1) {
         IsJamming = false;
-        MapEditClass::UnJam_From(Coord_Cell(Center_Coord()),
+        MapEditClass::UnJam_From(Cell::Containing(Center_Coord()),
                                  TheRules().GapShroudRadius, House);
       }
     }
@@ -1477,7 +1477,8 @@ bool BuildingClass::Unlimbo(Coordinate coord, game::DirType dir) {
   *it gets *	converted to an overlay type.
   */
   if (Class->IsWall) {
-    if (Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == game::MOVE_OK) {
+    if (Can_Enter_Cell(Cell::Containing(coord), game::FACING_NONE) ==
+        game::MOVE_OK) {
       OverlayType otype = OVERLAY_NONE;
       switch (Class->Type) {
         case STRUCT_SANDBAG_WALL:
@@ -1596,7 +1597,8 @@ bool BuildingClass::Unlimbo(Coordinate coord, game::DirType dir) {
         if (o && o->Unlimbo(coord)) {
           TheMap().at(coord).Owner = House->Class->House;
           Transmit_Message(RADIO_OVER_OUT);
-          TheMap().Sight_From(Coord_Cell(coord), Class->SightRange, House);
+          TheMap().Sight_From(Cell::Containing(coord), Class->SightRange,
+                              House);
           delete this;
           return true;
         }
@@ -1736,7 +1738,8 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
             TheWorld().base().Get_Node(this) == nullptr) {
           //				if (IsToRebuild && Class->IsBuildable &&
           // Base.House == House->Class->House && Base.Get_Node(this) == 0) {
-          TheWorld().base().Nodes.emplace_back(Class->Type, Coord_Cell(Coord));
+          TheWorld().base().Nodes.emplace_back(Class->Type,
+                                               Cell::Containing(Coord));
         }
 
         /*
@@ -1762,29 +1765,29 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
 
         PlaySoundEffectAt(VOC_KABOOM22, Coord);
         while (offset.front() != kRefreshEol) {
-          const CELL cell =
-              static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(offset));
+          const Cell cell =
+              Cell::Containing(Coord).Offset(base::ConsumeFront(offset));
 
           /*
           **	If the building is destroyed, then lots of
           **	explosions occur.
           */
           base::NewPooled<SmudgeClass>(
-              Random_Pick(SMUDGE_CRATER1, SMUDGE_CRATER6), Cell_Coord(cell));
+              Random_Pick(SMUDGE_CRATER1, SMUDGE_CRATER6), cell.Center());
           if (Percent_Chance(50)) {
             base::NewPooled<AnimClass>(
-                ANIM_FIRE_SMALL, Coord_Scatter(Cell_Coord(cell), 0x0080),
+                ANIM_FIRE_SMALL, Coord_Scatter(cell.Center(), 0x0080),
                 static_cast<unsigned char>(Random_Pick(0, 7)),
                 static_cast<unsigned char>(Random_Pick(1, 3)));
             if (Percent_Chance(50)) {
               base::NewPooled<AnimClass>(
-                  ANIM_FIRE_MED, Coord_Scatter(Cell_Coord(cell), 0x0040),
+                  ANIM_FIRE_MED, Coord_Scatter(cell.Center(), 0x0040),
                   static_cast<unsigned char>(Random_Pick(0, 7)),
                   static_cast<unsigned char>(Random_Pick(1, 3)));
             }
           }
           base::NewPooled<AnimClass>(
-              ANIM_FBALL1, Coord_Scatter(Cell_Coord(cell), 0x0040),
+              ANIM_FBALL1, Coord_Scatter(cell.Center(), 0x0040),
               static_cast<unsigned char>(Random_Pick(0, 3)));
         }
 
@@ -1859,7 +1862,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
         */
         if (*this == STRUCT_BARREL || *this == STRUCT_BARREL3) {
           const Coordinate center = Center_Coord();
-          const CELL cellcenter = Coord_Cell(center);
+          const Cell cellcenter = Cell::Containing(center);
 
           auto* bullet = base::NewPooled<BulletClass>(
               BULLET_INVISIBLE,
@@ -1913,8 +1916,8 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
       case game::RESULT_MAJOR:
         PlaySoundEffectAt(VOC_KABOOM1, Coord);
         while (offset.front() != kRefreshEol) {
-          const CELL cell =
-              static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(offset));
+          const Cell cell =
+              Cell::Containing(Coord).Offset(base::ConsumeFront(offset));
           AnimClass* anim = nullptr;
 
           /*
@@ -1932,22 +1935,22 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
               case 4:
               case 5:
                 anim = base::NewPooled<AnimClass>(
-                    ANIM_ON_FIRE_SMALL, Coord_Scatter(Cell_Coord(cell), 0x0060),
-                    0, static_cast<unsigned char>(Random_Pick(1, 3)));
+                    ANIM_ON_FIRE_SMALL, Coord_Scatter(cell.Center(), 0x0060), 0,
+                    static_cast<unsigned char>(Random_Pick(1, 3)));
                 break;
 
               case 6:
               case 7:
               case 8:
                 anim = base::NewPooled<AnimClass>(
-                    ANIM_ON_FIRE_MED, Coord_Scatter(Cell_Coord(cell), 0x0060),
-                    0, static_cast<unsigned char>(Random_Pick(1, 3)));
+                    ANIM_ON_FIRE_MED, Coord_Scatter(cell.Center(), 0x0060), 0,
+                    static_cast<unsigned char>(Random_Pick(1, 3)));
                 break;
 
               case 9:
                 anim = base::NewPooled<AnimClass>(
-                    ANIM_ON_FIRE_BIG, Coord_Scatter(Cell_Coord(cell), 0x0060),
-                    0, 1);
+                    ANIM_ON_FIRE_BIG, Coord_Scatter(cell.Center(), 0x0060), 0,
+                    1);
                 break;
 
               default:
@@ -1962,7 +1965,7 @@ game::ResultType BuildingClass::Take_Damage(int& damage, int distance,
               if (source == nullptr || source->What_Am_I() != RTTI_INFANTRY ||
                   *dynamic_cast<InfantryClass*>(source) != INFANTRY_RENOVATOR) {
                 anim = base::NewPooled<AnimClass>(
-                    ANIM_FIRE_SMALL, Coord_Scatter(Cell_Coord(cell), 0x0060),
+                    ANIM_FIRE_SMALL, Coord_Scatter(cell.Center(), 0x0060),
                     static_cast<unsigned char>(Random_Pick(0, 7)),
                     static_cast<unsigned char>(Random_Pick(1, 3)));
               }
@@ -2169,7 +2172,7 @@ void BuildingClass::Drop_Debris(Target source) {
   /*
   **	Generate random survivors from the destroyed building.
   */
-  CELL const cell = Coord_Cell(Coord);
+  const Cell cell = Cell::Containing(Coord);
   std::span<const int16_t> offset = Occupy_List();
   int odds = 2;
   if (WhomToRepay) {
@@ -2180,7 +2183,7 @@ void BuildingClass::Drop_Debris(Target source) {
   }
   int count = How_Many_Survivors();
   while (offset.front() != kRefreshEol) {
-    CELL const newcell = static_cast<CELL>(cell + base::ConsumeFront(offset));
+    const Cell newcell = cell.Offset(base::ConsumeFront(offset));
     const CellClass* cellptr = &TheMap().at(newcell);
 
     /*
@@ -2200,7 +2203,7 @@ void BuildingClass::Drop_Debris(Target source) {
             i->IsTechnician = true;
           }
           TheWorld().scenario_init()++;
-          if (i->Unlimbo(Cell_Coord(newcell), game::DIR_N)) {
+          if (i->Unlimbo(newcell.Center(), game::DIR_N)) {
             count--;
             i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
@@ -2236,7 +2239,7 @@ void BuildingClass::Drop_Debris(Target source) {
         case 1:
         case 2:
           base::NewPooled<AnimClass>(
-              ANIM_SMOKE_M, Coord_Scatter(Cell_Coord(newcell), 0x0050, false),
+              ANIM_SMOKE_M, Coord_Scatter(newcell.Center(), 0x0050, false),
               static_cast<unsigned char>(Random_Pick(0, 5)),
               static_cast<unsigned char>(Random_Pick(1, 2)));
           break;
@@ -2250,11 +2253,11 @@ void BuildingClass::Drop_Debris(Target source) {
       */
       if (Percent_Chance(25)) {
         base::NewPooled<SmudgeClass>(
-            Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6), Cell_Coord(newcell));
+            Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6), newcell.Center());
       } else {
         base::NewPooled<SmudgeClass>(
             Random_Pick(SMUDGE_CRATER1, SMUDGE_CRATER6),
-            Coord_Scatter(Cell_Coord(newcell), 0x0080, false));
+            Coord_Scatter(newcell.Center(), 0x0080, false));
       }
     }
   }
@@ -2307,7 +2310,7 @@ void BuildingClass::Active_Click_With(ActionType action, ObjectClass* object) {
  * HISTORY: * 07/04/1995 JLB : Created. * 10/04/1995 JLB : Handles construction
  *yard undeploy to move logic.                        *
  *=============================================================================================*/
-void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
+void BuildingClass::Active_Click_With(ActionType action, Cell cell) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
@@ -2411,7 +2414,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
   **	Find a good cell to unload the object to. The object, probably a vehicle
   **	will drive/walk to the adjacent free cell.
   */
-  CELL cell = 0;
+  Cell cell{};
 
   switch (base->What_Am_I()) {
     case RTTI_AIRCRAFT:
@@ -2430,18 +2433,18 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
       } else {
         auto* air = dynamic_cast<AircraftClass*>(base);
 
-        if (Cell_X(Coord_Cell(Center_Coord())) - TheMap().MapCellX <
+        if (Cell::Containing(Center_Coord()).x() - TheMap().MapCellX <
             TheMap().MapCellWidth / 2) {
-          cell = XY_Cell(
+          cell = Cell::FromXY(
               TheMap().MapCellX - 1,
               Random_Pick(0, TheMap().MapCellHeight - 1) + TheMap().MapCellY);
         } else {
-          cell = XY_Cell(
+          cell = Cell::FromXY(
               TheMap().MapCellX + TheMap().MapCellWidth,
               Random_Pick(0, TheMap().MapCellHeight - 1) + TheMap().MapCellY);
         }
         TheWorld().scenario_init()++;
-        if (air->Unlimbo(Cell_Coord(cell), game::DIR_N)) {
+        if (air->Unlimbo(cell.Center(), game::DIR_N)) {
           // BG
           // air->Assign_Destination(ra::As_Target(Nearby_Location(air)));
           /*BG*/ air->Assign_Destination(
@@ -2460,8 +2463,8 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         case STRUCT_SHIP_YARD:
           TheWorld().scenario_init()++;
           cell = Find_Exit_Cell(base);
-          if (cell != 0 &&
-              base->Unlimbo(Cell_Coord(cell), Direction(Cell_Coord(cell)))) {
+          if (cell.index() != 0 &&
+              base->Unlimbo(cell.Center(), Direction(cell.Center()))) {
             base->Assign_Mission(MISSION_GUARD);
             TheWorld().scenario_init()--;
             return 2;
@@ -2565,12 +2568,12 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
       switch (Class->Type) {
         case STRUCT_REFINERY:
           if (base->What_Am_I() == RTTI_UNIT) {
-            cell = Coord_Cell(Center_Coord());
+            cell = Cell::Containing(Center_Coord());
             auto* unit = dynamic_cast<UnitClass*>(base);
 
             cell = Adjacent_Cell(cell, game::FACING_SW);
             TheWorld().scenario_init()++;
-            if (unit->Unlimbo(Cell_Coord(Adjacent_Cell(cell, game::DIR_S)),
+            if (unit->Unlimbo(Adjacent_Cell(cell, game::DIR_S).Center(),
                               game::DIR_SW_X2)) {
               unit->PrimaryFacing = game::DIR_S;
               unit->Assign_Mission(MISSION_HARVEST);
@@ -2619,7 +2622,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         case STRUCT_KENNEL:
 
           cell = Find_Exit_Cell(base);
-          if (cell != 0) {
+          if (cell.index() != 0) {
             const game::DirType dir = Direction(cell);
             const Coordinate start = Exit_Coord();
 
@@ -2737,7 +2740,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         case StructType::STRUCT_LARVA2:
         default:
           cell = Find_Exit_Cell(base);
-          if (cell != 0) {
+          if (cell.index() != 0) {
             const game::DirType dir = Direction(cell);
             const Coordinate start = Exit_Coord();
 
@@ -2778,7 +2781,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             dynamic_cast<BuildingClass*>(base)->Class->Type);
         Coordinate coord{};
         if (node) {
-          coord = Cell_Coord(node->Cell);
+          coord = node->Cell.Center();
         } else {
           /*
           **	Find a suitable new spot to place.
@@ -2788,7 +2791,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         }
 
         if (coord) {
-          if (Flush_For_Placement(base, Coord_Cell(coord))) {
+          if (Flush_For_Placement(base, Cell::Containing(coord))) {
             return 1;
           }
           if (base->Unlimbo(coord)) {
@@ -3132,7 +3135,7 @@ void BuildingClass::Grand_Opening(bool captured) {
         !TheDebugState().map_editor_active() &&
         (!House->IsHuman || PurchasePrice == 0 ||
          PurchasePrice > Class->Raw_Cost())) {
-      CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), game::DIR_S));
+      Cell cell = Cell::Containing(Adjacent_Cell(Center_Coord(), game::DIR_S));
 
       auto* unit =
           base::NewPooled<UnitClass>(UNIT_HARVESTER, House->Class->House);
@@ -3141,14 +3144,14 @@ void BuildingClass::Grand_Opening(bool captured) {
         **	Try to place down the harvesters. If it could not be placed,
         *then try *	to place it in a nearby location.
         */
-        if (!unit->Unlimbo(Cell_Coord(cell), game::DIR_W)) {
+        if (!unit->Unlimbo(cell.Center(), game::DIR_W)) {
           cell = unit->Nearby_Location(this);
 
           /*
           **	If the harvester could still not be placed, then refund the
           *money *	to the owner and then bail.
           */
-          if (!unit->Unlimbo(Cell_Coord(cell), game::DIR_SW)) {
+          if (!unit->Unlimbo(cell.Center(), game::DIR_SW)) {
             House->Refund_Money(unit->Class->Cost_Of());
             base::DeletePooled(unit);
           }
@@ -3454,7 +3457,7 @@ ActionType BuildingClass::What_Action(ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 01/18/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType BuildingClass::What_Action(CELL cell) const {
+ActionType BuildingClass::What_Action(Cell cell) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
@@ -3801,7 +3804,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     }
 
     SmudgeType bib = SMUDGE_NONE;
-    CELL cell = Coord_Cell(Coord);
+    Cell cell = Cell::Containing(Coord);
     if (Class->Bib_And_Offset(bib, cell)) {
       auto* smudge = base::NewPooled<SmudgeClass>(bib);
       if (smudge) {
@@ -3810,11 +3813,10 @@ bool BuildingClass::Captured(HouseClass* newowner) {
       }
       if (TheSession().Type == GAME_NORMAL) {
         base::NewPooled<SmudgeClass>(
-            bib, Cell_Coord(cell),
+            bib, cell.Center(),
             Class->IsBase ? House->Class->House : HOUSE_NONE);
       } else {
-        base::NewPooled<SmudgeClass>(bib, Cell_Coord(cell),
-                                     House->Class->House);
+        base::NewPooled<SmudgeClass>(bib, cell.Center(), House->Class->House);
       }
     }
 
@@ -3851,8 +3853,8 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     */
     std::span<const int16_t> offset = Occupy_List();
     while (offset.front() != kRefreshEol) {
-      const CELL footprint_cell =
-          static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(offset));
+      const Cell footprint_cell =
+          Cell::Containing(Coord).Offset(base::ConsumeFront(offset));
       TheMap().Radar_Pixel(footprint_cell);
     }
     return true;
@@ -3918,7 +3920,7 @@ Coordinate BuildingClass::Sort_Y() const {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 game::MoveType BuildingClass::Can_Enter_Cell(
-    CELL cell, game::FacingType /*unused*/) const {
+    Cell cell, game::FacingType /*unused*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
@@ -4519,7 +4521,7 @@ int BuildingClass::Mission_Harvest() {
         **	Force any bib squatters to scatter.
         */
         TheMap()
-            .at(Adjacent_Cell(Coord_Cell(Center_Coord()), game::DIR_S))
+            .at(Adjacent_Cell(Cell::Containing(Center_Coord()), game::DIR_S))
             .Incoming(Coordinate{}, true, true);
 
         FootClass* techno = Attached_Object();
@@ -4876,8 +4878,8 @@ int BuildingClass::Mission_Missile() {
       case kLaunchUp: {
         const AnimClass* sput = AnimToTrack.AsAnimation();
         if (sput && (sput->Fetch_Stage() >= 19)) {
-          const CELL center = Coord_Cell(Center_Coord());
-          const CELL cell = XY_Cell(Cell_X(center), 1);
+          const Cell center = Cell::Containing(Center_Coord());
+          const Cell cell = Cell::FromXY(center.x(), 1);
           const Target targ = Target::FromCell(cell);
 
           auto* bullet = base::NewPooled<BulletClass>(
@@ -4938,8 +4940,8 @@ int BuildingClass::Mission_Missile() {
       ** actually handles launching the missile into the air.
       */
       case kLaunchUp: {
-        const CELL center = Coord_Cell(Center_Coord());
-        const CELL cell = XY_Cell(Cell_X(center), 1);
+        const Cell center = Cell::Containing(Center_Coord());
+        const Cell cell = Cell::FromXY(center.x(), 1);
         const Target targ = Target::FromCell(cell);
         auto* bullet = base::NewPooled<BulletClass>(
             BULLET_NUKE_UP, targ, this, 200, WARHEAD_HE,
@@ -4972,9 +4974,9 @@ int BuildingClass::Mission_Missile() {
               BULLET_NUKE_DOWN, Target::FromCell(House->NukeDest), this, 200,
               WARHEAD_NUKE, static_cast<int>(game::MPH_VERY_FAST));
           if (bullet) {
-            const int celly = std::max(Cell_Y(House->NukeDest) - 64, 1);
+            const int celly = std::max(House->NukeDest.y() - 64, 1);
             const Coordinate start =
-                Cell_Coord(XY_Cell(Cell_X(House->NukeDest), celly));
+                Cell::FromXY(House->NukeDest.x(), celly).Center();
             if (!bullet->Unlimbo(start, game::DIR_S)) {
               base::DeletePooled(bullet);
             }
@@ -5189,9 +5191,9 @@ int BuildingClass::Mission_Unload() {
   DCHECK(IsActive);
 
   if (*this == STRUCT_WEAP) {
-    const CELL cell =
-        static_cast<CELL>(Coord_Cell(Coord) + base::At(Class->ExitList, 0));
-    const Coordinate coord = Cell_Coord(cell);
+    const Cell cell =
+        Cell::Containing(Coord).Offset(base::At(Class->ExitList, 0));
+    const Coordinate coord = cell.Center();
     CellClass* cellptr = &TheMap().at(cell);
     constexpr int kInitial = 0;
     constexpr int kClearBib = 1;
@@ -5568,7 +5570,7 @@ void BuildingClass::Detach_All(bool all) {
  * HISTORY: * 08/06/1995 JLB : Created. * 09/27/1995 JLB : Revised to use type
  *class function.                                      *
  *=============================================================================================*/
-bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
+bool BuildingClass::Flush_For_Placement(TechnoClass* techno, Cell cell) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
@@ -5599,16 +5601,16 @@ bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
  * HISTORY: * 09/21/1995 JLB : Created. * 02/20/1996 JLB : Added default case
  *for exit cell calculation.                            *
  *=============================================================================================*/
-CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
+Cell BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
-  const CELL origin = Coord_Cell(Coord);
+  const Cell origin = Cell::Containing(Coord);
 
   std::span<const int16_t> ptr = Class->ExitList;
   if (!ptr.empty()) {
     while (ptr.front() != kRefreshEol) {
-      const CELL cell = static_cast<CELL>(origin + base::ConsumeFront(ptr));
+      const Cell cell = origin.Offset(base::ConsumeFront(ptr));
       if (TheMap().In_Radar(cell) &&
           techno->Can_Enter_Cell(cell) == game::MOVE_OK) {
         return cell;
@@ -5616,17 +5618,17 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
     }
   } else {
     int x1 = 0;
-    CELL cell = 0;
+    Cell cell{};
 
     int y1 = -1;
     const int y2 = Class->Height();
     for (x1 = -1; x1 <= Class->Width(); x1++) {
-      cell = static_cast<CELL>(origin + x1 + (y1 * MAP_CELL_W));
+      cell = origin.Offset(x1 + (y1 * MAP_CELL_W));
       if (TheMap().In_Radar(cell) &&
           techno->Can_Enter_Cell(cell) == game::MOVE_OK) {
         return cell;
       }
-      cell = static_cast<CELL>(origin + x1 + (y2 * MAP_CELL_W));
+      cell = origin.Offset(x1 + (y2 * MAP_CELL_W));
       if (TheMap().In_Radar(cell) &&
           techno->Can_Enter_Cell(cell) == game::MOVE_OK) {
         return cell;
@@ -5636,19 +5638,19 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
     x1 = -1;
     const int x2 = Class->Width();
     for (y1 = -1; y1 <= Class->Height(); y1++) {
-      cell = static_cast<CELL>(origin + (y1 * MAP_CELL_W) + x1);
+      cell = origin.Offset((y1 * MAP_CELL_W) + x1);
       if (TheMap().In_Radar(cell) &&
           techno->Can_Enter_Cell(cell) == game::MOVE_OK) {
         return cell;
       }
-      cell = static_cast<CELL>(origin + (y1 * MAP_CELL_W) + x2);
+      cell = origin.Offset((y1 * MAP_CELL_W) + x2);
       if (TheMap().In_Radar(cell) &&
           techno->Can_Enter_Cell(cell) == game::MOVE_OK) {
         return cell;
       }
     }
   }
-  return 0;
+  return Cell{};
 }
 
 /***********************************************************************************************
@@ -5715,10 +5717,10 @@ Coordinate BuildingClass::Exit_Coord() const {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-CELL BuildingClass::Check_Point(CheckPointType cp) const {
-  CELL xoffset = 6;  // Downwind offset.
-  CELL yoffset = 5;  // Crosswind offset.
-  const CELL cell = Coord_Cell(Center_Coord());
+Cell BuildingClass::Check_Point(CheckPointType cp) const {
+  int xoffset = 6;  // Downwind offset, in cells.
+  int yoffset = 5;  // Crosswind offset, in cells.
+  const Cell cell = Cell::Containing(Center_Coord());
 
   switch (cp) {
     case CHECK_STACK:
@@ -5734,15 +5736,15 @@ CELL BuildingClass::Check_Point(CheckPointType cp) const {
       break;
   }
 
-  if (Cell_X(cell) - TheMap().MapCellX > TheMap().MapCellWidth / 2) {
-    xoffset = static_cast<CELL>(-xoffset);
+  if (cell.x() - TheMap().MapCellX > TheMap().MapCellWidth / 2) {
+    xoffset = -xoffset;
   }
 
-  if (Cell_Y(cell) - TheMap().MapCellY > TheMap().MapCellHeight / 2) {
-    yoffset = static_cast<CELL>(-yoffset);
+  if (cell.y() - TheMap().MapCellY > TheMap().MapCellHeight / 2) {
+    yoffset = -yoffset;
   }
 
-  return XY_Cell(Cell_X(cell) + xoffset, Cell_Y(cell) + yoffset);
+  return Cell::FromXY(cell.x() + xoffset, cell.y() + yoffset);
 }
 
 /***********************************************************************************************
@@ -5828,8 +5830,8 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
       /*
       **	4th token: cell #.
       */
-      CELL const cell =
-          base::ParseIntegerOr<CELL>(tokens.Next(), 0);  // Cell of building.
+      const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(
+          tokens.Next(), 0));  // Cell of building.
 
       /*
       **	5th token: facing.
@@ -5869,7 +5871,7 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
         b->IsToRebuild = rebuild;
         b->IsToRepair = rebuild || *b == STRUCT_CONST;
 
-        if (b->Unlimbo(Cell_Coord(cell), facing)) {
+        if (b->Unlimbo(cell.Center(), facing)) {
           strength = std::min(strength, 0x100);
           strength = b->Class->MaxStrength * Fixed(strength, 256);
           b->Strength = static_cast<int16_t>(strength);
@@ -5921,14 +5923,15 @@ void BuildingClass::Write_INI(CCINIClass& ini) {
       char buf[127];
 
       absl::SNPrintF(uname, sizeof(uname), "%d", index);
-      absl::SNPrintF(
-          buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%d,%d",
-          building->House->Class->IniName, building->Class->IniName,
-          building->Health_Ratio() * 256, Coord_Cell(building->Coord),
-          building->PrimaryFacing.Current(),
-          building->Trigger != nullptr ? building->Trigger->Class->IniName
-                                       : "None",
-          building->IsAllowedToSell, building->IsToRebuild);
+      absl::SNPrintF(buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%d,%d",
+                     building->House->Class->IniName, building->Class->IniName,
+                     building->Health_Ratio() * 256,
+                     Cell::Containing(building->Coord).index(),
+                     building->PrimaryFacing.Current(),
+                     building->Trigger != nullptr
+                         ? building->Trigger->Class->IniName
+                         : "None",
+                     building->IsAllowedToSell, building->IsToRebuild);
       ini.Put_String(INI_Name(), uname, buf);
     }
   }
@@ -6571,11 +6574,11 @@ int BuildingClass::Value() const {
  *=============================================================================================*/
 void BuildingClass::Remove_Gap_Effect() {
   // unjam this one's field...
-  MapEditClass::UnJam_From(Coord_Cell(Center_Coord()),
+  MapEditClass::UnJam_From(Cell::Containing(Center_Coord()),
                            TheRules().GapShroudRadius, House);
   if (!House->IsPlayerControl && ThePlayer()->IsGPSActive) {
-    TheMap().Sight_From(Coord_Cell(Center_Coord()), TheRules().GapShroudRadius,
-                        ThePlayer());
+    TheMap().Sight_From(Cell::Containing(Center_Coord()),
+                        TheRules().GapShroudRadius, ThePlayer());
   }
   // and rejam any overlapping buildings' fields
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
@@ -6584,7 +6587,7 @@ void BuildingClass::Remove_Gap_Effect() {
         obj != this) {
       obj->IsJamming = false;
       obj->Arm.Set(0);
-      //			Map.Jam_From(Coord_Cell(obj->Center_Coord()),
+      //			Map.Jam_From(Cell::Containing(obj->Center_Coord()),
       // Rule.GapShroudRadius, PlayerPtr);
     }
   }

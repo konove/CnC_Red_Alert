@@ -191,7 +191,7 @@ class InfantryClass final : public FootClass {
   void Response_Move() override;
   void Response_Attack() override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;
-  void Active_Click_With(ActionType action, CELL cell) override {
+  void Active_Click_With(ActionType action, Cell cell) override {
     FootClass::Active_Click_With(action, cell);
   }
 
@@ -199,7 +199,7 @@ class InfantryClass final : public FootClass {
   **	Combat related.
   */
   ActionType What_Action(ObjectClass* object) override;
-  [[nodiscard]] ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] ActionType What_Action(Cell cell) const override;
   BulletClass* Fire_At(Target target, int which) override;
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source = nullptr,
@@ -208,13 +208,13 @@ class InfantryClass final : public FootClass {
                                              int which) const override;
   void Assign_Target(Target /*target*/) override;
   void Set_Occupy_Bit(Coordinate coord) {
-    Set_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
+    Set_Occupy_Bit(Cell::Containing(coord), CellClass::Spot_Index(coord));
   }
-  void Set_Occupy_Bit(CELL cell, int spot_index);
+  void Set_Occupy_Bit(Cell cell, int spot_index);
   void Clear_Occupy_Bit(Coordinate coord) {
-    Clear_Occupy_Bit(Coord_Cell(coord), CellClass::Spot_Index(coord));
+    Clear_Occupy_Bit(Cell::Containing(coord), CellClass::Spot_Index(coord));
   }
-  void Clear_Occupy_Bit(CELL cell, int spot_index);
+  void Clear_Occupy_Bit(Cell cell, int spot_index);
 
   /*
   **	Driver control support functions. These are used to control cell
@@ -258,7 +258,7 @@ class InfantryClass final : public FootClass {
   bool Do_Action(DoType todo, bool force = false);
   bool Random_Animate() override;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      CELL /*cell*/,
+      Cell /*cell*/,
       game::FacingType /*from*/ = game::FACING_NONE) const override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   void Enter_Idle_Mode(bool initial = false) override;

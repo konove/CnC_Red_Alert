@@ -1,6 +1,6 @@
-// Pins the packed CELL and lepton encodings and the CELL/Coordinate
-// conversions, including the truncation the original bit-fields performed on
-// out-of-range components. Coordinate's own layout is pinned by
+// Pins the packed lepton encoding and its pixel conversions, including the
+// truncation the original bit-fields performed on out-of-range components.
+// Cell's layout is pinned by cell_test.cc, Coordinate's by
 // coordinate_test.cc, Target's by ra/objects/target_test.cc.
 
 #include "ra/core/packed.h"
@@ -13,11 +13,8 @@
 namespace ra {
 namespace {
 
-constexpr Coordinate kSample = Coordinate::FromPacked(0x12345678);
-
 // The packers are usable in constant expressions.
-static_assert(XY_Cell(5, 3) == 389);
-static_assert(Coord_Cell(kSample) == XY_Cell(0x56, 0x12));
+static_assert(Make_Lepton(3, 0x80) == 0x0380);
 
 // The type of a noexcept function returning R from Args.
 template <class R, class... Args>
@@ -33,33 +30,8 @@ static_assert(std::is_same_v<decltype(Lepton_To_Cell), NoexceptFn<int, int>>);
 static_assert(std::is_same_v<decltype(Lepton_To_Pixel), NoexceptFn<int, int>>);
 static_assert(std::is_same_v<decltype(Pixel_To_Lepton), NoexceptFn<int, int>>);
 
-TEST(PackedTest, CellPacksSevenBitsPerAxis) {
-  EXPECT_EQ(XY_Cell(5, 3), (3 * 128) + 5);
-  EXPECT_EQ(Cell_X(XY_Cell(5, 3)), 5);
-  EXPECT_EQ(Cell_Y(XY_Cell(5, 3)), 3);
-}
-
-TEST(PackedTest, CellTruncatesOutOfRangeComponents) {
-  EXPECT_EQ(XY_Cell(-1, 0), 127);
-  EXPECT_EQ(XY_Cell(130, 1), 128 + 2);
-}
-
-TEST(PackedTest, SentinelCellsReadAsFullComponents) {
-  EXPECT_EQ(Cell_X(-1), 127);
-  EXPECT_EQ(Cell_Y(-1), 127);
-  EXPECT_EQ(Cell_X(kRefreshEol), 127);
-  EXPECT_EQ(Cell_Y(kRefreshEol), 127);
-}
-
 TEST(PackedTest, CellCenterFraction) {
   EXPECT_EQ(CellCenterFraction().packed(), 0x00800080U);
-}
-
-TEST(PackedTest, CellCoordinateRoundTrip) {
-  EXPECT_EQ(Cell_Coord(XY_Cell(5, 3)).packed(), 0x03800580U);
-  EXPECT_EQ(Coord_Cell(kSample), XY_Cell(0x56, 0x12));
-  // An X cell byte of 128 is off the map and wraps to column 0.
-  EXPECT_EQ(Coord_Cell(Coordinate::FromPacked(0x00008000U)), XY_Cell(0, 0));
 }
 
 TEST(PackedTest, LeptonCellConversions) {

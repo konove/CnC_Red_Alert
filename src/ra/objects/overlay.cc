@@ -45,6 +45,7 @@
 
 #include "ra/objects/overlay.h"
 
+#include <cstdint>
 #include <cstdlib>
 #include <span>
 
@@ -61,7 +62,6 @@
 #include "game/core/object_heap.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
@@ -153,12 +153,12 @@ void OverlayClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
+OverlayClass::OverlayClass(OverlayType type, Cell pos, HousesType house)
     : ObjectClass(RTTI_OVERLAY, TheObjectHeaps().overlay().SlotIndexOf(this)),
       Class(TheTypeHeaps().overlay().ActiveAt(static_cast<int>(type))) {
-  if (pos != -1) {
+  if (pos != Cell::None()) {
     ToOwn = house;
-    Unlimbo(Cell_Coord(pos));
+    Unlimbo(pos.Center());
     ToOwn = HOUSE_NONE;
   }
 }
@@ -186,7 +186,7 @@ bool OverlayClass::Mark(MarkType mark) {
   DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
-    const CELL cell = Coord_Cell(Coord);
+    const Cell cell = Cell::Containing(Coord);
     CellClass* cellptr = &TheMap().at(cell);
 
     /*
@@ -256,7 +256,7 @@ bool OverlayClass::Mark(MarkType mark) {
     **	Remove the overlay and make sure the system thinks it was never
     *placed down!
     */
-    TheMap().Overlap_Up(Coord_Cell(Coord), this);
+    TheMap().Overlap_Up(Cell::Containing(Coord), this);
     IsDown = false;
     IsInLimbo = true;
 
@@ -293,7 +293,8 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
           std::span(overlay_pack_buffer).first(base::ToSize(len))));
       LcwSource uncomp(CodecMode::kDecompress, bpipe);
 
-      for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+      for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+        const Cell cell = Cell::FromIndex(cell_index);
         OverlayType classid = OVERLAY_NONE;
 
         uncomp.ReadObject(classid);
@@ -301,7 +302,8 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
         if ((classid != OVERLAY_NONE) &&
             (TheSession().Type == GAME_NORMAL ||
              !OverlayTypeClass::As_Reference(classid).IsCrate) &&
-            (cell >= MAP_CELL_W && cell <= MAP_CELL_TOTAL - MAP_CELL_W))
+            (cell.index() >= MAP_CELL_W &&
+             cell.index() <= MAP_CELL_TOTAL - MAP_CELL_W))
 
         /*
         **	Don't allow placement of overlays on the top or bottom rows of
@@ -319,7 +321,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
               const BuildingClass* building =
                   TheObjectHeaps().building().ActiveAt(index);
               const int newdist =
-                  ra::Distance(building->Center_Coord(), Cell_Coord(cell));
+                  ra::Distance(building->Center_Coord(), cell.Center());
               if (newdist < distance) {
                 distance = newdist;
                 owner = building->Owner();
@@ -336,7 +338,8 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
     const int len = ini.Entry_Count(INI_Name());
     for (int index = 0; index < len; index++) {
       const char* entry = ini.Get_Entry(INI_Name(), index);
-      const CELL cell = base::ParseIntegerOr<CELL>(entry, 0);
+      const Cell cell =
+          Cell::FromIndex(base::ParseIntegerOr<int16_t>(entry, 0));
       const OverlayType classid =
           ini.Get_OverlayType(INI_Name(), entry, OVERLAY_NONE);
 
@@ -346,7 +349,8 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
       if ((classid != OVERLAY_NONE &&
            (TheSession().Type == GAME_NORMAL ||
             !OverlayTypeClass::As_Reference(classid).IsCrate)) &&
-          (cell >= MAP_CELL_W && cell <= MAP_CELL_TOTAL - MAP_CELL_W))
+          (cell.index() >= MAP_CELL_W &&
+           cell.index() <= MAP_CELL_TOTAL - MAP_CELL_W))
       /*
       **	Don't allow placement of overlays on the top or bottom rows of
       **	the map.
@@ -362,7 +366,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
             const BuildingClass* building =
                 TheObjectHeaps().building().ActiveAt(j);
             const int newdist =
-                ra::Distance(building->Center_Coord(), Cell_Coord(cell));
+                ra::Distance(building->Center_Coord(), cell.Center());
             if (newdist < distance) {
               distance = newdist;
               owner = building->Owner();
@@ -385,8 +389,8 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   SpanSink bpipe(std::as_writable_bytes(std::span(overlay_pack_buffer)));
   LcwSink comppipe(CodecMode::kCompress, bpipe);
 
-  for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    comppipe.WriteObject(TheMap().at(index).Overlay);
+  for (int index = 0; index < MAP_CELL_TOTAL; index++) {
+    comppipe.WriteObject(TheMap().at(Cell::FromIndex(index)).Overlay);
   }
   comppipe.Finish();
   if (bpipe.bytes_written() > 0) {
@@ -394,7 +398,7 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
                     static_cast<int>(bpipe.bytes_written()));
   }
 
-  //	for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
+  //	for (Cell index = 0; index < MAP_CELL_TOTAL; index++) {
   //		CellClass * cellptr = &Map[index];
   //		if (cellptr->Overlay != OVERLAY_NONE) {
   //			char	uname[10];

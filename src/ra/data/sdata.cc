@@ -71,7 +71,6 @@
 #include "ra/assets/shape_draw.h"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
@@ -439,8 +438,8 @@ void SmudgeTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-bool SmudgeTypeClass::Create_And_Place(CELL cell, HousesType /*unused*/) const {
-  return base::NewPooled<SmudgeClass>(Type, Cell_Coord(cell)) != nullptr;
+bool SmudgeTypeClass::Create_And_Place(Cell cell, HousesType /*unused*/) const {
+  return base::NewPooled<SmudgeClass>(Type, cell.Center()) != nullptr;
 }
 
 /***********************************************************************************************

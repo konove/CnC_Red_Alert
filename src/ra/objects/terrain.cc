@@ -83,9 +83,7 @@
 #include "game/sim/enums.h"
 #include "ra/ai/scenario.h"
 #include "ra/assets/shape_draw.h"
-#include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/core/type_heaps.h"
@@ -252,11 +250,11 @@ void TerrainClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
-TerrainClass::TerrainClass(TerrainType type, CELL cell)
+TerrainClass::TerrainClass(TerrainType type, Cell cell)
     : ObjectClass(RTTI_TERRAIN, TheObjectHeaps().terrain().SlotIndexOf(this)),
       Class(TheTypeHeaps().terrain().ActiveAt(static_cast<int>(type))) {
   Strength = Class->MaxStrength;
-  if ((cell != -1) && (!Unlimbo(Cell_Coord(cell)))) {
+  if ((cell != Cell::None()) && (!Unlimbo(cell.Center()))) {
     delete this;
   }
 
@@ -284,7 +282,7 @@ bool TerrainClass::Mark(MarkType mark) {
   DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark)) {
-    const CELL cell = Coord_Cell(Coord);
+    const Cell cell = Cell::Containing(Coord);
 
     switch (mark) {
       case MARK_UP:
@@ -398,12 +396,12 @@ void TerrainClass::Init() { TheObjectHeaps().terrain().FreeAll(); }
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. * 01/01/1995 JLB : Actually works now. *
  *=============================================================================================*/
-game::MoveType TerrainClass::Can_Enter_Cell(CELL cell,
+game::MoveType TerrainClass::Can_Enter_Cell(Cell cell,
                                             game::FacingType /*unused*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().terrain(), this);
   DCHECK(IsActive);
 
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+  if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return game::MOVE_NO;
   }
 
@@ -412,13 +410,13 @@ game::MoveType TerrainClass::Can_Enter_Cell(CELL cell,
   while (offset.front() != kRefreshEol) {
     if (Class->IsWaterBased) {
       if (!TheMap()
-               .at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
+               .at(cell.Offset(base::ConsumeFront(offset)))
                .Is_Clear_To_Build(SPEED_FLOAT)) {
         return game::MOVE_NO;
       }
     } else {
       if (!TheMap()
-               .at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
+               .at(cell.Offset(base::ConsumeFront(offset)))
                .Is_Clear_To_Build()) {
         return game::MOVE_NO;
       }
@@ -616,7 +614,7 @@ bool TerrainClass::Limbo() {
   DCHECK(IsActive);
 
   if (!IsInLimbo) {
-    const CELL cell = Coord_Cell(Coord);
+    const Cell cell = Cell::Containing(Coord);
     TheMap().at(cell).Flag.Occupy.Monolith = false;
   }
   return ObjectClass::Limbo();
@@ -659,7 +657,7 @@ Coordinate TerrainClass::Center_Coord() const {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-std::span<const unsigned char> TerrainClass::Radar_Icon(CELL cell) {
+std::span<const unsigned char> TerrainClass::Radar_Icon(Cell cell) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().terrain(), this);
   DCHECK(IsActive);
 
@@ -676,11 +674,9 @@ std::span<const unsigned char> TerrainClass::Radar_Icon(CELL cell) {
   ** multiplying it by the width of the terrain in icons, which we
   ** conveniently stored out as the first byte of every icon we made.
   */
-  const int basecell = Coord_Cell(Coord);  // find the base cell of terrain
-  const int ydiff =
-      static_cast<CELL>(Cell_Y(cell) - Cell_Y(static_cast<CELL>(basecell)));
-  const int xdiff =
-      static_cast<CELL>(Cell_X(cell) - Cell_X(static_cast<CELL>(basecell)));
+  const Cell basecell = Cell::Containing(Coord);  // the base cell of terrain
+  const int ydiff = static_cast<int16_t>(cell.y() - basecell.y());
+  const int xdiff = static_cast<int16_t>(cell.x() - basecell.x());
   if (xdiff >= 0 && ydiff >= 0 && xdiff < width && ydiff < height) {
     const int iconnum = (ydiff * width) + xdiff;
     const auto start = (base::ToSize(iconnum) * 9) + 2;
@@ -734,7 +730,7 @@ void TerrainClass::Read_INI(CCINIClass& ini) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
     const TerrainType terrain =
         ini.Get_TerrainType(INI_Name(), entry, TERRAIN_NONE);
-    const CELL cell = base::ParseIntegerOr<CELL>(entry, 0);
+    const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(entry, 0));
 
     if (terrain != TERRAIN_NONE) {
       base::NewPooled<TerrainClass>(terrain, cell);
@@ -772,7 +768,8 @@ void TerrainClass::Write_INI(CCINIClass& ini) {
     TerrainClass* terrain = TheObjectHeaps().terrain().ActiveAt(index);
     if (terrain != nullptr && !terrain->IsInLimbo && terrain->IsActive) {
       char uname[10];
-      absl::SNPrintF(uname, sizeof(uname), "%d", Coord_Cell(terrain->Coord));
+      absl::SNPrintF(uname, sizeof(uname), "%d",
+                     Cell::Containing(terrain->Coord).index());
       ini.Put_TerrainType(INI_Name(), uname, *terrain);
     }
   }

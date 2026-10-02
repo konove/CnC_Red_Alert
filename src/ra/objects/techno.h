@@ -310,8 +310,8 @@ class TechnoClass : public RadioClass,
   **	Query functions.
   */
   bool Is_Allowed_To_Retaliate(const TechnoClass* source) const;
-  [[nodiscard]] bool Can_Teleport_Here(CELL cell) const;
-  [[nodiscard]] bool Is_In_Same_Zone(CELL cell) const;
+  [[nodiscard]] bool Can_Teleport_Here(Cell cell) const;
+  [[nodiscard]] bool Is_In_Same_Zone(Cell cell) const;
   [[nodiscard]] bool Is_Players_Army() const override;
   [[nodiscard]] int Combat_Damage(int which = -1) const;
   [[nodiscard]] bool Is_Ready_To_Cloak() const;
@@ -324,7 +324,7 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] virtual game::DirType Turret_Facing() const {
     return PrimaryFacing.Current();
   }
-  CELL Nearby_Location(const TechnoClass* techno = nullptr) const;
+  Cell Nearby_Location(const TechnoClass* techno = nullptr) const;
   [[nodiscard]] const TechnoTypeClass* Techno_Type_Class() const {
     const auto& type = dynamic_cast<const TechnoTypeClass&>(Class_Of());
     return &type;
@@ -335,13 +335,13 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] int Anti_Infantry() const;
   [[nodiscard]] int Time_To_Build() const;
   [[nodiscard]] int What_Weapon_Should_I_Use(Target target) const;
-  [[nodiscard]] ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] ActionType What_Action(Cell cell) const override;
   ActionType What_Action(ObjectClass* object) override;
   virtual BuildingClass* Find_Docking_Bay(StructType b, bool friendly);
-  virtual CELL Find_Exit_Cell(const TechnoClass* techno) const;
+  virtual Cell Find_Exit_Cell(const TechnoClass* techno) const;
   [[nodiscard]] Coordinate Fire_Coord(int which) const override;
   virtual game::DirType Desired_Load_Dir(ObjectClass* /*unused*/,
-                                         CELL& moveto) const;
+                                         Cell& moveto) const;
   [[nodiscard]] virtual game::DirType Fire_Direction() const;
   [[nodiscard]] HousesType Owner() const override;
   [[nodiscard]] virtual InfantryType Crew_Type() const;
@@ -375,7 +375,7 @@ class TechnoClass : public RadioClass,
   /*
   **	Combat related.
   */
-  [[nodiscard]] Fixed Area_Modify(CELL cell) const;
+  [[nodiscard]] Fixed Area_Modify(Cell cell) const;
   virtual int Made_A_Kill() { return Crew.Add_Kill(); }
   void Base_Is_Attacked(TechnoClass* enemy);
   void Kill_Cargo(TechnoClass* source);
@@ -400,13 +400,13 @@ class TechnoClass : public RadioClass,
   game::ResultType Take_Damage(int& damage, int distance, WarheadType warhead,
                                TechnoClass* source = nullptr,
                                bool forced = false) override;
-  bool Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell, int range,
+  bool Evaluate_Cell(ThreatType method, uint32_t mask, Cell cell, int range,
                      const TechnoClass** object, int& value,
                      int zone = 0) const;
   bool Evaluate_Object(ThreatType method, uint32_t mask, int range,
                        const TechnoClass* object, int& value,
                        int zone = -1) const;
-  [[nodiscard]] int Evaluate_Just_Cell(CELL cell) const;
+  [[nodiscard]] int Evaluate_Just_Cell(Cell cell) const;
   virtual bool Electric_Zap(Target target, int which,
                             Coordinate source_coord = {},
                             std::span<const unsigned char> remap = {});

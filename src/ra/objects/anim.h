@@ -96,7 +96,7 @@ class AnimClass final : public ObjectClass, public StageClass {
 
   void Attach_To(ObjectClass* obj);
   void Make_Invisible() { IsInvisible = true; }
-  static void Do_Atom_Damage(HousesType ownerhouse, CELL cell);
+  static void Do_Atom_Damage(HousesType ownerhouse, Cell cell);
 
   [[nodiscard]] static bool Can_Place_Here(Coordinate /*unused*/) {
     return true;

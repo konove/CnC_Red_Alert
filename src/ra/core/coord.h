@@ -31,9 +31,8 @@ game::DirType Direction256(Coordinate coord1, Coordinate coord2);
 game::DirType Direction8(Coordinate coord1, Coordinate coord2);
 
 // Calculates the DirType from one cell to another (8-direction accuracy).
-inline game::DirType Direction(CELL cell1, CELL cell2) {
-  return game::Desired_Facing8(Cell_X(cell1), Cell_Y(cell1), Cell_X(cell2),
-                               Cell_Y(cell2));
+inline game::DirType Direction(Cell cell1, Cell cell2) {
+  return game::Desired_Facing8(cell1.x(), cell1.y(), cell2.x(), cell2.y());
 }
 
 // Returns the lepton distance between two coordinates using the "Dragon

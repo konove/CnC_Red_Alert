@@ -511,7 +511,7 @@ bool SidebarClass::Factory_Link(int factory, RTTIType type, int id) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void SidebarClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
+void SidebarClass::Refresh_Cells(Cell cell, std::span<const int16_t> list) {
   if (list.front() == kRefreshSidebar) {
     IsSidebarToRedraw = true;
     base::At(Column, 0).IsToRedraw = true;
@@ -2021,8 +2021,8 @@ bool SidebarClass::StripClass::SelectClass::Action(
           Speak(VOX_SELECT_TARGET);
         } else {
           TheNetwork().out_list().Add(EventClass(
-              EventClass::SPECIAL_PLACE, static_cast<int>(SPC_SONAR_PULSE), 0,
-              CellCenterFraction()));
+              EventClass::SPECIAL_PLACE, static_cast<int>(SPC_SONAR_PULSE),
+              Cell{}, CellCenterFraction()));
         }
       } else {
         ThePlayer()->SuperWeapon.at(spc).Impatient_Click();
@@ -2344,7 +2344,7 @@ void SidebarClass::Zoom_Mode_Control() {
   if (IsRadarActive) {
     if (Is_Zoomed() || TheSession().Type == GAME_NORMAL) {
       if (Is_Zoomed() || !Spy_Next_House()) {
-        Zoom_Mode(Coord_Cell(TacticalCoord));
+        Zoom_Mode(Cell::Containing(TacticalCoord));
       }
     } else {
       if (!Spying_On_House() && !Is_Player_Names()) {
@@ -2352,7 +2352,7 @@ void SidebarClass::Zoom_Mode_Control() {
       } else {
         Player_Names(false);
         if (!Spy_Next_House()) {
-          Zoom_Mode(Coord_Cell(TacticalCoord));
+          Zoom_Mode(Cell::Containing(TacticalCoord));
         }
       }
     }

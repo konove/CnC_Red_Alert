@@ -272,12 +272,12 @@ class BuildingClass : public TechnoClass {
   [[nodiscard]] std::span<const std::byte> Get_Image_Data() const override;
   [[nodiscard]] int How_Many_Survivors() const override;
   [[nodiscard]] game::DirType Turret_Facing() const override;
-  CELL Find_Exit_Cell(const TechnoClass* techno) const override;
+  Cell Find_Exit_Cell(const TechnoClass* techno) const override;
   [[nodiscard]] InfantryType Crew_Type() const override;
   [[nodiscard]] int Pip_Count() const override;
   [[nodiscard]] bool Can_Player_Move() const override;
   ActionType What_Action(ObjectClass* object) override;
-  [[nodiscard]] ActionType What_Action(CELL cell) const override;
+  [[nodiscard]] ActionType What_Action(Cell cell) const override;
   [[nodiscard]] bool Can_Demolish() const override;
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
@@ -287,7 +287,7 @@ class BuildingClass : public TechnoClass {
       bool redraw = false) const override;
   [[nodiscard]] int Shape_Number() const;
   [[nodiscard]] int Power_Output() const;
-  [[nodiscard]] CELL Check_Point(CheckPointType cp) const;
+  [[nodiscard]] Cell Check_Point(CheckPointType cp) const;
 
   /*
   **	Coordinate inquiry functions. These are used for both display and
@@ -307,7 +307,7 @@ class BuildingClass : public TechnoClass {
   virtual void Grand_Opening(bool captured = false);
   virtual void Update_Buildables();
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      CELL cell,
+      Cell cell,
       game::FacingType /*unused*/ = game::FACING_NONE) const override;
   bool Unlimbo(Coordinate /*coord*/ /*unused*/,
                game::DirType dir = game::DIR_N) override;
@@ -328,7 +328,7 @@ class BuildingClass : public TechnoClass {
   **	User I/O.
   */
   void Active_Click_With(ActionType action, ObjectClass* object) override;
-  void Active_Click_With(ActionType action, CELL cell) override;
+  void Active_Click_With(ActionType action, Cell cell) override;
 
   /*
   **	Combat related.
@@ -359,7 +359,7 @@ class BuildingClass : public TechnoClass {
   void AI() override;
   void Assign_Target(Target target) override;
   virtual bool Toggle_Primary();
-  bool Flush_For_Placement(TechnoClass* techno, CELL cell);
+  bool Flush_For_Placement(TechnoClass* techno, Cell cell);
 
   int Mission_Unload() override;
   int Mission_Repair() override;

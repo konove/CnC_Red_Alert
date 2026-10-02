@@ -44,11 +44,13 @@
 #include <cstdint>
 #include <cstring>
 #include <span>
+#include <type_traits>
 
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/enum_array.h"
 #include "ra/ai/special.h"
+#include "ra/core/cell.h"
 #include "ra/core/defines.h"
 #include "ra/core/target.h"
 
@@ -146,7 +148,7 @@ class EventClass {
       SpecialClass Data;  // The special option flags.
     } Options;
     struct {
-      CELL Cell;  // The cell to sell wall at.
+      ra::Cell Cell;  // The cell to sell wall at.
     } SellCell;
     struct {
       ra::Target Whom;  // The object to apply the event to.
@@ -191,11 +193,11 @@ class EventClass {
     } Specific;
     struct {
       RTTIType Type;
-      CELL Cell;
+      ra::Cell Cell;
     } Place;
     struct {
       int ID;
-      CELL Cell;
+      ra::Cell Cell;
       // Where in Cell it was placed, as a sub-cell coordinate: the weapons
       // that act on one unit take the one nearest this spot.
       Coordinate Where;
@@ -258,7 +260,7 @@ class EventClass {
   EventClass(EventType type, ra::Target target);
   explicit EventClass(EventType type);
   EventClass(EventType type, int val);
-  EventClass(EventType type, CELL cell);
+  EventClass(EventType type, Cell cell);
   EventClass(EventType type, ra::Target src, ra::Target dest);
   EventClass(ra::Target src, MissionType mission,
              ra::Target target = ra::Target{},
@@ -268,10 +270,10 @@ class EventClass {
              ra::Target destination, SpeedType speed, game::MPHType maxspeed);
 
   EventClass(EventType type, RTTIType object, int id);
-  EventClass(EventType type, RTTIType object, CELL cell);
+  EventClass(EventType type, RTTIType object, Cell cell);
   // A special weapon `id` placed at `where`, a sub-cell coordinate within
   // `cell`.
-  EventClass(EventType type, int id, CELL cell, Coordinate where);
+  EventClass(EventType type, int id, Cell cell, Coordinate where);
   EventClass(AnimType anim, HousesType owner, Coordinate coord);
   EventClass(void* ptr, uint32_t size);
   EventClass(EventType type, std::span<std::byte> payload);
@@ -299,6 +301,7 @@ class EventClass {
 
 // Events cross the wire as raw bytes, so their size is part of the protocol.
 static_assert(sizeof(EventClass) == 32);
+static_assert(std::is_trivially_copyable_v<EventClass>);
 
 }  // namespace ra
 

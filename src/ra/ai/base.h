@@ -60,13 +60,14 @@ namespace ra {
 class BaseNodeClass {
  public:
   BaseNodeClass() = default;
-  BaseNodeClass(StructType building, CELL cell) : Type(building), Cell(cell) {}
+  BaseNodeClass(StructType building, ra::Cell cell)
+      : Type(building), Cell(cell) {}
   bool operator==(const BaseNodeClass& node) const;
   bool operator!=(const BaseNodeClass& node) const;
   bool operator>(const BaseNodeClass& node);
 
   StructType Type = STRUCT_NONE;
-  CELL Cell = 0;
+  ra::Cell Cell{};
 };
 
 /****************************************************************************
@@ -127,7 +128,7 @@ class BaseClass {
   BaseNodeClass* Get_Node(int index) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return &base::At(Nodes, index);
   }
-  BaseNodeClass* Get_Node(CELL cell) ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  BaseNodeClass* Get_Node(Cell cell) ABSL_ATTRIBUTE_LIFETIME_BOUND;
 
   /*
   ** Returns a pointer to the next "hole" in the Nodes list.

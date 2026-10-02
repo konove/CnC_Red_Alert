@@ -892,7 +892,7 @@ void HouseClass::AI() {
   **	someone sitting on it.  If so, make the scatter.  If they refuse,
   **	blow them up.
   */
-  if (FlagHome != 0 && game::CurrentFrame() % kTicksPerSecond == 0) {
+  if (FlagHome.index() != 0 && game::CurrentFrame() % kTicksPerSecond == 0) {
     TechnoClass* techno = TheMap().at(FlagHome).Cell_Techno();
     if (techno != nullptr) {
       bool moving = false;
@@ -1031,7 +1031,7 @@ void HouseClass::AI() {
     if (unit) {
       unit->Mark(MARK_CHANGE);
     } else {
-      const CELL cell = FlagLocation.AsCell();
+      const Cell cell = FlagLocation.AsCell();
       TheMap().at(cell).Redraw_Objects();
     }
   }
@@ -2044,7 +2044,7 @@ void HouseClass::Make_Ally(HousesType house) {
           const BuildingClass* b = TheObjectHeaps().building().ActiveAt(index);
 
           if (b && !b->IsInLimbo && b->House == this) {
-            TheMap().Sight_From(Coord_Cell(b->Center_Coord()),
+            TheMap().Sight_From(Cell::Containing(b->Center_Coord()),
                                 b->Class->SightRange, ThePlayer(), false);
           }
         }
@@ -2425,7 +2425,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
   }
 
   if (bestptr) {
-    const CELL cell = Coord_Cell(bestptr->Center_Coord());
+    const Cell cell = Cell::Containing(bestptr->Center_Coord());
     Place_Special_Blast(id, cell, CellCenterFraction());
   }
 }
@@ -2450,7 +2450,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
  *effect for nuclear bomb.                                   * 07/28/1995 JLB :
  *Revamped to use super weapon class controller.                           *
  *=============================================================================================*/
-bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
+bool HouseClass::Place_Special_Blast(SpecialWeaponType id, Cell cell,
                                      Coordinate where) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
@@ -2484,8 +2484,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
               BULLET_NUKE_DOWN, Target::FromCell(cell), nullptr, 200,
               WARHEAD_NUKE, static_cast<int>(game::MPH_VERY_FAST));
           if (bullet) {
-            const int celly = std::max(Cell_Y(cell) - 15, 1);
-            const Coordinate start = Cell_Coord(XY_Cell(Cell_X(cell), celly));
+            const int celly = std::max(cell.y() - 15, 1);
+            const Coordinate start = Cell::FromXY(cell.x(), celly).Center();
             if (!bullet->Unlimbo(start, game::DIR_S)) {
               base::DeletePooled(bullet);
             }
@@ -2691,7 +2691,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
         if (tech->What_Am_I() == RTTI_INFANTRY) {
           auto& inf = dynamic_cast<InfantryClass&>(*tech);
           inf.Mark(MARK_UP);
-          inf.Coord = Cell_Coord(cell);
+          inf.Coord = cell.Center();
           inf.Mark(MARK_DOWN);
           int damage = inf.Strength;
           inf.Take_Damage(damage, 0, WARHEAD_FIRE, nullptr, true);
@@ -2703,7 +2703,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
           **	Warp the unit to the new location.
           */
           auto& drive = dynamic_cast<DriveClass&>(*tech);
-          drive.MoebiusCell = Coord_Cell(drive.Coord);
+          drive.MoebiusCell = Cell::Containing(drive.Coord);
           drive.Teleport_To(cell);
           drive.IsMoebius = true;
           if (tech->What_Am_I() == RTTI_UNIT &&
@@ -2752,13 +2752,14 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
             Percent_Chance(TheRules().VortexChance * 100)) {
           const int x = Random_Pick(0, TheMap().MapCellWidth - 1);
           const int y = Random_Pick(0, TheMap().MapCellHeight - 1);
-          TheWorld().chronal_vortex().Appear(Cell_Coord(
-              XY_Cell(TheMap().MapCellX + x, TheMap().MapCellY + y)));
+          TheWorld().chronal_vortex().Appear(
+              Cell::FromXY(TheMap().MapCellX + x, TheMap().MapCellY + y)
+                  .Center());
 
           //					if (Percent_Chance(50)) {
-          //						ChronalVortex.Appear(Cell_Coord(oldcell));
+          //						ChronalVortex.Appear(oldcell.Center());
           //					} else {
-          //						ChronalVortex.Appear(Cell_Coord(cell));
+          //						ChronalVortex.Appear(cell.Center());
           //					}
         }
       }
@@ -2793,7 +2794,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-bool HouseClass::Place_Object(RTTIType type, CELL cell) {
+bool HouseClass::Place_Object(RTTIType type, Cell cell) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   TechnoClass* tech = nullptr;
@@ -2810,7 +2811,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
   if (factory && factory->Has_Completed()) {
     tech = factory->Get_Object();
 
-    if (cell == -1) {
+    if (cell == Cell::None()) {
       TechnoClass* pending = factory->Get_Object();
       if (pending != nullptr) {
         bool intheory = false;
@@ -2907,7 +2908,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
         TechnoClass* builder = tech->Who_Can_Build_Me(false, false);
         if (builder) {
           builder->Transmit_Message(RADIO_HELLO, tech);
-          if (tech->Unlimbo(Cell_Coord(cell))) {
+          if (tech->Unlimbo(cell.Center())) {
             factory->Completed();
             Abandon_Production(type);
 
@@ -2974,7 +2975,7 @@ bool HouseClass::Manual_Place(BuildingClass* builder, BuildingClass* object) {
     TheMap().PendingHouse = Class->House;
 
     TheMap().Set_Cursor_Shape(object->Occupy_List(true));
-    TheMap().Set_Cursor_Pos(Coord_Cell(builder->Coord));
+    TheMap().Set_Cursor_Pos(Cell::Containing(builder->Coord));
     builder->Mark(MARK_CHANGE);
     return true;
   }
@@ -3261,7 +3262,7 @@ bool HouseClass::Flag_Remove(Target target, bool set_home) {
       /*
       **	Remove the flag from a cell
       */
-      const CELL cell = target.AsCell();
+      const Cell cell = target.AsCell();
       if (TheMap().In_Radar(cell)) {
         rc = TheMap().at(cell).Flag_Remove();
         if (rc && FlagLocation == target) {
@@ -3274,10 +3275,10 @@ bool HouseClass::Flag_Remove(Target target, bool set_home) {
     **	Handle the flag home cell:
     **	If 'set_home' is set, clear the home value & the cell's overlay
     */
-    if (set_home && (FlagHome != 0)) {
+    if (set_home && (FlagHome.index() != 0)) {
       TheMap().at(FlagHome).Overlay = OVERLAY_NONE;
       TheMap().Flag_Cell(FlagHome);
-      FlagHome = 0;
+      FlagHome = Cell{};
     }
 
     return rc;
@@ -3305,7 +3306,7 @@ bool HouseClass::Flag_Remove(Target target, bool set_home) {
  * HISTORY: * 05/23/1995 JLB : Created. * 10/08/1996 JLB : Uses map nearby cell
  *scanning handler.                                   *
  *=============================================================================================*/
-bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
+bool HouseClass::Flag_Attach(Cell cell, bool set_home) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
@@ -3322,11 +3323,11 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
     **	Attach the flag to the cell specified. If it can't be placed, then pick
     **	a nearby cell where it can be placed.
     */
-    CELL newcell = cell;
+    Cell newcell = cell;
     bool rc = TheMap().at(newcell).Flag_Place(Class->House);
     if (!rc) {
       newcell = TheMap().Nearby_Location(cell, SPEED_TRACK);
-      if (newcell != 0) {
+      if (newcell.index() != 0) {
         rc = TheMap().at(newcell).Flag_Place(Class->House);
       }
     }
@@ -3339,7 +3340,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
     if (rc) {
       FlagLocation = Target::FromCell(newcell);
 
-      if (set_home || FlagHome == 0) {
+      if (set_home || FlagHome.index() == 0) {
         TheMap().at(newcell).Overlay = OVERLAY_FLAG_SPOT;
         TheMap().at(newcell).OverlayData = 0;
         TheMap().at(newcell).Recalc_Attributes();
@@ -3427,7 +3428,7 @@ void HouseClass::MPlayer_Defeated() {
     if (FlagLocation) {
       Flag_Remove(FlagLocation, true);
     } else {
-      if (FlagHome != 0) {
+      if (FlagHome.index() != 0) {
         Flag_Remove(Target::FromCell(FlagHome), true);
       }
     }
@@ -3980,10 +3981,10 @@ Fixed HouseClass::Power_Fraction() const {
  * HISTORY: * 08/05/1995 JLB : Created. * 11/02/1996 JLB : Checks unsellable bit
  *for wall type.                                     *
  *=============================================================================================*/
-void HouseClass::Sell_Wall(CELL cell) {
+void HouseClass::Sell_Wall(Cell cell) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
-  if (static_cast<unsigned>(cell) > 0) {
+  if (static_cast<unsigned>(cell.index()) > 0) {
     const OverlayType overlay = TheMap().at(cell).Overlay;
 
     if (overlay != OVERLAY_NONE && TheMap().at(cell).Owner == Class->House) {
@@ -4238,9 +4239,9 @@ Coordinate HouseClass::Find_Build_Location(BuildingClass* building) const {
     }
   }
 
-  CELL zcell = Find_Cell_In_Zone(building, zone);
-  if (zcell) {
-    return Cell_Coord(zcell);
+  Cell zcell = Find_Cell_In_Zone(building, zone);
+  if (zcell.index() != 0) {
+    return zcell.Center();
   }
 
   /*
@@ -4253,8 +4254,8 @@ Coordinate HouseClass::Find_Build_Location(BuildingClass* building) const {
     const ZoneType tryzone =
         base::At(_zones, (zz + start) % std::ssize(_zones));
     zcell = Find_Cell_In_Zone(building, tryzone);
-    if (zcell) {
-      return Cell_Coord(zcell);
+    if (zcell.index() != 0) {
+      return zcell.Center();
     }
   }
 
@@ -6620,10 +6621,10 @@ ZoneType HouseClass::Which_Zone(const ObjectClass* object) const {
  *                                                                                             *
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
-ZoneType HouseClass::Which_Zone(CELL cell) const {
+ZoneType HouseClass::Which_Zone(Cell cell) const {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
-  return Which_Zone(Cell_Coord(cell));
+  return Which_Zone(cell.Center());
 }
 
 /***********************************************************************************************
@@ -6750,34 +6751,34 @@ void HouseClass::Recalc_Attributes() {
  *                                                                                             *
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
-CELL HouseClass::Zone_Cell(ZoneType zone) const {
+Cell HouseClass::Zone_Cell(ZoneType zone) const {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   switch (zone) {
     case ZONE_CORE:
-      return Coord_Cell(Center);
+      return Cell::Containing(Center);
 
     case ZONE_NORTH:
-      return Coord_Cell(
+      return Cell::Containing(
           Coord_Move(Center, game::DIR_N, static_cast<uint16_t>(Radius * 3)));
 
     case ZONE_EAST:
-      return Coord_Cell(
+      return Cell::Containing(
           Coord_Move(Center, game::DIR_E, static_cast<uint16_t>(Radius * 3)));
 
     case ZONE_WEST:
-      return Coord_Cell(
+      return Cell::Containing(
           Coord_Move(Center, game::DIR_W, static_cast<uint16_t>(Radius * 3)));
 
     case ZONE_SOUTH:
-      return Coord_Cell(
+      return Cell::Containing(
           Coord_Move(Center, game::DIR_S, static_cast<uint16_t>(Radius * 3)));
 
     case ZoneType::ZONE_NONE:
     default:
       break;
   }
-  return 0;
+  return Cell{};
 }
 
 /***********************************************************************************************
@@ -6796,7 +6797,7 @@ CELL HouseClass::Zone_Cell(ZoneType zone) const {
  * HISTORY: * 10/02/1995 JLB : Created. * 11/04/1996 JLB : Simplified to use
  *helper functions                                       *
  *=============================================================================================*/
-CELL HouseClass::Where_To_Go(const FootClass* object) const {
+Cell HouseClass::Where_To_Go(const FootClass* object) const {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
   CHECK_NE(object, nullptr);
 
@@ -6806,8 +6807,8 @@ CELL HouseClass::Where_To_Go(const FootClass* object) const {
           ? ZONE_CORE
           : Random_Pick(ZONE_NORTH, ZONE_WEST);
 
-  const CELL cell = Random_Cell_In_Zone(zone);
-  CHECK_NE(cell, 0);
+  const Cell cell = Random_Cell_In_Zone(zone);
+  CHECK_NE(cell.index(), 0);
 
   return TheMap().Nearby_Location(cell, SPEED_TRACK,
                                   TheMap().at(cell).Zones.at(MZONE_NORMAL),
@@ -7625,20 +7626,20 @@ void HouseClass::Update_Spied_Power_Plants() {
  * HISTORY: * 11/01/1996 JLB : Created. * 11/04/1996 JLB : Not so strict on zone
  *requirement.                                       *
  *=============================================================================================*/
-CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
+Cell HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
                                    ZoneType zone) const {
   if (techno == nullptr) {
-    return 0;
+    return Cell{};
   }
 
   int bestval = -1;
-  int bestcell = 0;
+  Cell bestcell{};
   const TechnoTypeClass* ttype = techno->Techno_Type_Class();
 
   /*
   **	Pick a random location within the zone specified.
   */
-  const CELL trycell = Random_Cell_In_Zone(zone);
+  const Cell trycell = Random_Cell_In_Zone(zone);
 
   std::span<const int16_t> list{};
   if (techno->What_Am_I() == RTTI_BUILDING) {
@@ -7649,7 +7650,8 @@ CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
   **	Find a legal placement position as close as possible to the picked
   *location while still *	remaining within the zone.
   */
-  for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+  for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+    const Cell cell = Cell::FromIndex(cell_index);
     //		if (Map.In_Radar(cell)) {
     if (TheMap().In_Radar(cell) && Which_Zone(cell) != ZONE_NONE) {
       bool ok = ttype->Legal_Placement(cell);
@@ -7664,7 +7666,7 @@ CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
       }
 
       if (ok) {
-        const int dist = Distance(Cell_Coord(cell), Cell_Coord(trycell));
+        const int dist = Distance(cell.Center(), trycell.Center());
         if (bestval == -1 || dist < bestval) {
           bestval = dist;
           bestcell = cell;
@@ -7676,7 +7678,7 @@ CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
   /*
   **	Return the best location to move to.
   */
-  return static_cast<CELL>(bestcell);
+  return bestcell;
 }
 
 /***********************************************************************************************
@@ -7695,7 +7697,7 @@ CELL HouseClass::Find_Cell_In_Zone(const TechnoClass* techno,
  *                                                                                             *
  * HISTORY: * 11/04/1996 JLB : Created. *
  *=============================================================================================*/
-CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
+Cell HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
   Coordinate coord{};
   int maxdist = 0;
   switch (zone) {
@@ -7765,14 +7767,14 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
   **	Double check that the location is valid and if so, convert it into a
   *cell *	number.
   */
-  CELL cell = 0;
-  if (!coord || !TheMap().In_Radar(Coord_Cell(coord))) {
+  Cell cell{};
+  if (!coord || !TheMap().In_Radar(Cell::Containing(coord))) {
     if (zone == ZONE_CORE) {
       /*
       **	Finding a cell within the core failed, so just pick the center
       **	cell. This cell is guaranteed to be valid.
       */
-      cell = Coord_Cell(Center);
+      cell = Cell::Containing(Center);
     } else {
       /*
       **	If the edge fails, then try to find a cell within the core.
@@ -7780,7 +7782,7 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
       cell = Random_Cell_In_Zone(ZONE_CORE);
     }
   } else {
-    cell = Coord_Cell(coord);
+    cell = Cell::Containing(coord);
   }
 
   /*
@@ -7788,11 +7790,11 @@ CELL HouseClass::Random_Cell_In_Zone(ZoneType zone) const {
   *it to *	the legal map area.
   */
   if (!TheMap().In_Radar(cell)) {
-    const int x = std::clamp(Cell_X(cell), TheMap().MapCellX,
+    const int x = std::clamp(cell.x(), TheMap().MapCellX,
                              TheMap().MapCellX + TheMap().MapCellWidth - 1);
-    const int y = std::clamp(Cell_Y(cell), TheMap().MapCellY,
+    const int y = std::clamp(cell.y(), TheMap().MapCellY,
                              TheMap().MapCellY + TheMap().MapCellHeight - 1);
-    cell = XY_Cell(x, y);
+    cell = Cell::FromXY(x, y);
   }
   return cell;
 }

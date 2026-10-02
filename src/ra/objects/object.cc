@@ -320,9 +320,9 @@ void ObjectClass::AI() {
 
       if (Class_Of().IsFootprint) {
         if (In_Which_Layer() == LAYER_GROUND) {
-          TheMap().Place_Down(Coord_Cell(Center_Coord()), this);
+          TheMap().Place_Down(Cell::Containing(Center_Coord()), this);
         } else {
-          TheMap().Pick_Up(Coord_Cell(Center_Coord()), this);
+          TheMap().Pick_Up(Cell::Containing(Center_Coord()), this);
         }
       }
     }
@@ -374,7 +374,7 @@ ActionType ObjectClass::What_Action(ObjectClass* /*unused*/) {
  *                                                                                             *
  * HISTORY: * 08/13/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType ObjectClass::What_Action(CELL /*unused*/) const {
+ActionType ObjectClass::What_Action(Cell /*unused*/) const {
   DCHECK(IsActive);
 
   return ACTION_NONE;
@@ -797,7 +797,7 @@ void ObjectClass::Active_Click_With(ActionType /*unused*/,
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Active_Click_With(ActionType /*unused*/, CELL /*unused*/) {
+void ObjectClass::Active_Click_With(ActionType /*unused*/, Cell /*unused*/) {
   DCHECK(IsActive);
 }
 
@@ -1037,7 +1037,7 @@ void ObjectClass::Move(game::FacingType facing) {
 
   Mark(MARK_UP);
   const Coordinate coord = Adjacent_Cell(Coord, facing);
-  if (Can_Enter_Cell(Coord_Cell(coord)) == game::MOVE_OK) {
+  if (Can_Enter_Cell(Cell::Containing(coord)) == game::MOVE_OK) {
     Coord = coord;
   }
   Mark(MARK_DOWN);
@@ -1307,7 +1307,8 @@ bool ObjectClass::Unlimbo(Coordinate coord, game::DirType /*unused*/) {
   DCHECK(IsActive);
   if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
-       Can_Enter_Cell(Coord_Cell(coord), game::FACING_NONE) == game::MOVE_OK)) {
+       Can_Enter_Cell(Cell::Containing(coord), game::FACING_NONE) ==
+           game::MOVE_OK)) {
     IsInLimbo = false;
     IsToDisplay = false;
     Coord = Class_Of().Coord_Fixup(coord);
@@ -1627,7 +1628,7 @@ bool ObjectClass::Mark(MarkType mark) {
     */
     if ((mark == MARK_OVERLAP_UP) && (static_cast<bool>(IsDown))) {
       if (Class_Of().IsFootprint) {
-        TheMap().Overlap_Up(Coord_Cell(Coord), this);
+        TheMap().Overlap_Up(Cell::Containing(Coord), this);
       }
       Mark_For_Redraw();
       return true;
@@ -1635,7 +1636,7 @@ bool ObjectClass::Mark(MarkType mark) {
 
     if ((mark == MARK_OVERLAP_DOWN) && (static_cast<bool>(IsDown))) {
       if (Class_Of().IsFootprint) {
-        TheMap().Overlap_Down(Coord_Cell(Coord), this);
+        TheMap().Overlap_Down(Cell::Containing(Coord), this);
       }
       Mark_For_Redraw();
       return true;
@@ -1647,13 +1648,13 @@ bool ObjectClass::Mark(MarkType mark) {
     */
     int threat = 0;
     HousesType house = HOUSE_NONE;
-    CELL cell = 0;
+    Cell cell{};
     TechnoClass* tech = nullptr;
     if (Is_Techno()) {
       tech = dynamic_cast<TechnoClass*>(this);
       threat = tech->Risk();
       house = tech->Owner();
-      cell = Coord_Cell(Coord);
+      cell = Cell::Containing(Coord);
     } else {
       tech = nullptr;
     }

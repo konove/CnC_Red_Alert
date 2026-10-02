@@ -302,12 +302,12 @@ const ObjectTypeClass& VesselClass::Class_Of() const {
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-game::MoveType VesselClass::Can_Enter_Cell(CELL cell,
+game::MoveType VesselClass::Can_Enter_Cell(Cell cell,
                                            game::FacingType /*from*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+  if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return game::MOVE_NO;
   }
 
@@ -594,7 +594,7 @@ void VesselClass::AI() {
   }
 
 #ifndef CLIPDRAW
-  if (TheMap().In_View(Coord_Cell(Center_Coord())) &&
+  if (TheMap().In_View(Cell::Containing(Center_Coord())) &&
       Visual_Character() != game::VISUAL_HIDDEN &&
       Visual_Character() != game::VISUAL_NORMAL) {
     Mark(MARK_CHANGE);
@@ -699,7 +699,7 @@ bool VesselClass::Per_Cell_Process(PCPType why) {
     if (IsToSelfRepair) {
       for (const game::FacingType face :
            magic_enum::enum_values<game::FacingType>()) {
-        const CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), face));
+        const Cell cell = Cell::Containing(Adjacent_Cell(Center_Coord(), face));
         const BuildingClass* whom = TheMap().at(cell).Cell_Building();
         if (whom != nullptr &&
             (*whom == STRUCT_SHIP_YARD || *whom == STRUCT_SUB_PEN)) {
@@ -764,7 +764,7 @@ ActionType VesselClass::What_Action(ObjectClass* object) {
           if (found) {
             break;
           }
-          const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
+          const Cell cellnum = Adjacent_Cell(Cell::Containing(Coord), face);
           const CellClass* cell = &TheMap().at(cellnum);
           if (!TheMap().In_Radar(cellnum) ||
               TheRules().ground().at(cell->Land_Type()).Cost.at(SPEED_FOOT) ==
@@ -875,7 +875,7 @@ void VesselClass::Active_Click_With(ActionType action, ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 04/16/1996 BWG : Created. *
  *=============================================================================================*/
-void VesselClass::Active_Click_With(ActionType action, CELL cell) {
+void VesselClass::Active_Click_With(ActionType action, Cell cell) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
@@ -1352,9 +1352,9 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         ** Before saying "Sure, come on board", make sure we're adjacent to
         ** the shore.
         */
-        CELL cell = 0;
+        Cell cell{};
         Desired_Load_Dir(from, cell);
-        if (cell) {
+        if (cell.index() != 0) {
           return RADIO_ROGER;
         }
       }
@@ -1435,14 +1435,14 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
         */
         if ((!IsDriving && !IsRotating) &&
             (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER)) {
-          CELL cell = 0;
+          Cell cell{};
           Desired_Load_Dir(from, cell);
 
           /*
           **	If no adjacent free cells are detected, then passenger loading
           **	cannot occur. Break radio contact.
           */
-          if (cell == 0) {
+          if (cell.index() == 0) {
             Transmit_Message(RADIO_OVER_OUT, from);
           } else {
             param = Target::FromCell(cell).packed();
@@ -1569,7 +1569,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
 game::DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
-                                            CELL& moveto) const {
+                                            Cell& moveto) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
@@ -1581,7 +1581,7 @@ game::DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
   for (const game::FacingType face :
        magic_enum::enum_values<game::FacingType>()) {
     int value = 0;
-    const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
+    const Cell cellnum = Adjacent_Cell(Cell::Containing(Coord), face);
 
     /*
     **	Base the initial value of the potential cell according to whether the
@@ -1591,7 +1591,7 @@ game::DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
     */
     if (passenger != nullptr) {
       value = passenger->Can_Enter_Cell(cellnum) == game::MOVE_OK ||
-                      Coord_Cell(passenger->Coord) == cellnum
+                      Cell::Containing(passenger->Coord) == cellnum
                   ? 128
                   : -128;
     } else {
@@ -1627,14 +1627,14 @@ game::DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
   /*
   **	If a suitable direction was found, then return with the direction value.
   */
-  moveto = 0;
+  moveto = Cell{};
   if (bestval > 0) {
     static constexpr base::EnumArray<game::FacingType, game::DirType>
         _desired_to_actual = {game::DIR_S,  game::DIR_SW, game::DIR_NW,
                               game::DIR_NW, game::DIR_NE, game::DIR_NE,
                               game::DIR_NE, game::DIR_SE};
 
-    moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
+    moveto = Adjacent_Cell(Cell::Containing(Coord), bestdir);
     return _desired_to_actual.at(bestdir);
   }
   return game::DIR_N;
@@ -1706,13 +1706,13 @@ int VesselClass::Mission_Unload() {
   constexpr int kUnloading = 3;
   constexpr int kClosingDoor = 4;
   game::DirType dir = game::DIR_N;
-  CELL cell = 0;
+  Cell cell{};
 
   if (Class->Type == VESSEL_TRANSPORT) {
     switch (Status) {
       case kInitialCheck:
         dir = Desired_Load_Dir(nullptr, cell);
-        if (How_Many() > 0 && cell != 0) {
+        if (How_Many() > 0 && cell.index() != 0) {
           Do_Turn(dir);
           Status = kManeuvering;
           return 1;
@@ -1760,7 +1760,8 @@ int VesselClass::Mission_Unload() {
             for (const game::FacingType face :
                  magic_enum::enum_values<game::FacingType>()) {
               const game::DirType newface = toface + game::Facing_Dir(face);
-              const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+              const Cell newcell =
+                  Adjacent_Cell(Cell::Containing(Coord), newface);
 
               if (passenger->Can_Enter_Cell(newcell) == game::MOVE_OK) {
                 TheWorld().scenario_init()++;
@@ -1905,12 +1906,12 @@ int VesselClass::Mission_Retreat() {
     case kPickRetreatPoint:
       IsALoaner = true;
       if (!NavCom) {
-        //				CELL cell =
+        //				Cell cell =
         // Map.Calculated_Cell(House->Control.Edge, (Team.Is_Valid()) ?
         // Team->Class->Origin : -1, -1, Class->Speed);
-        const CELL cell = TheMap().Calculated_Cell(
+        const Cell cell = TheMap().Calculated_Cell(
             House->Control.Edge, Team != nullptr ? Team->Class->Origin : -1,
-            Coord_Cell(Center_Coord()), Class->Speed);
+            Cell::Containing(Center_Coord()), Class->Speed);
         if (Team != nullptr) {
           Team->Remove(this);
         }
@@ -1989,9 +1990,10 @@ void VesselClass::Read_INI(CCINIClass& ini) {
           */
           const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
-          const CELL cell = base::ParseIntegerOr<CELL>(tokens.Next(), 0);
+          const Cell cell =
+              Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), 0));
 
-          const Coordinate coord = Cell_Coord(cell);
+          const Coordinate coord = cell.Center();
 
           const auto dir = static_cast<game::DirType>(
               base::ParseIntegerOr<int>(tokens.Next(), 0));
@@ -2073,7 +2075,7 @@ void VesselClass::Write_INI(CCINIClass& ini) {
       absl::SNPrintF(
           buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",
           vessel->House->Class->IniName, vessel->Class->IniName,
-          vessel->Health_Ratio() * 256, Coord_Cell(vessel->Coord),
+          vessel->Health_Ratio() * 256, Cell::Containing(vessel->Coord).index(),
           vessel->PrimaryFacing.Current(), Mission_Name(vessel->Mission),
           vessel->Trigger != nullptr ? vessel->Trigger->Class->IniName
                                      : "None");
@@ -2126,7 +2128,7 @@ bool VesselClass::Start_Driver(Coordinate& headto) {
  *                                                                                             *
  * HISTORY: * 07/11/1996 BWG : Created. *
  *=============================================================================================*/
-ActionType VesselClass::What_Action(CELL cell) const {
+ActionType VesselClass::What_Action(Cell cell) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
@@ -2263,7 +2265,7 @@ void VesselClass::Combat_AI() {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 bool VesselClass::Edge_Of_World_AI() {
-  if (!IsDriving && !TheMap().In_Radar(Coord_Cell(Coord)) && IsLocked) {
+  if (!IsDriving && !TheMap().In_Radar(Cell::Containing(Coord)) && IsLocked) {
     if (Team != nullptr) {
       Team->IsLeaveMap = true;
     }

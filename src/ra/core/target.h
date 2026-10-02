@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "ra/core/cell.h"
 #include "ra/core/coordinate.h"
-#include "ra/core/packed.h"
 #include "ra/core/rtti.h"
 
 namespace ra {
@@ -41,8 +41,8 @@ class VesselClass;
 //
 // RTTI_CELL has two value encodings, and nothing in the word says which one a
 // target holds:
-//   - the cell index, the CELL itself (FromCellIndex(); read by cell_index()
-//     and AsMovementCoordinate());
+//   - the cell index, Cell::index() itself (FromCellIndex(); read by
+//     cell_index() and AsMovementCoordinate());
 //   - a sub-cell spot, 12 bits per axis in units of 16 leptons, Y over X
 //     (FromCell(), FromCoordinate(), CellClass::As_Target(); read by
 //     AsCoordinate() and AsCell()).
@@ -83,16 +83,16 @@ class Target {
 
   // The cell index encoding: the cell number itself as the value, keeping
   // its low 24 bits, so cell -1 becomes 0xFFFFFF.
-  static constexpr Target FromCellIndex(CELL cell) noexcept {
-    return Make(RTTI_CELL, cell);
+  static constexpr Target FromCellIndex(Cell cell) noexcept {
+    return Make(RTTI_CELL, cell.index());
   }
 
   // The sub-cell encoding of a cell: the 16-lepton unit at its center.
-  // FromCell(cell) == FromCoordinate(Cell_Coord(cell)) for every cell.
-  static constexpr Target FromCell(CELL cell) noexcept {
+  // FromCell(cell) == FromCoordinate(cell.Center()) for every cell.
+  static constexpr Target FromCell(Cell cell) noexcept {
     return FromSubCell(
-        (static_cast<uint32_t>(Cell_X(cell)) * kUnitsPerCell) + kHalfCellUnits,
-        (static_cast<uint32_t>(Cell_Y(cell)) * kUnitsPerCell) + kHalfCellUnits);
+        (static_cast<uint32_t>(cell.x()) * kUnitsPerCell) + kHalfCellUnits,
+        (static_cast<uint32_t>(cell.y()) * kUnitsPerCell) + kHalfCellUnits);
   }
 
   // The sub-cell encoding of a coordinate: the 16-lepton unit it lies in.
@@ -121,8 +121,8 @@ class Target {
 
   // Reads the value as a cell index, the encoding FromCellIndex() writes:
   // its low 16 bits, so 0xFFFFFF reads back as cell -1.
-  [[nodiscard]] constexpr CELL cell_index() const noexcept {
-    return static_cast<CELL>(value());
+  [[nodiscard]] constexpr Cell cell_index() const noexcept {
+    return Cell::FromIndex(value());
   }
 
   // True when the kind is not RTTI_NONE. See the class comment for how this
@@ -197,7 +197,7 @@ class Target {
   [[nodiscard]] Coordinate AsCoordinate() const;
 
   // Returns the cell AsCoordinate() lies in.
-  [[nodiscard]] CELL AsCell() const;
+  [[nodiscard]] Cell AsCell() const;
 
   // Returns where a unit moving to this target heads: for a cell target, the
   // center of the cell, reading the cell index encoding; for an object, its

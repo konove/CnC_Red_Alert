@@ -82,7 +82,7 @@ class DriveClass : public FootClass {
   ** This is the coord the unit will be taken back to once its moebius
   ** effect wears off.
   */
-  CELL MoebiusCell = 0;
+  Cell MoebiusCell{};
 
   /*
   **	Some units must have their turret locked down to face their body
@@ -122,7 +122,7 @@ class DriveClass : public FootClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  bool Teleport_To(CELL cell);
+  bool Teleport_To(Cell cell);
   void Response_Select() override;
   void Response_Move() override;
   void Response_Attack() override;
@@ -130,7 +130,7 @@ class DriveClass : public FootClass {
                bool nokidding = false) override;
   bool Limbo() override;
   void Do_Turn(game::DirType dir);
-  virtual void Overrun_Square(CELL /*unused*/, bool /*unused*/ = true) {}
+  virtual void Overrun_Square(Cell /*unused*/, bool /*unused*/ = true) {}
   void Assign_Destination(Target target) override;
   [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   virtual bool Ok_To_Move(game::DirType /*unused*/);

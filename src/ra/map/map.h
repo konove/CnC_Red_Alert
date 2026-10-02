@@ -82,32 +82,32 @@ class MapClass : public GScreenClass {
   *with the cell
   ** as it relates to the map - not what the cell contains.
   */
-  [[nodiscard]] static CELL Pick_Random_Location();
+  [[nodiscard]] static Cell Pick_Random_Location();
   [[nodiscard]] int Intact_Bridge_Count() const;
-  bool Base_Region(CELL cell, HousesType& house, ZoneType& zone) const;
-  [[nodiscard]] CELL Nearby_Location(CELL cell, SpeedType speed, int zone = -1,
+  bool Base_Region(Cell cell, HousesType& house, ZoneType& zone) const;
+  [[nodiscard]] Cell Nearby_Location(Cell cell, SpeedType speed, int zone = -1,
                                      MZoneType check = MZONE_NORMAL) const;
   [[nodiscard]] ObjectClass* Close_Object(Coordinate coord) const;
   virtual void Detach(ObjectClass* /*unused*/) {}
-  static int Cell_Region(CELL cell);
-  static int Cell_Threat(CELL cell, HousesType house);
-  [[nodiscard]] bool In_Radar(CELL cell) const;
-  void Sight_From(CELL cell, int sightrange, HouseClass* house,
+  static int Cell_Region(Cell cell);
+  static int Cell_Threat(Cell cell, HousesType house);
+  [[nodiscard]] bool In_Radar(Cell cell) const;
+  void Sight_From(Cell cell, int sightrange, HouseClass* house,
                   bool incremental = false);
-  static void Jam_From(CELL cell, int jamrange, HouseClass* house);
-  static void UnJam_From(CELL cell, int jamrange, HouseClass* house);
-  void Place_Down(CELL cell, ObjectClass* object);
-  void Pick_Up(CELL cell, ObjectClass* object);
-  void Overlap_Down(CELL cell, ObjectClass* object);
-  void Overlap_Up(CELL cell, ObjectClass* object);
+  static void Jam_From(Cell cell, int jamrange, HouseClass* house);
+  static void UnJam_From(Cell cell, int jamrange, HouseClass* house);
+  void Place_Down(Cell cell, ObjectClass* object);
+  void Pick_Up(Cell cell, ObjectClass* object);
+  void Overlap_Down(Cell cell, ObjectClass* object);
+  void Overlap_Up(Cell cell, ObjectClass* object);
   bool Read_Binary(ByteSource& straw);
   bool Write_Binary(ByteSink& pipe);
   bool Place_Random_Crate();
-  bool Remove_Crate(CELL cell);
+  bool Remove_Crate(Cell cell);
   bool Zone_Reset(uint32_t method);
-  bool Zone_Cell(CELL cell, int zone);
-  int Zone_Span(CELL cell, int zone, MZoneType check);
-  bool Destroy_Bridge_At(CELL cell);
+  bool Zone_Cell(Cell cell, int zone);
+  int Zone_Span(Cell cell, int zone, MZoneType check);
+  bool Destroy_Bridge_At(Cell cell);
   void Detach(Target target, bool all = true);
   void Shroud_The_Map();
 
@@ -138,30 +138,30 @@ class MapClass : public GScreenClass {
 
   // Resolves a coordinate or cell ID through the checked cell array.
   CellClass& at(Coordinate coord) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return base::At(cells_, Coord_Cell(coord));
+    return base::At(cells_, Cell::Containing(coord).index());
   }
   CellClass& operator[](Coordinate coord) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(coord);
   }
-  CellClass& at(CELL cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return base::At(cells_, cell);
+  CellClass& at(Cell cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(cells_, cell.index());
   }
-  CellClass& operator[](CELL cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  CellClass& operator[](Cell cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(cell);
   }
   [[nodiscard]] const CellClass& at(Coordinate coord) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return base::At(cells_, Coord_Cell(coord));
+    return base::At(cells_, Cell::Containing(coord).index());
   }
   const CellClass& operator[](Coordinate coord) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(coord);
   }
-  [[nodiscard]] const CellClass& at(CELL cell) const
+  [[nodiscard]] const CellClass& at(Cell cell) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return base::At(cells_, cell);
+    return base::At(cells_, cell.index());
   }
-  const CellClass& operator[](CELL cell) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  const CellClass& operator[](Cell cell) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return at(cell);
   }
   // Returns the number of the cell `cell` points to, which must be one of
@@ -171,7 +171,7 @@ class MapClass : public GScreenClass {
   }
 
  protected:
-  // The map's cells, indexed by CELL.
+  // The map's cells, indexed by Cell::index().
   std::vector<CellClass> cells_;
 
   /*
@@ -197,7 +197,7 @@ class MapClass : public GScreenClass {
   /*
   **	Tiberium growth potential cells are recorded here.
   */
-  CELL TiberiumGrowth[MAP_CELL_W / 2]{};
+  Cell TiberiumGrowth[MAP_CELL_W / 2]{};
   int TiberiumGrowthCount = 0;
   int TiberiumGrowthExcess = 0;
 
@@ -205,14 +205,14 @@ class MapClass : public GScreenClass {
   **	List of cells that are full enough strength that they could spread
   **	Tiberium to adjacent cells.
   */
-  CELL TiberiumSpread[MAP_CELL_W / 2]{};
+  Cell TiberiumSpread[MAP_CELL_W / 2]{};
   int TiberiumSpreadCount = 0;
   int TiberiumSpreadExcess = 0;
 
   /*
   **	This is the current cell number in the incremental map scan process.
   */
-  CELL TiberiumScan = 0;
+  Cell TiberiumScan{};
 
   static constexpr int kScanAmount = MAP_CELL_TOTAL;
 };

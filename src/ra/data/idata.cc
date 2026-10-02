@@ -73,7 +73,6 @@
 #include "ra/assets/shape_draw.h"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
@@ -1110,11 +1109,10 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
+bool InfantryTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* i = base::NewPooled<InfantryClass>(Type, house);
   if (i != nullptr) {
-    const Coordinate coord =
-        TheMap().at(cell).Closest_Free_Spot(Cell_Coord(cell));
+    const Coordinate coord = TheMap().at(cell).Closest_Free_Spot(cell.Center());
     if (coord) {
       return i->Unlimbo(coord, game::DIR_E);
     }

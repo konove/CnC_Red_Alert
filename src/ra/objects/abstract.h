@@ -109,8 +109,8 @@ class AbstractClass {
     return ra::Direction(Center_Coord(), coord);
   }
   [[nodiscard]] game::DirType Direction(Target target) const;
-  [[nodiscard]] game::DirType Direction(const CELL cell) const {
-    return ra::Direction(Coord_Cell(Center_Coord()), cell);
+  [[nodiscard]] game::DirType Direction(const Cell cell) const {
+    return ra::Direction(Cell::Containing(Center_Coord()), cell);
   }
 
   // Returns distance in leptons to the target. For buildings, subtracts
@@ -124,7 +124,7 @@ class AbstractClass {
   }
 
   [[nodiscard]] virtual game::MoveType Can_Enter_Cell(
-      CELL /*unused*/, game::FacingType /*unused*/ = game::FACING_NONE) const {
+      Cell /*unused*/, game::FacingType /*unused*/ = game::FACING_NONE) const {
     return game::MOVE_OK;
   }
 

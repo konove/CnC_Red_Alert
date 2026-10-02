@@ -176,9 +176,11 @@ BulletClass::~BulletClass() {
         // This asks the bullet, which inherits AbstractClass's
         // always-MOVE_OK Can_Enter_Cell, so the fallback never runs. The loop
         // below does the real legality check through Unlimbo.
-        if (Can_Enter_Cell(Coord_Cell(newcoord)) != game::MOVE_OK) {
-          newcoord = Cell_Coord(TheMap().Nearby_Location(Coord_Cell(newcoord),
-                                                         dog->Class->Speed));
+        if (Can_Enter_Cell(Cell::Containing(newcoord)) != game::MOVE_OK) {
+          newcoord = TheMap()
+                         .Nearby_Location(Cell::Containing(newcoord),
+                                          dog->Class->Speed)
+                         .Center();
         }
 
         /*
@@ -319,7 +321,7 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
     static int16_t _list[25];
     std::span<const int16_t> ptr = Coord_Spillage_List(Coord, 5);
     int index = 0;
-    const CELL cell1 = Coord_Cell(Coord);
+    const Cell cell1 = Cell::Containing(Coord);
 
     while (base::At(ptr, base::ToSize(index)) != kRefreshEol) {
       base::At(_list, index) = base::At(ptr, base::ToSize(index));
@@ -328,11 +330,11 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
 
     const Coordinate coord =
         Coord_Move(Coord, game::DIR_N, static_cast<uint16_t>(Height));
-    const CELL cell2 = Coord_Cell(coord);
+    const Cell cell2 = Cell::Containing(coord);
     ptr = Coord_Spillage_List(coord, 5);
     while (ptr.front() != kRefreshEol) {
       base::At(_list, index++) =
-          static_cast<int16_t>(ptr.front() + (cell2 - cell1));
+          static_cast<int16_t>(ptr.front() + (cell2.index() - cell1.index()));
       ptr = ptr.subspan(1);
     }
     base::At(_list, index) = kRefreshEol;
@@ -363,7 +365,7 @@ bool BulletClass::Mark(MarkType mark) {
 
   if (ObjectClass::Mark(mark)) {
     if (!Class->IsInvisible) {
-      TheMap().Refresh_Cells(Coord_Cell(Coord), Occupy_List());
+      TheMap().Refresh_Cells(Cell::Containing(Coord), Occupy_List());
     }
     return true;
   }
@@ -448,7 +450,8 @@ void BulletClass::AI() {
           if (!TheMap().Is_Radar_Active()) {
             TheMap().Radar_Activate(1);
           }
-          for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+          for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+            const Cell cell = Cell::FromIndex(cell_index);
             TheMap().Map_Cell(cell, ThePlayer());
           }
           TheMap().RadarClass::Flag_To_Redraw(true);
@@ -929,7 +932,7 @@ bool BulletClass::Is_Forced_To_Explode(Coordinate& coord) const {
   */
   if (!Class->IsHigh && cellptr->Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(cellptr->Overlay).IsHigh) {
-    coord = Cell_Coord(Coord_Cell(coord));
+    coord = Cell::Containing(coord).Center();
     return true;
   }
 
@@ -1059,7 +1062,8 @@ void BulletClass::Bullet_Explodes(bool forced) {
   */
   if ((anim >= ANIM_WATER_EXP1 && anim <= ANIM_WATER_EXP3 &&
        TarCom.kind() == RTTI_VESSEL) &&
-      (Coord_Cell(Coord) == Coord_Cell(TarCom.AsVessel()->Center_Coord()))) {
+      (Cell::Containing(Coord) ==
+       Cell::Containing(TarCom.AsVessel()->Center_Coord()))) {
     anim = static_cast<AnimType>(
         static_cast<int>(ANIM_VEH_HIT1) +
         (static_cast<int>(anim) - static_cast<int>(ANIM_WATER_EXP1)));
@@ -1078,7 +1082,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
       if (Payback) {
         house = Payback->House->Class->House;
       }
-      AnimClass::Do_Atom_Damage(house, Coord_Cell(Coord));
+      AnimClass::Do_Atom_Damage(house, Cell::Containing(Coord));
     }
   }
 
@@ -1089,7 +1093,8 @@ void BulletClass::Bullet_Explodes(bool forced) {
       if (!TheMap().Is_Radar_Active()) {
         TheMap().Radar_Activate(1);
       }
-      for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+      for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+        const Cell cell = Cell::FromIndex(cell_index);
         TheMap().Map_Cell(cell, ThePlayer());
       }
       TheMap().RadarClass::Flag_To_Redraw(true);

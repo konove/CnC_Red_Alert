@@ -3279,10 +3279,10 @@ void BuildingTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-bool BuildingTypeClass::Create_And_Place(CELL cell, HousesType house) const {
+bool BuildingTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* ptr = base::NewPooled<BuildingClass>(Type, house);
   if (ptr != nullptr) {
-    return ptr->Unlimbo(Cell_Coord(cell), game::DIR_N);
+    return ptr->Unlimbo(cell.Center(), game::DIR_N);
   }
   return false;
 }
@@ -3456,7 +3456,7 @@ BuildingTypeClass& BuildingTypeClass::As_Reference(StructType type) {
  *=============================================================================================*/
 std::span<const int16_t> BuildingTypeClass::Occupy_List(bool placement) const {
   SmudgeType bib = SMUDGE_NONE;
-  CELL cell = 0;
+  Cell cell{};
 
   if (placement && Bib_And_Offset(bib, cell)) {
     const SmudgeTypeClass& smudge = SmudgeTypeClass::As_Reference(bib);
@@ -3469,7 +3469,7 @@ std::span<const int16_t> BuildingTypeClass::Occupy_List(bool placement) const {
     std::span<const int16_t> src = smudge.Occupy_List();
     while (src.front() != kRefreshEol) {
       base::ConsumeFront(dest) =
-          static_cast<int16_t>(base::ConsumeFront(src) + cell);
+          static_cast<int16_t>(base::ConsumeFront(src) + cell.index());
     }
 
     /*
@@ -3578,7 +3578,7 @@ int BuildingTypeClass::Height(bool bib) const {
  *                                                                                             *
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
-bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
+bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, Cell& cell) const {
   bib = SMUDGE_NONE;
 
   if (IsBibbed) {
@@ -3605,7 +3605,7 @@ bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
     **	of the building art itself.
     */
     if (bib != SMUDGE_NONE) {
-      cell = static_cast<CELL>(cell + ((Height() - 1) * MAP_CELL_W));
+      cell = cell.Offset((Height() - 1) * MAP_CELL_W);
     }
   }
   return bib != SMUDGE_NONE;
@@ -3705,14 +3705,14 @@ int BuildingTypeClass::Cost_Of() const {
  *                                                                                             *
  * HISTORY: * 09/27/1995 JLB : Created. *
  *=============================================================================================*/
-bool BuildingTypeClass::Flush_For_Placement(CELL cell,
+bool BuildingTypeClass::Flush_For_Placement(Cell cell,
                                             HouseClass* house) const {
   bool again = false;
-  if (cell > 0) {
+  if (cell.index() > 0) {
     std::span<const int16_t> list = Occupy_List(true);
 
     while (list.front() != kRefreshEol) {
-      const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
+      const Cell newcell = cell.Offset(base::ConsumeFront(list));
 
       if (TheMap().In_Radar(newcell)) {
         TechnoClass* occupier = TheMap().at(newcell).Cell_Techno();

@@ -82,9 +82,7 @@
 #include "ra/assets/screen.h"
 #include "ra/assets/theme.h"
 #include "ra/core/const.h"
-#include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
 #include "ra/data/ini.h"
@@ -264,15 +262,17 @@ int MapEditClass::New_Scenario() {
   **	Set the Home & Reinforcement Cells to the center of the map
   */
   base::At(TheScenario().Waypoint, ScenarioClass::kReinforcementWaypoint) =
-      XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
-  base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) =
-      XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
+      Cell::FromXY(MapCellX + (MapCellWidth / 2),
+                   MapCellY + (MapCellHeight / 2));
+  base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) = Cell::FromXY(
+      MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   (*this).at(TacticalCoord).IsWaypoint = true;
-  Flag_Cell(Coord_Cell(TacticalCoord));
+  Flag_Cell(Cell::Containing(TacticalCoord));
 
-  Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
-      base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) -
-      (MAP_CELL_W * 8) - 10)));
+  Set_Tactical_Position(
+      base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)
+          .Offset(-(MAP_CELL_W * 8) - 10)
+          .Center());
   TheWorld().scenario_init()--;
 
   return 0;
@@ -1258,12 +1258,12 @@ int MapEditClass::Load_Scenario() {
           /*
           **	Draw Land map symbols (use color according to Ground[] array).
           */
-          for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+          for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+            const Cell cell = Cell::FromIndex(cell_index);
             occupier = (*this).at(cell).Cell_Occupier();
             if (occupier == nullptr) {
               color = GroundColor.at((*this).at(cell).Land_Type());
-              view.PutPixel(kDBordX1 + Cell_X(cell) + 1,
-                            kDBordY1 + Cell_Y(cell) + 1,
+              view.PutPixel(kDBordX1 + cell.x() + 1, kDBordY1 + cell.y() + 1,
                             static_cast<unsigned char>(color));
             }
           }
@@ -1306,7 +1306,8 @@ int MapEditClass::Load_Scenario() {
           **	that specified in the house type class object.
           **	DKGREEN = terrain object
           */
-          for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+          for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+            const Cell cell = Cell::FromIndex(cell_index);
             occupier = (*this).at(cell).Cell_Occupier();
             if (occupier) {
               color = DKGREEN;
@@ -1317,8 +1318,7 @@ int MapEditClass::Load_Scenario() {
                                     ->RemapColor)
                             .Color;
               }
-              view.PutPixel(kDBordX1 + Cell_X(cell) + 1,
-                            kDBordY1 + Cell_Y(cell) + 1,
+              view.PutPixel(kDBordX1 + cell.x() + 1, kDBordY1 + cell.y() + 1,
                             static_cast<unsigned char>(color));
             }
           }
@@ -1326,15 +1326,16 @@ int MapEditClass::Load_Scenario() {
           /*
           **	Draw Home location
           */
-          view.PutPixel(kDBordX1 +
-                            Cell_X(base::At(TheScenario().Waypoint,
-                                            ScenarioClass::kHomeWaypoint)) +
-                            1,
-                        kDBordY1 +
-                            Cell_Y(base::At(TheScenario().Waypoint,
-                                            ScenarioClass::kHomeWaypoint)) +
-                            1,
-                        kWhite);
+          view.PutPixel(
+              kDBordX1 +
+                  base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)
+                      .x() +
+                  1,
+              kDBordY1 +
+                  base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)
+                      .y() +
+                  1,
+              kWhite);
 
           /*
           **	Draw the coordinates
@@ -1574,35 +1575,39 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Clip Home Cell to new map size
     */
-    if (Cell_X(base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)) <
+    if (base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint).x() <
         MapCellX) {
       base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) =
-          XY_Cell(MapCellX, Cell_Y(base::At(TheScenario().Waypoint,
-                                            ScenarioClass::kHomeWaypoint)));
+          Cell::FromXY(MapCellX, base::At(TheScenario().Waypoint,
+                                          ScenarioClass::kHomeWaypoint)
+                                     .y());
     }
 
-    if (Cell_X(base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)) >
+    if (base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint).x() >
         MapCellX + MapCellWidth - 1) {
       base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) =
-          XY_Cell(MapCellX + MapCellWidth - 1,
-                  Cell_Y(base::At(TheScenario().Waypoint,
-                                  ScenarioClass::kHomeWaypoint)));
+          Cell::FromXY(
+              MapCellX + MapCellWidth - 1,
+              base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)
+                  .y());
     }
 
-    if (Cell_Y(base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)) <
+    if (base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint).y() <
         MapCellY) {
       base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) =
-          XY_Cell(Cell_X(base::At(TheScenario().Waypoint,
-                                  ScenarioClass::kHomeWaypoint)),
-                  MapCellY);
+          Cell::FromXY(
+              base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)
+                  .x(),
+              MapCellY);
     }
 
-    if (Cell_Y(base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)) >
+    if (base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint).y() >
         MapCellY + MapCellHeight - 1) {
       base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) =
-          XY_Cell(Cell_X(base::At(TheScenario().Waypoint,
-                                  ScenarioClass::kHomeWaypoint)),
-                  MapCellY + MapCellHeight - 1);
+          Cell::FromXY(
+              base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)
+                  .x(),
+              MapCellY + MapCellHeight - 1);
     }
 
     return 0;
@@ -2416,17 +2421,18 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Loop through all cells
       */
-      for (CELL i = 0; i < MAP_CELL_TOTAL; i++) {
+      for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+        const Cell cell = Cell::FromIndex(cell_index);
         /*
         **	If this cell has a template icon & that template isn't
         *compatible *	with this theater, set the icon to NONE
         */
-        if ((*this).at(i).TType != TEMPLATE_NONE) {
+        if ((*this).at(cell).TType != TEMPLATE_NONE) {
           theater_mask =
-              TemplateTypeClass::As_Reference((*this).at(i).TType).Theater;
+              TemplateTypeClass::As_Reference((*this).at(cell).TType).Theater;
           if ((theater_mask & base::Bit<uint32_t>(theater)) == 0) {
-            (*this).at(i).TType = TEMPLATE_NONE;
-            (*this).at(i).TIcon = 0;
+            (*this).at(cell).TType = TEMPLATE_NONE;
+            (*this).at(cell).TIcon = 0;
           }
         }
 
@@ -2435,7 +2441,7 @@ int MapEditClass::Load_Scenario() {
         *compatible *	with this theater, delete the terrain object.
         */
         TerrainClass* terrain =
-            (*this).at(i).Cell_Terrain();  // cell's terrain pointer
+            (*this).at(cell).Cell_Terrain();  // cell's terrain pointer
         if (terrain != nullptr) {
           theater_mask = terrain->Class->Theater;
           if ((theater_mask & base::Bit<uint32_t>(theater)) == 0) {

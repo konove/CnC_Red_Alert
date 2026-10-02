@@ -564,7 +564,7 @@ int AircraftTypeClass::Max_Pips() const {
  *                                                                                             *
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
-bool AircraftTypeClass::Create_And_Place(CELL /*unused*/,
+bool AircraftTypeClass::Create_And_Place(Cell /*unused*/,
                                          HousesType /*unused*/) const {
   return false;
 }

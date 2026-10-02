@@ -80,7 +80,7 @@ class TemplateClass : public ObjectClass {
     return ptr;
   }
   void operator delete(void* ptr);
-  explicit TemplateClass(TemplateType type, CELL pos = -1);
+  explicit TemplateClass(TemplateType type, Cell pos = Cell::None());
   ~TemplateClass() override {
     if (TheGameState().active()) {
       TemplateClass::Limbo();
@@ -103,7 +103,7 @@ class TemplateClass : public ObjectClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  int Icon_Number(CELL cell);
+  int Icon_Number(Cell cell);
 
   /*
   **	Display and rendering support functionality. Supports imagery and how

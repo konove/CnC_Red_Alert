@@ -47,7 +47,6 @@
 #include "ra/core/config.h"
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/debug/debug_state.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"
@@ -296,14 +295,14 @@ const char* VocName(const VocType voc) {
 
 void PlaySoundEffectAt(const VocType voc, const Coordinate coord,
                        const int variation, const HousesType house) {
-  CELL cell = 0;
+  Cell cell{};
 
   if (TheDebugState().quiet() || TheOptions().Volume == 0 || voc == VOC_NONE ||
       !TheGameState().sound_on() || !engine::audio::TheAudio().is_open()) {
     return;
   }
   if (coord) {
-    cell = Coord_Cell(coord);
+    cell = Cell::Containing(coord);
   }
 
   // A sound on screen, or with no location, plays at full volume.

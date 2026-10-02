@@ -533,7 +533,7 @@ class HouseClass {
   ** This is the flag-home-cell for this house.  This is where we must bring
   ** another house's flag back to, to defeat that house.
   */
-  CELL FlagHome = 0;
+  Cell FlagHome{};
 
   /*
   ** For multiplayer games, each house needs to keep track of how many
@@ -678,7 +678,7 @@ class HouseClass {
   /*---------------------------------------------------------------------
   **	Member function prototypes.
   */
-  [[nodiscard]] CELL Random_Cell_In_Zone(ZoneType zone) const;
+  [[nodiscard]] Cell Random_Cell_In_Zone(ZoneType zone) const;
   static void Computer_Paranoid();
   [[nodiscard]] bool Is_Allowed_To_Ally(HousesType house) const;
   void Do_All_To_Hunt() const;
@@ -689,23 +689,23 @@ class HouseClass {
   [[nodiscard]] int Factory_Count(RTTIType rtti) const;
   DiffType Assign_Handicap(DiffType handicap);
   [[nodiscard]] Target Find_Juicy_Target(Coordinate coord) const;
-  CELL Where_To_Go(const FootClass* object) const;
-  [[nodiscard]] CELL Zone_Cell(ZoneType zone) const;
+  Cell Where_To_Go(const FootClass* object) const;
+  [[nodiscard]] Cell Zone_Cell(ZoneType zone) const;
   [[nodiscard]] ZoneType Which_Zone(Coordinate coord) const;
   ZoneType Which_Zone(const ObjectClass* object) const;
-  [[nodiscard]] ZoneType Which_Zone(CELL cell) const;
-  CELL Find_Cell_In_Zone(const TechnoClass* techno, ZoneType zone) const;
+  [[nodiscard]] ZoneType Which_Zone(Cell cell) const;
+  Cell Find_Cell_In_Zone(const TechnoClass* techno, ZoneType zone) const;
   game::ProdFailType Begin_Production(RTTIType type, int id);
   game::ProdFailType Suspend_Production(RTTIType type);
   game::ProdFailType Abandon_Production(RTTIType type);
-  bool Place_Object(RTTIType type, CELL cell);
+  bool Place_Object(RTTIType type, Cell cell);
   bool Manual_Place(BuildingClass* builder, BuildingClass* object);
   void Special_Weapon_AI(SpecialWeaponType id);
   // Fires special weapon `id` at `cell`. `where` is the sub-cell coordinate
   // it was aimed at; the Iron Curtain and the Chronosphere take the unit
   // nearest it.
-  bool Place_Special_Blast(SpecialWeaponType id, CELL cell, Coordinate where);
-  bool Flag_Attach(CELL cell, bool set_home = false);
+  bool Place_Special_Blast(SpecialWeaponType id, Cell cell, Coordinate where);
+  bool Flag_Attach(Cell cell, bool set_home = false);
   bool Flag_Attach(UnitClass* object, bool set_home = false);
   bool Flag_Remove(Target target, bool set_home = false);
   void Init_Data(PlayerColorType color, HousesType house, int credits);
@@ -719,7 +719,7 @@ class HouseClass {
   [[nodiscard]] bool Is_No_YakMig() const;
   int Expert_AI();
   void Production_Begun(const TechnoClass* product);
-  void Sell_Wall(CELL cell);
+  void Sell_Wall(Cell cell);
   bool Flag_To_Die();
   bool Flag_To_Win();
   bool Flag_To_Lose();
@@ -854,7 +854,7 @@ class HouseClass {
   **	This count down timer class decrements and then changes
   ** the Atomic Bomb state.
   */
-  CELL NukeDest = 0;
+  Cell NukeDest{};
 
   /*
   ** This routine completely removes this house & all its objects from the game.

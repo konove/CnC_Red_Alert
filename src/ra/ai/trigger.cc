@@ -71,7 +71,6 @@
 #include "ra/core/defines.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
-#include "ra/core/packed.h"
 #include "ra/core/target.h"
 #include "ra/map/world.h"
 #include "ra/objects/cell.h"
@@ -255,7 +254,7 @@ void TriggerClass::Init() { TheObjectHeaps().trigger().FreeAll(); }
  * HISTORY: * 05/31/1996 JLB : Created. * 08/13/1996 JLB : Linked triggers
  *supported.                                               *
  *=============================================================================================*/
-bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
+bool TriggerClass::Spring(TEventType event, ObjectClass* obj, ra::Cell cell,
                           bool forced) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().trigger(), this);
 
@@ -314,7 +313,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
       if (obj) {
         obj->Trigger = nullptr;
       }
-      if (cell) {
+      if (cell.index() != 0) {
         TheMap().at(cell).Trigger = nullptr;
       }
 

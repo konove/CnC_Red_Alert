@@ -570,7 +570,7 @@ void UnitClass::Rotation_AI() {
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
 bool UnitClass::Edge_Of_World_AI() {
-  if (Mission == MISSION_GUARD && !TheMap().In_Radar(Coord_Cell(Coord)) &&
+  if (Mission == MISSION_GUARD && !TheMap().In_Radar(Cell::Containing(Coord)) &&
       IsLocked) {
     if (Team != nullptr) {
       Team->IsLeaveMap = true;
@@ -815,14 +815,14 @@ RadioMessageType UnitClass::Receive_Message(RadioClass* from,
         */
         if ((!IsDriving && !IsRotating && !IsTethered) &&
             (Transmit_Message(RADIO_NEED_TO_MOVE, from) == RADIO_ROGER)) {
-          CELL cell = 0;
+          Cell cell{};
           const game::DirType dir = Desired_Load_Dir(from, cell);
 
           /*
           **	If no adjacent free cells are detected, then passenger loading
           **	cannot occur. Break radio contact.
           */
-          if (cell == 0) {
+          if (cell.index() == 0) {
             Transmit_Message(RADIO_OVER_OUT, from);
           } else {
             param = Target::FromCell(cell).packed();
@@ -1120,8 +1120,8 @@ game::ResultType UnitClass::Take_Damage(int& damage, int distance,
     **	if the scenario so indicates and there is room.
     */
     if (TheScenario().IsTruckCrate && *this == UNIT_TRUCK) {
-      const CELL cell = Nearby_Location();
-      if (cell != 0) {
+      const Cell cell = Nearby_Location();
+      if (cell.index() != 0) {
         base::NewPooled<OverlayClass>(OVERLAY_WOOD_CRATE, cell);
       }
     }
@@ -1301,7 +1301,7 @@ void UnitClass::Active_Click_With(ActionType action, ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Active_Click_With(ActionType action, CELL cell) {
+void UnitClass::Active_Click_With(ActionType action, Cell cell) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -1424,8 +1424,8 @@ bool UnitClass::Goto_Clear_Spot() {
 
   Mark(MARK_UP);
   if (!NavCom && BuildingTypeClass::As_Reference(STRUCT_CONST)
-                     .Legal_Placement(Adjacent_Cell(Coord_Cell(Center_Coord()),
-                                                    game::FACING_NW))) {
+                     .Legal_Placement(Adjacent_Cell(
+                         Cell::Containing(Center_Coord()), game::FACING_NW))) {
     Mark(MARK_DOWN);
     return true;
   }
@@ -1455,9 +1455,8 @@ bool UnitClass::Goto_Clear_Spot() {
 
     std::span<const int> ptr(_offsets);
     while (ptr.front()) {
-      const CELL cell =
-          static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(ptr));
-      const CELL check_cell = Adjacent_Cell(cell, game::FACING_NW);
+      const Cell cell = Cell::Containing(Coord).Offset(base::ConsumeFront(ptr));
+      const Cell check_cell = Adjacent_Cell(cell, game::FACING_NW);
       if (BuildingTypeClass::As_Reference(STRUCT_CONST)
               .Legal_Placement(check_cell)) {
         Assign_Destination(Target::FromCell(cell));
@@ -1509,8 +1508,8 @@ bool UnitClass::Try_To_Deploy() {
       *tell the *	player.
       */
       Mark(MARK_UP);
-      const CELL cell =
-          Coord_Cell(Adjacent_Cell(Center_Coord(), game::FACING_NW));
+      const Cell cell =
+          Cell::Containing(Adjacent_Cell(Center_Coord(), game::FACING_NW));
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
                .Legal_Placement(cell)) {
         if (ThePlayer() == House) {
@@ -1638,7 +1637,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
-  const CELL cell = Coord_Cell(Coord);
+  const Cell cell = Cell::Containing(Coord);
 
   /*
   **	Check to see if this is merely the end of a rotation for the MCV as it
@@ -1660,8 +1659,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
     TechnoClass* whom = Contact_With_Whom();
     if ((IsTethered && whom != nullptr) &&
         (whom->What_Am_I() == RTTI_BUILDING && Mission == MISSION_ENTER) &&
-        (whom ==
-         TheMap().at(static_cast<CELL>(cell - MAP_CELL_W)).Cell_Building())) {
+        (whom == TheMap().at(cell.Offset(-MAP_CELL_W)).Cell_Building())) {
       switch (Transmit_Message(RADIO_IM_IN, whom)) {
         case RADIO_ROGER:
         case RADIO_ATTACH:
@@ -1711,7 +1709,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
     */
     TechnoClass* techno = Contact_With_Whom();
     if (Mission == MISSION_ENTER && techno &&
-        Coord_Cell(Coord) == Coord_Cell(techno->Coord) &&
+        Cell::Containing(Coord) == Cell::Containing(techno->Coord) &&
         techno == NavCom.AsTechno()) {
       if (Transmit_Message(RADIO_IM_IN) == RADIO_ATTACH) {
         Limbo();
@@ -1837,7 +1835,8 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
       **	attack the unit.
       */
       if (!IsOwnedByPlayer && Flagged == ThePlayer()->Class->House) {
-        TheMap().Sight_From(Coord_Cell(Coord), Class->SightRange, House, true);
+        TheMap().Sight_From(Cell::Containing(Coord), Class->SightRange, House,
+                            true);
       }
 
       /*
@@ -1930,7 +1929,7 @@ bool UnitClass::Per_Cell_Process(PCPType why) {
   /*
   **	Check to see if crushing of any unfortunate infantry is warranted.
   */
-  Overrun_Square(Coord_Cell(Coord), false);
+  Overrun_Square(Cell::Containing(Coord), false);
 
   if (!IsActive) {
     return true;
@@ -2204,7 +2203,7 @@ void UnitClass::Draw_It(PixelView& view, int x, int y,
  *                                                                                             *
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
+bool UnitClass::Tiberium_Check(Cell& center, int x, int y) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -2212,20 +2211,20 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
   **	If the specified offset from the origin will cause it
   **	to spill past the map edge, then abort this cell check.
   */
-  if (Cell_X(center) + x < TheMap().MapCellX) {
+  if (center.x() + x < TheMap().MapCellX) {
     return false;
   }
-  if (Cell_X(center) + x >= TheMap().MapCellX + TheMap().MapCellWidth) {
+  if (center.x() + x >= TheMap().MapCellX + TheMap().MapCellWidth) {
     return false;
   }
-  if (Cell_Y(center) + y < TheMap().MapCellY) {
+  if (center.y() + y < TheMap().MapCellY) {
     return false;
   }
-  if (Cell_Y(center) + y >= TheMap().MapCellY + TheMap().MapCellHeight) {
+  if (center.y() + y >= TheMap().MapCellY + TheMap().MapCellHeight) {
     return false;
   }
 
-  center = XY_Cell(Cell_X(center) + x, Cell_Y(center) + y);
+  center = Cell::FromXY(center.x() + x, center.y() + y);
 
   if (TheSession().Type != GAME_NORMAL || !IsOwnedByPlayer ||
       TheMap().at(center).IsMapped) {
@@ -2263,7 +2262,7 @@ bool UnitClass::Goto_Tiberium(int rad) {
   DCHECK(IsActive);
 
   if (!NavCom) {
-    const CELL center = Coord_Cell(Center_Coord());
+    const Cell center = Cell::Containing(Center_Coord());
     if (TheMap().at(center).Land_Type() == LAND_TIBERIUM) {
       return true;
     }
@@ -2272,7 +2271,7 @@ bool UnitClass::Goto_Tiberium(int rad) {
      */
     for (int radius = 1; radius < rad; radius++) {
       for (int x = -radius; x <= radius; x++) {
-        CELL cell = center;
+        Cell cell = center;
         if (Tiberium_Check(cell, x, -radius)) {
           Assign_Destination(Target::FromCell(cell));
           return false;
@@ -2321,7 +2320,7 @@ bool UnitClass::Harvesting() {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
-  const CELL cell = Coord_Cell(Coord);
+  const Cell cell = Cell::Containing(Coord);
   CellClass* ptr = &TheMap().at(cell);
 
   /*
@@ -2433,7 +2432,7 @@ int UnitClass::Mission_Unload() {
   constexpr int kUnloading = 3;
   constexpr int kClosingDoor = 4;
   game::DirType dir = game::DIR_N;
-  CELL cell = 0;
+  Cell cell{};
 
   switch (Class->Type) {
     case UNIT_HARVESTER:
@@ -2470,7 +2469,7 @@ int UnitClass::Mission_Unload() {
       switch (Status) {
         case kInitialCheck:
           dir = Desired_Load_Dir(nullptr, cell);
-          if (How_Many() && cell != 0) {
+          if (How_Many() && cell.index() != 0) {
             Do_Turn(dir);
             Status = kManeuvering;
             return 1;
@@ -2496,7 +2495,8 @@ int UnitClass::Mission_Unload() {
               for (const game::FacingType face :
                    magic_enum::enum_values<game::FacingType>()) {
                 const game::DirType newface = toface + game::Facing_Dir(face);
-                const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+                const Cell newcell =
+                    Adjacent_Cell(Cell::Containing(Coord), newface);
 
                 if (passenger->Can_Enter_Cell(newcell) == game::MOVE_OK) {
                   TheWorld().scenario_init()++;
@@ -2540,7 +2540,7 @@ int UnitClass::Mission_Unload() {
       switch (Status) {
         case kInitialCheck:
           dir = Desired_Load_Dir(nullptr, cell);
-          if (How_Many() && cell != 0) {
+          if (How_Many() && cell.index() != 0) {
             Do_Turn(dir);
             Status = kManeuvering;
             return 1;
@@ -2579,7 +2579,8 @@ int UnitClass::Mission_Unload() {
               for (const game::FacingType face :
                    magic_enum::enum_values<game::FacingType>()) {
                 const game::DirType newface = toface + game::Facing_Dir(face);
-                const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+                const Cell newcell =
+                    Adjacent_Cell(Cell::Containing(Coord), newface);
 
                 if (passenger->Can_Enter_Cell(newcell) == game::MOVE_OK) {
                   TheWorld().scenario_init()++;
@@ -2760,7 +2761,8 @@ int UnitClass::Mission_Unload() {
           for (const game::FacingType face :
                magic_enum::enum_values<game::FacingType>()) {
             const game::DirType newface = toface + game::Facing_Dir(face);
-            const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+            const Cell newcell =
+                Adjacent_Cell(Cell::Containing(Coord), newface);
             if (crew->Can_Enter_Cell(newcell) == game::MOVE_OK) {
               TheWorld().scenario_init()++;
               crew->Unlimbo(Coord_Move(Coord, newface, 0x0080), newface);
@@ -2949,7 +2951,7 @@ int UnitClass::Mission_Harvest() {
         IsHarvesting = false;
         if (Tiberium_Load() == 1) {
           Status = kFindhome;
-          ArchiveTarget = Target::FromCell(Coord_Cell(Coord));
+          ArchiveTarget = Target::FromCell(Cell::Containing(Coord));
         } else {
           if (!Goto_Tiberium(TheRules().TiberiumShortScan / CELL_LEPTON_W) &&
               !NavCom) {
@@ -3141,7 +3143,7 @@ std::span<const int16_t> UnitClass::Overlap_List(bool redraw) const {
  *function.                                            * 07/04/1995 JLB :
  *Allowed to drive on building trying to enter it.                         *
  *=============================================================================================*/
-game::MoveType UnitClass::Can_Enter_Cell(CELL cell,
+game::MoveType UnitClass::Can_Enter_Cell(Cell cell,
                                          game::FacingType /*from*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
@@ -3150,7 +3152,7 @@ game::MoveType UnitClass::Can_Enter_Cell(CELL cell,
 
   const CellClass* cellptr = &TheMap().at(cell);
 
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+  if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return game::MOVE_NO;
   }
 
@@ -3507,7 +3509,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
       */
       Mark(MARK_UP);
       if (!BuildingTypeClass::As_Reference(STRUCT_CONST)
-               .Legal_Placement(Coord_Cell(
+               .Legal_Placement(Cell::Containing(
                    Adjacent_Cell(Center_Coord(), game::FACING_NW)))) {
         action = ACTION_NO_DEPLOY;
       }
@@ -3666,7 +3668,7 @@ ActionType UnitClass::What_Action(ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType UnitClass::What_Action(CELL cell) const {
+ActionType UnitClass::What_Action(Cell cell) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -3702,17 +3704,15 @@ void UnitClass::Exit_Repair() {
       XYCELL(0, -2), XYCELL(1, -1), XYCELL(2, 0),  XYCELL(1, 1),
       XYCELL(0, 2),  XYCELL(-1, 1), XYCELL(-2, 0), XYCELL(-1, -1)};
 
-  CELL cell = static_cast<CELL>(
-      Coord_Cell(Coord) +
-      base::At(ExitRepair,
-               static_cast<int>(game::Dir_Facing(PrimaryFacing.Current()))));
+  Cell cell = Cell::Containing(Coord).Offset(base::At(
+      ExitRepair, static_cast<int>(game::Dir_Facing(PrimaryFacing.Current()))));
   if (Can_Enter_Cell(cell) == game::MOVE_OK) {
     found = true;
   }
 
   if (!found) {
     for (const int16_t i : ExitRepair) {
-      cell = static_cast<CELL>(Coord_Cell(Coord) + i);
+      cell = Cell::Containing(Coord).Offset(i);
       if (Can_Enter_Cell(cell) == game::MOVE_OK) {
         found = true;
         break;
@@ -3818,7 +3818,7 @@ int UnitClass::Mission_Move() {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
-                                          CELL& moveto) const {
+                                          Cell& moveto) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -3839,7 +3839,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   for (const game::FacingType face :
        magic_enum::enum_values<game::FacingType>()) {
     int value = 0;
-    const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
+    const Cell cellnum = Adjacent_Cell(Cell::Containing(Coord), face);
 
     /*
     **	Base the initial value of the potential cell according to whether the
@@ -3849,7 +3849,7 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
     */
     if (passenger != nullptr) {
       value = passenger->Can_Enter_Cell(cellnum) == game::MOVE_OK ||
-                      Coord_Cell(passenger->Coord) == cellnum
+                      Cell::Containing(passenger->Coord) == cellnum
                   ? 128
                   : -128;
     } else {
@@ -3895,14 +3895,14 @@ game::DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
   /*
   **	If a suitable direction was found, then return with the direction value.
   */
-  moveto = 0;
+  moveto = Cell{};
   if (bestval > 0) {
     static constexpr base::EnumArray<game::FacingType, game::DirType>
         _desired_to_actual = {game::DIR_S,  game::DIR_SW, game::DIR_NW,
                               game::DIR_NW, game::DIR_NE, game::DIR_NE,
                               game::DIR_NE, game::DIR_SE};
 
-    moveto = Adjacent_Cell(Coord_Cell(Coord), bestdir);
+    moveto = Adjacent_Cell(Cell::Containing(Coord), bestdir);
     return _desired_to_actual.at(bestdir);
   }
   return game::DIR_S;
@@ -4443,7 +4443,7 @@ void UnitClass::Approach_Target() {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Overrun_Square(CELL cell, bool threaten) {
+void UnitClass::Overrun_Square(Cell cell, bool threaten) {
   DCHECK(IsActive);
 
   CellClass* cellptr = &TheMap().at(cell);
@@ -4480,7 +4480,7 @@ void UnitClass::Overrun_Square(CELL cell, bool threaten) {
           object->Mark(MARK_UP);
           object->Limbo();
           base::DeletePooled(object);
-          // new OverlayClass(OVERLAY_SQUISH, Coord_Cell(Coord));
+          // new OverlayClass(OVERLAY_SQUISH, Cell::Containing(Coord));
 
           object = next;
         } else {
@@ -4627,8 +4627,8 @@ void UnitClass::Assign_Destination(Target target) {
         **	Last check to make sure that the loading square is free from
         *permanent *	occupation (such as a building).
         */
-        const CELL cell =
-            static_cast<CELL>(Coord_Cell(b->Center_Coord()) + (MAP_CELL_W - 1));
+        const Cell cell =
+            Cell::Containing(b->Center_Coord()).Offset(MAP_CELL_W - 1);
         if (TheRules()
                 .ground()
                 .at(TheMap().at(cell).Land_Type())
@@ -4729,9 +4729,10 @@ void UnitClass::Read_INI(CCINIClass& ini) {
           */
           const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
-          const CELL cell = base::ParseIntegerOr<CELL>(tokens.Next(), 0);
+          const Cell cell =
+              Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), 0));
 
-          const Coordinate coord = Cell_Coord(cell);
+          const Coordinate coord = cell.Center();
 
           const auto dir = static_cast<game::DirType>(
               base::ParseIntegerOr<int>(tokens.Next(), 0));
@@ -4807,7 +4808,7 @@ void UnitClass::Write_INI(CCINIClass& ini) {
       absl::SNPrintF(
           buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s", unit->House->Class->IniName,
           unit->Class->IniName, unit->Health_Ratio() * 256,
-          Coord_Cell(unit->Coord), unit->PrimaryFacing.Current(),
+          Cell::Containing(unit->Coord).index(), unit->PrimaryFacing.Current(),
           Mission_Name(unit->Mission),
           unit->Trigger != nullptr ? unit->Trigger->Class->IniName : "None");
       ini.Put_String(INI_Name(), uname, buf);
@@ -4961,7 +4962,7 @@ void UnitClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
 
   if (!threat) {
     Assign_Destination(Target::FromCell(
-        TheMap().Nearby_Location(Coord_Cell(Coord), Class->Speed)));
+        TheMap().Nearby_Location(Cell::Containing(Coord), Class->Speed)));
   } else {
     DriveClass::Scatter(threat, forced, nokidding);
   }
@@ -4984,7 +4985,7 @@ void UnitClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
 bool UnitClass::Limbo() {
   if (DriveClass::Limbo()) {
     if (Flagged != HOUSE_NONE) {
-      HouseClass::As_Pointer(Flagged)->Flag_Attach(Coord_Cell(Coord));
+      HouseClass::As_Pointer(Flagged)->Flag_Attach(Cell::Containing(Coord));
       Flagged = HOUSE_NONE;
     }
     return true;
@@ -5002,16 +5003,16 @@ void UnitClass::Shroud_Regen() {
                                 1,  2,  2,  2,  2,  2,  3,  3,  3};
     int centerx = 0;
     int centery = 0;
-    CELL trycell = 0;
+    Cell trycell{};
 
     // Only restore under the shroud if it's a valid field.
     if (ShroudBits != static_cast<unsigned>(-1L)) {
-      centerx = Cell_X(ShroudCenter);
-      centery = Cell_Y(ShroudCenter);
+      centerx = ShroudCenter.x();
+      centery = ShroudCenter.y();
       for (int index = 30; index >= 0 && ShroudBits; index--) {
         if (ShroudBits & 1) {
-          trycell = XY_Cell(centerx + base::At(_xtab, index),
-                            centery + base::At(_ytab, index));
+          trycell = Cell::FromXY(centerx + base::At(_xtab, index),
+                                 centery + base::At(_ytab, index));
           TheMap().UnJam_Cell(trycell, House);
           TheMap().Map_Cell(trycell, ThePlayer());
         }
@@ -5022,13 +5023,13 @@ void UnitClass::Shroud_Regen() {
     if (IsActive && Strength) {
       // Now shroud around the new center
       ShroudBits = 0L;
-      ShroudCenter = Coord_Cell(Center_Coord());
-      centerx = Cell_X(ShroudCenter);
-      centery = Cell_Y(ShroudCenter);
+      ShroudCenter = Cell::Containing(Center_Coord());
+      centerx = ShroudCenter.x();
+      centery = ShroudCenter.y();
       for (int index = 0; index < 31; index++) {
         ShroudBits <<= 1;
-        trycell = XY_Cell(centerx + base::At(_xtab, index),
-                          centery + base::At(_ytab, index));
+        trycell = Cell::FromXY(centerx + base::At(_xtab, index),
+                               centery + base::At(_ytab, index));
         if (TheMap().at(trycell).IsMapped) {
           TheMap().Jam_Cell(trycell, House);
           ShroudBits |= 1;

@@ -335,7 +335,7 @@ bool AnimClass::Mark(MarkType mark) {
   DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark)) {
-    TheMap().Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
+    TheMap().Refresh_Cells(Cell::Containing(Center_Coord()), Overlap_List());
     //		ObjectClass::Mark(mark);
     return true;
   }
@@ -518,7 +518,7 @@ AnimClass::AnimClass(AnimType animnum, Coordinate coord, int timedelay,
   **	Drop zone smoke always reveals the map around itself.
   */
   if (*this == ANIM_LZ_SMOKE) {
-    TheMap().Sight_From(Coord_Cell(coord),
+    TheMap().Sight_From(Cell::Containing(coord),
                         TheRules().DropZoneRadius / CELL_LEPTON_W, ThePlayer(),
                         false);
   }
@@ -624,7 +624,7 @@ void AnimClass::AI() {
   **	For ground level based animations (ones that can run slowly as well as
   **	occur behind other ground objects) always cause the cell to be redrawn.
   */
-  TheMap().Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
+  TheMap().Refresh_Cells(Cell::Containing(Center_Coord()), Overlap_List());
 
   /*
   **	Special case check to make sure that building on top of a smoke marker
@@ -892,7 +892,7 @@ void AnimClass::Middle() {
   DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
-  const CELL cell = Coord_Cell(Center_Coord());
+  const Cell cell = Cell::Containing(Center_Coord());
   CellClass* cellptr = &TheMap().at(cell);
 
   if (Class->Type == ANIM_ATOM_BLAST) {
@@ -1097,7 +1097,7 @@ void AnimClass::Detach(Target target, bool all) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
+void AnimClass::Do_Atom_Damage(HousesType ownerhouse, Cell cell) {
   /*
   **	Find someone to blame the explosion on. This is necessary in
   **	order to properly enact retribution and record the kill for
@@ -1135,8 +1135,8 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
     rawdamage = TheRules().AtomDamage / 5;
   }
 
-  Wide_Area_Damage(Cell_Coord(cell), radius * CELL_LEPTON_W, rawdamage,
-                   building, WARHEAD_FIRE);
+  Wide_Area_Damage(cell.Center(), radius * CELL_LEPTON_W, rawdamage, building,
+                   WARHEAD_FIRE);
   Shake_The_Screen(3);
   if (TheSession().Type == GAME_NORMAL) {
     ThePalettes().game_palette().Set(kFadePaletteSlow, ServiceRealTime);

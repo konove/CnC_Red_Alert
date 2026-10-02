@@ -191,7 +191,7 @@ class ObjectClass : public AbstractClass {
   [[nodiscard]] virtual bool Is_Players_Army() const { return false; }
   [[nodiscard]] virtual std::span<const std::byte> Get_Image_Data() const;
   virtual ActionType What_Action(ObjectClass* /*unused*/);
-  [[nodiscard]] virtual ActionType What_Action(CELL /*unused*/) const;
+  [[nodiscard]] virtual ActionType What_Action(Cell /*unused*/) const;
   [[nodiscard]] virtual LayerType In_Which_Layer() const;
   [[nodiscard]] bool Is_Infantry() const { return RTTI == RTTI_INFANTRY; }
   [[nodiscard]] bool Is_Foot() const {
@@ -263,7 +263,7 @@ class ObjectClass : public AbstractClass {
   */
   virtual void Active_Click_With(ActionType /*unused*/,
                                  ObjectClass* /*unused*/);
-  virtual void Active_Click_With(ActionType /*unused*/, CELL /*unused*/);
+  virtual void Active_Click_With(ActionType /*unused*/, Cell /*unused*/);
   virtual void Clicked_As_Target(int /*unused*/ = 7);
   virtual bool Select();
   virtual void Unselect();

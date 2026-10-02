@@ -553,7 +553,7 @@ void TeamClass::AI() {
       ** factory then it should pick another structure that is friendly to
       ** its side.
       */
-      CELL dest = Zone.AsCell();
+      Cell dest = Zone.AsCell();
       int max = 0x7FFFFFFF;
 
       for (int index = 0; index < TheObjectHeaps().building().Count();
@@ -562,7 +562,7 @@ void TeamClass::AI() {
 
         if (b != nullptr && !b->IsInLimbo && b->House == House &&
             b->Class->PrimaryWeapon == nullptr) {
-          CELL cell = Coord_Cell(b->Center_Coord());
+          Cell cell = Cell::Containing(b->Center_Coord());
           int dist = ra::Distance(b->Center_Coord(), Zone.AsCoordinate()) *
                      (MapEditClass::Cell_Threat(cell, House->Class->House) + 1);
 
@@ -573,7 +573,7 @@ void TeamClass::AI() {
             cell = Fetch_A_Leader()->Safety_Point(Zone.AsCell(), cell, 2, 4);
             //						cell =
             // Member->Safety_Point(Zone.AsCell(), cell, 2, 4);
-            if (cell != -1) {
+            if (cell != Cell::None()) {
               max = dist;
               dest = cell;
             }
@@ -690,7 +690,7 @@ void TeamClass::AI() {
       switch (mission->Mission) {
         case TMISSION_MOVECELL:
           Assign_Mission_Target(
-              ra::Target::FromCell(static_cast<CELL>(mission->Data.Value)));
+              ra::Target::FromCell(Cell::FromIndex(mission->Data.Value)));
           break;
 
         case TMISSION_MOVE:
@@ -698,7 +698,7 @@ void TeamClass::AI() {
                   ScenarioClass::kWaypointCount &&
               Member != nullptr) {
             const FootClass* leader = Fetch_A_Leader();
-            CELL movecell =
+            Cell movecell =
                 base::At(TheScenario().Waypoint, mission->Data.Value);
             if ((!Is_Leaving_Map()) &&
                 (leader->Can_Enter_Cell(movecell) != game::MOVE_OK)) {
@@ -1186,7 +1186,7 @@ int TeamClass::Recruit(int typeindex) {
   Coordinate center = Zone.AsCoordinate();
 
   if (Class->Origin != -1) {
-    center = Cell_Coord(base::At(TheScenario().Waypoint, Class->Origin));
+    center = base::At(TheScenario().Waypoint, Class->Origin).Center();
   }
 
   int added = 0;  // Total number added to team.
@@ -1576,7 +1576,8 @@ void TeamClass::Calc_Center(ra::Target& center,
         //					center =
         // ra::As_Target(Scen.Waypoint[Class->Origin]);
         //:} else {
-        center = ra::Target::FromCell(Coord_Cell(closest->Center_Coord()));
+        center =
+            ra::Target::FromCell(Cell::Containing(closest->Center_Coord()));
         //				}
       }
     }
@@ -1586,7 +1587,8 @@ void TeamClass::Calc_Center(ra::Target& center,
     **	that will be used as the regroup point.
     */
     if (closest != nullptr) {
-      close_member = ra::Target::FromCell(Coord_Cell(closest->Center_Coord()));
+      close_member =
+          ra::Target::FromCell(Cell::Containing(closest->Center_Coord()));
     }
   }
 }
@@ -1810,7 +1812,7 @@ bool TeamClass::Coordinate_Regroup() {
           retval = false;
           if (!unit->IsFormationMove) {
             unit->Assign_Mission(MISSION_MOVE);
-            const CELL dest = unit->Adjust_Dest(Zone.AsCell());
+            const Cell dest = unit->Adjust_Dest(Zone.AsCell());
             unit->Assign_Destination(ra::Target::FromCell(dest));
           } else {
             retval = true;  // formations are always considered regrouped.
@@ -1874,7 +1876,7 @@ void TeamClass::Coordinate_Do() {
         unit->Assign_Mission(MISSION_MOVE);
         unit->Assign_Destination(Zone);
         unit->Assign_Mission(MISSION_MOVE);
-        const CELL dest = unit->Adjust_Dest(Zone.AsCell());
+        const Cell dest = unit->Adjust_Dest(Zone.AsCell());
         unit->Assign_Destination(ra::Target::FromCell(dest));
 
       } else {
@@ -1956,8 +1958,8 @@ void TeamClass::Coordinate_Move() {
           found = true;
 
           int dist = unit->Distance(Target);
-          if (unit->IsFormationMove &&
-              (ra::Target::FromCell(Coord_Cell(unit->Coord)) != unit->NavCom)) {
+          if (unit->IsFormationMove && (ra::Target::FromCell(Cell::Containing(
+                                            unit->Coord)) != unit->NavCom)) {
             dist =
                 TheRules().StrayDistance + 1;  // formation moves must be exact.
           }
@@ -1967,7 +1969,7 @@ void TeamClass::Coordinate_Move() {
                //						(unit->In_Which_Layer()
                //== LAYER_TOP &&
                unit->Height > 0 &&
-               Coord_Cell(unit->Center_Coord()) != Target.AsCell() &&
+               Cell::Containing(unit->Center_Coord()) != Target.AsCell() &&
                !dynamic_cast<AircraftClass*>(unit)->Class->IsFixedWing &&
                base::At(Class->MissionList, CurrentMission + 1).Mission !=
                    TMISSION_MOVE)) {
@@ -1983,8 +1985,8 @@ void TeamClass::Coordinate_Move() {
               ** a formation move
               */
               if (Target.kind() == RTTI_CELL && unit->IsFormationMove) {
-                const CELL newcell = unit->Adjust_Dest(Target.AsCell());
-                if (Coord_Cell(unit->Coord) != newcell) {
+                const Cell newcell = unit->Adjust_Dest(Target.AsCell());
+                if (Cell::Containing(unit->Coord) != newcell) {
                   unit->Assign_Destination(ra::Target::FromCell(newcell));
                 } else {
                   unit->Assign_Mission(MISSION_GUARD);
@@ -2801,7 +2803,7 @@ int TeamClass::TMission_Attack() {
  *=============================================================================================*/
 int TeamClass::TMission_Spy() {
   if (MissionTarget.kind() == RTTI_CELL) {
-    const CELL cell = MissionTarget.AsCell();
+    const Cell cell = MissionTarget.AsCell();
     const CellClass* cellptr = &TheMap().at(cell);
     const ObjectClass* bldg = cellptr->Cell_Building();
     if (bldg != nullptr) {

@@ -137,13 +137,13 @@ class VesselClass : public DriveClass {
   void LST_Close_Door();
   [[nodiscard]] Coordinate Fire_Coord(int which) const override;
   [[nodiscard]] game::MoveType Can_Enter_Cell(
-      CELL cell, game::FacingType from = game::FACING_NONE) const override;
+      Cell cell, game::FacingType from = game::FACING_NONE) const override;
   void Draw_It(PixelView& view, int x, int y,
                WindowNumberType window) const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List(
       bool redraw = false) const override;
   game::DirType Desired_Load_Dir(ObjectClass* passenger,
-                                 CELL& moveto) const override;
+                                 Cell& moveto) const override;
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
@@ -158,8 +158,8 @@ class VesselClass : public DriveClass {
 
   void Enter_Idle_Mode(bool initial = false) override;
   ActionType What_Action(ObjectClass* object) override;
-  [[nodiscard]] ActionType What_Action(CELL cell) const override;
-  void Active_Click_With(ActionType action, CELL cell) override;
+  [[nodiscard]] ActionType What_Action(Cell cell) const override;
+  void Active_Click_With(ActionType action, Cell cell) override;
   void Active_Click_With(ActionType action, ObjectClass* object) override;
   Target Greatest_Threat(ThreatType threat) override;  // const;
   [[nodiscard]] bool Is_Allowed_To_Recloak() const override;

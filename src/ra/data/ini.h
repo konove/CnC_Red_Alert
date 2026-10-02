@@ -201,7 +201,7 @@ class INIClass {
 
 void Write_Scenario_INI(const char* fname);
 bool Read_Scenario_INI(const char* fname, bool fresh = true);
-bool Scan_Place_Object(ObjectClass* obj, CELL cell);
+bool Scan_Place_Object(ObjectClass* obj, Cell cell);
 void Assign_Houses();
 
 }  // namespace ra

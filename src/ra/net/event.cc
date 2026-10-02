@@ -214,7 +214,7 @@ EventClass::EventClass(EventType type, ra::Target target) : EventClass() {
   Data.Target.Whom = target;
 }
 
-EventClass::EventClass(EventType type, CELL cell) : EventClass() {
+EventClass::EventClass(EventType type, Cell cell) : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -440,7 +440,8 @@ EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass() {
+EventClass::EventClass(EventType type, RTTIType object, Cell cell)
+    : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -467,7 +468,7 @@ EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass(
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, int id, CELL cell, Coordinate where)
+EventClass::EventClass(EventType type, int id, Cell cell, Coordinate where)
     : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
@@ -543,7 +544,7 @@ EventClass::EventClass(EventType type, std::span<std::byte> payload)
 void EventClass::Execute() {
   TechnoClass* techno = nullptr;
   AnimClass* anim = nullptr;
-  //	CELL cell = 0;
+  //	Cell cell = 0;
   bool formation = false;
   //	RTTIType rt;
 

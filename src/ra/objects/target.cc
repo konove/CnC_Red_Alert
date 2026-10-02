@@ -55,9 +55,7 @@
 #include "ra/ai/teamtype.h"
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
-#include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/map/world.h"
@@ -66,7 +64,6 @@
 #include "ra/objects/anim.h"
 #include "ra/objects/building.h"
 #include "ra/objects/bullet.h"
-#include "ra/objects/cell.h"
 #include "ra/objects/infantry.h"
 #include "ra/objects/object.h"
 #include "ra/objects/techno.h"
@@ -401,7 +398,7 @@ Coordinate Target::AsCoordinate() const {
   return Coordinate{};
 }
 
-CELL Target::AsCell() const { return Coord_Cell(AsCoordinate()); }
+Cell Target::AsCell() const { return Cell::Containing(AsCoordinate()); }
 
 // Reads a cell target as a cell index, where AsCoordinate() reads the
 // sub-cell encoding; see the class comment.
@@ -410,7 +407,7 @@ Coordinate Target::AsMovementCoordinate() const {
     return Coordinate{};
   }
   if (kind() == RTTI_CELL) {
-    return Cell_Coord(cell_index());
+    return cell_index().Center();
   }
   const ObjectClass* object = AsObject();
   if (object != nullptr) {

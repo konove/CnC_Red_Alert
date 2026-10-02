@@ -84,7 +84,7 @@ class DisplayClass : public MapClass {
   **	over the map. This cursor is used when placing buildings and also used
   **	extensively by the scenario editor.
   */
-  CELL ZoneCell{0};
+  Cell ZoneCell{};
   int16_t ZoneOffset{0};
   std::span<const int16_t> CursorSize;
   bool ProximityCheck{false};  // Is proximity check ok?
@@ -145,17 +145,17 @@ class DisplayClass : public MapClass {
   // within their sight range plus `distance` leptons of `center` look around.
   // `distance` keeps its low 16 bits.
   static void Constrained_Look(Coordinate center, int distance);
-  void Shroud_Cell(CELL cell /*KO, bool shadeit = false*/);
+  void Shroud_Cell(Cell cell /*KO, bool shadeit = false*/);
   void Encroach_Shadow();
   void Center_Map(Coordinate center = {});
-  virtual bool Map_Cell(CELL cell, HouseClass* house);
-  [[nodiscard]] virtual CELL Click_Cell_Calc(int x, int y) const;
+  virtual bool Map_Cell(Cell cell, HouseClass* house);
+  [[nodiscard]] virtual Cell Click_Cell_Calc(int x, int y) const;
   virtual void Help_Text(int /*unused*/, int /*unused*/ = -1,
                          int /*unused*/ = -1, int /*unused*/ = kYellow,
                          bool /*unused*/ = false) {}
   [[nodiscard]] virtual MouseType Get_Mouse_Shape() const = 0;
   virtual bool Scroll_Map(game::DirType facing, int& distance, bool really);
-  virtual void Refresh_Cells(CELL cell, std::span<const int16_t> list);
+  virtual void Refresh_Cells(Cell cell, std::span<const int16_t> list);
   virtual void Set_View_Dimensions(int x, int y, int width = -1,
                                    int height = -1);
 
@@ -175,9 +175,9 @@ class DisplayClass : public MapClass {
   */
   virtual void Put_Place_Back(TechnoClass* /*unused*/) {
   }  // Affects 'pending' system.
-  void Cursor_Mark(CELL pos, bool on);
+  void Cursor_Mark(Cell pos, bool on);
   void Set_Cursor_Shape(std::span<const int16_t> list);
-  CELL Set_Cursor_Pos(CELL pos = -1);
+  Cell Set_Cursor_Pos(Cell pos = Cell::None());
   static void Get_Occupy_Dimensions(int& w, int& h,
                                     std::span<const int16_t> list);
 
@@ -192,19 +192,19 @@ class DisplayClass : public MapClass {
   bool Push_Onto_TacMap(Coordinate& source, Coordinate& dest) const;
   static void Remove(ObjectClass* object, LayerType layer);
   static void Submit(ObjectClass* object, LayerType layer);
-  [[nodiscard]] CELL Calculated_Cell(SourceType dir, WAYPOINT waypoint = -1,
-                                     CELL cell = -1,
+  [[nodiscard]] Cell Calculated_Cell(SourceType dir, WAYPOINT waypoint = -1,
+                                     Cell cell = Cell::None(),
                                      SpeedType loco = SPEED_FOOT,
                                      bool zonecheck = true,
                                      MZoneType mzone = MZONE_NORMAL) const;
-  [[nodiscard]] bool In_View(CELL cell) const;
+  [[nodiscard]] bool In_View(Cell cell) const;
   bool Passes_Proximity_Check(const ObjectTypeClass* object, HousesType house,
                               std::span<const int16_t> list,
-                              CELL trycell) const;
-  [[nodiscard]] ObjectClass* Cell_Object(CELL cell, int x = 0, int y = 0) const;
+                              Cell trycell) const;
+  [[nodiscard]] ObjectClass* Cell_Object(Cell cell, int x = 0, int y = 0) const;
   static ObjectClass* Next_Object(ObjectClass* object);
   static ObjectClass* Prev_Object(ObjectClass* object);
-  [[nodiscard]] int Cell_Shadow(CELL cell) const;
+  [[nodiscard]] int Cell_Shadow(Cell cell) const;
   std::span<const int16_t> Text_Overlap_List(const char* text, int x,
                                              int y) const;
   [[nodiscard]] static bool Is_Spot_Free(Coordinate coord);
@@ -213,9 +213,9 @@ class DisplayClass : public MapClass {
   void Sell_Mode_Control(int control);
   void Repair_Mode_Control(int control);
 
-  virtual void Flag_Cell(CELL cell);
-  [[nodiscard]] static bool Is_Cell_Flagged(CELL cell) {
-    return CellRedraw.at(base::ToSize(cell));
+  virtual void Flag_Cell(Cell cell);
+  [[nodiscard]] static bool Is_Cell_Flagged(Cell cell) {
+    return CellRedraw.at(base::ToSize(cell.index()));
   }
 
   /*
@@ -230,10 +230,10 @@ class DisplayClass : public MapClass {
  protected:
   virtual void Mouse_Right_Press();
   virtual void Mouse_Left_Press(int x, int y);
-  virtual void Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
+  virtual void Mouse_Left_Up(Cell cell, bool shadow, ObjectClass* object,
                              ActionType action, bool wsmall = false);
   virtual void Mouse_Left_Held(int x, int y);
-  virtual void Mouse_Left_Release(CELL cell, int x, int y, ObjectClass* object,
+  virtual void Mouse_Left_Release(Cell cell, int x, int y, ObjectClass* object,
                                   ActionType action, bool wsmall = false);
 
  public:
@@ -350,7 +350,7 @@ class DisplayClass : public MapClass {
   */
   static std::vector<bool> CellRedraw;
 
-  [[nodiscard]] bool Good_Reinforcement_Cell(CELL outcell, CELL incell,
+  [[nodiscard]] bool Good_Reinforcement_Cell(Cell outcell, Cell incell,
                                              SpeedType loco, int zone,
                                              MZoneType mzone) const;
 };

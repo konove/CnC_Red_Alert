@@ -112,7 +112,7 @@ class ScenarioClass {
   ** The CellClass has a bit that tells if that cell has a waypoint attached to
   ** it; the only way to find which waypoint it is, is to scan this array.  This
   ** shouldn't be needed often; usually, you know the waypoint & you want the
-  *CELL.
+  *Cell.
   */
   // Waypoints 0..97 are the scenario's lettered waypoints; the last three
   // slots are reserved for the home cell, reinforcement arrivals and special
@@ -121,7 +121,7 @@ class ScenarioClass {
   static constexpr int kSpecialWaypoint = kWaypointCount - 1;
   static constexpr int kReinforcementWaypoint = kWaypointCount - 2;
   static constexpr int kHomeWaypoint = kWaypointCount - 3;
-  CELL Waypoint[kWaypointCount]{};
+  Cell Waypoint[kWaypointCount]{};
 
   /*
   **	This holds the system wide mission countdown timer. Time based missions
@@ -236,7 +236,7 @@ class ScenarioClass {
   /*
   **	This records the bookmark view locations the player has recorded.
   */
-  CELL Views[4]{};
+  Cell Views[4]{};
 
   /*
   **	This is the number of active passable bridges in the current game.

@@ -447,10 +447,10 @@ ObjectClass* VesselTypeClass::Create_One_Of(HouseClass* house) const {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-bool VesselTypeClass::Create_And_Place(CELL cell, HousesType house) const {
+bool VesselTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* unit = base::NewPooled<VesselClass>(Type, house);
   if (unit != nullptr) {
-    return unit->Unlimbo(Cell_Coord(cell),
+    return unit->Unlimbo(cell.Center(),
                          Random_Pick(game::DIR_N, kMaxRandomDirection));
   }
   base::DeletePooled(unit);

@@ -44,9 +44,7 @@
 #include <cstdint>
 
 #include "base/pooled.h"
-#include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/map/world.h"
 #include "ra/objects/building.h"
 #include "ra/objects/infantry.h"
@@ -127,7 +125,7 @@ CarryoverClass::CarryoverClass(TechnoClass* techno) {
 
     House = techno->Owner();
     Strength = techno->Strength;
-    Cell = Coord_Cell(techno->Coord);
+    Cell = Cell::Containing(techno->Coord);
   }
 }
 
@@ -204,7 +202,7 @@ bool CarryoverClass::Create() const {
     if (RTTI == RTTI_INFANTRY) {
       TheWorld().scenario_init() = 0;
     }
-    techno->Unlimbo(Cell_Coord(Cell));
+    techno->Unlimbo(Cell.Center());
     if (RTTI == RTTI_INFANTRY) {
       TheWorld().scenario_init() = oldscen;
     }

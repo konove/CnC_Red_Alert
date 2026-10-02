@@ -35,11 +35,8 @@
  *---------------------------------------------------------------------------------------------*
  * Functions: * Adjacent_Cell -- Calculate the adjacent cell in the direction
  *specified.                  * Adjacent_Cell -- Calculate the adjacent cell in
- *the direction specified.                  * Cell_Coord -- Convert a cell to a
- *coordinate value.                                       * Cell_To_Lepton --
+ *the direction specified.                  * Cell_To_Lepton --
  *Convert a cell distance into a lepton distance.                         *
- *   Cell_X -- Fetch the X cell component from the cell value. * Cell_Y -- Fetch
- *the Y cell component from the cell value specified.                       *
  *   Dir_Facing -- Convert a DirType into a FacingType
  *value.                                  * Dir_To_16 -- Convert a facing to a
  *0..15 value.                                           * Dir_To_32 -- Convert
@@ -61,7 +58,6 @@
  *affect the game.                   * Text_String -- Convert a text number into
  *a text pointer.                                 * XYP_Coord --
  *Combine pixel values into a coordinate.                                      *
- *   XY_Cell -- Create a cell from X and Y cell components. *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
@@ -246,11 +242,10 @@ inline Coordinate Adjacent_Cell(Coordinate coord, game::DirType dir) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline CELL Adjacent_Cell(CELL cell, game::FacingType dir) {
+inline Cell Adjacent_Cell(Cell cell, game::FacingType dir) {
   // Wrapped like the Coordinate overload above, so that FACING_NONE (-1) does
   // not index before the start of the table.
-  return static_cast<CELL>(
-      cell + AdjacentCell.at(game::AsFacing(static_cast<int>(dir))));
+  return cell.Offset(AdjacentCell.at(game::AsFacing(static_cast<int>(dir))));
 }
 
 /***********************************************************************************************
@@ -270,8 +265,8 @@ inline CELL Adjacent_Cell(CELL cell, game::FacingType dir) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-inline CELL Adjacent_Cell(CELL cell, game::DirType dir) {
-  return static_cast<CELL>(cell + AdjacentCell.at(game::Dir_Facing(dir)));
+inline Cell Adjacent_Cell(Cell cell, game::DirType dir) {
+  return cell.Offset(AdjacentCell.at(game::Dir_Facing(dir)));
 }
 
 /***********************************************************************************************

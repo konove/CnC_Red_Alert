@@ -35,9 +35,7 @@
 #include "ra/ai/scenario.h"
 #include "ra/ai/special.h"
 #include "ra/core/config.h"
-#include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/data/text_ids.h"
@@ -73,17 +71,18 @@ using enum engine::window::KeyNumber;
 static void Handle_View(const int view, const int action) {
   if (static_cast<unsigned>(view) < std::ssize(TheScenario().Views)) {
     if (action == 0) {
-      TheMap().Set_Tactical_Position(
-          Cell_Coord(static_cast<CELL>(base::At(TheScenario().Views, view) -
-                                       (MAP_CELL_W * 8) - 10))
-              .Whole());
+      TheMap().Set_Tactical_Position(base::At(TheScenario().Views, view)
+                                         .Offset(-(MAP_CELL_W * 8) - 10)
+                                         .Center()
+                                         .Whole());
 
       // Win95 scrolling logic cant handle just jumps in screen position so
       // redraw the lot.
       TheMap().Flag_To_Redraw(true);
     } else {
-      base::At(TheScenario().Views, view) = static_cast<CELL>(
-          Coord_Cell(TheMap().TacticalCoord) + (MAP_CELL_W * 8) + 10);
+      base::At(TheScenario().Views, view) =
+          Cell::Containing(TheMap().TacticalCoord)
+              .Offset((MAP_CELL_W * 8) + 10);
     }
   }
 }

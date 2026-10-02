@@ -49,6 +49,7 @@
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
 #include "magic_enum/magic_enum.hpp"
+#include "ra/core/cell.h"        // IWYU pragma: export
 #include "ra/core/coordinate.h"  // IWYU pragma: export
 #include "ra/core/jshell.h"
 #include "ra/core/packed.h"  // IWYU pragma: export
@@ -215,7 +216,7 @@ inline constexpr uint32_t kHighCoordMask = 0x80008000;
 inline constexpr int MAP_CELL_W = 128;
 inline constexpr int MAP_CELL_H = 128;
 inline constexpr int MAP_CELL_TOTAL = MAP_CELL_W * MAP_CELL_H;
-// Every cell index must fit the 16-bit cell word (ra/core/packed.h).
+// Every cell index must fit the 16-bit cell word (ra/core/cell.h).
 static_assert(MAP_CELL_TOTAL <= INT16_MAX);
 
 // This number ends a refresh/occupy offset list.
@@ -2574,13 +2575,13 @@ struct GroundType {
 **	Find_Path returns with a pointer to this structure.
 */
 struct PathType {
-  CELL Start = 0;                 // Starting cell number.
+  Cell Start{};                   // Starting cell number.
   int Cost = 0;                   // Accumulated terrain cost.
   int Length = 0;                 // Command string length.
   std::span<game::FacingType> Command;  // Pointer to command string.
   std::span<uint32_t> Overlap;    // Overlap bitmap, see ra/map/path_overlap.h.
-  CELL LastOverlap = 0;           // stores position of last overlap
-  CELL LastFixup = 0;             // stores position of last overlap
+  Cell LastOverlap{};             // stores position of last overlap
+  Cell LastFixup{};               // stores position of last overlap
 };
 
 /****************************************************************************

@@ -495,7 +495,7 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
 void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
   engine::window::KeyNumber& input = event.key;
   int rc = 0;
-  CELL cell = 0;
+  Cell cell{};
   int found = 0;  // for removing a waypoint label
   HousesType house = HOUSE_NONE;
   char wayname[4];
@@ -589,7 +589,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       game::TheMouse().y() >= TacPixelY &&
       game::TheMouse().y() <= TacPixelY + Lepton_To_Pixel(TacLeptonHeight)) {
     cell = Click_Cell_Calc(game::TheMouse().x(), game::TheMouse().y());
-    if (cell != -1) {
+    if (cell != Cell::None()) {
       Set_Cursor_Pos(cell);
       if (PendingObject) {
         Flag_To_Redraw(true);
@@ -807,7 +807,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         */
         TheWorld().scenario_init()++;
         Set_Tactical_Position(
-            Cell_Coord(TheScenario().Waypoint[ScenarioClass::kHomeWaypoint]));
+            TheScenario().Waypoint[ScenarioClass::kHomeWaypoint].Center());
         TheWorld().scenario_init()--;
 
         /*
@@ -824,14 +824,14 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     **	SHIFT-HOME: set new Home Cell position
     */
     case Shift(KN_HOME):
-      if (TheWorld().current_cell() != 0) {
+      if (TheWorld().current_cell().index() != 0) {
         /*
         ** Unflag the old Home Cell, if there are no other waypoints
         ** pointing to it
         */
         cell = TheScenario().Waypoint[ScenarioClass::kHomeWaypoint];
 
-        if (cell != -1) {
+        if (cell != Cell::None()) {
           found = 0;
           for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
             if (i != ScenarioClass::kHomeWaypoint &&
@@ -850,9 +850,9 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         ** Now set the new Home cell
         */
         //			Scen.Waypoint[ScenarioClass::kHomeWaypoint] =
-        // Coord_Cell(TacticalCoord);
+        // Cell::Containing(TacticalCoord);
         //			(*this)[TacticalCoord].IsWaypoint = 1;
-        //			Flag_Cell(Coord_Cell(TacticalCoord));
+        //			Flag_Cell(Cell::Containing(TacticalCoord));
         TheScenario().Waypoint[ScenarioClass::kHomeWaypoint] =
             TheWorld().current_cell();
         (*this).at(TheWorld().current_cell()).IsWaypoint = true;
@@ -868,7 +868,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     **	the Reinf. Cell to the same as the Home Cell (for display purposes.)
     */
     case Shift(KN_R):
-      if (TheWorld().current_cell() == 0 ||
+      if (TheWorld().current_cell().index() == 0 ||
           TheWorld().current_cell() ==
               TheScenario().Waypoint[ScenarioClass::kHomeWaypoint]) {
         break;
@@ -880,7 +880,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
       */
       cell = TheScenario().Waypoint[ScenarioClass::kReinforcementWaypoint];
 
-      if (cell != -1) {
+      if (cell != Cell::None()) {
         found = 0;
         for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
           if (i != ScenarioClass::kReinforcementWaypoint &&
@@ -934,7 +934,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     case Alt(KN_X):
     case Alt(KN_Y):
     case Alt(KN_Z):
-      if (TheWorld().current_cell() != 0) {
+      if (TheWorld().current_cell().index() != 0) {
         const int waypt_idx =
             KeyCode(input) - KN_A;  // for labelling a waypoint
         Update_Waypoint(waypt_idx);
@@ -947,7 +947,8 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     */
     case KN_PERIOD:
     case Alt(KN_PERIOD):
-      if (TheWorld().current_cell() != 0 && Get_Waypoint_Name(wayname)) {
+      if (TheWorld().current_cell().index() != 0 &&
+          Get_Waypoint_Name(wayname)) {
         int waynm = 0;
         if (!std::string_view(wayname).empty()) {
           wayname[0] = static_cast<char>(toupper(wayname[0]));
@@ -970,7 +971,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
     **	ALT-Space: Remove a waypoint designation
     */
     case Alt(KN_SPACE):
-      if (TheWorld().current_cell() != 0) {
+      if (TheWorld().current_cell().index() != 0) {
         /*
         **	Loop through letter waypoints; if this cell is one of them,
         **	clear that waypoint.
@@ -978,7 +979,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         for (int i = 0; i < ScenarioClass::kHomeWaypoint; i++) {
           if (base::At(TheScenario().Waypoint, i) ==
               TheWorld().current_cell()) {
-            base::At(TheScenario().Waypoint, i) = -1;
+            base::At(TheScenario().Waypoint, i) = Cell::None();
           }
         }
 
@@ -1070,7 +1071,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
               **	Single-click: select object
               */
               if (Select_Object(event.x, event.y) == 0) {
-                TheWorld().current_cell() = 0;
+                TheWorld().current_cell() = Cell{};
                 Grab_Object();
               } else {
                 /*
@@ -1161,7 +1162,7 @@ void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
         /*
         **	Remove trigger from current cell
         */
-        if (TheWorld().current_cell() &&
+        if (TheWorld().current_cell().index() != 0 &&
             (*this).at(TheWorld().current_cell()).Trigger != nullptr) {
           (*this).at(TheWorld().current_cell()).Trigger = nullptr;
           //						CellTriggers[CurrentCell]
@@ -1485,7 +1486,7 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
 bool MapEditClass::Mouse_Moved() {
   static int old_mx = 0;
   static int old_my = 0;
-  static CELL old_zonecell = 0;
+  static Cell old_zonecell{};
   const ObjectTypeClass* objtype = nullptr;
   bool retcode = false;
 
@@ -2097,8 +2098,8 @@ void MapEditClass::Update_Waypoint(int waypt_idx) {
   /*
   **	Unflag cell for this waypoint if there is one
   */
-  CELL const cell = base::At(TheScenario().Waypoint, waypt_idx);
-  if (cell != -1) {
+  const Cell cell = base::At(TheScenario().Waypoint, waypt_idx);
+  if (cell != Cell::None()) {
     if (TheScenario().Waypoint[ScenarioClass::kHomeWaypoint] != cell &&
         TheScenario().Waypoint[ScenarioClass::kReinforcementWaypoint] != cell) {
       (*this).at(cell).IsWaypoint = false;

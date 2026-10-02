@@ -741,7 +741,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
     */
     TechnoClass* techno = Contact_With_Whom();
     if (Mission == MISSION_ENTER && techno != nullptr &&
-        Coord_Cell(Coord) == Coord_Cell(techno->Coord) &&
+        Cell::Containing(Coord) == Cell::Containing(techno->Coord) &&
         techno == NavCom.AsTechno()) {
       if (Transmit_Message(RADIO_IM_IN) == RADIO_ATTACH) {
         Limbo();
@@ -770,7 +770,7 @@ bool InfantryClass::Per_Cell_Process(PCPType why) {
         Scatter(building->Center_Coord(), true, true);  // RUN AWAY!
         return false;
       }
-      if (Target::FromCell(Coord_Cell(Center_Coord())) == NavCom) {
+      if (Target::FromCell(Cell::Containing(Center_Coord())) == NavCom) {
         Explosion_Damage(Coord, TheRules().BridgeStrength, this, WARHEAD_HE);
 
         Stop_Driver();
@@ -1177,7 +1177,7 @@ void InfantryClass::AI() {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-game::MoveType InfantryClass::Can_Enter_Cell(CELL cell,
+game::MoveType InfantryClass::Can_Enter_Cell(Cell cell,
                                              game::FacingType /*from*/) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
@@ -1185,7 +1185,7 @@ game::MoveType InfantryClass::Can_Enter_Cell(CELL cell,
   /*
   ** If we are moving into an illegal cell, then we can't do that.
   */
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+  if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return game::MOVE_NO;
   }
 
@@ -1628,7 +1628,7 @@ void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
           order = MISSION_GUARD;
         } else {
           order = MISSION_GUARD_AREA;
-          ArchiveTarget = Target::FromCell(Coord_Cell(Center_Coord()));
+          ArchiveTarget = Target::FromCell(Cell::Containing(Center_Coord()));
         }
       } else {
         if (House->IsHuman || Team != nullptr) {
@@ -1847,17 +1847,17 @@ void InfantryClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
       toface = toface + static_cast<game::FacingType>(Random_Pick(0, 4) - 2);
     }
 
-    CELL newcell = 0;
-    CELL altcell = 0;
+    Cell newcell{};
+    Cell altcell{};
     bool found = false;
     for (const game::FacingType face :
          magic_enum::enum_values<game::FacingType>()) {
       const game::FacingType newface = toface + face;
-      newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+      newcell = Adjacent_Cell(Cell::Containing(Coord), newface);
 
       if (TheMap().In_Radar(newcell) &&
           Can_Enter_Cell(newcell) == game::MOVE_OK) {
-        if (altcell == 0) {
+        if (altcell.index() == 0) {
           altcell = newcell;
         }
         if (!TheMap().at(newcell).Is_Bridge_Here()) {
@@ -1867,14 +1867,14 @@ void InfantryClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
       }
     }
     if (!found) {
-      newcell = 0;
+      newcell = Cell{};
     }
 
-    if (newcell == 0) {
+    if (newcell.index() == 0) {
       newcell = altcell;
     }
 
-    if (newcell != 0) {
+    if (newcell.index() != 0) {
       Assign_Mission(MISSION_MOVE);
       Assign_Destination(Target::FromCell(newcell));
     }
@@ -2020,7 +2020,7 @@ bool InfantryClass::Stop_Driver() {
     }
   }
 
-  IsZoneCheat = Can_Enter_Cell(Coord_Cell(Coord)) != game::MOVE_OK;
+  IsZoneCheat = Can_Enter_Cell(Cell::Containing(Coord)) != game::MOVE_OK;
 
   return FootClass::Stop_Driver();
 }
@@ -2058,7 +2058,7 @@ bool InfantryClass::Start_Driver(Coordinate& headto) {
   */
   headto = TheMap().at(headto).Closest_Free_Spot(
       Coord_Move(headto, Direction(headto) + game::DIR_S, 0x007C));
-  if (!headto && Can_Enter_Cell(Coord_Cell(old)) == game::MOVE_OK) {
+  if (!headto && Can_Enter_Cell(Cell::Containing(old)) == game::MOVE_OK) {
     headto = TheMap().at(old).Closest_Free_Spot(
         Coord_Move(old, Direction(headto) + game::DIR_S, 0x0080), true);
   }
@@ -2945,7 +2945,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
         */
         action = ACTION_CAPTURE;
         if (object->What_Am_I() == RTTI_BUILDING) {
-          const CELL cell = object->As_Target().AsCell();
+          const Cell cell = object->As_Target().AsCell();
           const int targzone =
               TheMap().at(As_Target().AsCell()).Zones.at(Class->MZone);
           std::span<const int16_t> list =
@@ -2953,8 +2953,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
                   false);
           bool found = false;
           while (list.front() != kRefreshEol && !found) {
-            const CELL newcell =
-                static_cast<CELL>(cell + base::ConsumeFront(list));
+            const Cell newcell = cell.Offset(base::ConsumeFront(list));
             for (const game::FacingType i :
                  magic_enum::enum_values<game::FacingType>()) {
               if (std::cmp_equal(TheMap()
@@ -3063,7 +3062,7 @@ void InfantryClass::Active_Click_With(ActionType action, ObjectClass* object) {
 /***********************************************************************************************
  * InfantryClass::Set_Occupy_Bit -- Sets the occupy bit cell and bit pos *
  *                                                                                             *
- * INPUT:      CELL      - the cell we are setting the bit in *
+ * INPUT:      Cell      - the cell we are setting the bit in *
  *                                                                                             *
  *               int      - the spot index we are setting the bit for *
  *                                                                                             *
@@ -3071,7 +3070,7 @@ void InfantryClass::Active_Click_With(ActionType action, ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 06/08/1995 PWG : Created. *
  *=============================================================================================*/
-void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
+void InfantryClass::Set_Occupy_Bit(Cell cell, int spot_index) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
@@ -3098,7 +3097,7 @@ void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
  * HISTORY:                                                                *
  *   06/08/1995 PWG : Created.                                             *
  *=========================================================================*/
-void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
+void InfantryClass::Clear_Occupy_Bit(Cell cell, int spot_index) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
@@ -3209,7 +3208,7 @@ int InfantryClass::Mission_Attack() {
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-ActionType InfantryClass::What_Action(CELL cell) const {
+ActionType InfantryClass::What_Action(Cell cell) const {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
@@ -3330,8 +3329,9 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           /*
           **	4th token: cell #.
           */
-          const CELL cell = base::ParseIntegerOr<CELL>(tokens.Next(), 0);
-          Coordinate coord = Cell_Coord(cell);
+          const Cell cell =
+              Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), 0));
+          Coordinate coord = cell.Center();
 
           /*
           **	5th token: cell sub-location.
@@ -3426,17 +3426,18 @@ void InfantryClass::Write_INI(CCINIClass& ini) {
       char buf[128];
 
       absl::SNPrintF(uname, sizeof(uname), "%d", index);
-      absl::SNPrintF(
-          buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%d,%s",
-          infantry->House->Class->IniName, infantry->Class->IniName,
-          infantry->Health_Ratio() * 256, Coord_Cell(infantry->Coord),
-          CellClass::Spot_Index(infantry->Coord),
-          Mission_Name(infantry->Mission == MISSION_NONE
-                           ? infantry->MissionQueue
-                           : infantry->Mission),
-          infantry->PrimaryFacing.Current(),
-          infantry->Trigger != nullptr ? infantry->Trigger->Class->IniName
-                                       : "None");
+      absl::SNPrintF(buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%d,%s",
+                     infantry->House->Class->IniName, infantry->Class->IniName,
+                     infantry->Health_Ratio() * 256,
+                     Cell::Containing(infantry->Coord).index(),
+                     CellClass::Spot_Index(infantry->Coord),
+                     Mission_Name(infantry->Mission == MISSION_NONE
+                                      ? infantry->MissionQueue
+                                      : infantry->Mission),
+                     infantry->PrimaryFacing.Current(),
+                     infantry->Trigger != nullptr
+                         ? infantry->Trigger->Class->IniName
+                         : "None");
       ini.Put_String(INI_Name(), uname, buf);
     }
   }
@@ -3528,7 +3529,7 @@ bool InfantryClass::Edge_Of_World_AI() {
   }
 
   if (Team == nullptr && Mission == MISSION_GUARD &&
-      !TheMap().In_Radar(Coord_Cell(Coord))) {
+      !TheMap().In_Radar(Cell::Containing(Coord))) {
     Stun();
     delete this;
     return true;
@@ -3806,7 +3807,7 @@ void InfantryClass::Movement_AI() {
       *movement process by clearing *	the navigation computer.
       */
       if (((!IsZoneCheat ||
-            Can_Enter_Cell(Coord_Cell(Coord)) != game::MOVE_NO) &&
+            Can_Enter_Cell(Cell::Containing(Coord)) != game::MOVE_NO) &&
            !IsDriving && !IsTethered && NavCom && IsLocked &&
            TheMap().at(Coord).Zones.at(Class->MZone) !=
                TheMap().at(NavCom.AsCell()).Zones.at(Class->MZone)) &&
@@ -3829,7 +3830,7 @@ void InfantryClass::Movement_AI() {
         **	again.
         */
         if (base::At(Path, 0) != game::FACING_NONE &&
-            Can_Enter_Cell(Adjacent_Cell(Coord_Cell(Center_Coord()),
+            Can_Enter_Cell(Adjacent_Cell(Cell::Containing(Center_Coord()),
                                          base::At(Path, 0))) != game::MOVE_OK) {
           base::At(Path, 0) = game::FACING_NONE;
         }
@@ -3897,8 +3898,8 @@ void InfantryClass::Movement_AI() {
                   *path failures. *	Only perform the abort of the target is
                   *in a different zone.
                   */
-                  if ((!IsZoneCheat ||
-                       Can_Enter_Cell(Coord_Cell(Coord)) != game::MOVE_NO) &&
+                  if ((!IsZoneCheat || Can_Enter_Cell(Cell::Containing(
+                                           Coord)) != game::MOVE_NO) &&
                       IsLocked && NavCom &&
                       TheMap().at(NavCom.AsCell()).Zones.at(Class->MZone) !=
                           TheMap().at(Coord).Zones.at(Class->MZone)) {
@@ -3923,7 +3924,7 @@ void InfantryClass::Movement_AI() {
         **	current location and the next location in the path.
         */
         Coordinate acoord = Adjacent_Cell(Coord, base::At(Path, 0));
-        const CELL acell = Coord_Cell(acoord);
+        const Cell acell = Cell::Containing(acoord);
 
         if (Can_Enter_Cell(acell) != game::MOVE_OK) {
           if ((Mission == MISSION_MOVE || Mission == MISSION_ENTER) &&
@@ -4024,7 +4025,7 @@ void InfantryClass::Movement_AI() {
           return;
         }
 
-        if (Coord_Cell(Coord) == NavCom.AsCell()) {
+        if (Cell::Containing(Coord) == NavCom.AsCell()) {
           NavCom = Target{};
           if (Mission == MISSION_MOVE) {
             Enter_Idle_Mode();

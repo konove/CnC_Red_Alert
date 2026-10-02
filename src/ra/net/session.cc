@@ -745,8 +745,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
         static_cast<int32_t>(base::ParseHexOr<uint32_t>(buf, 0)));
 
     ini.Get_String("SyncBug", "Cell", "0", buf, 80);
-    CELL const cell = base::ParseIntegerOr<CELL>(buf, 0);
-    if (cell) {
+    const Cell cell = Cell::FromIndex(base::ParseIntegerOr<int16_t>(buf, 0));
+    if (cell.index() != 0) {
       TrapCell = &TheMap().at(cell);
     }
 

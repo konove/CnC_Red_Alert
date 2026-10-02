@@ -56,33 +56,33 @@ class CrateClass {
   void Serialize(Archive& ar) {
     ar(Cell, CrateTimer);
     if constexpr (Archive::kIsReading) {
-      if (Cell < -1 || Cell >= MAP_CELL_TOTAL) {
+      if (Cell.index() < -1 || Cell.index() >= MAP_CELL_TOTAL) {
         ar.Fail("invalid crate cell");
       }
     }
   }
   void Init() { Make_Invalid(); }
-  bool Create_Crate(CELL cell);
-  [[nodiscard]] bool Is_Here(CELL cell) const {
+  bool Create_Crate(ra::Cell cell);
+  [[nodiscard]] bool Is_Here(ra::Cell cell) const {
     return Is_Valid() && cell == Cell;
   }
   bool Remove_It();
   [[nodiscard]] bool Is_Expired() const {
     return Is_Valid() && CrateTimer.IsFinished();
   }
-  [[nodiscard]] bool Is_Valid() const { return Cell != -1; }
+  [[nodiscard]] bool Is_Valid() const { return Cell != ra::Cell::None(); }
 
  private:
-  static bool Put_Crate(CELL& cell);
-  static bool Get_Crate(CELL cell);
+  static bool Put_Crate(ra::Cell& cell);
+  static bool Get_Crate(ra::Cell cell);
 
   void Make_Invalid() {
-    Cell = -1;
+    Cell = ra::Cell::None();
     CrateTimer.Stop();
   }
 
   engine::platform::Timer<game::FrameTickSource> CrateTimer;
-  CELL Cell = -1;
+  ra::Cell Cell = ra::Cell::None();
 };
 
 }  // namespace ra

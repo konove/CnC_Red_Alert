@@ -16,7 +16,6 @@
 #include "gtest/gtest.h"
 #include "ra/core/coordinate.h"
 #include "ra/core/defines.h"
-#include "ra/core/packed.h"
 #include "ra/objects/abstract.h"
 #include "ra/objects/type.h"
 
@@ -24,7 +23,7 @@ namespace ra {
 namespace {
 
 // The cell at X 5, Y 3.
-constexpr CELL kCell = (3 * 128) + 5;
+constexpr Cell kCell = Cell::FromXY(5, 3);
 
 // The factories and accessors are usable in constant expressions.
 static_assert(Target::Make(RTTI_NONE, 0) == Target{});
@@ -108,20 +107,20 @@ TEST(TargetTest, IsObjectCoversTheMapObjectKinds) {
   }
 }
 
-// The cell index encoding: the value is the CELL itself, sign and all.
+// The cell index encoding: the value is the cell's index, sign and all.
 TEST(TargetTest, FromCellIndexHoldsTheCellIndex) {
   const Target target = Target::FromCellIndex(kCell);
   EXPECT_EQ(target, Target::Make(RTTI_CELL, 389));
   EXPECT_EQ(target.cell_index(), kCell);
-  EXPECT_EQ(target.AsMovementCoordinate(), Cell_Coord(kCell));
+  EXPECT_EQ(target.AsMovementCoordinate(), kCell.Center());
   EXPECT_EQ(target.AsMovementCoordinate().packed(), 0x03800580U);
 }
 
 TEST(TargetTest, FromCellIndexKeepsTwentyFourBitsOfANegativeCell) {
-  const Target target = Target::FromCellIndex(static_cast<CELL>(-1));
+  const Target target = Target::FromCellIndex(Cell::None());
   EXPECT_EQ(target.kind(), RTTI_CELL);
   EXPECT_EQ(target.value(), 0xFFFFFF);
-  EXPECT_EQ(target.cell_index(), -1);
+  EXPECT_EQ(target.cell_index(), Cell::None());
 }
 
 // The sub-cell encoding: 12 bits per axis, Y over X, in units of 16 leptons.
@@ -137,7 +136,7 @@ TEST(TargetTest, FromCellHoldsTheSubCellCenter) {
 }
 
 TEST(TargetTest, FromCellReadsASentinelCellAsFullComponents) {
-  EXPECT_EQ(Target::FromCell(static_cast<CELL>(-1)).value(), 0x7F87F8);
+  EXPECT_EQ(Target::FromCell(Cell::None()).value(), 0x7F87F8);
 }
 
 TEST(TargetTest, FromCoordinateKeepsTwelveBitsPerAxis) {
@@ -146,13 +145,13 @@ TEST(TargetTest, FromCoordinateKeepsTwelveBitsPerAxis) {
   EXPECT_EQ(target.kind(), RTTI_CELL);
   EXPECT_EQ(target.value(), 0x567123);
   EXPECT_EQ(target.AsCoordinate(), Coordinate::FromLeptons(0x1238, 0x5678));
-  EXPECT_EQ(target.AsCell(), XY_Cell(0x12, 0x56));
+  EXPECT_EQ(target.AsCell(), Cell::FromXY(0x12, 0x56));
   EXPECT_EQ(Target::FromCoordinate(Coordinate::FromPacked(0xFFFFFFFFU)).value(),
             0xFFFFFF);
 }
 
 TEST(TargetTest, ACellsCenterEncodesLikeTheCell) {
-  EXPECT_EQ(Target::FromCoordinate(Cell_Coord(kCell)), Target::FromCell(kCell));
+  EXPECT_EQ(Target::FromCoordinate(kCell.Center()), Target::FromCell(kCell));
 }
 
 // The two encodings disagree: each decoder reads only its own.

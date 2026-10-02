@@ -43,7 +43,7 @@
  *-- Constructor for cell objects.                                     *
  *   CellClass::Cell_Building -- Return with building at specified cell. *
  *   CellClass::Cell_Color   -- Determine what radar color to use for this cell.
- ** CellClass::Cell_Coord -- Returns the coordinate of this cell. *
+ ** CellClass::Center_Coord -- Returns the coordinate of this cell. *
  *   CellClass::Cell_Find_Object -- Returns ptr to RTTI type occupying cell *
  *   CellClass::Cell_Infantry -- Returns with pointer of first infantry unit. *
  *   CellClass::Cell_Object -- Returns with clickable object in cell. *
@@ -199,7 +199,7 @@ CellClass::CellClass() : ID(static_cast<int16_t>(TheMap().ID(this))) {
  *into account any stealth characteristics of object.                *
  *=============================================================================================*/
 int CellClass::Cell_Color(bool override) const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   const BuildingClass* object = Cell_Building();
   if (object && !object->Class->IsInvisible) {
@@ -235,7 +235,7 @@ int CellClass::Cell_Color(bool override) const {
  *function.                                            *
  *=============================================================================================*/
 TechnoClass* CellClass::Cell_Techno(int x, int y) const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   TechnoClass* close = nullptr;
   int32_t distance = 0;  // Recorded closest distance.
@@ -280,7 +280,7 @@ TechnoClass* CellClass::Cell_Techno(int x, int y) const {
  *   06/12/1995 JLB : Returns object class pointer.                        *
  *=========================================================================*/
 ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
   DCHECK(rtti != RTTI_NONE);
 
   ObjectClass* object = Cell_Occupier();
@@ -311,7 +311,7 @@ ObjectClass* CellClass::Cell_Find_Object(RTTIType rtti) const {
  *function.                                            *
  *=============================================================================================*/
 BuildingClass* CellClass::Cell_Building() const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   return dynamic_cast<BuildingClass*>(Cell_Find_Object(RTTI_BUILDING));
 }
@@ -332,7 +332,7 @@ BuildingClass* CellClass::Cell_Building() const {
  * HISTORY: * 05/18/1994 JLB : Created. *
  *=============================================================================================*/
 TerrainClass* CellClass::Cell_Terrain() const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   return dynamic_cast<TerrainClass*>(Cell_Find_Object(RTTI_TERRAIN));
 }
@@ -358,7 +358,7 @@ TerrainClass* CellClass::Cell_Terrain() const {
  * HISTORY: * 05/13/1994 JLB : Created. *
  *=============================================================================================*/
 ObjectClass* CellClass::Cell_Object(int x, int y) const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   /*
   **	Hack so that aircraft landed on helipads can still be selected if
@@ -387,9 +387,9 @@ ObjectClass* CellClass::Cell_Object(int x, int y) const {
 // chain.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Redraw_Objects(bool forced) {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
-  const CELL cell = Cell_Number();
+  const Cell cell = Cell_Number();
   if (!TheMap().In_View(cell) ||
       (!forced && MapEditClass::Is_Cell_Flagged(cell))) {
     return;
@@ -423,7 +423,7 @@ void CellClass::Redraw_Objects(bool forced) {
  *Checks for crushable walls and crushable object.                         *
  *=============================================================================================*/
 bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   /*
   **	During scenario initialization, passability is always guaranteed.
@@ -499,7 +499,7 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
  *pointer in cell object.                             *
  *=============================================================================================*/
 void CellClass::Recalc_Attributes() {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   /*
   **	Special override for interior terrain set so that a non-template or a
@@ -552,7 +552,7 @@ void CellClass::Recalc_Attributes() {
  * HISTORY: * 07/18/1994 JLB : Created. * 11/29/1994 JLB : Simplified. *
  *=============================================================================================*/
 void CellClass::Occupy_Down(ObjectClass* object) {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
   DCHECK(object != nullptr && object->IsActive);
 
   if (object == nullptr) {
@@ -656,7 +656,7 @@ void CellClass::Occupy_Down(ObjectClass* object) {
  *pointer in previous object.                         *
  *=============================================================================================*/
 void CellClass::Occupy_Up(ObjectClass* object) {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
   DCHECK(object != nullptr && object->IsActive);
 
   if (object == nullptr) {
@@ -750,7 +750,7 @@ void CellClass::Occupy_Up(ObjectClass* object) {
  *buildings are always marked down.                           *
  *=============================================================================================*/
 void CellClass::Overlap_Down(ObjectClass* object) {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
   DCHECK(object != nullptr && object->IsActive);
 
   ObjectClass** ptr = nullptr;
@@ -844,7 +844,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 void CellClass::Overlap_Up(ObjectClass* object) {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
   DCHECK(object != nullptr && object->IsActive);
 
   for (int index = 0; index < std::ssize(Overlappers); index++) {
@@ -871,7 +871,7 @@ void CellClass::Overlap_Up(ObjectClass* object) {
  * HISTORY: * 07/18/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass* CellClass::Cell_Unit() const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   return dynamic_cast<UnitClass*>(Cell_Find_Object(RTTI_UNIT));
 }
@@ -894,7 +894,7 @@ UnitClass* CellClass::Cell_Unit() const {
  * HISTORY: * 05/20/1996 JLB : Created. *
  *=============================================================================================*/
 VesselClass* CellClass::Cell_Vessel() const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   return dynamic_cast<VesselClass*>(Cell_Find_Object(RTTI_VESSEL));
 }
@@ -917,7 +917,7 @@ VesselClass* CellClass::Cell_Vessel() const {
  * HISTORY: * 12/21/1994 JLB : Created. *
  *=============================================================================================*/
 InfantryClass* CellClass::Cell_Infantry() const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   return dynamic_cast<InfantryClass*>(Cell_Find_Object(RTTI_INFANTRY));
 }
@@ -946,7 +946,7 @@ InfantryClass* CellClass::Cell_Infantry() const {
  *Objects added to draw process.                                           *
  *=============================================================================================*/
 void CellClass::Draw_It(PixelView& view, int x, int y) const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   const TemplateTypeClass* ttype = nullptr;
   int icon = 0;  // The icon number to use from the template set.
@@ -973,7 +973,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
     /*
     **	Draw debug cell visualization instead of normal terrain.
     */
-    const CELL cell = Cell_Number();
+    const Cell cell = Cell_Number();
     view.FillRect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
                   TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
                   TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
@@ -982,8 +982,8 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
         view, "%02X%02X\r%d%d%d\r%d %d",
         TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
         &ThePalettes().grey_scheme(), kTBlack,
-        TPF_EFNT | TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW, Cell_Y(cell),
-        Cell_X(cell), Zones.at(MZONE_NORMAL), Zones.at(MZONE_CRUSHER),
+        TPF_EFNT | TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW, cell.y(),
+        cell.x(), Zones.at(MZONE_NORMAL), Zones.at(MZONE_CRUSHER),
         Zones.at(MZONE_DESTROYER), Overlay, OverlayData);
   } else {
     if constexpr (config::kScenarioEditorEnabled) {
@@ -1148,13 +1148,11 @@ void CellClass::Draw_It(PixelView& view, int x, int y) const {
               const auto* tptr = dynamic_cast<const TemplateTypeClass*>(
                   TheMap().PendingObject);
               if (!tptr->Get_Image_Data().empty()) {
-                const CELL cell = Cell_Number();
-                icon = (Cell_X(cell) -
-                        Cell_X(static_cast<CELL>(TheMap().ZoneCell +
-                                                 TheMap().ZoneOffset))) +
-                       ((Cell_Y(cell) -
-                         Cell_Y(static_cast<CELL>(TheMap().ZoneCell +
-                                                  TheMap().ZoneOffset))) *
+                const Cell cell = Cell_Number();
+                icon = (cell.x() -
+                        TheMap().ZoneCell.Offset(TheMap().ZoneOffset).x()) +
+                       ((cell.y() -
+                         TheMap().ZoneCell.Offset(TheMap().ZoneOffset).y()) *
                         tptr->Width);
                 view.DrawStamp(tptr->Get_Image_Data(), icon, x, y, {},
                                WindowRect(WINDOW_TACTICAL));
@@ -1272,7 +1270,7 @@ void CellClass::Concrete_Calc() {}
  *partially-damaged walls.                               *
  *=============================================================================================*/
 void CellClass::Wall_Update() {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   static const game::FacingType _offsets[5] = {game::FACING_N, game::FACING_E,
                                                game::FACING_S, game::FACING_W,
@@ -1340,7 +1338,7 @@ void CellClass::Wall_Update() {
 }
 
 /***********************************************************************************************
- * CellClass::Cell_Coord -- Returns the coordinate of this cell. *
+ * CellClass::Center_Coord -- Returns the coordinate of this cell. *
  *                                                                                             *
  *    This support function will determine the coordinate of this cell and
  *return it.          *
@@ -1353,10 +1351,10 @@ void CellClass::Wall_Update() {
  *                                                                                             *
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
-Coordinate CellClass::Cell_Coord() const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+Coordinate CellClass::Center_Coord() const {
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
-  return ra::Cell_Coord(Cell_Number());
+  return Cell_Number().Center();
 }
 
 /***********************************************************************************************
@@ -1375,7 +1373,7 @@ Coordinate CellClass::Cell_Coord() const {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 int CellClass::Reduce_Tiberium(int levels) {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   int reducer = 0;
 
@@ -1410,7 +1408,7 @@ int CellClass::Reduce_Tiberium(int levels) {
  *Updates zone as necessary.                                               *
  *=============================================================================================*/
 bool CellClass::Reduce_Wall(int damage) {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   if (Overlay != OVERLAY_NONE) {
     bool destroyed = false;
@@ -1528,7 +1526,7 @@ int CellClass::Spot_Index(Coordinate coord) {
  *mix-up factor if center location is occupied.                     *
  *=============================================================================================*/
 Coordinate CellClass::Closest_Free_Spot(Coordinate coord, bool any) const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   const int spot_index = Spot_Index(coord);
 
@@ -1614,10 +1612,10 @@ Coordinate CellClass::Closest_Free_Spot(Coordinate coord, bool any) const {
  *scramble algorithm.                                        *
  *=============================================================================================*/
 int CellClass::Clear_Icon() const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
-  const CELL cell = Cell_Number();
-  return (Cell_X(cell) % 4) + ((Cell_Y(cell) % 4) * 4);
+  const Cell cell = Cell_Number();
+  return (cell.x() % 4) + ((cell.y() % 4) * 4);
   //	return((cell & 0x03) | ((unsigned(cell)>>5) & 0x0C));
 }
 
@@ -1646,7 +1644,7 @@ int CellClass::Clear_Icon() const {
 // Not const: scatters the units in the cell.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Incoming(Coordinate threat, bool forced, bool nokidding) {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   ObjectClass* object = nullptr;
 
@@ -1674,7 +1672,7 @@ void CellClass::Incoming(Coordinate threat, bool forced, bool nokidding) {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 int CellClass::Adjacent_Offset(game::FacingType face) const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   if (static_cast<unsigned>(face) >=
       magic_enum::enum_count<game::FacingType>()) {
@@ -1683,7 +1681,7 @@ int CellClass::Adjacent_Offset(game::FacingType face) const {
 
   // Check the index before forming the pointer: pointer arithmetic that leaves
   // the cell array is undefined even if the result is never dereferenced.
-  const int adjacent = Cell_Number() + AdjacentCell.at(face);
+  const int adjacent = Cell_Number().index() + AdjacentCell.at(face);
   if (adjacent < 0 || adjacent >= MAP_CELL_TOTAL) {
     return 0;
   }
@@ -1705,7 +1703,7 @@ int CellClass::Adjacent_Offset(game::FacingType face) const {
 // Not const: changes the other houses' threat values.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Adjust_Threat(HousesType house, int threat_value) {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   const int region = MapEditClass::Cell_Region(Cell_Number());
 
@@ -1743,7 +1741,7 @@ void CellClass::Adjust_Threat(HousesType house, int threat_value) {
  *the ore type.                                         *
  *=============================================================================================*/
 int32_t CellClass::Tiberium_Adjust(bool pregame) {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
   if ((Overlay != OVERLAY_NONE) &&
       (OverlayTypeClass::As_Reference(Overlay).Land == LAND_TIBERIUM)) {
     static const int _adj[9] = {0, 1, 3, 4, 6, 7, 8, 10, 11};
@@ -1846,7 +1844,7 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
 // Not const: opens the crate and grants its reward.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 bool CellClass::Goodie_Check(FootClass* object) {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   if (object != nullptr && Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(Overlay).IsCrate) {
@@ -2128,7 +2126,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     */
     if (TheRules().crate_anims().at(powerup) != ANIM_NONE) {
       base::NewPooled<AnimClass>(TheRules().crate_anims().at(powerup),
-                                 Cell_Coord());
+                                 Center_Coord());
     }
 
     /*
@@ -2171,7 +2169,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
       case CRATE_REVEAL:
         object->House->IsVisionary = true;
         if (object->House == ThePlayer()) {
-          for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
+          for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+            const Cell cell = Cell::FromIndex(cell_index);
             TheMap().Map_Cell(cell, ThePlayer());
           }
           TheMap().Flag_To_Redraw(true);
@@ -2232,7 +2231,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           auto* goodie_unit =
               dynamic_cast<UnitClass*>(utp->Create_One_Of(object->House));
           if (goodie_unit != nullptr) {
-            if (goodie_unit->Unlimbo(Cell_Coord())) {
+            if (goodie_unit->Unlimbo(Center_Coord())) {
               return false;
             }
 
@@ -2240,9 +2239,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
             **	Try to place the object into a nearby cell if something is
             *preventing *	placement at the crate location.
             */
-            const CELL cell = TheMap().Nearby_Location(
+            const Cell cell = TheMap().Nearby_Location(
                 Cell_Number(), goodie_unit->Class->Speed);
-            if (goodie_unit->Unlimbo(ra::Cell_Coord(cell))) {
+            if (goodie_unit->Unlimbo(cell.Center())) {
               return false;
             }
             base::DeletePooled(goodie_unit);
@@ -2305,7 +2304,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         }
         for (int index = 0; index < 5; index++) {
           const Coordinate frag_coord =
-              Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
+              Coord_Scatter(Center_Coord(), Random_Pick(0, 0x0200));
           base::NewPooled<AnimClass>(ANIM_FBALL1, frag_coord);
           damage = TheRules().crate_data().at(powerup);
           Explosion_Damage(frag_coord, damage, nullptr, WARHEAD_HE);
@@ -2316,7 +2315,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       **	A napalm blast is triggered.
       */
       case CRATE_NAPALM:
-        coord = Coordinate::Midpoint(Cell_Coord(), object->Center_Coord());
+        coord = Coordinate::Midpoint(Center_Coord(), object->Center_Coord());
         base::NewPooled<AnimClass>(ANIM_NAPALM3, coord);
         if (object != nullptr) {
           int d = TheRules().crate_data().at(powerup);
@@ -2336,7 +2335,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj && obj->Is_Techno() &&
-              Distance(Cell_Coord(), obj->Center_Coord()) <
+              Distance(Center_Coord(), obj->Center_Coord()) <
                   TheRules().CrateRadius) {
             dynamic_cast<TechnoClass*>(obj)->IsCloakable = true;
           }
@@ -2375,7 +2374,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj != nullptr && obj->Is_Techno() &&
-              Distance(Cell_Coord(), obj->Center_Coord()) <
+              Distance(Center_Coord(), obj->Center_Coord()) <
                   TheRules().CrateRadius &&
               dynamic_cast<TechnoClass*>(obj)->ArmorBias == 1) {
             const Fixed val =
@@ -2398,7 +2397,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj && obj->Is_Foot() &&
-              Distance(Cell_Coord(), obj->Center_Coord()) <
+              Distance(Center_Coord(), obj->Center_Coord()) <
                   TheRules().CrateRadius &&
               dynamic_cast<FootClass*>(obj)->SpeedBias == 1 &&
               obj->What_Am_I() != RTTI_AIRCRAFT) {
@@ -2423,7 +2422,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj && obj->Is_Techno() &&
-              Distance(Cell_Coord(), obj->Center_Coord()) <
+              Distance(Center_Coord(), obj->Center_Coord()) <
                   TheRules().CrateRadius &&
               dynamic_cast<TechnoClass*>(obj)->FirepowerBias == 1) {
             const Fixed val = dynamic_cast<TechnoClass*>(obj)->FirepowerBias *
@@ -2445,7 +2444,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj && obj->Is_Techno() &&
-              Distance(Cell_Coord(), obj->Center_Coord()) <
+              Distance(Center_Coord(), obj->Center_Coord()) <
                   TheRules().CrateRadius) {
             dynamic_cast<TechnoClass*>(obj)->IronCurtainCountDown.Set(
                 kTicksPerMinute *
@@ -2460,7 +2459,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       */
       case CRATE_VORTEX:
         if (!TheWorld().chronal_vortex().Is_Active()) {
-          TheWorld().chronal_vortex().Appear(Cell_Coord());
+          TheWorld().chronal_vortex().Appear(Center_Coord());
           TheWorld().chronal_vortex().Set_Target(object);
           PlaySoundEffectAt(VOC_TESLA_ZAP, object->Center_Coord());
         }
@@ -2488,7 +2487,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Flag_Place(HousesType house) {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   if (!IsFlagged && Is_Clear_To_Move(SPEED_TRACK, false, false)) {
     IsFlagged = true;
@@ -2514,7 +2513,7 @@ bool CellClass::Flag_Place(HousesType house) {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Flag_Remove() {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   if (IsFlagged) {
     IsFlagged = false;
@@ -2543,7 +2542,7 @@ bool CellClass::Flag_Remove() {
 // Not const: starts the occupants' shimmer effect.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void CellClass::Shimmer() {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   ObjectClass* object = Cell_Occupier();
 
@@ -2588,7 +2587,7 @@ void CellClass::Shimmer() {
 bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
                                  bool ignorevehicles, int zone,
                                  MZoneType check) const {
-  DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
+  DCHECK(static_cast<unsigned>(Cell_Number().index()) <= MAP_CELL_TOTAL);
 
   /*
   **	Flying objects always consider every cell passable since they can fly
@@ -2883,14 +2882,12 @@ bool CellClass::Can_Tiberium_Germinate() const {
 
 CellClass& CellClass::Adjacent_Cell(game::FacingType face) {
   const int offset = Adjacent_Offset(face);
-  return offset == 0 ? *this
-                     : TheMap().at(static_cast<CELL>(Cell_Number() + offset));
+  return offset == 0 ? *this : TheMap().at(Cell_Number().Offset(offset));
 }
 
 const CellClass& CellClass::Adjacent_Cell(game::FacingType face) const {
   const int offset = Adjacent_Offset(face);
-  return offset == 0 ? *this
-                     : TheMap().at(static_cast<CELL>(Cell_Number() + offset));
+  return offset == 0 ? *this : TheMap().at(Cell_Number().Offset(offset));
 }
 
 }  // namespace ra

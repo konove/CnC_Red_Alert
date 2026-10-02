@@ -122,8 +122,8 @@ void MapClass::Serialize(Archive& ar) {
         MapCellY > MAP_CELL_H - MapCellHeight || TiberiumGrowthCount < 0 ||
         TiberiumGrowthCount > std::ssize(TiberiumGrowth) ||
         TiberiumSpreadCount < 0 ||
-        TiberiumSpreadCount > std::ssize(TiberiumSpread) || TiberiumScan < 0 ||
-        TiberiumScan >= MAP_CELL_TOTAL) {
+        TiberiumSpreadCount > std::ssize(TiberiumSpread) ||
+        TiberiumScan.index() < 0 || TiberiumScan.index() >= MAP_CELL_TOTAL) {
       ar.Fail("invalid map dimensions or ore scan state");
       return;
     }
@@ -272,7 +272,7 @@ void RadarClass::ResetTransientUiState() {
   SpecialRadarFrame = 0;
   RadarAnimFrame = IsRadarActive ? kRadarActivatedFrame : 0;
   PixelPtr = 0;
-  std::ranges::fill(PixelStack, 0);
+  std::ranges::fill(PixelStack, Cell{});
 }
 
 void PowerClass::ResetTransientUiState() {
@@ -361,7 +361,8 @@ void MouseClass::Serialize(Archive& ar) {
 
   int32_t count = 0;
   if constexpr (!Archive::kIsReading) {
-    for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
+    for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+      const Cell cell = Cell::FromIndex(cell_index);
       if ((*this).at(cell).Should_Save()) {
         ++count;
       }
@@ -373,11 +374,11 @@ void MouseClass::Serialize(Archive& ar) {
       ar.Fail("invalid saved cell count");
       return;
     }
-    CELL previous = -1;
+    Cell previous = Cell::None();
     for (int i = 0; i < count; ++i) {
-      CELL cell = 0;
+      Cell cell{};
       ar(cell);
-      if (!ar.ok() || cell <= previous || cell >= MAP_CELL_TOTAL) {
+      if (!ar.ok() || cell <= previous || cell.index() >= MAP_CELL_TOTAL) {
         ar.Fail("invalid or duplicate saved cell index");
         return;
       }
@@ -389,7 +390,8 @@ void MouseClass::Serialize(Archive& ar) {
     }
     TheWorld().last_theater() = TheScenario().Theater;
   } else {
-    for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
+    for (int cell_index = 0; cell_index < MAP_CELL_TOTAL; ++cell_index) {
+      Cell cell = Cell::FromIndex(cell_index);  // ar() takes a mutable field.
       if ((*this).at(cell).Should_Save()) {
         ar(cell, (*this).at(cell));
       }

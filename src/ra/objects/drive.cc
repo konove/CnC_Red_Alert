@@ -230,7 +230,7 @@ void DriveClass::Scatter(Coordinate threat, bool forced, bool nokidding) {
     for (const game::FacingType face :
          magic_enum::enum_values<game::FacingType>()) {
       const game::FacingType newface = toface + face;
-      CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
+      const Cell newcell = Adjacent_Cell(Cell::Containing(Coord), newface);
 
       if (TheMap().In_Radar(newcell) &&
           Can_Enter_Cell(newcell) == game::MOVE_OK) {
@@ -357,7 +357,7 @@ void DriveClass::Do_Turn(game::DirType dir) {
  * HISTORY: * 10/21/1996 JLB : Created. * 10/31/1996 JLB : Handles flag teleport
  *case.                                              *
  *=============================================================================================*/
-bool DriveClass::Teleport_To(CELL cell) {
+bool DriveClass::Teleport_To(Cell cell) {
   /*
   **	All cargo gets destroyed.
   */
@@ -381,13 +381,13 @@ bool DriveClass::Teleport_To(CELL cell) {
   if (What_Am_I() == RTTI_UNIT &&
       dynamic_cast<UnitClass*>(this)->Flagged != HOUSE_NONE) {
     HouseClass::As_Pointer(dynamic_cast<UnitClass*>(this)->Flagged)
-        ->Flag_Attach(Coord_Cell(Coord));
+        ->Flag_Attach(Cell::Containing(Coord));
   }
 
   if (Can_Enter_Cell(cell) != game::MOVE_OK) {
     cell = TheMap().Nearby_Location(cell, Techno_Type_Class()->Speed);
   }
-  Coord = Cell_Coord(cell);
+  Coord = cell.Center();
   Mark(MARK_DOWN);
   return true;
 }
@@ -689,7 +689,7 @@ bool DriveClass::While_Moving() {
 
             c = Adjacent_Cell(c, nextface);
 
-            switch (Can_Enter_Cell(Coord_Cell(c), nextface)) {
+            switch (Can_Enter_Cell(Cell::Containing(c), nextface)) {
               case game::MOVE_OK:
                 IsOnShortTrack = false;  // Shouldn't be necessary, but...
                 TrackNumber = tnum;
@@ -797,7 +797,7 @@ bool DriveClass::Per_Cell_Process(PCPType why) {
   DCHECK(IsActive);
 
   if (why == PCP_END) {
-    const CELL cell = Coord_Cell(Coord);
+    const Cell cell = Cell::Containing(Coord);
 
     /*
     **	Check to see if it has reached its destination. If so, then clear the
@@ -901,8 +901,8 @@ bool DriveClass::Start_Of_Move() {
         *destination is *	blocked by a friendly temporary blockage, then
         *cause that blockage *	to scatter.
         */
-        const CELL cell =
-            Adjacent_Cell(Coord_Cell(Center_Coord()), PrimaryFacing.Current());
+        const Cell cell = Adjacent_Cell(Cell::Containing(Center_Coord()),
+                                        PrimaryFacing.Current());
         if (TheMap().In_Radar(cell)) {
           const game::MoveType ok = Can_Enter_Cell(cell);
           if (ok == game::MOVE_TEMP) {
@@ -967,8 +967,8 @@ bool DriveClass::Start_Of_Move() {
     **	blocked by a friendly temporary blockage, then cause that blockage
     **	to scatter.
     */
-    const CELL cell =
-        Adjacent_Cell(Coord_Cell(Center_Coord()), base::At(Path, 0));
+    const Cell cell =
+        Adjacent_Cell(Cell::Containing(Center_Coord()), base::At(Path, 0));
     if (TheMap().In_Radar(cell)) {
       const game::MoveType ok = Can_Enter_Cell(cell);
       if (ok == game::MOVE_TEMP) {
@@ -1020,7 +1020,7 @@ bool DriveClass::Start_Of_Move() {
    **	reason), then abort the path list and set the speed to zero. The
    ** next time this routine is called, a new path will be generated.
    */
-  CELL destcell = Coord_Cell(dest);  // Cell of destination.
+  Cell destcell = Cell::Containing(dest);  // Cell of destination.
   Mark(MARK_UP);
   game::MoveType cando = Can_Enter_Cell(destcell, facing);
   Mark(MARK_DOWN);
@@ -1119,7 +1119,7 @@ bool DriveClass::Start_Of_Move() {
     TrackNumber = -1;
     dest = Coordinate{};
   } else {
-    Overrun_Square(Coord_Cell(dest), true);
+    Overrun_Square(Cell::Containing(dest), true);
 
     /*
     **	Determine which track to use (based on recorded path).
@@ -1154,7 +1154,7 @@ bool DriveClass::Start_Of_Move() {
           return false;
         }
         dest = Adjacent_Cell(dest, nextface);
-        destcell = Coord_Cell(dest);
+        destcell = Cell::Containing(dest);
         cando = Can_Enter_Cell(destcell);
       }
       if (!IsActive) {
@@ -1265,7 +1265,7 @@ void DriveClass::AI() {
       MoebiusCountDown.IsFinished()) {
     IsMoebius = false;
     Teleport_To(MoebiusCell);
-    MoebiusCell = 0;
+    MoebiusCell = Cell{};
   }
 
   /*

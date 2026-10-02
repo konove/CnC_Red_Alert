@@ -161,7 +161,7 @@ void CarryoverClass::Serialize(Archive& ar) {
   }
   ar(Cell, Strength, House);
   if constexpr (Archive::kIsReading) {
-    if (Cell < 0 || Cell >= MAP_CELL_TOTAL ||
+    if (Cell.index() < 0 || Cell.index() >= MAP_CELL_TOTAL ||
         !magic_enum::enum_contains(House)) {
       ar.Fail("invalid carryover cell or house");
     }

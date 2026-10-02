@@ -381,7 +381,7 @@ static bool Consists_Only_Of_Infantry(const FootClass* first) {
  *                                                                                             *
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
-static TechnoClass* Who_Can_Pop_Out_Of(CELL origin) {
+static TechnoClass* Who_Can_Pop_Out_Of(Cell origin) {
   CellClass* cellptr = &TheMap().at(origin);
   TechnoClass* candidate = nullptr;
 
@@ -489,7 +489,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   const auto eface = static_cast<game::FacingType>(static_cast<int>(source) *
                                                    2);  // Facing to enter map.
 
-  CELL cell = TheMap().Calculated_Cell(source, teamtype->Origin, -1,
+  Cell cell = TheMap().Calculated_Cell(source, teamtype->Origin, Cell::None(),
                                        object->Techno_Type_Class()->Speed);
   /*
   **	For the ants, they will pop out of the ant hill directly.
@@ -497,25 +497,26 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   const auto* unit = dynamic_cast<UnitClass*>(object);
   if (teamtype->Origin != -1 && unit != nullptr &&
       (*unit == UNIT_ANT1 || *unit == UNIT_ANT2 || *unit == UNIT_ANT3)) {
-    const CELL newcell = base::At(TheScenario().Waypoint, teamtype->Origin);
-    if ((newcell != -1) && (TheMap().at(newcell).TType == TEMPLATE_HILL01)) {
+    const Cell newcell = base::At(TheScenario().Waypoint, teamtype->Origin);
+    if ((newcell != Cell::None()) &&
+        (TheMap().at(newcell).TType == TEMPLATE_HILL01)) {
       cell = newcell;
     }
   }
 
-  CELL newcell = cell;
+  Cell newcell = cell;
 
   auto* o = dynamic_cast<FootClass*>(object->Next);
   object->Next = nullptr;
   bool okvoice = false;
-  while (newcell > 0 && object != nullptr) {
+  while (newcell.index() > 0 && object != nullptr) {
     game::DirType desiredfacing = game::Facing_Dir(eface);
     if (object->What_Am_I() == RTTI_AIRCRAFT) {
       desiredfacing = Random_Pick(game::DIR_N, kMaxRandomDirection);
     }
 
     TheWorld().scenario_init()++;
-    if (object->Unlimbo(Cell_Coord(newcell), desiredfacing)) {
+    if (object->Unlimbo(newcell.Center(), desiredfacing)) {
       okvoice = true;
 
       /*
@@ -537,7 +538,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       bool found = false;
       for (const game::FacingType adj :
            magic_enum::enum_values<game::FacingType>()) {
-        const CELL trycell = Adjacent_Cell(newcell, adj);
+        const Cell trycell = Adjacent_Cell(newcell, adj);
         if (!TheMap().In_Radar(trycell) &&
             object->Can_Enter_Cell(trycell, adj) == game::MOVE_OK) {
           newcell = trycell;
@@ -548,7 +549,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       if (found) {
         continue;
       }
-      newcell = -1;
+      newcell = Cell::None();
     }
     TheWorld().scenario_init()--;
 
@@ -626,7 +627,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
       */
       if (!another && mission == TMISSION_NONE) {
         mission = TMISSION_MOVECELL;
-        argument = TheMap().Calculated_Cell(house->Control.Edge);
+        argument = TheMap().Calculated_Cell(house->Control.Edge).index();
       }
 
       /*
@@ -750,13 +751,14 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
         source = SOURCE_NORTH;
         break;
     }
-    const CELL newcell = TheMap().Calculated_Cell(source, -1, -1, SPEED_WINGED);
+    const Cell newcell =
+        TheMap().Calculated_Cell(source, -1, Cell::None(), SPEED_WINGED);
 
     /*
     ** Try and place the object onto the map.
     */
     TheWorld().scenario_init()++;
-    const bool placed = obj->Unlimbo(Cell_Coord(newcell), game::DIR_N);
+    const bool placed = obj->Unlimbo(newcell.Center(), game::DIR_N);
     TheWorld().scenario_init()--;
     if (placed) {
       /*

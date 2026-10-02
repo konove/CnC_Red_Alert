@@ -80,9 +80,7 @@
 #include "ra/ai/trigger.h"
 #include "ra/ai/trigtype.h"
 #include "ra/assets/screen.h"
-#include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
@@ -805,7 +803,7 @@ void MapEditClass::Start_Placement() {
  *   11/04/1994 BR : Created.                                              *
  *=========================================================================*/
 int MapEditClass::Place_Object() {
-  CELL template_cell = 0;    // cell being checked for template
+  Cell template_cell{};      // cell being checked for template
   Coordinate obj_coord{};    // coord of occupier object
                              //	BaseNodeClass node;
                              //// for adding to an AI Base
@@ -828,8 +826,7 @@ int MapEditClass::Place_Object() {
       /*
       **	Check this cell for an occupier
       */
-      template_cell =
-          static_cast<CELL>((ZoneCell + ZoneOffset) + occupy.front());
+      template_cell = ZoneCell.Offset(ZoneOffset + occupy.front());
       if ((*this).at(template_cell).Cell_Occupier()) {
         ObjectClass* occupier =
             (*this).at(template_cell).Cell_Occupier();  // occupying object
@@ -854,15 +851,16 @@ int MapEditClass::Place_Object() {
         (*this).at(template_cell).TType =
             dynamic_cast<const TemplateTypeClass*>(PendingObject)->Type;
         (*this).at(template_cell).TIcon = static_cast<unsigned char>(
-            Cell_X(occupy.front()) +
-            (Cell_Y(occupy.front()) *
+            Cell::FromIndex(occupy.front()).x() +
+            (Cell::FromIndex(occupy.front()).y() *
              dynamic_cast<const TemplateTypeClass*>(PendingObject)->Width));
         (*this).at(template_cell).Recalc_Attributes();
 
         /*
         **	Try to put the object back down
         */
-        if (occupier->Can_Enter_Cell(Coord_Cell(obj_coord)) != game::MOVE_OK) {
+        if (occupier->Can_Enter_Cell(Cell::Containing(obj_coord)) !=
+            game::MOVE_OK) {
           okflag = false;
         }
 
@@ -885,7 +883,7 @@ int MapEditClass::Place_Object() {
     **	If it's still OK after ALL THAT, place the template
     */
     if (okflag) {
-      if (PendingObjectPtr->Unlimbo(Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)))) {
+      if (PendingObjectPtr->Unlimbo(ZoneCell.Offset(ZoneOffset).Center())) {
         /*
         **	Loop through all cells occupied by this template, and clear the
         **	smudge & overlay.
@@ -895,8 +893,7 @@ int MapEditClass::Place_Object() {
           /*
           **	Get cell for this occupy item
           */
-          template_cell =
-              static_cast<CELL>((ZoneCell + ZoneOffset) + occupy.front());
+          template_cell = ZoneCell.Offset(ZoneOffset + occupy.front());
 
           /*
           **	Clear smudge & overlay
@@ -988,7 +985,7 @@ int MapEditClass::Place_Object() {
   /*
   **	Placing an object
   */
-  if (PendingObjectPtr->Unlimbo(Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)))) {
+  if (PendingObjectPtr->Unlimbo(ZoneCell.Offset(ZoneOffset).Center())) {
     /*
     ** Update the Tiberium computation if we're placing an overlay
     */
@@ -1004,10 +1001,10 @@ int MapEditClass::Place_Object() {
     if (BaseBuilding && PendingObject->What_Am_I() == RTTI_BUILDINGTYPE) {
       //			node.Type = ((BuildingTypeClass
       //*)PendingObject)->Type; 			node.Cell =
-      // Coord_Cell(PendingObjectPtr->Coord);
+      // Cell::Containing(PendingObjectPtr->Coord);
       TheWorld().base().Nodes.emplace_back(
           dynamic_cast<const BuildingTypeClass*>(PendingObject)->Type,
-          Coord_Cell(PendingObjectPtr->Coord));
+          Cell::Containing(PendingObjectPtr->Coord));
     }
 
     PendingObjectPtr = nullptr;
@@ -1618,7 +1615,7 @@ void MapEditClass::Place_Trigger(int x, int y) {
   /*
   **	Get cell for x,y
   */
-  CELL const cell = Click_Cell_Calc(x, y);  // Cell that was selected.
+  const Cell cell = Click_Cell_Calc(x, y);  // Cell that was selected.
 
   /*
   **	Convert x,y to offset from cell upper-left
@@ -1780,7 +1777,7 @@ void MapEditClass::Build_Base_To(int percent) {
     ** If unlimbo fails, error out
     */
     TheWorld().scenario_init()++;
-    if (!obj->Unlimbo(Cell_Coord(base::At(TheWorld().base().Nodes, i).Cell))) {
+    if (!obj->Unlimbo(base::At(TheWorld().base().Nodes, i).Cell.Center())) {
       base::DeletePooled(obj);
       WWMessageBox().Process("Unable to build base!");
       TheWorld().scenario_init()--;

@@ -51,7 +51,7 @@ std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
     return _list;
   }
 
-  const CELL origin_cell = Coord_Cell(coord);
+  const Cell origin_cell = Cell::Containing(coord);
   const int x = coord.x();
   const int y = coord.y();
 
@@ -77,8 +77,8 @@ std::span<const int16_t> Coord_Spillage_List(const Coordinate coord,
   std::span<int16_t> ptr(offsets);
   for (int yy = cell_top; yy <= cell_bottom; yy++) {
     for (int xx = cell_left; xx <= cell_right; xx++) {
-      if (const auto offset =
-              static_cast<int16_t>(XY_Cell(xx, yy) - origin_cell);
+      if (const auto offset = static_cast<int16_t>(
+              Cell::FromXY(xx, yy).index() - origin_cell.index());
           !no_center || offset != 0) {
         base::ConsumeFront(ptr) = offset;
         count++;

@@ -2153,7 +2153,7 @@ void TemplateTypeClass::Prep_For_Add() {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-bool TemplateTypeClass::Create_And_Place(CELL cell,
+bool TemplateTypeClass::Create_And_Place(Cell cell,
                                          HousesType /*unused*/) const {
   return base::NewPooled<TemplateClass>(Type, cell) != nullptr;
 }

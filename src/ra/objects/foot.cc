@@ -235,7 +235,7 @@ bool FootClass::Mark(MarkType mark) {
 
   if (TechnoClass::Mark(mark)) {
     //		short list[32];
-    const CELL cell = Coord_Cell(Coord);
+    const Cell cell = Cell::Containing(Coord);
 
     if (In_Which_Layer() != LAYER_GROUND &&
         (mark == MARK_UP || mark == MARK_DOWN)) {
@@ -298,7 +298,7 @@ bool FootClass::Basic_Path() {
   Path[0] = game::FACING_NONE;
 
   if (NavCom) {
-    CELL cell = NavCom.AsCell();
+    Cell cell = NavCom.AsCell();
 
     /*
     **	When the navigation computer is set to a location that is impassible,
@@ -309,24 +309,25 @@ bool FootClass::Basic_Path() {
     const int checkdist = Team != nullptr ? TheRules().StrayDistance
                                           : TheRules().CloseEnoughDistance;
     if (Can_Enter_Cell(cell) > game::MOVE_CLOAK && dist > checkdist) {
-      const CELL cell2 = TheMap().Nearby_Location(
+      const Cell cell2 = TheMap().Nearby_Location(
           cell, Techno_Type_Class()->Speed,
           TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone),
           Techno_Type_Class()->MZone);
-      if (cell2 != 0 &&
-          ra::Distance(Cell_Coord(cell), Cell_Coord(cell2)) < dist) {
+      if (cell2.index() != 0 &&
+          ra::Distance(cell.Center(), cell2.Center()) < dist) {
         cell = cell2;
       }
     }
 
     if (What_Am_I() == RTTI_INFANTRY) {
-      const CELL mycell = Coord_Cell(Center_Coord());
+      const Cell mycell = Cell::Containing(Center_Coord());
       ObjectClass* obj = TheMap().at(mycell).Cell_Occupier();
       while (obj) {
         if (obj != this && obj->What_Am_I() == RTTI_INFANTRY) {
           auto* inf = dynamic_cast<InfantryClass*>(obj);
           if (inf->NavCom == NavCom && inf->Path[0] != game::FACING_NONE) {
-            if (Coord_Cell(inf->Head_To_Coord()) == Coord_Cell(inf->Coord)) {
+            if (Cell::Containing(inf->Head_To_Coord()) ==
+                Cell::Containing(inf->Coord)) {
               base::CopyBytes(std::as_writable_bytes(std::span(Path)),
                               std::as_bytes(std::span(inf->Path).subspan(1)),
                               sizeof(Path) - sizeof(Path[0]));
@@ -848,8 +849,8 @@ void FootClass::Approach_Target() {
 
       const Coordinate tcoord = TarCom.AsCoordinate();
       Coordinate trycoord{};
-      const CELL tcell = Coord_Cell(tcoord);
-      CELL trycell = tcell;
+      const Cell tcell = Cell::Containing(tcoord);
+      Cell trycell = tcell;
       const game::DirType dir = Direction256(tcoord, Center_Coord());
       bool found = false;
 
@@ -869,7 +870,7 @@ void FootClass::Approach_Target() {
               Coord_Move(tcoord, dir + _angle, static_cast<uint16_t>(range));
 
           if (ra::Distance(trycoord, tcoord) < range) {
-            trycell = Coord_Cell(trycoord);
+            trycell = Cell::Containing(trycoord);
             if (TheMap().In_Radar(trycell) &&
                 TheMap().at(trycell).Is_Clear_To_Move(
                     Techno_Type_Class()->Speed, false, false,
@@ -1198,7 +1199,8 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
                     .at(object->Center_Coord())
                     .Zones.at(Techno_Type_Class()->MZone)) {
           targ = Target::FromCell(TheMap().Nearby_Location(
-              Coord_Cell(object->Center_Coord()), Techno_Type_Class()->Speed,
+              Cell::Containing(object->Center_Coord()),
+              Techno_Type_Class()->Speed,
               TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone),
               Techno_Type_Class()->MZone));
         }
@@ -1255,7 +1257,7 @@ void FootClass::Active_Click_With(ActionType action, ObjectClass* object) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void FootClass::Active_Click_With(ActionType action, CELL cell) {
+void FootClass::Active_Click_With(ActionType action, Cell cell) {
   DCHECK(IsActive);
 
   action = What_Action(cell);
@@ -1286,7 +1288,8 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
         const CellClass* cellptr =
             &TheMap().at(Target::FromCoordinate(Center_Coord()).AsCell());
         if (What_Am_I() != RTTI_AIRCRAFT) {
-          if (Can_Enter_Cell(Coord_Cell(Center_Coord())) == game::MOVE_OK) {
+          if (Can_Enter_Cell(Cell::Containing(Center_Coord())) ==
+              game::MOVE_OK) {
             cell = TheMap().Nearby_Location(
                 cell, Techno_Type_Class()->Speed,
                 cellptr->Zones.at(Techno_Type_Class()->MZone),
@@ -1387,7 +1390,7 @@ bool FootClass::Per_Cell_Process(PCPType why) {
     if (Cloak == game::CLOAKED) {
       for (const game::FacingType face :
            magic_enum::enum_values<game::FacingType>()) {
-        const CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
+        const Cell cell = Adjacent_Cell(Cell::Containing(Coord), face);
 
         if (TheMap().In_Radar(cell)) {
           const TechnoClass* techno = TheMap().at(cell).Cell_Techno();
@@ -1429,7 +1432,7 @@ bool FootClass::Per_Cell_Process(PCPType why) {
     if (Cloak != game::CLOAKED) {
       TriggerClass* trigger = TheMap().at(Coord).Trigger;
       if (trigger != nullptr) {
-        trigger->Spring(TEVENT_PLAYER_ENTERED, this, Coord_Cell(Coord));
+        trigger->Spring(TEVENT_PLAYER_ENTERED, this, Cell::Containing(Coord));
         if (!IsActive) {
           return true;
         }
@@ -1438,15 +1441,17 @@ bool FootClass::Per_Cell_Process(PCPType why) {
       /*
       **	Check for horizontal trigger crossing.
       */
-      const int x = Cell_X(Coord_Cell(Coord));
-      const int y = Cell_Y(Coord_Cell(Coord));
+      const int x = Cell::Containing(Coord).x();
+      const int y = Cell::Containing(Coord).y();
       for (int index = 0; index < TheMap().MapCellWidth; index++) {
-        trigger = TheMap().at(XY_Cell(index + TheMap().MapCellX, y)).Trigger;
+        trigger =
+            TheMap().at(Cell::FromXY(index + TheMap().MapCellX, y)).Trigger;
         if ((trigger != nullptr) &&
             (trigger->Class->Event1.Event == TEVENT_CROSS_HORIZONTAL ||
              (trigger->Class->EventControl != MULTI_ONLY &&
               trigger->Class->Event2.Event == TEVENT_CROSS_HORIZONTAL))) {
-          trigger->Spring(TEVENT_CROSS_HORIZONTAL, this, Coord_Cell(Coord));
+          trigger->Spring(TEVENT_CROSS_HORIZONTAL, this,
+                          Cell::Containing(Coord));
           if (!IsActive) {
             return true;
           }
@@ -1457,12 +1462,13 @@ bool FootClass::Per_Cell_Process(PCPType why) {
       **	Check for vertical trigger crossing.
       */
       for (int index = 0; index < TheMap().MapCellHeight; index++) {
-        trigger = TheMap().at(XY_Cell(x, index + TheMap().MapCellY)).Trigger;
+        trigger =
+            TheMap().at(Cell::FromXY(x, index + TheMap().MapCellY)).Trigger;
         if ((trigger != nullptr) &&
             (trigger->Class->Event1.Event == TEVENT_CROSS_VERTICAL ||
              (trigger->Class->EventControl != MULTI_ONLY &&
               trigger->Class->Event2.Event == TEVENT_CROSS_VERTICAL))) {
-          trigger->Spring(TEVENT_CROSS_VERTICAL, this, Coord_Cell(Coord));
+          trigger->Spring(TEVENT_CROSS_VERTICAL, this, Cell::Containing(Coord));
           if (!IsActive) {
             return true;
           }
@@ -1482,7 +1488,7 @@ bool FootClass::Per_Cell_Process(PCPType why) {
               trigger->Class->Event2.Event == TEVENT_ENTERS_ZONE)) &&
             (TheMap().at(trigger->Cell).Zones.at(Techno_Type_Class()->MZone) ==
              TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone))) {
-          trigger->Spring(TEVENT_ENTERS_ZONE, this, Coord_Cell(Coord));
+          trigger->Spring(TEVENT_ENTERS_ZONE, this, Cell::Containing(Coord));
           if (!IsActive) {
             return true;
           }
@@ -1642,7 +1648,8 @@ RadioMessageType FootClass::Receive_Message(RadioClass* from,
     */
     case RADIO_MOVE_HERE:
       if (NavCom != Target::FromPacked(param)) {
-        if (Target::FromCell(Coord_Cell(Coord)) == Target::FromPacked(param)) {
+        if (Target::FromCell(Cell::Containing(Coord)) ==
+            Target::FromPacked(param)) {
           return RADIO_YEA_NOW_WHAT;
         }
         if (Mission == MISSION_GUARD && MissionQueue == MISSION_NONE) {
@@ -2100,7 +2107,7 @@ int FootClass::Offload_Tiberium_Bail() {
  *                                                                                             *
  * HISTORY: * 07/19/1995 JLB : Created. *
  *=============================================================================================*/
-game::MoveType FootClass::Can_Enter_Cell(CELL /*unused*/,
+game::MoveType FootClass::Can_Enter_Cell(Cell /*unused*/,
                                          game::FacingType /*unused*/) const {
   DCHECK(IsActive);
 
@@ -2246,19 +2253,19 @@ Coordinate FootClass::Likely_Coord() const {
  *                                                                                             *
  * HISTORY: * 03/11/1996 JLB : Created. *
  *=============================================================================================*/
-CELL FootClass::Adjust_Dest(CELL cell) const {
+Cell FootClass::Adjust_Dest(Cell cell) const {
   DCHECK(IsActive);
 
   if (IsFormationMove) {
-    const int xdest = Cell_X(cell);
-    const int ydest = Cell_Y(cell);
+    const int xdest = cell.x();
+    const int ydest = cell.y();
 
     const int newx = Bound(XFormOffset + xdest, TheMap().MapCellX,
                            TheMap().MapCellX + TheMap().MapCellWidth - 1);
     const int newy = Bound(YFormOffset + ydest, TheMap().MapCellY,
                            TheMap().MapCellY + TheMap().MapCellHeight - 1);
 
-    cell = XY_Cell(newx, newy);
+    cell = Cell::FromXY(newx, newy);
   }
   return cell;
 }
@@ -2562,7 +2569,7 @@ int FootClass::Mission_Retreat() {
       if (NavCom) {
         Status = kTravelling;
       } else {
-        CELL cell = 0;
+        Cell cell{};
 
         /*
         **	If this is part of a team, then pick the edge where the team as
@@ -2571,20 +2578,20 @@ int FootClass::Mission_Retreat() {
         if (Team != nullptr && Team->Class->Origin != -1) {
           cell = TheMap().Calculated_Cell(
               House->Control.Edge, Team->Class->Origin,
-              Coord_Cell(Center_Coord()), Techno_Type_Class()->Speed);
+              Cell::Containing(Center_Coord()), Techno_Type_Class()->Speed);
         }
 
         /*
         **	If an edge hasn't been found, then try to find one that is not
         *based on any *	team information.
         */
-        if (cell == 0) {
+        if (cell.index() == 0) {
           cell = TheMap().Calculated_Cell(House->Control.Edge, -1,
-                                          Coord_Cell(Center_Coord()),
+                                          Cell::Containing(Center_Coord()),
                                           Techno_Type_Class()->Speed);
         }
 
-        DCHECK(cell == 0);  // An edge cell must be found!
+        DCHECK(cell.index() == 0);  // An edge cell must be found!
 
         Assign_Destination(Target::FromCell(cell));
         Status = kTravelling;

@@ -65,7 +65,6 @@
 #include "base/types.h"
 #include "engine/stream/archive.h"
 #include "magic_enum/magic_enum.hpp"
-#include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/data/ccini.h"
 #include "ra/map/map.h"
@@ -157,7 +156,7 @@ BuildingClass* BaseClass::Get_Building(int index) const {
   ** there, return a pointer to it.
   */
   const auto& node = base::At(Nodes, index);
-  const CELL target_cell = node.Cell;
+  const Cell target_cell = node.Cell;
 
   // Create a reference to the map cell to avoid repeated lookups.
   const auto& map_cell = TheMap().at(target_cell);
@@ -185,7 +184,7 @@ BuildingClass* BaseClass::Get_Building(int index) const {
 
     // 4. Location Check: Ensure the building is actually AT this cell
     // coordinate.
-    if (Coord_Cell(building->Coord) != target_cell) {
+    if (Cell::Containing(building->Coord) != target_cell) {
       return nullptr;
     }
 
@@ -237,7 +236,7 @@ bool BaseClass::Is_Node(const BuildingClass* obj) {
 BaseNodeClass* BaseClass::Get_Node(const BuildingClass* obj) {
   for (int i = 0; i < std::ssize(Nodes); i++) {
     if (obj->Class->Type == base::At(Nodes, i).Type &&
-        Coord_Cell(obj->Coord) == base::At(Nodes, i).Cell) {
+        Cell::Containing(obj->Coord) == base::At(Nodes, i).Cell) {
       return &base::At(Nodes, i);
     }
   }
@@ -259,7 +258,7 @@ BaseNodeClass* BaseClass::Get_Node(const BuildingClass* obj) {
  *                                                                                             *
  * HISTORY: * 03/12/1996 JLB : Created. *
  *=============================================================================================*/
-BaseNodeClass* BaseClass::Get_Node(CELL cell) {
+BaseNodeClass* BaseClass::Get_Node(Cell cell) {
   for (int index = 0; index < std::ssize(Nodes); index++) {
     if (cell == base::At(Nodes, index).Cell) {
       return &base::At(Nodes, index);
@@ -318,7 +317,7 @@ BaseNodeClass* BaseClass::Next_Buildable(StructType type) {
 /***********************************************************************************************
  * BaseClass::Read_INI -- INI reading routine *
  *                                                                                             *
- * INI entry format: * BLDG=CELL * BLDG=CELL *
+ * INI entry format: * BLDG=Cell * BLDG=Cell *
  *        ... *
  *                                                                                             *
  * INPUT: * buffer      pointer to loaded INI file *
@@ -366,7 +365,8 @@ void BaseClass::Read_INI(CCINIClass& ini) {
     /*
     ** Read & set the node's coordinate
     */
-    node.Cell = base::ParseIntegerOr<CELL>(tokens.Next(), 0);
+    node.Cell =
+        Cell::FromIndex(base::ParseIntegerOr<int16_t>(tokens.Next(), 0));
 
     /*
     ** Add this node to the Base's list
@@ -420,7 +420,7 @@ void BaseClass::Write_INI(CCINIClass& ini) {
       absl::SNPrintF(
           buf, sizeof(buf), "%s,%d",
           BuildingTypeClass::As_Reference(base::At(Nodes, i).Type).IniName,
-          base::At(Nodes, i).Cell);
+          base::At(Nodes, i).Cell.index());
 
       ini.Put_String(INI_Name(), uname, buf);
     }
@@ -443,7 +443,7 @@ void BaseClass::Serialize(Archive& ar) {
       BaseNodeClass node;
       ar(node.Type, node.Cell);
       if (!ar.ok() || !magic_enum::enum_contains(node.Type) ||
-          node.Cell < 0 || node.Cell >= MAP_CELL_TOTAL) {
+          node.Cell.index() < 0 || node.Cell.index() >= MAP_CELL_TOTAL) {
         ar.Fail("invalid base node");
         return;
       }

@@ -1132,10 +1132,10 @@ void UnitTypeClass::One_Time() {
  *                                                                                             *
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
-bool UnitTypeClass::Create_And_Place(CELL cell, HousesType house) const {
+bool UnitTypeClass::Create_And_Place(Cell cell, HousesType house) const {
   auto* unit = base::NewPooled<UnitClass>(Type, house);
   if (unit != nullptr) {
-    return unit->Unlimbo(Cell_Coord(cell),
+    return unit->Unlimbo(cell.Center(),
                          Random_Pick(game::DIR_N, kMaxRandomDirection));
   }
   return false;

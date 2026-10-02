@@ -819,8 +819,8 @@ void ChronalVortexClass::Render(PixelView& view) {
       *if we build
       ** the image from the hidpage.
       */
-      const auto xc = static_cast<CELL>(Position.cell_x());
-      const auto yc = static_cast<CELL>(Position.cell_y());
+      const auto xc = static_cast<int16_t>(Position.cell_x());
+      const auto yc = static_cast<int16_t>(Position.cell_y());
       const TemplateTypeClass* ttype = nullptr;
       int icon = 0;  // The icon number to use from the template set.
 
@@ -851,9 +851,9 @@ void ChronalVortexClass::Render(PixelView& view) {
       */
       for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
-          CELL const cell = XY_Cell(xc + x, yc + y);
-          if (cell != -1) {
-            // cellptr = &Map[ Cell_Coord(cell).Whole() ];
+          const Cell cell = Cell::FromXY(xc + x, yc + y);
+          if (cell != Cell::None()) {
+            // cellptr = &Map[ cell.Center().Whole() ];
             CellClass* cellptr = &TheMap().at(cell);
 
             /*
@@ -977,13 +977,13 @@ void ChronalVortexClass::Render(PixelView& view) {
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void ChronalVortexClass::Set_Redraw() {
   if (Active) {
-    const auto xc = static_cast<CELL>(Position.cell_x());
-    const auto yc = static_cast<CELL>(Position.cell_y());
+    const auto xc = static_cast<int16_t>(Position.cell_x());
+    const auto yc = static_cast<int16_t>(Position.cell_y());
 
     for (int y = std::max(0, yc - 1); y < yc + 4; y++) {
       for (int x = std::max(0, xc - 1); x < xc + 4; x++) {
-        CELL const cell = XY_Cell(x, y);
-        if (cell != -1) {
+        const Cell cell = Cell::FromXY(x, y);
+        if (cell != Cell::None()) {
           TheMap().at(cell).Redraw_Objects();
         }
       }

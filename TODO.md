@@ -135,6 +135,22 @@
     `FromCellIndex(cell)` (`ra/objects/building.cc`, `Active_Click_With()`), and the MCV it
     undeploys into is sent to that word with `Assign_Destination()`, which reads it as a sub-cell
     spot, so it heads for the wrong cell
+- Detach the right cells when Red Alert's `MapClass::Destroy_Bridge_At()` drops a bridge
+  - The detach loop (`ra/map/map.cc`) moves `cell` down a row per row of the bridge but detaches
+    `Target::FromCell(cell.Offset(tdata))`, where `tdata` counts every cell visited so far
+    (`y * w + x`) rather than the column `x`; from the second row on it detaches targets on cells
+    below and right of the bridge and leaves the bridge's own cells attached. The damage loop next
+    to it uses `cell.Offset(x)` correctly
+  - Fix: `cell.Offset(x)`; it changes which objects lose their target, so it needs its own commit
+    and an xcheck reference update. Check TD's `Destroy_Bridge_At()` for the same pattern
+- Send Red Alert's PLACE event through its own constructor
+  - `DisplayClass::Mouse_Left_Release()` (`ra/map/display.cc`) passes `cell.index() + ZoneOffset`,
+    an `int`, so the event is built by `EventClass(type, RTTIType, int id)`, which fills
+    `Data.Specific.ID`; the PLACE handler reads `Data.Place.Cell`, the low half of that int on a
+    little-endian machine. It works, but the high half (0 or 0xFFFF) also crosses the wire, and a
+    big-endian peer would read 0
+  - Fix: `EventClass(EventClass::PLACE, ..., cell.Offset(ZoneOffset))`; it changes two bytes of the
+    packet (not the game), so do it together with any other event-format change
 
 ## Refactoring
 

@@ -114,8 +114,8 @@ void Debug_Key(unsigned input) {
         } else {
           const int xxxx = game::TheMouse().x() + TheMap().TacPixelX;
           const int yyyy = game::TheMouse().y() + TheMap().TacPixelY;
-          const CELL cell = TheMap().DisplayClass::Click_Cell_Calc(xxxx, yyyy);
-          TheWorld().chronal_vortex().Appear(Cell_Coord(cell));
+          const Cell cell = TheMap().DisplayClass::Click_Cell_Calc(xxxx, yyyy);
+          TheWorld().chronal_vortex().Appear(cell.Center());
         }
         break;
 

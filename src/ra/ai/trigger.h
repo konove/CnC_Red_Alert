@@ -88,7 +88,7 @@ class TriggerClass {
   **	Processing routines
   */
   bool Spring(TEventType event = TEVENT_ANY, ObjectClass* object = nullptr,
-              CELL cell = 0, bool forced = false);
+              ra::Cell cell = ra::Cell{}, bool forced = false);
   void Detach(Target target, bool all = true) const;
 
   /*
@@ -139,7 +139,7 @@ class TriggerClass {
   *needed *	during processing but its location cannot be inferred from other
   *data. *	For all other triggers, this value is ignored.
   */
-  CELL Cell = 0;
+  ra::Cell Cell{};
 
  private:
   // Shell for ObjectHeap::Load: a fully initialized object with no

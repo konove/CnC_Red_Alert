@@ -44,6 +44,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include <array>
+#include <cstdint>
 #include <cstdio>
 #include <iterator>
 
@@ -97,7 +98,7 @@ int MapEditClass::Select_Object(int x, int y) {
   /*
   **	Get cell for x,y
   */
-  CELL const cell = Click_Cell_Calc(x, y);  // Cell that was selected.
+  const Cell cell = Click_Cell_Calc(x, y);  // Cell that was selected.
 
   /*
   **	Convert x,y to offset from cell upper-left
@@ -228,10 +229,10 @@ void MapEditClass::Select_Next() {
   /*
   **	compute x,y of object's cell
   */
-  CELL const obj_cell =
-      Coord_Cell(base::At(TheWorld().current_object(), 0)->Coord);
-  const int cell_x = Cell_X(obj_cell);       // cell-x of next object
-  const int cell_y = Cell_Y(obj_cell);       // cell-y of next object
+  const Cell obj_cell =
+      Cell::Containing(base::At(TheWorld().current_object(), 0)->Coord);
+  const int cell_x = obj_cell.x();           // cell-x of next object
+  const int cell_y = obj_cell.y();           // cell-y of next object
   int tcell_x = TacticalCoord.cell_x();      // cell-x of TacticalCell
   int tcell_y = TacticalCoord.cell_y();      // cell-y of TacticalCell
 
@@ -466,8 +467,8 @@ void MapEditClass::Grab_Object() {
     **	Find out which cell 'ZoneCell' is in relation to the object's current
     *cell
     */
-    CELL const cell = Coord_Cell(GrabbedObject->Coord);
-    GrabOffset = static_cast<CELL>(cell - ZoneCell);
+    const Cell cell = Cell::Containing(GrabbedObject->Coord);
+    GrabOffset = static_cast<int16_t>(cell.index() - ZoneCell.index());
   }
 }
 
@@ -517,7 +518,7 @@ int MapEditClass::Move_Grabbed_Object() {
     /*
     **	Non-infantry: use cell's center coordinate
     */
-    new_coord = Cell_Coord(static_cast<CELL>(ZoneCell + GrabOffset));
+    new_coord = ZoneCell.Offset(GrabOffset).Center();
 
     if (GrabbedObject->What_Am_I() == RTTI_BUILDING ||
         GrabbedObject->What_Am_I() == RTTI_TERRAIN) {
@@ -527,7 +528,8 @@ int MapEditClass::Move_Grabbed_Object() {
     /*
     **	Try to place object at new coordinate
     */
-    if (GrabbedObject->Can_Enter_Cell(Coord_Cell(new_coord)) != game::MOVE_OK) {
+    if (GrabbedObject->Can_Enter_Cell(Cell::Containing(new_coord)) !=
+        game::MOVE_OK) {
       new_coord = Coordinate{};
     }
   }
@@ -540,7 +542,7 @@ int MapEditClass::Move_Grabbed_Object() {
       BaseNodeClass* node = TheWorld().base().Get_Node(
           dynamic_cast<const BuildingClass*>(GrabbedObject));
       if (node != nullptr) {
-        node->Cell = Coord_Cell(new_coord);
+        node->Cell = Cell::Containing(new_coord);
       }
     }
 

@@ -52,7 +52,7 @@ class World {
 
   // Zeroes the home waypoint, which MapEditClass's constructor did while
   // the scenario was a global it could reach.
-  World() { scen_.Waypoint[ScenarioClass::kHomeWaypoint] = 0; }
+  World() { scen_.Waypoint[ScenarioClass::kHomeWaypoint] = Cell{}; }
   ~World() = default;
 
   World(const World&) = delete;
@@ -181,7 +181,7 @@ class World {
 
   // The cell the map editor is working on, and the theater whose art is
   // loaded, which tells the loaders when it changes.
-  CELL& current_cell() ABSL_ATTRIBUTE_LIFETIME_BOUND { return current_cell_; }
+  Cell& current_cell() ABSL_ATTRIBUTE_LIFETIME_BOUND { return current_cell_; }
   TheaterType& last_theater() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return last_theater_;
   }
@@ -232,7 +232,7 @@ class World {
   bool auto_sonar_pulse_ = false;
   int build_level_ = 10;
   HousesType whom_{};
-  CELL current_cell_ = 0;
+  Cell current_cell_{};
   TheaterType last_theater_ = THEATER_NONE;
   int new_ini_format_ = 0;
 };

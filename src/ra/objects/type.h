@@ -323,7 +323,7 @@ class ObjectTypeClass : public AbstractTypeClass {
   virtual void Dimensions(int& width, int& height) const;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  virtual bool Create_And_Place(CELL, HousesType = HOUSE_NONE) const = 0;
+  virtual bool Create_And_Place(Cell, HousesType = HOUSE_NONE) const = 0;
   [[nodiscard]] virtual int Cost_Of() const;
   [[nodiscard]] virtual int Time_To_Build() const;
   virtual ObjectClass* Create_One_Of(HouseClass*) const = 0;
@@ -595,7 +595,7 @@ class TechnoTypeClass : public ObjectTypeClass {
                   bool is_footprint, int rotation, SpeedType speed) noexcept;
 
   [[nodiscard]] bool Is_Two_Shooter() const;
-  [[nodiscard]] bool Legal_Placement(CELL pos) const;
+  [[nodiscard]] bool Legal_Placement(Cell pos) const;
   [[nodiscard]] virtual int Raw_Cost() const;
   [[nodiscard]] virtual int Max_Passengers() const { return MaxPassengers; }
   [[nodiscard]] virtual int Repair_Cost() const;
@@ -806,14 +806,14 @@ class BuildingTypeClass : public TechnoTypeClass {
 
   [[nodiscard]] int Full_Name() const override;
   bool Read_INI(CCINIClass& ini) override;
-  bool Flush_For_Placement(CELL cell, HouseClass* house) const;
+  bool Flush_For_Placement(Cell cell, HouseClass* house) const;
   [[nodiscard]] int Cost_Of() const override;
   [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override;
   [[nodiscard]] int Max_Pips() const override;
   void Dimensions(int& width, int& height) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL cell, HousesType house) const override;
+  bool Create_And_Place(Cell cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
   [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
@@ -824,7 +824,7 @@ class BuildingTypeClass : public TechnoTypeClass {
 
   [[nodiscard]] bool Is_Factory() const { return ToBuild != RTTI_NONE; }
   [[nodiscard]] int Raw_Cost() const override;
-  bool Bib_And_Offset(SmudgeType& bib, CELL& cell) const;
+  bool Bib_And_Offset(SmudgeType& bib, Cell& cell) const;
 
   void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house) const override;
@@ -996,7 +996,7 @@ class UnitTypeClass : public TechnoTypeClass {
   void Dimensions(int& width, int& height) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL cell, HousesType house) const override;
+  bool Create_And_Place(Cell cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
   [[nodiscard]] int Max_Pips() const override;
 
@@ -1092,7 +1092,7 @@ class VesselTypeClass : public TechnoTypeClass {
   void Dimensions(int& width, int& height) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL cell, HousesType house) const override;
+  bool Create_And_Place(Cell cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
   [[nodiscard]] int Max_Pips() const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
@@ -1232,7 +1232,7 @@ class InfantryTypeClass : public TechnoTypeClass {
   void Dimensions(int& width, int& height) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL cell, HousesType house) const override;
+  bool Create_And_Place(Cell cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
   [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
@@ -1323,7 +1323,7 @@ class AircraftTypeClass : public TechnoTypeClass {
   void Dimensions(int& width, int& height) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL /*unused*/, HousesType /*unused*/) const override;
+  bool Create_And_Place(Cell /*unused*/, HousesType /*unused*/) const override;
   ObjectClass* Create_One_Of(HouseClass* house) const override;
   [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
@@ -1505,7 +1505,7 @@ class BulletTypeClass : public ObjectTypeClass {
   virtual bool Read_INI(CCINIClass& ini);
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL /*unused*/,
+  bool Create_And_Place(Cell /*unused*/,
                         HousesType /*unused*/ = HOUSE_NONE) const override {
     return false;
   }
@@ -1568,7 +1568,7 @@ class TerrainTypeClass : public ObjectTypeClass {
   [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL cell, HousesType house) const override;
+  bool Create_And_Place(Cell cell, HousesType house) const override;
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
@@ -1628,7 +1628,7 @@ class TemplateTypeClass : public ObjectTypeClass {
   [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL cell,
+  bool Create_And_Place(Cell cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] std::span<const int16_t> Occupy_List(
@@ -1815,7 +1815,7 @@ class AnimTypeClass : public ObjectTypeClass {
 
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL /*unused*/,
+  bool Create_And_Place(Cell /*unused*/,
                         HousesType /*unused*/ = HOUSE_NONE) const override {
     return false;
   }
@@ -1922,7 +1922,7 @@ class OverlayTypeClass : public ObjectTypeClass {
   [[nodiscard]] Coordinate Coord_Fixup(Coordinate coord) const override;
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL cell,
+  bool Create_And_Place(Cell cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] std::span<const int16_t> Occupy_List(
@@ -1992,7 +1992,7 @@ class SmudgeTypeClass : public ObjectTypeClass {
 
   // placement can fail silently by design, as in crate and editor drops.
   // NOLINTNEXTLINE(modernize-use-nodiscard)
-  bool Create_And_Place(CELL cell,
+  bool Create_And_Place(Cell cell,
                         HousesType house = HOUSE_NONE) const override;
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] std::span<const int16_t> Occupy_List(

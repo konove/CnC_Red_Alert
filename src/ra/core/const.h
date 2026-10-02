@@ -151,7 +151,7 @@ constexpr unsigned char Pixel2Lepton[24] = {
 **	offset that, when added to another cell, will achieve the adjacent cell
 **	in the indexed direction.
 */
-constexpr base::EnumArray<game::FacingType, CELL> AdjacentCell = {
+constexpr base::EnumArray<game::FacingType, int> AdjacentCell = {
     -MAP_CELL_W,        // North
     -(MAP_CELL_W - 1),  // North East
     1,                  // East

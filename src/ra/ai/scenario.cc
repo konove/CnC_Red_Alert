@@ -179,8 +179,8 @@ using enum engine::window::KeyNumber;
 
 static void Remove_AI_Players();
 static void Create_Units(bool official);
-static CELL Clip_Scatter(CELL cell, int maxdist);
-static CELL Clip_Move(CELL cell, game::FacingType facing, int dist);
+static Cell Clip_Scatter(Cell cell, int maxdist);
+static Cell Clip_Move(Cell cell, game::FacingType facing, int dist);
 
 // Paces the mission briefing: each line is left up for three seconds, or
 // until the speech playing over it finishes. Only this file shows briefings.
@@ -221,7 +221,7 @@ ScenarioClass::ScenarioClass()
       FadeTimer(0),
       AutoSonarTimer(AUTOSONAR_PERIOD) {
   for (int index = 0; index < std::ssize(Waypoint); index++) {
-    base::At(Waypoint, index) = -1;
+    base::At(Waypoint, index) = Cell::None();
   }
   base::SafeCopy(Description, "");
   base::SafeCopy(ScenarioName, "");
@@ -550,9 +550,10 @@ void Fill_In_Data() {
     base::At(TheScenario().Views, 0) = base::At(TheScenario().Views, 1) =
         base::At(TheScenario().Views, 2) = base::At(TheScenario().Views, 3) =
             base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint);
-    TheMap().Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
-        base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) -
-        (MAP_CELL_W * 8) - 10)));
+    TheMap().Set_Tactical_Position(
+        base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)
+            .Offset(-(MAP_CELL_W * 8) - 10)
+            .Center());
     //		}
   }
 
@@ -588,25 +589,25 @@ void Fill_In_Data() {
   */
   for (int x = TheMap().MapCellX - 1;
        x < TheMap().MapCellX + TheMap().MapCellWidth + 1; x++) {
-    TheMap().at(XY_Cell(x, TheMap().MapCellY - 1)).IsVisible =
-        TheMap().at(XY_Cell(x, TheMap().MapCellY - 1)).IsMapped = true;
+    TheMap().at(Cell::FromXY(x, TheMap().MapCellY - 1)).IsVisible =
+        TheMap().at(Cell::FromXY(x, TheMap().MapCellY - 1)).IsMapped = true;
 
     TheMap()
-        .at(XY_Cell(x, TheMap().MapCellY + TheMap().MapCellHeight))
+        .at(Cell::FromXY(x, TheMap().MapCellY + TheMap().MapCellHeight))
         .IsVisible =
         TheMap()
-            .at(XY_Cell(x, TheMap().MapCellY + TheMap().MapCellHeight))
+            .at(Cell::FromXY(x, TheMap().MapCellY + TheMap().MapCellHeight))
             .IsMapped = true;
   }
   for (int y = TheMap().MapCellY;
        y < TheMap().MapCellY + TheMap().MapCellHeight; y++) {
-    TheMap().at(XY_Cell(TheMap().MapCellX - 1, y)).IsVisible =
-        TheMap().at(XY_Cell(TheMap().MapCellX - 1, y)).IsMapped = true;
+    TheMap().at(Cell::FromXY(TheMap().MapCellX - 1, y)).IsVisible =
+        TheMap().at(Cell::FromXY(TheMap().MapCellX - 1, y)).IsMapped = true;
     TheMap()
-        .at(XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth, y))
+        .at(Cell::FromXY(TheMap().MapCellX + TheMap().MapCellWidth, y))
         .IsVisible =
         TheMap()
-            .at(XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth, y))
+            .at(Cell::FromXY(TheMap().MapCellX + TheMap().MapCellWidth, y))
             .IsMapped = true;
   }
 
@@ -775,8 +776,8 @@ void Clear_Scenario() {
 
   TheWorld().current_object().clear();
 
-  for (int16_t& index : TheScenario().Waypoint) {
-    index = -1;
+  for (Cell& waypoint : TheScenario().Waypoint) {
+    waypoint = Cell::None();
   }
 
   // For endgame auto-sonar pulse.
@@ -2665,8 +2666,8 @@ static void Create_Units(bool official) {
   static int
       num_infantry[std::size(itable)];  // # of each type of infantry to create
 
-  CELL centroid = 0;  // centroid of this house's stuff
-  CELL centerpt = 0;  // centroid for a category of objects, as a CELL
+  Cell centroid{};  // centroid of this house's stuff
+  Cell centerpt{};  // centroid for a category of objects, as a Cell
 
   int u_limit = 0;  // last allowable index of units for this BuildLevel
   int i_limit = 0;  // last allowable index of infantry for this BuildLevel
@@ -2751,7 +2752,7 @@ static void Create_Units(bool official) {
   **	loop verifies that.
   */
   bool taken[26];
-  CELL waypts[26];
+  Cell waypts[26];
   DCHECK(TheRules().MaxPlayers < std::ssize(waypts));
   int num_waypts = 0;
 
@@ -2771,7 +2772,7 @@ static void Create_Units(bool official) {
     //	for (int waycount = 0; waycount < max(4,
     // Session.Players.Count()+Session.Options.AIPlayers); waycount++)
     // {
-    if (base::At(TheScenario().Waypoint, waycount) != -1) {
+    if (base::At(TheScenario().Waypoint, waycount) != Cell::None()) {
       base::At(waypts, num_waypts) = base::At(TheScenario().Waypoint, waycount);
       base::At(taken, num_waypts) = false;
       num_waypts++;
@@ -2788,7 +2789,7 @@ static void Create_Units(bool official) {
   // num_waypts;
   if (deficiency > 0) {
     for (int index = 0; index < deficiency; index++) {
-      CELL trycell = XY_Cell(
+      Cell trycell = Cell::FromXY(
           TheMap().MapCellX + Random_Pick(0, TheMap().MapCellWidth - 1),
           TheMap().MapCellY + Random_Pick(0, TheMap().MapCellHeight - 1));
 
@@ -2848,8 +2849,8 @@ static void Create_Units(bool official) {
           for (int trypoint = 0; trypoint < num_waypts; trypoint++) {
             if (base::At(taken, trypoint)) {
               base::At(score, index) +=
-                  Distance(Cell_Coord(base::At(waypts, index)),
-                           Cell_Coord(base::At(waypts, trypoint)));
+                  Distance(base::At(waypts, index).Center(),
+                           base::At(waypts, trypoint).Center());
             }
           }
         }
@@ -2879,7 +2880,7 @@ static void Create_Units(bool official) {
     /*
     **	Assign the center of this house to the waypoint location.
     */
-    hptr->Center = Cell_Coord(centroid);
+    hptr->Center = centroid.Center();
 
     /*
     **	If Bases are ON, human & computer houses are treated differently
@@ -2893,14 +2894,14 @@ static void Create_Units(bool official) {
       */
       scaleval = 1;
       obj = base::NewPooled<UnitClass>(UNIT_MCV, house);
-      if ((!obj->Unlimbo(Cell_Coord(centroid), game::DIR_N)) &&
+      if ((!obj->Unlimbo(centroid.Center(), game::DIR_N)) &&
           (!Scan_Place_Object(obj, centroid))) {
         base::DeletePooled(obj);
         obj = nullptr;
       }
 
       if (obj != nullptr) {
-        hptr->FlagHome = 0;
+        hptr->FlagHome = Cell{};
         hptr->FlagLocation = Target{};
         if (TheSpecial().IsCaptureTheFlag) {
           hptr->Flag_Attach(dynamic_cast<UnitClass*>(obj), true);
@@ -3034,7 +3035,7 @@ static void Create_Units(bool official) {
  *                                                                                             *
  * HISTORY: * 06/09/1995 BRR : Created. *
  *=============================================================================================*/
-bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
+bool Scan_Place_Object(ObjectClass* obj, Cell cell) {
   TechnoClass* techno = nullptr;
 
   /*
@@ -3044,7 +3045,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
     techno = TheMap().at(cell).Cell_Techno();
     if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                      obj->What_Am_I() == RTTI_INFANTRY)) &&
-        obj->Unlimbo(Cell_Coord(cell), game::DIR_N)) {
+        obj->Unlimbo(cell.Center(), game::DIR_N)) {
       return true;
     }
   }
@@ -3077,7 +3078,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
         /*
         **	Pick a coordinate along this directional axis
         */
-        CELL newcell = Clip_Move(cell, rot, dist);
+        Cell newcell = Clip_Move(cell, rot, dist);
 
         /*
         **	If this is our second try at this distance, add a random scatter
@@ -3105,7 +3106,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
           techno = TheMap().at(newcell).Cell_Techno();
           if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                            obj->What_Am_I() == RTTI_INFANTRY)) &&
-              obj->Unlimbo(Cell_Coord(newcell), game::DIR_N)) {
+              obj->Unlimbo(newcell.Center(), game::DIR_N)) {
             return true;
           }
         }
@@ -3132,13 +3133,12 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
  *                                                                                             *
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
-static CELL Clip_Scatter(CELL cell, int maxdist) {
-
+static Cell Clip_Scatter(Cell cell, int maxdist) {
   /*
   **	Get X & Y coords of given starting cell
   */
-  int x = Cell_X(cell);
-  int y = Cell_Y(cell);
+  int x = cell.x();
+  int y = cell.y();
 
   /*
   **	Compute our x & y limits
@@ -3172,7 +3172,7 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
     y = std::max(y, ymin);
   }
 
-  return XY_Cell(x, y);
+  return Cell::FromXY(x, y);
 }
 
 /***********************************************************************************************
@@ -3187,12 +3187,12 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
  *                                                                                             *
  * HISTORY: * 07/30/1995 BRR : Created. *
  *=============================================================================================*/
-static CELL Clip_Move(CELL cell, game::FacingType facing, int dist) {
+static Cell Clip_Move(Cell cell, game::FacingType facing, int dist) {
   /*
   **	Get X & Y coords of given starting cell
   */
-  int x = Cell_X(cell);
-  int y = Cell_Y(cell);
+  int x = cell.x();
+  int y = cell.y();
 
   /*
   **	Compute our x & y limits
@@ -3252,7 +3252,7 @@ static CELL Clip_Move(CELL cell, game::FacingType facing, int dist) {
   x = std::clamp(x, xmin, xmax);
   y = std::clamp(y, ymin, ymax);
 
-  return XY_Cell(x, y);
+  return Cell::FromXY(x, y);
 }
 
 void Disect_Scenario_Name(const char* name_data, int& scenario,

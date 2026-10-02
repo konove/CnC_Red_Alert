@@ -203,8 +203,8 @@ void Explosion_Damage(Coordinate coord, int strength, TechnoClass* source,
   //	range = ICON_LEPTON_W*2;
   const int range =
       ICON_LEPTON_W + (ICON_LEPTON_W >> 1);  // Damage effect radius.
-  CELL const cell = Coord_Cell(coord);       // Cell number under explosion.
-  if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
+  const Cell cell = Cell::Containing(coord);  // Cell number under explosion.
+  if (static_cast<unsigned>(cell.index()) >= MAP_CELL_TOTAL) {
     return;
   }
 
@@ -455,12 +455,12 @@ void Wide_Area_Damage(Coordinate coord, int radius, int rawdamage,
   // the explosion spread still wraps the way it always did.
   const int cell_radius =
       (static_cast<uint16_t>(radius) + CELL_LEPTON_W - 1) / CELL_LEPTON_W;
-  const CELL cell = Coord_Cell(coord);
+  const Cell cell = Cell::Containing(coord);
 
   for (int x = -cell_radius; x <= cell_radius; x++) {
     for (int y = -cell_radius; y <= cell_radius; y++) {
-      const int xpos = Cell_X(cell) + x;
-      const int ypos = Cell_Y(cell) + y;
+      const int xpos = cell.x() + x;
+      const int ypos = cell.y() + y;
 
       /*
       **	If the potential damage cell is outside of the map bounds,
@@ -473,7 +473,7 @@ void Wide_Area_Damage(Coordinate coord, int radius, int rawdamage,
       if (static_cast<unsigned>(ypos) > MAP_CELL_H) {
         continue;
       }
-      const CELL tcell = XY_Cell(xpos, ypos);
+      const Cell tcell = Cell::FromXY(xpos, ypos);
       if (!TheMap().In_Radar(tcell)) {
         continue;
       }
@@ -483,10 +483,10 @@ void Wide_Area_Damage(Coordinate coord, int radius, int rawdamage,
                    Coordinate::FromLeptons(cell_radius, cell_radius));
       const int damage =
           rawdamage * Fixed(cell_radius, dist_from_center).Invert();
-      Explosion_Damage(Cell_Coord(tcell), damage, source, warhead);
+      Explosion_Damage(tcell.Center(), damage, source, warhead);
       if (warhead == WARHEAD_FIRE && damage > 100) {
         base::NewPooled<SmudgeClass>(
-            Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6), Cell_Coord(tcell));
+            Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6), tcell.Center());
       }
     }
   }

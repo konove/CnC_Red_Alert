@@ -29,9 +29,7 @@
 #include "base/array.h"
 #include "game/core/object_heap.h"
 #include "game/sim/enums.h"
-#include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/editor/mapedit.h"
@@ -143,8 +141,8 @@ void Toggle_Formation() {
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
-        const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        const int32_t xc = Cell::Containing(obj->Center_Coord()).x();
+        const int32_t yc = Cell::Containing(obj->Center_Coord()).y();
         minx = std::min(xc, minx);
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
@@ -168,8 +166,8 @@ void Toggle_Formation() {
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
-        const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        const int32_t xc = Cell::Containing(obj->Center_Coord()).x();
+        const int32_t yc = Cell::Containing(obj->Center_Coord()).y();
         minx = std::min(xc, minx);
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
@@ -189,8 +187,8 @@ void Toggle_Formation() {
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
-        const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        const int32_t xc = Cell::Containing(obj->Center_Coord()).x();
+        const int32_t yc = Cell::Containing(obj->Center_Coord()).y();
         minx = std::min(xc, minx);
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
@@ -218,8 +216,8 @@ void Toggle_Formation() {
       UnitClass* obj = TheObjectHeaps().unit().ActiveAt(i);
       if (obj && !obj->IsInLimbo && obj->House == ThePlayer() &&
           std::cmp_equal(obj->Group, team)) {
-        const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        const int32_t xc = Cell::Containing(obj->Center_Coord()).x();
+        const int32_t yc = Cell::Containing(obj->Center_Coord()).y();
 
         obj->XFormOffset = xc - center_x;
         obj->YFormOffset = yc - center_y;
@@ -230,8 +228,8 @@ void Toggle_Formation() {
       InfantryClass* obj = TheObjectHeaps().infantry().ActiveAt(i);
       if (obj && !obj->IsInLimbo && obj->House == ThePlayer() &&
           std::cmp_equal(obj->Group, team)) {
-        const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        const int32_t xc = Cell::Containing(obj->Center_Coord()).x();
+        const int32_t yc = Cell::Containing(obj->Center_Coord()).y();
 
         obj->XFormOffset = xc - center_x;
         obj->YFormOffset = yc - center_y;
@@ -242,8 +240,8 @@ void Toggle_Formation() {
       VesselClass* obj = TheObjectHeaps().vessel().ActiveAt(i);
       if (obj && !obj->IsInLimbo && obj->House == ThePlayer() &&
           std::cmp_equal(obj->Group, team)) {
-        const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-        const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+        const int32_t xc = Cell::Containing(obj->Center_Coord()).x();
+        const int32_t yc = Cell::Containing(obj->Center_Coord()).y();
 
         obj->XFormOffset = xc - center_x;
         obj->YFormOffset = yc - center_y;
@@ -389,8 +387,8 @@ void Handle_Team(const int team, const int action) {
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
-            const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-            const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+            const int32_t xc = Cell::Containing(obj->Center_Coord()).x();
+            const int32_t yc = Cell::Containing(obj->Center_Coord()).y();
             minx = std::min(xc, minx);
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
@@ -415,8 +413,8 @@ void Handle_Team(const int team, const int action) {
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
-            const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-            const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+            const int32_t xc = Cell::Containing(obj->Center_Coord()).x();
+            const int32_t yc = Cell::Containing(obj->Center_Coord()).y();
             minx = std::min(xc, minx);
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
@@ -442,8 +440,8 @@ void Handle_Team(const int team, const int action) {
           if (obj->IsSelected) {
             obj->Group = static_cast<unsigned char>(team);
             obj->Mark(MARK_CHANGE);
-            const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
-            const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
+            const int32_t xc = Cell::Containing(obj->Center_Coord()).x();
+            const int32_t yc = Cell::Containing(obj->Center_Coord()).y();
             minx = std::min(xc, minx);
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);

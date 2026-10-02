@@ -1,10 +1,9 @@
-// The bit layouts of Red Alert's packed map words: CELL (7-bit X and Y) and
-// the lepton word (cell byte over sub-cell byte), with the lepton/pixel
-// conversions that share the 16-bit lepton word and the conversions between
-// CELL and Coordinate (ra/core/coordinate.h, which holds the coordinate's own
-// layout). A lepton (256 to a cell) is a plain int everywhere else; these
-// helpers wrap it to the 16-bit word. The target word's layout is
-// ra::Target's (ra/core/target.h).
+// The bit layout of Red Alert's 16-bit lepton word (cell byte over sub-cell
+// byte), with the lepton/pixel conversions that share it. A lepton (256 to a
+// cell) is a plain int everywhere else; these helpers wrap it to the 16-bit
+// word. The other packed words have their own classes: ra::Cell
+// (ra/core/cell.h), ra::Coordinate (ra/core/coordinate.h) and ra::Target
+// (ra/core/target.h).
 
 #ifndef CNC_RED_ALERT_RA_CORE_PACKED_H_
 #define CNC_RED_ALERT_RA_CORE_PACKED_H_
@@ -15,14 +14,6 @@
 #include "ra/core/coordinate.h"
 
 namespace ra {
-
-// A map coordinate with cell resolution, the cheaper index into the map than
-// a lepton-resolution Coordinate: Y * 128 + X. Negative values are sentinels.
-using CELL = int16_t;
-
-// Cell components are 7 bits each: X in the low bits, Y above it.
-inline constexpr unsigned kCellBits = 7;
-inline constexpr unsigned kCellMask = (1U << kCellBits) - 1;
 
 // Returns the sub-cell coordinate of a cell's center.
 constexpr Coordinate CellCenterFraction() noexcept {
@@ -45,14 +36,6 @@ constexpr int Lepton_Fraction(int lepton) noexcept {
 constexpr int Make_Lepton(int cell, int fraction) noexcept {
   return static_cast<int>(((static_cast<unsigned>(cell) & 0xFFU) << 8U) |
                           (static_cast<unsigned>(fraction) & 0xFFU));
-}
-
-// Combines X and Y cell components into a cell. Each keeps its low 7 bits, so
-// out-of-range components wrap.
-constexpr CELL XY_Cell(int x, int y) noexcept {
-  return static_cast<CELL>(
-      ((static_cast<unsigned>(y) & kCellMask) << kCellBits) |
-      (static_cast<unsigned>(x) & kCellMask));
 }
 
 // Converts a distance in cells to leptons. Only the low 8 bits of the cell
@@ -82,30 +65,6 @@ constexpr int Lepton_To_Pixel(int lepton) noexcept {
 constexpr int Pixel_To_Lepton(int pixel) noexcept {
   return static_cast<uint16_t>(((pixel * ICON_LEPTON_W) + (ICON_PIXEL_W / 2)) /
                                ICON_PIXEL_W);
-}
-
-// Returns the X component of a cell.
-constexpr int Cell_X(CELL cell) noexcept {
-  return static_cast<int>(static_cast<uint16_t>(cell) & kCellMask);
-}
-
-// Returns the Y component of a cell.
-constexpr int Cell_Y(CELL cell) noexcept {
-  return static_cast<int>(
-      (static_cast<unsigned>(static_cast<uint16_t>(cell)) >> kCellBits) &
-      kCellMask);
-}
-
-// Returns the cell a coordinate lies in. Each cell byte keeps its low 7 bits,
-// so an X cell byte of 128 (off the map) wraps to column 0.
-constexpr CELL Coord_Cell(Coordinate coord) noexcept {
-  return XY_Cell(coord.cell_x(), coord.cell_y());
-}
-
-// Returns the coordinate of a cell's center.
-constexpr Coordinate Cell_Coord(CELL cell) noexcept {
-  return Coordinate::FromLeptons(Make_Lepton(Cell_X(cell), CELL_LEPTON_W / 2),
-                                 Make_Lepton(Cell_Y(cell), CELL_LEPTON_H / 2));
 }
 
 }  // namespace ra

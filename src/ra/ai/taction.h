@@ -155,7 +155,7 @@ struct TActionClass {
   void Read_INI(base::Tokenizer& tokens);
   void Build_INI_Entry(std::string& buffer) const;
 
-  bool operator()(HousesType house, ObjectClass* object, int id, CELL cell);
+  bool operator()(HousesType house, ObjectClass* object, int id, Cell cell);
 };
 
 class ActionChoiceClass {

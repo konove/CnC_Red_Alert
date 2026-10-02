@@ -85,7 +85,6 @@
 #include "ra/assets/screen.h"
 #include "ra/assets/theme.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
@@ -392,7 +391,7 @@ void TActionClass::Read_INI(base::Tokenizer& tokens) {
 // Not const: carries out the action.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
-                              CELL cell) {
+                              Cell cell) {
   /*
   **	Otherwise, take an appropriate action.
   */
@@ -498,7 +497,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
                              .at(base::At(TheScenario().Waypoint, Data.Value))
                              .Zones.at(MZONE_CRUSHER);
 
-        for (CELL map_cell = 0; map_cell < MAP_CELL_TOTAL; map_cell++) {
+        for (int map_cell_index = 0; map_cell_index < MAP_CELL_TOTAL;
+             ++map_cell_index) {
+          const Cell map_cell = Cell::FromIndex(map_cell_index);
           if (std::cmp_equal(TheMap().at(map_cell).Zones.at(MZONE_CRUSHER),
                              zone)) {
             TheMap().Map_Cell(map_cell, ThePlayer());
@@ -513,7 +514,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     case TACTION_REVEAL_ALL:
       if (!ThePlayer()->IsVisionary) {
         ThePlayer()->IsVisionary = true;
-        for (CELL map_cell = 0; map_cell < MAP_CELL_TOTAL; map_cell++) {
+        for (int map_cell_index = 0; map_cell_index < MAP_CELL_TOTAL;
+             ++map_cell_index) {
+          const Cell map_cell = Cell::FromIndex(map_cell_index);
           TheMap().Map_Cell(map_cell, ThePlayer());
         }
       }
@@ -646,7 +649,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_FORCE_TRIGGER:
       if (Trigger != nullptr) {
-        Find_Or_Make(Trigger)->Spring(TEVENT_ANY, nullptr, 0, true);
+        Find_Or_Make(Trigger)->Spring(TEVENT_ANY, nullptr, Cell{}, true);
       }
       break;
 
@@ -655,8 +658,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_DZ:
       base::NewPooled<AnimClass>(
-          ANIM_LZ_SMOKE,
-          Cell_Coord(base::At(TheScenario().Waypoint, Data.Value)));
+          ANIM_LZ_SMOKE, base::At(TheScenario().Waypoint, Data.Value).Center());
       break;
 
     /*
@@ -762,7 +764,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       **	gets destroyed regardless of whether the trigger was a
       **	forced or natural spring event.
       */
-      if (cell != 0) {
+      if (cell.index() != 0) {
         TheMap().Destroy_Bridge_At(cell);
       }
 

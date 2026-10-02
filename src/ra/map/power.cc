@@ -369,7 +369,7 @@ void PowerClass::AI(engine::window::InputEvent& event, int x, int y) {
  *                                                                                             *
  * HISTORY: * 06/01/1995 JLB : Created. *
  *=============================================================================================*/
-void PowerClass::Refresh_Cells(CELL cell, std::span<const int16_t> list) {
+void PowerClass::Refresh_Cells(Cell cell, std::span<const int16_t> list) {
   if (list.front() == kRefreshSidebar) {
     IsPowerToRedraw = true;
     Flag_To_Redraw(false);

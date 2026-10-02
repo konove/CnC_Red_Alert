@@ -154,8 +154,8 @@ static uint32_t MainOverlap[MAP_CELL_TOTAL / 32];   // main path
 static uint32_t LeftOverlap[MAP_CELL_TOTAL / 32];   // left path
 static uint32_t RightOverlap[MAP_CELL_TOTAL / 32];  // right path
 
-// static CELL MoveMask = 0;
-static CELL DestLocation;
+// static Cell MoveMask = 0;
+static Cell DestLocation;
 
 /*
 **	The overlap lists above are bitmaps with one bit per map cell, marking
@@ -164,19 +164,19 @@ static CELL DestLocation;
 **	callers get their cells by stepping to an adjacent cell, which has no
 **	notion of the map edge.
 */
-static bool Is_Overlapped(const PathType* path, CELL cell) {
-  DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  return game::IsOverlapped(path->Overlap, cell);
+static bool Is_Overlapped(const PathType* path, Cell cell) {
+  DCHECK(cell.index() >= 0 && cell.index() < MAP_CELL_TOTAL);
+  return game::IsOverlapped(path->Overlap, cell.index());
 }
 
-static void Set_Overlap(const PathType* path, CELL cell) {
-  DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  game::SetOverlap(path->Overlap, cell);
+static void Set_Overlap(const PathType* path, Cell cell) {
+  DCHECK(cell.index() >= 0 && cell.index() < MAP_CELL_TOTAL);
+  game::SetOverlap(path->Overlap, cell.index());
 }
 
-static void Clear_Overlap(const PathType* path, CELL cell) {
-  DCHECK(cell >= 0 && cell < MAP_CELL_TOTAL);
-  game::ClearOverlap(path->Overlap, cell);
+static void Clear_Overlap(const PathType* path, Cell cell) {
+  DCHECK(cell.index() >= 0 && cell.index() < MAP_CELL_TOTAL);
+  game::ClearOverlap(path->Overlap, cell.index());
 }
 
 /***************************************************************************
@@ -247,14 +247,14 @@ static int Point_Relative_To_Line(int x, int z, int x1, int z1, int x2,
  * HISTORY:                                                                *
  *   05/25/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool FootClass::Unravel_Loop(PathType* path, CELL& cell, game::FacingType& dir,
+bool FootClass::Unravel_Loop(PathType* path, Cell& cell, game::FacingType& dir,
                              int sx, int sy, int dx, int dy,
                              game::MoveType threshhold) {
   /*
   ** Walk back to the actual cell before we advanced our position
   */
   game::FacingType curr_dir = dir;
-  CELL curr_pos = Adjacent_Cell(cell, Opposite(curr_dir));
+  Cell curr_pos = Adjacent_Cell(cell, Opposite(curr_dir));
   int idx = path->Length;                      // start at the last position
   int list = idx - 1;
   bool last_was_line = false;
@@ -265,8 +265,8 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, game::FacingType& dir,
   ** it.
   */
   while (idx) {
-    const int checkx = Cell_X(curr_pos);
-    const int checky = Cell_Y(curr_pos);
+    const int checkx = curr_pos.x();
+    const int checky = curr_pos.y();
 
     if (!Point_Relative_To_Line(checkx, checky, sx, sy, dx, dy) ||
         last_was_line) {
@@ -322,14 +322,14 @@ bool FootClass::Unravel_Loop(PathType* path, CELL& cell, game::FacingType& dir,
  * function will eliminate all backtracking from the list.                 *
  *                                                                         *
  * INPUT:      long   * list - the list to set the overlap bit for         *
- *               CELL  cell    - the cell to mark on the overlap list      *
+ *               Cell  cell    - the cell to mark on the overlap list      *
  *                                                                         *
  * OUTPUT:     BOOL - true if bit has been set, FALSE if bit already set   *
  *                                                                         *
  * HISTORY:                                                                *
  *   05/23/1995 PWG : Created.                                             *
  *=========================================================================*/
-bool FootClass::Register_Cell(PathType* path, CELL cell, game::FacingType dir,
+bool FootClass::Register_Cell(PathType* path, Cell cell, game::FacingType dir,
                               int cost, game::MoveType threshhold) {
   /*
   ** See if this point has already been registered as on the list.  If so
@@ -348,7 +348,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, game::FacingType dir,
 
     if (base::At(path->Command, base::ToSize(path->Length - 1)) ==
         Opposite(dir)) {
-      const CELL pos = Adjacent_Cell(cell, Opposite(dir));
+      const Cell pos = Adjacent_Cell(cell, Opposite(dir));
       Clear_Overlap(path, pos);
       path->Length--;
     } else {
@@ -362,7 +362,7 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, game::FacingType dir,
       }
       path->LastOverlap = cell;
 
-      CELL pos = path->Start;
+      Cell pos = path->Start;
       int newlen = 0;
       int idx = 0;
       size_t list = 0;
@@ -437,10 +437,10 @@ bool FootClass::Register_Cell(PathType* path, CELL cell, game::FacingType dir,
  *                                                                                             *
  * HISTORY: * 07/08/1991  CY : Created. *
  *=============================================================================================*/
-PathType* FootClass::Find_Path(CELL dest,
+PathType* FootClass::Find_Path(Cell dest,
                                std::span<game::FacingType> final_moves,
                                int maxlen, game::MoveType threshhold) {
-  const CELL source = Coord_Cell(Coord);  // Source expressed as cell
+  const Cell source = Cell::Containing(Coord);  // Source expressed as cell
   static PathType path;             // Main path control.
   game::FacingType newdir = game::FACING_NONE;  // Tentative facing value.
 
@@ -487,8 +487,8 @@ PathType* FootClass::Find_Path(CELL dest,
   path.Command = final_moves;
   base::At(path.Command, 0) = END;
   path.Overlap = MainOverlap;
-  path.LastOverlap = -1;
-  path.LastFixup = -1;
+  path.LastOverlap = Cell::None();
+  path.LastFixup = Cell::None();
 
   std::ranges::fill(path.Overlap, 0);
 
@@ -499,7 +499,7 @@ PathType* FootClass::Find_Path(CELL dest,
   */
   Set_Overlap(&path, source);
 
-  CELL startcell = source;  // Cell we started in
+  Cell startcell = source;  // Cell we started in
 
   /*
   **	Account for trailing end of list command, so reduce the maximum
@@ -543,7 +543,7 @@ PathType* FootClass::Find_Path(CELL dest,
     */
     const game::FacingType direction =
         CELL_FACING(startcell, dest);  // Working direction of look ahead.
-    CELL next = Adjacent_Cell(startcell, direction);  // Next cell to enter
+    Cell next = Adjacent_Cell(startcell, direction);  // Next cell to enter
 
     /*
     **	If we can move here, then make this our next move.
@@ -744,8 +744,8 @@ PathType* FootClass::Find_Path(CELL dest,
         std::ranges::copy(which->Command.first(base::ToSize(len)), path.Command.begin());
         path.Length = len;
         path.Cost = which->Cost;
-        path.LastOverlap = -1;
-        path.LastFixup = -1;
+        path.LastOverlap = Cell::None();
+        path.LastFixup = Cell::None();
       } else {
         break;
       }
@@ -795,32 +795,31 @@ end_of_list:
  * HISTORY: * 07/08/1991  CY : Created. * 06/01/1992  JLB : Optimized &
  *commented.                                                  *
  *=============================================================================================*/
-bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
+bool FootClass::Follow_Edge(Cell start, Cell target, PathType* path,
                             game::FacingType search, game::FacingType olddir,
                             int threat, int /*unused*/, int max_cells,
                             game::MoveType threshhold) {
   game::FacingType newdir =
       game::FACING_NONE;  // Direction of facing before surrounding cell check.
-  CELL oldcell = 0;
-  CELL                // Current cell.
-      newcell = 0;    // Tentative new cell.
+  Cell oldcell{};
+  Cell newcell{};     // Tentative new cell.
   int cost = 0;       // Working cost value.
   bool online = true;
   int oldval = 0;
   int cellcount = 0;
   bool forceout = false;
   auto firstdir = static_cast<game::FacingType>(-1);
-  CELL firstcell = -1;
-  const int startx = Cell_X(start);
-  const int starty = Cell_Y(start);
-  const int targetx = Cell_X(target);
-  const int targety = Cell_Y(target);
+  Cell firstcell = Cell::None();
+  const int startx = start.x();
+  const int starty = start.y();
+  const int targetx = target.x();
+  const int targety = target.y();
 
   if (!path) {
     return false;
   }
-  path->LastOverlap = -1;
-  path->LastFixup = -1;
+  path->LastOverlap = Cell::None();
+  path->LastFixup = Cell::None();
 
 #ifndef DIAGONAL
   /*
@@ -864,7 +863,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
       if (static_cast<int>(newdir) % 2 != 0) {
         // int	x,y;
 
-        CELL checkcell = Adjacent_Cell(
+        Cell checkcell = Adjacent_Cell(
             oldcell,
             Next_Direction(newdir, search));  // Non-diagonal check cell.
 
@@ -901,8 +900,8 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
 
         checkcell = Adjacent_Cell(oldcell, newdir);
 
-        const int checkx = Cell_X(checkcell);
-        const int checky = Cell_Y(checkcell);
+        const int checkx = checkcell.x();
+        const int checky = checkcell.y();
         const int checkval = Point_Relative_To_Line(checkx, checky, startx,
                                                     starty, targetx, targety);
         if (checkval && !online) {
@@ -985,8 +984,8 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
       ** Find out which side of the line this cell is on.  If it is on
       ** a side, then store off that side.
       */
-      const int newx = Cell_X(newcell);
-      const int newy = Cell_Y(newcell);
+      const int newx = newcell.x();
+      const int newy = newcell.y();
       const int val =
           Point_Relative_To_Line(newx, newy, startx, starty, targetx, targety);
       if (val) {
@@ -1016,7 +1015,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
       return false;
     }
 
-    if (firstcell == -1) {
+    if (firstcell == Cell::None()) {
       firstcell = newcell;
       firstdir = newdir;
     }
@@ -1061,7 +1060,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
  *=============================================================================================*/
 constexpr game::FacingType kEmptyCommand = static_cast<game::FacingType>(-2);
 int FootClass::Optimize_Moves(PathType* path, game::MoveType threshhold)
-// int Optimize_Moves(PathType *path, int (*callback)(CELL, FacingType), int
+// int Optimize_Moves(PathType *path, int (*callback)(Cell, FacingType), int
 // threshold)
 {
   /*
@@ -1110,7 +1109,7 @@ int FootClass::Optimize_Moves(PathType* path, game::MoveType threshhold)
     return 0;
   }
 
-  CELL cell = path->Start;  // Working cell (as it moves along path).
+  Cell cell = path->Start;  // Working cell (as it moves along path).
   if (path->Length > 1) {
     cmd2 = 1;
     while (base::At(path->Command, cmd2) != END) {
@@ -1255,7 +1254,7 @@ int FootClass::Optimize_Moves(PathType* path, game::MoveType threshhold)
   return path->Length;
 }
 
-CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
+Cell FootClass::Safety_Point(Cell src, Cell dst, int start, int max) const {
   const game::FacingType dir =
       game::AsFacing(static_cast<int>(CELL_FACING(src, dst)) + 4) - 1;
 
@@ -1266,7 +1265,7 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
     /*
     ** Move to the starting location.
     */
-    CELL next = dst;
+    Cell next = dst;
 
     for (int lp = 0; lp < dist; lp++) {
       next = Adjacent_Cell(next, dir);
@@ -1304,14 +1303,14 @@ CELL FootClass::Safety_Point(CELL src, CELL dst, int start, int max) const {
       }
     }
   }
-  return -1;
+  return Cell::None();
 }
 
-int FootClass::Passable_Cell(CELL cell, game::FacingType face, int threat,
+int FootClass::Passable_Cell(Cell cell, game::FacingType face, int threat,
                              game::MoveType threshhold) {
   const game::MoveType move = Can_Enter_Cell(cell, face);
 
-  if (move < game::MOVE_MOVING_BLOCK && Distance(Cell_Coord(cell)) > 0x0100) {
+  if (move < game::MOVE_MOVING_BLOCK && Distance(cell.Center()) > 0x0100) {
     threshhold = game::MOVE_MOVING_BLOCK;
   }
 
@@ -1321,7 +1320,7 @@ int FootClass::Passable_Cell(CELL cell, game::FacingType face, int threat,
 
   if (TheSession().Type == GAME_NORMAL) {
     if (threat != -1) {
-      if (ra::Distance(Cell_Coord(cell), Cell_Coord(DestLocation)) >
+      if (ra::Distance(cell.Center(), DestLocation.Center()) >
           THREAT_THRESHOLD * CELL_LEPTON_W) {
         //			if (Map.Cell_Distance(cell, DestLocation) >
         // THREAT_THRESHOLD) {

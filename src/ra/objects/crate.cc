@@ -92,7 +92,7 @@ bool CrateClass::Remove_It() {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-bool CrateClass::Create_Crate(CELL cell) {
+bool CrateClass::Create_Crate(ra::Cell cell) {
   /*
   **	Remove any existing crate that this crate class is tracking.
   */
@@ -127,7 +127,7 @@ bool CrateClass::Create_Crate(CELL cell) {
  * HISTORY: * 08/26/1996 JLB : Created. * 10/14/1996 JLB : Takes reference to
  *cell so that tracking can occur.                      *
  *=============================================================================================*/
-bool CrateClass::Put_Crate(CELL& cell) {
+bool CrateClass::Put_Crate(ra::Cell& cell) {
   const int old = TheWorld().scenario_init();
   TheWorld().scenario_init() = 0;
 
@@ -174,7 +174,7 @@ bool CrateClass::Put_Crate(CELL& cell) {
  *                                                                                             *
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
-bool CrateClass::Get_Crate(CELL cell) {
+bool CrateClass::Get_Crate(ra::Cell cell) {
   if (TheMap().In_Radar(cell)) {
     CellClass* cellptr = &TheMap().at(cell);
 

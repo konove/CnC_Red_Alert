@@ -118,7 +118,7 @@ class SmudgeClass : public ObjectClass {
   void Draw_It(PixelView& /*view*/, int /*x*/, int /*y*/,
                WindowNumberType /*unused*/) const override {}
 
-  void Disown(CELL cell);
+  void Disown(Cell cell);
 
  private:
   static HousesType ToOwn;

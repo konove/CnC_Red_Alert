@@ -81,7 +81,7 @@ class CarryoverClass {
   /*
   **	The location of the object.
   */
-  CELL Cell{0};
+  ra::Cell Cell{};
 
   /*
   **	The strength of the object at the time is was recorded.

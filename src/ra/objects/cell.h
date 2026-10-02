@@ -242,12 +242,12 @@ class CellClass {
   [[nodiscard]] bool Is_Bridge_Here() const;
   [[nodiscard]] static RTTIType What_Am_I() { return RTTI_CELL; }
   [[nodiscard]] BuildingClass* Cell_Building() const;
-  [[nodiscard]] CELL Cell_Number() const { return ID; }
-  [[nodiscard]] Coordinate Cell_Coord() const;
+  [[nodiscard]] Cell Cell_Number() const { return Cell::FromIndex(ID); }
+  [[nodiscard]] Coordinate Center_Coord() const;
   [[nodiscard]] Coordinate Closest_Free_Spot(Coordinate coord,
                                              bool any = false) const;
   [[nodiscard]] Coordinate Free_Spot() const {
-    return Closest_Free_Spot(Cell_Coord());
+    return Closest_Free_Spot(Center_Coord());
   }
   // Returns the cell adjacent to this one in direction `face`, or this cell
   // itself when `face` is invalid or the neighbour lies outside the map.

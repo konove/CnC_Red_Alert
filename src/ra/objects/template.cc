@@ -54,9 +54,7 @@
 #include "base/array.h"
 #include "engine/gfx/tile.h"
 #include "game/core/object_heap.h"
-#include "ra/core/coord.h"
 #include "ra/core/defines.h"
-#include "ra/core/inline.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/type_heaps.h"
 #include "ra/editor/mapedit.h"
@@ -108,8 +106,7 @@ bool TemplateClass::Mark(MarkType mark) {
 
     for (int y = 0; std::cmp_less(y, Class->Height); y++) {
       for (int x = 0; std::cmp_less(x, Class->Width); x++) {
-        const CELL cell =
-            static_cast<CELL>(Coord_Cell(Coord) + (y * MAP_CELL_W) + x);
+        const Cell cell = Cell::Containing(Coord).Offset((y * MAP_CELL_W) + x);
         if (TheMap().In_Radar(cell)) {
           CellClass* cellptr = &TheMap().at(cell);
           const int number = (y * Class->Width) + x;
@@ -237,11 +234,11 @@ void TemplateClass::operator delete(void* ptr) {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-TemplateClass::TemplateClass(TemplateType type, CELL pos)
+TemplateClass::TemplateClass(TemplateType type, Cell pos)
     : ObjectClass(RTTI_TEMPLATE, TheObjectHeaps().tmplate().SlotIndexOf(this)),
       Class(TheTypeHeaps().tmplate().ActiveAt(static_cast<int>(type))) {
-  if (pos != -1) {
-    Unlimbo(Cell_Coord(pos));
+  if (pos != Cell::None()) {
+    Unlimbo(pos.Center());
   }
 }
 
