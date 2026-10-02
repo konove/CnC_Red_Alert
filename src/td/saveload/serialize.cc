@@ -33,7 +33,7 @@ namespace td {
 namespace {
 
 template <class T>
-ObjectClass* Slot(game::TFixedIHeapClass<T>& heap, int index, ArchiveReader& ar,
+ObjectClass* Slot(game::ObjectHeap<T>& heap, int index, ArchiveReader& ar,
                   bool active_only) {
   if (index < 0 || index >= heap.Length()) {
     ar.Fail("saved object index outside its heap");

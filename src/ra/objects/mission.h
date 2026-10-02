@@ -86,7 +86,7 @@ class MissionClass : public ObjectClass {
   }
 
  protected:
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   MissionClass()
       : Mission(MISSION_NONE),
         SuspendedMission(MISSION_NONE),

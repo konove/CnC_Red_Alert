@@ -135,9 +135,9 @@ class UnitClass final : public DriveClass {
   game::FacingClass SecondaryFacing;
 
  protected:
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   UnitClass() = default;
-  friend class game::TFixedIHeapClass<UnitClass>;
+  friend class game::ObjectHeap<UnitClass>;
 
  public:
   /*---------------------------------------------------------------------

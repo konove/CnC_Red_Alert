@@ -178,7 +178,7 @@ bool Save_Game(int id, const char* descr) {
     Call_Back();
     /*
     **	Save all game objects.  This code saves every object that's stored in a
-    **	TFixedIHeap class.
+    **	ObjectHeap class.
     */
     if (!TheObjectHeaps().house().Save(writer) ||
         !TheObjectHeaps().team_type().Save(writer) ||

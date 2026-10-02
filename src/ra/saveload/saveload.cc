@@ -275,7 +275,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
 
   /*
   **	Save all game objects.  This code saves every object that's stored in a
-  **	TFixedIHeap class.
+  **	ObjectHeap class.
   */
   writer.Section(FourCC("HOUS"));
   TheObjectHeaps().house().Save(writer);
@@ -595,7 +595,7 @@ bool Save_Game(int id, const std::string_view descr, bool /*unused*/) {
  * - The cell loads its own CellTrigger pointer.                           *
  *                                                                         *
  * Loading game objects:                                                   *
- * - IHeap's Load() routine loads the # of objects stored, and loads       *
+ * - ObjectHeap's Load() routine loads the # of objects stored, and loads  *
  *   each object.                                                          *
  * - Triggers: Add themselves to the HouseTriggers if they're associated   *
  *   with a house                                                          *

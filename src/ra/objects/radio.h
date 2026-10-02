@@ -90,7 +90,7 @@ class RadioClass : public MissionClass {
   void Serialize(Archive& ar);
 
  protected:
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   RadioClass() : Old{RADIO_STATIC, RADIO_STATIC, RADIO_STATIC}, Radio(nullptr) {}
 
  public:

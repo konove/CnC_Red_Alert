@@ -128,9 +128,9 @@ class InfantryClass final : public FootClass {
   */
   FearType Fear = FEAR_NONE;
 
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   InfantryClass() = default;
-  friend class game::TFixedIHeapClass<InfantryClass>;
+  friend class game::ObjectHeap<InfantryClass>;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

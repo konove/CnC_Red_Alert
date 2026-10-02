@@ -154,7 +154,7 @@ class ObjectClass : public AbstractClass {
   void Serialize(Archive& ar);
 
  protected:
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   ObjectClass()
       : IsDown(false),
         IsToDamage(false),

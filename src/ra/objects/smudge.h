@@ -69,9 +69,9 @@ class SmudgeClass : public ObjectClass {
   */
   const SmudgeTypeClass* Class = nullptr;
 
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   SmudgeClass() = default;
-  friend class game::TFixedIHeapClass<SmudgeClass>;
+  friend class game::ObjectHeap<SmudgeClass>;
 
   /*-------------------------------------------------------------------
   **	Constructors and destructors.

@@ -285,9 +285,9 @@ class AircraftClass : public FootClass, public FlyClass {
   */
   char AttacksRemaining = 1;
 
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   AircraftClass() = default;
-  friend class game::TFixedIHeapClass<AircraftClass>;
+  friend class game::ObjectHeap<AircraftClass>;
 };
 
 bool Building_Check();

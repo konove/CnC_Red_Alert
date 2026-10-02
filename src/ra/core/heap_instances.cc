@@ -1,4 +1,4 @@
-// Explicit instantiations of TFixedIHeapClass for every game object heap.
+// Explicit instantiations of ObjectHeap for every game object heap.
 //
 // Kept apart from heap.cc so the heap itself links without the game classes,
 // which lets heap_test.cc exercise it with a small local element type.
@@ -27,34 +27,34 @@
 
 // An explicit instantiation of a game:: template must sit in a namespace
 // that encloses game::, so these are at global scope.
-template class game::TFixedIHeapClass<ra::AircraftClass>;
-template class game::TFixedIHeapClass<ra::AnimClass>;
-template class game::TFixedIHeapClass<ra::BuildingClass>;
-template class game::TFixedIHeapClass<ra::BulletClass>;
-template class game::TFixedIHeapClass<ra::FactoryClass>;
-template class game::TFixedIHeapClass<ra::HouseClass>;
-template class game::TFixedIHeapClass<ra::InfantryClass>;
-template class game::TFixedIHeapClass<ra::OverlayClass>;
-template class game::TFixedIHeapClass<ra::SmudgeClass>;
-template class game::TFixedIHeapClass<ra::TeamClass>;
-template class game::TFixedIHeapClass<ra::TemplateClass>;
-template class game::TFixedIHeapClass<ra::TerrainClass>;
-template class game::TFixedIHeapClass<ra::TriggerClass>;
-template class game::TFixedIHeapClass<ra::UnitClass>;
-template class game::TFixedIHeapClass<ra::VesselClass>;
-template class game::TFixedIHeapClass<ra::AircraftTypeClass>;
-template class game::TFixedIHeapClass<ra::AnimTypeClass>;
-template class game::TFixedIHeapClass<ra::BuildingTypeClass>;
-template class game::TFixedIHeapClass<ra::BulletTypeClass>;
-template class game::TFixedIHeapClass<ra::HouseTypeClass>;
-template class game::TFixedIHeapClass<ra::InfantryTypeClass>;
-template class game::TFixedIHeapClass<ra::OverlayTypeClass>;
-template class game::TFixedIHeapClass<ra::SmudgeTypeClass>;
-template class game::TFixedIHeapClass<ra::TeamTypeClass>;
-template class game::TFixedIHeapClass<ra::TemplateTypeClass>;
-template class game::TFixedIHeapClass<ra::TerrainTypeClass>;
-template class game::TFixedIHeapClass<ra::TriggerTypeClass>;
-template class game::TFixedIHeapClass<ra::UnitTypeClass>;
-template class game::TFixedIHeapClass<ra::VesselTypeClass>;
-template class game::TFixedIHeapClass<ra::WarheadTypeClass>;
-template class game::TFixedIHeapClass<ra::WeaponTypeClass>;
+template class game::ObjectHeap<ra::AircraftClass>;
+template class game::ObjectHeap<ra::AnimClass>;
+template class game::ObjectHeap<ra::BuildingClass>;
+template class game::ObjectHeap<ra::BulletClass>;
+template class game::ObjectHeap<ra::FactoryClass>;
+template class game::ObjectHeap<ra::HouseClass>;
+template class game::ObjectHeap<ra::InfantryClass>;
+template class game::ObjectHeap<ra::OverlayClass>;
+template class game::ObjectHeap<ra::SmudgeClass>;
+template class game::ObjectHeap<ra::TeamClass>;
+template class game::ObjectHeap<ra::TemplateClass>;
+template class game::ObjectHeap<ra::TerrainClass>;
+template class game::ObjectHeap<ra::TriggerClass>;
+template class game::ObjectHeap<ra::UnitClass>;
+template class game::ObjectHeap<ra::VesselClass>;
+template class game::ObjectHeap<ra::AircraftTypeClass>;
+template class game::ObjectHeap<ra::AnimTypeClass>;
+template class game::ObjectHeap<ra::BuildingTypeClass>;
+template class game::ObjectHeap<ra::BulletTypeClass>;
+template class game::ObjectHeap<ra::HouseTypeClass>;
+template class game::ObjectHeap<ra::InfantryTypeClass>;
+template class game::ObjectHeap<ra::OverlayTypeClass>;
+template class game::ObjectHeap<ra::SmudgeTypeClass>;
+template class game::ObjectHeap<ra::TeamTypeClass>;
+template class game::ObjectHeap<ra::TemplateTypeClass>;
+template class game::ObjectHeap<ra::TerrainTypeClass>;
+template class game::ObjectHeap<ra::TriggerTypeClass>;
+template class game::ObjectHeap<ra::UnitTypeClass>;
+template class game::ObjectHeap<ra::VesselTypeClass>;
+template class game::ObjectHeap<ra::WarheadTypeClass>;
+template class game::ObjectHeap<ra::WeaponTypeClass>;

@@ -935,11 +935,11 @@ class HouseClass {
     BuildChoiceClass(UrgencyType u, StructType s) : Urgency(u), Structure(s) {}
   };
 
-  static game::TFixedIHeapClass<BuildChoiceClass> BuildChoice;
+  static game::ObjectHeap<BuildChoiceClass> BuildChoice;
 
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   HouseClass();
-  friend class game::TFixedIHeapClass<HouseClass>;
+  friend class game::ObjectHeap<HouseClass>;
 
   // Allocates the per-type statistics trackers an Internet game keeps.
   // Called by both constructors; the trackers are not saved.
@@ -949,7 +949,7 @@ class HouseClass {
   ** These values are for multiplay only.
   */
  public:
-  friend class game::TFixedIHeapClass<BuildChoiceClass>;
+  friend class game::ObjectHeap<BuildChoiceClass>;
   /*
   ** For multiplayer games, each house instance has a remap table; the table
   ** in the HousesTypeClass isn't used.  This variable is set to the remap

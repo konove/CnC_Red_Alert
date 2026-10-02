@@ -170,9 +170,9 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   */
   WarheadType Warhead = WARHEAD_NONE;
 
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   BulletClass() = default;
-  friend class game::TFixedIHeapClass<BulletClass>;
+  friend class game::ObjectHeap<BulletClass>;
 };
 
 extern template void BulletClass::Serialize<ArchiveWriter>(ArchiveWriter&);

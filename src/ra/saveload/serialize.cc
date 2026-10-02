@@ -36,8 +36,7 @@ namespace {
 // when the index is outside it. Deliberately does not consult the slot's
 // IsActive flag: the object there may not have been loaded yet.
 template <class T>
-ObjectClass* Slot(game::TFixedIHeapClass<T>& heap, int index,
-                  ArchiveReader& ar) {
+ObjectClass* Slot(game::ObjectHeap<T>& heap, int index, ArchiveReader& ar) {
   if (index < 0 || index >= heap.Length()) {
     ar.Fail("saved object index outside its heap");
     return nullptr;

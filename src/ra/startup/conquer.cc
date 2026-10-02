@@ -536,7 +536,7 @@ static bool FinishScenarioIfDecided() {
 // Logs one line per object in `objects`, tagged with `kind`, for the
 // save/load smoke test to diff.
 template <typename T>
-static void LogObjectPositions(const game::TFixedIHeapClass<T>& objects,
+static void LogObjectPositions(const game::ObjectHeap<T>& objects,
                                const std::string_view kind) {
   for (int index = 0; index < objects.Count(); index++) {
     const T* object = objects.Ptr(index);

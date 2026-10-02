@@ -176,9 +176,9 @@ class TerrainClass final : public ObjectClass, public StageClass {
   */
   bool IsCrumbling : 1 = false;
 
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   TerrainClass() = default;
-  friend class game::TFixedIHeapClass<TerrainClass>;
+  friend class game::ObjectHeap<TerrainClass>;
 };
 
 extern template void TerrainClass::Serialize<ArchiveWriter>(ArchiveWriter&);

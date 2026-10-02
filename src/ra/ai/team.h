@@ -288,9 +288,9 @@ class TeamClass : public AbstractClass {
 
   unsigned char Quantity[TeamTypeClass::kMaxTeamClasscount] = {};
 
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   TeamClass() = default;
-  friend class game::TFixedIHeapClass<TeamClass>;
+  friend class game::ObjectHeap<TeamClass>;
 };
 
 extern template void TeamClass::Serialize<ArchiveWriter>(ArchiveWriter&);

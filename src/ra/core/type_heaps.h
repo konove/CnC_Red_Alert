@@ -30,76 +30,67 @@ class TypeHeaps {
   TypeHeaps(TypeHeaps&&) = delete;
   TypeHeaps& operator=(TypeHeaps&&) = delete;
 
-  game::TFixedIHeapClass<HouseTypeClass>& house()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<HouseTypeClass>& house() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return house_;
   }
-  game::TFixedIHeapClass<BuildingTypeClass>& building()
+  game::ObjectHeap<BuildingTypeClass>& building()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return building_;
   }
-  game::TFixedIHeapClass<AircraftTypeClass>& aircraft()
+  game::ObjectHeap<AircraftTypeClass>& aircraft()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return aircraft_;
   }
-  game::TFixedIHeapClass<InfantryTypeClass>& infantry()
+  game::ObjectHeap<InfantryTypeClass>& infantry()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return infantry_;
   }
-  game::TFixedIHeapClass<BulletTypeClass>& bullet()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<BulletTypeClass>& bullet() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return bullet_;
   }
-  game::TFixedIHeapClass<AnimTypeClass>& anim() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<AnimTypeClass>& anim() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return anim_;
   }
-  game::TFixedIHeapClass<UnitTypeClass>& unit() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<UnitTypeClass>& unit() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return unit_;
   }
-  game::TFixedIHeapClass<VesselTypeClass>& vessel()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<VesselTypeClass>& vessel() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return vessel_;
   }
-  game::TFixedIHeapClass<TemplateTypeClass>& tmplate()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<TemplateTypeClass>& tmplate() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return template_;
   }
-  game::TFixedIHeapClass<TerrainTypeClass>& terrain()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<TerrainTypeClass>& terrain() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return terrain_;
   }
-  game::TFixedIHeapClass<OverlayTypeClass>& overlay()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<OverlayTypeClass>& overlay() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return overlay_;
   }
-  game::TFixedIHeapClass<SmudgeTypeClass>& smudge()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<SmudgeTypeClass>& smudge() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return smudge_;
   }
-  game::TFixedIHeapClass<WeaponTypeClass>& weapon()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<WeaponTypeClass>& weapon() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return weapon_;
   }
-  game::TFixedIHeapClass<WarheadTypeClass>& warhead()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<WarheadTypeClass>& warhead() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return warhead_;
   }
 
  private:
-  game::TFixedIHeapClass<HouseTypeClass> house_;
-  game::TFixedIHeapClass<BuildingTypeClass> building_;
-  game::TFixedIHeapClass<AircraftTypeClass> aircraft_;
-  game::TFixedIHeapClass<InfantryTypeClass> infantry_;
-  game::TFixedIHeapClass<BulletTypeClass> bullet_;
-  game::TFixedIHeapClass<AnimTypeClass> anim_;
-  game::TFixedIHeapClass<UnitTypeClass> unit_;
-  game::TFixedIHeapClass<VesselTypeClass> vessel_;
-  game::TFixedIHeapClass<TemplateTypeClass> template_;
-  game::TFixedIHeapClass<TerrainTypeClass> terrain_;
-  game::TFixedIHeapClass<OverlayTypeClass> overlay_;
-  game::TFixedIHeapClass<SmudgeTypeClass> smudge_;
-  game::TFixedIHeapClass<WeaponTypeClass> weapon_;
-  game::TFixedIHeapClass<WarheadTypeClass> warhead_;
+  game::ObjectHeap<HouseTypeClass> house_;
+  game::ObjectHeap<BuildingTypeClass> building_;
+  game::ObjectHeap<AircraftTypeClass> aircraft_;
+  game::ObjectHeap<InfantryTypeClass> infantry_;
+  game::ObjectHeap<BulletTypeClass> bullet_;
+  game::ObjectHeap<AnimTypeClass> anim_;
+  game::ObjectHeap<UnitTypeClass> unit_;
+  game::ObjectHeap<VesselTypeClass> vessel_;
+  game::ObjectHeap<TemplateTypeClass> template_;
+  game::ObjectHeap<TerrainTypeClass> terrain_;
+  game::ObjectHeap<OverlayTypeClass> overlay_;
+  game::ObjectHeap<SmudgeTypeClass> smudge_;
+  game::ObjectHeap<WeaponTypeClass> weapon_;
+  game::ObjectHeap<WarheadTypeClass> warhead_;
 };
 
 // Returns the TypeHeaps that Game installed. CHECK-fails outside a Game's

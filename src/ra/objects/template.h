@@ -67,9 +67,9 @@ class TemplateClass : public ObjectClass {
   */
   const TemplateTypeClass* Class = nullptr;
 
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   TemplateClass() = default;
-  friend class game::TFixedIHeapClass<TemplateClass>;
+  friend class game::ObjectHeap<TemplateClass>;
 
   /*-------------------------------------------------------------------
   **	Constructors and destructors.

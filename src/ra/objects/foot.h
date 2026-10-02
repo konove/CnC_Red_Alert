@@ -293,7 +293,7 @@ class FootClass : public TechnoClass {
   void Serialize(Archive& ar);
 
  protected:
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   FootClass()
       : IsScanLimited(false),
         IsInitiated(false),

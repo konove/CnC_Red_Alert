@@ -222,7 +222,7 @@
 
 namespace ra {
 
-game::TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
+game::ObjectHeap<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
 
 /***********************************************************************************************
  * HouseClass::operator HousesType -- Conversion to HousesType operator. *

@@ -36,19 +36,19 @@ static_assert(Serializable<SmudgeClass>);
 
 // An explicit instantiation of a game:: template must sit in a namespace
 // that encloses game::, so these are at global scope.
-template class game::TFixedIHeapClass<td::AircraftClass>;
-template class game::TFixedIHeapClass<td::AnimClass>;
-template class game::TFixedIHeapClass<td::BuildingClass>;
-template class game::TFixedIHeapClass<td::BulletClass>;
-template class game::TFixedIHeapClass<td::FactoryClass>;
-template class game::TFixedIHeapClass<td::HouseClass>;
-template class game::TFixedIHeapClass<td::InfantryClass>;
-template class game::TFixedIHeapClass<td::OverlayClass>;
-template class game::TFixedIHeapClass<td::SmudgeClass>;
-template class game::TFixedIHeapClass<td::TeamClass>;
-template class game::TFixedIHeapClass<td::TemplateClass>;
-template class game::TFixedIHeapClass<td::TerrainClass>;
-template class game::TFixedIHeapClass<td::TriggerClass>;
-template class game::TFixedIHeapClass<td::UnitClass>;
+template class game::ObjectHeap<td::AircraftClass>;
+template class game::ObjectHeap<td::AnimClass>;
+template class game::ObjectHeap<td::BuildingClass>;
+template class game::ObjectHeap<td::BulletClass>;
+template class game::ObjectHeap<td::FactoryClass>;
+template class game::ObjectHeap<td::HouseClass>;
+template class game::ObjectHeap<td::InfantryClass>;
+template class game::ObjectHeap<td::OverlayClass>;
+template class game::ObjectHeap<td::SmudgeClass>;
+template class game::ObjectHeap<td::TeamClass>;
+template class game::ObjectHeap<td::TemplateClass>;
+template class game::ObjectHeap<td::TerrainClass>;
+template class game::ObjectHeap<td::TriggerClass>;
+template class game::ObjectHeap<td::UnitClass>;
 
-template class game::TFixedIHeapClass<td::TeamTypeClass>;
+template class game::ObjectHeap<td::TeamTypeClass>;

@@ -55,14 +55,14 @@ class RecordingSink : public ByteSink {
 
 // Constructs a Widget in the heap's next slot and records its slot index the
 // way game objects do.
-Widget* Allocate(TFixedIHeapClass<Widget>& heap, int32_t value) {
+Widget* Allocate(ObjectHeap<Widget>& heap, int32_t value) {
   auto* w = std::construct_at(heap.Alloc());
   w->ID = heap.ID(w);
   w->value = value;
   return w;
 }
 
-std::vector<uint8_t> Save(const TFixedIHeapClass<Widget>& heap) {
+std::vector<uint8_t> Save(const ObjectHeap<Widget>& heap) {
   RecordingSink pipe;
   ArchiveWriter writer(pipe);
   EXPECT_TRUE(heap.Save(writer));
@@ -71,7 +71,7 @@ std::vector<uint8_t> Save(const TFixedIHeapClass<Widget>& heap) {
 
 // Loads `bytes` into `heap` and returns the reader's error, empty on success.
 // Also checks that Load's result agrees with the reader.
-std::string LoadError(TFixedIHeapClass<Widget>& heap,
+std::string LoadError(ObjectHeap<Widget>& heap,
                       const std::vector<uint8_t>& bytes) {
   SpanSource straw(std::as_bytes(std::span(bytes)));
   ArchiveReader reader(straw);
@@ -80,12 +80,12 @@ std::string LoadError(TFixedIHeapClass<Widget>& heap,
   return std::string(reader.error());
 }
 
-bool Load(TFixedIHeapClass<Widget>& heap, const std::vector<uint8_t>& bytes) {
+bool Load(ObjectHeap<Widget>& heap, const std::vector<uint8_t>& bytes) {
   return LoadError(heap, bytes).empty();
 }
 
 TEST(HeapTest, FreeKeepsTheOrderOfTheOthers) {
-  TFixedIHeapClass<Widget> heap;
+  ObjectHeap<Widget> heap;
   heap.Set_Heap(4);
   Widget* first = Allocate(heap, 1);
   Widget* second = Allocate(heap, 2);
@@ -99,7 +99,7 @@ TEST(HeapTest, FreeKeepsTheOrderOfTheOthers) {
 }
 
 TEST(HeapTest, FreeReportsWhetherItFreedAnything) {
-  TFixedIHeapClass<Widget> heap;
+  ObjectHeap<Widget> heap;
   heap.Set_Heap(4);
   Widget* widget = Allocate(heap, 1);
 
@@ -111,7 +111,7 @@ TEST(HeapTest, FreeReportsWhetherItFreedAnything) {
 // A pointer that is not the start of a slot names no object, even though
 // ID() turns it into a plausible slot index.
 TEST(HeapTest, FreeRejectsAPointerThatIsNotASlot) {
-  TFixedIHeapClass<Widget> heap;
+  ObjectHeap<Widget> heap;
   heap.Set_Heap(4);
   Widget* widget = Allocate(heap, 1);
 
@@ -124,7 +124,7 @@ TEST(HeapTest, FreeRejectsAPointerThatIsNotASlot) {
 // Rule loading sizes the type heaps again with the same count while objects
 // still point into them, so the storage must stay where it is.
 TEST(HeapTest, SetHeapWithTheSameCountKeepsTheStorage) {
-  TFixedIHeapClass<Widget> heap;
+  ObjectHeap<Widget> heap;
   heap.Set_Heap(4);
   Allocate(heap, 1);
   const Widget* slot_zero = heap.Raw_Ptr(0);
@@ -137,7 +137,7 @@ TEST(HeapTest, SetHeapWithTheSameCountKeepsTheStorage) {
 }
 
 TEST(HeapTest, AllocateAfterFreeAllReusesSlotZeroZeroed) {
-  TFixedIHeapClass<Widget> heap;
+  ObjectHeap<Widget> heap;
   heap.Set_Heap(4);
   Allocate(heap, 7);
   Allocate(heap, 8);
@@ -151,7 +151,7 @@ TEST(HeapTest, AllocateAfterFreeAllReusesSlotZeroZeroed) {
 }
 
 TEST(HeapTest, SlotAtNamesEverySlotAndNothingOutside) {
-  TFixedIHeapClass<Widget> heap;
+  ObjectHeap<Widget> heap;
   heap.Set_Heap(3);
   const Widget* live = Allocate(heap, 7);
 
@@ -163,7 +163,7 @@ TEST(HeapTest, SlotAtNamesEverySlotAndNothingOutside) {
 }
 
 TEST(HeapDiagnosticsTest, OwnsOnlySlotStartsInsideTheBuffer) {
-  TFixedIHeapClass<Widget> heap;
+  ObjectHeap<Widget> heap;
   heap.Set_Heap(4);
   const Widget* first = Allocate(heap, 1);
   const Widget* second = Allocate(heap, 2);
@@ -179,7 +179,7 @@ TEST(HeapDiagnosticsTest, OwnsOnlySlotStartsInsideTheBuffer) {
 }
 
 TEST(HeapDiagnosticsTest, DescribeTellsTheWaysAPointerCanBeWrong) {
-  TFixedIHeapClass<Widget> heap;
+  ObjectHeap<Widget> heap;
   heap.Set_Heap(4);
   const Widget* live = Allocate(heap, 1);
   Widget* freed = Allocate(heap, 2);
@@ -196,12 +196,12 @@ TEST(HeapDiagnosticsTest, DescribeTellsTheWaysAPointerCanBeWrong) {
   EXPECT_THAT(heap.Describe(&stack_widget),
               testing::HasSubstr("outside the buffer"));
 
-  const TFixedIHeapClass<Widget> unsized;
+  const ObjectHeap<Widget> unsized;
   EXPECT_THAT(unsized.Describe(live), testing::HasSubstr("heap has no buffer"));
 }
 
 TEST(HeapDiagnosticsTest, ValidateReportsAStaleId) {
-  TFixedIHeapClass<Widget> heap;
+  ObjectHeap<Widget> heap;
   heap.Set_Heap(4);
   Allocate(heap, 1);
   Widget* second = Allocate(heap, 2);
@@ -213,7 +213,7 @@ TEST(HeapDiagnosticsTest, ValidateReportsAStaleId) {
 }
 
 TEST(HeapSerializeTest, SparseSlotsRoundTripIntoTheSameSlots) {
-  TFixedIHeapClass<Widget> source;
+  ObjectHeap<Widget> source;
   source.Set_Heap(8);
   const Widget* a = Allocate(source, 10);
   Widget* b = Allocate(source, 20);
@@ -226,7 +226,7 @@ TEST(HeapSerializeTest, SparseSlotsRoundTripIntoTheSameSlots) {
   // count + 2 x (index + ID + value + flag)
   EXPECT_EQ(bytes.size(), 4U + (2 * (4 + 4 + 4 + 1)));
 
-  TFixedIHeapClass<Widget> loaded;
+  ObjectHeap<Widget> loaded;
   loaded.Set_Heap(8);
   ASSERT_TRUE(Load(loaded, bytes));
   EXPECT_EQ(loaded.Count(), 2);
@@ -240,58 +240,58 @@ TEST(HeapSerializeTest, SparseSlotsRoundTripIntoTheSameSlots) {
 }
 
 TEST(HeapSerializeTest, EmptyHeapRoundTrips) {
-  TFixedIHeapClass<Widget> source;
+  ObjectHeap<Widget> source;
   source.Set_Heap(4);
   const std::vector<uint8_t> bytes = Save(source);
   EXPECT_EQ(bytes.size(), 4U);
 
-  TFixedIHeapClass<Widget> loaded;
+  ObjectHeap<Widget> loaded;
   loaded.Set_Heap(4);
   EXPECT_TRUE(Load(loaded, bytes));
   EXPECT_EQ(loaded.Count(), 0);
 }
 
 TEST(HeapSerializeTest, TruncatedStreamFails) {
-  TFixedIHeapClass<Widget> source;
+  ObjectHeap<Widget> source;
   source.Set_Heap(4);
   Allocate(source, 1);
   std::vector<uint8_t> bytes = Save(source);
   bytes.resize(bytes.size() - 1);
 
-  TFixedIHeapClass<Widget> loaded;
+  ObjectHeap<Widget> loaded;
   loaded.Set_Heap(4);
   EXPECT_FALSE(Load(loaded, bytes));
 }
 
 TEST(HeapSerializeTest, CountBeyondCapacityFails) {
-  TFixedIHeapClass<Widget> source;
+  ObjectHeap<Widget> source;
   source.Set_Heap(8);
   for (int i = 0; i < 6; i++) {
     Allocate(source, i);
   }
   const std::vector<uint8_t> bytes = Save(source);
 
-  TFixedIHeapClass<Widget> smaller;
+  ObjectHeap<Widget> smaller;
   smaller.Set_Heap(4);
   EXPECT_EQ(LoadError(smaller, bytes), "invalid saved heap count");
 }
 
 TEST(HeapSerializeTest, SlotIndexOutOfRangeFails) {
-  TFixedIHeapClass<Widget> source;
+  ObjectHeap<Widget> source;
   source.Set_Heap(8);
   const Widget* w = Allocate(source, 1);
   EXPECT_EQ(source.ID(w), 0);
   std::vector<uint8_t> bytes = Save(source);
   bytes.at(4) = 0x7F;  // slot index low byte: 127 is past an 8-slot heap
 
-  TFixedIHeapClass<Widget> loaded;
+  ObjectHeap<Widget> loaded;
   loaded.Set_Heap(8);
   EXPECT_EQ(LoadError(loaded, bytes), "invalid heap slot");
   EXPECT_EQ(loaded.Count(), 0);
 }
 
 TEST(HeapSerializeTest, SlotNamedTwiceFails) {
-  TFixedIHeapClass<Widget> source;
+  ObjectHeap<Widget> source;
   source.Set_Heap(8);
   Allocate(source, 1);
   Allocate(source, 2);
@@ -300,7 +300,7 @@ TEST(HeapSerializeTest, SlotNamedTwiceFails) {
   // index, 1 -> 0.
   bytes.at(4 + 13) = 0;
 
-  TFixedIHeapClass<Widget> loaded;
+  ObjectHeap<Widget> loaded;
   loaded.Set_Heap(8);
   EXPECT_EQ(LoadError(loaded, bytes), "invalid heap slot");
   EXPECT_EQ(loaded.Count(), 1);
@@ -326,7 +326,7 @@ class DestructorCounter {
 };
 
 TEST(HeapDestroyTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
-  TFixedIHeapClass<DestructorCounter> heap;
+  ObjectHeap<DestructorCounter> heap;
   heap.Set_Heap(3);
   int destroyed = 0;
   std::construct_at(heap.Alloc(), destroyed);

@@ -36,7 +36,7 @@
 
 namespace game {
 
-bool FixedIHeapClass::Set_Heap(int count) {
+bool ObjectHeapBase::Set_Heap(int count) {
   if (Size <= 0 || count < 0) {
     Clear();
     return false;
@@ -64,7 +64,7 @@ bool FixedIHeapClass::Set_Heap(int count) {
   return true;
 }
 
-void* FixedIHeapClass::Allocate() {
+void* ObjectHeapBase::Allocate() {
   // Full: skip the scan, which could only fail.
   if (ActiveCount >= TotalCount) {
     return nullptr;
@@ -82,7 +82,7 @@ void* FixedIHeapClass::Allocate() {
   return pointer;
 }
 
-bool FixedIHeapClass::Free(void* pointer) {
+bool ObjectHeapBase::Free(void* pointer) {
   // ID() alone would round a pointer into the middle of a slot down to that
   // slot, free it, and leave the in-use list holding it.
   if (ActiveCount == 0 || !Owns(pointer)) {
@@ -100,7 +100,7 @@ bool FixedIHeapClass::Free(void* pointer) {
 
 // Truncates toward zero, so a pointer just below the buffer also reads as
 // slot 0; callers that cannot trust the pointer ask Owns() first.
-int FixedIHeapClass::ID(const void* pointer) const {
+int ObjectHeapBase::ID(const void* pointer) const {
   if (pointer && Size) {
     return static_cast<int>(
         (static_cast<const std::byte*>(pointer) - Buffer.data()) / Size);
@@ -110,7 +110,7 @@ int FixedIHeapClass::ID(const void* pointer) const {
 
 // Ordering pointers into different objects is only defined through
 // std::less, which is why the comparison does not simply use `<`.
-base::ssize FixedIHeapClass::Offset_Of(const void* pointer) const {
+base::ssize ObjectHeapBase::Offset_Of(const void* pointer) const {
   if (pointer == nullptr || Buffer.empty()) {
     return -1;
   }
@@ -123,12 +123,12 @@ base::ssize FixedIHeapClass::Offset_Of(const void* pointer) const {
   return address - Buffer.data();
 }
 
-bool FixedIHeapClass::Owns(const void* pointer) const {
+bool ObjectHeapBase::Owns(const void* pointer) const {
   const base::ssize offset = Offset_Of(pointer);
   return Size > 0 && offset >= 0 && offset % Size == 0;
 }
 
-std::string FixedIHeapClass::Describe(const void* pointer) const {
+std::string ObjectHeapBase::Describe(const void* pointer) const {
   std::string description = absl::StrFormat(
       "heap=%p slots=%d/%d size=%d buffer=[%p,%p) ptr=%p", this, ActiveCount,
       TotalCount, Size, static_cast<const void*>(Buffer.data()),
@@ -156,7 +156,7 @@ std::string FixedIHeapClass::Describe(const void* pointer) const {
                       " listed=", Logical_ID(pointer) >= 0 ? "yes" : "no");
 }
 
-void FixedIHeapClass::Clear() {
+void ObjectHeapBase::Clear() {
   Buffer = {};
   storage_.reset();
   ActiveCount = 0;
@@ -165,20 +165,20 @@ void FixedIHeapClass::Clear() {
   ActivePointers.clear();
 }
 
-void FixedIHeapClass::Free_All() {
+void ObjectHeapBase::Free_All() {
   ActivePointers.clear();
   ActiveCount = 0;
   FreeFlag.assign(FreeFlag.size(), false);
 }
 
-int FixedIHeapClass::Logical_ID(const void* pointer) const {
+int ObjectHeapBase::Logical_ID(const void* pointer) const {
   if (pointer == nullptr) {
     return -1;
   }
   return static_cast<int>(base::IndexOf(ActivePointers, pointer));
 }
 
-std::string FixedIHeapClass::Validate() const {
+std::string ObjectHeapBase::Validate() const {
   if (std::ssize(ActivePointers) != ActiveCount) {
     return absl::StrCat("ActivePointers holds ", ActivePointers.size(), " of ",
                         ActiveCount, " active objects");

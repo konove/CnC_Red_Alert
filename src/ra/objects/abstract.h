@@ -76,7 +76,7 @@ class AbstractClass {
   }
 
  protected:
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   // IsActive starts true because each heap type's operator new sets it
   // before a normal constructor runs, and the shell must not disagree.
   AbstractClass() : RTTI(RTTI_NONE), ID(-1), Coord(0xFFFFFFFFL), Height(0) {}

@@ -69,7 +69,7 @@ class HeapSlotPtrTest : public ::testing::Test {
     return std::string(reader.error());
   }
 
-  TFixedIHeapClass<Part> heap_;
+  ObjectHeap<Part> heap_;
 };
 
 TEST_F(HeapSlotPtrTest, NullIsMinusOne) {

@@ -30,7 +30,7 @@ namespace game {
 template <class T>
 class HeapSlotPtr {
  public:
-  using Heap = TFixedIHeapClass<std::remove_const_t<T>>;
+  using Heap = ObjectHeap<std::remove_const_t<T>>;
 
   HeapSlotPtr(T*& ref ABSL_ATTRIBUTE_LIFETIME_BOUND,
               Heap& heap ABSL_ATTRIBUTE_LIFETIME_BOUND)
@@ -60,7 +60,7 @@ class HeapSlotPtr {
 };
 
 template <class T>
-HeapSlotPtr(T*&, TFixedIHeapClass<std::remove_const_t<T>>&) -> HeapSlotPtr<T>;
+HeapSlotPtr(T*&, ObjectHeap<std::remove_const_t<T>>&) -> HeapSlotPtr<T>;
 
 }  // namespace game
 

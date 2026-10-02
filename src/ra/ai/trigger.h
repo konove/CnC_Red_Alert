@@ -142,10 +142,10 @@ class TriggerClass {
   CELL Cell = 0;
 
  private:
-  // Shell for TFixedIHeapClass::Load: a fully initialized object with no
+  // Shell for ObjectHeap::Load: a fully initialized object with no
   // trigger type, filled in by Serialize().
   TriggerClass();
-  friend class game::TFixedIHeapClass<TriggerClass>;
+  friend class game::ObjectHeap<TriggerClass>;
 };
 
 TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype);

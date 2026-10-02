@@ -109,7 +109,7 @@ class DriveClass : public FootClass {
   void Serialize(Archive& ar);
 
  protected:
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   DriveClass() = default;
 
  public:

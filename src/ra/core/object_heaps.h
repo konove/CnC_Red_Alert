@@ -47,64 +47,55 @@ class ObjectHeaps {
   ObjectHeaps(ObjectHeaps&&) = delete;
   ObjectHeaps& operator=(ObjectHeaps&&) = delete;
 
-  game::TFixedIHeapClass<AircraftClass>& aircraft()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<AircraftClass>& aircraft() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return aircraft_;
   }
-  game::TFixedIHeapClass<AnimClass>& anim() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<AnimClass>& anim() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return anim_;
   }
-  game::TFixedIHeapClass<BuildingClass>& building()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<BuildingClass>& building() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return building_;
   }
-  game::TFixedIHeapClass<BulletClass>& bullet() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<BulletClass>& bullet() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return bullet_;
   }
-  game::TFixedIHeapClass<FactoryClass>& factory()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<FactoryClass>& factory() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return factory_;
   }
-  game::TFixedIHeapClass<HouseClass>& house() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<HouseClass>& house() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return house_;
   }
-  game::TFixedIHeapClass<InfantryClass>& infantry()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<InfantryClass>& infantry() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return infantry_;
   }
-  game::TFixedIHeapClass<OverlayClass>& overlay()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<OverlayClass>& overlay() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return overlay_;
   }
-  game::TFixedIHeapClass<SmudgeClass>& smudge() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<SmudgeClass>& smudge() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return smudge_;
   }
-  game::TFixedIHeapClass<TeamClass>& team() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<TeamClass>& team() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return team_;
   }
-  game::TFixedIHeapClass<TeamTypeClass>& team_type()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<TeamTypeClass>& team_type() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return team_type_;
   }
-  game::TFixedIHeapClass<TemplateClass>& tmplate()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<TemplateClass>& tmplate() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return tmplate_;
   }
-  game::TFixedIHeapClass<TerrainClass>& terrain()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<TerrainClass>& terrain() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return terrain_;
   }
-  game::TFixedIHeapClass<TriggerClass>& trigger()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<TriggerClass>& trigger() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return trigger_;
   }
-  game::TFixedIHeapClass<UnitClass>& unit() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<UnitClass>& unit() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return unit_;
   }
-  game::TFixedIHeapClass<VesselClass>& vessel() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  game::ObjectHeap<VesselClass>& vessel() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return vessel_;
   }
-  game::TFixedIHeapClass<TriggerTypeClass>& trigger_type()
+  game::ObjectHeap<TriggerTypeClass>& trigger_type()
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return trigger_type_;
   }
@@ -116,23 +107,23 @@ class ObjectHeaps {
   [[nodiscard]] std::string Validate() const;
 
  private:
-  game::TFixedIHeapClass<AircraftClass> aircraft_;
-  game::TFixedIHeapClass<AnimClass> anim_;
-  game::TFixedIHeapClass<BuildingClass> building_;
-  game::TFixedIHeapClass<BulletClass> bullet_;
-  game::TFixedIHeapClass<FactoryClass> factory_;
-  game::TFixedIHeapClass<HouseClass> house_;
-  game::TFixedIHeapClass<InfantryClass> infantry_;
-  game::TFixedIHeapClass<OverlayClass> overlay_;
-  game::TFixedIHeapClass<SmudgeClass> smudge_;
-  game::TFixedIHeapClass<TeamClass> team_;
-  game::TFixedIHeapClass<TeamTypeClass> team_type_;
-  game::TFixedIHeapClass<TemplateClass> tmplate_;
-  game::TFixedIHeapClass<TerrainClass> terrain_;
-  game::TFixedIHeapClass<TriggerClass> trigger_;
-  game::TFixedIHeapClass<UnitClass> unit_;
-  game::TFixedIHeapClass<VesselClass> vessel_;
-  game::TFixedIHeapClass<TriggerTypeClass> trigger_type_;
+  game::ObjectHeap<AircraftClass> aircraft_;
+  game::ObjectHeap<AnimClass> anim_;
+  game::ObjectHeap<BuildingClass> building_;
+  game::ObjectHeap<BulletClass> bullet_;
+  game::ObjectHeap<FactoryClass> factory_;
+  game::ObjectHeap<HouseClass> house_;
+  game::ObjectHeap<InfantryClass> infantry_;
+  game::ObjectHeap<OverlayClass> overlay_;
+  game::ObjectHeap<SmudgeClass> smudge_;
+  game::ObjectHeap<TeamClass> team_;
+  game::ObjectHeap<TeamTypeClass> team_type_;
+  game::ObjectHeap<TemplateClass> tmplate_;
+  game::ObjectHeap<TerrainClass> terrain_;
+  game::ObjectHeap<TriggerClass> trigger_;
+  game::ObjectHeap<UnitClass> unit_;
+  game::ObjectHeap<VesselClass> vessel_;
+  game::ObjectHeap<TriggerTypeClass> trigger_type_;
 };
 
 // Returns the ObjectHeaps that Game installed. CHECK-fails outside a Game's

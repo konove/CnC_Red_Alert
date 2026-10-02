@@ -36,7 +36,7 @@ static_assert(!Serializable<InheritedOnly>);
 
 // Saves `heap` into a zero-padded 256-byte buffer.
 template <class T>
-std::array<uint8_t, 256> SaveHeap(TFixedIHeapClass<T>& heap) {
+std::array<uint8_t, 256> SaveHeap(ObjectHeap<T>& heap) {
   std::array<uint8_t, 256> bytes{};
   SpanSink sink(std::as_writable_bytes(std::span(bytes)));
   ArchiveWriter writer(sink);
@@ -47,7 +47,7 @@ std::array<uint8_t, 256> SaveHeap(TFixedIHeapClass<T>& heap) {
 // Loads the first `length` bytes of `bytes` into `heap`; returns whether Load
 // succeeded.
 template <class T>
-bool LoadHeap(TFixedIHeapClass<T>& heap, const std::array<uint8_t, 256>& bytes,
+bool LoadHeap(ObjectHeap<T>& heap, const std::array<uint8_t, 256>& bytes,
               base::ssize length = 256) {
   SpanSource source(
       std::as_bytes(std::span(bytes).first(base::ToSize(length))));
@@ -56,7 +56,7 @@ bool LoadHeap(TFixedIHeapClass<T>& heap, const std::array<uint8_t, 256>& bytes,
 }
 
 TEST(HeapLoadTest, FieldObjectsPreserveSparseSlots) {
-  TFixedIHeapClass<FieldObject> source;
+  ObjectHeap<FieldObject> source;
   source.Set_Heap(4);
   auto* first = std::construct_at(source.Alloc());
   auto* hole = std::construct_at(source.Alloc());
@@ -65,7 +65,7 @@ TEST(HeapLoadTest, FieldObjectsPreserveSparseSlots) {
   last->value = -456;
   last->flag = true;
   source.Free(hole);
-  TFixedIHeapClass<FieldObject> loaded;
+  ObjectHeap<FieldObject> loaded;
   loaded.Set_Heap(4);
   // count + 2 x (index + value + flag)
   ASSERT_TRUE(LoadHeap(loaded, SaveHeap(source), 22));
@@ -86,7 +86,7 @@ TEST(HeapLoadTest, RejectsNegativeCountsAndOutOfRangeSlots) {
     int32_t count = invalid_count ? -1 : 1;
     int32_t index = 2;
     writer(count, index);
-    TFixedIHeapClass<FieldObject> heap;
+    ObjectHeap<FieldObject> heap;
     heap.Set_Heap(2);
     EXPECT_FALSE(LoadHeap(heap, bytes));
     EXPECT_EQ(heap.Count(), 0);
@@ -101,7 +101,7 @@ TEST(HeapLoadTest, RejectsDuplicateSlotsAndTruncatedFields) {
   int32_t index = 0;
   FieldObject value;
   writer(count, index, value, index, value);
-  TFixedIHeapClass<FieldObject> heap;
+  ObjectHeap<FieldObject> heap;
   heap.Set_Heap(2);
   EXPECT_FALSE(LoadHeap(heap, bytes));
   EXPECT_EQ(heap.Count(), 1);
@@ -115,7 +115,7 @@ TEST(HeapLoadTest, RejectsOversizedCountsAndTruncatedHeaders) {
   ArchiveWriter writer(sink);
   int32_t count = 3;
   writer(count);
-  TFixedIHeapClass<FieldObject> heap;
+  ObjectHeap<FieldObject> heap;
   heap.Set_Heap(2);
   EXPECT_FALSE(LoadHeap(heap, bytes));
   EXPECT_FALSE(LoadHeap(heap, bytes, 3));
@@ -123,7 +123,7 @@ TEST(HeapLoadTest, RejectsOversizedCountsAndTruncatedHeaders) {
 }
 
 TEST(HeapLoadTest, SaveReportsASinkThatFills) {
-  TFixedIHeapClass<FieldObject> heap;
+  ObjectHeap<FieldObject> heap;
   heap.Set_Heap(2);
   std::construct_at(heap.Alloc());
   // Room for the count and the slot index, not for the object's fields.
@@ -134,9 +134,9 @@ TEST(HeapLoadTest, SaveReportsASinkThatFills) {
 }
 
 TEST(HeapLoadTest, EmptyHeapRoundTripsWithoutObjects) {
-  TFixedIHeapClass<FieldObject> source;
+  ObjectHeap<FieldObject> source;
   source.Set_Heap(2);
-  TFixedIHeapClass<FieldObject> loaded;
+  ObjectHeap<FieldObject> loaded;
   loaded.Set_Heap(2);
   EXPECT_TRUE(LoadHeap(loaded, SaveHeap(source), 4));
   EXPECT_EQ(loaded.Count(), 0);
@@ -150,7 +150,7 @@ TEST(HeapLoadTest, EmptyHeapRoundTripsWithoutObjects) {
 // dead block. That is what makes reading a projectile pointer after a failed
 // unlimbo a live-object read instead of a harmless one.
 TEST(HeapLoadTest, FreedSlotIsHandedToTheNextAllocation) {
-  TFixedIHeapClass<FieldObject> heap;
+  ObjectHeap<FieldObject> heap;
   heap.Set_Heap(2);
   auto* first = std::construct_at(heap.Alloc());
   first->value = 4242;
@@ -179,7 +179,7 @@ class DestructorCounter {
 };
 
 TEST(HeapLoadTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
-  TFixedIHeapClass<DestructorCounter> heap;
+  ObjectHeap<DestructorCounter> heap;
   heap.Set_Heap(3);
   int destroyed = 0;
   std::construct_at(heap.Alloc(), destroyed);
@@ -193,7 +193,7 @@ TEST(HeapLoadTest, DestroyAllRunsEveryDestructorAndFreesTheSlots) {
 }
 
 TEST(HeapLoadTest, AllocationQueryRejectsHolesAndOutOfRangeSlots) {
-  TFixedIHeapClass<FieldObject> heap;
+  ObjectHeap<FieldObject> heap;
   heap.Set_Heap(3);
   auto* object = std::construct_at(heap.Alloc());
   EXPECT_TRUE(heap.Is_Allocated(0));

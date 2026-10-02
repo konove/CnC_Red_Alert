@@ -1856,8 +1856,8 @@ namespace {
 // Clears `ref` when it names a slot of `heap` that holds no object. `owner`
 // and `field` say where it was read from, for the log.
 template <class T>
-void DropIfUnfilled(T*& ref, game::TFixedIHeapClass<T>& heap,
-                    std::string_view owner, std::string_view field) {
+void DropIfUnfilled(T*& ref, game::ObjectHeap<T>& heap, std::string_view owner,
+                    std::string_view field) {
   if (ref == nullptr) {
     return;
   }

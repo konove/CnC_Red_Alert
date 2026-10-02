@@ -231,9 +231,9 @@ class BuildingClass : public TechnoClass {
   */
   engine::platform::Timer<game::FrameTickSource> PlacementDelay{0};
 
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   BuildingClass() : ActLike(HOUSE_NONE) {}
-  friend class game::TFixedIHeapClass<BuildingClass>;
+  friend class game::ObjectHeap<BuildingClass>;
 
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.

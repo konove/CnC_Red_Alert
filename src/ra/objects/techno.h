@@ -274,7 +274,7 @@ class TechnoClass : public RadioClass,
   void Serialize(Archive& ar);
 
  protected:
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   TechnoClass()
       : IsUseless(false),
         IsTickedOff(false),

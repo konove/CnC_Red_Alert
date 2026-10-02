@@ -68,9 +68,9 @@ class OverlayClass : public ObjectClass {
   */
   const OverlayTypeClass* Class = nullptr;
 
-  // Shell for TFixedIHeapClass::Load; Serialize() supplies every value.
+  // Shell for ObjectHeap::Load; Serialize() supplies every value.
   OverlayClass() = default;
-  friend class game::TFixedIHeapClass<OverlayClass>;
+  friend class game::ObjectHeap<OverlayClass>;
 
   /*-------------------------------------------------------------------
   **	Constructors and destructors.

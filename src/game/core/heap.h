@@ -51,14 +51,14 @@ namespace game {
 // if that order is the same on every machine.
 //
 // Nothing is virtual: nothing derives from it except the typed
-// TFixedIHeapClass below.
+// ObjectHeap below.
 //
 // Example:
-//   FixedIHeapClass heap(sizeof(Widget));
+//   ObjectHeapBase heap(sizeof(Widget));
 //   heap.Set_Heap(100);              // room for 100 widgets
 //   void* slot = heap.Allocate();    // zero-filled; nullptr when full
 //   heap.Free(slot);
-class FixedIHeapClass {
+class ObjectHeapBase {
  public:
   // Reads the slot index an object caches in its own `ID` field.
   using SlotIdReader = int (*)(const void* object);
@@ -68,15 +68,15 @@ class FixedIHeapClass {
   // clang's lifetime analysis reads slot_id as borrowed storage, but a
   // function pointer outlives any heap.
   // NOLINTBEGIN(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
-  explicit FixedIHeapClass(base::ssize size,
-                           SlotIdReader slot_id = nullptr) noexcept
+  explicit ObjectHeapBase(base::ssize size,
+                          SlotIdReader slot_id = nullptr) noexcept
       : Size(size), slot_id_(slot_id) {}
   // NOLINTEND(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
-  ~FixedIHeapClass() = default;
-  FixedIHeapClass(const FixedIHeapClass&) = delete;
-  FixedIHeapClass& operator=(const FixedIHeapClass&) = delete;
-  FixedIHeapClass(FixedIHeapClass&&) = delete;
-  FixedIHeapClass& operator=(FixedIHeapClass&&) = delete;
+  ~ObjectHeapBase() = default;
+  ObjectHeapBase(const ObjectHeapBase&) = delete;
+  ObjectHeapBase& operator=(const ObjectHeapBase&) = delete;
+  ObjectHeapBase(ObjectHeapBase&&) = delete;
+  ObjectHeapBase& operator=(ObjectHeapBase&&) = delete;
 
   // Returns the number of slots in use.
   [[nodiscard]] int Count() const { return ActiveCount; }
@@ -192,7 +192,7 @@ class FixedIHeapClass {
 
  private:
   // The allocation Buffer views. operator new[] aligns it for any type up to
-  // __STDCPP_DEFAULT_NEW_ALIGNMENT__, which TFixedIHeapClass checks.
+  // __STDCPP_DEFAULT_NEW_ALIGNMENT__, which ObjectHeap checks.
   std::unique_ptr<std::byte[]> storage_;
 
   SlotIdReader slot_id_;  // nullptr when the objects cache no slot index.
@@ -207,43 +207,43 @@ concept HasHeapId = requires(const T& object) {
   { object.ID } -> std::convertible_to<int>;
 };
 
-// FixedIHeapClass typed for T: it hands out T* rather than void*, can run the
+// ObjectHeapBase typed for T: it hands out T* rather than void*, can run the
 // destructors of what it holds, and saves and loads its objects.
 //
 // Save and Load exist only for element types with field-wise Serialize().
 // A Serializable T needs a default constructor reachable from this class
-// (declare `friend class TFixedIHeapClass<T>;`) that fully initializes the
+// (declare `friend class ObjectHeap<T>;`) that fully initializes the
 // object without side effects; Load placement-news it into the slot before
 // reading the fields.
 template <class T>
-class TFixedIHeapClass : public FixedIHeapClass {
+class ObjectHeap : public ObjectHeapBase {
  public:
   static_assert(alignof(T) <= __STDCPP_DEFAULT_NEW_ALIGNMENT__,
                 "the slots are carved from new char[], which aligns no more");
 
-  TFixedIHeapClass() noexcept
-      : FixedIHeapClass(base::ssize{sizeof(T)}, SlotIdReaderFor()) {}
-  ~TFixedIHeapClass() = default;
-  TFixedIHeapClass(const TFixedIHeapClass&) = delete;
-  TFixedIHeapClass& operator=(const TFixedIHeapClass&) = delete;
-  TFixedIHeapClass(TFixedIHeapClass&&) = delete;
-  TFixedIHeapClass& operator=(TFixedIHeapClass&&) = delete;
+  ObjectHeap() noexcept
+      : ObjectHeapBase(base::ssize{sizeof(T)}, SlotIdReaderFor()) {}
+  ~ObjectHeap() = default;
+  ObjectHeap(const ObjectHeap&) = delete;
+  ObjectHeap& operator=(const ObjectHeap&) = delete;
+  ObjectHeap(ObjectHeap&&) = delete;
+  ObjectHeap& operator=(ObjectHeap&&) = delete;
 
-  using FixedIHeapClass::Free;
-  using FixedIHeapClass::ID;
-  using FixedIHeapClass::Logical_ID;
+  using ObjectHeapBase::Free;
+  using ObjectHeapBase::ID;
+  using ObjectHeapBase::Logical_ID;
 
   [[nodiscard]] int ID(const T* pointer) const {
-    return FixedIHeapClass::ID(pointer);
+    return ObjectHeapBase::ID(pointer);
   }
   [[nodiscard]] int Logical_ID(const T* pointer) const {
-    return FixedIHeapClass::Logical_ID(pointer);
+    return ObjectHeapBase::Logical_ID(pointer);
   }
 
   // Allocate() as a T*. The slot holds zero bytes, not a T: the caller
   // constructs the object there, which is what each class's operator new is
   // for. Returns nullptr when the heap is full.
-  T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
+  T* Alloc() { return static_cast<T*>(ObjectHeapBase::Allocate()); }
   // Runs the destructor of every active object, then frees every slot.
   // Free_All() alone hands the slots back without destroying what is in
   // them, which leaks whatever the objects own; this is for objects whose
@@ -254,7 +254,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
     }
     Free_All();
   }
-  bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
+  bool Free(T* pointer) { return ObjectHeapBase::Free(pointer); }
   // Writes the active count, then each object's slot index and contents.
   // Returns writer.ok(): false once the sink has failed.
   bool Save(ArchiveWriter& writer) const
@@ -297,7 +297,7 @@ class TFixedIHeapClass : public FixedIHeapClass {
 };
 
 template <class T>
-bool TFixedIHeapClass<T>::Save(ArchiveWriter& writer) const
+bool ObjectHeap<T>::Save(ArchiveWriter& writer) const
   requires Serializable<T>
 {
   int32_t count = ActiveCount;
@@ -314,7 +314,7 @@ bool TFixedIHeapClass<T>::Save(ArchiveWriter& writer) const
 }
 
 template <class T>
-bool TFixedIHeapClass<T>::Load(ArchiveReader& reader)
+bool ObjectHeap<T>::Load(ArchiveReader& reader)
   requires Serializable<T>
 {
   int32_t count = 0;
