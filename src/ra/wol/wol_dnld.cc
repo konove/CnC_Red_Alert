@@ -104,8 +104,8 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   ** Buttons
   */
   TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+      kButtonCancel, TXT_CANCEL, FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // The German and French captions outgrow the button, so those builds
       // let it size itself to the text.
       d_cancel_x, d_cancel_y, config::kIsEnglish ? d_cancel_w : -1,
@@ -115,16 +115,16 @@ bool WOL_Download_Dialog(IDownload* pDownload,
                             d_progress_w, d_progress_h);
   progress_meter.Use_Thumb(false);
 
-  StaticButtonClass StatTitle(0, szTitle, TPF_CENTER | kTpfText,
+  StaticButtonClass StatTitle(0, szTitle, kTextFont, TPF_CENTER | kTextFlags,
                               d_dialog_x + d_margin, d_dialog_y + 28,
                               d_dialog_w - (2 * d_margin), d_txt6_h);
-  StaticButtonClass StatStatus(0, "", TPF_CENTER | kTpfText,
+  StaticButtonClass StatStatus(0, "", kTextFont, TPF_CENTER | kTextFlags,
                                d_dialog_x + d_margin, d_dialog_y + 49,
                                d_dialog_w - (2 * d_margin), d_txt6_h);
-  StaticButtonClass StatBytes(0, "", TPF_CENTER | kTpfText,
+  StaticButtonClass StatBytes(0, "", kTextFont, TPF_CENTER | kTextFlags,
                               d_dialog_x + d_margin, d_dialog_y + 71,
                               d_dialog_w - (2 * d_margin), d_txt6_h);
-  StaticButtonClass StatTime(0, "", TPF_CENTER | kTpfText,
+  StaticButtonClass StatTime(0, "", kTextFont, TPF_CENTER | kTextFlags,
                              d_dialog_x + d_margin, d_dialog_y + 117,
                              d_dialog_w - (2 * d_margin), d_txt6_h);
 

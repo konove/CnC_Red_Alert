@@ -78,7 +78,7 @@ namespace ra {
 class MusicListClass : public ListClass {
  public:
   MusicListClass(int id, int x, int y, int w, int h)
-      : ListClass(id, x, y, w, h, TPF_6PT_GRAD | TPF_NOSHADOW,
+      : ListClass(id, x, y, w, h, FontType::k6PointGradient, TPF_NOSHADOW,
                   MixArchive::RetrieveData("BTN-UP.SHP"),
                   MixArchive::RetrieveData("BTN-DN.SHP")) {}
   ~MusicListClass() override = default;
@@ -180,7 +180,7 @@ void SoundControlsClass::Process() {
   /*
   **	Return to options menu button.
   */
-  TextButtonClass returnto(kButtonOptions, TXT_OK, kTpfButton,
+  TextButtonClass returnto(kButtonOptions, TXT_OK, kButtonFont, kButtonFlags,
                            option_x + button_x, option_y + button_y,
                            button_width);
   //	TextButtonClass returnto(kButtonOptions, TXT_OPTIONS_MENU, kTpfButton,
@@ -200,7 +200,7 @@ void SoundControlsClass::Process() {
   /*
   **	Shuffle control.
   */
-  TextButtonClass shufflebtn(kButtonShuffle, TXT_OFF, kTpfButton,
+  TextButtonClass shufflebtn(kButtonShuffle, TXT_OFF, kButtonFont, kButtonFlags,
                              option_x + shuffle_x, option_y + shuffle_y,
                              onoff_width);
   //	TextButtonClass shufflebtn(kButtonShuffle, TXT_OFF, kTpfButton,
@@ -209,7 +209,7 @@ void SoundControlsClass::Process() {
   /*
   **	Repeat control.
   */
-  TextButtonClass repeatbtn(kButtonRepeat, TXT_OFF, kTpfButton,
+  TextButtonClass repeatbtn(kButtonRepeat, TXT_OFF, kButtonFont, kButtonFlags,
                             option_x + repeat_x, option_y + repeat_y,
                             onoff_width);
 
@@ -476,7 +476,7 @@ void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
                                 int width, bool selected) {
   RemapControlType* scheme = Get_Color_Scheme();
 
-  if (base::Any(TextFlags & TPF_6PT_GRAD)) {
+  if (HasGradientFontBits(TextFont)) {
     TextPrintType flags = TextFlags;
 
     if (selected) {
@@ -490,14 +490,14 @@ void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     }
 
     Conquer_Clip_Text_Print(view, Get_Item(index), x, y, scheme, kTBlack,
-                            FontOf(flags), StyleOf(flags), width, Tabs);
+                            TextFont, flags, width, Tabs);
 
   } else {
     Conquer_Clip_Text_Print(
         view, Get_Item(index), x, y,
         selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                  : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-        kTBlack, FontOf(TextFlags), StyleOf(TextFlags), width, Tabs);
+        kTBlack, TextFont, TextFlags, width, Tabs);
   }
 }
 

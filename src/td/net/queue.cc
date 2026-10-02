@@ -1816,8 +1816,8 @@ static RetcodeType Process_Serial_Packet(
         txt,
         base::At(TheSession().text_colors(),
                  static_cast<int>(MPlayerID_To_ColorIndex(serial_packet->ID))),
-        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, magic_number,
-        crc);
+        FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
+        magic_number, crc);
 
     //.....................................................................
     //	Save this message in our last-message buffer

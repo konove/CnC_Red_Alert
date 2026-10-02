@@ -18,7 +18,7 @@ struct Item {
   int value;
   void Draw_It(PixelView& /*view*/, int /*index*/, int /*x*/, int /*y*/,
                int /*width*/, int /*height*/, bool /*selected*/,
-               TextPrintType /*flags*/) const {}
+               FontType /*font*/, TextPrintType /*flags*/) const {}
 };
 
 // The list measures the font it prints in, which reads the fonts and colour
@@ -29,7 +29,8 @@ class TListClassTest : public testing::Test {
   base::Installed<Assets>::Scope assets_scope_{assets_};
   Palettes palettes_;
   base::Installed<Palettes>::Scope palettes_scope_{palettes_};
-  TListClass<Item*> list_{1, 0, 0, 100, 40, TPF_6POINT, {}, {}};
+  TListClass<Item*> list_{1,        0,  0, 100, 40, FontType::k6Point,
+                          TPF_NONE, {}, {}};
   Item a_{1};
   Item b_{2};
   Item c_{3};

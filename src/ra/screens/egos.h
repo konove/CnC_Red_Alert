@@ -54,7 +54,8 @@ namespace ra {
 
 class EgoClass {
  public:
-  EgoClass(int x, int y, std::string_view text, TextPrintType flags);
+  EgoClass(int x, int y, std::string_view text, FontType font,
+           TextPrintType flags);
   ~EgoClass() = default;
   EgoClass(const EgoClass&) = delete;
   EgoClass& operator=(const EgoClass&) = delete;
@@ -68,6 +69,7 @@ class EgoClass {
   std::string Text;
   int XPos;
   int YPos;
+  FontType TextFont;
   TextPrintType Flags;
 };
 

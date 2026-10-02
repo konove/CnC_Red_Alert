@@ -47,7 +47,6 @@
 
 #include "ra/ai/tevent.h"
 
-#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <format>
@@ -77,12 +76,6 @@
 #include "ra/ui/dialog.h"
 
 namespace ra {
-
-// The low nibble of the text print flags selects the font.
-static constexpr bool Is_Font(const TextPrintType flags,
-                              const TextPrintType font) {
-  return (static_cast<uint32_t>(flags) & 0x0FU) == static_cast<uint32_t>(font);
-}
 
 /*
 **	This is the text name for all of the trigger events. These are used by
@@ -181,10 +174,10 @@ base::EnumArray<TEventType, EventChoiceClass, static_cast<int>(TEVENT_COUNT)>
  *=============================================================================================*/
 void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                                int width, int height, bool selected,
-                               TextPrintType flags) const {
+                               FontType font, TextPrintType flags) const {
   RemapControlType* scheme = Get_Color_Scheme();
   static const int _tabs[] = {13, 40};
-  if (Is_Font(flags, TPF_6PT_GRAD) || Is_Font(flags, TPF_EFNT)) {
+  if (font == FontType::k6PointGradient || font == FontType::kEditor) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
       view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
@@ -194,14 +187,14 @@ void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
       }
     }
 
-    Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack,
-                            FontOf(flags), StyleOf(flags), width, _tabs);
+    Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
+                            flags, width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
         view, Description(), x, y,
         selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                  : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-        kTBlack, FontOf(flags), StyleOf(flags), width, _tabs);
+        kTBlack, font, flags, width, _tabs);
   }
 }
 

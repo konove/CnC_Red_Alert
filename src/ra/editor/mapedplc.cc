@@ -254,39 +254,47 @@ int MapEditClass::Placement_Dialog() {
   **	Buttons
   */
 
-  ListClass housebtn(kButtonHouse, kGdiX, kGdiY, 60, 8 * 16,
-                     TPF_EFNT | TPF_NOSHADOW,
-                     MixArchive::RetrieveData("EBTN-UP.SHP"),
+  ListClass housebtn(kButtonHouse, kGdiX, kGdiY, 60, 8 * 16, FontType::kEditor,
+                     TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
                      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const HousesType each_house : magic_enum::enum_values<HousesType>()) {
     housebtn.Add_Item(HouseTypeClass::As_Reference(each_house).IniName);
   }
 
-  TextButtonClass nextbtn(kButtonNext, TXT_RIGHT, kTpfEButton, kRightX, kRightY,
-                          kRightW, kRightH);
-  TextButtonClass prevbtn(kButtonPrev, TXT_LEFT, kTpfEButton, kLeftX, kLeftY,
-                          kLeftW, kLeftH);
-  TextButtonClass okbtn(kButtonOk, "OK", kTpfEButton, kOkX, kOkY, kOkW, kOkH);
-  TextButtonClass cancelbtn(kButtonCancel, "Cancel", kTpfEButton, kCancelX,
-                            kCancelY, kCancelW, kCancelH);
-  TextButtonClass templatebtn(kButtonTemplate, "Template", kTpfEButton,
-                              kTemplateX, kTemplateY, kTemplateW, kTemplateH);
-  TextButtonClass overlaybtn(kButtonOverlay, "Overlay", kTpfEButton, kOverlayX,
-                             kOverlayY, kOverlayW, kOverlayH);
-  TextButtonClass smudgebtn(kButtonSmudge, "Smudge", kTpfEButton, kSmudgeX,
-                            kSmudgeY, kSmudgeW, kSmudgeH);
-  TextButtonClass terrainbtn(kButtonTerrain, "Terrain", kTpfEButton, kTerrainX,
-                             kTerrainY, kTerrainW, kTerrainH);
-  TextButtonClass unitbtn(kButtonUnit, "Unit", kTpfEButton, kUnitX, kUnitY,
-                          kUnitW, kUnitH);
-  TextButtonClass infantrybtn(kButtonInfantry, "Infantry", kTpfEButton,
-                              kInfantryX, kInfantryY, kInfantryW, kInfantryH);
-  TextButtonClass aircraftbtn(kButtonAircraft, "Ships", kTpfEButton, kAircraftX,
-                              kAircraftY, kAircraftW, kAircraftH);
-  TextButtonClass buildingbtn(kButtonBuilding, "Building", kTpfEButton,
-                              kBuildingX, kBuildingY, kBuildingW, kBuildingH);
-  TextButtonClass airbtn(kButtonAir, "Aircraft", kTpfEButton, kAirX, kAirY,
-                         kAirW, kAirH);
+  TextButtonClass nextbtn(kButtonNext, TXT_RIGHT, kEButtonFont, kEButtonFlags,
+                          kRightX, kRightY, kRightW, kRightH);
+  TextButtonClass prevbtn(kButtonPrev, TXT_LEFT, kEButtonFont, kEButtonFlags,
+                          kLeftX, kLeftY, kLeftW, kLeftH);
+  TextButtonClass okbtn(kButtonOk, "OK", kEButtonFont, kEButtonFlags, kOkX,
+                        kOkY, kOkW, kOkH);
+  TextButtonClass cancelbtn(kButtonCancel, "Cancel", kEButtonFont,
+                            kEButtonFlags, kCancelX, kCancelY, kCancelW,
+                            kCancelH);
+  TextButtonClass templatebtn(kButtonTemplate, "Template", kEButtonFont,
+                              kEButtonFlags, kTemplateX, kTemplateY, kTemplateW,
+                              kTemplateH);
+  TextButtonClass overlaybtn(kButtonOverlay, "Overlay", kEButtonFont,
+                             kEButtonFlags, kOverlayX, kOverlayY, kOverlayW,
+                             kOverlayH);
+  TextButtonClass smudgebtn(kButtonSmudge, "Smudge", kEButtonFont,
+                            kEButtonFlags, kSmudgeX, kSmudgeY, kSmudgeW,
+                            kSmudgeH);
+  TextButtonClass terrainbtn(kButtonTerrain, "Terrain", kEButtonFont,
+                             kEButtonFlags, kTerrainX, kTerrainY, kTerrainW,
+                             kTerrainH);
+  TextButtonClass unitbtn(kButtonUnit, "Unit", kEButtonFont, kEButtonFlags,
+                          kUnitX, kUnitY, kUnitW, kUnitH);
+  TextButtonClass infantrybtn(kButtonInfantry, "Infantry", kEButtonFont,
+                              kEButtonFlags, kInfantryX, kInfantryY, kInfantryW,
+                              kInfantryH);
+  TextButtonClass aircraftbtn(kButtonAircraft, "Ships", kEButtonFont,
+                              kEButtonFlags, kAircraftX, kAircraftY, kAircraftW,
+                              kAircraftH);
+  TextButtonClass buildingbtn(kButtonBuilding, "Building", kEButtonFont,
+                              kEButtonFlags, kBuildingX, kBuildingY, kBuildingW,
+                              kBuildingH);
+  TextButtonClass airbtn(kButtonAir, "Aircraft", kEButtonFont, kEButtonFlags,
+                         kAirX, kAirY, kAirW, kAirH);
 
   /*
   **	Initialize addable objects list; we must do this every time in case one

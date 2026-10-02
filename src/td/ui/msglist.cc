@@ -208,6 +208,7 @@ std::span<char> MessageListClass::Text_Storage(const TextLabelClass& label) {
 }
 
 TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
+                                              FontType font,
                                               TextPrintType style, int timeout,
                                               uint16_t magic_number,
                                               uint16_t crc) {
@@ -369,7 +370,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   /*------------------------------------------------------------------------
   Create the message
   ------------------------------------------------------------------------*/
-  auto label = std::make_unique<TextLabelClass>(txt, x, y, color, style);
+  auto label = std::make_unique<TextLabelClass>(txt, x, y, color, font, style);
   if (timeout == -1) {
     label->UserData = 0;
   } else {
@@ -466,8 +467,9 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
  * HISTORY:                                                                *
  *   05/22/1995 BRR : Created.                                             *
  *=========================================================================*/
-TextLabelClass* MessageListClass::Add_Edit(int color, TextPrintType style,
-                                           char* to, int width) {
+TextLabelClass* MessageListClass::Add_Edit(int color, FontType font,
+                                           TextPrintType style, char* to,
+                                           int width) {
   /*------------------------------------------------------------------------
   Do nothing if we're already in "edit" mode
   ------------------------------------------------------------------------*/
@@ -479,7 +481,7 @@ TextLabelClass* MessageListClass::Add_Edit(int color, TextPrintType style,
   Initialize the buffer positions; add a new label to the label list.
   ------------------------------------------------------------------------*/
   EditCurPos = EditInitPos = static_cast<int>(std::string_view(to).size());
-  EditLabel = Add_Message(to, color, style, -1, 0, 0);
+  EditLabel = Add_Message(to, color, font, style, -1, 0, 0);
   Width = width;
 
   /*------------------------------------------------------------------------
@@ -684,10 +686,9 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
           ** Verify that the additional character would not overrun the on
           *screen edit box.
           */
-          const int width =
-              StringPixelWidth(TextFontStyle(FontOf(EditLabel->Style),
-                                             StyleOf(EditLabel->Style)),
-                               EditBuf.data());
+          const int width = StringPixelWidth(
+              TextFontStyle(EditLabel->TextFont, EditLabel->Style),
+              EditBuf.data());
           if (width >= Width) {
             --EditCurPos;
             base::At(EditBuf, base::ToSize(EditCurPos)) = 0;

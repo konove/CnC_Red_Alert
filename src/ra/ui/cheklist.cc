@@ -67,10 +67,10 @@
 namespace ra {
 
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
-                               TextPrintType flags,
+                               FontType font, TextPrintType flags,
                                std::span<const std::byte> up,
                                std::span<const std::byte> down)
-    : ListClass(id, x, y, w, h, flags, up, down) {}
+    : ListClass(id, x, y, w, h, font, flags, up, down) {}
 
 int CheckListClass::Add_Item(const char* text) {
   const int index = ListClass::Add_Item(text);
@@ -146,8 +146,8 @@ void CheckListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     }
   }
 
-  Conquer_Clip_Text_Print(view, buffer, x, y, scheme, kTBlack, FontOf(flags),
-                          StyleOf(flags), width, Tabs);
+  Conquer_Clip_Text_Print(view, buffer, x, y, scheme, kTBlack, TextFont, flags,
+                          width, Tabs);
 }
 
 }  // namespace ra

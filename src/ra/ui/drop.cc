@@ -58,16 +58,16 @@
 namespace ra {
 
 DropListClass::DropListClass(int id, std::span<char> text, int max_len,
-                             TextPrintType flags, int x, int y, int w, int h,
-                             std::span<const std::byte> up,
+                             FontType font, TextPrintType flags, int x, int y,
+                             int w, int h, std::span<const std::byte> up,
                              std::span<const std::byte> down)
-    : EditClass(id, text, max_len, flags, x, y, w, 18, kAlphanumeric),
+    : EditClass(id, text, max_len, font, flags, x, y, w, 18, kAlphanumeric),
 
       ListHeight(h),
       DropButton(0, down, x + w, y),
       List(0, x, y + engine::gfx::KeyframeHeight(down),
-           w + engine::gfx::KeyframeWidth(down), h, flags, up, down) {
-  Height = FontMaxHeight(TextFontStyle(FontOf(flags), StyleOf(flags))) + 1;
+           w + engine::gfx::KeyframeWidth(down), h, font, flags, up, down) {
+  Height = FontMaxHeight(TextFontStyle(font, flags)) + 1;
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);
 }

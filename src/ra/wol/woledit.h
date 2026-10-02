@@ -38,9 +38,9 @@ namespace ra {
 
 class WOLEditClass : public EditClass {
  public:
-  WOLEditClass(int id, std::span<char> text, int max_len, TextPrintType flags,
-               int x, int y, int w, int h, EditStyle style)
-      : EditClass(id, text, max_len, flags, x, y, w, h, style) {}
+  WOLEditClass(int id, std::span<char> text, int max_len, FontType font,
+               TextPrintType flags, int x, int y, int w, int h, EditStyle style)
+      : EditClass(id, text, max_len, font, flags, x, y, w, h, style) {}
 
  protected:
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,

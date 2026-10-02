@@ -154,23 +154,24 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   */
   game::ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass ConnectBtn(kButtonConnect, TXT_WOL_CONNECT, kTpfButton,
-                             d_connect_x, d_connect_y, d_connect_w);
-  TextButtonClass CancelBtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
-                            d_cancel_y, d_cancel_w);
+  TextButtonClass ConnectBtn(kButtonConnect, TXT_WOL_CONNECT, kButtonFont,
+                             kButtonFlags, d_connect_x, d_connect_y,
+                             d_connect_w);
+  TextButtonClass CancelBtn(kButtonCancel, TXT_CANCEL, kButtonFont,
+                            kButtonFlags, d_cancel_x, d_cancel_y, d_cancel_w);
 
   IconListClass NickList(kListboxNicks, d_list_x, d_list_y, d_list_w, d_list_h,
-                         TPF_6PT_GRAD | TPF_NOSHADOW,
+                         FontType::k6PointGradient, TPF_NOSHADOW,
                          MixArchive::RetrieveData("BTN-UP.SHP"),
                          MixArchive::RetrieveData("BTN-DN.SHP"), true, 1, 0);
 
   WOLEditClass NameEdit(kEditboxName, szNameBuffer, sizeof(szNameBuffer),
-                        TPF_6PT_GRAD | TPF_NOSHADOW, d_name_x, d_name_y,
-                        d_name_w, -1, EditClass::kAlphanumeric);
+                        FontType::k6PointGradient, TPF_NOSHADOW, d_name_x,
+                        d_name_y, d_name_w, -1, EditClass::kAlphanumeric);
 
   PassEditClass PassEdit(kEditboxPass, szPassBuffer, sizeof(szPassBuffer),
-                         TPF_6PT_GRAD | TPF_NOSHADOW, d_pass_x, d_pass_y,
-                         d_pass_w, -1, EditClass::kAlphanumeric);
+                         FontType::k6PointGradient, TPF_NOSHADOW, d_pass_x,
+                         d_pass_y, d_pass_w, -1, EditClass::kAlphanumeric);
 
   PixelView& view = TheScreen().visible_view();
 
@@ -180,10 +181,10 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       BIGCHECK_OFFSETX;
   BigCheckBoxClass SaveCheckBox(kButtonSavecheck, d_save_x, d_save_y,
                                 iSaveTextWidth, d_save_h, TXT_WOL_SAVELOGIN,
-                                TPF_6PT_GRAD | TPF_NOSHADOW, true);
+                                FontType::k6PointGradient, TPF_NOSHADOW, true);
 
-  TextButtonClass DeleteBtn(kButtonDelete, TXT_DELETE_BUTTON, kTpfButton,
-                            d_delete_x, d_delete_y, d_delete_w);
+  TextButtonClass DeleteBtn(kButtonDelete, TXT_DELETE_BUTTON, kButtonFont,
+                            kButtonFlags, d_delete_x, d_delete_y, d_delete_w);
 
   //	Get saved nickname/passwords from the registry.
   if (ReadSavedNicks(pWO, NickList, szNameBuffer, szPassBuffer)) {

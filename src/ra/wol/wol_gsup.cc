@@ -368,7 +368,8 @@ void WOL_GameSetupDialog::Initialize() {
 
   pILPlayers = std::make_unique<IconListClass>(
       kButtonPlayerlist, d_playerlist_x, d_playerlist_y, d_playerlist_w,
-      d_playerlist_h, TPF_TYPE, MixArchive::RetrieveData("BTN-UP.SHP"),
+      d_playerlist_h, FontType::kType, TPF_NONE,
+      MixArchive::RetrieveData("BTN-UP.SHP"),
       MixArchive::RetrieveData("BTN-DN.SHP"), true, 2);
   //	ListClass scenariolist(kButtonScenariolist, d_scenariolist_x,
   // d_scenariolist_y, d_scenariolist_w, d_scenariolist_h, kTpfText,
@@ -376,16 +377,17 @@ void WOL_GameSetupDialog::Initialize() {
   // MixArchive::RetrieveData("BTN-DN.SHP"));
   pILScens = std::make_unique<IconListClass>(
       kButtonScenariolist, d_scenariolist_x, d_scenariolist_y, d_scenariolist_w,
-      d_scenariolist_h, TPF_TYPE, MixArchive::RetrieveData("BTN-UP.SHP"),
+      d_scenariolist_h, FontType::kType, TPF_NONE,
+      MixArchive::RetrieveData("BTN-UP.SHP"),
       MixArchive::RetrieveData("BTN-DN.SHP"), true, 1);
   pILDisc = std::make_unique<IconListClass>(
-      kButtonDisclist, d_disc_x, d_disc_y, d_disc_w, d_disc_h, TPF_TYPE,
-      MixArchive::RetrieveData("BTN-UP.SHP"),
+      kButtonDisclist, d_disc_x, d_disc_y, d_disc_w, d_disc_h, FontType::kType,
+      TPF_NONE, MixArchive::RetrieveData("BTN-UP.SHP"),
       MixArchive::RetrieveData("BTN-DN.SHP"), true, 0, 300);
 
-  pEditSend = std::make_unique<EditClass>(kButtonSendedit, szSendBuffer,
-                                          MAXCHATSENDLENGTH, kTpfText, d_send_x,
-                                          d_send_y, d_send_w, d_send_h);
+  pEditSend = std::make_unique<EditClass>(
+      kButtonSendedit, szSendBuffer, MAXCHATSENDLENGTH, kTextFont, kTextFlags,
+      d_send_x, d_send_y, d_send_w, d_send_h);
 
   //	TextButtonClass rejectbtn( BUTTON_REJECT, TXT_REJECT, kTpfButton,
   // d_reject_x, d_reject_y );
@@ -400,37 +402,37 @@ void WOL_GameSetupDialog::Initialize() {
                                    d_aiplayers_y, d_aiplayers_w, d_aiplayers_h);
   pCheckListOptions = std::make_unique<CheckListClass>(
       kButtonParams, d_options_x, d_options_y, d_options_w, d_options_h,
-      kTpfText, MixArchive::RetrieveData("BTN-UP.SHP"),
+      kTextFont, kTextFlags, MixArchive::RetrieveData("BTN-UP.SHP"),
       MixArchive::RetrieveData("BTN-DN.SHP"));
   //	pTextBtnOk = new TextButtonClass( BUTTON_OK, TXT_OK, kTpfButton, d_ok_x,
   // d_ok_y, 60*2 ); 	TextButtonClass loadbtn(kButtonLoad,
   // TXT_LOAD_BUTTON, kTpfButton, d_load_x, d_load_y, 60*2);
   pTextBtnCancel = std::make_unique<TextButtonClass>(
-      kButtonCancel, TXT_WOL_CANCELGAME, kTpfButton, d_cancel_x, d_cancel_y,
-      d_cancel_w);
+      kButtonCancel, TXT_WOL_CANCELGAME, kButtonFont, kButtonFlags, d_cancel_x,
+      d_cancel_y, d_cancel_w);
   pTTipCancel = std::make_unique<ToolTipClass>(
       pTextBtnCancel.get(), TXT_WOL_TTIP_CANCELGAME,
       d_cancel_x + (d_cancel_w / 2), d_cancel_y - 6);
 
   if (bHost) {
     pTextBtnAcceptStart = std::make_unique<TextButtonClass>(
-        kButtonAcceptstart, TXT_WOL_STARTBUTTON, kTpfButton, d_accept_x,
-        d_accept_y, d_accept_w);
+        kButtonAcceptstart, TXT_WOL_STARTBUTTON, kButtonFont, kButtonFlags,
+        d_accept_x, d_accept_y, d_accept_w);
     pTTipAcceptStart = std::make_unique<ToolTipClass>(
         pTextBtnAcceptStart.get(), TXT_WOL_TTIP_START,
         d_accept_x + (d_accept_w / 2), d_accept_y - 6);
   } else {
     pTextBtnAcceptStart = std::make_unique<TextButtonClass>(
-        kButtonAcceptstart, TXT_WOL_ACCEPTBUTTON, kTpfButton, d_accept_x,
-        d_accept_y, d_accept_w);
+        kButtonAcceptstart, TXT_WOL_ACCEPTBUTTON, kButtonFont, kButtonFlags,
+        d_accept_x, d_accept_y, d_accept_w);
     pTTipAcceptStart = std::make_unique<ToolTipClass>(
         pTextBtnAcceptStart.get(), TXT_WOL_TTIP_ACCEPT,
         d_accept_x + (d_accept_w / 2), d_accept_y - 6);
   }
 
   pTextBtnAction = std::make_unique<TextButtonClass>(
-      kButtonAction, TXT_WOL_ACTION, kTpfButton, d_action_x, d_action_y,
-      d_action_w);
+      kButtonAction, TXT_WOL_ACTION, kButtonFont, kButtonFlags, d_action_x,
+      d_action_y, d_action_w);
   pTTipAction = std::make_unique<ToolTipClass>(
       pTextBtnAction.get(), TXT_WOL_TTIP_ACTION, d_action_x + (d_action_w / 2),
       d_action_y - 6, true);
@@ -453,23 +455,26 @@ void WOL_GameSetupDialog::Initialize() {
   //	pStaticDescrip = new StaticButtonClass( 0, "", TPF_TYPE, d_gamekind_x,
   // d_gamekind_y, d_gamekind_w, d_gamekind_h );
   pStaticUnit = std::make_unique<StaticButtonClass>(
-      0, "    ", kTpfText, d_count_x + d_count_w + 4, d_count_y);
+      0, "    ", kTextFont, kTextFlags, d_count_x + d_count_w + 4, d_count_y);
   pStaticLevel = std::make_unique<StaticButtonClass>(
-      0, "    ", kTpfText, d_level_x + d_level_w + 4, d_level_y);
+      0, "    ", kTextFont, kTextFlags, d_level_x + d_level_w + 4, d_level_y);
   pStaticCredits = std::make_unique<StaticButtonClass>(
-      0, "         ", kTpfText, d_credits_x + d_credits_w + 4, d_credits_y);
+      0, "         ", kTextFont, kTextFlags, d_credits_x + d_credits_w + 4,
+      d_credits_y);
   pStaticAIPlayers = std::make_unique<StaticButtonClass>(
-      0, "   ", kTpfText, d_aiplayers_x + d_aiplayers_w + 4, d_aiplayers_y);
+      0, "   ", kTextFont, kTextFlags, d_aiplayers_x + d_aiplayers_w + 4,
+      d_aiplayers_y);
 
   pDropListHouse = std::make_unique<DropListClass>(
-      kButtonHouse, szHouseBuffer, sizeof(szHouseBuffer), kTpfText, d_house_x,
-      d_house_y, d_house_w, d_house_h, MixArchive::RetrieveData("BTN-UP.SHP"),
+      kButtonHouse, szHouseBuffer, sizeof(szHouseBuffer), kTextFont, kTextFlags,
+      d_house_x, d_house_y, d_house_w, d_house_h,
+      MixArchive::RetrieveData("BTN-UP.SHP"),
       MixArchive::RetrieveData("BTN-DN.SHP"));
 
   //	ajw - This checkbox is not used. Could be turned on, though.
   pCheckAftermathUnits = std::make_unique<BigCheckBoxClass>(
       kButtonAftermathunits, d_amunits_x, d_amunits_y, d_amunits_w, d_amunits_h,
-      "Aftermath units enabled", kTpfText, false);
+      "Aftermath units enabled", kTextFont, kTextFlags, false);
 
   if (pWO->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME) {
     bAftermathUnits = true;

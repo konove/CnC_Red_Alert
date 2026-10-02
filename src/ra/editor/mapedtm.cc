@@ -261,16 +261,18 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   game::GadgetClass* commands = nullptr;  // the button list
 
   TListClass<TeamTypeClass*> teamlist(kTeamList, kListX, kListY, kListW, kListH,
-                                      TPF_EFNT | TPF_NOSHADOW,
+                                      FontType::kEditor, TPF_NOSHADOW,
                                       MixArchive::RetrieveData("EBTN-UP.SHP"),
                                       MixArchive::RetrieveData("EBTN-DN.SHP"));
 
-  TextButtonClass editbtn(kButtonEdit, "Edit", kTpfEButton, kEditX, kEditY,
-                          kEditW);
-  TextButtonClass newbtn(kButtonNew, "New", kTpfEButton, kNewX, kNewY, kNewW);
-  TextButtonClass deletebtn(kButtonDelete, "Delete", kTpfEButton, kDeleteX,
-                            kDeleteY, kDeleteW);
-  TextButtonClass okbtn(kButtonOk, "OK", kTpfEButton, kOkX, kOkY, kOkW);
+  TextButtonClass editbtn(kButtonEdit, "Edit", kEButtonFont, kEButtonFlags,
+                          kEditX, kEditY, kEditW);
+  TextButtonClass newbtn(kButtonNew, "New", kEButtonFont, kEButtonFlags, kNewX,
+                         kNewY, kNewW);
+  TextButtonClass deletebtn(kButtonDelete, "Delete", kEButtonFont,
+                            kEButtonFlags, kDeleteX, kDeleteY, kDeleteW);
+  TextButtonClass okbtn(kButtonOk, "OK", kEButtonFont, kEButtonFlags, kOkX,
+                        kOkY, kOkW);
 
   /*
   **	Initialize
@@ -526,11 +528,11 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Buttons.
   */
 
-  TextButtonClass okbtn(kButtonOk, TXT_OK, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
-                        kOkX, kOkY, kOkW, kOkH);
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
-                            TPF_CENTER | TPF_EFNT | TPF_NOSHADOW, kCancelX,
-                            kCancelY, kCancelW, kCancelH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::kEditor,
+                        TPF_CENTER | TPF_NOSHADOW, kOkX, kOkY, kOkW, kOkH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, FontType::kEditor,
+                            TPF_CENTER | TPF_NOSHADOW, kCancelX, kCancelY,
+                            kCancelW, kCancelH);
 
   /*
   **	Fill in the ObjectTypeClass array with all available object type ptrs,

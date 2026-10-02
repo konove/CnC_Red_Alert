@@ -76,7 +76,7 @@ namespace td {
 class MusicListClass : public ListClass {
  public:
   MusicListClass(int id, int x, int y, int w, int h)
-      : ListClass(id, x, y, w, h, TPF_6PT_GRAD | TPF_NOSHADOW,
+      : ListClass(id, x, y, w, h, FontType::k6PointGradient, TPF_NOSHADOW,
                   Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP")) {}
   ~MusicListClass() override = default;
   MusicListClass(const MusicListClass&) = delete;
@@ -187,7 +187,7 @@ void SoundControlsClass::Process() {
   **	Return to options menu button.
   */
   TextButtonClass returnto(
-      kButtonOptions, TXT_OPTIONS_MENU, TPF_6PT_GRAD | TPF_NOSHADOW,
+      kButtonOptions, TXT_OPTIONS_MENU, FontType::k6PointGradient, TPF_NOSHADOW,
 #ifdef FRENCH
       Option_X + Button_X - 8 * 2, Option_Y + Button_Y, Button_Width + 11 * 2);
 #else
@@ -221,16 +221,16 @@ void SoundControlsClass::Process() {
   /*
   **	Shuffle control.
   */
-  TextButtonClass shufflebtn(kButtonShuffle, TXT_OFF,
-                             TPF_6PT_GRAD | TPF_NOSHADOW, Option_X + Shuffle_X,
+  TextButtonClass shufflebtn(kButtonShuffle, TXT_OFF, FontType::k6PointGradient,
+                             TPF_NOSHADOW, Option_X + Shuffle_X,
                              Option_Y + Shuffle_Y, OnOff_Width);
 
   /*
   **	Repeat control.
   */
-  TextButtonClass repeatbtn(kButtonRepeat, TXT_OFF, TPF_6PT_GRAD | TPF_NOSHADOW,
-                            Option_X + Repeat_X, Option_Y + Repeat_Y,
-                            OnOff_Width);
+  TextButtonClass repeatbtn(kButtonRepeat, TXT_OFF, FontType::k6PointGradient,
+                            TPF_NOSHADOW, Option_X + Repeat_X,
+                            Option_Y + Repeat_Y, OnOff_Width);
 
   /*
   **	Music volume slider.
@@ -477,7 +477,7 @@ void SoundControlsClass::Process() {
 
 void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
                                 int width, bool selected) {
-  if (base::Any(TextFlags & TPF_6PT_GRAD)) {
+  if (HasGradientFontBits(TextFont)) {
     TextPrintType flags = TextFlags;
 
     if (selected) {
@@ -490,12 +490,12 @@ void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     }
 
     Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kCcGreen, kTBlack,
-                            FontOf(flags), StyleOf(flags), width, Tabs);
+                            TextFont, flags, width, Tabs);
 
   } else {
     Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                            selected ? kBlue : kWhite, kTBlack,
-                            FontOf(TextFlags), StyleOf(TextFlags), width, Tabs);
+                            selected ? kBlue : kWhite, kTBlack, TextFont,
+                            TextFlags, width, Tabs);
   }
 }
 

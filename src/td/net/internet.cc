@@ -462,13 +462,13 @@ bool Do_The_Internet_Menu_Thang() {
   // TextButtonClass *buttons;
   // // button list
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      // #if (GERMAN | FRENCH)
-      //		d_cancel_x, d_cancel_y);
-      // #else
-      d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            // #if (GERMAN | FRENCH)
+                            //		d_cancel_x, d_cancel_y);
+                            // #else
+                            d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
   // #endif
 
   // buttons = &cancelbtn;

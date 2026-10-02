@@ -37,9 +37,10 @@ namespace ra {
 class BigCheckBoxClass : public game::ToggleClass {
  public:
   BigCheckBoxClass(unsigned id, int x, int y, int w, int h,
-                   const char* szCaptionIn, TextPrintType text_flags,
-                   bool bInitiallyChecked = false)
+                   const char* szCaptionIn, FontType font,
+                   TextPrintType text_flags, bool bInitiallyChecked = false)
       : game::ToggleClass(id, x, y, w, h),
+        TextFont(font),
         TextFlags(text_flags),
         szCaption(szCaptionIn) {
     if (bInitiallyChecked) {
@@ -62,6 +63,7 @@ class BigCheckBoxClass : public game::ToggleClass {
  protected:
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
               int y) override;
+  FontType TextFont;
   TextPrintType TextFlags;
   std::string szCaption;
 };

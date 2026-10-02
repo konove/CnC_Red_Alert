@@ -125,10 +125,10 @@ inline int ItemExtraDataAsInt(const void* data) {
 // count by dropping the oldest line. Without it each Add_Item is one line.
 class IconListClass : public ListClass {
  public:
-  IconListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                std::span<const std::byte> up, std::span<const std::byte> down,
-                bool wrap_text = false, int iSelectionType = 1,
-                int iMaxItemsSaved = 0);
+  IconListClass(int id, int x, int y, int w, int h, FontType font,
+                TextPrintType flags, std::span<const std::byte> up,
+                std::span<const std::byte> down, bool wrap_text = false,
+                int iSelectionType = 1, int iMaxItemsSaved = 0);
   //		IconListClass( const IconListClass& list );
   ~IconListClass() override;
   IconListClass(const IconListClass&) = delete;

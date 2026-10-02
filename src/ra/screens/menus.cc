@@ -590,35 +590,39 @@ int Main_Menu(int32_t /*unused*/) {
     ystep = 26;
   }
 
-  TextButtonClass expandbtnCS(kButtonExpand, TXT_WOL_CS_MISSIONS, kTpfButton,
-                              d_start_x, starty, d_start_w, d_start_h);
+  TextButtonClass expandbtnCS(kButtonExpand, TXT_WOL_CS_MISSIONS, kButtonFont,
+                              kButtonFlags, d_start_x, starty, d_start_w,
+                              d_start_h);
   if (bExpansionCS) {
     starty += ystep;
   }
-  TextButtonClass expandbtnAM(kButtonExpandAm, TXT_WOL_AM_MISSIONS, kTpfButton,
-                              d_start_x, starty, d_start_w, d_start_h);
+  TextButtonClass expandbtnAM(kButtonExpandAm, TXT_WOL_AM_MISSIONS, kButtonFont,
+                              kButtonFlags, d_start_x, starty, d_start_w,
+                              d_start_h);
   if (bExpansionAM) {
     starty += ystep;
   }
 
-  TextButtonClass startbtn(kButtonStart, TXT_START_NEW_GAME, kTpfButton,
-                           d_start_x, starty, d_start_w, d_start_h);
+  TextButtonClass startbtn(kButtonStart, TXT_START_NEW_GAME, kButtonFont,
+                           kButtonFlags, d_start_x, starty, d_start_w,
+                           d_start_h);
   starty += ystep;
 
-  TextButtonClass loadbtn(kButtonLoad, TXT_LOAD_MISSION, kTpfButton, d_load_x,
-                          starty, d_load_w, d_load_h);
+  TextButtonClass loadbtn(kButtonLoad, TXT_LOAD_MISSION, kButtonFont,
+                          kButtonFlags, d_load_x, starty, d_load_w, d_load_h);
   starty += ystep;
 
-  TextButtonClass multibtn(kButtonMulti, TXT_MULTIPLAYER_GAME, kTpfButton,
-                           d_multi_x, starty, d_multi_w, d_multi_h);
+  TextButtonClass multibtn(kButtonMulti, TXT_MULTIPLAYER_GAME, kButtonFont,
+                           kButtonFlags, d_multi_x, starty, d_multi_w,
+                           d_multi_h);
   starty += ystep;
 
-  TextButtonClass introbtn(kButtonIntro, TXT_INTRO, kTpfButton, d_intro_x,
-                           starty, d_intro_w, d_intro_h);
+  TextButtonClass introbtn(kButtonIntro, TXT_INTRO, kButtonFont, kButtonFlags,
+                           d_intro_x, starty, d_intro_w, d_intro_h);
   starty += ystep;
 
-  TextButtonClass exitbtn(kButtonExit, TXT_EXIT_GAME, kTpfButton, d_exit_x,
-                          starty, d_exit_w, d_exit_h);
+  TextButtonClass exitbtn(kButtonExit, TXT_EXIT_GAME, kButtonFont, kButtonFlags,
+                          d_exit_x, starty, d_exit_w, d_exit_h);
 
   /*
   **	Initialize

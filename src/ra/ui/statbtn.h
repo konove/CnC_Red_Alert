@@ -53,8 +53,8 @@ namespace ra {
 class StaticButtonClass final : public game::GadgetClass {
  public:
   StaticButtonClass();
-  StaticButtonClass(unsigned id, const char* text, TextPrintType style, int x,
-                    int y, int w = -1, int h = -1);
+  StaticButtonClass(unsigned id, const char* text, FontType font,
+                    TextPrintType style, int x, int y, int w = -1, int h = -1);
   bool Draw_Me(PixelView& view, bool forced = false) override;
   void Set_Text(const char* text);
 
@@ -74,6 +74,7 @@ class StaticButtonClass final : public game::GadgetClass {
   /*
   **	This is the print flags to use when rendering this button's text.
   */
+  FontType TextFont = FontType::k8Point;
   TextPrintType PrintFlags;
 };
 

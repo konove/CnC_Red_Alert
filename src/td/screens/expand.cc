@@ -85,9 +85,10 @@ bool Expansion_Present() { return GameFileExists("EXPAND.DAT"); }
 // alongside its text.
 class EListClass : public ListClass {
  public:
-  EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-             std::span<const std::byte> up, std::span<const std::byte> down)
-      : ListClass(id, x, y, w, h, flags, up, down) {}
+  EListClass(int id, int x, int y, int w, int h, FontType font,
+             TextPrintType flags, std::span<const std::byte> up,
+             std::span<const std::byte> down)
+      : ListClass(id, x, y, w, h, font, flags, up, down) {}
   // Appends a line for `scenario`, returning its index.
   int Add_Scenario(int scenario, const std::string& text) {
     Scenarios.push_back(scenario);
@@ -116,7 +117,7 @@ class EListClass : public ListClass {
 
 void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
                             bool selected) {
-  if (base::Any(TextFlags & TPF_6PT_GRAD)) {
+  if (HasGradientFontBits(TextFont)) {
     TextPrintType flags = TextFlags;
 
     if (selected) {
@@ -129,12 +130,12 @@ void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
     }
 
     Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kCcGreen, kTBlack,
-                            FontOf(flags), StyleOf(flags), width, Tabs);
+                            TextFont, flags, width, Tabs);
 
   } else {
     Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                            selected ? kBlue : kWhite, kTBlack,
-                            FontOf(TextFlags), StyleOf(TextFlags), width, Tabs);
+                            selected ? kBlue : kWhite, kTBlack, TextFont,
+                            TextFlags, width, Tabs);
   }
 }
 
@@ -159,15 +160,16 @@ bool Expansion_Dialog() {
     down_button = Hires_Retrieve("BTN-DN2.SHP");
   }
 
-  TextButtonClass ok(200, TXT_OK, TPF_6PT_GRAD | TPF_NOSHADOW,
+  TextButtonClass ok(200, TXT_OK, FontType::k6PointGradient, TPF_NOSHADOW,
                      option_x + (25 * factor),
                      option_y + option_height - (15 * factor));
-  TextButtonClass cancel(201, TXT_CANCEL, TPF_6PT_GRAD | TPF_NOSHADOW,
-                         option_x + option_width - (50 * factor),
+  TextButtonClass cancel(201, TXT_CANCEL, FontType::k6PointGradient,
+                         TPF_NOSHADOW, option_x + option_width - (50 * factor),
                          option_y + option_height - (15 * factor));
   EListClass list(202, option_x + (10 * factor), option_y + (20 * factor),
                   option_width - (20 * factor), option_height - (40 * factor),
-                  TPF_6PT_GRAD | TPF_NOSHADOW, up_button, down_button);
+                  FontType::k6PointGradient, TPF_NOSHADOW, up_button,
+                  down_button);
 
   buttons = &ok;
   cancel.Add(*buttons);
@@ -306,15 +308,16 @@ bool Bonus_Dialog() {
     down_button = Hires_Retrieve("BTN-DN2.SHP");
   }
 
-  TextButtonClass ok(200, TXT_OK, TPF_6PT_GRAD | TPF_NOSHADOW,
+  TextButtonClass ok(200, TXT_OK, FontType::k6PointGradient, TPF_NOSHADOW,
                      option_x + (25 * factor),
                      option_y + option_height - (15 * factor));
-  TextButtonClass cancel(201, TXT_CANCEL, TPF_6PT_GRAD | TPF_NOSHADOW,
-                         option_x + option_width - (50 * factor),
+  TextButtonClass cancel(201, TXT_CANCEL, FontType::k6PointGradient,
+                         TPF_NOSHADOW, option_x + option_width - (50 * factor),
                          option_y + option_height - (15 * factor));
   EListClass list(202, option_x + (10 * factor), option_y + (20 * factor),
                   option_width - (20 * factor), option_height - (40 * factor),
-                  TPF_6PT_GRAD | TPF_NOSHADOW, up_button, down_button);
+                  FontType::k6PointGradient, TPF_NOSHADOW, up_button,
+                  down_button);
 
   buttons = &ok;
   cancel.Add(*buttons);

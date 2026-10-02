@@ -27,7 +27,7 @@ class InstalledAssets {
 class TdListClassTest : public InstalledAssets, public testing::Test {
  protected:
   // No scroll arrow shapes: the tests never draw.
-  ListClass list_{0, 0, 0, 100, 60, TPF_6POINT, {}, {}};
+  ListClass list_{0, 0, 0, 100, 60, FontType::k6Point, TPF_NONE, {}, {}};
 };
 
 TEST_F(TdListClassTest, AddItemCopiesTheText) {
@@ -109,7 +109,7 @@ TEST_F(TdListClassTest, ClearRemovesEverything) {
 class TdCheckListClassTest : public InstalledAssets, public testing::Test {};
 
 TEST_F(TdCheckListClassTest, CheckItemWritesTheGlyphIntoTheOwnedText) {
-  CheckListClass list(0, 0, 0, 100, 60, TPF_6POINT, {}, {});
+  CheckListClass list(0, 0, 0, 100, 60, FontType::k6Point, TPF_NONE, {}, {});
   const std::string source = " trigger";
   list.Add_Item(source.c_str());
 
@@ -133,7 +133,9 @@ TEST(TdMessageListTest, OversizedEditPrefixIsClampedToOwnedStorage) {
   MessageListClass messages;
   messages.Init(0, 0, 4, 80, 8);
   std::string prefix(300, 'x');
-  ASSERT_NE(messages.Add_Edit(0, TPF_6POINT, prefix.data(), 100), nullptr);
+  ASSERT_NE(
+      messages.Add_Edit(0, FontType::k6Point, TPF_NONE, prefix.data(), 100),
+      nullptr);
   ASSERT_NE(messages.Get_Edit_Buf(), nullptr);
   EXPECT_STREQ(messages.Get_Edit_Buf(), "");
 }
@@ -143,10 +145,10 @@ TEST(TdMessageListTest, TailMergesIntoMatchingPlayersOwnedBuffer) {
   messages.Init(0, 0, 4, 80, 8);
   char head[] = "Alice:abcdefghijklmnopqrstuvw";
   char tail[] = "Alice:tail";
-  auto* label = messages.Add_Message(head, 0, TPF_6POINT, -1,
+  auto* label = messages.Add_Message(head, 0, FontType::k6Point, TPF_NONE, -1,
                                      MESSAGE_HEAD_MAGIC_NUMBER, 123);
   ASSERT_NE(label, nullptr);
-  EXPECT_EQ(messages.Add_Message(tail, 0, TPF_6POINT, -1,
+  EXPECT_EQ(messages.Add_Message(tail, 0, FontType::k6Point, TPF_NONE, -1,
                                  MESSAGE_HEAD_MAGIC_NUMBER + 1, 123),
             label);
   EXPECT_EQ(std::string_view(label->Text), "Alice:abcdefghijklmnopqrstuvwtail");
@@ -158,10 +160,10 @@ TEST(TdMessageListTest, MatchingCrcDoesNotMergeDifferentPlayers) {
   messages.Init(0, 0, 4, 80, 8);
   char head[] = "Alice:head";
   char tail[] = "Bob:tail";
-  auto* label = messages.Add_Message(head, 0, TPF_6POINT, -1,
+  auto* label = messages.Add_Message(head, 0, FontType::k6Point, TPF_NONE, -1,
                                      MESSAGE_HEAD_MAGIC_NUMBER, 123);
   ASSERT_NE(label, nullptr);
-  EXPECT_NE(messages.Add_Message(tail, 0, TPF_6POINT, -1,
+  EXPECT_NE(messages.Add_Message(tail, 0, FontType::k6Point, TPF_NONE, -1,
                                  MESSAGE_HEAD_MAGIC_NUMBER + 1, 123),
             label);
   EXPECT_EQ(messages.Num_Messages(), 2);

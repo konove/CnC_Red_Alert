@@ -216,12 +216,10 @@ base::EnumArray<TActionType, ActionChoiceClass, static_cast<int>(TACTION_COUNT)>
  *=============================================================================================*/
 void ActionChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                                 int width, int height, bool selected,
-                                TextPrintType flags) const {
+                                FontType font, TextPrintType flags) const {
   RemapControlType* scheme = Get_Color_Scheme();
   static const int _tabs[] = {13, 40};
-  const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
-  if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
-      font == static_cast<uint32_t>(TPF_EFNT)) {
+  if (font == FontType::k6PointGradient || font == FontType::kEditor) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
       view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
@@ -231,14 +229,14 @@ void ActionChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
       }
     }
 
-    Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack,
-                            FontOf(flags), StyleOf(flags), width, _tabs);
+    Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
+                            flags, width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
         view, Description(), x, y,
         selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                  : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-        kTBlack, FontOf(flags), StyleOf(flags), width, _tabs);
+        kTBlack, font, flags, width, _tabs);
   }
 }
 
@@ -418,8 +416,8 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     case TACTION_TEXT_TRIGGER: {
       const char* message = TheAssets().tutorial_text(Data.Value);
       TheSession().Messages.Add_Message(
-          nullptr, 0, message, PCOLOR_GREEN,
-          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+          nullptr, 0, message, PCOLOR_GREEN, FontType::k6PointGradient,
+          TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           TheRules().MessageDelay * kTicksPerMinute);
       break;
     }

@@ -1396,15 +1396,15 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   **	Initialize the button structures. All are initialized, even though one
   *(or none) may *	actually be added to the button list.
   */
-  TextButtonClass button1(kButton1, b1txt, kTpfButton,
+  TextButtonClass button1(kButton1, b1txt, kButtonFont, kButtonFlags,
                           x + (numbuttons == 1 ? (width - bwidth) / 2 : 10),
                           y + height - (bheight + 5), bwidth);
 
-  TextButtonClass button2(kButton2, b2txt, kTpfButton,
+  TextButtonClass button2(kButton2, b2txt, kButtonFont, kButtonFlags,
                           x + width - (bwidth + 10), y + height - (bheight + 5),
                           bwidth);
 
-  TextButtonClass button3(kButton3, b3txt, kTpfButton, 0,
+  TextButtonClass button3(kButton3, b3txt, kButtonFont, kButtonFlags, 0,
                           y + height - (bheight + 5));
   button3.X = x + ((width - button3.Width) / 2);
 
@@ -1458,7 +1458,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   game::TheKeyboard().Clear();
 
   // The text types out in the font the button constructors above selected
-  // last (each measures itself in kTpfButton), recoloured through _scorepal.
+  // last (each measures itself in kButtonFont), recoloured through _scorepal.
   // That is not the style the page was wrapped in: it sets letters a pixel
   // closer and lines two pixels closer.
   FontStyle typed = TextFontStyle(kButtonFont, kButtonFlags);

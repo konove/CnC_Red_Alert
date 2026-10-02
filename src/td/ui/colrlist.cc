@@ -68,7 +68,6 @@
 #include <span>
 
 #include "base/array.h"
-#include "base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "td/core/defines.h"
@@ -80,10 +79,10 @@
 namespace td {
 
 ColorListClass::ColorListClass(int id, int x, int y, int w, int h,
-                               TextPrintType flags,
+                               FontType font, TextPrintType flags,
                                std::span<const std::byte> up,
                                std::span<const std::byte> down)
-    : ListClass(id, x, y, w, h, flags, up, down) {}
+    : ListClass(id, x, y, w, h, font, flags, up, down) {}
 
 /***************************************************************************
  * ColorListClass::~ColorListClass -- Class destructor                     *
@@ -218,8 +217,8 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
   */
   if (!selected) {
     Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
-                            base::At(Colors, index), kTBlack, FontOf(TextFlags),
-                            StyleOf(TextFlags), width, Tabs);
+                            base::At(Colors, index), kTBlack, TextFont,
+                            TextFlags, width, Tabs);
     return;
   }
 
@@ -237,9 +236,9 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	NONE: Just print the string in its native color
     */
     case SELECT_NONE:
-      Conquer_Clip_Text_Print(
-          view, Get_Item(index), x, y, base::At(Colors, index), kTBlack,
-          FontOf(TextFlags), StyleOf(TextFlags), width, Tabs);
+      Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
+                              base::At(Colors, index), kTBlack, TextFont,
+                              TextFlags, width, Tabs);
       break;
 
     /*
@@ -247,15 +246,13 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	be set)
     */
     case SELECT_HIGHLIGHT:
-      if (base::Any(TextFlags & TPF_6PT_GRAD)) {
+      if (HasGradientFontBits(TextFont)) {
         Conquer_Clip_Text_Print(view, Get_Item(index), x, y, color, kTBlack,
-                                FontOf(TextFlags | TPF_BRIGHT_COLOR),
-                                StyleOf(TextFlags | TPF_BRIGHT_COLOR), width,
+                                TextFont, TextFlags | TPF_BRIGHT_COLOR, width,
                                 Tabs);
       } else {
         Conquer_Clip_Text_Print(view, Get_Item(index), x, y, color, kTBlack,
-                                FontOf(TextFlags), StyleOf(TextFlags), width,
-                                Tabs);
+                                TextFont, TextFlags, width, Tabs);
       }
       break;
 
@@ -265,28 +262,27 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     case SELECT_BOX:
       view.DrawRect(x, y, x + width - 2, y + LineHeight - 2,
                     static_cast<unsigned char>(color));
-      Conquer_Clip_Text_Print(
-          view, Get_Item(index), x, y, base::At(Colors, index), kTBlack,
-          FontOf(TextFlags), StyleOf(TextFlags), width, Tabs);
+      Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
+                              base::At(Colors, index), kTBlack, TextFont,
+                              TextFlags, width, Tabs);
       break;
 
     /*
     **	BAR: draw a color bar under the text
     */
     case SELECT_BAR:
-      if (base::Any(TextFlags & TPF_6PT_GRAD)) {
+      if (HasGradientFontBits(TextFont)) {
         view.FillRect(x, y, x + width - 1, y + LineHeight - 1,
                       static_cast<unsigned char>(SelectColor));
-        Conquer_Clip_Text_Print(
-            view, Get_Item(index), x, y, base::At(Colors, index), kTBlack,
-            FontOf(TextFlags | TPF_BRIGHT_COLOR),
-            StyleOf(TextFlags | TPF_BRIGHT_COLOR), width, Tabs);
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
+                                base::At(Colors, index), kTBlack, TextFont,
+                                TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
       } else {
         view.FillRect(x, y, x + width - 2, y + LineHeight - 2,
                       static_cast<unsigned char>(SelectColor));
-        Conquer_Clip_Text_Print(
-            view, Get_Item(index), x, y, base::At(Colors, index), kTBlack,
-            FontOf(TextFlags), StyleOf(TextFlags), width, Tabs);
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
+                                base::At(Colors, index), kTBlack, TextFont,
+                                TextFlags, width, Tabs);
       }
       break;
 
@@ -294,20 +290,18 @@ void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     **	INVERT: Draw text as the background color on foreground color
     */
     case SELECT_INVERT:
-      if (base::Any(TextFlags & TPF_6PT_GRAD)) {
+      if (HasGradientFontBits(TextFont)) {
         view.FillRect(x, y, x + width - 1, y + LineHeight - 1,
                       static_cast<unsigned char>(base::At(Colors, index)));
         // Black text on the transparent color; the names only look swapped.
         // NOLINTNEXTLINE(readability-suspicious-call-argument)
         Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kBlack, kTBlack,
-                                FontOf(TextFlags), StyleOf(TextFlags), width,
-                                Tabs);
+                                TextFont, TextFlags, width, Tabs);
       } else {
         view.FillRect(x, y, x + width - 2, y + LineHeight - 2,
                       static_cast<unsigned char>(base::At(Colors, index)));
         Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kLtGrey, kTBlack,
-                                FontOf(TextFlags), StyleOf(TextFlags), width,
-                                Tabs);
+                                TextFont, TextFlags, width, Tabs);
       }
       break;
     default:

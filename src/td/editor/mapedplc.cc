@@ -304,100 +304,88 @@ int MapEditClass::Placement_Dialog() {
   Buttons
   ........................................................................*/
 
-  TextButtonClass gdibtn(
-      kButtonGdi, "GDI",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdiX, kGdiY,
-      kGdiW, kGdiH);
+  TextButtonClass gdibtn(kButtonGdi, "GDI", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdiX,
+                         kGdiY, kGdiW, kGdiH);
 
-  TextButtonClass nodbtn(
-      kButtonNod, "NOD",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodX, kNodY,
-      kNodW, kNodH);
+  TextButtonClass nodbtn(kButtonNod, "NOD", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodX,
+                         kNodY, kNodW, kNodH);
 
-  TextButtonClass neutbtn(
-      kButtonNeutral, "Neutral",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNeutralX,
-      kNeutralY, kNeutralW, kNeutralH);
+  TextButtonClass neutbtn(kButtonNeutral, "Neutral", FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                          kNeutralX, kNeutralY, kNeutralW, kNeutralH);
 
-  TextButtonClass multi1btn(
-      kButtonMulti1, "M1",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti1X,
-      kMulti1Y, kMulti1W, kMulti1H);
+  TextButtonClass multi1btn(kButtonMulti1, "M1", FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kMulti1X, kMulti1Y, kMulti1W, kMulti1H);
 
-  TextButtonClass multi2btn(
-      kButtonMulti2, "M2",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti2X,
-      kMulti2Y, kMulti2W, kMulti2H);
+  TextButtonClass multi2btn(kButtonMulti2, "M2", FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kMulti2X, kMulti2Y, kMulti2W, kMulti2H);
 
-  TextButtonClass multi3btn(
-      kButtonMulti3, "M3",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti3X,
-      kMulti3Y, kMulti3W, kMulti3H);
+  TextButtonClass multi3btn(kButtonMulti3, "M3", FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kMulti3X, kMulti3Y, kMulti3W, kMulti3H);
 
-  TextButtonClass multi4btn(
-      kButtonMulti4, "M4",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti4X,
-      kMulti4Y, kMulti4W, kMulti4H);
+  TextButtonClass multi4btn(kButtonMulti4, "M4", FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kMulti4X, kMulti4Y, kMulti4W, kMulti4H);
 
-  TextButtonClass nextbtn(
-      kButtonNext, TXT_RIGHT,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kRightX,
-      kRightY, kRightW, kRightH);
+  TextButtonClass nextbtn(kButtonNext, TXT_RIGHT, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kRightX,
+                          kRightY, kRightW, kRightH);
 
-  TextButtonClass prevbtn(
-      kButtonPrev, TXT_LEFT,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLeftX,
-      kLeftY, kLeftW, kLeftH);
+  TextButtonClass prevbtn(kButtonPrev, TXT_LEFT, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLeftX,
+                          kLeftY, kLeftW, kLeftH);
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
-      kOkW, kOkH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX,
+                        kOkY, kOkW, kOkH);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
-      kCancelY, kCancelW, kCancelH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kCancelX, kCancelY, kCancelW, kCancelH);
 
-  TextButtonClass templatebtn(
-      kButtonTemplate, "Template",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kTemplateX,
-      kTemplateY, kTemplateW, kTemplateH);
+  TextButtonClass templatebtn(kButtonTemplate, "Template",
+                              FontType::k6PointGradient,
+                              TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                              kTemplateX, kTemplateY, kTemplateW, kTemplateH);
 
-  TextButtonClass overlaybtn(
-      kButtonOverlay, "Overlay",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOverlayX,
-      kOverlayY, kOverlayW, kOverlayH);
+  TextButtonClass overlaybtn(kButtonOverlay, "Overlay",
+                             FontType::k6PointGradient,
+                             TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                             kOverlayX, kOverlayY, kOverlayW, kOverlayH);
 
-  TextButtonClass smudgebtn(
-      kButtonSmudge, "Smudge",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kSmudgeX,
-      kSmudgeY, kSmudgeW, kSmudgeH);
+  TextButtonClass smudgebtn(kButtonSmudge, "Smudge", FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kSmudgeX, kSmudgeY, kSmudgeW, kSmudgeH);
 
-  TextButtonClass terrainbtn(
-      kButtonTerrain, "Terrain",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kTerrainX,
-      kTerrainY, kTerrainW, kTerrainH);
+  TextButtonClass terrainbtn(kButtonTerrain, "Terrain",
+                             FontType::k6PointGradient,
+                             TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                             kTerrainX, kTerrainY, kTerrainW, kTerrainH);
 
-  TextButtonClass unitbtn(
-      kButtonUnit, "Unit",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kUnitX,
-      kUnitY, kUnitW, kUnitH);
+  TextButtonClass unitbtn(kButtonUnit, "Unit", FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kUnitX,
+                          kUnitY, kUnitW, kUnitH);
 
-  TextButtonClass infantrybtn(
-      kButtonInfantry, "Infantry",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kInfantryX,
-      kInfantryY, kInfantryW, kInfantryH);
+  TextButtonClass infantrybtn(kButtonInfantry, "Infantry",
+                              FontType::k6PointGradient,
+                              TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                              kInfantryX, kInfantryY, kInfantryW, kInfantryH);
 
-  TextButtonClass aircraftbtn(
-      kButtonAircraft, "Aircraft",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kAircraftX,
-      kAircraftY, kAircraftW, kAircraftH);
+  TextButtonClass aircraftbtn(kButtonAircraft, "Aircraft",
+                              FontType::k6PointGradient,
+                              TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                              kAircraftX, kAircraftY, kAircraftW, kAircraftH);
 
-  TextButtonClass buildingbtn(
-      kButtonBuilding, "Building",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kBuildingX,
-      kBuildingY, kBuildingW, kBuildingH);
+  TextButtonClass buildingbtn(kButtonBuilding, "Building",
+                              FontType::k6PointGradient,
+                              TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                              kBuildingX, kBuildingY, kBuildingW, kBuildingH);
 
   /*------------------------------------------------------------------------
   Initialize addable objects list; we must do this every time in case one

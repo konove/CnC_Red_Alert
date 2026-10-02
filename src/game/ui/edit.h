@@ -82,9 +82,10 @@ class EditClass : public ControlClass {
   // terminator. |w| and |h| default to -1, meaning auto-sized from the text.
   // Throws std::invalid_argument if the buffer is empty.
   EditClass(int id, std::span<char> text ABSL_ATTRIBUTE_LIFETIME_BOUND,
-            int max_len, Skin::PrintFlags flags, int x, int y, int w = -1,
-            int h = -1, EditStyle style = kAlphanumeric)
+            int max_len, Skin::Font font, Skin::PrintFlags flags, int x, int y,
+            int w = -1, int h = -1, EditStyle style = kAlphanumeric)
       : ControlClass(static_cast<unsigned>(id), x, y, w, h, kLeftPress),
+        TextFont(font),
         TextFlags(Skin::Edit_Flags(flags)),
         EditFlags(style),
         String(text),
@@ -95,19 +96,19 @@ class EditClass : public ControlClass {
     GadgetClass::Flag_To_Redraw();
 
     if (w == -1 || h == -1) {
-      const FontStyle font = Skin::Font(TextFlags);
+      const FontStyle font_style = Skin::FontStyleFor(TextFont, TextFlags);
       if (h == -1) {
-        Height = FontMaxHeight(font) + Skin::kEditHeightPad;
+        Height = FontMaxHeight(font_style) + Skin::kEditHeightPad;
       }
       if (w == -1) {
         if (!std::string_view(String.data()).empty()) {
-          Width = StringPixelWidth(font, String.data()) + 6;
+          Width = StringPixelWidth(font_style, String.data()) + 6;
         } else {
           // CharPixelWidth() already includes the spacing, so it is counted
           // twice here, as it always was.
-          Width =
-              ((CharPixelWidth(font, 'X') + font.x_spacing) * (MaxLength + 1)) +
-              2;
+          Width = ((CharPixelWidth(font_style, 'X') + font_style.x_spacing) *
+                   (MaxLength + 1)) +
+                  2;
         }
       }
     }
@@ -156,7 +157,8 @@ class EditClass : public ControlClass {
   [[nodiscard]] int Get_Max_Length() const { return MaxLength; }
 
  protected:
-  Skin::PrintFlags TextFlags;  // Text rendering style (font, alignment).
+  Skin::Font TextFont;         // The font the text renders in.
+  Skin::PrintFlags TextFlags;  // Text rendering style (alignment, colour).
   EditStyle EditFlags{};       // Allowed character types for input filtering.
 
   std::span<char> String;  // Caller-owned text buffer modified in place.
@@ -219,8 +221,8 @@ class EditClass : public ControlClass {
   // Draws the text content and cursor. Called after Draw_Background with
   // the mouse hidden.
   virtual void Draw_Text(PixelView& view, const char* text) {
-    Skin::Draw_Edit_Text(view, text, X, Y, Width, Color, TextFlags, Has_Focus(),
-                         MaxLength);
+    Skin::Draw_Edit_Text(view, text, X, Y, Width, Color, TextFont, TextFlags,
+                         Has_Focus(), MaxLength);
   }
 
   // Processes a single keyboard character. Returns false if the RETURN key
@@ -245,7 +247,7 @@ class EditClass : public ControlClass {
         break;
 
       default: {
-        const FontStyle font = Skin::Font(TextFlags);
+        const FontStyle font = Skin::FontStyleFor(TextFont, TextFlags);
         if (StringPixelWidth(font, String.data()) +
                 CharPixelWidth(font, ascii) >=
             Width - 2) {

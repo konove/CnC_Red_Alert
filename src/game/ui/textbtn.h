@@ -59,21 +59,25 @@ class TextButtonClass final : public ToggleClass {
       : ToggleClass(0, 0, 0, 0, 0),
         IsBlackBorder(false),
         String(nullptr),
+        TextFont(Skin::kButtonDefaultFont),
         PrintFlags(Skin::kButtonDefaultFlags) {}
   TextButtonClass(unsigned id, const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                  Skin::Font font, Skin::PrintFlags style, int x, int y,
+                  int w = -1, int h = -1, bool blackborder = false)
+      : ToggleClass(id, x, y, w, h),
+        IsBlackBorder(blackborder),
+        String(text),
+        TextFont(font),
+        PrintFlags(style) {
+    Size_To_Text(w, h);
+  }
+  TextButtonClass(unsigned id, int text, Skin::Font font,
                   Skin::PrintFlags style, int x, int y, int w = -1, int h = -1,
                   bool blackborder = false)
       : ToggleClass(id, x, y, w, h),
         IsBlackBorder(blackborder),
-        String(text),
-        PrintFlags(style) {
-    Size_To_Text(w, h);
-  }
-  TextButtonClass(unsigned id, int text, Skin::PrintFlags style, int x, int y,
-                  int w = -1, int h = -1, bool blackborder = false)
-      : ToggleClass(id, x, y, w, h),
-        IsBlackBorder(blackborder),
         String(nullptr),
+        TextFont(font),
         PrintFlags(style) {
     Set_Text(text);
     Size_To_Text(w, h);
@@ -93,8 +97,8 @@ class TextButtonClass final : public ToggleClass {
     String = text;
     Flag_To_Redraw();
     if (resize && String) {
-      Width = Skin::Text_Width(PrintFlags, String) + 8;
-      Height = Skin::Text_Height(PrintFlags) + 2;
+      Width = Skin::Text_Width(TextFont, PrintFlags, String) + 8;
+      Height = Skin::Text_Height(TextFont, PrintFlags) + 2;
     }
   }
   // Shows text number `text`; the game's "no text" number changes nothing.
@@ -103,19 +107,22 @@ class TextButtonClass final : public ToggleClass {
       Set_Text(Skin::Text_String(text), resize);
     }
   }
-  void Set_Style(Skin::PrintFlags style) { PrintFlags = style; }
+  void Set_Style(Skin::Font font, Skin::PrintFlags style) {
+    TextFont = font;
+    PrintFlags = style;
+  }
 
  protected:
   void Draw_Background(PixelView& view) {
     if (IsBlackBorder) {
       view.DrawRect(X - 1, Y - 1, X + Width + 2, Y + Height + 2, kBlack);
     }
-    Skin::Draw_Button_Box(view, X, Y, Width, Height, PrintFlags, IsDisabled,
-                          IsPressed);
+    Skin::Draw_Button_Box(view, X, Y, Width, Height, TextFont, PrintFlags,
+                          IsDisabled, IsPressed);
   }
   void Draw_Text(PixelView& view, const char* text) {
     if (String) {
-      Skin::Print_Button_Text(view, text, X + (Width / 2) - 1, Y + 1,
+      Skin::Print_Button_Text(view, text, X + (Width / 2) - 1, Y + 1, TextFont,
                               PrintFlags, IsDisabled, IsPressed, IsOn);
     }
   }
@@ -127,19 +134,18 @@ class TextButtonClass final : public ToggleClass {
   */
   const char* String;
 
-  /*
-  **	This is the print flags to use when rendering this button's text.
-  */
+  // The font and the print flags the button's text renders with.
+  Skin::Font TextFont;
   Skin::PrintFlags PrintFlags;
 
  private:
   // Applies the -1 ("fit the text") width and height of a constructor.
   void Size_To_Text(int w, int h) {
     if (w == -1) {
-      Width = Skin::Text_Width(PrintFlags, String) + 8;
+      Width = Skin::Text_Width(TextFont, PrintFlags, String) + 8;
     }
     if (h == -1) {
-      Height = Skin::Text_Height(PrintFlags) + 2;
+      Height = Skin::Text_Height(TextFont, PrintFlags) + 2;
     }
   }
 };

@@ -183,28 +183,29 @@ GameType Select_MPlayer_Game() {
   //		return( Select_Serial_Dialog() );
   //	}
 
-  TextButtonClass modemserialbtn(kButtonModemserial, TXT_MODEM_SERIAL,
-                                 kTpfButton, d_modemserial_x, d_modemserial_y,
-                                 d_modemserial_w, d_modemserial_h);
+  TextButtonClass modemserialbtn(
+      kButtonModemserial, TXT_MODEM_SERIAL, kButtonFont, kButtonFlags,
+      d_modemserial_x, d_modemserial_y, d_modemserial_w, d_modemserial_h);
 
-  TextButtonClass skirmishbtn(kButtonSkirmish, TXT_SKIRMISH, kTpfButton,
-                              d_skirmish_x, d_skirmish_y, d_skirmish_w,
-                              d_skirmish_h);
+  TextButtonClass skirmishbtn(kButtonSkirmish, TXT_SKIRMISH, kButtonFont,
+                              kButtonFlags, d_skirmish_x, d_skirmish_y,
+                              d_skirmish_w, d_skirmish_h);
 
-  TextButtonClass ipxbtn(kButtonIpx, TXT_NETWORK, kTpfButton, d_ipx_x, d_ipx_y,
-                         d_ipx_w, d_ipx_h);
+  TextButtonClass ipxbtn(kButtonIpx, TXT_NETWORK, kButtonFont, kButtonFlags,
+                         d_ipx_x, d_ipx_y, d_ipx_w, d_ipx_h);
 
   //	ajw
-  TextButtonClass wolbtn(kButtonWol, TXT_WOL_INTERNETBUTTON, kTpfButton,
-                         d_wol_x, d_wol_y, d_wol_w, d_wol_h);
+  TextButtonClass wolbtn(kButtonWol, TXT_WOL_INTERNETBUTTON, kButtonFont,
+                         kButtonFlags, d_wol_x, d_wol_y, d_wol_w, d_wol_h);
 
   if (!has_ipx) {
     d_cancel_y = d_ipx_y;
     d_dialog_h -= d_cancel_h;
   }
 
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
-                            d_cancel_y, d_cancel_w, d_cancel_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kButtonFont,
+                            kButtonFlags, d_cancel_x, d_cancel_y, d_cancel_w,
+                            d_cancel_h);
 
   //------------------------------------------------------------------------
   //	Initialize
@@ -519,11 +520,12 @@ int Surrender_Dialog(const char* text) {
   //------------------------------------------------------------------------
   game::ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfButton, kDOkX, kDOkY, kDOkW,
-                        kDOkH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, kButtonFont, kButtonFlags, kDOkX,
+                        kDOkY, kDOkW, kDOkH);
 
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, kDCancelX,
-                            kDCancelY, kDCancelW, kDCancelH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kButtonFont,
+                            kButtonFlags, kDCancelX, kDCancelY, kDCancelW,
+                            kDCancelH);
 
   TextButtonClass* buttons[2];
   int curbutton = 0;
@@ -702,11 +704,11 @@ int Abort_Dialog() {
   //------------------------------------------------------------------------
   game::ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass yesbtn(kButtonYes, TXT_YES, kTpfButton, kDYesX, kDYesY,
-                         kDYesW, kDYesH);
+  TextButtonClass yesbtn(kButtonYes, TXT_YES, kButtonFont, kButtonFlags, kDYesX,
+                         kDYesY, kDYesW, kDYesH);
 
-  TextButtonClass nobtn(kButtonNo, TXT_NO, kTpfButton, kDNoX, kDNoY, kDNoW,
-                        kDNoH);
+  TextButtonClass nobtn(kButtonNo, TXT_NO, kButtonFont, kButtonFlags, kDNoX,
+                        kDNoY, kDNoW, kDNoH);
 
   TextButtonClass* buttons[2];
   int curbutton = 0;

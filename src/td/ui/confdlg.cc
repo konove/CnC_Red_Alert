@@ -109,12 +109,12 @@ bool ConfirmationClass::Process(const char* string) {
   const int bwidth =
       std::max<int>(StringPixelWidth(font, Text_String(TXT_YES)) + 8, 30);
 
-  TextButtonClass yesbtn(
-      kButtonYes, TXT_YES, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      x + (10 * factor), y + height - (bheight + (5 * factor)), bwidth);
+  TextButtonClass yesbtn(kButtonYes, TXT_YES, FontType::k6PointGradient,
+                         TPF_USE_GRAD_PAL | TPF_NOSHADOW, x + (10 * factor),
+                         y + height - (bheight + (5 * factor)), bwidth);
 
-  TextButtonClass nobtn(kButtonNo, TXT_NO,
-                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+  TextButtonClass nobtn(kButtonNo, TXT_NO, FontType::k6PointGradient,
+                        TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                         x + width - (bwidth + (10 * factor)),
                         y + height - (bheight + (5 * factor)), bwidth);
 

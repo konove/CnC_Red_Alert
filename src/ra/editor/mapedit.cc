@@ -201,7 +201,7 @@ void MapEditClass::One_Time() {
   */
   HouseList = std::make_unique<ListClass>(
       kPopupHouselist, kPopupHouseX, kPopupHouseY, kPopupHouseW, kPopupHouseH,
-      TPF_EFNT | TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      FontType::kEditor, TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
     HouseList->Add_Item(HouseTypeClass::As_Reference(house).IniName);
@@ -212,7 +212,7 @@ void MapEditClass::One_Time() {
   */
   MissionList = std::make_unique<ListClass>(
       kPopupMissionlist, kPopupMissionX, kPopupMissionY, kPopupMissionW,
-      kPopupMissionH, TPF_EFNT | TPF_NOSHADOW,
+      kPopupMissionH, FontType::kEditor, TPF_NOSHADOW,
       MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
 
@@ -237,16 +237,18 @@ void MapEditClass::One_Time() {
   HealthBuf[0] = 0;
   HealthText = std::make_unique<TextLabelClass>(
       HealthBuf, kPopupHealthX + (kPopupHealthW / 2),
-      kPopupHealthY + kPopupHealthH + 1, Get_Color_Scheme(),
-      TPF_CENTER | TPF_FULLSHADOW | TPF_EFNT);
+      kPopupHealthY + kPopupHealthH + 1, Get_Color_Scheme(), FontType::kEditor,
+      TPF_CENTER | TPF_FULLSHADOW);
 
   /*
   **	Building attribute buttons.
   */
-  Sellable = std::make_unique<TextButtonClass>(
-      kPopupSellable, TXT_SELLABLE, kTpfEButton, 320 - 65, 200 - 25, 60);
+  Sellable = std::make_unique<TextButtonClass>(kPopupSellable, TXT_SELLABLE,
+                                               kEButtonFont, kEButtonFlags,
+                                               320 - 65, 200 - 25, 60);
   Rebuildable = std::make_unique<TextButtonClass>(
-      kPopupRebuildable, TXT_REBUILD, kTpfEButton, 320 - 65, 200 - 15, 60);
+      kPopupRebuildable, TXT_REBUILD, kEButtonFont, kEButtonFlags, 320 - 65,
+      200 - 15, 60);
 
   /*
   **	The facing dial
@@ -265,7 +267,7 @@ void MapEditClass::One_Time() {
   static char base_caption[] = "Base:";
   BaseLabel = std::make_unique<TextLabelClass>(
       base_caption, kPopupBaseX - 3, kPopupBaseY, Get_Color_Scheme(),
-      TPF_RIGHT | TPF_NOSHADOW | TPF_EFNT);
+      FontType::kEditor, TPF_RIGHT | TPF_NOSHADOW);
   BaseGauge->Set_Maximum(100);
   BaseGauge->Set_Value(TheScenario().Percent);
 }
@@ -1970,12 +1972,12 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
   */
   game::ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass button(kButtonOk, TXT_OK, kTpfEButton, kButtonX, kButtonY,
-                         kButtonW);
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfEButton, kCancelX,
-                            kCancelY, kCancelW);
-  EditClass editbtn(kButtonEdit, wayptname, 3, TPF_EFNT | TPF_NOSHADOW, kEditX,
-                    kEditY, kEditW, -1, EditClass::kAlphanumeric);
+  TextButtonClass button(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags,
+                         kButtonX, kButtonY, kButtonW);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kEButtonFont,
+                            kEButtonFlags, kCancelX, kCancelY, kCancelW);
+  EditClass editbtn(kButtonEdit, wayptname, 3, FontType::kEditor, TPF_NOSHADOW,
+                    kEditX, kEditY, kEditW, -1, EditClass::kAlphanumeric);
 
   /*
   **	Initialize.

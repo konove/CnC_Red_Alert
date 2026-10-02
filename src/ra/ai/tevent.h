@@ -232,7 +232,7 @@ class EventChoiceClass {
     return Name_From_Event(Event);
   }
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
-               bool selected, TextPrintType flags) const;
+               bool selected, FontType font, TextPrintType flags) const;
 
   TEventType Event;
 };

@@ -188,17 +188,18 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   *(or none) may *	actually be added to the button list.
   */
   TextButtonClass button1(
-      BUTTON_1, b1txt, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+      BUTTON_1, b1txt, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + (numbuttons == 1 ? (width - bwidth) / 2 : 10 * factor),
       y + height - (bheight + (5 * factor)), bwidth);
 
-  TextButtonClass button2(BUTTON_2, b2txt,
-                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+  TextButtonClass button2(BUTTON_2, b2txt, FontType::k6PointGradient,
+                          TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                           x + width - (bwidth + (10 * factor)),
                           y + height - (bheight + (5 * factor)), bwidth);
 
-  TextButtonClass button3(BUTTON_3, b3txt,
-                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, 0,
+  TextButtonClass button3(BUTTON_3, b3txt, FontType::k6PointGradient,
+                          TPF_USE_GRAD_PAL | TPF_NOSHADOW, 0,
                           y + height - (bheight + (5 * factor)));
   button3.X = x + ((width - button3.Width) / 2);
 

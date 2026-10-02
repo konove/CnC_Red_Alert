@@ -242,20 +242,21 @@ bool LoadOptionsClass::Process() {
     }
   }
 
-  TextButtonClass button(btn_id, btn_txt,
-                         TPF_6PT_GRAD | TPF_CENTER | TPF_NOSHADOW, d_button_x,
-                         d_button_y, d_button_w);
+  TextButtonClass button(btn_id, btn_txt, FontType::k6PointGradient,
+                         TPF_CENTER | TPF_NOSHADOW, d_button_x, d_button_y,
+                         d_button_w);
 
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
-                            TPF_6PT_GRAD | TPF_CENTER | TPF_NOSHADOW,
-                            d_cancel_x, d_cancel_y, d_cancel_w);
+  TextButtonClass cancelbtn(
+      kButtonCancel, TXT_CANCEL, FontType::k6PointGradient,
+      TPF_CENTER | TPF_NOSHADOW, d_cancel_x, d_cancel_y, d_cancel_w);
 
   ListClass listbtn(kButtonList, d_list_x, d_list_y, d_list_w, list_ht,
-                    TPF_6PT_GRAD | TPF_NOSHADOW, up_button, down_button);
+                    FontType::k6PointGradient, TPF_NOSHADOW, up_button,
+                    down_button);
 
-  EditClass editbtn(kButtonEdit, game_descr, 40,
-                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_edit_x,
-                    d_edit_y, d_edit_w, -1, EditClass::kAlphanumeric);
+  EditClass editbtn(kButtonEdit, game_descr, 40, FontType::k6PointGradient,
+                    TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_edit_x, d_edit_y,
+                    d_edit_w, -1, EditClass::kAlphanumeric);
 
   PixelView& view = TheScreen().visible_view();
 

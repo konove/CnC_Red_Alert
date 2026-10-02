@@ -68,12 +68,14 @@ namespace game {
 template <WidgetSkin Skin>
 class ListClass : public ControlClass {
  public:
-  ListClass(int id, int x, int y, int w, int h, Skin::PrintFlags flags,
-            std::span<const std::byte> up, std::span<const std::byte> down)
+  ListClass(int id, int x, int y, int w, int h, Skin::Font font,
+            Skin::PrintFlags flags, std::span<const std::byte> up,
+            std::span<const std::byte> down)
       : ControlClass(static_cast<unsigned>(id), x, y, w, h,
                      kLeftPress | kLeftRelease | kKeyboard, false),
+        TextFont(font),
         TextFlags(flags),
-        LineHeight(Skin::Text_Height(flags) - 1),
+        LineHeight(Skin::Text_Height(font, flags) - 1),
         LineCount((h - 1) / LineHeight),
         UpGadget(0, up, x + w, y),
         DownGadget(0, down, x + w, y + h),
@@ -465,13 +467,13 @@ class ListClass : public ControlClass {
   virtual void Draw_Entry(PixelView& view, int index, int x, int y, int width,
                           bool selected) {
     Skin::Draw_List_Entry(view, List.at(base::ToSize(index)).c_str(), x, y,
-                          width, LineHeight, TextFlags, selected, Tabs);
+                          width, LineHeight, TextFont, TextFlags, selected,
+                          Tabs);
   }
 
-  /*
-  **	This controls what the text looks like. It uses the basic TPF_ flags
-  **	that are used to control Fancy_Text_Print().
-  */
+  // The font and the print flags the lines render with, as
+  // Fancy_Text_Print() takes them.
+  Skin::Font TextFont;
   Skin::PrintFlags TextFlags;
 
   /*
@@ -486,7 +488,7 @@ class ListClass : public ControlClass {
 
   /*
   **	This is the total pixel height of a standard line of text. This is
-  **	greatly influenced by the TextFlags value.
+  **	set by the font.
   */
   int LineHeight;
 

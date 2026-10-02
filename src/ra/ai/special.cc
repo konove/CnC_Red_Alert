@@ -144,9 +144,9 @@ void Special_Dialog(bool simple) {
       {TXT_SPEED_BUILD, false, nullptr},
   };
 
-  TextButtonClass ok(200, TXT_OK, kTpfButton, kOptionX + 30,
+  TextButtonClass ok(200, TXT_OK, kButtonFont, kButtonFlags, kOptionX + 30,
                      kOptionY + kOptionHeight - 30);
-  TextButtonClass cancel(201, TXT_CANCEL, kTpfButton,
+  TextButtonClass cancel(201, TXT_CANCEL, kButtonFont, kButtonFlags,
                          kOptionX + kOptionWidth - 120,
                          kOptionY + kOptionHeight - 30);
   buttons = &ok;
@@ -270,9 +270,9 @@ void Special_Dialog(bool simple) {
 */
 class PWEditClass : public EditClass {
  public:
-  PWEditClass(int id, std::span<char> text, int max_len, TextPrintType flags,
-              int x, int y, int w = -1, int h = -1)
-      : EditClass(id, text, max_len, flags, x, y, w, h, kAlphanumeric) {}
+  PWEditClass(int id, std::span<char> text, int max_len, FontType font,
+              TextPrintType flags, int x, int y, int w = -1, int h = -1)
+      : EditClass(id, text, max_len, font, flags, x, y, w, h, kAlphanumeric) {}
 
  protected:
   void Draw_Text(PixelView& view, const char* text) override;
@@ -301,35 +301,34 @@ void PWEditClass::Draw_Text(PixelView& view, const char* text) {
   base::FillBytes(base::ObjectBytes(buffer), '*',
                   std::min(std::string_view(text).size(), sizeof(buffer) - 1));
 
-  const FontStyle font = TextFontStyle(FontOf(TextFlags), StyleOf(TextFlags));
+  const FontStyle font = TextFontStyle(TextFont, TextFlags);
   if (font.font.data().data() ==
       TheAssets().font(FontType::k6PointGradient).data()) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
     Conquer_Clip_Text_Print(view, buffer, X + 1, Y + 1, Color, kTBlack,
-                            FontOf(TextFlags | flags),
-                            StyleOf(TextFlags | flags), Width - 2);
+                            TextFont, TextFlags | flags, Width - 2);
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
       Conquer_Clip_Text_Print(view, "_", X + 1 + StringPixelWidth(font, buffer),
-                              Y + 1, Color, kTBlack, FontOf(TextFlags | flags),
-                              StyleOf(TextFlags | flags));
+                              Y + 1, Color, kTBlack, TextFont,
+                              TextFlags | flags);
     }
   } else {
     Conquer_Clip_Text_Print(
         view, buffer, X + 1, Y + 1,
         Has_Focus() ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-        kTBlack, FontOf(TextFlags), StyleOf(TextFlags), Width - 2);
+        kTBlack, TextFont, TextFlags, Width - 2);
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
       Conquer_Clip_Text_Print(
           view, "_", X + 1 + StringPixelWidth(font, buffer), Y + 1,
           &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE), kTBlack,
-          FontOf(TextFlags), StyleOf(TextFlags));
+          TextFont, TextFlags);
     }
   }
 }
@@ -396,15 +395,16 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Create the "ok" and password edit buttons.
   */
-  TextButtonClass button1(1, btext, kTpfButton, x + ((width - bwidth) / 2),
+  TextButtonClass button1(1, btext, kButtonFont, kButtonFlags,
+                          x + ((width - bwidth) / 2),
                           y + height - (bheight + 10), bwidth);
 
   static char pbuffer[45];
   base::FillBytes(base::ObjectBytes(pbuffer), '\0', sizeof(pbuffer));
   const int editx = x + 52;
   const int editwidth = ((TheScreen().visible_view().width() / 2) - editx) * 2;
-  PWEditClass button2(2, pbuffer, sizeof(pbuffer), TPF_6PT_GRAD | TPF_NOSHADOW,
-                      editx, y + height - 70, editwidth, 20);
+  PWEditClass button2(2, pbuffer, sizeof(pbuffer), FontType::k6PointGradient,
+                      TPF_NOSHADOW, editx, y + height - 70, editwidth, 20);
 
   TextButtonClass* buttonlist = nullptr;
 
@@ -520,8 +520,8 @@ int Fetch_Difficulty(bool amath) {
   /*
   **	Create the OK button.
   */
-  TextButtonClass okbutton(1, TXT_OK, kTpfButton, x + w - (bwidth + 40),
-                           y + h - 36, bwidth);
+  TextButtonClass okbutton(1, TXT_OK, kButtonFont, kButtonFlags,
+                           x + w - (bwidth + 40), y + h - 36, bwidth);
   game::GadgetClass* buttonlist = &okbutton;
 
   /*

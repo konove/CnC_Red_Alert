@@ -165,5 +165,19 @@ TEST(FontOfTest, MapsTheLegacyFontBits) {
             TPF_CENTER | TPF_USE_GRAD_PAL);
 }
 
+TEST(HasGradientFontBitsTest, MatchesWhatTheLegacyMaskMatched) {
+  // `flags & TPF_6PT_GRAD` (6) was true for every font index with bit 1 or 2
+  // set: 2-7.
+  for (const FontType font :
+       {FontType::k8Point, FontType::k3Point, FontType::kLed, FontType::kVcr,
+        FontType::k6PointGradient, FontType::kMap}) {
+    EXPECT_TRUE(HasGradientFontBits(font)) << magic_enum::enum_name(font);
+  }
+  for (const FontType font : {FontType::k6Point, FontType::kGreen12,
+                              FontType::kGreen12Gradient, FontType::kScore}) {
+    EXPECT_FALSE(HasGradientFontBits(font)) << magic_enum::enum_name(font);
+  }
+}
+
 }  // namespace
 }  // namespace td

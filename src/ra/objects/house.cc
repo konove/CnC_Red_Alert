@@ -1015,8 +1015,8 @@ void HouseClass::AI() {
       }
       if (text != nullptr) {
         TheSession().Messages.Add_Message(
-            nullptr, 0, text, PCOLOR_GREEN,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            nullptr, 0, text, PCOLOR_GREEN, FontType::k6PointGradient,
+            TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             TheRules().MessageDelay * kTicksPerMinute);
       }
     }
@@ -2060,8 +2060,8 @@ void HouseClass::Make_Ally(HousesType house) {
         // Session.Players[((HouseClass::As_Pointer(house))->Class->House)
         // - HOUSE_MULTI1]->Name);
         TheSession().Messages.Add_Message(
-            nullptr, 0, buffer, RemapColor,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            nullptr, 0, buffer, RemapColor, FontType::k6PointGradient,
+            TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             kTicksPerMinute * TheRules().MessageDelay);
       }
 
@@ -2118,8 +2118,8 @@ void HouseClass::Make_Enemy(HousesType house) {
       // Session.Players[Class->House - HOUSE_MULTI1]->Name,
       // Session.Players[enemy->Class->House - HOUSE_MULTI1]->Name);
       TheSession().Messages.Add_Message(
-          nullptr, 0, buffer, RemapColor,
-          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+          nullptr, 0, buffer, RemapColor, FontType::k6PointGradient,
+          TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           kTicksPerMinute * TheRules().MessageDelay);
       TheMap().Flag_To_Redraw(false);
     }
@@ -3453,8 +3453,8 @@ void HouseClass::MPlayer_Defeated() {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
                         IniName);
     TheSession().Messages.Add_Message(
-        nullptr, 0, txt, TheSession().ColorIdx,
-        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+        nullptr, 0, txt, TheSession().ColorIdx, FontType::k6PointGradient,
+        TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         TheRules().MessageDelay * kTicksPerMinute);
     TheMap().Flag_To_Redraw(false);
 
@@ -3467,8 +3467,8 @@ void HouseClass::MPlayer_Defeated() {
                           IniName);
 
       TheSession().Messages.Add_Message(
-          nullptr, 0, txt, RemapColor,
-          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+          nullptr, 0, txt, RemapColor, FontType::k6PointGradient,
+          TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           TheRules().MessageDelay * kTicksPerMinute);
       TheMap().Flag_To_Redraw(false);
       TheGameState().redraw_options_menu() = true;

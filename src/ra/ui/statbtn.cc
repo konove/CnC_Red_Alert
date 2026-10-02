@@ -85,22 +85,21 @@ namespace ra {
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
 StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
-                                     TextPrintType style, int x, int y, int w,
-                                     int h)
-    : game::GadgetClass(x, y, w, h, 0), PrintFlags(style) {
+                                     FontType font, TextPrintType style, int x,
+                                     int y, int w, int h)
+    : game::GadgetClass(x, y, w, h, 0), TextFont(font), PrintFlags(style) {
   /*
   **	Make a duplicate of the string to display.
   */
   Set_Text(text);
 
   if (w == -1 || h == -1) {
-    const FontStyle font =
-        TextFontStyle(FontOf(PrintFlags), StyleOf(PrintFlags));
+    const FontStyle font_style = TextFontStyle(TextFont, PrintFlags);
     if (w == -1) {
-      Width = StringPixelWidth(font, String.c_str());
+      Width = StringPixelWidth(font_style, String.c_str());
     }
     if (h == -1) {
-      Height = static_cast<unsigned char>(FontMaxHeight(font));
+      Height = static_cast<unsigned char>(FontMaxHeight(font_style));
     }
   }
 }
@@ -118,7 +117,7 @@ StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
  * HISTORY:  01/15/1995 JLB : Created. *
  *=============================================================================================*/
 StaticButtonClass::StaticButtonClass()
-    : game::GadgetClass(0, 0, 0, 0, 0), PrintFlags(TPF_8POINT) {}
+    : game::GadgetClass(0, 0, 0, 0, 0), PrintFlags(TPF_NONE) {}
 
 /***********************************************************************************************
  * StaticButtonClass::Draw_Me -- Draws the text buttons as indicated. *
@@ -238,8 +237,8 @@ void StaticButtonClass::Draw_Text(PixelView& view, const char* text) {
       x += Width - 1;
     }
 
-    Fancy_Text_Print(view, text, x, Y, Get_Color_Scheme(), kTBlack,
-                     FontOf(PrintFlags), StyleOf(PrintFlags));
+    Fancy_Text_Print(view, text, x, Y, Get_Color_Scheme(), kTBlack, TextFont,
+                     PrintFlags);
   }
 }
 

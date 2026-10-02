@@ -254,9 +254,10 @@ struct EObjectClass {
 // number, side and description) kept alongside the line's text.
 class EListClass : public ListClass {
  public:
-  EListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-             std::span<const std::byte> up, std::span<const std::byte> down)
-      : ListClass(id, x, y, w, h, flags, up, down) {}
+  EListClass(int id, int x, int y, int w, int h, FontType font,
+             TextPrintType flags, std::span<const std::byte> up,
+             std::span<const std::byte> down)
+      : ListClass(id, x, y, w, h, font, flags, up, down) {}
   // Appends a copy of `obj`, returning its index.
   int Add_Object(const EObjectClass& obj) {
     Objects.push_back(obj);
@@ -333,9 +334,8 @@ void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
     }
   }
 
-  Conquer_Clip_Text_Print(view, buffer, x + 100, y, scheme, kTBlack,
-                          FontOf(flags & ~TPF_CENTER),
-                          StyleOf(flags & ~TPF_CENTER), width, Tabs);
+  Conquer_Clip_Text_Print(view, buffer, x + 100, y, scheme, kTBlack, TextFont,
+                          flags & ~TPF_CENTER, width, Tabs);
 }
 
 bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
@@ -343,14 +343,14 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
 {
   game::GadgetClass* buttons = nullptr;
 
-  TextButtonClass ok(200, TXT_OK, kTpfButton, kOptionX + 40,
+  TextButtonClass ok(200, TXT_OK, kButtonFont, kButtonFlags, kOptionX + 40,
                      kOptionY + kOptionHeight - 50);
-  TextButtonClass cancel(201, TXT_CANCEL, kTpfButton,
+  TextButtonClass cancel(201, TXT_CANCEL, kButtonFont, kButtonFlags,
                          kOptionX + kOptionWidth - 85,
                          kOptionY + kOptionHeight - 50);
 
   EListClass list(202, kOptionX + 35, kOptionY + 30, kOptionWidth - 70,
-                  kOptionHeight - 85, kTpfButton,
+                  kOptionHeight - 85, kButtonFont, kButtonFlags,
                   MixArchive::RetrieveData("BTN-UP.SHP"),
                   MixArchive::RetrieveData("BTN-DN.SHP"));
   buttons = &ok;

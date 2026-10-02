@@ -121,11 +121,11 @@ static int Format_Window_String_New(const FontStyle& font, const char* string,
                                     std::span<char> output, int iExtraChars);
 
 //***********************************************************************************************
-IconListClass::IconListClass(int id, int x, int y, int w, int h,
+IconListClass::IconListClass(int id, int x, int y, int w, int h, FontType font,
                              TextPrintType flags, std::span<const std::byte> up,
                              std::span<const std::byte> down, bool wrap_text,
                              int iSelectionType, int iMaxItemsSaved)
-    : ListClass(id, x, y, w, h, flags, up, down), bWrapText(wrap_text) {
+    : ListClass(id, x, y, w, h, font, flags, up, down), bWrapText(wrap_text) {
   //	Icons are the caller's: the list never owns what's on the other end of
   //	the pointer.
 
@@ -189,7 +189,7 @@ int IconListClass::Add_Item(
 
       int iWidthMax = 0;
       int iHeight = 0;
-      if (TextFlags == TPF_TYPE) {
+      if (TextFont == FontType::kType && TextFlags == TPF_NONE) {
         // The typewriter font wraps with its letters two pixels closer.
         FontStyle font = TextFontStyle(FontType::kType, TPF_NONE);
         font.x_spacing = -2;
@@ -207,9 +207,9 @@ int IconListClass::Add_Item(
             IsScrollActive ? Width : Width - UpGadget.Width;
         //	This call will place '\r's in the string where line breaks
         // should occur.
-        Format_Window_String_New(
-            TextFontStyle(FontOf(TextFlags), StyleOf(TextFlags)), text,
-            iWidthToClipAt, iWidthMax, iHeight, szText, 50);
+        Format_Window_String_New(TextFontStyle(TextFont, TextFlags), text,
+                                 iWidthToClipAt, iWidthMax, iHeight, szText,
+                                 50);
       }
 
       //	Each break character causes a line to be added to list.
@@ -450,10 +450,10 @@ void IconListClass::Draw_Entry(PixelView& view, int index, int x, int y,
     if (!Tabs.empty()) {
       const int tab[] = {Tabs.front() - (xText - x)};
       Conquer_Clip_Text_Print(view, Get_Item(index), xText, y, pRemap, kTBlack,
-                              FontOf(flags), StyleOf(flags), width, tab);
+                              TextFont, flags, width, tab);
     } else {
       Conquer_Clip_Text_Print(view, Get_Item(index), xText, y, pRemap, kTBlack,
-                              FontOf(flags), StyleOf(flags), width, {});
+                              TextFont, flags, width, {});
     }
   }
 

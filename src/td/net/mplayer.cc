@@ -205,18 +205,17 @@ GameType Select_MPlayer_Game() {
   }
 
   TextButtonClass modemserialbtn(
-      kButtonModemserial, TXT_MODEM_SERIAL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      d_modemserial_x, d_modemserial_y, d_modemserial_w, d_modemserial_h);
-  TextButtonClass ipxbtn(
-      kButtonIpx, TXT_NETWORK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ipx_x,
-      d_ipx_y, d_ipx_w, d_ipx_h);
+      kButtonModemserial, TXT_MODEM_SERIAL, FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_modemserial_x,
+      d_modemserial_y, d_modemserial_w, d_modemserial_h);
+  TextButtonClass ipxbtn(kButtonIpx, TXT_NETWORK, FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ipx_x,
+                         d_ipx_y, d_ipx_w, d_ipx_h);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_cancel_x,
-      d_cancel_y, d_cancel_w, d_cancel_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
 
   /*
   ------------------------------- Initialize -------------------------------
@@ -1036,15 +1035,15 @@ void Computer_Message() {
                        Text_String(TXT_FROM_COMPUTER),
                        TheSession().last_message());
         TheSession().messages().Add_Message(
-            txt, color, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
-            0, 0);
+            txt, color, FontType::k6PointGradient,
+            TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
       }
     } else {
       absl::SNPrintF(txt, sizeof(txt), "%s %s", Text_String(TXT_FROM_COMPUTER),
                      Text_String(TXT_COMP_MSG1 + GameRandomRange(0, 12)));
-      TheSession().messages().Add_Message(
-          txt, color, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0,
-          0);
+      TheSession().messages().Add_Message(txt, color, FontType::k6PointGradient,
+                                          TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+                                          600, 0, 0);
     }
 
     return;
@@ -1196,15 +1195,14 @@ int Surrender_Dialog() {
   ........................................................................*/
   game::ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
-      d_ok_y, d_ok_w, d_ok_h);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
+                        d_ok_y, d_ok_w, d_ok_h);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_cancel_x,
-      d_cancel_y, d_cancel_w, d_cancel_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
 
   /*
   ------------------------------- Initialize -------------------------------

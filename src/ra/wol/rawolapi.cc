@@ -263,8 +263,8 @@ STDMETHODIMP RAChatEventSink::OnPaged(HRESULT /*res*/, User* pUser,
     pOwner->PrintMessage(szPrint, WOLCOLORREMAP_PAGE);
   } else {
     TheSession().Messages.Add_Message(
-        nullptr, 0, szPrint, PCOLOR_GOLD,
-        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+        nullptr, 0, szPrint, PCOLOR_GOLD, FontType::k6PointGradient,
+        TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         TheRules().MessageDelay * kTicksPerMinute);
     if (!pOwner->bFreezeExternalPager) {
       base::SafeCopy(pOwner->szExternalPager, WolText(pUser->name));

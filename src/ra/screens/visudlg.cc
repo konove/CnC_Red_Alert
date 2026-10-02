@@ -129,12 +129,12 @@ void VisualControlsClass::Process() {
   /*
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
   */
-  TextButtonClass optionsbtn(kButtonOptions, TXT_OK, kTpfButton, 0, button_y,
-                             120);
+  TextButtonClass optionsbtn(kButtonOptions, TXT_OK, kButtonFont, kButtonFlags,
+                             0, button_y, 120);
   //	TextButtonClass optionsbtn(kButtonOptions, TXT_OPTIONS_MENU, kTpfButton,
   // 0, button_y);
-  TextButtonClass resetbtn(kButtonReset, TXT_RESET_MENU, kTpfButton, 0,
-                           button_y, 160);
+  TextButtonClass resetbtn(kButtonReset, TXT_RESET_MENU, kButtonFont,
+                           kButtonFlags, 0, button_y, 160);
 
   /*
   **	Centers options button.

@@ -71,8 +71,8 @@ constexpr engine::window::KeyNumber kPageRespondKey = KN_RETURN;  // KN_COMMA
 [[maybe_unused]] static void Start_External_Page_Reply() {
   if (*TheNetwork().wolapi()->szExternalPager == '\0') {
     TheSession().Messages.Add_Message(
-        nullptr, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD,
-        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+        nullptr, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD, FontType::k6PointGradient,
+        TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         TheRules().MessageDelay * kTicksPerMinute);
     PlaySoundEffect(VOC_SYS_ERROR);
     return;
@@ -101,8 +101,8 @@ constexpr engine::window::KeyNumber kPageRespondKey = KN_RETURN;  // KN_COMMA
   }
 
   TheSession().Messages.Add_Edit(
-      TheSession().ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-      txt, 0, 464);
+      TheSession().ColorIdx, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
 
   TheMap().Flag_To_Redraw(false);
 
@@ -195,8 +195,8 @@ void Message_Input(engine::window::KeyNumber& input) {
         base::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
         TheSession().Messages.Add_Edit(
-            TheSession().ColorIdx,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
+            TheSession().ColorIdx, FontType::k6PointGradient,
+            TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
 
         TheMap().Flag_To_Redraw(false);
       }
@@ -212,8 +212,8 @@ void Message_Input(engine::window::KeyNumber& input) {
         base::SafeCopy(txt, Text_String(TXT_TO_ALL));     // "To All:"
 
         TheSession().Messages.Add_Edit(
-            TheSession().ColorIdx,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
+            TheSession().ColorIdx, FontType::k6PointGradient,
+            TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
 
         TheMap().Flag_To_Redraw(false);
 
@@ -233,8 +233,8 @@ void Message_Input(engine::window::KeyNumber& input) {
         }
 
         TheSession().Messages.Add_Edit(
-            TheSession().ColorIdx,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
+            TheSession().ColorIdx, FontType::k6PointGradient,
+            TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
 
         TheMap().Flag_To_Redraw(false);
       }
@@ -399,8 +399,8 @@ void IPX_Call_Back() {
                 TheSession().GPacket.Name,
                 static_cast<int>(TheSession().GPacket.Message.Color),
                 TheSession().GPacket.Message.Buf,
-                TheSession().GPacket.Message.Color,
-                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+                TheSession().GPacket.Message.Color, FontType::k6PointGradient,
+                TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                 TheRules().MessageDelay * kTicksPerMinute);
 
             PlaySoundEffect(VOC_INCOMING_MESSAGE);

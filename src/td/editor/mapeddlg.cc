@@ -545,69 +545,59 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   ........................................................................*/
   game::ControlClass* commands = nullptr;  // the button list
 
-  EditClass editbtn(kButtonScenario, scen_buf, 5,
-                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kScenX,
-                    kScenY, kScenW, kScenH, EditClass::kNumeric);
+  EditClass editbtn(kButtonScenario, scen_buf, 5, FontType::k6PointGradient,
+                    TPF_USE_GRAD_PAL | TPF_NOSHADOW, kScenX, kScenY, kScenW,
+                    kScenH, EditClass::kNumeric);
 
-  TextButtonClass varabtn(
-      kButtonVarA, "A",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kVaraX,
-      kVaraY, kVaraW, kVaraH);
+  TextButtonClass varabtn(kButtonVarA, "A", FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kVaraX,
+                          kVaraY, kVaraW, kVaraH);
 
-  TextButtonClass varbbtn(
-      kButtonVarB, "B",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kVarbX,
-      kVarbY, kVarbW, kVarbH);
+  TextButtonClass varbbtn(kButtonVarB, "B", FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kVarbX,
+                          kVarbY, kVarbW, kVarbH);
 
-  TextButtonClass varcbtn(
-      kButtonVarC, "C",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kVarcX,
-      kVarcY, kVarcW, kVarcH);
+  TextButtonClass varcbtn(kButtonVarC, "C", FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kVarcX,
+                          kVarcY, kVarcW, kVarcH);
 
-  TextButtonClass vardbtn(
-      kButtonVarD, "D",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kVardX,
-      kVardY, kVardW, kVardH);
+  TextButtonClass vardbtn(kButtonVarD, "D", FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kVardX,
+                          kVardY, kVardW, kVardH);
 
-  TextButtonClass varlbtn(
-      kButtonVarL, "L",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kVarloseX,
-      kVarloseY, kVarloseW, kVarloseH);
+  TextButtonClass varlbtn(kButtonVarL, "L", FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                          kVarloseX, kVarloseY, kVarloseW, kVarloseH);
 
-  TextButtonClass gdibtn(
-      kButtonGdi, "GDI",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdiX, kGdiY,
-      kGdiW, kGdiH);
+  TextButtonClass gdibtn(kButtonGdi, "GDI", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdiX,
+                         kGdiY, kGdiW, kGdiH);
 
-  TextButtonClass nodbtn(
-      kButtonNod, "NOD",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodX, kNodY,
-      kNodW, kNodH);
+  TextButtonClass nodbtn(kButtonNod, "NOD", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodX,
+                         kNodY, kNodW, kNodH);
 
-  TextButtonClass playermbtn(
-      kButtonMplayer, "Multi Player",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMplayerX,
-      kMplayerY, kMplayerW, kMplayerH);
+  TextButtonClass playermbtn(kButtonMplayer, "Multi Player",
+                             FontType::k6PointGradient,
+                             TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                             kMplayerX, kMplayerY, kMplayerW, kMplayerH);
 
-  TextButtonClass eastbtn(
-      kButtonEast, "East",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kEastX,
-      kEastY, kEastW, kEastH);
+  TextButtonClass eastbtn(kButtonEast, "East", FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kEastX,
+                          kEastY, kEastW, kEastH);
 
-  TextButtonClass westbtn(
-      kButtonWest, "West",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kWestX,
-      kWestY, kWestW, kWestH);
+  TextButtonClass westbtn(kButtonWest, "West", FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kWestX,
+                          kWestY, kWestW, kWestH);
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
-      kOkW, kOkH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX,
+                        kOkY, kOkW, kOkH);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
-      kCancelY, kCancelW, kCancelH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kCancelX, kCancelY, kCancelW, kCancelH);
 
   /*
   ------------------------------- Initialize -------------------------------
@@ -977,15 +967,14 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   ........................................................................*/
   game::ControlClass* commands = nullptr;
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
-      kOkW, kOkH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX,
+                        kOkY, kOkW, kOkH);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
-      kCancelY, kCancelW, kCancelH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kCancelX, kCancelY, kCancelW, kCancelH);
 
   PixelView& view = TheScreen().visible_view();
 
@@ -1606,76 +1595,67 @@ int MapEditClass::Scenario_Dialog() {
   Buttons
   ........................................................................*/
   game::ControlClass* commands = nullptr;  // the button list
-  ListClass theaterbtn(kListTheater, kTheaterX, kTheaterY, kTheaterW, kTheaterH,
-                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                       Hires_Retrieve("BTN-UP.SHP"),
-                       Hires_Retrieve("BTN-DN.SHP"));
+  ListClass theaterbtn(
+      kListTheater, kTheaterX, kTheaterY, kTheaterW, kTheaterH,
+      FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+      Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP"));
 
-  EditClass leveledt(kTeditGdicred, level_buf, 4,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLevelX,
-                     kLevelY, kLevelW, kLevelH, EditClass::kNumeric);
+  EditClass leveledt(kTeditGdicred, level_buf, 4, FontType::k6PointGradient,
+                     TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLevelX, kLevelY, kLevelW,
+                     kLevelH, EditClass::kNumeric);
 
-  EditClass gdicred(kTeditGdicred, gdicred_buf, 8,
-                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdicredX,
-                    kGdicredY, kGdicredW, kGdicredH, EditClass::kNumeric);
+  EditClass gdicred(kTeditGdicred, gdicred_buf, 8, FontType::k6PointGradient,
+                    TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdicredX, kGdicredY,
+                    kGdicredW, kGdicredH, EditClass::kNumeric);
 
-  EditClass nodcred(kTeditNodcred, nodcred_buf, 8,
-                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodcredX,
-                    kNodcredY, kNodcredW, kNodcredH, EditClass::kNumeric);
+  EditClass nodcred(kTeditNodcred, nodcred_buf, 8, FontType::k6PointGradient,
+                    TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodcredX, kNodcredY,
+                    kNodcredW, kNodcredH, EditClass::kNumeric);
 
-  EditClass neutcred(kTeditNeutcred, neutcred_buf, 8,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNeutcredX,
-                     kNeutcredY, kNeutcredW, kNeutcredH, EditClass::kNumeric);
+  EditClass neutcred(kTeditNeutcred, neutcred_buf, 8, FontType::k6PointGradient,
+                     TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNeutcredX, kNeutcredY,
+                     kNeutcredW, kNeutcredH, EditClass::kNumeric);
 
-  TextButtonClass gdinbtn(
-      kButtonGdiN, TXT_UP,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdinX,
-      kGdinY, kGdinW, kGdinH);
+  TextButtonClass gdinbtn(kButtonGdiN, TXT_UP, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdinX,
+                          kGdinY, kGdinW, kGdinH);
 
-  TextButtonClass gdiebtn(
-      kButtonGdiE, TXT_RIGHT,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdieX,
-      kGdieY, kGdieW, kGdieH);
+  TextButtonClass gdiebtn(kButtonGdiE, TXT_RIGHT, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdieX,
+                          kGdieY, kGdieW, kGdieH);
 
-  TextButtonClass gdisbtn(
-      kButtonGdiS, TXT_DOWN,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdisX,
-      kGdisY, kGdisW, kGdisH);
+  TextButtonClass gdisbtn(kButtonGdiS, TXT_DOWN, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdisX,
+                          kGdisY, kGdisW, kGdisH);
 
-  TextButtonClass gdiwbtn(
-      kButtonGdiW, TXT_LEFT,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdiwX,
-      kGdiwY, kGdiwW, kGdiwH);
+  TextButtonClass gdiwbtn(kButtonGdiW, TXT_LEFT, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdiwX,
+                          kGdiwY, kGdiwW, kGdiwH);
 
-  TextButtonClass nodnbtn(
-      kButtonNodN, TXT_UP,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodnX,
-      kNodnY, kNodnW, kNodnH);
+  TextButtonClass nodnbtn(kButtonNodN, TXT_UP, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodnX,
+                          kNodnY, kNodnW, kNodnH);
 
-  TextButtonClass nodebtn(
-      kButtonNodE, TXT_RIGHT,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodeX,
-      kNodeY, kNodeW, kNodeH);
+  TextButtonClass nodebtn(kButtonNodE, TXT_RIGHT, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodeX,
+                          kNodeY, kNodeW, kNodeH);
 
-  TextButtonClass nodsbtn(
-      kButtonNodS, TXT_DOWN,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodsX,
-      kNodsY, kNodsW, kNodsH);
+  TextButtonClass nodsbtn(kButtonNodS, TXT_DOWN, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodsX,
+                          kNodsY, kNodsW, kNodsH);
 
-  TextButtonClass nodwbtn(
-      kButtonNodW, TXT_LEFT,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodwX,
-      kNodwY, kNodwW, kNodwH);
+  TextButtonClass nodwbtn(kButtonNodW, TXT_LEFT, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodwX,
+                          kNodwY, kNodwW, kNodwH);
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
-      kOkW, kOkH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX,
+                        kOkY, kOkW, kOkH);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
-      kCancelY, kCancelW, kCancelH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kCancelX, kCancelY, kCancelW, kCancelH);
 
   PixelView& view = TheScreen().visible_view();
 
@@ -2248,30 +2228,26 @@ int MapEditClass::Select_Trigger() {
   ........................................................................*/
   game::ControlClass* commands = nullptr;  // the button list
 
-  ListClass triggerlist(kTriggerList, kListX, kListY, kListW, kListH,
-                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                        Hires_Retrieve("BTN-UP.SHP"),
-                        Hires_Retrieve("BTN-DN.SHP"));
+  ListClass triggerlist(
+      kTriggerList, kListX, kListY, kListW, kListH, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_NOSHADOW, Hires_Retrieve("BTN-UP.SHP"),
+      Hires_Retrieve("BTN-DN.SHP"));
 
-  TextButtonClass editbtn(
-      kButtonEdit, "Edit",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kEditX,
-      kEditY, kEditW, kEditH);
+  TextButtonClass editbtn(kButtonEdit, "Edit", FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kEditX,
+                          kEditY, kEditW, kEditH);
 
-  TextButtonClass newbtn(
-      kButtonNew, "New",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNewX, kNewY,
-      kNewW, kNewH);
+  TextButtonClass newbtn(kButtonNew, "New", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNewX,
+                         kNewY, kNewW, kNewH);
 
-  TextButtonClass deletebtn(
-      kButtonDelete, "Delete",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kDeleteX,
-      kDeleteY, kDeleteW, kDeleteH);
+  TextButtonClass deletebtn(kButtonDelete, "Delete", FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kDeleteX, kDeleteY, kDeleteW, kDeleteH);
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
-      kOkW, kOkH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX,
+                        kOkY, kOkW, kOkH);
 
   PixelView& view = TheScreen().visible_view();
 
@@ -2649,88 +2625,83 @@ int MapEditClass::Edit_Trigger() {
   ........................................................................*/
   game::ControlClass* commands = nullptr;  // the button list
 
-  ListClass eventlist(kEventList, kEventX, kEventY, kEventW, kEventH,
-                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                      Hires_Retrieve("BTN-UP.SHP"),
-                      Hires_Retrieve("BTN-DN.SHP"));
+  ListClass eventlist(
+      kEventList, kEventX, kEventY, kEventW, kEventH, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_NOSHADOW, Hires_Retrieve("BTN-UP.SHP"),
+      Hires_Retrieve("BTN-DN.SHP"));
 
-  ListClass actionlist(kActionList, kActionX, kActionY, kActionW, kActionH,
-                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                       Hires_Retrieve("BTN-UP.SHP"),
-                       Hires_Retrieve("BTN-DN.SHP"));
+  ListClass actionlist(
+      kActionList, kActionX, kActionY, kActionW, kActionH,
+      FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+      Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP"));
 
-  EditClass name_edt(kNameEdit, namebuf, 5,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNameX,
-                     kNameY, kNameW, kNameH, EditClass::kAlphanumeric);
+  EditClass name_edt(kNameEdit, namebuf, 5, FontType::k6PointGradient,
+                     TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNameX, kNameY, kNameW,
+                     kNameH, EditClass::kAlphanumeric);
 
-  EditClass data_edt(kDataEdit, databuf, 8,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kDataX,
-                     kDataY, kDataW, kDataH, EditClass::kAlphanumeric);
+  EditClass data_edt(kDataEdit, databuf, 8, FontType::k6PointGradient,
+                     TPF_USE_GRAD_PAL | TPF_NOSHADOW, kDataX, kDataY, kDataW,
+                     kDataH, EditClass::kAlphanumeric);
 
-  TextButtonClass teambtn(
-      kButtonTeam, "Team",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kTeamX,
-      kTeamY, kTeamW, kTeamH);
+  TextButtonClass teambtn(kButtonTeam, "Team", FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kTeamX,
+                          kTeamY, kTeamW, kTeamH);
 
-  TextButtonClass gdibtn(
-      kButtonGdi, "GDI",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdiX, kGdiY,
-      kGdiW, kGdiH);
+  TextButtonClass gdibtn(kButtonGdi, "GDI", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdiX,
+                         kGdiY, kGdiW, kGdiH);
 
-  TextButtonClass nodbtn(
-      kButtonNod, "NOD",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodX, kNodY,
-      kNodW, kNodH);
+  TextButtonClass nodbtn(kButtonNod, "NOD", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodX,
+                         kNodY, kNodW, kNodH);
 
   TextButtonClass neutralbtn(
-      kButtonNeutral, "Neutral",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNeuX, kNeuY,
-      kNeuW, kNeuH);
+      kButtonNeutral, "Neutral", FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNeuX, kNeuY, kNeuW, kNeuH);
 
-  const TextButtonClass multi1btn(
-      kButtonMulti1, "M1",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti1X,
-      kMulti1Y, kMulti1W, kMulti1H);
+  const TextButtonClass multi1btn(kButtonMulti1, "M1",
+                                  FontType::k6PointGradient,
+                                  TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                                  kMulti1X, kMulti1Y, kMulti1W, kMulti1H);
 
-  const TextButtonClass multi2btn(
-      kButtonMulti2, "M2",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti2X,
-      kMulti2Y, kMulti2W, kMulti2H);
+  const TextButtonClass multi2btn(kButtonMulti2, "M2",
+                                  FontType::k6PointGradient,
+                                  TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                                  kMulti2X, kMulti2Y, kMulti2W, kMulti2H);
 
-  const TextButtonClass multi3btn(
-      kButtonMulti3, "M3",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti3X,
-      kMulti3Y, kMulti3W, kMulti3H);
+  const TextButtonClass multi3btn(kButtonMulti3, "M3",
+                                  FontType::k6PointGradient,
+                                  TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                                  kMulti3X, kMulti3Y, kMulti3W, kMulti3H);
 
-  const TextButtonClass multi4btn(
-      kButtonMulti4, "M4",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti4X,
-      kMulti4Y, kMulti4W, kMulti4H);
+  const TextButtonClass multi4btn(kButtonMulti4, "M4",
+                                  FontType::k6PointGradient,
+                                  TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                                  kMulti4X, kMulti4Y, kMulti4W, kMulti4H);
 
-  TextButtonClass volatilebtn(
-      kButtonVolatile, "Volatile",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kVolatileX,
-      kVolatileY, kVolatileW, kVolatileH);
+  TextButtonClass volatilebtn(kButtonVolatile, "Volatile",
+                              FontType::k6PointGradient,
+                              TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                              kVolatileX, kVolatileY, kVolatileW, kVolatileH);
 
-  TextButtonClass persistbtn(
-      kButtonPersist, "Persistant",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPersistX,
-      kPersistY, kPersistW, kPersistH);
+  TextButtonClass persistbtn(kButtonPersist, "Persistant",
+                             FontType::k6PointGradient,
+                             TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                             kPersistX, kPersistY, kPersistW, kPersistH);
 
   TextButtonClass semipersistbtn(
-      kButtonSemipersist, "SemiPersistant",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      kSemipersistX, kSemipersistY, kSemipersistW, kSemipersistH);
+      kButtonSemipersist, "SemiPersistant", FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kSemipersistX,
+      kSemipersistY, kSemipersistW, kSemipersistH);
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
-      kOkW, kOkH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX,
+                        kOkY, kOkW, kOkH);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
-      kCancelY, kCancelW, kCancelH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kCancelX, kCancelY, kCancelW, kCancelH);
 
   PixelView& view = TheScreen().visible_view();
 
@@ -3160,20 +3131,19 @@ int MapEditClass::Import_Triggers() {
   ........................................................................*/
   game::ControlClass* commands = nullptr;  // the button list
 
-  CheckListClass triggerlist(kTriggerList, kListX, kListY, kListW, kListH,
-                             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                             Hires_Retrieve("BTN-UP.SHP"),
-                             Hires_Retrieve("BTN-DN.SHP"));
+  CheckListClass triggerlist(
+      kTriggerList, kListX, kListY, kListW, kListH, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_NOSHADOW, Hires_Retrieve("BTN-UP.SHP"),
+      Hires_Retrieve("BTN-DN.SHP"));
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
-      kOkW, kOkH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX,
+                        kOkY, kOkW, kOkH);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
-      kCancelY, kCancelW, kCancelH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kCancelX, kCancelY, kCancelW, kCancelH);
 
   PixelView& view = TheScreen().visible_view();
 
@@ -3474,20 +3444,19 @@ int MapEditClass::Import_Teams() {
   ........................................................................*/
   game::ControlClass* commands = nullptr;  // the button list
 
-  CheckListClass teamlist(kTeamList, kListX, kListY, kListW, kListH,
-                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                          Hires_Retrieve("BTN-UP.SHP"),
-                          Hires_Retrieve("BTN-DN.SHP"));
+  CheckListClass teamlist(
+      kTeamList, kListX, kListY, kListW, kListH, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_NOSHADOW, Hires_Retrieve("BTN-UP.SHP"),
+      Hires_Retrieve("BTN-DN.SHP"));
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
-      kOkW, kOkH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX,
+                        kOkY, kOkW, kOkH);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
-      kCancelY, kCancelW, kCancelH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kCancelX, kCancelY, kCancelW, kCancelH);
 
   PixelView& view = TheScreen().visible_view();
 

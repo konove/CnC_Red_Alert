@@ -194,47 +194,48 @@ void MapEditClass::One_Time() {
   House buttons
   ........................................................................*/
   GDIButton = std::make_unique<TextButtonClass>(
-      kPopupGdi, "GDI",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupGdiX,
-      kPopupGdiY, kPopupGdiW, kPopupGdiH);
+      kPopupGdi, "GDI", FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupGdiX, kPopupGdiY,
+      kPopupGdiW, kPopupGdiH);
 
   NODButton = std::make_unique<TextButtonClass>(
-      kPopupNod, "NOD",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupNodX,
-      kPopupNodY, kPopupNodW, kPopupNodH);
+      kPopupNod, "NOD", FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupNodX, kPopupNodY,
+      kPopupNodW, kPopupNodH);
 
   NeutralButton = std::make_unique<TextButtonClass>(
-      kPopupNeutral, "Neutral",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      kPopupNeutralX, kPopupNeutralY, kPopupNeutralW, kPopupNeutralH);
+      kPopupNeutral, "Neutral", FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupNeutralX,
+      kPopupNeutralY, kPopupNeutralW, kPopupNeutralH);
 
   Multi1Button = std::make_unique<TextButtonClass>(
-      kPopupMulti1, "M1",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      kPopupMulti1X, kPopupMulti1Y, kPopupMulti1W, kPopupMulti1H);
+      kPopupMulti1, "M1", FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupMulti1X,
+      kPopupMulti1Y, kPopupMulti1W, kPopupMulti1H);
 
   Multi2Button = std::make_unique<TextButtonClass>(
-      kPopupMulti2, "M2",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      kPopupMulti2X, kPopupMulti2Y, kPopupMulti2W, kPopupMulti2H);
+      kPopupMulti2, "M2", FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupMulti2X,
+      kPopupMulti2Y, kPopupMulti2W, kPopupMulti2H);
 
   Multi3Button = std::make_unique<TextButtonClass>(
-      kPopupMulti3, "M3",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      kPopupMulti3X, kPopupMulti3Y, kPopupMulti3W, kPopupMulti3H);
+      kPopupMulti3, "M3", FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupMulti3X,
+      kPopupMulti3Y, kPopupMulti3W, kPopupMulti3H);
 
   Multi4Button = std::make_unique<TextButtonClass>(
-      kPopupMulti4, "M4",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      kPopupMulti4X, kPopupMulti4Y, kPopupMulti4W, kPopupMulti4H);
+      kPopupMulti4, "M4", FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPopupMulti4X,
+      kPopupMulti4Y, kPopupMulti4W, kPopupMulti4H);
 
   /*........................................................................
   The mission list box
   ........................................................................*/
   MissionList = std::make_unique<ListClass>(
       kPopupMissionlist, kPopupMissionX, kPopupMissionY, kPopupMissionW,
-      kPopupMissionH, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP"));
+      kPopupMissionH, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_NOSHADOW, Hires_Retrieve("BTN-UP.SHP"),
+      Hires_Retrieve("BTN-DN.SHP"));
 
   for (const auto mission : MapEditMissions) {
     MissionList->Add_Item(MissionClass::Mission_Name(mission));
@@ -257,8 +258,8 @@ void MapEditClass::One_Time() {
   base::At(HealthBuf, 0) = 0;
   HealthText = std::make_unique<TextLabelClass>(
       HealthBuf, kPopupHealthX + (kPopupHealthW / 2),
-      kPopupHealthY + kPopupHealthH + 1, kCcGreen,
-      TPF_CENTER | TPF_FULLSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
+      kPopupHealthY + kPopupHealthH + 1, kCcGreen, FontType::k6PointGradient,
+      TPF_CENTER | TPF_FULLSHADOW | TPF_USE_GRAD_PAL);
 
   /*........................................................................
   The facing dial
@@ -277,7 +278,7 @@ void MapEditClass::One_Time() {
   static char base_caption[] = "Base:";
   BaseLabel = std::make_unique<TextLabelClass>(
       base_caption, kPopupBaseX - 3, kPopupBaseY, kCcGreen,
-      TPF_RIGHT | TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
+      FontType::k6PointGradient, TPF_RIGHT | TPF_NOSHADOW | TPF_USE_GRAD_PAL);
   BaseGauge->Set_Maximum(100);
   BaseGauge->Set_Value(BasePercent);
 }

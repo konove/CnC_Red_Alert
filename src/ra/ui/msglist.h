@@ -156,7 +156,7 @@ class MessageListClass {
   // through the vector's unique_ptr.
   TextLabelClass* Add_Message(
       const char* name, int id, const char* txt, PlayerColorType color,
-      TextPrintType style,
+      FontType font, TextPrintType style,
       // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-lifetimebound-violation)
       int timeout) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   int Concat_Message(const char* name, int id, const char* txt, int timeout);
@@ -170,8 +170,8 @@ class MessageListClass {
   //.....................................................................
   // Message-editing support routines
   //.....................................................................
-  TextLabelClass* Add_Edit(PlayerColorType color, TextPrintType style,
-                           const char* to, char cursor = 0,
+  TextLabelClass* Add_Edit(PlayerColorType color, FontType font,
+                           TextPrintType style, const char* to, char cursor = 0,
                            int width = 640) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   void Remove_Edit();
   char* Get_Edit_Buf();

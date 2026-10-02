@@ -167,7 +167,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator const char*() const { return Description(); }
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
-               bool selected, TextPrintType flags) const;
+               bool selected, FontType font, TextPrintType flags) const;
 };
 
 extern template void TriggerTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);

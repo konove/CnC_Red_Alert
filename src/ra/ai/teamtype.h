@@ -101,7 +101,7 @@ class TeamMissionClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator const char*() const { return Description(0); }
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
-               bool selected, TextPrintType flags) const;
+               bool selected, FontType font, TextPrintType flags) const;
 
   TeamMissionType Mission;  // Mission type.
   union {
@@ -186,7 +186,7 @@ class TeamTypeClass : public AbstractTypeClass {
   **	Utility routines
   */
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
-               bool selected, TextPrintType flags) const;
+               bool selected, FontType font, TextPrintType flags) const;
   static const char* Name_From_Mission(TeamMissionType order);
   static TeamMissionType Mission_From_Name(const char* name);
   static TeamTypeClass* Suggested_New_Team(HouseClass* house,

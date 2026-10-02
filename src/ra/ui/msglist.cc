@@ -323,11 +323,9 @@ void MessageListClass::Reset() {
  *   05/05/1995 BRR : Created.                                             *
  *   10/16/1996 JLB : Audio feedback added.                                *
  *=========================================================================*/
-TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
-                                              const char* txt,
-                                              PlayerColorType color,
-                                              TextPrintType style,
-                                              int timeout) {
+TextLabelClass* MessageListClass::Add_Message(
+    const char* name, int id, const char* txt, PlayerColorType color,
+    FontType font, TextPrintType style, int timeout) {
   TextLabelClass* txtlabel = nullptr;
   int i = 0;
   char message[MAX_MESSAGE_LENGTH + 30];
@@ -350,8 +348,8 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   //------------------------------------------------------------------------
 
   int print_this_pass = 0;
-  const FontStyle font = TextFontStyle(FontOf(style), StyleOf(style));
-  int wid = StringPixelWidth(font, message);
+  const FontStyle font_style = TextFontStyle(font, style);
+  int wid = StringPixelWidth(font_style, message);
   if (wid >= Width - 8) {
     //------------------------------------------------------------------------
     //	Bugger. Its too long. Loop through and find out how many chars we can
@@ -367,7 +365,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
       base::SafeCopy(base::Suffix(temp, mess_start),
                      std::string_view(txt).substr(0, base::ToSize(j)));
       base::At(temp, mess_start + j) = 0;
-      wid = StringPixelWidth(font, temp);
+      wid = StringPixelWidth(font_style, temp);
       if (wid >= Width - 8) {
         print_this_pass = mess_start + j - 1;
         break;
@@ -433,7 +431,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   txtlabel = Labels
                  .emplace_back(std::make_unique<TextLabelClass>(
                      base::At(MessageBuffers, i), MessageX, MessageY,
-                     &ThePalettes().color_remaps().at(color), style))
+                     &ThePalettes().color_remaps().at(color), font, style))
                  .get();
   if (timeout == -1) {
     txtlabel->UserData1 = 0;
@@ -465,7 +463,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   if (save) {
     base::At(message, print_this_pass) = save;
     Add_Message(name, id, base::Suffix(message, print_this_pass).data(), color,
-                style, timeout);
+                font, style, timeout);
   }
 
   return txtlabel;
@@ -632,8 +630,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     // We need to trim the message if there is no room to draw it
     //---------------------------------------------------------------------
     std::vector<char> concat_test(base::ToSize(MaxChars + 1));
-    const FontStyle font =
-        TextFontStyle(FontOf(tlabel->Style), StyleOf(tlabel->Style));
+    const FontStyle font = TextFontStyle(tlabel->TextFont, tlabel->Style);
     const int name_width = StringPixelWidth(font, tlabel->Text) -
                            StringPixelWidth(font, msg.data());
 
@@ -749,10 +746,9 @@ bool MessageListClass::Has_Edit_Focus() {
  * HISTORY:                                                                *
  *   05/22/1995 BRR : Created.                                             *
  *=========================================================================*/
-TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
+TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color, FontType font,
                                            TextPrintType style, const char* to,
                                            char cursor, int width) {
-
   //------------------------------------------------------------------------
   //	Do nothing if we're already in "edit" mode
   //------------------------------------------------------------------------
@@ -795,7 +791,8 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
   OverflowBuf[0] = 0;
   EditCurPos = EditInitPos = static_cast<int>(std::string_view(to).size());
   EditLabel = std::make_unique<TextLabelClass>(
-      EditBuf, EditX, EditY, &ThePalettes().color_remaps().at(color), style);
+      EditBuf, EditX, EditY, &ThePalettes().color_remaps().at(color), font,
+      style);
 
   Width = width;
 
@@ -1072,10 +1069,8 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
             ** Verify that the additional character would not overrun the on
             *screen edit box.
             */
-            const int width =
-                StringPixelWidth(TextFontStyle(FontOf(EditLabel->Style),
-                                               StyleOf(EditLabel->Style)),
-                                 EditBuf);
+            const int width = StringPixelWidth(
+                TextFontStyle(EditLabel->TextFont, EditLabel->Style), EditBuf);
             if (width >= Width - 10) {
               overflowed = true;
               EditCurPos--;
@@ -1142,12 +1137,11 @@ void MessageListClass::Draw(PixelView& view) {
       txt[0] = CursorChar;
       Fancy_Text_Print(
           view, txt,
-          EditLabel->X +
-              StringPixelWidth(TextFontStyle(FontOf(EditLabel->Style),
-                                             StyleOf(EditLabel->Style)),
-                               EditLabel->Text),
-          EditLabel->Y, EditLabel->Color, kTBlack, FontOf(EditLabel->Style),
-          StyleOf(EditLabel->Style));
+          EditLabel->X + StringPixelWidth(TextFontStyle(EditLabel->TextFont,
+                                                        EditLabel->Style),
+                                          EditLabel->Text),
+          EditLabel->Y, EditLabel->Color, kTBlack, EditLabel->TextFont,
+          EditLabel->Style);
     }
 
     if (TheScreen().IsVisible(&view)) {

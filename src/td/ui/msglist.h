@@ -87,13 +87,15 @@ class MessageListClass {
   **	Initialization
   */
   void Init(int x, int y, int max_msg, int maxchars, int height);
-  TextLabelClass* Add_Message(char* txt, int color, TextPrintType style,
-                              int timeout, uint16_t magic_number, uint16_t crc);
+  TextLabelClass* Add_Message(char* txt, int color, FontType font,
+                              TextPrintType style, int timeout,
+                              uint16_t magic_number, uint16_t crc);
 
   /*
   **	Message-editing routines
   */
-  TextLabelClass* Add_Edit(int color, TextPrintType style, char* to, int width);
+  TextLabelClass* Add_Edit(int color, FontType font, TextPrintType style,
+                           char* to, int width);
   char* Get_Edit_Buf();
 
   /*

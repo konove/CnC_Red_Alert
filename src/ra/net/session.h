@@ -472,7 +472,7 @@ class MultiMission {
   void Set_Official(bool official);
   void Set_Expansion(bool expansion);
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
-               bool selected, TextPrintType flags) const;
+               bool selected, FontType font, TextPrintType flags) const;
   [[nodiscard]] const char* Description() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return ScenarioDescription;
   }

@@ -61,8 +61,8 @@ class CheckListClass : public ListClass {
   /*---------------------------------------------------------------------
   Constructor/Destructor
   ---------------------------------------------------------------------*/
-  CheckListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                 std::span<const std::byte> up,
+  CheckListClass(int id, int x, int y, int w, int h, FontType font,
+                 TextPrintType flags, std::span<const std::byte> up,
                  std::span<const std::byte> down);
   ~CheckListClass() override = default;
   CheckListClass(const CheckListClass&) = delete;

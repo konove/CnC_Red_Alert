@@ -72,8 +72,8 @@ bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
     //		}
 
     Conquer_Clip_Text_Print(view, szCaption.c_str(), X + BIGCHECK_OFFSETX,
-                            Y + BIGCHECK_OFFSETY, pScheme, kTBlack,
-                            FontOf(flags), StyleOf(flags), Width, {});
+                            Y + BIGCHECK_OFFSETY, pScheme, kTBlack, TextFont,
+                            flags, Width, {});
 
     game::TheMouse().Show();
     return true;

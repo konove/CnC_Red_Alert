@@ -166,8 +166,9 @@ static char PaletteLUT[256];
  *                                                                                             *
  * HISTORY: * 9/9/96 11:53PM ST : Created *
  *=============================================================================================*/
-EgoClass::EgoClass(int x, int y, std::string_view text, TextPrintType flags)
-    : Text(text), XPos(x), YPos(y), Flags(flags) {}
+EgoClass::EgoClass(int x, int y, std::string_view text, FontType font,
+                   TextPrintType flags)
+    : Text(text), XPos(x), YPos(y), TextFont(font), Flags(flags) {}
 
 /***********************************************************************************************
  * EC::Scroll -- Apply the given distance to the y position of the text. * A
@@ -203,7 +204,7 @@ bool EgoClass::Scroll(int distance) {
 void EgoClass::Render(PixelView& view) const {
   if (YPos < view.height() && YPos > -16) {
     Fancy_Text_Print(view, Text.c_str(), XPos, YPos, Get_Color_Scheme(),
-                     kTBlack, FontOf(Flags), StyleOf(Flags));
+                     kTBlack, TextFont, Flags);
   }
 }
 
@@ -221,8 +222,8 @@ void EgoClass::Render(PixelView& view) const {
  * HISTORY: * 9/9/96 11:58PM ST : Created *
  *=============================================================================================*/
 void EgoClass::Wipe(PixelView& view, PixelBuffer* background) const {
-  const int width = StringPixelWidth(
-      TextFontStyle(FontOf(Flags), StyleOf(Flags)), Text.c_str());
+  const int width =
+      StringPixelWidth(TextFontStyle(TextFont, Flags), Text.c_str());
   int x = XPos;
 
   if (base::Any(Flags & TPF_RIGHT)) {
@@ -512,7 +513,7 @@ void Show_Who_Was_Responsible() {
         ** If string is on the right hand side then left justify it.
         */
         TextPrintType flags =
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_DROPSHADOW;  // TPF_NOSHADOW;
+            TPF_USE_GRAD_PAL | TPF_DROPSHADOW;  // TPF_NOSHADOW;
 
         if (startcolumn < 40 && endcolumn > 40) {
           flags = flags | TPF_CENTER;
@@ -536,7 +537,8 @@ void Show_Who_Was_Responsible() {
         ** Create the new class and add it to our list.
         */
         EgoList.push_back(std::make_unique<EgoClass>(
-            x, y + (line * 16), std::to_address(strstart), flags));
+            x, y + (line * 16), std::to_address(strstart),
+            FontType::k6PointGradient, flags));
 
         /*
         ** Restore the character that was lost when we added the terminator.

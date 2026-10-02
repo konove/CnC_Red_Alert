@@ -623,35 +623,37 @@ int MapEditClass::Load_Scenario() {
     **	Buttons
     */
     game::ControlClass* commands = nullptr;  // the button list
-    EditClass editbtn(kButtonScenario, scen_buf, 5, TPF_EFNT | TPF_NOSHADOW,
-                      kDScenX, kDScenY, kDScenW, kDScenH,
+    EditClass editbtn(kButtonScenario, scen_buf, 5, FontType::kEditor,
+                      TPF_NOSHADOW, kDScenX, kDScenY, kDScenW, kDScenH,
                       EditClass::kAlphanumeric);
 
-    TextButtonClass varabtn(kButtonVarA, "A", kTpfEButton, kDVaraX, kDVaraY,
-                            kDVaraW, kDVaraH);
-    TextButtonClass varbbtn(kButtonVarB, "B", kTpfEButton, kDVarbX, kDVarbY,
-                            kDVarbW, kDVarbH);
-    TextButtonClass varcbtn(kButtonVarC, "C", kTpfEButton, kDVarcX, kDVarcY,
-                            kDVarcW, kDVarcH);
-    TextButtonClass vardbtn(kButtonVarD, "D", kTpfEButton, kDVardX, kDVardY,
-                            kDVardW, kDVardH);
-    TextButtonClass gdibtn(kButtonGdi, "North (Spain)", kTpfEButton, kDGdiX,
-                           kDGdiY, kDGdiW, kDGdiH);
-    TextButtonClass nodbtn(kButtonNod, "South (Greece)", kTpfEButton, kDNodX,
-                           kDNodY, kDNodW, kDNodH);
-    TextButtonClass neubtn(kButtonNeutral,
-                           HouseTypeClass::As_Reference(HOUSE_USSR).IniName,
-                           kTpfEButton, kDNeuX, kDNeuY, kDNeuW, kDNeuH);
-    TextButtonClass playermbtn(kButtonMplayer, "Multiplayer", kTpfEButton,
-                               kDMplayerX, kDMplayerY, kDMplayerW, kDMplayerH);
-    TextButtonClass eastbtn(kButtonEast, "East", kTpfEButton, kDEastX, kDEastY,
-                            kDEastW, kDEastH);
-    TextButtonClass westbtn(kButtonWest, "West", kTpfEButton, kDWestX, kDWestY,
-                            kDWestW, kDWestH);
-    TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfEButton, kDOkX, kDOkY, kDOkW,
-                          kDOkH);
-    TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfEButton, kDCancelX,
-                              kDCancelY, kDCancelW, kDCancelH);
+    TextButtonClass varabtn(kButtonVarA, "A", kEButtonFont, kEButtonFlags,
+                            kDVaraX, kDVaraY, kDVaraW, kDVaraH);
+    TextButtonClass varbbtn(kButtonVarB, "B", kEButtonFont, kEButtonFlags,
+                            kDVarbX, kDVarbY, kDVarbW, kDVarbH);
+    TextButtonClass varcbtn(kButtonVarC, "C", kEButtonFont, kEButtonFlags,
+                            kDVarcX, kDVarcY, kDVarcW, kDVarcH);
+    TextButtonClass vardbtn(kButtonVarD, "D", kEButtonFont, kEButtonFlags,
+                            kDVardX, kDVardY, kDVardW, kDVardH);
+    TextButtonClass gdibtn(kButtonGdi, "North (Spain)", kEButtonFont,
+                           kEButtonFlags, kDGdiX, kDGdiY, kDGdiW, kDGdiH);
+    TextButtonClass nodbtn(kButtonNod, "South (Greece)", kEButtonFont,
+                           kEButtonFlags, kDNodX, kDNodY, kDNodW, kDNodH);
+    TextButtonClass neubtn(
+        kButtonNeutral, HouseTypeClass::As_Reference(HOUSE_USSR).IniName,
+        kEButtonFont, kEButtonFlags, kDNeuX, kDNeuY, kDNeuW, kDNeuH);
+    TextButtonClass playermbtn(kButtonMplayer, "Multiplayer", kEButtonFont,
+                               kEButtonFlags, kDMplayerX, kDMplayerY,
+                               kDMplayerW, kDMplayerH);
+    TextButtonClass eastbtn(kButtonEast, "East", kEButtonFont, kEButtonFlags,
+                            kDEastX, kDEastY, kDEastW, kDEastH);
+    TextButtonClass westbtn(kButtonWest, "West", kEButtonFont, kEButtonFlags,
+                            kDWestX, kDWestY, kDWestW, kDWestH);
+    TextButtonClass okbtn(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags, kDOkX,
+                          kDOkY, kDOkW, kDOkH);
+    TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kEButtonFont,
+                              kEButtonFlags, kDCancelX, kDCancelY, kDCancelW,
+                              kDCancelH);
 
     /*
     **	Initialize
@@ -1099,11 +1101,12 @@ int MapEditClass::Load_Scenario() {
     */
     game::ControlClass* commands = nullptr;
 
-    TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfEButton, kDOkX, kDOkY, kDOkW,
-                          kDOkH);
+    TextButtonClass okbtn(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags, kDOkX,
+                          kDOkY, kDOkW, kDOkH);
 
-    TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfEButton, kDCancelX,
-                              kDCancelY, kDCancelW, kDCancelH);
+    TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kEButtonFont,
+                              kEButtonFlags, kDCancelX, kDCancelY, kDCancelW,
+                              kDCancelH);
 
     PixelView& view = TheScreen().visible_view();
 
@@ -1712,7 +1715,7 @@ int MapEditClass::Load_Scenario() {
     */
     char theatertext[45] = "";
     DropListClass theaterbtn(kListTheater, theatertext, sizeof(theatertext) - 1,
-                             TPF_EFNT | TPF_NOSHADOW, kDDialogX + 30,
+                             FontType::kEditor, TPF_NOSHADOW, kDDialogX + 30,
                              kDDialogY + 30, 65, 8 * 5,
                              MixArchive::RetrieveData("EBTN-UP.SHP"),
                              MixArchive::RetrieveData("EBTN-DN.SHP"));
@@ -1724,7 +1727,7 @@ int MapEditClass::Load_Scenario() {
     char description[kDescripMax] = "";
     base::SafeCopy(description, TheScenario().Description);
     EditClass desc(kButtonDescription, description, sizeof(description),
-                   TPF_EFNT | TPF_NOSHADOW,
+                   FontType::kEditor, TPF_NOSHADOW,
                    theaterbtn.X + theaterbtn.Width + 15, theaterbtn.Y, 160);
 
     /*
@@ -1846,7 +1849,7 @@ int MapEditClass::Load_Scenario() {
     */
     char introtext[engine::platform::kMaxFname + engine::platform::kMaxExt];
     DropListClass intro(kButtonIntro, introtext, sizeof(introtext),
-                        TPF_EFNT | TPF_NOSHADOW, theaterbtn.X,
+                        FontType::kEditor, TPF_NOSHADOW, theaterbtn.X,
                         theaterbtn.Y + theaterbtn.Height + 24, 50, 7 * 10,
                         MixArchive::RetrieveData("EBTN-UP.SHP"),
                         MixArchive::RetrieveData("EBTN-DN.SHP"));
@@ -1861,8 +1864,8 @@ int MapEditClass::Load_Scenario() {
     */
     char brieftext[engine::platform::kMaxFname + engine::platform::kMaxExt];
     DropListClass briefing(kButtonBriefing, brieftext, sizeof(brieftext),
-                           TPF_EFNT | TPF_NOSHADOW, intro.X + intro.Width + 10,
-                           intro.Y, 50, 7 * 10,
+                           FontType::kEditor, TPF_NOSHADOW,
+                           intro.X + intro.Width + 10, intro.Y, 50, 7 * 10,
                            MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
     briefing.Add_Item("<none>");
@@ -1873,7 +1876,7 @@ int MapEditClass::Load_Scenario() {
 
     char actiontext[engine::platform::kMaxFname + engine::platform::kMaxExt];
     DropListClass action(kButtonAction, actiontext, sizeof(actiontext),
-                         TPF_EFNT | TPF_NOSHADOW,
+                         FontType::kEditor, TPF_NOSHADOW,
                          briefing.X + briefing.Width + 10, briefing.Y, 50,
                          7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),
                          MixArchive::RetrieveData("EBTN-DN.SHP"));
@@ -1884,10 +1887,9 @@ int MapEditClass::Load_Scenario() {
     action.Set_Selected_Index(static_cast<int>(TheScenario().ActionMovie) + 1);
 
     char wintext[engine::platform::kMaxFname + engine::platform::kMaxExt];
-    DropListClass win(kButtonWin, wintext, sizeof(wintext),
-                      TPF_EFNT | TPF_NOSHADOW, action.X + action.Width + 10,
-                      action.Y, 50, 7 * 10,
-                      MixArchive::RetrieveData("EBTN-UP.SHP"),
+    DropListClass win(kButtonWin, wintext, sizeof(wintext), FontType::kEditor,
+                      TPF_NOSHADOW, action.X + action.Width + 10, action.Y, 50,
+                      7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),
                       MixArchive::RetrieveData("EBTN-DN.SHP"));
     win.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
@@ -1897,8 +1899,9 @@ int MapEditClass::Load_Scenario() {
 
     char losetext[engine::platform::kMaxFname + engine::platform::kMaxExt];
     DropListClass lose(kButtonLose, losetext, sizeof(losetext),
-                       TPF_EFNT | TPF_NOSHADOW, win.X + win.Width + 10, win.Y,
-                       50, 7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                       FontType::kEditor, TPF_NOSHADOW, win.X + win.Width + 10,
+                       win.Y, 50, 7 * 10,
+                       MixArchive::RetrieveData("EBTN-UP.SHP"),
                        MixArchive::RetrieveData("EBTN-DN.SHP"));
     lose.Add_Item("<none>");
     for (const VQType v : magic_enum::enum_values<VQType>()) {
@@ -1910,7 +1913,7 @@ int MapEditClass::Load_Scenario() {
     **	House choice list.
     */
     ListClass housebtn(kButtonHouse, kDDialogX + 30, kDDialogY + 105, 55,
-                       7 * 10, TPF_EFNT | TPF_NOSHADOW,
+                       7 * 10, FontType::kEditor, TPF_NOSHADOW,
                        MixArchive::RetrieveData("EBTN-UP.SHP"),
                        MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
@@ -1923,7 +1926,7 @@ int MapEditClass::Load_Scenario() {
     */
     char basetext[35];
     DropListClass basebtn(kButtonBase, basetext, sizeof(basetext),
-                          TPF_EFNT | TPF_NOSHADOW, kDDialogX + 30,
+                          FontType::kEditor, TPF_NOSHADOW, kDDialogX + 30,
                           kDDialogY + 80, 65, 7 * 10,
                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                           MixArchive::RetrieveData("EBTN-DN.SHP"));
@@ -1939,7 +1942,7 @@ int MapEditClass::Load_Scenario() {
     */
     char themetext[65];
     DropListClass themebtn(kButtonTheme, themetext, sizeof(themetext),
-                           TPF_EFNT | TPF_NOSHADOW,
+                           FontType::kEditor, TPF_NOSHADOW,
                            basebtn.X + basebtn.Width + 30, basebtn.Y, 85,
                            7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
@@ -1962,7 +1965,7 @@ int MapEditClass::Load_Scenario() {
     techlevel.Set_Maximum(16);
 
     char statictechbuff[15];
-    StaticButtonClass techstatic(0, "999", TPF_EFNT | TPF_NOSHADOW,
+    StaticButtonClass techstatic(0, "999", FontType::kEditor, TPF_NOSHADOW,
                                  techlevel.X + techlevel.Width - 20,
                                  techlevel.Y - 7);
 
@@ -1974,9 +1977,9 @@ int MapEditClass::Load_Scenario() {
     creditbtn.Set_Maximum(201);
 
     char staticcreditbuff[15];
-    StaticButtonClass creditstatic(0, "999999999", TPF_EFNT | TPF_NOSHADOW,
-                                   creditbtn.X + creditbtn.Width - 50,
-                                   creditbtn.Y - 7);
+    StaticButtonClass creditstatic(
+        0, "999999999", FontType::kEditor, TPF_NOSHADOW,
+        creditbtn.X + creditbtn.Width - 50, creditbtn.Y - 7);
 
     /*
     **	Maximum unit/infantry slider.
@@ -1986,16 +1989,16 @@ int MapEditClass::Load_Scenario() {
     maxunit.Set_Maximum(501);
 
     char staticmaxunitbuff[15];
-    StaticButtonClass maxunitstatic(0, "999999", TPF_EFNT | TPF_NOSHADOW,
-                                    maxunit.X + maxunit.Width - 30,
-                                    maxunit.Y - 7);
+    StaticButtonClass maxunitstatic(
+        0, "999999", FontType::kEditor, TPF_NOSHADOW,
+        maxunit.X + maxunit.Width - 30, maxunit.Y - 7);
 
     /*
     **	Source of ground delivery reinforcements.
     */
     ListClass sourcebtn(kButtonSource, housebtn.X + housebtn.Width + 15,
-                        maxunit.Y + 20, 100, 7 * 4, TPF_EFNT | TPF_NOSHADOW,
-                        MixArchive::RetrieveData("EBTN-UP.SHP"),
+                        maxunit.Y + 20, 100, 7 * 4, FontType::kEditor,
+                        TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
                         MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const SourceType source : magic_enum::enum_values<SourceType>()) {
       if (source > SOURCE_WEST) {
@@ -2012,7 +2015,7 @@ int MapEditClass::Load_Scenario() {
     smarties.Set_Maximum(TheRules().MaxIQ + 1);
 
     char staticsmartiesbuff[15];
-    StaticButtonClass smartiesstatic(0, "9999", TPF_EFNT | TPF_NOSHADOW,
+    StaticButtonClass smartiesstatic(0, "9999", FontType::kEditor, TPF_NOSHADOW,
                                      smarties.X + smarties.Width - 20,
                                      smarties.Y - 7);
 
@@ -2020,8 +2023,8 @@ int MapEditClass::Load_Scenario() {
     **	List box of who is allied with whom.
     */
     CheckListClass allies(kButtonAllies, techlevel.X + techlevel.Width + 5,
-                          housebtn.Y, 65, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
-                          MixArchive::RetrieveData("EBTN-UP.SHP"),
+                          housebtn.Y, 65, 7 * 10, FontType::kEditor,
+                          TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
                           MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       allies.Add_Item(HouseTypeClass::As_Reference(h).IniName);
@@ -2035,7 +2038,8 @@ int MapEditClass::Load_Scenario() {
     **	List box of who the player can control.
     */
     CheckListClass control(kButtonControl, allies.X + allies.Width + 10,
-                           housebtn.Y, 65, 7 * 10, TPF_EFNT | TPF_NOSHADOW,
+                           housebtn.Y, 65, 7 * 10, FontType::kEditor,
+                           TPF_NOSHADOW,
                            MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
@@ -2049,10 +2053,11 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Create the ubiquitous "ok" and "cancel" buttons.
     */
-    TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfEButton, kDOkX, kDOkY, kDOkW,
-                          kDOkH);
-    TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfEButton, kDCancelX,
-                              kDCancelY, kDCancelW, kDCancelH);
+    TextButtonClass okbtn(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags, kDOkX,
+                          kDOkY, kDOkW, kDOkH);
+    TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kEButtonFont,
+                              kEButtonFlags, kDCancelX, kDCancelY, kDCancelW,
+                              kDCancelH);
 
     /*
     **	Create the list
@@ -2693,18 +2698,19 @@ int MapEditClass::Load_Scenario() {
     game::ControlClass* commands = nullptr;  // the button list
 
     TListClass<TriggerTypeClass*> triggerlist(
-        kTriggerList, kDListX, kDListY, kDListW, kDListH,
-        TPF_EFNT | TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
+        kTriggerList, kDListX, kDListY, kDListW, kDListH, FontType::kEditor,
+        TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
         MixArchive::RetrieveData("EBTN-DN.SHP"));
 
-    TextButtonClass editbtn(kButtonEdit, "Edit", kTpfEButton, kDEditX, kDEditY,
-                            kDEditW, kDEditH);
-    TextButtonClass newbtn(kButtonNew, "New", kTpfEButton, kDNewX, kDNewY,
-                           kDNewW, kDNewH);
-    TextButtonClass deletebtn(kButtonDelete, "Delete", kTpfEButton, kDDeleteX,
-                              kDDeleteY, kDDeleteW, kDDeleteH);
-    TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfEButton, kDOkX, kDOkY, kDOkW,
-                          kDOkH);
+    TextButtonClass editbtn(kButtonEdit, "Edit", kEButtonFont, kEButtonFlags,
+                            kDEditX, kDEditY, kDEditW, kDEditH);
+    TextButtonClass newbtn(kButtonNew, "New", kEButtonFont, kEButtonFlags,
+                           kDNewX, kDNewY, kDNewW, kDNewH);
+    TextButtonClass deletebtn(kButtonDelete, "Delete", kEButtonFont,
+                              kEButtonFlags, kDDeleteX, kDDeleteY, kDDeleteW,
+                              kDDeleteH);
+    TextButtonClass okbtn(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags, kDOkX,
+                          kDOkY, kDOkW, kDOkH);
 
     PixelView& view = TheScreen().visible_view();
 

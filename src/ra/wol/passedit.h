@@ -25,9 +25,10 @@ namespace ra {
 //   pass.bClearOnNextSetFocus = LoadSavedPassword(buffer);
 class PassEditClass : public WOLEditClass {
  public:
-  PassEditClass(int id, std::span<char> text, int max_len, TextPrintType flags,
-                int x, int y, int w, int h, EditStyle style)
-      : WOLEditClass(id, text, max_len, flags, x, y, w, h, style) {}
+  PassEditClass(int id, std::span<char> text, int max_len, FontType font,
+                TextPrintType flags, int x, int y, int w, int h,
+                EditStyle style)
+      : WOLEditClass(id, text, max_len, font, flags, x, y, w, h, style) {}
 
   // True while the buffer holds a saved password rather than a typed one.
   // Cleared by the first Set_Focus(), which also empties the buffer.

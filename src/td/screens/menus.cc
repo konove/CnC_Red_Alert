@@ -634,65 +634,65 @@ int Main_Menu(int timeout) {
   if (expansions) {
     ystep -= 4;
   }
-  TextButtonClass expandbtn(
-      kButtonExpand, TXT_NEW_MISSIONS,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kStartX,
-      starty, kStartW, kStartH);
+  TextButtonClass expandbtn(kButtonExpand, TXT_NEW_MISSIONS,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kStartX, starty, kStartW, kStartH);
   if (expansions) {
     starty += ystep;
   }
 
-  TextButtonClass startbtn(
-      kButtonStart, TXT_START_NEW_GAME,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kStartX,
-      starty, kStartW, kStartH);
+  TextButtonClass startbtn(kButtonStart, TXT_START_NEW_GAME,
+                           FontType::k6PointGradient,
+                           TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                           kStartX, starty, kStartW, kStartH);
   starty += ystep;
 
 #ifdef BONUS_MISSIONS
-  TextButtonClass bonusbtn(
-      kButtonBonus, TXT_BONUS_MISSIONS,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kBonusX,
-      starty, kBonusW, kBonusH);
+  TextButtonClass bonusbtn(kButtonBonus, TXT_BONUS_MISSIONS,
+                           FontType::k6PointGradient,
+                           TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                           kBonusX, starty, kBonusW, kBonusH);
   starty += ystep;
 #endif  // BONUS_MISSIONS
 
-  TextButtonClass internetbutton(
-      kButtonInternet, TXT_INTERNET,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kInternetX,
-      starty, kInternetW, kInternetH);
+  TextButtonClass internetbutton(kButtonInternet, TXT_INTERNET,
+                                 FontType::k6PointGradient,
+                                 TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                                 kInternetX, starty, kInternetW, kInternetH);
   starty += ystep;
 
-  TextButtonClass loadbtn(
-      kButtonLoad, TXT_LOAD_MISSION,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLoadX,
-      starty, kLoadW, kLoadH);
+  TextButtonClass loadbtn(kButtonLoad, TXT_LOAD_MISSION,
+                          FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLoadX,
+                          starty, kLoadW, kLoadH);
   starty += ystep;
 #else
 
-  TextButtonClass startbtn(
-      kButtonStart, TXT_START_NEW_GAME,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kStartX,
-      kStartY, kStartW, kStartH);
+  TextButtonClass startbtn(kButtonStart, TXT_START_NEW_GAME,
+                           FontType::k6PointGradient,
+                           TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                           kStartX, kStartY, kStartW, kStartH);
 
-  TextButtonClass loadbtn(
-      kButtonLoad, TXT_LOAD_MISSION,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLoadX,
-      kLoadY, kLoadW, kLoadH);
+  TextButtonClass loadbtn(kButtonLoad, TXT_LOAD_MISSION,
+                          FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLoadX,
+                          kLoadY, kLoadW, kLoadH);
 
 #endif
 
 #ifdef DEMO
-  TextButtonClass multibtn(
-      kButtonMulti, TXT_ORDER_INFO,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMultiX,
-      kMultiY, kMultiW, kMultiH);
+  TextButtonClass multibtn(kButtonMulti, TXT_ORDER_INFO,
+                           FontType::k6PointGradient,
+                           TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                           kMultiX, kMultiY, kMultiW, kMultiH);
 #else
 
 #ifdef NEWMENU
-  TextButtonClass multibtn(
-      kButtonMulti, TXT_MULTIPLAYER_GAME,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMultiX,
-      starty, kMultiW, kMultiH);
+  TextButtonClass multibtn(kButtonMulti, TXT_MULTIPLAYER_GAME,
+                           FontType::k6PointGradient,
+                           TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                           kMultiX, starty, kMultiW, kMultiH);
   starty += ystep;
 
   // TextButtonClass internetbutton(BUTTON_INTERNET, TXT_INTERNET,
@@ -700,55 +700,51 @@ int Main_Menu(int timeout) {
   //	D_INTERNET_X, starty, D_INTERNET_W, D_INTERNET_H);
   // starty += ystep;
 #else
-  TextButtonClass multibtn(
-      kButtonMulti, TXT_MULTIPLAYER_GAME,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMultiX,
-      kMultiY, kMultiW, kMultiH);
+  TextButtonClass multibtn(kButtonMulti, TXT_MULTIPLAYER_GAME,
+                           FontType::k6PointGradient,
+                           TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                           kMultiX, kMultiY, kMultiW, kMultiH);
 #endif
 #endif
 
 #ifdef NEWMENU
 #ifdef DEMO
-  TextButtonClass introbtn(
-      kButtonIntro, TXT_JUST_INTRO,
+  TextButtonClass introbtn(kButtonIntro, TXT_JUST_INTRO,
 #else   // DEMO
-  TextButtonClass introbtn(
-      kButtonIntro, TXT_INTRO,
+  TextButtonClass introbtn(kButtonIntro, TXT_INTRO,
 #endif  // DEMO
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kIntroX,
-      starty, kIntroW, kIntroH);
+                           FontType::k6PointGradient,
+                           TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                           kIntroX, starty, kIntroW, kIntroH);
   starty += ystep;
 
-  TextButtonClass exitbtn(
-      kButtonExit, TXT_EXIT_GAME,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+  TextButtonClass exitbtn(kButtonExit, TXT_EXIT_GAME, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
 #if (defined(GERMAN) || defined(FRENCH))
-      // D_EXIT_X, starty);
-      kExitX, starty, kExitW, kExitH);
+                          // D_EXIT_X, starty);
+                          kExitX, starty, kExitW, kExitH);
 #else
-      kExitX, starty, kExitW, kExitH);
+                          kExitX, starty, kExitW, kExitH);
 #endif
 
 #else
 
 #ifdef DEMO
-  TextButtonClass introbtn(
-      kButtonIntro, TXT_JUST_INTRO,
+  TextButtonClass introbtn(kButtonIntro, TXT_JUST_INTRO,
 #else   // DEMO
-  TextButtonClass introbtn(
-      kButtonIntro, TXT_INTRO,
+  TextButtonClass introbtn(kButtonIntro, TXT_INTRO,
 #endif  // DEMO
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kIntroX,
-      kIntroY, kIntroW, kIntroH);
+                           FontType::k6PointGradient,
+                           TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                           kIntroX, kIntroY, kIntroW, kIntroH);
 
-  TextButtonClass exitbtn(
-      kButtonExit, TXT_EXIT_GAME,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+  TextButtonClass exitbtn(kButtonExit, TXT_EXIT_GAME, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
 #if (defined(GERMAN) || defined(FRENCH))
-      // D_EXIT_X, D_EXIT_Y);
-      kExitX, kExitY, kExitW, kExitH);
+                          // D_EXIT_X, D_EXIT_Y);
+                          kExitX, kExitY, kExitW, kExitH);
 #else
-      kExitX, kExitY, kExitW, kExitH);
+                          kExitX, kExitY, kExitW, kExitH);
 #endif
 #endif
 

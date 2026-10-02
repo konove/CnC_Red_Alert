@@ -372,8 +372,8 @@ void RunGame() {
     // The Wolapi object is kept rather than deleted, so that the game results
     // can still be sent.
     TheSession().Messages.Add_Message(
-        nullptr, 0, TXT_WOL_WOLAPIGONE, PCOLOR_GOLD,
-        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+        nullptr, 0, TXT_WOL_WOLAPIGONE, PCOLOR_GOLD, FontType::k6PointGradient,
+        TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         TheRules().MessageDelay * kTicksPerMinute);
     PlaySoundEffect(WOLSOUND_LOGOUT);
   }

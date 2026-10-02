@@ -131,12 +131,14 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   */
   game::ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass OkBtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w);
-  TextButtonClass CancelBtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
-                            d_cancel_y, d_cancel_w);
+  TextButtonClass OkBtn(kButtonOk, TXT_OK, kButtonFont, kButtonFlags, d_ok_x,
+                        d_ok_y, d_ok_w);
+  TextButtonClass CancelBtn(kButtonCancel, TXT_CANCEL, kButtonFont,
+                            kButtonFlags, d_cancel_x, d_cancel_y, d_cancel_w);
 
-  StaticButtonClass PlayerCountStatic(0, "               ", kTpfText,
-                                      d_gaugeplayers_x, d_gaugeplayers_y - 16);
+  StaticButtonClass PlayerCountStatic(0, "               ", kTextFont,
+                                      kTextFlags, d_gaugeplayers_x,
+                                      d_gaugeplayers_y - 16);
   GaugeClass PlayerCountGauge(kGaugePlayercount, d_gaugeplayers_x,
                               d_gaugeplayers_y, d_gaugeplayers_w,
                               d_gaugeplayers_h);
@@ -150,24 +152,25 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
 
   BigCheckBoxClass TournamentCheck(
       kCheckTournament, d_checktourn_x, d_checktourn_y, d_checktourn_w,
-      d_checktourn_h, TXT_WOL_CG_TOURNAMENT, TPF_6PT_GRAD | TPF_NOSHADOW,
-      cgiReturn.bTournament);
+      d_checktourn_h, TXT_WOL_CG_TOURNAMENT, FontType::k6PointGradient,
+      TPF_NOSHADOW, cgiReturn.bTournament);
 
-  BigCheckBoxClass PrivacyCheck(
-      kCheckPrivacy, d_checkpriv_x, d_checkpriv_y, d_checkpriv_w, d_checkpriv_h,
-      TXT_WOL_CG_PRIVACY, TPF_6PT_GRAD | TPF_NOSHADOW, cgiReturn.bPrivate);
+  BigCheckBoxClass PrivacyCheck(kCheckPrivacy, d_checkpriv_x, d_checkpriv_y,
+                                d_checkpriv_w, d_checkpriv_h,
+                                TXT_WOL_CG_PRIVACY, FontType::k6PointGradient,
+                                TPF_NOSHADOW, cgiReturn.bPrivate);
 
   BigCheckBoxClass RA_Check(kCheckRa, d_checkra_x, d_checkra_y, d_checkra_w,
                             d_checkra_h, TXT_WOL_CG_RAGAME,
-                            TPF_6PT_GRAD | TPF_NOSHADOW,
+                            FontType::k6PointGradient, TPF_NOSHADOW,
                             cgiReturn.GameKind == CREATEGAMEINFO::RAGAME);
   BigCheckBoxClass CS_Check(kCheckCs, d_checkcs_x, d_checkcs_y, d_checkcs_w,
                             d_checkcs_h, TXT_WOL_CG_CSGAME,
-                            TPF_6PT_GRAD | TPF_NOSHADOW,
+                            FontType::k6PointGradient, TPF_NOSHADOW,
                             cgiReturn.GameKind == CREATEGAMEINFO::CSGAME);
   BigCheckBoxClass AM_Check(kCheckAm, d_checkam_x, d_checkam_y, d_checkam_w,
                             d_checkam_h, TXT_WOL_CG_AMGAME,
-                            TPF_6PT_GRAD | TPF_NOSHADOW,
+                            FontType::k6PointGradient, TPF_NOSHADOW,
                             cgiReturn.GameKind == CREATEGAMEINFO::AMGAME);
 
   if (!Is_Counterstrike_Installed()) {

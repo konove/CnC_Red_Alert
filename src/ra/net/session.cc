@@ -1279,12 +1279,11 @@ MultiMission::MultiMission(const char* filename, const char* description,
 }
 
 void MultiMission::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                           int width, int height, bool selected,
+                           int width, int height, bool selected, FontType font,
                            TextPrintType flags) const {
   RemapControlType* scheme = Get_Color_Scheme();
   static const int _tabs[] = {35, 60, 80, 100};
-  const TextPrintType point = flags & static_cast<TextPrintType>(0x0F);
-  if (point == TPF_6PT_GRAD || point == TPF_EFNT) {
+  if (font == FontType::k6PointGradient || font == FontType::kEditor) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
       view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
@@ -1295,13 +1294,13 @@ void MultiMission::Draw_It(PixelView& view, int /*unused*/, int x, int y,
     }
 
     Conquer_Clip_Text_Print(view, ScenarioDescription, x, y, scheme, kTBlack,
-                            FontOf(flags), StyleOf(flags), width, _tabs);
+                            font, flags, width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
         view, ScenarioDescription, x, y,
         selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                  : &ThePalettes().color_remaps().at(PCOLOR_GREY),
-        kTBlack, FontOf(flags), StyleOf(flags), width, _tabs);
+        kTBlack, font, flags, width, _tabs);
   }
 }
 

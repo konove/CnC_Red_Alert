@@ -348,7 +348,7 @@ int Test_Null_Modem() {
   const int y = (TheScreen().visible_view().height() - height) / 2;
 
   TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL, kTpfButton,
+      kButtonCancel, TXT_CANCEL, kButtonFont, kButtonFlags,
       x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 16)) /
            2),
       y + height - (FontLineHeight(font) + 4) - 20);
@@ -651,7 +651,7 @@ static int Reconnect_Null_Modem() {
   const int y = (TheScreen().visible_view().height() - height) / 2;
 
   TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL, kTpfButton,
+      kButtonCancel, TXT_CANCEL, kButtonFont, kButtonFlags,
       x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 16)) /
            2),
       y + height - (FontLineHeight(font) + 4) - 20);
@@ -836,7 +836,7 @@ void Destroy_Null_Connection(int id, int error) {
         nullptr, 0, txt,
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : housep->RemapColor,
-        kTpfText, TheRules().MessageDelay * kTicksPerMinute);
+        kTextFont, kTextFlags, TheRules().MessageDelay * kTicksPerMinute);
     TheMap().Flag_To_Redraw(false);
   }
 
@@ -870,7 +870,7 @@ void Destroy_Null_Connection(int id, int error) {
         nullptr, 0, txt,
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : housep->RemapColor,
-        kTpfText, TheRules().MessageDelay * kTicksPerMinute);
+        kTextFont, kTextFlags, TheRules().MessageDelay * kTicksPerMinute);
     TheMap().Flag_To_Redraw(false);
   }
 }
@@ -975,18 +975,20 @@ GameType Select_Serial_Dialog() {
   ** Buttons
   */
 
-  TextButtonClass dialbtn(kButtonDial, TXT_DIAL_MODEM, kTpfButton, d_dial_x,
-                          d_dial_y, d_dial_w, d_dial_h);
-  TextButtonClass answerbtn(kButtonAnswer, TXT_ANSWER_MODEM, kTpfButton,
-                            d_answer_x, d_answer_y, d_answer_w, d_answer_h);
-  TextButtonClass nullmodembtn(kButtonNullmodem, TXT_NULL_MODEM, kTpfButton,
-                               d_nullmodem_x, d_nullmodem_y, d_nullmodem_w,
-                               d_nullmodem_h);
-  TextButtonClass settingsbtn(kButtonSettings, TXT_SETTINGS, kTpfButton,
-                              d_settings_x, d_settings_y, d_settings_w,
-                              d_settings_h);
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
-                            d_cancel_y, d_cancel_w, d_cancel_h);
+  TextButtonClass dialbtn(kButtonDial, TXT_DIAL_MODEM, kButtonFont,
+                          kButtonFlags, d_dial_x, d_dial_y, d_dial_w, d_dial_h);
+  TextButtonClass answerbtn(kButtonAnswer, TXT_ANSWER_MODEM, kButtonFont,
+                            kButtonFlags, d_answer_x, d_answer_y, d_answer_w,
+                            d_answer_h);
+  TextButtonClass nullmodembtn(kButtonNullmodem, TXT_NULL_MODEM, kButtonFont,
+                               kButtonFlags, d_nullmodem_x, d_nullmodem_y,
+                               d_nullmodem_w, d_nullmodem_h);
+  TextButtonClass settingsbtn(kButtonSettings, TXT_SETTINGS, kButtonFont,
+                              kButtonFlags, d_settings_x, d_settings_y,
+                              d_settings_w, d_settings_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kButtonFont,
+                            kButtonFlags, d_cancel_x, d_cancel_y, d_cancel_w,
+                            d_cancel_h);
 
   PixelView& view = TheScreen().visible_view();
 
@@ -1398,31 +1400,29 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   ** Create the buttons
   */
   TextButtonClass compressionbutton(
-      kButtonCompression, compress_text,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      d_compression_x, d_compression_y, d_compression_w, d_compression_h);
+      kButtonCompression, compress_text, FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_compression_x,
+      d_compression_y, d_compression_w, d_compression_h);
 
   TextButtonClass errorcorrectionbutton(
-      kButtonErrorCorrection, correction_text,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      d_errorcorrection_x, d_errorcorrection_y, d_errorcorrection_w,
-      d_errorcorrection_h);
+      kButtonErrorCorrection, correction_text, FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_errorcorrection_x,
+      d_errorcorrection_y, d_errorcorrection_w, d_errorcorrection_h);
 
   TextButtonClass hardwareflowcontrolbutton(
-      kButtonHardwareFlowControl, flowcontrol_text,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      d_hardwareflowcontrol_x, d_hardwareflowcontrol_y, d_hardwareflowcontrol_w,
+      kButtonHardwareFlowControl, flowcontrol_text, FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_hardwareflowcontrol_x,
+      d_hardwareflowcontrol_y, d_hardwareflowcontrol_w,
       d_hardwareflowcontrol_h);
 
   TextButtonClass defaultbutton(
-      kButtonDefault, TXT_DEFAULT,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_default_x,
-      d_default_y, d_default_w, d_default_h);
+      kButtonDefault, TXT_DEFAULT, FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_default_x, d_default_y,
+      d_default_w, d_default_h);
 
-  TextButtonClass okbutton(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
-      d_ok_y, d_ok_w, d_ok_h);
+  TextButtonClass okbutton(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                           TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
+                           d_ok_y, d_ok_w, d_ok_h);
 
   /*
   ** Misc. variables.
@@ -1769,49 +1769,55 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   ** Buttons
   */
 
-  EditClass port_edt(kButtonPort, portbuf, PORTBUF_MAX, kTpfText, d_port_x,
-                     d_port_y, d_port_w, d_port_h, EditClass::kAlphanumeric);
+  EditClass port_edt(kButtonPort, portbuf, PORTBUF_MAX, kTextFont, kTextFlags,
+                     d_port_x, d_port_y, d_port_w, d_port_h,
+                     EditClass::kAlphanumeric);
 
   ListClass portlist(kButtonPortlist, d_portlist_x, d_portlist_y, d_portlist_w,
-                     d_portlist_h, kTpfText,
+                     d_portlist_h, kTextFont, kTextFlags,
                      MixArchive::RetrieveData("BTN-UP.SHP"),
                      MixArchive::RetrieveData("BTN-DN.SHP"));
 
-  EditClass baud_edt(kButtonBaud, baudbuf, BAUDBUF_MAX, kTpfText, d_baud_x,
-                     d_baud_y, d_baud_w, d_baud_h, EditClass::kNumeric);
+  EditClass baud_edt(kButtonBaud, baudbuf, BAUDBUF_MAX, kTextFont, kTextFlags,
+                     d_baud_x, d_baud_y, d_baud_w, d_baud_h,
+                     EditClass::kNumeric);
   ListClass baudlist(kButtonBaudlist, d_baudlist_x, d_baudlist_y, d_baudlist_w,
-                     d_baudlist_h, kTpfText,
+                     d_baudlist_h, kTextFont, kTextFlags,
                      MixArchive::RetrieveData("BTN-UP.SHP"),
                      MixArchive::RetrieveData("BTN-DN.SHP"));
-  EditClass initstr_edt(kButtonInitstr, initstrbuf, INITSTRBUF_MAX, kTpfText,
-                        d_initstr_x, d_initstr_y, d_initstr_w, d_initstr_h,
-                        EditClass::kAlphanumeric);
+  EditClass initstr_edt(kButtonInitstr, initstrbuf, INITSTRBUF_MAX, kTextFont,
+                        kTextFlags, d_initstr_x, d_initstr_y, d_initstr_w,
+                        d_initstr_h, EditClass::kAlphanumeric);
   ListClass initstrlist(kButtonInitstrlist, d_initstrlist_x, d_initstrlist_y,
-                        d_initstrlist_w, d_initstrlist_h, kTpfText,
+                        d_initstrlist_w, d_initstrlist_h, kTextFont, kTextFlags,
                         MixArchive::RetrieveData("BTN-UP.SHP"),
                         MixArchive::RetrieveData("BTN-DN.SHP"));
-  TextButtonClass addbtn(kButtonAdd, TXT_ADD, kTpfButton, d_add_x, d_add_y,
-                         d_add_w, d_add_h);
-  TextButtonClass deletebtn(kButtonDelete, TXT_DELETE_BUTTON, kTpfButton,
-                            d_delete_x, d_delete_y, d_delete_w, d_delete_h);
+  TextButtonClass addbtn(kButtonAdd, TXT_ADD, kButtonFont, kButtonFlags,
+                         d_add_x, d_add_y, d_add_w, d_add_h);
+  TextButtonClass deletebtn(kButtonDelete, TXT_DELETE_BUTTON, kButtonFont,
+                            kButtonFlags, d_delete_x, d_delete_y, d_delete_w,
+                            d_delete_h);
   EditClass cwaitstr_edt(kButtonCwaitstr, cwaitstrbuf, CWAITSTRBUF_MAX,
-                         kTpfText, d_cwaitstr_x, d_cwaitstr_y, d_cwaitstr_w,
-                         d_cwaitstr_h, EditClass::kAlphanumeric);
+                         kTextFont, kTextFlags, d_cwaitstr_x, d_cwaitstr_y,
+                         d_cwaitstr_w, d_cwaitstr_h, EditClass::kAlphanumeric);
   ListClass cwaitstrlist(kButtonCwaitstrlist, d_cwaitstrlist_x,
                          d_cwaitstrlist_y, d_cwaitstrlist_w, d_cwaitstrlist_h,
-                         kTpfText, MixArchive::RetrieveData("BTN-UP.SHP"),
+                         kTextFont, kTextFlags,
+                         MixArchive::RetrieveData("BTN-UP.SHP"),
                          MixArchive::RetrieveData("BTN-DN.SHP"));
-  TextButtonClass tonebtn(kButtonTone, TXT_TONE_BUTTON, kTpfButton, d_tone_x,
-                          d_tone_y, d_tone_w, d_tone_h);
-  TextButtonClass pulsebtn(kButtonPulse, TXT_PULSE_BUTTON, kTpfButton,
-                           d_pulse_x, d_pulse_y, d_pulse_w, d_pulse_h);
-  TextButtonClass savebtn(kButtonSave, TXT_SAVE_BUTTON, kTpfButton, d_save_x,
-                          d_save_y, d_save_w, d_save_h);
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
-                            d_cancel_y, d_cancel_w, d_cancel_h);
-  TextButtonClass advancedbutton(kButtonAdvanced, TXT_ADVANCED, kTpfButton,
-                                 d_advanced_x, d_advanced_y, d_advanced_w,
-                                 d_advanced_h);
+  TextButtonClass tonebtn(kButtonTone, TXT_TONE_BUTTON, kButtonFont,
+                          kButtonFlags, d_tone_x, d_tone_y, d_tone_w, d_tone_h);
+  TextButtonClass pulsebtn(kButtonPulse, TXT_PULSE_BUTTON, kButtonFont,
+                           kButtonFlags, d_pulse_x, d_pulse_y, d_pulse_w,
+                           d_pulse_h);
+  TextButtonClass savebtn(kButtonSave, TXT_SAVE_BUTTON, kButtonFont,
+                          kButtonFlags, d_save_x, d_save_y, d_save_w, d_save_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kButtonFont,
+                            kButtonFlags, d_cancel_x, d_cancel_y, d_cancel_w,
+                            d_cancel_h);
+  TextButtonClass advancedbutton(kButtonAdvanced, TXT_ADVANCED, kButtonFont,
+                                 kButtonFlags, d_advanced_x, d_advanced_y,
+                                 d_advanced_w, d_advanced_h);
   /*
   ** Various Inits
   */
@@ -2767,67 +2773,70 @@ int Com_Scenario_Dialog(bool skirmish) {
   ........................................................................*/
   game::GadgetClass* commands = nullptr;  // button list
 
-  EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX, kTpfText, d_name_x,
-                     d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
+  EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX, kTextFont,
+                     kTextFlags, d_name_x, d_name_y, d_name_w, d_name_h,
+                     EditClass::kAlphanumeric);
 
 #ifdef OLDWAY
-  TextButtonClass gdibtn(kButtonGdi, TXT_ALLIES, kTpfButton, d_gdi_x, d_gdi_y,
-                         d_gdi_w, d_gdi_h);
-  TextButtonClass nodbtn(kButtonNod, TXT_SOVIET, kTpfButton, d_nod_x, d_nod_y,
-                         d_nod_w, d_nod_h);
+  TextButtonClass gdibtn(kButtonGdi, TXT_ALLIES, kButtonFont, kButtonFlags,
+                         d_gdi_x, d_gdi_y, d_gdi_w, d_gdi_h);
+  TextButtonClass nodbtn(kButtonNod, TXT_SOVIET, kButtonFont, kButtonFlags,
+                         d_nod_x, d_nod_y, d_nod_w, d_nod_h);
 #else
   char housetext[25] = "";
-  DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTpfText,
-                         d_house_x, d_house_y, d_house_w, d_house_h,
+  DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTextFont,
+                         kTextFlags, d_house_x, d_house_y, d_house_w, d_house_h,
                          MixArchive::RetrieveData("BTN-UP.SHP"),
                          MixArchive::RetrieveData("BTN-DN.SHP"));
 #endif
   ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
-                            d_playerlist_w, d_playerlist_h, kTpfText,
-                            MixArchive::RetrieveData("BTN-UP.SHP"),
+                            d_playerlist_w, d_playerlist_h, kTextFont,
+                            kTextFlags, MixArchive::RetrieveData("BTN-UP.SHP"),
                             MixArchive::RetrieveData("BTN-DN.SHP"));
   ListClass scenariolist(kButtonScenariolist, d_scenariolist_x,
                          d_scenariolist_y, d_scenariolist_w, d_scenariolist_h,
-                         kTpfText, MixArchive::RetrieveData("BTN-UP.SHP"),
+                         kTextFont, kTextFlags,
+                         MixArchive::RetrieveData("BTN-UP.SHP"),
                          MixArchive::RetrieveData("BTN-DN.SHP"));
   GaugeClass countgauge(kButtonCount, d_count_x, d_count_y, d_count_w,
                         d_count_h);
 
   char staticcountbuff[35];
-  StaticButtonClass staticcount(0, "     ", kTpfText, d_count_x + d_count_w + 6,
-                                d_count_y);
+  StaticButtonClass staticcount(0, "     ", kTextFont, kTextFlags,
+                                d_count_x + d_count_w + 6, d_count_y);
 
   GaugeClass levelgauge(kButtonLevel, d_level_x, d_level_y, d_level_w,
                         d_level_h);
 
   char staticlevelbuff[35];
-  StaticButtonClass staticlevel(0, "     ", kTpfText, d_level_x + d_level_w + 6,
-                                d_level_y);
+  StaticButtonClass staticlevel(0, "     ", kTextFont, kTextFlags,
+                                d_level_x + d_level_w + 6, d_level_y);
 
   GaugeClass creditsgauge(kButtonCredits, d_credits_x, d_credits_y, d_credits_w,
                           d_credits_h);
 
   char staticcreditsbuff[35];
-  StaticButtonClass staticcredits(0, "         ", kTpfText,
+  StaticButtonClass staticcredits(0, "         ", kTextFont, kTextFlags,
                                   d_credits_x + d_credits_w + 6, d_credits_y);
 
   GaugeClass aiplayersgauge(kButtonAiplayers, d_aiplayers_x, d_aiplayers_y,
                             d_aiplayers_w, d_aiplayers_h);
 
   char staticaibuff[35];
-  StaticButtonClass staticai(0, "     ", kTpfText,
+  StaticButtonClass staticai(0, "     ", kTextFont, kTextFlags,
                              d_aiplayers_x + d_aiplayers_w + 6, d_aiplayers_y);
 
   CheckListClass optionlist(kButtonOptions, d_options_x, d_options_y,
-                            d_options_w, d_options_h, kTpfText,
+                            d_options_w, d_options_h, kTextFont, kTextFlags,
                             MixArchive::RetrieveData("BTN-UP.SHP"),
                             MixArchive::RetrieveData("BTN-DN.SHP"));
-  TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w,
-                        d_ok_h);
-  TextButtonClass loadbtn(kButtonLoad, TXT_LOAD_BUTTON, kTpfButton, d_load_x,
-                          d_load_y, d_load_w, d_load_h);
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
-                            d_cancel_y, d_cancel_w, d_cancel_h);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, kButtonFont, kButtonFlags, d_ok_x,
+                        d_ok_y, d_ok_w, d_ok_h);
+  TextButtonClass loadbtn(kButtonLoad, TXT_LOAD_BUTTON, kButtonFont,
+                          kButtonFlags, d_load_x, d_load_y, d_load_w, d_load_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kButtonFont,
+                            kButtonFlags, d_cancel_x, d_cancel_y, d_cancel_w,
+                            d_cancel_h);
 
   SliderClass difficulty(
       kButtonDifficulty, d_name_x,
@@ -3042,10 +3051,10 @@ int Com_Scenario_Dialog(bool skirmish) {
     TheSession().Messages.Init(
         d_message_x + 1, d_message_y + 1, 8, MAX_MESSAGE_LENGTH, d_txt6_h,
         d_send_x + 1, d_send_y + 1, 1, 20, MAX_MESSAGE_LENGTH - 5, d_message_w);
-    TheSession().Messages.Add_Edit(TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
-                                       ? PCOLOR_REALLY_BLUE
-                                       : TheSession().ColorIdx,
-                                   kTpfText, nullptr, '_', d_message_w);
+    TheSession().Messages.Add_Edit(
+        TheSession().ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                    : TheSession().ColorIdx,
+        kTextFont, kTextFlags, nullptr, '_', d_message_w);
   }
 
   /*........................................................................
@@ -3062,7 +3071,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   if (!TheNetwork().modem_response().empty()) {
     TheSession().Messages.Add_Message(nullptr, 0,
                                       TheNetwork().modem_response().c_str(),
-                                      PCOLOR_BROWN, kTpfText, -1);
+                                      PCOLOR_BROWN, kTextFont, kTextFlags, -1);
   }
 
   TheNetwork().modem_response().clear();
@@ -3640,12 +3649,12 @@ int Com_Scenario_Dialog(bool skirmish) {
                   TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                       ? PCOLOR_REALLY_BLUE
                       : TheSession().ColorIdx,
-                  kTpfText, -1);
+                  kTextFont, kTextFlags, -1);
               TheSession().Messages.Add_Edit(
                   TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                       ? PCOLOR_REALLY_BLUE
                       : TheSession().ColorIdx,
-                  kTpfText, nullptr, '_', d_message_w);
+                  kTextFont, kTextFlags, nullptr, '_', d_message_w);
 
               display = std::max(display, REDRAW_MESSAGE);
             } /* end of send message */
@@ -3988,7 +3997,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                           PCOLOR_DIALOG_BLUE
                       ? PCOLOR_REALLY_BLUE
                       : static_cast<PlayerColorType>(ReceivePacket.ID),
-                  kTpfText, -1);
+                  kTextFont, kTextFlags, -1);
 
               PlaySoundEffect(VOC_INCOMING_MESSAGE);
               display = std::max(display, REDRAW_MESSAGE);
@@ -4659,57 +4668,58 @@ int Com_Show_Scenario_Dialog() {
   ........................................................................*/
   game::GadgetClass* commands = nullptr;  // button list
 
-  EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX, kTpfText, d_name_x,
-                     d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
+  EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX, kTextFont,
+                     kTextFlags, d_name_x, d_name_y, d_name_w, d_name_h,
+                     EditClass::kAlphanumeric);
 #ifdef OLDWAY
-  TextButtonClass gdibtn(kButtonGdi, TXT_ALLIES, kTpfButton, d_gdi_x, d_gdi_y,
-                         d_gdi_w, d_gdi_h);
-  TextButtonClass nodbtn(kButtonNod, TXT_SOVIET, kTpfButton, d_nod_x, d_nod_y,
-                         d_nod_w, d_nod_h);
+  TextButtonClass gdibtn(kButtonGdi, TXT_ALLIES, kButtonFont, kButtonFlags,
+                         d_gdi_x, d_gdi_y, d_gdi_w, d_gdi_h);
+  TextButtonClass nodbtn(kButtonNod, TXT_SOVIET, kButtonFont, kButtonFlags,
+                         d_nod_x, d_nod_y, d_nod_w, d_nod_h);
 #else   // OLDWAY
   char housetext[25] = "";
-  DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTpfText,
-                         d_house_x, d_house_y, d_house_w, d_house_h,
+  DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTextFont,
+                         kTextFlags, d_house_x, d_house_y, d_house_w, d_house_h,
                          MixArchive::RetrieveData("BTN-UP.SHP"),
                          MixArchive::RetrieveData("BTN-DN.SHP"));
 #endif  // OLDWAY
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
-                            d_cancel_y, d_cancel_w);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kButtonFont,
+                            kButtonFlags, d_cancel_x, d_cancel_y, d_cancel_w);
   ListClass gamelist(kButtonGamelist, d_gamelist_x, d_gamelist_y, d_gamelist_w,
-                     d_gamelist_h, kTpfText,
+                     d_gamelist_h, kTextFont, kTextFlags,
                      MixArchive::RetrieveData("BTN-UP.SHP"),
                      MixArchive::RetrieveData("BTN-DN.SHP"));
   ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
-                            d_playerlist_w, d_playerlist_h, kTpfText,
-                            MixArchive::RetrieveData("BTN-UP.SHP"),
+                            d_playerlist_w, d_playerlist_h, kTextFont,
+                            kTextFlags, MixArchive::RetrieveData("BTN-UP.SHP"),
                             MixArchive::RetrieveData("BTN-DN.SHP"));
 
   GaugeClass countgauge(kButtonCount, d_count_x, d_count_y, d_count_w,
                         d_count_h);
   char staticcountbuff[35];
-  StaticButtonClass staticcount(0, "     ", kTpfText, d_count_x + d_count_w + 6,
-                                d_count_y);
+  StaticButtonClass staticcount(0, "     ", kTextFont, kTextFlags,
+                                d_count_x + d_count_w + 6, d_count_y);
 
   GaugeClass levelgauge(kButtonLevel, d_level_x, d_level_y, d_level_w,
                         d_level_h);
   char staticlevelbuff[35];
-  StaticButtonClass staticlevel(0, "     ", kTpfText, d_level_x + d_level_w + 6,
-                                d_level_y);
+  StaticButtonClass staticlevel(0, "     ", kTextFont, kTextFlags,
+                                d_level_x + d_level_w + 6, d_level_y);
 
   GaugeClass creditsgauge(kButtonCredits, d_credits_x, d_credits_y, d_credits_w,
                           d_credits_h);
   char staticcreditsbuff[35];
-  StaticButtonClass staticcredits(0, "         ", kTpfText,
+  StaticButtonClass staticcredits(0, "         ", kTextFont, kTextFlags,
                                   d_credits_x + d_credits_w + 6, d_credits_y);
 
   GaugeClass aiplayersgauge(kButtonAiPlayers, d_aiplayers_x, d_aiplayers_y,
                             d_aiplayers_w, d_aiplayers_h);
   char staticaibuff[35];
-  StaticButtonClass staticai(0, "     ", kTpfText,
+  StaticButtonClass staticai(0, "     ", kTextFont, kTextFlags,
                              d_aiplayers_x + d_aiplayers_w + 6, d_aiplayers_y);
 
   CheckListClass optionlist(kButtonOptions, d_options_x, d_options_y,
-                            d_options_w, d_options_h, kTpfText,
+                            d_options_w, d_options_h, kTextFont, kTextFlags,
                             MixArchive::RetrieveData("BTN-UP.SHP"),
                             MixArchive::RetrieveData("BTN-DN.SHP"));
 
@@ -4826,10 +4836,10 @@ int Com_Show_Scenario_Dialog() {
   TheSession().Messages.Init(
       d_message_x + 1, d_message_y + 1, 7, MAX_MESSAGE_LENGTH, d_txt6_h,
       d_send_x + 2, d_send_y + 2, 1, 20, MAX_MESSAGE_LENGTH - 5, d_message_w);
-  TheSession().Messages.Add_Edit(TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
-                                     ? PCOLOR_REALLY_BLUE
-                                     : TheSession().ColorIdx,
-                                 kTpfText, nullptr, '_', d_message_w);
+  TheSession().Messages.Add_Edit(
+      TheSession().ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                  : TheSession().ColorIdx,
+      kTextFont, kTextFlags, nullptr, '_', d_message_w);
   TheSession().WWChat = false;
 
   /*........................................................................
@@ -4847,7 +4857,7 @@ int Com_Show_Scenario_Dialog() {
   if (!TheNetwork().modem_response().empty()) {
     TheSession().Messages.Add_Message(nullptr, 0,
                                       TheNetwork().modem_response().c_str(),
-                                      PCOLOR_BROWN, kTpfText, -1);
+                                      PCOLOR_BROWN, kTextFont, kTextFlags, -1);
   }
 
   TheNetwork().modem_response().clear();
@@ -5135,9 +5145,9 @@ int Com_Show_Scenario_Dialog() {
                   game::TheMouse().x() <= d_options_x + d_options_w &&
                   game::TheMouse().y() >= d_options_y &&
                   game::TheMouse().y() <= d_options_y + d_options_h)) {
-        TheSession().Messages.Add_Message(nullptr, 0,
-                                          Text_String(TXT_ONLY_HOST_CAN_MODIFY),
-                                          PCOLOR_BROWN, kTpfText, 1200);
+        TheSession().Messages.Add_Message(
+            nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
+            kTextFont, kTextFlags, 1200);
         PlaySoundEffect(VOC_SYS_ERROR);
         display = std::max(display, REDRAW_MESSAGE);
         if (housebtn.IsDropped) {
@@ -5256,12 +5266,12 @@ int Com_Show_Scenario_Dialog() {
               TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                   ? PCOLOR_REALLY_BLUE
                   : TheSession().ColorIdx,
-              kTpfText, -1);
+              kTextFont, kTextFlags, -1);
           TheSession().Messages.Add_Edit(
               TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                   ? PCOLOR_REALLY_BLUE
                   : TheSession().ColorIdx,
-              kTpfText, nullptr, '_', d_message_w);
+              kTextFont, kTextFlags, nullptr, '_', d_message_w);
           display = std::max(display, REDRAW_MESSAGE);
         }
         break;
@@ -5849,7 +5859,7 @@ int Com_Show_Scenario_Dialog() {
                         PCOLOR_DIALOG_BLUE
                     ? PCOLOR_REALLY_BLUE
                     : static_cast<PlayerColorType>(ReceivePacket.ID),
-                kTpfText, -1);
+                kTextFont, kTextFlags, -1);
 
             PlaySoundEffect(VOC_INCOMING_MESSAGE);
             display = std::max(display, REDRAW_MESSAGE);
@@ -6136,22 +6146,24 @@ static int Phone_Dialog() {
   ........................................................................*/
 
   ListClass phonelist(kButtonPhonelist, d_phonelist_x, d_phonelist_y,
-                      d_phonelist_w, d_phonelist_h, kTpfText,
+                      d_phonelist_w, d_phonelist_h, kTextFont, kTextFlags,
                       MixArchive::RetrieveData("BTN-UP.SHP"),
                       MixArchive::RetrieveData("BTN-DN.SHP"));
-  TextButtonClass addbtn(kButtonAdd, TXT_ADD, kTpfButton, d_add_x, d_add_y,
-                         d_add_w, d_add_h);
-  TextButtonClass editbtn(kButtonEdit, TXT_EDIT, kTpfButton, d_edit_x, d_edit_y,
-                          d_edit_w, d_edit_h);
-  TextButtonClass deletebtn(kButtonDelete, TXT_DELETE_BUTTON, kTpfButton,
-                            d_delete_x, d_delete_y, d_delete_w, d_delete_h);
-  TextButtonClass dialbtn(kButtonDial, TXT_DIAL, kTpfButton, d_dial_x, d_dial_y,
-                          d_dial_w, d_dial_h);
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
-                            d_cancel_y, d_cancel_w, d_cancel_h);
+  TextButtonClass addbtn(kButtonAdd, TXT_ADD, kButtonFont, kButtonFlags,
+                         d_add_x, d_add_y, d_add_w, d_add_h);
+  TextButtonClass editbtn(kButtonEdit, TXT_EDIT, kButtonFont, kButtonFlags,
+                          d_edit_x, d_edit_y, d_edit_w, d_edit_h);
+  TextButtonClass deletebtn(kButtonDelete, TXT_DELETE_BUTTON, kButtonFont,
+                            kButtonFlags, d_delete_x, d_delete_y, d_delete_w,
+                            d_delete_h);
+  TextButtonClass dialbtn(kButtonDial, TXT_DIAL, kButtonFont, kButtonFlags,
+                          d_dial_x, d_dial_y, d_dial_w, d_dial_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kButtonFont,
+                            kButtonFlags, d_cancel_x, d_cancel_y, d_cancel_w,
+                            d_cancel_h);
   EditClass numedit(kButtonNumedit, phone_num, PhoneEntryClass::PHONE_MAX_NUM,
-                    kTpfText, d_numedit_x, d_numedit_y, d_numedit_w,
-                    d_numedit_h, EditClass::kAlphanumeric);
+                    kTextFont, kTextFlags, d_numedit_x, d_numedit_y,
+                    d_numedit_w, d_numedit_h, EditClass::kAlphanumeric);
 
   /*
   ------------------------- Build the button list --------------------------
@@ -6663,20 +6675,22 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   ........................................................................*/
 
   EditClass nameedit(kButtonName, namebuf, PhoneEntryClass::PHONE_MAX_NAME,
-                     kTpfText, d_name_x, d_name_y, d_name_w, d_name_h,
-                     EditClass::kAlphanumeric);
+                     kTextFont, kTextFlags, d_name_x, d_name_y, d_name_w,
+                     d_name_h, EditClass::kAlphanumeric);
   EditClass numedit(kButtonNumber, numbuf, PhoneEntryClass::PHONE_MAX_NUM,
-                    kTpfText, d_number_x, d_number_y, d_number_w, d_number_h,
-                    EditClass::kAlphanumeric);
-  TextButtonClass defaultbtn(kButtonDefault, TXT_DEFAULT_SETTINGS, kTpfButton,
-                             d_default_x, d_default_y, d_default_w,
-                             d_default_h);
-  TextButtonClass custombtn(kButtonCustom, TXT_CUSTOM_SETTINGS, kTpfButton,
-                            d_custom_x, d_custom_y, d_custom_w, d_custom_h);
-  TextButtonClass savebtn(kButtonSave, TXT_SAVE_BUTTON, kTpfButton, d_save_x,
-                          d_save_y, d_save_w, d_save_h);
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
-                            d_cancel_y, d_cancel_w, d_cancel_h);
+                    kTextFont, kTextFlags, d_number_x, d_number_y, d_number_w,
+                    d_number_h, EditClass::kAlphanumeric);
+  TextButtonClass defaultbtn(kButtonDefault, TXT_DEFAULT_SETTINGS, kButtonFont,
+                             kButtonFlags, d_default_x, d_default_y,
+                             d_default_w, d_default_h);
+  TextButtonClass custombtn(kButtonCustom, TXT_CUSTOM_SETTINGS, kButtonFont,
+                            kButtonFlags, d_custom_x, d_custom_y, d_custom_w,
+                            d_custom_h);
+  TextButtonClass savebtn(kButtonSave, TXT_SAVE_BUTTON, kButtonFont,
+                          kButtonFlags, d_save_x, d_save_y, d_save_w, d_save_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kButtonFont,
+                            kButtonFlags, d_cancel_x, d_cancel_y, d_cancel_w,
+                            d_cancel_h);
 
   /*
   ------------------------- Build the button list --------------------------

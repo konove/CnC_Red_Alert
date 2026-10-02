@@ -234,50 +234,51 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   const auto pShpUnexpand = MixArchive::RetrieveData("unexp.shp");
 
   IconListClass chatlist(kButtonChatlist, d_chatlist_x, d_chatlist_y,
-                         d_chatlist_w, d_chatlist_h, TPF_TYPE,
+                         d_chatlist_w, d_chatlist_h, FontType::kType, TPF_NONE,
                          MixArchive::RetrieveData("BTN-UP.SHP"),
                          MixArchive::RetrieveData("BTN-DN.SHP"), true, 0, 500);
   ShapeButtonClass ExpandChanBtn(kButtonExpandchannels, pShpExpand,
                                  d_chanlist_x + d_chanlist_w - 17,
                                  d_chanlist_y - 14);
   IconListClass chanlist(kButtonChanlist, d_chanlist_x, d_chanlist_y,
-                         d_chanlist_w, d_chanlist_h, TPF_TYPE,
+                         d_chanlist_w, d_chanlist_h, FontType::kType, TPF_NONE,
                          MixArchive::RetrieveData("BTN-UP.SHP"),
                          MixArchive::RetrieveData("BTN-DN.SHP"), true, 1);
   ShapeButtonClass ExpandUserBtn(kButtonExpandusers, pShpExpand,
                                  d_userlist_x + d_userlist_w - 17,
                                  d_userlist_y - 14);
   IconListClass userlist(kButtonUserlist, d_userlist_x, d_userlist_y,
-                         d_userlist_w, d_userlist_h, TPF_TYPE,
+                         d_userlist_w, d_userlist_h, FontType::kType, TPF_NONE,
                          MixArchive::RetrieveData("BTN-UP.SHP"),
                          MixArchive::RetrieveData("BTN-DN.SHP"), true, 2);
-  TextButtonClass ActionBtn(kButtonAction, TXT_WOL_ACTION, kTpfButton,
-                            d_action_x, d_action_y, d_action_w);
-  TextButtonClass CreateBtn(kButtonCreate, TXT_WOL_NEWSOMETHING, kTpfButton,
-                            d_create_x, d_create_y, d_create_w);
-  TextButtonClass JoinBtn(kButtonJoin, TXT_WOL_JOIN, kTpfButton, d_join_x,
-                          d_join_y, d_join_w);
-  TextButtonClass BackBtn(kButtonBack, TXT_WOL_BACK, kTpfButton, d_back_x,
-                          d_back_y, d_back_w);
+  TextButtonClass ActionBtn(kButtonAction, TXT_WOL_ACTION, kButtonFont,
+                            kButtonFlags, d_action_x, d_action_y, d_action_w);
+  TextButtonClass CreateBtn(kButtonCreate, TXT_WOL_NEWSOMETHING, kButtonFont,
+                            kButtonFlags, d_create_x, d_create_y, d_create_w);
+  TextButtonClass JoinBtn(kButtonJoin, TXT_WOL_JOIN, kButtonFont, kButtonFlags,
+                          d_join_x, d_join_y, d_join_w);
+  TextButtonClass BackBtn(kButtonBack, TXT_WOL_BACK, kButtonFont, kButtonFlags,
+                          d_back_x, d_back_y, d_back_w);
   char* szRecordToStartWith = nullptr;
   if (pWO->bShowRankRA) {
     szRecordToStartWith = pWO->szMyRecord;
   } else {
     szRecordToStartWith = pWO->szMyRecordAM;
   }
-  StaticButtonClass chatlistTitle(0, szRecordToStartWith, TPF_TYPE,
-                                  d_chatlist_x + 2, d_chatlist_y - 13,
+  StaticButtonClass chatlistTitle(0, szRecordToStartWith, FontType::kType,
+                                  TPF_NONE, d_chatlist_x + 2, d_chatlist_y - 13,
                                   d_chatlist_w - 4, 12);
-  StaticButtonClass chanlistTitle(0, "", TPF_TYPE, d_chanlist_x + 2,
-                                  d_chanlist_y - 16 + 4, d_chanlist_w - 4 - 16,
-                                  12);
-  StaticButtonClass userlistTitle(0, TXT_WOL_NOUSERLIST, TPF_TYPE,
-                                  d_userlist_x + 2, d_userlist_y - 16 + 4,
-                                  d_userlist_w - 4 - (16 * 4), 12);
+  StaticButtonClass chanlistTitle(0, "", FontType::kType, TPF_NONE,
+                                  d_chanlist_x + 2, d_chanlist_y - 16 + 4,
+                                  d_chanlist_w - 4 - 16, 12);
+  StaticButtonClass userlistTitle(
+      0, TXT_WOL_NOUSERLIST, FontType::kType, TPF_NONE, d_userlist_x + 2,
+      d_userlist_y - 16 + 4, d_userlist_w - 4 - (16 * 4), 12);
 
   char szSendBuffer[MAXCHATSENDLENGTH] = "";
-  EditClass sendedit(kButtonSendedit, szSendBuffer, MAXCHATSENDLENGTH, kTpfText,
-                     d_send_x, d_send_y, d_send_w, d_send_h);
+  EditClass sendedit(kButtonSendedit, szSendBuffer, MAXCHATSENDLENGTH,
+                     kTextFont, kTextFlags, d_send_x, d_send_y, d_send_w,
+                     d_send_h);
 
   const auto pShpRankRA = MixArchive::RetrieveData("rank_ra.shp");
   const auto pShpRankAM = MixArchive::RetrieveData("rank_am.shp");

@@ -112,14 +112,15 @@ bool Get_Broadcast_Addresses() {
   game::GadgetClass* commands = nullptr;  // button list
   ColorListClass ip_address_list(kButtonIplist, d_ip_address_list_x,
                                  d_ip_address_list_y, d_ip_address_list_w,
-                                 d_ip_address_list_h, kTpfText,
+                                 d_ip_address_list_h, kTextFont, kTextFlags,
                                  MixArchive::RetrieveData("BTN-UP.SHP"),
                                  MixArchive::RetrieveData("BTN-DN.SHP"));
 
-  TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w,
-                        d_ok_h);
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
-                            d_cancel_y, d_cancel_w, d_cancel_h);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, kButtonFont, kButtonFlags, d_ok_x,
+                        d_ok_y, d_ok_w, d_ok_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kButtonFont,
+                            kButtonFlags, d_cancel_x, d_cancel_y, d_cancel_w,
+                            d_cancel_h);
 
   ip_address_list.Set_Selected_Style(ColorListClass::SELECT_NORMAL);
 

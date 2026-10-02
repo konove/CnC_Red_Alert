@@ -234,19 +234,19 @@ bool LoadOptionsClass::Process() {
       break;
   }
 
-  TextButtonClass button(btn_id, btn_txt, kTpfButton, d_button_x, d_button_y,
-                         d_button_w);
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
-                            d_cancel_y, d_cancel_w);
+  TextButtonClass button(btn_id, btn_txt, kButtonFont, kButtonFlags, d_button_x,
+                         d_button_y, d_button_w);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kButtonFont,
+                            kButtonFlags, d_cancel_x, d_cancel_y, d_cancel_w);
 
   ListClass listbtn(kButtonList, d_list_x, d_list_y, d_list_w, list_ht,
-                    TPF_6PT_GRAD | TPF_NOSHADOW,
+                    FontType::k6PointGradient, TPF_NOSHADOW,
                     MixArchive::RetrieveData("BTN-UP.SHP"),
                     MixArchive::RetrieveData("BTN-DN.SHP"));
 
   EditClass editbtn(kButtonEdit, game_descr, sizeof(game_descr) - 4,
-                    TPF_6PT_GRAD | TPF_NOSHADOW, d_edit_x, d_edit_y, d_edit_w,
-                    -1, EditClass::kAlphanumeric);
+                    FontType::k6PointGradient, TPF_NOSHADOW, d_edit_x, d_edit_y,
+                    d_edit_w, -1, EditClass::kAlphanumeric);
 
   /*
   **	Initialize.

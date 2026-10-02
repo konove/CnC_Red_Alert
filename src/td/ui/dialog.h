@@ -79,6 +79,12 @@ TextStyle TextStyleFor(FontType font, TextPrintType flags, int fore = kTBlack,
 FontType FontOf(TextPrintType combined);
 TextPrintType StyleOf(TextPrintType combined);
 
+// Whether the packed flags of the old TextPrintType tested true for
+// `flags & TPF_6PT_GRAD` (6) with `font`: the list, colour list and button
+// skins used that test to pick their gradient look, and it matched every font
+// index with bit 1 or 2 set, not only the gradient font's.
+bool HasGradientFontBits(FontType font);
+
 void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
                        int fore, int back, FontType font, TextPrintType flag);
 

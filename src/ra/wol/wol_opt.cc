@@ -98,26 +98,28 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   */
   game::ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass OkBtn(kButtonOk, TXT_OK, kTpfButton, d_ok_x, d_ok_y, d_ok_w);
+  TextButtonClass OkBtn(kButtonOk, TXT_OK, kButtonFont, kButtonFlags, d_ok_x,
+                        d_ok_y, d_ok_w);
 
   BigCheckBoxClass FindCheck(kCheckFind, d_list_x, d_list_y, d_list_w, d_list_h,
-                             TXT_WOL_OPTFIND, TPF_6PT_GRAD | TPF_NOSHADOW,
-                             pWO->bFindEnabled);
+                             TXT_WOL_OPTFIND, FontType::k6PointGradient,
+                             TPF_NOSHADOW, pWO->bFindEnabled);
   BigCheckBoxClass PageCheck(kCheckPage, d_list_x, d_list_y + d_list_h + 2,
                              d_list_w, d_list_h, TXT_WOL_OPTPAGE,
-                             TPF_6PT_GRAD | TPF_NOSHADOW, pWO->bPageEnabled);
-  BigCheckBoxClass LanguageCheck(kCheckLanguage, d_list_x,
-                                 d_list_y + (2 * (d_list_h + 2)), d_list_w,
-                                 d_list_h, TXT_WOL_OPTLANGUAGE,
-                                 TPF_6PT_GRAD | TPF_NOSHADOW, pWO->bLangFilter);
+                             FontType::k6PointGradient, TPF_NOSHADOW,
+                             pWO->bPageEnabled);
+  BigCheckBoxClass LanguageCheck(
+      kCheckLanguage, d_list_x, d_list_y + (2 * (d_list_h + 2)), d_list_w,
+      d_list_h, TXT_WOL_OPTLANGUAGE, FontType::k6PointGradient, TPF_NOSHADOW,
+      pWO->bLangFilter);
   BigCheckBoxClass GamescopeCheck(
       kCheckAllgames, d_list_x, d_list_y + (3 * (d_list_h + 2)), d_list_w,
-      d_list_h, TXT_WOL_OPTGAMESCOPE, TPF_6PT_GRAD | TPF_NOSHADOW,
+      d_list_h, TXT_WOL_OPTGAMESCOPE, FontType::k6PointGradient, TPF_NOSHADOW,
       !pWO->bAllGamesShown);
-  BigCheckBoxClass RankAMCheck(kCheckRankam, d_list_x,
-                               d_list_y + (4 * (d_list_h + 2)), d_list_w,
-                               d_list_h, TXT_WOL_OPTRANKAM,
-                               TPF_6PT_GRAD | TPF_NOSHADOW, !pWO->bShowRankRA);
+  BigCheckBoxClass RankAMCheck(
+      kCheckRankam, d_list_x, d_list_y + (4 * (d_list_h + 2)), d_list_w,
+      d_list_h, TXT_WOL_OPTRANKAM, FontType::k6PointGradient, TPF_NOSHADOW,
+      !pWO->bShowRankRA);
 
   /*
   **	Initialize.

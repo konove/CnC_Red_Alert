@@ -116,14 +116,12 @@ const char* TriggerClass::Description() const { return Class->Description(); }
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void TriggerClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                           int width, int height, bool selected,
+                           int width, int height, bool selected, FontType font,
                            TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = Get_Color_Scheme();
     static const int _tabs[] = {13, 40};
-    const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
-    if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
-        font == static_cast<uint32_t>(TPF_EFNT)) {
+    if (font == FontType::k6PointGradient || font == FontType::kEditor) {
       if (selected) {
         flags = flags | TPF_BRIGHT_COLOR;
         view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
@@ -133,14 +131,14 @@ void TriggerClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
         }
       }
 
-      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack,
-                              FontOf(flags), StyleOf(flags), width, _tabs);
+      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
+                              flags, width, _tabs);
     } else {
       Conquer_Clip_Text_Print(
           view, Description(), x, y,
           (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-          kTBlack, FontOf(flags), StyleOf(flags), width, _tabs);
+          kTBlack, font, flags, width, _tabs);
     }
   }
 }

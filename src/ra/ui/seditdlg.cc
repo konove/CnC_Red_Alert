@@ -113,7 +113,7 @@ const char* SimpleEditDlgClass::Show() {
           }
   */
 
-  // The prompts print in kTpfText; see the Fancy_Text_Print() calls below.
+  // The prompts print in kTextFont; see the Fancy_Text_Print() calls below.
   const FontStyle font = TextFontStyle(kTextFont, kTextFlags);
   const int d_prompt_w = StringPixelWidth(font, szPrompt.c_str());
   const int d_prompt_x = d_dialog_x + x_margin;
@@ -169,23 +169,23 @@ const char* SimpleEditDlgClass::Show() {
   */
   game::ControlClass* commands = nullptr;  // the button list
 
-  TextButtonClass OkBtn(kButtonOk, szOkButton, kTpfButton, d_ok_x, d_ok_y,
-                        d_ok_w);
-  TextButtonClass CancelBtn(kButtonCancel, szCancelButton, kTpfButton,
-                            d_cancel_x, d_cancel_y, d_cancel_w);
-  TextButtonClass MiddleBtn(kButtonMiddle, szMiddleButton, kTpfButton, d_mid_x,
-                            d_mid_y, d_mid_w);
+  TextButtonClass OkBtn(kButtonOk, szOkButton, kButtonFont, kButtonFlags,
+                        d_ok_x, d_ok_y, d_ok_w);
+  TextButtonClass CancelBtn(kButtonCancel, szCancelButton, kButtonFont,
+                            kButtonFlags, d_cancel_x, d_cancel_y, d_cancel_w);
+  TextButtonClass MiddleBtn(kButtonMiddle, szMiddleButton, kButtonFont,
+                            kButtonFlags, d_mid_x, d_mid_y, d_mid_w);
 
   WOLEditClass EditBox(
       kButtonEdit, szEdit,
       std::min(static_cast<int>(sizeof(szEdit)), iEditCharsAccept),
-      TPF_6PT_GRAD | TPF_NOSHADOW, d_edit_x, d_edit_y, d_edit_w, -1,
+      FontType::k6PointGradient, TPF_NOSHADOW, d_edit_x, d_edit_y, d_edit_w, -1,
       EditClass::kAlphanumeric);
   WOLEditClass EditBox2(
       kButtonEdit2, szEdit2,
       std::min(static_cast<int>(sizeof(szEdit2)), iEditCharsAccept2),
-      TPF_6PT_GRAD | TPF_NOSHADOW, d_edit2_x, d_edit2_y, d_edit2_w, -1,
-      EditClass::kAlphanumeric);
+      FontType::k6PointGradient, TPF_NOSHADOW, d_edit2_x, d_edit2_y, d_edit2_w,
+      -1, EditClass::kAlphanumeric);
 
   /*
   **	Initialize.

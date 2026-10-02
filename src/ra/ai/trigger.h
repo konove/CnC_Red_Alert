@@ -104,7 +104,8 @@ class TriggerClass {
   [[nodiscard]] Target As_Target() const;
   [[nodiscard]] const char* Description() const;
   void Draw_It(PixelView& view, int /*unused*/, int x, int y, int width,
-               int height, bool selected, TextPrintType flags) const;
+               int height, bool selected, FontType font,
+               TextPrintType flags) const;
   [[nodiscard]] const char* Name() const { return Class->Name(); }
 
   /*

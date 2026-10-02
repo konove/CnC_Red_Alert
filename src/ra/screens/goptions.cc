@@ -195,7 +195,8 @@ void GameOptionsClass::Process() {
           if (!TheScenario().bOtherProposesDraw) {
             g = owned_buttons
                     .emplace_back(std::make_unique<TextButtonClass>(
-                        kButtonDraw, TXT_WOL_RETRACT_DRAW, kTpfButton, 0, y))
+                        kButtonDraw, TXT_WOL_RETRACT_DRAW, kButtonFont,
+                        kButtonFlags, 0, y))
                     .get();
           } else {
             continue;  //	Game will end now anyway.
@@ -204,12 +205,14 @@ void GameOptionsClass::Process() {
           if (!TheScenario().bOtherProposesDraw) {
             g = owned_buttons
                     .emplace_back(std::make_unique<TextButtonClass>(
-                        kButtonDraw, TXT_WOL_PROPOSE_DRAW, kTpfButton, 0, y))
+                        kButtonDraw, TXT_WOL_PROPOSE_DRAW, kButtonFont,
+                        kButtonFlags, 0, y))
                     .get();
           } else {
             g = owned_buttons
                     .emplace_back(std::make_unique<TextButtonClass>(
-                        kButtonDraw, TXT_WOL_ACCEPT_DRAW, kTpfButton, 0, y))
+                        kButtonDraw, TXT_WOL_ACCEPT_DRAW, kButtonFont,
+                        kButtonFlags, 0, y))
                     .get();
           }
         }
@@ -220,7 +223,7 @@ void GameOptionsClass::Process() {
       g = owned_buttons
               .emplace_back(std::make_unique<TextButtonClass>(
                   static_cast<unsigned>(base::At(_constants, index).ID), text,
-                  kTpfButton, 0, y))
+                  kButtonFont, kButtonFlags, 0, y))
               .get();
     }
 

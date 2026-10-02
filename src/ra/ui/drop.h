@@ -62,8 +62,9 @@ namespace ra {
 
 class DropListClass : public EditClass {
  public:
-  DropListClass(int id, std::span<char> text, int max_len, TextPrintType flags, int x,
-                int y, int w, int h, std::span<const std::byte> up, std::span<const std::byte> down);
+  DropListClass(int id, std::span<char> text, int max_len, FontType font,
+                TextPrintType flags, int x, int y, int w, int h,
+                std::span<const std::byte> up, std::span<const std::byte> down);
   ~DropListClass() override = default;
   DropListClass(DropListClass&&) = delete;
   DropListClass& operator=(DropListClass&&) = delete;
@@ -129,8 +130,10 @@ class DropListClass : public EditClass {
 template <class T>
 class TDropListClass : public EditClass {
  public:
-  TDropListClass(int id, std::span<char> text, int max_len, TextPrintType flags, int x,
-                 int y, int w, int h, std::span<const std::byte> up, std::span<const std::byte> down);
+  TDropListClass(int id, std::span<char> text, int max_len, FontType font,
+                 TextPrintType flags, int x, int y, int w, int h,
+                 std::span<const std::byte> up,
+                 std::span<const std::byte> down);
   TDropListClass(const TDropListClass<T>&) = delete;
   ~TDropListClass() override = default;
   TDropListClass(TDropListClass&&) = delete;
@@ -200,15 +203,16 @@ class TDropListClass : public EditClass {
 
 template <class T>
 TDropListClass<T>::TDropListClass(int id, std::span<char> text, int max_len,
-                                  TextPrintType flags, int x, int y, int w,
-                                  int h, std::span<const std::byte> up,
+                                  FontType font, TextPrintType flags, int x,
+                                  int y, int w, int h,
+                                  std::span<const std::byte> up,
                                   std::span<const std::byte> down)
-    : EditClass(id, text, max_len, flags, x, y, w, 9, kAlphanumeric),
+    : EditClass(id, text, max_len, font, flags, x, y, w, 9, kAlphanumeric),
 
       ListHeight(h),
       DropButton(0, down, x + w, y),
       List(0, x, y + engine::gfx::KeyframeHeight(down),
-           w + engine::gfx::KeyframeWidth(down), h, flags, up, down) {
+           w + engine::gfx::KeyframeWidth(down), h, font, flags, up, down) {
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);
 }

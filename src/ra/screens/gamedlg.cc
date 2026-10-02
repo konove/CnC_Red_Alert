@@ -185,16 +185,18 @@ void GameControlsClass::Process() {
                          d_speed_h, true);
   SliderClass scrate_btn(kButtonScrollrate, d_scroll_x, d_scroll_y, d_scroll_w,
                          d_scroll_h, true);
-  TextButtonClass visual_btn(kButtonVisual, TXT_VISUAL_CONTROLS, kTpfButton,
-                             d_visual_x, d_visual_y, d_visual_w, d_visual_h);
-  TextButtonClass sound_btn(kButtonSound, TXT_SOUND_CONTROLS, kTpfButton,
-                            d_sound_x, d_sound_y, d_sound_w, d_sound_h);
-  TextButtonClass okbtn(kButtonOk, TXT_OPTIONS_MENU, kTpfButton, d_ok_x,
-                        d_ok_y);
+  TextButtonClass visual_btn(kButtonVisual, TXT_VISUAL_CONTROLS, kButtonFont,
+                             kButtonFlags, d_visual_x, d_visual_y, d_visual_w,
+                             d_visual_h);
+  TextButtonClass sound_btn(kButtonSound, TXT_SOUND_CONTROLS, kButtonFont,
+                            kButtonFlags, d_sound_x, d_sound_y, d_sound_w,
+                            d_sound_h);
+  TextButtonClass okbtn(kButtonOk, TXT_OPTIONS_MENU, kButtonFont, kButtonFlags,
+                        d_ok_x, d_ok_y);
   okbtn.X = (TheScreen().visible_view().width() - okbtn.Width) / 2;
 
-  TextButtonClass wol_btn(kButtonWolapi, TXT_WOL_OPTTITLE, kTpfButton, d_wol_x,
-                          d_wol_y, d_wol_w, d_wol_h);
+  TextButtonClass wol_btn(kButtonWolapi, TXT_WOL_OPTTITLE, kButtonFont,
+                          kButtonFlags, d_wol_x, d_wol_y, d_wol_w, d_wol_h);
 
   /*
   **	Various Inits.

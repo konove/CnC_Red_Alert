@@ -60,7 +60,6 @@
 #include "ra/ai/trigtype.h"
 
 #include <cctype>
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -113,12 +112,6 @@
 namespace ra {
 
 using enum engine::window::KeyNumber;
-
-// The low nibble of the text print flags selects the font.
-static constexpr bool Is_Font(const TextPrintType flags,
-                              const TextPrintType font) {
-  return (static_cast<uint32_t>(flags) & 0x0FU) == static_cast<uint32_t>(font);
-}
 
 /***********************************************************************************************
  * TriggerTypeClass::TriggerTypeClass -- Constructor for trigger class object. *
@@ -355,13 +348,14 @@ bool TriggerTypeClass::Edit() {
   */
   char eventtext[kEntrySize] = "";
   TDropListClass<EventChoiceClass*> event1list(
-      kEventList, eventtext, sizeof(eventtext), TPF_EFNT | TPF_NOSHADOW, kE1X,
-      kE1Y, kEWidth, kEHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      kEventList, eventtext, sizeof(eventtext), FontType::kEditor, TPF_NOSHADOW,
+      kE1X, kE1Y, kEWidth, kEHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   char event2text[kEntrySize] = "";
   TDropListClass<EventChoiceClass*> event2list(
-      kEventList2, event2text, sizeof(event2text), TPF_EFNT | TPF_NOSHADOW,
-      kE2X, kE2Y, kEWidth, kEHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      kEventList2, event2text, sizeof(event2text), FontType::kEditor,
+      TPF_NOSHADOW, kE2X, kE2Y, kEWidth, kEHeight,
+      MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (TEventType event = TEVENT_NONE; event < TEVENT_COUNT; event++) {
     event1list.Add_Item(&EventChoices.at(event));
@@ -388,13 +382,15 @@ bool TriggerTypeClass::Edit() {
   */
   char actiontext[kEntrySize] = "";
   TDropListClass<ActionChoiceClass*> action1list(
-      kActionList, actiontext, sizeof(actiontext), TPF_EFNT | TPF_NOSHADOW,
-      kA1X, kA1Y, kEWidth, kEHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      kActionList, actiontext, sizeof(actiontext), FontType::kEditor,
+      TPF_NOSHADOW, kA1X, kA1Y, kEWidth, kEHeight,
+      MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   char action2text[kEntrySize] = "";
   TDropListClass<ActionChoiceClass*> action2list(
-      kActionList2, action2text, sizeof(action2text), TPF_EFNT | TPF_NOSHADOW,
-      kA2X, kA2Y, kEWidth, kEHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      kActionList2, action2text, sizeof(action2text), FontType::kEditor,
+      TPF_NOSHADOW, kA2X, kA2Y, kEWidth, kEHeight,
+      MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (TActionType action = TACTION_NONE; action < TACTION_COUNT; action++) {
     action1list.Add_Item(&ActionChoices.at(action));
@@ -417,8 +413,9 @@ bool TriggerTypeClass::Edit() {
   **	Optional waypoint entry field.
   */
   char way1[kWaypointSize] = "A";
-  EditClass way1data(kDataEdit, way1, sizeof(way1), TPF_EFNT | TPF_NOSHADOW,
-                     kEd1X, kEd1Y, kEdWidth, 9, EditClass::kAlpha);
+  EditClass way1data(kDataEdit, way1, sizeof(way1), FontType::kEditor,
+                     TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, 9,
+                     EditClass::kAlpha);
   if (Event_Needs(Event1.Event) == NEED_WAYPOINT) {
     if (Event1.Data.Value < 26) {
       absl::SNPrintF(way1, sizeof(way1), "%c",
@@ -431,8 +428,9 @@ bool TriggerTypeClass::Edit() {
   }
 
   char way2[kWaypointSize] = "A";
-  EditClass way2data(kDataEdit2, way2, sizeof(way2), TPF_EFNT | TPF_NOSHADOW,
-                     kEd2X, kEd2Y, kEdWidth, 9, EditClass::kAlpha);
+  EditClass way2data(kDataEdit2, way2, sizeof(way2), FontType::kEditor,
+                     TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, 9,
+                     EditClass::kAlpha);
   if (Event_Needs(Event2.Event) == NEED_WAYPOINT) {
     if (Event2.Data.Value < 26) {
       absl::SNPrintF(way2, sizeof(way2), "%c",
@@ -445,8 +443,9 @@ bool TriggerTypeClass::Edit() {
   }
 
   char way3[kWaypointSize] = "A";
-  EditClass way3data(kDataEdit3, way3, sizeof(way3), TPF_EFNT | TPF_NOSHADOW,
-                     kAd1X, kAd1Y, kEdWidth, 9, EditClass::kAlpha);
+  EditClass way3data(kDataEdit3, way3, sizeof(way3), FontType::kEditor,
+                     TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth, 9,
+                     EditClass::kAlpha);
   if (Action_Needs(Action1.Action) == NEED_WAYPOINT) {
     if (Action1.Data.Value < 26) {
       absl::SNPrintF(way3, sizeof(way3), "%c", Action1.Data.Value + 'A');
@@ -458,8 +457,9 @@ bool TriggerTypeClass::Edit() {
   }
 
   char way4[kWaypointSize] = "A";
-  EditClass way4data(kDataEdit4, way4, sizeof(way4), TPF_EFNT | TPF_NOSHADOW,
-                     kAd2X, kAd2Y, kEdWidth, 9, EditClass::kAlpha);
+  EditClass way4data(kDataEdit4, way4, sizeof(way4), FontType::kEditor,
+                     TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth, 9,
+                     EditClass::kAlpha);
   if (Action_Needs(Action2.Action) == NEED_WAYPOINT) {
     if (Action2.Data.Value < 26) {
       absl::SNPrintF(way4, sizeof(way4), "%c", Action2.Data.Value + 'A');
@@ -475,8 +475,8 @@ bool TriggerTypeClass::Edit() {
   */
   char databuf1[kGeneralSize] = "";
   EditClass event1data(kDataGeneral1, databuf1, sizeof(databuf1),
-                       TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, 9,
-                       EditClass::kNumeric);
+                       FontType::kEditor, TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
+                       9, EditClass::kNumeric);
   switch (Event_Needs(Event1.Event)) {
     case NEED_TIME:
     case NEED_NUMBER:
@@ -508,8 +508,8 @@ bool TriggerTypeClass::Edit() {
 
   char databuf2[kGeneralSize] = "";
   EditClass event2data(kDataGeneral2, databuf2, sizeof(databuf2),
-                       TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, 9,
-                       EditClass::kNumeric);
+                       FontType::kEditor, TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
+                       9, EditClass::kNumeric);
   switch (Event_Needs(Event2.Event)) {
     case NEED_TIME:
     case NEED_NUMBER:
@@ -541,16 +541,16 @@ bool TriggerTypeClass::Edit() {
 
   char actionbuf1[kGeneralSize] = "";
   EditClass action1data(kDataGeneral3, actionbuf1, sizeof(actionbuf1),
-                        TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth, 9,
-                        EditClass::kNumeric);
+                        FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
+                        9, EditClass::kNumeric);
   if (Action_Needs(Action1.Action) == NEED_NUMBER) {
     absl::SNPrintF(actionbuf1, sizeof(actionbuf1), "%d", Action1.Data.Value);
   }
 
   char actionbuf2[kGeneralSize] = "";
   EditClass action2data(kDataGeneral4, actionbuf2, sizeof(actionbuf2),
-                        TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth, 9,
-                        EditClass::kNumeric);
+                        FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
+                        9, EditClass::kNumeric);
   if (Action_Needs(Action2.Action) == NEED_NUMBER) {
     absl::SNPrintF(actionbuf2, sizeof(actionbuf2), "%d", Action2.Data.Value);
   }
@@ -559,24 +559,24 @@ bool TriggerTypeClass::Edit() {
   **	Optional team entry list.
   */
   char tbuf1[kTeamSize] = "";
-  DropListClass ttype1list(kDataTtype1, tbuf1, sizeof(tbuf1),
-                           TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass ttype1list(kDataTtype1, tbuf1, sizeof(tbuf1), FontType::kEditor,
+                           TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
   char tbuf2[kTeamSize] = "";
-  DropListClass ttype2list(kDataTtype2, tbuf2, sizeof(tbuf2),
-                           TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass ttype2list(kDataTtype2, tbuf2, sizeof(tbuf2), FontType::kEditor,
+                           TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
   char tbuf3[kTeamSize] = "";
-  DropListClass ttype3list(kDataTtype3, tbuf3, sizeof(tbuf3),
-                           TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass ttype3list(kDataTtype3, tbuf3, sizeof(tbuf3), FontType::kEditor,
+                           TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
   char tbuf4[kTeamSize] = "";
-  DropListClass ttype4list(kDataTtype4, tbuf4, sizeof(tbuf4),
-                           TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass ttype4list(kDataTtype4, tbuf4, sizeof(tbuf4), FontType::kEditor,
+                           TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
@@ -612,13 +612,15 @@ bool TriggerTypeClass::Edit() {
   */
   char trbuf1[kTeamSize] = "";
   DropListClass trtype1list(kDataTrtype1, trbuf1, sizeof(trbuf1),
-                            TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
-                            kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                            FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
+                            kEdWidth, kEdHeight,
+                            MixArchive::RetrieveData("EBTN-UP.SHP"),
                             MixArchive::RetrieveData("EBTN-DN.SHP"));
   char trbuf2[kTeamSize] = "";
   DropListClass trtype2list(kDataTrtype2, trbuf2, sizeof(trbuf2),
-                            TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
-                            kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                            FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
+                            kEdWidth, kEdHeight,
+                            MixArchive::RetrieveData("EBTN-UP.SHP"),
                             MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
@@ -645,14 +647,14 @@ bool TriggerTypeClass::Edit() {
   */
   char boolbuf1[kTeamSize] = "";
   DropListClass booltype1list(kDataBooltype1, boolbuf1, sizeof(boolbuf1),
-                              TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
-                              kEdHeight,
+                              FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
+                              kEdWidth, kEdHeight,
                               MixArchive::RetrieveData("EBTN-UP.SHP"),
                               MixArchive::RetrieveData("EBTN-DN.SHP"));
   char boolbuf2[kTeamSize] = "";
   DropListClass booltype2list(kDataBooltype2, boolbuf2, sizeof(boolbuf2),
-                              TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
-                              kEdHeight,
+                              FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
+                              kEdWidth, kEdHeight,
                               MixArchive::RetrieveData("EBTN-UP.SHP"),
                               MixArchive::RetrieveData("EBTN-DN.SHP"));
 
@@ -668,15 +670,17 @@ bool TriggerTypeClass::Edit() {
   **	Optional musical theme choice list.
   */
   char themebuf1[kDescSize] = "";
-  DropListClass themetype1list(
-      kDataTheme1, themebuf1, sizeof(themebuf1), TPF_EFNT | TPF_NOSHADOW, kAd1X,
-      kAd1Y, kEdWidth, kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
-      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  DropListClass themetype1list(kDataTheme1, themebuf1, sizeof(themebuf1),
+                               FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
+                               kEdWidth, kEdHeight,
+                               MixArchive::RetrieveData("EBTN-UP.SHP"),
+                               MixArchive::RetrieveData("EBTN-DN.SHP"));
   char themebuf2[kDescSize] = "";
-  DropListClass themetype2list(
-      kDataTheme2, themebuf2, sizeof(themebuf2), TPF_EFNT | TPF_NOSHADOW, kAd2X,
-      kAd2Y, kEdWidth, kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
-      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  DropListClass themetype2list(kDataTheme2, themebuf2, sizeof(themebuf2),
+                               FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
+                               kEdWidth, kEdHeight,
+                               MixArchive::RetrieveData("EBTN-UP.SHP"),
+                               MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
     themetype1list.Add_Item(ThemeClass::Full_Name(theme));
@@ -698,15 +702,17 @@ bool TriggerTypeClass::Edit() {
   **	Optional movie list.
   */
   char moviebuf1[kDescSize] = "";
-  DropListClass movietype1list(
-      kDataMovie1, moviebuf1, sizeof(moviebuf1), TPF_EFNT | TPF_NOSHADOW, kAd1X,
-      kAd1Y, kEdWidth, kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
-      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  DropListClass movietype1list(kDataMovie1, moviebuf1, sizeof(moviebuf1),
+                               FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
+                               kEdWidth, kEdHeight,
+                               MixArchive::RetrieveData("EBTN-UP.SHP"),
+                               MixArchive::RetrieveData("EBTN-DN.SHP"));
   char moviebuf2[kDescSize] = "";
-  DropListClass movietype2list(
-      kDataMovie2, moviebuf2, sizeof(moviebuf2), TPF_EFNT | TPF_NOSHADOW, kAd2X,
-      kAd2Y, kEdWidth, kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
-      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  DropListClass movietype2list(kDataMovie2, moviebuf2, sizeof(moviebuf2),
+                               FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
+                               kEdWidth, kEdHeight,
+                               MixArchive::RetrieveData("EBTN-UP.SHP"),
+                               MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const VQType movie : magic_enum::enum_values<VQType>()) {
     movietype1list.Add_Item(VQName.at(movie));
@@ -728,15 +734,17 @@ bool TriggerTypeClass::Edit() {
   **	Optional sound effect list.
   */
   char soundbuf1[kDescSize] = "";
-  DropListClass soundtype1list(
-      kDataSound1, soundbuf1, sizeof(soundbuf1), TPF_EFNT | TPF_NOSHADOW, kAd1X,
-      kAd1Y, kEdWidth, kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
-      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  DropListClass soundtype1list(kDataSound1, soundbuf1, sizeof(soundbuf1),
+                               FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
+                               kEdWidth, kEdHeight,
+                               MixArchive::RetrieveData("EBTN-UP.SHP"),
+                               MixArchive::RetrieveData("EBTN-DN.SHP"));
   char soundbuf2[kDescSize] = "";
-  DropListClass soundtype2list(
-      kDataSound2, soundbuf2, sizeof(soundbuf2), TPF_EFNT | TPF_NOSHADOW, kAd2X,
-      kAd2Y, kEdWidth, kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
-      MixArchive::RetrieveData("EBTN-DN.SHP"));
+  DropListClass soundtype2list(kDataSound2, soundbuf2, sizeof(soundbuf2),
+                               FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
+                               kEdWidth, kEdHeight,
+                               MixArchive::RetrieveData("EBTN-UP.SHP"),
+                               MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const VocType sound : magic_enum::enum_values<VocType>()) {
     soundtype1list.Add_Item(VocName(sound));
@@ -759,14 +767,14 @@ bool TriggerTypeClass::Edit() {
   */
   char speechbuf1[kDescSize] = "";
   DropListClass speechtype1list(kDataSpeech1, speechbuf1, sizeof(speechbuf1),
-                                TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
-                                kEdHeight,
+                                FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
+                                kEdWidth, kEdHeight,
                                 MixArchive::RetrieveData("EBTN-UP.SHP"),
                                 MixArchive::RetrieveData("EBTN-DN.SHP"));
   char speechbuf2[kDescSize] = "";
   DropListClass speechtype2list(kDataSpeech2, speechbuf2, sizeof(speechbuf2),
-                                TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
-                                kEdHeight,
+                                FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
+                                kEdWidth, kEdHeight,
                                 MixArchive::RetrieveData("EBTN-UP.SHP"),
                                 MixArchive::RetrieveData("EBTN-DN.SHP"));
 
@@ -790,14 +798,14 @@ bool TriggerTypeClass::Edit() {
   **	Optional building type entry list.
   */
   char bbuf1[kDescSize] = "";
-  DropListClass btype1list(kDataBtype1, bbuf1, sizeof(bbuf1),
-                           TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass btype1list(kDataBtype1, bbuf1, sizeof(bbuf1), FontType::kEditor,
+                           TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
   char bbuf2[kDescSize] = "";
-  DropListClass btype2list(kDataBtype2, bbuf2, sizeof(bbuf2),
-                           TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass btype2list(kDataBtype2, bbuf2, sizeof(bbuf2), FontType::kEditor,
+                           TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const StructType ss : magic_enum::enum_values<StructType>()) {
@@ -822,14 +830,14 @@ bool TriggerTypeClass::Edit() {
   **	Optional infantry type entry list.
   */
   char ibuf1[kDescSize] = "";
-  DropListClass itype1list(kDataItype1, ibuf1, sizeof(ibuf1),
-                           TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass itype1list(kDataItype1, ibuf1, sizeof(ibuf1), FontType::kEditor,
+                           TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
   char ibuf2[kDescSize] = "";
-  DropListClass itype2list(kDataItype2, ibuf2, sizeof(ibuf2),
-                           TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass itype2list(kDataItype2, ibuf2, sizeof(ibuf2), FontType::kEditor,
+                           TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const InfantryType ii : magic_enum::enum_values<InfantryType>()) {
@@ -854,14 +862,14 @@ bool TriggerTypeClass::Edit() {
   **	Optional aircraft type entry list.
   */
   char abuf1[kDescSize] = "";
-  DropListClass atype1list(kDataAtype1, abuf1, sizeof(abuf1),
-                           TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass atype1list(kDataAtype1, abuf1, sizeof(abuf1), FontType::kEditor,
+                           TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
   char abuf2[kDescSize] = "";
-  DropListClass atype2list(kDataAtype2, abuf2, sizeof(abuf2),
-                           TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass atype2list(kDataAtype2, abuf2, sizeof(abuf2), FontType::kEditor,
+                           TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const AircraftType aa : magic_enum::enum_values<AircraftType>()) {
@@ -886,14 +894,14 @@ bool TriggerTypeClass::Edit() {
   **	Optional unit type entry list.
   */
   char ubuf1[kDescSize] = "";
-  DropListClass utype1list(kDataUtype1, ubuf1, sizeof(ubuf1),
-                           TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass utype1list(kDataUtype1, ubuf1, sizeof(ubuf1), FontType::kEditor,
+                           TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
   char ubuf2[kDescSize] = "";
-  DropListClass utype2list(kDataUtype2, ubuf2, sizeof(ubuf2),
-                           TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass utype2list(kDataUtype2, ubuf2, sizeof(ubuf2), FontType::kEditor,
+                           TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const UnitType uu : magic_enum::enum_values<UnitType>()) {
@@ -919,23 +927,27 @@ bool TriggerTypeClass::Edit() {
   */
   char housebuf1[kDescSize] = "";
   DropListClass htype1list(kDataHtype1, housebuf1, sizeof(housebuf1),
-                           TPF_EFNT | TPF_NOSHADOW, kEd1X, kEd1Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                           FontType::kEditor, TPF_NOSHADOW, kEd1X, kEd1Y,
+                           kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
   char housebuf2[kDescSize] = "";
   DropListClass htype2list(kDataHtype2, housebuf2, sizeof(housebuf2),
-                           TPF_EFNT | TPF_NOSHADOW, kEd2X, kEd2Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                           FontType::kEditor, TPF_NOSHADOW, kEd2X, kEd2Y,
+                           kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
   char housebuf3[kDescSize] = "";
   DropListClass htype3list(kDataHtype3, housebuf3, sizeof(housebuf3),
-                           TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                           FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y,
+                           kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
   char housebuf4[kDescSize] = "";
   DropListClass htype4list(kDataHtype4, housebuf4, sizeof(housebuf4),
-                           TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
-                           kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
+                           FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y,
+                           kEdWidth, kEdHeight,
+                           MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const HousesType hh : magic_enum::enum_values<HousesType>()) {
@@ -971,13 +983,13 @@ bool TriggerTypeClass::Edit() {
   */
   char special1[kDescSize] = "";
   DropListClass spc1(kDataSpecial1, special1, sizeof(special1),
-                     TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth, kEdHeight,
-                     MixArchive::RetrieveData("EBTN-UP.SHP"),
+                     FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
+                     kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
                      MixArchive::RetrieveData("EBTN-DN.SHP"));
   char special2[kDescSize] = "";
   DropListClass spc2(kDataSpecial2, special2, sizeof(special2),
-                     TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth, kEdHeight,
-                     MixArchive::RetrieveData("EBTN-UP.SHP"),
+                     FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
+                     kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
                      MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const SpecialWeaponType spec :
        magic_enum::enum_values<SpecialWeaponType>()) {
@@ -1000,12 +1012,12 @@ bool TriggerTypeClass::Edit() {
   */
   char quarry1[kDescSize] = "";
   DropListClass qlist1(kDataSpecial1, quarry1, sizeof(quarry1),
-                       TPF_EFNT | TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
+                       FontType::kEditor, TPF_NOSHADOW, kAd1X, kAd1Y, kEdWidth,
                        kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
                        MixArchive::RetrieveData("EBTN-DN.SHP"));
   char quarry2[kDescSize] = "";
   DropListClass qlist2(kDataSpecial2, quarry2, sizeof(quarry2),
-                       TPF_EFNT | TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
+                       FontType::kEditor, TPF_NOSHADOW, kAd2X, kAd2Y, kEdWidth,
                        kEdHeight, MixArchive::RetrieveData("EBTN-UP.SHP"),
                        MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const QuarryType q : magic_enum::enum_values<QuarryType>()) {
@@ -1027,9 +1039,9 @@ bool TriggerTypeClass::Edit() {
   **	Name of this trigger text edit field.
   */
   char namebuf[5] = "";
-  EditClass name_edt(kNameEdit, namebuf, sizeof(namebuf),
-                     TPF_EFNT | TPF_NOSHADOW, kDialogX + 40, kDialogY + 30, 40,
-                     9, EditClass::kAlphanumeric);
+  EditClass name_edt(kNameEdit, namebuf, sizeof(namebuf), FontType::kEditor,
+                     TPF_NOSHADOW, kDialogX + 40, kDialogY + 30, 40, 9,
+                     EditClass::kAlphanumeric);
   base::SafeCopy(namebuf, IniName);  // Name
 
   /*
@@ -1037,7 +1049,7 @@ bool TriggerTypeClass::Edit() {
   */
   char housetext[kDescSize] = "";
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext),
-                         TPF_EFNT | TPF_NOSHADOW,
+                         FontType::kEditor, TPF_NOSHADOW,
                          name_edt.X + name_edt.Width + 20, name_edt.Y, 95,
                          8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
                          MixArchive::RetrieveData("EBTN-DN.SHP"));
@@ -1057,7 +1069,7 @@ bool TriggerTypeClass::Edit() {
   static const char* _perstext[3] = {"Volatile", "Semi-persistent",
                                      "Persistent"};
   DropListClass persbtn(kButtonPersistance, perstext, sizeof(perstext),
-                        TPF_EFNT | TPF_NOSHADOW,
+                        FontType::kEditor, TPF_NOSHADOW,
                         housebtn.X + housebtn.Width + 20, housebtn.Y, 105,
                         8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
                         MixArchive::RetrieveData("EBTN-DN.SHP"));
@@ -1071,24 +1083,26 @@ bool TriggerTypeClass::Edit() {
   **	event.
   */
   int eventflag = static_cast<int>(EventControl);
-  TextButtonClass eventbtn(kButtonEvent, TXT_TRIGGER_JUST_EVENT, kTpfEButton,
-                           event1list.X, event1list.Y + 11, 100, 9);
+  TextButtonClass eventbtn(kButtonEvent, TXT_TRIGGER_JUST_EVENT, kEButtonFont,
+                           kEButtonFlags, event1list.X, event1list.Y + 11, 100,
+                           9);
 
   /*
   **	This button controls the existence of a secondary action.
   */
   bool actionflag = ActionControl != MULTI_ONLY;
-  TextButtonClass actionbtn(kButtonAction, TXT_TRIGGER_JUST_ACTION, kTpfEButton,
-                            action1list.X, action1list.Y + 11, 100, 9);
+  TextButtonClass actionbtn(kButtonAction, TXT_TRIGGER_JUST_ACTION,
+                            kEButtonFont, kEButtonFlags, action1list.X,
+                            action1list.Y + 11, 100, 9);
 
   /*
   **	Create the ubiquitous OK and Cancel buttons.
   */
-  TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfEButton, kDialogX + 35,
-                        kDialogY + kDialogH - 30, 45, 9);
-  TextButtonClass cancelbtn(kKbuttoncancel, TXT_CANCEL, kTpfEButton,
-                            kDialogX + kDialogW - 80, kDialogY + kDialogH - 30,
-                            45, 9);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags,
+                        kDialogX + 35, kDialogY + kDialogH - 30, 45, 9);
+  TextButtonClass cancelbtn(kKbuttoncancel, TXT_CANCEL, kEButtonFont,
+                            kEButtonFlags, kDialogX + kDialogW - 80,
+                            kDialogY + kDialogH - 30, 45, 9);
 
   /*
   **	Initialize
@@ -2235,11 +2249,11 @@ void TriggerTypeClass::Build_INI_Entry(std::string& buffer) const {
  *=============================================================================================*/
 void TriggerTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                                int width, int height, bool selected,
-                               TextPrintType flags) const {
+                               FontType font, TextPrintType flags) const {
   if (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = Get_Color_Scheme();
     static const int _tabs[] = {13, 40};
-    if (Is_Font(flags, TPF_6PT_GRAD) || Is_Font(flags, TPF_EFNT)) {
+    if (font == FontType::k6PointGradient || font == FontType::kEditor) {
       if (selected) {
         flags = flags | TPF_BRIGHT_COLOR;
         view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
@@ -2249,14 +2263,14 @@ void TriggerTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
         }
       }
 
-      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack,
-                              FontOf(flags), StyleOf(flags), width, _tabs);
+      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
+                              flags, width, _tabs);
     } else {
       Conquer_Clip_Text_Print(
           view, Description(), x, y,
           (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-          kTBlack, FontOf(flags), StyleOf(flags), width, _tabs);
+          kTBlack, font, flags, width, _tabs);
     }
   }
 }

@@ -477,7 +477,8 @@ void EventClass::Execute() {
           txt,
           base::At(TheSession().text_colors(),
                    static_cast<int>(sender->RemapColor)),
-          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0, 0);
+          FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0,
+          0);
       TheMap().Flag_To_Redraw(false);
     } break;
 

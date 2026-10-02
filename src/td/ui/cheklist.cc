@@ -75,10 +75,10 @@
 namespace td {
 
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
-                               TextPrintType flags,
+                               FontType font, TextPrintType flags,
                                std::span<const std::byte> up,
                                std::span<const std::byte> down)
-    : ListClass(id, x, y, w, h, flags, up, down) {}
+    : ListClass(id, x, y, w, h, font, flags, up, down) {}
 
 /***************************************************************************
  * CheckListClass::Check_Item -- [un]checks an items                       *

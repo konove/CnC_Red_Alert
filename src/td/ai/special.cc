@@ -96,10 +96,10 @@ void Special_Dialog() {
       {TXT_SHOW_NAMES, false, nullptr},
   };
 
-  TextButtonClass ok(200, TXT_OK, TPF_6PT_GRAD | TPF_NOSHADOW, kOptionX + 5,
-                     kOptionY + kOptionHeight - 15);
-  TextButtonClass cancel(201, TXT_CANCEL, TPF_6PT_GRAD | TPF_NOSHADOW,
-                         kOptionX + kOptionWidth - 50,
+  TextButtonClass ok(200, TXT_OK, FontType::k6PointGradient, TPF_NOSHADOW,
+                     kOptionX + 5, kOptionY + kOptionHeight - 15);
+  TextButtonClass cancel(201, TXT_CANCEL, FontType::k6PointGradient,
+                         TPF_NOSHADOW, kOptionX + kOptionWidth - 50,
                          kOptionY + kOptionHeight - 15);
   buttons = &ok;
   cancel.Add(*buttons);

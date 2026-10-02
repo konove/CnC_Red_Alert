@@ -29,16 +29,17 @@ void UiSkin::Draw_Shape(PixelView& view, std::span<const std::byte> shapes,
 
 const char* UiSkin::Text_String(const int id) { return ra::Text_String(id); }
 
-int UiSkin::Text_Width(const PrintFlags flags, const char* text) {
-  return StringPixelWidth(TextFontStyle(FontOf(flags), StyleOf(flags)), text);
+int UiSkin::Text_Width(const Font font, const PrintFlags flags,
+                       const char* text) {
+  return StringPixelWidth(TextFontStyle(font, flags), text);
 }
 
-int UiSkin::Text_Height(const PrintFlags flags) {
-  return FontLineHeight(TextFontStyle(FontOf(flags), StyleOf(flags)));
+int UiSkin::Text_Height(const Font font, const PrintFlags flags) {
+  return FontLineHeight(TextFontStyle(font, flags));
 }
 
 void UiSkin::Draw_Button_Box(PixelView& view, const int x, const int y,
-                             const int width, const int height,
+                             const int width, const int height, Font /*font*/,
                              PrintFlags /*flags*/, const bool disabled,
                              const bool pressed) {
   const BoxStyleEnum style = [&] {
@@ -51,9 +52,9 @@ void UiSkin::Draw_Button_Box(PixelView& view, const int x, const int y,
 }
 
 void UiSkin::Print_Button_Text(PixelView& view, const char* text, const int x,
-                               const int y, const PrintFlags flags,
-                               const bool disabled, const bool pressed,
-                               const bool on) {
+                               const int y, const Font font,
+                               const PrintFlags flags, const bool disabled,
+                               const bool pressed, const bool on) {
   const TextPrintType state = [&] {
     if (disabled) {
       return static_cast<TextPrintType>(0);
@@ -61,8 +62,8 @@ void UiSkin::Print_Button_Text(PixelView& view, const char* text, const int x,
     return pressed || on ? TPF_USE_GRAD_PAL | TPF_BRIGHT_COLOR
                          : TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
   }();
-  Fancy_Text_Print(view, text, x, y, Get_Color_Scheme(), kTBlack, FontOf(flags),
-                   StyleOf(flags) | state | TPF_CENTER);
+  Fancy_Text_Print(view, text, x, y, Get_Color_Scheme(), kTBlack, font,
+                   flags | state | TPF_CENTER);
 }
 
 int UiSkin::Scale(const int amount, const int numerator,
@@ -79,8 +80,8 @@ void UiSkin::Draw_Gauge_Box(PixelView& view, const int x, const int y,
 
 unsigned char UiSkin::Gauge_Fill_Color() { return Get_Color_Scheme()->Bright; }
 
-FontStyle UiSkin::Font(const PrintFlags flags) {
-  return TextFontStyle(FontOf(flags), StyleOf(flags));
+FontStyle UiSkin::FontStyleFor(const Font font, const PrintFlags flags) {
+  return TextFontStyle(font, flags);
 }
 
 UiSkin::PrintFlags UiSkin::Edit_Flags(const PrintFlags flags) {
@@ -96,22 +97,20 @@ void UiSkin::Draw_Edit_Box(PixelView& view, const int x, const int y,
 
 void UiSkin::Draw_Edit_Text(PixelView& view, const char* text, const int x,
                             const int y, const int width, TextColor color,
-                            const PrintFlags flags, const bool focused,
-                            const int max_length) {
+                            const Font font, const PrintFlags flags,
+                            const bool focused, const int max_length) {
   const TextPrintType state =
       focused ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-  Conquer_Clip_Text_Print(view, text, x + 1, y + 1, color, kTBlack,
-                          FontOf(flags | state), StyleOf(flags | state),
-                          width - 2);
+  Conquer_Clip_Text_Print(view, text, x + 1, y + 1, color, kTBlack, font,
+                          flags | state, width - 2);
 
-  const FontStyle font =
-      TextFontStyle(FontOf(flags | state), StyleOf(flags | state));
+  const FontStyle style = TextFontStyle(font, flags | state);
   if (focused && std::cmp_less(std::string_view(text).size(), max_length) &&
-      StringPixelWidth(font, text) + StringPixelWidth(font, "_") < width - 2) {
-    Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(font, text),
-                            y + 1, color, kTBlack, FontOf(flags | state),
-                            StyleOf(flags | state));
+      StringPixelWidth(style, text) + StringPixelWidth(style, "_") <
+          width - 2) {
+    Conquer_Clip_Text_Print(view, "_", x + 1 + StringPixelWidth(style, text),
+                            y + 1, color, kTBlack, font, flags | state);
   }
 }
 
@@ -122,8 +121,9 @@ void UiSkin::Draw_List_Box(PixelView& view, const int x, const int y,
 
 void UiSkin::Draw_List_Entry(PixelView& view, const char* text, const int x,
                              const int y, const int width,
-                             const int line_height, PrintFlags flags,
-                             const bool selected, std::span<const int> tabs) {
+                             const int line_height, const Font font,
+                             PrintFlags flags, const bool selected,
+                             std::span<const int> tabs) {
   RemapControlType* scheme = Get_Color_Scheme();
   if (selected) {
     flags = flags | TPF_BRIGHT_COLOR;
@@ -131,21 +131,20 @@ void UiSkin::Draw_List_Entry(PixelView& view, const char* text, const int x,
   } else if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
     flags = flags | TPF_MEDIUM_COLOR;
   }
-  Conquer_Clip_Text_Print(view, text, x, y, scheme, kTBlack, FontOf(flags),
-                          StyleOf(flags), width, tabs);
+  Conquer_Clip_Text_Print(view, text, x, y, scheme, kTBlack, font, flags, width,
+                          tabs);
 }
 
 void UiSkin::Print_Label(PixelView& view, const char* text, const int x,
-                         const int y, TextColor color, const PrintFlags style) {
-  Simple_Text_Print(view, text, x, y, color, kTBlack, FontOf(style),
-                    StyleOf(style));
+                         const int y, TextColor color, const Font font,
+                         const PrintFlags style) {
+  Simple_Text_Print(view, text, x, y, color, kTBlack, font, style);
 }
 
 void UiSkin::Print_Clipped(PixelView& view, const char* text, const int x,
-                           const int y, TextColor color, const PrintFlags style,
-                           const int width) {
-  Conquer_Clip_Text_Print(view, text, x, y, color, kTBlack, FontOf(style),
-                          StyleOf(style), width);
+                           const int y, TextColor color, const Font font,
+                           const PrintFlags style, const int width) {
+  Conquer_Clip_Text_Print(view, text, x, y, color, kTBlack, font, style, width);
 }
 
 void UiSkin::Draw_Check_Box(PixelView& view, const int x, const int y,

@@ -37,8 +37,9 @@ namespace ra {
 template <class T>
 class TListClass final : public game::ControlClass {
  public:
-  TListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-             std::span<const std::byte> up, std::span<const std::byte> down);
+  TListClass(int id, int x, int y, int w, int h, FontType font,
+             TextPrintType flags, std::span<const std::byte> up,
+             std::span<const std::byte> down);
   TListClass(const TListClass<T>&) = delete;
   ~TListClass() override;
   TListClass& operator=(const TListClass&) = delete;
@@ -99,10 +100,9 @@ class TListClass final : public game::ControlClass {
   bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
               int y) override;
 
-  /*
-  **	This controls what the text looks like. It uses the basic TPF_ flags
-  *that *	are used to control Fancy_Text_Print().
-  */
+  // The font and the print flags the lines render with, as
+  // Fancy_Text_Print() takes them.
+  FontType TextFont;
   TextPrintType TextFlags;
 
   /*
@@ -149,14 +149,14 @@ class TListClass final : public game::ControlClass {
 };
 
 template <class T>
-TListClass<T>::TListClass(int id, int x, int y, int w, int h,
+TListClass<T>::TListClass(int id, int x, int y, int w, int h, FontType font,
                           TextPrintType flags, std::span<const std::byte> up,
                           std::span<const std::byte> down)
     : game::ControlClass(static_cast<unsigned>(id), x, y, w, h,
                          kLeftPress | kLeftRelease | kKeyboard, false),
+      TextFont(font),
       TextFlags(flags),
-      LineHeight(FontLineHeight(TextFontStyle(FontOf(flags), StyleOf(flags))) -
-                 1),
+      LineHeight(FontLineHeight(TextFontStyle(font, flags)) - 1),
       LineCount((h - 1) / LineHeight),
       UpGadget(0, up, x + w, y),
       DownGadget(0, down, x + w, y + h),
@@ -330,7 +330,7 @@ bool TListClass<T>::Draw_Me(PixelView& view, bool forced) {
           base::At(List, line)
               ->Draw_It(view, line, X + 1, Y + (LineHeight * index) + 1,
                         Width - 2, LineHeight, (line == SelectedIndex),
-                        TextFlags);
+                        TextFont, TextFlags);
           //					List[index].Draw_It(line, X+1,
           // Y+(LineHeight*index)+1, Width-2, LineHeight, (line ==
           // SelectedIndex), TextFlags);

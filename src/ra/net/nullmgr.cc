@@ -498,7 +498,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   const int y = (view.height() - height) / 2;
 
   TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL, kTpfButton,
+      kButtonCancel, TXT_CANCEL, kButtonFont, kButtonFlags,
       x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 16)) /
            2),
       y + height - (FontLineHeight(font) + 4) - 20);
@@ -683,7 +683,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   int y = (view.height() - height) / 2;
 
   TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL, kTpfButton,
+      kButtonCancel, TXT_CANCEL, kButtonFont, kButtonFlags,
       x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 16)) /
            2),
       y + height - (FontLineHeight(font) + 4) - 20);

@@ -2031,7 +2031,7 @@ static RetcodeType Process_Serial_Packet(
           serial_packet->Name, serial_packet->ID,
           serial_packet->Message.Message,
           static_cast<PlayerColorType>(serial_packet->ID),
-          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+          FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           TheRules().MessageDelay * kTicksPerMinute);
 
       PlaySoundEffect(VOC_INCOMING_MESSAGE);

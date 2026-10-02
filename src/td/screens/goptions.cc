@@ -192,7 +192,7 @@ void GameOptionsClass::Process() {
         text_buttons
             .emplace_back(std::make_unique<TextButtonClass>(
                 static_cast<unsigned>(base::At(_constants, index).ID), text,
-                TPF_6PT_GRAD | TPF_NOSHADOW, 0, y))
+                FontType::k6PointGradient, TPF_NOSHADOW, 0, y))
             .get();
 
     maxwidth = std::max(g->Width, maxwidth);

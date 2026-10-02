@@ -604,7 +604,7 @@ void EventClass::Execute() {
         const std::string message = absl::StrFormat(*format, house->Name());
         TheSession().Messages.Add_Message(
             nullptr, 0, message.c_str(), house->RemapColor,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200);
+            FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200);
       } else {
         DLOG(WARNING) << "TXT_SPECIAL_WARNING is not a single-%s format string";
       }
@@ -1049,7 +1049,7 @@ void EventClass::Execute() {
         TheScenario().bLocalProposesDraw = true;
         TheSession().Messages.Add_Message(
             nullptr, 0, TXT_WOL_DRAW_PROPOSED_LOCAL, PCOLOR_GOLD,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             TheRules().MessageDelay * kTicksPerMinute);
       } else {
         if (TheScenario().bLocalProposesDraw) {
@@ -1076,7 +1076,7 @@ void EventClass::Execute() {
         if (!message.empty()) {
           TheSession().Messages.Add_Message(
               nullptr, 0, message.c_str(), PCOLOR_GOLD,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+              FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
               TheRules().MessageDelay * kTicksPerMinute);
         }
       }
@@ -1088,7 +1088,7 @@ void EventClass::Execute() {
         TheScenario().bLocalProposesDraw = false;
         TheSession().Messages.Add_Message(
             nullptr, 0, TXT_WOL_DRAW_RETRACTED_LOCAL, PCOLOR_GOLD,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+            FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             TheRules().MessageDelay * kTicksPerMinute);
       } else {
         std::string message;
@@ -1110,7 +1110,7 @@ void EventClass::Execute() {
         if (!message.empty()) {
           TheSession().Messages.Add_Message(
               nullptr, 0, message.c_str(), PCOLOR_GOLD,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+              FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
               TheRules().MessageDelay * kTicksPerMinute);
         }
       }

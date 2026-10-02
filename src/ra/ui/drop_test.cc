@@ -24,8 +24,9 @@ class DropListClassTest : public testing::Test {
   base::Installed<Palettes>::Scope palettes_scope_{palettes_};
   char text_[16] = {};
   // No arrow shapes: the tests never draw.
-  DropListClass drop_{1, text_, sizeof(text_), TPF_6POINT, 0, 0, 100, 40,
-                      {}, {}};
+  DropListClass drop_{
+      1,  text_, sizeof(text_), FontType::k6Point, TPF_NONE, 0, 0, 100, 40,
+      {}, {}};
   game::GadgetClass button_{0, 0, 10, 10, 0};
 };
 

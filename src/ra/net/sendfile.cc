@@ -294,8 +294,8 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   // // button list
 
   TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+      kButtonCancel, TXT_CANCEL, FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // The German and French captions outgrow the button, so those builds
       // let it size itself to the text.
       d_cancel_x, d_cancel_y, config::kIsEnglish ? d_cancel_w : -1,
@@ -560,8 +560,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   // // button list
 
   TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+      kButtonCancel, TXT_CANCEL, FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       // The German and French captions outgrow the button, so those builds
       // let it size itself to the text.
       d_cancel_x, d_cancel_y, config::kIsEnglish ? d_cancel_w : -1,

@@ -68,8 +68,8 @@ class ColorListClass : public ListClass {
   };
   using enum SelectStyleType;
 
-  ColorListClass(int id, int x, int y, int w, int h, TextPrintType flags,
-                 std::span<const std::byte> up,
+  ColorListClass(int id, int x, int y, int w, int h, FontType font,
+                 TextPrintType flags, std::span<const std::byte> up,
                  std::span<const std::byte> down);
   ~ColorListClass() override;
   ColorListClass(const ColorListClass&) = delete;

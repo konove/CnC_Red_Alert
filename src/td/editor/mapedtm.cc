@@ -289,29 +289,25 @@ int MapEditClass::Select_Team(const char* caption) {
   game::GadgetClass* commands = nullptr;  // the button list
 
   ListClass teamlist(kTeamList, kListX, kListY, kListW, kListH,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                     FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW,
                      Hires_Retrieve("BTN-UP.SHP"),
                      Hires_Retrieve("BTN-DN.SHP"));
 
-  TextButtonClass editbtn(
-      kButtonEdit, "Edit",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kEditX,
-      kEditY, kEditW, kEditH);
+  TextButtonClass editbtn(kButtonEdit, "Edit", FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kEditX,
+                          kEditY, kEditW, kEditH);
 
-  TextButtonClass newbtn(
-      kButtonNew, "New",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNewX, kNewY,
-      kNewW, kNewH);
+  TextButtonClass newbtn(kButtonNew, "New", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNewX,
+                         kNewY, kNewW, kNewH);
 
-  TextButtonClass deletebtn(
-      kButtonDelete, "Delete",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kDeleteX,
-      kDeleteY, kDeleteW, kDeleteH);
+  TextButtonClass deletebtn(kButtonDelete, "Delete", FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kDeleteX, kDeleteY, kDeleteW, kDeleteH);
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
-      kOkW, kOkH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX,
+                        kOkY, kOkW, kOkH);
 
   PixelView& view = TheScreen().visible_view();
 
@@ -767,140 +763,133 @@ int MapEditClass::Edit_Team() {
   /*........................................................................
   Buttons:
   ........................................................................*/
-  EditClass name_edt(kButtonName, name_buf, 8,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNameX,
-                     kNameY, kNameW, kNameH, EditClass::kAlphanumeric);
+  EditClass name_edt(kButtonName, name_buf, 8, FontType::k6PointGradient,
+                     TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNameX, kNameY, kNameW,
+                     kNameH, EditClass::kAlphanumeric);
 
-  EditClass recr_edt(kButtonRecruit, recr_buf, 3,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPriorityX,
-                     kPriorityY, kPriorityW, kPriorityH, EditClass::kNumeric);
+  EditClass recr_edt(kButtonRecruit, recr_buf, 3, FontType::k6PointGradient,
+                     TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPriorityX, kPriorityY,
+                     kPriorityW, kPriorityH, EditClass::kNumeric);
 
-  EditClass maxnum_edt(kButtonMaxnum, maxnum_buf, 3,
-                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMaxnumX,
-                       kMaxnumY, kMaxnumW, kMaxnumH, EditClass::kNumeric);
+  EditClass maxnum_edt(kButtonMaxnum, maxnum_buf, 3, FontType::k6PointGradient,
+                       TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMaxnumX, kMaxnumY,
+                       kMaxnumW, kMaxnumH, EditClass::kNumeric);
 
   EditClass initnum_edt(kButtonInitnum, initnum_buf, 3,
-                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                        kInitnumX, kInitnumY, kInitnumW, kInitnumH,
-                        EditClass::kNumeric);
+                        FontType::k6PointGradient,
+                        TPF_USE_GRAD_PAL | TPF_NOSHADOW, kInitnumX, kInitnumY,
+                        kInitnumW, kInitnumH, EditClass::kNumeric);
 
-  EditClass fear_edt(kButtonFear, fear_buf, 3,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kFearX,
-                     kFearY, kFearW, kFearH, EditClass::kNumeric);
+  EditClass fear_edt(kButtonFear, fear_buf, 3, FontType::k6PointGradient,
+                     TPF_USE_GRAD_PAL | TPF_NOSHADOW, kFearX, kFearY, kFearW,
+                     kFearH, EditClass::kNumeric);
 
-  TextButtonClass gdibtn(
-      kButtonGdi, "GDI",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdiX, kGdiY,
-      kGdiW, kGdiH);
+  TextButtonClass gdibtn(kButtonGdi, "GDI", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kGdiX,
+                         kGdiY, kGdiW, kGdiH);
 
-  TextButtonClass nodbtn(
-      kButtonNod, "NOD",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodX, kNodY,
-      kNodW, kNodH);
+  TextButtonClass nodbtn(kButtonNod, "NOD", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNodX,
+                         kNodY, kNodW, kNodH);
 
-  TextButtonClass neubtn(
-      kButtonNeu, "NEUTRAL",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNeuX, kNeuY,
-      kNeuW, kNeuH);
+  TextButtonClass neubtn(kButtonNeu, "NEUTRAL", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kNeuX,
+                         kNeuY, kNeuW, kNeuH);
 
-  const TextButtonClass multi1btn(
-      kButtonMulti1, "M1",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti1X,
-      kMulti1Y, kMulti1W, kMulti1H);
+  const TextButtonClass multi1btn(kButtonMulti1, "M1",
+                                  FontType::k6PointGradient,
+                                  TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                                  kMulti1X, kMulti1Y, kMulti1W, kMulti1H);
 
-  const TextButtonClass multi2btn(
-      kButtonMulti2, "M2",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti2X,
-      kMulti2Y, kMulti2W, kMulti2H);
+  const TextButtonClass multi2btn(kButtonMulti2, "M2",
+                                  FontType::k6PointGradient,
+                                  TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                                  kMulti2X, kMulti2Y, kMulti2W, kMulti2H);
 
-  const TextButtonClass multi3btn(
-      kButtonMulti3, "M3",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti3X,
-      kMulti3Y, kMulti3W, kMulti3H);
+  const TextButtonClass multi3btn(kButtonMulti3, "M3",
+                                  FontType::k6PointGradient,
+                                  TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                                  kMulti3X, kMulti3Y, kMulti3W, kMulti3H);
 
-  const TextButtonClass multi4btn(
-      kButtonMulti4, "M4",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMulti4X,
-      kMulti4Y, kMulti4W, kMulti4H);
+  const TextButtonClass multi4btn(kButtonMulti4, "M4",
+                                  FontType::k6PointGradient,
+                                  TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                                  kMulti4X, kMulti4Y, kMulti4W, kMulti4H);
 
   TextButtonClass roundbtn(
-      kButtonRoundabout, "Roundabout",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kRoundaboutX,
-      kRoundaboutY, kRoundaboutW, kRoundaboutH);
+      kButtonRoundabout, "Roundabout", FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kRoundaboutX, kRoundaboutY,
+      kRoundaboutW, kRoundaboutH);
 
-  TextButtonClass learnbtn(
-      kButtonLearning, "Learning",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kLearningX,
-      kLearningY, kLearningW, kLearningH);
+  TextButtonClass learnbtn(kButtonLearning, "Learning",
+                           FontType::k6PointGradient,
+                           TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                           kLearningX, kLearningY, kLearningW, kLearningH);
 
-  TextButtonClass suicidebtn(
-      kButtonSuicide, "Suicide",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kSuicideX,
-      kSuicideY, kSuicideW, kSuicideH);
+  TextButtonClass suicidebtn(kButtonSuicide, "Suicide",
+                             FontType::k6PointGradient,
+                             TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                             kSuicideX, kSuicideY, kSuicideW, kSuicideH);
 
   TextButtonClass autocreatebtn(
-      kButtonAuto, "Autocreate",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kAutocreateX,
-      kAutocreateY, kAutocreateW, kAutocreateH);
+      kButtonAuto, "Autocreate", FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kAutocreateX, kAutocreateY,
+      kAutocreateW, kAutocreateH);
 
-  TextButtonClass mercbtn(
-      kButtonMercenary, "Mercenary",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMercenaryX,
-      kMercenaryY, kMercenaryW, kMercenaryH);
+  TextButtonClass mercbtn(kButtonMercenary, "Mercenary",
+                          FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                          kMercenaryX, kMercenaryY, kMercenaryW, kMercenaryH);
 
-  TextButtonClass prebuiltbtn(
-      kButtonPrebuilt, "Prebuild",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kPrebuiltX,
-      kPrebuiltY, kPrebuiltW, kPrebuiltH);
+  TextButtonClass prebuiltbtn(kButtonPrebuilt, "Prebuild",
+                              FontType::k6PointGradient,
+                              TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                              kPrebuiltX, kPrebuiltY, kPrebuiltW, kPrebuiltH);
 
   TextButtonClass reinforcebtn(
-      kButtonReinforce, "Reinforce",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kReinforceX,
-      kReinforceY, kReinforceW, kReinforceH);
+      kButtonReinforce, "Reinforce", FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kReinforceX, kReinforceY,
+      kReinforceW, kReinforceH);
 
   ListClass missionlist1(
       kButtonMission1, kMission1X, kMission1Y, kMission1W, kMission1H,
-      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+      FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP"));
 
   ListClass missionlist2(
       kButtonMission2, kMission2X, kMission2Y, kMission2W, kMission2H,
-      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+      FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       Hires_Retrieve("BTN-UP.SHP"), Hires_Retrieve("BTN-DN.SHP"));
 
-  TextButtonClass addbtn(
-      kButtonAdd, "Add >>",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kAddX, kAddY,
-      kAddW, kAddH);
+  TextButtonClass addbtn(kButtonAdd, "Add >>", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kAddX,
+                         kAddY, kAddW, kAddH);
 
-  TextButtonClass insertbtn(
-      kButtonInsert, "Insert",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kInsertX,
-      kInsertY, kInsertW, kInsertH);
+  TextButtonClass insertbtn(kButtonInsert, "Insert", FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kInsertX, kInsertY, kInsertW, kInsertH);
 
-  TextButtonClass delbtn(
-      kButtonDel, "Delete",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kDelX, kDelY,
-      kDelW, kDelH);
+  TextButtonClass delbtn(kButtonDel, "Delete", FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kDelX,
+                         kDelY, kDelW, kDelH);
 
-  EditClass arg_edt(kButtonArg, arg_buf, 4,
-                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kArgX,
-                    kArgY, kArgW, kArgH, EditClass::kAlphanumeric);
+  EditClass arg_edt(kButtonArg, arg_buf, 4, FontType::k6PointGradient,
+                    TPF_USE_GRAD_PAL | TPF_NOSHADOW, kArgX, kArgY, kArgW, kArgH,
+                    EditClass::kAlphanumeric);
 
-  TextButtonClass membersbtn(
-      kButtonMembers, "Members",
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kMembersX,
-      kMembersY, kMembersW, kMembersH);
+  TextButtonClass membersbtn(kButtonMembers, "Members",
+                             FontType::k6PointGradient,
+                             TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                             kMembersX, kMembersY, kMembersW, kMembersH);
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
-      kOkW, kOkH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX,
+                        kOkY, kOkW, kOkH);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
-      kCancelY, kCancelW, kCancelH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kCancelX, kCancelY, kCancelW, kCancelH);
 
   PixelView& view = TheScreen().visible_view();
 
@@ -1547,15 +1536,14 @@ int MapEditClass::Team_Members(HousesType house) {
   **	Buttons.
   */
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
-      kOkW, kOkH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX,
+                        kOkY, kOkW, kOkH);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
-      kCancelY, kCancelW, kCancelH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            kCancelX, kCancelY, kCancelW, kCancelH);
 
   /*
   **	Set up the team data arrays (ObjectTypeClass pointers & count)

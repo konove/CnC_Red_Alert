@@ -155,20 +155,19 @@ void GameControlsClass::Process() {
   SliderClass scrate_btn(kButtonScrollrate, d_scroll_x, d_scroll_y, d_scroll_w,
                          d_scroll_h);
 
-  TextButtonClass visual_btn(
-      kButtonVisual, TXT_VISUAL_CONTROLS,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_visual_x,
-      d_visual_y, d_visual_w, d_visual_h);
+  TextButtonClass visual_btn(kButtonVisual, TXT_VISUAL_CONTROLS,
+                             FontType::k6PointGradient,
+                             TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                             d_visual_x, d_visual_y, d_visual_w, d_visual_h);
 
-  TextButtonClass sound_btn(
-      kButtonSound, TXT_SOUND_CONTROLS,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_sound_x,
-      d_sound_y, d_sound_w, d_sound_h);
+  TextButtonClass sound_btn(kButtonSound, TXT_SOUND_CONTROLS,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            d_sound_x, d_sound_y, d_sound_w, d_sound_h);
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OPTIONS_MENU,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
-      d_ok_y);
+  TextButtonClass okbtn(kButtonOk, TXT_OPTIONS_MENU, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
+                        d_ok_y);
   okbtn.X = (TheScreen().visible_view().width() - okbtn.Width) / 2;
 
   /*

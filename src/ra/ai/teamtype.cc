@@ -147,14 +147,12 @@ static int atoh(const char* str);
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
 void TeamTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
-                            int width, int height, bool selected,
+                            int width, int height, bool selected, FontType font,
                             TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = Get_Color_Scheme();
     static const int _tabs[] = {35, 60, 80, 100};
-    const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
-    if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
-        font == static_cast<uint32_t>(TPF_EFNT)) {
+    if (font == FontType::k6PointGradient || font == FontType::kEditor) {
       if (selected) {
         flags = flags | TPF_BRIGHT_COLOR;
         view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
@@ -164,14 +162,14 @@ void TeamTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
         }
       }
 
-      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack,
-                              FontOf(flags), StyleOf(flags), width, _tabs);
+      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, font,
+                              flags, width, _tabs);
     } else {
       Conquer_Clip_Text_Print(
           view, Description(), x, y,
           (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-          kTBlack, FontOf(flags), StyleOf(flags), width, _tabs);
+          kTBlack, font, flags, width, _tabs);
     }
   }
 }
@@ -597,12 +595,10 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
  *=============================================================================================*/
 void TeamMissionClass::Draw_It(PixelView& view, int index, int x, int y,
                                int width, int height, bool selected,
-                               TextPrintType flags) const {
+                               FontType font, TextPrintType flags) const {
   RemapControlType* scheme = Get_Color_Scheme();
   static const int _tabs[] = {13, 40};
-  const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
-  if (font == static_cast<uint32_t>(TPF_6PT_GRAD) ||
-      font == static_cast<uint32_t>(TPF_EFNT)) {
+  if (font == FontType::k6PointGradient || font == FontType::kEditor) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
       view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
@@ -613,13 +609,13 @@ void TeamMissionClass::Draw_It(PixelView& view, int index, int x, int y,
     }
 
     Conquer_Clip_Text_Print(view, Description(index), x, y, scheme, kTBlack,
-                            FontOf(flags), StyleOf(flags), width, _tabs);
+                            font, flags, width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
         view, Description(index), x, y,
         (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                   : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
-        kTBlack, FontOf(flags), StyleOf(flags), width, _tabs);
+        kTBlack, font, flags, width, _tabs);
   }
 }
 
@@ -704,8 +700,8 @@ bool TeamTypeClass::Edit() {
   **	Team name edit field.
   */
   char name_buf[10];
-  EditClass name_edt(kButtonName, name_buf, sizeof(name_buf),
-                     TPF_EFNT | TPF_NOSHADOW, kDNameX, kDNameY, kEdWidth, 9,
+  EditClass name_edt(kButtonName, name_buf, sizeof(name_buf), FontType::kEditor,
+                     TPF_NOSHADOW, kDNameX, kDNameY, kEdWidth, 9,
                      EditClass::kAlphanumeric);
   base::SafeCopy(name_buf, IniName);
   commands = &name_edt;
@@ -715,7 +711,7 @@ bool TeamTypeClass::Edit() {
   */
   char housetext[25] = "";
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext),
-                         TPF_EFNT | TPF_NOSHADOW,
+                         FontType::kEditor, TPF_NOSHADOW,
                          name_edt.X + name_edt.Width + kDSpacingX, name_edt.Y,
                          55, 8 * 5, MixArchive::RetrieveData("EBTN-UP.SHP"),
                          MixArchive::RetrieveData("EBTN-DN.SHP"));
@@ -733,7 +729,7 @@ bool TeamTypeClass::Edit() {
   */
   char recr_buf[4];
   EditClass recr_edt(kButtonRecruit, recr_buf, sizeof(recr_buf),
-                     TPF_EFNT | TPF_NOSHADOW,
+                     FontType::kEditor, TPF_NOSHADOW,
                      housebtn.X + housebtn.Width + 5 + kDSpacingX, housebtn.Y,
                      kEdWidth, 9, EditClass::kNumeric);
   absl::SNPrintF(recr_buf, sizeof(recr_buf), "%d", RecruitPriority);
@@ -744,7 +740,7 @@ bool TeamTypeClass::Edit() {
   */
   char maxnum_buf[4];
   EditClass maxnum_edt(kButtonMaxnum, maxnum_buf, sizeof(maxnum_buf),
-                       TPF_EFNT | TPF_NOSHADOW,
+                       FontType::kEditor, TPF_NOSHADOW,
                        recr_edt.X + recr_edt.Width + kDSpacingX, recr_edt.Y,
                        kEdWidth, 9, EditClass::kNumeric);
   absl::SNPrintF(maxnum_buf, sizeof(maxnum_buf), "%d", MaxAllowed);
@@ -755,7 +751,7 @@ bool TeamTypeClass::Edit() {
   */
   char initnum_buf[4];
   EditClass initnum_edt(kButtonInitnum, initnum_buf, sizeof(initnum_buf),
-                        TPF_EFNT | TPF_NOSHADOW,
+                        FontType::kEditor, TPF_NOSHADOW,
                         maxnum_edt.X + maxnum_edt.Width + kDSpacingX,
                         maxnum_edt.Y, kEdWidth, 9, EditClass::kNumeric);
   absl::SNPrintF(initnum_buf, sizeof(initnum_buf), "%d", InitNum);
@@ -765,8 +761,8 @@ bool TeamTypeClass::Edit() {
   **	Waypoint preference to create/reinforce this team.
   */
   char origin[4];
-  EditClass originbtn(kButtonOrigin, origin, sizeof(origin),
-                      TPF_EFNT | TPF_NOSHADOW,
+  EditClass originbtn(kButtonOrigin, origin, sizeof(origin), FontType::kEditor,
+                      TPF_NOSHADOW,
                       initnum_edt.X + initnum_edt.Width + kDSpacingX,
                       initnum_edt.Y, 20, 9, EditClass::kAlpha);
   *originbtn.Get_Text() = '\0';
@@ -783,8 +779,8 @@ bool TeamTypeClass::Edit() {
   /*
   **	Members of this team control button.
   */
-  TextButtonClass membersbtn(kButtonMembers, "Members", kTpfEButton, name_edt.X,
-                             name_edt.Y + 12, 50);
+  TextButtonClass membersbtn(kButtonMembers, "Members", kEButtonFont,
+                             kEButtonFlags, name_edt.X, name_edt.Y + 12, 50);
   membersbtn.Add(*commands);
 
   /*
@@ -792,8 +788,8 @@ bool TeamTypeClass::Edit() {
   */
   char trigtext[25] = "";
   DropListClass triggerbtn(kButtonTrigger, trigtext, sizeof(trigtext),
-                           TPF_EFNT | TPF_NOSHADOW, kDDialogX + kDDialogW - 95,
-                           membersbtn.Y, 60, 8 * 5,
+                           FontType::kEditor, TPF_NOSHADOW,
+                           kDDialogX + kDDialogW - 95, membersbtn.Y, 60, 8 * 5,
                            MixArchive::RetrieveData("EBTN-UP.SHP"),
                            MixArchive::RetrieveData("EBTN-DN.SHP"));
   triggerbtn.Add_Item("<NONE>");
@@ -873,7 +869,7 @@ bool TeamTypeClass::Edit() {
   */
   char droptext[45];
   DropListClass missionlist1(kButtonMission1, droptext, sizeof(droptext),
-                             TPF_EFNT | TPF_NOSHADOW, reinforcebtn.X,
+                             FontType::kEditor, TPF_NOSHADOW, reinforcebtn.X,
                              reinforcebtn.Y + 15, 170, 8 * 8,
                              MixArchive::RetrieveData("EBTN-UP.SHP"),
                              MixArchive::RetrieveData("EBTN-DN.SHP"));
@@ -887,17 +883,16 @@ bool TeamTypeClass::Edit() {
   **	Optional mission argument entry field.
   */
   char arg_buf[6] = {0};
-  EditClass arg_edt(kButtonArg, arg_buf, sizeof(arg_buf),
-                    TPF_EFNT | TPF_NOSHADOW,
-                    missionlist1.X + missionlist1.Width + 15, missionlist1.Y,
-                    60, -1, EditClass::kAlphanumeric);
+  EditClass arg_edt(kButtonArg, arg_buf, sizeof(arg_buf), FontType::kEditor,
+                    TPF_NOSHADOW, missionlist1.X + missionlist1.Width + 15,
+                    missionlist1.Y, 60, -1, EditClass::kAlphanumeric);
   //	arg_edt.Add(*commands);
 
   char qtext[55];
-  DropListClass qlist(kButtonQuarry, qtext, sizeof(qtext),
-                      TPF_EFNT | TPF_NOSHADOW,
-                      missionlist1.X + missionlist1.Width + 15, missionlist1.Y,
-                      100, 5 * 8, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass qlist(kButtonQuarry, qtext, sizeof(qtext), FontType::kEditor,
+                      TPF_NOSHADOW, missionlist1.X + missionlist1.Width + 15,
+                      missionlist1.Y, 100, 5 * 8,
+                      MixArchive::RetrieveData("EBTN-UP.SHP"),
                       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const QuarryType q : magic_enum::enum_values<QuarryType>()) {
     qlist.Add_Item(QuarryName.at(q));
@@ -906,10 +901,10 @@ bool TeamTypeClass::Edit() {
   qlist.Add_Tail(*commands);
 
   char ftext[55];
-  DropListClass flist(kButtonFormation, ftext, sizeof(ftext),
-                      TPF_EFNT | TPF_NOSHADOW,
-                      missionlist1.X + missionlist1.Width + 15, missionlist1.Y,
-                      100, 5 * 8, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass flist(kButtonFormation, ftext, sizeof(ftext), FontType::kEditor,
+                      TPF_NOSHADOW, missionlist1.X + missionlist1.Width + 15,
+                      missionlist1.Y, 100, 5 * 8,
+                      MixArchive::RetrieveData("EBTN-UP.SHP"),
                       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const FormationType f : magic_enum::enum_values<FormationType>()) {
     flist.Add_Item(FormationName.at(f));
@@ -918,10 +913,10 @@ bool TeamTypeClass::Edit() {
   flist.Add_Tail(*commands);
 
   char mtext[55];
-  DropListClass mlist(kButtonMission, mtext, sizeof(mtext),
-                      TPF_EFNT | TPF_NOSHADOW,
-                      missionlist1.X + missionlist1.Width + 15, missionlist1.Y,
-                      100, 5 * 8, MixArchive::RetrieveData("EBTN-UP.SHP"),
+  DropListClass mlist(kButtonMission, mtext, sizeof(mtext), FontType::kEditor,
+                      TPF_NOSHADOW, missionlist1.X + missionlist1.Width + 15,
+                      missionlist1.Y, 100, 5 * 8,
+                      MixArchive::RetrieveData("EBTN-UP.SHP"),
                       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (const MissionType m : magic_enum::enum_values<MissionType>()) {
     mlist.Add_Item(MissionClass::Mission_Name(m));
@@ -934,7 +929,7 @@ bool TeamTypeClass::Edit() {
   std::vector<std::unique_ptr<TeamMissionClass>> missions;
   TListClass<TeamMissionClass*> missionlist2(
       kButtonMission2, missionlist1.X + 60, missionlist1.Y + 22, 240, 8 * 7,
-      TPF_EFNT | TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
+      FontType::kEditor, TPF_NOSHADOW, MixArchive::RetrieveData("EBTN-UP.SHP"),
       MixArchive::RetrieveData("EBTN-DN.SHP"));
   for (int index = 0; index < MissionCount; index++) {
     missionlist2.Add_Item(missions
@@ -950,26 +945,27 @@ bool TeamTypeClass::Edit() {
   /*
   **	Mission editing command buttons.
   */
-  TextButtonClass addbtn(kButtonAdd, "Append", kTpfEButton, kDNameX,
-                         missionlist1.Y + missionlist1.Height + 1, 50);
+  TextButtonClass addbtn(kButtonAdd, "Append", kEButtonFont, kEButtonFlags,
+                         kDNameX, missionlist1.Y + missionlist1.Height + 1, 50);
   addbtn.Add(*commands);
 
-  TextButtonClass insertbtn(kButtonInsert, "Insert", kTpfEButton, addbtn.X,
-                            addbtn.Y + 10, 50);
+  TextButtonClass insertbtn(kButtonInsert, "Insert", kEButtonFont,
+                            kEButtonFlags, addbtn.X, addbtn.Y + 10, 50);
   insertbtn.Add(*commands);
 
-  TextButtonClass delbtn(kButtonDelete, "Delete", kTpfEButton, insertbtn.X,
-                         insertbtn.Y + 10, 50);
+  TextButtonClass delbtn(kButtonDelete, "Delete", kEButtonFont, kEButtonFlags,
+                         insertbtn.X, insertbtn.Y + 10, 50);
   delbtn.Add(*commands);
 
-  TextButtonClass repbtn(kButtonReplace, "Replace", kTpfEButton, delbtn.X,
-                         delbtn.Y + 10, 50);
+  TextButtonClass repbtn(kButtonReplace, "Replace", kEButtonFont, kEButtonFlags,
+                         delbtn.X, delbtn.Y + 10, 50);
   repbtn.Add(*commands);
 
-  TextButtonClass okbtn(kButtonOk, TXT_OK, kTpfEButton, kDOkX, kDOkY, kDOkW,
-                        kDOkH);
-  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfEButton, kDCancelX,
-                            kDCancelY, kDCancelW, kDCancelH);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, kEButtonFont, kEButtonFlags, kDOkX,
+                        kDOkY, kDOkW, kDOkH);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kEButtonFont,
+                            kEButtonFlags, kDCancelX, kDCancelY, kDCancelW,
+                            kDCancelH);
 
   /*
   **	Initialize

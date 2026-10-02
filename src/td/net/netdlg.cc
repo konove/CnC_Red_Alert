@@ -457,7 +457,8 @@ void Destroy_Connection(int id, int error) {
         base::At(TheSession().text_colors(),
                  static_cast<int>(
                      MPlayerID_To_ColorIndex(static_cast<unsigned char>(id)))),
-        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
+        FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0,
+        0);
     TheMap().Flag_To_Redraw(false);
   }
 
@@ -505,7 +506,8 @@ void Destroy_Connection(int id, int error) {
         base::At(TheSession().text_colors(),
                  static_cast<int>(
                      MPlayerID_To_ColorIndex(static_cast<unsigned char>(id)))),
-        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
+        FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0,
+        0);
     TheMap().Flag_To_Redraw(false);
   }
 
@@ -964,58 +966,55 @@ static int Net_Join_Dialog() {
   game::GadgetClass* commands = nullptr;  // button list
 
   EditClass name_edt(kButtonName, namebuf, MPLAYER_NAME_MAX,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_name_x,
-                     d_name_y, d_name_w, d_name_h, EditClass::kAlphanumeric);
+                     FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                     d_name_x, d_name_y, d_name_w, d_name_h,
+                     EditClass::kAlphanumeric);
 
-  TextButtonClass gdibtn(
-      kButtonGdi, TXT_G_D_I,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_gdi_x,
-      d_gdi_y, d_gdi_w, d_gdi_h);
+  TextButtonClass gdibtn(kButtonGdi, TXT_G_D_I, FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_gdi_x,
+                         d_gdi_y, d_gdi_w, d_gdi_h);
 
-  TextButtonClass nodbtn(
-      kButtonNod, TXT_N_O_D,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_nod_x,
-      d_nod_y, d_nod_w, d_nod_h);
+  TextButtonClass nodbtn(kButtonNod, TXT_N_O_D, FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_nod_x,
+                         d_nod_y, d_nod_w, d_nod_h);
 
-  ListClass gamelist(
-      kButtonGamelist, d_gamelist_x, d_gamelist_y, d_gamelist_w, d_gamelist_h,
-      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
+  ListClass gamelist(kButtonGamelist, d_gamelist_x, d_gamelist_y, d_gamelist_w,
+                     d_gamelist_h, FontType::k6PointGradient,
+                     TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
 
-  ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
-                            d_playerlist_w, d_playerlist_h,
-                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                            up_button, down_button);
+  ColorListClass playerlist(
+      kButtonPlayerlist, d_playerlist_x, d_playerlist_y, d_playerlist_w,
+      d_playerlist_h, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
 
-  TextButtonClass joinbtn(
-      kButtonJoin, TXT_JOIN,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+  TextButtonClass joinbtn(kButtonJoin, TXT_JOIN, FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
 #ifdef FRENCH
-      d_join_x, d_join_y);
+                          d_join_x, d_join_y);
 #else
-      d_join_x, d_join_y, d_join_w, d_join_h);
+                          d_join_x, d_join_y, d_join_w, d_join_h);
 #endif
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      // #if (GERMAN | FRENCH)
-      //		d_cancel_x, d_cancel_y);
-      // #else
-      d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            // #if (GERMAN | FRENCH)
+                            //		d_cancel_x, d_cancel_y);
+                            // #else
+                            d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
   // #endif
 
-  TextButtonClass newbtn(
-      kButtonNew, TXT_NEW,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_new_x,
-      d_new_y, d_new_w, d_new_h);
+  TextButtonClass newbtn(kButtonNew, TXT_NEW, FontType::k6PointGradient,
+                         TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_new_x,
+                         d_new_y, d_new_w, d_new_h);
 
-  TextButtonClass sendbtn(
-      kButtonSend, TXT_SEND_MESSAGE,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      // #if (GERMAN | FRENCH)
-      //		d_send_x, d_send_y);
-      // #else
-      d_send_x, d_send_y, d_send_w, d_send_h);
+  TextButtonClass sendbtn(kButtonSend, TXT_SEND_MESSAGE,
+                          FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                          // #if (GERMAN | FRENCH)
+                          //		d_send_x, d_send_y);
+                          // #else
+                          d_send_x, d_send_y, d_send_w, d_send_h);
   // #endif
 
   playerlist.Set_Tabs(tabs);
@@ -1560,8 +1559,8 @@ static int Net_Join_Dialog() {
             TheSession().messages().Add_Edit(
                 base::At(TheSession().text_colors(),
                          TheSession().color_index()),
-                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
-                d_message_w - (70 * factor));
+                FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+                txt, d_message_w - (70 * factor));
 
             if (joinstate <= JOIN_NOTHING) {
               name_edt.Clear_Focus();
@@ -1694,8 +1693,9 @@ static int Net_Join_Dialog() {
                       txt,
                       base::At(TheSession().text_colors(),
                                TheSession().color_index()),
-                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
-                      magic_number, crc);
+                      FontType::k6PointGradient,
+                      TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, magic_number,
+                      crc);
                 } else {
                   for (i = 0; i < std::ssize(TheNetwork().players()); i++) {
                     TheNetwork().ipx().Send_Global_Message(
@@ -2746,8 +2746,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         MPlayerID_To_ColorIndex(TheNetwork().global_packet().Message.ID));
     TheSession().messages().Add_Message(
         txt, base::At(TheSession().text_colors(), color),
-        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, magic_number,
-        crc);
+        FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
+        magic_number, crc);
     retcode = EV_MESSAGE;
   }
 
@@ -3005,28 +3005,28 @@ static int Net_New_Dialog() {
     down_button = Hires_Retrieve("BTN-DN2.SHP");
   }
 
-  ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
-                            d_playerlist_w, d_playerlist_h,
-                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                            up_button, down_button);
+  ColorListClass playerlist(
+      kButtonPlayerlist, d_playerlist_x, d_playerlist_y, d_playerlist_w,
+      d_playerlist_h, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
 
-  ListClass scenariolist(kButtonScenariolist, d_scenariolist_x,
-                         d_scenariolist_y, d_scenariolist_w, d_scenariolist_h,
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                         up_button, down_button);
+  ListClass scenariolist(
+      kButtonScenariolist, d_scenariolist_x, d_scenariolist_y, d_scenariolist_w,
+      d_scenariolist_h, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
 
-  EditClass credit_edt(kButtonCredits, credbuf, CREDITSBUF_MAX,
-                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                       d_credits_x, d_credits_y, d_credits_w, d_credits_h,
-                       EditClass::kAlphanumeric);
+  EditClass credit_edt(
+      kButtonCredits, credbuf, CREDITSBUF_MAX, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_credits_x, d_credits_y, d_credits_w,
+      d_credits_h, EditClass::kAlphanumeric);
 
-  TextButtonClass rejectbtn(
-      kButtonReject, TXT_REJECT,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      // #if (GERMAN | FRENCH)
-      //		d_reject_x, d_reject_y);
-      // #else
-      d_reject_x, d_reject_y, d_reject_w, d_reject_h);
+  TextButtonClass rejectbtn(kButtonReject, TXT_REJECT,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            // #if (GERMAN | FRENCH)
+                            //		d_reject_x, d_reject_y);
+                            // #else
+                            d_reject_x, d_reject_y, d_reject_w, d_reject_h);
   // #endif
 
   GaugeClass countgauge(kButtonCount, d_count_x, d_count_y, d_count_w,
@@ -3035,47 +3035,46 @@ static int Net_New_Dialog() {
   GaugeClass levelgauge(kButtonLevel, d_level_x, d_level_y, d_level_w,
                         d_level_h);
 
-  TextButtonClass basesbtn(
-      kButtonBases, TXT_BASES_OFF,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_bases_x,
-      d_bases_y, d_bases_w, d_bases_h);
+  TextButtonClass basesbtn(kButtonBases, TXT_BASES_OFF,
+                           FontType::k6PointGradient,
+                           TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                           d_bases_x, d_bases_y, d_bases_w, d_bases_h);
 
   TextButtonClass tiberiumbtn(
-      kButtonTiberium, TXT_TIBERIUM_OFF,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_tiberium_x,
-      d_tiberium_y, d_tiberium_w, d_tiberium_h);
+      kButtonTiberium, TXT_TIBERIUM_OFF, FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_tiberium_x, d_tiberium_y,
+      d_tiberium_w, d_tiberium_h);
 
   TextButtonClass goodiesbtn(
-      kButtonGoodies, TXT_CRATES_OFF,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_goodies_x,
-      d_goodies_y, d_goodies_w, d_goodies_h);
+      kButtonGoodies, TXT_CRATES_OFF, FontType::k6PointGradient,
+      TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_goodies_x, d_goodies_y,
+      d_goodies_w, d_goodies_h);
 
-  TextButtonClass ghostsbtn(
-      kButtonGhosts, TXT_AI_PLAYERS_OFF,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ghosts_x,
-      d_ghosts_y, d_ghosts_w, d_ghosts_h);
+  TextButtonClass ghostsbtn(kButtonGhosts, TXT_AI_PLAYERS_OFF,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            d_ghosts_x, d_ghosts_y, d_ghosts_w, d_ghosts_h);
 
-  TextButtonClass okbtn(
-      kButtonOk, TXT_OK,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
-      d_ok_y, d_ok_w, d_ok_h);
+  TextButtonClass okbtn(kButtonOk, TXT_OK, FontType::k6PointGradient,
+                        TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
+                        d_ok_y, d_ok_w, d_ok_h);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      // #if (GERMAN | FRENCH)
-      //		d_cancel_x, d_cancel_y);
-      // #else
-      d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            // #if (GERMAN | FRENCH)
+                            //		d_cancel_x, d_cancel_y);
+                            // #else
+                            d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
   // #endif
 
-  TextButtonClass sendbtn(
-      kButtonSend, TXT_SEND_MESSAGE,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      // #if (GERMAN | FRENCH)
-      //		d_send_x, d_send_y);
-      // #else
-      d_send_x, d_send_y, d_send_w, d_send_h);
+  TextButtonClass sendbtn(kButtonSend, TXT_SEND_MESSAGE,
+                          FontType::k6PointGradient,
+                          TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                          // #if (GERMAN | FRENCH)
+                          //		d_send_x, d_send_y);
+                          // #else
+                          d_send_x, d_send_y, d_send_w, d_send_h);
   // #endif
 
   /*
@@ -3660,8 +3659,8 @@ static int Net_New_Dialog() {
             TheSession().messages().Add_Edit(
                 base::At(TheSession().text_colors(),
                          TheSession().color_index()),
-                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
-                d_message_w - (70 * factor));
+                FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+                txt, d_message_w - (70 * factor));
 
             credit_edt.Clear_Focus();
             credit_edt.Flag_To_Redraw();
@@ -3791,8 +3790,8 @@ static int Net_New_Dialog() {
                 txt,
                 base::At(TheSession().text_colors(),
                          TheSession().color_index()),
-                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
-                magic_number, crc);
+                FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+                1200, magic_number, crc);
 
             magic_number++;
             sent_so_far =
@@ -4230,8 +4229,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
         MPlayerID_To_ColorIndex(TheNetwork().global_packet().Message.ID));
     TheSession().messages().Add_Message(
         txt, base::At(TheSession().text_colors(), color),
-        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, magic_number,
-        crc);
+        FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
+        magic_number, crc);
     retval = EV_MESSAGE;
   }
 
@@ -4533,18 +4532,18 @@ static int Net_Fake_New_Dialog() {
   Buttons
   ........................................................................*/
 
-  ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
-                            d_playerlist_w, d_playerlist_h,
-                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                            up_button, down_button);
+  ColorListClass playerlist(
+      kButtonPlayerlist, d_playerlist_x, d_playerlist_y, d_playerlist_w,
+      d_playerlist_h, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      // #if (GERMAN | FRENCH)
-      //		d_cancel_x, d_cancel_y);
-      // #else
-      d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            // #if (GERMAN | FRENCH)
+                            //		d_cancel_x, d_cancel_y);
+                            // #else
+                            d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
   // #endif
 
   CCDebugString("C&C95 - In new game dialog - initialising lists.\n");
@@ -5134,22 +5133,22 @@ static int Net_Fake_Join_Dialog() {
   ........................................................................*/
   game::GadgetClass* commands = nullptr;  // button list
 
-  ColorListClass playerlist(kButtonPlayerlist, d_playerlist_x, d_playerlist_y,
-                            d_playerlist_w, d_playerlist_h,
-                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-                            up_button, down_button);
+  ColorListClass playerlist(
+      kButtonPlayerlist, d_playerlist_x, d_playerlist_y, d_playerlist_w,
+      d_playerlist_h, FontType::k6PointGradient,
+      TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
 
-  ListClass gamelist(
-      kButtonGamelist, d_gamelist_x, d_gamelist_y, d_gamelist_w, d_gamelist_h,
-      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
+  ListClass gamelist(kButtonGamelist, d_gamelist_x, d_gamelist_y, d_gamelist_w,
+                     d_gamelist_h, FontType::k6PointGradient,
+                     TPF_USE_GRAD_PAL | TPF_NOSHADOW, up_button, down_button);
 
-  TextButtonClass cancelbtn(
-      kButtonCancel, TXT_CANCEL,
-      TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      // #if (GERMAN | FRENCH)
-      //		d_cancel_x, d_cancel_y);
-      // #else
-      d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
+  TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL,
+                            FontType::k6PointGradient,
+                            TPF_CENTER | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                            // #if (GERMAN | FRENCH)
+                            //		d_cancel_x, d_cancel_y);
+                            // #else
+                            d_cancel_x, d_cancel_y, d_cancel_w, d_cancel_h);
   // #endif
 
   /*

@@ -59,8 +59,9 @@ class TextLabelClass : public GadgetClass, public Skin::LabelData {
   // palette index, which cannot be marked lifetimebound.
   // NOLINTBEGIN(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
   TextLabelClass(char* txt ABSL_ATTRIBUTE_LIFETIME_BOUND, int x, int y,
-                 Skin::TextColor color, Skin::PrintFlags style)
+                 Skin::TextColor color, Skin::Font font, Skin::PrintFlags style)
       : GadgetClass(x, y, 1, 1, 0, false),
+        TextFont(font),
         Style(style),
         Text(txt),
         Color(color) {}
@@ -71,9 +72,9 @@ class TextLabelClass : public GadgetClass, public Skin::LabelData {
       return false;
     }
     if (PixWidth == -1) {
-      Skin::Print_Label(view, Text, X, Y, Color, Style);
+      Skin::Print_Label(view, Text, X, Y, Color, TextFont, Style);
     } else {
-      Skin::Print_Clipped(view, Text, X, Y, Color, Style, PixWidth);
+      Skin::Print_Clipped(view, Text, X, Y, Color, TextFont, Style, PixWidth);
     }
     return true;
   }
@@ -81,6 +82,7 @@ class TextLabelClass : public GadgetClass, public Skin::LabelData {
   // Sets the displayed text of the label.
   virtual void Set_Text(char* txt) { Text = txt; }
 
+  Skin::Font TextFont;
   Skin::PrintFlags Style;
   char* Text;
   Skin::TextColor Color;

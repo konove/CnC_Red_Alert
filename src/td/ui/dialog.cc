@@ -375,6 +375,24 @@ TextPrintType StyleOf(const TextPrintType combined) {
   return combined & ~static_cast<TextPrintType>(0xFU);
 }
 
+bool HasGradientFontBits(const FontType font) {
+  switch (font) {
+    case FontType::k8Point:
+    case FontType::k3Point:
+    case FontType::kLed:
+    case FontType::kVcr:
+    case FontType::k6PointGradient:
+    case FontType::kMap:
+      return true;
+    case FontType::k6Point:
+    case FontType::kGreen12:
+    case FontType::kGreen12Gradient:
+    case FontType::kScore:
+    default:
+      return false;
+  }
+}
+
 FontStyle TextFontStyle(const FontType font, TextPrintType flags) {
   DCHECK_EQ(base::Bits(flags) & 0xFU, 0U) << "a font index in the style flags";
   flags = SupportedTextFlags(font, flags);

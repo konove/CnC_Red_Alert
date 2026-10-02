@@ -1945,7 +1945,8 @@ void HouseClass::Make_Ally(HousesType house) {
       TheSession().messages().Add_Message(
           buffer,
           base::At(TheSession().text_colors(), static_cast<int>(RemapColor)),
-          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0, 0);
+          FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0,
+          0);
       TheMap().Flag_To_Redraw(false);
     }
   }
@@ -1986,7 +1987,8 @@ void HouseClass::Make_Enemy(HousesType house) {
       TheSession().messages().Add_Message(
           buffer,
           base::At(TheSession().text_colors(), static_cast<int>(RemapColor)),
-          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
+          FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0,
+          0);
       TheMap().Flag_To_Redraw(false);
     }
   }
@@ -3843,7 +3845,8 @@ void HouseClass::MPlayer_Defeated() {
                         TheSession().player_name());
     TheSession().messages().Add_Message(
         txt, base::At(TheSession().text_colors(), TheSession().color_index()),
-        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
+        FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0,
+        0);
     TheMap().Flag_To_Redraw(false);
 
   } else {
@@ -3868,7 +3871,8 @@ void HouseClass::MPlayer_Defeated() {
           txt,
           base::At(TheSession().text_colors(),
                    static_cast<int>(MPlayerID_To_ColorIndex(id))),
-          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
+          FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0,
+          0);
       TheMap().Flag_To_Redraw(false);
     }
   }

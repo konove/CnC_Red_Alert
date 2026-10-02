@@ -2084,12 +2084,6 @@ inline constexpr bool base::kIsFlagEnum<ra::TextPrintType> = true;
 
 namespace ra {
 
-// Standard button text print flags.
-inline constexpr TextPrintType kTpfButton =
-    TPF_CENTER | TPF_6PT_GRAD | TPF_NOSHADOW;
-inline constexpr auto kTpfEButton = TPF_CENTER | TPF_EFNT | TPF_NOSHADOW;
-inline constexpr auto kTpfText = TPF_6PT_GRAD | TPF_NOSHADOW;
-
 // Standard button, editor button and dialog text: font and style flags.
 inline constexpr FontType kButtonFont = FontType::k6PointGradient;
 inline constexpr TextPrintType kButtonFlags = TPF_CENTER | TPF_NOSHADOW;

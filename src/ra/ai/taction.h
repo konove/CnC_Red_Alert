@@ -194,7 +194,7 @@ class ActionChoiceClass {
     return Name_From_Action(Action);
   }
   void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
-               bool selected, TextPrintType flags) const;
+               bool selected, FontType font, TextPrintType flags) const;
 
   TActionType Action;
 };

@@ -903,7 +903,7 @@ static void Message_Input(engine::window::KeyNumber& input) {
 
         TheSession().messages().Add_Edit(
             base::At(TheSession().text_colors(), TheSession().color_index()),
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
+            FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
             180 * factor);
 
         TheMap().Flag_To_Redraw(false);
@@ -923,7 +923,7 @@ static void Message_Input(engine::window::KeyNumber& input) {
 
           TheSession().messages().Add_Edit(
               base::At(TheSession().text_colors(), TheSession().color_index()),
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
+              FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
               180 * factor);
 
           TheMap().Flag_To_Redraw(false);
@@ -939,8 +939,8 @@ static void Message_Input(engine::window::KeyNumber& input) {
             TheSession().messages().Add_Edit(
                 base::At(TheSession().text_colors(),
                          TheSession().color_index()),
-                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
-                180 * factor);
+                FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+                txt, 180 * factor);
 
             TheMap().Flag_To_Redraw(false);
           }
@@ -1379,8 +1379,8 @@ void Call_Back() {
                 TheNetwork().global_packet().Message.ID));
             TheSession().messages().Add_Message(
                 txt, base::At(TheSession().text_colors(), color),
-                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
-                magic_number, crc);
+                FontType::k6PointGradient, TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+                600, magic_number, crc);
 
             /*
             **	Tell the map to do a partial update (just to force the
