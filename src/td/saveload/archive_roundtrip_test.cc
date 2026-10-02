@@ -102,7 +102,7 @@ class TdArchiveRoundTripTest : public testing::Test {
     TheObjectHeaps().trigger().Set_Heap(8);
     TheObjectHeaps().factory().Set_Heap(8);
     TheObjectHeaps().team().Set_Heap(8);
-    TheMap().Resize(MAP_CELL_TOTAL);
+    TheMap().Replace_Cells(MAP_CELL_TOTAL);
     TheWorld().cell_triggers().resize(MAP_CELL_TOTAL);
     TheMap().Init_Cells();
     ThePlayer() = base::NewPooled<HouseClass>(HOUSE_GOOD);
@@ -118,7 +118,7 @@ class TdArchiveRoundTripTest : public testing::Test {
     }
     base::DeletePooled(ThePlayer());
     ThePlayer() = nullptr;
-    TheMap().Clear();
+    TheMap().Free_Cells();
     debug_state_scope_.reset();
   }
 

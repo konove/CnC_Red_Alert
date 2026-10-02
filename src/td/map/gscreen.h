@@ -41,19 +41,56 @@
 #ifndef CNC_RED_ALERT_TD_MAP_GSCREEN_H_
 #define CNC_RED_ALERT_TD_MAP_GSCREEN_H_
 
+#include <iterator>
 #include <memory>
+#include <vector>
 
+#include "absl/base/attributes.h"
+#include "base/array.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
-#include "game/core/vector_dynamic.h"
 #include "game/ui/gadget.h"
 #include "td/core/defines.h"
 #include "td/objects/cell.h"
 
 namespace td {
 
-class GScreenClass : public game::VectorClass<CellClass> {
+class GScreenClass {
  public:
+  // Returns the cell numbered `cell`, which must be in [0, Length()).
+  CellClass& at(base::ssize cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(cells_, cell);
+  }
+  CellClass& operator[](base::ssize cell) ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return at(cell);
+  }
+  [[nodiscard]] const CellClass& at(base::ssize cell) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base::At(cells_, cell);
+  }
+  const CellClass& operator[](base::ssize cell) const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return at(cell);
+  }
+
+  // Returns the number of cells; 0 before the map allocates them.
+  [[nodiscard]] base::ssize Length() const { return std::ssize(cells_); }
+
+  // Returns the number of the cell `cell` points to, which must be one of
+  // this map's cells.
+  [[nodiscard]] base::ssize ID(const CellClass* cell) const {
+    return cell - cells_.data();
+  }
+
+  // Replaces the cells with `count` default-constructed ones; Init_Cells()
+  // sets them up for a scenario. A new vector rather than resize(): a cell
+  // cannot be moved, since its number is its position in the array.
+  void Replace_Cells(base::ssize count) {
+    cells_ = std::vector<CellClass>(base::ToSize(count));
+  }
+
   virtual void ResetTransientUiState();
   GScreenClass();
   virtual ~GScreenClass() = default;
@@ -154,7 +191,9 @@ class GScreenClass : public game::VectorClass<CellClass> {
  public:
   static std::unique_ptr<PixelBuffer> ShadowPage;
 
- private:
+ protected:
+  // The map's cells, indexed by CELL.
+  std::vector<CellClass> cells_;
 };
 
 extern bool ScreenRecording;

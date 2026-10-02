@@ -22,10 +22,10 @@ const base::Installed<World>::Scope world_scope(world);
 class TdAdjacentCellTest : public testing::Test {
  protected:
   static void SetUpTestSuite() {
-    TheMap().Resize(MAP_CELL_TOTAL);
+    TheMap().Replace_Cells(MAP_CELL_TOTAL);
     TheMap().Init_Cells();
   }
-  static void TearDownTestSuite() { TheMap().Clear(); }
+  static void TearDownTestSuite() { TheMap().Free_Cells(); }
 
   static const CellClass& Cell(int x, int y) {
     return TheMap().at(XY_Cell(x, y));

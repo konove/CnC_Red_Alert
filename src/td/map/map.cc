@@ -486,14 +486,9 @@ void MapClass::Init_Clear() {
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
 void MapClass::Alloc_Cells() {
-  /*
-  **	Assume that whatever the contents of the VectorClass are is garbage
-  **	(it may have been loaded from a save-game file), so zero it out first.
-  */
-  Vector = nullptr;
-  VectorMax = 0;
-  IsAllocated = false;
-  Resize(Size);
+  // Whatever the cells hold is garbage (they may have been loaded from a saved
+  // game), so start from new ones rather than keeping them.
+  Replace_Cells(Size);
 }
 
 /***********************************************************************************************
@@ -511,7 +506,7 @@ void MapClass::Alloc_Cells() {
  *                                                                                             *
  * HISTORY: * 03/17/1995 BRR : Created. *
  *=============================================================================================*/
-void MapClass::Free_Cells() { Clear(); }
+void MapClass::Free_Cells() { cells_.clear(); }
 
 /***********************************************************************************************
  * MapClass::Init_Cells -- Initializes the cell array to a fresh state. *
