@@ -120,8 +120,8 @@ add_gtest(
 
 add_gtest(
     NAME td_coord_inline_test
-    SOURCES core/coord_inline_test.cc
-    LIBS base absl::check absl::log
+    SOURCES core/coord_inline_test.cc core/coordinate_test.cc
+    LIBS base engine_stream absl::check absl::log
 )
 
 # Real cell array from the engine, without a game entry point.
