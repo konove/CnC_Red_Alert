@@ -104,7 +104,6 @@
 #include "ra/data/ccini.h"
 #include "ra/data/rules.h"
 #include "ra/editor/mapedit.h"
-#include "ra/map/display.h"
 #include "ra/map/gscreen.h"
 #include "ra/map/world.h"
 #include "ra/net/session.h"

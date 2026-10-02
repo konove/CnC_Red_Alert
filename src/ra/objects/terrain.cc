@@ -92,7 +92,6 @@
 #include "ra/data/rules.h"
 #include "ra/debug/debug_state.h"
 #include "ra/editor/mapedit.h"
-#include "ra/map/display.h"
 #include "ra/map/mouse.h"
 #include "ra/map/world.h"
 #include "ra/objects/anim.h"

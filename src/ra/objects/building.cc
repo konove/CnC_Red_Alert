@@ -157,7 +157,6 @@
 #include "ra/data/rules.h"
 #include "ra/debug/debug_state.h"
 #include "ra/editor/mapedit.h"
-#include "ra/map/display.h"
 #include "ra/map/gscreen.h"
 #include "ra/map/power.h"
 #include "ra/map/radar.h"
