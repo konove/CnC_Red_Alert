@@ -251,16 +251,6 @@ std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
   return base::At(kFacingOffsets, base::At(kSpillToFacing, index));
 }
 
-CELL Coord_Cell(COORDINATE coord) {
-  COORD_COMPOSITE cc{};
-  cc.Coord = coord;
-  CELL_COMPOSITE cell{};
-  cell.Cell = 0;
-  cell.Sub.X = cc.Sub.X.Sub.Cell;
-  cell.Sub.Y = cc.Sub.Y.Sub.Cell;
-  return cell.Cell;
-}
-
 void List_Copy(const std::span<const int16_t> source, const int len,
                const std::span<int16_t> dest) {
   CHECK_GE(len, 0);

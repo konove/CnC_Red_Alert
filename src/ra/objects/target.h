@@ -45,6 +45,7 @@
 
 #include "base/numeric.h"
 #include "ra/core/defines.h"
+#include "ra/core/packed.h"  // IWYU pragma: export
 #include "ra/data/ccini.h"
 #include "ra/objects/abstract.h"
 #include "ra/objects/object.h"
@@ -63,15 +64,6 @@ class TechnoTypeClass;
 class TerrainClass;
 class UnitClass;
 class VesselClass;
-
-inline RTTIType Target_Kind(TARGET a) {
-  return static_cast<RTTIType>(std::bit_cast<TARGET_COMPOSITE>(a).Sub.Exponent);
-}
-
-inline int Target_Value(TARGET a) {
-  const TARGET_COMPOSITE composite{.Target = a};
-  return static_cast<int>(composite.Sub.Mantissa);
-}
 
 inline bool Is_Target_Team(TARGET a) { return Target_Kind(a) == RTTI_TEAM; }
 inline bool Is_Target_TeamType(TARGET a) {

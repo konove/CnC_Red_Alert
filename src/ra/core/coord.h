@@ -9,6 +9,7 @@
 #include "engine/gfx/rect.h"
 #include "game/sim/direction.h"
 #include "ra/core/defines.h"
+#include "ra/core/packed.h"  // IWYU pragma: export
 
 namespace ra {
 
@@ -49,9 +50,6 @@ int Distance(TARGET target1, TARGET target2);
 // `maxsize` pixels overlaps. Limited to maxsize <= 48 for the lookup path;
 // larger objects use a manually computed or prebuilt 5x5 table.
 std::span<const int16_t> Coord_Spillage_List(COORDINATE coord, int maxsize);
-
-// Converts a coordinate to its cell number (map array index).
-CELL Coord_Cell(COORDINATE coord);
 
 // Rescales a value from an old range to a new range with rounding.
 // Maps: (value / old_base) * new_base
