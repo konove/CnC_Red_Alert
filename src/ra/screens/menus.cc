@@ -65,7 +65,6 @@
 #include "ra/assets/screen.h"
 #include "ra/assets/theme.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/world.h"

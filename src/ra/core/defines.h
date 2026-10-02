@@ -44,7 +44,9 @@
 
 #include "base/attributes.h"
 #include "base/enum_array.h"
+#include "base/enum_step.h"  // IWYU pragma: export
 #include "base/fixed.h"
+#include "base/flags.h"  // IWYU pragma: export
 #include "base/numeric.h"
 #include "game/sim/direction.h"
 #include "game/sim/enums.h"
@@ -53,7 +55,7 @@
 #include "ra/core/coordinate.h"  // IWYU pragma: export
 #include "ra/core/jshell.h"
 #include "ra/core/packed.h"  // IWYU pragma: export
-#include "ra/core/rtti.h"  // IWYU pragma: export
+#include "ra/core/rtti.h"    // IWYU pragma: export
 #include "ra/core/target.h"  // IWYU pragma: export
 
 namespace ra {
@@ -505,6 +507,13 @@ enum class CNC_FLAG_ENUM ThreatType {
       0x2000  // Consider base defense buildings a greater target?
 };
 using enum ThreatType;
+
+}  // namespace ra
+
+template <>
+inline constexpr bool base::kIsFlagEnum<ra::ThreatType> = true;
+
+namespace ra {
 
 inline constexpr ThreatType kThreatGround =
     THREAT_VEHICLES | THREAT_BUILDINGS | THREAT_INFANTRY;
@@ -2051,6 +2060,13 @@ enum class CNC_FLAG_ENUM TextPrintType {
 };
 using enum TextPrintType;
 
+}  // namespace ra
+
+template <>
+inline constexpr bool base::kIsFlagEnum<ra::TextPrintType> = true;
+
+namespace ra {
+
 // Standard button text print flags.
 inline constexpr TextPrintType kTpfButton =
     TPF_CENTER | TPF_6PT_GRAD | TPF_NOSHADOW;
@@ -2609,5 +2625,19 @@ inline constexpr int kMouseColor = 16;
 inline constexpr int kMaxPlayers = 8;
 
 }  // namespace ra
+
+// Enums that loops walk with ++ and --.
+template <>
+inline constexpr bool base::kIsSteppableEnum<ra::HousesType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<ra::UrgencyType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<ra::VQType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<ra::ThemeType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<ra::TemplateType> = true;
+template <>
+inline constexpr bool base::kIsSteppableEnum<ra::FearType> = true;
 
 #endif  // CNC_RED_ALERT_RA_CORE_DEFINES_H_

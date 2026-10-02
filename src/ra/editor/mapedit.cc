@@ -98,7 +98,6 @@
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/core/target.h"
 #include "ra/data/ccini.h"
 #include "ra/data/text_ids.h"

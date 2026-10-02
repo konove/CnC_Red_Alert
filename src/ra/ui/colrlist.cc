@@ -53,7 +53,6 @@
 #include "engine/gfx/wwstd.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/list.h"

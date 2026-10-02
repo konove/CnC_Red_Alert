@@ -127,7 +127,6 @@
 #include "ra/core/coord.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
 #include "ra/data/ccini.h"
 #include "ra/data/ini.h"

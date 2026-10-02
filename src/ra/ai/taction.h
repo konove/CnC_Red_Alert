@@ -46,6 +46,7 @@
 
 #include "absl/strings/ascii.h"
 #include "base/enum_array.h"
+#include "base/enum_step.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/ai/teamtype.h"
@@ -206,5 +207,8 @@ extern template void TActionClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TActionClass::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
+
+template <>
+inline constexpr bool base::kIsSteppableEnum<ra::TActionType> = true;
 
 #endif  // CNC_RED_ALERT_RA_AI_TACTION_H_

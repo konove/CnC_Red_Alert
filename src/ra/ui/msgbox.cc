@@ -57,7 +57,6 @@
 #include "ra/assets/screen.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/startup/conquer.h"
 #include "ra/startup/game_state.h"
 #include "ra/ui/color_scheme.h"

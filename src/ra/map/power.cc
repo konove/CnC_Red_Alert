@@ -62,7 +62,6 @@
 #include "game/ui/gadget.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"
 #include "ra/map/radar.h"

@@ -58,7 +58,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/core/const.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/core/type_heaps.h"
 #include "ra/data/ccini.h"
 

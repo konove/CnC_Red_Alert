@@ -58,7 +58,6 @@
 #include "ra/assets/screen.h"
 #include "ra/assets/shape_draw.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/data/rules.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug_state.h"

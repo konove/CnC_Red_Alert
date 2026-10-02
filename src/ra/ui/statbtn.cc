@@ -51,7 +51,6 @@
 #include "engine/gfx/wwstd.h"
 #include "game/ui/gadget.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 

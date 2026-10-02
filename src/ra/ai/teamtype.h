@@ -45,6 +45,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
+#include "base/enum_step.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/core/defines.h"
 #include "ra/core/target.h"
@@ -316,5 +317,8 @@ extern template void TeamTypeClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TeamTypeClass::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
+
+template <>
+inline constexpr bool base::kIsSteppableEnum<ra::TeamMissionType> = true;
 
 #endif  // CNC_RED_ALERT_RA_AI_TEAMTYPE_H_

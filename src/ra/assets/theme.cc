@@ -70,7 +70,6 @@
 #include "ra/ai/scenario.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/debug/debug_state.h"
 #include "ra/map/world.h"

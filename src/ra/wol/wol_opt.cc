@@ -28,7 +28,6 @@
 #include "ra/assets/screen.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/data/text_ids.h"
 #include "ra/startup/conquer.h"
 #include "ra/startup/game_state.h"

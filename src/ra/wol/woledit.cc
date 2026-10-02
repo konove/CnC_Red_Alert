@@ -33,7 +33,6 @@
 #include "game/ui/gadget.h"
 #include "game/ui/input.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/startup/game_state.h"
 #include "ra/ui/dialog.h"
 

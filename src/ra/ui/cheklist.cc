@@ -60,7 +60,6 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/ui/color_scheme.h"
 #include "ra/ui/dialog.h"
 #include "ra/ui/list.h"

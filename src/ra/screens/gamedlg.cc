@@ -52,7 +52,6 @@
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
 #include "ra/core/inline.h"
-#include "ra/core/jshell.h"
 #include "ra/data/options.h"
 #include "ra/data/text_ids.h"
 #include "ra/editor/mapedit.h"

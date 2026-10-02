@@ -48,6 +48,8 @@
 #include "absl/strings/ascii.h"
 #include "base/attributes.h"
 #include "base/enum_array.h"
+#include "base/enum_step.h"
+#include "base/flags.h"
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
@@ -243,5 +245,10 @@ extern template void TEventClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void TEventClass::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
+
+template <>
+inline constexpr bool base::kIsSteppableEnum<ra::TEventType> = true;
+template <>
+inline constexpr bool base::kIsFlagEnum<ra::AttachType> = true;
 
 #endif  // CNC_RED_ALERT_RA_AI_TEVENT_H_

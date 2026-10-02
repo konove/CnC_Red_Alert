@@ -69,7 +69,6 @@
 #include "ra/assets/palettes.h"
 #include "ra/core/config.h"
 #include "ra/core/defines.h"
-#include "ra/core/jshell.h"
 #include "ra/core/object_heaps.h"
 #include "ra/core/target.h"
 #include "ra/map/world.h"

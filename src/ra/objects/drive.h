@@ -40,6 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_OBJECTS_DRIVE_H_
 #define CNC_RED_ALERT_RA_OBJECTS_DRIVE_H_
 
+#include "base/attributes.h"
+#include "base/flags.h"
 #include "engine/platform/timer.h"
 #include "game/core/game_clock.h"
 #include "game/sim/direction.h"
@@ -155,7 +157,7 @@ class DriveClass : public FootClass {
   **	Smooth turning tracks are controlled by this structure and these
   **	processing bits.
   */
-  enum class TrackControlType {
+  enum class CNC_FLAG_ENUM TrackControlType {
     F_ = 0x00,   // No translation necessary?
     F_T = 0x01,  // Transpose X and Y components?
     F_X = 0x02,  // Reverse X component sign?
@@ -229,5 +231,9 @@ extern template void DriveClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void DriveClass::Serialize<ArchiveReader>(ArchiveReader&);
 
 }  // namespace ra
+
+template <>
+inline constexpr bool base::kIsFlagEnum<ra::DriveClass::TrackControlType> =
+    true;
 
 #endif  // CNC_RED_ALERT_RA_OBJECTS_DRIVE_H_
